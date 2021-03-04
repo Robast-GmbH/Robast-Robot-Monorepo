@@ -1,5 +1,6 @@
 FROM dorowu/ubuntu-desktop-lxde-vnc:focal
  
+ 
 ENV DEBIAN_FRONTEND noninteractive
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN apt-get update -q && \
@@ -64,6 +65,7 @@ RUN apt-get update && apt-get install -y \
 
 ARG USERNAME=ubuntu
 
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update \
   && apt-get install -y sudo \
   && echo $USERNAME ALL=\(root\) NOPASSWD:ALL > /etc/sudoers.d/$USERNAME\
@@ -81,20 +83,14 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
 
-
-#########################nvidia
-
-RUN apt-get update && apt-get install -y x11vnc xvfb
-RUN apt-get update \
- && apt-get install -y -qq --no-install-recommends \
-  libglvnd0 \
-  libgl1 \
-  libglx0 \
-  libegl1 \
-  libxext6 \
-  libx11-6
+ENV DEBIAN_FRONTEND=noninteractive
+# Install gazebo
+RUN apt-get update && apt-get install -y \
+  ros-foxy-gazebo* \
+  && rm -rf /var/lib/apt/lists/*
+ENV DEBIAN_FRONTEND=
   
 RUN apt-get update && apt-get install -y ros-foxy-cartographer ros-foxy-cartographer-ros ros-foxy-navigation2 ros-foxy-nav2-bringup
-COPY ./entrypoint.sh /entrypoint.sh
+
 
 ENTRYPOINT ["/entrypoint.sh"]
