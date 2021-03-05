@@ -88,5 +88,8 @@ ENV DEBIAN_FRONTEND=
   
 RUN apt-get update && apt-get install -y ros-foxy-cartographer ros-foxy-cartographer-ros ros-foxy-navigation2 ros-foxy-nav2-bringup
 
+#Turtlebot spezifisch
+RUN apt-get install ros-foxy-turtlebot3
+
 
 ENTRYPOINT ["/entrypoint.sh"]
