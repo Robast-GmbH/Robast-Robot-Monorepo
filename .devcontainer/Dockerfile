@@ -86,6 +86,7 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
   
+#nav2 stuff
 RUN apt-get update && apt-get install -y ros-foxy-cartographer ros-foxy-cartographer-ros ros-foxy-navigation2 ros-foxy-nav2-bringup
 
 #Turtlebot spezifisch
