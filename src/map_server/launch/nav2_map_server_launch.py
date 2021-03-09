@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     rviz_config_dir = os.path.join(get_package_share_directory('turtlebot3_simulations_robast'), 'config', 'nav2_default_view.rviz')
-    map_file = os.path.join(get_package_share_directory('turtlebot3_simulations_robast'), 'config', '5OG.yaml')
+    map_file = os.path.join(get_package_share_directory('turtlebot3_simulations_robast'), 'maps', '5OG.yaml')
 
     return LaunchDescription([
         #map server
