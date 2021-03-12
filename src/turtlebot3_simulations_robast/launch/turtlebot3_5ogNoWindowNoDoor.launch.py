@@ -12,11 +12,14 @@ TURTLEBOT3_MODEL = os.environ['TURTLEBOT3_MODEL']
 
 
 def generate_launch_description():
+    if os.environ['TURTLEBOT3_MODEL']=="":
+        TURTLEBOT3_MODEL="no"
+
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     world_file_name = 'turtlebot3_5ogNoWindowNoDoor/' + TURTLEBOT3_MODEL + '.model'
-    world = os.path.join(get_package_share_directory('turtlebot3_simulation_robast'),
+    world = os.path.join(get_package_share_directory('turtlebot3_simulations_robast'),
                          'worlds', world_file_name)
-    launch_file_dir = os.path.join(get_package_share_directory('turtlebot3_simulation_robast'), 'launch')
+    launch_file_dir = os.path.join(get_package_share_directory('turtlebot3_simulations_robast'), 'launch')
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
 
     return LaunchDescription([
