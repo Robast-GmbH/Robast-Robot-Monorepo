@@ -1,4 +1,4 @@
-image: 5OG.pgm
+image: 5OG_clean.pgm
 resolution: 0.01
 origin: [-5, -10, 0]
 negate: 0
