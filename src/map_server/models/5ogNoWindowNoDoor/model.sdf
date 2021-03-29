@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <sdf version='1.7'>
   <model name='5ogNoWindowNoDoor'>
-    <pose>-0.42618 0.023689 0 0 -0 0</pose>
+    <pose>-0 0 0 0 -0 0</pose>
     <link name='Stairs_2'>
       <visual name='Stairs_2_Visual_0'>
         <pose>11.0898 -0.209207 0.083333 0 -0 1.5708</pose>
