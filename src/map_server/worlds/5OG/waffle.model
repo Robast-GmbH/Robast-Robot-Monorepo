@@ -55,5 +55,56 @@
       <uri>model://turtlebot3_waffle</uri>
     </include>
 
+      <actor name="animated_box">
+        <link name="box_link">
+          <visual name="visual">
+            <geometry>
+              <box>
+                <size>.2 .2 .2</size>
+              </box>
+            </geometry>
+          </visual>
+        </link>
+        <script>
+          <loop>true</loop>
+          <delay_start>0.000000</delay_start>
+          <trajectory id="0" type="square">
+             <waypoint>
+                <time>0.0</time>
+                <pose>-13.5 -4.6 1 0 0 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>2.0</time>
+                <pose>-13.8 -2.3 1 0 0 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>4.0</time>
+                <pose>-11 -2.2 1 0 0 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>6.0</time>
+                <pose>-11 1.2 1 0 0 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>8.0</time>
+                <pose>-11 -2.2 1 0 0 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>10.0</time>
+                <pose>-11 -2.2 1 0 0 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>12.0</time>
+                <pose>-13.8 -2.3 1 0 0 0</pose>
+             </waypoint>
+             <waypoint>
+                <time>14.0</time>
+                <pose>-13.5 -4.6 1 0 0 0</pose>
+             </waypoint>
+          </trajectory>
+        </script>
+      </actor>
+
+
   </world>
 </sdf>

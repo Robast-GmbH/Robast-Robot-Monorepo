@@ -9,7 +9,7 @@ from launch.substitutions import LaunchConfiguration
 TURTLEBOT3_MODEL = os.environ['TURTLEBOT3_MODEL']
 WORLD_MODEL = os.environ['WORLD_MODEL']
 
-
+#export GAZEBO_MODEL_PATH=/workspaces/foxy_ws/src/map_server/models:${GAZEBO_MODEL_PATH}
 def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     world_file_name = WORLD_MODEL + '/' + TURTLEBOT3_MODEL + '.model'
