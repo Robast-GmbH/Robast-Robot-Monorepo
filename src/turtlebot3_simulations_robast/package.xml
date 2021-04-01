@@ -4,7 +4,7 @@
   <name>turtlebot3_simulations_robast</name>
   <version>0.0.0</version>
   <description>Gazebo simulation package for the TurtleBot3 Robast version</description>
-  <maintainer email="t.zurhelle@tiplu.de">test</maintainer>
+  <maintainer email="Robast@tiplu.de">Robast entwiklung</maintainer>
   <license>TODO: License declaration</license>
 
   <!--<test_depend>ament_copyright</test_depend>
