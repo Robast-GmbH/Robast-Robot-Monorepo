@@ -41,6 +41,12 @@ include_directories(
   ${GAZEBO_INCLUDE_DIRS}
 )
 
+list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
+
+add_library(RandomMovePlugin SHARED plugin/RandomMovePlugin.cc)
+target_link_libraries(RandomMovePlugin ${GAZEBO_LIBRARIES})
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
+
 set(dependencies
   "geometry_msgs"
   "nav_msgs"
