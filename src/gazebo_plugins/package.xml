@@ -14,5 +14,6 @@
   <depend>gazebo_ros_pkgs</depend>
   <export>
     <build_type>ament_cmake</build_type>
+     <gazebo_ros plugin_path="${prefix}/../../lib" gazebo_media_path="${prefix}" />
   </export>
 </package>

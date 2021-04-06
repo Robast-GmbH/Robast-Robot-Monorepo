@@ -15,8 +15,8 @@
  *
 */
 
-#ifndef GAZEBO_PLUGINS_RANDOMMOVEPLUGIN_HH_
-#define GAZEBO_PLUGINS_RANDOMMOVEPLUGIN_HH_
+#ifndef GAZEBO_PLUGINS_PATROLPLUGIN_HH_
+#define GAZEBO_PLUGINS_PATROLPLUGIN_HH_
 
 #include <string>
 #include <vector>
@@ -27,10 +27,10 @@
 
 namespace gazebo
 {
-  class GZ_PLUGIN_VISIBLE RandomMovePlugin : public ModelPlugin
+  class GZ_PLUGIN_VISIBLE PatrolPlugin : public ModelPlugin
   {
     /// \brief Constructor
-    public: RandomMovePlugin();
+    public: PatrolPlugin();
 
     /// \brief Load the actor plugin.
     /// \param[in] _model Pointer to the parent model.
