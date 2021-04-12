@@ -52,5 +52,6 @@
         "**/build": true,
         "**/install": true,
         "**/log": true
-    }
+    },
+    "python.pythonPath": "/usr/bin/python2"
 }
