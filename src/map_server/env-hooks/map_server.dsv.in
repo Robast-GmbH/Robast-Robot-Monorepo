@@ -1,0 +1,5 @@
+prepend-non-duplicate;GAZEBO_MODEL_PATH;share/@PROJECT_NAME@/models
+prepend-non-duplicate;GAZEBO_RESOURCE_PATH;share/@PROJECT_NAME@/worlds
+prepend-non-duplicate;GAZEBO_PLUGIN_PATH;share/@PROJECT_NAME@/plugins
+prepend-non-dublicate;WORLD_MODEL; 5OG
+prepend-non-dublicate;TURTLEBOT3_MODEL; waffle

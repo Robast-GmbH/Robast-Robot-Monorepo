@@ -18,7 +18,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(nav2_common REQUIRED)
 find_package(navigation2 REQUIRED)
-find_package(map_server REQUIRED)
 find_package(gazebo REQUIRED)
 find_package(gazebo_ros_pkgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
@@ -27,18 +26,18 @@ find_package(rclcpp REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 
-#include_directories(
-#  include
-#  ${GAZEBO_INCLUDE_DIRS}
-#)
+include_directories(
+  include
+  ${GAZEBO_INCLUDE_DIRS}
+)
 
-#link_directories(
-#  ${GAZEBO_LIBRARY_DIRS}
-#)
-#list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
+link_directories(
+  ${GAZEBO_LIBRARY_DIRS}
+)
+list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
-#add_library(ActorPlugin SHARED plugins/ActorPlugin.cc)
-#target_link_libraries(ActorPlugin ${GAZEBO_LIBRARIES})
+add_library(ActorPlugin SHARED plugins/ActorPlugin.cc)
+target_link_libraries(ActorPlugin ${GAZEBO_LIBRARIES})
 
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 
@@ -65,6 +64,13 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
+install(TARGETS  
+  ActorPlugin
+  DESTINATION lib
+)
+
+#ament_environment_hooks("${CMAKE_CURRENT_SOURCE_DIR}/env-hooks/${PROJECT_NAME}.dsv.in")
+
 ament_export_include_directories(include)
 ament_export_dependencies(gazebo_ros_pkgs)
 ament_export_dependencies(geometry_msgs)
@@ -72,4 +78,5 @@ ament_export_dependencies(nav_msgs)
 ament_export_dependencies(rclcpp)
 ament_export_dependencies(sensor_msgs)
 ament_export_dependencies(tf2)
+
 ament_package()
