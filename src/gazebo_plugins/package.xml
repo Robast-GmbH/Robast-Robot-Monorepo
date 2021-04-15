@@ -11,9 +11,16 @@
   
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
+
   <depend>gazebo_ros_pkgs</depend>
-  <export>
+  <depend>rclcpp</depend>
+  <depend>geometry_msgs</depend>
+  <depend>nav_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2</depend>
+  
+  <export>  
     <build_type>ament_cmake</build_type>
-     <gazebo_ros plugin_path="${prefix}/../../lib" gazebo_media_path="${prefix}" />
+    <gazebo_ros gazebo_model_path="${prefix}/models"/>
   </export>
 </package>

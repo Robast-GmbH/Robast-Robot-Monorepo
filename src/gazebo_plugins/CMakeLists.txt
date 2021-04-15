@@ -21,6 +21,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(gazebo REQUIRED)
 find_package(gazebo_ros_pkgs REQUIRED)
+find_package(rclcpp REQUIRED)
 
 include_directories(
   include
@@ -33,11 +34,11 @@ link_directories(
 
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
-add_library(RandomMovePlugin SHARED plugin/RandomMovePlugin.cc)
+add_library(RandomMovePlugin SHARED src/random_move_plugin.cc)
 target_link_libraries(RandomMovePlugin ${GAZEBO_LIBRARIES})
 
-add_library(PatrolPlugin SHARED plugin/PatrolPlugin.cc)
-target_link_libraries(PatrolPlugin ${GAZEBO_LIBRARIES})
+add_library(RemotePlugin SHARED src/remote_plugin.cpp)
+target_link_libraries(RemotePlugin ${GAZEBO_LIBRARIES})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 

@@ -1,7 +1,7 @@
 #include <gazebo/common/Events.hh>
 #include <gazebo/physics/Model.hh>
 #include <gazebo/physics/World.hh>
-#include <remote_plugin.hpp>
+#include <gazebo_plugins/remote_plugin.hpp>
 #include <gazebo_ros/conversions/builtin_interfaces.hpp>
 #include <gazebo_ros/conversions/geometry_msgs.hpp>
 #include <gazebo_ros/node.hpp>

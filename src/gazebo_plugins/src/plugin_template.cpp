@@ -1,5 +1,5 @@
 #include <gazebo/physics/Model.hh>
-#include <plugin_template.hpp>
+#include "gazebo_plugins/plugin_template.hpp"
 #include <gazebo_ros/node.hpp>
 #include <rclcpp/rclcpp.hpp>
 

@@ -1,9 +1,6 @@
-
 #include <functional>
-
-
 #include "gazebo/physics/physics.hh"
-#include "random_move_plugin.hh"
+#include "gazebo_plugins/random_move_plugin.hh"
 
 using namespace gazebo;
 GZ_REGISTER_MODEL_PLUGIN(RandomMovePlugin)
