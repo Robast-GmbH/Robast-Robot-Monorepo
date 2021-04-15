@@ -63,44 +63,16 @@
       <animation name="animation">
         <filename>walk.dae</filename>
       </animation>
-      <script>
-          <loop>true</loop>
-          <delay_start>0.000000</delay_start>
-          <trajectory id="0" type="walking">
-             <waypoint>
-                <time>0.0</time>
-                <pose>-13.5 -4.6 0 0 0 1.7</pose>
-             </waypoint>
-             <waypoint>
-                <time>2.0</time>
-                <pose>-13.8 -2.3 0 0 0 3.4</pose>
-             </waypoint>
-             <waypoint>
-                <time>4.0</time>
-                <pose>-11 -2.2 0 0 0 1.7</pose>
-             </waypoint>
-             <waypoint>
-                <time>6.0</time>
-                <pose>-11 1.2 0 0 0 -1.7</pose>
-             </waypoint>
-             <waypoint>
-                <time>8.0</time>
-                <pose>-11 -2.2 0 0 0 1.7</pose>
-             </waypoint>
-             <waypoint>
-                <time>10.0</time>
-                <pose>-11 -2.2 0 0 0 -1.7</pose>
-             </waypoint>
-             <waypoint>
-                <time>12.0</time>
-                <pose>-13.8 -2.3 0 0 0 1.7</pose>
-             </waypoint>
-             <waypoint>
-                <time>14.0</time>
-                <pose>-13.5 -4.6 0 0 0 1.7</pose>
-             </waypoint>
-          </trajectory>
-        </script>
+      <plugin name="actor1_plugin" filename="/workspaces/foxy_ws/install/map_server/lib/libActorPlugin.so">
+        <target>0 -5 1.2138</target>
+        <target_weight>1.15</target_weight>
+        <obstacle_weight>1.8</obstacle_weight>
+        <animation_factor>5.1</animation_factor>
+        <ignore_obstacles>
+          <model> 5OG_waende</model>
+          <model>ground_plane</model>
+        </ignore_obstacles>
+      </plugin>
     </actor>
 
 

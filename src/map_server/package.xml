@@ -17,8 +17,7 @@
   <test_depend>ament_lint_common</test_depend>
 
   <export>
-  <gazebo_ros gazebo_plugin_path="lib"/>
-  <gazebo_ros gazebo_model_path="${prefix}/models"/>
-  <gazebo_ros gazebo_media_path="${prefix}/worlds:${prefix}/media"/>
-</export>
+    <gazebo_ros gazebo_model_path="${prefix}/models"/>
+      <build_type>ament_cmake</build_type>
+  </export>
 </package>
