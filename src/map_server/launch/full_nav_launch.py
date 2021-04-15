@@ -89,7 +89,7 @@ def generate_launch_description():
 
     declare_rviz_config_file_cmd = DeclareLaunchArgument(
         'rviz_config_file',
-        default_value=os.path.join(config_dir, 'config', 'nav2_default_view.rviz'),
+        default_value=os.path.join(bringup_dir, 'rviz', 'nav2_default_view.rviz'),
         description='Full path to the RVIZ config file to use')
 
     declare_use_simulator_cmd = DeclareLaunchArgument(
@@ -118,7 +118,7 @@ def generate_launch_description():
         #              https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/91
         # default_value=os.path.join(get_package_share_directory('turtlebot3_gazebo'),
         #                            'worlds/turtlebot3_worlds/waffle.model'),
-        default_value=os.path.join(config_dir, 'worlds/5OG', 'waffle.model'),
+        default_value=os.path.join(config_dir, 'worlds', '5OG/waffle.model'),
         description='Full path to world model file to load')
 
     # Specify the actions
