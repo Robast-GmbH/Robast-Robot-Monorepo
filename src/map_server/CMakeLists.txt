@@ -40,8 +40,8 @@ link_directories(
 
 list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
 
-add_library(ActorPlugin SHARED plugins/ActorPlugin.cc)
-target_link_libraries(ActorPlugin ${GAZEBO_LIBRARIES})
+#add_library(ActorPlugin SHARED plugins/ActorPlugin.cc)
+#target_link_libraries(ActorPlugin ${GAZEBO_LIBRARIES})
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
 
@@ -55,7 +55,7 @@ install(DIRECTORY
 )
 
 install(TARGETS  
-  ActorPlugin
+  #ActorPlugin
   DESTINATION lib
 )
 

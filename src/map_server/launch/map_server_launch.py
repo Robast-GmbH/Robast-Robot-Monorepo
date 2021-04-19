@@ -8,8 +8,9 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     
+    nav2_yaml = os.path.join(get_package_share_directory('map_server'), 'config', 'nav2.yaml')
     rviz_config_dir = os.path.join(get_package_share_directory('map_server'), 'config', 'nav2_default_view.rviz')
-    map_file = os.path.join(get_package_share_directory('map_server'), 'maps', '5OG.yaml')
+    map_file = os.path.join(get_package_share_directory('map_server'), 'config', '5OG/waffle.yaml')
 
     return LaunchDescription([
         Node(
@@ -17,18 +18,14 @@ def generate_launch_description():
             node_executable='map_server',
             node_name='map_server',
             output='screen',
-            parameters=[{'use_sim_time': True}, 
-                        {'yaml_filename':map_file} 
-                       ]),
-
+            parameters=[nav2_yaml, {'yaml_filename':map_file} ]),
+            
         Node(
-            package='rviz2',
-            node_executable='rviz2',
-            node_name='rviz2',
-            arguments=['-d', rviz_config_dir],
-            parameters=[{'use_sim_time': True}],
-            output='screen'
-            ),
+            package='nav2_amcl',
+            node_executable='amcl',
+            node_name='amcl',
+            output='screen',
+            parameters=[nav2_yaml]),
 
         Node(
             package='nav2_lifecycle_manager',
@@ -37,5 +34,13 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': True},
                         {'autostart': True},
-                        {'node_names': ['map_server']}])            
+                        {'node_names': ['map_server', 'amcl']}]),
+
+        Node(
+            package='rviz2',
+            node_executable='rviz2',
+            node_name='rviz2',
+            arguments=['-d', rviz_config_dir],
+            parameters=[{'use_sim_time': True}],
+            output='screen')
         ])
