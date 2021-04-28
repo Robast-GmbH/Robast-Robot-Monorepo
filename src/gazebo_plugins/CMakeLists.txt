@@ -3,7 +3,7 @@ project(gazebo_plugins)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
-  set(CMAKE_C_STANDARD 99)
+  set(CMAKE_C_STANDARD 99) 
 endif()
 
 # Default to C++14
@@ -22,6 +22,10 @@ find_package(ament_cmake REQUIRED)
 find_package(gazebo REQUIRED)
 find_package(gazebo_ros_pkgs REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(builtin_interfaces REQUIRED)
+find_package(gazebo_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+
 
 include_directories(
   include
@@ -46,17 +50,18 @@ set(dependencies
   "rclcpp"
 )
 
+ament_target_dependencies(RemotePlugin
+  "builtin_interfaces"
+  "rclcpp"
+)
 
-################################################################################
-# Install
-################################################################################
+
 install(TARGETS ${EXEC_NAME}
   DESTINATION lib/${PROJECT_NAME}
 )
 
 install(DIRECTORY 
   launch
-  plugin 
   models
   config
   DESTINATION share/${PROJECT_NAME}/
@@ -66,8 +71,6 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-################################################################################
-# Macro for ament package
-################################################################################
+
 ament_export_include_directories(include)
 ament_package()
