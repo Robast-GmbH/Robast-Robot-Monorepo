@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+
+<head>
+	<meta charset="UTF-8" />
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>ROS</title>
+	<meta name="keywords" content="roslibjs, ros2-web-bridge and rclnodejs"	/>
+	<meta name="author" content="ros" />
+
+	<script src="https://static.robotwebtools.org/EventEmitter2/current/eventemitter2.min.js"></script>
+	<script src="https://static.robotwebtools.org/roslibjs/current/roslib.min.js"></script>
+	<script src="https://static.robotwebtools.org/EaselJS/current/easeljs.min.js"></script>
+	<script src="https://static.robotwebtools.org/ros2djs/current/ros2d.min.js"></script>
+</head>
+	<body>
+		<div class="col-md-12 col-sm-6 text-center">
+			<h3>Connection status</h3>
+			<p class="text-danger" v-if="!connected">Chef!</p>
+			<p class="text-success" v-if="connected">Stop!</p>
+			<label>ROSBridge address</label>
+			<br>
+			<input type="text" v-model="rosbridge_address" />
+			<br><br>
+			<button :disabled="loading" class="btn btn-danger" @click="disconnect"
+	    			v-if="connected">Stop!</button>
+			<button :disabled="loading" class="btn btn-success" @click="connect" v-else>Chef!</button>
+		</div>
+		<div id="perspective" class="perspective effect-movedown">
+			<div class="container">
+				<div class="wrapper">
+					<header class="ros-header">					
+						<div class="twodmap" id="ros2dmap">
+						</div>
+					</header>
+					<div class="main clearfix">
+						<div class="log" id="log"></div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script src="js/ros2dmap.js"></script>
+		<script src="js/log.js"></script>
+		<script src="main.js"></script>
+		<script>
+			let ros = new ROSLIB.Ros();
+			let bridgeHost = window.location.hostname;
+			let bridgePort = 9090;
+			
+			ros.on('connection', function() {
+				console.log('bridge connected');
+			});
+			ros.on('error', function(data) {
+				console.log('error');
+			});
+			ros.on('closed', function() {
+				console.log('bridge closed');
+			});
+			ros.connect('ws://' + bridgeHost + ':' + bridgePort);
+			
+			let ros2dmap = new Ros2dMap(ros, {
+				divName: 'ros2dmap',
+				width: 400,
+				height: 400
+			});	
+			
+		</script>
+	</body>
+</html>
