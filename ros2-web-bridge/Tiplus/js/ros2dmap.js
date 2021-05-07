@@ -18,7 +18,7 @@ function Ros2dMap(ros, options) {
   });
 
   this.gridClient = new ROS2D.OccupancyGridClient({
-    ros: ros2,
+    ros: ros,
     rootObject: viewer2D.scene,
     continuous : true
   });
