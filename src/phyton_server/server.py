@@ -1,5 +1,10 @@
 """
 Main module of the server file
+install help: $ pip3 install connexion
+              $ pip3 install connexion[swagger-ui]
+
+server pannel:  http://localhost:5000/  
+swagger UI:     http://localhost:5000/api/ui/
 """
 
 # 3rd party moudles
