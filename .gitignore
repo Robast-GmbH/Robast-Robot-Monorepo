@@ -1,0 +1,15 @@
+*.pyc
+*.tar.gz
+*.log
+build
+cscope.*
+gen
+node_modules
+npm-debug.log
+tags
+cpplint.py
+generated
+
+__pycache__
+site-packages
+venv
