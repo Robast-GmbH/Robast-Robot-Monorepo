@@ -25,7 +25,7 @@ class RoomSelectionNavGoal(Node):
                 #ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose "{pose: {pose: {position: {x: 2.2, y: 0.0, z: 0.0}, orientation: {w: 1.0}}}}"
                 self.action_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
 
-                #ros2 topic pub /room_nav_goal std_msgs/msg/Int8 "data: 3"
+                #ros2 topic pub /room_nav_goal std_msgs/msg/Int8 "data: 10"
                 self.subscriber = self.create_subscription(Int8, '/room_nav_goal', self.initiate_navigation, QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
 
         def initiate_navigation(self, msg):
