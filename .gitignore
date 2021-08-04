@@ -128,9 +128,6 @@ generated
 #web video testing
 web_video
 
-#node gedöns
-
-
 #generelle tags, die nicht in commit kommen
 demo
 test
