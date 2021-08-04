@@ -28,6 +28,8 @@ amcl:
     resample_interval: 1
     robot_model_type: "differential"
     save_pose_rate: 0.5
+    set_initial_pose: True
+    initial_pose: {x: 8.73, y: -13.45, theta: 0.0106}
     sigma_hit: 0.2
     tf_broadcast: true
     transform_tolerance: 1.0

@@ -1,0 +1,197 @@
+rooms:
+  1:
+    center point:
+      x: 2592.0
+      y: 555.5
+  2:
+    center point:
+      x: 2910.0
+      y: 141.0
+  3:
+    center point:
+      x: 3425.5
+      y: 99.0
+  4:
+    center point:
+      x: 4049.5
+      y: 128.5
+  5:
+    center point:
+      x: 4816.0
+      y: 290.5
+  6:
+    center point:
+      x: 3075.5
+      y: 343.0
+  7:
+    center point:
+      x: 4543.5
+      y: 582.0
+  8:
+    center point:
+      x: 1947.5
+      y: 351.5
+  9:
+    center point:
+      x: 2481.5
+      y: 356.5
+  10:
+    center point:
+      x: 902.5
+      y: 346.5
+  11:
+    center point:
+      x: 1422.5
+      y: 356.0
+  12:
+    center point:
+      x: 3871.5
+      y: 658.0
+  13:
+    center point:
+      x: 3174.5
+      y: 313.5
+  14:
+    center point:
+      x: 3742.5
+      y: 310.5
+  15:
+    center point:
+      x: 4986.5
+      y: 427.5
+  16:
+    center point:
+      x: 235.5
+      y: 456.0
+  17:
+    center point:
+      x: 300.0
+      y: 648.0
+  18:
+    center point:
+      x: 2244.5
+      y: 582.5
+  19:
+    center point:
+      x: 1225.5
+      y: 693.5
+  20:
+    center point:
+      x: 1745.0
+      y: 669.0
+  21:
+    center point:
+      x: 2183.0
+      y: 579.5
+  22:
+    center point:
+      x: 2349.5
+      y: 671.5
+  23:
+    center point:
+      x: 5235.5
+      y: 609.5
+  24:
+    center point:
+      x: 5141.5
+      y: 738.5
+  25:
+    center point:
+      x: 2137.5
+      y: 885.5
+  26:
+    center point:
+      x: 4136.5
+      y: 885.5
+  27:
+    center point:
+      x: 831.0
+      y: 886.5
+  28:
+    center point:
+      x: 2888.5
+      y: 1132.0
+  29:
+    center point:
+      x: 3755.5
+      y: 879.5
+  30:
+    center point:
+      x: 4913.5
+      y: 944.0
+  31:
+    center point:
+      x: 258.0
+      y: 1018.0
+  32:
+    center point:
+      x: 5204.5
+      y: 898.5
+  33:
+    center point:
+      x: 4844.0
+      y: 1132.0
+  34:
+    center point:
+      x: 1809.0
+      y: 1089.0
+  35:
+    center point:
+      x: 2969.5
+      y: 1096.5
+  36:
+    center point:
+      x: 2272.0
+      y: 1100.5
+  37:
+    center point:
+      x: 2482.0
+      y: 1100.0
+  38:
+    center point:
+      x: 5216.0
+      y: 1112.5
+  39:
+    center point:
+      x: 3630.5
+      y: 1384.5
+  40:
+    center point:
+      x: 3039.5
+      y: 1403.5
+  41:
+    center point:
+      x: 1365.5
+      y: 1362.5
+  42:
+    center point:
+      x: 2066.0
+      y: 1336.0
+  43:
+    center point:
+      x: 2504.5
+      y: 1407.5
+  44:
+    center point:
+      x: 796.5
+      y: 1348.5
+  45:
+    center point:
+      x: 2343.0
+      y: 1679.0
+  46:
+    center point:
+      x: 1651.5
+      y: 1663.5
+  47:
+    center point:
+      x: 2832.0
+      y: 1681.0
+  48:
+    center point:
+      x: 3372.0
+      y: 1681.0
+  49:
+    center point:
+      x: 3913.0
+      y: 1681.0

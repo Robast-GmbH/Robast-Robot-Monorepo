@@ -53,5 +53,7 @@
         "**/install": true,
         "**/log": true
     },
-    "python.pythonPath": "/usr/bin/python2"
+    "python.analysis.extraPaths": [
+        "/opt/ros/foxy/lib/python3.8/site-packages/"
+    ]
 }

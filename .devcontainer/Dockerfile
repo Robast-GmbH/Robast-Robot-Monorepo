@@ -86,11 +86,12 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
   
-#nav2 stuff
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y ros-foxy-cartographer ros-foxy-cartographer-ros ros-foxy-navigation2 ros-foxy-nav2-bringup
+ENV DEBIAN_FRONTEND=
 
-#Turtlebot spezifisch
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get install -y ros-foxy-turtlebot3
-
+ENV DEBIAN_FRONTEND=
 
 ENTRYPOINT ["/entrypoint.sh"]
