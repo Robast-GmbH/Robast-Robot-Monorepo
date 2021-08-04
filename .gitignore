@@ -9,6 +9,8 @@ npm-debug.log
 tags
 cpplint.py
 generated
+.db
+*/db.json
 
 __pycache__
 site-packages
