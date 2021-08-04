@@ -104,3 +104,33 @@ ENV/
 
 # mypy
 .mypy_cache/
+
+# web bridge stuff
+*~
+.DS_Store
+.*.sw?
+*.gypcmd
+*.mk
+*.pyc
+*.tar.gz
+*.log
+build
+cscope.*
+gen
+node_modules
+npm-debug.log
+tags
+cpplint.py
+generated
+
+/tmp
+
+#web video testing
+web_video
+
+#node gedöns
+
+
+#generelle tags, die nicht in commit kommen
+demo
+test
