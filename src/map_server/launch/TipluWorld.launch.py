@@ -14,7 +14,7 @@ from launch_ros.actions import Node
 TURTLEBOT3_MODEL = os.environ['TURTLEBOT3_MODEL']
 WORLD_MODEL = os.environ['WORLD_MODEL']
 
-#export GAZEBO_MODEL_PATH=/workspaces/foxy_ws/src/map_server/models:${GAZEBO_MODEL_PATH}
+#export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/map_server/models:${GAZEBO_MODEL_PATH}
 #export WORLD_MODEL=5OG
 #export TURTLEBOT3_MODEL=waffle
 #source /usr/share/gazebo/setup.sh
