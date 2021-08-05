@@ -91,7 +91,13 @@ RUN apt-get update && apt-get install -y ros-foxy-cartographer ros-foxy-cartogra
 ENV DEBIAN_FRONTEND=
 
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get install -y ros-foxy-turtlebot3
+RUN sudo apt install python3-vcstool \
+  && mkdir -p ~/turtlebot3_ws/src \
+  && cd ~/turtlebot3_ws \
+  && wget https://raw.githubusercontent.com/ROBOTIS-GIT/turtlebot3/foxy-devel/turtlebot3.repos \
+  && vcs import src < turtlebot3.repos \
+  && colcon build --symlink-install \
+  && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
 ENV DEBIAN_FRONTEND=
 
 ENTRYPOINT ["/entrypoint.sh"]
