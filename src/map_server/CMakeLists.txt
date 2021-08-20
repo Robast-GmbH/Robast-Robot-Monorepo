@@ -18,7 +18,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(gazebo REQUIRED)
 find_package(rclcpp REQUIRED)
-
+find_package(robot_localization REQUIRED)
 
 
 #list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")

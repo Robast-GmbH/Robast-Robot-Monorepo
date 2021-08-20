@@ -8,9 +8,6 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
-
-
-
 TURTLEBOT3_MODEL = os.environ['TURTLEBOT3_MODEL']
 WORLD_MODEL = os.environ['WORLD_MODEL']
 
