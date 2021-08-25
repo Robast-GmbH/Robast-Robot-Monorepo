@@ -26,17 +26,16 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    TURTLEBOT3_MODEL = os.environ['TURTLEBOT3_MODEL']
-
+    ROBOT_MODEL = os.environ['ROBOT_MODEL']
+    
     use_sim_time = LaunchConfiguration('use_sim_time', default='false')
-    urdf_file_name = 'turtlebot3_' + TURTLEBOT3_MODEL + '.urdf'
-
-    print('urdf_file_name : {}'.format(urdf_file_name))
-
     urdf = os.path.join(
-        get_package_share_directory('turtlebot3_description'),
-        'urdf',
-        urdf_file_name)
+        get_package_share_directory('map_server'),
+        'models',
+        ROBOT_MODEL,
+        ROBOT_MODEL + '.urdf')
+
+    print('urdf_file_path : {}'.format(urdf))    
 
     return LaunchDescription([
         DeclareLaunchArgument(
