@@ -94,11 +94,6 @@ RUN apt-get update && apt-get install -y ros-foxy-cartographer ros-foxy-cartogra
 	&& apt-get install -y libgeographic-dev ros-foxy-geographic-msgs ros-foxy-diagnostic-updater
 ENV DEBIAN_FRONTEND=
 
-# THIS PART IS ONLY HERE TO MAKE THE DOCKER REBUILD. CAN BE DELETED IF EVERYTHING WORKS AS EXPECTED.
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update
-ENV DEBIAN_FRONTEND=
-
 ENV DEBIAN_FRONTEND=noninteractive
 RUN sudo apt install python3-vcstool \
   && mkdir -p ~/turtlebot3_ws/src \
@@ -108,6 +103,5 @@ RUN sudo apt install python3-vcstool \
   && colcon build --symlink-install \
   && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
 ENV DEBIAN_FRONTEND=
-
 
 ENTRYPOINT ["/entrypoint.sh"]
