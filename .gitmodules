@@ -1,0 +1,3 @@
+[submodule "robot_localization.git"]
+	path = src/robot_localization
+	url = https://github.com/TipluJacob/robot_localization.git
