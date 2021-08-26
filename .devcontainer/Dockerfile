@@ -89,7 +89,14 @@ RUN apt-get update && apt-get install -y \
 ENV DEBIAN_FRONTEND=
   
 ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update && apt-get install -y ros-foxy-cartographer ros-foxy-cartographer-ros ros-foxy-navigation2 ros-foxy-nav2-bringup
+RUN apt-get update && apt-get install -y ros-foxy-cartographer ros-foxy-cartographer-ros ros-foxy-navigation2 ros-foxy-nav2-bringup \
+    # Dependencies needed to build the robot_localization package:
+	&& apt-get install -y libgeographic-dev ros-foxy-geographic-msgs ros-foxy-diagnostic-updater
+ENV DEBIAN_FRONTEND=
+
+# THIS PART IS ONLY HERE TO MAKE THE DOCKER REBUILD. CAN BE DELETED IF EVERYTHING WORKS AS EXPECTED.
+ENV DEBIAN_FRONTEND=noninteractive
+RUN apt-get update
 ENV DEBIAN_FRONTEND=
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -102,24 +109,5 @@ RUN sudo apt install python3-vcstool \
   && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
 ENV DEBIAN_FRONTEND=
 
-# Set global user for git
-ENV DEBIAN_FRONTEND=noninteractive
-RUN git config --global user.email "j.ritterbach@tiplu.de" \
-  && git config --global user.name "Jacob Ritterbach"
-ENV DEBIAN_FRONTEND=
-
-# Install robot_localization package
-ENV DEBIAN_FRONTEND=noninteractive
-RUN apt-get update \
-  # geographic is a dependency needed to build the robot_localization package
-  && apt-get install -y libgeographic-dev ros-foxy-geographic-msgs ros-foxy-diagnostic-updater \ 
-  && mkdir -p ~/../../workspaces/Robast_RosTheron/src \
-  && cd ~/../../workspaces/Robast_RosTheron/src \
-  && git clone -b foxy-devel https://github.com/cra-ros-pkg/robot_localization.git \
-  && cd robot_localization \
-  # Cherry pick a fix from the rolling branch that hasn't been merged into the foxy branch yet. Once that is done, we can simple use "apt-get install ros-foxy-robot_localization". 
-  && git cherry-pick --strategy=recursive -X theirs a1e48b4f023d9e567be5c2fca323b5c7e56ff5a9 \
-  && colcon build --packages-select robot_localization
-ENV DEBIAN_FRONTEND=
 
 ENTRYPOINT ["/entrypoint.sh"]
