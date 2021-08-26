@@ -126,6 +126,12 @@
             <uri>model://rb_theron/meshes/bases/mcq_prototype_bottom_cover.dae</uri>
           </mesh>
         </geometry>
+        <material>
+          <script>
+            <name>Gazebo/DarkGrey</name>
+            <uri>file://media/materials/scripts/gazebo.material</uri>
+          </script>
+        </material>
       </visual>
       <visual name='base_footprint_fixed_joint_lump__robot_front_laser_base_link_visual_3'>
         <pose>0.25 0 0.2249 3.14159 -7e-06 7e-06</pose>
