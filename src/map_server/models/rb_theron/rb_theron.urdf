@@ -1223,11 +1223,14 @@
           <stddev>0.03</stddev>
         </noise>
       </ray>
-      <plugin filename="libgazebo_ros_ray_sensor.so" name="robot_front_laser_controller">
-        <topicName>front_laser/scan</topicName>
-        <frameName>/robot_front_laser_link</frameName>
-        <!-- if not global (leading /) sets the current namespace as a prefix (/ns/name_laser_link) -->
-      </plugin>
+      <plugin name='robot_front_laser_controller' filename='libgazebo_ros_ray_sensor.so'>
+          <!-- <topicName>front_laser/scan</topicName> -->
+		      <ros>
+            <remapping>~/out:=scan</remapping>
+          </ros>
+          <frameName>robot_front_laser_link</frameName>
+		      <output_type>sensor_msgs/LaserScan</output_type>
+        </plugin>
     </sensor>
   </gazebo> 
   

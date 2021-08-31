@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <sdf version='1.7'>
   <model name='rb_theron'>
     <link name='base_footprint'>
@@ -196,11 +197,11 @@
         </ray>
         <plugin name='robot_front_laser_controller' filename='libgazebo_ros_ray_sensor.so'>
           <!-- <topicName>front_laser/scan</topicName> -->
-		  <ros>
+		      <ros>
             <remapping>~/out:=scan</remapping>
           </ros>
-          <frameName>/robot_front_laser_link</frameName>
-		  <output_type>sensor_msgs/LaserScan</output_type>
+          <frameName>robot_front_laser_link</frameName>
+		      <output_type>sensor_msgs/LaserScan</output_type>
         </plugin>
         <pose>0.25 0 0.1744 0 -7e-06 7e-06</pose>
       </sensor>
