@@ -172,7 +172,7 @@
       <velocity_decay/>
       <velocity_decay/>
       <velocity_decay/>
-      <sensor name='robot_front_laser_sensor' type='ray'>
+      <sensor name='robot_front_laser_sensor' type='gpu_ray'>
         <visualize>1</visualize>
         <update_rate>12.5</update_rate>
         <ray>
