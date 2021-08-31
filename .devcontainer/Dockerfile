@@ -1,6 +1,5 @@
 FROM dorowu/ubuntu-desktop-lxde-vnc:focal
  
- 
 ENV DEBIAN_FRONTEND noninteractive
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN apt-get update -q && \
@@ -74,26 +73,28 @@ RUN apt-get update \
   && echo "cd ~/../../workspaces/Robast_RosTheron" >> /home/$USERNAME/.bashrc
 ENV DEBIAN_FRONTEND=
 
-ENV DEBIAN_FRONTEND=noninteractive
 # Install the full release
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
   ros-foxy-desktop \
   && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
 
-ENV DEBIAN_FRONTEND=noninteractive
 # Install gazebo
+ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
   ros-foxy-gazebo* \
   && rm -rf /var/lib/apt/lists/*
 ENV DEBIAN_FRONTEND=
-  
+
+# Install ROS Nav stuff 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y ros-foxy-cartographer ros-foxy-cartographer-ros ros-foxy-navigation2 ros-foxy-nav2-bringup \
     # Dependencies needed to build the robot_localization package:
 	&& apt-get install -y libgeographic-dev ros-foxy-geographic-msgs ros-foxy-diagnostic-updater
 ENV DEBIAN_FRONTEND=
 
+# Install Turtlebot3 
 ENV DEBIAN_FRONTEND=noninteractive
 RUN sudo apt install python3-vcstool \
   && mkdir -p ~/turtlebot3_ws/src \
