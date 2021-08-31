@@ -61,7 +61,7 @@
       </geometry>
     </collision>
   </link>
-  <link name="robot_bottom_cover_link">
+  <link name="bottom_cover_link">
     <inertial>
       <mass value="2.0"/>
       <origin xyz="0 0 0"/>
@@ -83,10 +83,10 @@
       </geometry>
     </collision>
   </link>
-  <joint name="robot_bottom_cover_joint" type="fixed">
+  <joint name="bottom_cover_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0 0"/>
     <parent link="base_link"/>
-    <child link="robot_bottom_cover_link"/>
+    <child link="bottom_cover_link"/>
   </joint>
   <!-- DOCKING CONTACTS -->
   <!--joint name="${prefix}base_docking_joint" type="fixed">
@@ -99,7 +99,7 @@
   <gazebo>
     <plugin filename="libgazebo_ros_control.so" name="ros_control">
       <!--robotNamespace>/robot</robotNamespace-->
-      <robotParam>robot/robot_description</robotParam>
+      <robotParam>robot/description</robotParam>
       <controlPeriod>0.001</controlPeriod>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
       <legacyModeNS>true</legacyModeNS>
@@ -111,7 +111,7 @@
   <gazebo reference="base_link">
     <material>Gazebo/Grey</material>
   </gazebo>
-  <gazebo reference="robot_front_cover_link">
+  <gazebo reference="front_cover_link">
     <material>Gazebo/Black</material>
   </gazebo>
   <!--ROCKER BOGIE SUPPORT -->
@@ -123,15 +123,15 @@
       <limit effort="100" velocity="100"/>
       <joint_properties damping="0.1" friction="0.1"/>
 	</joint -->
-  <joint name="robot_rightjoint_rsupport" type="revolute">
+  <joint name="rightjoint_rsupport" type="revolute">
     <parent link="base_link"/>
-    <child link="robot_rightrsupport"/>
+    <child link="rightrsupport"/>
     <origin rpy="0 0 0" xyz="0.1175 -0.1725 0.0428"/>
     <axis rpy="0 0 3.14159265359" xyz="0 1 0"/>
     <limit effort="100" lower="-0.5" upper="0.5" velocity="100"/>
     <joint_properties damping="0.1" friction="0.1"/>
   </joint>
-  <link name="robot_rightrsupport">
+  <link name="rightrsupport">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -152,12 +152,12 @@
     </inertial>
   </link>
   <!-- Transmission is important to link the joints and the controller -->
-  <transmission name="robot_rightrsupport_joint_trans">
+  <transmission name="rightrsupport_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_rightjoint_rsupport">
+    <joint name="rightjoint_rsupport">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_rightrsupport_joint_motor">
+    <actuator name="rightrsupport_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>1</motorTorqueConstant>
     </actuator>
@@ -166,15 +166,15 @@
 		<origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
 	</xacro:rubber_wheel -->
   <!--WHEEL TIRE -->
-  <joint name="robot_right_wheel_joint" type="continuous">
-    <parent link="robot_rightrsupport"/>
-    <child link="robot_right_wheel_link"/>
+  <joint name="right_wheel_joint" type="continuous">
+    <parent link="rightrsupport"/>
+    <child link="right_wheel_link"/>
     <origin rpy="0 0 0" xyz="-0.1175 -0.079 -0.0428"/>
     <axis rpy="0 0 0" xyz="0 1 0"/>
     <limit effort="100" velocity="100"/>
     <joint_properties damping="0.0" friction="0.0"/>
   </joint>
-  <link name="robot_right_wheel_link">
+  <link name="right_wheel_link">
     <visual>
       <!-- HIGH RESOLUTION WHEELS -->
       <!-- LOW RESOLUTION WHEELS -->
@@ -196,20 +196,20 @@
     </inertial>
   </link>
   <!-- Transmission is important to link the joints and the controller (see rb_theron_control/config/rb_theron_control.yaml)-->
-  <transmission name="robot_right_wheel_joint_trans">
+  <transmission name="right_wheel_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_right_wheel_joint">
+    <joint name="right_wheel_joint">
       <!-- for the gazebo plugin -->
       <!--hardwareInterface>EffortJointInterface</hardwareInterface-->
       <!-- for ros control controller -->
       <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_right_wheel_joint_motor">
+    <actuator name="right_wheel_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>20</motorTorqueConstant>
     </actuator>
   </transmission>
-  <gazebo reference="robot_right_wheel_link">
+  <gazebo reference="right_wheel_link">
     <!-- mu1 value="5.0"/>
 			<mu2 value="0.5"/>
 			<kp value="10000000.0" />
@@ -258,16 +258,16 @@
 		<origin xyz="${caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
 	</xacro:caster -->
   <!--CASTER SUPPORT -->
-  <joint name="robot_rightcastorjoint_support" type="continuous">
-    <parent link="robot_rightrsupport"/>
-    <child link="robot_rightcastorsupport"/>
+  <joint name="rightcastorjoint_support" type="continuous">
+    <parent link="rightrsupport"/>
+    <child link="rightcastorsupport"/>
     <origin rpy="0 0 0" xyz="0.1175 0.01 0.002"/>
     <axis rpy="0 3.14159265359 0" xyz="0 0 1"/>
     <limit effort="100" velocity="100"/>
     <!-- joint_properties damping="1.5" friction="1.5"/ -->
     <dynamics damping="0" friction="0.01"/>
   </joint>
-  <link name="robot_rightcastorsupport">
+  <link name="rightcastorsupport">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -287,15 +287,15 @@
       <!--Check these values -->
     </inertial>
   </link>
-  <joint name="robot_rightcastorjoint_wheel" type="continuous">
-    <parent link="robot_rightcastorsupport"/>
-    <child link="robot_rightcastorwheel"/>
+  <joint name="rightcastorjoint_wheel" type="continuous">
+    <parent link="rightcastorsupport"/>
+    <child link="rightcastorwheel"/>
     <origin rpy="0 0 0" xyz="-0.033 0.0 -0.071"/>
     <axis rpy="0 0 0" xyz="0 1 0"/>
     <limit effort="100" velocity="100"/>
     <joint_properties damping="0.1" friction="0.1"/>
   </joint>
-  <link name="robot_rightcastorwheel">
+  <link name="rightcastorwheel">
     <visual>
       <!-- HIGH RESOLUTION WHEELS -->
       <!-- xacro:if value="${hq}">
@@ -332,22 +332,22 @@
     </inertial>
   </link>
   <!-- Transmission is important to link the joints and the controller -->
-  <transmission name="robot_rightcastorsupport_joint_trans">
+  <transmission name="rightcastorsupport_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_rightcastorjoint_support">
+    <joint name="rightcastorjoint_support">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_rightcastorsupport_joint_motor">
+    <actuator name="rightcastorsupport_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>1</motorTorqueConstant>
     </actuator>
   </transmission>
-  <transmission name="robot_rightcastorwheel_joint_trans">
+  <transmission name="rightcastorwheel_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_rightcastorjoint_wheel">
+    <joint name="rightcastorjoint_wheel">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_rightcastorwheel_joint_motor">
+    <actuator name="rightcastorwheel_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>1</motorTorqueConstant>
     </actuator>
@@ -360,7 +360,7 @@
 			<fdir1 value="1 0 0"/>
       <turnGravityOff>false</turnGravityOff>
     </gazebo -->
-  <gazebo reference="robot_rightcastor_wheel">
+  <gazebo reference="rightcastor_wheel">
     <mu1 value="100.0"/>
     <mu2 value="100.0"/>
     <!-- kp value="10000000.0" / -->
@@ -396,15 +396,15 @@
       <limit effort="100" velocity="100"/>
       <joint_properties damping="0.1" friction="0.1"/>
 	</joint -->
-  <joint name="robot_leftjoint_rsupport" type="revolute">
+  <joint name="leftjoint_rsupport" type="revolute">
     <parent link="base_link"/>
-    <child link="robot_leftrsupport"/>
+    <child link="leftrsupport"/>
     <origin rpy="0 0 0" xyz="0.1175 0.1725 0.0428"/>
     <axis rpy="0 0 3.14159265359" xyz="0 1 0"/>
     <limit effort="100" lower="-0.5" upper="0.5" velocity="100"/>
     <joint_properties damping="0.1" friction="0.1"/>
   </joint>
-  <link name="robot_leftrsupport">
+  <link name="leftrsupport">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -425,12 +425,12 @@
     </inertial>
   </link>
   <!-- Transmission is important to link the joints and the controller -->
-  <transmission name="robot_leftrsupport_joint_trans">
+  <transmission name="leftrsupport_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_leftjoint_rsupport">
+    <joint name="leftjoint_rsupport">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_leftrsupport_joint_motor">
+    <actuator name="leftrsupport_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>1</motorTorqueConstant>
     </actuator>
@@ -439,15 +439,15 @@
 		<origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
 	</xacro:rubber_wheel -->
   <!--WHEEL TIRE -->
-  <joint name="robot_left_wheel_joint" type="continuous">
-    <parent link="robot_leftrsupport"/>
-    <child link="robot_left_wheel_link"/>
+  <joint name="left_wheel_joint" type="continuous">
+    <parent link="leftrsupport"/>
+    <child link="left_wheel_link"/>
     <origin rpy="0 0 0" xyz="-0.1175 0.079 -0.0428"/>
     <axis rpy="0 0 0" xyz="0 1 0"/>
     <limit effort="100" velocity="100"/>
     <joint_properties damping="0.0" friction="0.0"/>
   </joint>
-  <link name="robot_left_wheel_link">
+  <link name="left_wheel_link">
     <visual>
       <!-- HIGH RESOLUTION WHEELS -->
       <!-- LOW RESOLUTION WHEELS -->
@@ -469,20 +469,20 @@
     </inertial>
   </link>
   <!-- Transmission is important to link the joints and the controller (see rb_theron_control/config/rb_theron_control.yaml)-->
-  <transmission name="robot_left_wheel_joint_trans">
+  <transmission name="left_wheel_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_left_wheel_joint">
+    <joint name="left_wheel_joint">
       <!-- for the gazebo plugin -->
       <!--hardwareInterface>EffortJointInterface</hardwareInterface-->
       <!-- for ros control controller -->
       <hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_left_wheel_joint_motor">
+    <actuator name="left_wheel_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>20</motorTorqueConstant>
     </actuator>
   </transmission>
-  <gazebo reference="robot_left_wheel_link">
+  <gazebo reference="left_wheel_link">
     <!-- mu1 value="5.0"/>
 			<mu2 value="0.5"/>
 			<kp value="10000000.0" />
@@ -531,16 +531,16 @@
 		<origin xyz="${caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
 	</xacro:caster -->
   <!--CASTER SUPPORT -->
-  <joint name="robot_leftcastorjoint_support" type="continuous">
-    <parent link="robot_leftrsupport"/>
-    <child link="robot_leftcastorsupport"/>
+  <joint name="leftcastorjoint_support" type="continuous">
+    <parent link="leftrsupport"/>
+    <child link="leftcastorsupport"/>
     <origin rpy="0 0 0" xyz="0.1175 0.01 0.002"/>
     <axis rpy="0 3.14159265359 0" xyz="0 0 1"/>
     <limit effort="100" velocity="100"/>
     <!-- joint_properties damping="1.5" friction="1.5"/ -->
     <dynamics damping="0" friction="0.01"/>
   </joint>
-  <link name="robot_leftcastorsupport">
+  <link name="leftcastorsupport">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -560,15 +560,15 @@
       <!--Check these values -->
     </inertial>
   </link>
-  <joint name="robot_leftcastorjoint_wheel" type="continuous">
-    <parent link="robot_leftcastorsupport"/>
-    <child link="robot_leftcastorwheel"/>
+  <joint name="leftcastorjoint_wheel" type="continuous">
+    <parent link="leftcastorsupport"/>
+    <child link="leftcastorwheel"/>
     <origin rpy="0 0 0" xyz="-0.033 0.0 -0.071"/>
     <axis rpy="0 0 0" xyz="0 1 0"/>
     <limit effort="100" velocity="100"/>
     <joint_properties damping="0.1" friction="0.1"/>
   </joint>
-  <link name="robot_leftcastorwheel">
+  <link name="leftcastorwheel">
     <visual>
       <!-- HIGH RESOLUTION WHEELS -->
       <!-- xacro:if value="${hq}">
@@ -605,22 +605,22 @@
     </inertial>
   </link>
   <!-- Transmission is important to link the joints and the controller -->
-  <transmission name="robot_leftcastorsupport_joint_trans">
+  <transmission name="leftcastorsupport_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_leftcastorjoint_support">
+    <joint name="leftcastorjoint_support">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_leftcastorsupport_joint_motor">
+    <actuator name="leftcastorsupport_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>1</motorTorqueConstant>
     </actuator>
   </transmission>
-  <transmission name="robot_leftcastorwheel_joint_trans">
+  <transmission name="leftcastorwheel_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_leftcastorjoint_wheel">
+    <joint name="leftcastorjoint_wheel">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_leftcastorwheel_joint_motor">
+    <actuator name="leftcastorwheel_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>1</motorTorqueConstant>
     </actuator>
@@ -633,7 +633,7 @@
 			<fdir1 value="1 0 0"/>
       <turnGravityOff>false</turnGravityOff>
     </gazebo -->
-  <gazebo reference="robot_leftcastor_wheel">
+  <gazebo reference="leftcastor_wheel">
     <mu1 value="100.0"/>
     <mu2 value="100.0"/>
     <!-- kp value="10000000.0" / -->
@@ -661,16 +661,16 @@
       <turnGravityOff>false</turnGravityOff>
     </gazebo -->
   <!--CASTER SUPPORT -->
-  <joint name="robot_leftjoint_support" type="continuous">
+  <joint name="leftjoint_support" type="continuous">
     <parent link="base_link"/>
-    <child link="robot_leftsupport"/>
+    <child link="leftsupport"/>
     <origin rpy="0 0 0" xyz="-0.235 0.1725 0.0428"/>
     <axis rpy="0 3.14159265359 0" xyz="0 0 1"/>
     <limit effort="100" velocity="100"/>
     <!-- joint_properties damping="1.5" friction="1.5"/ -->
     <dynamics damping="0" friction="0.01"/>
   </joint>
-  <link name="robot_leftsupport">
+  <link name="leftsupport">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -690,15 +690,15 @@
       <!--Check these values -->
     </inertial>
   </link>
-  <joint name="robot_leftjoint_wheel" type="continuous">
-    <parent link="robot_leftsupport"/>
-    <child link="robot_leftwheel"/>
+  <joint name="leftjoint_wheel" type="continuous">
+    <parent link="leftsupport"/>
+    <child link="leftwheel"/>
     <origin rpy="0 0 0" xyz="-0.033 0.0 -0.071"/>
     <axis rpy="0 0 0" xyz="0 1 0"/>
     <limit effort="100" velocity="100"/>
     <joint_properties damping="0.1" friction="0.1"/>
   </joint>
-  <link name="robot_leftwheel">
+  <link name="leftwheel">
     <visual>
       <!-- HIGH RESOLUTION WHEELS -->
       <!-- xacro:if value="${hq}">
@@ -735,22 +735,22 @@
     </inertial>
   </link>
   <!-- Transmission is important to link the joints and the controller -->
-  <transmission name="robot_leftsupport_joint_trans">
+  <transmission name="leftsupport_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_leftjoint_support">
+    <joint name="leftjoint_support">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_leftsupport_joint_motor">
+    <actuator name="leftsupport_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>1</motorTorqueConstant>
     </actuator>
   </transmission>
-  <transmission name="robot_leftwheel_joint_trans">
+  <transmission name="leftwheel_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_leftjoint_wheel">
+    <joint name="leftjoint_wheel">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_leftwheel_joint_motor">
+    <actuator name="leftwheel_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>1</motorTorqueConstant>
     </actuator>
@@ -763,7 +763,7 @@
 			<fdir1 value="1 0 0"/>
       <turnGravityOff>false</turnGravityOff>
     </gazebo -->
-  <gazebo reference="robot_left_wheel">
+  <gazebo reference="left_wheel">
     <mu1 value="100.0"/>
     <mu2 value="100.0"/>
     <!-- kp value="10000000.0" / -->
@@ -774,16 +774,16 @@
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
   <!--CASTER SUPPORT -->
-  <joint name="robot_rightjoint_support" type="continuous">
+  <joint name="rightjoint_support" type="continuous">
     <parent link="base_link"/>
-    <child link="robot_rightsupport"/>
+    <child link="rightsupport"/>
     <origin rpy="0 0 0" xyz="-0.235 -0.1725 0.0428"/>
     <axis rpy="0 3.14159265359 0" xyz="0 0 1"/>
     <limit effort="100" velocity="100"/>
     <!-- joint_properties damping="1.5" friction="1.5"/ -->
     <dynamics damping="0" friction="0.01"/>
   </joint>
-  <link name="robot_rightsupport">
+  <link name="rightsupport">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -803,15 +803,15 @@
       <!--Check these values -->
     </inertial>
   </link>
-  <joint name="robot_rightjoint_wheel" type="continuous">
-    <parent link="robot_rightsupport"/>
-    <child link="robot_rightwheel"/>
+  <joint name="rightjoint_wheel" type="continuous">
+    <parent link="rightsupport"/>
+    <child link="rightwheel"/>
     <origin rpy="0 0 0" xyz="-0.033 0.0 -0.071"/>
     <axis rpy="0 0 0" xyz="0 1 0"/>
     <limit effort="100" velocity="100"/>
     <joint_properties damping="0.1" friction="0.1"/>
   </joint>
-  <link name="robot_rightwheel">
+  <link name="rightwheel">
     <visual>
       <!-- HIGH RESOLUTION WHEELS -->
       <!-- xacro:if value="${hq}">
@@ -848,22 +848,22 @@
     </inertial>
   </link>
   <!-- Transmission is important to link the joints and the controller -->
-  <transmission name="robot_rightsupport_joint_trans">
+  <transmission name="rightsupport_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_rightjoint_support">
+    <joint name="rightjoint_support">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_rightsupport_joint_motor">
+    <actuator name="rightsupport_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>1</motorTorqueConstant>
     </actuator>
   </transmission>
-  <transmission name="robot_rightwheel_joint_trans">
+  <transmission name="rightwheel_joint_trans">
     <type>transmission_interface/SimpleTransmission</type>
-    <joint name="robot_rightjoint_wheel">
+    <joint name="rightjoint_wheel">
       <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
     </joint>
-    <actuator name="robot_rightwheel_joint_motor">
+    <actuator name="rightwheel_joint_motor">
       <mechanicalReduction>1</mechanicalReduction>
       <motorTorqueConstant>1</motorTorqueConstant>
     </actuator>
@@ -876,7 +876,7 @@
 			<fdir1 value="1 0 0"/>
       <turnGravityOff>false</turnGravityOff>
     </gazebo -->
-  <gazebo reference="robot_right_wheel">
+  <gazebo reference="right_wheel">
     <mu1 value="100.0"/>
     <mu2 value="100.0"/>
     <!-- kp value="10000000.0" / -->
@@ -887,12 +887,12 @@
     <turnGravityOff>false</turnGravityOff>
   </gazebo>
   <!-- camera body, with origin at bottom screw mount -->
-  <joint name="robot_front_realsense_camera_camera_joint" type="fixed">
+  <joint name="front_realsense_camera_camera_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.3305 0.0 0.1468"/>
     <parent link="base_link"/>
-    <child link="robot_front_realsense_camera_camera_link"/>
+    <child link="front_realsense_camera_camera_link"/>
   </joint>
-  <link name="robot_front_realsense_camera_camera_link">
+  <link name="front_realsense_camera_camera_link">
     <visual>
       <!-- origin xyz="0 ${-r430_cam_mount_from_center_offset} ${r430_cam_height/2}" rpy="${M_PI/2} 0 ${M_PI/2}"/ -->
       <origin rpy="0 0 0" xyz="0 -0.0 0"/>
@@ -917,60 +917,60 @@
     </inertial>
   </link>
   <!-- camera depth joints and links -->
-  <joint name="robot_front_realsense_camera_camera_depth_joint" type="fixed">
+  <joint name="front_realsense_camera_camera_depth_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.0 -0.0115 0.0"/>
-    <parent link="robot_front_realsense_camera_camera_link"/>
-    <child link="robot_front_realsense_camera_camera_depth_frame"/>
+    <parent link="front_realsense_camera_camera_link"/>
+    <child link="front_realsense_camera_camera_depth_frame"/>
   </joint>
-  <link name="robot_front_realsense_camera_camera_depth_frame"/>
-  <joint name="robot_front_realsense_camera_camera_depth_optical_joint" type="fixed">
+  <link name="front_realsense_camera_camera_depth_frame"/>
+  <joint name="front_realsense_camera_camera_depth_optical_joint" type="fixed">
     <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="robot_front_realsense_camera_camera_depth_frame"/>
-    <child link="robot_front_realsense_camera_camera_depth_optical_frame"/>
+    <parent link="front_realsense_camera_camera_depth_frame"/>
+    <child link="front_realsense_camera_camera_depth_optical_frame"/>
   </joint>
-  <link name="robot_front_realsense_camera_camera_depth_optical_frame"/>
+  <link name="front_realsense_camera_camera_depth_optical_frame"/>
   <!-- camera left IR joints and links -->
-  <joint name="robot_front_realsense_camera_camera_left_ir_joint" type="fixed">
+  <joint name="front_realsense_camera_camera_left_ir_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 -0.021 0"/>
-    <parent link="robot_front_realsense_camera_camera_depth_frame"/>
-    <child link="robot_front_realsense_camera_camera_left_ir_frame"/>
+    <parent link="front_realsense_camera_camera_depth_frame"/>
+    <child link="front_realsense_camera_camera_left_ir_frame"/>
   </joint>
-  <link name="robot_front_realsense_camera_camera_left_ir_frame"/>
-  <joint name="robot_front_realsense_camera_camera_left_ir_optical_joint" type="fixed">
+  <link name="front_realsense_camera_camera_left_ir_frame"/>
+  <joint name="front_realsense_camera_camera_left_ir_optical_joint" type="fixed">
     <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="robot_front_realsense_camera_camera_left_ir_frame"/>
-    <child link="robot_front_realsense_camera_camera_left_ir_optical_frame"/>
+    <parent link="front_realsense_camera_camera_left_ir_frame"/>
+    <child link="front_realsense_camera_camera_left_ir_optical_frame"/>
   </joint>
-  <link name="robot_front_realsense_camera_camera_left_ir_optical_frame"/>
+  <link name="front_realsense_camera_camera_left_ir_optical_frame"/>
   <!-- camera right IR joints and links -->
-  <joint name="robot_front_realsense_camera_camera_right_ir_joint" type="fixed">
+  <joint name="front_realsense_camera_camera_right_ir_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0.029 0"/>
-    <parent link="robot_front_realsense_camera_camera_depth_frame"/>
-    <child link="robot_front_realsense_camera_camera_right_ir_frame"/>
+    <parent link="front_realsense_camera_camera_depth_frame"/>
+    <child link="front_realsense_camera_camera_right_ir_frame"/>
   </joint>
-  <link name="robot_front_realsense_camera_camera_right_ir_frame"/>
-  <joint name="robot_front_realsense_camera_camera_right_ir_optical_joint" type="fixed">
+  <link name="front_realsense_camera_camera_right_ir_frame"/>
+  <joint name="front_realsense_camera_camera_right_ir_optical_joint" type="fixed">
     <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="robot_front_realsense_camera_camera_right_ir_frame"/>
-    <child link="robot_front_realsense_camera_camera_right_ir_optical_frame"/>
+    <parent link="front_realsense_camera_camera_right_ir_frame"/>
+    <child link="front_realsense_camera_camera_right_ir_optical_frame"/>
   </joint>
-  <link name="robot_front_realsense_camera_camera_right_ir_optical_frame"/>
+  <link name="front_realsense_camera_camera_right_ir_optical_frame"/>
   <!-- camera fisheye joints and links -->
-  <joint name="robot_front_realsense_camera_camera_fisheye_joint" type="fixed">
+  <joint name="front_realsense_camera_camera_fisheye_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0 0.044 0"/>
-    <parent link="robot_front_realsense_camera_camera_depth_frame"/>
-    <child link="robot_front_realsense_camera_camera_fisheye_frame"/>
+    <parent link="front_realsense_camera_camera_depth_frame"/>
+    <child link="front_realsense_camera_camera_fisheye_frame"/>
   </joint>
-  <link name="robot_front_realsense_camera_camera_fisheye_frame"/>
-  <joint name="robot_front_realsense_camera_camera_fisheye_optical_joint" type="fixed">
+  <link name="front_realsense_camera_camera_fisheye_frame"/>
+  <joint name="front_realsense_camera_camera_fisheye_optical_joint" type="fixed">
     <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="robot_front_realsense_camera_camera_fisheye_frame"/>
-    <child link="robot_front_realsense_camera_camera_fisheye_optical_frame"/>
+    <parent link="front_realsense_camera_camera_fisheye_frame"/>
+    <child link="front_realsense_camera_camera_fisheye_optical_frame"/>
   </joint>
-  <link name="robot_front_realsense_camera_camera_fisheye_optical_frame"/>
+  <link name="front_realsense_camera_camera_fisheye_optical_frame"/>
   <!-- gazebo reference="${prefix}_rgb_base_link" -->
-  <gazebo reference="robot_front_realsense_camera_camera_link">
-    <sensor name="robot_front_realsense_camera_depth_sensor" type="depth">
+  <gazebo reference="front_realsense_camera_camera_link">
+    <sensor name="front_realsense_camera_depth_sensor" type="depth">
       <always_on>true</always_on>
       <update_rate>15.0</update_rate>
       <camera>
@@ -985,7 +985,7 @@
           <far>10.0</far>
         </clip>
       </camera>
-      <plugin filename="libgazebo_ros_openni_kinect.so" name="robot_front_realsense_camera_controller">
+      <plugin filename="libgazebo_ros_openni_kinect.so" name="front_realsense_camera_controller">
         <cameraName>front_realsense_camera</cameraName>
         <alwaysOn>true</alwaysOn>
         <updateRate>10</updateRate>
@@ -994,7 +994,7 @@
         <pointCloudTopicName>depth/points</pointCloudTopicName>
         <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
         <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
-        <frameName>/robot_front_realsense_camera_camera_depth_optical_frame</frameName>
+        <frameName>/front_realsense_camera_camera_depth_optical_frame</frameName>
         <baseline>0.1</baseline>
         <distortion_k1>0.0</distortion_k1>
         <distortion_k2>0.0</distortion_k2>
@@ -1005,12 +1005,12 @@
       </plugin>
     </sensor>
   </gazebo>
-  <joint name="robot_front_rgbd_camera_joint" type="fixed">
+  <joint name="front_rgbd_camera_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.3305 0.0 0.1898"/>
     <parent link="base_link"/>
-    <child link="robot_front_rgbd_camera_link"/>
+    <child link="front_rgbd_camera_link"/>
   </joint>
-  <link name="robot_front_rgbd_camera_link">
+  <link name="front_rgbd_camera_link">
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -1028,56 +1028,56 @@
       <inertia ixx="2.34375e-06" ixy="0" ixz="0" iyy="2.08333333333e-07" iyz="0" izz="2.40208333333e-06"/>
     </inertial>
   </link>
-  <joint name="robot_front_rgbd_camera_rgb_joint" type="fixed">
+  <joint name="front_rgbd_camera_rgb_joint" type="fixed">
     <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0125 0.0150"/>
-    <parent link="robot_front_rgbd_camera_link"/>
-    <child link="robot_front_rgbd_camera_rgb_frame"/>
+    <parent link="front_rgbd_camera_link"/>
+    <child link="front_rgbd_camera_rgb_frame"/>
   </joint>
-  <link name="robot_front_rgbd_camera_rgb_frame">
+  <link name="front_rgbd_camera_rgb_frame">
     <inertial>
       <mass value="0.297"/>
       <origin xyz="-0.02 -0.0125 0.0"/>
       <inertia ixx="0.00069609375" ixy="0" ixz="0" iyy="6.1875e-05" iyz="0" izz="0.00071341875"/>
     </inertial>
   </link>
-  <joint name="robot_front_rgbd_camera_rgb_optical_joint" type="fixed">
+  <joint name="front_rgbd_camera_rgb_optical_joint" type="fixed">
     <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0.0 0.0 0.0"/>
-    <parent link="robot_front_rgbd_camera_rgb_frame"/>
-    <child link="robot_front_rgbd_camera_rgb_optical_frame"/>
+    <parent link="front_rgbd_camera_rgb_frame"/>
+    <child link="front_rgbd_camera_rgb_optical_frame"/>
   </joint>
-  <link name="robot_front_rgbd_camera_rgb_optical_frame">
+  <link name="front_rgbd_camera_rgb_optical_frame">
     <inertial>
       <mass value="0.001"/>
       <origin rpy="1.57079632679 0 1.57079632679" xyz="0 0 0"/>
       <inertia ixx="2.34375e-06" ixy="0" ixz="0" iyy="2.08333333333e-07" iyz="0" izz="2.40208333333e-06"/>
     </inertial>
   </link>
-  <joint name="robot_front_rgbd_camera_depth_joint" type="fixed">
+  <joint name="front_rgbd_camera_depth_joint" type="fixed">
     <origin rpy="0 0 0" xyz="0.0 0.0375 0.0150"/>
-    <parent link="robot_front_rgbd_camera_link"/>
-    <child link="robot_front_rgbd_camera_depth_frame"/>
+    <parent link="front_rgbd_camera_link"/>
+    <child link="front_rgbd_camera_depth_frame"/>
   </joint>
-  <link name="robot_front_rgbd_camera_depth_frame">
+  <link name="front_rgbd_camera_depth_frame">
     <inertial>
       <mass value="0.001"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="2.34375e-06" ixy="0" ixz="0" iyy="2.08333333333e-07" iyz="0" izz="2.40208333333e-06"/>
     </inertial>
   </link>
-  <joint name="robot_front_rgbd_camera_depth_optical_joint" type="fixed">
+  <joint name="front_rgbd_camera_depth_optical_joint" type="fixed">
     <origin rpy="-1.57079632679 0 -1.57079632679" xyz="0 0 0"/>
-    <parent link="robot_front_rgbd_camera_depth_frame"/>
-    <child link="robot_front_rgbd_camera_depth_optical_frame"/>
+    <parent link="front_rgbd_camera_depth_frame"/>
+    <child link="front_rgbd_camera_depth_optical_frame"/>
   </joint>
-  <link name="robot_front_rgbd_camera_depth_optical_frame">
+  <link name="front_rgbd_camera_depth_optical_frame">
     <inertial>
       <mass value="0.001"/>
       <origin xyz="0 0 0"/>
       <inertia ixx="2.34375e-06" ixy="0" ixz="0" iyy="2.08333333333e-07" iyz="0" izz="2.40208333333e-06"/>
     </inertial>
   </link>
-  <gazebo reference="robot_front_rgbd_camera_link">
-    <sensor name="robot_front_rgbd_camera_depth_sensor" type="depth">
+  <gazebo reference="front_rgbd_camera_link">
+    <sensor name="front_rgbd_camera_depth_sensor" type="depth">
       <always_on>true</always_on>
       <update_rate>20.0</update_rate>
       <camera>
@@ -1092,7 +1092,7 @@
           <far>3.5</far>
         </clip>
       </camera>
-      <plugin filename="libgazebo_ros_openni_kinect.so" name="robot_front_rgbd_camera_controller">
+      <plugin filename="libgazebo_ros_openni_kinect.so" name="front_rgbd_camera_controller">
         <cameraName>front_rgbd_camera</cameraName>
         <alwaysOn>true</alwaysOn>
         <updateRate>10</updateRate>
@@ -1101,7 +1101,7 @@
         <pointCloudTopicName>depth/points</pointCloudTopicName>
         <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
         <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
-        <frameName>/robot_front_rgbd_camera_depth_optical_frame</frameName>
+        <frameName>/front_rgbd_camera_depth_optical_frame</frameName>
         <baseline>0.1</baseline>
         <distortion_k1>0.0</distortion_k1>
         <distortion_k2>0.0</distortion_k2>
@@ -1112,14 +1112,14 @@
       </plugin>
     </sensor>
   </gazebo>
-  <joint name="robot_imu_joint" type="fixed">
+  <joint name="imu_joint" type="fixed">
     <axis xyz="1 0 0"/>
     <!--origin xyz="0 0 0.2825"/-->
     <origin rpy="0 0 0" xyz="-0.1975 0.0 0.1598"/>
     <parent link="base_link"/>
-    <child link="robot_imu_link"/>
+    <child link="imu_link"/>
   </joint>
-  <link name="robot_imu_link">
+  <link name="imu_link">
     <inertial>
       <origin rpy="0 0 0" xyz="0.0 0 0.01"/>
       <mass value="0.05"/>
@@ -1139,15 +1139,15 @@
     </collision>
   </link>
   <gazebo>
-    <plugin filename="libgazebo_ros_imu_sensor.so" name="robot_imu_controller">
+    <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_controller">
       <alwaysOn>true</alwaysOn>
       <ros>
             <!-- <namespace>/tb3</namespace> -->
             <remapping>~/out:=imu</remapping>
       </ros>
-      <serviceName>robot_imuimu/service</serviceName>
-      <bodyName>robot_imu_link</bodyName>
-      <frameId>robot_imu_link</frameId>
+      <serviceName>imuimu/service</serviceName>
+      <bodyName>imu_link</bodyName>
+      <frameId>imu_link</frameId>
       <updateRate>50.0</updateRate>
       <gaussianNoise>0.00</gaussianNoise>
       <yawOffset>0.0</yawOffset>
@@ -1163,12 +1163,12 @@
       <accelGaussianNoise>0.0 0.0 0.0</accelGaussianNoise>
     </plugin>
   </gazebo>
-  <joint name="robot_front_laser_base_joint" type="fixed">
+  <joint name="front_laser_base_joint" type="fixed">
     <origin rpy="0 3.1416 3.1416" xyz="0.250 0.0 0.1643"/>
     <parent link="base_link"/>
-    <child link="robot_front_laser_base_link"/>
+    <child link="front_laser_base_link"/>
   </joint>
-  <link name="robot_front_laser_base_link">
+  <link name="front_laser_base_link">
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
@@ -1190,14 +1190,14 @@
       <!-- Datasheet dimensional drawing: 100.6 mm x 100.6 mm x 80 mm without connectors -->
     </inertial>
   </link>
-  <joint name="robot_front_laser_joint" type="fixed">
-    <parent link="robot_front_laser_base_link"/>
-    <child link="robot_front_laser_link"/>
+  <joint name="front_laser_joint" type="fixed">
+    <parent link="front_laser_base_link"/>
+    <child link="front_laser_link"/>
     <origin rpy="0 0 0" xyz="0.0 0 0.0505"/>
   </joint>
-  <link name="robot_front_laser_link"/>
-  <gazebo reference="robot_front_laser_link">
-    <sensor name="robot_front_laser_sensor" type="ray">
+  <link name="front_laser_link"/>
+  <gazebo reference="front_laser_link">
+    <sensor name="front_laser_sensor" type="ray">
       <pose>0 0 0 0 0 0</pose>
       <visualize>true</visualize>
       <update_rate>12.5</update_rate>
@@ -1206,8 +1206,8 @@
           <horizontal>
             <samples>1618</samples>
             <resolution>1</resolution>
-            <min_angle>-2.0507619</min_angle>
-            <max_angle>2.0507619</max_angle>
+            <min_angle>-1.1507619</min_angle> <!-- -2.0507619 -->
+            <max_angle>1.1507619</max_angle> <!-- 2.0507619 -->
           </horizontal>
         </scan>
         <range>
@@ -1223,12 +1223,12 @@
           <stddev>0.03</stddev>
         </noise>
       </ray>
-      <plugin name='robot_front_laser_controller' filename='libgazebo_ros_ray_sensor.so'>
+      <plugin name='front_laser_controller' filename='libgazebo_ros_ray_sensor.so'>
           <!-- <topicName>front_laser/scan</topicName> -->
 		      <ros>
             <remapping>~/out:=scan</remapping>
           </ros>
-          <frameName>robot_front_laser_link</frameName>
+          <frameName>front_laser_link</frameName>
 		      <output_type>sensor_msgs/LaserScan</output_type>
         </plugin>
     </sensor>

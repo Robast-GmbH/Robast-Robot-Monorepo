@@ -31,7 +31,7 @@
           </friction>
         </surface>
       </collision>
-      <collision name='base_footprint_fixed_joint_lump__robot_bottom_cover_link_collision_1'>
+      <collision name='base_footprint_fixed_joint_lump__bottom_cover_link_collision_1'>
         <pose>0 0 0.0606 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -40,7 +40,7 @@
           </mesh>
         </geometry>
       </collision>
-      <collision name='base_footprint_fixed_joint_lump__robot_front_laser_base_link_collision_2'>
+      <collision name='base_footprint_fixed_joint_lump__front_laser_base_link_collision_2'>
         <pose>0.25 0 0.2249 3.14159 -7e-06 7e-06</pose>
         <geometry>
           <mesh>
@@ -49,7 +49,7 @@
           </mesh>
         </geometry>
       </collision>
-      <collision name='base_footprint_fixed_joint_lump__robot_front_realsense_camera_camera_link_collision_3'>
+      <collision name='base_footprint_fixed_joint_lump__front_realsense_camera_camera_link_collision_3'>
         <pose>0.318 0 0.2074 0 -0 0</pose>
         <geometry>
           <box>
@@ -65,7 +65,7 @@
           </friction>
         </surface>
       </collision>
-      <collision name='base_footprint_fixed_joint_lump__robot_front_rgbd_camera_link_collision_4'>
+      <collision name='base_footprint_fixed_joint_lump__front_rgbd_camera_link_collision_4'>
         <pose>0.3305 0 0.2504 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -82,7 +82,7 @@
           </friction>
         </surface>
       </collision>
-      <!--<collision name='base_footprint_fixed_joint_lump__robot_imu_link_collision_5'>
+      <!--<collision name='base_footprint_fixed_joint_lump__imu_link_collision_5'>
         <pose>-0.1975 0 0.2204 0 -0 0</pose>
         <geometry>
           <box>
@@ -119,7 +119,7 @@
           </script>
         </material>
       </visual>
-      <visual name='base_footprint_fixed_joint_lump__robot_bottom_cover_link_visual_2'>
+      <visual name='base_footprint_fixed_joint_lump__bottom_cover_link_visual_2'>
         <pose>0 0 0.0606 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -134,7 +134,7 @@
           </script>
         </material>
       </visual>
-      <visual name='base_footprint_fixed_joint_lump__robot_front_laser_base_link_visual_3'>
+      <visual name='base_footprint_fixed_joint_lump__front_laser_base_link_visual_3'>
         <pose>0.25 0 0.2249 3.14159 -7e-06 7e-06</pose>
         <geometry>
           <mesh>
@@ -143,7 +143,7 @@
           </mesh>
         </geometry>
       </visual>
-      <visual name='base_footprint_fixed_joint_lump__robot_front_realsense_camera_camera_link_visual_4'>
+      <visual name='base_footprint_fixed_joint_lump__front_realsense_camera_camera_link_visual_4'>
         <pose>0.3305 0 0.2074 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -152,7 +152,7 @@
           </mesh>
         </geometry>
       </visual>
-      <visual name='base_footprint_fixed_joint_lump__robot_front_rgbd_camera_link_visual_5'>
+      <visual name='base_footprint_fixed_joint_lump__front_rgbd_camera_link_visual_5'>
         <pose>0.3305 0 0.2504 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -161,7 +161,7 @@
           </mesh>
         </geometry>
       </visual>
-      <visual name='base_footprint_fixed_joint_lump__robot_imu_link_visual_6'>
+      <visual name='base_footprint_fixed_joint_lump__imu_link_visual_6'>
         <pose>-0.1975 0 0.2204 0 -0 0</pose>
         <geometry>
           <box>
@@ -172,7 +172,7 @@
       <velocity_decay/>
       <velocity_decay/>
       <velocity_decay/>
-      <sensor name='robot_front_laser_sensor' type='gpu_ray'>
+      <sensor name='front_laser_sensor' type='gpu_ray'>
         <visualize>1</visualize>
         <update_rate>12.5</update_rate>
         <ray>
@@ -180,8 +180,8 @@
             <horizontal>
               <samples>1618</samples>
               <resolution>1</resolution>
-              <min_angle>-2.05076</min_angle>
-              <max_angle>2.05076</max_angle>
+              <min_angle>-1.9507619</min_angle> <!-- -2.0507619 -->
+            <max_angle>1.9507619</max_angle> <!-- 2.0507619 -->
             </horizontal>
           </scan>
           <range>
@@ -195,18 +195,18 @@
             <stddev>0.03</stddev>
           </noise>
         </ray>
-        <plugin name='robot_front_laser_controller' filename='libgazebo_ros_ray_sensor.so'>
+        <plugin name='front_laser_controller' filename='libgazebo_ros_ray_sensor.so'>
           <!-- <topicName>front_laser/scan</topicName> -->
 		      <ros>
             <remapping>~/out:=scan</remapping>
           </ros>
-          <frameName>robot_front_laser_link</frameName>
+          <frameName>front_laser_link</frameName>
 		      <output_type>sensor_msgs/LaserScan</output_type>
         </plugin>
         <pose>0.25 0 0.1744 0 -7e-06 7e-06</pose>
       </sensor>
       <velocity_decay/>
-      <sensor name='robot_front_realsense_camera_depth_sensor' type='depth'>
+      <sensor name='front_realsense_camera_depth_sensor' type='depth'>
         <always_on>1</always_on>
         <update_rate>15</update_rate>
         <camera>
@@ -221,7 +221,7 @@
             <far>10</far>
           </clip>
         </camera>
-        <plugin name='robot_front_realsense_camera_controller' filename='libgazebo_ros_openni_kinect.so'>
+        <plugin name='front_realsense_camera_controller' filename='libgazebo_ros_openni_kinect.so'>
           <cameraName>front_realsense_camera</cameraName>
           <alwaysOn>1</alwaysOn>
           <updateRate>10</updateRate>
@@ -230,7 +230,7 @@
           <pointCloudTopicName>depth/points</pointCloudTopicName>
           <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
           <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
-          <frameName>/robot_front_realsense_camera_camera_depth_optical_frame</frameName>
+          <frameName>/front_realsense_camera_camera_depth_optical_frame</frameName>
           <baseline>0.1</baseline>
           <distortion_k1>0.0</distortion_k1>
           <distortion_k2>0.0</distortion_k2>
@@ -243,7 +243,7 @@
       </sensor>
       <gravity>1</gravity>
       <velocity_decay/>
-      <sensor name='robot_front_rgbd_camera_depth_sensor' type='depth'>
+      <sensor name='front_rgbd_camera_depth_sensor' type='depth'>
         <always_on>1</always_on>
         <update_rate>20</update_rate>
         <camera>
@@ -258,7 +258,7 @@
             <far>3.5</far>
           </clip>
         </camera>
-        <plugin name='robot_front_rgbd_camera_controller' filename='libgazebo_ros_openni_kinect.so'>
+        <plugin name='front_rgbd_camera_controller' filename='libgazebo_ros_openni_kinect.so'>
           <cameraName>front_rgbd_camera</cameraName>
           <alwaysOn>1</alwaysOn>
           <updateRate>10</updateRate>
@@ -267,7 +267,7 @@
           <pointCloudTopicName>depth/points</pointCloudTopicName>
           <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
           <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
-          <frameName>/robot_front_rgbd_camera_depth_optical_frame</frameName>
+          <frameName>/front_rgbd_camera_depth_optical_frame</frameName>
           <baseline>0.1</baseline>
           <distortion_k1>0.0</distortion_k1>
           <distortion_k2>0.0</distortion_k2>
@@ -279,10 +279,10 @@
         <pose>0.3305 0 0.2504 0 -0 0</pose>
       </sensor>
     </link>
-    <joint name='robot_leftjoint_rsupport' type='revolute'>
+    <joint name='leftjoint_rsupport' type='revolute'>
       <pose relative_to='base_footprint'>0.1175 0.1725 0.1034 0 -0 0</pose>
       <parent>base_footprint</parent>
-      <child>robot_leftrsupport</child>
+      <child>leftrsupport</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -297,8 +297,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_leftrsupport'>
-      <pose relative_to='robot_leftjoint_rsupport'>0 0 0 0 -0 0</pose>
+    <link name='leftrsupport'>
+      <pose relative_to='leftjoint_rsupport'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.5</mass>
@@ -311,7 +311,7 @@
           <izz>7.5e-05</izz>
         </inertia>
       </inertial>
-      <collision name='robot_leftrsupport_collision'>
+      <collision name='leftrsupport_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -320,7 +320,7 @@
           </mesh>
         </geometry>
       </collision>
-      <visual name='robot_leftrsupport_visual'>
+      <visual name='leftrsupport_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -330,10 +330,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='robot_left_wheel_joint' type='revolute'>
-      <pose relative_to='robot_leftrsupport'>-0.1175 0.079 -0.0428 0 -0 0</pose>
-      <parent>robot_leftrsupport</parent>
-      <child>robot_left_wheel_link</child>
+    <joint name='left_wheel_joint' type='revolute'>
+      <pose relative_to='leftrsupport'>-0.1175 0.079 -0.0428 0 -0 0</pose>
+      <parent>leftrsupport</parent>
+      <child>left_wheel_link</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -346,8 +346,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_left_wheel_link'>
-      <pose relative_to='robot_left_wheel_joint'>0 0 0 0 -0 0</pose>
+    <link name='left_wheel_link'>
+      <pose relative_to='left_wheel_joint'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>0.25</mass>
@@ -360,7 +360,7 @@
           <izz>0.00071442</izz>
         </inertia>
       </inertial>
-      <collision name='robot_left_wheel_link_collision'>
+      <collision name='left_wheel_link_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -383,7 +383,7 @@
           </friction>
         </surface>
       </collision>
-      <visual name='robot_left_wheel_link_visual'>
+      <visual name='left_wheel_link_visual'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -401,10 +401,10 @@
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
-    <joint name='robot_leftcastorjoint_support' type='revolute'>
-      <pose relative_to='robot_leftrsupport'>0.1175 0.01 0.002 0 -0 0</pose>
-      <parent>robot_leftrsupport</parent>
-      <child>robot_leftcastorsupport</child>
+    <joint name='leftcastorjoint_support' type='revolute'>
+      <pose relative_to='leftrsupport'>0.1175 0.01 0.002 0 -0 0</pose>
+      <parent>leftrsupport</parent>
+      <child>leftcastorsupport</child>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -419,8 +419,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_leftcastorsupport'>
-      <pose relative_to='robot_leftcastorjoint_support'>0 0 0 0 -0 0</pose>
+    <link name='leftcastorsupport'>
+      <pose relative_to='leftcastorjoint_support'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.5</mass>
@@ -433,7 +433,7 @@
           <izz>7.5e-05</izz>
         </inertia>
       </inertial>
-      <collision name='robot_leftcastorsupport_collision'>
+      <collision name='leftcastorsupport_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -442,7 +442,7 @@
           </mesh>
         </geometry>
       </collision>
-      <visual name='robot_leftcastorsupport_visual'>
+      <visual name='leftcastorsupport_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -452,10 +452,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='robot_leftcastorjoint_wheel' type='revolute'>
-      <pose relative_to='robot_leftcastorsupport'>-0.033 0 -0.071 0 -0 0</pose>
-      <parent>robot_leftcastorsupport</parent>
-      <child>robot_leftcastorwheel</child>
+    <joint name='leftcastorjoint_wheel' type='revolute'>
+      <pose relative_to='leftcastorsupport'>-0.033 0 -0.071 0 -0 0</pose>
+      <parent>leftcastorsupport</parent>
+      <child>leftcastorwheel</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -468,8 +468,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_leftcastorwheel'>
-      <pose relative_to='robot_leftcastorjoint_wheel'>0 0 0 0 -0 0</pose>
+    <link name='leftcastorwheel'>
+      <pose relative_to='leftcastorjoint_wheel'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>0.25</mass>
@@ -482,7 +482,7 @@
           <izz>0.0003125</izz>
         </inertia>
       </inertial>
-      <collision name='robot_leftcastorwheel_collision'>
+      <collision name='leftcastorwheel_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -491,7 +491,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='robot_leftcastorwheel_visual'>
+      <visual name='leftcastorwheel_visual'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -501,10 +501,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='robot_leftjoint_support' type='revolute'>
+    <joint name='leftjoint_support' type='revolute'>
       <pose relative_to='base_footprint'>-0.235 0.1725 0.1034 0 -0 0</pose>
       <parent>base_footprint</parent>
-      <child>robot_leftsupport</child>
+      <child>leftsupport</child>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -519,8 +519,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_leftsupport'>
-      <pose relative_to='robot_leftjoint_support'>0 0 0 0 -0 0</pose>
+    <link name='leftsupport'>
+      <pose relative_to='leftjoint_support'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.5</mass>
@@ -533,7 +533,7 @@
           <izz>7.5e-05</izz>
         </inertia>
       </inertial>
-      <collision name='robot_leftsupport_collision'>
+      <collision name='leftsupport_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -542,7 +542,7 @@
           </mesh>
         </geometry>
       </collision>
-      <visual name='robot_leftsupport_visual'>
+      <visual name='leftsupport_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -552,10 +552,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='robot_leftjoint_wheel' type='revolute'>
-      <pose relative_to='robot_leftsupport'>-0.033 0 -0.071 0 -0 0</pose>
-      <parent>robot_leftsupport</parent>
-      <child>robot_leftwheel</child>
+    <joint name='leftjoint_wheel' type='revolute'>
+      <pose relative_to='leftsupport'>-0.033 0 -0.071 0 -0 0</pose>
+      <parent>leftsupport</parent>
+      <child>leftwheel</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -568,8 +568,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_leftwheel'>
-      <pose relative_to='robot_leftjoint_wheel'>0 0 0 0 -0 0</pose>
+    <link name='leftwheel'>
+      <pose relative_to='leftjoint_wheel'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>0.25</mass>
@@ -582,7 +582,7 @@
           <izz>0.0003125</izz>
         </inertia>
       </inertial>
-      <collision name='robot_leftwheel_collision'>
+      <collision name='leftwheel_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -591,7 +591,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='robot_leftwheel_visual'>
+      <visual name='leftwheel_visual'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -601,10 +601,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='robot_rightjoint_rsupport' type='revolute'>
+    <joint name='rightjoint_rsupport' type='revolute'>
       <pose relative_to='base_footprint'>0.1175 -0.1725 0.1034 0 -0 0</pose>
       <parent>base_footprint</parent>
-      <child>robot_rightrsupport</child>
+      <child>rightrsupport</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -619,8 +619,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_rightrsupport'>
-      <pose relative_to='robot_rightjoint_rsupport'>0 0 0 0 -0 0</pose>
+    <link name='rightrsupport'>
+      <pose relative_to='rightjoint_rsupport'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.5</mass>
@@ -633,7 +633,7 @@
           <izz>7.5e-05</izz>
         </inertia>
       </inertial>
-      <collision name='robot_rightrsupport_collision'>
+      <collision name='rightrsupport_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -642,7 +642,7 @@
           </mesh>
         </geometry>
       </collision>
-      <visual name='robot_rightrsupport_visual'>
+      <visual name='rightrsupport_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -652,10 +652,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='robot_right_wheel_joint' type='revolute'>
-      <pose relative_to='robot_rightrsupport'>-0.1175 -0.079 -0.0428 0 -0 0</pose>
-      <parent>robot_rightrsupport</parent>
-      <child>robot_right_wheel_link</child>
+    <joint name='right_wheel_joint' type='revolute'>
+      <pose relative_to='rightrsupport'>-0.1175 -0.079 -0.0428 0 -0 0</pose>
+      <parent>rightrsupport</parent>
+      <child>right_wheel_link</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -668,8 +668,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_right_wheel_link'>
-      <pose relative_to='robot_right_wheel_joint'>0 0 0 0 -0 0</pose>
+    <link name='right_wheel_link'>
+      <pose relative_to='right_wheel_joint'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>0.25</mass>
@@ -682,7 +682,7 @@
           <izz>0.00071442</izz>
         </inertia>
       </inertial>
-      <collision name='robot_right_wheel_link_collision'>
+      <collision name='right_wheel_link_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -705,7 +705,7 @@
           </friction>
         </surface>
       </collision>
-      <visual name='robot_right_wheel_link_visual'>
+      <visual name='right_wheel_link_visual'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -723,10 +723,10 @@
       <gravity>1</gravity>
       <velocity_decay/>
     </link>
-    <joint name='robot_rightcastorjoint_support' type='revolute'>
-      <pose relative_to='robot_rightrsupport'>0.1175 0.01 0.002 0 -0 0</pose>
-      <parent>robot_rightrsupport</parent>
-      <child>robot_rightcastorsupport</child>
+    <joint name='rightcastorjoint_support' type='revolute'>
+      <pose relative_to='rightrsupport'>0.1175 0.01 0.002 0 -0 0</pose>
+      <parent>rightrsupport</parent>
+      <child>rightcastorsupport</child>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -741,8 +741,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_rightcastorsupport'>
-      <pose relative_to='robot_rightcastorjoint_support'>0 0 0 0 -0 0</pose>
+    <link name='rightcastorsupport'>
+      <pose relative_to='rightcastorjoint_support'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.5</mass>
@@ -755,7 +755,7 @@
           <izz>7.5e-05</izz>
         </inertia>
       </inertial>
-      <collision name='robot_rightcastorsupport_collision'>
+      <collision name='rightcastorsupport_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -764,7 +764,7 @@
           </mesh>
         </geometry>
       </collision>
-      <visual name='robot_rightcastorsupport_visual'>
+      <visual name='rightcastorsupport_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -774,10 +774,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='robot_rightcastorjoint_wheel' type='revolute'>
-      <pose relative_to='robot_rightcastorsupport'>-0.033 0 -0.071 0 -0 0</pose>
-      <parent>robot_rightcastorsupport</parent>
-      <child>robot_rightcastorwheel</child>
+    <joint name='rightcastorjoint_wheel' type='revolute'>
+      <pose relative_to='rightcastorsupport'>-0.033 0 -0.071 0 -0 0</pose>
+      <parent>rightcastorsupport</parent>
+      <child>rightcastorwheel</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -790,8 +790,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_rightcastorwheel'>
-      <pose relative_to='robot_rightcastorjoint_wheel'>0 0 0 0 -0 0</pose>
+    <link name='rightcastorwheel'>
+      <pose relative_to='rightcastorjoint_wheel'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>0.25</mass>
@@ -804,7 +804,7 @@
           <izz>0.0003125</izz>
         </inertia>
       </inertial>
-      <collision name='robot_rightcastorwheel_collision'>
+      <collision name='rightcastorwheel_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -813,7 +813,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='robot_rightcastorwheel_visual'>
+      <visual name='rightcastorwheel_visual'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -823,10 +823,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='robot_rightjoint_support' type='revolute'>
+    <joint name='rightjoint_support' type='revolute'>
       <pose relative_to='base_footprint'>-0.235 -0.1725 0.1034 0 -0 0</pose>
       <parent>base_footprint</parent>
-      <child>robot_rightsupport</child>
+      <child>rightsupport</child>
       <axis>
         <xyz>0 0 1</xyz>
         <limit>
@@ -841,8 +841,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_rightsupport'>
-      <pose relative_to='robot_rightjoint_support'>0 0 0 0 -0 0</pose>
+    <link name='rightsupport'>
+      <pose relative_to='rightjoint_support'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>1.5</mass>
@@ -855,7 +855,7 @@
           <izz>7.5e-05</izz>
         </inertia>
       </inertial>
-      <collision name='robot_rightsupport_collision'>
+      <collision name='rightsupport_collision'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -864,7 +864,7 @@
           </mesh>
         </geometry>
       </collision>
-      <visual name='robot_rightsupport_visual'>
+      <visual name='rightsupport_visual'>
         <pose>0 0 0 0 -0 0</pose>
         <geometry>
           <mesh>
@@ -874,10 +874,10 @@
         </geometry>
       </visual>
     </link>
-    <joint name='robot_rightjoint_wheel' type='revolute'>
-      <pose relative_to='robot_rightsupport'>-0.033 0 -0.071 0 -0 0</pose>
-      <parent>robot_rightsupport</parent>
-      <child>robot_rightwheel</child>
+    <joint name='rightjoint_wheel' type='revolute'>
+      <pose relative_to='rightsupport'>-0.033 0 -0.071 0 -0 0</pose>
+      <parent>rightsupport</parent>
+      <child>rightwheel</child>
       <axis>
         <xyz>0 1 0</xyz>
         <limit>
@@ -890,8 +890,8 @@
         </dynamics>
       </axis>
     </joint>
-    <link name='robot_rightwheel'>
-      <pose relative_to='robot_rightjoint_wheel'>0 0 0 0 -0 0</pose>
+    <link name='rightwheel'>
+      <pose relative_to='rightjoint_wheel'>0 0 0 0 -0 0</pose>
       <inertial>
         <pose>0 0 0 0 -0 0</pose>
         <mass>0.25</mass>
@@ -904,7 +904,7 @@
           <izz>0.0003125</izz>
         </inertia>
       </inertial>
-      <collision name='robot_rightwheel_collision'>
+      <collision name='rightwheel_collision'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -913,7 +913,7 @@
           </cylinder>
         </geometry>
       </collision>
-      <visual name='robot_rightwheel_visual'>
+      <visual name='rightwheel_visual'>
         <pose>0 0 0 1.5708 -0 0</pose>
         <geometry>
           <cylinder>
@@ -977,7 +977,7 @@
             </z>
           </linear_acceleration>
         </imu>
-        <plugin name="robot_imu" filename="libgazebo_ros_imu_sensor.so">
+        <plugin name="imu" filename="libgazebo_ros_imu_sensor.so">
           <ros>
             <!-- <namespace>/tb3</namespace> -->
             <remapping>~/out:=imu</remapping>
@@ -987,7 +987,7 @@
     </link>	
 	
     <plugin name='ros_control' filename='libgazebo_ros_control.so'>
-      <robotParam>robot/robot_description</robotParam>
+      <robotParam>robot/description</robotParam>
       <controlPeriod>0.001</controlPeriod>
       <robotSimType>gazebo_ros_control/DefaultRobotHWSim</robotSimType>
       <legacyModeNS>1</legacyModeNS>
@@ -995,7 +995,7 @@
 	
     <static>0</static>
     
-    <plugin name="robot_diff_drive" filename="libgazebo_ros_diff_drive.so">
+    <plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
       <alwaysOn>1</alwaysOn>
 	
 	  <ros>
@@ -1005,8 +1005,8 @@
       <update_rate>30</update_rate>
 
       <!-- wheels -->
-      <left_joint>robot_left_wheel_joint</left_joint>
-      <right_joint>robot_right_wheel_joint</right_joint>
+      <left_joint>left_wheel_joint</left_joint>
+      <right_joint>right_wheel_joint</right_joint>
 
       <!-- kinematics -->
       <wheel_separation>0.287</wheel_separation>
@@ -1025,18 +1025,18 @@
 
       <odometry_topic>odom</odometry_topic>
       <odometry_frame>odom</odometry_frame>
-      <robot_base_frame>base_footprint</robot_base_frame>
+      <base_frame>base_footprint</base_frame>
     </plugin>
 	
-	 <plugin name="robot_joint_state" filename="libgazebo_ros_joint_state_publisher.so">
+	 <plugin name="joint_state" filename="libgazebo_ros_joint_state_publisher.so">
       <ros>
         <!-- <namespace>/tb3</namespace> -->
         <remapping>~/out:=joint_states</remapping>
       </ros>
 	  <alwaysOn>1</alwaysOn>
       <update_rate>30</update_rate>
-      <joint_name>robot_left_wheel_joint</joint_name>
-      <joint_name>robot_right_wheel_joint</joint_name>
+      <joint_name>left_wheel_joint</joint_name>
+      <joint_name>right_wheel_joint</joint_name>
     </plugin>    
 	
   </model>
