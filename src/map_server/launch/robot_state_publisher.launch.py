@@ -35,6 +35,12 @@ def generate_launch_description():
         ROBOT_MODEL,
         ROBOT_MODEL + '.urdf')
 
+    urdf_turtelbot = os.path.join(
+        get_package_share_directory('turtlebot3_description'),
+        'urdf',
+        'turtlebot3_waffle.urdf')
+    #urdf = urdf_turtelbot # uncomment this to change to turtlebot
+
     print('urdf_file_path : {}'.format(urdf))    
 
     return LaunchDescription([
