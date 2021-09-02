@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-    nav2_params_yaml = os.path.join(get_package_share_directory('map_server'), 'config', 'slam_toolbox_params.yaml')
+    slam_toolbox_params_yaml = os.path.join(get_package_share_directory('map_server'), 'config', 'slam_toolbox_params.yaml')
     rviz_config_dir = os.path.join(get_package_share_directory('map_server'), 'config', 'nav2_default_view.rviz')
     map_file_posegraph = os.path.join(get_package_share_directory('map_server'), 'maps', '5OG')
 
@@ -33,7 +33,7 @@ def generate_launch_description():
             name='slam_toolbox',
             output='screen',
             parameters=[
-                nav2_params_yaml,
+                slam_toolbox_params_yaml,
                 {'map_file_name': map_file_posegraph},
                 {'map_start_pose': [8.73, -13.45, 0.35]},
                 {'mode': 'mapping'},
