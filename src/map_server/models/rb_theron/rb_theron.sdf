@@ -1035,8 +1035,25 @@
       </ros>
 	  <alwaysOn>1</alwaysOn>
       <update_rate>30</update_rate>
+
+      <joint_name>leftjoint_rsupport</joint_name>
+      <joint_name>rightjoint_rsupport</joint_name>
+
       <joint_name>left_wheel_joint</joint_name>
       <joint_name>right_wheel_joint</joint_name>
+
+      <joint_name>leftcastorjoint_support</joint_name>
+      <joint_name>rightcastorjoint_support</joint_name>
+
+      <joint_name>leftcastorjoint_wheel</joint_name>
+      <joint_name>rightcastorjoint_wheel</joint_name>
+
+      <joint_name>leftjoint_support</joint_name>
+      <joint_name>rightjoint_support</joint_name>
+
+      <joint_name>leftjoint_wheel</joint_name>
+      <joint_name>rightjoint_wheel</joint_name>
+      
     </plugin>    
 	
   </model>
