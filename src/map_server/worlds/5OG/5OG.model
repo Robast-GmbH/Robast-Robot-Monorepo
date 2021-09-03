@@ -50,11 +50,6 @@
         <uri>model://5OG_waende</uri>
       </include>
     </model>
-     
-    <include>
-      <pose>8.0 -13.5 0.0 0.0 0.0 0.0</pose>
-      <uri>model://rb_theron</uri> <!-- rb_theron or turtlebot3_waffle -->
-    </include>
 
     <actor name="actor">
      <skin>
