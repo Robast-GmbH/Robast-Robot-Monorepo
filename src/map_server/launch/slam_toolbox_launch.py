@@ -35,7 +35,7 @@ def generate_launch_description():
             parameters=[
                 slam_toolbox_params_yaml,
                 {'map_file_name': map_file_posegraph},
-                {'map_start_pose': [8.73, -13.45, 0.35]},
+                {'map_start_pose': [8.59, -13.45, 0.35]},
                 {'mode': 'mapping'},
                 {'use_sim_time': use_sim_time}
             ]),

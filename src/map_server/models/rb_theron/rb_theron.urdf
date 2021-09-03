@@ -1204,15 +1204,15 @@
       <ray>
         <scan>
           <horizontal>
-            <samples>1618</samples>
+            <samples>1618</samples> <!-- 1618 -->
             <resolution>1</resolution>
-            <min_angle>-1.1507619</min_angle> <!-- -2.0507619 -->
-            <max_angle>1.1507619</max_angle> <!-- 2.0507619 -->
+            <min_angle>-1.9507619</min_angle> <!-- -2.0507619 -->
+            <max_angle>1.9507619</max_angle> <!-- 2.0507619 -->
           </horizontal>
         </scan>
         <range>
           <min>0.065</min>
-          <max>40.0</max>
+          <max>40.0</max> <!-- 40.0 -->
           <!-- 3m protective, 10 warning, 40 measurement -->
           <resolution>0.07</resolution>
           <!-- Resolution is configurable 20 mm 30 mm 40 mm 50 mm 60 mm 70 mm 150 mm 200 mm, reglamentary resolution is 70 mm -->
