@@ -10,6 +10,9 @@ from launch_ros.actions import Node
 
 WORLD_MODEL = os.environ['WORLD_MODEL']
 ROBOT_MODEL = os.environ['ROBOT_MODEL']
+POSE_INIT_X = os.environ['POSE_INIT_X']
+POSE_INIT_Y = os.environ['POSE_INIT_Y']
+POSE_INIT_Z = os.environ['POSE_INIT_Z']
 
 # export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/map_server/models:${GAZEBO_MODEL_PATH}
 # export GAZEBO_PLUGIN_PATH=workspaces/Robast_RosTheron/gaz/plugins:${GAZEBO_PLUGIN_PATH}
@@ -24,7 +27,10 @@ def get_robot_spawn_args():
     robot_xml = open(robot_sdf, 'r').read()
     robot_xml = robot_xml.replace('"', '\\"')
 
-    initial_pose = '{position: {x: 8.59, y: -13.45, z: 0.35}}'
+    initial_pose = '{position: ' +\
+                    '{x: ' + POSE_INIT_X + ', ' +\
+                     'y: ' + POSE_INIT_Y + ', ' +\
+                     'z: ' + POSE_INIT_Z + '}}'
 
     spawn_args = '{name: \"' + ROBOT_MODEL + '\",' +\
                  'xml: \"' + robot_xml + '\",' +\

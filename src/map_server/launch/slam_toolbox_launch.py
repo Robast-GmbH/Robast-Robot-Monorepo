@@ -6,11 +6,16 @@ from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
+WORLD_MODEL = os.environ['WORLD_MODEL']
+POSE_INIT_X = os.environ['POSE_INIT_X']
+POSE_INIT_Y = os.environ['POSE_INIT_Y']
+POSE_INIT_Z = os.environ['POSE_INIT_Z']
+
 def generate_launch_description():
 
     slam_toolbox_params_yaml = os.path.join(get_package_share_directory('map_server'), 'config', 'slam_toolbox_params.yaml')
     rviz_config_dir = os.path.join(get_package_share_directory('map_server'), 'config', 'nav2_default_view.rviz')
-    map_file_posegraph = os.path.join(get_package_share_directory('map_server'), 'maps', '5OG')
+    map_file_posegraph = os.path.join(get_package_share_directory('map_server'), 'maps', WORLD_MODEL)
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
@@ -35,7 +40,7 @@ def generate_launch_description():
             parameters=[
                 slam_toolbox_params_yaml,
                 {'map_file_name': map_file_posegraph},
-                {'map_start_pose': [8.59, -13.45, 0.35]},
+                {'map_start_pose': [float(POSE_INIT_X), float(POSE_INIT_Y), float(POSE_INIT_Z)]},
                 {'mode': 'mapping'},
                 {'use_sim_time': use_sim_time}
             ]),
