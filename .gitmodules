@@ -1,3 +1,6 @@
 [submodule "robot_localization.git"]
 	path = src/robot_localization
 	url = https://github.com/TipluJacob/robot_localization.git
+[submodule "aws-robomaker-hospital-world.git --force"]
+	path = src/aws-robomaker-hospital-world
+	url = https://github.com/aws-robotics/aws-robomaker-hospital-world.git
