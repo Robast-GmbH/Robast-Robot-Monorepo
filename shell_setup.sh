@@ -1,15 +1,15 @@
 #!/bin/sh
 # Setup Environmental Path Variables
 export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/map_server/models:${GAZEBO_MODEL_PATH}
-export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/aws-robomaker-hospital-world/fuel_models:${GAZEBO_MODEL_PATH}
+export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/aws_hospital_world/fuel_models:${GAZEBO_MODEL_PATH}
 export GAZEBO_PLUGIN_PATH=workspaces/Robast_RosTheron/gaz/plugins:${GAZEBO_PLUGIN_PATH}
 
 # Set robot_model and world_model:
-WORLD_MODEL=5OG
+WORLD_MODEL=hospital
 export ROBOT_MODEL=rb_theron
 
 # Inititial pose of the robot, which is important for spawning the robot in the map AND for start position for SLAM
-if WORLD_MODEL=5OG
+if [ $WORLD_MODEL = "5OG" ];
 then
 	export WORLD_MODEL=5OG
 	export POSE_INIT_X=8.59
