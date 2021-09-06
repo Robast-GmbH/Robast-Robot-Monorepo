@@ -26,14 +26,39 @@
                 "isDefault": true
             }
         },
-        // Clean
+        // Clean-ros
         {
-            "label": "clean",
-            "detail": "Run the clean target",
+            "label": "clean-ros",
+            "detail": "Clean ros colcon build",
             "type": "shell",
             "command": "colcon build --cmake-target clean",
             "problemMatcher": "$gcc"
         },
+        // Clean
+        {
+            "label": "clean",
+            "detail": "Purge and clean ros colcon build",
+            "dependsOn": ["purge", "clean-ros"],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        // Build Ros-Theron 
+        {
+            "label": "build-ros-theron",
+            "detail": "Symlink Build for Ros-Theron. Makes sure packages are build in the right order.",
+            "type": "shell",
+            "command": "colcon build --packages-select robot_localization --symlink-install; source install/setup.bash; colcon build --symlink-install",
+            "problemMatcher": [],
+        },
+        // Clean build Ros-Theron 
+        {
+            "label": "clean-build-ros-theron",
+            "detail": "Purges and symlink builds for Ros-Theron. Makes sure packages are build in the right order.",
+            "dependsOn": ["purge", "build-ros-theron"],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        // Purge
         {
             "label": "purge",
             "detail": "Purge workspace by deleting all generated files.",
