@@ -26,3 +26,5 @@ RUN bash -c 'source $HOME/.nvm/nvm.sh   && \
 #RUN export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
 #RUN nvm install node
 ENV DEBIAN_FRONTEND= 
+
+ENTRYPOINT [ "entrypoint.sh" ]

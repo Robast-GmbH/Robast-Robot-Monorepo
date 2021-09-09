@@ -1,14 +1,14 @@
 import PropTypes from 'prop-types'
-import Task from './Task'
+import Order from './Order'
 
 
-const Tasks = ({tasks, onDelete, onToggle}) => {     
+const Orders = ({orders, onDelete, onToggle}) => {     
         return (
                 <>
                   {
-                          tasks.map((task) => (<Task 
-                                key={task.id} 
-                                task={task} 
+                          orders.map((order) => (<Order 
+                                key={order.id} 
+                                task={order} 
                                 onDelete = {onDelete} 
                                 onToggle = {onToggle}/>))
                   }      
@@ -17,10 +17,10 @@ const Tasks = ({tasks, onDelete, onToggle}) => {
 }
 
 
-Tasks.protoTypes = {
-        tasks: PropTypes.object,
+Orders.protoTypes = {
+        orders: PropTypes.object,
         onDelete: PropTypes.func,
         onToggle: PropTypes.func,
 }
 
-export default Tasks
+export default Orders

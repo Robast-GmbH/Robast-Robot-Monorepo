@@ -1,86 +1,97 @@
 import Header from './components/Header.js'
 import { BrowserRouter as Router, Route } from 'react-router-dom'
 import { useState, useEffect } from 'react'
-import AddTask from './components/AddTask.js'
+import AddOrder from './components/AddOrder.js'
 import Footer from './components/Footer.js'
 import About from './components/About.js'
 import Popup from 'reactjs-popup';
 import RosMap from './components/RosMap.js'
-import ShowTasks from './components/ShowTasks.js'
+import ShowOrders from './components/ShowOrders.js'
 
-
+const user_id = 1;
 function App() {
-  const [showAddTask, setShowAddTask] = useState(false)
+  const [showAddOrder, setShowAddOrder] = useState(false)
   const [showOrder, setShowOrder] = useState(false)
   const [popupIsOpen, setPopupIsOpen] = useState(false)
-  const [tasks, setTasks] = useState([
+  const [orders, setOrders] = useState([
 
   ])
-  const [OrderCoords, setOrderCoords] = useState([1,2])
+  const [OrderCoords, setOrderCoords] = useState({
+    Metadata:{x:0, y:0, scale_x:0, scale_y:0}})
+
+  const [User, setUser] = useState({
+      Metadata:{id:0, email: "", name:""}})
 
   const closeModal = () => setPopupIsOpen(false);
   const openModal = () => setPopupIsOpen(true);
 
   useEffect(() => {
-    const getTasks = async () => {
-      const tasksFromServer = await fetchTasks()
-      setTasks(tasksFromServer)
+    const getOrders = async () => {
+      const ordersFromServer = await fetchOrders()
+      setOrders(ordersFromServer)
     }
 
-    getTasks()
+    getOrders()
   }, [])
 
-
-  const fetchTasks = async () => {
-    const res = await fetch('http://localhost:5000/tasks')
+  const fetchUser = async () => {
+    const res = await fetch(`http://172.18.0.3:8000/users`)
     const data = await res.json()
 
     return data;
   }
 
-  const fetchTask = async (id) => {
-    const res = await fetch(`http://localhost:5000/tasks/${id}`)
+  const fetchOrders = async () => {
+    const res = await fetch(`http://172.18.0.3:8000/orders`)
+    const data = await res.json()
+
+    return data;
+  }
+
+  const fetchOrder = async (id) => {
+    const res = await fetch(`http://172.18.0.3:8000/${user_id}/orders/${id}`)
     const data = await res.json()
 
     return data;
   }
 
   //DELETE
-  const deleteTask = async (id) => {
-    await fetch(`http://localhost:5000/tasks/${id}`, { method: 'DELETE' })
+  const deleteOrder = async (id) => {
+    await fetch(`http://172.18.0.3:8000/${user_id}/orders/${id}`, { method: 'DELETE' })
 
-    setTasks(tasks.filter((task) => task.id !== id));
+    setOrders(orders.filter((order) => order.id !== id));
   }
 
-  const toggleReminder = async (id) => {
-    const taskToToggle = await fetchTask(id)
-    const updatedTask = { ...taskToToggle, reminder: !taskToToggle.reminder }
+  const toggleReminder = async (order_id) => {
+    const orderToToggle = await fetchOrder(order_id)
+    const updatedOrder = { ...orderToToggle, reminder: !orderToToggle.reminder }
+    
 
-    const res = await fetch(`http://localhost:5000/tasks/${id}`, {
+    const res = await fetch(`http://172.18.0.3:8000/${user_id}/orders/${order_id}`, {
       method: 'PUT',
       headers: {
         'Content-type': 'application/json'
       },
-      body: JSON.stringify(updatedTask)
+      body: JSON.stringify(updatedOrder)
     })
 
     const data = await res.json()
-    setTasks(
-      tasks.map((task) =>
-        task.id === id ? { ...task, reminder: data.reminder } : task))
+    setOrders(
+      orders.map((order) =>
+        order.id === order_id ? { ...order, reminder: data.reminder } : order))
   }
 
-  const addTask = async (task) => {
-    const res = await fetch('http://localhost:5000/tasks', {
+  const addOrder = async (order) => {
+    const res = await fetch(`http://172.18.0.3:8000/users/${user_id}/Order`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
       },
-      body: JSON.stringify(task)
+      body: JSON.stringify(order)
     })
     const data = await res.json()
     console.log(data)
-    setTasks([...tasks, data])
+    setOrders([...orders, data])
     closeModal()
   }
 
@@ -90,7 +101,7 @@ function App() {
     const rect = document.getElementById('RosMap').getBoundingClientRect();
     const map_x = event.clientX - rect.left;
     const map_y = event.clientY - rect.top;
-    setOrderCoords([map_x, map_y]);
+    setOrderCoords({x:map_x, y:map_y, scale_x:0, scale_y:0});
     console.log(rect);
     console.log(OrderCoords);
     console.log("map_x: " + map_x + ", map_y:" + map_y);
@@ -108,13 +119,13 @@ function App() {
 
         <Route path='/' exact render={(props) => (
           <>
-            {showOrder  && <ShowTasks tasks={tasks} onDelete={deleteTask} onToggle={toggleReminder}></ShowTasks>}
+            {showOrder  && <ShowOrders orders={orders} onDelete={deleteOrder} onToggle={toggleReminder}></ShowOrders>}
             {<h1>click on the location to order too</h1>}
 
             <RosMap onClick={showCoords} />
             <Popup open={popupIsOpen} closeOnDocumentClick onClose={closeModal}>
               <>
-                {<AddTask onAdd={addTask} coords={OrderCoords} />}
+                {<AddOrder onAdd={addOrder} coords={OrderCoords} />}
               </>
             </Popup>
           </>
@@ -128,3 +139,6 @@ function App() {
 }
 
 export default App;
+
+
+// get json from apenapi: https://www.npmjs.com/package/openapi-typescript

@@ -1,16 +1,16 @@
 import PropTypes from 'prop-types'
-import Tasks from "./Tasks"
+import Orders from "./Orders"
 
 
-const ShowTasks = ({ tasks, onDelete, onToggle }) => {
+const ShowOrders = ({ tasks: orders, onDelete, onToggle }) => {
         return (
                 <div>
-                        {tasks.length > 0 ? (
-                                <Tasks
-                                        tasks={tasks}
+                        {orders > 0 ? (
+                                <Orders
+                                        orders={orders}
                                         onDelete={onDelete}
                                         onToggle={onToggle}>
-                                </Tasks>
+                                </Orders>
                         ) : (
                                 'empty'
                         )}
@@ -19,10 +19,10 @@ const ShowTasks = ({ tasks, onDelete, onToggle }) => {
 }
 
 
-ShowTasks.protoTypes = {
-        tasks: PropTypes.object,
+ShowOrders.protoTypes = {
+        orders: PropTypes.object,
         onDelete: PropTypes.func,
         onToggle: PropTypes.func,
 }
 
-export default ShowTasks
+export default ShowOrders

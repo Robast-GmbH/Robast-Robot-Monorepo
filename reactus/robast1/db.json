@@ -1,34 +1,19 @@
 {
-  "tasks": [
+  "posts": [
     {
       "id": 1,
-      "text": "'Frontend'",
-      "day": "'now'",
-      "coords": [
-        566,
-        104
-      ],
-      "reminder": true
-    },
-    {
-      "id": 2,
-      "text": "Jungle",
-      "day": "Later",
-      "coords": [
-        402,
-        109
-      ],
-      "reminder": true
-    },
-    {
-      "id": 3,
-      "text": "Backend",
-      "day": "Tomorrow",
-      "coords": [
-        175,
-        396
-      ],
-      "reminder": false
+      "title": "json-server",
+      "author": "typicode"
     }
-  ]
+  ],
+  "comments": [
+    {
+      "id": 1,
+      "body": "some comment",
+      "postId": 1
+    }
+  ],
+  "profile": {
+    "name": "typicode"
+  }
 }

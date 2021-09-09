@@ -4,43 +4,43 @@ import PropTypes from 'prop-types'
 
 
 
-const AddTask = ({ onAdd, coords }) => {
-        const [text, setText] = useState('')
-        const [reminder, setReminder] = useState(false)
+const AddOrder = ({ onAdd, coords }) => {
+        const [orderItem, setOrderItem] = useState('')
+        const [recurring_order, setRecurringOrder] = useState(false)
 
         const onSubmit = (e) => {
                 e.preventDefault()
-                if (!text) {
-                        alert('Add stupid text')
+                if (!orderItem) {
+                        alert('Add stupid orderItem')
                         return
                 }
 
-                onAdd({ text, reminder, coords })
-                setText('')
-                setReminder(false)
+                onAdd({ orderItem, recurring_order, coords: {} })
+                setOrderItem('')
+                setRecurringOrder(false)
         }
 
         return (
                 <form className='add-form' onSubmit={onSubmit}>
                         <div className='form-control'>
                                 <label>Order</label>
-                                <input type='text' placeholder='What do you want?'
-                                        value={text} onChange={(e) => setText(e.target.value)} />
+                                <input type='orderItem' placeholder='What do you want?'
+                                        value={orderItem} onChange={(e) => setOrderItem(e.target.value)} />
                         </div>
 
                         <div className='form-control form-control-checkbox'>
-                                <label>Deliver by Robot</label>
+                                <label>Is it recurring?</label>
                                 <input
                                         type='checkbox'
-                                        checked={reminder}
-                                        value={reminder}
-                                        onChange={(e) => setReminder(e.currentTarget.checked)} />
+                                        checked={recurring_order}
+                                        value={recurring_order}
+                                        onChange={(e) => setRecurringOrder(e.currentTarget.checked)} />
                         </div>
 
                         <div className='form-control form-control-checkbox'>
                                 <label>Goal-Coordinates: (debug)</label>
-                                {coords.length > 0 ? (
-                                        <h1>[{coords[0]}, {coords[1]}]</h1>
+                                {coords ? (
+                                        <h1>x:{coords.x}, y:{coords.y}</h1>
                                 ) : (
                                         <h1>no coords</h1>
                                 )}
@@ -53,12 +53,12 @@ const AddTask = ({ onAdd, coords }) => {
         )
 }
 
-AddTask.defaultProps = {
+AddOrder.defaultProps = {
         coords: []
 }
-AddTask.propTypes = {
-        coords: PropTypes.array,
+AddOrder.propTypes = {
+        coords: PropTypes.object,
         onAdd: PropTypes.func
 }
-export default AddTask
+export default AddOrder
 

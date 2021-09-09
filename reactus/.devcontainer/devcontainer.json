@@ -3,18 +3,17 @@
 	"dockerFile": "Dockerfile",
 	"build": {
 		"args": {
-			"WORKSPACE": "${containerWorkspaceFolder}"
+			"WORKSPACE": "${containerWorkspaceFolder}",
 		}
 	},
 	"remoteUser": "ubuntu",
-	"runArgs": [		
-		"--network=host",
+	"runArgs": [
+		"--name=frontend",
+		"--network=frontend-backend",		
 		"--cap-add=SYS_PTRACE",
 		"--security-opt=seccomp:unconfined",
 		"--security-opt=apparmor:unconfined",
-		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
 	],
-	"containerEnv": { "DISPLAY": "${localEnv:DISPLAY}" },
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
@@ -23,10 +22,7 @@
 		"dotjoshjohnson.xml",
 		"laurenttreguier.uncrustify",
 		"ms-azuretools.vscode-docker",
-		"ms-iot.vscode-ros",
-		"ms-python.python",
 		"streetsidesoftware.code-spell-checker",
-		"twxs.cmake",
 		"yzhang.markdown-all-in-one"
 	]
 }
