@@ -45,7 +45,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://robotnik_sensors/meshes/sick_nanoscan3.stl</uri>
+            <uri>model://rb_theron/meshes/sensors/sick_nanoscan3.dae</uri>
           </mesh>
         </geometry>
       </collision>
@@ -70,7 +70,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://robotnik_sensors/meshes/orbbec_astra.dae</uri>
+            <uri>model://rb_theron/meshes/sensors/orbbec_astra.dae</uri>
           </mesh>
         </geometry>
         <surface>
@@ -82,7 +82,16 @@
           </friction>
         </surface>
       </collision>
-      <!--<collision name='base_footprint_fixed_joint_lump__imu_link_collision_5'>
+      <collision name='base_footprint_fixed_joint_lump__top_laser_base_link_collision_5'>
+        <pose>0.25 0 0.2896 4.71238898038 0 0</pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://rb_theron/meshes/sensors/robosense_16.dae</uri>
+          </mesh>
+        </geometry>
+      </collision>
+      <!--<collision name='base_footprint_fixed_joint_lump__imu_link_collision_6'>
         <pose>-0.1975 0 0.2204 0 -0 0</pose>
         <geometry>
           <box>
@@ -139,7 +148,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://robotnik_sensors/meshes/sick_nanoscan3.stl</uri>
+            <uri>model://rb_theron/meshes/sensors/sick_nanoscan3.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -148,7 +157,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://robotnik_sensors/meshes/intel_r430.dae</uri>
+            <uri>model://rb_theron/meshes/sensors/intel_r430.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -157,11 +166,20 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://robotnik_sensors/meshes/orbbec_astra.dae</uri>
+            <uri>model://rb_theron/meshes/sensors/orbbec_astra.dae</uri>
           </mesh>
         </geometry>
       </visual>
-      <visual name='base_footprint_fixed_joint_lump__imu_link_visual_6'>
+      <visual name='base_footprint_fixed_joint_lump__front_top_laser_base_link_visual_6'>
+        <pose>0.25 0 0.2896 4.71238898038 0 0 </pose>
+        <geometry>
+          <mesh>
+            <scale>1 1 1</scale>
+            <uri>model://rb_theron/meshes/sensors/robosense_16.dae</uri>
+          </mesh>
+        </geometry>
+      </visual>
+      <visual name='base_footprint_fixed_joint_lump__imu_link_visual_7'>
         <pose>-0.1975 0 0.2204 0 -0 0</pose>
         <geometry>
           <box>
@@ -204,6 +222,47 @@
 		      <output_type>sensor_msgs/LaserScan</output_type>
         </plugin>
         <pose>0.25 0 0.1744 0 -7e-06 7e-06</pose>
+      </sensor>
+      <sensor name='robosense-RS16' type='gpu_ray'>
+        <visualize>0</visualize>
+        <update_rate>20</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>900</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14159</min_angle>
+              <max_angle>3.14159</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>16</samples>
+              <resolution>1</resolution>
+              <min_angle>-0.261799</min_angle>
+              <max_angle>0.261799</max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min>0.4</min>
+            <max>151</max>
+            <resolution>0.001</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0</mean>
+            <stddev>0.008</stddev>
+          </noise>
+        </ray>
+        <plugin name='gazebo_ros_laser_controller' filename='libgazebo_ros_robosense_gpu_laser.so'>
+          <ros>
+            <namespace>/top_laser</namespace>
+            <argument>~/out:=scan</argument>
+          </ros>
+          <frameName>top_laser_link</frameName>
+          <output_type>sensor_msgs/PointCloud2</output_type>
+          <min_range>0.4</min_range>
+          <max_range>150.0</max_range>
+        </plugin>
+        <pose>0 0 0.489 0 -0 0</pose>
       </sensor>
       <velocity_decay/>
       <sensor name='front_realsense_camera_depth_sensor' type='depth'>
@@ -1039,11 +1098,11 @@
       <joint_name>leftjoint_rsupport</joint_name>
       <joint_name>rightjoint_rsupport</joint_name>
 
-      <joint_name>left_wheel_joint</joint_name>
-      <joint_name>right_wheel_joint</joint_name>
+      <!-- <joint_name>left_wheel_joint</joint_name>
+      <joint_name>right_wheel_joint</joint_name> -->
 
-      <joint_name>leftcastorjoint_support</joint_name>
-      <joint_name>rightcastorjoint_support</joint_name>
+      <!-- <joint_name>leftcastorjoint_support</joint_name>
+      <joint_name>rightcastorjoint_support</joint_name> -->
 
       <joint_name>leftcastorjoint_wheel</joint_name>
       <joint_name>rightcastorjoint_wheel</joint_name>
