@@ -105,4 +105,6 @@ RUN sudo apt install python3-vcstool \
   && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
 ENV DEBIAN_FRONTEND=
 
+COPY . .
+
 ENTRYPOINT ["/entrypoint.sh"]
