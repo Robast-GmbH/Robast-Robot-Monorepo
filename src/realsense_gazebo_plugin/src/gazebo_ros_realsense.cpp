@@ -46,11 +46,9 @@ void GazeboRosRealsense::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   RCLCPP_ERROR(node_->get_logger(), "Realsense Gazebo ROS plugin loading.");
   std::cout << "ROS IS OK LOADING REALSENSE PLUGIN" << std::endl;
 
-
   RealSensePlugin::Load(_model, _sdf);
 
   std::cout << "LOADED REALSENSE PLUGIN" << std::endl;
-
 
   // initialize camera_info_manager
   this->camera_info_manager_.reset(
@@ -58,20 +56,9 @@ void GazeboRosRealsense::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   this->itnode_ = new image_transport::ImageTransport(this->node_);
 
-  // set 'png' compression format for depth images
-  // default functional parameters for compressed_image_transport to have lossless png compression
-
-  // ROBAST FIX
-  std::string fully_qualified_name;
-  auto node_names = node_->get_node_names();
-  for (long unsigned int i = 0; i < node_names.size(); i++) {
-    if (node_names[i].find(cameraParamsMap_[DEPTH_CAMERA_NAME].topic_name)) {
-      fully_qualified_name = node_names[i];
-    }
-  }
-
-  node_->set_parameter(rclcpp::Parameter(fully_qualified_name + "/compressed/format", "png"));
-  node_->set_parameter(rclcpp::Parameter(fully_qualified_name + "/compressed/png_level", 1));
+  std::string fully_qualified_name = "/camera/" + cameraParamsMap_[DEPTH_CAMERA_NAME].topic_name;  
+  node_->declare_parameter(fully_qualified_name + "/compressed/format", "png");
+  node_->declare_parameter(fully_qualified_name + "/compressed/png_level", 1);
 
   this->color_pub_ = this->itnode_->advertiseCamera(
     cameraParamsMap_[COLOR_CAMERA_NAME].topic_name, 2);
