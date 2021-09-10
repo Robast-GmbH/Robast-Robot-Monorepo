@@ -1174,13 +1174,13 @@
       <geometry>
         <!--<box size="0.106 0.094 0.152"/>-->
         <!--<cylinder radius="0.058" length="0.152"/>-->
-        <mesh filename="package://robotnik_sensors/meshes/sick_nanoscan3.stl"/>
+        <mesh filename="package://robotnik_sensors/meshes/sick_nanoscan3.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotnik_sensors/meshes/sick_nanoscan3.stl"/>
+        <mesh filename="package://robotnik_sensors/meshes/sick_nanoscan3.dae"/>
       </geometry>
     </visual>
     <inertial>
@@ -1232,6 +1232,84 @@
 		      <output_type>sensor_msgs/LaserScan</output_type>
         </plugin>
     </sensor>
-  </gazebo> 
-  
+  </gazebo>
+
+  <joint name="top_laser_base_joint" type="fixed">
+    <origin rpy="0 0 0" xyz="0.250 0.0 0.2896"/>
+    <parent link="base_link"/>
+    <child link="top_laser_base_link"/>
+  </joint>
+  <link name="top_laser_base_link">
+    <collision>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <!--<box size="0.106 0.094 0.152"/>-->
+        <!--<cylinder radius="0.058" length="0.152"/>-->
+        <mesh filename="package://robotnik_sensors/meshes/sensors/sick_nanoscan3.dae"/>
+      </geometry>
+    </collision>
+    <visual>
+      <origin rpy="0 0 0" xyz="0 0 0"/>
+      <geometry>
+        <mesh filename="package://robotnik_sensors/meshes/sensors/sick_nanoscan3.dae"/>
+      </geometry>
+    </visual>
+    <inertial>
+      <mass value="0.67"/>
+      <origin rpy="0 0 0" xyz="0 0 0.04"/>
+      <inertia ixx="0.000922386766667" ixy="0" ixz="0" iyy="0.000922386766667" iyz="0" izz="0.00113010686667"/>
+      <!-- Datasheet dimensional drawing: 100.6 mm x 100.6 mm x 80 mm without connectors -->
+    </inertial>
+  </link>
+  <joint name="top_laser_joint" type="fixed">
+    <parent link="top_laser_base_link"/>
+    <child link="top_laser_link"/>
+    <origin rpy="0 0 0" xyz="0.0 0 0.0505"/>
+  </joint>
+  <link name="top_laser_link"/>
+  <!-- Gazebo requires the robosense_gazebo_plugins package -->
+  <gazebo reference="robosense">
+    <sensor name="robosense-RS16" type="gpu_ray">
+      <pose>0 0 0 0 0 0</pose>
+      <visualize>false</visualize>
+      <update_rate>20</update_rate>
+      <ray>
+        <scan>
+          <horizontal>
+            <samples>900</samples>
+            <resolution>1</resolution>
+            <min_angle>-3.14159265359</min_angle>
+            <max_angle>3.14159265359</max_angle>
+          </horizontal>
+          <vertical>
+            <samples>16</samples>
+            <resolution>1</resolution>
+            <min_angle>-0.261799387799</min_angle>
+            <max_angle> 0.261799387799</max_angle>
+          </vertical>
+        </scan>
+        <range>
+          <min>0.4</min>
+          <max>151.0</max>
+          <resolution>0.001</resolution>
+        </range>
+        <noise>
+          <type>gaussian</type>
+          <mean>0.0</mean>
+          <stddev>0.0</stddev>
+        </noise>
+      </ray>
+      <plugin filename="libgazebo_ros_robosense_gpu_laser.so" name="gazebo_ros_laser_controller">
+        <ros>
+            <remapping>~/out:=scan2</remapping>
+          </ros>
+          <topicName>/top_laser/scan</topicName>
+          <frameName>top_laser_link</frameName>
+          <output_type>sensor_msgs/PointCloud2</output_type>
+          <min_range>0.4</min_range>
+          <max_range>150.0</max_range>
+          <gaussianNoise>0.008</gaussianNoise>
+      </plugin>
+    </sensor>
+  </gazebo>
 </robot>
