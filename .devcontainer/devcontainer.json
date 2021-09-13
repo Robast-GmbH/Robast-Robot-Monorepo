@@ -8,7 +8,8 @@
 	},
 	"remoteUser": "ubuntu",
 	"runArgs": [		
-		"--network=host",
+		"--network=heiligenhafen",
+		"--name=ros_server",
 		"--cap-add=SYS_PTRACE",
 		"--security-opt=seccomp:unconfined",
 		"--security-opt=apparmor:unconfined",
