@@ -50,13 +50,19 @@ class TaskConnectorPublisher(Node):
         result = future.result().result
         self.get_logger().info('Result: {0}'.format(result))
 
-        # Remove finished task from queue
-        finished_order = self.order_queue.pop(0)
-        self.get_logger().info('Order with order_id {0} is finished!'.format(finished_order[0]))
+        # Send update request with finished=true
+        order_id = order_queue[0][0]
+        url = "http://backend:8000/orders/" + str(order_id)
+        response =requests.post(url, data={"finished": True})
+        if response.status_code == 200:
+            # Remove finished task from queue
+            finished_order = self.order_queue.pop(0)
+            self.get_logger().info('Order with order_id {0} is finished!'.format(finished_order[0]))
 
-        # Send next nav_goal to robot
-        self.send_nav_goal()
-
+            # Send next nav_goal to robot
+            self.send_nav_goal()
+        else:
+            self.get_logger().info('Server does not respond. Order ' + str(order_id) +' could not be finished.')             
 
     def does_queue_contains_order(self, order_id):
         for nav_goal_by_order_id in self.order_queue:
