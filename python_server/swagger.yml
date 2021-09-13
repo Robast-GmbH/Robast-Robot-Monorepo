@@ -1,0 +1,249 @@
+swagger: "2.0"
+info:
+  description: This is the swagger UI for the Robast API
+  version: "1.0.0"
+  title: Swagger Robast
+consumes:
+  - application/json
+produces:
+  - application/json
+
+basePath: /api
+
+# Paths supported by the server application
+paths:
+
+  /robots:
+    get:
+      operationId: robot.robots
+      tags:
+        - Status
+      summary: Lists all Active Robots
+      description: This Request returns a list of all ROBAST Robots which are currently active  in the Network. 
+      responses:
+        200:
+          description: Successfully read robot list operation
+          schema:
+            type: array
+            items:
+              properties:
+                name:
+                  type: string
+                task:
+                  type: string
+                 
+                timestamp:
+                  type: string
+  
+  /robots/navToRoom:
+    post:
+      operationId: robot.randomNavToRoom
+      tags:
+          - Task
+      summary: Moves a robot to the room
+      description: The next Robot which gets idle to move the the specific Waypoints/ rooms
+      parameters:
+      - name: "waypoints"
+        in: "query"
+        description: "Points of the Route"
+        required: true
+        type: "array"
+        items:
+          type: "string"
+        collectionFormat: "multi"
+      responses: 
+         200:
+          description: Task successfully added 
+
+  /robots/{lrobot}/navToRoom:
+    post:
+      operationId: robot.navToRoom
+      tags:
+        - Task
+      summary: Moves the robot to the room
+      description: Moves the Robot to the defined Waypoints/Rooms
+      parameters:
+        - name: lrobot
+          in: path
+          description: The name of the Robot which should perform the task 
+          type: string
+          required: True
+
+        - name: "waypoints"
+          in: "query"
+          description: "Points of the Route"
+          required: true
+          type: "array"
+          items:
+            type: "string"
+          collectionFormat: "multi"
+      responses: 
+         200:
+          description: Task successfully added 
+
+  /robots/task:
+    post:
+      operationId: robot.randomAddTask  
+      tags:
+        - Task
+      summary: Assigns a Task to a Robot
+      description: The next idle Robot will perform the specified Task after completing the current one
+      parameters:
+       
+        - name: "task"
+          in: "query"
+          description: "name of Task"
+          required: true
+          type: "string"    
+
+        - name: "Waypoints"
+          in: "query"
+          description: "Points of the Route"
+          required: true
+          type: "array"
+          items:
+            type: "string"
+          collectionFormat: "multi"
+      responses: 
+         200:
+          description: Task successfully added 
+
+  /robots/{lrobot}/task:
+    post:
+      operationId: robot.addTask  
+      tags:
+        - Task
+      summary: Assigns a Task to a Robot
+      description: The next idle Robot will perform the specified Task after completing the current one
+      parameters:
+       
+        - name: lrobot
+          in: path
+          description: The name of the Robot which should perform the task 
+          type: string
+          required: True
+
+        - name: "task"
+          in: "query"
+          description: "name of Task"
+          required: true
+          type: "string"    
+
+        - name: "waypoints"
+          in: "query"
+          description: "Points of the Route"
+          required: false
+          type: "array"
+          items:
+            type: "string"
+          collectionFormat: "multi"
+      responses: 
+         200:
+          description: Task successfully added 
+
+    get:
+      operationId: robot.getTask
+      tags:
+        - Status
+      summary:  Robots Task
+      description: shows the Tasks which is currently performed by the Robot.
+      parameters:
+        - name: lrobot
+          in: path
+          description: The name of the Robot of which you should get the Task from 
+          type: string
+          required: True
+
+      responses: 
+        200:
+          description: Gets the current Task of the Robot 
+          schema:
+            type: string
+
+  /robots/{lrobot}/Waypoints:
+    put:
+      operationId: robot.addWaypoint
+      tags:
+        - Task
+      summary: Add Waypoint to the task of the Robot
+      description: Extents the list of Waypoints of the current Task of the Defined Robot.  
+      parameters: 
+        - name: lrobot
+          in: path
+          description: The name of the Robot of which you should get the Task from 
+          type: string
+          required: True
+
+        - name: "waypoints"
+          in: "query"
+          description: "Points of the Route"
+          required: false
+          type: "array"
+          items:
+            type: "string"
+          collectionFormat: "multi"
+      responses: 
+        200:
+          description: waypoints successfully added      
+
+  /robots/idle:
+    get:
+      operationId: robot.getIdleBots
+      tags:
+        - Status
+      summary: Lists all idle Robots 
+      description: The request returns all Robot how are waiting for Tasks to be assinged to them
+      responses: 
+        200:
+          description: Successfully read robot list operation
+          schema:
+            type: array
+            items:
+              properties:
+                name:
+                  type: string
+                timestamp:
+                  type: string
+               
+    
+  /robots/{lrobot}/TimeToIdle:
+    get:
+      operationId: robot.getTimeToIdle
+      tags:
+        - Status
+      summary: The time until Robot is Idle
+      description: gets the Time the robot requires to finish the currently assigned Task
+
+      parameters: 
+        - name: lrobot
+          in: path
+          description: The name of the Robot of which you should get the Task from 
+          type: string
+          required: True
+
+      responses: 
+        200:
+          description: Successfully calculated the time to idle in seconds.
+          schema: 
+            type: string
+  
+  /robots/{lrobot}/prio:
+    get:
+      operationId: robot.getPrio
+      tags:
+        - Status
+      summary:  Robots task priority 
+      description: Gets the Priority of the Task currently performed by the Robot.    
+      
+      parameters:
+        - name: lrobot
+          in: path
+          description: The name of the Robot of which you should get the Task from 
+          type: string
+          required: True
+
+      responses: 
+        200:
+          description: request successful.
+          schema: 
+            type: string
