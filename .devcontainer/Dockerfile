@@ -102,7 +102,7 @@ RUN sudo apt install python3-vcstool \
   && wget https://raw.githubusercontent.com/ROBOTIS-GIT/turtlebot3/foxy-devel/turtlebot3.repos \
   && vcs import src < turtlebot3.repos \
   && colcon build --symlink-install \
-  && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
+#  && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
 ENV DEBIAN_FRONTEND=
 
 ENTRYPOINT ["/entrypoint.sh"]
