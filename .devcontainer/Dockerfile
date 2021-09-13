@@ -92,5 +92,7 @@ RUN apt-get update && apt-get install -y ros-foxy-cartographer ros-foxy-cartogra
 #Turtlebot spezifisch
 RUN apt-get install -y ros-foxy-turtlebot3
 
+#restapi
+RUN pip3 install connexion[swagger-ui]
 
 ENTRYPOINT ["/entrypoint.sh"]
