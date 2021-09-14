@@ -47,7 +47,7 @@
             "label": "build-ros-simple-fleetmanagement",
             "detail": "Symlink Build for fleetmanagement.",
             "type": "shell",
-            "command": "colcon build --packages-select simple_fleetmanagement --symlink-install; source install/setup.bash; colcon build --symlink-install",
+            "command": "colcon build --packages-select simple_fleetmanagement --symlink-install;",
             "problemMatcher": [],
         },
 
@@ -56,7 +56,7 @@
             "label": "build-fleetmanagement",
             "detail": "Symlink Build for fleetmanagement.",
             "type": "shell",
-            "command": "colcon build --packages-skip simple_fleetmanagement --symlink-install; source install/setup.bash; colcon build --symlink-install",
+            "command": "colcon build --packages-skip simple_fleetmanagement --symlink-install;",
             "problemMatcher": [],
         },
         // run simple FleetManagement
@@ -64,7 +64,8 @@
             "label": "run-simple-fleetmanagement",
             "detail": "Run the fleetmanagement for one robot.",
             "type": "shell",
-            "command": "colcon build --packages-select simple_fleetmanagement --symlink-install; source install/setup.bash;ros2 run simple_fleetmanagement fleetmanagement",
+            "dependsOn": ["build-ros-simple-fleetmanagement"],
+            "command": "source install/setup.bash; ros2 run simple_fleetmanagement fleetmanagement",
             "problemMatcher": [],
             },
 
