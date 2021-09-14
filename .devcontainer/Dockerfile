@@ -47,6 +47,7 @@ RUN apt-get update && apt-get install -y \
   python3-rosdep \
   python3-vcstool \
   vim \
+  dos2unix \
   wget \
   # Install ros distro testing packages
   ros-foxy-ament-lint \
@@ -104,5 +105,6 @@ RUN sudo apt install python3-vcstool \
   && colcon build --symlink-install
 #  && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
 ENV DEBIAN_FRONTEND=
+CMD ["dos2unix /entrypoint.sh"]
+ENTRYPOINT [ "/entrypoint.sh" ]
 
-ENTRYPOINT ["/entrypoint.sh"]
