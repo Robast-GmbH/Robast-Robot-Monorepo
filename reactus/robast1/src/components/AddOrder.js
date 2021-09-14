@@ -5,17 +5,17 @@ import PropTypes from 'prop-types'
 
 
 const AddOrder = ({ onAdd, coords }) => {
-        const [orderItem, setOrderItem] = useState('')
+        const [order_item, setOrderItem] = useState('')
         const [recurring_order, setRecurringOrder] = useState(false)
 
         const onSubmit = (e) => {
                 e.preventDefault()
-                if (!orderItem) {
+                if (!order_item) {
                         alert('Add stupid orderItem')
                         return
                 }
-
-                onAdd({ orderItem, recurring_order, coords: {} })
+                //console.log({ orderItem, recurring_order, coords })
+                onAdd({ order_item, goal: coords, recurring_order})
                 setOrderItem('')
                 setRecurringOrder(false)
         }
@@ -25,7 +25,7 @@ const AddOrder = ({ onAdd, coords }) => {
                         <div className='form-control'>
                                 <label>Order</label>
                                 <input type='orderItem' placeholder='What do you want?'
-                                        value={orderItem} onChange={(e) => setOrderItem(e.target.value)} />
+                                        value={order_item} onChange={(e) => setOrderItem(e.target.value)} />
                         </div>
 
                         <div className='form-control form-control-checkbox'>

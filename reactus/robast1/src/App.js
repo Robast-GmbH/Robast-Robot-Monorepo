@@ -7,6 +7,7 @@ import About from './components/About.js'
 import Popup from 'reactjs-popup';
 import RosMap from './components/RosMap.js'
 import ShowOrders from './components/ShowOrders.js'
+import React from 'react'
 
 const user_id = 1;
 function App() {
@@ -17,7 +18,7 @@ function App() {
 
   ])
   const [OrderCoords, setOrderCoords] = useState({
-    Metadata:{x:0, y:0, scale_x:0, scale_y:0}})
+    Coords:{x:0, y:0, scale_x:0, scale_y:0}})
 
   const [User, setUser] = useState({
       Metadata:{id:0, email: "", name:""}})
@@ -28,6 +29,7 @@ function App() {
   useEffect(() => {
     const getOrders = async () => {
       const ordersFromServer = await fetchOrders()
+      console.log(ordersFromServer)
       setOrders(ordersFromServer)
     }
 
@@ -35,21 +37,21 @@ function App() {
   }, [])
 
   const fetchUser = async () => {
-    const res = await fetch(`http://172.18.0.3:8000/users`)
+    const res = await fetch(`http://localhost:8000/users/${user_id}`)
     const data = await res.json()
 
     return data;
   }
 
   const fetchOrders = async () => {
-    const res = await fetch(`http://172.18.0.3:8000/orders`)
+    const res = await fetch(`http://localhost:8000/orders`)
     const data = await res.json()
 
     return data;
   }
 
   const fetchOrder = async (id) => {
-    const res = await fetch(`http://172.18.0.3:8000/${user_id}/orders/${id}`)
+    const res = await fetch(`http://localhost:8000/orders/${id}`)
     const data = await res.json()
 
     return data;
@@ -57,17 +59,17 @@ function App() {
 
   //DELETE
   const deleteOrder = async (id) => {
-    await fetch(`http://172.18.0.3:8000/${user_id}/orders/${id}`, { method: 'DELETE' })
+    await fetch(`http://localhost:8000/orders/${id}`, { method: 'DELETE' })
 
     setOrders(orders.filter((order) => order.id !== id));
   }
 
-  const toggleReminder = async (order_id) => {
+  const toggleRecurringOrder = async (order_id) => {
     const orderToToggle = await fetchOrder(order_id)
-    const updatedOrder = { ...orderToToggle, reminder: !orderToToggle.reminder }
+    const updatedOrder = { ...orderToToggle, recurring_order: !orderToToggle.recurring_order }
     
 
-    const res = await fetch(`http://172.18.0.3:8000/${user_id}/orders/${order_id}`, {
+    const res = await fetch(`http://localhost:8000/orders/${order_id}`, {
       method: 'PUT',
       headers: {
         'Content-type': 'application/json'
@@ -75,14 +77,17 @@ function App() {
       body: JSON.stringify(updatedOrder)
     })
 
-    const data = await res.json()
+    const data = await res.json() 
+    console.log("log")   
+    console.log(res)   
     setOrders(
-      orders.map((order) =>
-        order.id === order_id ? { ...order, reminder: data.reminder } : order))
+      orders.map((order) =>        
+        order.id === order_id ? { ...order, recurring_order: data.recurring_order } : order))
   }
 
   const addOrder = async (order) => {
-    const res = await fetch(`http://172.18.0.3:8000/users/${user_id}/Order`, {
+    console.log(order)
+    const res = await fetch(`http://localhost:8000/users/${user_id}/order`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
@@ -100,8 +105,9 @@ function App() {
     openModal();
     const rect = document.getElementById('RosMap').getBoundingClientRect();
     const map_x = event.clientX - rect.left;
-    const map_y = event.clientY - rect.top;
-    setOrderCoords({x:map_x, y:map_y, scale_x:0, scale_y:0});
+    const map_y = event.clientY - rect.top;   
+    
+    setOrderCoords({x:map_x, y:map_y, clientX:1500, clientY:500});
     console.log(rect);
     console.log(OrderCoords);
     console.log("map_x: " + map_x + ", map_y:" + map_y);
@@ -119,7 +125,7 @@ function App() {
 
         <Route path='/' exact render={(props) => (
           <>
-            {showOrder  && <ShowOrders orders={orders} onDelete={deleteOrder} onToggle={toggleReminder}></ShowOrders>}
+            {showOrder  && <ShowOrders orders={orders} onDelete={deleteOrder} onToggle={toggleRecurringOrder}></ShowOrders>}
             {<h1>click on the location to order too</h1>}
 
             <RosMap onClick={showCoords} />

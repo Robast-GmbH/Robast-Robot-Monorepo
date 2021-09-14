@@ -20,7 +20,7 @@ const styles = StyleSheet.create({
 const DisplayAnImage = ({ onClick, logo, styleIn }) => {
 
   return (
-    <View style={styleIn ? styleIn : styles.container}>
+    <View id="ist" style={styleIn ? styleIn : styles.container}>
 
       
       <ImageBackground

@@ -60,7 +60,7 @@ body {
   cursor: pointer;
 }
 
-.task.reminder {
+.task.recurring_order {
   border-left: 5px solid green;
 }
 

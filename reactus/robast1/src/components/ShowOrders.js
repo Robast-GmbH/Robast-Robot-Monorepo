@@ -2,10 +2,10 @@ import PropTypes from 'prop-types'
 import Orders from "./Orders"
 
 
-const ShowOrders = ({ tasks: orders, onDelete, onToggle }) => {
+const ShowOrders = ({ orders: orders, onDelete, onToggle }) => {
         return (
                 <div>
-                        {orders > 0 ? (
+                        {orders ? (
                                 <Orders
                                         orders={orders}
                                         onDelete={onDelete}

@@ -8,7 +8,7 @@ const Orders = ({orders, onDelete, onToggle}) => {
                   {
                           orders.map((order) => (<Order 
                                 key={order.id} 
-                                task={order} 
+                                order={order} 
                                 onDelete = {onDelete} 
                                 onToggle = {onToggle}/>))
                   }      
