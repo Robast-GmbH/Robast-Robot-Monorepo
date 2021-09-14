@@ -5,7 +5,7 @@ from rclpy.action import ActionClient
 from nav2_msgs.action import NavigateToPose
 
 
-class TaskConnectorPublisher(Node):
+class SimpleFleetmanagement(Node):
 
     order_queue = []
 
@@ -15,6 +15,7 @@ class TaskConnectorPublisher(Node):
 
         #Repeted call for new tasks 
         Task_pull_intervall = 5  # seconds
+        self.get_logger().info("The simple fleetmanagement is running")
         self.timer = self.create_timer(Task_pull_intervall, self.handle_tasks_callback)
 
     def handle_tasks_callback(self):
@@ -87,7 +88,7 @@ class TaskConnectorPublisher(Node):
                 
 def main(args=None):
     rclpy.init(args=args)
-    fleetmanagement = TaskConnectorPublisher()
+    fleetmanagement = SimpleFleetmanagement()
     rclpy.spin(fleetmanagement)
     fleetmanagement.destroy_node()
     rclpy.shutdown()
