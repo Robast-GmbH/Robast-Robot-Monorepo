@@ -5,5 +5,7 @@ git clone https://github.com/ros2/rviz.git
 cp -r ./resource_retriever ~/rviz2_ws/src/rviz/rviz_rendering/include/
 colcon build --merge-install
 cd /workspaces/Robast_RosTheron
+sudo apt-get install dos2unix
+dos2unix shell_setup.sh
 
 #sudo /startup.sh
