@@ -6,6 +6,7 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 from nav2_msgs.action import NavigateToPose
 
+goal_reach_epsilon = 0.2 # meter
 
 class SimpleFleetmanagement(Node):
 
@@ -36,12 +37,17 @@ class SimpleFleetmanagement(Node):
             goal_msg.pose.pose.position.y = float(nav_goal["y"]) / -100
             self.get_logger().info('Navigating to goal: ' + str(goal_msg.pose.pose.position.x) + ' ' +
                         str(goal_msg.pose.pose.position.y) + ' for order ' + str(order_id))
-            self.send_goal_future = self.nav_to_pose_client.send_goal_async(goal_msg)
-            self.send_goal_future.add_done_callback(self.goal_response_callback)
+            self.send_goal_future = self.nav_to_pose_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
+            
+            # goal_response_callback is called before the task is finished (dont know why).
+            # So better use the feedback topic abd check distance_remaining
+            # self.send_goal_future.add_done_callback(self.goal_response_callback)
 
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
-        self.get_logger().info('Received feedback: {0}'.format(feedback))
+        self.get_logger().info('Received feedback: {0}'.format(feedback.distance_remaining))
+        if (feedback.distance_remaining < goal_reach_epsilon):
+            self.set_order_to_finished()
 
     def goal_response_callback(self, future):
         goal_handle = future.result()
@@ -57,6 +63,9 @@ class SimpleFleetmanagement(Node):
         result = future.result().result
         self.get_logger().info('Result: {0}'.format(result))
 
+        self.set_order_to_finished() 
+
+    def set_order_to_finished(self):
         # Send update request with finished=true
         order_id = self.order_queue[0][0]
         response = self.update_order(order_id, "finished", True)
@@ -69,7 +78,7 @@ class SimpleFleetmanagement(Node):
             # Send next nav_goal to robot
             self.send_nav_goal()
         else:
-            self.get_logger().info('Server does not respond. Order ' + str(order_id) +' could not be finished.') 
+            self.get_logger().info('Server does not respond. Order ' + str(order_id) +' could not be finished.')
 
     def update_order(self, order_id, property, value):
         url = "http://backend:8000/orders/" + str(order_id)
