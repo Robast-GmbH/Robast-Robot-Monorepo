@@ -1,7 +1,7 @@
 #FROM dorowu/ubuntu-desktop-lxde-vnc:focal
 FROM ubuntu:focal
  
-ARG DEBIAN_FRONTEND noninteractive
+ARG DEBIAN_FRONTEND=noninteractive
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
