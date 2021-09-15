@@ -1,5 +1,4 @@
-#FROM dorowu/ubuntu-desktop-lxde-vnc:focal
-FROM ubuntu:focal
+FROM dorowu/ubuntu-desktop-lxde-vnc:focal
  
 ARG DEBIAN_FRONTEND=noninteractive
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
