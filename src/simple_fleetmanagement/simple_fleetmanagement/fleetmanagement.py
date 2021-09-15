@@ -1,6 +1,7 @@
 import rclpy
 import requests
 import time
+import json
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from nav2_msgs.action import NavigateToPose
@@ -38,6 +39,10 @@ class SimpleFleetmanagement(Node):
             self.send_goal_future = self.nav_to_pose_client.send_goal_async(goal_msg)
             self.send_goal_future.add_done_callback(self.goal_response_callback)
 
+    def feedback_callback(self, feedback_msg):
+        feedback = feedback_msg.feedback
+        self.get_logger().info('Received feedback: {0}'.format(feedback))
+
     def goal_response_callback(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
@@ -54,11 +59,7 @@ class SimpleFleetmanagement(Node):
 
         # Send update request with finished=true
         order_id = self.order_queue[0][0]
-        url = "http://backend:8000/orders/" + str(order_id)
-        checkConnection(url,self)
-        order = self.get_order(url)
-        order["finished"] = True
-        response = requests.put(url, data=order)
+        response = self.update_order(order_id, "finished", True)
 
         if response.status_code == 200:
             # Remove finished task from queue
@@ -68,12 +69,23 @@ class SimpleFleetmanagement(Node):
             # Send next nav_goal to robot
             self.send_nav_goal()
         else:
-            self.get_logger().info('Server does not respond. Order ' + str(order_id) +' could not be finished.')     
+            self.get_logger().info('Server does not respond. Order ' + str(order_id) +' could not be finished.') 
+
+    def update_order(self, order_id, property, value):
+        url = "http://backend:8000/orders/" + str(order_id)
+        checkConnection(url,self)
+        
+        order_json = self.get_order(url)
+        order_json[property] = value
+
+        response = requests.put(url, data=json.dumps(order_json))
+        return response    
 
     def get_order(self, url):
+        checkConnection(url,self)
         response_get_order = requests.get(url)
-        response_text= response_get_order.json()
-        return response_text      
+        response_json= json.loads(response_get_order.text)
+        return response_json      
 
     def does_queue_contains_order(self, order_id):
         for nav_goal_by_order_id in self.order_queue:
@@ -83,7 +95,7 @@ class SimpleFleetmanagement(Node):
                 
     
     def get_tasks(self):
-        api_url = "http://backend:8000/orders"
+        api_url = "http://backend:8000/orders/"
         checkConnection(api_url,self)
         response = requests.get(api_url)
         if(response.status_code == 200):
@@ -104,7 +116,7 @@ def checkConnection(url,self):
     while noConnection:
         try:
             #self.get_logger().info("test") 
-            response = requests.head(url)
+            response = requests.get(url)
             noConnection=False
         except requests.exceptions.RequestException:
             if not errorSent:
@@ -113,7 +125,7 @@ def checkConnection(url,self):
             time.sleep(1)# if fixed in use wait until
 
     if errorSent:
-        self.get_logger().info("connection estabished.")        
+        self.get_logger().info("connection established.")        
     return url
 
                 
