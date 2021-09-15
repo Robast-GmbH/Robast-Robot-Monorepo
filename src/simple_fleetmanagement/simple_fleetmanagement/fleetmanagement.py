@@ -1,5 +1,6 @@
 import rclpy
 import requests
+import time
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from nav2_msgs.action import NavigateToPose
@@ -54,6 +55,7 @@ class SimpleFleetmanagement(Node):
         # Send update request with finished=true
         order_id = self.order_queue[0][0]
         url = "http://backend:8000/orders/" + str(order_id)
+        checkConnection(url,self)
         order = self.get_order(url)
         order["finished"] = True
         response = requests.put(url, data=order)
@@ -82,6 +84,7 @@ class SimpleFleetmanagement(Node):
     
     def get_tasks(self):
         api_url = "http://backend:8000/orders"
+        checkConnection(api_url,self)
         response = requests.get(api_url)
         if(response.status_code == 200):
             response_text= response.json()
@@ -92,6 +95,26 @@ class SimpleFleetmanagement(Node):
                     if not self.does_queue_contains_order(order_id):
                         self.order_queue.append((order_id, nav_goal))
                         self.get_logger().info('New Task with order_id {0} was appended to queue!'.format(order_id))
+
+
+def checkConnection(url,self):
+    noConnection=True
+    errorSent=False
+
+    while noConnection:
+        try:
+            #self.get_logger().info("test") 
+            response = requests.head(url)
+            noConnection=False
+        except requests.exceptions.RequestException:
+            if not errorSent:
+                self.get_logger().info("connection to "+url+" failed.") 
+                errorSent=True 
+            time.sleep(1)# if fixed in use wait until
+
+    if errorSent:
+        self.get_logger().info("connection estabished.")        
+    return url
 
                 
 def main(args=None):
