@@ -40,6 +40,7 @@ install(DIRECTORY
   launch
   config
   maps
+  behavior_trees
   DESTINATION share/${PROJECT_NAME}/
 )
 

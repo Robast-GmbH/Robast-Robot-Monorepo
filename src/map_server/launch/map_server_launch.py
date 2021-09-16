@@ -15,22 +15,22 @@ def generate_launch_description():
     return LaunchDescription([
         Node(
             package='nav2_map_server',
-            node_executable='map_server',
-            node_name='map_server',
+            executable='map_server',
+            name='map_server',
             output='screen',
             parameters=[nav2_yaml, {'yaml_filename':map_file} ]),
             
         Node(
             package='nav2_amcl',
-            node_executable='amcl',
-            node_name='amcl',
+            executable='amcl',
+            name='amcl',
             output='screen',
             parameters=[nav2_yaml]),
 
         Node(
             package='nav2_lifecycle_manager',
-            node_executable='lifecycle_manager',
-            node_name='lifecycle_manager_localization',
+            executable='lifecycle_manager',
+            name='lifecycle_manager_localization',
             output='screen',
             parameters=[{'use_sim_time': True},
                         {'autostart': True},
@@ -38,8 +38,8 @@ def generate_launch_description():
 
         Node(
             package='rviz2',
-            node_executable='rviz2',
-            node_name='rviz2',
+            executable='rviz2',
+            name='rviz2',
             arguments=['-d', rviz_config_dir],
             parameters=[{'use_sim_time': True}],
             output='screen')

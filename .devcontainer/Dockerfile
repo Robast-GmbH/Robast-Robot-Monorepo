@@ -12,12 +12,12 @@ RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group
 ENV USER ubuntu
 ARG DEBIAN_FRONTEND=
 
-ENV ROS_DISTRO=foxy
-ENV AMENT_PREFIX_PATH=/opt/ros/foxy
-ENV COLCON_PREFIX_PATH=/opt/ros/foxy
-ENV LD_LIBRARY_PATH=/opt/ros/foxy/lib
-ENV PATH=/opt/ros/foxy/bin:$PATH
-ENV PYTHONPATH=/opt/ros/foxy/lib/python3.8/site-packages
+ENV ROS_DISTRO=galactic
+ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
+ENV COLCON_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
+ENV LD_LIBRARY_PATH=/opt/ros/${ROS_DISTRO}/lib
+ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
+ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
 
@@ -86,6 +86,6 @@ RUN apt-get update \
 #  && vcs import src < turtlebot3.repos \
 #  && colcon build --symlink-install
 #  && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
-COPY "entrypoint.sh" "entrypoint.sh"
-ENTRYPOINT ["/entrypoint.sh"]
+COPY "/entrypoint.sh" "/entrypoint.sh"
+# ENTRYPOINT ["/entrypoint.sh"]
 

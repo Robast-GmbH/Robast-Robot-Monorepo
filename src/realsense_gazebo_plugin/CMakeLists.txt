@@ -11,8 +11,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wpedantic -Wno-inconsistent-missing-override")
 endif()
 
-set(FastRTPS_INCLUDE_DIR /opt/ros/foxy/include) 
-set(FastRTPS_LIBRARY_RELEASE /opt/ros/foxy/lib/libfastrtps.so)
+set(FastRTPS_INCLUDE_DIR /opt/ros/${ROS_DISTRO}/include) 
+set(FastRTPS_LIBRARY_RELEASE /opt/ros/${ROS_DISTRO}/lib/libfastrtps.so)
 # Load catkin and all dependencies required for this package
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
