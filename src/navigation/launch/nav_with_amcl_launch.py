@@ -12,21 +12,22 @@ def generate_launch_description():
 
     nav2_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_params.yaml')
     default_bt_xml_filename = os.path.join(get_package_share_directory('navigation'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
-    map_file = os.path.join(get_package_share_directory('map_server'), 'maps', '5OG.yaml')
+    map_file = os.path.join(get_package_share_directory('navigation'), 'maps', '5OG.yaml')
 
     print('map_file: {}'.format(map_file))
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
 
+    # Mind the order in which the nodes are started!!!
     lifecycle_nodes = [
-                       'controller_server',
-                       'planner_server',
-                       'recoveries_server',
-                       'bt_navigator',
-                       'waypoint_follower',
-                       'map_server',
-                       'amcl',
+                        'map_server',
+                        'amcl',
+                        'controller_server',
+                        'planner_server',
+                        'recoveries_server',
+                        'bt_navigator',
+                        'waypoint_follower',
                        ]
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
@@ -50,6 +51,24 @@ def generate_launch_description():
         DeclareLaunchArgument(
             'autostart', default_value='true',
             description='Automatically startup the nav2 stack'),
+
+        Node(
+            package='nav2_map_server',
+            executable='map_server',
+            name='map_server',
+            output='screen',
+            parameters=[nav2_params_yaml,
+                {'yaml_filename': map_file}
+            ],
+            remappings=remappings),
+
+         Node(
+            package='nav2_amcl',
+            executable='amcl',
+            name='amcl',
+            output='screen',
+            parameters=[nav2_params_yaml],
+            remappings=remappings),
 
         Node(
             package='nav2_controller',
@@ -93,24 +112,7 @@ def generate_launch_description():
             parameters=[nav2_params_yaml],
             remappings=remappings),
 
-        Node(
-            package='nav2_map_server',
-            executable='map_server',
-            name='map_server',
-            output='screen',
-            parameters=[nav2_params_yaml,
-                {'yaml_filename': map_file}
-            ],
-            remappings=remappings),
-
-        Node(
-            package='nav2_amcl',
-            executable='amcl',
-            name='amcl',
-            output='screen',
-            parameters=[nav2_params_yaml],
-            remappings=remappings),
-
+        
         Node(
             package='nav2_lifecycle_manager',
             executable='lifecycle_manager',
