@@ -46,7 +46,7 @@ RUN apt-get update && apt-get install -y \
   python3-pip \
   python3-rosdep \
   python3-vcstool \
-  dos2unix \
+  #dos2unix \
   wget \
   # Install ros distro testing packages
   ros-${ROS_DISTRO}-ament-lint \
