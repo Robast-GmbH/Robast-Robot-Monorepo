@@ -6,7 +6,7 @@ from rclpy.node import Node
 from rclpy.action import ActionClient
 from nav2_msgs.action import NavigateToPose
 
-goal_reach_epsilon = 0.2 # meter
+goal_reach_epsilon = 0.9 # meter
 
 class SimpleFleetmanagement(Node):
 
@@ -37,19 +37,22 @@ class SimpleFleetmanagement(Node):
             goal_msg.pose.pose.position.y = float(nav_goal["y"]) / -100
             self.get_logger().info('Navigating to goal: ' + str(goal_msg.pose.pose.position.x) + ' ' +
                         str(goal_msg.pose.pose.position.y) + ' for order ' + str(order_id))
-            self.send_goal_future = self.nav_to_pose_client.send_goal_async(goal_msg, feedback_callback=self.feedback_callback)
+            order_feedback_callback = lambda a: self.feedback_callback(order_id, a)
+            self.send_goal_future = self.nav_to_pose_client.send_goal_async(goal_msg, feedback_callback=order_feedback_callback)
             
             # goal_response_callback is called before the task is finished (dont know why).
             # So better use the feedback topic abd check distance_remaining
-            # self.send_goal_future.add_done_callback(self.goal_response_callback)
+            # order_goal_response_callback= lambda a :self.goal_response_callback(order_id,a)
+            # self.send_goal_future.add_done_callback(order_goal_response_callback)
 
-    def feedback_callback(self, feedback_msg):
+    def feedback_callback(self,order_id ,feedback_msg):
         feedback = feedback_msg.feedback
-        self.get_logger().info('Received feedback: {0}'.format(feedback.distance_remaining))
         if (feedback.distance_remaining < goal_reach_epsilon):
-            self.set_order_to_finished()
+            self.set_order_to_finished(order_id)
+        #else:
+            self.get_logger().debug('Received feedback: {0}'.format(feedback.distance_remaining))
 
-    def goal_response_callback(self, future):
+    def goal_response_callback(self, order_id, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().info('Goal rejected :(')
@@ -57,26 +60,28 @@ class SimpleFleetmanagement(Node):
         self.get_logger().info('Goal accepted :)')
 
         self._get_result_future = goal_handle.get_result_async()
-        self._get_result_future.add_done_callback(self.get_result_callback)
+        order_get_result_callback= lambda a :self.get_result_callback(order_id,a)
+        self._get_result_future.add_done_callback(order_get_result_callback)
 
-    def get_result_callback(self, future):
+    def get_result_callback(self, order_id, future):
         result = future.result().result
         self.get_logger().info('Result: {0}'.format(result))
+        self.set_order_to_finished(order_id) 
 
-        self.set_order_to_finished() 
-
-    def set_order_to_finished(self):
+    def set_order_to_finished(self,order_id):
         # Send update request with finished=true
-        order_id = self.order_queue[0][0]
         response = self.update_order(order_id, "finished", True)
 
         if response.status_code == 200:
+            
+            initial_size= len(self.order_queue)
             # Remove finished task from queue
-            finished_order = self.order_queue.pop(0)
-            self.get_logger().info('Order with order_id {0} is finished!'.format(finished_order[0]))
-
-            # Send next nav_goal to robot
-            self.send_nav_goal()
+            self.order_queue= list(filter( lambda  a : a[0]!=order_id, self.order_queue))
+            
+            if len(self.order_queue)< initial_size:
+                self.get_logger().info('Order with order_id {0} is finished!'.format(order_id))
+                # Send next nav_goal to robot
+                self.send_nav_goal()
         else:
             self.get_logger().info('Server does not respond. Order ' + str(order_id) +' could not be finished.')
 
