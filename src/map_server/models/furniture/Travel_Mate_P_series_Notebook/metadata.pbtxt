@@ -1,0 +1,38 @@
+model {
+  file: "model.sdf"
+}
+name: "Travel_Mate_P_series_Notebook"
+description: "Travel Mate P series Notebook\n14\" commerical notebok"
+version: 1
+authors {
+  name: "Google"
+  email: "scanned-objects@google.com"
+}
+legal {
+  copyright: "Copyright 2020 Google LLC."
+  license: "Creative Commons Attribution 4.0 International"
+}
+annotations {
+  key: "brand"
+  value: "Acer"
+}
+annotations {
+  key: "gtin"
+  value: "887899957017"
+}
+annotations {
+  key: "mpn"
+  value: "nx.vagaa.001"
+}
+annotations {
+  key: "sku"
+  value: "ACE031"
+}
+compatibilities {
+  name: "Gazebo"
+  version {
+    major: 11
+  }
+}
+categories {
+}
