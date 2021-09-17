@@ -76,7 +76,8 @@ RUN apt-get update \
   #&& rm -rf /var/lib/apt/lists/* \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
   && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
-  && echo "cd ~/../../workspaces/Robast_RosTheron" >> /home/$USER/.bashrc
+  && echo "cd ~/../../workspaces/Robast_RosTheron" >> /home/$USER/.bashrc \
+  && echo 'export PS1="\[\e[31m\][\[\e[m\]\[\e[38;5;172m\]\u\[\e[m\]@\[\e[38;5;153m\]\h\[\e[m\]\[\e[38;5;214m\]\W\[\e[m\]\[\e[31m\]]\[\e[m\]\\$"' >> /home/$USER/.bashrc
 
 # Install Turtlebot3 
 #RUN sudo apt install python3-vcstool \
