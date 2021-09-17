@@ -1113,8 +1113,8 @@
       <right_joint>right_wheel_joint</right_joint>
 
       <!-- kinematics -->
-      <wheel_separation>0.287</wheel_separation>
-      <wheel_diameter>0.158</wheel_diameter>
+      <wheel_separation>0.500</wheel_separation>
+      <wheel_diameter>0.1512</wheel_diameter>
 
       <!-- limits -->
       <max_wheel_torque>20</max_wheel_torque>
@@ -1143,11 +1143,11 @@
       <joint_name>leftjoint_rsupport</joint_name>
       <joint_name>rightjoint_rsupport</joint_name>
 
-      <!-- <joint_name>left_wheel_joint</joint_name>
-      <joint_name>right_wheel_joint</joint_name> -->
+      <joint_name>left_wheel_joint</joint_name>
+      <joint_name>right_wheel_joint</joint_name>
 
-      <!-- <joint_name>leftcastorjoint_support</joint_name>
-      <joint_name>rightcastorjoint_support</joint_name> -->
+      <joint_name>leftcastorjoint_support</joint_name>
+      <joint_name>rightcastorjoint_support</joint_name>
 
       <joint_name>leftcastorjoint_wheel</joint_name>
       <joint_name>rightcastorjoint_wheel</joint_name>
