@@ -37,7 +37,7 @@ class SimpleFleetmanagement(Node):
             goal_msg.pose.pose.position.y = float(nav_goal["y"]) / -100
             self.get_logger().info('Navigating to goal: ' + str(goal_msg.pose.pose.position.x) + ' ' +
                         str(goal_msg.pose.pose.position.y) + ' for order ' + str(order_id))
-            order_feedback_callback = lambda a: self.feedback_callback(order_id, a)
+            order_feedback_callback = lambda feedback_msg: self.feedback_callback(order_id, feedback_msg)
             self.send_goal_future = self.nav_to_pose_client.send_goal_async(goal_msg, feedback_callback=order_feedback_callback)
             
             # goal_response_callback is called before the task is finished (dont know why).
@@ -50,7 +50,7 @@ class SimpleFleetmanagement(Node):
         if (feedback.distance_remaining < goal_reach_epsilon):
             self.set_order_to_finished(order_id)
         #else:
-            self.get_logger().debug('Received feedback: {0}'.format(feedback.distance_remaining))
+        #   self.get_logger().debug('Received feedback: {0}'.format(feedback.distance_remaining))
 
     def goal_response_callback(self, order_id, future):
         goal_handle = future.result()
@@ -76,7 +76,7 @@ class SimpleFleetmanagement(Node):
             
             initial_size= len(self.order_queue)
             # Remove finished task from queue
-            self.order_queue= list(filter( lambda  a : a[0]!=order_id, self.order_queue))
+            self.order_queue= list(filter( lambda  order_item : order_item[0]!=order_id, self.order_queue))
             
             if len(self.order_queue)< initial_size:
                 self.get_logger().info('Order with order_id {0} is finished!'.format(order_id))
