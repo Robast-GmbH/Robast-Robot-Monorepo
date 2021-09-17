@@ -33,6 +33,7 @@ class SimpleFleetmanagement(Node):
             order_id = nav_goal_by_order_id[0]
             nav_goal = nav_goal_by_order_id[1]
             goal_msg = NavigateToPose.Goal()
+            goal_msg.pose.header.frame_id = "base_link"
             goal_msg.pose.pose.position.x = float(nav_goal["x"]) / 100
             goal_msg.pose.pose.position.y = float(nav_goal["y"]) / -100
             self.get_logger().info('Navigating to goal: ' + str(goal_msg.pose.pose.position.x) + ' ' +
@@ -42,15 +43,15 @@ class SimpleFleetmanagement(Node):
             
             # goal_response_callback is called before the task is finished (dont know why).
             # So better use the feedback topic abd check distance_remaining
-            # order_goal_response_callback= lambda a :self.goal_response_callback(order_id,a)
-            # self.send_goal_future.add_done_callback(order_goal_response_callback)
+            order_goal_response_callback= lambda a :self.goal_response_callback(order_id,a)
+            self.send_goal_future.add_done_callback(order_goal_response_callback)
 
     def feedback_callback(self,order_id ,feedback_msg):
         feedback = feedback_msg.feedback
-        if (feedback.distance_remaining < goal_reach_epsilon):
-            self.set_order_to_finished(order_id)
+        #if (feedback.distance_remaining < goal_reach_epsilon):
+        #    self.set_order_to_finished(order_id)
         #else:
-        #   self.get_logger().debug('Received feedback: {0}'.format(feedback.distance_remaining))
+        self.get_logger().debug('Received feedback: {0}'.format(feedback.distance_remaining))
 
     def goal_response_callback(self, order_id, future):
         goal_handle = future.result()
