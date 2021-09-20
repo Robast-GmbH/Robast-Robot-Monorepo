@@ -88,5 +88,5 @@ RUN apt-get update \
 #  && colcon build --symlink-install
 #  && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
 COPY "/entrypoint.sh" "/entrypoint.sh"
-# ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
 
