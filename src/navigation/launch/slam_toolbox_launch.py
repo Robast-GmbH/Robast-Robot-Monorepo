@@ -42,7 +42,7 @@ def generate_launch_description():
             parameters=[
                 slam_toolbox_params_yaml,
                 {'map_file_name': map_file_posegraph},
-                {'map_start_pose': [float(POSE_INIT_X), float(POSE_INIT_Y), float(POSE_INIT_Z)]},
+                {'map_start_pose': [float(POSE_INIT_X), float(POSE_INIT_Y), 3.14]},
                 {'mode': 'mapping'},
                 {'use_sim_time': use_sim_time}
             ]),
