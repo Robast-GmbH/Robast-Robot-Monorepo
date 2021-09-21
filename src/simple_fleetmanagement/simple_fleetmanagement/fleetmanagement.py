@@ -33,7 +33,7 @@ class SimpleFleetmanagement(Node):
             order_id = nav_goal_by_order_id[0]
             nav_goal = nav_goal_by_order_id[1]
             goal_msg = NavigateToPose.Goal()
-            goal_msg.pose.header.frame_id = "base_link"
+            # goal_msg.pose.header.frame_id = "base_link" # frame_id is irrelevant for foxy!
             goal_msg.pose.pose.position.x = float(nav_goal["x"]) / 100
             goal_msg.pose.pose.position.y = float(nav_goal["y"]) / -100
             self.get_logger().info('Navigating to goal: ' + str(goal_msg.pose.pose.position.x) + ' ' +
