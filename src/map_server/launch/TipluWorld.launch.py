@@ -29,7 +29,9 @@ def get_robot_spawn_args():
     initial_pose = '{position: ' +\
                     '{x: ' + POSE_INIT_X + ', ' +\
                      'y: ' + POSE_INIT_Y + ', ' +\
-                     'z: ' + POSE_INIT_Z + '}}'
+                     'z: ' + POSE_INIT_Z + '}' + ', ' +\
+                   'orientation: ' +\
+                    '{z: 1, w: 0}' + '}'
 
     spawn_args = '{name: \"' + ROBOT_MODEL + '\",' +\
                  'xml: \"' + robot_xml + '\",' +\

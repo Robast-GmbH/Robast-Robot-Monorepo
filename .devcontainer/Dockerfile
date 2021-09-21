@@ -13,11 +13,11 @@ ENV USER ubuntu
 ARG DEBIAN_FRONTEND=
 
 ENV ROS_DISTRO=foxy
-ENV AMENT_PREFIX_PATH=/opt/ros/foxy
-ENV COLCON_PREFIX_PATH=/opt/ros/foxy
-ENV LD_LIBRARY_PATH=/opt/ros/foxy/lib
-ENV PATH=/opt/ros/foxy/bin:$PATH
-ENV PYTHONPATH=/opt/ros/foxy/lib/python3.8/site-packages
+ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
+ENV COLCON_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
+ENV LD_LIBRARY_PATH=/opt/ros/${ROS_DISTRO}/lib
+ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
+ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
 
@@ -76,7 +76,8 @@ RUN apt-get update \
   #&& rm -rf /var/lib/apt/lists/* \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
   && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
-  && echo "cd ~/../../workspaces/Robast_RosTheron" >> /home/$USER/.bashrc
+  && echo "cd ~/../../workspaces/Robast_RosTheron" >> /home/$USER/.bashrc \
+  && echo 'export PS1="\[\e[31m\][\[\e[m\]\[\e[38;5;172m\]\u\[\e[m\]@\[\e[38;5;153m\]\h\[\e[m\]\[\e[38;5;214m\]\W\[\e[m\]\[\e[31m\]]\[\e[m\]\\$"' >> /home/$USER/.bashrc
 
 # Install Turtlebot3 
 #RUN sudo apt install python3-vcstool \
@@ -86,6 +87,6 @@ RUN apt-get update \
 #  && vcs import src < turtlebot3.repos \
 #  && colcon build --symlink-install
 #  && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
-COPY "entrypoint.sh" "entrypoint.sh"
+COPY "/entrypoint.sh" "/entrypoint.sh"
 ENTRYPOINT ["/entrypoint.sh"]
 
