@@ -5,27 +5,39 @@ import json
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from nav2_msgs.action import NavigateToPose
+from datetime import datetime
 
-goal_reach_epsilon = 0.9 # meter
+
 
 class SimpleFleetmanagement(Node):
 
+ 
+    Task_pull_intervall = 5  # seconds ## the interval in which the task get pulled from backend interface.
+    goal_reach_epsilon = 0.4 # meter   ## the radius in which the robot defines the goal reached.
+    error_reset_time= 20 # seconds     ## the time which is acceptible for no new feedback message to be sent after that the navigation will be reset. 
+    
     order_queue = []
-
+    last_feedback = datetime.now() 
+    
     def __init__(self):
         super().__init__('simple_fleetmanagement')
         self.nav_to_pose_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+        self.last_feedback= datetime.now()
 
         #Repeted call for new tasks 
-        Task_pull_intervall = 5  # seconds
         self.get_logger().info("The simple fleetmanagement is running")
-        self.timer = self.create_timer(Task_pull_intervall, self.handle_tasks_callback)
+        self.timer = self.create_timer(self.Task_pull_intervall, self.handle_tasks_callback)
 
     def handle_tasks_callback(self):
         is_queue_empty_before_getting = len(self.order_queue) == 0
         self.get_tasks() 
-        if is_queue_empty_before_getting and len(self.order_queue) > 0:
+       
+        time_diff=  datetime.now() - self.last_feedback 
+
+        if (is_queue_empty_before_getting  or time_diff.total_seconds()> self.error_reset_time) and len(self.order_queue) > 0:
             self.send_nav_goal()
+            #self.get_logger().info("Last callback: "+str(self.last_feedback ))
+            #self.get_logger().info("duration : "+str(time_diff.total_seconds() ))
     
     def send_nav_goal(self):
         if len(self.order_queue) > 0:
@@ -41,17 +53,18 @@ class SimpleFleetmanagement(Node):
             order_feedback_callback = lambda feedback_msg: self.feedback_callback(order_id, feedback_msg)
             self.send_goal_future = self.nav_to_pose_client.send_goal_async(goal_msg, feedback_callback=order_feedback_callback)
             
-            # goal_response_callback is called before the task is finished (dont know why).
+            # goal_response_callback is called before the task is finished (don't know why).
             # So better use the feedback topic abd check distance_remaining
             order_goal_response_callback= lambda a :self.goal_response_callback(order_id,a)
-            self.send_goal_future.add_done_callback(order_goal_response_callback)
+            #self.send_goal_future.add_done_callback(order_goal_response_callback)
 
     def feedback_callback(self,order_id ,feedback_msg):
         feedback = feedback_msg.feedback
-        #if (feedback.distance_remaining < goal_reach_epsilon):
-        #    self.set_order_to_finished(order_id)
+        self.last_feedback= datetime.now()
+        if (feedback.distance_remaining < self.goal_reach_epsilon):
+            self.set_order_to_finished(order_id)
         #else:
-        self.get_logger().debug('Received feedback: {0}'.format(feedback.distance_remaining))
+        #    self.get_logger().debug('Received feedback: {0}'.format(feedback.distance_remaining))
 
     def goal_response_callback(self, order_id, future):
         goal_handle = future.result()
@@ -74,7 +87,6 @@ class SimpleFleetmanagement(Node):
         response = self.update_order(order_id, "finished", True)
 
         if response.status_code == 200:
-            
             initial_size= len(self.order_queue)
             # Remove finished task from queue
             self.order_queue= list(filter( lambda  order_item : order_item[0]!=order_id, self.order_queue))
