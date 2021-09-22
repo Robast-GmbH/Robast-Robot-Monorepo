@@ -7,7 +7,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-    robot_localization_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'robot_localization_ekf.yaml')
+    robot_localization_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'robot_localization_ekf_odom_to_base.yaml')
 
     return LaunchDescription([
         # Set env var to print messages to stdout immediately
