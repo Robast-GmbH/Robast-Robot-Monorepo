@@ -7,8 +7,9 @@
 		}
 	},
 	"remoteUser": "ubuntu",
-	"runArgs": [		
-		"--network=host",
+	"runArgs": [
+		"--name=theron",
+		"--network=heiligenhafen",		
 		"--cap-add=SYS_PTRACE",
 		"--security-opt=seccomp:unconfined",
 		"--security-opt=apparmor:unconfined",
