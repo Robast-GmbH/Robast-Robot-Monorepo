@@ -47,7 +47,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/bases/theron_base.stl"/>
+        <mesh filename="meshes/bases/theron_base.stl"/>
       </geometry>
       <material name="darkgrey">
         <color rgba="0.1 0.1 0.1 1"/>
@@ -57,7 +57,7 @@
       <origin rpy="0 0 0 " xyz="0 0 0"/>
       <geometry>
         <!--box size="0.390 0.240 0.165"/-->
-        <mesh filename="package://rb_theron/meshes/bases/theron_base.stl"/>
+        <mesh filename="meshes/bases/theron_base.stl"/>
       </geometry>
     </collision>
   </link>
@@ -70,7 +70,7 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/bases/mcq_prototype_bottom_cover.dae"/>
+        <mesh filename="meshes/bases/mcq_prototype_bottom_cover.dae"/>
       </geometry>
       <material name="darkgrey">
         <color rgba="0.1 0.1 0.1 1"/>
@@ -79,7 +79,7 @@
     <collision>
       <origin rpy="0 0 0 " xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/bases/mcq_prototype_bottom_cover.dae"/>
+        <mesh filename="meshes/bases/mcq_prototype_bottom_cover.dae"/>
       </geometry>
     </collision>
   </link>
@@ -135,13 +135,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/rocker/mcq_prototype_rocker_r.dae"/>
+        <mesh filename="meshes/rocker/mcq_prototype_rocker_r.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/rocker/mcq_prototype_rocker_r.dae"/>
+        <mesh filename="meshes/rocker/mcq_prototype_rocker_r.dae"/>
       </geometry>
     </collision>
     <inertial>
@@ -271,13 +271,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_base_castor.dae"/>
+        <mesh filename="meshes/wheels/mcq_prototype_base_castor.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_base_castor.dae"/>
+        <mesh filename="meshes/wheels/mcq_prototype_base_castor.dae"/>
       </geometry>
     </collision>
     <inertial>
@@ -301,7 +301,7 @@
       <!-- xacro:if value="${hq}">
           <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>     
-		<mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_castor_wheel.dae" />
+		<mesh filename="meshes/wheels/mcq_prototype_castor_wheel.dae" />
           </geometry>         
         </xacro:if -->
       <!-- LOW RESOLUTION WHEELS -->
@@ -317,7 +317,7 @@
       <origin rpy="1.57079632679 0 0" xyz="0 0 0"/>
       <!-- origin xyz="0 0 0" rpy="0 0 0" / -->
       <geometry>
-        <!-- mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_castor_wheel.dae" / -->
+        <!-- mesh filename="meshes/wheels/mcq_prototype_castor_wheel.dae" / -->
         <cylinder length="0.025" radius="0.05"/>
         <!-- sphere radius="${caster_radius}"/ -->
       </geometry>
@@ -408,13 +408,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/rocker/mcq_prototype_rocker_l.dae"/>
+        <mesh filename="meshes/rocker/mcq_prototype_rocker_l.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/rocker/mcq_prototype_rocker_l.dae"/>
+        <mesh filename="meshes/rocker/mcq_prototype_rocker_l.dae"/>
       </geometry>
     </collision>
     <inertial>
@@ -544,13 +544,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_base_castor.dae"/>
+        <mesh filename="meshes/wheels/mcq_prototype_base_castor.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_base_castor.dae"/>
+        <mesh filename="meshes/wheels/mcq_prototype_base_castor.dae"/>
       </geometry>
     </collision>
     <inertial>
@@ -574,7 +574,7 @@
       <!-- xacro:if value="${hq}">
           <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>     
-		<mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_castor_wheel.dae" />
+		<mesh filename="meshes/wheels/mcq_prototype_castor_wheel.dae" />
           </geometry>         
         </xacro:if -->
       <!-- LOW RESOLUTION WHEELS -->
@@ -590,7 +590,7 @@
       <origin rpy="1.57079632679 0 0" xyz="0 0 0"/>
       <!-- origin xyz="0 0 0" rpy="0 0 0" / -->
       <geometry>
-        <!-- mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_castor_wheel.dae" / -->
+        <!-- mesh filename="meshes/wheels/mcq_prototype_castor_wheel.dae" / -->
         <cylinder length="0.025" radius="0.05"/>
         <!-- sphere radius="${caster_radius}"/ -->
       </geometry>
@@ -674,13 +674,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_base_castor.dae"/>
+        <mesh filename="meshes/wheels/mcq_prototype_base_castor.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_base_castor.dae"/>
+        <mesh filename="meshes/wheels/mcq_prototype_base_castor.dae"/>
       </geometry>
     </collision>
     <inertial>
@@ -704,7 +704,7 @@
       <!-- xacro:if value="${hq}">
           <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>     
-		<mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_castor_wheel.dae" />
+		<mesh filename="meshes/wheels/mcq_prototype_castor_wheel.dae" />
           </geometry>         
         </xacro:if -->
       <!-- LOW RESOLUTION WHEELS -->
@@ -720,7 +720,7 @@
       <origin rpy="1.57079632679 0 0" xyz="0 0 0"/>
       <!-- origin xyz="0 0 0" rpy="0 0 0" / -->
       <geometry>
-        <!-- mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_castor_wheel.dae" / -->
+        <!-- mesh filename="meshes/wheels/mcq_prototype_castor_wheel.dae" / -->
         <cylinder length="0.025" radius="0.05"/>
         <!-- sphere radius="${caster_radius}"/ -->
       </geometry>
@@ -787,13 +787,13 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_base_castor.dae"/>
+        <mesh filename="meshes/wheels/mcq_prototype_base_castor.dae"/>
       </geometry>
     </visual>
     <collision>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_base_castor.dae"/>
+        <mesh filename="meshes/wheels/mcq_prototype_base_castor.dae"/>
       </geometry>
     </collision>
     <inertial>
@@ -817,7 +817,7 @@
       <!-- xacro:if value="${hq}">
           <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>     
-		<mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_castor_wheel.dae" />
+		<mesh filename="meshes/wheels/mcq_prototype_castor_wheel.dae" />
           </geometry>         
         </xacro:if -->
       <!-- LOW RESOLUTION WHEELS -->
@@ -833,7 +833,7 @@
       <origin rpy="1.57079632679 0 0" xyz="0 0 0"/>
       <!-- origin xyz="0 0 0" rpy="0 0 0" / -->
       <geometry>
-        <!-- mesh filename="package://rb_theron/meshes/wheels/mcq_prototype_castor_wheel.dae" / -->
+        <!-- mesh filename="meshes/wheels/mcq_prototype_castor_wheel.dae" / -->
         <cylinder length="0.025" radius="0.05"/>
         <!-- sphere radius="${caster_radius}"/ -->
       </geometry>
@@ -898,7 +898,7 @@
       <origin rpy="0 0 0" xyz="0 -0.0 0"/>
       <geometry>
         <!-- box size="${r430_cam_width} ${r430_cam_height} ${r430_cam_depth}"/ -->
-        <mesh filename="package://robotnik_sensors/meshes/intel_r430.dae"/>
+        <mesh filename="meshes/sensors/intel_r430.dae"/>
       </geometry>
       <material name="aluminum">
         <color rgba="0.5 0.5 0.5 1"/>
@@ -1014,12 +1014,12 @@
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotnik_sensors/meshes/orbbec_astra.dae"/>
+        <mesh filename="meshes/sensors/orbbec_astra.dae"/>
       </geometry>
     </visual>
     <collision>
       <geometry>
-        <mesh filename="package://robotnik_sensors/meshes/orbbec_astra.dae"/>
+        <mesh filename="meshes/sensors/orbbec_astra.dae"/>
       </geometry>
     </collision>
     <inertial>
@@ -1138,31 +1138,7 @@
       </geometry>
     </collision>
   </link>
-  <gazebo>
-    <plugin filename="libgazebo_ros_imu_sensor.so" name="imu_controller">
-      <alwaysOn>true</alwaysOn>
-      <ros>
-            <!-- <namespace>/tb3</namespace> -->
-            <remapping>~/out:=imu</remapping>
-      </ros>
-      <serviceName>imuimu/service</serviceName>
-      <bodyName>imu_link</bodyName>
-      <frameId>imu_link</frameId>
-      <updateRate>50.0</updateRate>
-      <gaussianNoise>0.00</gaussianNoise>
-      <yawOffset>0.0</yawOffset>
-      <yawDrift>0.0</yawDrift>
-      <yawGaussianNoise>0.0</yawGaussianNoise>
-      <!-- angular velocities parameters -->
-      <rateOffset>0.0 0.0 0.0</rateOffset>
-      <rateDrift>0.0 0.0 0.0</rateDrift>
-      <rateGaussianNoise>0.0 0.0 0.0</rateGaussianNoise>
-      <!-- linear accelerations parameters -->
-      <accelOffset>0.0 0.0 0.0</accelOffset>
-      <accelDrift>0.0 0.0 0.0</accelDrift>
-      <accelGaussianNoise>0.0 0.0 0.0</accelGaussianNoise>
-    </plugin>
-  </gazebo>
+
   <joint name="front_laser_base_joint" type="fixed">
     <origin rpy="0 3.1416 3.1416" xyz="0.250 0.0 0.1643"/>
     <parent link="base_link"/>
@@ -1174,13 +1150,13 @@
       <geometry>
         <!--<box size="0.106 0.094 0.152"/>-->
         <!--<cylinder radius="0.058" length="0.152"/>-->
-        <mesh filename="package://robotnik_sensors/meshes/sick_nanoscan3.dae"/>
+        <mesh filename="meshes/sensors/sick_nanoscan3.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotnik_sensors/meshes/sick_nanoscan3.dae"/>
+        <mesh filename="meshes/sensors/sick_nanoscan3.dae"/>
       </geometry>
     </visual>
     <inertial>
@@ -1245,13 +1221,13 @@
       <geometry>
         <!--<box size="0.106 0.094 0.152"/>-->
         <!--<cylinder radius="0.058" length="0.152"/>-->
-        <mesh filename="package://robotnik_sensors/meshes/sensors/sick_nanoscan3.dae"/>
+        <mesh filename="meshes/sensors/sick_nanoscan3.dae"/>
       </geometry>
     </collision>
     <visual>
       <origin rpy="0 0 0" xyz="0 0 0"/>
       <geometry>
-        <mesh filename="package://robotnik_sensors/meshes/sensors/sick_nanoscan3.dae"/>
+        <mesh filename="meshes/sensors/sick_nanoscan3.dae"/>
       </geometry>
     </visual>
     <inertial>
