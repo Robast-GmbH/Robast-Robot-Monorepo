@@ -828,7 +828,7 @@
       <velocity_decay/>
     </link>
     <joint name='rightcastorjoint_support' type='revolute'>
-      <pose relative_to='rightrsupport'>0.1175 0.01 0.002 0 -0 0</pose>
+      <pose relative_to='rightrsupport'>0.1175 -0.01 0.002 0 -0 0</pose>
       <parent>rightrsupport</parent>
       <child>rightcastorsupport</child>
       <axis>

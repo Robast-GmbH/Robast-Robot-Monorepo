@@ -261,7 +261,7 @@
   <joint name="rightcastorjoint_support" type="continuous">
     <parent link="rightrsupport"/>
     <child link="rightcastorsupport"/>
-    <origin rpy="0 0 0" xyz="0.1175 0.01 0.002"/>
+    <origin rpy="0 0 0" xyz="0.1175 -0.01 0.002"/>
     <axis rpy="0 3.14159265359 0" xyz="0 0 1"/>
     <limit effort="100" velocity="100"/>
     <!-- joint_properties damping="1.5" friction="1.5"/ -->
