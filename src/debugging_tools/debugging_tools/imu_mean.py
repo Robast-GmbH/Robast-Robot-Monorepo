@@ -31,6 +31,9 @@ class SimpleSubscriber(Node):
         self.sum_ax_data = 0
         self.sum_ay_data = 0
         self.sum_az_data = 0
+        self.sum_gyr_x_data = 0
+        self.sum_gyr_y_data = 0
+        self.sum_gyr_z_data = 0
         
 
     def listener_callback(self, msg):
@@ -43,7 +46,15 @@ class SimpleSubscriber(Node):
         ay_mean = self.sum_ay_data / self.num_of_imu_data
         az_mean = self.sum_az_data / self.num_of_imu_data
 
-        msg = 'ax mean: ' + str(format(ax_mean, '.6f')) + ', ay mean:' + str(format(ay_mean, '.6f')) + ', az mean:' + str(format(az_mean, '.6f'))
+        self.sum_gyr_x_data += msg.angular_velocity.x
+        self.sum_gyr_y_data += msg.angular_velocity.y
+        self.sum_gyr_z_data += msg.angular_velocity.z
+        gyr_x_mean = self.sum_gyr_x_data / self.num_of_imu_data
+        gyr_y_mean = self.sum_gyr_y_data / self.num_of_imu_data
+        gyr_z_mean = self.sum_gyr_z_data / self.num_of_imu_data
+
+        msg = 'ax mean: ' + str(format(ax_mean, '.6f')) + ', ay mean:' + str(format(ay_mean, '.6f')) + ', az mean:' + str(format(az_mean, '.6f')) + \
+              'gyr_x_mean: ' + str(format(gyr_x_mean, '.6f')) + ', gyr_y_mean:' + str(format(gyr_y_mean, '.6f')) + ', gyr_z_mean:' + str(format(gyr_z_mean, '.6f'))
         self.get_logger().info(msg)
        
         
