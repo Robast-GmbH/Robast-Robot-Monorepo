@@ -45,7 +45,7 @@ ekf_filter_node:
         publish_acceleration: false
 
 # Whether to broadcast the transformation over the /tf topic. Defaults to true if unspecified.
-        publish_tf: false
+        publish_tf: true
 
 # REP-105 (http://www.ros.org/reps/rep-0105.html) specifies four principal coordinate frames: base_link, odom, map, and
 # earth. base_link is the coordinate frame that is affixed to the robot. Both odom and map are world-fixed frames.
@@ -122,8 +122,8 @@ ekf_filter_node:
 # required. Data is specified at the level of pose and twist variables, rather than for each variable in isolation.
 # For messages that have both pose and twist data, the parameter specifies to which part of the message we are applying
 # the thresholds.
-        odom0_pose_rejection_threshold: 5.0
-        odom0_twist_rejection_threshold: 1.0
+        # odom0_pose_rejection_threshold: 5.0
+        # odom0_twist_rejection_threshold: 1.0
 
 # Further input parameter examples
         imu0: imu
@@ -136,9 +136,9 @@ ekf_filter_node:
         imu0_differential: false
         imu0_relative: true
         imu0_queue_size: 5
-        imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
-        imu0_twist_rejection_threshold: 0.8                #
-        imu0_linear_acceleration_rejection_threshold: 0.8  #
+        # imu0_pose_rejection_threshold: 0.8                 # Note the difference in parameter names
+        # imu0_twist_rejection_threshold: 0.8                #
+        # imu0_linear_acceleration_rejection_threshold: 0.8  #
 
 # [ADVANCED] Some IMUs automatically remove acceleration due to gravity, and others don't. If yours doesn't, please set
 # this to true, and *make sure* your data conforms to REP-103, specifically, that the data is in ENU frame.
