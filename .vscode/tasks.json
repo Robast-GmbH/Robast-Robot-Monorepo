@@ -47,7 +47,7 @@
             "label": "build-ros-theron",
             "detail": "Symlink Build for Ros-Theron. Makes sure packages are build in the right order.",
             "type": "shell",
-            "command": "colcon build --packages-select robot_localization --symlink-install; source install/setup.bash; colcon build --symlink-install",
+            "command": "colcon build --packages-select robot_localization --symlink-install; source install/setup.bash; colcon build --symlink-install --packages-skip aws_hospital_world",
             "problemMatcher": [],
         },
         // Clean build Ros-Theron 
