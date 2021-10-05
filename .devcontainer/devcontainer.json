@@ -11,6 +11,7 @@
 		"--name=theron",
 		"--network=heiligenhafen",		
 		"--cap-add=SYS_PTRACE",
+		"--gpus=all",
 		"--security-opt=seccomp:unconfined",
 		"--security-opt=apparmor:unconfined",
 		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"

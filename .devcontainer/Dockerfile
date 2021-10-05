@@ -1,4 +1,6 @@
-FROM dorowu/ubuntu-desktop-lxde-vnc:focal
+FROM dorowu/ubuntu-desktop-lxde-vnc:focal as base
+
+
  
 ARG DEBIAN_FRONTEND=noninteractive
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
@@ -66,7 +68,21 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
   
-
+# Install glvnd + opengl libraries
+# They don't come over apt for Ubuntu 16.04, so we just grab them from another img
+COPY --from=nvidia/opengl:1.1-glvnd-runtime-ubuntu20.04 \
+  /usr/lib/x86_64-linux-gnu \
+  /usr/local/lib/x86_64-linux-gnu
+RUN echo '/usr/local/lib/x86_64-linux-gnu' >> /etc/ld.so.conf.d/glvnd.conf && \
+    ldconfig
+# Set up env variables to enable nvidia for opengl
+ENV NVIDIA_VISIBLE_DEVICES \
+    ${NVIDIA_VISIBLE_DEVICES:-all}
+ENV NVIDIA_DRIVER_CAPABILITIES \
+    ${NVIDIA_DRIVER_CAPABILITIES:-all}
+ENV NVIDIA_REQUIRE_CUDA "cuda>=8.0"
+# Some QT-Apps/Gazebo don't show controls without this
+ENV QT_X11_NO_MITSHM 1
 
 RUN apt-get update \
   #&& apt-get install -y sudo \
@@ -87,6 +103,10 @@ RUN apt-get update \
 #  && vcs import src < turtlebot3.repos \
 #  && colcon build --symlink-install
 #  && echo 'source ~/turtlebot3_ws/install/setup.bash' >> ~/.bashrc
+
 COPY "/entrypoint.sh" "/entrypoint.sh"
 ENTRYPOINT ["/entrypoint.sh"]
 
+
+
+#watch -d -n 0.5 nvidia-smi
