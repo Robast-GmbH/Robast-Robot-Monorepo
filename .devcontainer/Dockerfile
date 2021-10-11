@@ -68,13 +68,14 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
   
+#Relevent for Linux docker
 # Install glvnd + opengl libraries
 # They don't come over apt for Ubuntu 16.04, so we just grab them from another img
-COPY --from=nvidia/opengl:1.1-glvnd-runtime-ubuntu20.04 \
-  /usr/lib/x86_64-linux-gnu \
-  /usr/local/lib/x86_64-linux-gnu
-RUN echo '/usr/local/lib/x86_64-linux-gnu' >> /etc/ld.so.conf.d/glvnd.conf && \
-    ldconfig
+# COPY --from=nvidia/opengl:1.1-glvnd-runtime-ubuntu20.04 \
+#   /usr/lib/x86_64-linux-gnu \
+#   /usr/local/lib/x86_64-linux-gnu
+# RUN echo '/usr/local/lib/x86_64-linux-gnu' >> /etc/ld.so.conf.d/glvnd.conf && \
+#     ldconfig
 # Set up env variables to enable nvidia for opengl
 ENV NVIDIA_VISIBLE_DEVICES \
     ${NVIDIA_VISIBLE_DEVICES:-all}
@@ -95,6 +96,19 @@ RUN apt-get update \
   && echo "cd ~/../../workspaces/Robast_RosTheron" >> /home/$USER/.bashrc \
   && echo 'export PS1="\[\e[31m\][\[\e[m\]\[\e[38;5;172m\]\u\[\e[m\]@\[\e[38;5;153m\]\h\[\e[m\]\[\e[38;5;214m\]\W\[\e[m\]\[\e[31m\]]\[\e[m\]\\$"' >> /home/$USER/.bashrc
 
+  # RUN apt-get update && apt-get install -y \
+  #   libxext-dev \
+  #   libxrender-dev \
+  #   libxtst-dev \
+  #   && rm -rf /var/lib/apt/lists/* 
+
+
+
+  # ENV QT_DEBUG_PLUGINS=1
+  # ENV QT_QPA_PLATFORM=xcb
+  # ENV QT_QPA_PLATFORM_PLUGIN_PATH=/opt/Qt/${QT_VERSION}/gcc_64/plugins
+  # ENV QT_PLUGIN_PATH=/opt/Qt/${QT_VERSION}/gcc_64/plugins
+  # ENV DISPLAY=:1
 # Install Turtlebot3 
 #RUN sudo apt install python3-vcstool \
 #  && mkdir -p ~/turtlebot3_ws/src \
