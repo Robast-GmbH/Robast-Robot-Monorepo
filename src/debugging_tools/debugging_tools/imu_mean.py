@@ -1,7 +1,6 @@
 import rclpy
 # import the ROS2 python libraries
 from rclpy.node import Node
-# import the LaserScan module from sensor_msgs interface
 from sensor_msgs.msg import Imu
 # import Quality of Service library, to set the correct profile and reliability in order to read sensor data.
 from rclpy.qos import ReliabilityPolicy, QoSProfile
@@ -16,14 +15,13 @@ class SimpleSubscriber(Node):
         # the parameter we pass is the node name
         super().__init__('simple_subscriber')
         # create the subscriber object
-        # in this case the subscriptor will be subsribed on /scan topic with a queue size of 10 messages.
-        # use the LaserScan module for /scan topic
+
         # send the received info to the listener_callback method.
         self.subscriber= self.create_subscription(
             Imu,
             '/imu',
             self.listener_callback,
-            QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT)) #is the most used to read LaserScan data and some sensor data too.
+            QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
         # prevent unused variable warning
         self.subscriber
         # define the variable to save the received info
