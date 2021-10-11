@@ -42,7 +42,7 @@ rooms:
       y: 9.8
   11:
     center point:
-      x: 20
+      x: 20.0
       y: 3.3
   12:
     center point:
