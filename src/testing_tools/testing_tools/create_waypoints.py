@@ -1,7 +1,6 @@
 import os
 import rclpy
 import yaml
-import numpy as np
 from ament_index_python.packages import get_package_share_directory
 from rclpy.node import Node
 from rclpy.action import ActionClient
@@ -9,6 +8,9 @@ from rclpy.action import ActionClient
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import PoseStamped
 from nav2_msgs.action import FollowWaypoints
+
+from random import seed
+from random import randint
 
 
 
@@ -33,10 +35,14 @@ class WaypointCreator(Node):
 
         def create_waypoints(self, num_of_waypoints, map_setup):
                 waypoints = []
+                # seed random number generator
+                seed(2)
+                number_of_rooms = len(map_setup['rooms'])
                 for i in range(1, num_of_waypoints+1):
                         # TODO: create nav goal pose random
-                        self.get_logger().info('Adding goal number %d to waypoints:' % i)
-                        waypoints.append(self.get_nav_goal_pose(i, map_setup))
+                        room_number = randint(1,number_of_rooms)
+                        self.get_logger().info(('Adding room ' + str(room_number) + ' as waypoint number ' + str(i) + ' to waypoints:'))
+                        waypoints.append(self.get_nav_goal_pose(room_number, map_setup))
                 return waypoints
 
 
@@ -62,47 +68,51 @@ class WaypointCreator(Node):
         def send_waypoints(self, waypoints):
                 waypoints_goal = FollowWaypoints.Goal()
                 waypoints_goal.poses = waypoints
+
                 self.get_logger().info('Waiting for FollowWaypoints Server ...')
                 self.follow_waypoints_client.wait_for_server()
+
                 self.get_logger().info('Sending FollowWaypoints Goal: {0}'.format(waypoints_goal))
                 send_goal_future = self.follow_waypoints_client.send_goal_async(waypoints_goal, feedback_callback=self.feedback_callback)
 
+                # The send_goal_future instance completes when the goal request has been accepted or rejected.
+                # Therefore the spinning runs just a short time until the request has been accepted or rejected.
                 rclpy.spin_until_future_complete(self, send_goal_future)
 
-                self.goal_handle = send_goal_future.result()
+                # The result of the send_goal_future is set to a ClientGoalHandle when receipt of the goal is acknowledged by an action server
+                client_goal_handle = send_goal_future.result()
 
-                if not self.goal_handle.accepted:
+                if not client_goal_handle.accepted:
                         self.error('Following ' + str(len(waypoints)) + ' waypoints request was rejected!')
 
-                self.result_future = self.goal_handle.get_result_async()
+                self.result_future = client_goal_handle.get_result_async()
+                self.result_future.add_done_callback(self.get_result_callback)
 
 
-        def goal_response_callback(self, future):
-                goal_handle = future.result()
-                if not goal_handle.accepted:
-                        self.get_logger().info('Goal rejected :(')
-                        return
+        # def goal_response_callback(self, future):
+        #         goal_handle = future.result()
+        #         if not goal_handle.accepted:
+        #                 self.get_logger().info('Goal rejected :(')
+        #                 return
 
-                self.get_logger().info('Goal accepted :)')
+        #         self.get_logger().info('Goal accepted :)')
 
-                self._get_result_future = goal_handle.get_result_async()
-                self._get_result_future.add_done_callback(self.get_result_callback)
+        #         self._get_result_future = goal_handle.get_result_async()
+        #         self._get_result_future.add_done_callback(self.get_result_callback)
 
 
         def get_result_callback(self, future):
                 result = future.result().result
                 self.get_logger().info('Result: {0}'.format(result))
-                rclpy.shutdown()
 
 
         def feedback_callback(self, feedback_msg):
                 self.feedback = feedback_msg.feedback
-                #self.get_logger().info('Current Waypoint: {0}'.format(feedback.current_waypoint))
         
-        def getFeedback(self):
+        def get_feedback(self):
                 return self.feedback
 
-        def isNavComplete(self):
+        def is_nav_complete(self):
                 if not self.result_future:
                         # task was cancelled or completed
                         return True
@@ -116,7 +126,7 @@ class WaypointCreator(Node):
                         # Timed out, still processing, not complete yet
                         return False
 
-                self.debug('Goal succeeded!')
+                self.get_logger().info('Goal succeeded!')
                 return True
         
             
@@ -132,10 +142,10 @@ def main(args=None):
         # waypoint_creator.destroy_node()
         
         i = 0
-        while not waypoint_creator.isNavComplete():
+        while not waypoint_creator.is_nav_complete():
                 # Do something with the feedback
                 i = i + 1
-                feedback = waypoint_creator.getFeedback()
+                feedback = waypoint_creator.get_feedback()
                 if feedback and i % 5 == 0:
                         waypoint_creator.get_logger().info(('Executing current waypoint: ' +
                                 str(feedback.current_waypoint + 1) + '/' + str(len(waypoint_creator.waypoints))))
