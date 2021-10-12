@@ -3,14 +3,11 @@ from ament_index_python.packages import get_package_share_directory
 from contextlib import nullcontext
 import rclpy
 from rclpy.node import Node
-import std_msgs
 from std_msgs.msg import Int8
-import nav2_msgs
 from geometry_msgs.msg import PoseStamped
 # import Quality of Service library, to set the correct profile and reliability in order to read sensor data.
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 from rclpy.action import ActionClient
-import numpy as np
 import yaml
 from nav2_msgs.action import NavigateToPose
 
@@ -19,7 +16,6 @@ class RoomSelectionNavGoal(Node):
 
         def __init__(self):
                 super().__init__('room_selection_nav_goal')
-                self.busy = False
                 self.map_setup = self.read_map_setup(os.path.join(get_package_share_directory('room_selection'), 'map_setup.yaml'))
 
                 #ros2 action send_goal /navigate_to_pose nav2_msgs/action/NavigateToPose "{pose: {pose: {position: {x: 2.2, y: 0.0, z: 0.0}, orientation: {w: 1.0}}}}"
