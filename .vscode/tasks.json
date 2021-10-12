@@ -74,7 +74,7 @@
             "command": "rm -fr build install log; py3clean .",
             "problemMatcher": []
         },
-        // Purge
+        // Source Ros Foxy
         {
             "label": "source-ros-foxy",
             "detail": "Source Ros foxy",
