@@ -77,13 +77,13 @@ RUN apt-get update && apt-get install -y \
 # RUN echo '/usr/local/lib/x86_64-linux-gnu' >> /etc/ld.so.conf.d/glvnd.conf && \
 #     ldconfig
 # Set up env variables to enable nvidia for opengl
-ENV NVIDIA_VISIBLE_DEVICES \
-    ${NVIDIA_VISIBLE_DEVICES:-all}
-ENV NVIDIA_DRIVER_CAPABILITIES \
-    ${NVIDIA_DRIVER_CAPABILITIES:-all}
-ENV NVIDIA_REQUIRE_CUDA "cuda>=8.0"
-# Some QT-Apps/Gazebo don't show controls without this
-ENV QT_X11_NO_MITSHM 1
+# ENV NVIDIA_VISIBLE_DEVICES \
+#     ${NVIDIA_VISIBLE_DEVICES:-all}
+# ENV NVIDIA_DRIVER_CAPABILITIES \
+#     ${NVIDIA_DRIVER_CAPABILITIES:-all}
+# ENV NVIDIA_REQUIRE_CUDA "cuda>=8.0"
+# # Some QT-Apps/Gazebo don't show controls without this
+# ENV QT_X11_NO_MITSHM 1
 
 RUN apt-get update \
   #&& apt-get install -y sudo \
