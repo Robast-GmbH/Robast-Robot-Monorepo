@@ -4,8 +4,8 @@
             "name": "Linux",
             "includePath": [
                 "${workspaceFolder}/**",
-                "/opt/ros/galactic/include/**",
-                "/opt/ros/galactic/include"
+                "/opt/ros/foxy/include/**",
+                "/opt/ros/foxy/include"
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",
