@@ -9,10 +9,16 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
 def generate_launch_description():
+    POSE_INIT_X = os.environ['POSE_INIT_X']
+    POSE_INIT_Y = os.environ['POSE_INIT_Y']
+    POSE_INIT_Z = os.environ['POSE_INIT_Z']
 
     nav2_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_params.yaml')
-    default_bt_xml_filename = os.path.join(get_package_share_directory('navigation'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
-    map_file = os.path.join(get_package_share_directory('navigation'), 'maps', '5OG.yaml')
+    nav2_localization_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'localization_params.yaml')
+    default_bt_xml_filename = os.path.join(get_package_share_directory('navigation'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_w_replanning_and_recovery.xml')
+    map_file = os.path.join(get_package_share_directory('navigation'), 'maps', '5OG_map.yaml')
+    rviz_config_dir = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_default_view.rviz')
+
 
     print('map_file: {}'.format(map_file))
 
@@ -67,7 +73,10 @@ def generate_launch_description():
             executable='amcl',
             name='amcl',
             output='screen',
-            parameters=[nav2_params_yaml],
+            parameters=[
+            nav2_localization_params_yaml,
+            {"initial_pose": [float(POSE_INIT_X), float(POSE_INIT_Y), 3.14]}
+            ],
             remappings=remappings),
 
         Node(
@@ -122,4 +131,11 @@ def generate_launch_description():
                         {'autostart': autostart},
                         {'node_names': lifecycle_nodes}]),
 
+        Node(
+            package='rviz2',
+            executable='rviz2',
+            name='rviz2',
+            arguments=['-d', rviz_config_dir],
+            parameters=[{'use_sim_time': use_sim_time}],
+            output='screen'),
     ])
