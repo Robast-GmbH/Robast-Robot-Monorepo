@@ -36,15 +36,15 @@ rooms:
       x: 24.5
       y: 3.3
   # Now those rooms begin, that are harder to access due to the small door
-  10:
-    center point:
-      x: 2.8
-      y: 9.8
-  11:
-    center point:
-      x: 20.0
-      y: 3.3
-  12:
-    center point:
-      x: 8.7
-      y: 3.3
+  # 10:
+  #   center point:
+  #     x: 2.8
+  #     y: 9.8
+  # 11:
+  #   center point:
+  #     x: 20.0
+  #     y: 3.3
+  # 12:
+  #   center point:
+  #     x: 8.7
+  #     y: 3.3
