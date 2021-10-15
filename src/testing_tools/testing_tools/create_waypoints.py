@@ -8,39 +8,57 @@ from rclpy.action import ActionClient
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import PoseStamped
 from nav2_msgs.action import FollowWaypoints
+from std_srvs.srv import SetBool
 
-from random import seed
-from random import randint
+import random
 
 
 
 class WaypointCreator(Node):
 
         def __init__(self):
-                # Here we have the class constructor
-                # call super() in the constructor in order to initialize the Node object
-                # the parameter we pass is the node name
                 super().__init__('waypoint_creator')
 
                 self.declare_parameter('num_of_waypoints', '9')
                 num_of_waypoints = self.get_parameter('num_of_waypoints').get_parameter_value().integer_value
                 self.get_logger().info('Number of waypoints to be created: %d' % num_of_waypoints)
 
+                self.trigger_map_update_srv_client = self.create_client(SetBool, 'trigger_robast_map_publishing')
+                # Check if the a service is available  
+                while not self.trigger_map_update_srv_client.wait_for_service(timeout_sec=1.0):
+                        self.get_logger().info('Trigger_robast_map_publishing Service is not available, waiting again...')
+
                 map_setup = self.read_map_setup(os.path.join(get_package_share_directory('testing_tools'), 'map_setup_5OG.yaml'))             
                 self.waypoints = self.create_waypoints(num_of_waypoints, map_setup)
+
+                # Define the Timer that is responsible for triggering the robast map publish 
+                self.robast_map_publish_rate = 100 # seconds between timer ticks
+                self.timer = self.create_timer(self.robast_map_publish_rate, self.trigger_map_publish_callback)
 
                 self.follow_waypoints_client = ActionClient(self, FollowWaypoints, 'FollowWaypoints')
                 self.send_waypoints(self.waypoints)
 
 
+        def trigger_map_publish_callback(self):
+                self.trigger_map_update()
+
+
+        def trigger_map_update(self):
+                map_update_future = self.trigger_map_update_srv_client.call_async(SetBool.Request())
+                map_update_future.add_done_callback(self.map_update_result_callback)
+
+
+        def map_update_result_callback(self, future):
+                is_map_update_successfull = future.result().success
+                self.get_logger().info('Is map update successfull? {0}'.format(is_map_update_successfull))
+
+
         def create_waypoints(self, num_of_waypoints, map_setup):
                 waypoints = []
-                # seed random number generator
-                seed(2)
+                random.seed(2) # seed random number generator
                 number_of_rooms = len(map_setup['rooms'])
                 for i in range(1, num_of_waypoints+1):
-                        # TODO: create nav goal pose random
-                        room_number = randint(1,number_of_rooms)
+                        room_number = random.randint(1,number_of_rooms)
                         self.get_logger().info(('Adding room ' + str(room_number) + ' as waypoint number ' + str(i) + ' to waypoints:'))
                         waypoints.append(self.get_nav_goal_pose(room_number, map_setup))
                 return waypoints
@@ -52,8 +70,9 @@ class WaypointCreator(Node):
                 nav_goal.header.stamp = self.get_clock().now().to_msg()
                 x = map_setup['rooms'][nav_goal_room_number]['center point']['x']
                 y = map_setup['rooms'][nav_goal_room_number]['center point']['y']
-                nav_goal.pose.position.x = x
-                nav_goal.pose.position.y = - y
+                # Add a small random number to the x and y value to ensure the goal is not always the same
+                nav_goal.pose.position.x = x + random.uniform(-1.0, 1.0)
+                nav_goal.pose.position.y = - y + random.uniform(-1.0, 1.0)
                 self.get_logger().info('-> Goal X-Coordinate: %s' % nav_goal.pose.position.x)
                 self.get_logger().info('-> Goal Y-Coordinate: %s' % nav_goal.pose.position.y)
                 return nav_goal
@@ -89,18 +108,6 @@ class WaypointCreator(Node):
                 self.result_future.add_done_callback(self.get_result_callback)
 
 
-        # def goal_response_callback(self, future):
-        #         goal_handle = future.result()
-        #         if not goal_handle.accepted:
-        #                 self.get_logger().info('Goal rejected :(')
-        #                 return
-
-        #         self.get_logger().info('Goal accepted :)')
-
-        #         self._get_result_future = goal_handle.get_result_async()
-        #         self._get_result_future.add_done_callback(self.get_result_callback)
-
-
         def get_result_callback(self, future):
                 result = future.result().result
                 self.get_logger().info('Result: {0}'.format(result))
@@ -108,9 +115,11 @@ class WaypointCreator(Node):
 
         def feedback_callback(self, feedback_msg):
                 self.feedback = feedback_msg.feedback
+
         
         def get_feedback(self):
                 return self.feedback
+
 
         def is_nav_complete(self):
                 if not self.result_future:
@@ -136,10 +145,6 @@ def main(args=None):
 
         # declare the node constructor
         waypoint_creator = WaypointCreator()
-        # pause the program execution, waits for a request to kill the node (ctrl+c)
-        # rclpy.spin(waypoint_creator)
-        # # Explicity destroy the node
-        # waypoint_creator.destroy_node()
         
         i = 0
         while not waypoint_creator.is_nav_complete():
