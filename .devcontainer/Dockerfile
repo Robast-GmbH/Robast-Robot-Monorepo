@@ -66,7 +66,9 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-geographic-msgs \
   ros-${ROS_DISTRO}-diagnostic-updater \
   && rm -rf /var/lib/apt/lists/* \
-  && rosdep init || echo "rosdep already initialized"
+  && rosdep init || echo "rosdep already initialized" \
+  # Depencencies needed to build the spatio_temporal_voxel_layer package:
+  && libopenvdb-dev
   
 #Relevent for Linux docker
 # Install glvnd + opengl libraries
