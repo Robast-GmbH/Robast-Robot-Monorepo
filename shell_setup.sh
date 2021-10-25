@@ -5,6 +5,13 @@ export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/map_server/models/furn
 export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/aws_hospital_world/fuel_models:${GAZEBO_MODEL_PATH}
 export GAZEBO_PLUGIN_PATH=/workspaces/Robast_RosTheron/gaz/plugins:${GAZEBO_PLUGIN_PATH}
 
+# For Ubuntu 20.04 users, there’s a known issue with OpenVDB and its binaries as of July 2020 with libjmalloc.
+# If you see an error such as Could not load library LoadLibrary error:
+# /usr/lib/x86_64-linux-gnu/libjemalloc.so.2: cannot allocate memory in static TLS block,
+# it can be resolved with export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2 until new binaries are released of OpenVDB.
+# Reference: https://navigation.ros.org/tutorials/docs/navigation2_with_stvl.html
+export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
+
 # Set robot_model and world_model:
 WORLD_MODEL=5OG #aws_hospital_world or 5OG or 5OG_with_furniture
 export ROBOT_MODEL=rb_theron #rb_theron or turtlebot3_waffle
