@@ -10,8 +10,12 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-    nav2_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_params.yaml')
-    default_bt_xml_filename = os.path.join(get_package_share_directory('navigation'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_w_replanning_and_recovery.xml')
+    if(os.environ['ROS_DISTRO'] == 'galactic'):
+        default_bt_xml_filename = os.path.join(get_package_share_directory('navigation'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_through_poses_w_replanning_and_recovery.xml')
+        nav2_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_params_galactic.yaml')
+    else:
+        default_bt_xml_filename = os.path.join(get_package_share_directory('navigation'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_w_replanning_and_recovery.xml')
+        nav2_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_params.yaml')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
