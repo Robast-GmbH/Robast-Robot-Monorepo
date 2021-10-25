@@ -13,7 +13,7 @@ POSE_INIT_Z = os.environ['POSE_INIT_Z']
 
 def generate_launch_description():
 
-    slam_toolbox_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'slam_toolbox_params.yaml')
+    slam_toolbox_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'slam_toolbox_params_offline.yaml')
     rviz_config_dir = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_default_view.rviz')
     map_file_posegraph = os.path.join(get_package_share_directory('navigation'), 'maps', WORLD_MODEL)
 
@@ -36,7 +36,7 @@ def generate_launch_description():
 
         Node(            
             package='slam_toolbox',
-            executable='async_slam_toolbox_node',
+            executable='sync_slam_toolbox_node',
             name='slam_toolbox',
             output='screen',
             parameters=[

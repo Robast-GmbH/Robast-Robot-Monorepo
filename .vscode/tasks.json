@@ -62,8 +62,10 @@
         {
             "label": "native-linux-clean-build-ros-theron",
             "detail": "Purges and symlink builds for Ros-Theron. Makes sure packages are build in the right order.",
-            "dependsOn": ["purge", "source-ros-foxy", "build-ros-theron"],
+            "dependsOn": ["purge"],
             "dependsOrder": "sequence",
+            "type": "shell",
+            "command": "source ~/../../opt/ros/foxy/setup.bash; colcon build --packages-select robot_localization --symlink-install; source install/setup.bash; colcon build --symlink-install --packages-skip aws_hospital_world",
             "problemMatcher": []
         },
         // Purge
@@ -72,14 +74,6 @@
             "detail": "Purge workspace by deleting all generated files.",
             "type": "shell",
             "command": "rm -fr build install log; py3clean .",
-            "problemMatcher": []
-        },
-        // Source Ros Foxy
-        {
-            "label": "source-ros-foxy",
-            "detail": "Source Ros foxy",
-            "type": "shell",
-            "command": "source ~/../../opt/ros/foxy/setup.bash",
             "problemMatcher": []
         },
         // Linting and static code analysis tasks
