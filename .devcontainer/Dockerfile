@@ -61,14 +61,15 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-cartographer-ros \
   ros-${ROS_DISTRO}-navigation2 \
   ros-${ROS_DISTRO}-nav2-bringup \
+  # Depencencies needed to build the spatio_temporal_voxel_layer package:
+  libopenvdb-dev \
   # Dependencies needed to build the robot_localization package:
 	libgeographic-dev \
   ros-${ROS_DISTRO}-geographic-msgs \
   ros-${ROS_DISTRO}-diagnostic-updater \
   && rm -rf /var/lib/apt/lists/* \
-  && rosdep init || echo "rosdep already initialized" \
-  # Depencencies needed to build the spatio_temporal_voxel_layer package:
-  && libopenvdb-dev
+  && rosdep init || echo "rosdep already initialized"
+  
   
 #Relevent for Linux docker
 # Install glvnd + opengl libraries
