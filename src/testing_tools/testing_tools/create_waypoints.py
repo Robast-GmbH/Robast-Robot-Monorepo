@@ -19,7 +19,7 @@ class WaypointCreator(Node):
         def __init__(self):
                 super().__init__('waypoint_creator')
 
-                self.declare_parameter('num_of_waypoints', '9')
+                self.declare_parameter('num_of_waypoints', 9)
                 num_of_waypoints = self.get_parameter('num_of_waypoints').get_parameter_value().integer_value
                 self.get_logger().info('Number of waypoints to be created: %d' % num_of_waypoints)
 
@@ -35,7 +35,8 @@ class WaypointCreator(Node):
                 self.robast_map_publish_rate = 100 # seconds between timer ticks
                 self.timer = self.create_timer(self.robast_map_publish_rate, self.trigger_map_publish_callback)
 
-                self.follow_waypoints_client = ActionClient(self, FollowWaypoints, 'FollowWaypoints')
+                # Mind that the action server changed from /FollowWaypoints (Foxy) to /follow_waypoints (Galactic)
+                self.follow_waypoints_client = ActionClient(self, FollowWaypoints, 'follow_waypoints') 
                 self.send_waypoints(self.waypoints)
 
 
@@ -46,8 +47,6 @@ class WaypointCreator(Node):
         def trigger_map_update(self):
                 map_update_future = self.trigger_map_update_srv_client.call_async(SetBool.Request())
                 map_update_future.add_done_callback(self.map_update_result_callback)
-
-
         def map_update_result_callback(self, future):
                 is_map_update_successfull = future.result().success
                 self.get_logger().info('Is map update successfull? {0}'.format(is_map_update_successfull))
@@ -102,7 +101,7 @@ class WaypointCreator(Node):
                 client_goal_handle = send_goal_future.result()
 
                 if not client_goal_handle.accepted:
-                        self.error('Following ' + str(len(waypoints)) + ' waypoints request was rejected!')
+                        self.get_logger().error('Following ' + str(len(waypoints)) + ' waypoints request was rejected!')
 
                 self.result_future = client_goal_handle.get_result_async()
                 self.result_future.add_done_callback(self.get_result_callback)
