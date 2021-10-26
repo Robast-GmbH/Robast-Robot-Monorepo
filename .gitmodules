@@ -4,6 +4,9 @@
 [submodule "aws_hospital_world.git"]
 	path = src/aws_hospital_world
 	url = https://github.com/TipluJacob/aws_hospital_world.git
+[submodule "spatio_temporal_voxel_layer.git"]
+	path = src/spatio_temporal_voxel_layer
+	url = https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
 [submodule "rosboard.git"]
 	path = src/rosboard
 	url = https://github.com/TAlscher/rosboard.git
