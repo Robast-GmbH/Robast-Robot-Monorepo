@@ -80,7 +80,7 @@
         {
             "label": "waypoint_test",
             "detail": "Starts TipluWorld, Nav, waypoint test",
-            "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_l"],
+            "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_l", "start follow_waypoint_test"],
         },
         {
             "type": "shell",
@@ -97,7 +97,7 @@
         {
             "type": "shell",
             "label": "start nav_without_l",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation nav_without_localization_launch.py",  
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation nav_without_localization_with_map_buffer_launch.py",  
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
@@ -118,16 +118,18 @@
                 "panel": "new"
             }
         },
-
-
-
-
-
-
-
-
-
-
+        {
+            "type": "shell",
+            "label": "start follow_waypoint_test",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=50",  
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": true,
+                "group": "waypoint_testing",  
+                "panel": "new"
+            }
+        },
         // Linting and static code analysis tasks
         {
             "label": "fix",
