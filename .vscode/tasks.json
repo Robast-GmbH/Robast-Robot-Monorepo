@@ -78,8 +78,8 @@
         },
         //default start
         {
-            "label": "waypoint_test",
-            "detail": "Starts TipluWorld, Nav, waypoint test",
+            "label": "defaullt_startup",
+            "detail": "Starts TipluWorld, Nav, slam",
             "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_localization"],
             "problemMatcher": [],
         },
@@ -122,7 +122,7 @@
         //waypoint test
         {
             "label": "waypoint_test",
-            "detail": "Starts TipluWorld, Nav, waypoint test",
+            "detail": "Starts TipluWorld, Nav, slam, waypoint test",
             "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_localization_with_map_buffer", "start follow_waypoint_test"],
             "problemMatcher": [],
         },
