@@ -8,5 +8,5 @@
 	path = src/spatio_temporal_voxel_layer
 	url = https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
 [submodule "rosboard.git"]
-	path = rosboard
+	path = src/rosboard
 	url = https://github.com/TAlscher/rosboard.git
