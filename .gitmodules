@@ -5,5 +5,5 @@
 	path = src/aws_hospital_world
 	url = https://github.com/TipluJacob/aws_hospital_world.git
 [submodule "rosboard.git"]
-	path = rosboard
+	path = src/rosboard
 	url = https://github.com/TAlscher/rosboard.git
