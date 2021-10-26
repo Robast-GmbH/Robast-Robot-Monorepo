@@ -65,7 +65,7 @@
             "dependsOn": ["purge"],
             "dependsOrder": "sequence",
             "type": "shell",
-            "command": "source ~/../../opt/ros/foxy/setup.bash; colcon build --packages-select robot_localization --symlink-install; source install/setup.bash; colcon build --symlink-install --packages-skip aws_hospital_world",
+            "command": "source ~/../../opt/ros/galactic/setup.bash; colcon build --packages-select robot_localization --symlink-install; source install/setup.bash; colcon build --symlink-install --packages-skip aws_hospital_world",
             "problemMatcher": []
         },
         // Purge
