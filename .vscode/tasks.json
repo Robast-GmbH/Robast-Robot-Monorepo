@@ -81,6 +81,7 @@
             "label": "waypoint_test",
             "detail": "Starts TipluWorld, Nav, waypoint test",
             "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_localization"],
+            "problemMatcher": [],
         },
         {
             "type": "shell",
@@ -123,6 +124,7 @@
             "label": "waypoint_test",
             "detail": "Starts TipluWorld, Nav, waypoint test",
             "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_localization_with_map_buffer", "start follow_waypoint_test"],
+            "problemMatcher": [],
         },
         {
             "type": "shell",
