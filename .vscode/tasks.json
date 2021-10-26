@@ -76,11 +76,11 @@
             "command": "rm -fr build install log; py3clean .",
             "problemMatcher": []
         },
-        //waypoint test
+        //default start
         {
             "label": "waypoint_test",
             "detail": "Starts TipluWorld, Nav, waypoint test",
-            "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_l", "start follow_waypoint_test"],
+            "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_localization"],
         },
         {
             "type": "shell",
@@ -88,21 +88,21 @@
             "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch map_server TipluWorld_no_client.launch.py",
             "problemMatcher": [],
             "presentation": {
-                "echo": true,  // silence "Executing task ..."
-                "focus": false,
-                "group": "waypoint_testing",  
+                "echo": false,  // silence "Executing task ..."
+                "focus": true,
+                "group": "default_start",  
                 "panel": "new"
             }
         },
         {
             "type": "shell",
-            "label": "start nav_without_l",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation nav_without_localization_with_map_buffer_launch.py",  
+            "label": "start nav_without_localization",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation nav_without_localization_launch.py",  
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
                 "focus": true,
-                "group": "waypoint_testing",  
+                "group": "default_start",  
                 "panel": "new"
             }
         },
@@ -110,6 +110,24 @@
             "type": "shell",
             "label": "start slam_toolbox",
             "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation slam_toolbox_launch_no_rviz.py",  
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": true,
+                "group": "default_start",  
+                "panel": "new"
+            }
+        },
+        //waypoint test
+        {
+            "label": "waypoint_test",
+            "detail": "Starts TipluWorld, Nav, waypoint test",
+            "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_localization_with_map_buffer", "start follow_waypoint_test"],
+        },
+        {
+            "type": "shell",
+            "label": "start nav_without_localization_with_map_buffer",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation nav_without_localization_with_map_buffer_launch.py",  
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
