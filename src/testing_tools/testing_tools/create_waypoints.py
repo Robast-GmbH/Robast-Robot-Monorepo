@@ -19,7 +19,7 @@ class WaypointCreator(Node):
         def __init__(self):
                 super().__init__('waypoint_creator')
 
-                self.declare_parameter('num_of_waypoints', '9')
+                self.declare_parameter('num_of_waypoints', 9)
                 num_of_waypoints = self.get_parameter('num_of_waypoints').get_parameter_value().integer_value
                 self.get_logger().info('Number of waypoints to be created: %d' % num_of_waypoints)
 
@@ -102,7 +102,7 @@ class WaypointCreator(Node):
                 client_goal_handle = send_goal_future.result()
 
                 if not client_goal_handle.accepted:
-                        self.error('Following ' + str(len(waypoints)) + ' waypoints request was rejected!')
+                        self.get_logger().error('Following ' + str(len(waypoints)) + ' waypoints request was rejected!')
 
                 self.result_future = client_goal_handle.get_result_async()
                 self.result_future.add_done_callback(self.get_result_callback)
