@@ -1,23 +1,23 @@
 import os
 import rclpy
 import yaml
+import random
+import time
 from ament_index_python.packages import get_package_share_directory
 from rclpy.node import Node
 from rclpy.action import ActionClient
-
 from action_msgs.msg import GoalStatus
 from geometry_msgs.msg import PoseStamped
 from nav2_msgs.action import FollowWaypoints
 from std_srvs.srv import SetBool
-
-import random
-
 
 
 class WaypointCreator(Node):
 
         def __init__(self):
                 super().__init__('waypoint_creator')
+
+                time.sleep(5) # Sleep for some seconds to make sure gazebo and other stuff is started
 
                 self.declare_parameter('num_of_waypoints', 9)
                 num_of_waypoints = self.get_parameter('num_of_waypoints').get_parameter_value().integer_value
