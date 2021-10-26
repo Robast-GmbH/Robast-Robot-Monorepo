@@ -47,7 +47,7 @@
             "label": "build-ros-theron",
             "detail": "Symlink Build for Ros-Theron. Makes sure packages are build in the right order.",
             "type": "shell",
-            "command": "colcon build --packages-select robot_localization --symlink-install; source install/setup.bash; colcon build --symlink-install --packages-skip aws_hospital_world",
+            "command": "colcon build --packages-select robot_localization --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic; source install/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip aws_hospital_world",
             "problemMatcher": [],
         },
         // Clean build Ros-Theron 
@@ -75,6 +75,80 @@
             "type": "shell",
             "command": "rm -fr build install log; py3clean .",
             "problemMatcher": []
+        },
+        //default start
+        {
+            "label": "waypoint_test",
+            "detail": "Starts TipluWorld, Nav, waypoint test",
+            "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_localization"],
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "start map_server",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch map_server TipluWorld_no_client.launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": true,
+                "group": "default_start",  
+                "panel": "new"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "start nav_without_localization",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation nav_without_localization_launch.py",  
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": true,
+                "group": "default_start",  
+                "panel": "new"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "start slam_toolbox",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation slam_toolbox_launch_no_rviz.py",  
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": true,
+                "group": "default_start",  
+                "panel": "new"
+            }
+        },
+        //waypoint test
+        {
+            "label": "waypoint_test",
+            "detail": "Starts TipluWorld, Nav, waypoint test",
+            "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_localization_with_map_buffer", "start follow_waypoint_test"],
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "start nav_without_localization_with_map_buffer",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation nav_without_localization_with_map_buffer_launch.py",  
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": true,
+                "group": "waypoint_testing",  
+                "panel": "new"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "start follow_waypoint_test",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=50",  
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": true,
+                "group": "waypoint_testing",  
+                "panel": "new"
+            }
         },
         // Linting and static code analysis tasks
         {
