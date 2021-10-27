@@ -7,7 +7,6 @@ bt_navigator:
     bt_loop_duration: 10 #neu
     default_server_timeout: 20 #neu
     # default_bt_xml_filename: "navigate_w_replanning_and_recovery.xml"
-
     plugin_lib_names:
       - nav2_compute_path_to_pose_action_bt_node
       - nav2_compute_path_through_poses_action_bt_node
@@ -40,11 +39,9 @@ bt_navigator:
       - nav2_planner_selector_bt_node
       - nav2_controller_selector_bt_node
       - nav2_goal_checker_selector_bt_node
-
 bt_navigator_rclcpp_node:
   ros__parameters:
     use_sim_time: True
-
 controller_server:
   ros__parameters:
     use_sim_time: True
@@ -56,7 +53,6 @@ controller_server:
     progress_checker_plugin: "progress_checker"
     goal_checker_plugin: "goal_checker"
     controller_plugins: ["FollowPath"]
-
     # Progress checker parameters
     progress_checker:
       plugin: "nav2_controller::SimpleProgressChecker"
@@ -69,7 +65,6 @@ controller_server:
       yaw_goal_tolerance: 0.25
       stateful: True
     # DWB parameters
-    
     FollowPath:
       plugin: "dwb_core::DWBLocalPlanner"
       debug_trajectory_details: True
@@ -113,11 +108,9 @@ controller_server:
       RotateToGoal.scale: 32.0
       RotateToGoal.slowing_factor: 5.0
       RotateToGoal.lookahead_time: -1.0
-
 controller_server_rclcpp_node:
   ros__parameters:
     use_sim_time: True
-
 local_costmap:
   local_costmap:
     ros__parameters:
@@ -125,7 +118,7 @@ local_costmap:
       publish_frequency: 2.0
       global_frame: odom
       robot_base_frame: base_link
-      map_topic: /map
+      # map_topic: /map
       use_sim_time: True
       rolling_window: true
       width: 7
@@ -203,7 +196,6 @@ local_costmap:
   local_costmap_rclcpp_node:
     ros__parameters:
       use_sim_time: True
-
 global_costmap:
   global_costmap:
     ros__parameters:
@@ -211,7 +203,7 @@ global_costmap:
       publish_frequency: 1.0
       global_frame: map
       robot_base_frame: base_link
-      map_topic: /map
+      # map_topic: /map
       use_sim_time: True
       robot_radius: 0.40
       footprint: "[ [0.35, 0.30], [0.35, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
@@ -289,7 +281,6 @@ global_costmap:
   global_costmap_rclcpp_node:
     ros__parameters:
       use_sim_time: True
-
 planner_server:
   ros__parameters:
     expected_planner_frequency: 20.0
@@ -300,11 +291,9 @@ planner_server:
       tolerance: 0.1 #er hat hier auch 0.5
       use_astar: false
       allow_unknown: True
-
 planner_server_rclcpp_node:
   ros__parameters:
     use_sim_time: True
-
 recoveries_server:
   ros__parameters:
     costmap_topic: local_costmap/costmap_raw
@@ -325,18 +314,15 @@ recoveries_server:
     max_rotational_vel: 1.0
     min_rotational_vel: 0.4
     rotational_acc_lim: 3.2
-
 robot_state_publisher:
   ros__parameters:
     use_sim_time: True
-
 waypoint_follower:
   ros__parameters:
     loop_rate: 20
     stop_on_failure: false
-    waypoint_task_executor_plugin: "wait_at_waypoint"   
+    waypoint_task_executor_plugin: "wait_at_waypoint"
     wait_at_waypoint:
       plugin: "nav2_waypoint_follower::WaitAtWaypoint"
       enabled: True
       waypoint_pause_duration: 200
-

@@ -115,7 +115,7 @@ local_costmap:
       publish_frequency: 2.0
       global_frame: odom
       robot_base_frame: base_link
-      map_topic: /map
+      # map_topic: /map
       use_sim_time: True
       rolling_window: true
       width: 7
@@ -201,7 +201,7 @@ global_costmap:
       publish_frequency: 1.0
       global_frame: map
       robot_base_frame: base_link
-      map_topic: /map
+      # map_topic: /map
       use_sim_time: True
       robot_radius: 0.40
       footprint: "[ [0.35, 0.30], [0.35, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
