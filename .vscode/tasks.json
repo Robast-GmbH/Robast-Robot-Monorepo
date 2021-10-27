@@ -123,6 +123,24 @@
         {
             "label": "waypoint_test",
             "detail": "Starts TipluWorld, Nav, slam, waypoint test",
+            "dependsOrder": "sequence",
+            "dependsOn": ["build tests", "waypoint_test_follow"],
+            "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "build tests",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; colcon build --symlink-install --packages-select testing_tools",  
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": false,
+                "group": "testing",  
+            }
+        },
+        {
+            "label": "waypoint_test_follow",
+            "detail": "Starts TipluWorld, Nav, slam, waypoint test",
             "dependsOn": ["start map_server", "start slam_toolbox", "start nav_without_localization_with_map_buffer", "start follow_waypoint_test"],
             "problemMatcher": [],
         },
@@ -141,7 +159,7 @@
         {
             "type": "shell",
             "label": "start follow_waypoint_test",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=50",  
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=200",  
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
