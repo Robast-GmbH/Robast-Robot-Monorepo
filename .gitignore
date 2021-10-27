@@ -134,3 +134,7 @@ demo
 test
 *.pdf
 *.gv
+
+#rosbag
+*.db3
+rosbag2*
