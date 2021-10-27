@@ -56,7 +56,8 @@ def generate_launch_description():
             package='nav2_controller',
             executable='controller_server',
             output='screen',
-            parameters=[nav2_params_yaml],
+            parameters=[nav2_params_yaml,
+            {"map_topic": '/robast_map'}],
             remappings=remappings),
 
         Node(
@@ -64,7 +65,8 @@ def generate_launch_description():
             executable='planner_server',
             name='planner_server',
             output='screen',
-            parameters=[nav2_params_yaml],
+            parameters=[nav2_params_yaml,
+            {"map_topic": '/robast_map'}],
             remappings=remappings),
 
         Node(
