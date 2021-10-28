@@ -23,6 +23,14 @@ class WaypointCreator(Node):
                 num_of_waypoints = self.get_parameter('num_of_waypoints').get_parameter_value().integer_value
                 self.get_logger().info('Number of waypoints to be created: %d' % num_of_waypoints)
 
+                self.declare_parameter('random_seed', 2)
+                self.random_seed = self.get_parameter('random_seed').get_parameter_value().integer_value
+                self.get_logger().info('Random seed: %d' % self.random_seed)
+
+                self.declare_parameter('random_deviation_goal_pose', 1.5)
+                self.random_deviation = self.get_parameter('random_deviation_goal_pose').get_parameter_value().double_value
+                self.get_logger().info('Random deviation for goal pose: %f' % self.random_deviation)
+
                 self.trigger_map_update_srv_client = self.create_client(SetBool, 'trigger_robast_map_publishing')
                 # Check if the a service is available  
                 while not self.trigger_map_update_srv_client.wait_for_service(timeout_sec=1.0):
@@ -47,7 +55,7 @@ class WaypointCreator(Node):
 
         def create_waypoints(self, num_of_waypoints, map_setup):
                 waypoints = []
-                random.seed(2) # seed random number generator
+                random.seed(self.random_seed) # seed random number generator
                 number_of_rooms = len(map_setup['rooms'])
                 for i in range(1, num_of_waypoints+1):
                         room_number = random.randint(1,number_of_rooms)
@@ -63,8 +71,8 @@ class WaypointCreator(Node):
                 x = map_setup['rooms'][nav_goal_room_number]['center point']['x']
                 y = map_setup['rooms'][nav_goal_room_number]['center point']['y']
                 # Add a small random number to the x and y value to ensure the goal is not always the same
-                nav_goal.pose.position.x = x + random.uniform(-1.0, 1.0)
-                nav_goal.pose.position.y = - y + random.uniform(-1.0, 1.0)
+                nav_goal.pose.position.x = x + random.uniform(-self.random_deviation, self.random_deviation)
+                nav_goal.pose.position.y = - y + random.uniform(-self.random_deviation, self.random_deviation)
                 self.get_logger().info('-> Goal X-Coordinate: %s' % nav_goal.pose.position.x)
                 self.get_logger().info('-> Goal Y-Coordinate: %s' % nav_goal.pose.position.y)
                 return nav_goal
