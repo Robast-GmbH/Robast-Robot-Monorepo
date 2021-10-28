@@ -401,7 +401,7 @@
 
              <min_depth>0.001</min_depth>
         </plugin>
-        <pose>0.3305 0 0.265 0 -0 0</pose>
+        <pose>0.25 0 0.265 0 -0 0</pose>
       </sensor>
     </link>
     <joint name='leftjoint_rsupport' type='revolute'>
