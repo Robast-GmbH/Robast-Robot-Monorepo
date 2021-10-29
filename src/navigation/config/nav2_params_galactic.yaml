@@ -248,7 +248,26 @@ global_costmap:
           topic: /custom_camera/points
           marking: true
           clearing: true
-          obstacle_range: 6.0
+          obstacle_range: 3.0
+          min_obstacle_height: 0.1
+          max_obstacle_height: 2.0
+          expected_update_rate: 0.0
+          observation_persistence: 0.0
+          inf_is_valid: false
+          voxel_filter: false
+          clear_after_reading: true
+          max_z: 7.0
+          min_z: 0.1
+          vertical_fov_angle: 0.8745
+          horizontal_fov_angle: 1.048
+          decay_acceleration: 15.0
+          model_type: 0
+        scan:
+          data_type: LaserScan
+          topic: /scan
+          marking: true
+          clearing: true
+          obstacle_range: 3.0
           min_obstacle_height: 0.1
           max_obstacle_height: 2.0
           expected_update_rate: 0.0

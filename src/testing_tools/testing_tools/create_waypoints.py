@@ -33,8 +33,8 @@ class WaypointCreator(Node):
 
                 self.trigger_map_update_srv_client = self.create_client(SetBool, 'trigger_robast_map_publishing')
                 # Check if the a service is available  
-                while not self.trigger_map_update_srv_client.wait_for_service(timeout_sec=1.0):
-                        self.get_logger().info('Trigger_robast_map_publishing Service is not available, waiting again...')
+                if not self.trigger_map_update_srv_client.wait_for_service(timeout_sec=5.0):
+                        self.get_logger().warn('Trigger_robast_map_publishing Service is not available! If slam_toolbox is used, this service should be active.')
 
                 map_setup = self.read_map_setup(os.path.join(get_package_share_directory('testing_tools'), 'map_setup_5OG.yaml'))             
                 self.waypoints = self.create_waypoints(num_of_waypoints, map_setup)
