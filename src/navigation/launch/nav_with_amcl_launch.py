@@ -74,8 +74,9 @@ def generate_launch_description():
             name='amcl',
             output='screen',
             parameters=[
-            nav2_localization_params_yaml,
-            {"initial_pose": [float(POSE_INIT_X), float(POSE_INIT_Y), 3.14]}
+                nav2_localization_params_yaml,
+                {"initial_pose": {"x": 8.59, "y": -13.45, "yaw": 3.14}},
+                {"set_initial_pose": True},
             ],
             remappings=remappings),
 
