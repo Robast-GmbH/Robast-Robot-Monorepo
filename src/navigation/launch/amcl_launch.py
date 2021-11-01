@@ -8,14 +8,16 @@ from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
     POSE_INIT_X = os.environ['POSE_INIT_X']
     POSE_INIT_Y = os.environ['POSE_INIT_Y']
     POSE_INIT_Z = os.environ['POSE_INIT_Z']
 
     nav2_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_params.yaml')
-    nav2_localization_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'localization_params.yaml')
-    map_file = os.path.join(get_package_share_directory('navigation'), 'maps', '5OG_map.yaml')
+    nav2_localization_params_yaml = os.path.join(get_package_share_directory(
+        'navigation'), 'config', 'localization_params.yaml')
+    map_file = os.path.join(get_package_share_directory('navigation'), 'maps', '5OG.yaml')
 
     print('map_file: {}'.format(map_file))
 
@@ -24,9 +26,9 @@ def generate_launch_description():
 
     # Mind the order in which the nodes are started!!!
     lifecycle_nodes = [
-                        'map_server',
-                        'amcl',
-                       ]
+        'map_server',
+        'amcl',
+    ]
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -37,7 +39,6 @@ def generate_launch_description():
     remappings = [('/tf', 'tf'),
                   ('/tf_static', 'tf_static'),
                   ('/map', 'map')]
-
 
     return LaunchDescription([
         # Set env var to print messages to stdout immediately
@@ -57,11 +58,11 @@ def generate_launch_description():
             name='map_server',
             output='screen',
             parameters=[nav2_params_yaml,
-                {'yaml_filename': map_file}
-            ],
+                        {'yaml_filename': map_file}
+                        ],
             remappings=remappings),
 
-         Node(
+        Node(
             package='nav2_amcl',
             executable='amcl',
             name='amcl',
@@ -72,7 +73,7 @@ def generate_launch_description():
                 {"set_initial_pose": True},
             ],
             remappings=remappings),
-    
+
         Node(
             package='nav2_lifecycle_manager',
             executable='lifecycle_manager',
@@ -80,5 +81,5 @@ def generate_launch_description():
             output='screen',
             parameters=[{'use_sim_time': use_sim_time},
                         {'autostart': autostart},
-                        {'node_names': lifecycle_nodes}])    
+                        {'node_names': lifecycle_nodes}])
     ])
