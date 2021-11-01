@@ -3,6 +3,7 @@ import rclpy
 import yaml
 import random
 import time
+from datetime import datetime
 from ament_index_python.packages import get_package_share_directory
 from rclpy.node import Node
 from rclpy.action import ActionClient
@@ -36,7 +37,8 @@ class WaypointCreator(Node):
         if not self.trigger_map_update_srv_client.wait_for_service(timeout_sec=5.0):
             self.get_logger().warn('Trigger_robast_map_publishing Service is not available! If slam_toolbox is used, this service should be active.')
 
-        map_setup = self.read_map_setup(os.path.join(get_package_share_directory('testing_tools'), 'map_setup_5OG.yaml'))
+        map_setup = self.read_map_setup(os.path.join(
+            get_package_share_directory('testing_tools'), 'map_setup_5OG.yaml'))
         self.waypoints = self.create_waypoints(num_of_waypoints, map_setup)
 
         self.nav_to_pose_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
@@ -47,7 +49,8 @@ class WaypointCreator(Node):
     def trigger_map_update(self):
         map_update_future = self.trigger_map_update_srv_client.call_async(SetBool.Request())
         map_update_future.add_done_callback(self.map_update_result_callback)
-        time.sleep(1.0)  # Sleep for a second to make sure there is enough time to build a new costmap before navigation is started again
+        # Sleep for a second to make sure there is enough time to build a new costmap before navigation is started again
+        time.sleep(1.0)
 
     def map_update_result_callback(self, future):
         is_map_update_successfull = future.result().success
@@ -88,7 +91,8 @@ class WaypointCreator(Node):
         nav_to_pose_goal_msg.pose = nav_goal
 
         self.get_logger().info('Sending waypoint number {0} as NavigateToPose Goal: '.format(waypoint_counter))
-        send_goal_future = self.nav_to_pose_client.send_goal_async(nav_to_pose_goal_msg, feedback_callback=self.feedback_callback)
+        send_goal_future = self.nav_to_pose_client.send_goal_async(
+            nav_to_pose_goal_msg, feedback_callback=self.feedback_callback)
 
         # The send_goal_future instance completes when the goal request has been accepted or rejected.
         # Therefore the spinning runs just a short time until the request has been accepted or rejected.
@@ -131,7 +135,8 @@ class WaypointCreator(Node):
             return False
 
     def handle_failed_nav_goal(self, waypoint_counter):
-        self.get_logger().info('Goal for waypoint {0} failed with status code: {1}! List of failed goales:'.format(waypoint_counter, self.status))
+        self.get_logger().info('Goal for waypoint {0} failed with status code: {1}! List of failed goales:'.format(
+            waypoint_counter, self.status))
         room_number = self.room_numbers_of_waypoints[waypoint_counter - 1]
         goal_position_x = self.waypoints[waypoint_counter - 1].pose.position.x
         goal_position_y = self.waypoints[waypoint_counter - 1].pose.position.y
@@ -161,16 +166,28 @@ def main(args=None):
 
     waypoint_creator.get_logger().info('Waiting for navigate_to_pose Server ...')
     waypoint_creator.nav_to_pose_client.wait_for_server()
-    waypoint_counter = 1
+    waypoint_counter = 0
 
     for nav_goal in waypoint_creator.waypoints:
+        waypoint_counter += 1
         waypoint_creator.trigger_map_update()
-
         waypoint_creator.send_nav_goal(nav_goal, waypoint_counter)
-
         waypoint_creator.spin_until_nav_goal_reached(waypoint_counter)
 
-        waypoint_counter += 1
+    waypoint_creator.get_logger().info('Finished test procedure for {0} waypoints!'.format(waypoint_counter))
+
+    # get timestamp
+    now = datetime.now()
+    dt_string = now.strftime("%d/%m/%Y %H:%M:%S")  # dd/mm/YY H:M:S
+    # write the list of failed_nav_goals to txt file
+    with open('waypoint_testing_result.txt', 'a+') as file:
+        file.write("\n\n" + "Timestamp:" + dt_string)
+        file.write("\n" + "Finished test procedure for " +
+                   str(waypoint_counter) + " waypoints! List of all " + str(len(waypoint_creator.failed_nav_goals)) + " failed waypoints:")
+        for item in waypoint_creator.failed_nav_goals:
+            file.write("\n%s" % item)
+    waypoint_creator.get_logger().info(
+        'Wrote all {0} failed waypoints to waypoint_testing_result.txt!'.format(len(waypoint_creator.failed_nav_goals)))
 
     # shutdown the ROS communication
     rclpy.shutdown()
