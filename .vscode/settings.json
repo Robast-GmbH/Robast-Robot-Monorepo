@@ -1,7 +1,10 @@
 {
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "on",
+    "editor.wordWrapColumn": 120,
     "editor.tabSize": 8,
     "editor.rulers": [
-        100
+        120
     ],
     "editor.defaultFormatter": "LaurentTreguier.uncrustify",
     "files.associations": {
@@ -18,7 +21,7 @@
     // Use the system installed version of autopep8
     "python.formatting.autopep8Path": "/usr/bin/autopep8",
     "python.formatting.autopep8Args": [
-        "--max-line-length=100"
+        "--max-line-length=120"
     ],
     "C_Cpp.default.intelliSenseMode": "clang-x64",
     "C_Cpp.formatting": "Disabled",
@@ -55,5 +58,8 @@
     },
     "python.analysis.extraPaths": [
         "/opt/ros/galactic/lib/python3.8/site-packages/"
-    ]
+    ],
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python"
+    }
 }
