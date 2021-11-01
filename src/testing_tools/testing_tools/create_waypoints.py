@@ -36,10 +36,14 @@ class WaypointCreator(Node):
                 if not self.trigger_map_update_srv_client.wait_for_service(timeout_sec=5.0):
                         self.get_logger().warn('Trigger_robast_map_publishing Service is not available! If slam_toolbox is used, this service should be active.')
 
-                map_setup = self.read_map_setup(os.path.join(get_package_share_directory('testing_tools'), 'map_setup_5OG.yaml'))             
+                map_setup = self.read_map_setup(os.path.join(get_package_share_directory('testing_tools'), 'map_setup_5OG.yaml')) 
                 self.waypoints = self.create_waypoints(num_of_waypoints, map_setup)
 
                 self.nav_to_pose_client = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+
+                # Create lists to track the failed nav goals
+                self.failed_nav_goals = list()
+                
 
 
         def trigger_map_update(self):
@@ -54,11 +58,13 @@ class WaypointCreator(Node):
 
 
         def create_waypoints(self, num_of_waypoints, map_setup):
+                self.room_numbers_of_waypoints = list() # this list is important to report which rooms have failed
                 waypoints = []
                 random.seed(self.random_seed) # seed random number generator
                 number_of_rooms = len(map_setup['rooms'])
                 for i in range(1, num_of_waypoints+1):
                         room_number = random.randint(1,number_of_rooms)
+                        self.room_numbers_of_waypoints.append(room_number)
                         self.get_logger().info(('Adding room ' + str(room_number) + ' as waypoint number ' + str(i) + ' to waypoints:'))
                         waypoints.append(self.get_nav_goal_pose(room_number, map_setup))
                 return waypoints
@@ -120,7 +126,7 @@ class WaypointCreator(Node):
                 return self.feedback
 
 
-        def is_nav_complete(self):
+        def is_nav_complete(self, waypoint_counter):
                 if not self.result_future:
                         # task was cancelled or completed
                         self.get_logger().info('Goal cancelled or completed!')
@@ -129,7 +135,7 @@ class WaypointCreator(Node):
                 if self.result_future.result():
                         self.status = self.result_future.result().status
                         if self.status != GoalStatus.STATUS_SUCCEEDED:
-                                self.get_logger().info('Goal with failed with status code: {0}'.format(self.status))
+                                self.handle_failed_nav_goal(waypoint_counter)
                                 return True
                         elif self.status == GoalStatus.STATUS_SUCCEEDED:
                                 self.get_logger().info('Goal succeeded!')
@@ -137,11 +143,18 @@ class WaypointCreator(Node):
                 else:
                         # Timed out, still processing, not complete yet
                         return False
+                        
+
+        def handle_failed_nav_goal(self, waypoint_counter):
+            self.get_logger().info('Goal for waypoint {0} failed with status code: {1}! List of failed goales:'.format(waypoint_counter, self.status))
+            self.failed_nav_goals.append('Waypoint {0} in room {1} with goal pose x = {2} and y = {3} failed!'.format(waypoint_counter, self.room_numbers_of_waypoints[waypoint_counter], self.waypoints[waypoint_counter].pose.position.x, self.waypoints[waypoint_counter].pose.position.y))
+            for failed_nav_goal in self.failed_nav_goals:
+                    self.get_logger().info('{0}'.format(failed_nav_goal))
 
         
         def spin_until_nav_goal_reached(self, waypoint_counter):
                 i = 0
-                while not self.is_nav_complete():
+                while not self.is_nav_complete(waypoint_counter):
                         # Do something with the feedback
                         i = i + 1
                         feedback = self.get_feedback()
