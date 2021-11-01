@@ -143,11 +143,11 @@ class WaypointCreator(Node):
                 else:
                         # Timed out, still processing, not complete yet
                         return False
-                        
+
 
         def handle_failed_nav_goal(self, waypoint_counter):
             self.get_logger().info('Goal for waypoint {0} failed with status code: {1}! List of failed goales:'.format(waypoint_counter, self.status))
-            self.failed_nav_goals.append('Waypoint {0} in room {1} with goal pose x = {2} and y = {3} failed!'.format(waypoint_counter, self.room_numbers_of_waypoints[waypoint_counter], self.waypoints[waypoint_counter].pose.position.x, self.waypoints[waypoint_counter].pose.position.y))
+            self.failed_nav_goals.append('Waypoint {0} in room {1} with goal pose x = {2} and y = {3} failed!'.format(waypoint_counter, self.room_numbers_of_waypoints[waypoint_counter - 1], self.waypoints[waypoint_counter - 1].pose.position.x, self.waypoints[waypoint_counter - 1].pose.position.y))
             for failed_nav_goal in self.failed_nav_goals:
                     self.get_logger().info('{0}'.format(failed_nav_goal))
 
