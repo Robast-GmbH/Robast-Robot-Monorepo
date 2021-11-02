@@ -34,7 +34,7 @@
           <geometry>
             <plane>
               <normal>0 0 1</normal>
-              <size>100 100</size>
+              <size>0 100</size>
             </plane>
           </geometry>
           <material>
@@ -12837,5 +12837,34 @@
       <allow_auto_disable>1</allow_auto_disable>
       <pose>9.63692 -13.0975 0.795297 0 -0 0</pose>
     </model>
+    <actor name="actor">
+      <pose>9 -10 1 0 -0 0</pose>
+      <skin>
+        <filename>walk.dae</filename>
+        <scale>1.0</scale>
+      </skin>
+      <animation name="walking">
+        <filename>walk.dae</filename>
+        <scale>1.000000</scale>
+        <interpolate_x>true</interpolate_x>
+      </animation>
+
+    <plugin name="actor0_plugin" filename="libAutonomousActorPlugin.so">
+      <target_weight>1.15</target_weight>
+      <obstacle_weight>1.8</obstacle_weight>
+      <animation_factor>5.1</animation_factor>
+      <!-- Usage: Modify the set of models that the vector field should
+            ignore when moving the actor -->
+      <ignore_obstacles>
+        <model>cafe</model>
+        <model>ground_plane</model>
+      </ignore_obstacles>
+      <targets>
+        <target>100 -50 0</target>
+       
+      </targets>
+    </plugin>
+    </actor>
   </world>
+  
 </sdf>
