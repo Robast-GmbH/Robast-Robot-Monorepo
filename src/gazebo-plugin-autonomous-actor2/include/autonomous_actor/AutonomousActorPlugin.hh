@@ -8,8 +8,6 @@
 #include "gazebo/physics/physics.hh"
 #include "gazebo/util/system.hh"
 
-#include <rclcpp/rclcpp.hpp>
-
 namespace gazebo
 {
   class GAZEBO_VISIBLE AutoActorPlugin : public ModelPlugin
@@ -110,8 +108,8 @@ namespace gazebo
 
     /// \brief To broadcast velocity info (Bacchin Alberto)
   private:
-    ros::NodeHandle nh;
-    ros::Publisher pub;
+    // ros::NodeHandle nh;
+    // ros::Publisher pub;
 
     /// \brief GridMap for obstacle avoidance
     //private:
