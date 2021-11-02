@@ -14,28 +14,27 @@ endif()
 find_package(gazebo REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(rclpy REQUIRED)
-find_package(gazebo REQUIRED)
+find_package(gazebo_ros REQUIRED)
+
+add_library(AutonomousActorPlugin SHARED src/AutonomousActorPlugin.cc)
 
 link_directories(${GAZEBO_LIBRARY_DIRS})
 
-include_directories(
-  include
-  ${GAZEBO_INCLUDE_DIRS}
-)
+target_include_directories(AutonomousActorPlugin PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
-link_directories(
-  ${GAZEBO_LIBRARY_DIRS}
-)
+ament_target_dependencies(AutonomousActorPlugin
+  "gazebo_ros"
+  "rclcpp")
 
-list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
+install(TARGETS
+  AutonomousActorPlugin
+  DESTINATION share/${PROJECT_NAME})
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
-add_library(AutonomousActorPlugin SHARED src/AutonomousActorPlugin.cc)
-target_link_libraries(AutonomousActorPlugin ${caktin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
-# Debug Version (Note to add library before target compile definition)
-add_library(AutonomousActorPluginDebug SHARED src/AutonomousActorPlugin.cc)
-target_compile_definitions(AutonomousActorPluginDebug PRIVATE DEBUG_)
-target_link_libraries(AutonomousActorPluginDebug ${caktin_LIBRARIES} ${GAZEBO_LIBRARIES})
+ament_package()
