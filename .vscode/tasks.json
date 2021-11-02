@@ -85,15 +85,32 @@
         },
         {
             "type": "shell",
-            "label": "start map_server",
+            "label": "start rosboard",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 run rosboard rosboard_node",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": false,
+                "group": "default_start",  
+            }
+        },
+        {
+            "type": "shell",
+            "label": "start TipluWorld",
             "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch map_server TipluWorld_no_client.launch.py",
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
-                "focus": true,
+                "focus": false,
                 "group": "default_start",  
                 "panel": "dedicated"
             }
+        },
+        {
+            "label": "start map_server",
+            "detail": "TipluWorld with rosboard on 8888",
+            "dependsOn": ["start TipluWorld", "start rosboard"],
+            "problemMatcher": [],
         },
         {
             "type": "shell",
