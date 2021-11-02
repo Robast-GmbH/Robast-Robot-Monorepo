@@ -11,7 +11,7 @@
   <license>BSD</license>
   <url type="website">https://github.com/BruceChanJianLe/gazebo-plugin-autonomous-actor</url>
 
-  <buildtool_depend>catkin</buildtool_depend>
+  <buildtool_depend>ament_cmake</buildtool_depend>
 
   <build_depend>roscpp</build_depend>
   <build_depend>rospy</build_depend>

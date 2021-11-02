@@ -1,60 +1,44 @@
-cmake_minimum_required(VERSION VERSION 3.5.1)
-project(gazebo-plugin-autonomous-actor)
+cmake_minimum_required(VERSION VERSION 3.5)
+project(gazebo-plugin-autonomous-actor2)
 
-set(CMAKE_CXX_STANDARD 11)
-add_compile_options(-Wall -Wextra -Wpedantic)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Default to C99
+if(NOT CMAKE_C_STANDARD)
+  set(CMAKE_C_STANDARD 99)
+endif()
 
-find_package(catkin REQUIRED COMPONENTS
-  roscpp
-  rospy
-  std_msgs
-  geometry_msgs
-  message_generation
+# Default to C++14
+if(NOT CMAKE_CXX_STANDARD)
+  set(CMAKE_CXX_STANDARD 17)
+endif()
 
-)
-
+find_package( ament_cmake REQUIRED)
 find_package(gazebo REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(rclpy REQUIRED)
 
 
+link_directories(${GAZEBO_LIBRARY_DIRS})
 
 include_directories(
   include
-  ${catkin_INCLUDE_DIRS}
+  ${GAZEBO_INCLUDE_DIRS}
 )
 
-
-link_directories(${GAZEBO_LIBRARY_DIRS}  ${catkin_LIBRARY_DIRS} ${tiago_public_DIRS})
-include_directories(include ${Boost_INCLUDE_DIR} ${catkin_INCLUDE_DIRS} ${GAZEBO_INCLUDE_DIRS} )
-
-catkin_package(
-  DEPENDS
-    roscpp
-    rospy
-    std_msgs
-    
+link_directories(
+  ${GAZEBO_LIBRARY_DIRS}
 )
 
-add_library(AutonomousActorPlugin SHARED src/AutonomousActorPlugin.cc)
-target_link_libraries(AutonomousActorPlugin ${caktin_LIBRARIES} ${GAZEBO_LIBRARIES} )
+list(APPEND CMAKE_CXX_FLAGS "${GAZEBO_CXX_FLAGS}")
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${GAZEBO_CXX_FLAGS}")
+
+add_library(AutonomousActorPlugin2 SHARED src/AutonomousActorPlugin2.cc)
+target_link_libraries(AutonomousActorPlugin2 ${caktin_LIBRARIES} ${GAZEBO_LIBRARIES})
+ament_target_dependencies(AutonomousActorPlugin2 rclcpp)
 
 # Debug Version (Note to add library before target compile definition)
-add_library(AutonomousActorPluginDebug SHARED src/AutonomousActorPlugin.cc)
-target_compile_definitions(AutonomousActorPluginDebug PRIVATE DEBUG_)
-target_link_libraries(AutonomousActorPluginDebug ${caktin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
-add_library(CollisionActorPlugin SHARED src/CollisionActorPlugin.cc)
-target_link_libraries(CollisionActorPlugin ${caktin_LIBRARIES} ${GAZEBO_LIBRARIES} )
-
-# Debug Version (Note to add library before target compile definition)
-add_library(CollisionActorPluginDebug SHARED src/CollisionActorPlugin.cc)
-target_compile_definitions(CollisionActorPluginDebug PRIVATE DEBUG_)
-target_link_libraries(CollisionActorPluginDebug ${caktin_LIBRARIES} ${GAZEBO_LIBRARIES})
-
-
-add_library(AttachModelPlugin SHARED src/AttachModelPlugin.cc)
-target_link_libraries(AttachModelPlugin ${caktin_LIBRARIES} ${GAZEBO_LIBRARIES} )
-
-
-
-
+add_library(AutonomousActorPlugin2Debug SHARED src/AutonomousActorPlugin2.cc)
+target_compile_definitions(AutonomousActorPlugin2Debug PRIVATE DEBUG_)
+target_link_libraries(AutonomousActorPlugin2Debug ${caktin_LIBRARIES} ${GAZEBO_LIBRARIES})
+ament_package()

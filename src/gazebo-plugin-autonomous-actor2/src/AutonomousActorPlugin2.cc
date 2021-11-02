@@ -6,7 +6,7 @@
 #include "gazebo/physics/physics.hh"
 #include <iostream>
 
-#include <ros/ros.h>
+#include <rclcpp/rclcpp.hpp>
 #include <cmath>
 #include <ctgmath>
 #include <fstream>
@@ -637,9 +637,9 @@ void AutoActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   if (stuck_count > 250)
   {
-    ROS_INFO("Timeout for %s!", this->actor->GetName().c_str());
+    //ROS_INFO("Timeout for %s!", this->actor->GetName().c_str());
     this->ChooseNewTarget();
-    ROS_INFO("New target selected");
+    //ROS_INFO("New target selected");
     stuck_count = 0;
   }
 
