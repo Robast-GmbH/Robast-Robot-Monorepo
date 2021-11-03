@@ -37,7 +37,6 @@ void AutoActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->connections.push_back(event::Events::ConnectWorldUpdateBegin(
       std::bind(&AutoActorPlugin::OnUpdate, this, std::placeholders::_1)));
 
-  // Added by brucechanjianle
   // Read in multiple targets
   if (_sdf->HasElement("targets"))
   {
@@ -114,14 +113,12 @@ void AutoActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     }
   }
 
-  // Added by brucechanjianle
   // Read in target tolerance
   if (_sdf->HasElement("target_tolerance"))
     this->tolerance = _sdf->Get<double>("target_tolerance");
   else
     this->tolerance = 0.3;
 
-  // Added by Alberto Bacchin
   // Room personalization
   if (_sdf->HasElement("room_x"))
     this->room_x = _sdf->Get<ignition::math::Vector2d>("room_x");
@@ -147,10 +144,7 @@ void AutoActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
   check_pose = init_pose;
 
-  //Publisher initialization
-  //pub = nh.advertise<gazebo_person_detection::actor_vel>("actor_velocities", 1, true);
-
-  direction = (this->target - init_pose).Normalize();
+  offset_target_to_init_pose = (this->target - init_pose).Normalize();
 }
 
 /////////////////////////////////////////////////
@@ -393,7 +387,7 @@ std::tuple<bool, double> AutoActorPlugin::checkIntersection(ignition::math::Box 
 } */
 
 /////////////////////////////////////////////////
-void AutoActorPlugin::HandleObstacles(ignition::math::Vector3d &_pos) //Updated by Bacchin Alberto
+void AutoActorPlugin::HandleObstacles(ignition::math::Vector3d &_pos)
 {
   std::tuple<bool, double> obs_intersection;
   ignition::math::Vector3d correction, other_actor_pose;
@@ -526,10 +520,10 @@ void AutoActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   //gazebo_person_detection::actor_vel msg;
 
   ignition::math::Pose3d pose = this->actor->WorldPose();
-  ignition::math::Vector3d pos = this->target - pose.Pos();
+  ignition::math::Vector3d offset_target_to_pose = this->target - pose.Pos();
   ignition::math::Vector3d rpy = pose.Rot().Euler();
 
-  double distance = pos.Length();
+  double distance = offset_target_to_pose.Length();
 
 #ifdef DEBUG_
   // For debug
@@ -542,7 +536,7 @@ void AutoActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   if (distance < this->tolerance)
   {
     this->ChooseNewTarget();
-    pos = this->target - pose.Pos();
+    offset_target_to_pose = this->target - pose.Pos();
   }
 
 #ifdef DEBUG_
@@ -559,12 +553,12 @@ void AutoActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 #endif
 
   // Normalize the direction vector, and apply the target weight
-  pos = pos.Normalize(); //* this->targetWeight;
+  offset_target_to_pose = offset_target_to_pose.Normalize(); //* this->targetWeight;
 
   // Adjust the direction vector by avoiding obstacles
-  this->HandleObstacles(pos);
+  this->HandleObstacles(offset_target_to_pose);
 
-  direction = pos;
+  direction = pos; // TODO: Fix this (change pos to offset variable)
 
 #ifdef DEBUG_
   // For debug
