@@ -67,6 +67,7 @@ RUN apt-get update && apt-get install -y \
 	libgeographic-dev \
   ros-${ROS_DISTRO}-geographic-msgs \
   ros-${ROS_DISTRO}-diagnostic-updater \
+  && pip3 install tornado \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
   
