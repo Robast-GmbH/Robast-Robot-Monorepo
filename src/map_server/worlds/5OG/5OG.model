@@ -62,6 +62,9 @@
       </include>
     </model>
 
+    <include>
+      <uri>model://autonomous_actor</uri>
+    </include>
 
   </world>
 </sdf>
