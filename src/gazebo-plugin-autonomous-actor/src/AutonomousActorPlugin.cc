@@ -212,8 +212,8 @@ void AutoActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   }
 
   // Make sure the actor stays within bounds
-  pose.Pos().X(std::max(-3.0, std::min(3.5, pose.Pos().X())));
-  pose.Pos().Y(std::max(-10.0, std::min(2.0, pose.Pos().Y())));
+  pose.Pos().X(std::max(-100.0, std::min(50.5, pose.Pos().X())));
+  pose.Pos().Y(std::max(-100.0, std::min(50.0, pose.Pos().Y())));
   pose.Pos().Z(1.2138);
 
   // Distance traveled is used to coordinate motion with the walking
