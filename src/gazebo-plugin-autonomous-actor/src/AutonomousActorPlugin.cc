@@ -64,6 +64,7 @@ void AutoActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
     this->animationFactor = 4.5;
 
   // Add our own name to models we should ignore when avoiding obstacles.
+  // This needs to be done because std::find cannot find the last entry in list. (check HandleObstacles func)
   this->ignoreModels.push_back(this->actor->GetName());
 
   // Read in the other obstacles to ignore
@@ -113,54 +114,43 @@ void AutoActorPlugin::Reset()
 
 /////////////////////////////////////////////////
 void AutoActorPlugin::ChooseNewTarget()
-{
-  // Added by brucechanjianle
+{ 
   // Increase index number in sequence
-  #ifdef DEBUG_
-    // For debug
-    gzdbg << "index:" << this->idx << "\t" << "target_size:" << this->targets.size() << (this->idx < this->targets.size()) << std::endl;
-  #endif
   this->idx++;
-  if(!(this->idx < this->targets.size()))
+
+  //reset the Target index
+  if((this->idx > this->targets.size()))
   {
-    #ifdef DEBUG_
-      // For debug
-      gzdbg << "Zero statement!" << std::endl;
-    #endif
     this->idx = 0;
   }
-  
-  #ifdef DEBUG_
-    // For debug
-    gzdbg << "current index:" << this->idx << std::endl;
-  #endif
 
   // Set next target
   this->target = this->targets.at(this->idx);
-  
 }
 
 /////////////////////////////////////////////////
-void AutoActorPlugin::HandleObstacles(ignition::math::Vector3d &_pos)
+ignition::math::Vector3d AutoActorPlugin::HandleObstacles(ignition::math::Vector3d &tf_target_to_pose)
 {
+  // gzdbg << "this->world->ModelCount():" << this->world->ModelCount() << std::endl;
   for (unsigned int i = 0; i < this->world->ModelCount(); ++i)
   {
     physics::ModelPtr model = this->world->ModelByIndex(i);
+    // std::find returns an iterator to the first element satisfying the condition or last if no such element is found.
     if (std::find(this->ignoreModels.begin(), this->ignoreModels.end(),
           model->GetName()) == this->ignoreModels.end())
     {
-      ignition::math::Vector3d offset = model->WorldPose().Pos() -
-        this->actor->WorldPose().Pos();
-      double modelDist = offset.Length();
-      if (modelDist < 4.0)
+      ignition::math::Vector3d offset_model_actor = model->WorldPose().Pos() - this->actor->WorldPose().Pos();
+      double dist_to_model = offset_model_actor.Length();
+      if (dist_to_model < 4.0)
       {
-        double invModelDist = this->obstacleWeight / modelDist;
-        offset.Normalize();
-        offset *= invModelDist;
-        _pos -= offset;
+        double inv_dist_to_model = this->obstacleWeight / dist_to_model;
+        offset_model_actor.Normalize();
+        offset_model_actor *= inv_dist_to_model;
+        return tf_target_to_pose - offset_model_actor;
       }
     }
   }
+  return tf_target_to_pose;
 }
 
 /////////////////////////////////////////////////
@@ -170,59 +160,50 @@ void AutoActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   double dt = (_info.simTime - this->lastUpdate).Double();
 
   ignition::math::Pose3d pose = this->actor->WorldPose();
-  ignition::math::Vector3d pos = this->target - pose.Pos();
-  ignition::math::Vector3d rpy = pose.Rot().Euler();
+  ignition::math::Vector3d offset_target_to_pose = this->target - pose.Pos();
+  ignition::math::Vector3d pose_rpy = pose.Rot().Euler();
 
-  double distance = pos.Length();
+  double distance = offset_target_to_pose.Length();
   
-  // Added by brucechanjianle
-  #ifdef DEBUG_
-    // For debug
-    // gzdbg << distance << std::endl;
-  #endif
-
-  // Choose a new target position if the actor has reached its current
-  // target.
+  // Choose a new target position if the actor has reached its current target.
   if (distance < this->tolerance)
   {
     this->ChooseNewTarget();
-    pos = this->target - pose.Pos();
+    offset_target_to_pose = this->target - pose.Pos();
   }
 
   // Normalize the direction vector, and apply the target weight
-  pos = pos.Normalize() * this->targetWeight;
+  offset_target_to_pose = offset_target_to_pose.Normalize() * this->targetWeight;
 
   // Adjust the direction vector by avoiding obstacles
-  this->HandleObstacles(pos);
+  ignition::math::Vector3d offset_target_to_model = this->HandleObstacles(offset_target_to_pose);
 
   // Compute the yaw orientation
-  ignition::math::Angle yaw = atan2(pos.Y(), pos.X()) + 1.5707 - rpy.Z();
+  // 1.5707 = 90°
+  ignition::math::Angle yaw = atan2(offset_target_to_model.Y(), offset_target_to_model.X()) + 1.5707 - pose_rpy.Z();
   yaw.Normalize();
 
   // Rotate in place, instead of jumping.
   if (std::abs(yaw.Radian()) > IGN_DTOR(10))
   {
-    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+
-        yaw.Radian()*0.001);
+    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, pose_rpy.Z()+yaw.Radian()*0.001);
   }
   else
   {
-    pose.Pos() += pos * this->velocity * dt;
-    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z()+yaw.Radian());
+    pose.Pos() += offset_target_to_model * this->velocity * dt;
+    pose.Rot() = ignition::math::Quaterniond(1.5707, 0, pose_rpy.Z()+yaw.Radian());
   }
 
   // Make sure the actor stays within bounds
-  pose.Pos().X(std::max(-100.0, std::min(50.5, pose.Pos().X())));
-  pose.Pos().Y(std::max(-100.0, std::min(50.0, pose.Pos().Y())));
+  // pose.Pos().X(std::max(-100.0, std::min(50.5, pose.Pos().X())));
+  // pose.Pos().Y(std::max(-100.0, std::min(50.0, pose.Pos().Y())));
   pose.Pos().Z(1.2138);
 
   // Distance traveled is used to coordinate motion with the walking
   // animation
-  double distanceTraveled = (pose.Pos() -
-      this->actor->WorldPose().Pos()).Length();
+  double distanceTraveled = (pose.Pos() - this->actor->WorldPose().Pos()).Length();
 
   this->actor->SetWorldPose(pose, false, false);
-  this->actor->SetScriptTime(this->actor->ScriptTime() +
-    (distanceTraveled * this->animationFactor));
+  this->actor->SetScriptTime(this->actor->ScriptTime() + (distanceTraveled * this->animationFactor));
   this->lastUpdate = _info.simTime;
 }

@@ -34,7 +34,7 @@ namespace gazebo
     /// simple vector-field algorithm.
     /// \param[in] _pos Direction vector that should be adjusted according
     /// to nearby obstacles.
-    private: void HandleObstacles(ignition::math::Vector3d &_pos);
+    private: ignition::math::Vector3d HandleObstacles(ignition::math::Vector3d &_pos);
 
     /// \brief Pointer to the parent actor.
     private: physics::ActorPtr actor;
