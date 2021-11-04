@@ -35,6 +35,9 @@ namespace gazebo
   private:
     void ChooseNewTarget();
 
+    /// \brief Helper function to choose a new target location randomly
+    void ChooseNewRandomTarget();
+
     /// \brief Helper function to avoid obstacles. This implements a very
     /// simple vector-field algorithm (Edited by Bacchin Alberto).
     /// \param[in] _pos Direction vector that should be adjusted according
@@ -55,7 +58,7 @@ namespace gazebo
     /// \param[in] d_in_min Lower bound of the intersection segment
     /// \param[in] d_in_min Upper bound of the intersection segment
     /// \return An std::tuple containing a bool (true=collision detected) and a double which tells the distance of the nearest collision point on the direction line
-    std::tuple<bool, double> checkIntersection(ignition::math::Box box,
+    std::tuple<bool, double> checkIntersection(ignition::math::AxisAlignedBox box,
                                                ignition::math::Vector3d origin, ignition::math::Vector3d direction, double d_in_min, double d_in_max);
 
     /// \brief Helper function for an efficient intersection checking (Bacchin Alberto)
@@ -66,6 +69,9 @@ namespace gazebo
     /// \return
     ignition::math::Vector2d Intersect(ignition::math::Vector2d A, ignition::math::Vector2d B,
                                        ignition::math::Vector2d C, ignition::math::Vector2d D);
+
+    /// \brief Helper function to check whether the actor is still moving or got stuck
+    void StuckCheck();
 
     /// \brief Pointer to the parent actor.
   private:
@@ -121,6 +127,7 @@ namespace gazebo
 
   private:
     int idx;
+    int debugging_counter;
 
     /// \brief Target Tolerance
   private:

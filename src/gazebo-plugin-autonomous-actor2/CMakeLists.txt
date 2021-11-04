@@ -30,7 +30,7 @@ ament_target_dependencies(AutonomousActorPlugin2
 
 install(TARGETS
   AutonomousActorPlugin2
-  DESTINATION share/${PROJECT_NAME})
+  DESTINATION share/../../../gaz/plugins)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
