@@ -16,7 +16,7 @@ def generate_launch_description():
     # Get the launch directory
     bringup_dir = get_package_share_directory('nav2_bringup')
     launch_dir = os.path.join(bringup_dir, 'launch')
-    config_dir = get_package_share_directory('map_server')
+    config_dir = get_package_share_directory('tiplu_world')
 
     # Create the launch configuration variables
     slam = LaunchConfiguration('slam')
@@ -118,7 +118,7 @@ def generate_launch_description():
         #              https://github.com/ROBOTIS-GIT/turtlebot3_simulations/issues/91
         # default_value=os.path.join(get_package_share_directory('turtlebot3_gazebo'),
         #                            'worlds/turtlebot3_worlds/waffle.model'),
-        default_value=os.path.join(config_dir, 'worlds','5OG', 'waffle.model'),
+        default_value=os.path.join(config_dir, 'worlds', '5OG', 'waffle.model'),
         description='Full path to world model file to load')
 
     # Specify the actions
