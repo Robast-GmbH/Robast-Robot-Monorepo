@@ -1,0 +1,7 @@
+image: tiplu_fast_lane_mask.pgm
+mode: scale
+resolution: 0.05
+origin: [0.00125, -16.7, 0]
+negate: 0
+occupied_thresh: 0.65
+free_thresh: 0.25
