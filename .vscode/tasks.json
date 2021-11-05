@@ -87,8 +87,19 @@
         {
             "label": "defaullt_startup_amcl",
             "detail": "Starts TipluWorld, Nav, slam",
-            "dependsOn": ["start TipluWorld", "start amcl", "start nav_without_localization", "start rviz_amcl"],
+            "dependsOn": ["start TipluWorld", "start amcl", "start keepout_mask", "start nav_without_localization", "start rviz_amcl"],
             "problemMatcher": [],
+        },
+        {
+            "type": "shell",
+            "label": "start keepout_mask",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation mask_server_launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": false,
+                "group": "default_start",  
+            }
         },
         {
             "type": "shell",
@@ -208,7 +219,7 @@
         {
             "label": "waypoint_test_follow_amcl",
             "detail": "Starts TipluWorld, Nav, slam, waypoint test, rviz",
-            "dependsOn": ["start TipluWorld", "start amcl", "start nav_without_localization", "start follow_waypoint_test"],
+            "dependsOn": ["start TipluWorld","start keepout_mask", "start amcl", "start nav_without_localization", "start follow_waypoint_test"],
             "problemMatcher": [],
         },
         {
