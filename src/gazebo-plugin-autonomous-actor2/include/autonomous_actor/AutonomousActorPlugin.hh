@@ -50,10 +50,12 @@ namespace gazebo
     /// \param[in] Bbox Bounding Box arround obstacle
     /// \param[in] offset_pose_to_target Direction vector that should be adjusted according
     /// to nearby obstacles.
+    /// \param[in] current_observed_obstacles List of observed obstacles that is within the perception box of the actor
   private:
     void SteerAroundObstacle(physics::ModelPtr model,
-                             ignition::math::AxisAlignedBox Bbox,
-                             ignition::math::Vector3d &offset_pose_to_target);
+                        ignition::math::AxisAlignedBox Bbox,
+                        ignition::math::Vector3d &offset_pose_to_target,
+                        std::vector<ignition::math::AxisAlignedBox> current_observed_obstacles);
 
     /// \brief Helper function to correct the path for steering around an obstacles.
     /// \param[in] offset_pose_to_target Direction vector that should be adjusted according
@@ -149,6 +151,10 @@ namespace gazebo
     /// \brief List of complexe objects that contain childs with their own bounding boxes
   private:
     std::vector<std::string> complex_models;
+
+    /// \brief Observed Obstacles
+  private:
+    std::vector<ignition::math::AxisAlignedBox> observed_obstacles;
 
   private:
     int idx;

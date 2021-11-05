@@ -215,124 +215,8 @@ void AutoActorPlugin::ChooseNewTarget()
   this->target = this->targets.at(this->idx);
 }
 
-/////////////////////////////////////////////////
-void AutoActorPlugin::ChooseNewRandomTarget()
-{
-  //ROS_INFO("+++++++ CHOOSE NEW TARGET START +++++++++");
-  //Dilation of the bounding box of the model to improve the awareness
-  ignition::math::AxisAlignedBox security_box, Bbox;
-  ignition::math::Vector3d scaling(0.3, 0.3, 0);
-  ignition::math::Vector3d scaling_actor(0.5, 0.5, 1.2138);
-  ignition::math::Vector3d targetProjection, other_actor_pose;
-
-  ignition::math::Vector3d newTarget(this->target);
-
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "++++++++++++ NEW TARGET SELECTION ++++++++++++" << std::endl;
-#endif
-
-  //choose a target that is far enough from the previuos one
-  while ((newTarget - this->target).Length() < 2.0)
-  {
-
-    //debug std::cout << "New target: " << newTarget << " too near to the previous one!" << std::endl;
-#ifdef DEBUG_
-    // For debug
-    gzdbg << "New target: " << newTarget << " too near to the previous one!" << std::endl;
-#endif
-
-    newTarget.X(ignition::math::Rand::DblUniform(this->room_x[0], this->room_x[1]));
-    newTarget.Y(ignition::math::Rand::DblUniform(this->room_y[0], this->room_y[1]));
-
-    if ((newTarget - this->target).Length() < 2.0) {
-      continue;
-    }
-
-    //debug std::cout << "NEW RANDOM TARGET: " << newTarget << std::endl;
-
-    //TODO: This should be removed?!
-    if (newTarget.X() == 2.0 || newTarget.Y() == 2.0)
-    {
-
-      std::cout << "ATTENTION: Not valid target for this training/test..." << std::endl;
-      continue;
-    }
-
-#ifdef DEBUG_
-    // For debug
-    gzdbg << "NEW RANDOM TARGET: " << newTarget << std::endl;
-#endif
-
-    for (unsigned int i = 0; i < this->world->ModelCount(); ++i)
-    {
-
-      physics::ModelPtr model = this->world->ModelByIndex(i);
-      if (std::find(this->ignoreModels.begin(), this->ignoreModels.end(),
-                    model->GetName()) == this->ignoreModels.end())
-      {
-        //TODO: Put this in a function because its used in the HandleObstacles as well
-        //Actors bounding box handling (the method BoundingBox() dose not work properly for actors)
-        if (std::find(this->otherActors.begin(), this->otherActors.end(),
-                      model->GetName()) == this->otherActors.end())
-        {
-          // BoundingBox around other objects than actors is good by default
-          Bbox = model->BoundingBox();
-        }
-        else
-        {
-          other_actor_pose = model->WorldPose().Pos();
-          //debug std::cout << ">>>> other actor pose=" << other_actor_pose << std::endl;
-          Bbox = ignition::math::AxisAlignedBox(other_actor_pose - scaling_actor, other_actor_pose + scaling_actor);
-          //debug std::cout << ">>>> BBOX=" << Bbox << std::endl;
-        }
-
-        //expasion of the BB to avoid dangerous targets
-        security_box = ignition::math::AxisAlignedBox(Bbox.Min() - scaling, Bbox.Max() + scaling);
-        targetProjection = ignition::math::Vector3d(newTarget.X(), newTarget.Y(), Bbox.Min().Z());
-
-        //if there is a model too closed to the new target, I retry
-        // TODO: We think this is wrong. The if query should be negated, shouldn't it?!
-        if (security_box.Contains(targetProjection))
-        {
-
-          //debug std::cout << ">>>> New target: " << newTarget << " too near to " << model->GetName() << std::endl;
-
-          //debug std::cout << ">>>> security box =" << security_box << std::endl;
-
-#ifdef DEBUG_
-          // For debug
-          gzdbg << ">>>> New target: " << newTarget << " too near to "
-                << model->GetName() << std::endl;
-#endif
-          newTarget = this->target;
-          break;
-        }
-      }
-    }
-  }
-
-  //Update the speed to reach the new target with random noise
-  this->velocity = SPEED_BASE + ignition::math::Rand::DblNormal(0, 0.1); //[m/s]
-  this->rot_velocity = this->velocity.Length() * 4.375;                  //[rad/s]
-
-  //all models are enough far, so I can set the new target
-  this->target = newTarget;
-
-  //ROS_INFO("SET RANDOM TARGET");
-
-#ifdef DEBUG_
-  // For debug
-  std::string line;
-  myfile.open("/home/alberto/vel_debug.txt", std::ios::app);
-  myfile << "#### Set speed of " << this->actor->GetName() << " to: " << this->velocity << " [m/s] ####" << std::endl;
-  myfile.close();
-#endif
-}
-
 ignition::math::Vector3d AutoActorPlugin::Perpendicular(ignition::math::Vector3d &_pos, bool dir_pi_2)
 {
-
   ignition::math::Vector3d rot;
   rot.Z(0);
   _pos.Normalize();
@@ -351,94 +235,15 @@ ignition::math::Vector3d AutoActorPlugin::Perpendicular(ignition::math::Vector3d
   return rot;
 }
 
-std::tuple<bool, double> AutoActorPlugin::checkIntersection(ignition::math::AxisAlignedBox box, ignition::math::Vector3d origin, ignition::math::Vector3d direction, double d_in_min, double d_in_max)
-{
-  ignition::math::Vector3d min = box.Min(), max = box.Max();
-  //Vertex of the 2D box
-  ignition::math::Vector2d A(min.X(), min.Y()), B(max.X(), min.Y()), C(max.X(), max.Y()), D(min.X(), max.Y());
-  //Direction points, arbitrary
-  ignition::math::Vector2d dir1(origin.X(), origin.Y()), dir2(direction.X(), direction.Y()), origin2d(origin.X(), origin.Y());
-
-  if (dir1 == dir2)
-    dir2 = 2 * dir2;
-
-  ignition::math::Line2d ab(A, B), bc(B, C), cd(C, D), da(D, A), dir(dir1, dir2);
-  std::vector<ignition::math::Line2d> edges{ab, bc, cd, da};
-  std::vector<ignition::math::Vector2d> intersections;
-  ignition::math::Vector2d point;
-  intersections.reserve(2);
-
-  for (auto e : edges)
-  {
-
-    if (dir.Intersect(e, point))
-      intersections.push_back(point);
-  }
-
-  if (intersections.empty())
-    return std::make_tuple(false, 0);
-
-  if (intersections.size() == 1)
-    return std::make_tuple(true, (origin2d - intersections[0]).Length());
-
-  double d1 = (origin2d - intersections[0]).Length();
-  double d2 = (origin2d - intersections[1]).Length();
-  double d_min, d_max;
-
-  if (d1 > d2)
-  {
-    d_max = d1;
-    d_min = d2;
-  }
-  else
-  {
-    d_max = d2;
-    d_min = d1;
-  }
-
-  //check if no overlapping
-  if (d_min > d_in_max || d_in_min > d_max)
-  {
-    return std::make_tuple(false, 0);
-  }
-
-  return std::make_tuple(true, std::max(d_min, d_in_min));
-}
-
-/*ignition::math::Vector2d AutoActorPlugin::Intersect(ignition::math::Vector2d A, ignition::math::Vector2d B,
-                                                    ignition::math::Vector2d C, ignition::math::Vector2d D)
-{
-
-  ignition::math::Vector2d result;
-  // Line AB represented as a1x + b1y = c1
-  double a1 = B.Y() - A.Y();
-  double b1 = A.X() - B.X();
-  double c1 = B.Y() * A.X() - A.Y() * B.X();
-
-  // Line CD represented as a2x + b2y = c2
-  double a2 = D.Y() - C.Y();
-  double b2 = C.X() - D.X();
-  double c2 = D.Y() * C.X() - C.Y() * D.X();
-
-  double determinant = a1 * b2 - a2 * b1;
-
-  if (determinant == 0)
-  {
-    // The lines are parallel
-    return result(ignition::math::NAN_D,ignition::math::NAN_D);
-  }
-  else
-  {
-    return result((b2 * c1 - b1 * c2) / determinant, (a1 * c2 - a2 * c1) / determinant);
-  }
-} */
-
 /////////////////////////////////////////////////
 void AutoActorPlugin::HandleObstacles(ignition::math::Vector3d &offset_pose_to_target)
 {
   ignition::math::AxisAlignedBox Bbox;
   ignition::math::Vector3d other_actor_pose;
   ignition::math::Vector3d scaling_actor(0.5, 0.5, 1.2138);
+
+  //List of observed obstacles within the perception_box
+  std::vector<ignition::math::AxisAlignedBox> current_observed_obstacles;
 
   // Set velocity to SPEED_BASE. In case there is an obstacle in the way, the velocity is set to zero later in this func
   this->velocity = SPEED_BASE;
@@ -456,18 +261,14 @@ void AutoActorPlugin::HandleObstacles(ignition::math::Vector3d &offset_pose_to_t
       {
         for (int i=0; i<model->GetChildCount(); i++)
         {
-          //Bbox = this->world->ModelByName(model->GetChild(i)->GetName())->BoundingBox();
           Bbox = model->GetLink(model->GetChild(i)->GetName())->BoundingBox();
-          //Bbox = model->GetChild(i)->BoundingBox();
-          // gzdbg << "model->GetChild(i)->GetName(): " << model->GetChild(i)->GetName() << std::endl;
-          this->SteerAroundObstacle(model, Bbox, offset_pose_to_target);
+          this->SteerAroundObstacle(model, Bbox, offset_pose_to_target, current_observed_obstacles);
         }
       }
       else
       {
         //Actors bounding box handling (the method BoundingBox() dose not work properly for actors)
-        if (std::find(this->otherActors.begin(), this->otherActors.end(),
-                      model->GetName()) == this->otherActors.end())
+        if (std::find(this->otherActors.begin(), this->otherActors.end(), model->GetName()) == this->otherActors.end())
         {
           Bbox = model->BoundingBox();
         }
@@ -477,35 +278,40 @@ void AutoActorPlugin::HandleObstacles(ignition::math::Vector3d &offset_pose_to_t
           other_actor_pose = model->WorldPose().Pos();
           Bbox = ignition::math::AxisAlignedBox(other_actor_pose - scaling_actor, other_actor_pose + scaling_actor);
         }
-        this->SteerAroundObstacle(model, Bbox, offset_pose_to_target);
+        this->SteerAroundObstacle(model, Bbox, offset_pose_to_target, current_observed_obstacles);
       }
     }
   }
+  // Save current_observed_obstacles for the next round so that in each intersection check all nearby obstacles are known
+  observed_obstacles = current_observed_obstacles;
 }
 
 /////////////////////////////////////////////////
-void AutoActorPlugin::SteerAroundObstacle(physics::ModelPtr model, ignition::math::AxisAlignedBox Bbox, ignition::math::Vector3d &offset_pose_to_target)
+void AutoActorPlugin::SteerAroundObstacle(physics::ModelPtr model, ignition::math::AxisAlignedBox Bbox, ignition::math::Vector3d &offset_pose_to_target, std::vector<ignition::math::AxisAlignedBox> current_observed_obstacles)
 {  
   std::tuple<bool, double> obs_intersection;
   ignition::math::Vector3d actor_pose = this->actor->WorldPose().Pos();
   
   //Dilation of the bounding box of the model to improve the awareness
-  ignition::math::AxisAlignedBox security_box, security_box2;
-  ignition::math::Vector3d scaling(0.2, 0.2, 0);
-  ignition::math::Vector3d scaling2(0.2, 0.2, 0);
+  ignition::math::AxisAlignedBox security_box, perception_box;
+  ignition::math::Vector3d security_range(0.2, 0.2, 0);
+  ignition::math::Vector3d perception_range(1.0, 1.0, 0);
 
   //Parameters of the function that compute the correction to the trajectory
   double distance_dependend_evasion_factor = 0.1;
 
-  //Compute a security distance of scaling2 meters
-  security_box2 = ignition::math::AxisAlignedBox(Bbox.Min() - scaling2, Bbox.Max() + scaling2);
+  //Compute a security distance of perception_range meters
+  perception_box = ignition::math::AxisAlignedBox(Bbox.Min() - perception_range, Bbox.Max() + perception_range);
   //Project the actor pose on the 2D plane
   actor_pose.Z(std::max(Bbox.Min().Z(), 0.0));
 
   //A collision is handled when the obstacle is closer then 2 meters
-  if (security_box2.Contains(actor_pose))
+  if (perception_box.Contains(actor_pose))
   {
-    gzdbg << "Actor_pose is within security_box2 for Bbox: " << Bbox << std::endl;
+    // Add current Bbox to list of observed obstacles, because it is within the perception_box
+    current_observed_obstacles.push_back(Bbox);
+
+    gzdbg << "Actor_pose is within perception_box for Bbox: " << Bbox << std::endl;
 
     //projection in a 2D plane
     offset_pose_to_target.Z(Bbox.Min().Z());
@@ -514,19 +320,23 @@ void AutoActorPlugin::SteerAroundObstacle(physics::ModelPtr model, ignition::mat
     if (std::find(this->dynObstacles.begin(), this->dynObstacles.end(),
                   model->GetName()) == this->dynObstacles.end())
     {
-      scaling.Set(0.2, 0.2, 0.0);
+      security_range.Set(0.2, 0.2, 0.0);
       distance_dependend_evasion_factor = 1.0;
     }
     else
     {
-      scaling.Set(0.7, 0.7, 0.0);
+      security_range.Set(0.7, 0.7, 0.0);
       distance_dependend_evasion_factor = 2.0;
     }
 
-    security_box = ignition::math::AxisAlignedBox(Bbox.Min() - scaling, Bbox.Max() + scaling);
+    security_box = ignition::math::AxisAlignedBox(Bbox.Min() - security_range, Bbox.Max() + security_range);
 
     //Check if there are any intersection in the direction of motion
-    obs_intersection = security_box.IntersectDist(actor_pose, direction, 0.01, 1.99);
+    obs_intersection = security_box.IntersectDist(actor_pose, direction, 0.01, 5.99);
+    // gzdbg << "security_box: " << security_box << std::endl;
+    // gzdbg << "actor_pose: " << actor_pose << std::endl;
+    // gzdbg << "direction: " << direction << std::endl;
+    gzdbg << "std::get<1>(obs_intersection): " << std::get<1>(obs_intersection) << std::endl;
     //obs_intersection = checkIntersection(security_box, actor_pose, _pos, 0.01, 1.99); //handcrafted implementation
 
     if (std::get<0>(obs_intersection))
@@ -547,10 +357,11 @@ void AutoActorPlugin::CorrectPath(ignition::math::Vector3d &offset_pose_to_targe
   correction.Normalize();
 
   //Second: a force in perpendicular direction to the motion, propotional to the cos(angle<_pos,correction>)
-  correction = correction + Perpendicular(offset_pose_to_target, true) /** abs(correction.Dot(_pos))*/; //(in the actual implementation cos() weight is useless)
+  correction = correction + Perpendicular(offset_pose_to_target, true);
 
   correction.Normalize();
 
+  gzdbg << "std::get<1>(obs_intersection): " << std::get<1>(obs_intersection) << std::endl;
   if (std::get<1>(obs_intersection) < 0.1 && std::get<1>(obs_intersection) > 0)
   {
     //this->ChooseNewTarget();
