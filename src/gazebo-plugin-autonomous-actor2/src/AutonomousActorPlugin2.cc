@@ -311,8 +311,6 @@ void AutoActorPlugin::SteerAroundObstacle(physics::ModelPtr model, ignition::mat
     // Add current Bbox to list of observed obstacles, because it is within the perception_box
     current_observed_obstacles.push_back(Bbox);
 
-    gzdbg << "Actor_pose is within perception_box for Bbox: " << Bbox << std::endl;
-
     //projection in a 2D plane
     offset_pose_to_target.Z(Bbox.Min().Z());
 
@@ -333,11 +331,6 @@ void AutoActorPlugin::SteerAroundObstacle(physics::ModelPtr model, ignition::mat
 
     //Check if there are any intersection in the direction of motion
     obs_intersection = security_box.IntersectDist(actor_pose, direction, 0.01, 5.99);
-    // gzdbg << "security_box: " << security_box << std::endl;
-    // gzdbg << "actor_pose: " << actor_pose << std::endl;
-    // gzdbg << "direction: " << direction << std::endl;
-    gzdbg << "std::get<1>(obs_intersection): " << std::get<1>(obs_intersection) << std::endl;
-    //obs_intersection = checkIntersection(security_box, actor_pose, _pos, 0.01, 1.99); //handcrafted implementation
 
     if (std::get<0>(obs_intersection))
     {
@@ -361,7 +354,6 @@ void AutoActorPlugin::CorrectPath(ignition::math::Vector3d &offset_pose_to_targe
 
   correction.Normalize();
 
-  gzdbg << "std::get<1>(obs_intersection): " << std::get<1>(obs_intersection) << std::endl;
   if (std::get<1>(obs_intersection) < 0.1 && std::get<1>(obs_intersection) > 0)
   {
     //this->ChooseNewTarget();
