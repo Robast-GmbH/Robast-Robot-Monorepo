@@ -19,6 +19,7 @@ GZ_REGISTER_MODEL_PLUGIN(AutoActorPlugin)
 
 #define WALKING_ANIMATION "walking"
 #define SPEED_BASE 0.8
+#define SPEED_STOP 0.0
 //#define DEBUG_
 
 std::ofstream myfile;
@@ -58,6 +59,22 @@ void AutoActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
 
     // Set index to zero
     this->idx = 0;
+  }
+
+   // Read in multiple complexe Objects, that contain childs with their own bounding boxes
+  if (_sdf->HasElement("complex_models"))
+  {
+    gzdbg << "Complex Objects beeing read!" << std::endl;
+
+    // Obtain targets with element pointer
+    sdf::ElementPtr local_complex_models = _sdf->GetElement("complex_models")->GetElement("complex_model");
+
+    // Extract target
+    while (local_complex_models)
+    {
+      this->complex_models.push_back(local_complex_models->Get<std::string>());
+      local_complex_models = local_complex_models->GetNextElement("complex_model");
+    }
   }
 
   this->Reset();
@@ -125,22 +142,6 @@ void AutoActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   else
     this->tolerance = 0.3;
 
-  // Room personalization
-  if (_sdf->HasElement("room_x"))
-    this->room_x = _sdf->Get<ignition::math::Vector2d>("room_x");
-  else
-    this->room_x.Set(100, 100);
-
-  if (_sdf->HasElement("room_y"))
-    this->room_y = _sdf->Get<ignition::math::Vector2d>("room_y");
-  else
-    this->room_y.Set(100, 100);
-
-  if (_sdf->HasElement("room_z"))
-    this->room_z = _sdf->Get<double>("room_z");
-  else
-    this->room_z = 0;
-
   //Initialize the obstacle map
   ignition::math::Vector3d init_pose;
   if (_sdf->HasElement("init_pose"))
@@ -162,6 +163,7 @@ void AutoActorPlugin::Reset()
   gzdbg << "RESET CALLED!!!!!" << std::endl;
 
   this->velocity = SPEED_BASE; //[m/s]
+  gzdbg << "this->velocity: " << this->velocity << std::endl;
   //Add rotational velocity for gracefully rotations
   this->rot_velocity = this->velocity.Length() * 4.375; //[rad/s]
   this->lastUpdate = 0;
@@ -434,18 +436,13 @@ std::tuple<bool, double> AutoActorPlugin::checkIntersection(ignition::math::Axis
 /////////////////////////////////////////////////
 void AutoActorPlugin::HandleObstacles(ignition::math::Vector3d &offset_pose_to_target)
 {
-  std::tuple<bool, double> obs_intersection;
-  ignition::math::Vector3d correction, other_actor_pose;
-  ignition::math::Vector3d actor_pose = this->actor->WorldPose().Pos();
-
-  //Dilation of the bounding box of the model to improve the awareness
-  ignition::math::AxisAlignedBox security_box, security_box2, Bbox;
-  ignition::math::Vector3d scaling(0.2, 0.2, 0);
-  ignition::math::Vector3d scaling2(2, 2, 0);
+  ignition::math::AxisAlignedBox Bbox;
+  ignition::math::Vector3d other_actor_pose;
   ignition::math::Vector3d scaling_actor(0.5, 0.5, 1.2138);
 
-  //Parameters of the function that compute the correction to the trajectory
-  double a = 2.0, b = 0.1;
+  // Set velocity to SPEED_BASE. In case there is an obstacle in the way, the velocity is set to zero later in this func
+  this->velocity = SPEED_BASE;
+  this->rot_velocity = this->velocity.Length() * 4.375; //[rad/s]
 
   //Cycle over the models of the world
   for (unsigned int i = 0; i < this->world->ModelCount(); ++i)
@@ -453,124 +450,124 @@ void AutoActorPlugin::HandleObstacles(ignition::math::Vector3d &offset_pose_to_t
     physics::ModelPtr model = this->world->ModelByIndex(i);
 
     //Ignore models indicated in the .world file, like ground
-    if (std::find(this->ignoreModels.begin(), this->ignoreModels.end(),
-                  model->GetName()) == this->ignoreModels.end())
+    if (std::find(this->ignoreModels.begin(), this->ignoreModels.end(), model->GetName()) == this->ignoreModels.end())
     {
-
-      //Actors bounding box handling (the method BoundingBox() dose not work properly for actors)
-      if (std::find(this->otherActors.begin(), this->otherActors.end(),
-                    model->GetName()) == this->otherActors.end())
+      if (std::find(this->complex_models.begin(), this->complex_models.end(), model->GetName()) != this->complex_models.end())
       {
-        Bbox = model->BoundingBox();
+        for (int i=0; i<model->GetChildCount(); i++)
+        {
+          //Bbox = this->world->ModelByName(model->GetChild(i)->GetName())->BoundingBox();
+          Bbox = model->GetLink(model->GetChild(i)->GetName())->BoundingBox();
+          //Bbox = model->GetChild(i)->BoundingBox();
+          // gzdbg << "model->GetChild(i)->GetName(): " << model->GetChild(i)->GetName() << std::endl;
+          this->SteerAroundObstacle(model, Bbox, offset_pose_to_target);
+        }
       }
-
       else
       {
-        other_actor_pose = model->WorldPose().Pos();
-        Bbox = ignition::math::AxisAlignedBox(other_actor_pose - scaling_actor, other_actor_pose + scaling_actor);
-      }
-
-      //Compute a security distance of scaling2 meters
-      security_box2 = ignition::math::AxisAlignedBox(Bbox.Min() - scaling2, Bbox.Max() + scaling2);
-      //Project the actor pose on the 2D plane
-      actor_pose.Z(std::max(Bbox.Min().Z(), 0.0));
-
-      //A collision is handled when the obstacle is closer then 2 meters
-      if (security_box2.Contains(actor_pose))
-      {
-        //projection in a 2D plane
-        offset_pose_to_target.Z(Bbox.Min().Z());
-
-        //Dynamic ostacles are treated with larger security bounds
-        if (std::find(this->dynObstacles.begin(), this->dynObstacles.end(),
-                      model->GetName()) == this->dynObstacles.end())
+        //Actors bounding box handling (the method BoundingBox() dose not work properly for actors)
+        if (std::find(this->otherActors.begin(), this->otherActors.end(),
+                      model->GetName()) == this->otherActors.end())
         {
-          scaling.Set(0.2, 0.2, 0.0);
-          b = 1.0;
+          Bbox = model->BoundingBox();
         }
+
         else
         {
-          scaling.Set(0.7, 0.7, 0.0);
-          b = 2.0;
+          other_actor_pose = model->WorldPose().Pos();
+          Bbox = ignition::math::AxisAlignedBox(other_actor_pose - scaling_actor, other_actor_pose + scaling_actor);
         }
-
-        security_box = ignition::math::AxisAlignedBox(Bbox.Min() - scaling, Bbox.Max() + scaling);
-
-        //Check if there are any intersection in the direction of motion
-        obs_intersection = security_box.IntersectDist(actor_pose, direction, 0.01, 1.99);
-        //obs_intersection = checkIntersection(security_box, actor_pose, _pos, 0.01, 1.99); //handcrafted implementation
-
-#ifdef DEBUG_
-        // For debug
-        gzdbg << "....................OBSTACLE HANDLING: " << model->GetName() << "................." << std::endl;
-        gzdbg << "Actor world pose projection: " << actor_pose << std::endl;
-        gzdbg << "Collision box: " << security_box << std::endl;
-        gzdbg << "Direction (to the target) pos: " << offset_pose_to_target << std::endl;
-        gzdbg << "Current Direction: " << direction << std::endl;
-        gzdbg << "Intersection between " << this->actor->GetName() << " and " << model->GetName() << " = " << std::get<0>(obs_intersection) << std::endl;
-        gzdbg << "Distance between a" << this->actor->GetName() << " and " << model->GetName() << " = " << std::get<1>(obs_intersection) << std::endl;
-        gzdbg << "......................................................" << std::endl;
-#endif
-
-        if (std::get<0>(obs_intersection))
-        {
-
-          //Correction have 2 components:
-
-          //First: a force in the direction opposite to the actual motion
-          correction = -offset_pose_to_target;
-          correction.Normalize();
-
-#ifdef DEBUG_
-          // For debug
-          gzdbg << "!!! POSSIBLE COLLISION, Correction... " << std::endl;
-          gzdbg << "Correction offset: " << correction << std::endl;
-          gzdbg << "Perpendicular to pose: " << Perpendicular(offset_pose_to_target, true) << std::endl;
-          gzdbg << "cos(ang<correction_pos>): " << correction.Dot(offset_pose_to_target) << std::endl;
-#endif
-
-          //Second: a force in perpendicular direction to the motion, propotional to the cos(angle<_pos,correction>)
-          correction = correction + Perpendicular(offset_pose_to_target, true) /** abs(correction.Dot(_pos))*/; //(in the actual implementation cos() weight is useless)
-
-          correction.Normalize();
-
-          if (debugging_counter % 100 == 0) {
-            gzdbg << "correction: "<< correction << std::endl;
-            gzdbg << "(a * exp(-b * std::get<1>(obs_intersection))): "<< (a * exp(-b * std::get<1>(obs_intersection))) << std::endl;
-            gzdbg << "std::get<1>(obs_intersection): "<< std::get<1>(obs_intersection) << std::endl;
-          }
-          if (std::get<1>(obs_intersection) < 0.1 && std::get<1>(obs_intersection) > 0)
-          {
-            //this->ChooseNewTarget();
-            gzdbg << "Setting velocity to 0" << std::endl;
-            this->velocity = 0;
-            this->rot_velocity = 0;
-          }
-          else
-          {
-            //Correction strength depends on the distance from the obstacle
-            offset_pose_to_target = offset_pose_to_target + (a * exp(-b * std::get<1>(obs_intersection))) * correction;
-            offset_pose_to_target.Normalize();
-            gzdbg << "Setting velocity back to normal" << std::endl;
-            this->velocity = SPEED_BASE;
-            this->rot_velocity = this->velocity.Length() * 4.375; //[rad/s]
-          }
-
-
-#ifdef DEBUG_
-          // For debug
-          //gzdbg << "!!! POSSIBLE COLLISION, Correction... " << std::endl;
-          gzdbg << "Correction final offset: " << correction << std::endl;
-          gzdbg << "Weight of correction: " << (a * exp(-b * std::get<1>(obs_intersection))) << std::endl;
-          gzdbg << "New pos: " << offset_pose_to_target << std::endl;
-#endif
-        }
+        this->SteerAroundObstacle(model, Bbox, offset_pose_to_target);
       }
     }
   }
 }
 
-void AutoActorPlugin::StuckCheck() {
+/////////////////////////////////////////////////
+void AutoActorPlugin::SteerAroundObstacle(physics::ModelPtr model, ignition::math::AxisAlignedBox Bbox, ignition::math::Vector3d &offset_pose_to_target)
+{  
+  std::tuple<bool, double> obs_intersection;
+  ignition::math::Vector3d actor_pose = this->actor->WorldPose().Pos();
+  
+  //Dilation of the bounding box of the model to improve the awareness
+  ignition::math::AxisAlignedBox security_box, security_box2;
+  ignition::math::Vector3d scaling(0.2, 0.2, 0);
+  ignition::math::Vector3d scaling2(0.2, 0.2, 0);
+
+  //Parameters of the function that compute the correction to the trajectory
+  double distance_dependend_evasion_factor = 0.1;
+
+  //Compute a security distance of scaling2 meters
+  security_box2 = ignition::math::AxisAlignedBox(Bbox.Min() - scaling2, Bbox.Max() + scaling2);
+  //Project the actor pose on the 2D plane
+  actor_pose.Z(std::max(Bbox.Min().Z(), 0.0));
+
+  //A collision is handled when the obstacle is closer then 2 meters
+  if (security_box2.Contains(actor_pose))
+  {
+    gzdbg << "Actor_pose is within security_box2 for Bbox: " << Bbox << std::endl;
+
+    //projection in a 2D plane
+    offset_pose_to_target.Z(Bbox.Min().Z());
+
+    //Dynamic ostacles are treated with larger security bounds
+    if (std::find(this->dynObstacles.begin(), this->dynObstacles.end(),
+                  model->GetName()) == this->dynObstacles.end())
+    {
+      scaling.Set(0.2, 0.2, 0.0);
+      distance_dependend_evasion_factor = 1.0;
+    }
+    else
+    {
+      scaling.Set(0.7, 0.7, 0.0);
+      distance_dependend_evasion_factor = 2.0;
+    }
+
+    security_box = ignition::math::AxisAlignedBox(Bbox.Min() - scaling, Bbox.Max() + scaling);
+
+    //Check if there are any intersection in the direction of motion
+    obs_intersection = security_box.IntersectDist(actor_pose, direction, 0.01, 1.99);
+    //obs_intersection = checkIntersection(security_box, actor_pose, _pos, 0.01, 1.99); //handcrafted implementation
+
+    if (std::get<0>(obs_intersection))
+    {
+      this->CorrectPath(offset_pose_to_target, distance_dependend_evasion_factor, obs_intersection);
+    }
+  }
+}
+
+/////////////////////////////////////////////////
+void AutoActorPlugin::CorrectPath(ignition::math::Vector3d &offset_pose_to_target, double distance_dependend_evasion_factor, std::tuple<bool, double> obs_intersection)
+{
+  ignition::math::Vector3d correction;
+  //Correction have 2 components:
+
+  //First: a force in the direction opposite to the actual motion
+  correction = -offset_pose_to_target;
+  correction.Normalize();
+
+  //Second: a force in perpendicular direction to the motion, propotional to the cos(angle<_pos,correction>)
+  correction = correction + Perpendicular(offset_pose_to_target, true) /** abs(correction.Dot(_pos))*/; //(in the actual implementation cos() weight is useless)
+
+  correction.Normalize();
+
+  if (std::get<1>(obs_intersection) < 0.1 && std::get<1>(obs_intersection) > 0)
+  {
+    //this->ChooseNewTarget();
+    this->velocity = SPEED_STOP;
+    this->rot_velocity = 0;
+  }
+  else
+  {
+    //Correction strength depends on the distance from the obstacle
+    double b = distance_dependend_evasion_factor;
+    double a = 2.0; // factor to weight the correction
+    offset_pose_to_target = offset_pose_to_target + (a * exp(-b * std::get<1>(obs_intersection))) * correction;
+    offset_pose_to_target.Normalize();
+  }
+}
+
+void AutoActorPlugin::StuckCheck(double distance) {
   //Try to unstuck the actor
   double check_dist = (check_pose - this->actor->WorldPose().Pos()).Length();
 
@@ -579,12 +576,14 @@ void AutoActorPlugin::StuckCheck() {
     stuck_count = 0;
     check_pose = this->actor->WorldPose().Pos();
   }
-  else
+  // In case the velocity is set to 0, the actor is supposed to stand still
+  else if (!this->velocity.Equal(ignition::math::Vector3d (SPEED_STOP, SPEED_STOP, SPEED_STOP)))
   {
     stuck_count++;
   }
-  if (stuck_count > 250)
+  if (stuck_count > 750)
   {
+    gzdbg << "Calling ChooseNewTarget from StuckCheck now! Distance: " << distance << std::endl;
     this->ChooseNewTarget();
     stuck_count = 0;
   }
@@ -610,12 +609,7 @@ void AutoActorPlugin::OnUpdate(const common::UpdateInfo &_info)
 
   double distance = offset_pose_to_target.Length();
 
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "--------------------------------------------------------" << std::endl;
-  gzdbg << "DISTANCE FROM TARGET: " << distance << std::endl;
-#endif
-  if (debugging_counter > 200) {
+  if (debugging_counter > 400) {
     gzdbg << "Still alive!"<< std::endl;
     debugging_counter = 0;
   }
@@ -630,38 +624,12 @@ void AutoActorPlugin::OnUpdate(const common::UpdateInfo &_info)
     offset_pose_to_target = this->target - pose.Pos();
   }
 
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "TARGET: " << target[0] << " " << target[1] << " " << target[2] << " " << std::endl;
-  gzdbg << "INITIAL POSE: " << pose << std::endl;
-
-#endif
-
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "DIRECTION TO THE TARGET: " << offset_pose_to_target[0] << " " << offset_pose_to_target[1] << " " << offset_pose_to_target[2] << " " << std::endl;
-
-#endif
-
   // Normalize the direction vector, and apply the target weight
   offset_pose_to_target = offset_pose_to_target.Normalize(); //* this->targetWeight;
 
   // Adjust the direction vector by avoiding obstacles
 
-#ifdef DEBUG2_
-  if (debugging_counter < 3) {
-    gzdbg << "offset_pose_to_target before HandleObstacles: " << offset_pose_to_target << std::endl;
-  }
-#endif
-
   this->HandleObstacles(offset_pose_to_target);
-
-#ifdef DEBUG2_
-  if (debugging_counter < 3) {
-    gzdbg << "offset_pose_to_target after HandleObstacles: " << offset_pose_to_target << std::endl;
-    debugging_counter++;
-  }
-#endif
 
   ignition::math::Vector3d pos = offset_pose_to_target;
   direction = pos; // TODO: Fix this (change pos to offset variable)
@@ -713,8 +681,7 @@ void AutoActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   // Distance traveled is used to coordinate motion with the walking animation
   double distanceTraveled = (pose.Pos() - this->actor->WorldPose().Pos()).Length();
 
-  // TODO: Only go into stuckcheck if velocity is not zero
-  // this->StuckCheck();
+  this->StuckCheck(distance);
 
 #ifdef DEBUG_
   // For debug

@@ -2,7 +2,7 @@
 <sdf version='1.7'>
 
   <actor name="autonomous_actor2">
-    <pose>0 0 0 0 0 0</pose>
+    <pose>6.8 -10.5 0 0 0 0</pose>
     <skin>
     <filename>walk.dae</filename>
     <scale>1.0</scale>
@@ -18,9 +18,8 @@
       <obstacle_weight>1.8</obstacle_weight>
       <animation_factor>5.1</animation_factor>
       <!-- Usage: Initial pose of the actor -->
-      <init_position>0 0 0</init_position>
-      <!-- Usage: Modify the set of models that the vector field should
-              ignore when moving the actor -->
+      <init_position>6.8 -10.5 0</init_position>
+      <!-- Usage: Modify the set of models that the vector field should ignore when moving the actor -->
       <ignore_obstacles>
           <model>ground_plane</model>
           <model>actor1_collision_model</model>
@@ -33,17 +32,17 @@
           <model>actor2</model>
           <model>actor3</model>
       </actor_awareness>
-      <!-- Usage: Specify the first target -->
+      <!-- Usage: Specify the targets -->
       <targets>
-        <target>0 0 0</target>
-        <target>10.0 0 0</target>
-        <target>10.0 10.0 0</target>
-        <target>0 10.0 0</target>
+        <target>6.8 -10.5 1.2138</target>
+        <target>11.5 -10.5 1.2138</target>
       </targets>
-      <!-- Usage: Specify the region where the random targets are computed, it is recommended to stay 0.5 meters from walls -->
-      <room_x>12.8 15.5</room_x>
-      <room_y>11.0 10.0</room_y>
-      <room_z>1.2138</room_z>
+      <!-- Usage: Specify the complex models -->
+      <complex_models>
+        <complex_model>5OG_waende</complex_model>
+      </complex_models>
     </plugin>
+
+    
   </actor>
 </sdf>

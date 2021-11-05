@@ -40,10 +40,31 @@ namespace gazebo
 
     /// \brief Helper function to avoid obstacles. This implements a very
     /// simple vector-field algorithm (Edited by Bacchin Alberto).
-    /// \param[in] _pos Direction vector that should be adjusted according
+    /// \param[in] offset_pose_to_target Direction vector that should be adjusted according
     /// to nearby obstacles.
   private:
-    void HandleObstacles(ignition::math::Vector3d &_pos);
+    void HandleObstacles(ignition::math::Vector3d &offset_pose_to_target);
+
+    /// \brief Helper function to steer around an obstacles.
+    /// \param[in] model model object of the obstacle to steer around
+    /// \param[in] Bbox Bounding Box arround obstacle
+    /// \param[in] offset_pose_to_target Direction vector that should be adjusted according
+    /// to nearby obstacles.
+  private:
+    void SteerAroundObstacle(physics::ModelPtr model,
+                             ignition::math::AxisAlignedBox Bbox,
+                             ignition::math::Vector3d &offset_pose_to_target);
+
+    /// \brief Helper function to correct the path for steering around an obstacles.
+    /// \param[in] offset_pose_to_target Direction vector that should be adjusted according
+    /// to nearby obstacles.
+    /// \param[in] distance_dependend_evasion_factor Factor that determines from how far away the actor starts to evade
+    /// the obstacle
+    /// \param[in] obs_intersection Tuple that contains whether there is an intersection between actor pose and target
+    /// pose and the distance to this intersection
+    void CorrectPath(ignition::math::Vector3d &offset_pose_to_target,
+                     double distance_dependend_evasion_factor,
+                     std::tuple<bool, double> obs_intersection);
 
     /// \brief Helper function to compute a 2D perpendicula vector to a given one (Bacchin Alberto)
     /// \param[in] _pos The input vector
@@ -71,7 +92,7 @@ namespace gazebo
                                        ignition::math::Vector2d C, ignition::math::Vector2d D);
 
     /// \brief Helper function to check whether the actor is still moving or got stuck
-    void StuckCheck();
+    void StuckCheck(double distance);
 
     /// \brief Pointer to the parent actor.
   private:
@@ -124,6 +145,10 @@ namespace gazebo
     /// \brief Target List
   private:
     std::vector<ignition::math::Vector3d> targets;
+
+    /// \brief List of complexe objects that contain childs with their own bounding boxes
+  private:
+    std::vector<std::string> complex_models;
 
   private:
     int idx;

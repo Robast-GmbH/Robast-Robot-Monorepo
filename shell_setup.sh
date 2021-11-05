@@ -13,7 +13,7 @@ export GAZEBO_PLUGIN_PATH=/workspaces/Robast_RosTheron/gaz/plugins:${GAZEBO_PLUG
 export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
 
 # Set robot_model and world_model:
-WORLD_MODEL=5OG_with_furniture #aws_hospital_world or 5OG or 5OG_with_furniture
+WORLD_MODEL=5OG #aws_hospital_world or 5OG or 5OG_with_furniture
 export ROBOT_MODEL=rb_theron #rb_theron or turtlebot3_waffle
 
 # Inititial pose of the robot, which is important for spawning the robot in the map AND for start position for SLAM
