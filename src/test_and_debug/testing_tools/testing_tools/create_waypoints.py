@@ -39,8 +39,7 @@ class WaypointCreator(Node):
             self.get_logger().warn('Trigger_robast_map_publishing Service is not available! If slam_toolbox is used, this service should be active.')
             self.trigger_map_update_available = False
 
-        # This list is important to report which rooms have failed
-        self.room_numbers_of_waypoints = list()
+        self.goal_description_by_waypoints = dict()  # This dict is important to report which rooms have failed
         map_setup = self.read_map_setup(os.path.join(
             get_package_share_directory('testing_tools'), 'map_setup_5OG.yaml'))
         self.waypoints = self.create_waypoints(num_of_waypoints, map_setup)
@@ -67,24 +66,34 @@ class WaypointCreator(Node):
         waypoints = []
         random.seed(self.random_seed)  # seed random number generator
         number_of_rooms = len(map_setup['rooms'])
-        for i in range(1, num_of_waypoints+1):
+        for waypoint_index in range(1, num_of_waypoints+1):
             room_number = random.randint(1, number_of_rooms)
-            self.room_numbers_of_waypoints.append(room_number)
-            self.get_logger().info(('Adding room ' + str(room_number) + ' as waypoint number ' + str(i) + ' to waypoints:'))
-            waypoints.append(self.get_nav_goal_pose(room_number, map_setup))
+            # Firstly add the door bell of the room as nav goal to the waypoints
+            poi = 'door_bell'
+            nav_goal_door_bell = self.get_nav_pose_from_map_setup(room_number, poi, waypoint_index, map_setup)
+            waypoints.append(nav_goal_door_bell)
+            # Secondly add the nav goal within the room itself to the waypoints
+            poi = 'center_point'
+            nav_goal_center_point = self.get_nav_pose_from_map_setup(room_number, poi, waypoint_index * 2, map_setup)
+            waypoints.append(nav_goal_center_point)
         return waypoints
 
-    def get_nav_goal_pose(self, nav_goal_room_number, map_setup):
+    def get_nav_pose_from_map_setup(self, room_number, point_of_interest, waypoint_index, map_setup):
+        self.get_logger().info(('Adding ' + str(point_of_interest) + ' of room ' + str(room_number) +
+                                ' as waypoint number ' + str(waypoint_index) + ' to waypoints:'))
         nav_goal = PoseStamped()
         nav_goal.header.frame_id = 'map'
         nav_goal.header.stamp = self.get_clock().now().to_msg()
-        x = map_setup['rooms'][nav_goal_room_number]['center point']['x']
-        y = map_setup['rooms'][nav_goal_room_number]['center point']['y']
-        # Add a small random number to the x and y value to ensure the goal is not always the same
-        nav_goal.pose.position.x = x + random.uniform(-self.random_deviation, self.random_deviation)
-        nav_goal.pose.position.y = - y + random.uniform(-self.random_deviation, self.random_deviation)
+        x = map_setup['rooms'][room_number][point_of_interest]['x']
+        y = map_setup['rooms'][room_number][point_of_interest]['y']
+        if point_of_interest == 'center_point':
+            # Add a small random number to the x and y value to ensure the goal is not always the same within the room
+            nav_goal.pose.position.x = x + random.uniform(-self.random_deviation, self.random_deviation)
+            nav_goal.pose.position.y = - y + random.uniform(-self.random_deviation, self.random_deviation)
         self.get_logger().info('-> Goal X-Coordinate: %s' % nav_goal.pose.position.x)
         self.get_logger().info('-> Goal Y-Coordinate: %s' % nav_goal.pose.position.y)
+        # Track which goal is represented by each waypoint
+        self.goal_description_by_waypoints[waypoint_index] = str(point_of_interest) + '_room_' + str(room_number)
         return nav_goal
 
     def read_map_setup(self, filename):
@@ -143,12 +152,12 @@ class WaypointCreator(Node):
     def handle_failed_nav_goal(self, waypoint_counter):
         self.get_logger().info('Goal for waypoint {0} failed with status code: {1}! List of failed goales:'.format(
             waypoint_counter, self.status))
-        room_number = self.room_numbers_of_waypoints[waypoint_counter - 1]
+        goal_description = self.goal_description_by_waypoints[waypoint_counter]
         goal_position_x = self.waypoints[waypoint_counter - 1].pose.position.x
         goal_position_y = self.waypoints[waypoint_counter - 1].pose.position.y
         self.failed_nav_goals.append(
-            "Waypoint {0} in room {1} with goal pose x = {2} and y = {3} failed!"
-            .format(waypoint_counter, room_number, goal_position_x, goal_position_y))
+            "Waypoint {0} with the goal {1} with goal pose x = {2} and y = {3} failed!"
+            .format(waypoint_counter, goal_description, goal_position_x, goal_position_y))
         for failed_nav_goal in self.failed_nav_goals:
             self.get_logger().info('{0}'.format(failed_nav_goal))
 
@@ -214,14 +223,14 @@ def write_result_log(waypoint_creator, waypoint_counter):
             file.write("\n%s" % item)
         file.write("\n" + "Total Number of recoveries: " + str(total_num_of_recoveries) +
                    ". List of recoveries for each waypoint.")
-        file.write("\n" + "waypoint | room_number | number_of_recoveries:")
+        file.write("\n" + "waypoint | goal_description | number_of_recoveries:")
         for waypoint, num_of_recoveries in waypoint_creator.number_of_recoveries_by_waypoint.items():
             # adjust the number of empty spaces according to the number of digits of the waypoints
             if waypoint < 10:
-                file.write("\n" + str(waypoint) + "              ")
+                file.write("\n" + str(waypoint) + "                   ")
             else:
-                file.write("\n" + str(waypoint) + "             ")
-            file.write(str(waypoint_creator.room_numbers_of_waypoints[waypoint - 1]) + "                  ")
+                file.write("\n" + str(waypoint) + "                  ")
+            file.write(str(waypoint_creator.goal_description_by_waypoints[waypoint - 1]) + "                  ")
             file.write(str(num_of_recoveries))
 
 
