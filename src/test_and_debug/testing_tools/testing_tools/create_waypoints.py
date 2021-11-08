@@ -39,6 +39,8 @@ class WaypointCreator(Node):
             self.get_logger().warn('Trigger_robast_map_publishing Service is not available! If slam_toolbox is used, this service should be active.')
             self.trigger_map_update_available = False
 
+        # This list is important to report which rooms have failed
+        self.room_numbers_of_waypoints = list()
         map_setup = self.read_map_setup(os.path.join(
             get_package_share_directory('testing_tools'), 'map_setup_5OG.yaml'))
         self.waypoints = self.create_waypoints(num_of_waypoints, map_setup)
@@ -49,8 +51,6 @@ class WaypointCreator(Node):
         self.failed_nav_goals = list()
         # Create dictionary to track the number of recoveries needed for each waypoint
         self.number_of_recoveries_by_waypoint = dict()
-        # this list is important to report which rooms have failed
-        self.room_numbers_of_waypoints = list()
 
     def trigger_map_update(self):
         if self.trigger_map_update_available:
@@ -188,7 +188,7 @@ def main(args=None):
 
     write_result_log(waypoint_creator, waypoint_counter)
     waypoint_creator.get_logger().info(
-        'Wrote all {0} failed waypoints to waypoint_testing_result.txt!'.format(len(waypoint_creator.failed_nav_goals)))
+        'Wrote all {0} failed waypoints to waypoint_testing_result.cache!'.format(len(waypoint_creator.failed_nav_goals)))
 
     # shutdown the ROS communication
     rclpy.shutdown()
@@ -200,11 +200,11 @@ def write_result_log(waypoint_creator, waypoint_counter):
 
     # compute total number of recoveries
     total_num_of_recoveries = 0
-    for num_of_recoveries in waypoint_creator.number_of_recoveries_by_waypoint.values:
+    for num_of_recoveries in waypoint_creator.number_of_recoveries_by_waypoint.values():
         total_num_of_recoveries += num_of_recoveries
 
     # write the list of failed_nav_goals to txt file
-    with open('waypoint_testing_result.txt', 'a+') as file:
+    with open('waypoint_testing_result.cache', 'a+') as file:
         file.write("\n\n" + "Timestamp:" + datetime_string)
         file.write("\n" + "Finished test procedure for " +
                    str(waypoint_counter) + " waypoints! List of all " + str(len(waypoint_creator.failed_nav_goals)) + " failed waypoints:")
@@ -212,7 +212,7 @@ def write_result_log(waypoint_creator, waypoint_counter):
             file.write("\n%s" % item)
         file.write("\n\n" + "Total Number of recoveries: " + str(total_num_of_recoveries) +
                    ". List of recoveries for each waypoint.")
-        file.write("\n" + "waypoint | room_number | number_of_recoveries")
+        file.write("\n" + "waypoint | room_number | number_of_recoveries:")
         for waypoint, num_of_recoveries in waypoint_creator.number_of_recoveries_by_waypoint.items():
             file.write("\n" + str(waypoint) + "      ")
             file.write(str(waypoint_creator.room_numbers_of_waypoints[waypoint - 1]) + "      ")
