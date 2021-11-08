@@ -217,9 +217,9 @@
             }
         },
         {
-            "label": "waypoint_test_follow_amcl",
+            "label": "waypoint_test_amcl_rviz",
             "detail": "Starts TipluWorld, Nav, slam, waypoint test, rviz",
-            "dependsOn": ["start TipluWorld", "start keepout_mask", "start amcl", "start nav_without_localization", "start follow_waypoint_test"],
+            "dependsOn": ["start TipluWorld", "start keepout_mask", "start amcl", "start nav_without_localization", "start follow_waypoint_test", "start rviz_amcl"],
             "problemMatcher": [],
         },
         {
@@ -243,7 +243,7 @@
         {
             "type": "shell",
             "label": "start follow_waypoint_test",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=200",  
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=25",  
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
