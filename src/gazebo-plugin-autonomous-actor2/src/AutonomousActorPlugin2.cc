@@ -39,8 +39,7 @@ void AutoActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
   this->actor = boost::dynamic_pointer_cast<physics::Actor>(_model);
   this->world = this->actor->GetWorld();
 
-  this->connections.push_back(event::Events::ConnectWorldUpdateBegin(
-      std::bind(&AutoActorPlugin::OnUpdate, this, std::placeholders::_1)));
+  this->connections.push_back(event::Events::ConnectWorldUpdateBegin( std::bind(&AutoActorPlugin::OnUpdate, this, std::placeholders::_1)));
 
   // Read in multiple targets
   if (_sdf->HasElement("targets"))
@@ -75,6 +74,7 @@ void AutoActorPlugin::Load(physics::ModelPtr _model, sdf::ElementPtr _sdf)
       this->complex_models.push_back(local_complex_models->Get<std::string>());
       local_complex_models = local_complex_models->GetNextElement("complex_model");
     }
+    //this->complex_models.push_back(local_complex_models->);
   }
 
   this->Reset();
@@ -437,83 +437,25 @@ void AutoActorPlugin::OnUpdate(const common::UpdateInfo &_info)
   ignition::math::Vector3d pos = offset_pose_to_target;
   direction = pos; // TODO: Fix this (change pos to offset variable)
 
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "DIRECTION TO THE TARGET AFTER OA: " << pos[0] << " " << pos[1] << " " << pos[2] << " " << std::endl;
-
-#endif
-
   // Compute the yaw orientation
   ignition::math::Angle yaw = atan2(pos.Y(), pos.X()) + 1.5707 - rpy.Z();
   yaw.Normalize();
 
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "YAW TO THE TARGET: " << yaw << std::endl;
-
-#endif
-
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "CURRENT POSE: " << pose.Pos()[0] << " " << pose.Pos()[1] << " " << pose.Pos()[2] << " " << pose.Rot().Euler()[0] << " " << pose.Rot().Euler()[1] << " " << pose.Rot().Euler()[2] << " " << std::endl;
-  gzdbg << "***********" << std::endl;
-#endif
-
   pose.Pos() = pose.Pos() + pos * this->velocity * dt;
   pose.Rot() = ignition::math::Quaterniond(1.5707, 0, rpy.Z() + yaw.Radian() * this->rot_velocity * dt);
-
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "UPDATE: " << pos * this->velocity * dt << std::endl;
-  gzdbg << "NEW POSE: " << pose << std::endl;
-  gzdbg << "***********" << std::endl;
-#endif
 
   // Make sure the actor stays within bounds
   // pose.Pos().X(std::max(this->room_x[0], std::min(this->room_x[1], pose.Pos().X())));
   // pose.Pos().Y(std::max(this->room_y[0], std::min(this->room_y[1], pose.Pos().Y())));
   pose.Pos().Z(1.2138);
 
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "BOUNDS x: " << this->room_x[0] << "-" << this->room_x[1] << "   y: " << this->room_y[0] << "-" << this->room_y[1] << std::endl;
-  gzdbg << "NEW POSE AFTER CHECK: " << pose << std::endl;
-  gzdbg << "***********" << std::endl;
-#endif
-
   // Distance traveled is used to coordinate motion with the walking animation
   double distanceTraveled = (pose.Pos() - this->actor->WorldPose().Pos()).Length();
 
   this->StuckCheck(distance);
 
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "NEW POSE: " << pose.Pos() << std::endl;
-  gzdbg << "CURRENT POSE: " << this->actor->WorldPose().Pos()[0] << " " << this->actor->WorldPose().Pos()[1] << " " << this->actor->WorldPose().Pos()[2] << " " << std::endl;
-  gzdbg << "DIFF POSE: " << (pose.Pos() - this->actor->WorldPose().Pos())[0] << " " << (pose.Pos() - this->actor->WorldPose().Pos())[1] << " " << (pose.Pos() - this->actor->WorldPose().Pos())[2] << " " << std::endl;
-  gzdbg << "TRAVELLED DISTANCE: " << distanceTraveled << std::endl;
-
-#endif
-
   this->actor->SetWorldPose(pose, false, false);
   this->actor->SetScriptTime(this->actor->ScriptTime() + (distanceTraveled * this->animationFactor));
   this->lastUpdate = _info.simTime;
 
-  /* 
-  msg.id = (int)(this->actor->GetName().back()) - '0';
-  msg.twist.header.frame_id = "world";
-  msg.twist.header.stamp = ros::Time::now();
-  msg.twist.twist.linear.x = pos.X() * this->velocity.X();
-  msg.twist.twist.linear.y = pos.Y() * this->velocity.Y();
-  msg.twist.twist.angular.z = yaw.Radian() * this->rot_velocity;
-  */
-
-  //pub.publish(msg);
-
-#ifdef DEBUG_
-  // For debug
-  gzdbg << "FINAL POSE: " << pose.Pos()[0] << " " << pose.Pos()[1] << " " << pose.Pos()[2] << " " << pose.Rot().Euler()[0] << " " << pose.Rot().Euler()[1] << " " << pose.Rot().Euler()[2] << " " << std::endl;
-  gzdbg << "***********" << std::endl;
-
-#endif
 }
