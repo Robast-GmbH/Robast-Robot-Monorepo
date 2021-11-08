@@ -1,8 +1,8 @@
 #!/bin/sh
 # Setup Environmental Path Variables
-export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/tiplu_world/models:${GAZEBO_MODEL_PATH}
-export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/tiplu_world/models/furniture:${GAZEBO_MODEL_PATH}
-export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/aws_hospital_world/fuel_models:${GAZEBO_MODEL_PATH}
+export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}
+export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/simulation/tiplu_world/models/furniture:${GAZEBO_MODEL_PATH}
+export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/simulation/aws_hospital_world/fuel_models:${GAZEBO_MODEL_PATH}
 export GAZEBO_PLUGIN_PATH=/workspaces/Robast_RosTheron/gaz/plugins:${GAZEBO_PLUGIN_PATH}
 
 # For Ubuntu 20.04 users, there’s a known issue with OpenVDB and its binaries as of July 2020 with libjmalloc.
