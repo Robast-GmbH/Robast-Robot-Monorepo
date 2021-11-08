@@ -162,6 +162,8 @@ class WaypointCreator(Node):
             if feedback.number_of_recoveries > number_of_recoveries:
                 number_of_recoveries = feedback.number_of_recoveries
                 self.number_of_recoveries_by_waypoint[waypoint_counter] = number_of_recoveries
+                self.get_logger().info('Number of recoveries for waypoint ' +
+                                       str(waypoint_counter) + ' increased to ' + str(number_of_recoveries))
             if feedback and i % 50 == 0:
                 self.get_logger().info('Executing current waypoint: ' +
                                        str(waypoint_counter) + '/' + str(len(self.waypoints)))
@@ -210,12 +212,16 @@ def write_result_log(waypoint_creator, waypoint_counter):
                    str(waypoint_counter) + " waypoints! List of all " + str(len(waypoint_creator.failed_nav_goals)) + " failed waypoints:")
         for item in waypoint_creator.failed_nav_goals:
             file.write("\n%s" % item)
-        file.write("\n\n" + "Total Number of recoveries: " + str(total_num_of_recoveries) +
+        file.write("\n" + "Total Number of recoveries: " + str(total_num_of_recoveries) +
                    ". List of recoveries for each waypoint.")
         file.write("\n" + "waypoint | room_number | number_of_recoveries:")
         for waypoint, num_of_recoveries in waypoint_creator.number_of_recoveries_by_waypoint.items():
-            file.write("\n" + str(waypoint) + "      ")
-            file.write(str(waypoint_creator.room_numbers_of_waypoints[waypoint - 1]) + "      ")
+            # adjust the number of empty spaces according to the number of digits of the waypoints
+            if waypoint < 10:
+                file.write("\n" + str(waypoint) + "              ")
+            else:
+                file.write("\n" + str(waypoint) + "             ")
+            file.write(str(waypoint_creator.room_numbers_of_waypoints[waypoint - 1]) + "                  ")
             file.write(str(num_of_recoveries))
 
 
