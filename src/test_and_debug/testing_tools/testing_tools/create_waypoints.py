@@ -70,11 +70,14 @@ class WaypointCreator(Node):
             room_number = random.randint(1, number_of_rooms)
             # Firstly add the door bell of the room as nav goal to the waypoints
             poi = 'door_bell'
-            nav_goal_door_bell = self.get_nav_pose_from_map_setup(room_number, poi, waypoint_index, map_setup)
+            waypoint_index_door_bell = (waypoint_index * 2) - 1
+            nav_goal_door_bell = self.get_nav_pose_from_map_setup(room_number, poi, waypoint_index_door_bell, map_setup)
             waypoints.append(nav_goal_door_bell)
             # Secondly add the nav goal within the room itself to the waypoints
             poi = 'center_point'
-            nav_goal_center_point = self.get_nav_pose_from_map_setup(room_number, poi, waypoint_index * 2, map_setup)
+            waypoint_index_center_point = (waypoint_index * 2)
+            nav_goal_center_point = self.get_nav_pose_from_map_setup(
+                room_number, poi, waypoint_index_center_point, map_setup)
             waypoints.append(nav_goal_center_point)
         return waypoints
 
@@ -224,15 +227,15 @@ def write_result_log(waypoint_creator, waypoint_counter):
         for item in waypoint_creator.failed_nav_goals:
             file.write("\n%s" % item)
         file.write("\n" + "Total Number of recoveries: " + str(total_num_of_recoveries) +
-                   ". List of recoveries for each waypoint.")
-        file.write("\n" + "waypoint | goal_description | number_of_recoveries:")
+                   ". List of recoveries for each waypoint:")
+        file.write("\n" + "waypoint | goal_description | number_of_recoveries")
         for waypoint, num_of_recoveries in waypoint_creator.number_of_recoveries_by_waypoint.items():
             # adjust the number of empty spaces according to the number of digits of the waypoints
             if waypoint < 10:
-                file.write("\n" + str(waypoint) + "                   ")
+                file.write("\n" + str(waypoint) + "         ")
             else:
-                file.write("\n" + str(waypoint) + "                  ")
-            file.write(str(waypoint_creator.goal_description_by_waypoints[waypoint - 1]) + "                  ")
+                file.write("\n" + str(waypoint) + "        ")
+            file.write(str(waypoint_creator.goal_description_by_waypoints[waypoint]) + "          ")
             file.write(str(num_of_recoveries))
 
 
