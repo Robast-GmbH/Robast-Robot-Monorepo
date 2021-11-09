@@ -232,7 +232,7 @@
         {
             "type": "shell",
             "label": "start follow_waypoint_test",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=25",  
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=200",  
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
