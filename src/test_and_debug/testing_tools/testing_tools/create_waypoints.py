@@ -88,8 +88,10 @@ class WaypointCreator(Node):
         y = map_setup['rooms'][room_number][point_of_interest]['y']
         if point_of_interest == 'center_point':
             # Add a small random number to the x and y value to ensure the goal is not always the same within the room
-            nav_goal.pose.position.x = x + random.uniform(-self.random_deviation, self.random_deviation)
-            nav_goal.pose.position.y = - y + random.uniform(-self.random_deviation, self.random_deviation)
+            x = x + random.uniform(-self.random_deviation, self.random_deviation)
+            y = y + random.uniform(-self.random_deviation, self.random_deviation)
+        nav_goal.pose.position.x = x
+        nav_goal.pose.position.y = - y
         self.get_logger().info('-> Goal X-Coordinate: %s' % nav_goal.pose.position.x)
         self.get_logger().info('-> Goal Y-Coordinate: %s' % nav_goal.pose.position.y)
         # Track which goal is represented by each waypoint
