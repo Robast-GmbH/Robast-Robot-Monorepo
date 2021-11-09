@@ -1,46 +1,94 @@
 rooms:
   1:
-    center point:
+    center_point:
       x: 5.5
       y: 13.7
+    door_bell:
+      x: 7.2
+      y: 10.6
   2:
-    center point:
+    center_point:
       x: 13.5
       y: 13.7
+    door_bell:
+      x: 12.0
+      y: 10.6
   3:
-    center point:
+    center_point:
       x: 18.8
       y: 13.8
+    door_bell:
+      x: 19.7
+      y: 10.6
   4:
-    center point:
+    center_point:
       x: 24.8
       y: 13.8
+    door_bell:
+      x: 23.2
+      y: 10.6
   5:
-    center point:
+    center_point:
       x: 30.0
       y: 14.0
+    door_bell:
+      x: 31.4
+      y: 10.8
   6:
-    center point:
+    center_point:
       x: 11.0
       y: 8.6
+    door_bell:
+      x: 8.4
+      y: 6.8
   7:
-    center point:
+    center_point:
       x: 14.1
       y: 3.3
+    door_bell:
+      x: 15.9
+      y: 6.4
   8:
-    center point:
+    center_point:
       x: 24.5
       y: 3.3
+    door_bell:
+      x: 23.1
+      y: 6.5
+  # Rooms on the other side
+  9:
+    center_point:
+      x: 35.0
+      y: 14.0
+    door_bell:
+      x: 33.7
+      y: 10.9
+  10:
+    center_point:
+      x: 41.0
+      y: 14.0
+    door_bell:
+      x: 39.0
+      y: 10.9
   # Now those rooms begin, that are harder to access due to the small door
   # 9:
-  #   center point:
+  #   center_point:
   #     x: 2.8
   #     y: 9.8
+  #     door_bell:
+  #     x: 6.4
+  #     y: 10.7
   # 10:
-  #   center point:
+  #   center_point:
   #     x: 20.0
   #     y: 3.3
+  #     door_bell:
+  #     x: 21.1
+  #     y: 6.2
   # 11:
-  #   center point:
+  #   center_point:
   #     x: 8.7
   #     y: 3.3
+  #     door_bell:
+  #     x: 10.5
+  #     y: 6.3
