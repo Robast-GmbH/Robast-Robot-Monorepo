@@ -1,0 +1,48 @@
+<?xml version="1.0" ?>
+<sdf version='1.7'>
+
+  <actor name="autonomous_actor2">
+    <pose>6.8 -10.5 0 0 0 0</pose>
+    <skin>
+    <filename>walk.dae</filename>
+    <scale>1.0</scale>
+    </skin>
+    <animation name="walking">
+    <filename>walk.dae</filename>
+    <scale>1.000000</scale>
+    <interpolate_x>true</interpolate_x>
+    </animation>
+
+    <plugin name="autonomous_actor2_plugin" filename="libAutonomousActorPlugin2.so">
+      <target_weight>1.15</target_weight>
+      <obstacle_weight>1.8</obstacle_weight>
+      <animation_factor>5.1</animation_factor>
+      <!-- Usage: Initial pose of the actor -->
+      <init_position>6.8 -10.5 0</init_position>
+      <!-- Usage: Modify the set of models that the vector field should ignore when moving the actor -->
+      <ignore_obstacles>
+          <model>ground_plane</model>
+          <model>actor1_collision_model</model>
+          <model>actor2_collision_model</model>
+          <model>actor3_collision_model</model>
+      </ignore_obstacles>
+      <!-- Usage: Specify which other actors you want to avoid during wandering -->
+      <actor_awareness>
+          <model>actor1</model>
+          <model>actor2</model>
+          <model>actor3</model>
+      </actor_awareness>
+      <!-- Usage: Specify the targets -->
+      <targets>
+        <target>6.8 -10.5 1.2138</target>
+        <target>11.5 -10.5 1.2138</target>
+      </targets>
+      <!-- Usage: Specify the complex models -->
+      <complex_models>
+        <complex_model>5OG_waende</complex_model>
+      </complex_models>
+    </plugin>
+
+    
+  </actor>
+</sdf>
