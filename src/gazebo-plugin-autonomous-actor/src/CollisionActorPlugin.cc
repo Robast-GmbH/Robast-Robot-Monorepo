@@ -23,8 +23,6 @@
 #include <gazebo/physics/Link.hh>
 #include "CollisionActorPlugin.hh"
 
-#include <boost/shared_ptr.hpp>
-
 using namespace servicesim;
 GZ_REGISTER_MODEL_PLUGIN(CollisionActorPlugin)
 
@@ -51,9 +49,7 @@ void CollisionActorPlugin::Load(gazebo::physics::ModelPtr _model, sdf::ElementPt
     {
       if (!elem->HasAttribute("collision"))
       {
-#ifdef DEBUG_
-        gzdbg << "****** Skipping element without collision attribute" << std::endl;
-#endif
+        gzwarn << "Skipping element without collision attribute" << std::endl;
         elem = elem->GetNextElement("scaling");
         continue;
       }
@@ -74,81 +70,39 @@ void CollisionActorPlugin::Load(gazebo::physics::ModelPtr _model, sdf::ElementPt
     }
   }
 
-  //for each link in the actor
+  std::string actor_pose_name = actor->GetName() + "_pose";
+
   for (const auto &link : actor->GetLinks())
   {
-#ifdef DEBUG_
-    gzdbg << "***** Actor link " << link->GetName() << std::endl;
-#endif
-    // Init the links, which in turn enables collisions
-    link->Init();
+    gzdbg << "actor_pose_name: " << actor_pose_name << std::endl;
+    // Init the links, which in turn enables collisions (just be carefull to not init the link called <actor_name>_pose)
+    if (link->GetName() != actor_pose_name)
+    {
+      link->Init();
+    }
 
     if (scaling.empty())
       continue;
-#ifdef DEBUG_
-    gzdbg << "Collisions of link " << link->GetName() << ":" << std::endl;
-#endif
+
     // Process all the collisions in all the links
     for (const auto &collision : link->GetCollisions())
     {
       auto name = collision->GetName();
-#ifdef DEBUG_
-      gzdbg << "> " << name << std::endl;
-#endif
 
-      //find a correspondence between collision link name and scaling name
       if (scaling.find(name) != scaling.end())
       {
+        auto boxShape = boost::dynamic_pointer_cast<gazebo::physics::BoxShape>(collision->GetShape());
 
-#ifdef DEBUG_
-        gzdbg << "Collision box original shape: " << collision->GetShape()->TypeStr() << std::endl;
-#endif
-
-        //auto boxShape = boost::dynamic_pointer_cast<gazebo::physics::BoxShape>(collision->GetShape());
-
-        gazebo::physics::BoxShape box(collision);
-
-        box.Init();
-
-#ifdef DEBUG_
-        gzdbg << "Init" << std::endl;
-#endif
-
-        box.SetSize(ignition::math::Vector3d(1, 1, 1));
-
-#ifdef DEBUG_
-        gzdbg << "Setsize" << std::endl;
-#endif
-
-        boost::shared_ptr<gazebo::physics::BoxShape> box_ptr(&box);
-
-#ifdef DEBUG_
-        gzdbg << "Create pointer to " << box_ptr->TypeStr() << std::endl;
-#endif
-
-        collision->SetShape(box_ptr);
-
-        auto boxShape = collision->GetShape();
-
-#ifdef DEBUG_
-        gzdbg << "Collision box NEW shape: " << boxShape->TypeStr() << std::endl;
-#endif
-
-        // Make sure we have a box shape (not NULL ponter).
-        if (boxShape)
-        {
-          boxShape->SetScale(scaling[name]); //scale the original box
-#ifdef DEBUG_
-          gzdbg << "Add box to " << name << "of size " << scaling[name] << std::endl;
-#endif
-        }
+        // Make sure we have a box shape.
+        if (boxShape) //but is always null pointer...
+          boxShape->SetSize(boxShape->Size() * scaling[name]);
       }
 
       if (offsets.find(name) != offsets.end())
       {
-        collision->SetInitialRelativePose(
-            offsets[name] + collision->InitialRelativePose());
+        collision->SetInitialRelativePose(offsets[name] + collision->InitialRelativePose());
       }
     }
   }
 }
+

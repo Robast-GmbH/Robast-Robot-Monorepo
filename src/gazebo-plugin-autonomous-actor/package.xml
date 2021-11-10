@@ -4,12 +4,12 @@
   <name>gazebo-plugin-autonomous-actor</name>
   <version>0.0.0</version>
   <description>
-    The autonomous actor plugin allows user to specify a few location with respect to the world frame and loop these location by visiting them autonomously.
+    The autonomous actor plugin allows the actor to move randomly in the specified room avoiding ostacles both static and dynamic.
   </description>
-  <maintainer email="jianle001@e.ntu.edu.sg">Bruce Chan Jian Le</maintainer>
-  <author email="jianle001@e.ntu.edu.sg">Bruce Chan Jian Le</author>
-  <license>BSD</license>
-  <url type="website">https://github.com/BruceChanJianLe/gazebo-plugin-autonomous-actor</url>
+  <maintainer email="TODO@todo.todo"></maintainer>
+  <author email="TODO@todo.todo"></author>
+  <license>TODO</license>
+  <url type="website">TODO</url>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 

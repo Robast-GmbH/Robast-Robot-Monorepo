@@ -6,6 +6,17 @@
         <scale>1.0</scale>
      </skin>
      <pose>0 0 0 0 0 0</pose>
+
+	<link name="Hips">
+      <collision name="Hips_collision">
+        <pose>0 0 0 1 0 0</pose>
+        <geometry>
+          <box>
+            <size>0.5 0.5 0.5</size>
+          </box>
+        </geometry>
+      </collision>
+
      <animation name="walking">
         <filename>model://actor_walk/meshes/ANIMATION_walking.dae</filename>
         <scale>1.000000</scale>
