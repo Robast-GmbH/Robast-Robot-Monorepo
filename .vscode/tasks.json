@@ -114,9 +114,27 @@
             }
         },
         {
+            "type": "shell",
+            "label": "start tiplu_sim_high_rf",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch tiplu_world tiplu_world_no_client_high_rtf.launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": false,
+                "group": "default_start",  
+                "panel": "dedicated"
+            }
+        },
+        {
             "label": "start TipluWorld",
             "detail": "TipluWorld with rosboard on 8888",
             "dependsOn": ["start tiplu_sim", "start rosboard"],
+            "problemMatcher": [],
+        },
+        {
+            "label": "start TipluWorld_high_rf",
+            "detail": "TipluWorld with rosboard on 8888",
+            "dependsOn": ["start tiplu_sim_high_rf", "start rosboard"],
             "problemMatcher": [],
         },
         {
@@ -208,13 +226,13 @@
         {
             "label": "waypoint_test_follow_amcl",
             "detail": "Starts TipluWorld, Nav, slam, waypoint test, rviz",
-            "dependsOn": ["start TipluWorld", "start amcl", "start nav_without_localization", "start follow_waypoint_test", "start rviz_amcl"],
+            "dependsOn": ["start TipluWorld_high_rf", "start keepout_mask", "start amcl", "start nav_without_localization", "start follow_waypoint_test", "start rviz_amcl"],
             "problemMatcher": [],
         },
         {
             "label": "waypoint_test_follow",
             "detail": "Starts TipluWorld, Nav, slam, waypoint test, start rviz",
-            "dependsOn": ["start TipluWorld", "start slam_toolbox", "start nav_without_localization_with_map_buffer", "start follow_waypoint_test", "start rviz"],
+            "dependsOn": ["start TipluWorld_high_rf", "start keepout_mask", "start slam_toolbox", "start nav_without_localization_with_map_buffer", "start follow_waypoint_test", "start rviz"],
             "problemMatcher": [],
         },
         {
@@ -232,7 +250,7 @@
         {
             "type": "shell",
             "label": "start follow_waypoint_test",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=25",  
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=5",  
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
