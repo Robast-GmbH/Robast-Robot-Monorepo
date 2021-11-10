@@ -4,6 +4,7 @@ import yaml
 import random
 import time
 from datetime import datetime
+from timeit import default_timer as timer
 from ament_index_python.packages import get_package_share_directory
 from rclpy.node import Node
 from rclpy.action import ActionClient
@@ -193,16 +194,16 @@ def main(args=None):
     waypoint_creator.get_logger().info('Waiting for navigate_to_pose Server ...')
     waypoint_creator.nav_to_pose_client.wait_for_server()
     waypoint_counter = 0
-
+    test_start = time.time()
     for nav_goal in waypoint_creator.waypoints:
         waypoint_counter += 1
         waypoint_creator.trigger_map_update()
         waypoint_creator.send_nav_goal(nav_goal, waypoint_counter)
         waypoint_creator.spin_until_nav_goal_reached(waypoint_counter)
-
+    test_end = time.time()
     waypoint_creator.get_logger().info('Finished test procedure for {0} waypoints!'.format(waypoint_counter))
 
-    write_result_log(waypoint_creator, waypoint_counter)
+    write_result_log(waypoint_creator, waypoint_counter, test_end-test_start)
     waypoint_creator.get_logger().info(
         'Wrote all {0} failed waypoints to waypoint_testing_result.cache!'.format(len(waypoint_creator.failed_nav_goals)))
 
@@ -210,7 +211,7 @@ def main(args=None):
     rclpy.shutdown()
 
 
-def write_result_log(waypoint_creator, waypoint_counter):
+def write_result_log(waypoint_creator, waypoint_counter, test_time):
     # get timestamp
     datetime_string = datetime.now().strftime("%d/%m/%Y %H:%M:%S")  # dd/mm/YY H:M:S
 
@@ -222,6 +223,7 @@ def write_result_log(waypoint_creator, waypoint_counter):
     # write the list of failed_nav_goals to txt file
     with open('waypoint_testing_result.cache', 'a+') as file:
         file.write("\n\n" + "Timestamp:" + datetime_string)
+        file.write("\n Test took " + str(test_time) + " seconds")
         file.write("\n" + "Finished test procedure for " +
                    str(waypoint_counter) + " waypoints! List of all " + str(len(waypoint_creator.failed_nav_goals)) + " failed waypoints:")
         for item in waypoint_creator.failed_nav_goals:
