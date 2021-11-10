@@ -1,4 +1,4 @@
-#include "autonomous_actor/AutonomousActorPlugin.hh"
+#include "autonomous_actor/AutonomousActorPlugin2.hh"
 
 #include <functional>
 
@@ -334,7 +334,29 @@ void AutoActorPlugin::SteerAroundObstacle(physics::ModelPtr model, ignition::mat
 
     if (std::get<0>(obs_intersection))
     {
-      this->CorrectPath(offset_pose_to_target, distance_dependend_evasion_factor, obs_intersection);
+      gzdbg << "offset " << offset_pose_to_target << std::endl;
+      ignition::math::Vector3d correctedPath = ignition::math::Vector3d (offset_pose_to_target[0],offset_pose_to_target[1],offset_pose_to_target[2]);
+      gzdbg << "correctedVector " << correctedPath << std::endl;
+      this->CorrectPath(correctedPath, distance_dependend_evasion_factor, obs_intersection);
+
+      std::vector<ignition::math::AxisAlignedBox> all_observed_obstacles(current_observed_obstacles);
+      all_observed_obstacles.insert(all_observed_obstacles.end(), observed_obstacles.begin(), observed_obstacles.end());
+
+      bool error= false;
+      for(int x = 0; x < all_observed_obstacles.size(); x++)
+      {
+        std::tuple<bool, double> obsticles_intersection  = all_observed_obstacles[x].IntersectDist(actor_pose, correctedPath, 0, 10);
+        if (std::get<0>(obsticles_intersection))
+        {
+          error= true;
+          break;
+        }
+      }
+
+      if(!error)
+      {
+        offset_pose_to_target= ignition::math::Vector3d(correctedPath[0],correctedPath[1],correctedPath[2]);
+      }
     }
   }
 }
@@ -350,7 +372,7 @@ void AutoActorPlugin::CorrectPath(ignition::math::Vector3d &offset_pose_to_targe
   correction.Normalize();
 
   //Second: a force in perpendicular direction to the motion, propotional to the cos(angle<_pos,correction>)
-  correction = correction + Perpendicular(offset_pose_to_target, true);
+  correction = correction + Perpendicular(offset_pose_to_target, false);
 
   correction.Normalize();
 

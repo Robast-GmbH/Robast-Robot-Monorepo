@@ -64,8 +64,10 @@ namespace gazebo
     /// the obstacle
     /// \param[in] obs_intersection Tuple that contains whether there is an intersection between actor pose and target
     /// pose and the distance to this intersection
-                     double distance_dependend_evasion_factor,
-                     std::tuple<bool, double> obs_intersection);
+void CorrectPath( ignition::math::Vector3d &offset_pose_to_target, 
+                  double distance_dependend_evasion_factor, 
+                  std::tuple<bool, double> obs_intersection);
+                    
 
     /// \brief Helper function to compute a 2D perpendicula vector to a given one (Bacchin Alberto)
     /// \param[in] _pos The input vector
@@ -94,6 +96,8 @@ namespace gazebo
 
     /// \brief Helper function to check whether the actor is still moving or got stuck
     void StuckCheck(double distance);
+
+    
 
     /// \brief Pointer to the parent actor.
   private:
