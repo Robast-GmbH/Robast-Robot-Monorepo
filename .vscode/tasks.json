@@ -78,16 +78,22 @@
         },
         //default start
         {
-            "label": "defaullt_startup",
+            "label": "default_startup",
             "detail": "Starts TipluWorld, Nav, slam",
             "dependsOn": ["start TipluWorld", "start slam_toolbox", "start nav_without_localization"],
             "problemMatcher": [],
         },
         //default start
         {
-            "label": "defaullt_startup_amcl",
-            "detail": "Starts TipluWorld, Nav, slam",
+            "label": "default_startup_amcl",
+            "detail": "Starts TipluWorld, Nav, amcl",
             "dependsOn": ["start TipluWorld", "start amcl", "start keepout_mask", "start nav_without_localization", "start rviz_amcl"],
+        },
+        //default start
+        {
+            "label": "default_startup_amcl_robot_localization",
+            "detail": "Starts TipluWorld, Nav, amcl, robot_localization",
+            "dependsOn": ["start TipluWorld", "start amcl", "start keepout_mask", "start nav_without_localization", "start robot_localization", "start rviz_amcl"],
             "problemMatcher": [],
         },
         {
@@ -200,6 +206,18 @@
             "type": "shell",
             "label": "start amcl",
             "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation amcl_launch.py; ros2 launch navigation nav_without_localization_launch.py",  
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": true,
+                "group": "default_start",  
+                "panel": "dedicated"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "start robot_localization",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation robot_localization_odom_to_base_launch.py;",  
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
