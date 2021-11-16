@@ -34,6 +34,7 @@
         "athackst",
         "autopep",
         "cmake",
+        "costmap",
         "cppcheck",
         "cpplint",
         "deque",

@@ -7,6 +7,12 @@ bt_navigator:
     bt_loop_duration: 10 #neu
     default_server_timeout: 20 #neu
     # default_bt_xml_filename: "navigate_w_replanning_and_recovery.xml"
+    transform_tolerance: 0.1
+    enable_groot_monitoring: True
+    pose_groot_publisher_port: 1666
+    pose_groot_server_port: 1667
+    poses_groot_publisher_port: 1668
+    poses_groot_server_port: 1669
     plugin_lib_names:
     - nav2_compute_path_to_pose_action_bt_node
     - nav2_follow_path_action_bt_node
