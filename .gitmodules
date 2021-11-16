@@ -10,3 +10,6 @@
 [submodule "rosboard.git"]
 	path = src/submodules/rosboard
 	url = https://github.com/TAlscher/rosboard.git
+[submodule "Groot.git"]
+	path = src/Groot
+	url = https://github.com/BehaviorTree/Groot.git
