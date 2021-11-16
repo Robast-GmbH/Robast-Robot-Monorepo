@@ -48,6 +48,11 @@ RUN apt-get update && apt-get install -y \
   python3-pip \
   python3-rosdep \
   python3-vcstool \
+  #groot qt
+  qtbase5-dev \
+  libqt5svg5-dev \
+  libzmq3-dev \
+  libdw-dev \
   #dos2unix \
   wget \
   # Install ros distro testing packages
