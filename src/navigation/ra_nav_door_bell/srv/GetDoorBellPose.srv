@@ -1,7 +1,0 @@
-# Get the door bell pose
-
-# Request
-nav_msgs/Path path
----
-# Response
-geometry_msgs/PoseStamped pose

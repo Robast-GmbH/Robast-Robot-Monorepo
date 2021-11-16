@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ra_nav_door_bell)
+project(ra_nav_interim_goal)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -31,7 +31,7 @@ if(BUILD_TESTING)
 endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-"srv/get_door_bell_pose.srv"
+"srv/ComputeInterimGoal.srv"
 )
 
 ament_package()
