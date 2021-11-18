@@ -8,25 +8,29 @@ from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
 
     if(os.environ['ROS_DISTRO'] == 'galactic'):
-        default_bt_xml_filename = os.path.join(get_package_share_directory('navigation'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_through_poses_w_replanning_and_recovery.xml')
-        nav2_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_params_galactic.yaml')
+        default_bt_xml_filename = os.path.join(get_package_share_directory(
+            'navigation'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_through_poses_w_replanning_and_recovery.xml')
+        nav2_params_yaml = os.path.join(get_package_share_directory(
+            'navigation'), 'config', 'nav2_params_galactic.yaml')
     else:
-        default_bt_xml_filename = os.path.join(get_package_share_directory('navigation'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_w_replanning_and_recovery.xml')
+        default_bt_xml_filename = os.path.join(get_package_share_directory(
+            'navigation'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_w_replanning_and_recovery.xml')
         nav2_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_params.yaml')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
 
     lifecycle_nodes = [
-                       'controller_server',
-                       'planner_server',
-                       'recoveries_server',
-                       'bt_navigator',
-                       'waypoint_follower',
-                       ]
+        'controller_server',
+        'planner_server',
+        'recoveries_server',
+        'bt_navigator',
+        'waypoint_follower',
+    ]
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -36,7 +40,6 @@ def generate_launch_description():
     #              https://github.com/ros2/launch_ros/issues/56
     remappings = [('/tf', 'tf'),
                   ('/tf_static', 'tf_static')]
-
 
     return LaunchDescription([
         # Set env var to print messages to stdout immediately
@@ -54,14 +57,14 @@ def generate_launch_description():
             package='theron_fleetmanagement_bridge',
             executable='map_buffer',
             name='map_buffer'
-        ),   
+        ),
 
         Node(
             package='nav2_controller',
             executable='controller_server',
             output='screen',
             parameters=[nav2_params_yaml,
-            {"map_topic": '/robast_map'}],
+                        {"map_topic": '/robast_map'}],
             remappings=remappings),
 
         Node(
@@ -70,7 +73,7 @@ def generate_launch_description():
             name='planner_server',
             output='screen',
             parameters=[nav2_params_yaml,
-            {"map_topic": '/robast_map'}],
+                        {"map_topic": '/robast_map'}],
             remappings=remappings),
 
         Node(
