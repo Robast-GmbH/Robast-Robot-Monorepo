@@ -1,7 +1,0 @@
-# Get the door bell pose
-
-# Request
-nav_msgs/Path goal_path
----
-# Response
-geometry_msgs/PoseStamped interim_goal_pose

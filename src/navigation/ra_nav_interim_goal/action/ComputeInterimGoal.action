@@ -1,0 +1,8 @@
+#goal
+nav_msgs/Path goal_path
+---
+#result
+geometry_msgs/PoseStamped interim_goal_pose
+---
+#feedback
+std_msgs/Empty feedback
