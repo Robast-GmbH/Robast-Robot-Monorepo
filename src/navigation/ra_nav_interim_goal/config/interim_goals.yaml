@@ -1,0 +1,17 @@
+# list of interim_goals used in the interim_goal_selector node
+1:
+  x: 7.2
+  y: 10.6
+  yaw: 3.14
+2:
+  x: 13.5
+  y: 13.7
+  yaw: 3.14
+3:
+  x: 18.8
+  y: 13.8
+  yaw: 3.14
+4:
+  x: 24.8
+  y: 13.8
+  yaw: 3.14
