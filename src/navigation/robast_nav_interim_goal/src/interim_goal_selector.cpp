@@ -1,18 +1,18 @@
-#include "ra_nav_interim_goal/interim_goal_selector.hpp"
+#include "robast_nav_interim_goal/interim_goal_selector.hpp"
 
 #include "yaml-cpp/yaml.h"
 #include "rclcpp/rclcpp.hpp"
-#include "ra_nav_interim_goal/action/compute_interim_goal.hpp"
+#include "robast_msgs/action/compute_interim_goal.hpp"
 #include <inttypes.h>
 #include <memory>
 
 #define param_interim_goals_yaml "interim_goals"
 
-namespace ra_nav_interim_goal
+namespace robast_nav_interim_goal
 {
 
 InterimGoalSelector::InterimGoalSelector()
-: nav2_util::LifecycleNode("ra_nav_interim_goal", "", true)
+: nav2_util::LifecycleNode("robast_nav_interim_goal", "", true)
 {
   RCLCPP_INFO(get_logger(), "Creating");
   
@@ -81,7 +81,8 @@ InterimGoalSelector::on_shutdown(const rclcpp_lifecycle::State & /*state*/)
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
-void InterimGoalSelector::select_interim_goal() {
+void InterimGoalSelector::select_interim_goal()
+{
   auto goal = action_server_->get_current_goal();
   auto feedback = std::make_shared<ActionT::Feedback>();
   auto result = std::make_shared<ActionT::Result>();
@@ -95,6 +96,11 @@ void InterimGoalSelector::select_interim_goal() {
   RCLCPP_INFO(
     get_logger(), "Received a interim goal computation request for a path with %i poses.",
     static_cast<int>(goal->goal_path.poses.size()));
+
+  if (goal->goal_path.poses.empty()) {
+    RCLCPP_ERROR(get_logger(), "Invalid path, Path is empty.");
+    action_server_->terminate_current(result);
+  }
 
 }
 
@@ -114,4 +120,4 @@ void InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim
   }
 }
 
-} // namespace ra_nav_door_bell
+} // namespace robast_nav_door_bell

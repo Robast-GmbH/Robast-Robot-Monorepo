@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RA_NAV_INTERIM_GOAL__INTERIM_GOAL_HPP_
-#define RA_NAV_INTERIM_GOAL__INTERIM_GOAL_HPP_
+#ifndef ROBAST_NAV_INTERIM_GOAL__INTERIM_GOAL_HPP_
+#define ROBAST_NAV_INTERIM_GOAL__INTERIM_GOAL_HPP_
 
 #include <memory>
 #include <string>
@@ -27,7 +27,7 @@
 #include "nav2_util/simple_action_server.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
-namespace ra_nav_interim_goal
+namespace robast_nav_interim_goal
 {
 
 struct interim_goal
@@ -46,22 +46,22 @@ enum class ActionStatus
 };
 
 /**
- * @class ra_nav_interim_goal::InterimGoalSelector
+ * @class robast_nav_interim_goal::InterimGoalSelector
  * @brief A server that gets a path to a goal position and selects from a list of poses the one
  * that's closest to the path and returns this one as interim goal pose.
  */
 class InterimGoalSelector : public nav2_util::LifecycleNode
 {
 public:
-  using ActionT = ra_nav_interim_goal::action::ComputeInterimGoal;
+  using ActionT = robast_nav_interim_goal::action::ComputeInterimGoal;
   using ActionServer = nav2_util::SimpleActionServer<ActionT>;
 
   /**
-   * @brief A constructor for ra_nav_interim_goal::InterimGoalSelector class
+   * @brief A constructor for robast_nav_interim_goal::InterimGoalSelector class
    */
   InterimGoalSelector();
   /**
-   * @brief A destructor for ra_nav_interim_goal::InterimGoalSelector class
+   * @brief A destructor for robast_nav_interim_goal::InterimGoalSelector class
    */
   ~InterimGoalSelector();
 
@@ -126,9 +126,6 @@ protected:
   // TODO: Remove these variables. Only here for comparison
   // Our action server
   std::unique_ptr<ActionServer> action_server_;
-  ActionClient::SharedPtr nav_to_pose_client_;
-  rclcpp::Node::SharedPtr client_node_;
-  std::shared_future<rclcpp_action::ClientGoalHandle<ClientT>::SharedPtr> future_goal_handle_;
   bool stop_on_failure_;
   ActionStatus current_goal_status_;
   int loop_rate_;
@@ -139,6 +136,6 @@ protected:
   std::vector<interim_goal> interim_goals_;
 };
 
-}  // namespace ra_nav_interim_goal
+}  // namespace robast_nav_interim_goal
 
-#endif  // RA_NAV_INTERIM_GOAL__INTERIM_GOAL_HPP_
+#endif  // ROBAST_NAV_INTERIM_GOAL__INTERIM_GOAL_HPP_
