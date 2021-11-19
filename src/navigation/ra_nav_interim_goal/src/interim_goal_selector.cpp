@@ -12,7 +12,7 @@ namespace ra_nav_interim_goal
 {
 
 InterimGoalSelector::InterimGoalSelector()
-: nav2_util::LifecycleNode("ra_nav_interim_goal", "", true),
+: nav2_util::LifecycleNode("ra_nav_interim_goal", "", true)
 {
   RCLCPP_INFO(get_logger(), "Creating");
   
