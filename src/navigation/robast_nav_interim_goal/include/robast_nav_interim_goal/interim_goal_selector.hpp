@@ -105,6 +105,14 @@ protected:
   void load_interim_goals_from_yaml(const std::string interim_goals_yaml_filename);
 
   /**
+   * @brief Helper function to check if the request for the action is valid
+   * @param state Reference to LifeCycle node state
+   * @return true if valid, false if not valid
+   */
+  bool is_request_valid(const std::shared_ptr<const typename ActionT::Goal> goal,
+                        std::shared_ptr<ActionT::Result> result);
+
+  /**
    * @brief Action server execution callback
    */
   void select_interim_goal();
@@ -112,10 +120,7 @@ protected:
   // TODO: Remove these variables. Only here for comparison
   // Our action server
   std::unique_ptr<ActionServer> action_server_;
-  bool stop_on_failure_;
   ActionStatus current_goal_status_;
-  int loop_rate_;
-  std::vector<int> failed_ids_;
 
   // TODO: Remove this comment
   // NEUE VON MIR HINZUGEFÜGTE:

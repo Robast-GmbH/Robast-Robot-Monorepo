@@ -87,21 +87,33 @@ void InterimGoalSelector::select_interim_goal()
   auto feedback = std::make_shared<ActionT::Feedback>();
   auto result = std::make_shared<ActionT::Result>();
 
-  // Check if request is valid
+  if (!is_request_valid(goal, result)) {
+    return;
+  }
+  
+
+}
+
+bool
+InterimGoalSelector::is_request_valid(
+  const std::shared_ptr<const typename ActionT::Goal> goal,
+  std::shared_ptr<ActionT::Result> result)
+{
   if (!action_server_ || !action_server_->is_server_active()) {
     RCLCPP_DEBUG(get_logger(), "Action server inactive. Stopping.");
-    return;
+    return false;
+  } 
+
+  if (goal->goal_path.poses.empty()) {
+    RCLCPP_ERROR(get_logger(), "Invalid path, Path is empty.");
+    action_server_->terminate_current(result);
+    return false;
   }
 
   RCLCPP_INFO(
     get_logger(), "Received a interim goal computation request for a path with %i poses.",
     static_cast<int>(goal->goal_path.poses.size()));
-
-  if (goal->goal_path.poses.empty()) {
-    RCLCPP_ERROR(get_logger(), "Invalid path, Path is empty.");
-    action_server_->terminate_current(result);
-  }
-
+  return true;
 }
 
 void InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim_goals_yaml_filename)
