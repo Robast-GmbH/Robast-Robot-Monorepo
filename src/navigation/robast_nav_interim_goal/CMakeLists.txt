@@ -18,6 +18,57 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
+find_package(yaml_cpp_vendor REQUIRED)
+find_package(robast_msgs REQUIRED)
+find_package(nav2_util REQUIRED)
+
+include_directories(include)
+
+set(executable_name interim_goal_selector)
+
+add_executable(${executable_name}
+  src/main.cpp)
+
+set(library_name ${executable_name}_core)
+
+add_library(${library_name} SHARED
+  src/interim_goal_selector.cpp
+)
+
+set(dependencies
+  rclcpp
+  rclcpp_action
+  rclcpp_lifecycle
+  yaml_cpp_vendor
+  nav2_util
+  robast_msgs
+)
+
+ament_target_dependencies(${executable_name}
+  ${dependencies}
+)
+
+target_link_libraries(${executable_name} ${library_name})
+
+ament_target_dependencies(${library_name}
+  ${dependencies}
+)
+
+install(TARGETS ${library_name}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(TARGETS ${executable_name}
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -29,5 +80,7 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+ament_export_include_directories(include)
 
 ament_package()

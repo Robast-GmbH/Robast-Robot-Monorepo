@@ -15,6 +15,7 @@
 
 #include <memory>
 
+#include "robast_nav_interim_goal/interim_goal_selector.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char ** argv)

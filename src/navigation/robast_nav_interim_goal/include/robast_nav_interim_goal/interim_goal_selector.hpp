@@ -22,9 +22,7 @@
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include "nav2_util/lifecycle_node.hpp"
-#include "nav2_msgs/action/navigate_to_pose.hpp"
-#include "nav2_msgs/action/follow_waypoints.hpp"
-#include "nav_msgs/msg/path.hpp"
+#include "robast_msgs/action/compute_interim_goal.hpp"
 #include "nav2_util/simple_action_server.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
@@ -110,19 +108,6 @@ protected:
    * @brief Action server execution callback
    */
   void select_interim_goal();
-
-  /**
-   * @brief Action client result callback
-   * @param result Result of action server updated asynchronously
-   */
-  void resultCallback(const rclcpp_action::ClientGoalHandle<ClientT>::WrappedResult & result);
-
-  /**
-   * @brief Action client goal response callback
-   * @param future Shared future to goalhandle
-   */
-  void goalResponseCallback(
-    std::shared_future<rclcpp_action::ClientGoalHandle<ClientT>::SharedPtr> future);
 
   // TODO: Remove these variables. Only here for comparison
   // Our action server
