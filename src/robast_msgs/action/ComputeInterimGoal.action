@@ -5,6 +5,7 @@ string controller_id
 ---
 #result
 geometry_msgs/PoseStamped interim_pose
+builtin_interfaces/Duration planning_time
 ---
 #feedback
 std_msgs/Empty feedback
