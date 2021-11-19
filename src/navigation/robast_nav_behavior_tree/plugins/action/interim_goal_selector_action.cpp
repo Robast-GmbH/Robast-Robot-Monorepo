@@ -48,6 +48,12 @@ void InterimGoalCompAction::on_wait_for_result()
   }
 }
 
+BT::NodeStatus InterimGoalCompAction::on_success()
+{
+  setOutput("interim_pose", result_.result->interim_pose);
+  return BT::NodeStatus::SUCCESS;
+}
+
 }  // namespace nav2_behavior_tree
 
 #include "behaviortree_cpp_v3/bt_factory.h"

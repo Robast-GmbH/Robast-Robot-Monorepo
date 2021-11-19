@@ -35,6 +35,9 @@ include_directories(
   include
 )
 
+set(library_name ${PROJECT_NAME})
+
+
 set(dependencies
   rclcpp
   rclcpp_action
@@ -50,7 +53,7 @@ set(dependencies
 )
 
 
-#set(library_name ${PROJECT_NAME})
+set(library_name ${PROJECT_NAME})
 
 # ament_target_dependencies(${library_name}
 #   ${dependencies}

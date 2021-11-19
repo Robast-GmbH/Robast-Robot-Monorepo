@@ -52,7 +52,7 @@ public:
   {
     return providedBasicPorts(
       {
-        BT::OutputPort<nav_msgs::msg::Path>("interim_path", "Path created by ComputeInterimGoal node"),
+        BT::OutputPort<nav_msgs::msg::Path>("interim_pose", "Path created by ComputeInterimGoal node"),
         BT::InputPort<nav_msgs::msg::Path>("path", "Path to Goal"),
         BT::InputPort<geometry_msgs::msg::PoseStamped>("pose", "Goal Pose"),
         BT::InputPort<std::string>("controller_id", ""), //not sure about that
