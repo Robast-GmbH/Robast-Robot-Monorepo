@@ -11,9 +11,11 @@ POSE_INIT_X = os.environ['POSE_INIT_X']
 POSE_INIT_Y = os.environ['POSE_INIT_Y']
 POSE_INIT_Z = os.environ['POSE_INIT_Z']
 
+
 def generate_launch_description():
 
-    rviz_config_dir = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_default_view_amcl.rviz')
+    rviz_config_dir = os.path.join(get_package_share_directory(
+        'robast_nav_launch'), 'config', 'nav2_default_view_amcl.rviz')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
 

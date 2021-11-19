@@ -14,10 +14,10 @@ def generate_launch_description():
     POSE_INIT_Y = os.environ['POSE_INIT_Y']
     POSE_INIT_Z = os.environ['POSE_INIT_Z']
 
-    nav2_params_yaml = os.path.join(get_package_share_directory('navigation'), 'config', 'nav2_params.yaml')
+    nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'), 'config', 'nav2_params.yaml')
     nav2_localization_params_yaml = os.path.join(get_package_share_directory(
-        'navigation'), 'config', 'localization_params.yaml')
-    map_file = os.path.join(get_package_share_directory('navigation'), 'maps', '5OG.yaml')
+        'robast_nav_launch'), 'config', 'localization_params.yaml')
+    map_file = os.path.join(get_package_share_directory('robast_nav_launch'), 'maps', '5OG.yaml')
 
     print('map_file: {}'.format(map_file))
 
