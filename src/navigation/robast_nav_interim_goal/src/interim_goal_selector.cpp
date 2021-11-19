@@ -91,6 +91,8 @@ void InterimGoalSelector::select_interim_goal()
     return;
   }
   
+  //TODO: Wie ist der path aufgebaut? Path ist Array aus Poses  
+  //TODO: Ist die das Endziel am Anfang oder am ende des Poses Array?
 
 }
 
@@ -104,7 +106,7 @@ InterimGoalSelector::is_request_valid(
     return false;
   } 
 
-  if (goal->goal_path.poses.empty()) {
+  if (goal->path.poses.empty()) {
     RCLCPP_ERROR(get_logger(), "Invalid path, Path is empty.");
     action_server_->terminate_current(result);
     return false;
@@ -112,7 +114,7 @@ InterimGoalSelector::is_request_valid(
 
   RCLCPP_INFO(
     get_logger(), "Received a interim goal computation request for a path with %i poses.",
-    static_cast<int>(goal->goal_path.poses.size()));
+    static_cast<int>(goal->path.poses.size()));
   return true;
 }
 
