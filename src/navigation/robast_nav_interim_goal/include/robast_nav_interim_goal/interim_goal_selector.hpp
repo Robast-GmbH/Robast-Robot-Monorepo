@@ -19,6 +19,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 
 #include "nav2_util/lifecycle_node.hpp"
 #include "nav2_msgs/action/navigate_to_pose.hpp"
@@ -53,7 +54,7 @@ enum class ActionStatus
 class InterimGoalSelector : public nav2_util::LifecycleNode
 {
 public:
-  using ActionT = robast_nav_interim_goal::action::ComputeInterimGoal;
+  using ActionT = robast_msgs::action::ComputeInterimGoal;
   using ActionServer = nav2_util::SimpleActionServer<ActionT>;
 
   /**

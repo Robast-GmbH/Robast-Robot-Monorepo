@@ -106,8 +106,6 @@ void InterimGoalSelector::select_interim_goal()
 
 void InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim_goals_yaml_filename)
 {
-  //TODO: get full path for interim_goals_yaml_filename
-
   YAML::Node doc = YAML::LoadFile(interim_goals_yaml_filename);
 
   for (std::size_t i=1; i<doc.size()+1; i++) {
