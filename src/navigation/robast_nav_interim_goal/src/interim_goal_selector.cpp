@@ -7,6 +7,7 @@
 #include <memory>
 
 #define param_interim_goals_yaml "interim_goals"
+#define param_k_nearest_neighbors "k_nearest_neighbors" 
 
 namespace robast_nav_interim_goal
 {
@@ -18,6 +19,7 @@ InterimGoalSelector::InterimGoalSelector()
   
   // Declare this node's parameters
   declare_parameter(param_interim_goals_yaml);
+  declare_parameter(param_k_nearest_neighbors);
 }
 
 InterimGoalSelector::~InterimGoalSelector()
@@ -29,6 +31,8 @@ nav2_util::CallbackReturn
 InterimGoalSelector::on_configure(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Configuring");
+
+  k_nearest_neighbors_ = get_parameter(param_k_nearest_neighbors).as_int();
 
   std::string interim_goals_yaml_filename = get_parameter(param_interim_goals_yaml).as_string();
 
@@ -81,7 +85,8 @@ InterimGoalSelector::on_shutdown(const rclcpp_lifecycle::State & /*state*/)
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
-void InterimGoalSelector::select_interim_goal()
+void
+InterimGoalSelector::select_interim_goal()
 {
   auto goal = action_server_->get_current_goal();
   auto feedback = std::make_shared<ActionT::Feedback>();
@@ -90,10 +95,17 @@ void InterimGoalSelector::select_interim_goal()
   if (!is_request_valid(goal, result)) {
     return;
   }
-  
-  //TODO: Wie ist der path aufgebaut? Path ist Array aus Poses  
-  //TODO: Ist die das Endziel am Anfang oder am ende des Poses Array?
 
+  // From all possible interim goals find the k nearest neighbors closest to the final goal pose
+  find_k_nearest_neighbors(k_nearest_neighbors_, goal->pose);
+
+  // TODO: Select the one goal of the closest_interim_goals_ that is closest to the path
+}
+
+void
+InterimGoalSelector::find_k_nearest_neighbors(int64_t k, geometry_msgs::msg::PoseStamped final_pose)
+{
+  //TODO: Implement
 }
 
 bool
@@ -118,7 +130,8 @@ InterimGoalSelector::is_request_valid(
   return true;
 }
 
-void InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim_goals_yaml_filename)
+void
+InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim_goals_yaml_filename)
 {
   YAML::Node doc = YAML::LoadFile(interim_goals_yaml_filename);
 

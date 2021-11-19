@@ -106,25 +106,35 @@ protected:
 
   /**
    * @brief Helper function to check if the request for the action is valid
-   * @param state Reference to LifeCycle node state
-   * @return true if valid, false if not valid
+   * @param goal Action goal that is checked for validity
+   * @param result Action result that is used in case the request is invalid and action is canceled
+   * @return True if valid, false if not valid
    */
   bool is_request_valid(const std::shared_ptr<const typename ActionT::Goal> goal,
                         std::shared_ptr<ActionT::Result> result);
+
+  /**
+   * @brief Helper function to find the k nearest neighbors closest to the final goal pose
+   * @param k Number of closest neighbors to find
+   * @param final_pose Pose to which the neighbors should be found
+   */
+  void find_k_nearest_neighbors(int64_t k, geometry_msgs::msg::PoseStamped final_pose);
 
   /**
    * @brief Action server execution callback
    */
   void select_interim_goal();
 
-  // TODO: Remove these variables. Only here for comparison
+  // TODO: Remove these variables? Only here for comparison
   // Our action server
   std::unique_ptr<ActionServer> action_server_;
   ActionStatus current_goal_status_;
 
   // TODO: Remove this comment
   // NEUE VON MIR HINZUGEFÜGTE:
+  int64_t k_nearest_neighbors_;
   std::vector<interim_goal> interim_goals_;
+  std::vector<interim_goal> closest_interim_goals_;
 };
 
 }  // namespace robast_nav_interim_goal
