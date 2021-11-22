@@ -140,13 +140,6 @@ protected:
    */
   double calculate_euclidean_distance(double x1, double y1, double x2, double y2);
 
-  /**
-   * @brief Helper function to compare the distance to the final pose of two interim goals
-   * @param interim_goal1 
-   * @param interim_goal2
-   * @return True if distance to final pose of interim_goal1 is smaller than the one of interim_goal2
-   */
-  bool compare_dist_to_final_pose(interim_goal interim_goal1, interim_goal interim_goal2);
 
   /**
    * @brief Action server execution callback
@@ -162,6 +155,17 @@ protected:
   double epsilon_;
 };
 
+
+  /**
+   * @brief Helper function to compare the distance to the final pose of two interim goals
+   * @param interim_goal1 
+   * @param interim_goal2
+   * @return True if distance to final pose of interim_goal1 is smaller than the one of interim_goal2
+   */
+  static bool compare_dist_to_final_pose(interim_goal interim_goal1, interim_goal interim_goal2)
+  {
+    return (interim_goal1.dist_to_final_pose < interim_goal2.dist_to_final_pose);
+  }
 }  // namespace robast_nav_interim_goal
 
 #endif  // ROBAST_NAV_INTERIM_GOAL__INTERIM_GOAL_HPP_

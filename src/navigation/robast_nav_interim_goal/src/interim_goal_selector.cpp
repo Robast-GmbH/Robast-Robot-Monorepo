@@ -1,6 +1,6 @@
 #include <inttypes.h>
 #include <memory>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 
 #include "rclcpp/rclcpp.hpp"
@@ -17,6 +17,7 @@
 
 namespace robast_nav_interim_goal
 {
+
 
 InterimGoalSelector::InterimGoalSelector()
 : nav2_util::LifecycleNode("robast_nav_interim_goal", "", true)
@@ -140,11 +141,11 @@ void InterimGoalSelector::filter_k_nearest_neighbors_interim_goals(geometry_msgs
 
 bool InterimGoalSelector::select_final_interim_goal_on_path(nav_msgs::msg::Path path)
 {
-  for(int i = std.sizeof(path.poses); i=>0; --i)
+  for(int i = (sizeof(path.poses) / sizeof(path.poses[0])); i>=0; --i)
   {
     double path_x = path.poses[i].pose.position.x;
     double path_y = path.poses[i].pose.position.y;
-    for(int j = 0; j < interim_goals_.size(); j++)
+    for(long unsigned int j = 0; j < interim_goals_.size(); j++)
     {
       if(calculate_euclidean_distance(path_x, path_y, interim_goals_[j].x, interim_goals_[j].y) < epsilon_)
       {
@@ -164,10 +165,7 @@ double InterimGoalSelector::calculate_euclidean_distance(double x1, double y1, d
   return std::hypot(x1 - x2, y1 - y2);
 }
 
-bool InterimGoalSelector::compare_dist_to_final_pose(interim_goal interim_goal1, interim_goal interim_goal2)
-{
-  return (interim_goal1.dist_to_final_pose < interim_goal2.dist_to_final_pose);
-}
+
 
 
 bool InterimGoalSelector::is_request_valid(
@@ -205,5 +203,7 @@ void InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim
     interim_goals_.push_back(interim_goal);
   }
 }
+
+
 
 } // namespace robast_nav_door_bell
