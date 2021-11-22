@@ -21,6 +21,9 @@ def generate_launch_description():
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_w_replanning_and_recovery.xml')
         nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'), 'config', 'nav2_params.yaml')
 
+    interim_goals_yaml = os.path.join(get_package_share_directory(
+        'robast_nav_interim_goal'), 'config', 'interim_goals.yaml')
+
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
 
@@ -28,6 +31,7 @@ def generate_launch_description():
         'controller_server',
         'planner_server',
         'recoveries_server',
+        'interim_goal_selector',
         'bt_navigator',
         'waypoint_follower',
     ]
@@ -77,6 +81,15 @@ def generate_launch_description():
             name='recoveries_server',
             output='screen',
             parameters=[nav2_params_yaml],
+            remappings=remappings),
+
+        Node(
+            package='robast_nav_interim_goal',
+            executable='interim_goal_selector',
+            name='interim_goal_selector',
+            output='screen',
+            parameters=[{'interim_goals_yaml': interim_goals_yaml},
+                        nav2_params_yaml],
             remappings=remappings),
 
         Node(

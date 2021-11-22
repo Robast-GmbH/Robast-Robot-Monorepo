@@ -11,7 +11,7 @@
 
 
 
-#define param_interim_goals_yaml "interim_goals"
+#define param_interim_goals_yaml "interim_goals_yaml"
 #define param_k_nearest_neighbors "k_nearest_neighbors" 
 #define param_max_interim_dist_to_path "max_interim_dist_to_path" 
 

@@ -41,6 +41,11 @@ bt_navigator_rclcpp_node:
   ros__parameters:
     use_sim_time: True
 
+interim_goal_selector:
+  ros__parameters:
+    k_nearest_neighbors: 3
+    max_interim_dist_to_path: 0.4
+
 controller_server:
   ros__parameters:
     use_sim_time: True
