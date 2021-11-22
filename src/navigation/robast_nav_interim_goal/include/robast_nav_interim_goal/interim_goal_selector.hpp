@@ -34,6 +34,7 @@ struct interim_goal
   double x;
   double y;
   double yaw;
+  double dist_to_final_pose;
 };
 
 enum class ActionStatus
@@ -117,8 +118,27 @@ protected:
    * @brief Helper function to find the k nearest neighbors closest to the final goal pose
    * @param k Number of closest neighbors to find
    * @param final_pose Pose to which the neighbors should be found
+   * @return 
    */
-  void find_k_nearest_neighbors(int64_t k, geometry_msgs::msg::PoseStamped final_pose);
+  void filter_k_nearest_neighbors_interim_goals(geometry_msgs::msg::PoseStamped final_pose);
+
+  /**
+   * @brief Helper function to calculate the euclidean distance between two 2D-points
+   * @param x1 x-coordinate of the first point
+   * @param y1 y-coordinate of the first point
+   * @param x2 x-coordinate of the second point
+   * @param y2 y-coordinate of the second point
+   * @return Euclidean distance between the two 2D-points
+   */
+  double calculate_euclidean_distance(double x1, double y1, double x2, double y2);
+
+  /**
+   * @brief Helper function to compare the distance to the final pose of two interim goals
+   * @param interim_goal1 
+   * @param interim_goal2
+   * @return True if distance to final pose of interim_goal1 is smaller than the one of interim_goal2
+   */
+  bool compare_dist_to_final_pose(interim_goal interim_goal1, interim_goal interim_goal2);
 
   /**
    * @brief Action server execution callback
@@ -134,7 +154,6 @@ protected:
   // NEUE VON MIR HINZUGEFÜGTE:
   int64_t k_nearest_neighbors_;
   std::vector<interim_goal> interim_goals_;
-  std::vector<interim_goal> closest_interim_goals_;
 };
 
 }  // namespace robast_nav_interim_goal

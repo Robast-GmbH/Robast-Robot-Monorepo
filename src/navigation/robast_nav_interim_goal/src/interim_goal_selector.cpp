@@ -27,8 +27,7 @@ InterimGoalSelector::~InterimGoalSelector()
   RCLCPP_INFO(get_logger(), "Destroying");
 }
 
-nav2_util::CallbackReturn
-InterimGoalSelector::on_configure(const rclcpp_lifecycle::State & /*state*/)
+nav2_util::CallbackReturn InterimGoalSelector::on_configure(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Configuring");
 
@@ -48,8 +47,7 @@ InterimGoalSelector::on_configure(const rclcpp_lifecycle::State & /*state*/)
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
-nav2_util::CallbackReturn
-InterimGoalSelector::on_activate(const rclcpp_lifecycle::State & /*state*/)
+nav2_util::CallbackReturn InterimGoalSelector::on_activate(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Activating");
 
@@ -58,8 +56,7 @@ InterimGoalSelector::on_activate(const rclcpp_lifecycle::State & /*state*/)
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
-nav2_util::CallbackReturn
-InterimGoalSelector::on_deactivate(const rclcpp_lifecycle::State & /*state*/)
+nav2_util::CallbackReturn InterimGoalSelector::on_deactivate(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Deactivating");
 
@@ -68,8 +65,7 @@ InterimGoalSelector::on_deactivate(const rclcpp_lifecycle::State & /*state*/)
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
-nav2_util::CallbackReturn
-InterimGoalSelector::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
+nav2_util::CallbackReturn InterimGoalSelector::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Cleaning up");
 
@@ -78,15 +74,13 @@ InterimGoalSelector::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
-nav2_util::CallbackReturn
-InterimGoalSelector::on_shutdown(const rclcpp_lifecycle::State & /*state*/)
+nav2_util::CallbackReturn InterimGoalSelector::on_shutdown(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Shutting down");
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
-void
-InterimGoalSelector::select_interim_goal()
+void InterimGoalSelector::select_interim_goal()
 {
   auto goal = action_server_->get_current_goal();
   auto feedback = std::make_shared<ActionT::Feedback>();
@@ -96,20 +90,41 @@ InterimGoalSelector::select_interim_goal()
     return;
   }
 
-  // From all possible interim goals find the k nearest neighbors closest to the final goal pose
-  find_k_nearest_neighbors(k_nearest_neighbors_, goal->pose);
+  // From all possible interim goals find the k nearest neighbors to the final goal pose
+  filter_k_nearest_neighbors_interim_goals(goal->pose);
 
+  find_
   // TODO: Select the one goal of the closest_interim_goals_ that is closest to the path
 }
 
-void
-InterimGoalSelector::find_k_nearest_neighbors(int64_t k, geometry_msgs::msg::PoseStamped final_pose)
+void InterimGoalSelector::filter_k_nearest_neighbors_interim_goals(geometry_msgs::msg::PoseStamped final_pose)
 {
-  //TODO: Implement
+  for (u_int16_t i = 0; i < interim_goals_.size(); i++)
+  {
+    interim_goal interim_goal = interim_goals_[i];
+    interim_goals_[i].dist_to_final_pose = calculate_euclidean_distance(final_pose.pose.position.x,
+                                                            final_pose.pose.position.y,
+                                                            interim_goal.x,
+                                                            interim_goal.y);
+  }
+  // sort the vector of interim_goals_, so that interim_goals_[0] contains the smallest distance to the final pose
+  std::sort(interim_goals_.begin(), interim_goals_.end(), compare_dist_to_final_pose);
+
+  interim_goals_.resize(k_nearest_neighbors_);
 }
 
-bool
-InterimGoalSelector::is_request_valid(
+double InterimGoalSelector::calculate_euclidean_distance(double x1, double y1, double x2, double y2)
+{
+  return std::hypot(x1 - x2, y1 - y2);
+}
+
+bool InterimGoalSelector::compare_dist_to_final_pose(interim_goal interim_goal1, interim_goal interim_goal2)
+{
+  return (interim_goal1.dist_to_final_pose < interim_goal2.dist_to_final_pose);
+}
+
+
+bool InterimGoalSelector::is_request_valid(
   const std::shared_ptr<const typename ActionT::Goal> goal,
   std::shared_ptr<ActionT::Result> result)
 {
@@ -130,8 +145,7 @@ InterimGoalSelector::is_request_valid(
   return true;
 }
 
-void
-InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim_goals_yaml_filename)
+void InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim_goals_yaml_filename)
 {
   YAML::Node doc = YAML::LoadFile(interim_goals_yaml_filename);
 
@@ -140,6 +154,7 @@ InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim_goal
     interim_goal.x = doc[i]["x"].as<double>();
     interim_goal.y = doc[i]["y"].as<double>();
     interim_goal.yaw = doc[i]["yaw"].as<double>();
+    interim_goal.dist_to_final_pose = 0;
 
     interim_goals_.push_back(interim_goal);
   }
