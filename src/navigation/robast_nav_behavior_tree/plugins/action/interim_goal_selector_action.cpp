@@ -20,9 +20,9 @@ InterimGoalCompAction::InterimGoalCompAction(
 
 void InterimGoalCompAction::on_tick()
 {
-  getInput("path", goal_.path);
-  getInput("pose", goal_.pose);
-  getInput("controller_id", goal_.controller_id);
+  getInput("path", goal_.path); //goal (in the room)
+  getInput("pose", goal_.pose); 
+  getInput("splitter_id", goal_.splitter_id);
 }
 
 void InterimGoalCompAction::on_wait_for_result()
@@ -38,12 +38,12 @@ void InterimGoalCompAction::on_wait_for_result()
     goal_updated_ = true;
   }  
 
-  std::string new_controller_id;
-  getInput("controller_id", new_controller_id);
+  std::string new_splitter_id;
+  getInput("splitter_id", new_splitter_id);
 
-  if (goal_.controller_id != new_controller_id) 
+  if (goal_.splitter_id != new_splitter_id) 
   {
-    goal_.controller_id = new_controller_id;
+    goal_.splitter_id = new_splitter_id;
     goal_updated_ = true;
   }
 }

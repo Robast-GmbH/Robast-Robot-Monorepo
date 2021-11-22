@@ -31,6 +31,13 @@
       <input_port name="planner_id"/>
     </Action>
 
+    <Action ID="ComputeNavInterimGoal">
+      <input_port name="pose">Final goal pose</input_port>
+      <input_port name="path">Path to the goal</input_port>
+      <output_port name="interim_pose">Path created by ComputePathToPose node</output_port>
+      <input_port name="splitter_id"/>
+    </Action>
+
     <Action ID="RemovePassedGoals">
       <input_port name="input_goals">Input goals to remove if passed</input_port>
       <input_port name="radius">Radius tolerance on a goal to consider it passed</input_port>
