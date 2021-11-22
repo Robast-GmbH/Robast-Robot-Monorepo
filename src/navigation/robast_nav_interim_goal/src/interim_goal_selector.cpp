@@ -1,13 +1,19 @@
-#include "robast_nav_interim_goal/interim_goal_selector.hpp"
-
-#include "yaml-cpp/yaml.h"
-#include "rclcpp/rclcpp.hpp"
-#include "robast_msgs/action/compute_interim_goal.hpp"
 #include <inttypes.h>
 #include <memory>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+
+
+#include "rclcpp/rclcpp.hpp"
+
+#include "yaml-cpp/yaml.h"
+#include "robast_nav_interim_goal/interim_goal_selector.hpp"
+#include "robast_msgs/action/compute_interim_goal.hpp"
+
+
 
 #define param_interim_goals_yaml "interim_goals"
 #define param_k_nearest_neighbors "k_nearest_neighbors" 
+#define param_max_interim_dist_to_path "max_interim_dist_to_path" 
 
 namespace robast_nav_interim_goal
 {
@@ -20,6 +26,7 @@ InterimGoalSelector::InterimGoalSelector()
   // Declare this node's parameters
   declare_parameter(param_interim_goals_yaml);
   declare_parameter(param_k_nearest_neighbors);
+  declare_parameter(param_max_interim_dist_to_path);
 }
 
 InterimGoalSelector::~InterimGoalSelector()
@@ -32,7 +39,7 @@ nav2_util::CallbackReturn InterimGoalSelector::on_configure(const rclcpp_lifecyc
   RCLCPP_INFO(get_logger(), "Configuring");
 
   k_nearest_neighbors_ = get_parameter(param_k_nearest_neighbors).as_int();
-
+  epsilon_ = get_parameter(param_max_interim_dist_to_path).as_double();
   std::string interim_goals_yaml_filename = get_parameter(param_interim_goals_yaml).as_string();
 
   load_interim_goals_from_yaml(interim_goals_yaml_filename);
@@ -93,7 +100,25 @@ void InterimGoalSelector::select_interim_goal()
   // From all possible interim goals find the k nearest neighbors to the final goal pose
   filter_k_nearest_neighbors_interim_goals(goal->pose);
 
-  find_
+  bool result_state = select_final_interim_goal_on_path(goal->path);
+  if (result_state == false)
+  {
+    RCLCPP_ERROR(get_logger(), "no interim on path");
+    action_server_->terminate_current(result);
+  }
+  else
+  {
+    result->interim_pose.pose.position.x = interim_goals_[0].x;
+    result->interim_pose.pose.position.y = interim_goals_[0].y;
+
+    //transform euler pose orientation to quaternion
+    tf2::Quaternion q;
+    q.setRPY(0, 0, interim_goals_[0].yaw);
+
+    result->interim_pose.pose.orientation = tf2::toMsg(q);
+    action_server_->succeeded_current(result);
+  }
+
   // TODO: Select the one goal of the closest_interim_goals_ that is closest to the path
 }
 
@@ -112,6 +137,27 @@ void InterimGoalSelector::filter_k_nearest_neighbors_interim_goals(geometry_msgs
 
   interim_goals_.resize(k_nearest_neighbors_);
 }
+
+bool InterimGoalSelector::select_final_interim_goal_on_path(nav_msgs::msg::Path path)
+{
+  for(int i = std.sizeof(path.poses); i=>0; --i)
+  {
+    double path_x = path.poses[i].pose.position.x;
+    double path_y = path.poses[i].pose.position.y;
+    for(int j = 0; j < interim_goals_.size(); j++)
+    {
+      if(calculate_euclidean_distance(path_x, path_y, interim_goals_[j].x, interim_goals_[j].y) < epsilon_)
+      {
+        auto final_interim_goal = interim_goals_[j];
+        interim_goals_.resize(1);
+        interim_goals_[0] = final_interim_goal;
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
 
 double InterimGoalSelector::calculate_euclidean_distance(double x1, double y1, double x2, double y2)
 {

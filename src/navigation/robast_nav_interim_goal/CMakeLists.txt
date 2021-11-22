@@ -23,6 +23,8 @@ find_package(rclcpp_lifecycle REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
 find_package(robast_msgs REQUIRED)
 find_package(nav2_util REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 
 include_directories(include)
 
@@ -44,6 +46,8 @@ set(dependencies
   yaml_cpp_vendor
   nav2_util
   robast_msgs
+  tf2
+  tf2_geometry_msgs
 )
 
 ament_target_dependencies(${executable_name}

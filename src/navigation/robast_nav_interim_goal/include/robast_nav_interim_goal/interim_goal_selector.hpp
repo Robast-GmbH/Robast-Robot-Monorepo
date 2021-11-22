@@ -20,6 +20,8 @@
 #include <vector>
 #include <map>
 #include <ament_index_cpp/get_package_share_directory.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+
 
 #include "nav2_util/lifecycle_node.hpp"
 #include "robast_msgs/action/compute_interim_goal.hpp"
@@ -118,9 +120,15 @@ protected:
    * @brief Helper function to find the k nearest neighbors closest to the final goal pose
    * @param k Number of closest neighbors to find
    * @param final_pose Pose to which the neighbors should be found
-   * @return 
    */
   void filter_k_nearest_neighbors_interim_goals(geometry_msgs::msg::PoseStamped final_pose);
+
+  /**
+   * @brief selects the final interim goal on the path with given epsilon
+   * @param path path to the goal
+   * @return true if a goal was selected. False if none is on the path
+   */
+  bool select_final_interim_goal_on_path(nav_msgs::msg::Path path);
 
   /**
    * @brief Helper function to calculate the euclidean distance between two 2D-points
@@ -145,15 +153,13 @@ protected:
    */
   void select_interim_goal();
 
-  // TODO: Remove these variables? Only here for comparison
   // Our action server
   std::unique_ptr<ActionServer> action_server_;
   ActionStatus current_goal_status_;
 
-  // TODO: Remove this comment
-  // NEUE VON MIR HINZUGEFÜGTE:
   int64_t k_nearest_neighbors_;
   std::vector<interim_goal> interim_goals_;
+  double epsilon_;
 };
 
 }  // namespace robast_nav_interim_goal
