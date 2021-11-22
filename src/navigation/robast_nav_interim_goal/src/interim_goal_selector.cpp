@@ -1,6 +1,6 @@
 #include <inttypes.h>
 #include <memory>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include <tf2/LinearMath/Quaternion.h>
 
 
 #include "rclcpp/rclcpp.hpp"
@@ -115,7 +115,11 @@ void InterimGoalSelector::select_interim_goal()
     tf2::Quaternion q;
     q.setRPY(0, 0, interim_goals_[0].yaw);
 
-    result->interim_pose.pose.orientation = tf2::toMsg(q);
+    result->interim_pose.pose.orientation.x = q.x();
+    result->interim_pose.pose.orientation.y = q.y();
+    result->interim_pose.pose.orientation.z = q.z();
+    result->interim_pose.pose.orientation.w = q.w();
+
     action_server_->succeeded_current(result);
   }
 
