@@ -148,7 +148,6 @@ protected:
 
   // Our action server
   std::unique_ptr<ActionServer> action_server_;
-  ActionStatus current_goal_status_;
 
   int64_t k_nearest_neighbors_;
   std::vector<interim_goal> interim_goals_;

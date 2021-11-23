@@ -2,13 +2,11 @@
 #include <memory>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-
 #include "rclcpp/rclcpp.hpp"
 
 #include "yaml-cpp/yaml.h"
 #include "robast_nav_interim_goal/interim_goal_selector.hpp"
 #include "robast_msgs/action/compute_interim_goal.hpp"
-
 
 
 #define param_interim_goals_yaml "interim_goals_yaml"
@@ -104,11 +102,15 @@ void InterimGoalSelector::select_interim_goal()
   bool result_state = select_final_interim_goal_on_path(goal->path);
   if (result_state == false)
   {
-    RCLCPP_ERROR(get_logger(), "no interim on path");
+    RCLCPP_ERROR(get_logger(), "No interim goal on path!");
     action_server_->terminate_current(result);
   }
   else
   {
+    RCLCPP_INFO(
+    get_logger(), "Found an interim pose on path to goal with x-coordinate %d and y-coordinate %d.",
+    interim_goals_[0].x, interim_goals_[0].y);
+
     result->interim_pose.pose.position.x = interim_goals_[0].x;
     result->interim_pose.pose.position.y = interim_goals_[0].y;
 
@@ -119,8 +121,6 @@ void InterimGoalSelector::select_interim_goal()
     result->interim_pose.pose.orientation = tf2::toMsg(q);
     action_server_->succeeded_current(result);
   }
-
-  // TODO: Select the one goal of the closest_interim_goals_ that is closest to the path
 }
 
 void InterimGoalSelector::filter_k_nearest_neighbors_interim_goals(geometry_msgs::msg::PoseStamped final_pose)
@@ -159,14 +159,10 @@ bool InterimGoalSelector::select_final_interim_goal_on_path(nav_msgs::msg::Path 
   return false;
 }
 
-
 double InterimGoalSelector::calculate_euclidean_distance(double x1, double y1, double x2, double y2)
 {
   return std::hypot(x1 - x2, y1 - y2);
 }
-
-
-
 
 bool InterimGoalSelector::is_request_valid(
   const std::shared_ptr<const typename ActionT::Goal> goal,
@@ -203,7 +199,5 @@ void InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim
     interim_goals_.push_back(interim_goal);
   }
 }
-
-
 
 } // namespace robast_nav_door_bell
