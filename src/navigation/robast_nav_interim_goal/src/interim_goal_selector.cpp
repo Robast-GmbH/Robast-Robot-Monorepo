@@ -44,7 +44,7 @@ nav2_util::CallbackReturn InterimGoalSelector::on_configure(const rclcpp_lifecyc
     get_node_clock_interface(),
     get_node_logging_interface(),
     get_node_waitables_interface(),
-    "ComputeInterimGoal", std::bind(&InterimGoalSelector::select_interim_goal, this), false);
+    "interim_goal_selector", std::bind(&InterimGoalSelector::select_interim_goal, this), false);
 
   RCLCPP_INFO(get_logger(), "End of Configuring");
 
