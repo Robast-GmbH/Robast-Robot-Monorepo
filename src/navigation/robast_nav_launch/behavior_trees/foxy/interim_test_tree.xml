@@ -3,18 +3,34 @@
     <!-- ////////// -->
     <BehaviorTree ID="MainTree">
         <Control ID="RecoveryNode" name="NavigateRecovery" number_of_retries="6">
-            <Control ID="PipelineSequence" name="NavigateWithReplanning">
-                <Decorator ID="RateController" hz="1.0">
-                    <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
-                        <Action ID="ComputePathToPose" goal="{goal}" path="{path}" planner_id="GridBased"/>
-                        <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
+            <SequenceStar>
+                <Action ID="ComputePathToPose" goal="{goal}" path="{path}" planner_id="GridBased"/>
+                <Action ID="InterimGoalCompAction" interim_pose="{interim_pose}" path="{path}" pose="{goal}" splitter_id=""/>
+                <Control ID="PipelineSequence" name="NavigateWithReplanning">
+                    <Decorator ID="RateController" hz="1">
+                        <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
+                            <Action ID="ComputePathToPose" goal="{interim_pose}" path="{path}" planner_id="GridBased"/>
+                            <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
+                        </Control>
+                    </Decorator>
+                    <Control ID="RecoveryNode" name="FollowPath" number_of_retries="1">
+                        <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
+                        <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
                     </Control>
-                </Decorator>
-                <Control ID="RecoveryNode" name="FollowPath" number_of_retries="1">
-                    <Action ID="InterimGoalCompAction" interim_pose="{interim_pose}" path="{path}" pose="{goal}" splitter_id="FollowPath"/>
-                    <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
                 </Control>
-            </Control>
+                <Control ID="PipelineSequence" name="NavigateWithReplanning">
+                    <Decorator ID="RateController" hz="1.0">
+                        <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
+                            <Action ID="ComputePathToPose" goal="{goal}" path="{path}" planner_id="GridBased"/>
+                            <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
+                        </Control>
+                    </Decorator>
+                    <Control ID="RecoveryNode" name="FollowPath" number_of_retries="1">
+                        <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
+                        <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
+                    </Control>
+                </Control>
+            </SequenceStar>
             <ReactiveFallback name="RecoveryFallback">
                 <Condition ID="GoalUpdated"/>
                 <SequenceStar name="RecoveryActions">
@@ -34,12 +50,6 @@
         </Action>
         <Action ID="ClearEntireCostmap">
             <input_port name="service_name">Service name</input_port>
-        </Action>
-        <Action ID="ComputeNavInterimGoal">
-            <output_port name="interim_pose">Path created by ComputePathToPose node</output_port>
-            <input_port name="path">Path to the goal</input_port>
-            <input_port name="pose">Final goal pose</input_port>
-            <input_port name="splitter_id"/>
         </Action>
         <Action ID="ComputePathToPose">
             <input_port name="goal">Destination to plan to</input_port>
@@ -61,6 +71,12 @@
             <input_port name="input_goal">Original goal in</input_port>
             <output_port name="output_goal">Output goal set by subscription</output_port>
         </Decorator>
+        <Action ID="InterimGoalCompAction">
+            <output_port name="interim_pose">Path created by ComputePathToPose node</output_port>
+            <input_port name="path">Path to the goal</input_port>
+            <input_port name="pose">Final goal pose</input_port>
+            <input_port name="splitter_id"/>
+        </Action>
         <Condition ID="IsStuck"/>
         <Action ID="NavigateToPose">
             <input_port name="orientation">Orientation</input_port>
