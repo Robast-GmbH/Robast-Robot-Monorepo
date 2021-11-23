@@ -14,6 +14,7 @@ bt_navigator:
     poses_groot_publisher_port: 1668
     poses_groot_server_port: 1669
     plugin_lib_names:
+    - interim_goal_selector_action_bt_node #custom
     - nav2_compute_path_to_pose_action_bt_node
     - nav2_follow_path_action_bt_node
     - nav2_back_up_action_bt_node

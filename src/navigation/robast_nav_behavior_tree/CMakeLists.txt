@@ -52,9 +52,6 @@ set(dependencies
   nav_msgs
 )
 
-
-set(library_name ${PROJECT_NAME})
-
 # ament_target_dependencies(${library_name}
 #   ${dependencies}
 # )
@@ -79,6 +76,10 @@ install(DIRECTORY include/
 )
 
 # install(FILES nav2_tree_nodes.xml DESTINATION share/${PROJECT_NAME})
+
+ament_export_include_directories(
+  include
+)
 
 ament_export_libraries(
   ${library_name}

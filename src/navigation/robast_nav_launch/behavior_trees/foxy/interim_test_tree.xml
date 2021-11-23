@@ -13,7 +13,7 @@
                 <Control ID="RecoveryNode" name="FollowPath" number_of_retries="1">
                     <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
                     <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
-                    <Action ID="ComputeNavInterimGoal" interim_pose="{interim_pose}" path="{path}" pose="{goal}" splitter_id="FollowPath"/>
+                    <Action ID="InterimGoalCompAction" interim_pose="{interim_pose}" path="{path}" pose="{goal}" splitter_id="FollowPath"/>
                 </Control>
             </Control>
             <ReactiveFallback name="RecoveryFallback">
