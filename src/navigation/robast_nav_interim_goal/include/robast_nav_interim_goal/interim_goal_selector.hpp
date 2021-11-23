@@ -152,7 +152,8 @@ protected:
   std::unique_ptr<ActionServer> action_server_;
 
   int64_t k_nearest_neighbors_;
-  std::vector<interim_goal> interim_goals_;
+  std::vector<interim_goal> global_interim_goals_;
+  std::vector<interim_goal> local_interim_goals_;
   double epsilon_;
 };
 
