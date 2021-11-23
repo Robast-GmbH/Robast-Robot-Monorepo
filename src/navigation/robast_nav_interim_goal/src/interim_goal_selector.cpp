@@ -86,8 +86,6 @@ nav2_util::CallbackReturn InterimGoalSelector::on_shutdown(const rclcpp_lifecycl
 
 void InterimGoalSelector::select_interim_goal()
 {
-    RCLCPP_INFO(get_logger(), "select mamamia");
-
   auto goal = action_server_->get_current_goal();
   auto feedback = std::make_shared<ActionT::Feedback>();
   auto result = std::make_shared<ActionT::Result>();
@@ -141,13 +139,15 @@ void InterimGoalSelector::filter_k_nearest_neighbors_interim_goals(geometry_msgs
 
 bool InterimGoalSelector::select_final_interim_goal_on_path(nav_msgs::msg::Path path)
 {
-  for(int i = (sizeof(path.poses) / sizeof(path.poses[0])); i>=0; --i)
+
+  for(int i = path.poses.size() - 1; i>=0; --i)
   {
     double path_x = path.poses[i].pose.position.x;
     double path_y = path.poses[i].pose.position.y;
+
     for(long unsigned int j = 0; j < interim_goals_.size(); j++)
     {
-      if(calculate_euclidean_distance(path_x, path_y, interim_goals_[j].x, interim_goals_[j].y) < epsilon_)
+      if(calculate_euclidean_distance(path_x, path_y, interim_goals_[j].x, interim_goals_[j].y) <= epsilon_)
       {
         auto final_interim_goal = interim_goals_[j];
         interim_goals_.resize(1);
@@ -192,7 +192,7 @@ void InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim
   for (std::size_t i=1; i<doc.size()+1; i++) {
     interim_goal interim_goal;
     interim_goal.x = doc[i]["x"].as<double>();
-    interim_goal.y = doc[i]["y"].as<double>();
+    interim_goal.y = doc[i]["y"].as<double>() * (-1.0);
     interim_goal.yaw = doc[i]["yaw"].as<double>();
     interim_goal.dist_to_final_pose = 0;
 
