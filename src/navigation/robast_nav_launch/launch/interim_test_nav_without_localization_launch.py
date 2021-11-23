@@ -89,7 +89,8 @@ def generate_launch_description():
             name='interim_goal_selector',
             output='screen',
             parameters=[{'interim_goals_yaml': interim_goals_yaml},
-                        nav2_params_yaml],
+                        {'k_nearest_neighbors': 3},
+                        {'max_interim_dist_to_path': 0.4}],
             remappings=remappings),
 
         Node(

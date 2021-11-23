@@ -2,11 +2,7 @@
 #include <memory>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
-#include "rclcpp/rclcpp.hpp"
-
-#include "yaml-cpp/yaml.h"
 #include "robast_nav_interim_goal/interim_goal_selector.hpp"
-#include "robast_msgs/action/compute_interim_goal.hpp"
 
 
 #define param_interim_goals_yaml "interim_goals_yaml"
@@ -41,14 +37,13 @@ nav2_util::CallbackReturn InterimGoalSelector::on_configure(const rclcpp_lifecyc
   epsilon_ = get_parameter(param_max_interim_dist_to_path).as_double();
   std::string interim_goals_yaml_filename = get_parameter(param_interim_goals_yaml).as_string();
 
-  load_interim_goals_from_yaml(interim_goals_yaml_filename);
-
+  //load_interim_goals_from_yaml(interim_goals_yaml_filename);
+  
   action_server_ = std::make_unique<ActionServer>(
-    get_node_base_interface(),
-    get_node_clock_interface(),
-    get_node_logging_interface(),
-    get_node_waitables_interface(),
+    rclcpp_node_,
     "ComputeInterimGoal", std::bind(&InterimGoalSelector::select_interim_goal, this), false);
+
+  RCLCPP_INFO(get_logger(), "End of Configuring");
 
   return nav2_util::CallbackReturn::SUCCESS;
 }
@@ -88,6 +83,8 @@ nav2_util::CallbackReturn InterimGoalSelector::on_shutdown(const rclcpp_lifecycl
 
 void InterimGoalSelector::select_interim_goal()
 {
+    RCLCPP_INFO(get_logger(), "select mamamia");
+
   auto goal = action_server_->get_current_goal();
   auto feedback = std::make_shared<ActionT::Feedback>();
   auto result = std::make_shared<ActionT::Result>();
