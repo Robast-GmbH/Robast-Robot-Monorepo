@@ -37,10 +37,13 @@ nav2_util::CallbackReturn InterimGoalSelector::on_configure(const rclcpp_lifecyc
   epsilon_ = get_parameter(param_max_interim_dist_to_path).as_double();
   std::string interim_goals_yaml_filename = get_parameter(param_interim_goals_yaml).as_string();
 
-  //load_interim_goals_from_yaml(interim_goals_yaml_filename);
+  load_interim_goals_from_yaml(interim_goals_yaml_filename);
   
   action_server_ = std::make_unique<ActionServer>(
-    rclcpp_node_,
+    get_node_base_interface(),
+    get_node_clock_interface(),
+    get_node_logging_interface(),
+    get_node_waitables_interface(),
     "ComputeInterimGoal", std::bind(&InterimGoalSelector::select_interim_goal, this), false);
 
   RCLCPP_INFO(get_logger(), "End of Configuring");
