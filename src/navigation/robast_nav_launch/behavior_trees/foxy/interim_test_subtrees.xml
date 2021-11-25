@@ -2,17 +2,17 @@
 <root main_tree_to_execute="MainTree">
     <!-- ////////// -->
     <BehaviorTree ID="MainTree">
-        <Control ID="RecoveryNode" number_of_retries="1">
+        <Fallback>
             <SequenceStar>
                 <Action ID="ComputePathToPose" goal="{goal}" path="{path}" planner_id="GridBased"/>
                 <Action ID="InterimGoalCompAction" interim_pose="{interim_pose}" path="{path}" pose="{goal}" splitter_id=""/>
                 <SequenceStar>
-                    <SubTree ID="NavigateWithReplanningAndRecovery" target_goal="goal"/>
-                    <SubTree ID="NavigateWithReplanningAndRecovery" target_goal="interim_pose"/>
+                    <SubTree ID="NavigateWithReplanningAndRecovery" target_goal="{interim_pose}"/>
+                    <SubTree ID="NavigateWithReplanningAndRecovery" target_goal="{goal}"/>
                 </SequenceStar>
             </SequenceStar>
-            <SubTree ID="NavigateWithReplanningAndRecovery" target_goal="goal"/>
-        </Control>
+            <SubTree ID="NavigateWithReplanningAndRecovery" target_goal="{goal}"/>
+        </Fallback>
     </BehaviorTree>
     <!-- ////////// -->
     <BehaviorTree ID="NavigateWithReplanningAndRecovery">
