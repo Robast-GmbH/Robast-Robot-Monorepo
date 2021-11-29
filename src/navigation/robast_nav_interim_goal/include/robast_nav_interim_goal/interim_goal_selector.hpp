@@ -19,7 +19,6 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <ament_index_cpp/get_package_share_directory.hpp>
 #include <tf2/LinearMath/Quaternion.h>
 
 #include "nav2_util/simple_action_server.hpp"
@@ -105,7 +104,7 @@ protected:
 
   /**
    * @brief Helper function to load the interim goals from a yaml file
-   * @param state Reference to LifeCycle node state
+   * @param yaml_filename full path to the yaml to load the poses from
    */
   void load_interim_goals_from_yaml(const std::string interim_goals_yaml_filename);
 

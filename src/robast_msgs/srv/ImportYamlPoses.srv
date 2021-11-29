@@ -1,0 +1,7 @@
+# Import poses
+
+# Request
+std_msgs/Empty request
+---
+# Response
+geometry_msgs/PoseStamped[] poses

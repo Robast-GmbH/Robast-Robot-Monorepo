@@ -28,15 +28,22 @@ find_package(tf2_geometry_msgs REQUIRED)
 
 include_directories(include)
 
-set(executable_name interim_goal_selector)
+set(executable_goal_selector interim_goal_selector)
+set(executable_poses_importer yaml_poses_importer)
 
-add_executable(${executable_name}
-  src/main.cpp)
+add_executable(${executable_goal_selector}
+  src/interim_goal_selector/main.cpp)
+add_executable(${executable_poses_importer}
+  src/yaml_poses_importer/main.cpp)
 
-set(library_name ${executable_name}_core)
+set(library_goal_selector ${executable_goal_selector}_core)
+set(library_poses_importer ${executable_poses_importer}_core)
 
-add_library(${library_name} SHARED
-  src/interim_goal_selector.cpp
+add_library(${library_goal_selector} SHARED
+  src/interim_goal_selector/interim_goal_selector.cpp
+)
+add_library(${library_poses_importer} SHARED
+  src/yaml_poses_importer/yaml_poses_importer.cpp
 )
 
 set(dependencies
@@ -50,23 +57,34 @@ set(dependencies
   tf2_geometry_msgs
 )
 
-ament_target_dependencies(${executable_name}
+ament_target_dependencies(${executable_goal_selector}
+  ${dependencies}
+)
+ament_target_dependencies(${executable_poses_importer}
   ${dependencies}
 )
 
-target_link_libraries(${executable_name} ${library_name})
+target_link_libraries(${executable_goal_selector} ${library_goal_selector})
+target_link_libraries(${executable_poses_importer} ${library_poses_importer})
 
-ament_target_dependencies(${library_name}
+ament_target_dependencies(${library_goal_selector}
+  ${dependencies}
+)
+ament_target_dependencies(${library_poses_importer}
   ${dependencies}
 )
 
-install(TARGETS ${library_name}
+install(TARGETS
+  ${library_goal_selector}
+  ${library_poses_importer}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
-install(TARGETS ${executable_name}
+install(TARGETS
+  ${executable_goal_selector}
+  ${executable_poses_importer}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
