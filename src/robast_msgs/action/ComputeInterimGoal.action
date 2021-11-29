@@ -1,7 +1,6 @@
 #goal
 nav_msgs/Path path  # path to the final goal pose
-geometry_msgs/PoseStamped pose  # the final pose
-string splitter_id
+geometry_msgs/PoseStamped[] poses  # array of possible interim poses
 ---
 #result
 geometry_msgs/PoseStamped interim_pose

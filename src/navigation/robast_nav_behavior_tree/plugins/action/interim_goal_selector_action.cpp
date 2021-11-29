@@ -21,8 +21,7 @@ InterimGoalCompAction::InterimGoalCompAction(
 void InterimGoalCompAction::on_tick()
 {
   getInput("path", goal_.path); //goal (in the room)
-  getInput("pose", goal_.pose); 
-  getInput("splitter_id", goal_.splitter_id);
+  getInput("interim_goals", goal_.poses); 
 }
 
 void InterimGoalCompAction::on_wait_for_result()
