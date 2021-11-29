@@ -58,6 +58,10 @@ set(dependencies
 
 add_library(interim_goal_selector_action_bt_node SHARED plugins/action/interim_goal_selector_action.cpp)
 list(APPEND plugin_libs interim_goal_selector_action_bt_node)
+add_library(check_state_condition_bt_node SHARED plugins/condition/check_state_condition.cpp)
+list(APPEND plugin_libs check_state_condition_bt_node)
+add_library(variable_update_condition_bt_node SHARED plugins/condition/variable_condition_updated.cpp)
+list(APPEND plugin_libs variable_update_condition_bt_node)
 
 
 foreach(bt_plugin ${plugin_libs})
