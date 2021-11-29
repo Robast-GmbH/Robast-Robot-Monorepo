@@ -21,8 +21,10 @@ def generate_launch_description():
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'interim_test_subtrees.xml')
         nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'), 'config', 'nav2_params.yaml')
 
-    interim_goals_yaml = os.path.join(get_package_share_directory(
-        'robast_nav_interim_goal'), 'config', 'interim_goals.yaml')
+    inner_door_bells_yaml = os.path.join(get_package_share_directory(
+        'robast_nav_interim_goal'), 'config', 'inner_door_bells.yaml')
+    outer_door_bells_yaml = os.path.join(get_package_share_directory(
+        'robast_nav_interim_goal'), 'config', 'outer_door_bells.yaml')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
@@ -32,6 +34,8 @@ def generate_launch_description():
         'planner_server',
         'recoveries_server',
         'interim_goal_selector',
+        'yaml_inner_door_bells_importer',
+        'yaml_outer_door_bells_importer',
         'bt_navigator',
         'waypoint_follower',
     ]
@@ -85,11 +89,26 @@ def generate_launch_description():
 
         Node(
             package='robast_nav_interim_goal',
+            executable='yaml_poses_importer',
+            name='yaml_inner_door_bells_importer',
+            output='screen',
+            parameters=[{'poses_yaml': inner_door_bells_yaml}],
+            remappings=remappings),
+
+        Node(
+            package='robast_nav_interim_goal',
+            executable='yaml_poses_importer',
+            name='yaml_outer_door_bells_importer',
+            output='screen',
+            parameters=[{'poses_yaml': outer_door_bells_yaml}],
+            remappings=remappings),
+
+        Node(
+            package='robast_nav_interim_goal',
             executable='interim_goal_selector',
             name='interim_goal_selector',
             output='screen',
-            parameters=[{'interim_goals_yaml': interim_goals_yaml},
-                        {'k_nearest_neighbors': 3},
+            parameters=[{'k_nearest_neighbors': 3},
                         {'max_interim_dist_to_path': 0.6}],
             remappings=remappings),
 

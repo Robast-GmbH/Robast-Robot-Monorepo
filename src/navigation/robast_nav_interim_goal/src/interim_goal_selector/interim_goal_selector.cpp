@@ -5,7 +5,6 @@
 #include "robast_nav_interim_goal/interim_goal_selector.hpp"
 
 
-#define param_interim_goals_yaml "interim_goals_yaml"
 #define param_k_nearest_neighbors "k_nearest_neighbors" 
 #define param_max_interim_dist_to_path "max_interim_dist_to_path" 
 
@@ -19,7 +18,6 @@ InterimGoalSelector::InterimGoalSelector()
   RCLCPP_INFO(get_logger(), "Creating");
   
   // Declare this node's parameters
-  declare_parameter(param_interim_goals_yaml);
   declare_parameter(param_k_nearest_neighbors);
   declare_parameter(param_max_interim_dist_to_path);
 }
@@ -35,9 +33,6 @@ nav2_util::CallbackReturn InterimGoalSelector::on_configure(const rclcpp_lifecyc
 
   k_nearest_neighbors_ = get_parameter(param_k_nearest_neighbors).as_int();
   epsilon_ = get_parameter(param_max_interim_dist_to_path).as_double();
-  std::string interim_goals_yaml_filename = get_parameter(param_interim_goals_yaml).as_string();
-
-  load_interim_goals_from_yaml(interim_goals_yaml_filename);
   
   action_server_ = std::make_unique<ActionServer>(
     get_node_base_interface(),
@@ -94,10 +89,19 @@ void InterimGoalSelector::select_interim_goal()
     return;
   }
 
-  local_interim_goals_ = global_interim_goals_;
+  // Get the interim goals from the action goal
+  geometry_msgs::msg::PoseStamped final_pose = goal->path.poses[goal->path.poses.size() - 1];
+  for (u_int16_t i = 0; i < goal->poses.size(); i++)
+  {
+    interim_goals_[i].pose = goal->poses[i];
+    interim_goals_[i].dist_to_final_pose = calculate_euclidean_distance(final_pose.pose.position.x,
+                                                            final_pose.pose.position.y,
+                                                            interim_goals_[i].pose.pose.position.x,
+                                                            interim_goals_[i].pose.pose.position.y);
+  }
 
   // From all possible interim goals find the k nearest neighbors to the final goal pose
-  filter_k_nearest_neighbors_interim_goals(goal->pose);
+  filter_k_nearest_neighbors_interim_goals();
 
   bool result_state = select_final_interim_goal_on_path(goal->path);
   if (result_state == false)
@@ -109,34 +113,19 @@ void InterimGoalSelector::select_interim_goal()
   {
     RCLCPP_INFO(
     get_logger(), "Found an interim pose on path to goal with x-coordinate %d and y-coordinate %d.",
-    local_interim_goals_[0].x, local_interim_goals_[0].y);
+    interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y);
 
-    result->interim_pose.pose.position.x = local_interim_goals_[0].x;
-    result->interim_pose.pose.position.y = local_interim_goals_[0].y;
-
-    //transform euler pose orientation to quaternion
-    tf2::Quaternion q;
-    q.setRPY(0, 0, local_interim_goals_[0].yaw);
-
-    result->interim_pose.pose.orientation = tf2::toMsg(q);
+    result->interim_pose = interim_goals_[0].pose;
     action_server_->succeeded_current(result);
   }
 }
 
-void InterimGoalSelector::filter_k_nearest_neighbors_interim_goals(geometry_msgs::msg::PoseStamped final_pose)
+void InterimGoalSelector::filter_k_nearest_neighbors_interim_goals()
 {
-  for (u_int16_t i = 0; i < local_interim_goals_.size(); i++)
-  {
-    interim_goal interim_goal = local_interim_goals_[i];
-    local_interim_goals_[i].dist_to_final_pose = calculate_euclidean_distance(final_pose.pose.position.x,
-                                                            final_pose.pose.position.y,
-                                                            interim_goal.x,
-                                                            interim_goal.y);
-  }
   // sort the vector of local_interim_goals_, so that local_interim_goals_[0] contains the smallest distance to the final pose
-  std::sort(local_interim_goals_.begin(), local_interim_goals_.end(), compare_dist_to_final_pose);
+  std::sort(interim_goals_.begin(), interim_goals_.end(), compare_dist_to_final_pose);
 
-  local_interim_goals_.resize(k_nearest_neighbors_);
+  interim_goals_.resize(k_nearest_neighbors_);
 }
 
 bool InterimGoalSelector::select_final_interim_goal_on_path(nav_msgs::msg::Path path)
@@ -147,13 +136,13 @@ bool InterimGoalSelector::select_final_interim_goal_on_path(nav_msgs::msg::Path 
     double path_x = path.poses[i].pose.position.x;
     double path_y = path.poses[i].pose.position.y;
 
-    for(long unsigned int j = 0; j < local_interim_goals_.size(); j++)
+    for(long unsigned int j = 0; j < interim_goals_.size(); j++)
     {
-      if(calculate_euclidean_distance(path_x, path_y, local_interim_goals_[j].x, local_interim_goals_[j].y) <= epsilon_)
+      if(calculate_euclidean_distance(path_x, path_y, interim_goals_[j].pose.pose.position.x, interim_goals_[j].pose.pose.position.y) <= epsilon_)
       {
-        auto final_interim_goal = local_interim_goals_[j];
-        local_interim_goals_.resize(1);
-        local_interim_goals_[0] = final_interim_goal;
+        auto final_interim_goal = interim_goals_[j];
+        interim_goals_.resize(1);
+        interim_goals_[0] = final_interim_goal;
         return true;
       }
     }
@@ -185,21 +174,6 @@ bool InterimGoalSelector::is_request_valid(
     get_logger(), "Received a interim goal computation request for a path with %i poses.",
     static_cast<int>(goal->path.poses.size()));
   return true;
-}
-
-void InterimGoalSelector::load_interim_goals_from_yaml(const std::string interim_goals_yaml_filename)
-{
-  YAML::Node doc = YAML::LoadFile(interim_goals_yaml_filename);
-
-  for (std::size_t i=1; i<doc.size()+1; i++) {
-    interim_goal interim_goal;
-    interim_goal.x = doc[i]["x"].as<double>();
-    interim_goal.y = doc[i]["y"].as<double>() * (-1.0);
-    interim_goal.yaw = doc[i]["yaw"].as<double>();
-    interim_goal.dist_to_final_pose = 0;
-
-    global_interim_goals_.push_back(interim_goal);
-  }
 }
 
 } // namespace robast_nav_door_bell
