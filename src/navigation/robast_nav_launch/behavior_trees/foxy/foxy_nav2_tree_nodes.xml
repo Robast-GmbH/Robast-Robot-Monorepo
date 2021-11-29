@@ -61,6 +61,14 @@
       <input_port name="parent">Parent frame for transform</input_port>
     </Condition>
 
+    <Condition ID="StateCheck">
+      <input_port name="variable_name">name of the state bool in the Blackboard</input_port>
+    </Condition>
+
+    <Condition ID="VariableUpdated">
+      <input_port name="variable_name">name of the int in the Blackboard that should be checked</input_port>
+    </Condition>
+
     <Condition ID="GoalUpdated"/>
 
     <!-- ############################### CONTROL NODES ################################ -->

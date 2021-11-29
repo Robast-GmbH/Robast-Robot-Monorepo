@@ -35,15 +35,6 @@ void InterimGoalCompAction::on_wait_for_result()
     // the action server on the next loop iteration
     goal_.path = new_path;
     goal_updated_ = true;
-  }  
-
-  std::string new_splitter_id;
-  getInput("splitter_id", new_splitter_id);
-
-  if (goal_.splitter_id != new_splitter_id) 
-  {
-    goal_.splitter_id = new_splitter_id;
-    goal_updated_ = true;
   }
 }
 

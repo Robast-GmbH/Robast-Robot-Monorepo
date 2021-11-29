@@ -54,8 +54,7 @@ public:
       {
         BT::OutputPort<geometry_msgs::msg::PoseStamped>("interim_pose", "Interim goal selected by the interim_goal_selector node"),
         BT::InputPort<nav_msgs::msg::Path>("path", "Path to Goal"),
-        BT::InputPort<geometry_msgs::msg::PoseStamped>("pose", "Goal Pose"),
-        BT::InputPort<std::string>("splitter_id", ""), //not sure about that
+        BT::InputPort<geometry_msgs::msg::PoseStamped[]>("poses", "Goal Pose"),
       });
   }
 };
