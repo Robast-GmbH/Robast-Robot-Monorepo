@@ -91,6 +91,12 @@
         },
         //default start
         {
+            "label": "default_startup_amcl_interim_poses",
+            "detail": "Starts TipluWorld, Nav, amcl, rviz, interim_poses",
+            "dependsOn": ["start TipluWorld", "start amcl", "start interim_test_nav_without_localization", "start rviz_amcl"],
+        },
+        //default start
+        {
             "label": "default_startup_amcl_robot_localization",
             "detail": "Starts TipluWorld, Nav, amcl, robot_localization",
             "dependsOn": ["start TipluWorld", "start amcl", "start keepout_mask", "start nav_without_localization", "start robot_localization", "start rviz_amcl"],
@@ -171,6 +177,18 @@
             "type": "shell",
             "label": "start nav_without_localization",
             "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_launch.py",  
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,  // silence "Executing task ..."
+                "focus": true,
+                "group": "default_start",  
+                "panel": "dedicated"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "start interim_test_nav_without_localization",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch interim_test_nav_without_localization_launch.py",  
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
