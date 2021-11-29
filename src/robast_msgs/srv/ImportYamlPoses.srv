@@ -1,7 +1,7 @@
 # Import poses
 
 # Request
-std_msgs/Empty request
+string yaml_name
 ---
 # Response
 geometry_msgs/PoseStamped[] poses
