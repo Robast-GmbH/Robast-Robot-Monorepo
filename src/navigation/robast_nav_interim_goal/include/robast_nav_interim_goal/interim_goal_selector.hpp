@@ -34,9 +34,7 @@ namespace robast_nav_interim_goal
 
 struct interim_goal
 {
-  double x;
-  double y;
-  double yaw;
+  geometry_msgs::msg::PoseStamped pose;
   double dist_to_final_pose;
 };
 
@@ -103,12 +101,6 @@ protected:
   nav2_util::CallbackReturn on_shutdown(const rclcpp_lifecycle::State & state) override;
 
   /**
-   * @brief Helper function to load the interim goals from a yaml file
-   * @param yaml_filename full path to the yaml to load the poses from
-   */
-  void load_interim_goals_from_yaml(const std::string interim_goals_yaml_filename);
-
-  /**
    * @brief Helper function to check if the request for the action is valid
    * @param goal Action goal that is checked for validity
    * @param result Action result that is used in case the request is invalid and action is canceled
@@ -119,10 +111,8 @@ protected:
 
   /**
    * @brief Helper function to find the k nearest neighbors closest to the final goal pose
-   * @param k Number of closest neighbors to find
-   * @param final_pose Pose to which the neighbors should be found
    */
-  void filter_k_nearest_neighbors_interim_goals(geometry_msgs::msg::PoseStamped final_pose);
+  void filter_k_nearest_neighbors_interim_goals();
 
   /**
    * @brief selects the final interim goal on the path with given epsilon
@@ -151,8 +141,7 @@ protected:
   std::unique_ptr<ActionServer> action_server_;
 
   int64_t k_nearest_neighbors_;
-  std::vector<interim_goal> global_interim_goals_;
-  std::vector<interim_goal> local_interim_goals_;
+  std::vector<interim_goal> interim_goals_;
   double epsilon_;
 };
 
