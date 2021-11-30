@@ -29,12 +29,12 @@ VariableUpdatedCondition::VariableUpdatedCondition(
 BT::NodeStatus VariableUpdatedCondition::tick()
 {
   if (status() == BT::NodeStatus::IDLE) {
-    config().blackboard->get<int>(_name, _state);
+    config().blackboard->get<std::string>(_name, _state);
     return BT::NodeStatus::FAILURE;
   }
 
-  int current_state;
-  config().blackboard->get<int>(_name, current_state);
+  std::string current_state;
+  config().blackboard->get<std::string>(_name, current_state);
 
   if (current_state != _state) {
     _state = current_state;
