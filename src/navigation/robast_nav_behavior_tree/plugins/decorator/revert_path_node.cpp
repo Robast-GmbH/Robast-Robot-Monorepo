@@ -26,7 +26,8 @@ BT::NodeStatus RevertPath::tick()
   if(path.poses.size() > 0){
     nav_msgs::msg::Path reverted_path = path;
     std::vector<geometry_msgs::msg::PoseStamped> arr = path.poses;
-    int n = sizeof(path.poses) / sizeof(path.poses[0]);
+    // int n = sizeof(path.poses) / sizeof(path.poses[0]);
+    int n = path.poses.size();
 
     // std::reverse(path.poses, path.poses + n);
     for (int i = 0; i < n; i++)
@@ -36,7 +37,7 @@ BT::NodeStatus RevertPath::tick()
     
     reverted_path.poses = arr;
     // reverted_path.poses = path.poses;
-    setOutput("reverted_path", reverted_path);
+    setOutput("reverted_path", reverted_path);   
 
     return BT::NodeStatus::SUCCESS;
   }
