@@ -29,10 +29,10 @@ VariableUpdatedCondition::VariableUpdatedCondition(
 
 BT::NodeStatus VariableUpdatedCondition::tick()
 {
-  bool current_state;
-  config().blackboard->get<bool>(_name, current_state);
+  std::string current_state;
+  config().blackboard->get<std::string>(_name, current_state);
 
-  if (current_state) 
+  if (current_state == "true") 
   {
     return BT::NodeStatus::SUCCESS;
   }
