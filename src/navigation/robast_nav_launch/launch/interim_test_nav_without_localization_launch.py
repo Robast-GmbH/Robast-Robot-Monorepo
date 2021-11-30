@@ -34,8 +34,7 @@ def generate_launch_description():
         'planner_server',
         'recoveries_server',
         'interim_goal_selector',
-        'yaml_inner_door_bells_importer',
-        'yaml_outer_door_bells_importer',
+        'yaml_poses_importer',
         'bt_navigator',
         'waypoint_follower',
     ]
