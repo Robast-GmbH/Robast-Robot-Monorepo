@@ -93,11 +93,13 @@ void InterimGoalSelector::select_interim_goal()
   geometry_msgs::msg::PoseStamped final_pose = goal->path.poses[goal->path.poses.size() - 1];
   for (u_int16_t i = 0; i < goal->poses.size(); i++)
   {
-    interim_goals_[i].pose = goal->poses[i];
-    interim_goals_[i].dist_to_final_pose = calculate_euclidean_distance(final_pose.pose.position.x,
-                                                            final_pose.pose.position.y,
-                                                            interim_goals_[i].pose.pose.position.x,
-                                                            interim_goals_[i].pose.pose.position.y);
+    interim_goal interim_goal;
+    interim_goal.pose = goal->poses[i];
+    interim_goal.dist_to_final_pose = calculate_euclidean_distance(final_pose.pose.position.x,
+                                                                  final_pose.pose.position.y,
+                                                                  interim_goal.pose.pose.position.x,
+                                                                  interim_goal.pose.pose.position.y);
+    interim_goals_.push_back(interim_goal);
   }
 
   // From all possible interim goals find the k nearest neighbors to the final goal pose
