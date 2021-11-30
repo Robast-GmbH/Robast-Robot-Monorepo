@@ -5,22 +5,29 @@
         <Control ID="RecoveryNode" name="NavigateRecovery" number_of_retries="6">
             <SequenceStar>
                 <Action ID="ComputePathToPose" goal="{goal}" path="{path}" planner_id="GridBased"/>
-                <Action ID="ImportYamlPosesAction" poses="{outer_door_bell_poses}" yaml_name="outer_door_bells.yaml"/>
-                <Action ID="InterimGoalCompAction" interim_goal="{interim_goal}" interim_poses="{outer_door_bell_poses}" path="{path}"/>
-                <Control ID="PipelineSequence" name="NavigateWithReplanning">
-                    <Decorator ID="RateController" hz="1">
-                        <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
-                            <Action ID="ComputePathToPose" goal="{interim_goal}" path="{path}" planner_id="GridBased"/>
-                            <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
-                        </Control>
+                <Action ID="ImportYamlPosesAction" poses="{inner_door_bell_poses}" yaml_name="inner_door_bells.yaml"/>
+                <SequenceStar>
+                    <Decorator ID="RevertPath" path="{path}" reverted_path="{reverted_path}">
+                        <Action ID="InterimGoalCompAction" interim_goal="{interim_goal}" interim_poses="{inner_door_bell_poses}" path="{reverted_path}"/>
                     </Decorator>
-                    <Control ID="RecoveryNode" name="FollowPath" number_of_retries="1">
-                        <Decorator ID="RevertPath" path="{path}" reverted_path="{reverted_path}">
-                            <Action ID="FollowPath" controller_id="FollowPath" path="{reverted_path}"/>
+                    <SetBlackboard output_key="interim_goal_computed" value="true"/>
+                </SequenceStar>
+                <IfThenElse>
+                    <Condition ID="StateCheck" variable_name="interim_goal_computed"/>
+                    <Control ID="PipelineSequence" name="NavigateWithReplanning">
+                        <Decorator ID="RateController" hz="1">
+                            <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
+                                <Action ID="ComputePathToPose" goal="{interim_goal}" path="{path}" planner_id="GridBased"/>
+                                <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
+                            </Control>
                         </Decorator>
-                        <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
+                        <Control ID="RecoveryNode" name="FollowPath" number_of_retries="1">
+                            <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
+                            <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
+                        </Control>
                     </Control>
-                </Control>
+                    <Action ID="Spin" spin_dist="1.57"/>
+                </IfThenElse>
                 <Control ID="PipelineSequence" name="NavigateWithReplanning">
                     <Decorator ID="RateController" hz="1.0">
                         <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
@@ -29,7 +36,7 @@
                         </Control>
                     </Decorator>
                     <Control ID="RecoveryNode" name="FollowPath" number_of_retries="1">
-                        <Action ID="FollowPath" controller_id="FollowPath" path="{reverted_path}"/>
+                        <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
                         <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
                     </Control>
                 </Control>
