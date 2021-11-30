@@ -31,7 +31,6 @@ def generate_launch_description():
         'controller_server',
         'planner_server',
         'recoveries_server',
-        'interim_goal_selector',
         'bt_navigator',
         'waypoint_follower',
     ]
@@ -81,15 +80,6 @@ def generate_launch_description():
             name='recoveries_server',
             output='screen',
             parameters=[nav2_params_yaml],
-            remappings=remappings),
-
-        Node(
-            package='robast_nav_interim_goal',
-            executable='interim_goal_selector',
-            name='interim_goal_selector',
-            output='screen',
-            parameters=[{'interim_goals_yaml': interim_goals_yaml},
-                        nav2_params_yaml],
             remappings=remappings),
 
         Node(

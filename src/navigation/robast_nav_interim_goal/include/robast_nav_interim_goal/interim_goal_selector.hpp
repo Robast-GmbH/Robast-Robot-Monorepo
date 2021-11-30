@@ -27,7 +27,6 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 
 #include "robast_msgs/action/compute_interim_goal.hpp"
-#include "yaml-cpp/yaml.h"
 
 namespace robast_nav_interim_goal
 {

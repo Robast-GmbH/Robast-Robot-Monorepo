@@ -18,10 +18,12 @@
 #include <memory>
 #include <string>
 
+#include "nav2_util/simple_action_server.hpp"
 #include "nav2_util/lifecycle_node.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
 
-#include "robast_msgs/srv/import_yaml_poses.hpp"
+#include "robast_msgs/action/import_yaml_poses.hpp"
 #include "yaml-cpp/yaml.h"
 
 namespace robast_nav_poses_importer
@@ -29,12 +31,13 @@ namespace robast_nav_poses_importer
 
 /**
  * @class robast_nav_poses_importer::YamlPosesImporter
- * @brief A server that gets a path to a goal position and selects from a list of poses the one
- * that's closest to the path and returns this one as interim goal pose.
+ * @brief A server that imports poses from a yaml
  */
 class YamlPosesImporter : public nav2_util::LifecycleNode
 {
 public:
+  using ActionT = robast_msgs::action::ImportYamlPoses;
+  using ActionServer = nav2_util::SimpleActionServer<ActionT>;
   /**
    * @brief A constructor for robast_nav_poses_importer::YamlPosesImporter class
    */
@@ -85,19 +88,23 @@ protected:
   void load_poses_from_yaml(const std::string yaml_filename);
 
   /**
-   * @brief Callback function for the service that creates the service response provided with the poses
-   * @param request_header Service request header
-   * @param request Service request
-   * @param response Service response
+   * @brief Helper function to check if the request for the action is valid
+   * @param goal Action goal that is checked for validity
+   * @param result Action result that is used in case the request is invalid and action is canceled
+   * @return True if valid, false if not valid
    */
-  void providePosesCallback(
-        const std::shared_ptr<rmw_request_id_t>/*request_header*/,
-        const std::shared_ptr<robast_msgs::srv::ImportYamlPoses::Request> request,
-        std::shared_ptr<robast_msgs::srv::ImportYamlPoses::Response> response);
+  bool is_request_valid(const std::shared_ptr<const typename ActionT::Goal> goal,
+                        std::shared_ptr<ActionT::Result> result);
 
-  rclcpp::Service<robast_msgs::srv::ImportYamlPoses>::SharedPtr import_poses_service_;
+  /**
+   * @brief Callback function for the service that creates the service response provided with the poses
+   */
+  void provide_poses();
 
-  std::map<std::string, std::vector<geometry_msgs::msg::PoseStamped>> yaml_filename_by_poses;
+  // Our action server
+  std::unique_ptr<ActionServer> action_server_;
+
+  std::map<std::string, std::vector<geometry_msgs::msg::PoseStamped>> yaml_filename_by_poses_;
 };
 
 }  // namespace robast_nav_poses_importer

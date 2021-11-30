@@ -24,10 +24,13 @@ YamlPosesImporter::~YamlPosesImporter()
 nav2_util::CallbackReturn YamlPosesImporter::on_configure(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Configuring");
-  
-  import_poses_service_ = create_service<robast_msgs::srv::ImportYamlPoses>(
-    "robast_import_poses_service",
-    std::bind(&YamlPosesImporter::providePosesCallback, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3));
+
+  action_server_ = std::make_unique<ActionServer>(
+    get_node_base_interface(),
+    get_node_clock_interface(),
+    get_node_logging_interface(),
+    get_node_waitables_interface(),
+    "yaml_poses_importer", std::bind(&YamlPosesImporter::provide_poses, this), false);
 
   RCLCPP_INFO(get_logger(), "End of Configuring");
 
@@ -58,20 +61,47 @@ nav2_util::CallbackReturn YamlPosesImporter::on_shutdown(const rclcpp_lifecycle:
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
-void YamlPosesImporter::providePosesCallback(
-  const std::shared_ptr<rmw_request_id_t> request_header,
-  const std::shared_ptr<robast_msgs::srv::ImportYamlPoses::Request> request,
-  std::shared_ptr<robast_msgs::srv::ImportYamlPoses::Response> response)
+void YamlPosesImporter::provide_poses()
 {
-  std::string poses_yaml_filename = request->yaml_name;
+  auto goal = action_server_->get_current_goal();
+  auto feedback = std::make_shared<ActionT::Feedback>();
+  auto result = std::make_shared<ActionT::Result>();
+
+  if (!is_request_valid(goal, result)) {
+    return;
+  }
+
+  std::string poses_yaml_filename = goal->yaml_name;
 
   // Only import the yaml, if it hasn't been imported before
-  if (!yaml_filename_by_poses.contains(poses_yaml_filename))
+  if (!yaml_filename_by_poses_.contains(poses_yaml_filename))
   {
     load_poses_from_yaml(poses_yaml_filename);
   }  
 
-  response->poses = yaml_filename_by_poses[poses_yaml_filename];
+  RCLCPP_INFO(
+    get_logger(), "Provided list of poses with %i poses!",
+    yaml_filename_by_poses_[poses_yaml_filename].size());
+  result->poses = yaml_filename_by_poses_[poses_yaml_filename];
+  action_server_->succeeded_current(result);
+}
+
+bool YamlPosesImporter::is_request_valid(
+  const std::shared_ptr<const typename ActionT::Goal> goal,
+  std::shared_ptr<ActionT::Result> result)
+{
+  if (!action_server_ || !action_server_->is_server_active()) {
+    RCLCPP_DEBUG(get_logger(), "Action server inactive. Stopping.");
+    return false;
+  } 
+
+  if (goal->yaml_name.empty()) {
+    RCLCPP_ERROR(get_logger(), "Invalid yaml filename, Path is empty.");
+    action_server_->terminate_current(result);
+    return false;
+  }
+
+  return true;
 }
 
 void YamlPosesImporter::load_poses_from_yaml(const std::string poses_yaml_filename)
@@ -95,7 +125,11 @@ void YamlPosesImporter::load_poses_from_yaml(const std::string poses_yaml_filena
 
     poses.push_back(pose_stamped);
   }
-  yaml_filename_by_poses[poses_yaml_filename] = poses;
+  yaml_filename_by_poses_[poses_yaml_filename] = poses;
+
+  RCLCPP_INFO(
+    get_logger(), "Imported list of poses with %i poses from yaml path %s",
+    yaml_filename_by_poses_[poses_yaml_filename].size(), yaml_path);
 }
 
 } // namespace robast_nav_poses_importer
