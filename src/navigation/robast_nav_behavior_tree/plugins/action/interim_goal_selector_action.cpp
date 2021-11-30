@@ -21,7 +21,7 @@ InterimGoalCompAction::InterimGoalCompAction(
 void InterimGoalCompAction::on_tick()
 {
   getInput("path", goal_.path); //goal (in the room)
-  getInput("interim_goals", goal_.poses); 
+  getInput("interim_poses", goal_.poses); 
 }
 
 void InterimGoalCompAction::on_wait_for_result()
@@ -40,7 +40,7 @@ void InterimGoalCompAction::on_wait_for_result()
 
 BT::NodeStatus InterimGoalCompAction::on_success()
 {
-  setOutput("interim_pose", result_.result->interim_pose);
+  setOutput("interim_goal", result_.result->interim_pose);
   return BT::NodeStatus::SUCCESS;
 }
 

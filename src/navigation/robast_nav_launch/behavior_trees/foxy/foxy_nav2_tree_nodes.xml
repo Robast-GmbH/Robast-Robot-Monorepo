@@ -34,8 +34,8 @@
 
     <Action ID="InterimGoalCompAction">
       <input_port name="path">Path to the goal</input_port>
-      <input_port name="poses">List of possible interim poses</input_port>
-      <output_port name="interim_pose">Path created by ComputePathToPose node</output_port>
+      <input_port name="interim_poses">List of possible interim poses</input_port>
+      <output_port name="interim_goal">Path created by ComputePathToPose node</output_port>
     </Action>
 
     <Action ID="ImportYamlPosesAction">

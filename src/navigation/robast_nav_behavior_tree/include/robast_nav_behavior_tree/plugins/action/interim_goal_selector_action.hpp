@@ -52,9 +52,9 @@ public:
   {
     return providedBasicPorts(
       {
-        BT::OutputPort<geometry_msgs::msg::PoseStamped>("interim_pose", "Interim goal selected by the interim_goal_selector node"),
+        BT::OutputPort<geometry_msgs::msg::PoseStamped>("interim_goal", "Interim goal selected by the interim_goal_selector node"),
         BT::InputPort<nav_msgs::msg::Path>("path", "Path to Goal"),
-        BT::InputPort<std::vector<geometry_msgs::msg::PoseStamped>>("poses", "Interim poses list"),
+        BT::InputPort<std::vector<geometry_msgs::msg::PoseStamped>>("interim_poses", "Interim poses list"),
       });
   }
 };

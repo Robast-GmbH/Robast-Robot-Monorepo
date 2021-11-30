@@ -6,10 +6,11 @@
             <SequenceStar>
                 <Action ID="ComputePathToPose" goal="{goal}" path="{path}" planner_id="GridBased"/>
                 <Action ID="ImportYamlPosesAction" poses="{outer_door_bell_poses}" yaml_name="outer_door_bells.yaml"/>
+                <Action ID="InterimGoalCompAction" interim_goal="{interim_goal}" interim_poses="{outer_door_bell_poses}" path="{path}"/>
                 <Control ID="PipelineSequence" name="NavigateWithReplanning">
                     <Decorator ID="RateController" hz="1">
                         <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
-                            <Action ID="ComputePathToPose" goal="{goal}" path="{path}" planner_id="GridBased"/>
+                            <Action ID="ComputePathToPose" goal="{interim_goal}" path="{path}" planner_id="GridBased"/>
                             <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
                         </Control>
                     </Decorator>
@@ -51,19 +52,19 @@
             <input_port name="backup_speed">Speed at which to backup</input_port>
         </Action>
         <Action ID="ClearEntireCostmap">
-            <inout_port name="service_name"/>
+            <input_port name="service_name">Service name</input_port>
         </Action>
         <Action ID="ComputePathToPose">
-            <inout_port name="goal"/>
-            <inout_port name="path"/>
-            <inout_port name="planner_id"/>
+            <input_port name="goal">Destination to plan to</input_port>
+            <output_port name="path">Path created by ComputePathToPose node</output_port>
+            <input_port name="planner_id"/>
         </Action>
         <Decorator ID="DistanceController">
             <input_port name="distance">Distance</input_port>
         </Decorator>
         <Action ID="FollowPath">
-            <inout_port name="controller_id"/>
-            <inout_port name="path"/>
+            <input_port default="FollowPath" name="controller_id"/>
+            <input_port name="path">Path to follow</input_port>
         </Action>
         <Condition ID="GoalReached">
             <input_port name="goal">Destination</input_port>
@@ -78,10 +79,9 @@
             <input_port name="yaml_name">name of the yaml file</input_port>
         </Action>
         <Action ID="InterimGoalCompAction">
-            <inout_port name="interim_pose"/>
-            <inout_port name="path"/>
-            <inout_port name="pose"/>
-            <inout_port name="splitter_id"/>
+            <output_port name="interim_goal">Path created by ComputePathToPose node</output_port>
+            <input_port name="interim_poses">List of possible interim poses</input_port>
+            <input_port name="path">Path to the goal</input_port>
         </Action>
         <Condition ID="IsStuck"/>
         <Action ID="NavigateToPose">
@@ -91,10 +91,10 @@
         <Control ID="PipelineSequence"/>
         <Action ID="RandomCrawl"/>
         <Decorator ID="RateController">
-            <inout_port name="hz"/>
+            <input_port name="hz">Rate</input_port>
         </Decorator>
         <Control ID="RecoveryNode">
-            <inout_port name="number_of_retries"/>
+            <input_port name="number_of_retries">Number of retries</input_port>
         </Control>
         <Decorator ID="RevertPath">
             <input_port name="path">Original path in</input_port>
@@ -109,7 +109,7 @@
             <input_port name="min_speed">Minimum speed</input_port>
         </Decorator>
         <Action ID="Spin">
-            <inout_port name="spin_dist"/>
+            <input_port name="spin_dist">Spin distance</input_port>
         </Action>
         <Condition ID="StateCheck">
             <input_port name="variable_name">name of the state bool in the Blackboard</input_port>
@@ -122,7 +122,7 @@
             <input_port name="variable_name">name of the int in the Blackboard that should be checked</input_port>
         </Condition>
         <Action ID="Wait">
-            <inout_port name="wait_duration"/>
+            <input_port name="wait_duration">Wait time</input_port>
         </Action>
     </TreeNodesModel>
     <!-- ////////// -->
