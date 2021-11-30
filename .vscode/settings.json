@@ -82,6 +82,7 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp",
+        "*.ipp": "cpp",
         "*.idl": "cpp"
     },
     // Autocomplete from ros python packages

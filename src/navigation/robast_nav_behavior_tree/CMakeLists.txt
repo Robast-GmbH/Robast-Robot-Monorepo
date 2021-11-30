@@ -8,7 +8,7 @@ endif()
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 20)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -58,10 +58,16 @@ set(dependencies
 
 add_library(interim_goal_selector_action_bt_node SHARED plugins/action/interim_goal_selector_action.cpp)
 list(APPEND plugin_libs interim_goal_selector_action_bt_node)
+add_library(yaml_poses_import_action_bt_node SHARED plugins/action/yaml_poses_import_action.cpp)
+list(APPEND plugin_libs yaml_poses_import_action_bt_node)
+
 add_library(check_state_condition_bt_node SHARED plugins/condition/check_state_condition.cpp)
 list(APPEND plugin_libs check_state_condition_bt_node)
 add_library(variable_update_condition_bt_node SHARED plugins/condition/variable_condition_updated.cpp)
 list(APPEND plugin_libs variable_update_condition_bt_node)
+
+add_library(revert_path_node_decorator_bt_node SHARED plugins/decorator/revert_path_node.cpp)
+list(APPEND plugin_libs revert_path_node_decorator_bt_node)
 
 
 foreach(bt_plugin ${plugin_libs})
