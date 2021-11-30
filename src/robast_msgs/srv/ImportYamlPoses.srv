@@ -1,7 +1,0 @@
-# Import poses
-
-# Request
-string yaml_name
----
-# Response
-geometry_msgs/PoseStamped[] poses
