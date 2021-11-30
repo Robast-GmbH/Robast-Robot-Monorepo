@@ -67,8 +67,6 @@ nav2_util::CallbackReturn YamlPosesImporter::on_shutdown(const rclcpp_lifecycle:
 
 void YamlPosesImporter::provide_poses()
 {
-  RCLCPP_INFO(get_logger(), "YamlPosesImporter callback!");
-
   auto goal = action_server_->get_current_goal();
   auto feedback = std::make_shared<ActionT::Feedback>();
   auto result = std::make_shared<ActionT::Result>();

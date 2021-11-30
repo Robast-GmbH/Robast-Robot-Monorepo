@@ -114,7 +114,7 @@ void InterimGoalSelector::select_interim_goal()
   else
   {
     RCLCPP_INFO(
-    get_logger(), "Found an interim pose on path to goal with x-coordinate %d and y-coordinate %d.",
+    get_logger(), "Found an interim pose on path to goal with x-coordinate %f and y-coordinate %f.",
     interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y);
 
     result->interim_pose = interim_goals_[0].pose;
