@@ -90,17 +90,8 @@ def generate_launch_description():
         Node(
             package='robast_nav_interim_goal',
             executable='yaml_poses_importer',
-            name='yaml_inner_door_bells_importer',
+            name='yaml_poses_importer',
             output='screen',
-            parameters=[{'poses_yaml': inner_door_bells_yaml}],
-            remappings=remappings),
-
-        Node(
-            package='robast_nav_interim_goal',
-            executable='yaml_poses_importer',
-            name='yaml_outer_door_bells_importer',
-            output='screen',
-            parameters=[{'poses_yaml': outer_door_bells_yaml}],
             remappings=remappings),
 
         Node(

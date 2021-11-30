@@ -96,8 +96,8 @@ protected:
         std::shared_ptr<robast_msgs::srv::ImportYamlPoses::Response> response);
 
   rclcpp::Service<robast_msgs::srv::ImportYamlPoses>::SharedPtr import_poses_service_;
-  
-  std::vector<geometry_msgs::msg::PoseStamped> poses_;
+
+  std::map<std::string, std::vector<geometry_msgs::msg::PoseStamped>> yaml_filename_by_poses;
 };
 
 }  // namespace robast_nav_poses_importer

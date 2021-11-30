@@ -1,11 +1,10 @@
 #include <inttypes.h>
 #include <memory>
+#include <filesystem>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include "robast_nav_interim_goal/yaml_poses_importer.hpp"
 
-
-#define param_poses_yaml "poses_yaml"
 
 namespace robast_nav_poses_importer
 {
@@ -15,9 +14,6 @@ YamlPosesImporter::YamlPosesImporter()
 : nav2_util::LifecycleNode("robast_nav_poses_importer", "", true)
 {
   RCLCPP_INFO(get_logger(), "Creating");
-  
-  // Declare this node's parameters
-  declare_parameter(param_poses_yaml);
 }
 
 YamlPosesImporter::~YamlPosesImporter()
@@ -28,10 +24,6 @@ YamlPosesImporter::~YamlPosesImporter()
 nav2_util::CallbackReturn YamlPosesImporter::on_configure(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Configuring");
-
-  std::string poses_yaml_filename = get_parameter(param_poses_yaml).as_string();
-
-  load_poses_from_yaml(poses_yaml_filename);
   
   import_poses_service_ = create_service<robast_msgs::srv::ImportYamlPoses>(
     "robast_import_poses_service",
@@ -71,13 +63,26 @@ void YamlPosesImporter::providePosesCallback(
   const std::shared_ptr<robast_msgs::srv::ImportYamlPoses::Request> request,
   std::shared_ptr<robast_msgs::srv::ImportYamlPoses::Response> response)
 {
-  response->poses = poses_;
+  std::string poses_yaml_filename = request->yaml_name;
+
+  // Only import the yaml, if it hasn't been imported before
+  if (!yaml_filename_by_poses.contains(poses_yaml_filename))
+  {
+    load_poses_from_yaml(poses_yaml_filename);
+  }  
+
+  response->poses = yaml_filename_by_poses[poses_yaml_filename];
 }
 
 void YamlPosesImporter::load_poses_from_yaml(const std::string poses_yaml_filename)
 {
-  YAML::Node doc = YAML::LoadFile(poses_yaml_filename);
+  std::filesystem::path yaml_path = std::filesystem::current_path();
+  yaml_path.append("config");
+  yaml_path.append(poses_yaml_filename);
 
+  YAML::Node doc = YAML::LoadFile(yaml_path.string());
+
+  std::vector<geometry_msgs::msg::PoseStamped> poses;
   for (std::size_t i=1; i<doc.size()+1; i++) {
     geometry_msgs::msg::PoseStamped pose_stamped;
     pose_stamped.pose.position.x = doc[i]["x"].as<double>();
@@ -88,8 +93,9 @@ void YamlPosesImporter::load_poses_from_yaml(const std::string poses_yaml_filena
     q.setRPY(0, 0, doc[i]["yaw"].as<double>());
     pose_stamped.pose.orientation = tf2::toMsg(q);
 
-    poses_.push_back(pose_stamped);
+    poses.push_back(pose_stamped);
   }
+  yaml_filename_by_poses[poses_yaml_filename] = poses;
 }
 
 } // namespace robast_nav_poses_importer
