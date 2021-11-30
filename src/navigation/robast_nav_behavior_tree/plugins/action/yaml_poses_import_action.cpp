@@ -22,19 +22,19 @@ void ImportYamlPosesAction::on_tick()
   getInput("yaml_name", goal_.yaml_name); //goal (in the room)
 }
 
-void ImportYamlPosesAction::on_wait_for_result()
-{
-  // Grab the new yaml_name
-  std::string new_yaml_name;
-  getInput("yaml_name", new_yaml_name);
+// void ImportYamlPosesAction::on_wait_for_result()
+// {
+//   // Grab the new yaml_name
+//   std::string new_yaml_name;
+//   getInput("yaml_name", new_yaml_name);
 
-  // Check if it is not same with the current one
-  if (goal_.yaml_name != new_yaml_name) {
-    // the action server on the next loop iteration
-    goal_.yaml_name = new_yaml_name;
-    goal_updated_ = true;
-  }
-}
+//   // Check if it is not same with the current one
+//   if (goal_.yaml_name != new_yaml_name) {
+//     // the action server on the next loop iteration
+//     goal_.yaml_name = new_yaml_name;
+//     goal_updated_ = true;
+//   }
+// }
 
 BT::NodeStatus ImportYamlPosesAction::on_success()
 {

@@ -37,7 +37,7 @@ public:
    * @brief Function to perform some user-defined operation after a timeout
    * waiting for a result that hasn't been received yet
    */
-  void on_wait_for_result() override;
+  // void on_wait_for_result() override;
 
    /**
    * @brief Function to perform some user-defined operation upon successful completion of the action
@@ -53,7 +53,7 @@ public:
     return providedBasicPorts(
       {
         BT::InputPort<std::string>("yaml_name", "name of the yaml containing poses"),
-        BT::OutputPort<geometry_msgs::msg::PoseStamped>("poses", "poses loaded of the yaml"),
+        BT::OutputPort<std::vector<geometry_msgs::msg::PoseStamped>>("poses", "poses loaded of the yaml"),
       });
   }
 };

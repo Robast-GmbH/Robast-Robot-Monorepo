@@ -17,6 +17,10 @@
 
 #include <memory>
 #include <string>
+#include <inttypes.h>
+#include <filesystem>
+#include <ament_index_cpp/get_package_share_directory.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include "nav2_util/simple_action_server.hpp"
 #include "nav2_util/lifecycle_node.hpp"

@@ -1,8 +1,3 @@
-#include <inttypes.h>
-#include <memory>
-#include <filesystem>
-#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
-
 #include "robast_nav_interim_goal/yaml_poses_importer.hpp"
 
 
@@ -40,18 +35,27 @@ nav2_util::CallbackReturn YamlPosesImporter::on_configure(const rclcpp_lifecycle
 nav2_util::CallbackReturn YamlPosesImporter::on_activate(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Activating");
+
+  action_server_->activate();
+
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
 nav2_util::CallbackReturn YamlPosesImporter::on_deactivate(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Deactivating");
+
+  action_server_->deactivate();
+
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
 nav2_util::CallbackReturn YamlPosesImporter::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Cleaning up");
+
+  action_server_.reset();
+
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
@@ -63,6 +67,8 @@ nav2_util::CallbackReturn YamlPosesImporter::on_shutdown(const rclcpp_lifecycle:
 
 void YamlPosesImporter::provide_poses()
 {
+  RCLCPP_INFO(get_logger(), "YamlPosesImporter callback!");
+
   auto goal = action_server_->get_current_goal();
   auto feedback = std::make_shared<ActionT::Feedback>();
   auto result = std::make_shared<ActionT::Result>();
@@ -96,7 +102,7 @@ bool YamlPosesImporter::is_request_valid(
   } 
 
   if (goal->yaml_name.empty()) {
-    RCLCPP_ERROR(get_logger(), "Invalid yaml filename, Path is empty.");
+    RCLCPP_ERROR(get_logger(), "Invalid yaml filename, string is empty.");
     action_server_->terminate_current(result);
     return false;
   }
@@ -106,9 +112,13 @@ bool YamlPosesImporter::is_request_valid(
 
 void YamlPosesImporter::load_poses_from_yaml(const std::string poses_yaml_filename)
 {
-  std::filesystem::path yaml_path = std::filesystem::current_path();
+  std::string package_share_directory = ament_index_cpp::get_package_share_directory("robast_nav_interim_goal");
+  std::filesystem::path yaml_path = std::filesystem::path(package_share_directory);
   yaml_path.append("config");
   yaml_path.append(poses_yaml_filename);
+
+  RCLCPP_INFO(
+    get_logger(), "Importing yaml from path" + yaml_path.string());
 
   YAML::Node doc = YAML::LoadFile(yaml_path.string());
 
@@ -128,8 +138,8 @@ void YamlPosesImporter::load_poses_from_yaml(const std::string poses_yaml_filena
   yaml_filename_by_poses_[poses_yaml_filename] = poses;
 
   RCLCPP_INFO(
-    get_logger(), "Imported list of poses with %i poses from yaml path %s",
-    yaml_filename_by_poses_[poses_yaml_filename].size(), yaml_path);
+    get_logger(), "Imported list of poses with %i poses!",
+    yaml_filename_by_poses_[poses_yaml_filename].size());
 }
 
 } // namespace robast_nav_poses_importer
