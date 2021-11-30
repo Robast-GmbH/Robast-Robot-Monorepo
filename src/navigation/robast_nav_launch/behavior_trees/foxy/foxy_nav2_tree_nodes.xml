@@ -38,6 +38,11 @@
       <output_port name="interim_pose">Path created by ComputePathToPose node</output_port>
     </Action>
 
+    <Action ID="ImportYamlPosesAction">
+      <input_port name="yaml_name">name of the yaml file</input_port>
+      <output_port name="poses"> all poses from the yaml file</output_port>
+    </Action>
+
     <Action ID="RandomCrawl"/>
 
     <Action ID="Spin">
@@ -91,6 +96,11 @@
     <Decorator ID="GoalUpdater">
       <input_port name="input_goal">Original goal in</input_port>
       <output_port name="output_goal">Output goal set by subscription</output_port>
+    </Decorator>
+
+    <Decorator ID="RevertPath">
+      <input_port name="path">Original path in</input_port>
+      <output_port name="reverted_path">Output reverted path</output_port>
     </Decorator>
     
     <Decorator ID="SpeedController">
