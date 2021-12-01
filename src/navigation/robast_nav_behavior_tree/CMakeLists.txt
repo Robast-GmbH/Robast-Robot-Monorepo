@@ -65,6 +65,8 @@ add_library(check_state_condition_bt_node SHARED plugins/condition/check_state_c
 list(APPEND plugin_libs check_state_condition_bt_node)
 add_library(variable_update_condition_bt_node SHARED plugins/condition/variable_condition_updated.cpp)
 list(APPEND plugin_libs variable_update_condition_bt_node)
+add_library(robast_goal_updated_condition_bt_node SHARED plugins/condition/robast_goal_updated_condition.cpp)
+list(APPEND plugin_libs robast_goal_updated_condition_bt_node)
 
 add_library(revert_path_node_decorator_bt_node SHARED plugins/decorator/revert_path_node.cpp)
 list(APPEND plugin_libs revert_path_node_decorator_bt_node)

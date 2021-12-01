@@ -75,6 +75,8 @@
 
     <Condition ID="GoalUpdated"/>
 
+    <Condition ID="RobastGoalUpdated"/>
+
     <!-- ############################### CONTROL NODES ################################ -->
     <Control ID="PipelineSequence"/>
 

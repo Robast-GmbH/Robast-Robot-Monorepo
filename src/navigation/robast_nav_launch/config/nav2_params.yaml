@@ -18,6 +18,7 @@ bt_navigator:
     - yaml_poses_import_action_bt_node    #custom
     - check_state_condition_bt_node       #custom
     - variable_update_condition_bt_node   #custom
+    - robast_goal_updated_condition_bt_node   #custom
     - revert_path_node_decorator_bt_node  #custom
     - nav2_compute_path_to_pose_action_bt_node
     - nav2_follow_path_action_bt_node
