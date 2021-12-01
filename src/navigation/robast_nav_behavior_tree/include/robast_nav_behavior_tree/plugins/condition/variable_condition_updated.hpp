@@ -62,7 +62,7 @@ public:
 
 private:
   std::string _name;
-  std::string _state = false;
+  std::string _state = "false";
 };
 
 }  // namespace nav2_behavior_tree

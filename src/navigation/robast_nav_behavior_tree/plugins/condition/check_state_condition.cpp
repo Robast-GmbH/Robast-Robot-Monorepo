@@ -19,7 +19,7 @@
 namespace nav2_behavior_tree
 {
 
-VariableUpdatedCondition::VariableUpdatedCondition(
+CheckStateCondition::CheckStateCondition(
   const std::string & condition_name,
   const BT::NodeConfiguration & conf)
 : BT::ConditionNode(condition_name, conf)
@@ -27,7 +27,7 @@ VariableUpdatedCondition::VariableUpdatedCondition(
   getInput("variable_name", _name);
 }
 
-BT::NodeStatus VariableUpdatedCondition::tick()
+BT::NodeStatus CheckStateCondition::tick()
 {
   std::string current_state;
   config().blackboard->get<std::string>(_name, current_state);
@@ -48,5 +48,5 @@ BT::NodeStatus VariableUpdatedCondition::tick()
 #include "behaviortree_cpp_v3/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-  factory.registerNodeType<nav2_behavior_tree::VariableUpdatedCondition>("StateCheck");
+  factory.registerNodeType<nav2_behavior_tree::CheckStateCondition>("StateCheck");
 }

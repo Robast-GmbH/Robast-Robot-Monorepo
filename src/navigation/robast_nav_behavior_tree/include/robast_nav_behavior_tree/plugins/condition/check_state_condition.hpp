@@ -28,7 +28,7 @@ namespace nav2_behavior_tree
  * @brief A BT::ConditionNode that returns SUCCESS when goal is
  * updated on the blackboard and FAILURE otherwise
  */
-class VariableUpdatedCondition : public BT::ConditionNode
+class CheckStateCondition : public BT::ConditionNode
 {
 public:
   /**
@@ -36,11 +36,11 @@ public:
    * @param condition_name Name for the XML tag for this node
    * @param conf BT node configuration
    */
-  VariableUpdatedCondition(
+  CheckStateCondition(
     const std::string & condition_name,
     const BT::NodeConfiguration & conf);
 
-  VariableUpdatedCondition() = delete;
+  CheckStateCondition() = delete;
 
   /**
    * @brief The main override required by a BT action
