@@ -91,6 +91,8 @@ void InterimGoalSelector::select_interim_goal()
 
   // Get the interim goals from the action goal
   geometry_msgs::msg::PoseStamped final_pose = goal->path.poses[goal->path.poses.size() - 1];
+  // Clean the interim_goals_ vector, which is quite important as there could be entries stored in the vector from the last run
+  interim_goals_.clear();
   for (u_int16_t i = 0; i < goal->poses.size(); i++)
   {
     interim_goal interim_goal;
