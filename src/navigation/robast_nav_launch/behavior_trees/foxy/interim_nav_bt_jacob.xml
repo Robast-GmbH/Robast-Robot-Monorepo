@@ -4,7 +4,7 @@
     <BehaviorTree ID="GoalUpdateSubtree">
         <IfThenElse>
             <Condition ID="RobastGoalUpdated"/>
-            <SetBlackboard output_key="outer_door_bell_computed" value="false"/>
+            <SetBlackboard output_key="new_goal_pending" value="true"/>
             <AlwaysFailure/>
         </IfThenElse>
     </BehaviorTree>
@@ -21,6 +21,7 @@
                         <IfThenElse>
                             <ReactiveFallback>
                                 <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
+                                <Condition ID="StateCheck" variable_name="new_goal_pending"/>
                                 <Inverter>
                                     <Condition ID="StateCheck" variable_name="outer_door_bell_computed"/>
                                 </Inverter>
@@ -32,8 +33,12 @@
                                     <Control ID="PipelineSequence">
                                         <SetBlackboard output_key="outer_door_bell_computed" value="true"/>
                                         <SetBlackboard output_key="accomplished_outer_door_bell" value="false"/>
+                                        <SetBlackboard output_key="new_goal_pending" value="false"/>
                                     </Control>
-                                    <SetBlackboard output_key="accomplished_outer_door_bell" value="true"/>
+                                    <Control ID="PipelineSequence">
+                                        <SetBlackboard output_key="accomplished_outer_door_bell" value="true"/>
+                                        <SetBlackboard output_key="new_goal_pending" value="false"/>
+                                    </Control>
                                 </IfThenElse>
                                 <AlwaysFailure/>
                             </IfThenElse>
@@ -55,14 +60,19 @@
                     </Decorator>
                     <Control ID="RecoveryNode" name="FollowPath" number_of_retries="1">
                         <IfThenElse>
-                            <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
+                            <Condition ID="StateCheck" variable_name="outer_door_bell_computed"/>
+                            <Sequence>
+                                <ReactiveFallback>
+                                    <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
+                                    <Action ID="FollowPath" controller_id="FollowPath" path="{path_outer_door_bell}"/>
+                                </ReactiveFallback>
+                                <SetBlackboard output_key="accomplished_outer_door_bell" value="true"/>
+                                <ReactiveFallback>
+                                    <Condition ID="StateCheck" variable_name="new_goal_pending"/>
+                                    <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
+                                </ReactiveFallback>
+                            </Sequence>
                             <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
-                            <IfThenElse>
-                                <Action ID="FollowPath" controller_id="FollowPath" path="{path_outer_door_bell}"/>
-                                <Inverter>
-                                    <SetBlackboard output_key="accomplished_outer_door_bell" value="true"/>
-                                </Inverter>
-                            </IfThenElse>
                         </IfThenElse>
                         <ReactiveFallback name="FollowPathRecoveryFallback">
                             <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
