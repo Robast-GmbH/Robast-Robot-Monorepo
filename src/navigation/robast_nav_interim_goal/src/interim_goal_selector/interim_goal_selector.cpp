@@ -175,8 +175,8 @@ bool InterimGoalSelector::is_request_valid(
   }
 
   RCLCPP_INFO(
-    get_logger(), "Received a interim goal computation request for a path with %i poses.",
-    static_cast<int>(goal->path.poses.size()));
+    get_logger(), "Received a interim goal computation request for a path with %i poses and %i possible interim goals.",
+    static_cast<int>(goal->path.poses.size()), goal->poses.size());
   return true;
 }
 
