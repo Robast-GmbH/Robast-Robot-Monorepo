@@ -1,90 +1,6 @@
 <?xml version="1.0"?>
 <root main_tree_to_execute="MainTree">
     <!-- ////////// -->
-    <BehaviorTree ID="CheckForInterimGoalsSubtree">
-        <Decorator ID="RateController" hz="1.0">
-            <IfThenElse>
-                <ReactiveFallback>
-                    <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
-                    <Condition ID="StateCheck" variable_name="new_goal_pending"/>
-                    <IfThenElse>
-                        <Condition ID="StateCheck" variable_name="computed_outer_door_bell"/>
-                        <AlwaysFailure/>
-                        <Inverter>
-                            <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
-                        </Inverter>
-                    </IfThenElse>
-                </ReactiveFallback>
-                <IfThenElse>
-                    <Action ID="ComputePathToPose" goal="{goal}" path="{path_tmp}" planner_id="GridBased"/>
-                    <Sequence>
-                        <SetBlackboard output_key="new_goal_pending" value="false"/>
-                        <SetBlackboard output_key="accomplished_final_goal" value="false"/>
-                        <IfThenElse>
-                            <Action ID="InterimGoalCompAction" interim_goal="{outer_door_bell_goal}" interim_poses="{outer_door_bell_poses}" is_path_reversed="false" path="{path_tmp}" search_radius="8.0" waypoint_index="{wp_id_outer_door_bell}"/>
-                            <Control ID="PipelineSequence">
-                                <SetBlackboard output_key="computed_outer_door_bell" value="true"/>
-                                <SetBlackboard output_key="accomplished_outer_door_bell" value="false"/>
-                            </Control>
-                            <SetBlackboard output_key="accomplished_outer_door_bell" value="true"/>
-                        </IfThenElse>
-                    </Sequence>
-                    <AlwaysFailure/>
-                </IfThenElse>
-                <AlwaysSuccess/>
-            </IfThenElse>
-        </Decorator>
-    </BehaviorTree>
-    <!-- ////////// -->
-    <BehaviorTree ID="ComputePathSubtree">
-        <Decorator ID="RateController" hz="1.0">
-            <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
-                <IfThenElse>
-                    <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
-                    <Action ID="ComputePathToPose" goal="{goal}" path="{path}" planner_id="GridBased"/>
-                    <Action ID="ComputePathToPose" goal="{outer_door_bell_goal}" path="{path_outer_door_bell}" planner_id="GridBased"/>
-                </IfThenElse>
-                <ReactiveFallback name="ComputePathToPoseRecoveryFallback">
-                    <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
-                    <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
-                </ReactiveFallback>
-            </Control>
-        </Decorator>
-    </BehaviorTree>
-    <!-- ////////// -->
-    <BehaviorTree ID="FinalCheckSubtree">
-        <ReactiveSequence>
-            <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
-            <Condition ID="StateCheck" variable_name="accomplished_final_goal"/>
-        </ReactiveSequence>
-    </BehaviorTree>
-    <!-- ////////// -->
-    <BehaviorTree ID="FollowPathSubtree">
-        <Control ID="RecoveryNode" name="FollowPath" number_of_retries="2">
-            <WhileDoElse>
-                <Condition ID="StateCheck" variable_name="new_goal_pending"/>
-                <AlwaysFailure/>
-                <IfThenElse>
-                    <Condition ID="StateCheck" variable_name="computed_outer_door_bell"/>
-                    <Sequence>
-                        <ReactiveFallback>
-                            <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
-                            <Action ID="FollowPath" controller_id="FollowPath" path="{path_outer_door_bell}"/>
-                        </ReactiveFallback>
-                        <SetBlackboard output_key="accomplished_outer_door_bell" value="true"/>
-                        <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
-                        <SetBlackboard output_key="accomplished_final_goal" value="true"/>
-                    </Sequence>
-                    <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
-                </IfThenElse>
-            </WhileDoElse>
-            <ReactiveFallback name="FollowPathRecoveryFallback">
-                <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
-                <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
-            </ReactiveFallback>
-        </Control>
-    </BehaviorTree>
-    <!-- ////////// -->
     <BehaviorTree ID="GoalUpdateSubtree">
         <IfThenElse>
             <Condition ID="RobastGoalUpdated"/>
@@ -93,43 +9,104 @@
         </IfThenElse>
     </BehaviorTree>
     <!-- ////////// -->
-    <BehaviorTree ID="InitializationSubtree">
-        <SequenceStar>
-            <Action ID="ImportYamlPosesAction" poses="{outer_door_bell_poses}" yaml_name="outer_door_bells.yaml"/>
-            <Action ID="ImportYamlPosesAction" poses="{inner_door_bell_poses}" yaml_name="inner_door_bells.yaml"/>
-            <SetBlackboard output_key="computed_outer_door_bell" value="false"/>
-            <SetBlackboard output_key="accomplished_outer_door_bell" value="false"/>
-            <SetBlackboard output_key="accomplished_final_goal" value="false"/>
-        </SequenceStar>
-    </BehaviorTree>
-    <!-- ////////// -->
     <BehaviorTree ID="MainTree">
         <SequenceStar>
-            <SubTree ID="InitializationSubtree" __shared_blackboard="true"/>
+            <SequenceStar>
+                <Action ID="ImportYamlPosesAction" poses="{outer_door_bell_poses}" yaml_name="outer_door_bells.yaml"/>
+                <Action ID="ImportYamlPosesAction" poses="{inner_door_bell_poses}" yaml_name="inner_door_bells.yaml"/>
+                <SetBlackboard output_key="computed_outer_door_bell" value="false"/>
+                <SetBlackboard output_key="accomplished_outer_door_bell" value="false"/>
+                <SetBlackboard output_key="accomplished_final_goal" value="false"/>
+            </SequenceStar>
             <Control ID="RecoveryNode" name="NavigateRecovery" number_of_retries="6">
                 <Control ID="PipelineSequence" name="NavigateWithReplanning">
-                    <SubTree ID="CheckForInterimGoalsSubtree" __shared_blackboard="true"/>
-                    <SubTree ID="ComputePathSubtree" __shared_blackboard="true"/>
-                    <SubTree ID="FollowPathSubtree" __shared_blackboard="true"/>
-                    <SubTree ID="FinalCheckSubtree" __shared_blackboard="true"/>
+                    <Decorator ID="RateController" hz="1.0">
+                        <IfThenElse>
+                            <ReactiveFallback>
+                                <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
+                                <Condition ID="StateCheck" variable_name="new_goal_pending"/>
+                                <IfThenElse>
+                                    <Condition ID="StateCheck" variable_name="computed_outer_door_bell"/>
+                                    <AlwaysFailure/>
+                                    <Inverter>
+                                        <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
+                                    </Inverter>
+                                </IfThenElse>
+                            </ReactiveFallback>
+                            <IfThenElse>
+                                <Action ID="ComputePathToPose" goal="{goal}" path="{path_tmp}" planner_id="GridBased"/>
+                                <Sequence>
+                                    <SetBlackboard output_key="new_goal_pending" value="false"/>
+                                    <SetBlackboard output_key="accomplished_final_goal" value="false"/>
+                                    <IfThenElse>
+                                        <Action ID="InterimGoalCompAction" interim_goal="{outer_door_bell_goal}" interim_poses="{outer_door_bell_poses}" is_path_reversed="false" path="{path_tmp}" search_radius="8.0" waypoint_index="{wp_id_outer_door_bell}"/>
+                                        <Control ID="PipelineSequence">
+                                            <SetBlackboard output_key="computed_outer_door_bell" value="true"/>
+                                            <SetBlackboard output_key="accomplished_outer_door_bell" value="false"/>
+                                        </Control>
+                                        <SetBlackboard output_key="accomplished_outer_door_bell" value="true"/>
+                                    </IfThenElse>
+                                </Sequence>
+                                <AlwaysFailure/>
+                            </IfThenElse>
+                            <AlwaysSuccess/>
+                        </IfThenElse>
+                    </Decorator>
+                    <Decorator ID="RateController" hz="2.0">
+                        <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
+                            <IfThenElse>
+                                <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
+                                <Action ID="ComputePathToPose" goal="{goal}" path="{path}" planner_id="GridBased"/>
+                                <Action ID="ComputePathToPose" goal="{outer_door_bell_goal}" path="{path_outer_door_bell}" planner_id="GridBased"/>
+                            </IfThenElse>
+                            <ReactiveFallback name="ComputePathToPoseRecoveryFallback">
+                                <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
+                                <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Context" service_name="global_costmap/clear_entirely_global_costmap"/>
+                            </ReactiveFallback>
+                        </Control>
+                    </Decorator>
+                    <Control ID="RecoveryNode" name="FollowPath" number_of_retries="2">
+                        <WhileDoElse>
+                            <Condition ID="StateCheck" variable_name="new_goal_pending"/>
+                            <AlwaysFailure/>
+                            <IfThenElse>
+                                <Condition ID="StateCheck" variable_name="computed_outer_door_bell"/>
+                                <Sequence>
+                                    <ReactiveFallback>
+                                        <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
+                                        <Action ID="FollowPath" controller_id="FollowPath" path="{path_outer_door_bell}"/>
+                                    </ReactiveFallback>
+                                    <SetBlackboard output_key="accomplished_outer_door_bell" value="true"/>
+                                    <Action ID="Wait" wait_duration="1.0"/>
+                                    <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
+                                    <SetBlackboard output_key="accomplished_final_goal" value="true"/>
+                                </Sequence>
+                                <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
+                            </IfThenElse>
+                        </WhileDoElse>
+                        <ReactiveFallback name="FollowPathRecoveryFallback">
+                            <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
+                            <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
+                        </ReactiveFallback>
+                    </Control>
+                    <ReactiveSequence>
+                        <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
+                        <Condition ID="StateCheck" variable_name="accomplished_final_goal"/>
+                    </ReactiveSequence>
                 </Control>
-                <SubTree ID="NavRecoverySubtree" __shared_blackboard="true"/>
+                <ReactiveFallback name="RecoveryFallback">
+                    <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
+                    <Control ID="RoundRobin" name="RecoveryActions">
+                        <Sequence name="ClearingActions">
+                            <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Subtree" service_name="local_costmap/clear_entirely_local_costmap"/>
+                            <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Subtree" service_name="global_costmap/clear_entirely_global_costmap"/>
+                        </Sequence>
+                        <Action ID="Spin" spin_dist="1.57"/>
+                        <Action ID="Wait" wait_duration="5"/>
+                    </Control>
+                </ReactiveFallback>
             </Control>
         </SequenceStar>
-    </BehaviorTree>
-    <!-- ////////// -->
-    <BehaviorTree ID="NavRecoverySubtree">
-        <ReactiveFallback name="RecoveryFallback">
-            <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
-            <Control ID="RoundRobin" name="RecoveryActions">
-                <Sequence name="ClearingActions">
-                    <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Subtree" service_name="local_costmap/clear_entirely_local_costmap"/>
-                    <Action ID="ClearEntireCostmap" name="ClearGlobalCostmap-Subtree" service_name="global_costmap/clear_entirely_global_costmap"/>
-                </Sequence>
-                <Action ID="Spin" spin_dist="1.57"/>
-                <Action ID="Wait" wait_duration="5"/>
-            </Control>
-        </ReactiveFallback>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
@@ -183,11 +160,11 @@
             <inout_port name="__shared_blackboard"/>
         </SubTree>
         <Action ID="InterimGoalCompAction">
-            <input_port name="path">Path to the goal</input_port>
-            <input_port name="is_path_reversed">Is the supplied path reversed?</input_port>
-            <input_port name="interim_poses">List of possible interim poses</input_port>
-            <input_port name="search_radius">Radius to search for interim_poses</input_port>
             <output_port name="interim_goal">Path created by ComputePathToPose node</output_port>
+            <input_port name="interim_poses">List of possible interim poses</input_port>
+            <input_port name="is_path_reversed">Is the supplied path reversed?</input_port>
+            <input_port name="path">Path to the goal</input_port>
+            <input_port name="search_radius">Radius to search for interim_poses</input_port>
             <output_port name="waypoint_index">Waypoint index of the path-waypoints that was closest to the chosen interim pose</output_port>
         </Action>
         <Condition ID="IsStuck"/>
