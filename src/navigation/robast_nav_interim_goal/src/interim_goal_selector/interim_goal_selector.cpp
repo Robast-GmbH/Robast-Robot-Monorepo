@@ -95,6 +95,7 @@ void InterimGoalSelector::select_interim_goal()
   interim_goals_.clear();
   for (u_int16_t i = 0; i < goal->poses.size(); i++)
   {
+    RCLCPP_INFO(get_logger(), "Adding interim pose number %i with x-goal %f to interim_goals_", i, goal->poses[i].pose.position.x);
     interim_goal interim_goal;
     interim_goal.pose = goal->poses[i];
     interim_goal.dist_to_final_pose = calculate_euclidean_distance(final_pose.pose.position.x,
@@ -106,12 +107,6 @@ void InterimGoalSelector::select_interim_goal()
     {
       interim_goals_.push_back(interim_goal);
     }
-    else 
-    {
-      RCLCPP_INFO(get_logger(), "Distance to goal %f is bigger that search radius %f for interim_goal %i with x coordinate %f!",
-      interim_goal.dist_to_final_pose, goal->search_radius, i, interim_goal.pose.pose.position.x);
-    }
-  }
   }
 
   // From all possible interim goals find the k nearest neighbors to the final goal pose
@@ -125,12 +120,7 @@ void InterimGoalSelector::select_interim_goal()
   }
   else
   {
-    RCLCPP_INFO(
-    get_logger(), "Found an interim pose on path to goal with x-coordinate %f and y-coordinate %f.",
-    interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y);
-
-    result->interim_pose = interim_goals_[0].pose;
-    action_server_->succeeded_current(result);
+    send_succeeded_action_result(goal, result);
   }
 }
 
@@ -159,6 +149,7 @@ bool InterimGoalSelector::select_final_interim_goal_on_path(nav_msgs::msg::Path 
         auto final_interim_goal = interim_goals_[j];
         interim_goals_.resize(1);
         interim_goals_[0] = final_interim_goal;
+        waypoint_index_ = i;
         return true;
       }
     }
@@ -196,6 +187,25 @@ bool InterimGoalSelector::is_request_valid(
     get_logger(), "Received a interim goal computation request for a path with %i poses, %i possible interim goals and search radius %f.",
     static_cast<int>(goal->path.poses.size()), goal->poses.size(), goal->search_radius);
   return true;
+}
+
+
+void InterimGoalSelector::send_succeeded_action_result(
+  const std::shared_ptr<const typename ActionT::Goal> goal,
+  std::shared_ptr<ActionT::Result> result)
+{
+  if (goal->is_path_reversed) {
+      result->waypoint_index = waypoint_index_;
+      RCLCPP_INFO(get_logger(), "Found an interim pose on reversed path to goal with x-coordinate %f and y-coordinate %f. The waypoint that was first inside the max_interim_dist_to_path was the one with the index %i!",
+      interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y, waypoint_index_);
+    } else {
+      result->waypoint_index = goal->path.poses.size() - waypoint_index_;
+      RCLCPP_INFO(get_logger(), "Found an interim pose on path to goal with x-coordinate %f and y-coordinate %f. The waypoint that was first inside the max_interim_dist_to_path was the one with the index %i!",
+      interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y, (goal->path.poses.size() - waypoint_index_));
+    }
+
+    result->interim_pose = interim_goals_[0].pose;
+    action_server_->succeeded_current(result);
 }
 
 } // namespace robast_nav_door_bell

@@ -53,7 +53,9 @@ public:
     return providedBasicPorts(
       {
         BT::OutputPort<geometry_msgs::msg::PoseStamped>("interim_goal", "Interim goal selected by the interim_goal_selector node"),
+        BT::OutputPort<uint>("waypoint_index", "Waypoint index of the path-waypoints that was closest to the chosen interim pose"),
         BT::InputPort<nav_msgs::msg::Path>("path", "Path to Goal"),
+        BT::InputPort<bool>("is_path_reversed", "Is the supplied path reversed?"),
         BT::InputPort<std::vector<geometry_msgs::msg::PoseStamped>>("interim_poses", "Interim poses list"),
         BT::InputPort<double>("search_radius", "Radius to search for interim_poses"),
       });

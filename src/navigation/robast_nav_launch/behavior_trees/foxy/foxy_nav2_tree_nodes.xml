@@ -34,9 +34,11 @@
 
     <Action ID="InterimGoalCompAction">
       <input_port name="path">Path to the goal</input_port>
+      <input_port name="is_path_reversed">Is the supplied path reversed?</input_port>
       <input_port name="interim_poses">List of possible interim poses</input_port>
       <input_port name="search_radius">Radius to search for interim_poses</input_port>
       <output_port name="interim_goal">Path created by ComputePathToPose node</output_port>
+      <output_port name="waypoint_index">Waypoint index of the path-waypoints that was closest to the chosen interim pose</output_port>
     </Action>
 
     <Action ID="ImportYamlPosesAction">

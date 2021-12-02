@@ -109,6 +109,14 @@ protected:
                         std::shared_ptr<ActionT::Result> result);
 
   /**
+   * @brief Helper function to send the succeeded action result
+   * @param goal Action goal
+   * @param result Action result that is filled within the action and sent to the action server
+   */
+  void send_succeeded_action_result(const std::shared_ptr<const typename ActionT::Goal> goal,
+                        std::shared_ptr<ActionT::Result> result);
+
+  /**
    * @brief Helper function to find the k nearest neighbors closest to the final goal pose
    */
   void filter_k_nearest_neighbors_interim_goals();
@@ -142,6 +150,7 @@ protected:
   int64_t k_nearest_neighbors_;
   std::vector<interim_goal> interim_goals_;
   double epsilon_;
+  uint waypoint_index_;
 };
 
 

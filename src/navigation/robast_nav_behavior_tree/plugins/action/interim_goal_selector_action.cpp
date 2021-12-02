@@ -21,6 +21,7 @@ InterimGoalCompAction::InterimGoalCompAction(
 void InterimGoalCompAction::on_tick()
 {
   getInput("path", goal_.path); //goal (in the room)
+  getInput("is_path_reversed", goal_.is_path_reversed);
   getInput("interim_poses", goal_.poses); 
   getInput("search_radius", goal_.search_radius);
 }
@@ -42,6 +43,7 @@ void InterimGoalCompAction::on_wait_for_result()
 BT::NodeStatus InterimGoalCompAction::on_success()
 {
   setOutput("interim_goal", result_.result->interim_pose);
+  setOutput("waypoint_index", result_.result->waypoint_index);
   return BT::NodeStatus::SUCCESS;
 }
 

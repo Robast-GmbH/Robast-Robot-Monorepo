@@ -21,7 +21,7 @@
                         <SetBlackboard output_key="new_goal_pending" value="false"/>
                         <SetBlackboard output_key="accomplished_final_goal" value="false"/>
                         <IfThenElse>
-                            <Action ID="InterimGoalCompAction" interim_goal="{outer_door_bell_goal}" interim_poses="{outer_door_bell_poses}" path="{path_tmp}" search_radius="8.0"/>
+                            <Action ID="InterimGoalCompAction" interim_goal="{outer_door_bell_goal}" interim_poses="{outer_door_bell_poses}" is_path_reversed="false" path="{path_tmp}" search_radius="8.0" waypoint_index="{wp_id_outer_door_bell}"/>
                             <Control ID="PipelineSequence">
                                 <SetBlackboard output_key="computed_outer_door_bell" value="true"/>
                                 <SetBlackboard output_key="accomplished_outer_door_bell" value="false"/>
@@ -183,10 +183,12 @@
             <inout_port name="__shared_blackboard"/>
         </SubTree>
         <Action ID="InterimGoalCompAction">
-            <inout_port name="interim_goal"/>
-            <inout_port name="interim_poses"/>
-            <inout_port name="path"/>
-            <inout_port name="search_radius"/>
+            <input_port name="path">Path to the goal</input_port>
+            <input_port name="is_path_reversed">Is the supplied path reversed?</input_port>
+            <input_port name="interim_poses">List of possible interim poses</input_port>
+            <input_port name="search_radius">Radius to search for interim_poses</input_port>
+            <output_port name="interim_goal">Path created by ComputePathToPose node</output_port>
+            <output_port name="waypoint_index">Waypoint index of the path-waypoints that was closest to the chosen interim pose</output_port>
         </Action>
         <Condition ID="IsStuck"/>
         <SubTree ID="NavRecoverySubtree">
