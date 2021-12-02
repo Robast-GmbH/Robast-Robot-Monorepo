@@ -22,6 +22,7 @@ void InterimGoalCompAction::on_tick()
 {
   getInput("path", goal_.path); //goal (in the room)
   getInput("interim_poses", goal_.poses); 
+  getInput("search_radius", goal_.search_radius);
 }
 
 void InterimGoalCompAction::on_wait_for_result()

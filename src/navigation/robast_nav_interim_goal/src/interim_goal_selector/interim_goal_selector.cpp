@@ -101,7 +101,17 @@ void InterimGoalSelector::select_interim_goal()
                                                                   final_pose.pose.position.y,
                                                                   interim_goal.pose.pose.position.x,
                                                                   interim_goal.pose.pose.position.y);
-    interim_goals_.push_back(interim_goal);
+    // Only add those interim goals to the list of possible interim_goals_ that are within the search radius
+    if (interim_goal.dist_to_final_pose < goal->search_radius)
+    {
+      interim_goals_.push_back(interim_goal);
+    }
+    else 
+    {
+      RCLCPP_INFO(get_logger(), "Distance to goal %f is bigger that search radius %f for interim_goal %i with x coordinate %f!",
+      interim_goal.dist_to_final_pose, goal->search_radius, i, interim_goal.pose.pose.position.x);
+    }
+  }
   }
 
   // From all possible interim goals find the k nearest neighbors to the final goal pose
@@ -126,10 +136,12 @@ void InterimGoalSelector::select_interim_goal()
 
 void InterimGoalSelector::filter_k_nearest_neighbors_interim_goals()
 {
-  // sort the vector of local_interim_goals_, so that local_interim_goals_[0] contains the smallest distance to the final pose
-  std::sort(interim_goals_.begin(), interim_goals_.end(), compare_dist_to_final_pose);
+  if (interim_goals_.size() > 0) {
+    // sort the vector of local_interim_goals_, so that local_interim_goals_[0] contains the smallest distance to the final pose
+    std::sort(interim_goals_.begin(), interim_goals_.end(), compare_dist_to_final_pose);
 
-  interim_goals_.resize(k_nearest_neighbors_);
+    interim_goals_.resize(k_nearest_neighbors_);
+  }
 }
 
 bool InterimGoalSelector::select_final_interim_goal_on_path(nav_msgs::msg::Path path)
@@ -174,9 +186,15 @@ bool InterimGoalSelector::is_request_valid(
     return false;
   }
 
+  if (goal->search_radius <= 0.0) {
+    RCLCPP_ERROR(get_logger(), "Invalid search radius: %f! Search radius has to be > 0.0!", goal->search_radius);
+    action_server_->terminate_current(result);
+    return false;
+  }
+
   RCLCPP_INFO(
-    get_logger(), "Received a interim goal computation request for a path with %i poses and %i possible interim goals.",
-    static_cast<int>(goal->path.poses.size()), goal->poses.size());
+    get_logger(), "Received a interim goal computation request for a path with %i poses, %i possible interim goals and search radius %f.",
+    static_cast<int>(goal->path.poses.size()), goal->poses.size(), goal->search_radius);
   return true;
 }
 

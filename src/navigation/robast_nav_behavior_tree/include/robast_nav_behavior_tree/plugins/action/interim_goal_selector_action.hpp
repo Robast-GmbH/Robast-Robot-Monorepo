@@ -55,6 +55,7 @@ public:
         BT::OutputPort<geometry_msgs::msg::PoseStamped>("interim_goal", "Interim goal selected by the interim_goal_selector node"),
         BT::InputPort<nav_msgs::msg::Path>("path", "Path to Goal"),
         BT::InputPort<std::vector<geometry_msgs::msg::PoseStamped>>("interim_poses", "Interim poses list"),
+        BT::InputPort<double>("search_radius", "Radius to search for interim_poses"),
       });
   }
 };

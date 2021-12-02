@@ -1,6 +1,7 @@
 #goal
 nav_msgs/Path path  # path to the final goal pose
 geometry_msgs/PoseStamped[] poses  # array of possible interim poses
+float64 search_radius  # radius to search for possible interim poses
 ---
 #result
 geometry_msgs/PoseStamped interim_pose

@@ -37,7 +37,7 @@
                                     <SetBlackboard output_key="new_goal_pending" value="false"/>
                                     <SetBlackboard output_key="accomplished_final_goal" value="false"/>
                                     <IfThenElse>
-                                        <Action ID="InterimGoalCompAction" interim_goal="{outer_door_bell_goal}" interim_poses="{outer_door_bell_poses}" path="{path_tmp}"/>
+                                        <Action ID="InterimGoalCompAction" interim_goal="{outer_door_bell_goal}" interim_poses="{outer_door_bell_poses}" path="{path_tmp}" search_radius="8.0"/>
                                         <Control ID="PipelineSequence">
                                             <SetBlackboard output_key="computed_outer_door_bell" value="true"/>
                                             <SetBlackboard output_key="accomplished_outer_door_bell" value="false"/>
