@@ -23,9 +23,13 @@
                             <ReactiveFallback>
                                 <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
                                 <Condition ID="StateCheck" variable_name="new_goal_pending"/>
-                                <Inverter>
+                                <IfThenElse>
                                     <Condition ID="StateCheck" variable_name="computed_outer_door_bell"/>
-                                </Inverter>
+                                    <AlwaysFailure/>
+                                    <Inverter>
+                                        <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
+                                    </Inverter>
+                                </IfThenElse>
                             </ReactiveFallback>
                             <IfThenElse>
                                 <Action ID="ComputePathToPose" goal="{goal}" path="{path_tmp}" planner_id="GridBased"/>
