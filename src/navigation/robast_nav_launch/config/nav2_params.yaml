@@ -16,6 +16,7 @@ bt_navigator:
     plugin_lib_names:
     - interim_goal_selector_action_bt_node #custom
     - yaml_poses_import_action_bt_node    #custom
+    - compare_integer_condition_bt_node   #custom
     - check_state_condition_bt_node       #custom
     - variable_update_condition_bt_node   #custom
     - robast_goal_updated_condition_bt_node   #custom

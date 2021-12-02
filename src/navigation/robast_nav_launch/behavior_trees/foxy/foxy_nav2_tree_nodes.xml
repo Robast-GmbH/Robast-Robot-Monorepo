@@ -72,6 +72,11 @@
       <input_port name="variable_name">name of the state bool in the Blackboard</input_port>
     </Condition>
 
+    <Condition ID="CompareIntegerA>BCondition">
+      <input_port name="first_integer">BT-Key for the first integer that is compared to the second one</input_port>
+      <input_port name="second_integer">BT-Key for the second integer that is compared to the first one</input_port>
+    </Condition>
+
     <Condition ID="VariableUpdated">
       <input_port name="variable_name">name of the int in the Blackboard that should be checked</input_port>
     </Condition>
