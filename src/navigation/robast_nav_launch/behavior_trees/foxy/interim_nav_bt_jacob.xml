@@ -52,7 +52,7 @@
                             <AlwaysSuccess/>
                         </IfThenElse>
                     </Decorator>
-                    <Decorator ID="RateController" hz="2.0">
+                    <Decorator ID="RateController" hz="1.0">
                         <Control ID="RecoveryNode" name="ComputePathToPose" number_of_retries="1">
                             <IfThenElse>
                                 <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
@@ -77,7 +77,7 @@
                                         <Action ID="FollowPath" controller_id="FollowPath" path="{path_outer_door_bell}"/>
                                     </ReactiveFallback>
                                     <SetBlackboard output_key="accomplished_outer_door_bell" value="true"/>
-                                    <Action ID="Wait" wait_duration="1.0"/>
+                                    <Action ID="Wait" wait_duration="1.5"/>
                                     <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
                                     <SetBlackboard output_key="accomplished_final_goal" value="true"/>
                                 </Sequence>
