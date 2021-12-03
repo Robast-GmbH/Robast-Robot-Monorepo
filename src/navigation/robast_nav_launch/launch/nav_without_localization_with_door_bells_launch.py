@@ -16,7 +16,7 @@ def generate_launch_description():
             'robast_nav_launch'), 'config', 'nav2_params_galactic.yaml')
     else:
         default_bt_xml_filename = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'interim_nav_bt_jacob_inner+outer_door_bells.xml')
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'nav_bt_with_door_bells.xml')
         nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'), 'config', 'nav2_params.yaml')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
