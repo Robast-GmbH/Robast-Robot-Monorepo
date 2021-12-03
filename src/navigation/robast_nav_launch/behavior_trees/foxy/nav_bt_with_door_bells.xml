@@ -15,7 +15,9 @@
                 <Action ID="ImportYamlPosesAction" poses="{outer_door_bell_poses}" yaml_name="outer_door_bells.yaml"/>
                 <Action ID="ImportYamlPosesAction" poses="{inner_door_bell_poses}" yaml_name="inner_door_bells.yaml"/>
                 <SetBlackboard output_key="computed_outer_door_bell" value="false"/>
+                <SetBlackboard output_key="computed_inner_door_bell" value="false"/>
                 <SetBlackboard output_key="accomplished_outer_door_bell" value="false"/>
+                <SetBlackboard output_key="accomplished_inner_door_bell" value="false"/>
                 <SetBlackboard output_key="accomplished_final_goal" value="false"/>
             </SequenceStar>
             <Control ID="RecoveryNode" name="NavigateRecovery" number_of_retries="6">
