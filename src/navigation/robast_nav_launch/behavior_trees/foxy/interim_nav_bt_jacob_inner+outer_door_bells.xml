@@ -142,11 +142,19 @@
                             <Action ID="ClearEntireCostmap" name="ClearLocalCostmap-Context" service_name="local_costmap/clear_entirely_local_costmap"/>
                         </ReactiveFallback>
                     </Control>
-                    <ReactiveSequence>
-                        <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
-                        <Condition ID="StateCheck" variable_name="accomplished_inner_door_bell"/>
-                        <Condition ID="StateCheck" variable_name="accomplished_final_goal"/>
-                    </ReactiveSequence>
+                    <Decorator ID="RateController" hz="5">
+                        <Inverter>
+                            <KeepRunningUntilFailure>
+                                <Inverter>
+                                    <ReactiveSequence>
+                                        <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
+                                        <Condition ID="StateCheck" variable_name="accomplished_inner_door_bell"/>
+                                        <Condition ID="StateCheck" variable_name="accomplished_final_goal"/>
+                                    </ReactiveSequence>
+                                </Inverter>
+                            </KeepRunningUntilFailure>
+                        </Inverter>
+                    </Decorator>
                 </Control>
                 <ReactiveFallback name="RecoveryFallback">
                     <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
