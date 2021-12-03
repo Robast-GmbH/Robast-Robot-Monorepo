@@ -69,16 +69,10 @@ class WaypointCreator(Node):
         number_of_rooms = len(map_setup['rooms'])
         for waypoint_index in range(1, num_of_waypoints+1):
             room_number = random.randint(1, number_of_rooms)
-            # Firstly add the door bell of the room as nav goal to the waypoints
-            poi = 'door_bell'
-            waypoint_index_door_bell = (waypoint_index * 2) - 1
-            nav_goal_door_bell = self.get_nav_pose_from_map_setup(room_number, poi, waypoint_index_door_bell, map_setup)
-            waypoints.append(nav_goal_door_bell)
-            # Secondly add the nav goal within the room itself to the waypoints
+            # Add the nav goal within the room itself to the waypoints
             poi = 'center_point'
-            waypoint_index_center_point = (waypoint_index * 2)
             nav_goal_center_point = self.get_nav_pose_from_map_setup(
-                room_number, poi, waypoint_index_center_point, map_setup)
+                room_number, poi, waypoint_index, map_setup)
             waypoints.append(nav_goal_center_point)
         return waypoints
 

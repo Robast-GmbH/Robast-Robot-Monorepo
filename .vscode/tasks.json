@@ -98,14 +98,9 @@
             "problemMatcher": []
         },
         {
-            "label": "default_startup_amcl_interim_poses",
-            "detail": "Starts TipluWorld, Nav, amcl, rviz, interim_poses",
-            "dependsOn": [
-                "start TipluWorld",
-                "start amcl",
-                "start interim_test_nav_without_localization",
-                "start rviz_amcl"
-            ]
+            "label": "default_startup_amcl_door_bells",
+            "detail": "Starts TipluWorld, Nav, amcl, rviz, door_bells",
+            "dependsOn": ["start TipluWorld", "start amcl", "start nav_without_localization_with_door_bells_launch", "start rviz_amcl"],
         },
         {
             "label": "default_startup_amcl_robot_localization",
@@ -211,8 +206,8 @@
         },
         {
             "type": "shell",
-            "label": "start interim_test_nav_without_localization",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch interim_test_nav_without_localization_launch.py",
+            "label": "start nav_without_localization_with_door_bells_launch",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_with_door_bells_launch.py",  
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
@@ -291,15 +286,8 @@
         {
             "label": "waypoint_test_follow_amcl",
             "detail": "Starts TipluWorld, Nav, slam, waypoint test, rviz",
-            "dependsOn": [
-                "start TipluWorld_high_rf",
-                "start keepout_mask",
-                "start amcl",
-                "start nav_without_localization",
-                "start follow_waypoint_test",
-                "start rviz_amcl"
-            ],
-            "problemMatcher": []
+            "dependsOn": ["start TipluWorld_high_rf", "start keepout_mask", "start amcl", "start nav_without_localization_with_door_bells_launch", "start follow_waypoint_test", "start rviz_amcl"],
+            "problemMatcher": [],
         },
         {
             "label": "waypoint_test_follow",

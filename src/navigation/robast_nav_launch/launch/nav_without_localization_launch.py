@@ -1,7 +1,5 @@
 import os
 
-import launch.actions
-import launch_ros.actions
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
@@ -20,9 +18,6 @@ def generate_launch_description():
         default_bt_xml_filename = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_w_replanning_and_recovery.xml')
         nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'), 'config', 'nav2_params.yaml')
-
-    interim_goals_yaml = os.path.join(get_package_share_directory(
-        'robast_nav_interim_goal'), 'config', 'interim_goals.yaml')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
