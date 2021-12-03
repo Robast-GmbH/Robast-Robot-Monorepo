@@ -7,7 +7,7 @@ bool is_path_reversed  # bool, if the path is reversed, which is important for r
 #result
 geometry_msgs/PoseStamped interim_pose
 builtin_interfaces/Duration planning_time
-uint32 waypoint_index  # the waypoint index of the path-waypoints that was closest to the chosen interim pose
+int32 waypoint_index  # the waypoint index of the path-waypoints that was closest to the chosen interim pose
 ---
 #feedback
 std_msgs/Empty feedback

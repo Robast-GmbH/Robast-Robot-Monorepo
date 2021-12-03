@@ -195,13 +195,13 @@ void InterimGoalSelector::send_succeeded_action_result(
   std::shared_ptr<ActionT::Result> result)
 {
   if (goal->is_path_reversed) {
-      result->waypoint_index = waypoint_index_;
-      RCLCPP_INFO(get_logger(), "Found an interim pose on reversed path to goal with x-coordinate %f and y-coordinate %f. The waypoint that was first inside the max_interim_dist_to_path was the one with the index %i!",
-      interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y, waypoint_index_);
-    } else {
       result->waypoint_index = goal->path.poses.size() - waypoint_index_;
+      RCLCPP_INFO(get_logger(), "Found an interim pose on reversed path to goal with x-coordinate %f and y-coordinate %f. The waypoint that was first inside the max_interim_dist_to_path was the one with the index %i!",
+      interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y, result->waypoint_index);
+    } else {
+      result->waypoint_index = waypoint_index_;
       RCLCPP_INFO(get_logger(), "Found an interim pose on path to goal with x-coordinate %f and y-coordinate %f. The waypoint that was first inside the max_interim_dist_to_path was the one with the index %i!",
-      interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y, (goal->path.poses.size() - waypoint_index_));
+      interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y, result->waypoint_index);
     }
 
     result->interim_pose = interim_goals_[0].pose;
