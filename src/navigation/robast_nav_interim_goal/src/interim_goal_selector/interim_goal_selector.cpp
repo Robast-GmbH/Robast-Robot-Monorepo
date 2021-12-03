@@ -95,7 +95,6 @@ void InterimGoalSelector::select_interim_goal()
   interim_goals_.clear();
   for (u_int16_t i = 0; i < goal->poses.size(); i++)
   {
-    RCLCPP_INFO(get_logger(), "Adding interim pose number %i with x-goal %f to interim_goals_", i, goal->poses[i].pose.position.x);
     interim_goal interim_goal;
     interim_goal.pose = goal->poses[i];
     interim_goal.dist_to_final_pose = calculate_euclidean_distance(final_pose.pose.position.x,
@@ -195,7 +194,7 @@ void InterimGoalSelector::send_succeeded_action_result(
   std::shared_ptr<ActionT::Result> result)
 {
   if (goal->is_path_reversed) {
-      result->waypoint_index = goal->path.poses.size() - waypoint_index_;
+      result->waypoint_index = goal->path.poses.size() - waypoint_index_ ;
       RCLCPP_INFO(get_logger(), "Found an interim pose on reversed path to goal with x-coordinate %f and y-coordinate %f. The waypoint that was first inside the max_interim_dist_to_path was the one with the index %i!",
       interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y, result->waypoint_index);
     } else {
