@@ -87,7 +87,7 @@ controller_server:
       vx_samples: 20
       vy_samples: 5
       vtheta_samples: 20
-      sim_time: 2 # The amount of time to forward-simulate trajectories in seconds
+      sim_time: 2.0 # The amount of time to forward-simulate trajectories in seconds
       linear_granularity: 0.05
       angular_granularity: 0.025
       transform_tolerance: 0.2
