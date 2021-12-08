@@ -149,6 +149,13 @@ bool InterimGoalSelector::select_final_interim_goal_on_path(nav_msgs::msg::Path 
         interim_goals_.resize(1);
         interim_goals_[0] = final_interim_goal;
         waypoint_index_ = i;
+        // Mind that the condition of the if statement for this sections is true, as soon as the first pose for waypoint i
+        // is within the circle with radius epsilon_. This can make problems, if the determined waypoints of two paths,
+        // where one of them is reversed, are compared against each other. For example when the robot tries to enter a
+        // room, where the inner and outer door bell are close to each other, it can be the case, that the robot first
+        // navigates to the inner and afterwards to the outer door bell, altough it should be the other way round.
+        // Therefore, subtract a small number from the determined waypoint, that is depended on the circle radius epsilon_
+        waypoint_index_ -= std::round(epsilon_ * 2);
         return true;
       }
     }
@@ -194,7 +201,7 @@ void InterimGoalSelector::send_succeeded_action_result(
   std::shared_ptr<ActionT::Result> result)
 {
   if (goal->is_path_reversed) {
-      result->waypoint_index = goal->path.poses.size() - waypoint_index_ ;
+      result->waypoint_index = goal->path.poses.size() - waypoint_index_;
       RCLCPP_INFO(get_logger(), "Found an interim pose on reversed path to goal with x-coordinate %f and y-coordinate %f. The waypoint that was first inside the max_interim_dist_to_path was the one with the index %i!",
       interim_goals_[0].pose.pose.position.x, interim_goals_[0].pose.pose.position.y, result->waypoint_index);
     } else {
