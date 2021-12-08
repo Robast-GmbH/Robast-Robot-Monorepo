@@ -4,11 +4,7 @@
     <BehaviorTree ID="GoalUpdateSubtree">
         <IfThenElse>
             <Condition ID="RobastGoalUpdated"/>
-            <IfThenElse>
-                <Condition ID="IsIncremented" variable_name="nav_state"/>
-                <AlwaysFailure/>
-                <SetBlackboard output_key="new_goal_pending" value="true"/>
-            </IfThenElse>
+            <SetBlackboard output_key="new_goal_pending" value="true"/>
             <AlwaysFailure/>
         </IfThenElse>
     </BehaviorTree>
@@ -23,7 +19,6 @@
                 <SetBlackboard output_key="accomplished_outer_door_bell" value="false"/>
                 <SetBlackboard output_key="accomplished_inner_door_bell" value="false"/>
                 <SetBlackboard output_key="accomplished_final_goal" value="false"/>
-                <SetBlackboard output_key="nav_state" value="0"/>
             </SequenceStar>
             <Control ID="RecoveryNode" name="NavigateRecovery" number_of_retries="6">
                 <Control ID="PipelineSequence" name="NavigateWithReplanning">
@@ -32,22 +27,20 @@
                             <ReactiveFallback>
                                 <SubTree ID="GoalUpdateSubtree" __shared_blackboard="true"/>
                                 <Condition ID="StateCheck" variable_name="new_goal_pending"/>
-                                <ReactiveSequence>
-                                    <IfThenElse>
-                                        <Condition ID="StateCheck" variable_name="computed_outer_door_bell"/>
-                                        <AlwaysFailure/>
-                                        <Inverter>
-                                            <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
-                                        </Inverter>
-                                    </IfThenElse>
-                                    <IfThenElse>
-                                        <Condition ID="StateCheck" variable_name="computed_inner_door_bell"/>
-                                        <AlwaysFailure/>
-                                        <Inverter>
-                                            <Condition ID="StateCheck" variable_name="accomplished_inner_door_bell"/>
-                                        </Inverter>
-                                    </IfThenElse>
-                                </ReactiveSequence>
+                                <IfThenElse>
+                                    <Condition ID="StateCheck" variable_name="computed_outer_door_bell"/>
+                                    <AlwaysFailure/>
+                                    <Inverter>
+                                        <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
+                                    </Inverter>
+                                </IfThenElse>
+                                <IfThenElse>
+                                    <Condition ID="StateCheck" variable_name="computed_inner_door_bell"/>
+                                    <AlwaysFailure/>
+                                    <Inverter>
+                                        <Condition ID="StateCheck" variable_name="accomplished_inner_door_bell"/>
+                                    </Inverter>
+                                </IfThenElse>
                             </ReactiveFallback>
                             <IfThenElse>
                                 <Action ID="ComputePathToPose" goal="{goal}" path="{path_tmp}" planner_id="GridBased"/>
@@ -62,7 +55,7 @@
                                                 </Decorator>
                                                 <Sequence>
                                                     <IfThenElse>
-                                                        <Condition ID="CompareIntegerA&gt;BCondition" first_integer="wp_id_outer_door_bell" second_integer="wp_id_inner_door_bell"/>
+                                                        <Condition ID="CompareIntegerA>BCondition" first_integer="wp_id_outer_door_bell" second_integer="wp_id_inner_door_bell"/>
                                                         <SetBlackboard output_key="accomplished_inner_door_bell" value="false"/>
                                                         <SetBlackboard output_key="accomplished_inner_door_bell" value="true"/>
                                                     </IfThenElse>
@@ -125,7 +118,6 @@
                                     <Condition ID="StateCheck" variable_name="accomplished_outer_door_bell"/>
                                     <Sequence>
                                         <Action ID="FollowPath" controller_id="FollowPath" path="{path}"/>
-                                        <SetBlackboard output_key="nav_state" value="0"/>
                                         <SetBlackboard output_key="accomplished_final_goal" value="true"/>
                                     </Sequence>
                                     <Sequence>
@@ -134,7 +126,6 @@
                                             <Action ID="FollowPath" controller_id="FollowPath" path="{path_outer_door_bell}"/>
                                         </ReactiveFallback>
                                         <SetBlackboard output_key="accomplished_outer_door_bell" value="true"/>
-                                        <SetBlackboard output_key="nav_state" value="2"/>
                                         <Action ID="Wait" wait_duration="1.5"/>
                                     </Sequence>
                                 </IfThenElse>
@@ -144,7 +135,6 @@
                                         <Action ID="FollowPath" controller_id="FollowPath" path="{path_inner_door_bell}"/>
                                     </ReactiveFallback>
                                     <SetBlackboard output_key="accomplished_inner_door_bell" value="true"/>
-                                    <SetBlackboard output_key="nav_state" value="1"/>
                                     <Action ID="Wait" wait_duration="1.5"/>
                                 </Sequence>
                             </IfThenElse>
@@ -182,113 +172,5 @@
             </Control>
         </SequenceStar>
     </BehaviorTree>
-    <!-- ////////// -->
-    <TreeNodesModel>
-        <Action ID="BackUp">
-            <input_port name="backup_dist">Distance to backup</input_port>
-            <input_port name="backup_speed">Speed at which to backup</input_port>
-        </Action>
-        <Action ID="ClearEntireCostmap">
-            <input_port name="server_timeout" type="std::chrono::duration&lt;long, std::ratio&lt;1l, 1000l&gt; &gt;"/>
-            <input_port name="service_name" type="std::string">please_set_service_name_in_BT_Node</input_port>
-        </Action>
-        <Condition ID="CompareIntegerA&gt;BCondition">
-            <input_port name="first_integer" type="int">BT-Key for the first integer that is compared to the second one</input_port>
-            <input_port name="second_integer" type="int">BT-Key for the second integer that is compared to the first one</input_port>
-        </Condition>
-        <Action ID="ComputePathToPose">
-            <input_port name="goal" type="geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;">Destination to plan to</input_port>
-            <output_port name="path" type="nav_msgs::msg::Path_&lt;std::allocator&lt;void&gt; &gt;">Path created by ComputePathToPose node</output_port>
-            <input_port name="planner_id" type="std::string"/>
-            <input_port name="server_name" type="std::string">Action server name</input_port>
-            <input_port name="server_timeout" type="std::chrono::duration&lt;long, std::ratio&lt;1l, 1000l&gt; &gt;"/>
-        </Action>
-        <Decorator ID="DistanceController">
-            <input_port name="distance">Distance</input_port>
-        </Decorator>
-        <Action ID="FollowPath">
-            <input_port name="controller_id" type="std::string"/>
-            <input_port name="path" type="nav_msgs::msg::Path_&lt;std::allocator&lt;void&gt; &gt;">Path to follow</input_port>
-            <input_port name="server_name" type="std::string">Action server name</input_port>
-            <input_port name="server_timeout" type="std::chrono::duration&lt;long, std::ratio&lt;1l, 1000l&gt; &gt;"/>
-        </Action>
-        <Condition ID="GoalReached">
-            <input_port name="goal">Destination</input_port>
-        </Condition>
-        <SubTree ID="GoalUpdateSubtree">
-            <inout_port name="__shared_blackboard"/>
-        </SubTree>
-        <Condition ID="GoalUpdated"/>
-        <Decorator ID="GoalUpdater">
-            <input_port name="input_goal">Original goal in</input_port>
-            <output_port name="output_goal">Output goal set by subscription</output_port>
-        </Decorator>
-        <Action ID="ImportYamlPosesAction">
-            <output_port name="poses" type="std::vector&lt;geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;, std::allocator&lt;geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt; &gt; &gt;">poses loaded of the yaml</output_port>
-            <input_port name="server_name" type="std::string">Action server name</input_port>
-            <input_port name="server_timeout" type="std::chrono::duration&lt;long, std::ratio&lt;1l, 1000l&gt; &gt;"/>
-            <input_port name="yaml_name" type="std::string">name of the yaml containing poses</input_port>
-        </Action>
-        <Action ID="InterimGoalCompAction">
-            <output_port name="interim_goal" type="geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;">Interim goal selected by the interim_goal_selector node</output_port>
-            <input_port name="interim_poses" type="std::vector&lt;geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt;, std::allocator&lt;geometry_msgs::msg::PoseStamped_&lt;std::allocator&lt;void&gt; &gt; &gt; &gt;">Interim poses list</input_port>
-            <input_port name="is_path_reversed" type="bool">Is the supplied path reversed?</input_port>
-            <input_port name="path" type="nav_msgs::msg::Path_&lt;std::allocator&lt;void&gt; &gt;">Path to Goal</input_port>
-            <input_port name="search_radius" type="double">Radius to search for interim_poses</input_port>
-            <input_port name="server_name" type="std::string">Action server name</input_port>
-            <input_port name="server_timeout" type="std::chrono::duration&lt;long, std::ratio&lt;1l, 1000l&gt; &gt;"/>
-            <output_port name="waypoint_index" type="int">Waypoint index of the path-waypoints that was closest to the chosen interim pose</output_port>
-        </Action>
-        <Condition ID="IsIncremented">
-            <input_port name="variable_name" type="std::string">name of the variable on the blackboard</input_port>
-        </Condition>
-        <Condition ID="IsStuck"/>
-        <Action ID="NavigateToPose">
-            <input_port name="orientation">Orientation</input_port>
-            <input_port name="position">Position</input_port>
-        </Action>
-        <Control ID="PipelineSequence"/>
-        <Action ID="RandomCrawl"/>
-        <Decorator ID="RateController">
-            <input_port name="hz" type="double">Rate</input_port>
-        </Decorator>
-        <Control ID="RecoveryNode">
-            <input_port name="number_of_retries" type="int">Number of retries</input_port>
-        </Control>
-        <Decorator ID="RevertPath">
-            <input_port name="path" type="nav_msgs::msg::Path_&lt;std::allocator&lt;void&gt; &gt;">Path to be reverted</input_port>
-            <output_port name="reverted_path" type="nav_msgs::msg::Path_&lt;std::allocator&lt;void&gt; &gt;">reverted path</output_port>
-        </Decorator>
-        <Condition ID="RobastGoalUpdated"/>
-        <Control ID="RoundRobin"/>
-        <Decorator ID="SpeedController">
-            <input_port name="filter_duration">Duration (secs) for velocity smoothing filter</input_port>
-            <input_port name="max_rate">Maximum rate</input_port>
-            <input_port name="max_speed">Maximum speed</input_port>
-            <input_port name="min_rate">Minimum rate</input_port>
-            <input_port name="min_speed">Minimum speed</input_port>
-        </Decorator>
-        <Action ID="Spin">
-            <input_port name="server_name" type="std::string">Action server name</input_port>
-            <input_port name="server_timeout" type="std::chrono::duration&lt;long, std::ratio&lt;1l, 1000l&gt; &gt;"/>
-            <input_port name="spin_dist" type="double">Spin distance</input_port>
-        </Action>
-        <Condition ID="StateCheck">
-            <input_port name="variable_name" type="std::string">name of the variable (bool) on the blackboard</input_port>
-        </Condition>
-        <Condition ID="TransformAvailable">
-            <input_port name="child">Child frame for transform</input_port>
-            <input_port name="parent">Parent frame for transform</input_port>
-        </Condition>
-        <Condition ID="VariableUpdated">
-            <input_port name="variable_name">name of the int in the Blackboard that should be checked</input_port>
-        </Condition>
-        <Action ID="Wait">
-            <input_port name="server_name" type="std::string">Action server name</input_port>
-            <input_port name="server_timeout" type="std::chrono::duration&lt;long, std::ratio&lt;1l, 1000l&gt; &gt;"/>
-            <input_port name="wait_duration" type="int">Wait time</input_port>
-        </Action>
-    </TreeNodesModel>
-    <!-- ////////// -->
 </root>
 
