@@ -18,6 +18,7 @@ bt_navigator:
     - yaml_poses_import_action_bt_node    #custom
     - compare_integer_condition_bt_node   #custom
     - check_state_condition_bt_node       #custom
+    - is_incremented_condition_bt_node    #custom
     - variable_update_condition_bt_node   #custom
     - robast_goal_updated_condition_bt_node   #custom
     - revert_path_node_decorator_bt_node  #custom

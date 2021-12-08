@@ -27,7 +27,7 @@ namespace nav2_behavior_tree
  * @brief A BT::ConditionNode that returns SUCCESS when goal is
  * updated on the blackboard and FAILURE otherwise
  */
-class VariableUpdatedCondition : public BT::ConditionNode
+class IsIncrementedCondition : public BT::ConditionNode
 {
 public:
   /**
@@ -35,11 +35,11 @@ public:
    * @param condition_name Name for the XML tag for this node
    * @param conf BT node configuration
    */
-  VariableUpdatedCondition(
+  IsIncrementedCondition(
     const std::string & condition_name,
     const BT::NodeConfiguration & conf);
 
-  VariableUpdatedCondition() = delete;
+  IsIncrementedCondition() = delete;
 
   /**
    * @brief The main override required by a BT action
@@ -61,7 +61,7 @@ public:
 
 private:
   std::string _name;
-  std::string _state = "false";
+  int _state = 0;
 };
 
 }  // namespace nav2_behavior_tree
