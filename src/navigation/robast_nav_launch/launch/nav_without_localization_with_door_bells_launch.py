@@ -11,7 +11,7 @@ def generate_launch_description():
 
     if(os.environ['ROS_DISTRO'] == 'galactic'):
         default_bt_xml_filename = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_through_poses_w_replanning_and_recovery.xml')
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'nav_bt_with_door_bells.xml')
         nav2_params_yaml = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'config', 'nav2_params_galactic.yaml')
     else:
@@ -102,7 +102,7 @@ def generate_launch_description():
             output='screen',
             parameters=[
                 nav2_params_yaml,
-                {'default_bt_xml_filename': default_bt_xml_filename},
+                {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
             ],
             remappings=remappings),
 

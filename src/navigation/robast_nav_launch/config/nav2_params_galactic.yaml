@@ -7,7 +7,20 @@ bt_navigator:
     bt_loop_duration: 10 #neu
     default_server_timeout: 20 #neu
     # default_bt_xml_filename: "navigate_w_replanning_and_recovery.xml"
+    enable_groot_monitoring: True
+    pose_groot_publisher_port: 1666
+    pose_groot_server_port: 1667
+    poses_groot_publisher_port: 1668
+    poses_groot_server_port: 1669
     plugin_lib_names:
+      - interim_goal_selector_action_bt_node #custom
+      - yaml_poses_import_action_bt_node    #custom
+      - compare_integer_condition_bt_node   #custom
+      - check_state_condition_bt_node       #custom
+      - is_incremented_condition_bt_node    #custom
+      - variable_update_condition_bt_node   #custom
+      - robast_goal_updated_condition_bt_node   #custom
+      - revert_path_node_decorator_bt_node  #custom
       - nav2_compute_path_to_pose_action_bt_node
       - nav2_compute_path_through_poses_action_bt_node
       - nav2_follow_path_action_bt_node

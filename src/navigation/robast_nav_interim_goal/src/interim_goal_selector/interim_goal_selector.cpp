@@ -196,8 +196,7 @@ bool InterimGoalSelector::is_request_valid(
   }
 
   RCLCPP_INFO(
-    get_logger(), "Received a interim goal computation request for a path with %i poses, %i possible interim goals and search radius %f.",
-    static_cast<int>(goal->path.poses.size()), static_cast<int>(goal->poses.size()), goal->search_radius);
+    get_logger(), "Received a interim goal computation request for a path with %i poses, %i possible interim goals and search radius %f.", static_cast<int>(goal->path.poses.size()), static_cast<int>(goal->poses.size()), goal->search_radius);
   return true;
 }
 
@@ -217,6 +216,7 @@ void InterimGoalSelector::send_succeeded_action_result(
     }
 
     result->interim_pose = interim_goals_[0].pose;
+    result->interim_pose.header.frame_id = "map";
     action_server_->succeeded_current(result);
 }
 
