@@ -124,7 +124,7 @@
         {
             "type": "shell",
             "label": "start keepout_mask",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch navigation mask_server_launch.py",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch mask_server_launch.py",
             "problemMatcher": [],
             "presentation": {
                 "echo": false,  // silence "Executing task ..."
