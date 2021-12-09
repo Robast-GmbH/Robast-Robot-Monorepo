@@ -81,7 +81,9 @@
         "cfenv": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "*.ipp": "cpp",
+        "*.idl": "cpp"
     },
     // Autocomplete from ros python packages
     "python.autoComplete.extraPaths": [
@@ -133,5 +135,6 @@
     ],
     "[python]": {
         "editor.defaultFormatter": "ms-python.python"
-    }
+    },
+    "C_Cpp.default.cppStandard": "c++20"
 }

@@ -1,0 +1,8 @@
+#goal
+string yaml_name
+---
+#result
+geometry_msgs/PoseStamped[] poses
+---
+#feedback
+std_msgs/Empty feedback
