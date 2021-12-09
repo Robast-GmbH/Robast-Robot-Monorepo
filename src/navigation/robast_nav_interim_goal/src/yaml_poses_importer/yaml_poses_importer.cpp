@@ -38,6 +38,9 @@ nav2_util::CallbackReturn YamlPosesImporter::on_activate(const rclcpp_lifecycle:
 
   action_server_->activate();
 
+  // create bond connection
+  createBond();
+
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
@@ -46,6 +49,9 @@ nav2_util::CallbackReturn YamlPosesImporter::on_deactivate(const rclcpp_lifecycl
   RCLCPP_INFO(get_logger(), "Deactivating");
 
   action_server_->deactivate();
+
+  // destroy bond connection
+  destroyBond();
 
   return nav2_util::CallbackReturn::SUCCESS;
 }
