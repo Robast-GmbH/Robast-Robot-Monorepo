@@ -18,8 +18,8 @@ InterimGoalSelector::InterimGoalSelector()
   RCLCPP_INFO(get_logger(), "Creating");
   
   // Declare this node's parameters
-  declare_parameter(param_k_nearest_neighbors);
-  declare_parameter(param_max_interim_dist_to_path);
+  declare_parameter<int>(param_k_nearest_neighbors);
+  declare_parameter<double>(param_max_interim_dist_to_path);
 }
 
 InterimGoalSelector::~InterimGoalSelector()
@@ -39,7 +39,7 @@ nav2_util::CallbackReturn InterimGoalSelector::on_configure(const rclcpp_lifecyc
     get_node_clock_interface(),
     get_node_logging_interface(),
     get_node_waitables_interface(),
-    "interim_goal_selector", std::bind(&InterimGoalSelector::select_interim_goal, this), false);
+    "interim_goal_selector", std::bind(&InterimGoalSelector::select_interim_goal, this));
 
   RCLCPP_INFO(get_logger(), "End of Configuring");
 
@@ -191,7 +191,7 @@ bool InterimGoalSelector::is_request_valid(
 
   RCLCPP_INFO(
     get_logger(), "Received a interim goal computation request for a path with %i poses, %i possible interim goals and search radius %f.",
-    static_cast<int>(goal->path.poses.size()), goal->poses.size(), goal->search_radius);
+    static_cast<int>(goal->path.poses.size()), static_cast<int>(goal->poses.size()), goal->search_radius);
   return true;
 }
 

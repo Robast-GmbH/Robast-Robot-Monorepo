@@ -25,7 +25,7 @@ nav2_util::CallbackReturn YamlPosesImporter::on_configure(const rclcpp_lifecycle
     get_node_clock_interface(),
     get_node_logging_interface(),
     get_node_waitables_interface(),
-    "yaml_poses_importer", std::bind(&YamlPosesImporter::provide_poses, this), false);
+    "yaml_poses_importer", std::bind(&YamlPosesImporter::provide_poses, this));
 
   RCLCPP_INFO(get_logger(), "End of Configuring");
 
@@ -85,7 +85,7 @@ void YamlPosesImporter::provide_poses()
 
   RCLCPP_INFO(
     get_logger(), "Provided list of poses with %i poses!",
-    yaml_filename_by_poses_[poses_yaml_filename].size());
+    static_cast<int>(yaml_filename_by_poses_[poses_yaml_filename].size()));
   result->poses = yaml_filename_by_poses_[poses_yaml_filename];
   action_server_->succeeded_current(result);
 }
@@ -115,8 +115,7 @@ void YamlPosesImporter::load_poses_from_yaml(const std::string poses_yaml_filena
   yaml_path.append("config");
   yaml_path.append(poses_yaml_filename);
 
-  RCLCPP_INFO(
-    get_logger(), "Importing yaml from path" + yaml_path.string());
+  RCLCPP_INFO(get_logger(), "Importing yaml from path %s", yaml_path.string().c_str());
 
   YAML::Node doc = YAML::LoadFile(yaml_path.string());
 
@@ -137,7 +136,7 @@ void YamlPosesImporter::load_poses_from_yaml(const std::string poses_yaml_filena
 
   RCLCPP_INFO(
     get_logger(), "Imported list of poses with %i poses!",
-    yaml_filename_by_poses_[poses_yaml_filename].size());
+    static_cast<int>(yaml_filename_by_poses_[poses_yaml_filename].size()));
 }
 
 } // namespace robast_nav_poses_importer
