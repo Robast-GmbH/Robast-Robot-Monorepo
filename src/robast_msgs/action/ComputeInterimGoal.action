@@ -1,0 +1,13 @@
+#goal
+nav_msgs/Path path  # path to the final goal pose
+geometry_msgs/PoseStamped[] poses  # array of possible interim poses
+float64 search_radius  # radius to search for possible interim poses
+bool is_path_reversed  # bool, if the path is reversed, which is important for result.waypoint_index
+---
+#result
+geometry_msgs/PoseStamped interim_pose
+builtin_interfaces/Duration planning_time
+int32 waypoint_index  # the waypoint index of the path-waypoints that was closest to the chosen interim pose
+---
+#feedback
+std_msgs/Empty feedback
