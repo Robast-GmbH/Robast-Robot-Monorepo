@@ -1006,7 +1006,7 @@
     </sensor>
   </gazebo>
   <joint name="front_rgbd_camera_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.3305 0.0 0.1898"/>
+    <origin rpy="0 0 0" xyz="0.25 0 0.265"/>
     <parent link="base_link"/>
     <child link="front_rgbd_camera_link"/>
   </joint>
@@ -1029,7 +1029,7 @@
     </inertial>
   </link>
   <joint name="front_rgbd_camera_rgb_joint" type="fixed">
-    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0125 0.0150"/>
+    <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
     <parent link="front_rgbd_camera_link"/>
     <child link="front_rgbd_camera_rgb_frame"/>
   </joint>
@@ -1053,7 +1053,7 @@
     </inertial>
   </link>
   <joint name="front_rgbd_camera_depth_joint" type="fixed">
-    <origin rpy="0 0 0" xyz="0.0 0.0375 0.0150"/>
+    <origin rpy="0 0 0" xyz="0.0 0.0 0.0"/>
     <parent link="front_rgbd_camera_link"/>
     <child link="front_rgbd_camera_depth_frame"/>
   </joint>
@@ -1076,42 +1076,6 @@
       <inertia ixx="2.34375e-06" ixy="0" ixz="0" iyy="2.08333333333e-07" iyz="0" izz="2.40208333333e-06"/>
     </inertial>
   </link>
-  <gazebo reference="front_rgbd_camera_link">
-    <sensor name="front_rgbd_camera_depth_sensor" type="depth">
-      <always_on>true</always_on>
-      <update_rate>20.0</update_rate>
-      <camera>
-        <horizontal_fov>1.0471975512</horizontal_fov>
-        <image>
-          <format>R8G8B8</format>
-          <width>640</width>
-          <height>480</height>
-        </image>
-        <clip>
-          <near>0.05</near>
-          <far>3.5</far>
-        </clip>
-      </camera>
-      <plugin filename="libgazebo_ros_openni_kinect.so" name="front_rgbd_camera_controller">
-        <cameraName>front_rgbd_camera</cameraName>
-        <alwaysOn>true</alwaysOn>
-        <updateRate>10</updateRate>
-        <imageTopicName>rgb/image_raw</imageTopicName>
-        <depthImageTopicName>depth/image_raw</depthImageTopicName>
-        <pointCloudTopicName>depth/points</pointCloudTopicName>
-        <cameraInfoTopicName>rgb/camera_info</cameraInfoTopicName>
-        <depthImageCameraInfoTopicName>depth/camera_info</depthImageCameraInfoTopicName>
-        <frameName>/front_rgbd_camera_depth_optical_frame</frameName>
-        <baseline>0.1</baseline>
-        <distortion_k1>0.0</distortion_k1>
-        <distortion_k2>0.0</distortion_k2>
-        <distortion_k3>0.0</distortion_k3>
-        <distortion_t1>0.0</distortion_t1>
-        <distortion_t2>0.0</distortion_t2>
-        <pointCloudCutoff>0.4</pointCloudCutoff>
-      </plugin>
-    </sensor>
-  </gazebo>
   <joint name="imu_joint" type="fixed">
     <axis xyz="1 0 0"/>
     <!--origin xyz="0 0 0.2825"/-->
@@ -1206,49 +1170,4 @@
     <origin rpy="0 0 0" xyz="0.0 0 0.0505"/>
   </joint>
   <link name="top_laser_link"/>
-  <!-- Gazebo requires the robosense_gazebo_plugins package -->
-  <gazebo reference="robosense">
-    <sensor name="robosense-RS16" type="gpu_ray">
-      <pose>0 0 0 0 0 0</pose>
-      <visualize>false</visualize>
-      <update_rate>20</update_rate>
-      <ray>
-        <scan>
-          <horizontal>
-            <samples>900</samples>
-            <resolution>1</resolution>
-            <min_angle>-3.14159265359</min_angle>
-            <max_angle>3.14159265359</max_angle>
-          </horizontal>
-          <vertical>
-            <samples>16</samples>
-            <resolution>1</resolution>
-            <min_angle>-0.261799387799</min_angle>
-            <max_angle> 0.261799387799</max_angle>
-          </vertical>
-        </scan>
-        <range>
-          <min>0.4</min>
-          <max>151.0</max>
-          <resolution>0.001</resolution>
-        </range>
-        <noise>
-          <type>gaussian</type>
-          <mean>0.0</mean>
-          <stddev>0.0</stddev>
-        </noise>
-      </ray>
-      <plugin filename="libgazebo_ros_robosense_gpu_laser.so" name="gazebo_ros_laser_controller">
-        <ros>
-            <remapping>~/out:=scan2</remapping>
-          </ros>
-          <topicName>/top_laser/scan</topicName>
-          <frameName>top_laser_link</frameName>
-          <output_type>sensor_msgs/PointCloud2</output_type>
-          <min_range>0.4</min_range>
-          <max_range>150.0</max_range>
-          <gaussianNoise>0.008</gaussianNoise>
-      </plugin>
-    </sensor>
-  </gazebo>
 </robot>
