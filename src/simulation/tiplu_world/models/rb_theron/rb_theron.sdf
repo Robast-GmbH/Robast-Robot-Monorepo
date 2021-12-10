@@ -204,8 +204,8 @@
           </scan>
           <range>
             <min>0.065</min>
-            <max>40</max>
-            <resolution>0.07</resolution>
+            <max>40.0</max> <!-- 3m protective, 10 warning, 40 measurement -->
+						<resolution>0.07</resolution> <!-- Resolution is configurable 20 mm 30 mm 40 mm 50 mm 60 mm 70 mm 150 mm 200 mm, reglamentary resolution is 70 mm -->
           </range>
           <noise>
             <type>gaussian</type>
@@ -225,7 +225,7 @@
       </sensor>
 
       <sensor name='robosense_16' type='ray'>
-        <visualize>1</visualize>
+        <visualize>0</visualize>
         <update_rate>10</update_rate>
         <ray>
           <scan>
@@ -258,7 +258,7 @@
             <namespace>/robosense</namespace>
             <remapping>~/out:=/robosense_scan</remapping>
           </ros>
-          <frame_name>front_laser_link</frame_name>
+          <frame_name>top_laser_base_link</frame_name>
           <organize_cloud>0</organize_cloud>
           <min_range>0.9</min_range>
           <max_range>130.0</max_range>
@@ -412,7 +412,10 @@
 
              <min_depth>0.001</min_depth>
         </plugin>
-        <pose>0.25 0 0.265 0 -0 0</pose>
+        <!-- ATTENTION! Make sure the displacement specified here in the pose tags is the same displacement,
+        that the frame specified in <frame_name> has the same displacement (which will be definied in the corressponding
+        urdf file) -->
+        <pose>0.25 0 0.265 0 -0 0</pose> 
       </sensor>
     </link>
     <joint name='leftjoint_rsupport' type='revolute'>
