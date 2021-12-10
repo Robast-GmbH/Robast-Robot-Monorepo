@@ -82,7 +82,8 @@
             "dependsOn": [
                 "start TipluWorld",
                 "start slam_toolbox",
-                "start nav_without_localization"
+                "start nav_without_localization",
+                "start rviz"
             ],
             "problemMatcher": []
         },
