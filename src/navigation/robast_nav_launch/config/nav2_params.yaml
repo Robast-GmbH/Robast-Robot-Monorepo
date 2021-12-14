@@ -120,9 +120,9 @@ local_costmap:
       # map_topic: /map
       use_sim_time: True
       rolling_window: true
-      width: 7
+      width: 5
       height: 5
-      resolution: 0.03
+      resolution: 0.025
       footprint: "[ [0.35, 0.30], [0.35, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
       footprint_padding: 0.05
       plugins: ["stvl_layer", "inflation_layer"]
@@ -205,9 +205,9 @@ global_costmap:
       robot_base_frame: base_link
       # map_topic: /map
       use_sim_time: True
-      robot_radius: 0.40
       footprint: "[ [0.35, 0.30], [0.35, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
-      resolution: 0.05
+      footprint_padding: 0.05
+      resolution: 0.025
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "stvl_layer", "inflation_layer"]
       obstacle_layer:
@@ -230,7 +230,7 @@ global_costmap:
         enabled: true
         voxel_decay: 5.
         decay_model: 0
-        voxel_size: 0.05 # It is recommended in RViz to set the PointCloud2 Size to your voxel size
+        voxel_size: 0.025 # It is recommended in RViz to set the PointCloud2 Size to your voxel size
         track_unknown_space: true
         max_obstacle_height: 2.0
         unknown_threshold: 15
@@ -248,7 +248,7 @@ global_costmap:
           topic: /custom_camera/points
           marking: true
           clearing: true
-          obstacle_range: 6.0
+          obstacle_range: 3.0
           min_obstacle_height: 0.1
           max_obstacle_height: 2.0
           expected_update_rate: 0.0

@@ -232,7 +232,7 @@ global_costmap:
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer" # For Foxy and later
         enabled: true
-        voxel_decay: 30.
+        voxel_decay: 5.
         decay_model: 0
         voxel_size: 0.025 # It is recommended in RViz to set the PointCloud2 Size to your voxel size
         track_unknown_space: true
