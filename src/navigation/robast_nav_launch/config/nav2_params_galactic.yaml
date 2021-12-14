@@ -84,7 +84,7 @@ controller_server:
       max_linear_accel: 2.5
       max_linear_decel: 2.5
       lookahead_dist: 1.0
-      min_lookahead_dist: 0.2
+      min_lookahead_dist: 0.3
       max_lookahead_dist: 1.3
       lookahead_time: 1.5
       rotate_to_heading_angular_vel: 1.8
@@ -92,7 +92,7 @@ controller_server:
       use_velocity_scaled_lookahead_dist: true
       min_approach_linear_velocity: 0.05
       use_approach_linear_velocity_scaling: true
-      max_allowed_time_to_collision: 1.3
+      max_allowed_time_to_collision: 1.0
       use_regulated_linear_velocity_scaling: true
       use_cost_regulated_linear_velocity_scaling: false
       regulated_linear_scaling_min_radius: 0.9
