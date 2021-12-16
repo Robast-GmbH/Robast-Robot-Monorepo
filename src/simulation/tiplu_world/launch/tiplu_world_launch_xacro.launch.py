@@ -52,6 +52,8 @@ def generate_launch_description():
                          WORLD_MODEL + '.model')
 
     launch_file_dir = os.path.join(get_package_share_directory('tiplu_world'), 'launch')
+    rb_theron_controller_dir = os.path.join(get_package_share_directory(
+        'rb_theron_description'), 'config', 'rb_theron_controller.yaml')
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
 
     print('world_file_path : {}'.format(world))
@@ -78,6 +80,33 @@ def generate_launch_description():
         ExecuteProcess(
             cmd=['ros2', 'service', 'call', '/spawn_entity', 'gazebo_msgs/SpawnEntity', get_robot_spawn_args()],
             output='screen'),
+
+        # Node(
+        #     package="controller_manager",
+        #     executable="ros2_control_node",
+        #     parameters=[
+        #         {"robot_description": get_robot_xml()},
+        #         {'use_sim_time': use_sim_time},
+        #         rb_theron_controller_dir],
+        #     output={
+        #         "stdout": "screen",
+        #         "stderr": "screen",
+        #     },
+        # ),
+
+        # Node(
+        #     package="controller_manager",
+        #     executable="spawner.py",
+        #     arguments=["diffbot_base_controller"],
+        #     output="screen",
+        # ),
+
+        # Node(
+        #     package="controller_manager",
+        #     executable="spawner.py",
+        #     arguments=["joint_state_broadcaster"],
+        #     output="screen",
+        # ),
 
         Node(
             package="robot_state_publisher",
