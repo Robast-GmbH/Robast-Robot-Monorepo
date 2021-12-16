@@ -109,6 +109,16 @@
             "problemMatcher": []
         },
         {
+            "label": "default_startup_xacro_slam",
+            "detail": "Starts TipluWorld, Nav, slam",
+            "dependsOn": [
+                "start TipluWorld_xacro",
+                "start slam_toolbox",
+                "start nav_without_localization",
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "default_startup_amcl_door_bells",
             "detail": "Starts TipluWorld, Nav, amcl, rviz, door_bells",
             "dependsOn": ["start TipluWorld", "start amcl", "start nav_without_localization_with_door_bells_launch", "start rviz_amcl"],
