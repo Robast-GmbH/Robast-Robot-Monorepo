@@ -131,7 +131,22 @@
         {
             "label": "default_startup_amcl_door_bells",
             "detail": "Starts TipluWorld, Nav, amcl, rviz, door_bells",
-            "dependsOn": ["start TipluWorld", "start amcl", "start nav_without_localization_with_door_bells_launch", "start rviz_amcl"],
+            "dependsOn": [
+                "start TipluWorld",
+                "start amcl",
+                "start nav_without_localization_with_door_bells_launch",
+                "start rviz_amcl"
+            ],
+        },
+        {
+            "label": "default_xacro_startup_amcl_door_bells",
+            "detail": "Starts TipluWorld, Nav, amcl, rviz, door_bells",
+            "dependsOn": [
+                "start TipluWorld_xacro",
+                "start amcl",
+                "start nav_without_localization_with_door_bells_launch",
+                "start rviz_amcl"
+            ],
         },
         {
             "label": "default_startup_amcl_robot_localization",
