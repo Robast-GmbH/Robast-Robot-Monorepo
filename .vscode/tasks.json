@@ -210,7 +210,7 @@
         {
             "type": "shell",
             "label": "start tiplu_sim_high_rf",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch tiplu_world tiplu_world_no_client_high_rtf.launch.py",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch tiplu_world tiplu_world_launch_xacro_high_rtf_launch.py",
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
@@ -364,7 +364,13 @@
         {
             "label": "waypoint_test_follow_amcl",
             "detail": "Starts TipluWorld, Nav, slam, waypoint test, rviz",
-            "dependsOn": ["start TipluWorld_high_rf", "start keepout_mask", "start amcl", "start nav_without_localization_with_door_bells_launch", "start follow_waypoint_test", "start rviz_amcl"],
+            "dependsOn": [
+                "start TipluWorld_high_rf", 
+                "start keepout_mask", 
+                "start amcl", 
+                "start nav_without_localization_with_door_bells_launch", 
+                "start follow_waypoint_test", 
+                "start rviz_amcl"],
             "problemMatcher": [],
         },
         {
