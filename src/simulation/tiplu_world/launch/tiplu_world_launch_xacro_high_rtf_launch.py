@@ -51,7 +51,6 @@ def generate_launch_description():
                          WORLD_MODEL + "_high_rtf" + '.model')
 
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
-
     print('world_file_path : {}'.format(world))
 
     return LaunchDescription([
@@ -59,8 +58,9 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(
                 os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')
             ),
-            launch_arguments={'world': world}.items(),
+            launch_arguments={'world': world, 'extra_gazebo_args': "--lockstep"}.items(),
         ),
+
 
         # IncludeLaunchDescription(
         #     PythonLaunchDescriptionSource(
