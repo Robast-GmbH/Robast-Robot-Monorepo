@@ -238,7 +238,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Best Effort
-        Value: /scan
+        Value: /front_laser/scan
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -449,7 +449,7 @@ Visualization Manager:
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /custom_camera/points
+        Value: /front_realsense_camera_depth_sensor/points
       Use Fixed Frame: true
       Use rainbow: true
       Value: false

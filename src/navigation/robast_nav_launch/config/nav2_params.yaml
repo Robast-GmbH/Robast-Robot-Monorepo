@@ -150,7 +150,7 @@ local_costmap:
         observation_sources: pointcloud scan
         pointcloud:
           data_type: PointCloud2
-          topic: /custom_camera/points
+          topic: /front_realsense_camera_depth_sensor/points
           marking: true
           clearing: true
           obstacle_range: 3.0
@@ -169,7 +169,7 @@ local_costmap:
           model_type: 0
         scan:
           data_type: LaserScan
-          topic: /scan
+          topic: /front_laser/scan
           marking: true
           clearing: true
           obstacle_range: 3.0
@@ -215,7 +215,7 @@ global_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /scan
+          topic: /front_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -245,7 +245,7 @@ global_costmap:
         observation_sources: pointcloud
         pointcloud:
           data_type: PointCloud2
-          topic: /custom_camera/points
+          topic: /front_realsense_camera_depth_sensor/points
           marking: true
           clearing: true
           obstacle_range: 3.0

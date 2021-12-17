@@ -108,6 +108,30 @@
                 "start nav_without_localization_with_door_bells_launch",
                 "start rviz_amcl"
             ],
+            "label": "default_startup_xacro_amcl",
+            "detail": "Starts TipluWorld, Nav, amcl",
+            "dependsOn": [
+                "start TipluWorld_xacro",
+                "start amcl",
+                "start nav_without_localization",
+                "start rviz_amcl"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "default_startup_xacro_slam",
+            "detail": "Starts TipluWorld, Nav, slam",
+            "dependsOn": [
+                "start TipluWorld_xacro",
+                "start slam_toolbox",
+                "start nav_without_localization",
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "default_startup_amcl_door_bells",
+            "detail": "Starts TipluWorld, Nav, amcl, rviz, door_bells",
+            "dependsOn": ["start TipluWorld", "start amcl", "start nav_without_localization_with_door_bells_launch", "start rviz_amcl"],
         },
         {
             "label": "default_startup_amcl_robot_localization",
@@ -158,6 +182,18 @@
         },
         {
             "type": "shell",
+            "label": "start tiplu_sim_xacro",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch tiplu_world tiplu_world_launch_xacro.launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "focus": false,
+                "group": "default_start",
+                "panel": "dedicated"
+            }
+        },
+        {
+            "type": "shell",
             "label": "start tiplu_sim_high_rf",
             "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch tiplu_world tiplu_world_no_client_high_rtf.launch.py",
             "problemMatcher": [],
@@ -173,6 +209,15 @@
             "detail": "TipluWorld with rosboard on 8888",
             "dependsOn": [
                 "start tiplu_sim",
+                "start rosboard"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "start TipluWorld_xacro",
+            "detail": "TipluWorld_xacro with rosboard on 8888",
+            "dependsOn": [
+                "start tiplu_sim_xacro",
                 "start rosboard"
             ],
             "problemMatcher": []
