@@ -11,7 +11,7 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
     # Get the launch directory
-    costmap_filters_demo_dir = get_package_share_directory('robast_nav_launch')
+    costmap_filters_dir = get_package_share_directory('robast_nav_launch')
 
     # Create our own temporary YAML files that include substitutions
     lifecycle_nodes = ['filter_mask_server', 'costmap_filter_info_server']
@@ -40,12 +40,12 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(costmap_filters_demo_dir, 'masks', 'tiplu_fast_lane_params.yaml'),
+        default_value=os.path.join(costmap_filters_dir, 'masks', 'tiplu_fast_lane_params.yaml'),
         description='Full path to the ROS 2 parameters file to use')
 
     declare_mask_yaml_file_cmd = DeclareLaunchArgument(
         'mask',
-        default_value=os.path.join(costmap_filters_demo_dir, 'masks', 'tiplu_fast_lane_mask.yaml'),
+        default_value=os.path.join(costmap_filters_dir, 'masks', 'tiplu_fast_lane_mask.yaml'),
         description='Full path to filter mask yaml file to load')
 
     # Make re-written yaml
