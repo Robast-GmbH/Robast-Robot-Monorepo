@@ -98,6 +98,27 @@
             "problemMatcher": []
         },
         {
+            "label": "default_startup_amcl_with_mapping",
+            "detail": "Starts TipluWorld, Nav, amcl",
+            "dependsOn": [
+                "start TipluWorld",
+                "start amcl",
+                "start keepout_mask",
+                "start nav_without_localization",
+                "start rviz_amcl",
+                "start slam_mapping"
+            ],
+        },
+        {
+            "label": "default_startup_amcl_door_bell",
+            "detail": "Starts TipluWorld, Nav, amcl",
+            "dependsOn": [
+                "start TipluWorld",
+                "start amcl",
+                "start keepout_mask",
+                "start nav_without_localization_with_door_bells_launch",
+                "start rviz_amcl"
+            ],
             "label": "default_startup_xacro_amcl",
             "detail": "Starts TipluWorld, Nav, amcl",
             "dependsOn": [
@@ -272,8 +293,19 @@
         },
         {
             "type": "shell",
+            "label": "start slam_mapping",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch slam_with_amcl_launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "focus": true,
+                "group": "default_start",
+            }
+        },
+        {
+            "type": "shell",
             "label": "start amcl",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch amcl_launch.py; ros2 launch robast_nav_launch nav_without_localization_launch.py",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch amcl_launch.py",
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
