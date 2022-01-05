@@ -54,7 +54,7 @@ def generate_launch_description():
 
     declare_slam_posegraph_file_cmd = DeclareLaunchArgument(
         'slam_posegraph',
-        default_value=os.path.join(robast_nav_launch_dir, 'maps', "test"),
+        default_value=os.path.join(robast_nav_launch_dir, 'maps', "5OG"),
         description='Full path to the slam_toolbox posegraph map file to use')
 
     # declare_robot_start_pose_cmd = DeclareLaunchArgument(
@@ -70,7 +70,7 @@ def generate_launch_description():
 
     declare_slam_map_topic_cmd = DeclareLaunchArgument(
         'slam_map_topic',
-        default_value='/slam_map',
+        default_value='/map',
         description='Name of the occupancy grid topic e.g. /map'
     )
 
@@ -86,9 +86,13 @@ def generate_launch_description():
         description='kind of slam toolbox node'
     )
 
+    # print('map_file_posegraph: {}'.format(slam_posegraph))
+    # print('map_file_posegraph: {}'.format(declare_slam_posegraph_file_cmd))
+
     # Make re-written yaml
     param_substitutions = {
-        'map_file_name': slam_posegraph,
+        'namespace': namespace,
+        # 'map_file_name': slam_posegraph,
         'use_sim_time': use_sim_time,
         'mode': slam_mode,
         'map_name': slam_map_topic,
@@ -107,6 +111,7 @@ def generate_launch_description():
         output='screen',
         parameters=[
             configured_params,
+            {'map_file_name': slam_posegraph},
             {'map_start_pose': [float(POSE_INIT_X), float(POSE_INIT_Y), 3.14]}
         ]
     )
@@ -141,7 +146,4 @@ def generate_launch_description():
     # nodes
     ld.add_action(start_lifecycle_manager_cmd)
     ld.add_action(start_slam_toolbox_cmd)
-
-    print('map_file_posegraph: {}'.format(slam_posegraph))
-
     return ld
