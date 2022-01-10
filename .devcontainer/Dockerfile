@@ -55,6 +55,8 @@ RUN apt-get update && apt-get install -y \
   libdw-dev \
   #dos2unix \
   wget \
+  # General ros stuff
+  ros-${ROS_DISTRO}-xacro \
   # Install ros distro testing packages
   ros-${ROS_DISTRO}-ament-lint \
   ros-${ROS_DISTRO}-launch-testing \
