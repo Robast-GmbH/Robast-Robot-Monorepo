@@ -56,17 +56,18 @@ void MapCombine::slam_map_subscriber(const nav_msgs::msg::OccupancyGrid::SharedP
         // updateSlamMap(msg);
         _slam_map = msg;
         // mapCombination();
+        RCLCPP_DEBUG(this->get_logger(), "Received new slam map");
 }
 
 void MapCombine::base_map_subscriber(const nav_msgs::msg::OccupancyGrid::SharedPtr msg)
 {
         _base_map = msg;
-        RCLCPP_INFO(this->get_logger(), "Received new base map");
+        RCLCPP_DEBUG(this->get_logger(), "Received new base map");
 }
 
 void MapCombine::updateSlamMap(const nav_msgs::msg::OccupancyGrid::SharedPtr map)
 {
-        RCLCPP_INFO(this->get_logger(), "recieved map update");
+        RCLCPP_DEBUG(this->get_logger(), "recieved map update");
         // std::lock_guard<std::mutex> lock(subscription.mutex);
   
         // ros2 header .stamp don't support > operator, we need to create them explicitly
@@ -79,7 +80,7 @@ void MapCombine::updateSlamMap(const nav_msgs::msg::OccupancyGrid::SharedPtr map
         }
         std::lock_guard<std::mutex> lock(_pipeline_mutex);
         _slam_map = map;
-        RCLCPP_INFO(this->get_logger(), "Slam map updated successfully");
+        RCLCPP_DEBUG(this->get_logger(), "Slam map updated successfully");
 }
 
 void pose_to_transform(geometry_msgs::msg::Transform* transform, geometry_msgs::msg::Pose* pose)
@@ -119,12 +120,12 @@ void MapCombine::mapCombination(){
         if(!_base_map)
         {
                 std::cout << "no base map" << std::endl;
-                RCLCPP_INFO(this->get_logger(), "no base map for combination");
+                RCLCPP_DEBUG(this->get_logger(), "no base map for combination");
         }
         if(!_slam_map)
         {
                 std::cout << "no slam map" << std::endl;
-                RCLCPP_INFO(this->get_logger(), "no SLAM map for combination");
+                RCLCPP_DEBUG(this->get_logger(), "no SLAM map for combination");
 
         }
 
@@ -146,7 +147,7 @@ void MapCombine::mapCombination(){
         }
 
         // RCLCPP_DEBUG(logger_, "all maps merged, publishing");
-        RCLCPP_INFO(this->get_logger(), "all maps merged, publishing");
+        RCLCPP_DEBUG(this->get_logger(), "all maps merged, publishing");
         auto now = this->now();
         merged_map->info.map_load_time = now;
         merged_map->header.stamp = now;
