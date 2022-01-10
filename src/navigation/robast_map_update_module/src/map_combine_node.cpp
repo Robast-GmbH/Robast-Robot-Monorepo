@@ -13,7 +13,7 @@ MapCombine::MapCombine(): Node("map_combine_node")
 {
         
         using std::placeholders::_1;
-        _merging_rate = 0.5;
+        _merging_rate = 0.1;
 
         auto qos = rclcpp::QoS(rclcpp::KeepLast(1)).transient_local().best_effort();
 
@@ -37,8 +37,8 @@ MapCombine::MapCombine(): Node("map_combine_node")
         _map_merging_timer = this->create_wall_timer(
                 std::chrono::milliseconds((uint16_t)(1000.0 / _merging_rate)),
                 [this]() { mapCombination(); });
+        
         _map_merging_timer->execute_callback();
-
         // For topicSubscribing() we need to spin briefly for the discovery to happen
         rclcpp::Rate r(100);
         int i = 0;

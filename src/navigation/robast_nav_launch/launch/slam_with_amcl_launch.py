@@ -46,7 +46,7 @@ def generate_launch_description():
 
     declare_slam_executable_cmd = DeclareLaunchArgument(
         'slam_executable',
-        default_value='async_slam_toolbox_node',
+        default_value='sync_slam_toolbox_node',
         description='kind of slam toolbox node'
     )
 
