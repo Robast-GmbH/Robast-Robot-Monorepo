@@ -67,11 +67,23 @@ def generate_launch_description():
         # 'namespace': 'slam'
     }.items()
 
+    amcl_arguments = {
+        'map_server_map_topic': 'base_map'
+        # 'namespace': 'amcl'
+    }.items()
+
+    start_parallel_mapping = Node(
+        package='robast_map_update_module',
+        executable='map_combine_node',
+        name='map_combine_node',
+        output='screen',
+    )
+
     slam_base_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(slam_base_launch_file), launch_arguments=slam_arguments)
 
     amcl_base_launch = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(amcl_base_launch_file))
+        PythonLaunchDescriptionSource(amcl_base_launch_file),  launch_arguments=amcl_arguments)
 
     ld = LaunchDescription()
 
@@ -83,7 +95,8 @@ def generate_launch_description():
     ld.add_action(declare_amcl_toolbox_params_file_cmd)
 
     # import other launch files
-    # ld.add_action(amcl_base_launch)
+    ld.add_action(start_parallel_mapping)
+    ld.add_action(amcl_base_launch)
     ld.add_action(slam_base_launch)
 
     return ld
