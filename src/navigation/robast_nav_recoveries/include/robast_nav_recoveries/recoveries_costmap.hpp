@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ROBAST_NAV_RECOVERIES__INTERIM_GOAL_HPP_
-#define ROBAST_NAV_RECOVERIES__INTERIM_GOAL_HPP_
+#ifndef ROBAST_NAV_RECOVERIES__RECOVERIES_COSTMAP_HPP_
+#define ROBAST_NAV_RECOVERIES__RECOVERIES_COSTMAP_HPP_
 
 #include <memory>
 #include <string>
@@ -80,7 +80,8 @@ protected:
 
   std::shared_ptr<nav2_costmap_2d::Costmap2DROS> costmap_ros_;
   std::unique_ptr<nav2_util::NodeThread> costmap_thread_;
+  std::string costmap_namespace_;
 };
 }  // namespace robast_nav_recoveries
 
-#endif  // ROBAST_NAV_RECOVERIES__INTERIM_GOAL_HPP_
+#endif  // ROBAST_NAV_RECOVERIES__RECOVERIES_COSTMAP_HPP_

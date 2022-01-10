@@ -30,11 +30,17 @@ RecoveriesCostmap::RecoveriesCostmap()
 {
   RCLCPP_INFO(get_logger(), "Creating recoveries costmap");
 
+  declare_parameter("costmap_namespace", rclcpp::ParameterValue(std::string("recoveries_costmap")));
+
+  get_parameter("costmap_namespace", costmap_namespace_);
+
+  RCLCPP_INFO(get_logger(), "costmap_namespace: %s", costmap_namespace_.c_str());
+
   costmap_ros_ = std::make_shared<nav2_costmap_2d::Costmap2DROS>(
-    "recoveries_costmap", std::string{get_namespace()}, "recoveries_costmap");
+    costmap_namespace_, std::string{get_namespace()}, costmap_namespace_);
 
   // Launch a thread to run the costmap node
-  costmap_thread_ = std::make_unique<nav2_util::NodeThread>(costmap_ros_);
+  costmap_thread_ = std::make_unique<nav2_util::NodeThread>(costmap_ros_);  
 }
 
 RecoveriesCostmap::~RecoveriesCostmap()
