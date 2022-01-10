@@ -85,9 +85,9 @@ void MapCombine::updateSlamMap(const nav_msgs::msg::OccupancyGrid::SharedPtr map
 void pose_to_transform(geometry_msgs::msg::Transform* transform, geometry_msgs::msg::Pose* pose)
 {
         // transform->rotation = pose->orientation;
-        transform->translation.x = 0.0;
-        transform->translation.y = -16.62;
-        transform->translation.z = 0;
+        transform->translation.x = pose->position.x;
+        transform->translation.y = pose->position.y;
+        transform->translation.z = pose->position.z;
 }
 
 void MapCombine::mapCombination(){
@@ -151,9 +151,14 @@ void MapCombine::mapCombination(){
         merged_map->info.map_load_time = now;
         merged_map->header.stamp = now;
         merged_map->header.frame_id = "map";
-        merged_map->info.origin.position.x = 0.0;
-        merged_map->info.origin.position.y = -16.62626;
-        merged_map->info.origin.position.z = 0.0;
+
+        // TODO fix cheat weil transform irgendwie nicht wie gewollt
+        if(_base_map)
+        {
+                merged_map->info.origin.position.x = _base_map->info.origin.position.x;
+                merged_map->info.origin.position.y = _base_map->info.origin.position.y;
+                merged_map->info.origin.position.z = _base_map->info.origin.position.z;
+        }
 
         _combined_map = merged_map;
         // rcpputils::assert_true(merged_map->info.resolution > 0.f);
