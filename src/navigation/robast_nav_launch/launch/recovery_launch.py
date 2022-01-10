@@ -13,13 +13,14 @@ def generate_launch_description():
         recovery_params_yaml = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'config', 'recovery_params.yaml')
     else:
-        recovery_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'), 'config', 'recovery_params.yaml')
+        recovery_params_yaml = os.path.join(get_package_share_directory(
+            'robast_nav_launch'), 'config', 'recovery_params.yaml')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
 
     lifecycle_nodes = [
-        'nav2_costmap_2d',
+        'recoveries_costmap',
         'recoveries_server',
     ]
 
@@ -45,9 +46,9 @@ def generate_launch_description():
             description='Automatically startup the nav2 stack'),
 
         Node(
-            package='nav2_costmap_2d',
-            executable='nav2_costmap_2d',
-            name='nav2_costmap_2d',
+            package='robast_nav_recoveries',
+            executable='recoveries_costmap',
+            name='recoveries_costmap',
             output='screen',
             parameters=[recovery_params_yaml],
             remappings=remappings),
