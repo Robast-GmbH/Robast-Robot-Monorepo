@@ -19,7 +19,7 @@ class WaypointCreator(Node):
     def __init__(self):
         super().__init__('waypoint_creator')
 
-        time.sleep(10)  # Sleep for some seconds to make sure gazebo and other stuff is started
+        time.sleep(20)  # Sleep for some seconds to make sure gazebo and other stuff is started
 
         self.declare_parameter('num_of_waypoints', 9)
         num_of_waypoints = self.get_parameter('num_of_waypoints').get_parameter_value().integer_value
