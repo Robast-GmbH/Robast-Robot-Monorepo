@@ -23,6 +23,8 @@ struct MapSubscription {
   // also protects reads and writes of shared_ptrs
   std::mutex mutex;
 
+
+
   geometry_msgs::msg::Transform initial_pose;
   nav_msgs::msg::OccupancyGrid::SharedPtr writable_map;
   nav_msgs::msg::OccupancyGrid::ConstSharedPtr readonly_map;
@@ -33,27 +35,36 @@ struct MapSubscription {
   rclcpp::Subscription<map_msgs::msg::OccupancyGridUpdate>::SharedPtr map_updates_sub;
 };
 
-class map_combine : public rclcpp::Node
+class MapCombine : public rclcpp::Node
 {
 public:
 
-        map_combine();
-        ~map_combine();
+        MapCombine();
 
 private:
+        double _merging_rate;
+        
         // map subscriber
         rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr _slam_map_getter;
         rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr _base_map_getter;
+        rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr _merged_map_publisher;
+        rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr _debug_base_map_publisher;
 
         combine_grids::MergingPipeline _pipeline;
         std::mutex _pipeline_mutex;
-        //muss vektor sein, damit ich "combine_grids" nutzen kann. hätte ich lieber als struckt oder 2 seperate variablen
-        std::vector<nav_msgs::msg::OccupancyGrid::SharedPtr> _maps;
+
         nav_msgs::msg::OccupancyGrid::SharedPtr _slam_map;
         nav_msgs::msg::OccupancyGrid::SharedPtr _base_map;
+        nav_msgs::msg::OccupancyGrid::SharedPtr _combined_map;
+        rclcpp::TimerBase::SharedPtr _map_merging_timer;
 
-        void slam_map_subscriber(const nav_msg::::SharedPtr msg);
-        void base_map_subscriber(const nav_msg::::SharedPtr msg);
+
+        void slam_map_subscriber(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+        void base_map_subscriber(const nav_msgs::msg::OccupancyGrid::SharedPtr msg);
+
+
+        void updateSlamMap(const nav_msgs::msg::OccupancyGrid::SharedPtr map);
+        void mapCombination();
 
 
 };
