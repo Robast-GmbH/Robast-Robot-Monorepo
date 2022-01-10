@@ -80,7 +80,7 @@
             "label": "default_startup",
             "detail": "Starts TipluWorld, Nav, slam",
             "dependsOn": [
-                "start TipluWorld",
+                "start TipluWorld_xacro",
                 "start slam_toolbox",
                 "start nav_without_localization",
                 "start rviz"
@@ -91,35 +91,27 @@
             "label": "default_startup_amcl",
             "detail": "Starts TipluWorld, Nav, amcl",
             "dependsOn": [
-                "start TipluWorld",
+                "start TipluWorld_xacro",
                 "start amcl",
                 "start keepout_mask",
                 "start nav_without_localization",
                 "start rviz_amcl"
-            ],
+            ]
         },
         {
             "label": "default_startup_amcl_with_mapping",
             "detail": "Starts TipluWorld, Nav, amcl",
             "dependsOn": [
-                "start TipluWorld",
-                "start amcl",
+                "start TipluWorld_xacro",
+                // "start amcl",
                 "start keepout_mask",
                 "start nav_without_localization",
                 "start rviz_amcl",
-                "start slam_mapping"
+                "start amcl_with_slam_mapping"
             ],
+            "problemMatcher": []
         },
         {
-            "label": "default_startup_amcl_door_bell",
-            "detail": "Starts TipluWorld, Nav, amcl",
-            "dependsOn": [
-                "start TipluWorld",
-                "start amcl",
-                "start keepout_mask",
-                "start nav_without_localization_with_door_bells_launch",
-                "start rviz_amcl"
-            ],
             "label": "default_startup_xacro_amcl",
             "detail": "Starts TipluWorld, Nav, amcl",
             "dependsOn": [
@@ -147,12 +139,12 @@
             "label": "default_startup_amcl_door_bells",
             "detail": "Starts TipluWorld, Nav, amcl, rviz, door_bells",
             "dependsOn": [
-                "start TipluWorld",
+                "start TipluWorld_xacro",
                 "start amcl",
                 "start keepout_mask",
                 "start nav_without_localization_with_door_bells_launch",
                 "start rviz_amcl"
-            ],
+            ]
         },
         {
             "label": "default_xacro_startup_amcl_door_bells",
@@ -163,13 +155,13 @@
                 "start keepout_mask",
                 "start nav_without_localization_with_door_bells_launch",
                 "start rviz_amcl"
-            ],
+            ]
         },
         {
             "label": "default_startup_amcl_robot_localization",
             "detail": "Starts TipluWorld, Nav, amcl, robot_localization",
             "dependsOn": [
-                "start TipluWorld",
+                "start TipluWorld_xacro",
                 "start amcl",
                 "start keepout_mask",
                 "start nav_without_localization",
@@ -184,9 +176,9 @@
             "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch mask_server_launch.py",
             "problemMatcher": [],
             "presentation": {
-                "echo": false,  // silence "Executing task ..."
+                "echo": false,
                 "focus": false,
-                "group": "default_start",  
+                "group": "default_start"
             }
         },
         {
@@ -208,7 +200,7 @@
             "presentation": {
                 "echo": false,
                 "focus": false,
-                "group": "default_start",
+                "group": "default_start"
             }
         },
         {
@@ -219,7 +211,7 @@
             "presentation": {
                 "echo": false,
                 "focus": false,
-                "group": "default_start",
+                "group": "default_start"
             }
         },
         {
@@ -230,17 +222,8 @@
             "presentation": {
                 "echo": false,
                 "focus": false,
-                "group": "default_start",
+                "group": "default_start"
             }
-        },
-        {
-            "label": "start TipluWorld",
-            "detail": "TipluWorld with rosboard on 8888",
-            "dependsOn": [
-                "start tiplu_sim",
-                "start rosboard"
-            ],
-            "problemMatcher": []
         },
         {
             "label": "start TipluWorld_xacro",
@@ -268,7 +251,7 @@
             "presentation": {
                 "echo": false,
                 "focus": true,
-                "group": "default_start",
+                // "group": "default_start"
             }
         },
         {
@@ -279,7 +262,7 @@
             "presentation": {
                 "echo": false,
                 "focus": true,
-                "group": "default_start",
+                // "group": "default_start"
             }
         },
         {
@@ -290,18 +273,18 @@
             "presentation": {
                 "echo": false,
                 "focus": true,
-                "group": "default_start",
+                // "group": "default_start"
             }
         },
         {
             "type": "shell",
             "label": "start nav_without_localization_with_door_bells_launch",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_with_door_bells_launch.py",  
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_with_door_bells_launch.py",
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
                 "focus": true,
-                "group": "default_start",
+                // "group": "default_start"
             }
         },
         {
@@ -312,18 +295,18 @@
             "presentation": {
                 "echo": false,
                 "focus": true,
-                "group": "default_start",
+                // "group": "default_start"
             }
         },
         {
             "type": "shell",
-            "label": "start slam_mapping",
+            "label": "start amcl_with_slam_mapping",
             "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch slam_with_amcl_launch.py",
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
                 "focus": true,
-                "group": "default_start",
+                // "group": "default_start"
             }
         },
         {
@@ -334,7 +317,7 @@
             "presentation": {
                 "echo": false,
                 "focus": true,
-                "group": "default_start",
+                // "group": "default_start"
             }
         },
         {
@@ -345,7 +328,7 @@
             "presentation": {
                 "echo": false,
                 "focus": true,
-                "group": "default_start",
+                // "group": "default_start"
             }
         },
         {
@@ -369,6 +352,16 @@
             "problemMatcher": []
         },
         {
+            "label": "waypoint_amcl_with_mapping_test",
+            "detail": "Starts TipluWorld, Nav, slam, waypoint test",
+            "dependsOrder": "sequence",
+            "dependsOn": [
+                "build tests",
+                "waypoint_amcl_with_mapping_test_base"
+            ],
+            "problemMatcher": []
+        },
+        {
             "type": "shell",
             "label": "build tests",
             "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; colcon build --symlink-install --packages-select testing_tools",
@@ -383,13 +376,14 @@
             "label": "waypoint_test_follow_amcl",
             "detail": "Starts TipluWorld, Nav, slam, waypoint test, rviz",
             "dependsOn": [
-                "start TipluWorld_high_rf", 
-                "start keepout_mask", 
-                "start amcl", 
-                "start nav_without_localization_with_door_bells_launch", 
-                "start follow_waypoint_test", 
-                "start rviz_amcl"],
-            "problemMatcher": [],
+                "start TipluWorld_high_rf",
+                "start keepout_mask",
+                "start amcl",
+                "start nav_without_localization_with_door_bells_launch",
+                "start follow_waypoint_test",
+                "start rviz_amcl"
+            ],
+            "problemMatcher": []
         },
         {
             "label": "waypoint_test_follow",
@@ -405,6 +399,19 @@
             "problemMatcher": []
         },
         {
+            "label": "waypoint_amcl_with_mapping_test_base",
+            "detail": "starts the stack with live mapping",
+            "dependsOn": [
+                "start TipluWorld_high_rf",
+                "start keepout_mask",
+                "start amcl_with_slam_mapping",
+                "start nav_without_localization_with_door_bells_launch",
+                "start follow_waypoint_test",
+                "start rviz_amcl"
+            ],
+            "problemMatcher": []
+        },
+        {
             "type": "shell",
             "label": "start nav_without_localization_with_map_buffer",
             "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_with_map_buffer_launch.py",
@@ -412,7 +419,7 @@
             "presentation": {
                 "echo": false,
                 "focus": true,
-                "group": "waypoint_testing",
+                "group": "waypoint_testing"
             }
         },
         {
@@ -423,7 +430,7 @@
             "presentation": {
                 "echo": false,
                 "focus": false,
-                "group": "waypoint_testing",
+                "group": "waypoint_testing"
             }
         },
         {
