@@ -14,7 +14,6 @@ recoveries_costmap:
       footprint_padding: 0.05
       resolution: 0.025
       plugins: ["stvl_layer", "inflation_layer"]
-      filters: ["keepout_filter"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
@@ -94,10 +93,6 @@ recoveries_costmap:
           horizontal_fov_angle: 1.048
           decay_acceleration: 15.0
           model_type: 0
-      keepout_filter:
-        plugin: "nav2_costmap_2d::KeepoutFilter"
-        enabled: True
-        filter_info_topic: "/costmap_filter_info"
       static_layer:
         map_subscribe_transient_local: True
       always_send_full_costmap: True
