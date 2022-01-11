@@ -125,7 +125,7 @@ local_costmap:
       height: 5
       resolution: 0.025
       footprint: "[ [0.35, 0.30], [0.35, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
-      footprint_padding: 0.05
+      footprint_padding: 0.025
       plugins: ["stvl_layer", "inflation_layer"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
@@ -207,7 +207,7 @@ global_costmap:
       # map_topic: /map
       use_sim_time: True
       footprint: "[ [0.35, 0.30], [0.35, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
-      footprint_padding: 0.05
+      footprint_padding: 0.025
       resolution: 0.025
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "stvl_layer", "inflation_layer"]
