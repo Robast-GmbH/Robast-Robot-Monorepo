@@ -5,6 +5,8 @@ from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch.actions import IncludeLaunchDescription
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
@@ -14,10 +16,17 @@ def generate_launch_description():
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_through_poses_w_replanning_and_recovery.xml')
         nav2_params_yaml = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'config', 'nav2_params_galactic.yaml')
+        recoveries_params_yaml = os.path.join(get_package_share_directory(
+            'robast_nav_launch'), 'config', 'recoveries_params.yaml')
     else:
         default_bt_xml_filename = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_w_replanning_and_recovery.xml')
         nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'), 'config', 'nav2_params.yaml')
+        recoveries_params_yaml = os.path.join(get_package_share_directory(
+            'robast_nav_launch'), 'config', 'recoveries_params.yaml')
+
+    robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
+    recoveries_launch_file = os.path.join(robast_nav_launch_dir, 'launch', 'recoveries_launch.py')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
@@ -25,7 +34,6 @@ def generate_launch_description():
     lifecycle_nodes = [
         'controller_server',
         'planner_server',
-        'recoveries_server',
         'bt_navigator',
         'waypoint_follower',
     ]
@@ -39,70 +47,86 @@ def generate_launch_description():
     remappings = [('/tf', 'tf'),
                   ('/tf_static', 'tf_static')]
 
-    return LaunchDescription([
-        # Set env var to print messages to stdout immediately
-        SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'),
+    declare_use_sim_time_cmd = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='Use simulation (Gazebo) clock if true')
 
-        DeclareLaunchArgument(
-            'use_sim_time', default_value='true',
-            description='Use simulation (Gazebo) clock if true'),
+    declare_autostart_cmd = DeclareLaunchArgument(
+        'autostart',
+        default_value='true',
+        description='Automatically startup the nav2 stack')
 
-        DeclareLaunchArgument(
-            'autostart', default_value='true',
-            description='Automatically startup the nav2 stack'),
+    start_controller_cmd = Node(
+        package='nav2_controller',
+        executable='controller_server',
+        output='screen',
+        parameters=[nav2_params_yaml,
+                    {"map_topic": '/map'}
+                    ],
+        remappings=remappings)
 
-        Node(
-            package='nav2_controller',
-            executable='controller_server',
-            output='screen',
-            parameters=[nav2_params_yaml,
-                        {"map_topic": '/map'}
-                        ],
-            remappings=remappings),
+    start_planner_cmd = Node(
+        package='nav2_planner',
+        executable='planner_server',
+        name='planner_server',
+        output='screen',
+        parameters=[nav2_params_yaml,
+                    {"map_topic": '/map'}],
+        remappings=remappings)
 
-        Node(
-            package='nav2_planner',
-            executable='planner_server',
-            name='planner_server',
-            output='screen',
-            parameters=[nav2_params_yaml,
-                        {"map_topic": '/map'}],
-            remappings=remappings),
+    start_bt_navigator_cmd = Node(
+        package='nav2_bt_navigator',
+        executable='bt_navigator',
+        name='bt_navigator',
+        output='screen',
+        parameters=[
+            nav2_params_yaml,
+            {'default_bt_xml_filename': default_bt_xml_filename},
+        ],
+        remappings=remappings)
 
-        Node(
-            package='nav2_recoveries',
-            executable='recoveries_server',
-            name='recoveries_server',
-            output='screen',
-            parameters=[nav2_params_yaml],
-            remappings=remappings),
+    start_waypoint_follower_cmd = Node(
+        package='nav2_waypoint_follower',
+        executable='waypoint_follower',
+        name='waypoint_follower',
+        output='screen',
+        parameters=[nav2_params_yaml],
+        remappings=remappings)
 
-        Node(
-            package='nav2_bt_navigator',
-            executable='bt_navigator',
-            name='bt_navigator',
-            output='screen',
-            parameters=[
-                nav2_params_yaml,
-                {'default_bt_xml_filename': default_bt_xml_filename},
-            ],
-            remappings=remappings),
+    start_lifecycle_manager_cmd = Node(
+        package='nav2_lifecycle_manager',
+        executable='lifecycle_manager',
+        name='lifecycle_manager_navigation',
+        output='screen',
+        parameters=[{'use_sim_time': use_sim_time},
+                    {'autostart': autostart},
+                    {'node_names': lifecycle_nodes}])
 
-        Node(
-            package='nav2_waypoint_follower',
-            executable='waypoint_follower',
-            name='waypoint_follower',
-            output='screen',
-            parameters=[nav2_params_yaml],
-            remappings=remappings),
+    recoveries_arguments = {
+        'use_sim_time': use_sim_time,
+        'autostart': autostart,
+        'costmap_namespace': 'recoveries_costmap',
+        'recoveries_params_file': recoveries_params_yaml,
+    }.items()
 
-        Node(
-            package='nav2_lifecycle_manager',
-            executable='lifecycle_manager',
-            name='lifecycle_manager_navigation',
-            output='screen',
-            parameters=[{'use_sim_time': use_sim_time},
-                        {'autostart': autostart},
-                        {'node_names': lifecycle_nodes}]),
+    launch_robast_recoveries = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(recoveries_launch_file), launch_arguments=recoveries_arguments)
 
-    ])
+    ld = LaunchDescription()
+    # Set env var to print messages to stdout immediately
+    ld.add_action(SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'))
+
+    # arguments
+    ld.add_action(declare_use_sim_time_cmd)
+    ld.add_action(declare_autostart_cmd)
+
+    # nodes
+    ld.add_action(start_lifecycle_manager_cmd)
+    ld.add_action(start_controller_cmd)
+    ld.add_action(start_planner_cmd)
+    ld.add_action(start_bt_navigator_cmd)
+    ld.add_action(start_waypoint_follower_cmd)
+    ld.add_action(launch_robast_recoveries)
+
+    return ld
