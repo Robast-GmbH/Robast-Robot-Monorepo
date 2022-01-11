@@ -66,6 +66,9 @@ RecoveriesCostmap::on_activate(const rclcpp_lifecycle::State & state)
 
   costmap_ros_->on_activate(state);
 
+  // create bond connection
+  createBond();
+
   return nav2_util::CallbackReturn::SUCCESS;
 }
 
@@ -75,6 +78,9 @@ RecoveriesCostmap::on_deactivate(const rclcpp_lifecycle::State & state)
   RCLCPP_INFO(get_logger(), "Deactivating recoveries costmap");
 
   costmap_ros_->on_deactivate(state);
+
+  // destroy bond connection
+  destroyBond();
 
   return nav2_util::CallbackReturn::SUCCESS;
 }
