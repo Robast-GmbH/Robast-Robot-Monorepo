@@ -90,20 +90,21 @@ controller_server:
       rotate_to_heading_angular_vel: 1.8
       transform_tolerance: 0.1
       use_velocity_scaled_lookahead_dist: true
+      # use_approach_linear_velocity_scaling: true
       min_approach_linear_velocity: 0.05
-      use_approach_linear_velocity_scaling: true
       max_allowed_time_to_collision: 1.0
       use_regulated_linear_velocity_scaling: true
       use_cost_regulated_linear_velocity_scaling: false
-      regulated_linear_scaling_min_radius: 0.9
+      regulated_linear_scaling_min_radius: 1.1
       regulated_linear_scaling_min_speed: 0.25
       use_rotate_to_heading: true
+      allow_reversing: false
       rotate_to_heading_min_angle: 0.785
       max_angular_accel: 3.2
       goal_dist_tol: 0.25
-      cost_scaling_dist: 0.3
-      cost_scaling_gain: 1.0
-      inflation_cost_scaling_factor: 3.0
+      # cost_scaling_dist: 0.3
+      # cost_scaling_gain: 1.0
+      # inflation_cost_scaling_factor: 1.0
 
 
 controller_server_rclcpp_node:
@@ -122,14 +123,14 @@ local_costmap:
       width: 5
       height: 5
       footprint: "[ [0.35, 0.30], [0.35, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
-      footprint_padding: 0.05
+      footprint_padding: 0.025
       resolution: 0.025
       plugins: ["stvl_layer", "inflation_layer"]
-      filters: ["keepout_filter"]
+      # filters: ["keepout_filter"]
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
-        inflation_radius: 0.70
+        inflation_radius: 1.70
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer" # For Foxy and later
         enabled: true
@@ -186,10 +187,10 @@ local_costmap:
           horizontal_fov_angle: 1.048
           decay_acceleration: 15.0
           model_type: 0
-      keepout_filter:
-        plugin: "nav2_costmap_2d::KeepoutFilter"
-        enabled: True
-        filter_info_topic: "/costmap_filter_info"
+      # keepout_filter:
+      #   plugin: "nav2_costmap_2d::KeepoutFilter"
+      #   enabled: True
+      #   filter_info_topic: "/costmap_filter_info"
       static_layer:
         map_subscribe_transient_local: True
       always_send_full_costmap: True
@@ -209,11 +210,11 @@ global_costmap:
       # map_topic: /map
       use_sim_time: True
       footprint: "[ [0.35, 0.30], [0.35, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
-      footprint_padding: 0.05
+      footprint_padding: 0.025
       resolution: 0.025
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "stvl_layer", "inflation_layer"]
-      filters: ["keepout_filter"]
+      # filters: ["keepout_filter"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -285,10 +286,10 @@ global_costmap:
           horizontal_fov_angle: 1.048
           decay_acceleration: 15.0
           model_type: 0
-      keepout_filter:
-        plugin: "nav2_costmap_2d::KeepoutFilter"
-        enabled: True
-        filter_info_topic: "/costmap_filter_info"
+      # keepout_filter:
+      #   plugin: "nav2_costmap_2d::KeepoutFilter"
+      #   enabled: True
+      #   filter_info_topic: "/costmap_filter_info"
       static_layer:
         #enabled: True
         plugin: "nav2_costmap_2d::StaticLayer"
@@ -298,7 +299,7 @@ global_costmap:
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 5.0
-        inflation_radius: 0.70
+        inflation_radius: 1.70
         # inflate_unknown: true
         # inflate_around_unknown: true
       always_send_full_costmap: True #Wenn false, dann drucker
