@@ -1,9 +1,11 @@
 import os
 
+import xacro
 from ament_index_python.packages import get_package_share_directory
+from launch_ros.actions import Node
+
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess
-from launch.actions import IncludeLaunchDescription
+from launch.actions import ExecuteProcess, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
@@ -19,14 +21,14 @@ POSE_INIT_Z = os.environ['POSE_INIT_Z']
 # export ROBOT_MODEL=rb_theron
 
 
-def get_robot_spawn_args():
-    robot_sdf = os.path.join(get_package_share_directory('tiplu_world'),
-                             'models',
-                             ROBOT_MODEL,
-                             ROBOT_MODEL + '.sdf')
-    robot_xml = open(robot_sdf, 'r').read()
-    robot_xml = robot_xml.replace('"', '\\"')
+def get_robot_xml():
+    xacro_file = os.path.join(get_package_share_directory('rb_theron_description'), 'robots', 'rb_theron.urdf.xacro')
+    robot_description_config = xacro.process_file(xacro_file)
+    robot_xml = robot_description_config.toxml()
+    return robot_xml
 
+
+def get_robot_spawn_args():
     initial_pose = '{position: ' +\
         '{x: ' + POSE_INIT_X + ', ' +\
         'y: ' + POSE_INIT_Y + ', ' +\
@@ -35,7 +37,8 @@ def get_robot_spawn_args():
         '{z: 1, w: 0}' + '}'
 
     spawn_args = '{name: \"' + ROBOT_MODEL + '\",' +\
-                 'xml: \"' + robot_xml + '\",' +\
+                 'xml: \"' + get_robot_xml().replace('"', '\\"') + '\",' +\
+                 'reference_frame: \"world\"' + ',' +\
                  'initial_pose: ' + initial_pose + '}'
     return spawn_args
 
@@ -47,9 +50,7 @@ def generate_launch_description():
                          WORLD_MODEL + "_high_rtf",
                          WORLD_MODEL + "_high_rtf" + '.model')
 
-    launch_file_dir = os.path.join(get_package_share_directory('tiplu_world'), 'launch')
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
-
     print('world_file_path : {}'.format(world))
 
     return LaunchDescription([
@@ -57,8 +58,9 @@ def generate_launch_description():
             PythonLaunchDescriptionSource(
                 os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')
             ),
-            launch_arguments={'world': world}.items(),
+            launch_arguments={'world': world, 'extra_gazebo_args': "--lockstep"}.items(),
         ),
+
 
         # IncludeLaunchDescription(
         #     PythonLaunchDescriptionSource(
@@ -75,8 +77,12 @@ def generate_launch_description():
             cmd=['ros2', 'service', 'call', '/spawn_entity', 'gazebo_msgs/SpawnEntity', get_robot_spawn_args()],
             output='screen'),
 
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([launch_file_dir, '/robot_state_publisher.launch.py']),
-            launch_arguments={'use_sim_time': use_sim_time}.items(),
-        ),
+        Node(
+            package="robot_state_publisher",
+            executable="robot_state_publisher",
+            name="robot_state_publisher",
+            parameters=[
+                {"robot_description": get_robot_xml()},
+                {'use_sim_time': use_sim_time}],
+            output="screen"),
     ])
