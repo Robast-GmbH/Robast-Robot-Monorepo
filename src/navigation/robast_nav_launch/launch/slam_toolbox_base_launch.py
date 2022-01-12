@@ -93,7 +93,7 @@ def generate_launch_description():
     param_substitutions = {
         'namespace': namespace,
         # 'map_file_name': slam_posegraph,
-        'use_sim_time': use_sim_time,
+        # 'use_sim_time': use_sim_time,
         'mode': slam_mode,
         'map_name': slam_map_topic,
         'transform_publish_period': transform_publish_period}
@@ -112,6 +112,7 @@ def generate_launch_description():
         parameters=[
             configured_params,
             {'map_file_name': slam_posegraph},
+            {'use_sim_time': use_sim_time},
             {'map_start_pose': [float(POSE_INIT_X), float(POSE_INIT_Y), 3.14]}
         ]
     )
