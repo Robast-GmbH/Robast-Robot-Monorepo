@@ -263,7 +263,7 @@
         {
             "type": "shell",
             "label": "start nav_without_localization_with_door_bells_launch",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_with_door_bells_launch.py",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_launch.py use_interim_goal:=true",
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
@@ -397,7 +397,7 @@
         {
             "type": "shell",
             "label": "start nav_without_localization_with_map_buffer",
-            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_with_map_buffer_launch.py",
+            "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_launch.py use_map_buffer:=true",
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
