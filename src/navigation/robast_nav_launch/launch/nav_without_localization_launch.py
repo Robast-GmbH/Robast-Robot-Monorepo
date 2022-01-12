@@ -38,6 +38,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
     use_interim_goal = LaunchConfiguration('use_interim_goal')
+    use_map_buffer = LaunchConfiguration('use_map_buffer')
 
     lifecycle_nodes = [
         'controller_server',
@@ -69,6 +70,11 @@ def generate_launch_description():
         'use_interim_goal',
         default_value='false',
         description='Use the interim goal navigation if true')
+
+    declare_use_map_buffer_cmd = DeclareLaunchArgument(
+        'use_map_buffer',
+        default_value='false',
+        description='Use a map buffer if true. Mainly required for SLAM because frequent map updates can disturb navigation')
 
     start_controller_cmd = Node(
         package='nav2_controller',
@@ -129,7 +135,13 @@ def generate_launch_description():
                     {'autostart': autostart},
                     {'node_names': lifecycle_nodes}])
 
-    launch_robast_recoveries = IncludeLaunchDescription(
+    start_map_buffer_cmd = Node(
+        package='theron_fleetmanagement_bridge',
+        executable='map_buffer',
+        name='map_buffer',
+        condition=IfCondition(use_map_buffer))
+
+    launch_robast_recoveries_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(recoveries_launch_file),
         launch_arguments={
             'use_sim_time': use_sim_time,
@@ -152,6 +164,7 @@ def generate_launch_description():
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_autostart_cmd)
     ld.add_action(declare_use_interim_goal_cmd)
+    ld.add_action(declare_use_map_buffer_cmd)
 
     # nodes
     ld.add_action(start_lifecycle_manager_cmd)
@@ -160,7 +173,10 @@ def generate_launch_description():
     ld.add_action(start_bt_navigator_cmd)
     ld.add_action(start_bt_navigator_with_interim_goal_cmd)
     ld.add_action(start_waypoint_follower_cmd)
-    ld.add_action(launch_robast_recoveries)
+    ld.add_action(start_map_buffer_cmd)
+
+    # launches
+    ld.add_action(launch_robast_recoveries_cmd)
     ld.add_action(launch_interim_goal_cmd)
 
     return ld
