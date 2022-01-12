@@ -101,7 +101,7 @@ def generate_launch_description():
         output='screen',
         parameters=[
             nav2_params_yaml,
-            {'default_bt_xml_filename': default_bt_xml_filename},
+            {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
         ],
         remappings=remappings,
         condition=UnlessCondition(use_interim_goal))
@@ -113,7 +113,7 @@ def generate_launch_description():
         output='screen',
         parameters=[
             nav2_params_yaml,
-            {'default_bt_xml_filename': bt_xml_filename_door_bells},
+            {'default_nav_to_pose_bt_xml': bt_xml_filename_door_bells},
         ],
         remappings=remappings,
         condition=IfCondition(use_interim_goal))
