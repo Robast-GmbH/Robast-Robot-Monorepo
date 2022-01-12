@@ -1,8 +1,9 @@
 import os
 
 from ament_index_python.packages import get_package_share_directory
-from launch import LaunchDescription
+from launch import LaunchDescription, condition
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
+from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch.actions import IncludeLaunchDescription
@@ -14,6 +15,8 @@ def generate_launch_description():
     if(os.environ['ROS_DISTRO'] == 'galactic'):
         default_bt_xml_filename = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_through_poses_w_replanning_and_recovery.xml')
+        bt_xml_filename_door_bells = os.path.join(get_package_share_directory(
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'nav_bt_with_door_bells.xml')
         nav2_params_yaml = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'config', 'nav2_params_galactic.yaml')
         recoveries_params_yaml = os.path.join(get_package_share_directory(
@@ -21,15 +24,21 @@ def generate_launch_description():
     else:
         default_bt_xml_filename = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_w_replanning_and_recovery.xml')
+        bt_xml_filename_door_bells = os.path.join(get_package_share_directory(
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'nav_bt_with_door_bells.xml')
         nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'), 'config', 'nav2_params.yaml')
         recoveries_params_yaml = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'config', 'recoveries_params.yaml')
 
     robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
     recoveries_launch_file = os.path.join(robast_nav_launch_dir, 'launch', 'recoveries_launch.py')
+    robast_nav_interim_goal_dir = get_package_share_directory('robast_nav_interim_goal')
+    interim_goal_launch_file = os.path.join(robast_nav_interim_goal_dir, 'launch', 'interim_goal_launch.py')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
+    use_interim_goal = LaunchConfiguration('use_interim_goal')
+    use_map_buffer = LaunchConfiguration('use_map_buffer')
 
     lifecycle_nodes = [
         'controller_server',
@@ -56,6 +65,16 @@ def generate_launch_description():
         'autostart',
         default_value='true',
         description='Automatically startup the nav2 stack')
+
+    declare_use_interim_goal_cmd = DeclareLaunchArgument(
+        'use_interim_goal',
+        default_value='false',
+        description='Use the interim goal navigation if true')
+
+    declare_use_map_buffer_cmd = DeclareLaunchArgument(
+        'use_map_buffer',
+        default_value='false',
+        description='Use a map buffer if true. Mainly required for SLAM because frequent map updates can disturb navigation')
 
     start_controller_cmd = Node(
         package='nav2_controller',
@@ -84,7 +103,20 @@ def generate_launch_description():
             nav2_params_yaml,
             {'default_bt_xml_filename': default_bt_xml_filename},
         ],
-        remappings=remappings)
+        remappings=remappings,
+        condition=UnlessCondition(use_interim_goal))
+
+    start_bt_navigator_with_interim_goal_cmd = Node(
+        package='nav2_bt_navigator',
+        executable='bt_navigator',
+        name='bt_navigator',
+        output='screen',
+        parameters=[
+            nav2_params_yaml,
+            {'default_bt_xml_filename': bt_xml_filename_door_bells},
+        ],
+        remappings=remappings,
+        condition=IfCondition(use_interim_goal))
 
     start_waypoint_follower_cmd = Node(
         package='nav2_waypoint_follower',
@@ -103,15 +135,26 @@ def generate_launch_description():
                     {'autostart': autostart},
                     {'node_names': lifecycle_nodes}])
 
-    recoveries_arguments = {
-        'use_sim_time': use_sim_time,
-        'autostart': autostart,
-        'costmap_namespace': 'recoveries_costmap',
-        'recoveries_params_file': recoveries_params_yaml,
-    }.items()
+    start_map_buffer_cmd = Node(
+        package='theron_fleetmanagement_bridge',
+        executable='map_buffer',
+        name='map_buffer',
+        condition=IfCondition(use_map_buffer))
 
-    launch_robast_recoveries = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(recoveries_launch_file), launch_arguments=recoveries_arguments)
+    launch_robast_recoveries_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(recoveries_launch_file),
+        launch_arguments={
+            'use_sim_time': use_sim_time,
+            'autostart': autostart,
+            'costmap_namespace': 'recoveries_costmap',
+            'recoveries_params_file': recoveries_params_yaml,
+        }.items())
+
+    launch_interim_goal_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(interim_goal_launch_file),
+        launch_arguments={'use_sim_time': use_sim_time,
+                          'autostart': autostart}.items(),
+        condition=IfCondition(use_interim_goal))
 
     ld = LaunchDescription()
     # Set env var to print messages to stdout immediately
@@ -120,13 +163,20 @@ def generate_launch_description():
     # arguments
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_autostart_cmd)
+    ld.add_action(declare_use_interim_goal_cmd)
+    ld.add_action(declare_use_map_buffer_cmd)
 
     # nodes
     ld.add_action(start_lifecycle_manager_cmd)
     ld.add_action(start_controller_cmd)
     ld.add_action(start_planner_cmd)
     ld.add_action(start_bt_navigator_cmd)
+    ld.add_action(start_bt_navigator_with_interim_goal_cmd)
     ld.add_action(start_waypoint_follower_cmd)
-    ld.add_action(launch_robast_recoveries)
+    ld.add_action(start_map_buffer_cmd)
+
+    # launches
+    ld.add_action(launch_robast_recoveries_cmd)
+    ld.add_action(launch_interim_goal_cmd)
 
     return ld
