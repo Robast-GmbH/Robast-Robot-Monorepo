@@ -21,7 +21,7 @@ void setup() {
   pinMode(LOCK_SENSOR_PIN, INPUT);
 
   FastLED.addLeds<NEOPIXEL,2>(leds, NUM_LEDS);
-  FastLED.setBrightness(100);
+  FastLED.setBrightness(255);
 
   digitalWrite(LED_POWER_PIN, HIGH);
 }
@@ -40,7 +40,7 @@ void loop() {
   else {
     // Serial.println("Lock is open!");
     for(int i = 0; i < NUM_LEDS; i++) {   
-      leds[i] = CRGB::Red;
+      leds[i] = CRGB::White;
     }
     FastLED.show();
   }
