@@ -6,18 +6,10 @@
 			"WORKSPACE": "${containerWorkspaceFolder}"
 		}
 	},
-	"remoteUser": "ubuntu",
 	"runArgs": [
 		"--name=ros_hardware_nodes",
-		"--network=heiligenhafen",		
-		"--cap-add=SYS_PTRACE",
-		//"--gpus=all",
-		"--security-opt=seccomp:unconfined",
-		"--security-opt=apparmor:unconfined",
-		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
+		"--network=host",
 	],
-	"postStartCommand": "/entrypoint.sh",
-	"containerEnv": { "DISPLAY": "${localEnv:DISPLAY}" },
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
