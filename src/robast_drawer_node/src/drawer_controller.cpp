@@ -1,14 +1,14 @@
 #include <inttypes.h>
 #include <memory>
 
-#include "robast_drawer_node/drawer_node.hpp"
+#include "robast_drawer_controller/drawer_controller.hpp"
 
-namespace robast_drawer_node
+namespace robast_drawer_controller
 {
 
 
 DrawerController::DrawerController()
-: nav2_util::LifecycleNode("robast_drawer_node", "", true)
+: nav2_util::LifecycleNode("robast_drawer_controller", "", true)
 {
   RCLCPP_INFO(get_logger(), "Creating");
 }
@@ -158,4 +158,4 @@ void DrawerController::send_succeeded_action_result(
     action_server_->succeeded_current(result);
 }
 
-} // namespace robast_drawer_node
+} // namespace robast_drawer_controller

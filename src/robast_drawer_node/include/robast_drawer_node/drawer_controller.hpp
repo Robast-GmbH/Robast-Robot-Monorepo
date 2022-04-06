@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ROBAST_DRAWER_NODE__DRAWER_NODE_HPP_
-#define ROBAST_DRAWER_NODE__DRAWER_NODE_HPP_
+#ifndef ROBAST_DRAWER_CONTROLLER__DRAWER_CONTROLLER_HPP_
+#define ROBAST_DRAWER_CONTROLLER__DRAWER_CONTROLLER_HPP_
 
 #include <memory>
 
@@ -117,4 +117,4 @@ protected:
 
 }  // namespace robast_drawer_node
 
-#endif  // ROBAST_DRAWER_NODE__DRAWER_NODE_HPP_
+#endif  // ROBAST_DRAWER_CONTROLLER__DRAWER_CONTROLLER_HPP_
