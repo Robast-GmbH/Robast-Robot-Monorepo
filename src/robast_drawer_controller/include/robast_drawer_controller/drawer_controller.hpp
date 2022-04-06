@@ -22,9 +22,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
-#include "robast_msgs/action/control_drawer.hpp"
+#include "robast_hardware_nodes_msgs/action/control_drawer.hpp"
 
-namespace robast_drawer_node
+namespace robast_drawer_controller
 {
 
 enum class ActionStatus
@@ -36,21 +36,21 @@ enum class ActionStatus
 };
 
 /**
- * @class robast_drawer_node::DrawerController
+ * @class robast_drawer_controller::DrawerController
  * @brief A Controller that sends commands via the CAN bus to the drawer microcontroller to open them.
  */
 class DrawerController : public nav2_util::LifecycleNode
 {
 public:
-  using ActionT = robast_msgs::action::ControlDrawer;
+  using ActionT = robast_hardware_nodes_msgs::action::ControlDrawer;
   using ActionServer = nav2_util::SimpleActionServer<ActionT>;
 
   /**
-   * @brief A constructor for robast_drawer_node::DrawerController class
+   * @brief A constructor for robast_drawer_controller::DrawerController class
    */
   DrawerController();
   /**
-   * @brief A destructor for robast_drawer_node::DrawerController class
+   * @brief A destructor for robast_drawer_controller::DrawerController class
    */
   ~DrawerController();
 
@@ -89,15 +89,6 @@ protected:
   nav2_util::CallbackReturn on_shutdown(const rclcpp_lifecycle::State & state) override;
 
   /**
-   * @brief Helper function to check if the request for the action is valid
-   * @param goal Action goal that is checked for validity
-   * @param result Action result that is used in case the request is invalid and action is canceled
-   * @return True if valid, false if not valid
-   */
-  bool is_request_valid(const std::shared_ptr<const typename ActionT::Goal> goal,
-                        std::shared_ptr<ActionT::Result> result);
-
-  /**
    * @brief Helper function to send the succeeded action result
    * @param goal Action goal
    * @param result Action result that is filled within the action and sent to the action server
@@ -115,6 +106,6 @@ protected:
   std::unique_ptr<ActionServer> action_server_;
 };
 
-}  // namespace robast_drawer_node
+}  // namespace robast_drawer_controller
 
 #endif  // ROBAST_DRAWER_CONTROLLER__DRAWER_CONTROLLER_HPP_
