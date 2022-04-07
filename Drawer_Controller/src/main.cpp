@@ -16,7 +16,7 @@ CRGBArray<NUM_LEDS> leds;
 
 CAN_device_t CAN_cfg;               // CAN Config
 unsigned long previousMillis = 0;   // will store last time a CAN Message was send
-const int interval = 1000;          // interval at which send CAN Messages (milliseconds)
+const int interval = 50;          // interval at which send CAN Messages (milliseconds)
 const int rx_queue_size = 10;       // Receive Queue size
 
 void can_setup() {
@@ -38,10 +38,10 @@ void can_loop() {
   if (xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 3 * portTICK_PERIOD_MS) == pdTRUE) {
 
     if (rx_frame.FIR.B.FF == CAN_frame_std) {
-      printf("New standard frame");
+      Serial.println("New standard frame");
     }
     else {
-      printf("New extended frame");
+      Serial.println("New extended frame");
     }
 
     if (rx_frame.FIR.B.RTR == CAN_RTR) {
@@ -70,6 +70,7 @@ void can_loop() {
   //   tx_frame.data.u8[5] = 0x04;
   //   tx_frame.data.u8[6] = 0x04;
   //   tx_frame.data.u8[7] = 0x04;
+  //   Serial.println("CAN Message to be sent!");
   //   ESP32Can.CANWriteFrame(&tx_frame);
   //   Serial.println("CAN Message sent!");
   // }
@@ -89,27 +90,28 @@ void setup() {
   digitalWrite(LED_POWER_PIN, HIGH);
 
   can_setup();
+  Serial.println("Setup finished!");
 }
 
 void loop() {
   can_loop();
 
-  bool lock_is_closed = !digitalRead(LOCK_SENSOR_PIN);
+  // bool lock_is_closed = !digitalRead(LOCK_SENSOR_PIN);
 
-  if (lock_is_closed) {
-    // Serial.println("Lock is closed!");
-    for(int i = 0; i < NUM_LEDS; i++) {   
-      leds[i] = CRGB::Green;
-    }
-    FastLED.show();
-  }
-  else {
-    // Serial.println("Lock is open!");
-    for(int i = 0; i < NUM_LEDS; i++) {   
-      leds[i] = CRGB::Red;
-    }
-    FastLED.show();
-  }
+  // if (lock_is_closed) {
+  //   // Serial.println("Lock is closed!");
+  //   for(int i = 0; i < NUM_LEDS; i++) {   
+  //     leds[i] = CRGB::Green;
+  //   }
+  //   FastLED.show();
+  // }
+  // else {
+  //   // Serial.println("Lock is open!");
+  //   for(int i = 0; i < NUM_LEDS; i++) {   
+  //     leds[i] = CRGB::Red;
+  //   }
+  //   FastLED.show();
+  // }
 }
 
 
