@@ -16,6 +16,8 @@
 #define ROBAST_DRAWER_CONTROLLER__DRAWER_CONTROLLER_HPP_
 
 #include <memory>
+#include <stdio.h>
+#include <string.h>
 
 #include "nav2_util/simple_action_server.hpp"
 #include "nav2_util/lifecycle_node.hpp"
@@ -23,6 +25,15 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 
 #include "robast_hardware_nodes_msgs/action/control_drawer.hpp"
+
+// #include <CppLinuxSerial/SerialPort.hpp>
+// SerialPort serial_;
+
+// Linux headers
+#include <fcntl.h> // Contains file controls like O_RDWR
+#include <errno.h> // Error integer and strerror() function
+#include <termios.h> // Contains POSIX terminal control definitions
+#include <unistd.h> // write(), read(), close()
 
 namespace robast_drawer_controller
 {

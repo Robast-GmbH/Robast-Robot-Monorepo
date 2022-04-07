@@ -21,6 +21,17 @@ DrawerController::~DrawerController()
 nav2_util::CallbackReturn DrawerController::on_configure(const rclcpp_lifecycle::State & /*state*/)
 {
   RCLCPP_INFO(get_logger(), "Configuring");
+
+  // serial_ = SerialPort("/dev/ttyACM0", BaudRate::B_115200, NumDataBits::EIGHT, Parity::NONE, NumStopBits::ONE);
+  // serial_.SetTimeout(0);
+  // serial_.Open();
+
+  int serial_port = open("/dev/ttyACM0", O_RDWR);
+
+  // Check for errors
+  if (serial_port < 0) {
+      printf("Error %i from open: %s\n", errno, strerror(errno));
+  }
   
   action_server_ = std::make_unique<ActionServer>(
     get_node_base_interface(),
