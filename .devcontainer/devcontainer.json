@@ -9,6 +9,7 @@
 	"runArgs": [
 		"--name=ros_hardware_nodes",
 		"--network=host",
+		"-v=/dev/ttyACM0:/dev/ttyACM0"
 	],
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
@@ -29,3 +30,4 @@
 		"jaehyunshim.vscode-ros2"
 	]
 }
+
