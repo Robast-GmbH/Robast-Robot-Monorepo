@@ -32,10 +32,16 @@ def get_robot_xml():
     return robot_xml
 
 
-def get_robot_spawn_args(initial_pose, robot_model, robot_xml):
+def get_robot_spawn_args(initial_pose: str, robot_model: str, robot_xml: str):
 
+    initial_pose = '{position: ' +\
+        '{x: ' + POSE_INIT_X + ', ' +\
+        'y: ' + POSE_INIT_Y + ', ' +\
+        'z: ' + POSE_INIT_Z + '}' + ', ' +\
+        'orientation: ' +\
+        '{z: 1, w: 0}' + '}'
     spawn_args = '{name: \"' + robot_model + '\",' +\
-                 'xml: \"' + robot_xml.replace('"', '\\"') + '\",' +\
+                 'xml: \"' + get_robot_xml().replace('"', '\\"') + '\",' +\
                  'reference_frame: \"world\"' + ',' +\
                  'initial_pose: ' + initial_pose + '}'
     return spawn_args
@@ -65,14 +71,11 @@ def generate_launch_description():
         'z: ' + POSE_INIT_Z + '}' + ', ' +
         'orientation: ' +
         '{z: 1, w: 0}' + '}',
-        description='Top-level namespace')
+        description='initial position of the robot')
 
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_model',
-        default_value=os.path.join(get_package_share_directory('tiplu_world'),
-                                   'worlds',
-                                   '5OG',
-                                   '5OG' + '.model'),
+        default_value=os.path.join(get_package_share_directory('tiplu_world'), 'worlds', '5OG', '5OG' + '.model'),
         description='math to the world model')
 
     declare_robot_model_cmd = DeclareLaunchArgument(
@@ -91,7 +94,7 @@ def generate_launch_description():
         description='frame prefix'
     )
 
-    declare_namespace_cmd = DeclareLaunchArgument(
+    declare_xacro_path_cmd = DeclareLaunchArgument(
         'xacro_path',
         default_value=os.path.join(get_package_share_directory(
             'rb_theron_description'), 'robots', 'rb_theron.urdf.xacro'),
@@ -101,20 +104,20 @@ def generate_launch_description():
         package="robot_state_publisher",
         executable="robot_state_publisher",
         name="robot_state_publisher",
-        namespace=namespace,
         parameters=[
                 {'use_sim_time': use_sim_time,
+                 #  'namespace': namespace,
                  'robot_description': robot_xml,
                  }],
         output="screen")
 
     exec_use_sim_time_cmd = ExecuteProcess(
         cmd=['ros2', 'param', 'set', '/gazebo', 'use_sim_time', use_sim_time],
-        output='screen'),
+        output='screen')
 
     exec_spawn_robot_cmd = ExecuteProcess(
         cmd=['ros2', 'service', 'call', '/spawn_entity', 'gazebo_msgs/SpawnEntity',
-             get_robot_spawn_args(initial_pose=initial_pose, robot_model=robot_model, robot_xml=robot_xml)],
+             get_robot_spawn_args(initial_pose=initial_pose, robot_model='rb_theron', robot_xml=robot_xml)],
         output='screen')
 
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
@@ -143,6 +146,7 @@ def generate_launch_description():
     ld.add_action(declare_world_model_cmd)
     ld.add_action(declare_robot_model_cmd)
     ld.add_action(declare_prefix_cmd)
+    ld.add_action(declare_xacro_path_cmd)
 
     # included launches
     ld.add_action(start_gzserver_cmd)
