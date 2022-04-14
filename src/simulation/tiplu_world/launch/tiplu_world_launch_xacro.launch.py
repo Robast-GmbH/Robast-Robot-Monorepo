@@ -106,7 +106,7 @@ def generate_launch_description():
                 {'use_sim_time': use_sim_time,
                  'robot_description': robot_xml,
                  }],
-        output="screen"),
+        output="screen")
 
     exec_use_sim_time_cmd = ExecuteProcess(
         cmd=['ros2', 'param', 'set', '/gazebo', 'use_sim_time', use_sim_time],
@@ -124,13 +124,13 @@ def generate_launch_description():
             os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')
         ),
         launch_arguments={'world': world_model}.items(),
-    ),
+    )
 
     start_gzclient_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_gazebo_ros, 'launch', 'gzclient.launch.py')
         ),
-    ),
+    )
 
     print('world_file_path : {}'.format(world_model))
 
