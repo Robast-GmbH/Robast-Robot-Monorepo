@@ -13,44 +13,18 @@ from launch_ros.descriptions import ParameterValue
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 
 
-WORLD_MODEL = os.environ['WORLD_MODEL']
-ROBOT_MODEL = os.environ['ROBOT_MODEL']
-POSE_INIT_X = os.environ['POSE_INIT_X']
-POSE_INIT_Y = os.environ['POSE_INIT_Y']
-POSE_INIT_Z = os.environ['POSE_INIT_Z']
-
-# export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/tiplu_world/models:${GAZEBO_MODEL_PATH}
+# export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/tiplu_world/models:${}
 # export GAZEBO_PLUGIN_PATH=workspaces/Robast_RosTheron/gaz/plugins:${GAZEBO_PLUGIN_PATH}
 # export WORLD_MODEL=5OG
 # export ROBOT_MODEL=rb_theron
 
 
-def get_robot_xml():
-    xacro_file = os.path.join(get_package_share_directory('rb_theron_description'), 'robots', 'rb_theron.urdf.xacro')
-    robot_description_config = xacro.process_file(xacro_file, mappings={'prefix': 'robot_'})
-    robot_xml = robot_description_config.toxml()
-    return robot_xml
-
-
-def get_robot_spawn_args(initial_pose: str, robot_model: str, robot_xml: str):
-
-    initial_pose = '{position: ' +\
-        '{x: ' + POSE_INIT_X + ', ' +\
-        'y: ' + POSE_INIT_Y + ', ' +\
-        'z: ' + POSE_INIT_Z + '}' + ', ' +\
-        'orientation: ' +\
-        '{z: 1, w: 0}' + '}'
-    spawn_args = '{name: \"' + robot_model + '\",' +\
-                 'xml: \"' + get_robot_xml().replace('"', '\\"') + '\",' +\
-                 'reference_frame: \"world\"' + ',' +\
-                 'initial_pose: ' + initial_pose + '}'
-    return spawn_args
-
-
 def generate_launch_description():
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
-    initial_pose = LaunchConfiguration('initial_pose')
+    initial_pose_x = LaunchConfiguration('initial_pose_x', default="8.59")
+    initial_pose_y = LaunchConfiguration('initial_pose_y', default="-13.45")
+    initial_pose_Yaw = LaunchConfiguration('initial_pose_Yaw', default="3.14")
     world_model = LaunchConfiguration('world_model')
     robot_model = LaunchConfiguration('robot_model')
     frame_prefix = LaunchConfiguration('frame_prefix')
@@ -62,16 +36,6 @@ def generate_launch_description():
         'namespace',
         default_value='',
         description='Top-level namespace')
-
-    declare_initial_pose_cmd = DeclareLaunchArgument(
-        'initial_pose',
-        default_value='{position: ' +
-        '{x: ' + POSE_INIT_X + ', ' +
-        'y: ' + POSE_INIT_Y + ', ' +
-        'z: ' + POSE_INIT_Z + '}' + ', ' +
-        'orientation: ' +
-        '{z: 1, w: 0}' + '}',
-        description='initial position of the robot')
 
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_model',
@@ -106,19 +70,16 @@ def generate_launch_description():
         name="robot_state_publisher",
         parameters=[
                 {'use_sim_time': use_sim_time,
-                 #  'namespace': namespace,
                  'robot_description': robot_xml,
                  }],
         output="screen")
 
-    exec_use_sim_time_cmd = ExecuteProcess(
-        cmd=['ros2', 'param', 'set', '/gazebo', 'use_sim_time', use_sim_time],
-        output='screen')
-
-    exec_spawn_robot_cmd = ExecuteProcess(
-        cmd=['ros2', 'service', 'call', '/spawn_entity', 'gazebo_msgs/SpawnEntity',
-             get_robot_spawn_args(initial_pose=initial_pose, robot_model='rb_theron', robot_xml=robot_xml)],
-        output='screen')
+    spawn_robo_cmd = Node(
+        package='gazebo_ros',
+        executable='spawn_entity.py',
+        name='urdf_spawner',
+        output='screen',
+        arguments=["-topic", "/robot_description", "-entity", robot_model, "-x", initial_pose_x, "-y", initial_pose_y, "-Y", initial_pose_Yaw])
 
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
 
@@ -142,7 +103,7 @@ def generate_launch_description():
     # arguments
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
-    ld.add_action(declare_initial_pose_cmd)
+    # ld.add_action(declare_initial_pose_x_cmd)
     ld.add_action(declare_world_model_cmd)
     ld.add_action(declare_robot_model_cmd)
     ld.add_action(declare_prefix_cmd)
@@ -152,12 +113,9 @@ def generate_launch_description():
     ld.add_action(start_gzserver_cmd)
     ld.add_action(start_gzclient_cmd)
 
-    # execute
-    ld.add_action(exec_spawn_robot_cmd)
-    ld.add_action(exec_use_sim_time_cmd)
-
     # nodes
     ld.add_action(start_robot_state_publisher_cmd)
+    ld.add_action(spawn_robo_cmd)
 
     return ld
 
