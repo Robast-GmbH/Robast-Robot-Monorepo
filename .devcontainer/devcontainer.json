@@ -9,7 +9,7 @@
 	"remoteUser": "ubuntu",
 	"runArgs": [
 		"--name=theron",
-		"--network=heiligenhafen",		
+		"--network=host",		
 		"--cap-add=SYS_PTRACE",
 		//"--gpus=all",
 		"--security-opt=seccomp:unconfined",
