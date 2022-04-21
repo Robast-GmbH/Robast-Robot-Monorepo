@@ -1,5 +1,6 @@
 import os
 import xacro
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -12,38 +13,45 @@ from launch.actions import DeclareLaunchArgument
 
 
 def generate_launch_description():
+    with open("environment_vars.yaml", 'r') as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
+    robot_xml = xacro.process_file(os.path.join(get_package_share_directory(
+        'rb_theron_description'), 'robots', environment_yaml["robot"]+'.urdf.xacro'), mappings={'prefix': environment_yaml["prefix"]}).toxml()
+
     use_sim_time = LaunchConfiguration('use_sim_time')
     initial_pose_x = LaunchConfiguration('initial_pose_x', default="8.59")
     initial_pose_y = LaunchConfiguration('initial_pose_y', default="-13.45")
     initial_pose_Yaw = LaunchConfiguration('initial_pose_Yaw', default="3.14")
     world_model = LaunchConfiguration('world_model')
-    robot_model = LaunchConfiguration('robot_model')
+    robot_name = LaunchConfiguration('robot_name')
     extra_gazebo_args = LaunchConfiguration('extra_gazebo_args')
-    # prefixe funzen iwie nicht :(
-    # frame_prefix = LaunchConfiguration('frame_prefix')
-    # xacro_path = LaunchConfiguration('xacro_path')
-    robot_xml = xacro.process_file(os.path.join(get_package_share_directory(
-        'rb_theron_description'), 'robots', 'rb_theron.urdf.xacro'), mappings={'prefix': 'robot_'}).toxml()
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
         default_value='',
-        description='Top-level namespace')
+        description='Top-level namespace'
+    )
 
     run_gzclient_cmd = DeclareLaunchArgument(
         'run_gzclient',
         default_value='True',
-        description='Top-level namespace')
+        description='Top-level namespace'
+    )
 
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_model',
         default_value=os.path.join(get_package_share_directory('tiplu_world'), 'worlds', '5OG', '5OG' + '.model'),
-        description='math to the world model')
+        description='math to the world model'
+    )
 
     declare_robot_model_cmd = DeclareLaunchArgument(
-        'robot_model',
+        'robot_name',
         default_value='rb_theron',
-        description='name of the robot-model')
+        description='name of the robot in the simulation')
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',
@@ -83,7 +91,7 @@ def generate_launch_description():
         executable='spawn_entity.py',
         name='urdf_spawner',
         output='screen',
-        arguments=["-topic", "/robot_description", "-entity", robot_model, "-x", initial_pose_x, "-y", initial_pose_y, "-Y", initial_pose_Yaw])
+        arguments=["-topic", "/robot_description", "-entity", robot_name, "-x", initial_pose_x, "-y", initial_pose_y, "-Y", initial_pose_Yaw])
 
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
 
