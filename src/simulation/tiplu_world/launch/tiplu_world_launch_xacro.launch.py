@@ -1,40 +1,38 @@
 import os
-from sys import prefix
 import xacro
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess
+from launch.conditions import IfCondition
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
-from launch.substitutions import LaunchConfiguration, Command
-from launch_ros.descriptions import ParameterValue
-from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
-
-
-# export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/tiplu_world/models:${}
-# export GAZEBO_PLUGIN_PATH=workspaces/Robast_RosTheron/gaz/plugins:${GAZEBO_PLUGIN_PATH}
-# export WORLD_MODEL=5OG
-# export ROBOT_MODEL=rb_theron
+from launch.substitutions import LaunchConfiguration
+from launch.actions import DeclareLaunchArgument
 
 
 def generate_launch_description():
-    namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
     initial_pose_x = LaunchConfiguration('initial_pose_x', default="8.59")
     initial_pose_y = LaunchConfiguration('initial_pose_y', default="-13.45")
     initial_pose_Yaw = LaunchConfiguration('initial_pose_Yaw', default="3.14")
     world_model = LaunchConfiguration('world_model')
     robot_model = LaunchConfiguration('robot_model')
-    frame_prefix = LaunchConfiguration('frame_prefix')
-    xacro_path = LaunchConfiguration('xacro_path')
+    extra_gazebo_args = LaunchConfiguration('extra_gazebo_args')
+    # prefixe funzen iwie nicht :(
+    # frame_prefix = LaunchConfiguration('frame_prefix')
+    # xacro_path = LaunchConfiguration('xacro_path')
     robot_xml = xacro.process_file(os.path.join(get_package_share_directory(
         'rb_theron_description'), 'robots', 'rb_theron.urdf.xacro'), mappings={'prefix': 'robot_'}).toxml()
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
         default_value='',
+        description='Top-level namespace')
+
+    run_gzclient_cmd = DeclareLaunchArgument(
+        'run_gzclient',
+        default_value='True',
         description='Top-level namespace')
 
     declare_world_model_cmd = DeclareLaunchArgument(
@@ -57,6 +55,11 @@ def generate_launch_description():
         default_value='robot_',
         description='frame prefix'
     )
+    declare_extra_gazebo_args_cmd = DeclareLaunchArgument(
+        'extra_gazebo_args',
+        default_value='',
+        description='extra_gazebo_args e.g. --lockstep'
+    )
 
     declare_xacro_path_cmd = DeclareLaunchArgument(
         'xacro_path',
@@ -69,9 +72,10 @@ def generate_launch_description():
         executable="robot_state_publisher",
         name="robot_state_publisher",
         parameters=[
-                {'use_sim_time': use_sim_time,
-                 'robot_description': robot_xml,
-                 }],
+                {'use_sim_time': use_sim_time},
+                # {'robot_description': Command(['xacro', ' ', xacro_path, ' gazebo:=False'])}
+                {'robot_description': robot_xml}
+        ],
         output="screen")
 
     spawn_robo_cmd = Node(
@@ -87,13 +91,14 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')
         ),
-        launch_arguments={'world': world_model}.items(),
+        launch_arguments={'world': world_model, 'extra_gazebo_args': extra_gazebo_args}.items(),
     )
 
     start_gzclient_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_gazebo_ros, 'launch', 'gzclient.launch.py')
         ),
+        condition=IfCondition(LaunchConfiguration("run_gzclient"))
     )
 
     print('world_file_path : {}'.format(world_model))
@@ -103,11 +108,12 @@ def generate_launch_description():
     # arguments
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
-    # ld.add_action(declare_initial_pose_x_cmd)
     ld.add_action(declare_world_model_cmd)
+    ld.add_action(run_gzclient_cmd)
     ld.add_action(declare_robot_model_cmd)
     ld.add_action(declare_prefix_cmd)
     ld.add_action(declare_xacro_path_cmd)
+    ld.add_action(declare_extra_gazebo_args_cmd)
 
     # included launches
     ld.add_action(start_gzserver_cmd)
