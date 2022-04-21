@@ -23,9 +23,9 @@ def generate_launch_description():
         'rb_theron_description'), 'robots', environment_yaml["robot"]+'.urdf.xacro'), mappings={'prefix': environment_yaml["prefix"]}).toxml()
 
     use_sim_time = LaunchConfiguration('use_sim_time')
-    initial_pose_x = LaunchConfiguration('initial_pose_x', default="8.59")
-    initial_pose_y = LaunchConfiguration('initial_pose_y', default="-13.45")
-    initial_pose_Yaw = LaunchConfiguration('initial_pose_Yaw', default="3.14")
+    init_x = LaunchConfiguration('init_x', default="8.59")
+    init_y = LaunchConfiguration('init_y', default="-13.45")
+    init_yaw = LaunchConfiguration('init_yaw', default="3.14")
     world_model = LaunchConfiguration('world_model')
     robot_name = LaunchConfiguration('robot_name')
     extra_gazebo_args = LaunchConfiguration('extra_gazebo_args')
@@ -58,22 +58,11 @@ def generate_launch_description():
         default_value='true',
         description='whether to use sim time or not')
 
-    declare_prefix_cmd = DeclareLaunchArgument(
-        'frame_prefix',
-        default_value='robot_',
-        description='frame prefix'
-    )
     declare_extra_gazebo_args_cmd = DeclareLaunchArgument(
         'extra_gazebo_args',
         default_value='',
         description='extra_gazebo_args e.g. --lockstep'
     )
-
-    declare_xacro_path_cmd = DeclareLaunchArgument(
-        'xacro_path',
-        default_value=os.path.join(get_package_share_directory(
-            'rb_theron_description'), 'robots', 'rb_theron.urdf.xacro'),
-        description='path to the xacro file of the robot')
 
     start_robot_state_publisher_cmd = Node(
         package="robot_state_publisher",
@@ -85,13 +74,6 @@ def generate_launch_description():
                 {'robot_description': robot_xml}
         ],
         output="screen")
-
-    spawn_robo_cmd = Node(
-        package='gazebo_ros',
-        executable='spawn_entity.py',
-        name='urdf_spawner',
-        output='screen',
-        arguments=["-topic", "/robot_description", "-entity", robot_name, "-x", initial_pose_x, "-y", initial_pose_y, "-Y", initial_pose_Yaw])
 
     pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
 
@@ -109,6 +91,13 @@ def generate_launch_description():
         condition=IfCondition(LaunchConfiguration("run_gzclient"))
     )
 
+    spawn_robot_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(get_package_share_directory('tiplu_world'), 'launch', 'spawn_robot_launch.py')
+        ),
+        launch_arguments={'init_x': init_x, 'init_y': init_y, 'init_yaw': init_yaw, 'robot_name': robot_name}.items(),
+    )
+
     print('world_file_path : {}'.format(world_model))
 
     ld = LaunchDescription()
@@ -119,8 +108,6 @@ def generate_launch_description():
     ld.add_action(declare_world_model_cmd)
     ld.add_action(run_gzclient_cmd)
     ld.add_action(declare_robot_model_cmd)
-    ld.add_action(declare_prefix_cmd)
-    ld.add_action(declare_xacro_path_cmd)
     ld.add_action(declare_extra_gazebo_args_cmd)
 
     # included launches
@@ -129,7 +116,9 @@ def generate_launch_description():
 
     # nodes
     ld.add_action(start_robot_state_publisher_cmd)
-    ld.add_action(spawn_robo_cmd)
+
+    # late execute
+    ld.add_action(spawn_robot_cmd)
 
     return ld
 
