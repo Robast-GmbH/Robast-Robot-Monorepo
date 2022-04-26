@@ -1,98 +1,47 @@
-#include <inttypes.h>
-#include <memory>
-
 #include "robast_drawer_controller/drawer_controller.hpp"
 
 namespace robast_drawer_controller
 {
-
-
-DrawerController::DrawerController()
-: nav2_util::LifecycleNode("robast_drawer_controller", "", true)
+DrawerController::DrawerController() : Node("robast_drawer_controller")
 {
-  RCLCPP_INFO(get_logger(), "Creating");
+  this->drawer_controller_server = rclcpp_action::create_server<ControlDrawer>(
+    this,
+    "control_drawer",
+    std::bind(&DrawerController::goal_callback, this, std::placeholders::_1, std::placeholders::_2),
+    std::bind(&DrawerController::cancel_callback, this, std::placeholders::_1),
+    std::bind(&DrawerController::accepted_callback, this, std::placeholders::_1));
 }
 
-DrawerController::~DrawerController()
+//TODO: Dekonstruktor
+
+rclcpp_action::GoalResponse DrawerController::goal_callback(
+    const rclcpp_action::GoalUUID & uuid,
+    std::shared_ptr<const ControlDrawer::Goal> goal)
 {
-  RCLCPP_INFO(get_logger(), "Destroying");
+  // RCLCPP_INFO(this->get_logger(), "Received goal request with order %d", goal->order);
+  // (void)uuid;
+  return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 }
 
-nav2_util::CallbackReturn DrawerController::on_configure(const rclcpp_lifecycle::State & /*state*/)
+rclcpp_action::CancelResponse DrawerController::cancel_callback(
+  const std::shared_ptr<GoalHandleControlDrawer> goal_handle)
 {
-  RCLCPP_INFO(get_logger(), "Configuring");
-
-  // serial_ = SerialPort("/dev/ttyACM0", BaudRate::B_115200, NumDataBits::EIGHT, Parity::NONE, NumStopBits::ONE);
-  // serial_.SetTimeout(0);
-  // serial_.Open();
-
-  int serial_port = open("/dev/ttyACM0", O_RDWR);
-
-  // Check for errors
-  if (serial_port < 0) {
-      printf("Error %i from open: %s\n", errno, strerror(errno));
-  }
-  
-  action_server_ = std::make_unique<ActionServer>(
-    get_node_base_interface(),
-    get_node_clock_interface(),
-    get_node_logging_interface(),
-    get_node_waitables_interface(),
-    "drawer_controller", std::bind(&DrawerController::open_drawer, this), false);
-
-  RCLCPP_INFO(get_logger(), "End of Configuring");
-
-  return nav2_util::CallbackReturn::SUCCESS;
+  // RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
+  // (void)goal_handle;
+  return rclcpp_action::CancelResponse::ACCEPT;
 }
 
-nav2_util::CallbackReturn DrawerController::on_activate(const rclcpp_lifecycle::State & /*state*/)
+void DrawerController::accepted_callback(const std::shared_ptr<GoalHandleControlDrawer> goal_handle)
 {
-  RCLCPP_INFO(get_logger(), "Activating");
-
-  action_server_->activate();
-
-  return nav2_util::CallbackReturn::SUCCESS;
+  // this needs to return quickly to avoid blocking the executor, so spin up a new thread
+  std::thread{std::bind(&DrawerController::open_drawer, this, std::placeholders::_1), goal_handle}.detach();
 }
 
-nav2_util::CallbackReturn DrawerController::on_deactivate(const rclcpp_lifecycle::State & /*state*/)
-{
-  RCLCPP_INFO(get_logger(), "Deactivating");
-
-  action_server_->deactivate();
-
-  return nav2_util::CallbackReturn::SUCCESS;
+void DrawerController::open_drawer(const std::shared_ptr<GoalHandleControlDrawer> goal_handle) {
+  //RCLCPP_INFO(this->get_logger(), "Executing goal");
 }
 
-nav2_util::CallbackReturn DrawerController::on_cleanup(const rclcpp_lifecycle::State & /*state*/)
-{
-  RCLCPP_INFO(get_logger(), "Cleaning up");
 
-  action_server_.reset();
 
-  return nav2_util::CallbackReturn::SUCCESS;
-}
 
-nav2_util::CallbackReturn DrawerController::on_shutdown(const rclcpp_lifecycle::State & /*state*/)
-{
-  RCLCPP_INFO(get_logger(), "Shutting down");
-  return nav2_util::CallbackReturn::SUCCESS;
-}
-
-void DrawerController::open_drawer()
-{
-  auto goal = action_server_->get_current_goal();
-  auto feedback = std::make_shared<ActionT::Feedback>();
-  auto result = std::make_shared<ActionT::Result>();
-
-  send_succeeded_action_result(goal, result);
-}
-
-void DrawerController::send_succeeded_action_result(
-  const std::shared_ptr<const typename ActionT::Goal> goal,
-  std::shared_ptr<ActionT::Result> result)
-{
-  result->success = true;
-  action_server_->succeeded_current(result);
-}
-
-} // namespace robast_drawer_controller
+}  // namespace robast_drawer_controller

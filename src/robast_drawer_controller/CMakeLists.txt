@@ -17,8 +17,9 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
 find_package(robast_hardware_nodes_msgs REQUIRED)
-find_package(nav2_util REQUIRED)
 
 include_directories(include)
 
@@ -36,8 +37,6 @@ add_library(${library_drawer_controller} SHARED
 set(dependencies
   rclcpp
   rclcpp_action
-  rclcpp_lifecycle
-  nav2_util
   robast_hardware_nodes_msgs
 )
 
