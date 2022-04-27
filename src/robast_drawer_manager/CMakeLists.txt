@@ -17,27 +17,64 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(robast_hardware_nodes_msgs REQUIRED)
 
-add_executable(drawer_manager src/drawer_manager.cpp)
+include_directories(include)
+
+set(executable_drawer_manager drawer_manager)
+
+add_executable(${executable_drawer_manager}
+  src/main.cpp)
+
+set(library_drawer_manager ${executable_drawer_manager}_core)
+
+add_library(${library_drawer_manager} SHARED
+  src/drawer_manager.cpp
+)
+
+set(dependencies
+  rclcpp
+  robast_hardware_nodes_msgs
+  rclcpp_action
+)
+
+ament_target_dependencies(${executable_drawer_manager}
+  ${dependencies}
+)
+
+target_link_libraries(${executable_drawer_manager} ${library_drawer_manager})
+
+ament_target_dependencies(${library_drawer_manager}
+  ${dependencies}
+)
+
 target_include_directories(drawer_manager PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
-install(TARGETS drawer_manager
-  DESTINATION lib/${PROJECT_NAME})
+install(TARGETS
+  ${library_drawer_manager}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(TARGETS
+  ${executable_drawer_manager}
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
+
+ament_export_include_directories(include)
 
 ament_package()

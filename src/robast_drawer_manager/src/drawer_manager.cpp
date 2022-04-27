@@ -1,36 +1,21 @@
-#include <chrono>
-#include <functional>
+#include <inttypes.h>
 #include <memory>
-#include <string>
 
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
+#include "robast_drawer_manager/drawer_manager.hpp"
 
-using namespace std::chrono_literals;
-
-
-
-class DrawerManager : public rclcpp::Node
+namespace robast_drawer_manager
 {
-  public:
-    DrawerManager()
-    : Node("drawer_manager"), count_(0)
-    {
-
-    rclcpp::Service<example_interfaces::srv::AddTwoInts>::SharedPtr service = Node->create_service<example_interfaces::srv::AddTwoInts>("add_two_ints", &add);
-
-    }
-
-  private:
-    void add(const std::shared_ptr<example_interfaces::srv::AddTwoInts::Request> request,  std::shared_ptr<example_interfaces::srv::AddTwoInts::Response>      response)
 
 
-}
+  DrawerManager::DrawerManager(): Node("drawer_manager_Node")
+  {
+    RCLCPP_INFO(get_logger(), "Creating");
+  }
 
-int main(int argc, char * argv[])
-{
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<DrawerManager>());
-  rclcpp::shutdown();
-  return 0;
-}
+  DrawerManager::~DrawerManager()
+  {
+    RCLCPP_INFO(get_logger(), "Destroying");
+  }
+
+
+} // namespace robast_drawer_manager
