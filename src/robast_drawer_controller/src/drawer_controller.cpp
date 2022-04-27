@@ -38,8 +38,8 @@ void DrawerController::accepted_callback(const std::shared_ptr<GoalHandleControl
 }
 
 void DrawerController::open_drawer(const std::shared_ptr<GoalHandleControlDrawer> goal_handle) {
-  RCLCPP_INFO(this->get_logger(), "Executing goal");
-
+  RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
+ 
   int serial_port = open("/dev/ttyACM0", O_RDWR);
 
   // Check for errors
@@ -90,7 +90,7 @@ void DrawerController::open_drawer(const std::shared_ptr<GoalHandleControlDrawer
   }
 
   // Write to serial port
-  unsigned char msg[] = { 'O', '\r' };
+  unsigned char msg[] = { 'C', '\r' };
   write(serial_port, msg, sizeof(msg));
 
   // Allocate memory for read buffer, set size according to your needs
@@ -117,6 +117,8 @@ void DrawerController::open_drawer(const std::shared_ptr<GoalHandleControlDrawer
   printf("Read %i bytes. Received message: %s", num_bytes, read_buf);
 
   close(serial_port);
+
+  RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
 }
 
 
