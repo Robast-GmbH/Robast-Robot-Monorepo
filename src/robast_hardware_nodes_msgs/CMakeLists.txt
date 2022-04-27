@@ -35,6 +35,8 @@ endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/ControlDrawer.action"
+  "action/OpenDrawer.action"
+  "srv/RequestDrawer.srv"
   DEPENDENCIES builtin_interfaces geometry_msgs std_msgs nav_msgs
 )
 

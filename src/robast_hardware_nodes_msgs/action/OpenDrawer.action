@@ -1,5 +1,6 @@
 #goal
-# no specific goal needed, because calling this action has only one possible result: Opening the drawer
+#int64 drawer_id # the ID 
+int64 requestor_id
 ---
 #result
 bool success  # indicates whether closing of the drawer was successfull after opening it
