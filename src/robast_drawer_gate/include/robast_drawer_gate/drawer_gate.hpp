@@ -14,14 +14,14 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
 
-#include "robast_msgs/action/drawer_user_access.hpp"
+#include "robast_ros2_msgs/action/drawer_user_access.hpp"
 
 namespace robast_drawer_gate
 {
 class DrawerGate : public rclcpp::Node
 {
 public:
-  using DrawerUserAccess = robast_msgs::action::DrawerUserAccess;
+  using DrawerUserAccess = robast_ros2_msgs::action::DrawerUserAccess;
   using GoalHandleDrawerUserAccess = rclcpp_action::ServerGoalHandle<DrawerUserAccess>;
 
   /**
