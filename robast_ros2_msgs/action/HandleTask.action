@@ -1,8 +1,8 @@
 #goal
-robast_msgs/Task task
+robast_ros2_msgs/Task task
 ---
 #result
 bool success  # indicates whether tasks was successful
 ---
 #feedback
-robast_msgs/TaskStatus task_status
+robast_ros2_msgs/TaskStatus task_status
