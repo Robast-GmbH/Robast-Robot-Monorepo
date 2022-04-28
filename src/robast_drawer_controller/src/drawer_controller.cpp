@@ -4,7 +4,7 @@ namespace robast_drawer_controller
 {
 DrawerController::DrawerController() : Node("robast_drawer_controller")
 {
-  this->drawer_controller_server = rclcpp_action::create_server<ControlDrawer>(
+  this->drawer_controller_server = rclcpp_action::create_server<DrawerUserAccess>(
     this,
     "control_drawer",
     std::bind(&DrawerController::goal_callback, this, std::placeholders::_1, std::placeholders::_2),
@@ -16,7 +16,7 @@ DrawerController::DrawerController() : Node("robast_drawer_controller")
 
 rclcpp_action::GoalResponse DrawerController::goal_callback(
     const rclcpp_action::GoalUUID & uuid,
-    std::shared_ptr<const ControlDrawer::Goal> goal)
+    std::shared_ptr<const DrawerUserAccess::Goal> goal)
 {
   RCLCPP_INFO(this->get_logger(), "Received goal request");
   // (void)uuid;
@@ -24,20 +24,20 @@ rclcpp_action::GoalResponse DrawerController::goal_callback(
 }
 
 rclcpp_action::CancelResponse DrawerController::cancel_callback(
-  const std::shared_ptr<GoalHandleControlDrawer> goal_handle)
+  const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle)
 {
   RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
   // (void)goal_handle;
   return rclcpp_action::CancelResponse::ACCEPT;
 }
 
-void DrawerController::accepted_callback(const std::shared_ptr<GoalHandleControlDrawer> goal_handle)
+void DrawerController::accepted_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle)
 {
   // this needs to return quickly to avoid blocking the executor, so spin up a new thread
   std::thread{std::bind(&DrawerController::open_drawer, this, std::placeholders::_1), goal_handle}.detach();
 }
 
-void DrawerController::open_drawer(const std::shared_ptr<GoalHandleControlDrawer> goal_handle) {
+void DrawerController::open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) {
   RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
  
   int serial_port = open("/dev/ttyACM0", O_RDWR);

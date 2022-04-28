@@ -14,15 +14,15 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
 
-#include "robast_hardware_nodes_msgs/action/control_drawer.hpp"
+#include "robast_msgs/action/drawer_user_access.hpp"
 
 namespace robast_drawer_controller
 {
 class DrawerController : public rclcpp::Node
 {
 public:
-  using ControlDrawer = robast_hardware_nodes_msgs::action::ControlDrawer;
-  using GoalHandleControlDrawer = rclcpp_action::ServerGoalHandle<ControlDrawer>;
+  using DrawerUserAccess = robast_msgs::action::DrawerUserAccess;
+  using GoalHandleDrawerUserAccess = rclcpp_action::ServerGoalHandle<DrawerUserAccess>;
 
   /**
    * @brief A constructor for robast_drawer_controller::DrawerController class
@@ -35,18 +35,18 @@ public:
   
 
 private:
-  rclcpp_action::Server<ControlDrawer>::SharedPtr drawer_controller_server;
+  rclcpp_action::Server<DrawerUserAccess>::SharedPtr drawer_controller_server;
 
-  rclcpp_action::GoalResponse goal_callback(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const ControlDrawer::Goal> goal);
+  rclcpp_action::GoalResponse goal_callback(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const DrawerUserAccess::Goal> goal);
 
-  rclcpp_action::CancelResponse cancel_callback(const std::shared_ptr<GoalHandleControlDrawer> goal_handle);
+  rclcpp_action::CancelResponse cancel_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
 
-  void accepted_callback(const std::shared_ptr<GoalHandleControlDrawer> goal_handle);
+  void accepted_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
 
   /**
    * @brief Action server execution callback
    */
-  void open_drawer(const std::shared_ptr<GoalHandleControlDrawer> goal_handle);  
+  void open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);  
 };
 }  // namespace robast_drawer_controller
 #endif  // ROBAST_DRAWER_CONTROLLER__DRAWER_CONTROLLER_HPP_

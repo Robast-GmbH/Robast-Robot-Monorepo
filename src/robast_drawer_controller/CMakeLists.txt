@@ -19,7 +19,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
-find_package(robast_hardware_nodes_msgs REQUIRED)
+find_package(robast_msgs REQUIRED)
 
 include_directories(include)
 
@@ -37,7 +37,7 @@ add_library(${library_drawer_controller} SHARED
 set(dependencies
   rclcpp
   rclcpp_action
-  robast_hardware_nodes_msgs
+  robast_msgs
 )
 
 ament_target_dependencies(${executable_drawer_controller}
