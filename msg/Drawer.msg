@@ -1,0 +1,2 @@
+uint16 drawer_id
+robast_msgs/Box drawer_size

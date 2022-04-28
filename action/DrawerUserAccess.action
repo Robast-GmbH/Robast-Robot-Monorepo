@@ -1,0 +1,8 @@
+#goal
+int64 drawer_id
+---
+#result
+bool success  # indicates whether closing of the drawer was successfull after opening it
+---
+#feedback
+bool is_drawer_open  # information of the sensor data about the status of the electrical locker
