@@ -9,8 +9,8 @@ def generate_launch_description():
 
     # Nodes launching commands
     start_map_saver_server_cmd = launch_ros.actions.Node(
-            package='robast_drawer_controller',
-            executable='drawer_controller',
+            package='robast_drawer_gate',
+            executable='drawer_gate',
             output='screen',
             emulate_tty=True,  # https://github.com/ros2/launch/issues/188
             )

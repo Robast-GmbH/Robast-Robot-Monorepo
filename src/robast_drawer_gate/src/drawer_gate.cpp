@@ -1,20 +1,20 @@
-#include "robast_drawer_controller/drawer_controller.hpp"
+#include "robast_drawer_gate/drawer_gate.hpp"
 
-namespace robast_drawer_controller
+namespace robast_drawer_gate
 {
-DrawerController::DrawerController() : Node("robast_drawer_controller")
+DrawerGate::DrawerGate() : Node("robast_drawer_gate")
 {
-  this->drawer_controller_server = rclcpp_action::create_server<DrawerUserAccess>(
+  this->drawer_gate_server = rclcpp_action::create_server<DrawerUserAccess>(
     this,
     "control_drawer",
-    std::bind(&DrawerController::goal_callback, this, std::placeholders::_1, std::placeholders::_2),
-    std::bind(&DrawerController::cancel_callback, this, std::placeholders::_1),
-    std::bind(&DrawerController::accepted_callback, this, std::placeholders::_1));
+    std::bind(&DrawerGate::goal_callback, this, std::placeholders::_1, std::placeholders::_2),
+    std::bind(&DrawerGate::cancel_callback, this, std::placeholders::_1),
+    std::bind(&DrawerGate::accepted_callback, this, std::placeholders::_1));
 }
 
 //TODO: Dekonstruktor
 
-rclcpp_action::GoalResponse DrawerController::goal_callback(
+rclcpp_action::GoalResponse DrawerGate::goal_callback(
     const rclcpp_action::GoalUUID & uuid,
     std::shared_ptr<const DrawerUserAccess::Goal> goal)
 {
@@ -23,7 +23,7 @@ rclcpp_action::GoalResponse DrawerController::goal_callback(
   return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 }
 
-rclcpp_action::CancelResponse DrawerController::cancel_callback(
+rclcpp_action::CancelResponse DrawerGate::cancel_callback(
   const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle)
 {
   RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
@@ -31,13 +31,13 @@ rclcpp_action::CancelResponse DrawerController::cancel_callback(
   return rclcpp_action::CancelResponse::ACCEPT;
 }
 
-void DrawerController::accepted_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle)
+void DrawerGate::accepted_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle)
 {
   // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-  std::thread{std::bind(&DrawerController::open_drawer, this, std::placeholders::_1), goal_handle}.detach();
+  std::thread{std::bind(&DrawerGate::open_drawer, this, std::placeholders::_1), goal_handle}.detach();
 }
 
-void DrawerController::open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) {
+void DrawerGate::open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) {
   RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
  
   int serial_port = open("/dev/ttyACM0", O_RDWR);
@@ -124,4 +124,4 @@ void DrawerController::open_drawer(const std::shared_ptr<GoalHandleDrawerUserAcc
 
 
 
-}  // namespace robast_drawer_controller
+}  // namespace robast_drawer_gate

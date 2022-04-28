@@ -1,5 +1,5 @@
-#ifndef ROBAST_DRAWER_CONTROLLER__DRAWER_CONTROLLER_HPP_
-#define ROBAST_DRAWER_CONTROLLER__DRAWER_CONTROLLER_HPP_
+#ifndef ROBAST_DRAWER_GATE__DRAWER_GATE_HPP_
+#define ROBAST_DRAWER_GATE__DRAWER_GATE_HPP_
 
 #include <inttypes.h>
 #include <memory>
@@ -16,26 +16,26 @@
 
 #include "robast_msgs/action/drawer_user_access.hpp"
 
-namespace robast_drawer_controller
+namespace robast_drawer_gate
 {
-class DrawerController : public rclcpp::Node
+class DrawerGate : public rclcpp::Node
 {
 public:
   using DrawerUserAccess = robast_msgs::action::DrawerUserAccess;
   using GoalHandleDrawerUserAccess = rclcpp_action::ServerGoalHandle<DrawerUserAccess>;
 
   /**
-   * @brief A constructor for robast_drawer_controller::DrawerController class
+   * @brief A constructor for robast_drawer_gate::DrawerGate class
    */
-  DrawerController();
+  DrawerGate();
   /**
-   * @brief A destructor for robast_drawer_controller::DrawerController class
+   * @brief A destructor for robast_drawer_gate::DrawerGate class
    */
-  // ~DrawerController();
+  // ~DrawerGate();
   
 
 private:
-  rclcpp_action::Server<DrawerUserAccess>::SharedPtr drawer_controller_server;
+  rclcpp_action::Server<DrawerUserAccess>::SharedPtr drawer_gate_server;
 
   rclcpp_action::GoalResponse goal_callback(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const DrawerUserAccess::Goal> goal);
 
@@ -48,5 +48,5 @@ private:
    */
   void open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);  
 };
-}  // namespace robast_drawer_controller
-#endif  // ROBAST_DRAWER_CONTROLLER__DRAWER_CONTROLLER_HPP_
+}  // namespace robast_drawer_gate
+#endif  // ROBAST_DRAWER_GATE__DRAWER_GATE_HPP_

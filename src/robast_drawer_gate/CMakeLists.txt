@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(robast_drawer_controller)
+project(robast_drawer_gate)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -23,15 +23,15 @@ find_package(robast_msgs REQUIRED)
 
 include_directories(include)
 
-set(executable_drawer_controller drawer_controller)
+set(executable_drawer_gate drawer_gate)
 
-add_executable(${executable_drawer_controller}
+add_executable(${executable_drawer_gate}
   src/main.cpp)
 
-set(library_drawer_controller ${executable_drawer_controller}_core)
+set(library_drawer_gate ${executable_drawer_gate}_core)
 
-add_library(${library_drawer_controller} SHARED
-  src/drawer_controller.cpp
+add_library(${library_drawer_gate} SHARED
+  src/drawer_gate.cpp
 )
 
 set(dependencies
@@ -40,29 +40,29 @@ set(dependencies
   robast_msgs
 )
 
-ament_target_dependencies(${executable_drawer_controller}
+ament_target_dependencies(${executable_drawer_gate}
   ${dependencies}
 )
 
-target_link_libraries(${executable_drawer_controller} ${library_drawer_controller})
+target_link_libraries(${executable_drawer_gate} ${library_drawer_gate})
 
-ament_target_dependencies(${library_drawer_controller}
+ament_target_dependencies(${library_drawer_gate}
   ${dependencies}
 )
 
-target_include_directories(drawer_controller PUBLIC
+target_include_directories(drawer_gate PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
 install(TARGETS
-  ${library_drawer_controller}
+  ${library_drawer_gate}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
 install(TARGETS
-  ${executable_drawer_controller}
+  ${executable_drawer_gate}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
