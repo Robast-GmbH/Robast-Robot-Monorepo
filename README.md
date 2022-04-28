@@ -1,2 +1,2 @@
-# Robast_Msgs
+# robast_msgs
 This repo contains all custom robast messages.
