@@ -7,28 +7,35 @@
 namespace robast_can_msgs
 {
     struct can_signal
+        {
+            std::string name;
+            uint8_t bit_start_LSB;
+            uint8_t bit_length; // number of bits for this can_signal
+            uint64_t data;
+        };
+
+    class CanMessage
     {
-        std::string name;
-        uint8_t bit_start_LSB;
-        uint8_t bit_length; // number of bits for this can_signal
-        uint64_t data;
+        public:
+            /**
+             * @brief A constructor for robast_can_msgs::CanMessage class
+             */
+            CanMessage(uint16_t id, std::string name, std::vector<can_signal> can_signals);
+
+            uint16_t id;
+            std::string name;
+            std::vector<can_signal> can_signals;            
     };
 
-    struct can_message
-    {
-        uint16_t id;
-        std::string name;
-        std::vector<can_signal> can_signals;
-    };
-
-    can_message decode_can_message(can_message can_message, uint64_t can_data) {
-        // TODO: Test this!
-        for (int i = 0; i < can_message.can_signals.size(); i++) {
-            can_message.can_signals[i].data = (can_data >> can_message.can_signals[i].bit_start_LSB) << (64 - can_message.can_signals[i].bit_length);
-        }
-        return can_message;
-    }
-
+    /**
+     * @brief Decodes can message from a 8 Byte Bitstream
+     *
+     * @param id ID of the can message
+     * @param name name of the can message
+     * @param can_data 8 Byte Bitstream where to decode data from
+     * @return CanMessage
+     */
+    CanMessage decode_can_message(uint16_t id, std::string name, uint64_t can_data);
 }
 
 #endif /* CAN_MESSAGE_HPP_ */
