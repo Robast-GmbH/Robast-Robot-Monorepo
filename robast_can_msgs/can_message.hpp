@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include <math.h>
 
 namespace robast_can_msgs
 {
@@ -20,22 +21,30 @@ namespace robast_can_msgs
             /**
              * @brief A constructor for robast_can_msgs::CanMessage class
              */
-            CanMessage(uint16_t id, std::string name, std::vector<can_signal> can_signals);
+            CanMessage(uint32_t id, std::string name, std::vector<can_signal> can_signals);
 
-            uint16_t id;
+            uint32_t id;
             std::string name;
             std::vector<can_signal> can_signals;            
     };
 
     /**
-     * @brief Decodes can message from a 8 Byte Bitstream
+     * @brief Decodes CAN message from a 8 Byte Bitstream
      *
-     * @param id ID of the can message
-     * @param name name of the can message
-     * @param can_data 8 Byte Bitstream where to decode data from
+     * @param rx_frame The received CAN data frame
+     * @param can_db CAN database to decode message with
+     * @param name name of the CAN message
      * @return CanMessage
      */
-    CanMessage decode_can_message(uint16_t id, std::string name, uint64_t can_data);
+    CanMessage decode_can_message(CAN_frame_t rx_frame, std::vector<CanMessage> can_db, std::string name);
+
+    /**
+     * @brief Joins together the data bytes from the CAN bus
+     *
+     * @param rx_frame The received CAN data frame
+     * @return 8Byte CAN data joined together 
+     */
+    uint64_t join_together_CAN_data_bytes(CAN_frame_t rx_frame);
 }
 
 #endif /* CAN_MESSAGE_HPP_ */
