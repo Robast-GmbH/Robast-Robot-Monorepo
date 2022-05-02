@@ -52,24 +52,9 @@ void can_loop() {
     }
     else {
       printf(" from 0x%08X, DLC %d, Data ", rx_frame.MsgID,  rx_frame.FIR.B.DLC);
-      for (int i = 0; i < rx_frame.FIR.B.DLC; i++) {
-        printf("0x%02X ", rx_frame.data.u8[i]);
-        // Join together the data of all CAN data bytes
-         // TODO: Test this!
-        uint64_t can_byte = rx_frame.data.u8[i];
-        uint64_t can_data = (can_byte << i*8) | can_data;
-      }
       printf("\n");
       printf("can_data: 0x%02X ",can_data);
       printf("\n");
-    }
-
-    // TODO: Test this!
-    for (int i = 0; i < robast_can_msgs::can_db.size(); i++) {
-     if (robast_can_msgs::can_db[i].id == rx_frame.MsgID) {
-        printf("CAN Message with 0x%08X has the name %s", rx_frame.MsgID, robast_can_msgs::can_db[i].name);
-        robast_can_msgs::CanMessage drawer_user_access = robast_can_msgs::decode_can_message(robast_can_msgs::can_db[i].id, robast_can_msgs::can_db[i].name, can_data);
-     }
     }
   }
 
