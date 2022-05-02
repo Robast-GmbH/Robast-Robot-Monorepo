@@ -3,7 +3,7 @@
 #include <CAN_config.h>
 #include <FastLED.h>
 
-#include <robast_msgs/robast_can_msgs/can_db.hpp>
+#include "robast_can_msgs/can_db.hpp"
 
 #define LOCK_POWER_PIN GPIO_NUM_21
 #define LOCK_SENSOR_PIN GPIO_NUM_19
@@ -68,8 +68,7 @@ void can_loop() {
     for (int i = 0; i < robast_can_msgs::can_db.size(); i++) {
      if (robast_can_msgs::can_db[i].id == rx_frame.MsgID) {
         printf("CAN Message with 0x%08X has the name %s", rx_frame.MsgID, robast_can_msgs::can_db[i].name);
-        robast_can_msgs::can_message drawer_user_access;
-        drawer_user_access = robast_can_msgs::decode_can_message(drawer_user_access, can_data);
+        robast_can_msgs::CanMessage drawer_user_access = robast_can_msgs::decode_can_message(robast_can_msgs::can_db[i].id, robast_can_msgs::can_db[i].name, can_data);
      }
     }
   }

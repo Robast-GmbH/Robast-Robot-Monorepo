@@ -1,3 +1,3 @@
 [submodule "robast_msgs.git"]
-	path = Drawer_Controller/include/robast_msgs
+	path = Drawer_Controller/lib/robast_msgs
 	url = git@github.com:Robast-GmbH/robast_msgs.git
