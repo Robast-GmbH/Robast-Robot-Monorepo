@@ -29,9 +29,6 @@ namespace robast_can_msgs
     uint64_t join_together_CAN_data_bytes(CAN_frame_t rx_frame) {
         uint64_t can_data;
         for (int i = 0; i < rx_frame.FIR.B.DLC; i++) {
-            printf("0x%02X ", rx_frame.data.u8[i]);
-            // Join together the data of all CAN data bytes
-            // TODO: Test this!
             uint64_t can_byte = rx_frame.data.u8[i];
             can_data = (can_byte << i*8) | can_data;
         };
