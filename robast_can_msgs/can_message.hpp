@@ -1,16 +1,17 @@
 #ifndef CAN_MESSAGE_HPP_
 #define CAN_MESSAGE_HPP_
 
+#include <optional>
+#include <CAN.h>
 #include <string>
 #include <vector>
-#include <math.h>
 
 namespace robast_can_msgs
 {
     struct can_signal
         {
             std::string name;
-            uint8_t bit_start_LSB;
+            uint8_t bit_start;
             uint8_t bit_length; // number of bits for this can_signal
             uint64_t data;
         };
@@ -34,9 +35,9 @@ namespace robast_can_msgs
      * @param rx_frame The received CAN data frame
      * @param can_db CAN database to decode message with
      * @param name name of the CAN message
-     * @return CanMessage
+     * @return std::optional<CanMessage>
      */
-    CanMessage decode_can_message(CAN_frame_t rx_frame, std::vector<CanMessage> can_db, std::string name);
+    std::optional<CanMessage> decode_can_message(CAN_frame_t rx_frame, std::vector<CanMessage> can_db);
 
     /**
      * @brief Joins together the data bytes from the CAN bus
