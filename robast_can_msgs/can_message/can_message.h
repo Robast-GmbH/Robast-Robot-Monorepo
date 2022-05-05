@@ -2,9 +2,15 @@
 #define CAN_MESSAGE_HPP_
 
 #include <optional>
-#include <CAN.h>
 #include <string>
 #include <vector>
+
+#ifdef IS_TEST
+#include "robast_can_msgs/can_mock/can_mock.h"
+using namespace can_mock;
+#else
+#include <CAN.h>
+#endif
 
 namespace robast_can_msgs
 {
@@ -26,7 +32,9 @@ namespace robast_can_msgs
 
             uint32_t id;
             std::string name;
-            std::vector<can_signal> can_signals;            
+            std::vector<can_signal> can_signals;
+
+            uint32_t get_id();
     };
 
     /**

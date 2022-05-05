@@ -1,4 +1,4 @@
-#include "can_message.hpp"
+#include "can_message.h"
 
 namespace robast_can_msgs
 {
@@ -7,6 +7,10 @@ namespace robast_can_msgs
         id = id;
         name = name;
         can_signals = can_signals;
+    }
+
+    uint32_t CanMessage::get_id() {
+        return id;
     }
 
     std::optional<CanMessage> decode_can_message(CAN_frame_t rx_frame, std::vector<CanMessage> can_db_messages)
