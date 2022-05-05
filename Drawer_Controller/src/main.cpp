@@ -3,7 +3,7 @@
 #include <CAN_config.h>
 #include <FastLED.h>
 
-#include "robast_can_msgs/can_db.hpp"
+#include "robast_can_msgs/can_db/can_db.h"
 
 #define LOCK_POWER_PIN GPIO_NUM_21
 #define LOCK_SENSOR_PIN GPIO_NUM_19
