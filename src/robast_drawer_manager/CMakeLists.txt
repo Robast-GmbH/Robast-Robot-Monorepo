@@ -19,7 +19,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
-find_package(robast_hardware_nodes_msgs REQUIRED)
+find_package(robast_ros2_msgs REQUIRED)
 
 include_directories(include)
 
