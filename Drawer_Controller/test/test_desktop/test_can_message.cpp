@@ -1,10 +1,14 @@
 #include <unity.h>
+#include <string>
+#include <iostream>
 
 #include "robast_can_msgs/can_message/can_message.h"
 #include "robast_can_msgs/can_db/can_db.h"
 
 CAN_frame_t rx_frame;
 uint8_t u8_can_data[8];
+uint64_t can_data_expected;
+uint64_t can_data_not_expected;
 uint64_t drawer_id;
 uint64_t open_drawer;
 uint64_t LED_red;
@@ -20,7 +24,9 @@ void setUp(void) {
     LED_green = 1;
     LED_blue = 1;
 
-    uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b10000000,0b10000000,0b10000000,0x07,0x08};
+    uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b10000000,0b10000000,0b10000000,0b10000000,0x08};
+    can_data_expected = 0x0102038080808008;
+    can_data_not_expected = 0x0907060509030201;
     
     std::copy(std::begin(u8_can_data), std::end(u8_can_data), std::begin(rx_frame.data.u8)); // copy data array to rx_frame
 }
@@ -30,9 +36,7 @@ void tearDown(void) {
 }
 
 void test_testing_data(void) {
-  robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
-
-  robast_can_msgs::CanMessage can_message = robast_can_msgs::CanMessage(
+  robast_can_msgs::CanMessage can_message(
                     0x01,
                     "drawer_user_access",
                     {
@@ -42,73 +46,48 @@ void test_testing_data(void) {
                         {"LED_green", 33, 8, 0},
                         {"LED_blue", 41, 8, 0},
                     });
+  robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
-  TEST_ASSERT_EQUAL_UINT32(2, can_db.can_messages.size());
-
-//   TEST_ASSERT_EQUAL_UINT32_MESSAGE(rx_frame.MsgID, can_db.can_messages[0].id, std::to_string(can_db.can_messages[0].id).c_str());
-  // TEST_ASSERT_EQUAL_UINT32_MESSAGE(rx_frame.MsgID, can_message.get_id(), std::to_string(can_message.get_id()).c_str());
-  // TEST_ASSERT_EQUAL_UINT32_MESSAGE(rx_frame.MsgID, can_message.id, std::to_string(can_message.id).c_str());
-  // TEST_ASSERT_EQUAL_STRING("drawer_user_access", can_db.can_messages[0].name.c_str());
+  TEST_ASSERT_EQUAL_UINT32(rx_frame.MsgID, can_db.can_messages[0].id);
+  TEST_ASSERT_EQUAL_UINT32(rx_frame.MsgID, can_message.id);
+  TEST_ASSERT_EQUAL_STRING("drawer_user_access", can_db.can_messages[0].name.c_str());
+  TEST_ASSERT_EQUAL_STRING("drawer_id", can_db.can_messages[0].can_signals[0].name.c_str());
 }
 
 // test_function_should_doBlahAndBlah
 void test_join_together_CAN_data_bytes(void) {
-  // Mind that for the tests unity doesn't support 64-bit, although it should be possible via the unity_config.h
-  // Error message is: "FAIL: Unity 64-bit Support Disabled"
-  // At the moment this can't be fixed despite great effort, therefore 64 Bits are separated into 2 x 32 Bits
-//   uint64_t can_data_64;
-//   uint32_t can_data_32_1;
-//   uint32_t can_data_32_2;
+  uint64_t can_data = robast_can_msgs::join_together_CAN_data_bytes(rx_frame);
 
-//   uint64_t can_data_expected_64 = 0x0102038080800708;
-//   uint32_t can_data_expected_32_1 = (uint32_t) ((can_data_expected_64 & 0xFFFFFFFF00000000) >> 32);
-//   uint32_t can_data_expected_32_2 = (uint32_t) (can_data_expected_64 & 0xFFFFFFFF);
-
-//   uint64_t can_data_not_expected_64 = 0x0907060509030201;
-//   uint32_t can_data_not_expected_32_1 = (uint32_t) ((can_data_not_expected_64 & 0xFFFFFFFF00000000) >> 32);
-//   uint32_t can_data_not_expected_32_2 = (uint32_t) (can_data_not_expected_64 & 0xFFFFFFFF);
-
-//   can_data_64 = robast_can_msgs::join_together_CAN_data_bytes(rx_frame);
-
-//   can_data_32_1 = (uint32_t) ((can_data_64 & 0xFFFFFFFF00000000) >> 32);
-//   can_data_32_2 = (uint32_t) (can_data_64 & 0xFFFFFFFF);
-//   TEST_ASSERT_EQUAL_UINT32(can_data_expected_32_1, can_data_32_1);
-//   TEST_ASSERT_EQUAL_UINT32(can_data_expected_32_2, can_data_32_2);
-//   TEST_ASSERT_NOT_EQUAL(can_data_not_expected_32_1, can_data_32_1);
-//   TEST_ASSERT_NOT_EQUAL(can_data_not_expected_32_2, can_data_32_2);
+  TEST_ASSERT_FALSE(can_data_not_expected == can_data);
+  TEST_ASSERT_TRUE(can_data_expected == can_data);
+  TEST_ASSERT_EQUAL_UINT64(can_data_expected, can_data);
 }
 
 void test_decode_can_message(void) {
-  // uint64_t can_data_expected_64[5] = {drawer_id, open_drawer, LED_red, LED_green, LED_blue};
+  robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
+  uint64_t can_data_expected_drawer_user_access[5] = {drawer_id, open_drawer, LED_red, LED_green, LED_blue};
 
-  // std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_frame, can_db.can_messages);
+  std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_frame, can_db.can_messages);
 
-  // if (can_message.has_value()) {
-  //   for (int j = 0; j < can_db.can_messages.size(); j++) {
-  //     if (rx_frame.MsgID ==  can_db.can_messages[j].id) {
-  //       for (int i = 0; i < can_db.can_messages[j].can_signals.size(); i++) {
-  //         uint32_t can_data_32_1 = (uint32_t) ((can_message.value().can_signals[i].data & 0xFFFFFFFF00000000) >> 32);
-  //         uint32_t can_data_32_2 = (uint32_t) (can_message.value().can_signals[i].data & 0xFFFFFFFF);
-
-  //         uint32_t can_data_expected_32_1 = (uint32_t) ((can_data_expected_64[i] & 0xFFFFFFFF00000000) >> 32);
-  //         uint32_t can_data_expected_32_2 = (uint32_t) (can_data_expected_64[i] & 0xFFFFFFFF);
-
-  //         TEST_ASSERT_EQUAL_UINT32(can_data_expected_32_1, can_data_32_1);
-  //         TEST_ASSERT_EQUAL_UINT32(can_data_expected_32_2, can_data_32_2);
-  //       }
-  //     }
-  //   }
-  // } else {
-  //   TEST_FAIL();
-  // }  
+  if (can_message.has_value()) {
+    for (int j = 0; j < can_db.can_messages.size(); j++) {
+      if (rx_frame.MsgID == can_db.can_messages[j].id) {
+        for (int i = 0; i < can_db.can_messages[j].can_signals.size(); i++) {
+          TEST_ASSERT_EQUAL_UINT64(can_data_expected_drawer_user_access[i], can_message.value().can_signals[i].data);
+        }
+      }
+    }
+  } else {
+    TEST_FAIL();
+  }  
 }
 
 int main(int argc, char **argv) {
     UNITY_BEGIN();
 
     RUN_TEST(test_testing_data);
-    // RUN_TEST(test_join_together_CAN_data_bytes);
-    // RUN_TEST(test_decode_can_message);
+    RUN_TEST(test_join_together_CAN_data_bytes);
+    RUN_TEST(test_decode_can_message);
 
     UNITY_END();
 
