@@ -2,15 +2,11 @@
 
 namespace robast_can_msgs
 {
-    CanMessage::CanMessage(uint32_t id, std::string name, std::vector<can_signal> can_signals)
+    CanMessage::CanMessage(uint32_t id_in, std::string name_in, std::vector<can_signal> can_signals_in)
     {
-        id = id;
-        name = name;
-        can_signals = can_signals;
-    }
-
-    uint32_t CanMessage::get_id() {
-        return id;
+        id = id_in;
+        name = name_in;
+        can_signals_in = can_signals_in;
     }
 
     std::optional<CanMessage> decode_can_message(CAN_frame_t rx_frame, std::vector<CanMessage> can_db_messages)
@@ -31,7 +27,7 @@ namespace robast_can_msgs
     }
 
     uint64_t join_together_CAN_data_bytes(CAN_frame_t rx_frame) {
-        uint64_t can_data;
+        uint64_t can_data = 0;
         for (int i = 0; i < rx_frame.FIR.B.DLC; i++) {
             uint64_t can_byte = rx_frame.data.u8[i];
             can_data = (can_byte << (7-i)*8) | can_data;            

@@ -28,13 +28,11 @@ namespace robast_can_msgs
             /**
              * @brief A constructor for robast_can_msgs::CanMessage class
              */
-            CanMessage(uint32_t id, std::string name, std::vector<can_signal> can_signals);
+            CanMessage(uint32_t id_in, std::string name_in, std::vector<can_signal> can_signals_in);
 
             uint32_t id;
             std::string name;
             std::vector<can_signal> can_signals;
-
-            uint32_t get_id();
     };
 
     /**
