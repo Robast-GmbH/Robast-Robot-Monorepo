@@ -1,10 +1,7 @@
 #include <unity.h>
 
-#define IS_TEST
-
-#include "../lib/robast_msgs/robast_can_msgs/can_message/can_message.h"
-#include "../lib/robast_msgs/robast_can_msgs/can_db/can_db.h"
-#include "../lib/robast_msgs/robast_can_msgs/can_mock/can_mock.h"
+#include "robast_can_msgs/can_message/can_message.h"
+#include "robast_can_msgs/can_db/can_db.h"
 
 CAN_frame_t rx_frame;
 uint8_t u8_can_data[8];
@@ -35,18 +32,18 @@ void tearDown(void) {
 void test_testing_data(void) {
   robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
-//   robast_can_msgs::CanMessage can_message = robast_can_msgs::CanMessage(
-//                     0x01,
-//                     "drawer_user_access",
-//                     {
-//                         {"drawer_id", 0, 24, 0},
-//                         {"open_drawer", 24, 1, 0},
-//                         {"LED_red", 25, 8, 0},
-//                         {"LED_green", 33, 8, 0},
-//                         {"LED_blue", 41, 8, 0},
-//                     });
+  robast_can_msgs::CanMessage can_message = robast_can_msgs::CanMessage(
+                    0x01,
+                    "drawer_user_access",
+                    {
+                        {"drawer_id", 0, 24, 0},
+                        {"open_drawer", 24, 1, 0},
+                        {"LED_red", 25, 8, 0},
+                        {"LED_green", 33, 8, 0},
+                        {"LED_blue", 41, 8, 0},
+                    });
 
-//   TEST_ASSERT_EQUAL_UINT32(2, can_db.can_messages.size());
+  TEST_ASSERT_EQUAL_UINT32(2, can_db.can_messages.size());
 
 //   TEST_ASSERT_EQUAL_UINT32_MESSAGE(rx_frame.MsgID, can_db.can_messages[0].id, std::to_string(can_db.can_messages[0].id).c_str());
   // TEST_ASSERT_EQUAL_UINT32_MESSAGE(rx_frame.MsgID, can_message.get_id(), std::to_string(can_message.get_id()).c_str());
