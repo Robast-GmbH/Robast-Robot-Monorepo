@@ -93,14 +93,19 @@ void test_decode_can_message(void)
   std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_frame, can_db.can_messages);
 
   if (can_message.has_value()) {
-    for (int j = 0; j < can_db.can_messages.size(); j++) {
-      if (rx_frame.MsgID == can_db.can_messages[j].id) {
-        for (int i = 0; i < can_db.can_messages[j].can_signals.size(); i++) {
+    for (int j = 0; j < can_db.can_messages.size(); j++)
+    {
+      if (rx_frame.MsgID == can_db.can_messages[j].id)
+      {
+        for (int i = 0; i < can_db.can_messages[j].can_signals.size(); i++)
+        {
           TEST_ASSERT_EQUAL_UINT64(can_data_expected_drawer_user_access[i], can_message.value().can_signals[i].data);
         }
       }
     }
-  } else {
+  }
+  else
+  {
     TEST_FAIL();
   }  
 }
