@@ -6,7 +6,7 @@ namespace robast_can_msgs
     {
         id = id_in;
         name = name_in;
-        can_signals_in = can_signals_in;
+        can_signals = can_signals_in;
     }
 
     std::optional<CanMessage> decode_can_message(CAN_frame_t rx_frame, std::vector<CanMessage> can_db_messages)
@@ -16,9 +16,12 @@ namespace robast_can_msgs
             if (rx_frame.MsgID == can_db_messages[j].id) {
                 uint64_t can_data = join_together_CAN_data_bytes(rx_frame);
                 for (int i = 0; i < can_db_messages[j].can_signals.size(); i++) {
-                    can_signals[i].bit_start = can_db_messages[j].can_signals[i].bit_start;
-                    can_signals[i].bit_length = can_db_messages[j].can_signals[i].bit_length;
-                    can_signals[i].data = (can_data << can_signals[i].bit_start) >> (64 - can_signals[i].bit_length);
+                    robast_can_msgs::can_signal can_signal;
+                    can_signal.bit_start = can_db_messages[j].can_signals[i].bit_start;
+                    can_signal.bit_length = can_db_messages[j].can_signals[i].bit_length;
+                    can_signal.name = can_db_messages[j].can_signals[i].name;
+                    can_signal.data = (can_data << can_signal.bit_start) >> (64 - can_signal.bit_length);
+                    can_signals.push_back(can_signal);
                 }
                 return CanMessage(rx_frame.MsgID, can_db_messages[j].name, can_signals);
             }
