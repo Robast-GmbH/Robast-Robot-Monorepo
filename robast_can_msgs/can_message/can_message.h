@@ -4,6 +4,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <cmath>
 
 #ifdef IS_TEST
 #include "robast_can_msgs/can_mock/can_mock.h"
@@ -39,11 +40,19 @@ namespace robast_can_msgs
      * @brief Decodes CAN message from a 8 Byte Bitstream
      *
      * @param rx_frame The received CAN data frame
-     * @param can_db CAN database to decode message with
-     * @param name name of the CAN message
+     * @param can_db_messages CAN messages from CAN database to decode the message with
      * @return std::optional<CanMessage>
      */
-    std::optional<CanMessage> decode_can_message(CAN_frame_t rx_frame, std::vector<CanMessage> can_db);
+    std::optional<CanMessage> decode_can_message(CAN_frame_t rx_frame, std::vector<CanMessage> can_db_messages);
+
+    /**
+     * @brief Encodes CAN message into CAN_frame_t with 8 Byte Bitstream
+     *
+     * @param can_message The can_message to be encoded
+     * @param can_db_messages CAN messages from CAN database to encode the message with
+     * @return std::optional<CAN_frame_t>
+     */
+    std::optional<CAN_frame_t> encode_can_message(CanMessage can_message, std::vector<CanMessage> can_db_messages);    
 
     /**
      * @brief Joins together the data bytes from the CAN bus
@@ -51,7 +60,23 @@ namespace robast_can_msgs
      * @param rx_frame The received CAN data frame
      * @return 8Byte CAN data joined together 
      */
-    uint64_t join_together_CAN_data_bytes(CAN_frame_t rx_frame);
+    uint64_t join_together_CAN_data_bytes_from_array(CAN_frame_t rx_frame);
+
+    /**
+     * @brief Joins together the CAN data that is encapsulated in the CanMessage class
+     *
+     * @param can_message The CAN message encapsulated into the CanMessage class
+     * @return All CAN data joined into 64 bit stream 
+     */
+    uint64_t join_together_CAN_data_from_CAN_message(CanMessage can_message);
+
+    /**
+     * @brief Gets DLC for CanMessage
+     *
+     * @param can_message The CAN message encapsulated into the CanMessage class
+     * @return DLC for the CAN message
+     */
+    uint8_t get_dlc_of_can_message(CanMessage can_message);
 }
 
 #endif /* CAN_MESSAGE_HPP_ */
