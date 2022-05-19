@@ -58,24 +58,24 @@ void can_loop() {
     }
   }
 
-  // if (currentMillis - previousMillis >= interval) {
-  //   previousMillis = currentMillis;
-  //   CAN_frame_t tx_frame;
-  //   tx_frame.FIR.B.FF = CAN_frame_std;
-  //   tx_frame.MsgID = 0x001;
-  //   tx_frame.FIR.B.DLC = 8;
-  //   tx_frame.data.u8[0] = 0x02;
-  //   tx_frame.data.u8[1] = 0x02;
-  //   tx_frame.data.u8[2] = 0x02;
-  //   tx_frame.data.u8[3] = 0x02;
-  //   tx_frame.data.u8[4] = 0x04;
-  //   tx_frame.data.u8[5] = 0x04;
-  //   tx_frame.data.u8[6] = 0x04;
-  //   tx_frame.data.u8[7] = 0x04;
-  //   Serial.println("CAN Message to be sent!");
-  //   ESP32Can.CANWriteFrame(&tx_frame);
-  //   Serial.println("CAN Message sent!");
-  // }
+  if (currentMillis - previousMillis >= interval) {
+    previousMillis = currentMillis;
+    CAN_frame_t tx_frame;
+    tx_frame.FIR.B.FF = CAN_frame_std;
+    tx_frame.MsgID = 0x001;
+    tx_frame.FIR.B.DLC = 8;
+    tx_frame.data.u8[0] = 0x02;
+    tx_frame.data.u8[1] = 0x02;
+    tx_frame.data.u8[2] = 0x02;
+    tx_frame.data.u8[3] = 0x02;
+    tx_frame.data.u8[4] = 0x04;
+    tx_frame.data.u8[5] = 0x04;
+    tx_frame.data.u8[6] = 0x04;
+    tx_frame.data.u8[7] = 0x04;
+    Serial.println("CAN Message to be sent!");
+    ESP32Can.CANWriteFrame(&tx_frame);
+    Serial.println("CAN Message sent!");
+  }
 }
 
 void setup() {
