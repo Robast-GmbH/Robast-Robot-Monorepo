@@ -72,7 +72,7 @@ void can_loop() {
     tx_frame.data.u8[5] = 0x04;
     tx_frame.data.u8[6] = 0x04;
     tx_frame.data.u8[7] = 0x04;
-    Serial.println("CAN Message to be sent!");
+    // Serial.println("CAN Message to be sent!");
     ESP32Can.CANWriteFrame(&tx_frame);
     Serial.println("CAN Message sent!");
   }
