@@ -11,7 +11,7 @@ jobs:
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
       with:
-        submodules: recursive
+        submodules: 'true'
     - name: Cache pip
       uses: actions/cache@v3
       with:
