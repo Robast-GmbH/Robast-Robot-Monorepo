@@ -1,4 +1,4 @@
-FROM dorowu/ubuntu-desktop-lxde-vnc:focal as base
+FROM ros:humble as base
 
 
  
@@ -14,7 +14,7 @@ RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group
 ENV USER ubuntu
 ARG DEBIAN_FRONTEND=
 
-ENV ROS_DISTRO=galactic
+ENV ROS_DISTRO=humble
 ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
 ENV COLCON_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
 ENV LD_LIBRARY_PATH=/opt/ros/${ROS_DISTRO}/lib
