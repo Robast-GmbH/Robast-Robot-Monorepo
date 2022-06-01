@@ -23,7 +23,7 @@ void setUp(void)
     open_drawer = 1;
     LED_red = 1;
     LED_green = 1;
-    LED_blue = 0;
+    LED_blue = 1;
 
     uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b10000000,0b10000000,0b10000000,0b10000000,0x00};
     can_data_expected = 0x0102038080808000;
