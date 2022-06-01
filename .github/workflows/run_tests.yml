@@ -11,6 +11,7 @@ jobs:
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
       with:
+        token: ${{ secrets.SUBMODULE_ACCESS_TOKEN }}
         submodules: 'true'
     - name: Cache pip
       uses: actions/cache@v3
