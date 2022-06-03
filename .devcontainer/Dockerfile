@@ -1,4 +1,4 @@
-FROM ros:foxy-ros-core-focal
+FROM ros:humble-ros-core
 
 RUN apt-get update && apt-get install -y \
   build-essential \
