@@ -1,63 +1,56 @@
 #include <Arduino.h>
-#include <CAN_config.h>
-#include <FastLED.h>
+#include <mcp_can.h>
+#include <SPI.h>
 
-#define OPEN_LOCK1_PIN GPIO_NUM_22
-#define CLOSE_LOCK1_PIN GPIO_NUM_21
-#define LOCK_SENSOR_PIN GPIO_NUM_39
+#define PWR_OPEN_LOCK1_PIN GPIO_NUM_22
+#define PWR_CLOSE_LOCK1_PIN GPIO_NUM_21
+#define SENSOR_LOCK1_PIN GPIO_NUM_36
+#define SENSOR_DRAWER1_CLOSED_PIN GPIO_NUM_39
+
+#define PWR_OPEN_LOCK2_PIN GPIO_NUM_4
+#define PWR_CLOSE_LOCK2_PIN GPIO_NUM_15
+#define SENSOR_LOCK2_PIN GPIO_NUM_34
+#define SENSOR_DRAWER2_CLOSED_PIN GPIO_NUM_35
+
+#define OE_TXB0104 GPIO_NUM_32
+#define MCP2515_INT GPIO_NUM_25
+#define MCP2515_RX0BF GPIO_NUM_26
+#define MCP2515_RX1BF GPIO_NUM_27
+
+#define SPI_MOSI GPIO_NUM_23
+#define SPI_MISO GPIO_NUM_19
+#define SPI_CLK GPIO_NUM_18
+#define SPI_CS GPIO_NUM_5
+
 #define LED_PIXEL_PIN GPIO_NUM_13
-#define CAN_TX_PIN GPIO_NUM_5
-#define CAN_RX_PIN GPIO_NUM_4
 
-#define NUM_LEDS 19 // number of LEDs for LED strip
+MCP_CAN CAN0(10);     // Set CS to pin 10
 
-CRGBArray<NUM_LEDS> leds;
-
-bool lock_is_closed_last_loop;
-bool fade_up;
-uint8_t brightness;
-uint8_t brightness_maximum = 200;
-
-
-void setup() {
+void setup()
+{
   Serial.begin(115200);
 
-  pinMode(OPEN_LOCK1_PIN, OUTPUT);
-  pinMode(CLOSE_LOCK1_PIN, OUTPUT);
-  pinMode(LOCK_SENSOR_PIN, INPUT);
+  // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
+  if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_16MHZ) == CAN_OK) Serial.println("MCP2515 Initialized Successfully!");
+  else Serial.println("Error Initializing MCP2515...");
 
-  FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_LEDS);
-  FastLED.setBrightness(100);
-
-  lock_is_closed_last_loop = false;
-  fade_up = true;
-  brightness = 0;
-  digitalWrite(OPEN_LOCK1_PIN, LOW);
-  digitalWrite(CLOSE_LOCK1_PIN, LOW);
+  CAN0.setMode(MCP_NORMAL);   // Change to normal mode to allow messages to be transmitted
 }
 
-void loop() {
+byte data[8] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
-  bool lock_is_closed = !digitalRead(LOCK_SENSOR_PIN);
-
-  if (lock_is_closed) {
-    // Serial.println("Lock is closed!");
-    for(int i = 0; i < NUM_LEDS; i++) {   
-      leds[i] = CRGB::Green;
-    }
-    FastLED.show();
-
-    digitalWrite(OPEN_LOCK1_PIN, LOW);
-    digitalWrite(CLOSE_LOCK1_PIN, HIGH);
+void loop()
+{
+  // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send
+  byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
+  if(sndStat == CAN_OK){
+    Serial.println("Message Sent Successfully!");
+  } else {
+    Serial.println("Error Sending Message...");
   }
-  else {
-    // Serial.println("Lock is open!");
-    for(int i = 0; i < NUM_LEDS; i++) {   
-      leds[i] = CRGB::Red;
-    }
-    FastLED.show();
-
-    digitalWrite(CLOSE_LOCK1_PIN, LOW);
-    digitalWrite(OPEN_LOCK1_PIN, HIGH);
-  }
+  delay(100);   // send data per 100ms
 }
+
+/*********************************************************************************************************
+  END FILE
+*********************************************************************************************************/
