@@ -25,8 +25,8 @@
 namespace robast_nav_recoveries
 {
 
-RecoveriesCostmap::RecoveriesCostmap()
-: nav2_util::LifecycleNode("recoveries_costmap", "", true)
+RecoveriesCostmap::RecoveriesCostmap(const rclcpp::NodeOptions & options)
+: nav2_util::LifecycleNode("recoveries_costmap", "", options)
 {
   RCLCPP_INFO(get_logger(), "Creating recoveries costmap");
 
@@ -103,3 +103,10 @@ RecoveriesCostmap::on_shutdown(const rclcpp_lifecycle::State &)
 }
 
 }  // namespace nav2_controller
+
+#include "rclcpp_components/register_node_macro.hpp"
+
+// Register the component with class_loader.
+// This acts as a sort of entry point, allowing the component to be discoverable when its library
+// is being loaded into a running process.
+RCLCPP_COMPONENTS_REGISTER_NODE(robast_nav_recoveries::RecoveriesCostmap)

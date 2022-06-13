@@ -8,7 +8,7 @@ endif()
 
 # Default to C++20
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -18,6 +18,7 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(nav2_util REQUIRED)
 find_package(nav2_costmap_2d REQUIRED)
@@ -40,6 +41,7 @@ set(dependencies
   rclcpp_lifecycle
   nav2_util
   nav2_costmap_2d
+  rclcpp_components
 )
 
 ament_target_dependencies(${executable_recoveries_costmap}
@@ -51,6 +53,8 @@ target_link_libraries(${executable_recoveries_costmap} ${library_recoveries_cost
 ament_target_dependencies(${library_recoveries_costmap}
   ${dependencies}
 )
+
+# rclcpp_components_register_nodes(${library_name} "robast_nav_recoveries::RecoveriesCostmap")
 
 install(TARGETS
   ${executable_recoveries_costmap}

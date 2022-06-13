@@ -12,8 +12,8 @@ namespace robast_nav_interim_goal
 {
 
 
-InterimGoalSelector::InterimGoalSelector()
-: nav2_util::LifecycleNode("robast_nav_interim_goal", "", true)
+InterimGoalSelector::InterimGoalSelector(const rclcpp::NodeOptions & options)
+: nav2_util::LifecycleNode("robast_nav_interim_goal", "", options)
 {
   RCLCPP_INFO(get_logger(), "Creating");
   

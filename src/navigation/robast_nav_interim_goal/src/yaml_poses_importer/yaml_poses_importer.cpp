@@ -6,7 +6,7 @@ namespace robast_nav_poses_importer
 
 
 YamlPosesImporter::YamlPosesImporter()
-: nav2_util::LifecycleNode("robast_nav_poses_importer", "", true)
+: nav2_util::LifecycleNode("robast_nav_poses_importer", "")
 {
   RCLCPP_INFO(get_logger(), "Creating");
 }
@@ -84,10 +84,10 @@ void YamlPosesImporter::provide_poses()
   std::string poses_yaml_filename = goal->yaml_name;
 
   // Only import the yaml, if it hasn't been imported before
-  if (!yaml_filename_by_poses_.contains(poses_yaml_filename))
-  {
-    load_poses_from_yaml(poses_yaml_filename);
-  }  
+  // if (!yaml_filename_by_poses_.contains(poses_yaml_filename))
+  // {
+  load_poses_from_yaml(poses_yaml_filename);
+  // }  
 
   RCLCPP_INFO(
     get_logger(), "Provided list of poses with %i poses!",
