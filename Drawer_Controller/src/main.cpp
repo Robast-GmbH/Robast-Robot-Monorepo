@@ -3,9 +3,8 @@
 #include <FastLED.h>
 
 #define LOCK_POWER_PIN GPIO_NUM_21
-#define LOCK_SENSOR_PIN GPIO_NUM_19
-#define LED_POWER_PIN GPIO_NUM_18
-#define LED_PIXEL_PIN GPIO_NUM_2
+#define LOCK_SENSOR_PIN GPIO_NUM_39
+#define LED_PIXEL_PIN GPIO_NUM_13
 #define CAN_TX_PIN GPIO_NUM_5
 #define CAN_RX_PIN GPIO_NUM_4
 
@@ -22,14 +21,11 @@ uint8_t brightness_maximum = 200;
 void setup() {
   Serial.begin(115200);
 
-  pinMode(LED_POWER_PIN, OUTPUT);
   pinMode(LOCK_POWER_PIN, OUTPUT);
   pinMode(LOCK_SENSOR_PIN, INPUT);
 
-  FastLED.addLeds<NEOPIXEL,2>(leds, NUM_LEDS);
+  FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_LEDS);
   // FastLED.setBrightness(191);
-
-  digitalWrite(LED_POWER_PIN, HIGH);
 
   lock_is_closed_last_loop = false;
   fade_up = true;
@@ -62,14 +58,14 @@ void loop() {
   
   if (lock_is_closed) {
 
-    // Serial.println("Lock is closed!");
+    Serial.println("Lock is closed!");
     for(int i = 0; i < NUM_LEDS; i++) {   
       leds[i] = CRGB::SeaGreen;
     }
     FastLED.show();
   }
   else {
-    // Serial.println("Lock is open!");
+    Serial.println("Lock is open!");
     for(int i = 0; i < NUM_LEDS; i++) {   
       leds[i] = CRGB::White;
     }
