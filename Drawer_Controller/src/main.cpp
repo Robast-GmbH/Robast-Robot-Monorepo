@@ -24,7 +24,7 @@
 
 #define LED_PIXEL_PIN GPIO_NUM_13
 
-MCP_CAN CAN0(10);     // Set CS to pin 10
+MCP_CAN CAN0(SPI_CS);     // Set CS to pin 10
 
 void setup()
 {
