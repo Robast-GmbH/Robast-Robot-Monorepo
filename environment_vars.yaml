@@ -1,2 +1,6 @@
 prefix: ''
 robot: 'rb_theron'
+init_x: 8.59
+init_y: -13.45
+init_yaw: 3.14
+robot_name: "rb_theron"

@@ -6,11 +6,6 @@ from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 
-WORLD_MODEL = os.environ['WORLD_MODEL']
-POSE_INIT_X = os.environ['POSE_INIT_X']
-POSE_INIT_Y = os.environ['POSE_INIT_Y']
-POSE_INIT_Z = os.environ['POSE_INIT_Z']
-
 
 def generate_launch_description():
 

@@ -10,17 +10,18 @@ from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
-WORLD_MODEL = os.environ['WORLD_MODEL']
-POSE_INIT_X = os.environ['POSE_INIT_X']
-POSE_INIT_Y = os.environ['POSE_INIT_Y']
-POSE_INIT_Z = os.environ['POSE_INIT_Z']
-
-
 def generate_launch_description():
+    world_model = LaunchConfiguration('world_model')
+
+    declare_world_model_cmd = DeclareLaunchArgument(
+        'world_model',
+        default_value='5OG',
+        description='math to the world model'
+    )
 
     robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
     slam_toolbox_params_yaml = os.path.join(robast_nav_launch_dir, 'config', 'slam_toolbox_params_offline.yaml')
-    map_file_posegraph = os.path.join(robast_nav_launch_dir, 'maps', WORLD_MODEL)
+    map_file_posegraph = os.path.join(robast_nav_launch_dir, 'maps', '5OG')
     slam_launch_file = os.path.join(robast_nav_launch_dir, 'launch', 'slam_toolbox_base_launch.py')
 
     slam_arguments = {
@@ -35,6 +36,7 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(slam_launch_file), launch_arguments=slam_arguments)
 
     ld = LaunchDescription()
+    ld.add_action(declare_world_model_cmd)
     ld.add_action(launch_slam_base_launch)
 
     return ld

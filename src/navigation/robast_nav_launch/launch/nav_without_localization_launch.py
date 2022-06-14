@@ -1,36 +1,41 @@
 import os
+import yaml
+
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
+from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, GroupAction
 from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch_ros.descriptions import ComposableNode
+from launch_ros.actions import LoadComposableNodes
+from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
 
-    if(os.environ['ROS_DISTRO'] == 'galactic'):
+    if(os.environ['ROS_DISTRO'] == 'humble'):
         default_bt_xml_filename = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
         bt_xml_filename_door_bells = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'nav_bt_with_door_bells.xml')
-        nav2_params_yaml = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'config', 'nav2_params_galactic.yaml')
-        recoveries_params_yaml = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'config', 'recoveries_params.yaml')
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
+
     else:
         default_bt_xml_filename = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_w_replanning_and_recovery.xml')
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
         bt_xml_filename_door_bells = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'nav_bt_with_door_bells.xml')
-        nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'), 'config', 'nav2_params.yaml')
-        recoveries_params_yaml = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'config', 'recoveries_params.yaml')
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
+
+    nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'),
+                                    'config', 'nav2_params_' + os.environ['ROS_DISTRO']+'.yaml')
+    recoveries_params_yaml = os.path.join(get_package_share_directory(
+        'robast_nav_launch'), 'config', 'recoveries_params.yaml')
 
     robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
+    # nav2_params_yaml = LaunchConfiguration('nav2_params_yaml')
     recoveries_launch_file = os.path.join(robast_nav_launch_dir, 'launch', 'recoveries_launch.py')
     robast_nav_interim_goal_dir = get_package_share_directory('robast_nav_interim_goal')
     interim_goal_launch_file = os.path.join(robast_nav_interim_goal_dir, 'launch', 'interim_goal_launch.py')
@@ -39,12 +44,30 @@ def generate_launch_description():
     autostart = LaunchConfiguration('autostart')
     use_interim_goal = LaunchConfiguration('use_interim_goal')
     use_map_buffer = LaunchConfiguration('use_map_buffer')
+    namespace = LaunchConfiguration('namespace')
+    use_composition = LaunchConfiguration('use_composition')
+    container_name = LaunchConfiguration('container_name')
+    use_respawn = LaunchConfiguration('use_respawn')
+
+    param_substitutions = {
+        'use_sim_time': use_sim_time,
+        'autostart': autostart,
+        'map_topic': "/map"}
+
+    configured_params = RewrittenYaml(
+        source_file=nav2_params_yaml,
+        root_key=namespace,
+        param_rewrites=param_substitutions,
+        convert_types=True)
 
     lifecycle_nodes = [
         'controller_server',
+        'smoother_server',
         'planner_server',
+        'behavior_server',
         'bt_navigator',
         'waypoint_follower',
+        # 'velocity_smoother',
     ]
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
@@ -55,6 +78,12 @@ def generate_launch_description():
     #              https://github.com/ros2/launch_ros/issues/56
     remappings = [('/tf', 'tf'),
                   ('/tf_static', 'tf_static')]
+
+    declare_namespace_cmd = DeclareLaunchArgument(
+        'namespace',
+        default_value='',
+        description='Top-level namespace'
+    )
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',
@@ -76,70 +105,197 @@ def generate_launch_description():
         default_value='false',
         description='Use a map buffer if true. Mainly required for SLAM because frequent map updates can disturb navigation')
 
-    start_controller_cmd = Node(
-        package='nav2_controller',
-        executable='controller_server',
-        output='screen',
-        parameters=[nav2_params_yaml,
-                    {"map_topic": '/map'}
-                    ],
-        remappings=remappings)
+    declare_use_composition_cmd = DeclareLaunchArgument(
+        'use_composition', default_value='False',
+        description='Use composed bringup if True')
 
-    start_planner_cmd = Node(
-        package='nav2_planner',
-        executable='planner_server',
-        name='planner_server',
-        output='screen',
-        parameters=[nav2_params_yaml,
-                    {"map_topic": '/map'}],
-        remappings=remappings)
+    declare_container_name_cmd = DeclareLaunchArgument(
+        'container_name', default_value='nav2_container',
+        description='the name of conatiner that nodes will load in if use composition')
 
-    start_bt_navigator_cmd = Node(
-        package='nav2_bt_navigator',
-        executable='bt_navigator',
-        name='bt_navigator',
-        output='screen',
-        parameters=[
-            nav2_params_yaml,
-            {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
-        ],
-        remappings=remappings,
-        condition=UnlessCondition(use_interim_goal))
+    declare_use_respawn_cmd = DeclareLaunchArgument(
+        'use_respawn', default_value='False',
+        description='Whether to respawn if a node crashes. Applied when composition is disabled.')
 
-    start_bt_navigator_with_interim_goal_cmd = Node(
-        package='nav2_bt_navigator',
-        executable='bt_navigator',
-        name='bt_navigator',
-        output='screen',
-        parameters=[
-            nav2_params_yaml,
-            {'default_nav_to_pose_bt_xml': bt_xml_filename_door_bells},
-        ],
-        remappings=remappings,
-        condition=IfCondition(use_interim_goal))
+    load_nodes = GroupAction(
+        condition=IfCondition(PythonExpression(['not ', use_composition])),
+        actions=[
+            Node(
+                package='nav2_controller',
+                executable='controller_server',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[configured_params],
+                remappings=remappings + [('cmd_vel', 'cmd_vel_nav')]),
 
-    start_waypoint_follower_cmd = Node(
-        package='nav2_waypoint_follower',
-        executable='waypoint_follower',
-        name='waypoint_follower',
-        output='screen',
-        parameters=[nav2_params_yaml],
-        remappings=remappings)
+            Node(
+                package='nav2_smoother',
+                executable='smoother_server',
+                name='smoother_server',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[configured_params],
+                remappings=remappings),
 
-    start_lifecycle_manager_cmd = Node(
-        package='nav2_lifecycle_manager',
-        executable='lifecycle_manager',
-        name='lifecycle_manager_navigation',
-        output='screen',
-        parameters=[{'use_sim_time': use_sim_time},
-                    {'autostart': autostart},
-                    {'node_names': lifecycle_nodes}])
+            Node(
+                package='nav2_planner',
+                executable='planner_server',
+                name='planner_server',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[configured_params],
+                remappings=remappings),
 
-    start_map_buffer_cmd = Node(
-        package='theron_fleetmanagement_bridge',
-        executable='map_buffer',
-        name='map_buffer',
-        condition=IfCondition(use_map_buffer))
+            Node(
+                package='nav2_behaviors',
+                executable='behavior_server',
+                name='behavior_server',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[configured_params],
+                remappings=remappings),
+
+            Node(
+                package='nav2_bt_navigator',
+                executable='bt_navigator',
+                name='bt_navigator',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[
+                    configured_params,
+                    {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
+                ],
+                remappings=remappings,
+                # condition=UnlessCondition(use_interim_goal)
+            ),
+
+            # Node(
+            #     package='nav2_bt_navigator',
+            #     executable='bt_navigator',
+            #     name='bt_navigator',
+            #     output='screen',
+            #     respawn=use_respawn,
+            #     respawn_delay=2.0,
+            #     parameters=[
+            #         configured_params,
+            #         {'default_nav_to_pose_bt_xml': bt_xml_filename_door_bells},
+            #     ],
+            #     remappings=remappings,
+            #     condition=IfCondition(use_interim_goal)),
+
+            Node(
+                package='nav2_waypoint_follower',
+                executable='waypoint_follower',
+                name='waypoint_follower',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[configured_params],
+                remappings=remappings),
+
+            # Node(
+            #     package='nav2_velocity_smoother',
+            #     executable='velocity_smoother',
+            #     name='velocity_smoother',
+            #     output='screen',
+            #     respawn=use_respawn,
+            #     respawn_delay=2.0,
+            #     parameters=[configured_params],
+            #     remappings=remappings +
+            #                [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')]),
+
+            Node(
+                package='nav2_lifecycle_manager',
+                executable='lifecycle_manager',
+                name='lifecycle_manager_navigation',
+                output='screen',
+                parameters=[{'use_sim_time': use_sim_time},
+                            {'autostart': autostart},
+                            {'node_names': lifecycle_nodes}]),
+
+
+            # Node(
+            #     package='theron_fleetmanagement_bridge',
+            #     executable='map_buffer',
+            #     name='map_buffer',
+            #     condition=IfCondition(use_map_buffer)),
+        ]
+    )
+
+    load_composable_nodes = LoadComposableNodes(
+        condition=IfCondition(use_composition),
+        target_container=container_name,
+        composable_node_descriptions=[
+            ComposableNode(
+                package='nav2_controller',
+                plugin='nav2_controller::ControllerServer',
+                name='controller_server',
+                parameters=[configured_params],
+                remappings=remappings + [('cmd_vel', 'cmd_vel_nav')]),
+
+            ComposableNode(
+                package='nav2_smoother',
+                plugin='nav2_smoother::SmootherServer',
+                name='smoother_server',
+                parameters=[configured_params],
+                remappings=remappings),
+            ComposableNode(
+                package='nav2_planner',
+                plugin='nav2_planner::PlannerServer',
+                name='planner_server',
+                parameters=[configured_params],
+                remappings=remappings),
+            ComposableNode(
+                package='nav2_behaviors',
+                plugin='behavior_server::BehaviorServer',
+                name='behavior_server',
+                parameters=[configured_params],
+                remappings=remappings),
+
+            ComposableNode(
+                package='nav2_bt_navigator',
+                plugin='nav2_bt_navigator::BtNavigator',
+                name='bt_navigator',
+                parameters=[
+                    configured_params,
+                    {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
+                ],
+                remappings=remappings),
+
+            ComposableNode(
+                package='nav2_waypoint_follower',
+                plugin='nav2_waypoint_follower::WaypointFollower',
+                name='waypoint_follower',
+                parameters=[configured_params],
+                remappings=remappings),
+            # ComposableNode(
+            #     package='nav2_velocity_smoother',
+            #     plugin='nav2_velocity_smoother::VelocitySmoother',
+            #     name='velocity_smoother',
+            #     parameters=[configured_params],
+            #     remappings=remappings +
+            #     [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')]),
+            ComposableNode(
+                package='nav2_lifecycle_manager',
+                plugin='nav2_lifecycle_manager::LifecycleManager',
+                name='lifecycle_manager_navigation',
+                parameters=[{'use_sim_time': use_sim_time,
+                             'autostart': autostart,
+                             'node_names': lifecycle_nodes}]),
+
+
+            # Node(
+            #     package='theron_fleetmanagement_bridge',
+            #     executable='map_buffer',
+            #     name='map_buffer',
+            #     condition=IfCondition(use_map_buffer)),
+        ]
+    )
 
     launch_robast_recoveries_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(recoveries_launch_file),
@@ -161,19 +317,17 @@ def generate_launch_description():
     ld.add_action(SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'))
 
     # arguments
+    ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_autostart_cmd)
     ld.add_action(declare_use_interim_goal_cmd)
     ld.add_action(declare_use_map_buffer_cmd)
+    ld.add_action(declare_use_composition_cmd)
+    ld.add_action(declare_container_name_cmd)
+    ld.add_action(declare_use_respawn_cmd)
 
-    # nodes
-    ld.add_action(start_lifecycle_manager_cmd)
-    ld.add_action(start_controller_cmd)
-    ld.add_action(start_planner_cmd)
-    ld.add_action(start_bt_navigator_cmd)
-    ld.add_action(start_bt_navigator_with_interim_goal_cmd)
-    ld.add_action(start_waypoint_follower_cmd)
-    ld.add_action(start_map_buffer_cmd)
+    ld.add_action(load_nodes)
+    ld.add_action(load_composable_nodes)
 
     # launches
     ld.add_action(launch_robast_recoveries_cmd)

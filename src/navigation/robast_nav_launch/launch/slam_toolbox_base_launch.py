@@ -1,5 +1,7 @@
 import os
 
+import yaml
+
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
@@ -9,13 +11,19 @@ from nav2_common.launch import RewrittenYaml
 
 # ros2 run nav2_map_server map_saver_cli -t slam_map -f test
 
-WORLD_MODEL = os.environ['WORLD_MODEL']
-POSE_INIT_X = os.environ['POSE_INIT_X']
-POSE_INIT_Y = os.environ['POSE_INIT_Y']
-POSE_INIT_Z = os.environ['POSE_INIT_Z']
-
 
 def generate_launch_description():
+
+    with open("environment_vars.yaml", 'r') as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    init_x = environment_yaml["init_x"]
+    init_y = environment_yaml["init_y"]
+    init_yaw = environment_yaml["init_yaw"]
 
     robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
 
@@ -113,7 +121,7 @@ def generate_launch_description():
             configured_params,
             {'map_file_name': slam_posegraph},
             {'use_sim_time': use_sim_time},
-            {'map_start_pose': [float(POSE_INIT_X), float(POSE_INIT_Y), 3.14]}
+            {'map_start_pose': [float(init_x), float(init_y), float(init_yaw)]}
         ]
     )
 
