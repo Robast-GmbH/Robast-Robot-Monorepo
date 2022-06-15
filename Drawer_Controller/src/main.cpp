@@ -41,7 +41,7 @@ MCP_CAN CAN0(SPI_CS);
 
 void initialize_can_controller(void)
 {
-  if(CAN0.begin(MCP_ANY, CAN_125KBPS, MCP_8MHZ) == CAN_OK)
+  if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK)
   {
     Serial.println("MCP2515 Initialized Successfully!");
   }
