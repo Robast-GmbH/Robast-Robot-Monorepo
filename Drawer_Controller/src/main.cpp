@@ -93,9 +93,9 @@ void setup()
 {
   Serial.begin(115200);
 
-  initialize_can_controller();
-
   initialize_voltage_translator();  
+
+  initialize_can_controller();
 
   initialize_locks();
 
