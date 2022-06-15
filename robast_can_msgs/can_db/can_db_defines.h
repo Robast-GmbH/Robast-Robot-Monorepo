@@ -1,0 +1,23 @@
+#ifndef CAN_DB_DEFINES_HPP_
+#define CAN_DB_DEFINES_HPP_
+
+namespace robast_can_msgs
+{
+    #define NUM_OF_CAN_MSGS 2
+
+    #define CAN_MSG_DRAWER_USER_ACCESS 0x01
+    #define CAN_MSG_DRAWER_FEEDBACK 0x02
+
+    #define CAN_SIGNAL_DRAWER_ID 1
+    #define CAN_SIGNAL_OPEN_DRAWER 2
+    #define CAN_SIGNAL_LED_RED 3
+    #define CAN_SIGNAL_LED_GREEN 4
+    #define CAN_SIGNAL_LED_BLUE 5
+
+    #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED 1
+    #define CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED 2
+    #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED 3
+    #define CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED 4
+}
+
+#endif /* CAN_DB_DEFINES_HPP_ */
