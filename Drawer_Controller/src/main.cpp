@@ -32,7 +32,7 @@
 
 CRGBArray<NUM_LEDS> leds;
 
-MCP_CAN CAN0(SPI_CS);     // Set CS to pin 10
+MCP_CAN CAN0(SPI_CS);
 
 
 /*********************************************************************************************************
@@ -107,9 +107,20 @@ void setup()
   LOOP
 *********************************************************************************************************/
 
+byte data[8] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+
 void loop()
 {
-  byte data[8] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+  if (digitalRead(SENSOR_DRAWER1_CLOSED_PIN))
+  {
+    data[0] = 0x00;
+    Serial.println("SENSOR_DRAWER1_CLOSED_PIN is HIGH");
+  }
+  else
+  {
+    data[0] = 0x01;
+    Serial.println("SENSOR_DRAWER1_CLOSED_PIN is LOW");
+  }
 
   // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send
   byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
