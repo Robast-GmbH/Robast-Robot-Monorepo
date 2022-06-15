@@ -30,14 +30,11 @@ void setup()
 {
   Serial.begin(115200);
 
-  pinMode(OE_TXB0104, OUTPUT);
-  digitalWrite(OE_TXB0104, HIGH); // enable voltage level translator
+  initialize_can_controller();
 
-  // Initialize MCP2515 running at 16MHz with a baudrate of 500kb/s and the masks and filters disabled.
-  if(CAN0.begin(MCP_ANY, CAN_125KBPS, MCP_16MHZ) == CAN_OK) Serial.println("MCP2515 Initialized Successfully!");
-  else Serial.println("Error Initializing MCP2515...");
+  initialize_voltage_translator();  
 
-  CAN0.setMode(MCP_NORMAL);   // Change to normal mode to allow messages to be transmitted
+  initialize_locks();
 }
 
 byte data[8] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
@@ -52,6 +49,45 @@ void loop()
     Serial.println("Error Sending Message...");
   }
   delay(100);   // send data per 100ms
+}
+
+void initialize_can_controller(void)
+{
+  if(CAN0.begin(MCP_ANY, CAN_125KBPS, MCP_16MHZ) == CAN_OK)
+  {
+    Serial.println("MCP2515 Initialized Successfully!");
+  }
+  else 
+  {
+    Serial.println("Error Initializing MCP2515...");
+  } 
+
+  CAN0.setMode(MCP_NORMAL);   // Change to normal mode to allow messages to be transmitted
+}
+
+void initialize_voltage_translator(void)
+{
+  pinMode(OE_TXB0104, OUTPUT);
+  digitalWrite(OE_TXB0104, HIGH); // enable voltage level translator
+}
+
+void initialize_locks(void)
+{
+  pinMode(PWR_OPEN_LOCK1_PIN, OUTPUT);
+  pinMode(PWR_CLOSE_LOCK1_PIN, OUTPUT);
+  pinMode(SENSOR_LOCK1_PIN, INPUT);
+  pinMode(SENSOR_DRAWER1_CLOSED_PIN, INPUT);
+
+  pinMode(PWR_OPEN_LOCK2_PIN, OUTPUT);
+  pinMode(PWR_CLOSE_LOCK2_PIN, OUTPUT);
+  pinMode(SENSOR_LOCK2_PIN, INPUT);
+  pinMode(SENSOR_DRAWER2_CLOSED_PIN, INPUT);
+
+  digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
+  digitalWrite(PWR_CLOSE_LOCK1_PIN, LOW);
+
+  digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
+  digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
 }
 
 /*********************************************************************************************************
