@@ -43,7 +43,8 @@ void GazeboRosRobosenseLaser::Load(sensors::SensorPtr _parent, sdf::ElementPtr _
   parent_ray_sensor_ = _parent;
 
   // Sets the frame name to either the supplied name, or the name of the sensor
-  frame_name_ = gazebo_ros::SensorFrameID(*_parent, *_sdf);
+  std::string tf_prefix = _sdf->Get<std::string>("tf_prefix", std::string("")).first;
+  frame_name_ = tf_resolve(tf_prefix, gazebo_ros::SensorFrameID(*_parent, *_sdf));
 
   if (!_sdf->HasElement("organize_cloud")) {
     RCLCPP_INFO(ros_node_->get_logger(), "Robosense laser plugin missing <organize_cloud>, defaults to false");
@@ -88,7 +89,7 @@ void GazeboRosRobosenseLaser::Load(sensors::SensorPtr _parent, sdf::ElementPtr _
   using namespace std::chrono_literals;
   timer_ = ros_node_->create_wall_timer(0.5s, std::bind(&GazeboRosRobosenseLaser::ConnectCb, this));
 
-  RCLCPP_INFO(ros_node_->get_logger(), "Robosense %slaser plugin ready");
+  RCLCPP_INFO(ros_node_->get_logger(), "Robosense laser plugin ready");
   gzdbg << "GazeboRosRobosenseLaser LOADED\n";
 }
 
