@@ -1,6 +1,10 @@
 #include <Arduino.h>
 #include <mcp_can.h>
-#include <SPI.h>
+#include <FastLED.h>
+
+/*********************************************************************************************************
+  GLOBAL VARIABLES AND CONSTANTS
+*********************************************************************************************************/
 
 #define PWR_OPEN_LOCK1_PIN GPIO_NUM_22
 #define PWR_CLOSE_LOCK1_PIN GPIO_NUM_21
@@ -24,32 +28,16 @@
 
 #define LED_PIXEL_PIN GPIO_NUM_13
 
+#define NUM_LEDS 19 // number of LEDs for LED strip
+
+CRGBArray<NUM_LEDS> leds;
+
 MCP_CAN CAN0(SPI_CS);     // Set CS to pin 10
 
-void setup()
-{
-  Serial.begin(115200);
 
-  initialize_can_controller();
-
-  initialize_voltage_translator();  
-
-  initialize_locks();
-}
-
-byte data[8] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
-
-void loop()
-{
-  // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send
-  byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
-  if(sndStat == CAN_OK){
-    Serial.println("Message Sent Successfully!");
-  } else {
-    Serial.println("Error Sending Message...");
-  }
-  delay(100);   // send data per 100ms
-}
+/*********************************************************************************************************
+  FUNCTIONS
+*********************************************************************************************************/
 
 void initialize_can_controller(void)
 {
@@ -90,6 +78,45 @@ void initialize_locks(void)
   digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
 }
 
+void initialize_LED_strip(void)
+{
+ FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_LEDS);
+}
+
 /*********************************************************************************************************
-  END FILE
+  SETUP
 *********************************************************************************************************/
+
+void setup()
+{
+  Serial.begin(115200);
+
+  initialize_can_controller();
+
+  initialize_voltage_translator();  
+
+  initialize_locks();
+
+  initialize_LED_strip();
+}
+
+
+/*********************************************************************************************************
+  LOOP
+*********************************************************************************************************/
+
+void loop()
+{
+  byte data[8] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+
+  // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send
+  byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
+  if(sndStat == CAN_OK){
+    Serial.println("Message Sent Successfully!");
+  } else {
+    Serial.println("Error Sending Message...");
+  }
+  delay(2000);
+}
+
+
