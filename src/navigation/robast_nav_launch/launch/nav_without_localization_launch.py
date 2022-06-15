@@ -19,15 +19,15 @@ def generate_launch_description():
 
     if(os.environ['ROS_DISTRO'] == 'humble'):
         default_bt_xml_filename = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'default_nav_to_pose_bt_xml.xml')
         bt_xml_filename_door_bells = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
 
     else:
         default_bt_xml_filename = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'default_nav_to_pose_bt_xml.xml')
         bt_xml_filename_door_bells = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'default_nav_to_pose_bt_xml.xml')
 
     nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'),
                                     'config', 'nav2_params_' + os.environ['ROS_DISTRO']+'.yaml')
@@ -66,8 +66,7 @@ def generate_launch_description():
         'planner_server',
         'behavior_server',
         'bt_navigator',
-        'waypoint_follower',
-        # 'velocity_smoother',
+        'waypoint_follower'
     ]
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
@@ -87,7 +86,7 @@ def generate_launch_description():
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',
-        default_value='true',
+        default_value='false',
         description='Use simulation (Gazebo) clock if true')
 
     declare_autostart_cmd = DeclareLaunchArgument(
@@ -127,7 +126,7 @@ def generate_launch_description():
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params],
-                remappings=remappings + [('cmd_vel', 'cmd_vel_nav')]),
+                remappings=remappings),
 
             Node(
                 package='nav2_smoother',
@@ -168,7 +167,7 @@ def generate_launch_description():
                 respawn_delay=2.0,
                 parameters=[
                     configured_params,
-                    {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
+                    # {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
                 ],
                 remappings=remappings,
                 # condition=UnlessCondition(use_interim_goal)
@@ -236,7 +235,7 @@ def generate_launch_description():
                 plugin='nav2_controller::ControllerServer',
                 name='controller_server',
                 parameters=[configured_params],
-                remappings=remappings + [('cmd_vel', 'cmd_vel_nav')]),
+                remappings=remappings),
 
             ComposableNode(
                 package='nav2_smoother',
@@ -263,7 +262,7 @@ def generate_launch_description():
                 name='bt_navigator',
                 parameters=[
                     configured_params,
-                    {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
+                    # {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
                 ],
                 remappings=remappings),
 
@@ -297,20 +296,20 @@ def generate_launch_description():
         ]
     )
 
-    launch_robast_recoveries_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(recoveries_launch_file),
-        launch_arguments={
-            'use_sim_time': use_sim_time,
-            'autostart': autostart,
-            'costmap_namespace': 'recoveries_costmap',
-            'recoveries_params_file': recoveries_params_yaml,
-        }.items())
+    # launch_robast_recoveries_cmd = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(recoveries_launch_file),
+    #     launch_arguments={
+    #         'use_sim_time': use_sim_time,
+    #         'autostart': autostart,
+    #         'costmap_namespace': 'recoveries_costmap',
+    #         'recoveries_params_file': recoveries_params_yaml,
+    #     }.items())
 
-    launch_interim_goal_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(interim_goal_launch_file),
-        launch_arguments={'use_sim_time': use_sim_time,
-                          'autostart': autostart}.items(),
-        condition=IfCondition(use_interim_goal))
+    # launch_interim_goal_cmd = IncludeLaunchDescription(
+    #     PythonLaunchDescriptionSource(interim_goal_launch_file),
+    #     launch_arguments={'use_sim_time': use_sim_time,
+    #                       'autostart': autostart}.items(),
+    #     condition=IfCondition(use_interim_goal))
 
     ld = LaunchDescription()
     # Set env var to print messages to stdout immediately
@@ -330,7 +329,7 @@ def generate_launch_description():
     ld.add_action(load_composable_nodes)
 
     # launches
-    ld.add_action(launch_robast_recoveries_cmd)
-    ld.add_action(launch_interim_goal_cmd)
+    # ld.add_action(launch_robast_recoveries_cmd)
+    # ld.add_action(launch_interim_goal_cmd)
 
     return ld
