@@ -41,7 +41,7 @@ MCP_CAN CAN0(SPI_CS);
 
 void initialize_can_controller(void)
 {
-  if(CAN0.begin(MCP_ANY, CAN_125KBPS, MCP_16MHZ) == CAN_OK)
+  if(CAN0.begin(MCP_ANY, CAN_125KBPS, MCP_8MHZ) == CAN_OK)
   {
     Serial.println("MCP2515 Initialized Successfully!");
   }
@@ -127,7 +127,8 @@ void loop()
   if(sndStat == CAN_OK){
     Serial.println("Message Sent Successfully!");
   } else {
-    Serial.println("Error Sending Message...");
+    Serial.print("Error Sending Message... CAN Status is: ");
+    Serial.println(sndStat);
   }
   delay(2000);
 }
