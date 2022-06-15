@@ -51,6 +51,8 @@ void initialize_can_controller(void)
   } 
 
   CAN0.setMode(MCP_NORMAL);   // Change to normal mode to allow messages to be transmitted
+
+  pinMode(MCP2515_INT, INPUT);  // Configuring pin for /INT input
 }
 
 void initialize_voltage_translator(void)
