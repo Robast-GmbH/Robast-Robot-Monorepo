@@ -39,6 +39,13 @@ MCP_CAN CAN0(SPI_CS);
   FUNCTIONS
 *********************************************************************************************************/
 
+
+void initialize_voltage_translator(void)
+{
+  pinMode(OE_TXB0104, OUTPUT);
+  digitalWrite(OE_TXB0104, HIGH); // enable voltage level translator
+}
+
 void initialize_can_controller(void)
 {
   if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK)
@@ -53,12 +60,6 @@ void initialize_can_controller(void)
   CAN0.setMode(MCP_NORMAL);   // Change to normal mode to allow messages to be transmitted
 
   pinMode(MCP2515_INT, INPUT);  // Configuring pin for /INT input
-}
-
-void initialize_voltage_translator(void)
-{
-  pinMode(OE_TXB0104, OUTPUT);
-  digitalWrite(OE_TXB0104, HIGH); // enable voltage level translator
 }
 
 void initialize_locks(void)
@@ -130,7 +131,7 @@ void loop()
     Serial.print("Error Sending Message... CAN Status is: ");
     Serial.println(sndStat);
   }
-  delay(2000);
+  delay(100);
 }
 
 
