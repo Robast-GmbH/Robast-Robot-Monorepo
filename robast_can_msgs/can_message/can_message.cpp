@@ -28,7 +28,9 @@ namespace robast_can_msgs
     std::optional<CanFrame> encode_can_message(CanMessage can_message, std::vector<CanMessage> can_db_messages)
     {
         uint64_t can_data = join_together_CAN_data_from_CAN_message(can_message);
-        uint8_t *can_data_bytes = (uint8_t *)&can_data;
+
+        uint8_t* can_data_bytes = (uint8_t*) malloc (8 * sizeof(uint8_t));
+        u64_to_eight_bytes(can_data, can_data_bytes);
 
         for (uint16_t j = 0; j < can_db_messages.size(); j++)
         {
@@ -38,6 +40,36 @@ namespace robast_can_msgs
             }
         }
         return std::nullopt;
+    }
+
+    void u64_to_eight_bytes(uint64_t input, uint8_t *result)
+    {
+        uint64_t big_endian;
+        int check_for_little_endian = 1;
+        // little endian if true
+        if (*(char *)&check_for_little_endian == 1)
+        {
+            SwapEndian<uint64_t>(input);
+            big_endian = input; 
+        }
+        else
+        {
+            big_endian = input;
+        }
+
+        std::memcpy(result, &big_endian, sizeof(input) );    
+    }
+
+    template <typename T>
+    void SwapEndian(T &val) {
+        union U {
+            T val;
+            std::array<uint8_t, sizeof(T)> raw;
+        } src, dst;
+
+        src.val = val;
+        std::reverse_copy(src.raw.begin(), src.raw.end(), dst.raw.begin());
+        val = dst.val;
     }
 
     uint64_t join_together_CAN_data_bytes_from_array(uint8_t data[], uint8_t dlc)

@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 #include <cmath>
+#include <cstring>
+#include <array>
+#include <algorithm>
 
 #include "robast_can_msgs/can_signal/can_signal.h"
 #include "robast_can_msgs/can_frame/can_frame.h"
@@ -60,6 +63,22 @@ namespace robast_can_msgs
      * @return All CAN data joined into 64 bit stream 
      */
     uint64_t join_together_CAN_data_from_CAN_message(CanMessage can_message);
+
+    /**
+     * @brief Converts a uint64 into 8 byte array
+     *
+     * @param input The uint64 to be converted
+     * @param result Pointer to the 8 byte array for the result
+     */
+    void u64_to_eight_bytes(uint64_t input, uint8_t *result);
+
+    /**
+     * @brief Swap Endian
+     *
+     * @param val The value that's supposed to be swapped
+     */
+    template <typename T>
+    void SwapEndian(T &val);
 }
 
 #endif /* CAN_MESSAGE_HPP_ */

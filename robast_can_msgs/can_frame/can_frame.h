@@ -11,11 +11,11 @@ namespace robast_can_msgs
             /**
              * @brief A constructor for robast_can_msgs::CanFrame class
              */
-            CanFrame(uint32_t id_in, uint8_t dlc_in, uint8_t data_in[]) : id{id_in}, dlc{dlc_in}, data{*data_in} {}
+            CanFrame(uint32_t id_in, uint8_t dlc_in, uint8_t data_in[]) : id{id_in}, dlc{dlc_in}, data{data_in} {}
 
             const uint32_t id;
             const uint8_t dlc;
-            uint8_t data[8];
+            uint8_t *data;
     };
 
 }
