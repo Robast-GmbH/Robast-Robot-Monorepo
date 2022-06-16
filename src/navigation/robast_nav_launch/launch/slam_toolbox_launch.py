@@ -13,12 +13,12 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 def generate_launch_description():
 
     robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
-    world_posegraph = LaunchConfiguration('world_model')
+    world_posegraph = LaunchConfiguration('world_posegraph')
 
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_posegraph',
         default_value=os.path.join(robast_nav_launch_dir, 'maps', '5OG'),
-        description='math to the world model'
+        description='path to the world posegrapg'
     )
     slam_toolbox_params_yaml = os.path.join(robast_nav_launch_dir, 'config', 'slam_toolbox_params_offline.yaml')
     slam_launch_file = os.path.join(robast_nav_launch_dir, 'launch', 'slam_toolbox_base_launch.py')
