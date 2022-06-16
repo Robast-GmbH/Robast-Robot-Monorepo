@@ -1,4 +1,5 @@
 import os
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -8,9 +9,16 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    POSE_INIT_X = os.environ['POSE_INIT_X']
-    POSE_INIT_Y = os.environ['POSE_INIT_Y']
-    POSE_INIT_Z = os.environ['POSE_INIT_Z']
+    with open("environment_vars.yaml", 'r') as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    init_x = environment_yaml["init_x"]
+    init_y = environment_yaml["init_y"]
+    init_yaw = environment_yaml["init_yaw"]
 
     if(os.environ['ROS_DISTRO'] == 'galactic'):
         nav2_params_yaml = os.path.join(get_package_share_directory(
@@ -108,7 +116,7 @@ def generate_launch_description():
         namespace=namespace,
         parameters=[
             nav2_amcl_params_yaml,
-            {"initial_pose": {"x": float(POSE_INIT_X), "y": float(POSE_INIT_Y), "yaw": 3.14}},
+            {"initial_pose": {"x": float(init_x), "y": float(init_y), "yaw": float(init_yaw)}},
             {"set_initial_pose": True},
         ],
         remappings=remappings_amcl)

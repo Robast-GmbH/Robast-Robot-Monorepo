@@ -10,12 +10,6 @@ from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
-WORLD_MODEL = os.environ['WORLD_MODEL']
-POSE_INIT_X = os.environ['POSE_INIT_X']
-POSE_INIT_Y = os.environ['POSE_INIT_Y']
-POSE_INIT_Z = os.environ['POSE_INIT_Z']
-
-
 def generate_launch_description():
 
     robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
@@ -41,7 +35,7 @@ def generate_launch_description():
 
     declare_slam_posegraph_file_cmd = DeclareLaunchArgument(
         'slam_posegraph',
-        default_value=os.path.join(robast_nav_launch_dir, 'maps', WORLD_MODEL),
+        default_value=os.path.join(robast_nav_launch_dir, 'maps', '5OG'),
         description='Full path to the slam_toolbox posegraph map file to use')
 
     declare_slam_executable_cmd = DeclareLaunchArgument(

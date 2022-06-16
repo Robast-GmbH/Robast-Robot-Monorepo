@@ -1,4 +1,5 @@
 import os
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -8,9 +9,17 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    POSE_INIT_X = os.environ['POSE_INIT_X']
-    POSE_INIT_Y = os.environ['POSE_INIT_Y']
-    POSE_INIT_Z = os.environ['POSE_INIT_Z']
+
+    with open("environment_vars.yaml", 'r') as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    init_x = environment_yaml["init_x"]
+    init_y = environment_yaml["init_y"]
+    init_yaw = environment_yaml["init_yaw"]
 
     if(os.environ['ROS_DISTRO'] == 'galactic'):
         nav2_params_yaml = os.path.join(get_package_share_directory(
@@ -21,7 +30,7 @@ def generate_launch_description():
     nav2_localization_params_yaml = os.path.join(get_package_share_directory(
         'robast_nav_launch'), 'config', 'localization_params.yaml')
     # map_file = os.path.join(get_package_share_directory('robast_nav_launch'), 'maps', '5OG.yaml')
-    
+
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
@@ -41,7 +50,6 @@ def generate_launch_description():
     # https://github.com/ros/robot_state_publisher/pull/30
     # TODO(orduno) Substitute with `PushNodeRemapping`
     #              https://github.com/ros2/launch_ros/issues/56
-    
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
@@ -73,18 +81,16 @@ def generate_launch_description():
         default_value=os.path.join(get_package_share_directory('robast_nav_launch'), 'maps', '5OG.yaml'),
         description='map server map file to load')
 
-
-    
     # Set env var to print messages to stdout immediately
     SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1')
 
     remappings_amcl = [('/tf', 'tf'),
-                ('/tf_static', 'tf_static'),
-                ('/map', amcl_map_topic)]
-    
+                       ('/tf_static', 'tf_static'),
+                       ('/map', amcl_map_topic)]
+
     remappings_map_server = [('/tf', 'tf'),
-                ('/tf_static', 'tf_static'),
-                ('/map', map_server_map_topic)]
+                             ('/tf_static', 'tf_static'),
+                             ('/map', map_server_map_topic)]
 
     start_map_server_cmd = Node(
         package='nav2_map_server',
@@ -103,7 +109,7 @@ def generate_launch_description():
         output='screen',
         parameters=[
             nav2_localization_params_yaml,
-            {"initial_pose": {"x": float(POSE_INIT_X), "y": float(POSE_INIT_Y), "yaw": 3.14}},
+            {"initial_pose": {"x": float(init_x), "y": float(init_y), "yaw": init_yaw}},
             {"set_initial_pose": True},
         ],
         remappings=remappings_amcl)
@@ -116,7 +122,7 @@ def generate_launch_description():
         parameters=[{'use_sim_time': use_sim_time},
                     {'autostart': autostart},
                     {'node_names': lifecycle_nodes}])
-    
+
     ld = LaunchDescription()
     # Set env var to print messages to stdout immediately
     ld.add_action(SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'))
