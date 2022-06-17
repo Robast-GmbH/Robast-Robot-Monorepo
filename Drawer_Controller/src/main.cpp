@@ -2,6 +2,9 @@
 #include <mcp_can.h>
 #include <FastLED.h>
 
+#include "robast_can_msgs/can_message/can_message.h"
+#include "robast_can_msgs/can_db/can_db.h"
+
 /*********************************************************************************************************
   GLOBAL VARIABLES AND CONSTANTS
 *********************************************************************************************************/
@@ -112,6 +115,11 @@ byte data[8] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
 
 void loop()
 {
+  // robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
+  // can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_DRAWER_ID].data
+
+
+
   if (digitalRead(SENSOR_DRAWER1_CLOSED_PIN))
   {
     data[0] = 0x00;
