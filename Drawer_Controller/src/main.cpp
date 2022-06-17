@@ -112,34 +112,79 @@ void setup()
 *********************************************************************************************************/
 
 byte data[8] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+long unsigned int rx_id;
+unsigned char rx_len = 0;
+unsigned char rx_buf[8];
+char msgString[128];                        // Array to store serial string
 
 void loop()
 {
   // robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
   // can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_DRAWER_ID].data
 
+  // if (digitalRead(SENSOR_DRAWER1_CLOSED_PIN))
+  // {
+  //   data[0] = 0x00;
+  //   Serial.println("SENSOR_DRAWER1_CLOSED_PIN is HIGH");
+  // }
+  // else
+  // {
+  //   data[0] = 0x01;
+  //   Serial.println("SENSOR_DRAWER1_CLOSED_PIN is LOW");
+  // }
+
+  // // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send
+  // byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
+  // if(sndStat == CAN_OK){
+  //   Serial.println("Message Sent Successfully!");
+  // } else {
+  //   Serial.print("Error Sending Message... CAN Status is: ");
+  //   Serial.println(sndStat);
+  // }
+  // delay(100);
 
 
-  if (digitalRead(SENSOR_DRAWER1_CLOSED_PIN))
+  if(!digitalRead(MCP2515_INT))                         // If CAN0_INT pin is low, read receive buffer
   {
-    data[0] = 0x00;
-    Serial.println("SENSOR_DRAWER1_CLOSED_PIN is HIGH");
-  }
-  else
-  {
-    data[0] = 0x01;
-    Serial.println("SENSOR_DRAWER1_CLOSED_PIN is LOW");
-  }
+    
 
-  // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send
-  byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
-  if(sndStat == CAN_OK){
-    Serial.println("Message Sent Successfully!");
-  } else {
-    Serial.print("Error Sending Message... CAN Status is: ");
-    Serial.println(sndStat);
+    CAN0.readMsgBuf(&rx_id, &rx_len, rx_buf);      // Read data: rx_len = data length, rx_buf = data byte(s)
+
+    // Serial.println("Received CAN message!");
+    
+    if((rx_id & 0x80000000) == 0x80000000) // Determine if ID is standard (11 bits) or extended (29 bits)
+    {
+      Serial.println("Extended ID");
+      Serial.printf(msgString, "Extended ID: 0x%.8lX  DLC: %1d  Data:", (rx_id & 0x1FFFFFFF), rx_len);
+    }     
+    else
+    {
+      Serial.print("Standard ID: ");
+      Serial.println(rx_id, OCT);
+      Serial.printf(msgString, "Standard ID: 0x%.3lX  DLC: %1d  Data:", rx_id, rx_len);
+      if (rx_id == CAN_MSG_DRAWER_USER_ACCESS)
+      {
+        // std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_id, rx_buf, rx_len, can_db.can_messages);
+      }
+    }
+
+    if (rx_buf[0] == 0x01) {
+      for(int i = 0; i < NUM_LEDS; i++)
+      {   
+        leds[i] = CRGB::SeaGreen;
+      }
+    }
+    else
+    {
+      for(int i = 0; i < NUM_LEDS; i++)
+      {   
+        leds[i] = CRGB::DarkOrange;
+      }
+    }
+    FastLED.setBrightness(10);
+    FastLED.show();
+    
   }
-  delay(100);
 }
 
 
