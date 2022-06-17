@@ -24,7 +24,7 @@ namespace robast_can_msgs
 
             const uint32_t id;
             const uint8_t dlc;
-            const std::vector<CanSignal> can_signals;
+            std::vector<CanSignal> can_signals;
     };
 
     /**

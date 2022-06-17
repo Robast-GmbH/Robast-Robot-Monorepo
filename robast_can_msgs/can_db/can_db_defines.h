@@ -5,8 +5,14 @@ namespace robast_can_msgs
 {
     #define NUM_OF_CAN_MSGS 2
 
-    #define CAN_MSG_DRAWER_USER_ACCESS 0x01
-    #define CAN_MSG_DRAWER_FEEDBACK 0x02
+    #define CAN_ID_DRAWER_USER_ACCESS 0x01
+    #define CAN_ID_DRAWER_FEEDBACK 0x02
+
+    #define CAN_DLC_DRAWER_USER_ACCESS 7
+    #define CAN_DLC_DRAWER_FEEDBACK 1
+
+    #define CAN_MSG_DRAWER_USER_ACCESS 0
+    #define CAN_MSG_DRAWER_FEEDBACK 1
 
     #define CAN_SIGNAL_DRAWER_ID 0
     #define CAN_SIGNAL_OPEN_DRAWER 1

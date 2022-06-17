@@ -17,8 +17,8 @@ namespace robast_can_msgs
             // Vector that contains all the CAN messages stored in the CanDb
             const std::vector<CanMessage> can_messages = {
                 CanMessage(
-                    CAN_MSG_DRAWER_USER_ACCESS,
-                    7,
+                    CAN_ID_DRAWER_USER_ACCESS,
+                    CAN_DLC_DRAWER_USER_ACCESS,
                     {
                         CanSignal(0, 24, 0),
                         CanSignal(24, 1, 0),
@@ -27,8 +27,8 @@ namespace robast_can_msgs
                         CanSignal(41, 8, 0),
                     }),
                 CanMessage(
-                    CAN_MSG_DRAWER_FEEDBACK,
-                    1,
+                    CAN_ID_DRAWER_FEEDBACK,
+                    CAN_DLC_DRAWER_FEEDBACK,
                     {
                         CanSignal(0, 1, 0),
                         CanSignal(1, 1, 0),
