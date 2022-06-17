@@ -87,7 +87,8 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://rb_theron/meshes/sensors/robosense_16.dae</uri>
+            <!--<uri>model://rb_theron/meshes/sensors/robosense_16.dae</uri>-->
+            <uri>model://rb_theron/meshes/sensors/rs_bpearl.dae</uri>
           </mesh>
         </geometry>
       </collision>
@@ -175,7 +176,7 @@
         <geometry>
           <mesh>
             <scale>1 1 1</scale>
-            <uri>model://rb_theron/meshes/sensors/robosense_16.dae</uri>
+            <uri>model://rb_theron/meshes/sensors/rs_bpearl.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -224,7 +225,7 @@
         <pose>0.25 0 0.1744 0 -7e-06 7e-06</pose>
       </sensor>
 
-      <sensor name='robosense_16' type='ray'>
+     <!-- <sensor name='robosense_16' type='ray'>
         <visualize>0</visualize>
         <update_rate>10</update_rate>
         <ray>
@@ -265,6 +266,49 @@
           <gaussian_noise>0.008</gaussian_noise>
         </plugin>
         <pose>0.25 0 0.2896 0 0 0 </pose>
+      </sensor>-->
+
+      <sensor name='robosense_Bpearl'  type='ray'>  
+        <visualize>0</visualize>
+        <update_rate>10</update_rate>
+        <ray>
+          <scan>
+            <horizontal>
+              <samples>440</samples>
+              <resolution>1</resolution>
+              <min_angle>-3.14159</min_angle>
+              <max_angle>3.14159</max_angle>
+            </horizontal>
+            <vertical>
+              <samples>32</samples>
+              <resolution>1</resolution>
+              <min_angle> -0.7854 </min_angle>
+              <max_angle> 0.7854 </max_angle>
+            </vertical>
+          </scan>
+          <range>
+            <min> 0.1 </min>
+            <max> 88 </max>
+            <resolution>0.001</resolution>
+          </range>
+          <noise>
+            <type>gaussian</type>
+            <mean>0</mean>
+            <stddev>0</stddev>
+          </noise>
+        </ray>
+        <plugin name='gazebo_ros_laser_controller' filename='libGazeboRosLaserVelodyne.so'>
+          <ros>
+            <namespace>/robosense</namespace>
+            <remapping>~/out:=/robosense_scan</remapping>
+          </ros>
+          <frame_name>top_laser_base_link</frame_name>
+          <organize_cloud>0</organize_cloud>
+          <min_range>0.9</min_range>
+          <max_range>130.0</max_range>
+          <gaussian_noise>0.00  </gaussian_noise>
+        </plugin>
+        <pose>0.25 0 0.2720 1.5707963 3.1416 1.5707963 </pose>
       </sensor>
       <velocity_decay/>
 
