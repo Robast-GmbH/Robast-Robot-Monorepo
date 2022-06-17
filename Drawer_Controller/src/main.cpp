@@ -119,7 +119,7 @@ char msgString[128];                        // Array to store serial string
 
 void loop()
 {
-  // robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
+  
   // can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_DRAWER_ID].data
 
   // if (digitalRead(SENSOR_DRAWER1_CLOSED_PIN))
@@ -150,6 +150,10 @@ void loop()
 
     CAN0.readMsgBuf(&rx_id, &rx_len, rx_buf);      // Read data: rx_len = data length, rx_buf = data byte(s)
 
+    robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
+    std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_id, rx_buf, rx_len, can_db.can_messages);
+
+
     // Serial.println("Received CAN message!");
     
     if((rx_id & 0x80000000) == 0x80000000) // Determine if ID is standard (11 bits) or extended (29 bits)
@@ -160,29 +164,35 @@ void loop()
     else
     {
       Serial.print("Standard ID: ");
-      Serial.println(rx_id, BIN);
+      Serial.print(rx_id, BIN);
+      Serial.print(" rx_len: ");
+      Serial.println(uint8_t(rx_len), DEC);
       Serial.printf(msgString, "Standard ID: 0x%.3lX  DLC: %1d  Data:", rx_id, rx_len);
-      if (rx_id == CAN_MSG_DRAWER_USER_ACCESS)
+
+      if (can_message.has_value())
       {
-        // std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_id, rx_buf, rx_len, can_db.can_messages);
+        if (can_message.value().id == CAN_ID_DRAWER_USER_ACCESS)
+        {
+          if (can_message.value().can_signals.at(CAN_SIGNAL_OPEN_DRAWER).data == 1) {
+            for(int i = 0; i < NUM_LEDS; i++)
+            {   
+              leds[i] = CRGB::SeaGreen;
+            }
+          }
+          else
+          {
+            for(int i = 0; i < NUM_LEDS; i++)
+            {   
+              leds[i] = CRGB::DarkOrange;
+            }
+          }
+          FastLED.setBrightness(10);
+          FastLED.show();
+        }
       }
     }
 
-    if (rx_buf[0] == 0x01) {
-      for(int i = 0; i < NUM_LEDS; i++)
-      {   
-        leds[i] = CRGB::SeaGreen;
-      }
-    }
-    else
-    {
-      for(int i = 0; i < NUM_LEDS; i++)
-      {   
-        leds[i] = CRGB::DarkOrange;
-      }
-    }
-    FastLED.setBrightness(10);
-    FastLED.show();
+    
     
   }
 }
