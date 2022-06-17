@@ -8,7 +8,7 @@
 	},
 	"remoteUser": "ubuntu",
 	"runArgs": [
-		"--name=theron",
+		"--name=theron_vsc",
 		"--network=host",		
 		"--cap-add=SYS_PTRACE",
 		//"--gpus=all",
@@ -17,7 +17,7 @@
 		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
 	],
 	"postStartCommand": "/entrypoint.sh",
-	"containerEnv": { "DISPLAY": "${localEnv:DISPLAY}" },
+	"containerEnv": { "DISPLAY": "0" },
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"

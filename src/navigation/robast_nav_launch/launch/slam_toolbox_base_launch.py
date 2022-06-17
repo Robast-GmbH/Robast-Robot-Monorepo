@@ -62,7 +62,7 @@ def generate_launch_description():
 
     declare_slam_posegraph_file_cmd = DeclareLaunchArgument(
         'slam_posegraph',
-        default_value=os.path.join(robast_nav_launch_dir, 'maps', "5OG"),
+        default_value=os.path.join(robast_nav_launch_dir, 'maps', "new_6OG"),
         description='Full path to the slam_toolbox posegraph map file to use')
 
     # declare_robot_start_pose_cmd = DeclareLaunchArgument(
@@ -100,7 +100,7 @@ def generate_launch_description():
     # Make re-written yaml
     param_substitutions = {
         'namespace': namespace,
-        # 'map_file_name': slam_posegraph,
+        'map_file_name': slam_posegraph,
         # 'use_sim_time': use_sim_time,
         'mode': slam_mode,
         'map_name': slam_map_topic,

@@ -3,9 +3,9 @@ recoveries_costmap:
     ros__parameters:
       update_frequency: 5.0
       publish_frequency: 2.0
-      global_frame: odom
-      robot_base_frame: base_link
-      # map_topic: /map
+      global_frame: robot_odom
+      robot_base_frame: robot_base_link
+      map_topic: /robot/map
       use_sim_time: True
       rolling_window: true
       width: 5
@@ -115,8 +115,8 @@ recoveries_server:
       plugin: "nav2_recoveries/BackUp"
     wait:
       plugin: "nav2_recoveries/Wait"
-    global_frame: odom
-    robot_base_frame: base_link
+    global_frame: robot_odom
+    robot_base_frame: robot_base_link
     transform_timeout: 0.1
     use_sim_time: true
     simulate_ahead_time: 2.0

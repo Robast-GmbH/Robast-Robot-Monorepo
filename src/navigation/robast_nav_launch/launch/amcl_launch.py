@@ -53,12 +53,12 @@ def generate_launch_description():
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
-        default_value='',
+        default_value='robot',
         description='Top-level namespace')
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',
-        default_value='true',
+        default_value='false',
         description='Use simulation (Gazebo) clock if true')
 
     declare_autostart_cmd = DeclareLaunchArgument(
@@ -66,39 +66,45 @@ def generate_launch_description():
         default_value='true',
         description='Automatically startup the nav2 stack')
 
-    map_server_map_topic_cmd = DeclareLaunchArgument(
-        'map_server_map_topic',
-        default_value='map',
-        description='map topic that the map server publishes on')
-
-    amcl_map_topic_cmd = DeclareLaunchArgument(
-        'amcl_map_topic',
-        default_value='map',
-        description='map topic that amcl subscribes')
-
     map_file_cmd = DeclareLaunchArgument(
         'map_file',
-        default_value=os.path.join(get_package_share_directory('robast_nav_launch'), 'maps', '5OG.yaml'),
+        default_value=os.path.join(get_package_share_directory('robast_nav_launch'), 'maps','Tiplu_6OG_2', 'Tiplu_6OG_2.yaml'),
         description='map server map file to load')
 
     # Set env var to print messages to stdout immediately
     SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1')
 
-    remappings_amcl = [('/tf', 'tf'),
-                       ('/tf_static', 'tf_static'),
-                       ('/map', amcl_map_topic)]
+    remappings_amcl = [('/robot/tf', 'tf'),
+                       ('/robot/tf_static', 'tf_static'),
+                       #('/robot/map', '/map')
+                       ]
 
-    remappings_map_server = [('/tf', 'tf'),
-                             ('/tf_static', 'tf_static'),
-                             ('/map', map_server_map_topic)]
+    remappings_map_server = remappings_amcl
+
+    # Make re-written yaml
+    param_substitutions = {
+        'namespace': namespace,
+        'base_frame_id': 'robot_base_link',
+        'global_frame_id': 'robot_map',
+        'odom_frame_id': 'robot_odom',
+        'scan_topic': 'front_laser/scan',
+        'map_topic': 'map'}
+
+    configured_params = RewrittenYaml(
+        source_file=nav2_amcl_params_yaml,
+        root_key=namespace,
+        param_rewrites=param_substitutions,
+        convert_types=True)
 
     start_map_server_cmd = Node(
         package='nav2_map_server',
         executable='map_server',
         name='map_server',
         output='screen',
-        parameters=[nav2_params_yaml,
-                    {'yaml_filename': map_file}
+        namespace=namespace,
+        parameters=[{'use_sim_time': use_sim_time},
+                    {'yaml_filename': map_file},
+                    {'frame_id': 'robot_map'}
                     ],
         remappings=remappings_map_server)
 
@@ -107,9 +113,11 @@ def generate_launch_description():
         executable='amcl',
         name='amcl',
         output='screen',
+        namespace=namespace,
         parameters=[
-            nav2_localization_params_yaml,
-            {"initial_pose": {"x": float(init_x), "y": float(init_y), "yaw": init_yaw}},
+            configured_params,
+            {'use_sim_time': use_sim_time},
+            {"initial_pose": {"x": float(0), "y": float(0), "yaw": 0.0}},
             {"set_initial_pose": True},
         ],
         remappings=remappings_amcl)
@@ -119,6 +127,7 @@ def generate_launch_description():
         executable='lifecycle_manager',
         name='lifecycle_manager_localization',
         output='screen',
+        namespace=namespace,
         parameters=[{'use_sim_time': use_sim_time},
                     {'autostart': autostart},
                     {'node_names': lifecycle_nodes}])
@@ -129,10 +138,9 @@ def generate_launch_description():
 
     # arguments
     ld.add_action(declare_namespace_cmd)
+    # ld.add_action(declare_prefix_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_autostart_cmd)
-    ld.add_action(map_server_map_topic_cmd)
-    ld.add_action(amcl_map_topic_cmd)
     ld.add_action(map_file_cmd)
 
     # nodes
