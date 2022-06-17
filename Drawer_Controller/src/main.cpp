@@ -160,7 +160,7 @@ void loop()
     else
     {
       Serial.print("Standard ID: ");
-      Serial.println(rx_id, OCT);
+      Serial.println(rx_id, BIN);
       Serial.printf(msgString, "Standard ID: 0x%.3lX  DLC: %1d  Data:", rx_id, rx_len);
       if (rx_id == CAN_MSG_DRAWER_USER_ACCESS)
       {
