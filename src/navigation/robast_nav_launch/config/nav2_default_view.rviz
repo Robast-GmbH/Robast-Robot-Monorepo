@@ -8,12 +8,9 @@ Panels:
         - /TF1/Frames1
         - /TF1/Tree1
         - /Global Planner1/Global Costmap1
-        - /MarkerArray1
-        - /PointCloud22
-        - /PointCloud23
         - /PointCloud23/Autocompute Value Bounds1
-      Splitter Ratio: 0.5833333134651184
-    Tree Height: 178
+      Splitter Ratio: 0.46290323138237
+    Tree Height: 808
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -79,77 +76,87 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
-        base_footprint:
+        robot_base_footprint:
           Value: true
-        base_link:
+        robot_base_link:
           Value: true
-        bottom_cover_link:
+        robot_front_laser_base_link:
           Value: true
-        front_laser_base_link:
+        robot_front_laser_link:
           Value: true
-        front_laser_link:
+        robot_front_rgbd_camera_base_link:
           Value: true
-        front_realsense_camera_camera_depth_frame:
+        robot_front_rgbd_camera_color_frame:
           Value: true
-        front_realsense_camera_camera_depth_optical_frame:
+        robot_front_rgbd_camera_color_optical_frame:
           Value: true
-        front_realsense_camera_camera_fisheye_frame:
+        robot_front_rgbd_camera_depth_frame:
           Value: true
-        front_realsense_camera_camera_fisheye_optical_frame:
+        robot_front_rgbd_camera_depth_optical_frame:
           Value: true
-        front_realsense_camera_camera_left_ir_frame:
+        robot_front_rgbd_camera_infra1_frame:
           Value: true
-        front_realsense_camera_camera_left_ir_optical_frame:
+        robot_front_rgbd_camera_infra1_optical_frame:
           Value: true
-        front_realsense_camera_camera_link:
+        robot_front_rgbd_camera_infra2_frame:
           Value: true
-        front_realsense_camera_camera_right_ir_frame:
+        robot_front_rgbd_camera_infra2_optical_frame:
           Value: true
-        front_realsense_camera_camera_right_ir_optical_frame:
+        robot_front_rgbd_camera_link:
           Value: true
-        front_rgbd_camera_depth_frame:
+        robot_imu_link:
           Value: true
-        front_rgbd_camera_depth_optical_frame:
+        robot_left_castorsupport:
           Value: true
-        front_rgbd_camera_link:
+        robot_left_castorwheel:
           Value: true
-        front_rgbd_camera_rgb_frame:
+        robot_left_rsupport:
           Value: true
-        front_rgbd_camera_rgb_optical_frame:
+        robot_left_wheel_link:
           Value: true
-        imu_link:
+        robot_leftsupport:
           Value: true
-        left_wheel_link:
+        robot_leftwheel:
           Value: true
-        leftcastorsupport:
+        robot_map:
           Value: true
-        leftcastorwheel:
+        robot_odom:
           Value: true
-        leftrsupport:
+        robot_rear_rgbd_camera_base_link:
           Value: true
-        leftsupport:
+        robot_rear_rgbd_camera_color_frame:
           Value: true
-        leftwheel:
+        robot_rear_rgbd_camera_color_optical_frame:
           Value: true
-        map:
+        robot_rear_rgbd_camera_depth_frame:
           Value: true
-        odom:
+        robot_rear_rgbd_camera_depth_optical_frame:
           Value: true
-        right_wheel_link:
+        robot_rear_rgbd_camera_infra1_frame:
           Value: true
-        rightcastorsupport:
+        robot_rear_rgbd_camera_infra1_optical_frame:
           Value: true
-        rightcastorwheel:
+        robot_rear_rgbd_camera_infra2_frame:
           Value: true
-        rightrsupport:
+        robot_rear_rgbd_camera_infra2_optical_frame:
           Value: true
-        rightsupport:
+        robot_rear_rgbd_camera_link:
           Value: true
-        rightwheel:
+        robot_right_castorsupport:
           Value: true
-        top_laser_base_link:
+        robot_right_castorwheel:
           Value: true
-        top_laser_link:
+        robot_right_rsupport:
+          Value: true
+        robot_right_wheel_link:
+          Value: true
+        robot_rightsupport:
+          Value: true
+        robot_rightwheel:
+          Value: true
+        robot_top_laser_base_link:
+          Value: true
+        robot_top_laser_link:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -157,57 +164,63 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        map:
-          odom:
-            base_footprint:
-              base_link:
-                bottom_cover_link:
+        robot_map:
+          robot_odom:
+            robot_base_footprint:
+              robot_base_link:
+                robot_front_laser_base_link:
+                  robot_front_laser_link:
+                    {}
+                robot_front_rgbd_camera_base_link:
+                  robot_front_rgbd_camera_link:
+                    robot_front_rgbd_camera_color_frame:
+                      robot_front_rgbd_camera_color_optical_frame:
+                        {}
+                    robot_front_rgbd_camera_depth_frame:
+                      robot_front_rgbd_camera_depth_optical_frame:
+                        {}
+                    robot_front_rgbd_camera_infra1_frame:
+                      robot_front_rgbd_camera_infra1_optical_frame:
+                        {}
+                    robot_front_rgbd_camera_infra2_frame:
+                      robot_front_rgbd_camera_infra2_optical_frame:
+                        {}
+                robot_imu_link:
                   {}
-                front_laser_base_link:
-                  front_laser_link:
-                    {}
-                front_realsense_camera_camera_link:
-                  front_realsense_camera_camera_depth_frame:
-                    front_realsense_camera_camera_depth_optical_frame:
+                robot_left_rsupport:
+                  robot_left_castorsupport:
+                    robot_left_castorwheel:
                       {}
-                    front_realsense_camera_camera_fisheye_frame:
-                      front_realsense_camera_camera_fisheye_optical_frame:
+                  robot_left_wheel_link:
+                    {}
+                robot_leftsupport:
+                  robot_leftwheel:
+                    {}
+                robot_rear_rgbd_camera_base_link:
+                  robot_rear_rgbd_camera_link:
+                    robot_rear_rgbd_camera_color_frame:
+                      robot_rear_rgbd_camera_color_optical_frame:
                         {}
-                    front_realsense_camera_camera_left_ir_frame:
-                      front_realsense_camera_camera_left_ir_optical_frame:
+                    robot_rear_rgbd_camera_depth_frame:
+                      robot_rear_rgbd_camera_depth_optical_frame:
                         {}
-                    front_realsense_camera_camera_right_ir_frame:
-                      front_realsense_camera_camera_right_ir_optical_frame:
+                    robot_rear_rgbd_camera_infra1_frame:
+                      robot_rear_rgbd_camera_infra1_optical_frame:
                         {}
-                front_rgbd_camera_link:
-                  front_rgbd_camera_depth_frame:
-                    front_rgbd_camera_depth_optical_frame:
+                    robot_rear_rgbd_camera_infra2_frame:
+                      robot_rear_rgbd_camera_infra2_optical_frame:
+                        {}
+                robot_right_rsupport:
+                  robot_right_castorsupport:
+                    robot_right_castorwheel:
                       {}
-                  front_rgbd_camera_rgb_frame:
-                    front_rgbd_camera_rgb_optical_frame:
-                      {}
-                imu_link:
-                  {}
-                leftrsupport:
-                  left_wheel_link:
+                  robot_right_wheel_link:
                     {}
-                  leftcastorsupport:
-                    leftcastorwheel:
-                      {}
-                leftsupport:
-                  leftwheel:
+                robot_rightsupport:
+                  robot_rightwheel:
                     {}
-                rightrsupport:
-                  right_wheel_link:
-                    {}
-                  rightcastorsupport:
-                    rightcastorwheel:
-                      {}
-                rightsupport:
-                  rightwheel:
-                    {}
-                top_laser_base_link:
-                  top_laser_link:
+                robot_top_laser_base_link:
+                  robot_top_laser_link:
                     {}
       Update Interval: 0
       Value: true
@@ -226,9 +239,9 @@ Visualization Manager:
       Enabled: true
       Invert Rainbow: false
       Max Color: 255; 255; 255
-      Max Intensity: 0
+      Max Intensity: 233
       Min Color: 0; 0; 0
-      Min Intensity: 0
+      Min Intensity: 54
       Name: LaserScan
       Position Transformer: XYZ
       Selectable: true
@@ -238,9 +251,10 @@ Visualization Manager:
       Topic:
         Depth: 5
         Durability Policy: Volatile
+        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Best Effort
-        Value: /front_laser/scan
+        Value: /robot/front_laser/scan
       Use Fixed Frame: true
       Use rainbow: true
       Value: true
@@ -271,6 +285,7 @@ Visualization Manager:
       Topic:
         Depth: 5
         Durability Policy: Volatile
+        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Best Effort
         Value: /mobile_base/sensors/bumper_pointcloud
@@ -286,9 +301,10 @@ Visualization Manager:
       Topic:
         Depth: 1
         Durability Policy: Transient Local
+        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /map
+        Value: /robot/map
       Update Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -313,6 +329,7 @@ Visualization Manager:
       Topic:
         Depth: 5
         Durability Policy: Volatile
+        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Best Effort
         Value: /particlecloud
@@ -328,6 +345,7 @@ Visualization Manager:
           Topic:
             Depth: 1
             Durability Policy: Transient Local
+            Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
             Value: /global_costmap/costmap
@@ -362,6 +380,7 @@ Visualization Manager:
           Topic:
             Depth: 5
             Durability Policy: Volatile
+            Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
             Value: /plan
@@ -374,6 +393,7 @@ Visualization Manager:
           Topic:
             Depth: 5
             Durability Policy: Volatile
+            Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
             Value: /global_costmap/published_footprint
@@ -391,6 +411,7 @@ Visualization Manager:
           Topic:
             Depth: 1
             Durability Policy: Transient Local
+            Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
             Value: /local_costmap/costmap
@@ -425,6 +446,7 @@ Visualization Manager:
           Topic:
             Depth: 5
             Durability Policy: Volatile
+            Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
             Value: /local_plan
@@ -449,6 +471,7 @@ Visualization Manager:
           Topic:
             Depth: 5
             Durability Policy: Volatile
+            Filter size: 10
             History Policy: Keep Last
             Reliability Policy: Reliable
             Value: /local_costmap/published_footprint
@@ -479,7 +502,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: RGB8
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -494,12 +517,13 @@ Visualization Manager:
       Topic:
         Depth: 5
         Durability Policy: Volatile
+        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /front_realsense_camera_depth_sensor/points
+        Value: /robot/robot_front_rgbd_camera_/depth/color/points
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 0.25
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -512,7 +536,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: AxisColor
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -527,12 +551,13 @@ Visualization Manager:
       Topic:
         Depth: 5
         Durability Policy: Volatile
+        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /global_costmap/voxel_grid
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -545,7 +570,7 @@ Visualization Manager:
       Color: 255; 255; 255
       Color Transformer: AxisColor
       Decay Time: 0
-      Enabled: true
+      Enabled: false
       Invert Rainbow: false
       Max Color: 255; 255; 255
       Max Intensity: 4096
@@ -560,16 +585,17 @@ Visualization Manager:
       Topic:
         Depth: 5
         Durability Policy: Volatile
+        Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: /local_costmap/voxel_grid
       Use Fixed Frame: true
       Use rainbow: true
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: map
+    Fixed Frame: robot_map
     Frame Rate: 30
   Name: root
   Tools:
@@ -579,6 +605,9 @@ Visualization Manager:
     - Class: rviz_default_plugins/Measure
       Line color: 128; 128; 0
     - Class: rviz_default_plugins/SetInitialPose
+      Covariance x: 0.25
+      Covariance y: 0.25
+      Covariance yaw: 0.06853891909122467
       Topic:
         Depth: 5
         Durability Policy: Volatile
@@ -601,35 +630,35 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/XYOrbit
-      Distance: 20.481651306152344
+      Distance: 12.459327697753906
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 8.518468856811523
-        Y: -15.460454940795898
+        X: 2.1704893112182617
+        Y: -3.7501792907714844
         Z: -1.9443077690084465e-06
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.8497970700263977
+      Pitch: 1.164797067642212
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz_default_plugins)
-      Yaw: 4.7123894691467285
+      Yaw: 4.702391147613525
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 914
+  Height: 953
   Hide Left Dock: false
   Hide Right Dock: false
   Navigation 2:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000020700000337fc020000000afb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003e000000ef000000cb00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb00000018004e0061007600690067006100740069006f006e002000320100000133000000b7000000b700fffffffb000000220053006c0061006d0054006f006f006c0062006f00780050006c007500670069006e01000001f0000001850000018500ffffff000000010000010f0000033cfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003b0000033c000000a500fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004420000003efc0100000002fb0000000800540069006d00650100000000000004420000000000000000fb0000000800540069006d00650100000000000004500000000000000000000003fc0000033700000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000026e00000363fc020000000afb0000001200530065006c0065006300740069006f006e000000003b000000830000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b00000363000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb00000018004e0061007600690067006100740069006f006e00200032000000019f000001ff0000012300fffffffb000000220053006c0061006d0054006f006f006c0062006f00780050006c007500670069006e00000002310000016d0000016d00ffffff000000010000010f0000033cfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003b0000033c000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004420000003efc0100000002fb0000000800540069006d00650100000000000004420000000000000000fb0000000800540069006d00650100000000000004500000000000000000000003950000036300000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   SlamToolboxPlugin:
@@ -640,4 +669,4 @@ Window Geometry:
     collapsed: false
   Width: 1545
   X: 186
-  Y: 117
+  Y: 87
