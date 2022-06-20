@@ -48,10 +48,10 @@ def generate_launch_description():
         'waypoint_follower',
     ]
     remappings_movement = [('/cmd_vel', 'robot/robotnik_base_control/cmd_vel'),
-                        ('/odom', 'robot/robotnik_base_control/odom'),
-                        ('/robot/tf', 'tf'),
-                        ('/robot/tf_static', 'tf_static')
-                       ]
+                           ('/odom', 'robot/robotnik_base_control/odom'),
+                           ('/robot/tf', 'tf'),
+                           ('/robot/tf_static', 'tf_static')
+                           ]
 
     # Map fully qualified names to relative ones so the node's namespace can be prepended.
     # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
@@ -84,11 +84,10 @@ def generate_launch_description():
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
-        default_value='',
+        default_value='robot',
         description='Top-level namespace')
 
     print('world_file_path : {}'.format(nav2_params_yaml))
-
 
     start_controller_cmd = Node(
         package='nav2_controller',
@@ -96,9 +95,9 @@ def generate_launch_description():
         output='screen',
         namespace=namespace,
         parameters=[nav2_params_yaml,
-	    	    {'use_sim_time': use_sim_time},
-                {"map_topic": '/robot/map'}
-                ],
+                    {'use_sim_time': use_sim_time},
+                    {"map_topic": '/robot/map'}
+                    ],
         remappings=remappings_movement)
 
     start_planner_cmd = Node(
@@ -108,8 +107,8 @@ def generate_launch_description():
         output='screen',
         namespace=namespace,
         parameters=[nav2_params_yaml,
-	    	    {'use_sim_time': use_sim_time},
-                {"map_topic": '/robot/map'}],
+                    {'use_sim_time': use_sim_time},
+                    {"map_topic": '/robot/map'}],
         remappings=remappings_movement)
 
     start_bt_navigator_cmd = Node(
@@ -120,7 +119,7 @@ def generate_launch_description():
         namespace=namespace,
         parameters=[
             nav2_params_yaml,
-	    {'use_sim_time': use_sim_time},
+            {'use_sim_time': use_sim_time},
             {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
         ],
         remappings=remappings_movement,
@@ -134,7 +133,7 @@ def generate_launch_description():
         namespace=namespace,
         parameters=[
             nav2_params_yaml,
-	    {'use_sim_time': use_sim_time},
+            {'use_sim_time': use_sim_time},
             {'default_nav_to_pose_bt_xml': bt_xml_filename_door_bells},
         ],
         remappings=remappings_movement,

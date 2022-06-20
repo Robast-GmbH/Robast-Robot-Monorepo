@@ -1,7 +1,6 @@
 import os
 import yaml
 
-
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
@@ -78,7 +77,7 @@ def generate_launch_description():
 
     declare_slam_map_topic_cmd = DeclareLaunchArgument(
         'slam_map_topic',
-        default_value='/map',
+        default_value='map',
         description='Name of the occupancy grid topic e.g. /map'
     )
 
@@ -112,9 +111,15 @@ def generate_launch_description():
         param_rewrites=param_substitutions,
         convert_types=True)
 
+    remappings_amcl = [('/map', 'map'),
+                       ('/map_metadata', 'map_metadata')]
+
+    remappings_map_server = remappings_amcl
+
     start_slam_toolbox_cmd = Node(
         package='slam_toolbox',
         executable=slam_executable,
+        namespace=namespace,
         name='slam_toolbox',
         output='screen',
         parameters=[
@@ -122,13 +127,15 @@ def generate_launch_description():
             {'map_file_name': slam_posegraph},
             {'use_sim_time': use_sim_time},
             {'map_start_pose': [float(init_x), float(init_y), float(init_yaw)]}
-        ]
+        ],
+        remappings=remappings_map_server
     )
 
     start_lifecycle_manager_cmd = Node(
         package='nav2_lifecycle_manager',
         executable='lifecycle_manager',
         name='lifecycle_manager_navigation',
+        namespace=namespace,
         output='screen',
         parameters=[
             {'use_sim_time': use_sim_time},

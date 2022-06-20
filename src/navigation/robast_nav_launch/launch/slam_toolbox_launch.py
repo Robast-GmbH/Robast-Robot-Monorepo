@@ -17,18 +17,19 @@ def generate_launch_description():
 
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_posegraph',
-        default_value=os.path.join(robast_nav_launch_dir, 'maps', '5OG'),
+        default_value=os.path.join(robast_nav_launch_dir, 'maps', '6OG_Tiplu', '6OG'),
         description='path to the world posegrapg'
     )
-    slam_toolbox_params_yaml = os.path.join(robast_nav_launch_dir, 'config', 'slam_toolbox_params_offline.yaml')
+    slam_toolbox_params_yaml = os.path.join(robast_nav_launch_dir, 'config', 'slam_toolbox_params.yaml')
     slam_launch_file = os.path.join(robast_nav_launch_dir, 'launch', 'slam_toolbox_base_launch.py')
 
     slam_arguments = {
-        'slam_executable': 'sync_slam_toolbox_node',
+        'slam_executable': 'async_slam_toolbox_node',
         'slam_params_file': slam_toolbox_params_yaml,
         'slam_posegraph': world_posegraph,
-        'slam_mode': 'localization',
+        'slam_mode': 'mapping',
         'slam_map_topic': '/map',
+        'namespace': 'robot'
     }.items()
 
     launch_slam_base_launch = IncludeLaunchDescription(
