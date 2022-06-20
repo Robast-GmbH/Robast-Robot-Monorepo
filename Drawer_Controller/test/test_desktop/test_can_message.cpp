@@ -40,7 +40,7 @@ void test_testing_data(void)
   printf("Testing Data!");
 
   robast_can_msgs::CanMessage can_message(
-                    CAN_MSG_DRAWER_USER_ACCESS,
+                    CAN_ID_DRAWER_USER_ACCESS,
                     7,
                     {
                         robast_can_msgs::CanSignal(0, 24, 0),
@@ -77,7 +77,7 @@ void test_join_together_CAN_data_bytes_from_array(void)
 void test_join_together_CAN_data_from_CAN_message(void)
 {
   robast_can_msgs::CanMessage can_message(
-                    CAN_MSG_DRAWER_USER_ACCESS,
+                    CAN_ID_DRAWER_USER_ACCESS,
                     7,
                     {
                         robast_can_msgs::CanSignal(0, 24, drawer_id),
@@ -121,7 +121,7 @@ void test_encode_can_message(void)
 {
   robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
   robast_can_msgs::CanMessage can_message(
-                    CAN_MSG_DRAWER_USER_ACCESS,
+                    CAN_ID_DRAWER_USER_ACCESS,
                     7,
                     {
                         robast_can_msgs::CanSignal(0, 24, drawer_id),
