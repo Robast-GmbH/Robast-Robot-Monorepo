@@ -7,7 +7,7 @@
 /*
 * HOW TO RUN THIS TEST:
 * g++ -c .\tests_main.cpp
-* g++ tests_main.o tests_can_db.cpp ..\can_helper.cpp -o tests -I ..\
+* g++ tests_main.o tests_can_db.cpp ..\can_helper.cpp -o test_executable -I ..\
 * .\test_executable.exe
 */
 
