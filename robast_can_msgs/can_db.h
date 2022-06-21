@@ -1,8 +1,8 @@
 #ifndef CAN_DB_HPP_
 #define CAN_DB_HPP_
 
-#include "robast_can_msgs/can_message/can_message.h"
-#include "robast_can_msgs/can_db/can_db_defines.h"
+#include "can_message.h"
+#include "can_db_defines.h"
 
 namespace robast_can_msgs
 {

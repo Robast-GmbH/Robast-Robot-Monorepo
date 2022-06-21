@@ -1,5 +1,5 @@
-#ifndef CAN_MESSAGE_HPP_
-#define CAN_MESSAGE_HPP_
+#ifndef CAN_HELPER_HPP_
+#define CAN_HELPER_HPP_
 
 #include <optional>
 #include <string>
@@ -9,24 +9,11 @@
 #include <array>
 #include <algorithm>
 
-#include "robast_can_msgs/can_signal/can_signal.h"
-#include "robast_can_msgs/can_frame/can_frame.h"
+#include "can_message.h"
+#include "can_frame.h"
 
 namespace robast_can_msgs
 {
-    class CanMessage
-    {
-        public:
-            /**
-             * @brief A constructor for robast_can_msgs::CanMessage class
-             */
-            CanMessage(uint32_t id_in, uint8_t dlc_in, std::vector<CanSignal> can_signals_in) : id{id_in}, dlc{dlc_in}, can_signals{can_signals_in} {}
-
-            const uint32_t id;
-            const uint8_t dlc;
-            std::vector<CanSignal> can_signals;
-    };
-
     /**
      * @brief Decodes CAN message from a 8 Byte Bitstream
      *
@@ -81,4 +68,4 @@ namespace robast_can_msgs
     void SwapEndian(T &val);
 }
 
-#endif /* CAN_MESSAGE_HPP_ */
+#endif /* CAN_HELPER_HPP_ */
