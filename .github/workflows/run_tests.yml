@@ -13,9 +13,12 @@ jobs:
     - name: Install g++ compiler
       run: |
         sudo apt install build-essential
-    - name: Run Tests
+    - name: Build Tests
       working-directory: robast_can_msgs/tests
       run: |
         g++ -std=c++17 -c tests_main.cpp
-        g++ -std=c++17 tests_main.o tests_can_db.cpp ../can_helper.cpp -o test_executable -I ../
+        g++ -std=c++17 tests_main.o tests_can_db.cpp ../can_helper.cpp -o test_executable -I ../    
+    - name: Execute Tests
+      working-directory: robast_can_msgs/tests
+      run: |
         ./test_executable
