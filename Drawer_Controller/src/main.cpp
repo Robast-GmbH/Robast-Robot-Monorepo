@@ -9,6 +9,8 @@
   GLOBAL VARIABLES AND CONSTANTS
 *********************************************************************************************************/
 
+#define DRAWER_ID 1 //TODO: Every Drawer needs to have his own id
+
 #define PWR_OPEN_LOCK1_PIN GPIO_NUM_22
 #define PWR_CLOSE_LOCK1_PIN GPIO_NUM_21
 #define SENSOR_LOCK1_PIN GPIO_NUM_36
@@ -37,11 +39,11 @@ CRGBArray<NUM_LEDS> leds;
 
 MCP_CAN CAN0(SPI_CS);
 
-byte data[8] = {0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07};
+robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
+
 long unsigned int rx_msg_id;
 uint8_t rx_msg_dlc = 0;
 uint8_t rx_data_buf[8];
-char msgString[128];                        // Array to store serial string
 
 
 /*********************************************************************************************************
@@ -95,6 +97,71 @@ void initialize_LED_strip(void)
  FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_LEDS);
 }
 
+void handle_locks(robast_can_msgs::CanMessage can_message)
+{
+  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_OPEN_LOCK)
+  {
+    digitalWrite(PWR_OPEN_LOCK1_PIN, HIGH);
+  }
+  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_CLOSE_LOCK)
+  {
+    digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
+  }
+
+  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_OPEN_LOCK)
+  {
+    digitalWrite(PWR_OPEN_LOCK2_PIN, HIGH);
+  }
+  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_CLOSE_LOCK)
+  {
+    digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
+  }
+}
+
+void handle_LED_strip(robast_can_msgs::CanMessage can_message)
+{
+  uint8_t red = can_message.can_signals.at(CAN_SIGNAL_LED_RED).data;
+  uint8_t green = can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data;
+  uint8_t blue = can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data;
+
+  for(int i = 0; i < NUM_LEDS; i++)
+  {   
+    leds[i] = CRGB(red, green, blue);
+  }
+  FastLED.setBrightness(10);
+  FastLED.show();
+}
+
+void handle_CAN_msg(robast_can_msgs::CanMessage can_message)
+{
+  if (can_message.id == CAN_ID_DRAWER_USER_ACCESS)
+  {
+    handle_locks(can_message);
+
+    handle_LED_strip(can_message);
+  }
+}
+
+void debug_prints(robast_can_msgs::CanMessage can_message) {
+  Serial.print("Standard ID: ");
+  Serial.print(rx_msg_id, HEX);
+  Serial.print(" rx_dlc: ");
+  Serial.print(uint8_t(rx_msg_dlc), DEC);
+  Serial.print(" DRAWER ID: ");
+  Serial.print(can_message.can_signals.at(CAN_SIGNAL_DRAWER_ID).data, HEX);
+  Serial.print(" CAN_SIGNAL_OPEN_LOCK_1: ");
+  Serial.print(can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data, BIN);
+  Serial.print(" CAN_SIGNAL_OPEN_LOCK_2: ");
+  Serial.print(can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data, BIN);
+  Serial.print(" LED RED: ");
+  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_RED).data, HEX);
+  Serial.print(" LED GREEN: ");
+  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data, HEX);
+  Serial.print(" LED BLUE: ");
+  Serial.println(can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data, HEX);
+}
+
+
 /*********************************************************************************************************
   SETUP
 *********************************************************************************************************/
@@ -119,79 +186,23 @@ void setup()
 
 void loop()
 {
-  
-  // can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_DRAWER_ID].data
-
-  // if (digitalRead(SENSOR_DRAWER1_CLOSED_PIN))
-  // {
-  //   data[0] = 0x00;
-  //   Serial.println("SENSOR_DRAWER1_CLOSED_PIN is HIGH");
-  // }
-  // else
-  // {
-  //   data[0] = 0x01;
-  //   Serial.println("SENSOR_DRAWER1_CLOSED_PIN is LOW");
-  // }
-
-  // // send data:  ID = 0x100, Standard CAN Frame, Data length = 8 bytes, 'data' = array of data bytes to send
-  // byte sndStat = CAN0.sendMsgBuf(0x100, 0, 8, data);
-  // if(sndStat == CAN_OK){
-  //   Serial.println("Message Sent Successfully!");
-  // } else {
-  //   Serial.print("Error Sending Message... CAN Status is: ");
-  //   Serial.println(sndStat);
-  // }
-  // delay(100);
-
-
   if(!digitalRead(MCP2515_INT))                         // If CAN0_INT pin is low, read receive buffer
   {
     CAN0.readMsgBuf(&rx_msg_id, &rx_msg_dlc, rx_data_buf);
 
-    robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
-    std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_msg_id, rx_data_buf, rx_msg_dlc, can_db.can_messages);
+    std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_msg_id, rx_data_buf, rx_msg_dlc, can_db.can_messages); 
 
-
-    // Serial.println("Received CAN message!");
-    
-    if((rx_msg_id & 0x80000000) == 0x80000000) // Determine if ID is standard (11 bits) or extended (29 bits)
+    if (can_message.has_value())
     {
-      Serial.println("Extended ID");
-      Serial.printf(msgString, "Extended ID: 0x%.8lX  DLC: %1d  Data:", (rx_msg_id & 0x1FFFFFFF), rx_msg_dlc);
-    }     
+      handle_CAN_msg(can_message.value());
+
+      debug_prints(can_message.value());
+    }
     else
     {
-      Serial.print("Standard ID: ");
-      Serial.print(rx_msg_id, BIN);
-      Serial.print(" rx_dlc: ");
-      Serial.println(uint8_t(rx_msg_dlc), DEC);
-      Serial.printf(msgString, "Standard ID: 0x%.3lX  DLC: %1d  Data:", rx_msg_id, rx_msg_dlc);
-
-      if (can_message.has_value())
-      {
-        if (can_message.value().id == CAN_ID_DRAWER_USER_ACCESS)
-        {
-          if (can_message.value().can_signals.at(CAN_SIGNAL_OPEN_DRAWER).data == 1) {
-            for(int i = 0; i < NUM_LEDS; i++)
-            {   
-              leds[i] = CRGB::SeaGreen;
-            }
-          }
-          else
-          {
-            for(int i = 0; i < NUM_LEDS; i++)
-            {   
-              leds[i] = CRGB::DarkOrange;
-            }
-          }
-          FastLED.setBrightness(10);
-          FastLED.show();
-        }
-      }
+      Serial.println("There is no CAN Message available in the CAN Database that corresponds to the msg id: ");
+      Serial.print(rx_msg_id, HEX);
     }
-
-    
-    
   }
 }
 
