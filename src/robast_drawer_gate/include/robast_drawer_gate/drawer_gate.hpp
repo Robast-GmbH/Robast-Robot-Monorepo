@@ -14,39 +14,52 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
 
+#include "can_serial_helper.hpp"
 #include "robast_ros2_msgs/action/drawer_user_access.hpp"
+#include "robast_can_msgs/can_db.h"
+
 
 namespace robast_drawer_gate
 {
-class DrawerGate : public rclcpp::Node
-{
-public:
-  using DrawerUserAccess = robast_ros2_msgs::action::DrawerUserAccess;
-  using GoalHandleDrawerUserAccess = rclcpp_action::ServerGoalHandle<DrawerUserAccess>;
+  class DrawerGate : public rclcpp::Node
+  {
+    public:
+      using DrawerUserAccess = robast_ros2_msgs::action::DrawerUserAccess;
+      using GoalHandleDrawerUserAccess = rclcpp_action::ServerGoalHandle<DrawerUserAccess>;
 
-  /**
-   * @brief A constructor for robast_drawer_gate::DrawerGate class
-   */
-  DrawerGate();
-  /**
-   * @brief A destructor for robast_drawer_gate::DrawerGate class
-   */
-  // ~DrawerGate();
-  
+      /**
+       * @brief A constructor for robast_drawer_gate::DrawerGate class
+       */
+      DrawerGate();
+      /**
+       * @brief A destructor for robast_drawer_gate::DrawerGate class
+       */
+      // ~DrawerGate();
+      
 
-private:
-  rclcpp_action::Server<DrawerUserAccess>::SharedPtr drawer_gate_server;
+    private:
+      rclcpp_action::Server<DrawerUserAccess>::SharedPtr drawer_gate_server;
 
-  rclcpp_action::GoalResponse goal_callback(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const DrawerUserAccess::Goal> goal);
+      int serial_port;
 
-  rclcpp_action::CancelResponse cancel_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
+      robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
-  void accepted_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
+      void setup_serial_port(void);
 
-  /**
-   * @brief Action server execution callback
-   */
-  void open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);  
-};
+      robast_can_msgs::CanMessage create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal);
+
+      void set_can_baudrate(can_baudrate_usb_to_can_interface can_baudrate);
+
+      rclcpp_action::GoalResponse goal_callback(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const DrawerUserAccess::Goal> goal);
+
+      rclcpp_action::CancelResponse cancel_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
+
+      void accepted_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
+
+      /**
+       * @brief Action server execution callback
+       */
+      void open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);  
+  };
 }  // namespace robast_drawer_gate
 #endif  // ROBAST_DRAWER_GATE__DRAWER_GATE_HPP_

@@ -21,6 +21,8 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(robast_ros2_msgs REQUIRED)
 
+include_directories(../robast_msgs) # needed to find robast_msgs/robast_can_msgs
+
 include_directories(include)
 
 set(executable_drawer_gate drawer_gate)
