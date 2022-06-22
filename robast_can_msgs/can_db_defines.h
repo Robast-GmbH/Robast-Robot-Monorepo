@@ -26,6 +26,12 @@ namespace robast_can_msgs
     #define CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED 2
     #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED 3
     #define CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED 4
+
+    #define CAN_DATA_CLOSE_LOCK 0
+    #define CAN_DATA_OPEN_LOCK 1
+
+    #define CAN_DATA_SWITCH_IS_NOT_PUSHED 0
+    #define CAN_DATA_SWITCH_IS_PUSHED 1
 }
 
 #endif /* CAN_DB_DEFINES_HPP_ */
