@@ -15,8 +15,8 @@ namespace robast_can_msgs
     #define CAN_MSG_DRAWER_FEEDBACK 1
 
     #define CAN_SIGNAL_DRAWER_ID 0
-    #define CAN_SIGNAL_OPEN_DRAWER_1 1
-    #define CAN_SIGNAL_OPEN_DRAWER_2 2
+    #define CAN_SIGNAL_OPEN_LOCK_1 1
+    #define CAN_SIGNAL_OPEN_LOCK_2 2
     #define CAN_SIGNAL_LED_RED 3
     #define CAN_SIGNAL_LED_GREEN 4
     #define CAN_SIGNAL_LED_BLUE 5
