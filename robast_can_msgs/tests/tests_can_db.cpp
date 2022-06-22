@@ -16,9 +16,10 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
     GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, open_drawer, LED_red, LED_green, LED_blue") {
         uint32_t msg_id = CAN_ID_DRAWER_USER_ACCESS;;
         uint8_t dlc = 7;
-        uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b10000000,0b10000001,0b00000001,0b10000000,0x00};
+        uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b11000000,0b01000000,0b10000000,0b11000000,0x00};
         uint64_t data_drawer_id = 0x010203;
-        uint64_t data_open_drawer = 1;
+        uint64_t data_open_drawer_1 = 1;
+        uint64_t data_open_drawer_2 = 1;
         uint64_t data_LED_red = 1;
         uint64_t data_LED_green = 2;
         uint64_t data_LED_blue = 3;    
@@ -28,19 +29,23 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
             uint8_t bit_length_drawer_id = 24;
             robast_can_msgs::CanSignal can_signal_drawer_id = robast_can_msgs::CanSignal(bit_start_drawer_id, bit_length_drawer_id, data_drawer_id);
 
-            uint8_t bit_start_open_drawer = 24;
-            uint8_t bit_length_open_drawer = 1;
-            robast_can_msgs::CanSignal can_signal_open_drawer = robast_can_msgs::CanSignal(bit_start_open_drawer, bit_length_open_drawer, data_open_drawer);
+            uint8_t bit_start_open_drawer_1 = 24;
+            uint8_t bit_length_open_drawer_1 = 1;
+            robast_can_msgs::CanSignal can_signal_open_drawer_1 = robast_can_msgs::CanSignal(bit_start_open_drawer_1, bit_length_open_drawer_1, data_open_drawer_1);
 
-            uint8_t bit_start_LED_red = 25;
+            uint8_t bit_start_open_drawer_2 = 25;
+            uint8_t bit_length_open_drawer_2 = 1;
+            robast_can_msgs::CanSignal can_signal_open_drawer_2 = robast_can_msgs::CanSignal(bit_start_open_drawer_2, bit_length_open_drawer_2, data_open_drawer_2);
+
+            uint8_t bit_start_LED_red = 26;
             uint8_t bit_length_LED_red = 8;
             robast_can_msgs::CanSignal can_signal_LED_red = robast_can_msgs::CanSignal(bit_start_LED_red, bit_length_LED_red, data_LED_red);
 
-            uint8_t bit_start_LED_green = 33;
+            uint8_t bit_start_LED_green = 34;
             uint8_t bit_length_LED_green = 8;
             robast_can_msgs::CanSignal can_signal_LED_green = robast_can_msgs::CanSignal(bit_start_LED_green, bit_length_LED_green, data_LED_green);
 
-            uint8_t bit_start_LED_blue = 41;
+            uint8_t bit_start_LED_blue = 42;
             uint8_t bit_length_LED_blue = 8;
             robast_can_msgs::CanSignal can_signal_LED_blue = robast_can_msgs::CanSignal(bit_start_LED_blue, bit_length_LED_blue, data_LED_blue);
 
@@ -49,9 +54,13 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                 REQUIRE(can_signal_drawer_id.bit_length == bit_length_drawer_id);
                 REQUIRE(can_signal_drawer_id.data == data_drawer_id);
 
-                REQUIRE(can_signal_open_drawer.bit_start == bit_start_open_drawer);
-                REQUIRE(can_signal_open_drawer.bit_length == bit_length_open_drawer);
-                REQUIRE(can_signal_open_drawer.data == data_open_drawer);
+                REQUIRE(can_signal_open_drawer_1.bit_start == bit_start_open_drawer_1);
+                REQUIRE(can_signal_open_drawer_1.bit_length == bit_length_open_drawer_1);
+                REQUIRE(can_signal_open_drawer_1.data == data_open_drawer_1);
+
+                REQUIRE(can_signal_open_drawer_2.bit_start == bit_start_open_drawer_2);
+                REQUIRE(can_signal_open_drawer_2.bit_length == bit_length_open_drawer_2);
+                REQUIRE(can_signal_open_drawer_2.data == data_open_drawer_2);
 
                 REQUIRE(can_signal_LED_red.bit_start == bit_start_LED_red);
                 REQUIRE(can_signal_LED_red.bit_length == bit_length_LED_red);
@@ -73,7 +82,8 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                         dlc,
                         {
                             can_signal_drawer_id,
-                            can_signal_open_drawer,
+                            can_signal_open_drawer_1,
+                            can_signal_open_drawer_2,
                             can_signal_LED_red,
                             can_signal_LED_green,
                             can_signal_LED_blue,
@@ -87,9 +97,13 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                     REQUIRE(can_message.can_signals[CAN_SIGNAL_DRAWER_ID].bit_length == can_signal_drawer_id.bit_length);
                     REQUIRE(can_message.can_signals[CAN_SIGNAL_DRAWER_ID].data == can_signal_drawer_id.data);
 
-                    REQUIRE(can_message.can_signals[CAN_SIGNAL_OPEN_DRAWER].bit_start == can_signal_open_drawer.bit_start);
-                    REQUIRE(can_message.can_signals[CAN_SIGNAL_OPEN_DRAWER].bit_length == can_signal_open_drawer.bit_length);
-                    REQUIRE(can_message.can_signals[CAN_SIGNAL_OPEN_DRAWER].data == can_signal_open_drawer.data);
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_OPEN_DRAWER_1].bit_start == can_signal_open_drawer_1.bit_start);
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_OPEN_DRAWER_1].bit_length == can_signal_open_drawer_1.bit_length);
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_OPEN_DRAWER_1].data == can_signal_open_drawer_1.data);
+
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_OPEN_DRAWER_2].bit_start == can_signal_open_drawer_2.bit_start);
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_OPEN_DRAWER_2].bit_length == can_signal_open_drawer_2.bit_length);
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_OPEN_DRAWER_2].data == can_signal_open_drawer_2.data);
 
                     REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_RED].bit_start == can_signal_LED_red.bit_start);
                     REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_RED].bit_length == can_signal_LED_red.bit_length);
@@ -115,9 +129,13 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                         REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_DRAWER_ID].bit_length == can_signal_drawer_id.bit_length);
                         REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_DRAWER_ID].data == 0);
 
-                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_OPEN_DRAWER].bit_start == can_signal_open_drawer.bit_start);
-                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_OPEN_DRAWER].bit_length == can_signal_open_drawer.bit_length);
-                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_OPEN_DRAWER].data == 0);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_OPEN_DRAWER_1].bit_start == can_signal_open_drawer_1.bit_start);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_OPEN_DRAWER_1].bit_length == can_signal_open_drawer_1.bit_length);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_OPEN_DRAWER_1].data == 0);
+
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_OPEN_DRAWER_2].bit_start == can_signal_open_drawer_2.bit_start);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_OPEN_DRAWER_2].bit_length == can_signal_open_drawer_2.bit_length);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_OPEN_DRAWER_2].data == 0);
 
                         REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_RED].bit_start == can_signal_LED_red.bit_start);
                         REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_RED].bit_length == can_signal_LED_red.bit_length);
@@ -154,11 +172,12 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
     GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, open_drawer, LED_red, LED_green, LED_blue") {
         uint32_t msg_id = CAN_ID_DRAWER_USER_ACCESS;;
         uint8_t dlc = 7;
-        uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b10000000,0b10000001,0b00000001,0b10000000,0x00};
-        uint64_t u64_can_data_expected = 0x0102038081018000;
+        uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b11000000,0b01000000,0b10000000,0b11000000,0x00};
+        uint64_t u64_can_data_expected = 0x010203C04080C000;
         uint64_t u64_can_data_not_expected = 0x0907060509030201;
         uint64_t data_drawer_id = 0x010203;
-        uint64_t data_open_drawer = 1;
+        uint64_t data_open_drawer_1 = 1;
+        uint64_t data_open_drawer_2 = 1;
         uint64_t data_LED_red = 1;
         uint64_t data_LED_green = 2;
         uint64_t data_LED_blue = 3;
@@ -166,16 +185,19 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         uint8_t bit_start_drawer_id = 0;
         uint8_t bit_length_drawer_id = 24;
         robast_can_msgs::CanSignal can_signal_drawer_id = robast_can_msgs::CanSignal(bit_start_drawer_id, bit_length_drawer_id, data_drawer_id);
-        uint8_t bit_start_open_drawer = 24;
-        uint8_t bit_length_open_drawer = 1;
-        robast_can_msgs::CanSignal can_signal_open_drawer = robast_can_msgs::CanSignal(bit_start_open_drawer, bit_length_open_drawer, data_open_drawer);
-        uint8_t bit_start_LED_red = 25;
+        uint8_t bit_start_open_drawer_1 = 24;
+        uint8_t bit_length_open_drawer_1 = 1;
+        robast_can_msgs::CanSignal can_signal_open_drawer_1 = robast_can_msgs::CanSignal(bit_start_open_drawer_1, bit_length_open_drawer_1, data_open_drawer_1);
+        uint8_t bit_start_open_drawer_2 = 25;
+        uint8_t bit_length_open_drawer_2 = 1;
+        robast_can_msgs::CanSignal can_signal_open_drawer_2 = robast_can_msgs::CanSignal(bit_start_open_drawer_2, bit_length_open_drawer_2, data_open_drawer_2);
+        uint8_t bit_start_LED_red = 26;
         uint8_t bit_length_LED_red = 8;
         robast_can_msgs::CanSignal can_signal_LED_red = robast_can_msgs::CanSignal(bit_start_LED_red, bit_length_LED_red, data_LED_red);
-        uint8_t bit_start_LED_green = 33;
+        uint8_t bit_start_LED_green = 34;
         uint8_t bit_length_LED_green = 8;
         robast_can_msgs::CanSignal can_signal_LED_green = robast_can_msgs::CanSignal(bit_start_LED_green, bit_length_LED_green, data_LED_green);
-        uint8_t bit_start_LED_blue = 41;
+        uint8_t bit_start_LED_blue = 42;
         uint8_t bit_length_LED_blue = 8;
         robast_can_msgs::CanSignal can_signal_LED_blue = robast_can_msgs::CanSignal(bit_start_LED_blue, bit_length_LED_blue, data_LED_blue);
 
@@ -184,7 +206,8 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
                         dlc,
                         {
                             can_signal_drawer_id,
-                            can_signal_open_drawer,
+                            can_signal_open_drawer_1,
+                            can_signal_open_drawer_2,
                             can_signal_LED_red,
                             can_signal_LED_green,
                             can_signal_LED_blue,
@@ -195,7 +218,8 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
                         dlc,
                         {
                             can_signal_drawer_id,
-                            can_signal_open_drawer,
+                            can_signal_open_drawer_1,
+                            can_signal_open_drawer_2,
                             can_signal_LED_red,
                             can_signal_LED_green,
                             can_signal_LED_blue,
@@ -284,9 +308,13 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_DRAWER_ID].bit_length == bit_length_drawer_id);
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_DRAWER_ID].data == data_drawer_id);
 
-                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_DRAWER].bit_start == bit_start_open_drawer);
-                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_DRAWER].bit_length == bit_length_open_drawer);
-                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_DRAWER].data == data_open_drawer);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_DRAWER_1].bit_start == bit_start_open_drawer_1);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_DRAWER_1].bit_length == bit_length_open_drawer_1);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_DRAWER_1].data == data_open_drawer_1);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_DRAWER_2].bit_start == bit_start_open_drawer_2);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_DRAWER_2].bit_length == bit_length_open_drawer_2);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_DRAWER_2].data == data_open_drawer_2);
 
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_RED].bit_start == bit_start_LED_red);
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_RED].bit_length == bit_length_LED_red);

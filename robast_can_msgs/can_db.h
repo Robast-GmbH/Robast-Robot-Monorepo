@@ -22,18 +22,20 @@ namespace robast_can_msgs
                     {
                         CanSignal(0, 24, 0),
                         CanSignal(24, 1, 0),
-                        CanSignal(25, 8, 0),
-                        CanSignal(33, 8, 0),
-                        CanSignal(41, 8, 0),
+                        CanSignal(25, 1, 0),
+                        CanSignal(26, 8, 0),
+                        CanSignal(34, 8, 0),
+                        CanSignal(42, 8, 0),
                     }),
                 CanMessage(
                     CAN_ID_DRAWER_FEEDBACK,
                     CAN_DLC_DRAWER_FEEDBACK,
                     {
-                        CanSignal(0, 1, 0),
-                        CanSignal(1, 1, 0),
-                        CanSignal(2, 1, 0),
-                        CanSignal(3, 1, 0)
+                        CanSignal(0, 24, 0),
+                        CanSignal(24, 1, 0),
+                        CanSignal(25, 1, 0),
+                        CanSignal(26, 1, 0),
+                        CanSignal(27, 1, 0)
                     })
             };
     };
