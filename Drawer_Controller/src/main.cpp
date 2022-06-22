@@ -148,7 +148,7 @@ void debug_prints(robast_can_msgs::CanMessage can_message) {
   Serial.print(" rx_dlc: ");
   Serial.print(uint8_t(rx_msg_dlc), DEC);
   Serial.print(" DRAWER ID: ");
-  Serial.print(can_message.can_signals.at(CAN_SIGNAL_DRAWER_ID).data, HEX);
+  Serial.print(can_message.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data, HEX);
   Serial.print(" CAN_SIGNAL_OPEN_LOCK_1: ");
   Serial.print(can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data, BIN);
   Serial.print(" CAN_SIGNAL_OPEN_LOCK_2: ");
