@@ -45,6 +45,14 @@ long unsigned int rx_msg_id;
 uint8_t rx_msg_dlc = 0;
 uint8_t rx_data_buf[8];
 
+unsigned long previous_millis = 0;
+const unsigned long interval_drawer_feedback_in_ms = 1000;
+
+float moving_average_sensor_lock1_pin = 0;
+float moving_average_drawer1_closed_pin = 0;
+float moving_average_sensor_lock2_pin = 0;
+float moving_average_drawer2_closed_pin = 0;
+
 
 /*********************************************************************************************************
   FUNCTIONS
@@ -132,17 +140,8 @@ void handle_LED_strip(robast_can_msgs::CanMessage can_message)
   FastLED.show();
 }
 
-void handle_CAN_msg(robast_can_msgs::CanMessage can_message)
+void debug_prints(robast_can_msgs::CanMessage can_message)
 {
-  if (can_message.id == CAN_ID_DRAWER_USER_ACCESS)
-  {
-    handle_locks(can_message);
-
-    handle_LED_strip(can_message);
-  }
-}
-
-void debug_prints(robast_can_msgs::CanMessage can_message) {
   Serial.print("Standard ID: ");
   Serial.print(rx_msg_id, HEX);
   Serial.print(" rx_dlc: ");
@@ -159,6 +158,59 @@ void debug_prints(robast_can_msgs::CanMessage can_message) {
   Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data, HEX);
   Serial.print(" LED BLUE: ");
   Serial.println(can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data, HEX);
+}
+
+void handle_CAN_msg(robast_can_msgs::CanMessage can_message)
+{
+  if (can_message.id == CAN_ID_DRAWER_USER_ACCESS)
+  {
+    handle_locks(can_message);
+
+    handle_LED_strip(can_message);
+
+    debug_prints(can_message);
+  }
+}
+
+void handle_reading_sensors(void)
+{
+  // Tracking the moving average for the sensor pins helps to debounce them a little bit
+  moving_average_sensor_lock1_pin = 0.2 * digitalRead(SENSOR_LOCK1_PIN) + 0.8 * moving_average_sensor_lock1_pin;
+  moving_average_drawer1_closed_pin = 0.2 * digitalRead(SENSOR_DRAWER1_CLOSED_PIN) + 0.8 * moving_average_drawer1_closed_pin;
+  moving_average_sensor_lock2_pin = 0.2 * digitalRead(SENSOR_LOCK2_PIN) + 0.8 * moving_average_sensor_lock2_pin;
+  moving_average_drawer2_closed_pin = 0.2 * digitalRead(SENSOR_DRAWER2_CLOSED_PIN) + 0.8 * moving_average_drawer2_closed_pin;
+}
+
+robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
+{
+  robast_can_msgs::CanMessage can_msg_drawer_feedback = can_db.can_messages.at(CAN_MSG_DRAWER_FEEDBACK);
+  can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = DRAWER_ID;
+
+  if (moving_average_drawer1_closed_pin > 0.9){
+    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).data = 1;
+  } else {
+    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).data = 0;
+  }
+
+  if (moving_average_sensor_lock1_pin > 0.9){
+    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).data = 1;
+  } else {
+    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).data = 0;
+  }
+
+  if (moving_average_drawer2_closed_pin > 0.9){
+    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).data = 1;
+  } else {
+    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).data = 0;
+  }
+
+  if (moving_average_sensor_lock2_pin > 0.9){
+    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).data = 1;
+  } else {
+    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).data = 0;
+  }
+
+  return can_msg_drawer_feedback;
 }
 
 
@@ -194,14 +246,36 @@ void loop()
 
     if (can_message.has_value())
     {
-      handle_CAN_msg(can_message.value());
-
-      debug_prints(can_message.value());
+      handle_CAN_msg(can_message.value());      
     }
     else
     {
       Serial.println("There is no CAN Message available in the CAN Database that corresponds to the msg id: ");
       Serial.print(rx_msg_id, HEX);
+    }
+  }
+
+  
+  handle_reading_sensors();
+
+  unsigned long current_millis = millis();
+  if (current_millis - previous_millis >= interval_drawer_feedback_in_ms)
+  {
+    previous_millis = current_millis;
+    
+    robast_can_msgs::CanMessage can_msg_drawer_feedback = create_drawer_feedback_can_msg();
+
+    std::optional<robast_can_msgs::CanFrame> can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_msg_drawer_feedback, can_db.can_messages);
+
+    if (can_frame.has_value())
+    {
+      byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().data);
+      if(sndStat == CAN_OK){
+        Serial.println("Message Sent Successfully!");
+      } else {
+        Serial.print("Error Sending Message... CAN Status is: ");
+        Serial.println(sndStat);
+      }
     }
   }
 }
