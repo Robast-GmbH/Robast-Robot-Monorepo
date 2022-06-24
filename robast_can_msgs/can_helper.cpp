@@ -25,21 +25,63 @@ namespace robast_can_msgs
         return std::nullopt;
     }
 
-    std::optional<CanFrame> encode_can_message(CanMessage can_message, std::vector<CanMessage> can_db_messages)
-    {
-        uint64_t can_data = join_together_CAN_data_from_CAN_message(can_message);
-
-        uint8_t* can_data_bytes = (uint8_t*) malloc (8 * sizeof(uint8_t));
-        u64_to_eight_bytes(can_data, can_data_bytes);
-
+    std::optional<CanFrame> encode_can_message_into_can_frame(CanMessage can_message, std::vector<CanMessage> can_db_messages)
+    { 
         for (uint16_t j = 0; j < can_db_messages.size(); j++)
         {
             if (can_message.id == can_db_messages[j].id)
             {
+                uint64_t can_data = join_together_CAN_data_from_CAN_message(can_message);
+                uint8_t* can_data_bytes = (uint8_t*) malloc (8 * sizeof(uint8_t));
+                u64_to_eight_bytes(can_data, can_data_bytes);
                 return CanFrame(can_message.id, can_message.dlc, can_data_bytes);
             }
         }
         return std::nullopt;
+    }
+
+    /* The USB-CAN Controller is controlled via simple ASCII commands over the serial port.
+    * The full command list can be found here: https://www.fischl.de/usbtin/
+    * The command for transmitting standard (11 bit) frame should look like:
+    *   tiiildd..[CR]
+    *       iii: Identifier in hexadecimal format (000-7FF)
+    *       l: Data length (0-8)
+    *       dd: Data byte value in hexadecimal format (00-FF)
+    */
+    std::optional<std::string> encode_can_message_into_ascii_command(CanMessage can_message, std::vector<CanMessage> can_db_messages)
+    {
+        for (uint16_t j = 0; j < can_db_messages.size(); j++)
+        {
+            if (can_message.id == can_db_messages[j].id)
+            {
+                uint64_t can_data = join_together_CAN_data_from_CAN_message(can_message);
+                can_data = can_data >> ((8 - can_message.dlc) * 8);
+
+                std::string ascii_command = "t";
+                
+                ascii_command.append(uint_to_hex_string(can_message.id, 3));
+                ascii_command.append(std::to_string(can_message.dlc));
+                ascii_command.append(uint_to_hex_string(can_data, can_message.dlc*2));
+                ascii_command.append("\r");
+
+                return ascii_command;
+            }
+        }
+        return std::nullopt;
+    }
+
+    std::string uint_to_hex_string(uint32_t input, int num_of_digits)
+    {
+        std::stringstream stream;
+        stream << std::setfill('0') << std::setw(num_of_digits) << std::uppercase << std::hex << input;
+        return stream.str();
+    }
+
+    std::string uint_to_hex_string(uint64_t input, int num_of_digits)
+    {
+        std::stringstream stream;
+        stream << std::setfill('0') << std::setw(num_of_digits) << std::uppercase << std::hex << input;
+        return stream.str();
     }
 
     void u64_to_eight_bytes(uint64_t input, uint8_t *result)

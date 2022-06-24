@@ -7,7 +7,7 @@
 /*
 * HOW TO RUN THIS TEST ON WINDOWS:
 * g++ -std=c++17 -c .\tests_main.cpp
-* g++ -std=c++17 tests_main.o tests_can_db.cpp ..\can_helper.cpp -o test_executable -I ..\
+* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\can_helper.cpp -o test_executable -I ..\
 * .\test_executable.exe
 */
 
@@ -180,6 +180,10 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         uint64_t data_LED_red = 1;
         uint64_t data_LED_green = 2;
         uint64_t data_LED_blue = 3;
+        std::string ascii_command_expected = "t00";
+        ascii_command_expected.append(std::to_string(msg_id));
+        ascii_command_expected.append(std::to_string(dlc));
+        ascii_command_expected.append("010203C04080C0\r");
 
         uint8_t bit_start_drawer_id = 0;
         uint8_t bit_length_drawer_id = 24;
@@ -246,7 +250,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
             }
         }
 
-        WHEN("Swapping Endian") {
+        WHEN("Swapping endian") {
             uint64_t input_to_be_swapped = 0x1034567891234560;
             uint64_t input_unswapped = input_to_be_swapped;
             robast_can_msgs::SwapEndian<uint64_t>(input_to_be_swapped);
@@ -254,7 +258,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
                 REQUIRE(input_to_be_swapped == 0x6045239178563410);
                 REQUIRE(input_to_be_swapped != input_unswapped);
             }
-            WHEN("Swapping Endian twice") {
+            WHEN("Swapping endian twice") {
                 uint64_t input_to_be_swapped_twice = input_to_be_swapped;
                 robast_can_msgs::SwapEndian<uint64_t>(input_to_be_swapped_twice);
                 THEN("The input_to_be_swapped_twice should have the original Endian again") {
@@ -274,8 +278,26 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
             }
         }
 
-        WHEN("Encoding a CAN Message with an id, that exists in the can_db messages") {
-            std::optional<robast_can_msgs::CanFrame> encoded_can_frame = robast_can_msgs::encode_can_message(can_message, can_db.can_messages);
+        WHEN("Converting a uint32 or uint64 into a string where the numbers are represented in hex format") {
+            uint32_t u32_input = 0x01C40;
+            uint64_t u64_input = 0x01240123FF;
+            std::string u32_expected_string = "01C40";
+            std::string u32_unexpected_string = "001C40";
+            std::string u64_expected_string = "01240123FF";
+            std::string u64_unexpected_string = "1240123ff";
+            std::string u32_result = robast_can_msgs::uint_to_hex_string(u32_input, 5);
+            std::string u64_result = robast_can_msgs::uint_to_hex_string(u64_input, 10);
+
+            THEN("The converted string should represent the uint32 and uint64 in the hex format.") {
+                REQUIRE(u32_result == u32_expected_string);
+                REQUIRE_FALSE(u32_result == u32_unexpected_string);
+                REQUIRE(u64_result == u64_expected_string);
+                REQUIRE_FALSE(u64_result == u64_unexpected_string);
+            }
+        }
+
+        WHEN("Encoding a CAN message with an id, that exists in the can_db messages") {
+            std::optional<robast_can_msgs::CanFrame> encoded_can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_message, can_db.can_messages);
 
             THEN("The resulting CanFrame Class should contain all the data that was contained in the CanMessage class") {
                 REQUIRE(encoded_can_frame.has_value());
@@ -287,18 +309,27 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
             }
         }
 
-        WHEN("Encoding a CAN Message with an id, that does not exist in the can_db messages") {
-            std::optional<robast_can_msgs::CanFrame> encoded_can_frame = robast_can_msgs::encode_can_message(can_message_invalid_id, can_db.can_messages);
+        WHEN("Encoding a CAN message with an id, that does not exist in the can_db messages") {
+            std::optional<robast_can_msgs::CanFrame> encoded_can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_message_invalid_id, can_db.can_messages);
 
             THEN("The resulting CanFrame should not contain a value") {
                 REQUIRE_FALSE(encoded_can_frame.has_value());
             }
         }
 
-        WHEN("Decoding a CAN Message with an id, that exists in the can_db messages") {
+        WHEN("Encoding a CAN message into an ASCII command with an id, that exists in the can_db messages") {
+            std::optional<std::string> ascii_command = robast_can_msgs::encode_can_message_into_ascii_command(can_message, can_db.can_messages);
+
+            THEN("The resulting ASCII command should contain the id, the dlc and the data that was contained in the CanMessage class") {
+                REQUIRE(ascii_command.has_value());
+                REQUIRE(ascii_command.value() == ascii_command_expected);
+            }
+        }
+
+        WHEN("Decoding a CAN message with an id, that exists in the can_db messages") {
             std::optional<robast_can_msgs::CanMessage> decoded_can_message = robast_can_msgs::decode_can_message(msg_id, u8_can_data, dlc, can_db.can_messages);
 
-            THEN("The resulting CanMessage Class should contain all the data that was contained in the CanMessage class") {
+            THEN("The resulting CanMessage class should contain all the data that was contained in the CanMessage class") {
                 REQUIRE(decoded_can_message.has_value());
                 REQUIRE(decoded_can_message.value().id == can_message.id);
                 REQUIRE(decoded_can_message.value().dlc == can_message.dlc);

@@ -8,14 +8,28 @@
 #include <cstring>
 #include <array>
 #include <algorithm>
+#include <iomanip>
 
 #include "can_message.h"
 #include "can_frame.h"
 
 namespace robast_can_msgs
 {
+    enum can_baudrate_usb_to_can_interface 
+    {
+        can_baud_10kbps = 0,
+        can_baud_20kbps = 1,
+        can_baud_50kbps = 2,
+        can_baud_100kbps = 3,
+        can_baud_125kbps = 4,
+        can_baud_250kbps = 5,
+        can_baud_500kbps = 6,
+        can_baud_800kbps = 7,
+        can_baud_1000kbps = 8
+    };
+
     /**
-     * @brief Decodes CAN message from a 8 Byte Bitstream
+     * @brief Decodes CAN message from a 8 Byte bitstream
      *
      * @param msg_id The ID of the received can msg
      * @param data The array of data bytes of the received msg
@@ -26,13 +40,22 @@ namespace robast_can_msgs
     std::optional<CanMessage> decode_can_message(uint32_t msg_id, uint8_t data[], uint8_t dlc, std::vector<CanMessage> can_db_messages);
 
     /**
-     * @brief Encodes CAN message into CAN_frame_t with 8 Byte Bitstream
+     * @brief Encodes CAN message into CAN_frame_t with 8 Byte bitstream
      *
      * @param can_message The can_message to be encoded
      * @param can_db_messages CAN messages from CAN database to encode the message with
-     * @return std::optional<CanFrame>
+     * @return std::optional<CanFrame>. Only contains a value if the can_message id exists in the can_db.
      */
-    std::optional<CanFrame> encode_can_message(CanMessage can_message, std::vector<CanMessage> can_db_messages);    
+    std::optional<CanFrame> encode_can_message_into_can_frame(CanMessage can_message, std::vector<CanMessage> can_db_messages);  
+
+    /**
+     * @brief Encodes CAN message into a ASCII command, which is needed for the USB-CAN adapter
+     *
+     * @param can_message The can_message to be encoded
+     * @param can_db_messages CAN messages from CAN database to encode the message with
+     * @return std::optional<std::string>. Only contains a value if the can_message id exists in the can_db.
+     */
+    std::optional<std::string> encode_can_message_into_ascii_command(CanMessage can_message, std::vector<CanMessage> can_db_messages);   
 
     /**
      * @brief Joins together the data bytes from the CAN bus
@@ -66,6 +89,22 @@ namespace robast_can_msgs
      */
     template <typename T>
     void SwapEndian(T &val);
+
+    /**
+     * @brief Converts a uint32 into a string where the numbers are represented in hex format in uppercase
+     *
+     * @param input The uint64 to be converted
+     * @param num_of_digits The number of digits the converted hex number should have. This enables leading zeros.
+     */
+    std::string uint_to_hex_string(uint32_t input, int num_of_digits);
+
+    /**
+     * @brief Converts a uint64 into a string where the numbers are represented in hex format in uppercase
+     *
+     * @param input The uint64 to be converted
+     * @param num_of_digits The number of digits the converted hex number should have. This enables leading zeros.
+     */
+    std::string uint_to_hex_string(uint64_t input, int num_of_digits);
 }
 
 #endif /* CAN_HELPER_HPP_ */
