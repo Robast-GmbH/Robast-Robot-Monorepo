@@ -34,6 +34,7 @@ set(library_drawer_gate ${executable_drawer_gate}_core)
 
 add_library(${library_drawer_gate} SHARED
   src/drawer_gate.cpp
+  ../robast_msgs/robast_can_msgs/can_helper.cpp #TODO: This can probably be done better
 )
 
 set(dependencies
