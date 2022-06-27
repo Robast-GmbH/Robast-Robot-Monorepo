@@ -118,9 +118,7 @@ namespace robast_drawer_gate
 
   void DrawerGate::set_can_baudrate(can_baudrate_usb_to_can_interface can_baudrate)
   {
-    // Write to serial port
     unsigned char msg[3];
-    msg[2] = '\r';
 
     switch (can_baudrate)
     {
@@ -166,6 +164,15 @@ namespace robast_drawer_gate
         break;
     }
 
+    msg[2] = '\r';
+
+    write(serial_port, msg, sizeof(msg)); // Write to serial port
+  }
+
+  void DrawerGate::open_can_channel(void)
+  {
+    unsigned char msg[2] = {'O', '\r'};
+
     write(serial_port, msg, sizeof(msg));
   }
   
@@ -181,7 +188,15 @@ namespace robast_drawer_gate
     
     set_can_baudrate(can_baud_500kbps);
 
+    open_can_channel();
+
+    std::optional<std::string> ascii_cmd_drawer_user_access = robast_can_msgs::CanMessage encode_can_message_into_ascii_command(can_msg_drawer_user_access, can_db.can_messages);
     
+    if (ascii_cmd_drawer_user_access.has_value())
+    {
+      write(serial_port, ascii_cmd_drawer_user_access.value(), ascii_cmd_drawer_user_access.size());
+    }
+
     // Write to serial port
     unsigned char msg[] = { 'S', '6', '\r', 'O', '\r', 't', '0', '0', '1', '4', '0', '0', '0', '0', '0', '1', '0', '5', '5', '\r'};
 
