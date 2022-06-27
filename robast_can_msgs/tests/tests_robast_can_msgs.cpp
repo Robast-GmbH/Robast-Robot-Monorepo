@@ -202,7 +202,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         std::string ascii_command_expected = "t00";
         ascii_command_expected.append(std::to_string(msg_id));
         ascii_command_expected.append(std::to_string(dlc));
-        ascii_command_expected.append("010203C04080C0\r");
+        ascii_command_expected.append("010203C04080C1C0\r");
 
         uint8_t bit_start_drawer_id = 0;
         uint8_t bit_length_drawer_id = 24;
