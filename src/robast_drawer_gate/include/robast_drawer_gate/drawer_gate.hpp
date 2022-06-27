@@ -14,9 +14,9 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
 
-#include "can_serial_helper.hpp"
 #include "robast_ros2_msgs/action/drawer_user_access.hpp"
 #include "robast_can_msgs/can_db.h"
+#include "robast_can_msgs/can_helper.h"
 
 
 namespace robast_drawer_gate
@@ -48,7 +48,7 @@ namespace robast_drawer_gate
 
       robast_can_msgs::CanMessage create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal);
 
-      void set_can_baudrate(can_baudrate_usb_to_can_interface can_baudrate);
+      void set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface can_baudrate);
 
       void open_can_channel(void);
 

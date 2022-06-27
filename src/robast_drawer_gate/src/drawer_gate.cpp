@@ -116,45 +116,45 @@ namespace robast_drawer_gate
     return can_msg_drawer_user_access;
   }
 
-  void DrawerGate::set_can_baudrate(can_baudrate_usb_to_can_interface can_baudrate)
+  void DrawerGate::set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface can_baudrate)
   {
     unsigned char msg[3];
 
     switch (can_baudrate)
     {
-      case can_baud_10kbps:
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_10kbps:
         msg[0] = 'S';
         msg[1] = '0';
         break;
-      case can_baud_20kbps:
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_20kbps:
         msg[0] = 'S';
         msg[1] = '1';
         break;
-      case can_baud_50kbps:
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_50kbps:
         msg[0] = 'S';
         msg[1] = '2';
         break;
-      case can_baud_100kbps:
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_100kbps:
         msg[0] = 'S';
         msg[1] = '3';
         break;
-      case can_baud_125kbps:
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_125kbps:
         msg[0] = 'S';
         msg[1] = '4';
         break;
-      case can_baud_250kbps:
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps:
         msg[0] = 'S';
         msg[1] = '5';
         break;
-      case can_baud_500kbps:
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_500kbps:
         msg[0] = 'S';
         msg[1] = '6';
         break;
-      case can_baud_800kbps:
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_800kbps:
         msg[0] = 'S';
         msg[1] = '7';
         break;
-      case can_baud_1000kbps:
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_1000kbps:
         msg[0] = 'S';
         msg[1] = '8';
         break;
@@ -186,15 +186,15 @@ namespace robast_drawer_gate
 
     robast_can_msgs::CanMessage can_msg_drawer_user_access = DrawerGate::create_can_msg_drawer_user_access(goal);
     
-    set_can_baudrate(can_baud_500kbps);
+    set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_500kbps);
 
     open_can_channel();
 
-    std::optional<std::string> ascii_cmd_drawer_user_access = robast_can_msgs::CanMessage encode_can_message_into_ascii_command(can_msg_drawer_user_access, can_db.can_messages);
+    std::optional<std::string> ascii_cmd_drawer_user_access = robast_can_msgs::encode_can_message_into_ascii_command(can_msg_drawer_user_access, can_db.can_messages);
     
     if (ascii_cmd_drawer_user_access.has_value())
     {
-      write(serial_port, ascii_cmd_drawer_user_access.value(), ascii_cmd_drawer_user_access.size());
+      write(serial_port, ascii_cmd_drawer_user_access.value(), ascii_cmd_drawer_user_access.value().size());
     }
 
     // Write to serial port
