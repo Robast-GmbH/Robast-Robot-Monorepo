@@ -190,7 +190,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         uint32_t msg_id = CAN_ID_DRAWER_USER_ACCESS;;
         uint8_t dlc = 8;
         uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b11000000,0b01000000,0b10000000,0b11000001,0b11000000};
-        uint64_t u64_can_data_expected = 0x010203C04080C000;
+        uint64_t u64_can_data_expected = 0x010203C04080C1C0;
         uint64_t u64_can_data_not_expected = 0x0907060509030201;
         uint64_t data_drawer_controller_id = 0x010203;
         uint64_t data_open_drawer_1 = 1;
@@ -222,7 +222,6 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         uint8_t bit_start_LED_blue = 42;
         uint8_t bit_length_LED_blue = 8;
         robast_can_msgs::CanSignal can_signal_LED_blue = robast_can_msgs::CanSignal(bit_start_LED_blue, bit_length_LED_blue, data_LED_blue);
-
         uint8_t bit_start_LED_brightness = 50;
         uint8_t bit_length_LED_brightness = 8;
         robast_can_msgs::CanSignal can_signal_LED_brightness = robast_can_msgs::CanSignal(bit_start_LED_brightness, bit_length_LED_brightness, data_LED_brightness);
