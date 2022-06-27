@@ -8,7 +8,7 @@ NFCGate::NFCGate( ):NFCGate( "/dev/ttyACM0" ) { }
 
 NFCGate::NFCGate( string serial_port_path ) : Node("robast_nfc_gate")
 {
-  RCLCPP_INFO(this->get_logger(), "constructor start"); 
+  RCLCPP_INFO(this->get_logger(), "constructor start: %s",serial_path.c_str()); 
   serial_path = serial_port_path;
   this->user_authenticate_server = rclcpp_action::create_server<AuthenticateUser>(
     this,
@@ -119,6 +119,7 @@ string NFCGate::read_serial()
   char read_buf [256];
   memset(&read_buf, '\0', sizeof(read_buf));
   int num_bytes; 
+  RCLCPP_INFO(this->get_logger(),"start Waiting");
   do{
      num_bytes = read(this->serial_port, &read_buf, sizeof(read_buf));
       if( num_bytes >20)
@@ -126,34 +127,26 @@ string NFCGate::read_serial()
         RCLCPP_ERROR(this->get_logger(),"Error reading: %s", strerror(errno));
         return "false";
       }
-      RCLCPP_INFO(this->get_logger(),"Waiting");
+      
   }while(num_bytes<1);
-
+  RCLCPP_INFO(this->get_logger(),"start Waiting");
   string msg= string(read_buf, num_bytes);
    RCLCPP_INFO(this->get_logger(),"Received message: %s", msg.c_str());
   return msg;
 }
 
-string NFCGate::send_command(string command )
+void NFCGate::scan() 
 {
+    RCLCPP_INFO(this->get_logger(),"start scan");
+  this->open_serial();
+  RCLCPP_INFO(this->get_logger(),"set comunication to ASCII");
 
- 
-  RCLCPP_INFO(this->get_logger(),"set comunication to ASCII"); 
-  this->write_serial(command);
-
-  RCLCPP_INFO(this->get_logger(),"sent");
+  this->write_serial( "0409\r");
+ RCLCPP_INFO(this->get_logger(),"sent");
   string message=this->read_serial();
   RCLCPP_INFO(this->get_logger(),"Received message: %s", message.c_str());
-  return message;
-}
 
-void NFCGate::scan() 
-{ 
-  RCLCPP_INFO(this->get_logger(),"start scan");
-  this->open_serial();
-  this->send_command("0408\r" );
-
-  this->close_serial();
+  close(serial_port);
 }
 
 
