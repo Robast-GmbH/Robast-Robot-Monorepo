@@ -9,7 +9,7 @@
   GLOBAL VARIABLES AND CONSTANTS
 *********************************************************************************************************/
 
-#define DRAWER_ID 1 //TODO: Every Drawer needs to have his own id
+#define DRAWER_ID 2 //TODO: Every Drawer needs to have his own id
 
 #define PWR_OPEN_LOCK1_PIN GPIO_NUM_22
 #define PWR_CLOSE_LOCK1_PIN GPIO_NUM_21
@@ -131,12 +131,13 @@ void handle_LED_strip(robast_can_msgs::CanMessage can_message)
   uint8_t red = can_message.can_signals.at(CAN_SIGNAL_LED_RED).data;
   uint8_t green = can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data;
   uint8_t blue = can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data;
+  uint8_t brightness = can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data;
 
   for(int i = 0; i < NUM_LEDS; i++)
   {   
     leds[i] = CRGB(red, green, blue);
   }
-  FastLED.setBrightness(10);
+  FastLED.setBrightness(brightness);
   FastLED.show();
 }
 
@@ -153,17 +154,21 @@ void debug_prints(robast_can_msgs::CanMessage can_message)
   Serial.print(" CAN_SIGNAL_OPEN_LOCK_2: ");
   Serial.print(can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data, BIN);
   Serial.print(" LED RED: ");
-  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_RED).data, HEX);
+  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_RED).data, DEC);
   Serial.print(" LED GREEN: ");
-  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data, HEX);
+  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data, DEC);
   Serial.print(" LED BLUE: ");
-  Serial.println(can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data, HEX);
+  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data, DEC);
+  Serial.print(" LED BRIGHTNESS: ");
+  Serial.println(can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data, DEC);
 }
 
 void handle_CAN_msg(robast_can_msgs::CanMessage can_message)
 {
   if (can_message.id == CAN_ID_DRAWER_USER_ACCESS)
   {
+    //TODO: Abfrage, ob DRAWER ID passt
+
     handle_locks(can_message);
 
     handle_LED_strip(can_message);
@@ -267,16 +272,16 @@ void loop()
 
     std::optional<robast_can_msgs::CanFrame> can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_msg_drawer_feedback, can_db.can_messages);
 
-    if (can_frame.has_value())
-    {
-      byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().data);
-      if(sndStat == CAN_OK){
-        Serial.println("Message Sent Successfully!");
-      } else {
-        Serial.print("Error Sending Message... CAN Status is: ");
-        Serial.println(sndStat);
-      }
-    }
+    // if (can_frame.has_value())
+    // {
+    //   byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().data);
+    //   if(sndStat == CAN_OK){
+    //     Serial.println("Message Sent Successfully!");
+    //   } else {
+    //     Serial.print("Error Sending Message... CAN Status is: ");
+    //     Serial.println(sndStat);
+    //   }
+    // }
   }
 }
 
