@@ -20,22 +20,23 @@ namespace robast_can_msgs
                     CAN_ID_DRAWER_USER_ACCESS,
                     CAN_DLC_DRAWER_USER_ACCESS,
                     {
-                        CanSignal(0, 24, 0),
-                        CanSignal(24, 1, 0),
-                        CanSignal(25, 1, 0),
-                        CanSignal(26, 8, 0),
-                        CanSignal(34, 8, 0),
-                        CanSignal(42, 8, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_OPEN_LOCK_1_BIT_START, CAN_SIGNAL_OPEN_LOCK_1_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_OPEN_LOCK_2_BIT_START, CAN_SIGNAL_OPEN_LOCK_2_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_LED_RED_BIT_START, CAN_SIGNAL_LED_RED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_LED_GREEN_BIT_START, CAN_SIGNAL_LED_GREEN_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_LED_BLUE_BIT_START, CAN_SIGNAL_LED_BLUE_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_LED_BRIGHTNESS_BIT_START, CAN_SIGNAL_LED_BRIGHTNESS_BIT_LENGTH, 0),
                     }),
                 CanMessage(
                     CAN_ID_DRAWER_FEEDBACK,
                     CAN_DLC_DRAWER_FEEDBACK,
                     {
-                        CanSignal(0, 24, 0),
-                        CanSignal(24, 1, 0),
-                        CanSignal(25, 1, 0),
-                        CanSignal(26, 1, 0),
-                        CanSignal(27, 1, 0)
+                        CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_LENGTH, 0)
                     })
             };
     };
