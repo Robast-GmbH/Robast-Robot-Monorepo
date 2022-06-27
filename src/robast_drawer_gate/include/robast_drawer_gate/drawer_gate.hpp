@@ -52,6 +52,8 @@ namespace robast_drawer_gate
 
       void open_can_channel(void);
 
+      void close_can_channel(void);
+
       rclcpp_action::GoalResponse goal_callback(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const DrawerUserAccess::Goal> goal);
 
       rclcpp_action::CancelResponse cancel_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);

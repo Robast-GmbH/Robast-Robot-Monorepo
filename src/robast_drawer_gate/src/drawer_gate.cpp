@@ -10,8 +10,6 @@ namespace robast_drawer_gate
       std::bind(&DrawerGate::goal_callback, this, std::placeholders::_1, std::placeholders::_2),
       std::bind(&DrawerGate::cancel_callback, this, std::placeholders::_1),
       std::bind(&DrawerGate::accepted_callback, this, std::placeholders::_1));
-
-    DrawerGate::setup_serial_port();
   }
 
   //TODO: Dekonstruktor
@@ -41,11 +39,14 @@ namespace robast_drawer_gate
 
   void DrawerGate::setup_serial_port(void)
   {
+    RCLCPP_INFO(this->get_logger(), "Setting up serial port!");
+
     serial_port = open("/dev/ttyACM0", O_RDWR);
 
     // Check for errors
     if (serial_port < 0)
     {
+      RCLCPP_ERROR(this->get_logger(), "Error from opening serial Port!");
       printf("Error %i from open: %s\n", errno, strerror(errno));
     }
 
@@ -109,9 +110,10 @@ namespace robast_drawer_gate
       can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_OPEN_LOCK;
     }
 
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_RED).data = 0;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_RED).data = 255;
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_GREEN).data = 255;
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BLUE).data = 0;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data = 20;
 
     return can_msg_drawer_user_access;
   }
@@ -175,10 +177,22 @@ namespace robast_drawer_gate
 
     write(serial_port, msg, sizeof(msg));
   }
+
+  void DrawerGate::close_can_channel(void)
+  {
+    unsigned char msg[2] = {'C', '\r'};
+
+    write(serial_port, msg, sizeof(msg));
+  }
   
   void DrawerGate::open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
   {
     RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
+
+    DrawerGate::setup_serial_port();
+
+    // For DEBUGGING purposes this is the action send_goal command:
+    // ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer_controller_id: 1, drawer_id: 1}"
 
     const auto goal = goal_handle->get_goal();
     auto feedback = std::make_shared<DrawerUserAccess::Feedback>();
@@ -194,13 +208,10 @@ namespace robast_drawer_gate
     
     if (ascii_cmd_drawer_user_access.has_value())
     {
-      write(serial_port, ascii_cmd_drawer_user_access.value(), ascii_cmd_drawer_user_access.value().size());
+      write(serial_port, &ascii_cmd_drawer_user_access.value()[0], ascii_cmd_drawer_user_access.value().length());
     }
 
-    // Write to serial port
-    unsigned char msg[] = { 'S', '6', '\r', 'O', '\r', 't', '0', '0', '1', '4', '0', '0', '0', '0', '0', '1', '0', '5', '5', '\r'};
-
-    write(serial_port, msg, sizeof(msg));
+    close_can_channel();
 
     // Allocate memory for read buffer, set size according to your needs
     char read_buf [256];
@@ -213,17 +224,17 @@ namespace robast_drawer_gate
     // Read bytes. The behaviour of read() (e.g. does it block?,
     // how long does it block for?) depends on the configuration
     // settings above, specifically VMIN and VTIME
-    int num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
+    // int num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
 
     // n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
-    if (num_bytes < 0) {
-      printf("Error reading: %s", strerror(errno));
-      return;
-    }
+    // if (num_bytes < 0) {
+    //   printf("Error reading: %s", strerror(errno));
+    //   return;
+    // }
 
     // Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and
     // print it to the screen like this!)
-    printf("Read %i bytes. Received message: %s", num_bytes, read_buf);
+    // printf("Read %i bytes. Received message: %s", num_bytes, read_buf);
 
     close(serial_port);
 
