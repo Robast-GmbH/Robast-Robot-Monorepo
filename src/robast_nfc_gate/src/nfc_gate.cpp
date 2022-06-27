@@ -130,26 +130,30 @@ string NFCGate::read_serial()
       
   }while(num_bytes<1);
   RCLCPP_INFO(this->get_logger(),"start Waiting");
-  string msg= string(read_buf, num_bytes);
-   RCLCPP_INFO(this->get_logger(),"Received message: %s", msg.c_str());
-  return msg;
+  return string(read_buf, num_bytes);
+  
+}
+
+string NFCGate::send_command(string command )
+{
+  this->write_serial(command+"\r");
+  return this->read_serial();
 }
 
 void NFCGate::scan() 
 {
-    RCLCPP_INFO(this->get_logger(),"start scan");
+
+  RCLCPP_INFO(this->get_logger(),"start scan");
   this->open_serial();
-  RCLCPP_INFO(this->get_logger(),"set comunication to ASCII");
-
-  this->write_serial( "0409\r");
- RCLCPP_INFO(this->get_logger(),"sent");
-  string message=this->read_serial();
-  RCLCPP_INFO(this->get_logger(),"Received message: %s", message.c_str());
-
+  this->send_command("0408");
+  string tag;
+  do{ 
+  this->send_command("050010");
+  tag= this->send_command("050010");//search for a tag with the length of 10
+  RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
+  } while(tag.length() <10); 
+  this->send_command("0409");
   close(serial_port);
 }
-
-
-
 
 }  // namespace robast_drawer_gate

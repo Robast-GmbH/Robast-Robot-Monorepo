@@ -44,7 +44,6 @@ namespace robast_nfc_gate
     string serial_path;
     int serial_port;
 
-
     
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
 
