@@ -186,10 +186,10 @@ local_costmap:
           horizontal_fov_angle: 1.048
           decay_acceleration: 15.0
           model_type: 0
-      # keepout_filter:
-      #   plugin: "nav2_costmap_2d::KeepoutFilter"
-      #   enabled: True
-      #   filter_info_topic: "/costmap_filter_info"
+      keepout_filter:
+        plugin: "nav2_costmap_2d::KeepoutFilter"
+        enabled: True
+        filter_info_topic: "/costmap_filter_info"
       static_layer:
         map_subscribe_transient_local: True
       always_send_full_costmap: True
@@ -208,12 +208,12 @@ global_costmap:
       robot_base_frame: robot_base_link
       map_topic: /robot/map
       use_sim_time: False
-      footprint: "[ [0.35, 0.30], [0.35, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
+      footprint: "[ [0.60, 0.30], [0.60, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
       footprint_padding: 0.025
       resolution: 0.025
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "stvl_layer", "inflation_layer"]
-      # filters: ["keepout_filter"]
+      filters: ["keepout_filter"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -285,10 +285,10 @@ global_costmap:
           horizontal_fov_angle: 1.048
           decay_acceleration: 15.0
           model_type: 0
-      # keepout_filter:
-      #   plugin: "nav2_costmap_2d::KeepoutFilter"
-      #   enabled: True
-      #   filter_info_topic: "/costmap_filter_info"
+      keepout_filter:
+        plugin: "nav2_costmap_2d::KeepoutFilter"
+        enabled: True
+        filter_info_topic: "/costmap_filter_info"
       static_layer:
         #enabled: True
         plugin: "nav2_costmap_2d::StaticLayer"

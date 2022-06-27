@@ -84,7 +84,7 @@ def generate_launch_description():
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
-        default_value='robot',
+        default_value='',
         description='Top-level namespace')
 
     print('world_file_path : {}'.format(nav2_params_yaml))

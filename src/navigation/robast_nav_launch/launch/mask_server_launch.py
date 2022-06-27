@@ -40,12 +40,12 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(costmap_filters_dir, 'masks', 'tiplu_fast_lane_params.yaml'),
+        default_value=os.path.join(costmap_filters_dir, 'masks', 'Tiplu_6OG', 'Tiplu_6OG_mask_params.yaml'),
         description='Full path to the ROS 2 parameters file to use')
 
     declare_mask_yaml_file_cmd = DeclareLaunchArgument(
         'mask',
-        default_value=os.path.join(costmap_filters_dir, 'masks', 'tiplu_fast_lane_mask.yaml'),
+        default_value=os.path.join(costmap_filters_dir, 'masks', 'Tiplu_6OG', 'Tiplu_6OG_no_go.yaml'),
         description='Full path to filter mask yaml file to load')
 
     # Make re-written yaml
