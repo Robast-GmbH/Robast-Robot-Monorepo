@@ -103,7 +103,6 @@
             "detail": "Starts TipluWorld, Nav, amcl",
             "dependsOn": [
                 "start TipluWorld",
-                // "start amcl",
                 "start keepout_mask",
                 "start nav_without_localization",
                 "start rviz_amcl",
@@ -250,8 +249,7 @@
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
-                "focus": true,
-                // "group": "default_start"
+                "focus": true
             }
         },
         {
@@ -261,8 +259,7 @@
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
-                "focus": true,
-                // "group": "default_start"
+                "focus": true
             }
         },
         {
@@ -272,8 +269,7 @@
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
-                "focus": true,
-                // "group": "default_start"
+                "focus": true
             }
         },
         {
@@ -283,8 +279,7 @@
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
-                "focus": true,
-                // "group": "default_start"
+                "focus": true
             }
         },
         {
@@ -294,8 +289,7 @@
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
-                "focus": true,
-                // "group": "default_start"
+                "focus": true
             }
         },
         {
@@ -305,8 +299,7 @@
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
-                "focus": true,
-                // "group": "default_start"
+                "focus": true
             }
         },
         {
@@ -316,8 +309,7 @@
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
-                "focus": true,
-                // "group": "default_start"
+                "focus": true
             }
         },
         {
@@ -327,8 +319,7 @@
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
-                "focus": true,
-                // "group": "default_start"
+                "focus": true
             }
         },
         {
