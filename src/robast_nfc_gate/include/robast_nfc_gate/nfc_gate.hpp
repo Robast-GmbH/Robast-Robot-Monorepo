@@ -17,16 +17,22 @@
 using namespace std;
 
 #include "robast_ros2_msgs/action/authenticate_user.hpp"
-
+#include "robast_ros2_msgs/srv/create_user_nfc_tag.hpp"
+#include "robast_nfc_gate/elatec_api.hpp"
+   
 namespace robast_nfc_gate
-{
+{ 
+
+  
   class NFCGate : public rclcpp::Node
   {
 
     public:
+
     using  AuthenticateUser= robast_ros2_msgs::action::AuthenticateUser;
     using GoalHandleAuthenticateUser = rclcpp_action::ServerGoalHandle<AuthenticateUser>;
-
+  
+    using CreateUser= robast_ros2_msgs::srv::CreateUserNfcTag;
     /**
     * @brief A constructor for robast_nfc_gate::NFCGate class
     */ 
@@ -46,11 +52,14 @@ namespace robast_nfc_gate
 
     
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
+    rclcpp::Service<CreateUser>::SharedPtr create_user_server;
 
-    rclcpp_action::GoalResponse goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal);
-    rclcpp_action::CancelResponse cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle); 
-    void accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-    void authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);  
+    
+
+    rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal);
+    rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle); 
+    void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+    void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);  
    
     void open_serial();
     void close_serial();
@@ -59,7 +68,8 @@ namespace robast_nfc_gate
     void write_serial( string msg );
     string send_command(string command );
     
-    void scan(); 
+    void scanTag(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+   void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
 };
 
 

@@ -13,35 +13,58 @@ NFCGate::NFCGate( string serial_port_path ) : Node("robast_nfc_gate")
   this->user_authenticate_server = rclcpp_action::create_server<AuthenticateUser>(
     this,
     "authenticate_user",
-    bind(&NFCGate::goal_callback, this, placeholders::_1, placeholders::_2),
-    bind(&NFCGate::cancel_callback, this, placeholders::_1),
-    bind(&NFCGate::accepted_callback, this, placeholders::_1));
+    bind(&NFCGate::auth_goal_callback, this, placeholders::_1, placeholders::_2),
+    bind(&NFCGate::auth_cancel_callback, this, placeholders::_1),
+    bind(&NFCGate::auth_accepted_callback, this, placeholders::_1)
+    );
+    this->create_user_server =this->create_service<robast_msgs::srv::CreateUserNfcTag>(Craete_user_tag,&writeTag);
+    
 
-  this->scan();
-  RCLCPP_INFO(this->get_logger(), "constructor done");
+  //RCLCPP_INFO(this->get_logger(), "constructor done");
 }
 
 
-rclcpp_action::GoalResponse NFCGate::goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal)
+rclcpp_action::GoalResponse NFCGate::auth_goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal)
 {
   RCLCPP_INFO(this->get_logger(), "Received goal request");
   
   return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 }
 
-rclcpp_action::CancelResponse NFCGate::cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
+rclcpp_action::CancelResponse NFCGate::auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
 {
   RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
   // (void)goal_handle;
   return rclcpp_action::CancelResponse::ACCEPT;
 }
 
-void NFCGate::accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
+void NFCGate::auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
 {
   RCLCPP_INFO(this->get_logger(), "scan task");
- //thread(&NFCGate::scan, goal_handle).detach();
+  std::thread{std::bind(&NFCGate::scanTag, this, placeholders::_1), goal_handle}.detach();
 }
 
+
+/*rclcpp_action::GoalResponse NFCGate::create_goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const CreateUser::Goal> goal)
+{
+  RCLCPP_INFO(this->get_logger(), "Received goal request");
+  
+  return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+}
+
+rclcpp_action::CancelResponse NFCGate::create_cancel_callback(const shared_ptr<GoalHandleCreateUser> goal_handle)
+{
+  RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
+  // (void)goal_handle;
+  return rclcpp_action::CancelResponse::ACCEPT;
+}
+
+void NFCGate::create_accepted_callback(const shared_ptr<GoalHandleCreateUser> goal_handle)
+{
+  RCLCPP_INFO(this->get_logger(), "write task");
+  std::thread{std::bind(&NFCGate::writeTag, this, placeholders::_1), goal_handle}.detach();
+}
+*/
 
 void NFCGate::open_serial()
 {
@@ -94,7 +117,6 @@ void NFCGate::open_serial()
 
       return;
     }
-
   }  
 
   void NFCGate::close_serial()
@@ -109,9 +131,7 @@ void NFCGate::write_serial( string msg)
   if (this->serial_port < 0) {
       printf("Error %i from open: %s\n", errno, strerror(errno));
     }
-  //unsigned char msg[] = { 'S', '4', '\r', 'O', '\r', 't', '0', '1', '4', '1', '1', '2', '2', '3', '3', '4', '4', '\r'};
-  const char* msg_array =msg.c_str();
-  write(this->serial_port, msg_array, sizeof(msg_array));
+  write(this->serial_port, &msg[0], msg.length());
 }
 
 string NFCGate::read_serial()
@@ -119,19 +139,19 @@ string NFCGate::read_serial()
   char read_buf [256];
   memset(&read_buf, '\0', sizeof(read_buf));
   int num_bytes; 
-  RCLCPP_INFO(this->get_logger(),"start Waiting");
-  do{
-     num_bytes = read(this->serial_port, &read_buf, sizeof(read_buf));
-      if( num_bytes >20)
-      {
-        RCLCPP_ERROR(this->get_logger(),"Error reading: %s", strerror(errno));
-        return "false";
-      }
-      
+
+  do
+  {
+    num_bytes = read(this->serial_port, &read_buf, sizeof(read_buf));
+    if( num_bytes >20)
+    {
+      RCLCPP_ERROR(this->get_logger(),"Error reading: %s", strerror(errno));
+      return "false";
+    }
+    //RCLCPP_ERROR(this->get_logger(),"%i",num_bytes);
   }while(num_bytes<1);
-  RCLCPP_INFO(this->get_logger(),"start Waiting");
-  return string(read_buf, num_bytes);
   
+  return string(read_buf, num_bytes);
 }
 
 string NFCGate::send_command(string command )
@@ -140,20 +160,104 @@ string NFCGate::send_command(string command )
   return this->read_serial();
 }
 
-void NFCGate::scan() 
+void NFCGate::scanTag(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle) 
 {
+  const auto goal = goal_handle->get_goal();
+  auto result = std::make_shared<AuthenticateUser::Result>();
+  auto reader_feedback = std::make_shared<robast_ros2_msgs::msg::NFCStatus>();
+  string scaned_key; 
 
-  RCLCPP_INFO(this->get_logger(),"start scan");
+
   this->open_serial();
-  this->send_command("0408");
-  string tag;
-  do{ 
-  this->send_command("050010");
-  tag= this->send_command("050010");//search for a tag with the length of 10
-  RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
-  } while(tag.length() <10); 
-  this->send_command("0409");
+ 
+  this->send_command(SET_SERIAL_TO_ASCII);
+  bool validTagNotfound= true;
+  int numReadings=0;
+  while(validTagNotfound)
+  {
+    this->send_command(BOTTOM_LED_ON);
+    this->send_command((TOP_LEDS_INIT(LED_RED)));
+    this->send_command(TOP_LEDS_ON(LED_RED));
+  
+    string tag;
+    //wait for the Tag and read TAG ID 
+    do{ 
+    tag= this->send_command(SEARCH_TAG);//search for a tag with the length of 10
+    RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
+    } while(tag.length() <10);
+  
+    RCLCPP_INFO(this->get_logger(),"READ");
+    this->send_command(NFC_LOGIN_MC_STANDART("00"));
+    scaned_key =this->send_command(NFC_READ_MC("02"));
+    RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", scaned_key.c_str());
+    numReadings++;
+    //show that aktion is done
+    this->send_command(BEEP_STANDART); 
+
+    validTagNotfound= std::find(std::begin(goal->permission_keys), std::end(goal->permission_keys), scaned_key) != std::end(goal->permission_keys);
+    
+    if(!validTagNotfound)
+    {
+      //feedback
+      auto feedback = std::make_shared<AuthenticateUser::Feedback>();
+      feedback->reader_status.is_completted=true;
+      feedback->reader_status.unidentified_readings = numReadings;
+      goal_handle->publish_feedback(feedback);
+    }
+  }
+  this->send_command((TOP_LED_OFF(LED_RED)));
+  this->send_command(BOTTOM_LED_OFF); 
   close(serial_port);
+
+  // Check if goal is done
+    if (rclcpp::ok()) 
+    {
+      result-> permission_key_used = scaned_key;
+      result-> sucessful = true;
+      result-> error_message = ""; 
+      goal_handle->succeed(result);
+    }
+}
+
+void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)
+{
+ 
+ 
+  this->open_serial();
+ 
+  this->send_command(SET_SERIAL_TO_ASCII);
+  int numReadings=0;
+  
+    this->send_command(BOTTOM_LED_ON);
+    this->send_command((TOP_LEDS_INIT(LED_RED)));
+    this->send_command(TOP_LEDS_ON(LED_RED));
+  
+    string tag;
+    //wait for the Tag and read TAG ID 
+    do{ 
+    tag= this->send_command(SEARCH_TAG);//search for a tag with the length of 10
+    RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
+    } while(tag.length() <10);
+  
+    RCLCPP_INFO(this->get_logger(),"READ");
+    this->send_command(NFC_LOGIN_MC_STANDART("00"));
+    string bitsChanged =this->send_command(NFC_WRITE_MC("02","00000100000010000"));//ToDo dynamic key defination
+    RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", bitsChanged.c_str());
+    
+
+  //show that aktion is done
+  this->send_command(BEEP_STANDART);   
+  this->send_command((TOP_LED_OFF(LED_RED)));
+  this->send_command(BOTTOM_LED_OFF); 
+  close(serial_port);
+
+  // Check if goal is done
+    if (rclcpp::ok()) 
+    {
+      result-> sucessful = true;
+      result-> error_message = ""; 
+      goal_handle->succeed(result);
+    }
 }
 
 }  // namespace robast_drawer_gate
