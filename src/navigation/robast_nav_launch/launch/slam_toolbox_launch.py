@@ -20,7 +20,7 @@ def generate_launch_description():
         default_value=os.path.join(robast_nav_launch_dir, 'maps', '6OG_Tiplu', '6OG'),
         description='path to the world posegrapg'
     )
-    slam_toolbox_params_yaml = os.path.join(robast_nav_launch_dir, 'config', 'slam_toolbox_params.yaml')
+    slam_toolbox_params_yaml = os.path.join(robast_nav_launch_dir, 'config', 'slam_toolbox_params_offline.yaml')
     slam_launch_file = os.path.join(robast_nav_launch_dir, 'launch', 'slam_toolbox_base_launch.py')
 
     slam_arguments = {
