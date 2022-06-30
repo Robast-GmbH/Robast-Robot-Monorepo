@@ -27,6 +27,7 @@ namespace robast_can_msgs
                         CanSignal(CAN_SIGNAL_LED_GREEN_BIT_START, CAN_SIGNAL_LED_GREEN_BIT_LENGTH, 0),
                         CanSignal(CAN_SIGNAL_LED_BLUE_BIT_START, CAN_SIGNAL_LED_BLUE_BIT_LENGTH, 0),
                         CanSignal(CAN_SIGNAL_LED_BRIGHTNESS_BIT_START, CAN_SIGNAL_LED_BRIGHTNESS_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_LED_MODE_BIT_START, CAN_SIGNAL_LED_MODE_BIT_LENGTH, 0),
                     }),
                 CanMessage(
                     CAN_ID_DRAWER_FEEDBACK,
