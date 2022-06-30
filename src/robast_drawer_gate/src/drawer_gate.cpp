@@ -90,7 +90,8 @@ void DrawerGate::open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> g
   }
 
   // Write to serial port
-  unsigned char msg[] = { 'C', '\r' };
+  unsigned char msg[] = { 'S', '4', '\r', 'O', '\r', 't', '0', '1', '4', '1', '1', '2', '2', '3', '3', '4', '4', '\r'};
+
   write(serial_port, msg, sizeof(msg));
 
   // Allocate memory for read buffer, set size according to your needs

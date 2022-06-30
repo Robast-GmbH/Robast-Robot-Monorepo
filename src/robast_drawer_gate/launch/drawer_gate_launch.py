@@ -7,8 +7,9 @@ def generate_launch_description():
     use_sim_time = True
     autostart = True
 
+    # Action call for testing: ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer_id: 0}"
     # Nodes launching commands
-    start_map_saver_server_cmd = launch_ros.actions.Node(
+    start_drawer_gate_cmd = launch_ros.actions.Node(
             package='robast_drawer_gate',
             executable='drawer_gate',
             output='screen',
@@ -17,6 +18,6 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-    ld.add_action(start_map_saver_server_cmd)
+    ld.add_action(start_drawer_gate_cmd)
 
     return ld

@@ -6,8 +6,9 @@
         "limitSymbolsToIncludedHeaders": false
       },
       "includePath": [
-        "/opt/ros/foxy/include/**",
-        "/workspaces/Ros_Hardware_Nodes/src/robast_drawer_manager/include/**",
+        "/opt/ros/humble/include/**",
+        "/workspaces/Ros_Hardware_Nodes/src/robast_drawer_gate/include/**",
+        "/workspaces/Ros_Hardware_Nodes/src/robast_nfc_gate/include/**",
         "/usr/include/**"
       ],
       "name": "ROS",

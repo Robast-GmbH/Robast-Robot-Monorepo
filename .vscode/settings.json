@@ -1,12 +1,23 @@
 {
+    "files.associations": {
+        "functional": "cpp",
+        "*.tcc": "cpp",
+        "exception": "cpp",
+        "memory_resource": "cpp",
+        "iosfwd": "cpp",
+        "new": "cpp",
+        "ostream": "cpp",
+        "shared_mutex": "cpp",
+        "sstream": "cpp",
+        "stop_token": "cpp",
+        "streambuf": "cpp"
+    },
     "python.autoComplete.extraPaths": [
-        "/opt/ros/foxy/lib/python3.8/site-packages"
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
     ],
     "python.analysis.extraPaths": [
-        "/opt/ros/foxy/lib/python3.8/site-packages" 
-   
-    ],
-    "files.associations": {
-        "functional": "cpp"
-    	}
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ]
 }
