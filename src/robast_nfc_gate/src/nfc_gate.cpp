@@ -17,7 +17,7 @@ NFCGate::NFCGate( string serial_port_path ) : Node("robast_nfc_gate")
     bind(&NFCGate::auth_cancel_callback, this, placeholders::_1),
     bind(&NFCGate::auth_accepted_callback, this, placeholders::_1)
     );
-    this->create_user_server =this->create_service<robast_msgs::srv::CreateUserNfcTag>(Craete_user_tag,&writeTag);
+    this->create_user_server =this->create_service<CreateUser>("create_user_tag",bind(&NFCGate::writeTag, this, placeholders::_1, placeholders::_2));
     
 
   //RCLCPP_INFO(this->get_logger(), "constructor done");
@@ -44,27 +44,6 @@ void NFCGate::auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser
   std::thread{std::bind(&NFCGate::scanTag, this, placeholders::_1), goal_handle}.detach();
 }
 
-
-/*rclcpp_action::GoalResponse NFCGate::create_goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const CreateUser::Goal> goal)
-{
-  RCLCPP_INFO(this->get_logger(), "Received goal request");
-  
-  return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
-}
-
-rclcpp_action::CancelResponse NFCGate::create_cancel_callback(const shared_ptr<GoalHandleCreateUser> goal_handle)
-{
-  RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
-  // (void)goal_handle;
-  return rclcpp_action::CancelResponse::ACCEPT;
-}
-
-void NFCGate::create_accepted_callback(const shared_ptr<GoalHandleCreateUser> goal_handle)
-{
-  RCLCPP_INFO(this->get_logger(), "write task");
-  std::thread{std::bind(&NFCGate::writeTag, this, placeholders::_1), goal_handle}.detach();
-}
-*/
 
 void NFCGate::open_serial()
 {
@@ -221,8 +200,6 @@ void NFCGate::scanTag(const std::shared_ptr<GoalHandleAuthenticateUser> goal_han
 
 void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)
 {
- 
- 
   this->open_serial();
  
   this->send_command(SET_SERIAL_TO_ASCII);
@@ -241,7 +218,7 @@ void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::
   
     RCLCPP_INFO(this->get_logger(),"READ");
     this->send_command(NFC_LOGIN_MC_STANDART("00"));
-    string bitsChanged =this->send_command(NFC_WRITE_MC("02","00000100000010000"));//ToDo dynamic key defination
+    string bitsChanged =this->send_command(NFC_WRITE_MC("02",/*request->card_key*/"00000100000010000"));//ToDo dynamic key defination 
     RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", bitsChanged.c_str());
     
 
@@ -251,13 +228,9 @@ void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::
   this->send_command(BOTTOM_LED_OFF); 
   close(serial_port);
 
-  // Check if goal is done
-    if (rclcpp::ok()) 
-    {
-      result-> sucessful = true;
-      result-> error_message = ""; 
-      goal_handle->succeed(result);
-    }
+  response->sucessful= true;
+  response-> card_id= tag;
+  response->error_message;
 }
 
 }  // namespace robast_drawer_gate

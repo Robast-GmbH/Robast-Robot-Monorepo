@@ -67,9 +67,9 @@ namespace robast_nfc_gate
     string read_serial( );
     void write_serial( string msg );
     string send_command(string command );
-    
+
     void scanTag(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-   void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
+    void writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
 };
 
 
