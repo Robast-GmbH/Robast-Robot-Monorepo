@@ -126,12 +126,18 @@ void handle_locks(robast_can_msgs::CanMessage can_message)
   }
 }
 
+void LED_mode_fade_on(uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness)
+{
+  
+}
+
 void handle_LED_strip(robast_can_msgs::CanMessage can_message)
 {
   uint8_t red = can_message.can_signals.at(CAN_SIGNAL_LED_RED).data;
   uint8_t green = can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data;
   uint8_t blue = can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data;
   uint8_t brightness = can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data;
+  uint8_t mode = can_message.can_signals.at(CAN_SIGNAL_LED_MODE).data;
 
   for(int i = 0; i < NUM_LEDS; i++)
   {   
@@ -272,16 +278,16 @@ void loop()
 
     std::optional<robast_can_msgs::CanFrame> can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_msg_drawer_feedback, can_db.can_messages);
 
-    // if (can_frame.has_value())
-    // {
-    //   byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().data);
-    //   if(sndStat == CAN_OK){
-    //     Serial.println("Message Sent Successfully!");
-    //   } else {
-    //     Serial.print("Error Sending Message... CAN Status is: ");
-    //     Serial.println(sndStat);
-    //   }
-    // }
+    if (can_frame.has_value())
+    {
+      byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().data);
+      if(sndStat == CAN_OK){
+        Serial.println("Message Sent Successfully!");
+      } else {
+        Serial.print("Error Sending Message... CAN Status is: ");
+        Serial.println(sndStat);
+      }
+    }
   }
 }
 
