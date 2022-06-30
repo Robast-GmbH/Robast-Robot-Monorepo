@@ -126,9 +126,35 @@ void handle_locks(robast_can_msgs::CanMessage can_message)
   }
 }
 
-void LED_mode_fade_on(uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness)
+void LED_standard_mode(uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness)
 {
-  
+  for(int i = 0; i < NUM_LEDS; i++)
+  {   
+    leds[i] = CRGB(red, green, blue);
+  }
+  FastLED.setBrightness(brightness);
+  FastLED.show();
+}
+
+void LED_fade_on_mode(uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness)
+{
+  //TODO: Das muss jetzt noch in irgendeiner loop aufgerufen werden
+  static uint8_t current_brightness = 0;
+  if (current_brightness == brightness)
+  {
+    current_brightness = 0;
+  }
+  else
+  {
+    current_brightness = current_brightness + 1;
+  }
+
+  for(int i = 0; i < NUM_LEDS; i++)
+  {   
+    leds[i] = CRGB(red, green, blue);
+  }
+  FastLED.setBrightness(current_brightness);
+  FastLED.show();
 }
 
 void handle_LED_strip(robast_can_msgs::CanMessage can_message)
@@ -139,12 +165,22 @@ void handle_LED_strip(robast_can_msgs::CanMessage can_message)
   uint8_t brightness = can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data;
   uint8_t mode = can_message.can_signals.at(CAN_SIGNAL_LED_MODE).data;
 
-  for(int i = 0; i < NUM_LEDS; i++)
-  {   
-    leds[i] = CRGB(red, green, blue);
+  switch (mode)
+  {
+    case 0:
+      LED_standard_mode(red, green, blue, brightness);
+      break;
+
+    case 1:
+      LED_fade_on_mode(red, green, blue, brightness);
+      break;
+    
+    default:
+      LED_standard_mode(red, green, blue, brightness);
+      break;
   }
-  FastLED.setBrightness(brightness);
-  FastLED.show();
+
+  
 }
 
 void debug_prints(robast_can_msgs::CanMessage can_message)
@@ -166,7 +202,9 @@ void debug_prints(robast_can_msgs::CanMessage can_message)
   Serial.print(" LED BLUE: ");
   Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data, DEC);
   Serial.print(" LED BRIGHTNESS: ");
-  Serial.println(can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data, DEC);
+  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data, DEC);
+  Serial.print(" LED MODE: ");
+  Serial.println(can_message.can_signals.at(CAN_SIGNAL_LED_MODE).data, DEC);
 }
 
 void handle_CAN_msg(robast_can_msgs::CanMessage can_message)
