@@ -21,6 +21,16 @@
 
 namespace robast_drawer_gate
 {
+
+  struct led_parameters
+  {
+    uint8_t led_red;
+    uint8_t led_green;
+    uint8_t led_blue;
+    uint8_t brightness;
+    uint8_t mode;
+  };
+
   class DrawerGate : public rclcpp::Node
   {
     public:
@@ -46,7 +56,7 @@ namespace robast_drawer_gate
 
       void setup_serial_port(void);
 
-      robast_can_msgs::CanMessage create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal);
+      robast_can_msgs::CanMessage create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal, led_parameters led_parameters);
 
       void set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface can_baudrate);
 

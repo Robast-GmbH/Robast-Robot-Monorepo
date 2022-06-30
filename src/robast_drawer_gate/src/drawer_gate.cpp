@@ -95,7 +95,7 @@ namespace robast_drawer_gate
     }
   }
 
-  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal)
+  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal, led_parameters led_parameters)
   {
     robast_can_msgs::CanMessage can_msg_drawer_user_access = can_db.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
 
@@ -110,10 +110,10 @@ namespace robast_drawer_gate
       can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_OPEN_LOCK;
     }
 
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_RED).data = 255;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_GREEN).data = 255;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BLUE).data = 0;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data = 20;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_RED).data = led_parameters.led_red;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_GREEN).data = led_parameters.led_green;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BLUE).data = led_parameters.led_blue;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data = led_parameters.brightness;
 
     return can_msg_drawer_user_access;
   }
@@ -198,7 +198,14 @@ namespace robast_drawer_gate
     auto feedback = std::make_shared<DrawerUserAccess::Feedback>();
     auto result = std::make_shared<DrawerUserAccess::Result>();
 
-    robast_can_msgs::CanMessage can_msg_drawer_user_access = DrawerGate::create_can_msg_drawer_user_access(goal);
+    led_parameters led_parameters = {};
+    led_parameters.led_red = 100;
+    led_parameters.led_blue = 0;
+    led_parameters.led_green = 50;
+    led_parameters.brightness = 20;
+    led_parameters.mode = 0;
+
+    robast_can_msgs::CanMessage can_msg_drawer_user_access = DrawerGate::create_can_msg_drawer_user_access(goal, led_parameters);
     
     set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_500kbps);
 
