@@ -413,7 +413,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
 
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].bit_start == bit_start_LED_mode);
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].bit_length == bit_length_LED_mode);
-                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].data == bit_start_LED_mode);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].data == data_LED_mode);
             }
         }
 
