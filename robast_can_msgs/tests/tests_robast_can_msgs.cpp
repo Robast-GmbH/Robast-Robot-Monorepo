@@ -13,7 +13,7 @@
 
 SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[robast_can_msgs]") {
 
-    GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, open_drawer, LED_red, LED_green, LED_blue, LED_brightness") {
+    GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, open_drawer, LED_red, LED_green, LED_blue, LED_brightness, LED_mode") {
         uint32_t msg_id = CAN_ID_DRAWER_USER_ACCESS;;
         uint8_t dlc = 8;
         uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b11000000,0b01000000,0b10000000,0b11000001,0b11001000};

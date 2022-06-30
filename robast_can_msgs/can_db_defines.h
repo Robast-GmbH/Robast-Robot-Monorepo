@@ -21,7 +21,7 @@ namespace robast_can_msgs
     #define CAN_SIGNAL_LED_GREEN 4
     #define CAN_SIGNAL_LED_BLUE 5
     #define CAN_SIGNAL_LED_BRIGHTNESS 6
-    #define CAN_SIGNAL_LED_MODE 6
+    #define CAN_SIGNAL_LED_MODE 7
 
     #define CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START 0
     #define CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH 24
