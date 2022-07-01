@@ -9,7 +9,7 @@
   GLOBAL VARIABLES AND CONSTANTS
 *********************************************************************************************************/
 
-#define DRAWER_ID 2 //TODO: Every Drawer needs to have his own id
+#define DRAWER_CONTROLLER_ID 1 //TODO: Every DRAWER_CONTROLLER needs to have his own id
 
 #define PWR_OPEN_LOCK1_PIN GPIO_NUM_22
 #define PWR_CLOSE_LOCK1_PIN GPIO_NUM_21
@@ -67,7 +67,7 @@ void initialize_voltage_translator(void)
 
 void initialize_can_controller(void)
 {
-  if(CAN0.begin(MCP_ANY, CAN_500KBPS, MCP_8MHZ) == CAN_OK)
+  if(CAN0.begin(MCP_ANY, CAN_250KBPS, MCP_8MHZ) == CAN_OK)
   {
     Serial.println("MCP2515 Initialized Successfully!");
   }
@@ -211,13 +211,14 @@ void handle_CAN_msg(robast_can_msgs::CanMessage can_message)
 {
   if (can_message.id == CAN_ID_DRAWER_USER_ACCESS)
   {
-    //TODO: Abfrage, ob DRAWER ID passt
+    if (can_message.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data == DRAWER_CONTROLLER_ID)
+    {
+      handle_locks(can_message);
 
-    handle_locks(can_message);
+      handle_LED_strip(can_message);
 
-    handle_LED_strip(can_message);
-
-    debug_prints(can_message);
+      debug_prints(can_message);
+    }
   }
 }
 
@@ -233,7 +234,7 @@ void handle_reading_sensors(void)
 robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
 {
   robast_can_msgs::CanMessage can_msg_drawer_feedback = can_db.can_messages.at(CAN_MSG_DRAWER_FEEDBACK);
-  can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = DRAWER_ID;
+  can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = DRAWER_CONTROLLER_ID;
 
   if (moving_average_drawer1_closed_pin > 0.9){
     can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).data = 1;
