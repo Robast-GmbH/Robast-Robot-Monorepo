@@ -10,6 +10,12 @@ namespace robast_drawer_gate
       std::bind(&DrawerGate::goal_callback, this, std::placeholders::_1, std::placeholders::_2),
       std::bind(&DrawerGate::cancel_callback, this, std::placeholders::_1),
       std::bind(&DrawerGate::accepted_callback, this, std::placeholders::_1));
+
+      this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
+      this->timer_ptr_ = this->create_wall_timer(1s, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
+
+    //TODO: Timer callback, der regelmäßig aufgerufen wird und CAN Messages EINLIEST.
+    //TODO: Das sollte aber niemals gleichzeitig zum Abschicken von CAN Messages passieren, daher beide in eine Mutually Exclusive Callback Group packen!
   }
 
   //TODO: Dekonstruktor
@@ -35,6 +41,13 @@ namespace robast_drawer_gate
   {
     // this needs to return quickly to avoid blocking the executor, so spin up a new thread
     std::thread{std::bind(&DrawerGate::open_drawer, this, std::placeholders::_1), goal_handle}.detach();
+  }
+
+  void DrawerGate::timer_callback(void)
+  {
+    RCLCPP_INFO(this->get_logger(), "Timer callback triggert!");
+    std::string serial_read = this->read_serial(void);
+    RCLCPP_INFO(this->get_logger(), "Read from serial: %s", serial_read);
   }
 
   void DrawerGate::setup_serial_port(void)
@@ -93,6 +106,27 @@ namespace robast_drawer_gate
       printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
       return;
     }
+  }
+  
+  std::string DrawerGate::read_serial()
+  {
+    RCLCPP_INFO(this->get_logger(), "Reading serial now!");
+    char read_buf [256];
+    memset(&read_buf, '\0', sizeof(read_buf));
+    int num_bytes; 
+
+    do
+    {
+      num_bytes = read(this->serial_port, &read_buf, sizeof(read_buf));
+      if( num_bytes >20)
+      {
+        RCLCPP_ERROR(this->get_logger(),"Error reading: %s", strerror(errno));
+        return "false";
+      }
+      RCLCPP_INFO(this->get_logger(),"Number of bytes read from serial: %i",num_bytes);
+    }while(num_bytes<1);
+    
+    return std::string(read_buf, num_bytes);
   }
 
   robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal, led_parameters led_parameters)
@@ -173,6 +207,13 @@ namespace robast_drawer_gate
 
   void DrawerGate::open_can_channel(void)
   {
+    unsigned char msg[2] = {'L', '\r'};
+
+    write(serial_port, msg, sizeof(msg));
+  }
+
+  void DrawerGate::open_can_channel_listen_only_mode(void)
+  {
     unsigned char msg[2] = {'O', '\r'};
 
     write(serial_port, msg, sizeof(msg));
@@ -207,7 +248,7 @@ namespace robast_drawer_gate
 
     robast_can_msgs::CanMessage can_msg_drawer_user_access = DrawerGate::create_can_msg_drawer_user_access(goal, led_parameters);
     
-    set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_500kbps);
+    set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
 
     open_can_channel();
 
@@ -218,7 +259,8 @@ namespace robast_drawer_gate
       write(serial_port, &ascii_cmd_drawer_user_access.value()[0], ascii_cmd_drawer_user_access.value().length());
     }
 
-    close_can_channel();
+    // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
+    open_can_channel_listen_only_mode(); 
 
     // Allocate memory for read buffer, set size according to your needs
     char read_buf [256];

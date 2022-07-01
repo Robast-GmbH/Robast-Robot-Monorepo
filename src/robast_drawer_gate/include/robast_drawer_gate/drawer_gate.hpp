@@ -49,6 +49,8 @@ namespace robast_drawer_gate
 
     private:
       rclcpp_action::Server<DrawerUserAccess>::SharedPtr drawer_gate_server;
+      rclcpp::CallbackGroup::SharedPtr timer_cb_group_;
+      rclcpp::TimerBase::SharedPtr timer_ptr_;
 
       int serial_port;
 
@@ -56,11 +58,15 @@ namespace robast_drawer_gate
 
       void setup_serial_port(void);
 
+      std::string read_serial(void);
+
       robast_can_msgs::CanMessage create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal, led_parameters led_parameters);
 
       void set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface can_baudrate);
 
       void open_can_channel(void);
+
+      void open_can_channel_listen_only_mode(void);
 
       void close_can_channel(void);
 
@@ -69,6 +75,8 @@ namespace robast_drawer_gate
       rclcpp_action::CancelResponse cancel_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
 
       void accepted_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
+
+      void timer_callback(void);
 
       /**
        * @brief Action server execution callback
