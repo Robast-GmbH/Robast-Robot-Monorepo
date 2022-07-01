@@ -12,7 +12,7 @@ namespace robast_drawer_gate
       std::bind(&DrawerGate::accepted_callback, this, std::placeholders::_1));
 
       this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
-      this->timer_ptr_ = this->create_wall_timer(1s, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
+      this->timer_ptr_ = this->create_wall_timer(500ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
 
       this->setup_serial_port();
       set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
@@ -56,7 +56,7 @@ namespace robast_drawer_gate
     set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
     open_can_channel_listen_only_mode(); 
     std::string serial_read = this->read_serial();
-    RCLCPP_INFO(this->get_logger(), "Read from serial: %s", serial_read);
+    RCLCPP_INFO(this->get_logger(), "Read from serial: %s", serial_read.c_str());
     close(serial_port);
   }
 
@@ -128,7 +128,7 @@ namespace robast_drawer_gate
     do
     {
       num_bytes = read(this->serial_port, &read_buf, sizeof(read_buf));
-      if( num_bytes >20)
+      if( num_bytes >30)
       {
         RCLCPP_ERROR(this->get_logger(),"Error reading: %s", strerror(errno));
         return "false";
