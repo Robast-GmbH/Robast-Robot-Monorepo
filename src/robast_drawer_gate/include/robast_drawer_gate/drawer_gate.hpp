@@ -1,6 +1,7 @@
 #ifndef ROBAST_DRAWER_GATE__DRAWER_GATE_HPP_
 #define ROBAST_DRAWER_GATE__DRAWER_GATE_HPP_
 
+#include <chrono>
 #include <inttypes.h>
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
@@ -18,6 +19,7 @@
 #include "robast_can_msgs/can_db.h"
 #include "robast_can_msgs/can_helper.h"
 
+using namespace std::chrono_literals;
 
 namespace robast_drawer_gate
 {

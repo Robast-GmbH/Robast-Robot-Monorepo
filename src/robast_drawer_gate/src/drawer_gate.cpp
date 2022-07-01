@@ -14,6 +14,12 @@ namespace robast_drawer_gate
       this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
       this->timer_ptr_ = this->create_wall_timer(1s, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
 
+      this->setup_serial_port();
+      set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
+      // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
+      open_can_channel_listen_only_mode(); 
+      close(serial_port);
+
     //TODO: Timer callback, der regelmäßig aufgerufen wird und CAN Messages EINLIEST.
     //TODO: Das sollte aber niemals gleichzeitig zum Abschicken von CAN Messages passieren, daher beide in eine Mutually Exclusive Callback Group packen!
   }
@@ -46,8 +52,12 @@ namespace robast_drawer_gate
   void DrawerGate::timer_callback(void)
   {
     RCLCPP_INFO(this->get_logger(), "Timer callback triggert!");
-    std::string serial_read = this->read_serial(void);
+    this->setup_serial_port();
+    set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
+    open_can_channel_listen_only_mode(); 
+    std::string serial_read = this->read_serial();
     RCLCPP_INFO(this->get_logger(), "Read from serial: %s", serial_read);
+    close(serial_port);
   }
 
   void DrawerGate::setup_serial_port(void)
@@ -261,29 +271,6 @@ namespace robast_drawer_gate
 
     // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
     open_can_channel_listen_only_mode(); 
-
-    // Allocate memory for read buffer, set size according to your needs
-    char read_buf [256];
-
-    // Normally you wouldn't do this memset() call, but since we will just receive
-    // ASCII data for this example, we'll set everything to 0 so we can
-    // call printf() easily.
-    memset(&read_buf, '\0', sizeof(read_buf));
-
-    // Read bytes. The behaviour of read() (e.g. does it block?,
-    // how long does it block for?) depends on the configuration
-    // settings above, specifically VMIN and VTIME
-    // int num_bytes = read(serial_port, &read_buf, sizeof(read_buf));
-
-    // n is the number of bytes read. n may be 0 if no bytes were received, and can also be -1 to signal an error.
-    // if (num_bytes < 0) {
-    //   printf("Error reading: %s", strerror(errno));
-    //   return;
-    // }
-
-    // Here we assume we received ASCII data, but you might be sending raw bytes (in that case, don't try and
-    // print it to the screen like this!)
-    // printf("Read %i bytes. Received message: %s", num_bytes, read_buf);
 
     close(serial_port);
 
