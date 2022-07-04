@@ -9,7 +9,7 @@ namespace robast_can_msgs
     #define CAN_ID_DRAWER_FEEDBACK 0x002
 
     #define CAN_DLC_DRAWER_USER_ACCESS 8
-    #define CAN_DLC_DRAWER_FEEDBACK 1
+    #define CAN_DLC_DRAWER_FEEDBACK 4
 
     #define CAN_MSG_DRAWER_USER_ACCESS 0
     #define CAN_MSG_DRAWER_FEEDBACK 1
