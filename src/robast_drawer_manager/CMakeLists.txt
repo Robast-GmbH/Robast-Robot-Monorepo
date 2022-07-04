@@ -36,7 +36,7 @@ add_library(${library_drawer_manager} SHARED
 
 set(dependencies
   rclcpp
-  robast_hardware_nodes_msgs
+  robast_ros2_msgs
   rclcpp_action
 )
 

@@ -1,5 +1,0 @@
-string drawer_type
-int64 requestor_id
-#int64 task_id
----
-int64 drawer_id
