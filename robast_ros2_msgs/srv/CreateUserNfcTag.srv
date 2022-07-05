@@ -1,0 +1,7 @@
+# request
+string identification_key  
+---
+# response
+bool sucessful
+string card_id
+string error_message

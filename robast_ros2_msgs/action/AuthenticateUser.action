@@ -1,0 +1,10 @@
+#goal
+string[] permission_keys 
+---
+#result
+bool sucessful
+string permission_key_used
+string error_message
+---
+#feedback
+robast_ros2_msgs/NFCStatus reader_status

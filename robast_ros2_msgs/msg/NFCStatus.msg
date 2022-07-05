@@ -1,0 +1,2 @@
+bool is_completted
+uint16 unidentified_readings
