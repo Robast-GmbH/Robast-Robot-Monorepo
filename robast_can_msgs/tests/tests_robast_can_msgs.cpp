@@ -7,22 +7,24 @@
 /*
 * HOW TO RUN THIS TEST ON WINDOWS:
 * g++ -std=c++17 -c .\tests_main.cpp
-* g++ -std=c++17 tests_main.o tests_can_db.cpp ..\can_helper.cpp -o test_executable -I ..\
+* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\can_helper.cpp -o test_executable -I ..\
 * .\test_executable.exe
 */
 
 SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[robast_can_msgs]") {
 
-    GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, open_drawer, LED_red, LED_green, LED_blue") {
+    GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, open_drawer, LED_red, LED_green, LED_blue, LED_brightness, LED_mode") {
         uint32_t msg_id = CAN_ID_DRAWER_USER_ACCESS;;
-        uint8_t dlc = 7;
-        uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b11000000,0b01000000,0b10000000,0b11000000,0x00};
+        uint8_t dlc = 8;
+        uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b11000000,0b01000000,0b10000000,0b11000001,0b11001000};
         uint64_t data_drawer_controller_id = 0x010203;
         uint64_t data_open_drawer_1 = 1;
         uint64_t data_open_drawer_2 = 1;
         uint64_t data_LED_red = 1;
         uint64_t data_LED_green = 2;
         uint64_t data_LED_blue = 3;    
+        uint64_t data_LED_brightness = 7;
+        uint64_t data_LED_mode = 1;
 
         WHEN("Creating the CanSignal classes") {
             uint8_t bit_start_drawer_id = 0;
@@ -49,6 +51,14 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
             uint8_t bit_length_LED_blue = 8;
             robast_can_msgs::CanSignal can_signal_LED_blue = robast_can_msgs::CanSignal(bit_start_LED_blue, bit_length_LED_blue, data_LED_blue);
 
+            uint8_t bit_start_LED_brightness = 50;
+            uint8_t bit_length_LED_brightness = 8;
+            robast_can_msgs::CanSignal can_signal_LED_brightness = robast_can_msgs::CanSignal(bit_start_LED_brightness, bit_length_LED_brightness, data_LED_brightness);
+
+            uint8_t bit_start_LED_mode = 58;
+            uint8_t bit_length_LED_mode = 3;
+            robast_can_msgs::CanSignal can_signal_LED_mode = robast_can_msgs::CanSignal(bit_start_LED_mode, bit_length_LED_mode, data_LED_mode);
+
             THEN("The created CanSignal classes should encapsulate the data correctly") {
                 REQUIRE(can_signal_drawer_id.bit_start == bit_start_drawer_id);
                 REQUIRE(can_signal_drawer_id.bit_length == bit_length_drawer_id);
@@ -73,6 +83,14 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                 REQUIRE(can_signal_LED_blue.bit_start == bit_start_LED_blue);
                 REQUIRE(can_signal_LED_blue.bit_length == bit_length_LED_blue);
                 REQUIRE(can_signal_LED_blue.data == data_LED_blue);
+
+                REQUIRE(can_signal_LED_brightness.bit_start == bit_start_LED_brightness);
+                REQUIRE(can_signal_LED_brightness.bit_length == bit_length_LED_brightness);
+                REQUIRE(can_signal_LED_brightness.data == data_LED_brightness);
+
+                REQUIRE(can_signal_LED_mode.bit_start == bit_start_LED_mode);
+                REQUIRE(can_signal_LED_mode.bit_length == bit_length_LED_mode);
+                REQUIRE(can_signal_LED_mode.data == data_LED_mode);
             }
 
             WHEN("Creating the CanMessage class") {
@@ -86,6 +104,8 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                             can_signal_LED_red,
                             can_signal_LED_green,
                             can_signal_LED_blue,
+                            can_signal_LED_brightness,
+                            can_signal_LED_mode
                         });
 
                 THEN("The created CanMessage class should encapsulate the data correctly") {
@@ -115,6 +135,14 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                     REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_BLUE].bit_start == can_signal_LED_blue.bit_start);
                     REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_BLUE].bit_length == can_signal_LED_blue.bit_length);
                     REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_BLUE].data == can_signal_LED_blue.data);
+
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_BRIGHTNESS].bit_start == can_signal_LED_brightness.bit_start);
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_BRIGHTNESS].bit_length == can_signal_LED_brightness.bit_length);
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_BRIGHTNESS].data == can_signal_LED_brightness.data);
+
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_MODE].bit_start == can_signal_LED_mode.bit_start);
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_MODE].bit_length == can_signal_LED_mode.bit_length);
+                    REQUIRE(can_message.can_signals[CAN_SIGNAL_LED_MODE].data == can_signal_LED_mode.data);
                 }
 
                 WHEN("Creating the CanDb class") {
@@ -147,6 +175,14 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                         REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_BLUE].bit_start == can_signal_LED_blue.bit_start);
                         REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_BLUE].bit_length == can_signal_LED_blue.bit_length);
                         REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_BLUE].data == 0);
+
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_BRIGHTNESS].bit_start == can_signal_LED_brightness.bit_start);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_BRIGHTNESS].bit_length == can_signal_LED_brightness.bit_length);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_BRIGHTNESS].data == 0);
+
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_MODE].bit_start == can_signal_LED_mode.bit_start);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_MODE].bit_length == can_signal_LED_mode.bit_length);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].can_signals[CAN_SIGNAL_LED_MODE].data == 0);
                     }
                 }
             }        
@@ -170,9 +206,9 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
 
     GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, open_drawer, LED_red, LED_green, LED_blue") {
         uint32_t msg_id = CAN_ID_DRAWER_USER_ACCESS;;
-        uint8_t dlc = 7;
-        uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b11000000,0b01000000,0b10000000,0b11000000,0x00};
-        uint64_t u64_can_data_expected = 0x010203C04080C000;
+        uint8_t dlc = 8;
+        uint8_t u8_can_data[8] = {0x01,0x02,0x03,0b11000000,0b01000000,0b10000000,0b11000001,0b11001000};
+        uint64_t u64_can_data_expected = 0x010203C04080C1C8;
         uint64_t u64_can_data_not_expected = 0x0907060509030201;
         uint64_t data_drawer_controller_id = 0x010203;
         uint64_t data_open_drawer_1 = 1;
@@ -180,6 +216,12 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         uint64_t data_LED_red = 1;
         uint64_t data_LED_green = 2;
         uint64_t data_LED_blue = 3;
+        uint64_t data_LED_brightness = 7;
+        uint64_t data_LED_mode = 1;  
+        std::string ascii_command_expected = "t00";
+        ascii_command_expected.append(std::to_string(msg_id));
+        ascii_command_expected.append(std::to_string(dlc));
+        ascii_command_expected.append("010203C04080C1C8\r");
 
         uint8_t bit_start_drawer_id = 0;
         uint8_t bit_length_drawer_id = 24;
@@ -199,6 +241,13 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         uint8_t bit_start_LED_blue = 42;
         uint8_t bit_length_LED_blue = 8;
         robast_can_msgs::CanSignal can_signal_LED_blue = robast_can_msgs::CanSignal(bit_start_LED_blue, bit_length_LED_blue, data_LED_blue);
+        uint8_t bit_start_LED_brightness = 50;
+        uint8_t bit_length_LED_brightness = 8;
+        robast_can_msgs::CanSignal can_signal_LED_brightness = robast_can_msgs::CanSignal(bit_start_LED_brightness, bit_length_LED_brightness, data_LED_brightness);
+        uint8_t bit_start_LED_mode = 58;
+        uint8_t bit_length_LED_mode = 3;
+        robast_can_msgs::CanSignal can_signal_LED_mode = robast_can_msgs::CanSignal(bit_start_LED_mode, bit_length_LED_mode, data_LED_mode);
+
 
         robast_can_msgs::CanMessage can_message = robast_can_msgs::CanMessage(
                         msg_id,
@@ -210,6 +259,8 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
                             can_signal_LED_red,
                             can_signal_LED_green,
                             can_signal_LED_blue,
+                            can_signal_LED_brightness,
+                            can_signal_LED_mode
                         });
 
         robast_can_msgs::CanMessage can_message_invalid_id = robast_can_msgs::CanMessage(
@@ -222,6 +273,8 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
                             can_signal_LED_red,
                             can_signal_LED_green,
                             can_signal_LED_blue,
+                            can_signal_LED_brightness,
+                            can_signal_LED_mode
                         });
 
         robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
@@ -246,7 +299,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
             }
         }
 
-        WHEN("Swapping Endian") {
+        WHEN("Swapping endian") {
             uint64_t input_to_be_swapped = 0x1034567891234560;
             uint64_t input_unswapped = input_to_be_swapped;
             robast_can_msgs::SwapEndian<uint64_t>(input_to_be_swapped);
@@ -254,7 +307,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
                 REQUIRE(input_to_be_swapped == 0x6045239178563410);
                 REQUIRE(input_to_be_swapped != input_unswapped);
             }
-            WHEN("Swapping Endian twice") {
+            WHEN("Swapping endian twice") {
                 uint64_t input_to_be_swapped_twice = input_to_be_swapped;
                 robast_can_msgs::SwapEndian<uint64_t>(input_to_be_swapped_twice);
                 THEN("The input_to_be_swapped_twice should have the original Endian again") {
@@ -274,8 +327,26 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
             }
         }
 
-        WHEN("Encoding a CAN Message with an id, that exists in the can_db messages") {
-            std::optional<robast_can_msgs::CanFrame> encoded_can_frame = robast_can_msgs::encode_can_message(can_message, can_db.can_messages);
+        WHEN("Converting a uint32 or uint64 into a string where the numbers are represented in hex format") {
+            uint32_t u32_input = 0x01C40;
+            uint64_t u64_input = 0x01240123FF;
+            std::string u32_expected_string = "01C40";
+            std::string u32_unexpected_string = "001C40";
+            std::string u64_expected_string = "01240123FF";
+            std::string u64_unexpected_string = "1240123ff";
+            std::string u32_result = robast_can_msgs::uint_to_hex_string(u32_input, 5);
+            std::string u64_result = robast_can_msgs::uint_to_hex_string(u64_input, 10);
+
+            THEN("The converted string should represent the uint32 and uint64 in the hex format.") {
+                REQUIRE(u32_result == u32_expected_string);
+                REQUIRE_FALSE(u32_result == u32_unexpected_string);
+                REQUIRE(u64_result == u64_expected_string);
+                REQUIRE_FALSE(u64_result == u64_unexpected_string);
+            }
+        }
+
+        WHEN("Encoding a CAN message with an id, that exists in the can_db messages") {
+            std::optional<robast_can_msgs::CanFrame> encoded_can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_message, can_db.can_messages);
 
             THEN("The resulting CanFrame Class should contain all the data that was contained in the CanMessage class") {
                 REQUIRE(encoded_can_frame.has_value());
@@ -287,18 +358,27 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
             }
         }
 
-        WHEN("Encoding a CAN Message with an id, that does not exist in the can_db messages") {
-            std::optional<robast_can_msgs::CanFrame> encoded_can_frame = robast_can_msgs::encode_can_message(can_message_invalid_id, can_db.can_messages);
+        WHEN("Encoding a CAN message with an id, that does not exist in the can_db messages") {
+            std::optional<robast_can_msgs::CanFrame> encoded_can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_message_invalid_id, can_db.can_messages);
 
             THEN("The resulting CanFrame should not contain a value") {
                 REQUIRE_FALSE(encoded_can_frame.has_value());
             }
         }
 
-        WHEN("Decoding a CAN Message with an id, that exists in the can_db messages") {
+        WHEN("Encoding a CAN message into an ASCII command with an id, that exists in the can_db messages") {
+            std::optional<std::string> ascii_command = robast_can_msgs::encode_can_message_into_ascii_command(can_message, can_db.can_messages);
+
+            THEN("The resulting ASCII command should contain the id, the dlc and the data that was contained in the CanMessage class") {
+                REQUIRE(ascii_command.has_value());
+                REQUIRE(ascii_command.value() == ascii_command_expected);
+            }
+        }
+
+        WHEN("Decoding a CAN message with an id, that exists in the can_db messages") {
             std::optional<robast_can_msgs::CanMessage> decoded_can_message = robast_can_msgs::decode_can_message(msg_id, u8_can_data, dlc, can_db.can_messages);
 
-            THEN("The resulting CanMessage Class should contain all the data that was contained in the CanMessage class") {
+            THEN("The resulting CanMessage class should contain all the data that was contained in the CanMessage class") {
                 REQUIRE(decoded_can_message.has_value());
                 REQUIRE(decoded_can_message.value().id == can_message.id);
                 REQUIRE(decoded_can_message.value().dlc == can_message.dlc);
@@ -326,6 +406,14 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BLUE].bit_start == bit_start_LED_blue);
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BLUE].bit_length == bit_length_LED_blue);
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BLUE].data == data_LED_blue);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BRIGHTNESS].bit_start == bit_start_LED_brightness);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BRIGHTNESS].bit_length == bit_length_LED_brightness);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BRIGHTNESS].data == data_LED_brightness);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].bit_start == bit_start_LED_mode);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].bit_length == bit_length_LED_mode);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].data == data_LED_mode);
             }
         }
 
