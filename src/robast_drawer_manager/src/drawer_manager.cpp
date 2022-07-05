@@ -5,26 +5,54 @@ namespace robast_drawer_manager
   DrawerManager::DrawerManager(): Node("drawer_manager_Node")
   {
     RCLCPP_INFO(this->get_logger(), "Creating");
-    this->get_all_drawers_server = this->create_service<AllAttechedDrawers("Get_all_attached_drawer_drawer_management", bind(&DrawerManager::get_all_drawer,this, placeholder::_1, plachholder::_2));
-    this->handle_drawer_server = this->create_service<HandleDrawer>("open_drawer_drawer_management", bind(&DrawerManager::open_drawer,this, placeholder::_1, plachholder::_2));
+    this->drawers_info_server = this->create_service<ShelfSetupInfo>("Get_module_setup", bind(&DrawerManager::get_shelf_setup,this, placeholders::_1, placeholders::_2));
+    //this->open_drawer_server = this->create_service<HandleDrawer>("open_drawer_drawer_management", bind(&DrawerManager::open_drawer,this, placeholders::_1, placeholders::_2));
     
-    //this->authenticate_user_client = this->create_client<robast_ros2_msgs::srv::AuthenticateUser>("authenticate_drawer_user");
+    this->access_drawer_service = rclcpp_action::create_server<DrawerInteraction>(
+    this,
+    "drawerInteraction",
+    bind(&DrawerManager::drawer_access_goal_callback, this, placeholders::_1, placeholders::_2),
+    bind(&DrawerManager::drawer_access_cancel_callback, this, placeholders::_1),
+    bind(&DrawerManager::drawer_access_accepted_callback, this, placeholders::_1)
+    );
+
+    this->authenticate_user_client = rclcpp_action::create_client<robast_ros2_msgs::action::AuthenticateUser>(this,"authenticate_drawer_user");
     this->open_drawers_client = rclcpp_action::create_client<DrawerUserAccess>(this,"open_drawer_drawer");
   }
 
 
-  void DrawerManager::get_all_drawer(const std::shared_ptr<AllAttechedDrawers::Request> request, std::shared_ptr<AllAttechedDrawers::Response>      response)
+  void DrawerManager::get_shelf_setup(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
   {
-    rclcpp::Client<AllAttechedDrawers>::SharedPtr stateMaschineRequest = this->create_client<AllAttechedDrawers>("Get_all_attached_drawer");
-    response->drawers;
+    //# request from the Drawer Hardware Node the setup modules used(just the modules which are empty)     
+
+    //response->drawers;
   }
 
-  void DrawerManager::open_drawer(const std::shared_ptr<HandleDrawer::Request> request,
-                      std::shared_ptr<HandleDrawer::Response>      response)
+  rclcpp_action::GoalResponse DrawerManager::drawer_access_goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const DrawerInteraction::Goal> goal)
   {
-    // NFC Reader
-    //auto authentication_request = std::make_shared<robast_ros2_msgs::srv::AuthenticateUser::Request>();
-    //authentication_request.permission_keys = request.permission_keys;
+    RCLCPP_INFO(this->get_logger(), "Received goal request");
+    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+  }
+
+  rclcpp_action::CancelResponse DrawerManager::drawer_access_cancel_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle)
+  {
+    RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
+    // (void)goal_handle;
+    return rclcpp_action::CancelResponse::ACCEPT;
+  }
+
+  void DrawerManager::drawer_access_accepted_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle)
+  {
+    RCLCPP_INFO(this->get_logger(), "open drawer");
+    std::thread{std::bind(&DrawerManager::open_drawer, this, placeholders::_1), goal_handle}.detach();
+  }
+
+
+  void DrawerManager::open_drawer(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle)
+  {
+    /*// NFC Reader
+    auto authentication_request = std::make_shared<robast_ros2_msgs::srv::AuthenticateUser::Request>();
+    authentication_request.permission_keys = request.permission_keys;
 
     //auto result =  this->authenticate_user_client ->async_send_request(authentication_request);
     //RCLCPP_INFO(this->get_logger(), "The reader is active please authenticate yourselve at the reader.");
@@ -54,7 +82,7 @@ namespace robast_drawer_manager
     target_drawer_msg.order = request->drawer_id;
 
     auto send_goal_options = rclcpp_action::Client<DrawerUserAccess>::SendGoalOptions();
-    send_goal_options.feedback_callback = std::bind(&DrawerManager::open_drawer_feedback_callback, this, std::placeholder::_1, std::placeholder::_2);
+    send_goal_options.feedback_callback = std::bind(&DrawerManager::open_drawer_feedback_callback, this, placeholders::_1, placeholders::_2);
     auto result = open_drawers_client->async_send_goal(target_drawer_msg, send_goal_options);
 
     // Schublade offen im Frontend anzeigen
@@ -69,26 +97,26 @@ namespace robast_drawer_manager
       return; 
     }
     
-    //  wenn die Schublade  geschlossen ist action beenden 
+    //  wenn die Schublade  geschlossen ist action beenden */
   }
 
 
 
   /*void DrawerManager::open_drawer_feedback_callback( rclcpp_action::ClientGoalHandle<DrawerUserAccess>::SharedPtr, const std::shared_ptr<const DrawerUserAccess::Feedback> feedback)
   {
-      if(feedback->is_drawer_open())
+    if(feedback->is_drawer_open)
       { 
         this->door_timer = this->create_wall_timer(  std::chrono::milliseconds(500), std::bind(&DrawerManager::remind_user_to_close_drawer, this));
       }
       else 
       {
-        this->door_timer->cancel();
+       
       }
-  }*/
-
-  void DrawerManager::remind_user_to_close_drawer()
+  }
+*/
+ /* void DrawerManager::remind_user_to_close_drawer()
   {
     RCLCPP_INFO(this->get_logger(), "Please close the drawer when you are done.");
-  }
+  }*/
 
 } // namespace robast_drawer_manager

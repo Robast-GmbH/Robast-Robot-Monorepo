@@ -10,11 +10,12 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
-#include "robast_ros2_msgs/srv/get_all_attached_drawers.hpp"
-#include "robast_ros2_msgs/srv/handle_drawer.hpp"
+#include "robast_ros2_msgs/srv/shelf_setup_info.hpp"
+
+#include "robast_ros2_msgs/action/drawer_interaction.hpp"
 #include "robast_ros2_msgs/action/drawer_user_access.hpp"
 #include "robast_ros2_msgs/action/authenticate_user.hpp"
-
+ using namespace std;
 
 namespace robast_drawer_manager
 {
@@ -24,31 +25,48 @@ namespace robast_drawer_manager
   {
 
     public: 
-      using AllAttechedDrawers = robast_ros2_msgs::srv::GetAllAttachedDrawers;
-      using HandleDrawer       = robast_ros2_msgs::srv::HandleDrawer;
-      using DrawerUserAccess   = robast_ros2_msgs::action::DrawerUserAccess
+      using ShelfSetupInfo              = robast_ros2_msgs::srv::ShelfSetupInfo;  // to get the types of modules in the Robot
+      using DrawerInteraction           = robast_ros2_msgs::action::DrawerInteraction;    // the Service provideded By this Node to perform 
+      using GoalHandleDrawerInteraction = rclcpp_action::ServerGoalHandle<DrawerInteraction>;
+      using DrawerUserAccess            = robast_ros2_msgs::action::DrawerUserAccess; // interaction with the drawermodules 
+      using AuthenticateUser            = robast_ros2_msgs::action::AuthenticateUser;  //interaction with the 
+    
+     
+     
 
       DrawerManager();
      // ~DrawerManager();
      
 
   private:
+  
+    rclcpp::Service<ShelfSetupInfo>::SharedPtr drawers_info_server;
+    
 
+    rclcpp_action::Server<DrawerInteraction>::SharedPtr access_drawer_service;
     rclcpp_action::Client<AuthenticateUser>::SharedPtr authenticate_user_client;
     rclcpp_action::Client<DrawerUserAccess>::SharedPtr open_drawers_client;
 
-    rclcpp::Service<GetAllAttachedDrawers>::SharedPtr get_all_drawers_server;
-    rclcpp::Service<GetAllAttachedDrawers>::SharedPtr open_drawer_server;
 
-    void get_all_drawer(const std::shared_ptr<AllAttechedDrawers::Request> request, std::shared_ptr<AllAttechedDrawers::Response>      response);
+    void get_shelf_setup(const shared_ptr<ShelfSetupInfo::Request> request, shared_ptr<ShelfSetupInfo::Response> response);
 
-    void open_drawer(const std::shared_ptr<HandleDrawer::Request> request,  std::shared_ptr<HandleDrawer::Response>      response);
-  
+    rclcpp_action::GoalResponse drawer_access_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const DrawerInteraction::Goal> goal);
+    rclcpp_action::CancelResponse drawer_access_cancel_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle); 
+    void drawer_access_accepted_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle);
+
+    void open_drawer(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
+    
+
+
+
     void remind_user_to_close_drawer();
 
-    /*void goal_response_callback(std::shared_future<rclcpp_action::ClientGoalHandle<DrawerUserAccess>::SharedPtr> future);
-    void open_drawer_feedback_callback( rclcpp_action::ClientGoalHandle<DrawerUserAccess>::SharedPtr, const std::shared_ptr<const DrawerUserAccess::Feedback> feedback);
-    void open_drawer_result_callback(const rclcpp_action::ClientGoalHandle<DrawerUserAccess>::WrappedResult & result)*/
+
+
+
+    void goal_response_callback( shared_future<rclcpp_action::ClientGoalHandle<DrawerUserAccess>::SharedPtr> future);
+    void open_drawer_feedback_callback( rclcpp_action::ClientGoalHandle<DrawerUserAccess>::SharedPtr, const shared_ptr<const DrawerUserAccess::Feedback> feedback);
+    void open_drawer_result_callback(const rclcpp_action::ClientGoalHandle<DrawerUserAccess>::WrappedResult & result);
 
 };
 
