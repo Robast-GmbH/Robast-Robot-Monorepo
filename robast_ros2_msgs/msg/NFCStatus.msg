@@ -1,2 +1,6 @@
+bool is_prepaing
+bool is_active
+bool is_reading
+bool is_error
 bool is_completted
-uint16 unidentified_readings
+int64 unidentified_readings

@@ -1,7 +1,7 @@
-# request
-string identification_key  
+#goal
+string card_key
 ---
-# response
+#result
 bool sucessful
 string card_id
 string error_message

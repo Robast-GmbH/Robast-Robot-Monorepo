@@ -1,9 +1,9 @@
 #goal
-string[] permission_keys 
+string[] permission_keys
 ---
 #result
-bool sucessful
 string permission_key_used
+bool sucessful
 string error_message
 ---
 #feedback
