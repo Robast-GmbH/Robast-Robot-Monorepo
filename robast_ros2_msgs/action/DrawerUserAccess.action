@@ -1,5 +1,6 @@
 #goal
-int64 drawer_id
+int64 drawer_controller_id
+int8 drawer_id  # one drawer controller can control more than one drawer so choose which drawer to open (if module contains only one drawer, drawer_id should be one)
 ---
 #result
 bool success  # indicates whether closing of the drawer was successfull after opening it
