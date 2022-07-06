@@ -70,6 +70,60 @@ namespace robast_can_msgs
         return std::nullopt;
     }
 
+    /* The USB-CAN Controller is controlled via simple ASCII commands over the serial port.
+    * The full command list can be found here: https://www.fischl.de/usbtin/
+    * The command for transmitting standard (11 bit) frame should look like:
+    *   tiiildd..[CR]
+    *       iii: Identifier in hexadecimal format (000-7FF)
+    *       l: Data length (0-8)
+    *       dd: Data byte value in hexadecimal format (00-FF)
+    */
+    std::optional<CanMessage> decode_ascii_command_into_can_message(const char* ascii_command, uint8_t ascii_command_length, std::vector<CanMessage> can_db_messages)
+    {
+        if (ascii_command_length > 5 || ascii_command[0] != 't')
+        {
+            std::string id_as_hex_string = std::string(ascii_command + 1, 3);
+            uint16_t can_msg_id = hex_string_to_unsigned_int<uint16_t>(id_as_hex_string);
+            for (uint16_t j = 0; j < can_db_messages.size(); j++)
+            {
+                if (can_msg_id == can_db_messages[j].id)
+                {
+                    std::string dlc_as_hex_string = std::string(ascii_command + 4, 1);
+                    uint8_t dlc = hex_string_to_unsigned_int<uint8_t>(dlc_as_hex_string);
+
+                    std::string data_as_hex_string = std::string(ascii_command + 5, dlc);
+                    uint64_t data = hex_string_to_unsigned_int<uint64_t>(data_as_hex_string);
+                }
+            }
+        }
+        else
+        {
+            return std::nullopt;
+        }
+    }
+
+    template <typename T>
+    T hex_string_to_unsigned_int(std::string hex_string)
+    {
+        T result;
+        result = std::stoul(hex_string, nullptr, 16);
+        return result;
+    }
+
+    // uint16_t hex_string_to_uint16_t(std::string hex_string)
+    // {
+    //     uint16_t result;
+    //     result = std::stoul(hex_string, nullptr, 16);
+    //     return result;
+    // }
+
+    // uint64_t hex_string_to_uint64_t(std::string hex_string)
+    // {
+    //     uint64_t result;
+    //     result = std::stoul(hex_string, nullptr, 16);
+    //     return result;
+    // }
+
     std::string uint_to_hex_string(uint32_t input, int num_of_digits)
     {
         std::stringstream stream;

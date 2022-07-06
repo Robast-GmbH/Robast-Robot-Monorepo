@@ -6,9 +6,20 @@
 
 /*
 * HOW TO RUN THIS TEST ON WINDOWS:
+* - Go to directory src/robast_msgs/robast_can_msgs_tests
+* - Run the following commands:
 * g++ -std=c++17 -c .\tests_main.cpp
 * g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\can_helper.cpp -o test_executable -I ..\
 * .\test_executable.exe
+*/
+
+/*
+* HOW TO RUN THIS TEST ON LINUX:
+* - Go to directory src/robast_msgs/robast_can_msgs_tests
+* - Run the following commands:
+* g++ -std=c++17 -c tests_main.cpp
+* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ../can_helper.cpp -o test_executable -I ..\
+* ./test_executable
 */
 
 SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[robast_can_msgs]") {
@@ -424,6 +435,11 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
             THEN("The resulting CanFrame should not contain a value") {
                 REQUIRE_FALSE(decoded_can_message.has_value());
             }
+        }
+
+        WHEN("Converting a string containing hex numbers to an unsigned int") {
+            std::string hex_string = "00F";
+            
         }
     }
 }

@@ -55,7 +55,17 @@ namespace robast_can_msgs
      * @param can_db_messages CAN messages from CAN database to encode the message with
      * @return std::optional<std::string>. Only contains a value if the can_message id exists in the can_db.
      */
-    std::optional<std::string> encode_can_message_into_ascii_command(CanMessage can_message, std::vector<CanMessage> can_db_messages);   
+    std::optional<std::string> encode_can_message_into_ascii_command(CanMessage can_message, std::vector<CanMessage> can_db_messages);
+
+    /**
+     * @brief Decodes an ASCII command sent from the USB-CAN adapter into a CAN message
+     *
+     * @param ascii_command The ASCII command to be encoded
+     * @param ascii_command_length The number of chars the ASCII command contains
+     * @param can_db_messages CAN messages from CAN database to encode the message with
+     * @return std::optional<CanMessage>. Only contains a value if the can_message id exists in the can_db and the ascii command has the proper format.
+     */
+    std::optional<CanMessage> decode_ascii_command_into_can_message(const char* ascii_command, uint8_t ascii_command_length, std::vector<CanMessage> can_db_messages); 
 
     /**
      * @brief Joins together the data bytes from the CAN bus
@@ -81,6 +91,15 @@ namespace robast_can_msgs
      * @param result Pointer to the 8 byte array for the result
      */
     void u64_to_eight_bytes(uint64_t input, uint8_t *result);
+
+    /**
+     * @brief Swap Endian
+     *
+     * @param hex_string The input string that contains the data in hex format.
+     * @return The data, that was contained in the string, as an unsigned integer.
+     */
+    template <typename T>
+    T hex_string_to_unsigned_int(std::string hex_string);
 
     /**
      * @brief Swap Endian
