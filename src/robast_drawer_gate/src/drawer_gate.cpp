@@ -11,14 +11,16 @@ namespace robast_drawer_gate
       std::bind(&DrawerGate::cancel_callback, this, std::placeholders::_1),
       std::bind(&DrawerGate::accepted_callback, this, std::placeholders::_1));
 
-      this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
-      this->timer_ptr_ = this->create_wall_timer(500ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
+    this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
+    this->timer_ptr_ = this->create_wall_timer(500ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
 
-      this->setup_serial_port();
-      this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
-      // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
-      this->open_can_channel_listen_only_mode(); 
-      close(serial_port);
+    // this->serial_helper = robast_serial::SerialHelper("/dev/ttyACM1");#
+
+    this->open_serial_port();
+    this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
+    // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
+    this->open_can_channel_listen_only_mode();
+    this->serial_helper.close_serial();
 
     //TODO: Timer callback, der regelmäßig aufgerufen wird und CAN Messages EINLIEST.
     //TODO: Das sollte aber niemals gleichzeitig zum Abschicken von CAN Messages passieren, daher beide in eine Mutually Exclusive Callback Group packen!
@@ -52,91 +54,23 @@ namespace robast_drawer_gate
   void DrawerGate::timer_callback(void)
   {
     RCLCPP_INFO(this->get_logger(), "Timer callback triggert!");
-    this->setup_serial_port();
+    this->open_serial_port();
     this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
     this->open_can_channel_listen_only_mode(); 
-    std::string serial_read = this->read_serial();
+    std::string serial_read;
+    uint16_t num_of_received_bytes = this->serial_helper.read_serial(&serial_read, 30);
     RCLCPP_INFO(this->get_logger(), "Read from serial: %s", serial_read.c_str());
-    close(serial_port);
+    this->serial_helper.close_serial();
   }
 
-  void DrawerGate::setup_serial_port(void)
+  void DrawerGate::open_serial_port(void)
   {
-    RCLCPP_INFO(this->get_logger(), "Setting up serial port!");
-
-    serial_port = open("/dev/ttyACM0", O_RDWR);
-
-    // Check for errors
-    if (serial_port < 0)
+    std::string setup_serial_port_result = this->serial_helper.open_serial();
+    if (setup_serial_port_result.size() > 0)
     {
-      RCLCPP_ERROR(this->get_logger(), "Error from opening serial Port!");
-      printf("Error %i from open: %s\n", errno, strerror(errno));
+      RCLCPP_ERROR(this->get_logger(), "setup_serial_port_result.size(): %i", setup_serial_port_result.size());
+      RCLCPP_ERROR(this->get_logger(), "Error from opening serial Port: %s", setup_serial_port_result.c_str());
     }
-
-    // Create new termios struct, we call it 'tty' for convention
-    struct termios tty;
-
-    // Read in existing settings, and handle any error
-    if(tcgetattr(serial_port, &tty) != 0)
-    {
-      printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
-      return;
-    }
-
-    tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
-    tty.c_cflag &= ~CSTOPB; // Clear stop field, only one stop bit used in communication (most common)
-    tty.c_cflag &= ~CSIZE; // Clear all bits that set the data size 
-    tty.c_cflag |= CS8; // 8 bits per byte (most common)
-    tty.c_cflag &= ~CRTSCTS; // Disable RTS/CTS hardware flow control (most common)
-    tty.c_cflag |= CREAD | CLOCAL; // Turn on READ & ignore ctrl lines (CLOCAL = 1)
-
-    tty.c_lflag &= ~ICANON;
-    tty.c_lflag &= ~ECHO; // Disable echo
-    tty.c_lflag &= ~ECHOE; // Disable erasure
-    tty.c_lflag &= ~ECHONL; // Disable new-line echo
-    tty.c_lflag &= ~ISIG; // Disable interpretation of INTR, QUIT and SUSP
-    tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
-    tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
-
-    tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
-    tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
-    // tty.c_oflag &= ~OXTABS; // Prevent conversion of tabs to spaces (NOT PRESENT ON LINUX)
-    // tty.c_oflag &= ~ONOEOT; // Prevent removal of C-d chars (0x004) in output (NOT PRESENT ON LINUX)
-
-    tty.c_cc[VTIME] = 10;    // Wait for up to 1s (10 deciseconds), returning as soon as any data is received.
-    tty.c_cc[VMIN] = 0;
-
-    // Set in/out baud rate to be 115200
-    cfsetispeed(&tty, 115200);
-    cfsetospeed(&tty, 115200);
-
-    // Save tty settings, also checking for error
-    if (tcsetattr(serial_port, TCSANOW, &tty) != 0)
-    {
-      printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
-      return;
-    }
-  }
-  
-  std::string DrawerGate::read_serial()
-  {
-    RCLCPP_INFO(this->get_logger(), "Reading serial now!");
-    char read_buf [256];
-    memset(&read_buf, '\0', sizeof(read_buf));
-    int num_bytes; 
-
-    do
-    {
-      num_bytes = read(this->serial_port, &read_buf, sizeof(read_buf));
-      if( num_bytes >30)
-      {
-        RCLCPP_ERROR(this->get_logger(),"Error reading: %s", strerror(errno));
-        return "false";
-      }
-      RCLCPP_INFO(this->get_logger(),"Number of bytes read from serial: %i",num_bytes);
-    }while(num_bytes<1);
-    
-    return std::string(read_buf, num_bytes);
   }
 
   robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal, led_parameters led_parameters)
@@ -164,83 +98,69 @@ namespace robast_drawer_gate
 
   void DrawerGate::set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface can_baudrate)
   {
-    unsigned char msg[3];
+    std::string msg;
 
     switch (can_baudrate)
     {
       case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_10kbps:
-        msg[0] = 'S';
-        msg[1] = '0';
+        msg = "S0";
         break;
       case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_20kbps:
-        msg[0] = 'S';
-        msg[1] = '1';
+        msg = "S1";
         break;
       case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_50kbps:
-        msg[0] = 'S';
-        msg[1] = '2';
+        msg = "S2";
         break;
       case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_100kbps:
-        msg[0] = 'S';
-        msg[1] = '3';
+        msg = "S3";
         break;
       case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_125kbps:
-        msg[0] = 'S';
-        msg[1] = '4';
+        msg = "S4";
         break;
       case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps:
-        msg[0] = 'S';
-        msg[1] = '5';
+        msg = "S5";
         break;
       case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_500kbps:
-        msg[0] = 'S';
-        msg[1] = '6';
+        msg = "S6";
         break;
       case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_800kbps:
-        msg[0] = 'S';
-        msg[1] = '7';
+        msg = "S7";
         break;
       case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_1000kbps:
-        msg[0] = 'S';
-        msg[1] = '8';
+        msg = "S8";
         break;
       default:
-        msg[0] = 'S';
-        msg[1] = '6';
+        msg = "S5";
         break;
     }
 
-    msg[2] = '\r';
-
-    write(serial_port, msg, sizeof(msg)); // Write to serial port
+    //TODO: Handle return value for error checking
+    this->serial_helper.write_serial(msg);
   }
 
   void DrawerGate::open_can_channel(void)
   {
-    unsigned char msg[2] = {'L', '\r'};
-
-    write(serial_port, msg, sizeof(msg));
+    //TODO: Handle return value for error checking
+    this->serial_helper.write_serial("O");
   }
 
   void DrawerGate::open_can_channel_listen_only_mode(void)
   {
-    unsigned char msg[2] = {'O', '\r'};
-
-    write(serial_port, msg, sizeof(msg));
+    //TODO: Handle return value for error checking
+    this->serial_helper.write_serial("L");
   }
 
   void DrawerGate::close_can_channel(void)
   {
-    unsigned char msg[2] = {'C', '\r'};
-
-    write(serial_port, msg, sizeof(msg));
+    //TODO: Handle return value for error checking
+    this->serial_helper.write_serial("C");
   }
   
   void DrawerGate::open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
   {
     RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
 
-    this->setup_serial_port();
+    this->open_serial_port();
 
     // For DEBUGGING purposes this is the action send_goal command:
     // ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer_controller_id: 1, drawer_id: 1}"
@@ -266,13 +186,13 @@ namespace robast_drawer_gate
     
     if (ascii_cmd_drawer_user_access.has_value())
     {
-      write(serial_port, &ascii_cmd_drawer_user_access.value()[0], ascii_cmd_drawer_user_access.value().length());
+      this->serial_helper.write_serial(ascii_cmd_drawer_user_access.value());
     }
 
     // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
     this->open_can_channel_listen_only_mode(); 
 
-    close(serial_port);
+    this->serial_helper.close_serial();
 
     RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
   }

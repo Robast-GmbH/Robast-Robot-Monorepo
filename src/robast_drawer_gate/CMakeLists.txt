@@ -22,6 +22,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(robast_ros2_msgs REQUIRED)
 
 include_directories(../robast_msgs) # needed to find robast_msgs/robast_can_msgs
+include_directories(../robast_serial) # needed to find robast_serial
 
 include_directories(include)
 
@@ -35,6 +36,7 @@ set(library_drawer_gate ${executable_drawer_gate}_core)
 add_library(${library_drawer_gate} SHARED
   src/drawer_gate.cpp
   ../robast_msgs/robast_can_msgs/can_helper.cpp #TODO: This can probably be done better
+  ../robast_serial/src/robast_serial.cpp #TODO: This can probably be done better
 )
 
 set(dependencies

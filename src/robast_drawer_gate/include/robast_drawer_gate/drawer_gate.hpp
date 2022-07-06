@@ -18,6 +18,7 @@
 #include "robast_ros2_msgs/action/drawer_user_access.hpp"
 #include "robast_can_msgs/can_db.h"
 #include "robast_can_msgs/can_helper.h"
+#include "include/robast_serial.h" //TODO: Fix that
 
 using namespace std::chrono_literals;
 
@@ -54,13 +55,11 @@ namespace robast_drawer_gate
       rclcpp::CallbackGroup::SharedPtr timer_cb_group_;
       rclcpp::TimerBase::SharedPtr timer_ptr_;
 
-      int serial_port;
+      robast_serial::SerialHelper serial_helper = robast_serial::SerialHelper("/dev/ttyACM1");
 
       robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
-      void setup_serial_port(void);
-
-      std::string read_serial(void);
+      void open_serial_port(void);
 
       robast_can_msgs::CanMessage create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal, led_parameters led_parameters);
 

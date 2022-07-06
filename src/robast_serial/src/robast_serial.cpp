@@ -17,8 +17,10 @@ namespace robast_serial
         this->serial_port = open(this->serial_path.c_str() , O_RDWR);
         // Check for errors
         if (this->serial_port < 0) {
-            string errno_string(errno, sizeof(errno));
-            return "Error " + errno_string + " from open: " + strerror(errno) + "\n";
+            string result = "Error from open: ";
+            result.append(strerror(errno));
+            result.append("\n");
+            return result;
         }
 
         // Create new termios struct, we call it 'tty' for convention
@@ -26,8 +28,10 @@ namespace robast_serial
 
         // Read in existing settings, and handle any error
         if(tcgetattr(this->serial_port, &tty) != 0) {
-            string errno_string(errno, sizeof(errno));
-            return "Error " + errno_string + " from tcgetattr: " + strerror(errno) + "\n";
+            string result = "Error from tcgetattr: ";
+            result.append(strerror(errno));
+            result.append("\n");
+            return result;
         }
 
         tty.c_cflag &= ~PARENB; // Clear parity bit, disabling parity (most common)
@@ -59,8 +63,10 @@ namespace robast_serial
 
         // Save tty settings, also checking for error
         if (tcsetattr(this->serial_port, TCSANOW, &tty) != 0) {
-            string errno_string(errno, sizeof(errno));
-            return "Error " + errno_string + " from tcgetattr: " + strerror(errno) + "\n";
+            string result = "Error from tcgetattr: ";
+            result.append(strerror(errno));
+            result.append("\n");
+            return result;
         }
         return "";
     }
