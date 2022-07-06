@@ -15,27 +15,24 @@ namespace robast_serial
 {
     class SerialHelper
     {
-    private:
-        /* data */
-        string serial_path;
-        int serial_port;
+        private:
+            /* data */
+            string serial_path;
+            int serial_port;
 
+        public:
+            SerialHelper(string serial_path);
+            ~SerialHelper();
 
+            string open_serial();
+            void close_serial();
 
-    public:
-        SerialHelper(string serial_path);
-        ~SerialHelper();
+            uint16_t read_serial(string* result, uint16_t max_num_bytes);
 
-        string open_serial();
-        void close_serial();
+            string write_serial(string msg);
 
-        uint16_t read_serial(string* result, uint16_t max_num_bytes);
-
-        string write_serial(string msg);
-
-        string send__ascii_cmd(string cmd);
+            string send__ascii_cmd(string cmd);
     };
-    
 }
 
 #endif /* ROBAST_SERIAL_HPP_ */
