@@ -31,7 +31,7 @@ namespace robast_serial
 
             string write_serial(string msg);
 
-            string send__ascii_cmd(string cmd);
+            string send_ascii_cmd(string cmd);
     };
 }
 

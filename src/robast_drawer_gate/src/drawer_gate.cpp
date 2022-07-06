@@ -18,11 +18,9 @@ namespace robast_drawer_gate
     this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
     this->timer_ptr_ = this->create_wall_timer(500ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
 
-    // this->serial_helper = robast_serial::SerialHelper("/dev/ttyACM1");#
-
     this->setup_serial_can_ubs_converter();
     // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
-    this->open_can_channel_listen_only_mode();
+    this->open_can_channel();
     this->serial_helper.close_serial();
 
     //TODO: Timer callback, der regelmäßig aufgerufen wird und CAN Messages EINLIEST.
@@ -58,7 +56,7 @@ namespace robast_drawer_gate
   {
     RCLCPP_INFO(this->get_logger(), "Timer callback triggert!");
     this->setup_serial_can_ubs_converter();
-    this->open_can_channel_listen_only_mode(); 
+    this->open_can_channel(); 
     std::string serial_read;
     uint16_t num_of_received_bytes = this->serial_helper.read_serial(&serial_read, 30);
     RCLCPP_INFO(this->get_logger(), "Read from serial: %s", serial_read.c_str());
@@ -70,7 +68,6 @@ namespace robast_drawer_gate
     std::string setup_serial_port_result = this->serial_helper.open_serial();
     if (setup_serial_port_result.size() > 0)
     {
-      RCLCPP_ERROR(this->get_logger(), "setup_serial_port_result.size(): %i", setup_serial_port_result.size());
       RCLCPP_ERROR(this->get_logger(), "Error from opening serial Port: %s", setup_serial_port_result.c_str());
     }
     this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
@@ -137,26 +134,38 @@ namespace robast_drawer_gate
         break;
     }
 
-    //TODO: Handle return value for error checking
-    this->serial_helper.write_serial(msg);
+    std::string send_ascii_cmd_result = this->serial_helper.send_ascii_cmd(msg);
+    if (send_ascii_cmd_result.size() > 0)
+    {
+      RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
+    }
   }
 
   void DrawerGate::open_can_channel(void)
   {
-    //TODO: Handle return value for error checking
-    this->serial_helper.write_serial("O");
+    std::string send_ascii_cmd_result = this->serial_helper.send_ascii_cmd("O");
+    if (send_ascii_cmd_result.size() > 0)
+    {
+      RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
+    }
   }
 
   void DrawerGate::open_can_channel_listen_only_mode(void)
   {
-    //TODO: Handle return value for error checking
-    this->serial_helper.write_serial("L");
+    std::string send_ascii_cmd_result = this->serial_helper.send_ascii_cmd("L");
+    if (send_ascii_cmd_result.size() > 0)
+    {
+      RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
+    }
   }
 
   void DrawerGate::close_can_channel(void)
   {
-    //TODO: Handle return value for error checking
-    this->serial_helper.write_serial("C");
+    std::string send_ascii_cmd_result = this->serial_helper.send_ascii_cmd("C");
+    if (send_ascii_cmd_result.size() > 0)
+    {
+      RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
+    }
   }
   
   void DrawerGate::open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
@@ -184,11 +193,15 @@ namespace robast_drawer_gate
     
     if (ascii_cmd_drawer_user_access.has_value())
     {
-      this->serial_helper.write_serial(ascii_cmd_drawer_user_access.value());
+      std::string send_ascii_cmd_result = this->serial_helper.send_ascii_cmd(ascii_cmd_drawer_user_access.value());
+      if (send_ascii_cmd_result.size() > 0)
+      {
+        RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
+      }
     }
 
     // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
-    this->open_can_channel_listen_only_mode(); 
+    // this->open_can_channel_listen_only_mode();  //TODO: Das ist glaube ich quatsch! default state sollte open can channel sein
 
     this->serial_helper.close_serial();
 

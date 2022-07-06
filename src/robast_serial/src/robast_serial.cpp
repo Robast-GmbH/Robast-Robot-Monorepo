@@ -105,7 +105,7 @@ namespace robast_serial
         return "";
     }
 
-    string SerialHelper::send__ascii_cmd(string cmd)
+    string SerialHelper::send_ascii_cmd(string cmd)
     {
         return this->write_serial(cmd + "\r");
     }
