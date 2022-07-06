@@ -17,6 +17,20 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(nav2_common REQUIRED)
+find_package(navigation2 REQUIRED)
+
+nav2_package()
+
+
+install(DIRECTORY
+launch
+config
+maps
+masks
+behavior_trees
+DESTINATION share/${PROJECT_NAME}/
+)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
@@ -28,14 +42,5 @@ if(BUILD_TESTING)
   #set(ament_cmake_cpplint_FOUND TRUE)
   ament_lint_auto_find_test_dependencies()
 endif()
-
-install(DIRECTORY
-  launch
-  config
-  maps
-  masks
-  behavior_trees
-  DESTINATION share/${PROJECT_NAME}/
-)
 
 ament_package()

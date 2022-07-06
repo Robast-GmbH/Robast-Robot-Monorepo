@@ -19,9 +19,11 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <functional>
 
-#include "nav2_util/lifecycle_node.hpp"
+
 #include "rclcpp/rclcpp.hpp"
+#include "nav2_util/lifecycle_node.hpp"
 #include "nav2_costmap_2d/costmap_2d_ros.hpp"
 
 namespace robast_nav_recoveries
@@ -38,7 +40,7 @@ public:
   /**
    * @brief A constructor for robast_nav_recoveries::RecoveriesCostmap class
    */
-  RecoveriesCostmap();
+  explicit RecoveriesCostmap(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
   /**
    * @brief A destructor for robast_nav_recoveries::RecoveriesCostmap class
    */

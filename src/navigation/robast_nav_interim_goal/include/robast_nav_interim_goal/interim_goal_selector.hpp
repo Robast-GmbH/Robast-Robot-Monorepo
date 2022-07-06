@@ -59,7 +59,7 @@ public:
   /**
    * @brief A constructor for robast_nav_interim_goal::InterimGoalSelector class
    */
-  InterimGoalSelector();
+  explicit InterimGoalSelector(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
   /**
    * @brief A destructor for robast_nav_interim_goal::InterimGoalSelector class
    */

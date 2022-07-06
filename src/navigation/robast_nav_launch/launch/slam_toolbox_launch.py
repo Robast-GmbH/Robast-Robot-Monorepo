@@ -11,6 +11,13 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
+    world_model = LaunchConfiguration('world_model')
+
+    declare_world_model_cmd = DeclareLaunchArgument(
+        'world_model',
+        default_value='5OG',
+        description='math to the world model'
+    )
 
     robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
     world_posegraph = LaunchConfiguration('world_posegraph')

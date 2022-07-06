@@ -37,7 +37,7 @@ public:
    * @brief Function to perform some user-defined operation after a timeout
    * waiting for a result that hasn't been received yet
    */
-  void on_wait_for_result() override;
+  void on_wait_for_result();
 
    /**
    * @brief Function to perform some user-defined operation upon successful completion of the action
