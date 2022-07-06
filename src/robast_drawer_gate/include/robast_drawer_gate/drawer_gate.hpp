@@ -55,7 +55,7 @@ namespace robast_drawer_gate
       rclcpp::CallbackGroup::SharedPtr timer_cb_group_;
       rclcpp::TimerBase::SharedPtr timer_ptr_;
 
-      robast_serial::SerialHelper serial_helper = robast_serial::SerialHelper("/dev/ttyACM1");
+      robast_serial::SerialHelper serial_helper = robast_serial::SerialHelper("/dev/serial/by-id/usb-Microchip_Technology__Inc._USBtin_A0211324-if00");
 
       robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
