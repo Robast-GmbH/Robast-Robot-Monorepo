@@ -1,5 +1,9 @@
 #include "robast_drawer_gate/drawer_gate.hpp"
 
+
+// For DEBUGGING purposes this is the action send_goal command:
+// ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer_controller_id: 1, drawer_id: 1}"
+
 namespace robast_drawer_gate
 {
   DrawerGate::DrawerGate() : Node("robast_drawer_gate")
@@ -16,8 +20,7 @@ namespace robast_drawer_gate
 
     // this->serial_helper = robast_serial::SerialHelper("/dev/ttyACM1");#
 
-    this->open_serial_port();
-    this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
+    this->setup_serial_can_ubs_converter();
     // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
     this->open_can_channel_listen_only_mode();
     this->serial_helper.close_serial();
@@ -54,8 +57,7 @@ namespace robast_drawer_gate
   void DrawerGate::timer_callback(void)
   {
     RCLCPP_INFO(this->get_logger(), "Timer callback triggert!");
-    this->open_serial_port();
-    this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
+    this->setup_serial_can_ubs_converter();
     this->open_can_channel_listen_only_mode(); 
     std::string serial_read;
     uint16_t num_of_received_bytes = this->serial_helper.read_serial(&serial_read, 30);
@@ -63,7 +65,7 @@ namespace robast_drawer_gate
     this->serial_helper.close_serial();
   }
 
-  void DrawerGate::open_serial_port(void)
+  void DrawerGate::setup_serial_can_ubs_converter(void)
   {
     std::string setup_serial_port_result = this->serial_helper.open_serial();
     if (setup_serial_port_result.size() > 0)
@@ -71,6 +73,7 @@ namespace robast_drawer_gate
       RCLCPP_ERROR(this->get_logger(), "setup_serial_port_result.size(): %i", setup_serial_port_result.size());
       RCLCPP_ERROR(this->get_logger(), "Error from opening serial Port: %s", setup_serial_port_result.c_str());
     }
+    this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
   }
 
   robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal, led_parameters led_parameters)
@@ -160,11 +163,6 @@ namespace robast_drawer_gate
   {
     RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
 
-    this->open_serial_port();
-
-    // For DEBUGGING purposes this is the action send_goal command:
-    // ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer_controller_id: 1, drawer_id: 1}"
-
     const auto goal = goal_handle->get_goal();
     auto feedback = std::make_shared<DrawerUserAccess::Feedback>();
     auto result = std::make_shared<DrawerUserAccess::Result>();
@@ -177,8 +175,8 @@ namespace robast_drawer_gate
     led_parameters.mode = 0;
 
     robast_can_msgs::CanMessage can_msg_drawer_user_access = DrawerGate::create_can_msg_drawer_user_access(goal, led_parameters);
-    
-    this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
+
+    this->setup_serial_can_ubs_converter();
 
     this->open_can_channel();
 

@@ -59,7 +59,7 @@ namespace robast_drawer_gate
 
       robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
-      void open_serial_port(void);
+      void setup_serial_can_ubs_converter(void);
 
       robast_can_msgs::CanMessage create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal, led_parameters led_parameters);
 
