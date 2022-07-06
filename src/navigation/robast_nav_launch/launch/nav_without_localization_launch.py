@@ -19,7 +19,7 @@ def generate_launch_description():
 
     if(os.environ['ROS_DISTRO'] == 'humble'):
         default_bt_xml_filename = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'default_nav_to_pose_bt_xml.xml')
+            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_goal_patience_and_recovery.xml')
         bt_xml_filename_door_bells = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
 
@@ -29,13 +29,13 @@ def generate_launch_description():
         bt_xml_filename_door_bells = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'default_nav_to_pose_bt_xml.xml')
 
-    nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'),
-                                    'config', 'nav2_params_' + os.environ['ROS_DISTRO']+'.yaml')
+    # nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'),
+    #                                 'config', 'nav2_params_' + os.environ['ROS_DISTRO']+'.yaml')
     recoveries_params_yaml = os.path.join(get_package_share_directory(
         'robast_nav_launch'), 'config', 'recoveries_params.yaml')
 
     robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
-    # nav2_params_yaml = LaunchConfiguration('nav2_params_yaml')
+    nav2_params_yaml = LaunchConfiguration('nav2_params_yaml')
     recoveries_launch_file = os.path.join(robast_nav_launch_dir, 'launch', 'recoveries_launch.py')
     robast_nav_interim_goal_dir = get_package_share_directory('robast_nav_interim_goal')
     interim_goal_launch_file = os.path.join(robast_nav_interim_goal_dir, 'launch', 'interim_goal_launch.py')
@@ -45,7 +45,6 @@ def generate_launch_description():
     autostart = LaunchConfiguration('autostart')
     use_interim_goal = LaunchConfiguration('use_interim_goal')
     use_map_buffer = LaunchConfiguration('use_map_buffer')
-    namespace = LaunchConfiguration('namespace')
     use_composition = LaunchConfiguration('use_composition')
     container_name = LaunchConfiguration('container_name')
     use_respawn = LaunchConfiguration('use_respawn')
@@ -53,7 +52,7 @@ def generate_launch_description():
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
-        'map_topic': "/map"}
+        'map_topic': "/robot/map"}
 
     configured_params = RewrittenYaml(
         source_file=nav2_params_yaml,
@@ -81,8 +80,8 @@ def generate_launch_description():
     # https://github.com/ros/robot_state_publisher/pull/30
     # TODO(orduno) Substitute with `PushNodeRemapping`
     #              https://github.com/ros2/launch_ros/issues/56
-    remappings = [('/robot/tf', 'tf'),
-                  ('/robot/tf_static', 'tf_static')]
+    # remappings = [('/robot/tf', 'tf'),
+    #               ('/robot/tf_static', 'tf_static')]
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
@@ -99,6 +98,12 @@ def generate_launch_description():
         'autostart',
         default_value='true',
         description='Automatically startup the nav2 stack')
+
+    nav2_params_yaml_cmd = DeclareLaunchArgument('nav2_params_yaml',
+                                                 default_value=os.path.join(get_package_share_directory(
+                                                     'robast_nav_launch'), 'config', 'nav2_params_' + os.environ['ROS_DISTRO']+'.yaml'),
+                                                 description='Navigation params file'
+                                                 )
 
     declare_use_interim_goal_cmd = DeclareLaunchArgument(
         'use_interim_goal',
@@ -173,7 +178,7 @@ def generate_launch_description():
                 respawn_delay=2.0,
                 parameters=[
                     configured_params,
-                    # {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
+                    {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
                 ],
                 remappings=remappings,
                 # condition=UnlessCondition(use_interim_goal)
@@ -330,6 +335,7 @@ def generate_launch_description():
     ld.add_action(declare_use_composition_cmd)
     ld.add_action(declare_container_name_cmd)
     ld.add_action(declare_use_respawn_cmd)
+    ld.add_action(nav2_params_yaml_cmd)
 
     ld.add_action(load_nodes)
     ld.add_action(load_composable_nodes)

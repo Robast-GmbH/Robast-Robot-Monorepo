@@ -23,7 +23,7 @@ def generate_launch_description():
 
     nav2_localization_params_yaml = os.path.join(get_package_share_directory(
         'robast_nav_launch'), 'config', 'localization_params.yaml')
-    map_file = os.path.join(get_package_share_directory('robast_nav_launch'), 'maps', '5OG.yaml')
+    map_file = os.path.join(get_package_share_directory('robast_nav_launch'), 'maps', '6OG_Tiplu', 'Tiplu_6OG.yaml')
 
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -50,6 +50,7 @@ def generate_launch_description():
     param_substitutions = {
         'use_sim_time': use_sim_time,
         # 'yaml_filename': map_file,
+        'namespace': namespace
     }
 
     configured_params = RewrittenYaml(
@@ -67,7 +68,7 @@ def generate_launch_description():
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
-        default_value='robot',
+        default_value='',
         description='Top-level namespace')
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
@@ -101,23 +102,26 @@ def generate_launch_description():
                 name='map_server',
                 output='screen',
                 respawn=use_respawn,
+                namespace=namespace,
                 respawn_delay=2.0,
                 parameters=[configured_params,
                             {'yaml_filename': map_file}
-
                             ],
                 remappings=remappings_map_server),
+
             Node(
                 package='nav2_amcl',
                 executable='amcl',
                 name='amcl',
                 output='screen',
+                namespace=namespace,
                 respawn=use_respawn,
                 respawn_delay=2.0,
                 parameters=[configured_params,
                             {"initial_pose": {"x": float(init_x), "y": float(init_y), "yaw": init_yaw}},
                             {"set_initial_pose": True}],
                 remappings=remappings_amcl),
+
             Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
@@ -173,8 +177,8 @@ def generate_launch_description():
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_autostart_cmd)
     ld.add_action(declare_use_respawn_cmd)
-    ld.add_action(map_server_map_topic_cmd)
-    ld.add_action(amcl_map_topic_cmd)
+    # ld.add_action(map_server_map_topic_cmd)
+    # ld.add_action(amcl_map_topic_cmd)
     ld.add_action(map_file_cmd)
 
     # nodes

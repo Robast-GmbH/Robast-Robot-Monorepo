@@ -1,5 +1,6 @@
 #!/bin/sh
 # Setup Environmental Path Variables
+export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}
 export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/simulation/tiplu_world/models/furniture:${GAZEBO_MODEL_PATH}
 export GAZEBO_MODEL_PATH=/workspaces/Robast_RosTheron/src/simulation/aws_hospital_world/fuel_models:${GAZEBO_MODEL_PATH}

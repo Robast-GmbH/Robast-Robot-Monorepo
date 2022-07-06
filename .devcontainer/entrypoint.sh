@@ -6,4 +6,4 @@
 #colcon build --merge-install
 cd ~/../../workspaces/Robast_RosTheron
 #sudo dos2unix shell_setup.sh
-sudo /startup.sh
+#sudo /startup.sh
