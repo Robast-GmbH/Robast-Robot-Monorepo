@@ -19,6 +19,7 @@ using namespace std;
 #include "robast_ros2_msgs/action/authenticate_user.hpp"
 #include "robast_ros2_msgs/srv/create_user_nfc_tag.hpp"
 #include "robast_nfc_gate/elatec_api.hpp"
+#include "include/robast_serial.h" //TODO: Fix that
    
 namespace robast_nfc_gate
 { 

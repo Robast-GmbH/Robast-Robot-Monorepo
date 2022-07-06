@@ -22,6 +22,9 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(robast_ros2_msgs REQUIRED)
 
+include_directories(../robast_serial) # needed to find robast_msgs/robast_can_msgs
+
+
 include_directories(include)
 
 set(executable_nfc_gate nfc_gate)
@@ -33,6 +36,7 @@ set(library_nfc_gate ${executable_nfc_gate}_core)
 
 add_library(${library_nfc_gate} SHARED
   src/nfc_gate.cpp
+  ../robast_serial/src/robast_serial.cpp #TODO: This can probably be done better
 )
 
 set(dependencies
