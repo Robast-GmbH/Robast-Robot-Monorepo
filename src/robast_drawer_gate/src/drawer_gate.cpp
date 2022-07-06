@@ -15,9 +15,9 @@ namespace robast_drawer_gate
       this->timer_ptr_ = this->create_wall_timer(500ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
 
       this->setup_serial_port();
-      set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
+      this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
       // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
-      open_can_channel_listen_only_mode(); 
+      this->open_can_channel_listen_only_mode(); 
       close(serial_port);
 
     //TODO: Timer callback, der regelmäßig aufgerufen wird und CAN Messages EINLIEST.
@@ -53,8 +53,8 @@ namespace robast_drawer_gate
   {
     RCLCPP_INFO(this->get_logger(), "Timer callback triggert!");
     this->setup_serial_port();
-    set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
-    open_can_channel_listen_only_mode(); 
+    this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
+    this->open_can_channel_listen_only_mode(); 
     std::string serial_read = this->read_serial();
     RCLCPP_INFO(this->get_logger(), "Read from serial: %s", serial_read.c_str());
     close(serial_port);
@@ -240,7 +240,7 @@ namespace robast_drawer_gate
   {
     RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
 
-    DrawerGate::setup_serial_port();
+    this->setup_serial_port();
 
     // For DEBUGGING purposes this is the action send_goal command:
     // ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer_controller_id: 1, drawer_id: 1}"
@@ -258,9 +258,9 @@ namespace robast_drawer_gate
 
     robast_can_msgs::CanMessage can_msg_drawer_user_access = DrawerGate::create_can_msg_drawer_user_access(goal, led_parameters);
     
-    set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
+    this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
 
-    open_can_channel();
+    this->open_can_channel();
 
     std::optional<std::string> ascii_cmd_drawer_user_access = robast_can_msgs::encode_can_message_into_ascii_command(can_msg_drawer_user_access, can_db.can_messages);
     
@@ -270,7 +270,7 @@ namespace robast_drawer_gate
     }
 
     // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
-    open_can_channel_listen_only_mode(); 
+    this->open_can_channel_listen_only_mode(); 
 
     close(serial_port);
 
