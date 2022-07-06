@@ -34,12 +34,17 @@ if(BUILD_TESTING)
 endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
+  "action/AuthenticateUser.action"
+  "action/DrawerInteraction.action"
   "action/DrawerUserAccess.action"
-  "action/HandleTask.action"
-  "srv/GetAllAttachedDrawers.srv"
+
+  "srv/CreateUserNfcTag.srv"
   "srv/HandleDrawer.srv"
+  "srv/ShelfSetupInfo.srv"
+  
   "msg/Box.msg"
   "msg/Drawer.msg"
+  "msg/NFCStatus.msg"
   "msg/Task.msg"
   "msg/TaskStatus.msg"
   "msg/Ticket.msg"
