@@ -49,8 +49,9 @@ namespace robast_nfc_gate
     private:
     string serial_path;
     int serial_port;
+    int numReadings;
 
-    
+    rclcpp::TimerBase::SharedPtr timer;
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
     rclcpp::Service<CreateUser>::SharedPtr create_user_server;
 
@@ -68,7 +69,7 @@ namespace robast_nfc_gate
     void write_serial( string msg );
     string send_command(string command );
 
-    void scanTag(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+    void scanTag( const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle); 
     void writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
 };
 

@@ -41,6 +41,9 @@ rclcpp_action::CancelResponse NFCGate::auth_cancel_callback(const shared_ptr<Goa
 void NFCGate::auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
 {
   RCLCPP_INFO(this->get_logger(), "scan task");
+  numReadings=0;
+ 
+  //timer = this->create_wall_timer( 500ms, bind(&NFCGate::scanTag, this, goal_handle));
   std::thread{std::bind(&NFCGate::scanTag, this, placeholders::_1), goal_handle}.detach();
 }
 
@@ -118,18 +121,13 @@ string NFCGate::read_serial()
   char read_buf [256];
   memset(&read_buf, '\0', sizeof(read_buf));
   int num_bytes; 
-
-  do
+  num_bytes = read(this->serial_port, &read_buf, sizeof(read_buf));
+  if( num_bytes >20)
   {
-    num_bytes = read(this->serial_port, &read_buf, sizeof(read_buf));
-    if( num_bytes >20)
-    {
-      RCLCPP_ERROR(this->get_logger(),"Error reading: %s", strerror(errno));
-      return "false";
-    }
-    //RCLCPP_ERROR(this->get_logger(),"%i",num_bytes);
-  }while(num_bytes<1);
-  
+    RCLCPP_ERROR(this->get_logger(),"Error reading: %s", strerror(errno));
+    return "false";
+  }
+
   return string(read_buf, num_bytes);
 }
 
@@ -141,49 +139,48 @@ string NFCGate::send_command(string command )
 
 void NFCGate::scanTag(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle) 
 {
-  const auto goal = goal_handle->get_goal();
-  auto result = std::make_shared<AuthenticateUser::Result>();
-  auto reader_feedback = std::make_shared<robast_ros2_msgs::msg::NFCStatus>();
-  string scaned_key; 
 
+  auto reader_feedback = std::make_shared<robast_ros2_msgs::msg::NFCStatus>();
+  string scaned_key, tag;  
+  bool validTagNotfound= true;
+  auto result = std::make_shared<AuthenticateUser::Result>();
+  const auto goal = goal_handle->get_goal();
 
   this->open_serial();
- 
-  this->send_command(SET_SERIAL_TO_ASCII);
-  bool validTagNotfound= true;
-  int numReadings=0;
-  while(validTagNotfound)
-  {
-    this->send_command(BOTTOM_LED_ON);
-    this->send_command((TOP_LEDS_INIT(LED_RED)));
-    this->send_command(TOP_LEDS_ON(LED_RED));
-  
-    string tag;
-    //wait for the Tag and read TAG ID 
-    do{ 
-    tag= this->send_command(SEARCH_TAG);//search for a tag with the length of 10
-    RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
-    } while(tag.length() <10);
-  
-    RCLCPP_INFO(this->get_logger(),"READ");
-    this->send_command(NFC_LOGIN_MC_STANDART("00"));
-    scaned_key =this->send_command(NFC_READ_MC("02"));
-    RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", scaned_key.c_str());
-    numReadings++;
-    //show that aktion is done
-    this->send_command(BEEP_STANDART); 
+  this->send_command(SET_SERIAL_TO_ASCII);  
+  this->send_command(BOTTOM_LED_ON);
+  this->send_command((TOP_LEDS_INIT(LED_RED)));
+  this->send_command(TOP_LEDS_ON(LED_RED));
 
-    validTagNotfound= std::find(std::begin(goal->permission_keys), std::end(goal->permission_keys), scaned_key) != std::end(goal->permission_keys);
-    
-    if(!validTagNotfound)
-    {
-      //feedback
-      auto feedback = std::make_shared<AuthenticateUser::Feedback>();
-      feedback->reader_status.is_completted=true;
-      feedback->reader_status.unidentified_readings = numReadings;
-      goal_handle->publish_feedback(feedback);
-    }
+  //wait for the Tag and read TAG ID 
+  tag= this->send_command(SEARCH_TAG);//search for a tag with the length of 10
+  RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
+  if(tag.length() <10)
+  {
+    return;
   }
+  
+  RCLCPP_INFO(this->get_logger(),"READ");
+  this->send_command(NFC_LOGIN_MC_STANDART("00"));
+  scaned_key =this->send_command(NFC_READ_MC("02"));
+  RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", scaned_key.c_str());
+  this->send_command(BEEP_STANDART); 
+
+  validTagNotfound= std::find(std::begin(goal->permission_keys), std::end(goal->permission_keys), scaned_key) != std::end(goal->permission_keys);
+    
+  auto feedback = std::make_shared<AuthenticateUser::Feedback>();
+  feedback->reader_status.unidentified_readings = ++numReadings;
+  if(validTagNotfound)
+  {
+    //feedback  
+    feedback->reader_status.is_completted=false;
+    goal_handle->publish_feedback(feedback);
+    return;
+  }
+ 
+  feedback->reader_status.is_completted=true;
+  goal_handle->publish_feedback(feedback);
+
   this->send_command((TOP_LED_OFF(LED_RED)));
   this->send_command(BOTTOM_LED_OFF); 
   close(serial_port);
@@ -203,7 +200,6 @@ void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::
   this->open_serial();
  
   this->send_command(SET_SERIAL_TO_ASCII);
-  int numReadings=0;
   
     this->send_command(BOTTOM_LED_ON);
     this->send_command((TOP_LEDS_INIT(LED_RED)));
