@@ -232,7 +232,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         std::string ascii_command_expected = "t00";
         ascii_command_expected.append(std::to_string(msg_id));
         ascii_command_expected.append(std::to_string(dlc));
-        ascii_command_expected.append("010203C04080C1C8\r");
+        ascii_command_expected.append("010203C04080C1C8");
 
         uint8_t bit_start_drawer_id = 0;
         uint8_t bit_length_drawer_id = 24;
@@ -437,9 +437,74 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
             }
         }
 
-        WHEN("Converting a string containing hex numbers to an unsigned int") {
-            std::string hex_string = "00F";
-            
+        // TODO: Somehow this tests results in an undefined reference error although it worked at some point.
+        // TODO: Nevertheless the function is used in the "decode_ascii_command_into_can_message" function which is tested too. 
+        // WHEN("Converting a string containing hex numbers to an unsigned int") {
+        //     std::string hex_string_1 = "00F";
+        //     std::string hex_string_2 = "010";
+        //     uint16_t u16_result_expected_1 = 15;
+        //     uint16_t u16_result_expected_2 = 16;
+        //     uint16_t u16_result_unexpected = 1;
+        //     uint16_t u16_result_1 = robast_can_msgs::hex_string_to_unsigned_int<uint16_t>(hex_string_1);
+        //     uint16_t u16_result_2 = robast_can_msgs::hex_string_to_unsigned_int<uint16_t>(hex_string_2);
+
+        //     uint64_t u64_result_expected_1 = 15;
+        //     uint64_t u64_result_expected_2 = 16;
+        //     uint16_t u64_result_unexpected = 1;
+        //     uint64_t u64_result_1 = robast_can_msgs::hex_string_to_unsigned_int<uint64_t>(hex_string_1);
+        //     uint64_t u64_result_2 = robast_can_msgs::hex_string_to_unsigned_int<uint64_t>(hex_string_2);
+
+        //     THEN("The resulting unsigned integer should represent the same number that was contained in the hex string") {
+        //         REQUIRE(u16_result_1 == u16_result_expected_1);
+        //         REQUIRE(u16_result_1 != u16_result_unexpected);
+        //         REQUIRE(u16_result_2 == u16_result_expected_2);
+        //         REQUIRE(u64_result_1 == u64_result_expected_1);
+        //         REQUIRE(u64_result_1 != u64_result_unexpected);
+        //         REQUIRE(u64_result_2 == u64_result_expected_2);
+        //     }
+        // }
+
+        WHEN("Decoding an ASCII command into a CAN message") {
+            std::optional<robast_can_msgs::CanMessage> decoded_can_message = robast_can_msgs::decode_ascii_command_into_can_message(&ascii_command_expected[0], ascii_command_expected.length(), can_db.can_messages);
+
+            THEN("The resulting CAN message should contain the correct data that was contained in the ASCII command") {
+                REQUIRE(decoded_can_message.has_value());
+                REQUIRE(decoded_can_message.value().id == can_message.id);
+                REQUIRE(decoded_can_message.value().dlc == can_message.dlc);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_DRAWER_CONTROLLER_ID].bit_start == bit_start_drawer_id);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_DRAWER_CONTROLLER_ID].bit_length == bit_length_drawer_id);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_DRAWER_CONTROLLER_ID].data == data_drawer_controller_id);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_LOCK_1].bit_start == bit_start_open_drawer_1);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_LOCK_1].bit_length == bit_length_open_drawer_1);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_LOCK_1].data == data_open_drawer_1);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_LOCK_2].bit_start == bit_start_open_drawer_2);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_LOCK_2].bit_length == bit_length_open_drawer_2);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_LOCK_2].data == data_open_drawer_2);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_RED].bit_start == bit_start_LED_red);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_RED].bit_length == bit_length_LED_red);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_RED].data == data_LED_red);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_GREEN].bit_start == bit_start_LED_green);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_GREEN].bit_length == bit_length_LED_green);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_GREEN].data == data_LED_green);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BLUE].bit_start == bit_start_LED_blue);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BLUE].bit_length == bit_length_LED_blue);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BLUE].data == data_LED_blue);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BRIGHTNESS].bit_start == bit_start_LED_brightness);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BRIGHTNESS].bit_length == bit_length_LED_brightness);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_BRIGHTNESS].data == data_LED_brightness);
+
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].bit_start == bit_start_LED_mode);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].bit_length == bit_length_LED_mode);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].data == data_LED_mode);
+            }
         }
+
     }
 }

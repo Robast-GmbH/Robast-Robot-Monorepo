@@ -62,7 +62,6 @@ namespace robast_can_msgs
                 ascii_command.append(uint_to_hex_string(can_message.id, 3));
                 ascii_command.append(std::to_string(can_message.dlc));
                 ascii_command.append(uint_to_hex_string(can_data, can_message.dlc*2));
-                ascii_command.append("\r");
 
                 return ascii_command;
             }
@@ -83,7 +82,7 @@ namespace robast_can_msgs
         if (ascii_command_length > 5 || ascii_command[0] != 't')
         {
             std::string id_as_hex_string = std::string(ascii_command + 1, 3);
-            uint16_t can_msg_id = hex_string_to_unsigned_int<uint16_t>(id_as_hex_string);
+            uint32_t can_msg_id = hex_string_to_unsigned_int<uint32_t>(id_as_hex_string);
             for (uint16_t j = 0; j < can_db_messages.size(); j++)
             {
                 if (can_msg_id == can_db_messages[j].id)
@@ -91,15 +90,17 @@ namespace robast_can_msgs
                     std::string dlc_as_hex_string = std::string(ascii_command + 4, 1);
                     uint8_t dlc = hex_string_to_unsigned_int<uint8_t>(dlc_as_hex_string);
 
-                    std::string data_as_hex_string = std::string(ascii_command + 5, dlc);
+                    std::string data_as_hex_string = std::string(ascii_command + 5, dlc*2);
                     uint64_t data = hex_string_to_unsigned_int<uint64_t>(data_as_hex_string);
+
+                    uint8_t* can_data_bytes = (uint8_t*) malloc (8 * sizeof(uint8_t));
+                    u64_to_eight_bytes(data, can_data_bytes);
+
+                    return decode_can_message(can_msg_id, can_data_bytes, dlc, can_db_messages);
                 }
             }
         }
-        else
-        {
-            return std::nullopt;
-        }
+        return std::nullopt;
     }
 
     template <typename T>
