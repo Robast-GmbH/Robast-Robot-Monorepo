@@ -77,7 +77,8 @@ namespace robast_can_msgs
         return std::nullopt;
     }
 
-    /* The USB-CAN Controller is controlled via simple ASCII commands over the serial port.
+    /*
+    * The USB-CAN Controller is controlled via simple ASCII commands over the serial port.
     * The full command list can be found here: https://www.fischl.de/usbtin/
     * The command for transmitting standard (11 bit) frame should look like:
     *   tiiildd..[CR]
@@ -85,7 +86,7 @@ namespace robast_can_msgs
     *       l: Data length (0-8)
     *       dd: Data byte value in hexadecimal format (00-FF)
     */
-    std::optional<CanMessage> decode_ascii_command_into_can_message(const char* ascii_command, uint8_t ascii_command_length, std::vector<CanMessage> can_db_messages)
+    std::optional<CanMessage> decode_single_ascii_command_into_can_message(const char* ascii_command, uint8_t ascii_command_length, std::vector<CanMessage> can_db_messages)
     {
         if (ascii_command_length > 5 && ascii_command[0] == 't')
         {
@@ -108,6 +109,51 @@ namespace robast_can_msgs
             }
         }
         return std::nullopt;
+    }
+
+    std::vector<CanMessage> decode_multiple_ascii_commands_into_can_messages(std::string ascii_commands, uint32_t can_msgs_id, uint8_t dlc, std::vector<CanMessage> can_db_messages)
+    {
+        std::vector<CanMessage> received_can_msgs;
+        /*
+        * The USB-CAN Controller is controlled via simple ASCII commands over the serial port.
+        * The full command list can be found here: https://www.fischl.de/usbtin/
+        * The command for transmitting standard (11 bit) frame should look like:
+        *   tiiildd..[CR]
+        *       iii: Identifier in hexadecimal format (000-7FF)
+        *       l: Data length (0-8)
+        *       dd: Data byte value in hexadecimal format (00-FF)
+        *
+        * Therefore a received ASCII command of a CAN message has 2*DLC ("ddd...") + 6 ("t"+"iii"+"l"+"[CR]") bytes
+        */
+        uint8_t expected_num_of_bytes_ascii_cmd = 2 * dlc + 6;
+
+        // If we received more than one CAN message, we need to split the received serial_read_ascii_command
+        if (ascii_commands.length() > expected_num_of_bytes_ascii_cmd)
+        {
+            uint8_t num_of_received_can_msgs = ascii_commands.length() / expected_num_of_bytes_ascii_cmd;
+            
+            for (uint8_t i = 0; i < num_of_received_can_msgs; i++)
+            {
+                // I don't know why, but:
+                // Some of the serial read results have 2 beginning bytes that contain the ASCII code 7
+                // Therefore remove the first to bytes from the read serial command
+                if ((ascii_commands[0] == 7) && (ascii_commands[1] == 7) && (ascii_commands.length() > 2))
+                {
+                    ascii_commands.erase(ascii_commands.begin(), ascii_commands.begin() + 2);
+                }
+
+                std::optional<CanMessage> decoded_can_message = decode_single_ascii_command_into_can_message(&ascii_commands[0], ascii_commands.length(), can_db_messages);
+                if (decoded_can_message.has_value())
+                {
+                    if (decoded_can_message.value().id == can_msgs_id)
+                    {
+                        received_can_msgs.push_back(decoded_can_message.value());
+                    }
+                }
+                ascii_commands.erase(ascii_commands.begin(), ascii_commands.begin() + expected_num_of_bytes_ascii_cmd);
+            }
+        }
+        return received_can_msgs;
     }
 
     template <typename T>
