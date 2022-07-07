@@ -9,12 +9,14 @@
 #include <array>
 #include <algorithm>
 #include <iomanip>
+#include <iostream> //only for debugging
 
 #include "can_message.h"
 #include "can_frame.h"
 
 namespace robast_can_msgs
 {
+    
     enum can_baudrate_usb_to_can_interface 
     {
         can_baud_10kbps = 0,
@@ -124,6 +126,17 @@ namespace robast_can_msgs
      * @param num_of_digits The number of digits the converted hex number should have. This enables leading zeros.
      */
     std::string uint_to_hex_string(uint64_t input, int num_of_digits);
+    
+    /**
+     * @brief Assigns the data that is contained in the uint64_t parameter to the can signals
+     *
+     * @param can_msg_data The uint64_t parameter that contains the data for the can signals
+     * @param can_db_messages  The vector containing all can_messages that are defined in the CAN database
+     * @param can_msgs_index The index of the CAN message we want to decode
+     * @return A Vector of all CanSignals filled with the data that is contained in the can_msgs_data parameter
+     */
+    std::vector<CanSignal> assign_data_to_can_signals(uint64_t can_msg_data, std::vector<CanMessage> can_db_messages, uint16_t can_msgs_index);
+
 }
 
 #endif /* CAN_HELPER_HPP_ */

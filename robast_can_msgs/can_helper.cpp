@@ -4,25 +4,33 @@ namespace robast_can_msgs
 {
     std::optional<CanMessage> decode_can_message(uint32_t msg_id, uint8_t data[], uint8_t dlc, std::vector<CanMessage> can_db_messages)
     {
-        std::vector<CanSignal> can_signals;
-        for (uint16_t j = 0; j < can_db_messages.size(); j++)
+        for (uint16_t can_msgs_index = 0; can_msgs_index < can_db_messages.size(); can_msgs_index++)
         {
-            if (msg_id == can_db_messages[j].id)
+            if (msg_id == can_db_messages[can_msgs_index].id)
             {
                 uint64_t can_msg_data = join_together_CAN_data_bytes_from_array(data, dlc);
-                for (uint16_t i = 0; i < can_db_messages[j].can_signals.size(); i++)
-                {
-                    uint8_t bit_start = can_db_messages[j].can_signals[i].bit_start;
-                    uint8_t bit_length = can_db_messages[j].can_signals[i].bit_length;
-                    uint64_t can_signal_data = (can_msg_data << bit_start) >> (64 - bit_length);
-
-                    robast_can_msgs::CanSignal can_signal = CanSignal(bit_start, bit_length, can_signal_data);
-                    can_signals.push_back(can_signal);
-                }
+                std::vector<CanSignal> can_signals = assign_data_to_can_signals(can_msg_data, can_db_messages, can_msgs_index);
                 return CanMessage(msg_id, dlc, can_signals);
             }
         }
         return std::nullopt;
+    }
+
+    std::vector<CanSignal> assign_data_to_can_signals(uint64_t can_msg_data, std::vector<CanMessage> can_db_messages, uint16_t can_msgs_index)
+    {
+        std::vector<CanSignal> can_signals;
+        uint8_t dlc = can_db_messages[can_msgs_index].dlc;
+        for (uint16_t i = 0; i < can_db_messages[can_msgs_index].can_signals.size(); i++)
+        {
+            uint8_t bit_start = can_db_messages[can_msgs_index].can_signals[i].bit_start;
+            uint8_t bit_length = can_db_messages[can_msgs_index].can_signals[i].bit_length;
+            
+            uint64_t can_signal_data = (can_msg_data << (bit_start + 8*(8-dlc))) >> (64 - bit_length);
+
+            robast_can_msgs::CanSignal can_signal = CanSignal(bit_start, bit_length, can_signal_data);
+            can_signals.push_back(can_signal);
+        }
+        return can_signals;
     }
 
     std::optional<CanFrame> encode_can_message_into_can_frame(CanMessage can_message, std::vector<CanMessage> can_db_messages)
@@ -79,24 +87,23 @@ namespace robast_can_msgs
     */
     std::optional<CanMessage> decode_ascii_command_into_can_message(const char* ascii_command, uint8_t ascii_command_length, std::vector<CanMessage> can_db_messages)
     {
-        if (ascii_command_length > 5 && ascii_command[0] != 't')
+        if (ascii_command_length > 5 && ascii_command[0] == 't')
         {
             std::string id_as_hex_string = std::string(ascii_command + 1, 3);
             uint32_t can_msg_id = hex_string_to_unsigned_int<uint32_t>(id_as_hex_string);
-            for (uint16_t j = 0; j < can_db_messages.size(); j++)
+            for (uint16_t can_msgs_index = 0; can_msgs_index < can_db_messages.size(); can_msgs_index++)
             {
-                if (can_msg_id == can_db_messages[j].id)
+                if (can_msg_id == can_db_messages[can_msgs_index].id)
                 {
                     std::string dlc_as_hex_string = std::string(ascii_command + 4, 1);
                     uint8_t dlc = hex_string_to_unsigned_int<uint8_t>(dlc_as_hex_string);
 
                     std::string data_as_hex_string = std::string(ascii_command + 5, dlc*2);
-                    uint64_t data = hex_string_to_unsigned_int<uint64_t>(data_as_hex_string);
+                    uint64_t can_msg_data = hex_string_to_unsigned_int<uint64_t>(data_as_hex_string);
 
-                    uint8_t* can_data_bytes = (uint8_t*) malloc (8 * sizeof(uint8_t));
-                    u64_to_eight_bytes(data, can_data_bytes);
+                    std::vector<CanSignal> can_signals = assign_data_to_can_signals(can_msg_data, can_db_messages, can_msgs_index);
 
-                    return decode_can_message(can_msg_id, can_data_bytes, dlc, can_db_messages);
+                    return CanMessage(can_msg_id, dlc, can_signals);
                 }
             }
         }
@@ -110,20 +117,6 @@ namespace robast_can_msgs
         result = std::stoul(hex_string, nullptr, 16);
         return result;
     }
-
-    // uint16_t hex_string_to_uint16_t(std::string hex_string)
-    // {
-    //     uint16_t result;
-    //     result = std::stoul(hex_string, nullptr, 16);
-    //     return result;
-    // }
-
-    // uint64_t hex_string_to_uint64_t(std::string hex_string)
-    // {
-    //     uint64_t result;
-    //     result = std::stoul(hex_string, nullptr, 16);
-    //     return result;
-    // }
 
     std::string uint_to_hex_string(uint32_t input, int num_of_digits)
     {
