@@ -1,5 +1,5 @@
 
-#include "robast_nfc_gate/nfc_gate.h"
+#include "robast_nfc_gate/nfc_gate.hpp"
 
 namespace robast_nfc_gate
 {
