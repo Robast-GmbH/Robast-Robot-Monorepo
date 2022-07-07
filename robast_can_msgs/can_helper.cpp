@@ -79,7 +79,7 @@ namespace robast_can_msgs
     */
     std::optional<CanMessage> decode_ascii_command_into_can_message(const char* ascii_command, uint8_t ascii_command_length, std::vector<CanMessage> can_db_messages)
     {
-        if (ascii_command_length > 5 || ascii_command[0] != 't')
+        if (ascii_command_length > 5 && ascii_command[0] != 't')
         {
             std::string id_as_hex_string = std::string(ascii_command + 1, 3);
             uint32_t can_msg_id = hex_string_to_unsigned_int<uint32_t>(id_as_hex_string);
