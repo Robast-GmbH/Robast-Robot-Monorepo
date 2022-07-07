@@ -93,7 +93,7 @@ namespace robast_can_msgs
     void u64_to_eight_bytes(uint64_t input, uint8_t *result);
 
     /**
-     * @brief Swap Endian
+     * @brief Convert hex data contained in a string to an unsigned integer
      *
      * @param hex_string The input string that contains the data in hex format.
      * @return The data, that was contained in the string, as an unsigned integer.
