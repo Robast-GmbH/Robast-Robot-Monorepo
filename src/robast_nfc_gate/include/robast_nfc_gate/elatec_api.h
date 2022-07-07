@@ -23,4 +23,6 @@
 #define LED_GREEN "06"
 #define LED_YELLOW "07"
 
+#define BOOL_SUCESS "0001"
+
 #endif  // ROBAST_NFC_GATE__NFC_GATE_HPP_

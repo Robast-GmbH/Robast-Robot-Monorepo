@@ -17,12 +17,14 @@ endif()
 
 
 # find dependencies
+
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(robast_ros2_msgs REQUIRED)
 
-include_directories(../robast_serial) # needed to find robast_msgs/robast_can_msgs
+
+#include_directories(../robast_serial) # needed to find robast_msgs/robast_can_msgs
 
 
 include_directories(include)
@@ -36,8 +38,10 @@ set(library_nfc_gate ${executable_nfc_gate}_core)
 
 add_library(${library_nfc_gate} SHARED
   src/nfc_gate.cpp
-  ../robast_serial/src/robast_serial.cpp #TODO: This can probably be done better
+  #../robast_serial/src/robast_serial.cpp #TODO: This can probably be done better
 )
+
+
 
 set(dependencies
   rclcpp
@@ -51,6 +55,7 @@ ament_target_dependencies(${executable_nfc_gate}
 
 target_link_libraries(${executable_nfc_gate} ${library_nfc_gate})
 
+target_link_libraries(nfc_gate  ${PROJECT_SOURCE_DIR}/lib/librobast_serial.a)
 ament_target_dependencies(${library_nfc_gate}
   ${dependencies}
 )

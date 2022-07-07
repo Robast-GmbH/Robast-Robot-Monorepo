@@ -5,6 +5,7 @@
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
+
 // C library headers
 #include <stdio.h>
 #include <iostream>
@@ -18,8 +19,8 @@ using namespace std;
 
 #include "robast_ros2_msgs/action/authenticate_user.hpp"
 #include "robast_ros2_msgs/srv/create_user_nfc_tag.hpp"
-#include "robast_nfc_gate/elatec_api.hpp"
-#include "include/robast_serial.h" //TODO: Fix that
+#include "robast_nfc_gate/elatec_api.h"
+#include "robast_nfc_gate/robast_serial.h" //TODO: Fix that
    
 namespace robast_nfc_gate
 { 
@@ -40,18 +41,11 @@ namespace robast_nfc_gate
     NFCGate();
     NFCGate(string serial_port_path );
    
-    
-    /**
-    * @brief A destructor for robast_nfc_gate::NFCGate class
-    */
-    // ~NFCGate();
-  
-
     private:
-    string serial_path;
-    int serial_port;
+   
     int numReadings;
-
+    //robast_serial::SerialHelper serial_connector;//= robast_serial::SerialHelper("");
+    robast_serial::SerialHelper serial_connector = robast_serial::SerialHelper("/dev/serial/by-id/usb-Microchip_Technology__Inc._USBtin_A0211324-if00");
     rclcpp::TimerBase::SharedPtr timer;
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
     rclcpp::Service<CreateUser>::SharedPtr create_user_server;
