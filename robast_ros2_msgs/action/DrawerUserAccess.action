@@ -1,6 +1,5 @@
 #goal
-uint32 drawer_controller_id
-uint8 drawer_id  # one drawer controller can control more than one drawer so choose which drawer to open (if module contains only one drawer, drawer_id should be one)
+robast_ros2_msgs/DrawerAddress drawer
 ---
 #result
 bool success  # indicates whether closing of the drawer was successfull after opening it

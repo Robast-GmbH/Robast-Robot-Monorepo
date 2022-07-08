@@ -1,2 +1,2 @@
 robast_ros2_msgs/Ticket ticket
-uint16 drawer_id 
+robast_ros2_msgs/DrawerAddress drawer
