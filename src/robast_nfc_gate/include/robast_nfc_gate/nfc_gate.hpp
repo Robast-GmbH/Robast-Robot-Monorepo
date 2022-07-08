@@ -22,7 +22,7 @@ using namespace std;
 #include "robast_nfc_gate/elatec_api.h"
 #include "include/robast_serial.h" //TODO: Fix that
    
-namespace robast_nfc_gate
+namespace robast
 { 
 
   
@@ -70,5 +70,5 @@ namespace robast_nfc_gate
 
 
 
-}  // namespace robast_nfc_gate
+}  // namespace robast
 #endif  // ROBAST_NFC_GATE__NFC_GATE_HPP_

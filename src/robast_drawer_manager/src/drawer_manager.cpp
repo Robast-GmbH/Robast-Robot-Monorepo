@@ -1,6 +1,6 @@
 #include "robast_drawer_manager/drawer_manager.hpp"
 
-namespace robast_drawer_manager
+namespace robast
 {
   DrawerManager::DrawerManager(): Node("drawer_manager_Node")
   {
@@ -119,4 +119,4 @@ namespace robast_drawer_manager
     RCLCPP_INFO(this->get_logger(), "Please close the drawer when you are done.");
   }*/
 
-} // namespace robast_drawer_manager
+} // namespace robast

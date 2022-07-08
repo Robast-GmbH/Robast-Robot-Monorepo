@@ -17,7 +17,7 @@
 #include "robast_ros2_msgs/action/authenticate_user.hpp"
  using namespace std;
 
-namespace robast_drawer_manager
+namespace robast
 {
 
 
