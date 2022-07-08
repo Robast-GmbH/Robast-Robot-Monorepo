@@ -9,12 +9,14 @@
 #include <array>
 #include <algorithm>
 #include <iomanip>
+#include <iostream> //only for debugging
 
 #include "can_message.h"
 #include "can_frame.h"
 
 namespace robast_can_msgs
 {
+    
     enum can_baudrate_usb_to_can_interface 
     {
         can_baud_10kbps = 0,
@@ -65,7 +67,18 @@ namespace robast_can_msgs
      * @param can_db_messages CAN messages from CAN database to encode the message with
      * @return std::optional<CanMessage>. Only contains a value if the can_message id exists in the can_db and the ascii command has the proper format.
      */
-    std::optional<CanMessage> decode_ascii_command_into_can_message(const char* ascii_command, uint8_t ascii_command_length, std::vector<CanMessage> can_db_messages); 
+    std::optional<CanMessage> decode_single_ascii_command_into_can_message(const char* ascii_command, uint8_t ascii_command_length, std::vector<CanMessage> can_db_messages); 
+
+    /**
+     * @brief Decodes string that may contain more than one ASCII commant sent from the USB-CAN adapter into a CAN message
+     *
+     * @param ascii_command The string with ASCII commands to be encoded
+     * @param can_msgs_id The CAN message ID of the expected can message
+     * @param dlc The dlc of the expected can message
+     * @param can_db_messages CAN messages from CAN database to encode the message with
+     * @return std::optional<CanMessage>. Only contains a value if the can_message id exists in the can_db and the ascii command has the proper format.
+     */
+    std::vector<CanMessage> decode_multiple_ascii_commands_into_can_messages(std::string ascii_commands, uint32_t can_msgs_id, uint8_t dlc, std::vector<CanMessage> can_db_messages);
 
     /**
      * @brief Joins together the data bytes from the CAN bus
@@ -124,6 +137,17 @@ namespace robast_can_msgs
      * @param num_of_digits The number of digits the converted hex number should have. This enables leading zeros.
      */
     std::string uint_to_hex_string(uint64_t input, int num_of_digits);
+    
+    /**
+     * @brief Assigns the data that is contained in the uint64_t parameter to the can signals
+     *
+     * @param can_msg_data The uint64_t parameter that contains the data for the can signals
+     * @param can_db_messages  The vector containing all can_messages that are defined in the CAN database
+     * @param can_msgs_index The index of the CAN message we want to decode
+     * @return A Vector of all CanSignals filled with the data that is contained in the can_msgs_data parameter
+     */
+    std::vector<CanSignal> assign_data_to_can_signals(uint64_t can_msg_data, std::vector<CanMessage> can_db_messages, uint16_t can_msgs_index);
+
 }
 
 #endif /* CAN_HELPER_HPP_ */

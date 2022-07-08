@@ -465,7 +465,11 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         // }
 
         WHEN("Decoding an ASCII command into a CAN message") {
-            std::optional<robast_can_msgs::CanMessage> decoded_can_message = robast_can_msgs::decode_ascii_command_into_can_message(&ascii_command_expected[0], ascii_command_expected.length(), can_db.can_messages);
+            std::string ascii_command_drawer_feedback_1 = "t0018000203C04080C1C8";
+            std::optional<robast_can_msgs::CanMessage> decoded_can_message = robast_can_msgs::decode_single_ascii_command_into_can_message(&ascii_command_drawer_feedback_1[0], ascii_command_drawer_feedback_1.length(), can_db.can_messages);
+
+            std::string ascii_command_drawer_feedback_2 = "t002400000170";
+            std::optional<robast_can_msgs::CanMessage> decoded_can_message_drawer_feedback = robast_can_msgs::decode_single_ascii_command_into_can_message(&ascii_command_drawer_feedback_2[0], ascii_command_drawer_feedback_2.length(), can_db.can_messages);
 
             THEN("The resulting CAN message should contain the correct data that was contained in the ASCII command") {
                 REQUIRE(decoded_can_message.has_value());
@@ -474,7 +478,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
 
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_DRAWER_CONTROLLER_ID].bit_start == bit_start_drawer_id);
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_DRAWER_CONTROLLER_ID].bit_length == bit_length_drawer_id);
-                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_DRAWER_CONTROLLER_ID].data == data_drawer_controller_id);
+                REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_DRAWER_CONTROLLER_ID].data == 0x000203);
 
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_LOCK_1].bit_start == bit_start_open_drawer_1);
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_OPEN_LOCK_1].bit_length == bit_length_open_drawer_1);
@@ -503,6 +507,17 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].bit_start == bit_start_LED_mode);
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].bit_length == bit_length_LED_mode);
                 REQUIRE(decoded_can_message.value().can_signals[CAN_SIGNAL_LED_MODE].data == data_LED_mode);
+
+                REQUIRE(decoded_can_message_drawer_feedback.has_value());
+                REQUIRE(decoded_can_message_drawer_feedback.value().id == 2);
+                REQUIRE(decoded_can_message_drawer_feedback.value().dlc == 4);
+
+                REQUIRE(decoded_can_message_drawer_feedback.value().can_signals[CAN_SIGNAL_DRAWER_CONTROLLER_ID].data == 1);
+                REQUIRE(decoded_can_message_drawer_feedback.value().can_signals[CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED].data == 0);
+                REQUIRE(decoded_can_message_drawer_feedback.value().can_signals[CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED].data == 1);
+                REQUIRE(decoded_can_message_drawer_feedback.value().can_signals[CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED].data == 1);
+                REQUIRE(decoded_can_message_drawer_feedback.value().can_signals[CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED].data == 1);
+
             }
         }
 
