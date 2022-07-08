@@ -36,6 +36,12 @@
 #define NUM_LEDS 19 // number of LEDs for LED strip
 
 CRGBArray<NUM_LEDS> leds;
+uint8_t led_red;
+uint8_t led_green;
+uint8_t led_blue;
+uint8_t led_target_brightness;
+volatile uint8_t led_current_brightness;
+uint8_t led_mode;
 
 MCP_CAN CAN0(SPI_CS);
 
@@ -53,11 +59,29 @@ float moving_average_drawer1_closed_pin = 0;
 float moving_average_sensor_lock2_pin = 0;
 float moving_average_drawer2_closed_pin = 0;
 
+hw_timer_t * timer = NULL;
+portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
 
 /*********************************************************************************************************
   FUNCTIONS
 *********************************************************************************************************/
 
+void IRAM_ATTR on_timer()
+{
+  if (led_target_brightness > led_current_brightness)
+  {
+    portENTER_CRITICAL_ISR(&timerMux);
+    led_current_brightness++;
+    portEXIT_CRITICAL_ISR(&timerMux);
+  }
+
+  if (led_target_brightness < led_current_brightness)
+  {
+    portENTER_CRITICAL_ISR(&timerMux);
+    led_current_brightness--;
+    portEXIT_CRITICAL_ISR(&timerMux);
+  }
+}
 
 void initialize_voltage_translator(void)
 {
@@ -102,85 +126,83 @@ void initialize_locks(void)
 
 void initialize_LED_strip(void)
 {
- FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_LEDS);
+  FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_LEDS);
+  led_current_brightness = 0;
+  led_target_brightness = 0;
+}
+
+void initialize_timer(void)
+{
+  timer = timerBegin(0, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
+  timerAttachInterrupt(timer, &on_timer, true);
+  timerAlarmWrite(timer, 3000, true); // With the alarm_value of 5000 the interrupt will be triggert 333/s
+  timerAlarmEnable(timer);
 }
 
 void handle_locks(robast_can_msgs::CanMessage can_message)
 {
   if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_OPEN_LOCK)
   {
+    digitalWrite(PWR_CLOSE_LOCK1_PIN, LOW);
     digitalWrite(PWR_OPEN_LOCK1_PIN, HIGH);
+    Serial.print(" CAN_SIGNAL_OPEN_LOCK_1: ");
+    Serial.print(can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data, BIN);
   }
   if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_CLOSE_LOCK)
   {
     digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
+    digitalWrite(PWR_CLOSE_LOCK1_PIN, HIGH);
+    Serial.print(" CAN_SIGNAL_OPEN_LOCK_1: ");
+    Serial.print(can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data, BIN);
   }
 
   if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_OPEN_LOCK)
   {
+    digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
     digitalWrite(PWR_OPEN_LOCK2_PIN, HIGH);
   }
   if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_CLOSE_LOCK)
   {
     digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
+    digitalWrite(PWR_CLOSE_LOCK2_PIN, HIGH);
   }
 }
 
-void LED_standard_mode(uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness)
+void LED_standard_mode()
 {
-  for(int i = 0; i < NUM_LEDS; i++)
-  {   
-    leds[i] = CRGB(red, green, blue);
+  if (led_target_brightness != led_current_brightness)
+  {
+    for(int i = 0; i < NUM_LEDS; i++)
+    {   
+      leds[i] = CRGB(led_red, led_green, led_blue);
+    }
+    led_current_brightness = led_target_brightness;
+    FastLED.setBrightness(led_target_brightness);
+    FastLED.show();
   }
-  FastLED.setBrightness(brightness);
-  FastLED.show();
 }
 
-void LED_fade_on_mode(uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness)
+void LED_fade_on_mode()
 {
-  //TODO: Das muss jetzt noch in irgendeiner loop aufgerufen werden
-  static uint8_t current_brightness = 0;
-  if (current_brightness == brightness)
+  // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
+  if (led_current_brightness != led_target_brightness)
   {
-    current_brightness = 0;
-  }
-  else
-  {
-    current_brightness = current_brightness + 1;
-  }
-
-  for(int i = 0; i < NUM_LEDS; i++)
-  {   
-    leds[i] = CRGB(red, green, blue);
-  }
-  FastLED.setBrightness(current_brightness);
-  FastLED.show();
+    for(int i = 0; i < NUM_LEDS; i++)
+    {   
+      leds[i] = CRGB(led_red, led_green, led_blue);
+    }
+    FastLED.setBrightness(led_current_brightness);
+    FastLED.show();
+  }  
 }
 
-void handle_LED_strip(robast_can_msgs::CanMessage can_message)
+void select_LED_strip_mode(robast_can_msgs::CanMessage can_message)
 {
-  uint8_t red = can_message.can_signals.at(CAN_SIGNAL_LED_RED).data;
-  uint8_t green = can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data;
-  uint8_t blue = can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data;
-  uint8_t brightness = can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data;
-  uint8_t mode = can_message.can_signals.at(CAN_SIGNAL_LED_MODE).data;
-
-  switch (mode)
-  {
-    case 0:
-      LED_standard_mode(red, green, blue, brightness);
-      break;
-
-    case 1:
-      LED_fade_on_mode(red, green, blue, brightness);
-      break;
-    
-    default:
-      LED_standard_mode(red, green, blue, brightness);
-      break;
-  }
-
-  
+  led_red = can_message.can_signals.at(CAN_SIGNAL_LED_RED).data;
+  led_green = can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data;
+  led_blue = can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data;
+  led_target_brightness = can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data;
+  led_mode = can_message.can_signals.at(CAN_SIGNAL_LED_MODE).data;
 }
 
 void debug_prints(robast_can_msgs::CanMessage can_message)
@@ -215,7 +237,7 @@ void handle_CAN_msg(robast_can_msgs::CanMessage can_message)
     {
       handle_locks(can_message);
 
-      handle_LED_strip(can_message);
+      select_LED_strip_mode(can_message);
 
       debug_prints(can_message);
     }
@@ -263,6 +285,24 @@ robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
   return can_msg_drawer_feedback;
 }
 
+void handle_LED_control(void)
+{
+  switch (led_mode)
+    {
+      case 0:
+        LED_standard_mode();
+        break;
+
+      case 1:
+        LED_fade_on_mode();
+        break;
+      
+      default:
+        LED_standard_mode();
+        break;
+    }
+}
+
 
 /*********************************************************************************************************
   SETUP
@@ -279,6 +319,8 @@ void setup()
   initialize_locks();
 
   initialize_LED_strip();
+
+  initialize_timer();
 }
 
 
@@ -290,6 +332,8 @@ void loop()
 {
   if(!digitalRead(MCP2515_INT))                         // If CAN0_INT pin is low, read receive buffer
   {
+    Serial.println("Received CAN message!");
+
     CAN0.readMsgBuf(&rx_msg_id, &rx_msg_dlc, rx_data_buf);
 
     std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_msg_id, rx_data_buf, rx_msg_dlc, can_db.can_messages); 
@@ -305,6 +349,7 @@ void loop()
     }
   }
 
+  handle_LED_control();
   
   handle_reading_sensors();
 
