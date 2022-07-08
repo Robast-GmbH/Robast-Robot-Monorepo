@@ -91,13 +91,19 @@ namespace robast_drawer_gate
   {
     robast_can_msgs::CanMessage can_msg_drawer_user_access = can_db.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
 
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = goal->drawer_controller_id;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = goal->drawer.drawer_controller_id;
 
-    if (goal->drawer_id == 1) 
+    // DEBUGGING
+    if (goal->drawer.drawer_id == 0) 
+    {
+      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_CLOSE_LOCK;
+      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_CLOSE_LOCK;
+    }
+    if (goal->drawer.drawer_id == 1) 
     {
       can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_OPEN_LOCK;
     }
-    if (goal->drawer_id == 2)
+    if (goal->drawer.drawer_id == 2)
     {
       can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_OPEN_LOCK;
     }
@@ -106,6 +112,7 @@ namespace robast_drawer_gate
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_GREEN).data = led_parameters.led_green;
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BLUE).data = led_parameters.led_blue;
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data = led_parameters.brightness;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_MODE).data = led_parameters.mode;
 
     return can_msg_drawer_user_access;
   }
@@ -191,11 +198,23 @@ namespace robast_drawer_gate
     auto result = std::make_shared<DrawerUserAccess::Result>();
 
     led_parameters led_parameters = {};
-    led_parameters.led_red = 100;
-    led_parameters.led_blue = 0;
-    led_parameters.led_green = 50;
-    led_parameters.brightness = 20;
-    led_parameters.mode = 0;
+    // Debugging
+    if (goal->drawer.drawer_id == 1)
+    {
+      led_parameters.led_red = 00;
+      led_parameters.led_blue = 0;
+      led_parameters.led_green = 255;
+      led_parameters.brightness = 255;
+      led_parameters.mode = 1;
+    }
+    else if (goal->drawer.drawer_id == 0)
+    {
+      led_parameters.led_red = 100;
+      led_parameters.led_blue = 0;
+      led_parameters.led_green = 50;
+      led_parameters.brightness = 0;
+      led_parameters.mode = 1;
+    }  
 
     robast_can_msgs::CanMessage can_msg_drawer_user_access = DrawerGate::create_can_msg_drawer_user_access(goal, led_parameters);
 
