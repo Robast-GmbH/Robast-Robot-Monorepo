@@ -16,10 +16,10 @@ namespace robast_drawer_gate
       std::bind(&DrawerGate::accepted_callback, this, std::placeholders::_1));
 
     this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
-    this->timer_ptr_ = this->create_wall_timer(500ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
+    this->timer_ptr_ = this->create_wall_timer(1000ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
 
     this->setup_serial_can_ubs_converter();
-    // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
+    // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the open can channel to enable receiving CAN messages
     this->open_can_channel();
     this->serial_helper.close_serial();
 
@@ -57,9 +57,23 @@ namespace robast_drawer_gate
     RCLCPP_INFO(this->get_logger(), "Timer callback triggert!");
     this->setup_serial_can_ubs_converter();
     this->open_can_channel(); 
-    std::string serial_read;
-    uint16_t num_of_received_bytes = this->serial_helper.read_serial(&serial_read, 30);
-    RCLCPP_INFO(this->get_logger(), "Read from serial: %s", serial_read.c_str());
+    std::string serial_read_ascii_command;
+    uint16_t num_of_received_bytes = this->serial_helper.read_serial(&serial_read_ascii_command, 200);
+    RCLCPP_INFO(this->get_logger(), "Read from serial: %s", serial_read_ascii_command.c_str());
+    RCLCPP_INFO(this->get_logger(), "serial_read_ascii_command[0]: %u", serial_read_ascii_command[0]);
+    RCLCPP_INFO(this->get_logger(), "serial_read_ascii_command[1]: %u", serial_read_ascii_command[1]);
+    RCLCPP_INFO(this->get_logger(), "serial_read_ascii_command.length(): %u", serial_read_ascii_command.length());
+    RCLCPP_INFO(this->get_logger(), "num_of_received_bytes: %i", num_of_received_bytes);
+
+    std::vector<robast_can_msgs::CanMessage> received_can_msgs = robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, can_db.can_messages);
+
+    RCLCPP_INFO(this->get_logger(), "received_can_msgs.size(): %i", received_can_msgs.size());
+
+    for (uint8_t i = 0; i < received_can_msgs.size(); i++)
+    {
+      RCLCPP_INFO(this->get_logger(), "received_can_msgs.at(i).can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data: %u", received_can_msgs.at(i).can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data);
+    }
+
     this->serial_helper.close_serial();
   }
 
@@ -199,9 +213,6 @@ namespace robast_drawer_gate
         RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
       }
     }
-
-    // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the listen only mode to enable receiving CAN messages
-    // this->open_can_channel_listen_only_mode();  //TODO: Das ist glaube ich quatsch! default state sollte open can channel sein
 
     this->serial_helper.close_serial();
 
