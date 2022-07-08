@@ -77,13 +77,13 @@ namespace robast_drawer_gate
   {
     robast_can_msgs::CanMessage can_msg_drawer_user_access = can_db.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
 
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = goal->drawer_controller_id;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = goal->drawer.drawer_controller_id;
 
-    if (goal->drawer_id == 1) 
+    if (goal->drawer.drawer_id == 1) 
     {
       can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_OPEN_LOCK;
     }
-    if (goal->drawer_id == 2)
+    if (goal->drawer.drawer_id == 2)
     {
       can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_OPEN_LOCK;
     }
