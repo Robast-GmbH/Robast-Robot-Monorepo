@@ -79,6 +79,8 @@ namespace robast_drawer_gate
 
   void DrawerGate::provide_shelf_setup_info(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
   {
+    //TODO: This should actually be done automatically by polling all drawer_controller on the CAN bus
+
     robast_ros2_msgs::msg::Box box_10x40x1;
     box_10x40x1.x = DRAWER_INSIDE_WIDTH_10x40x1;
     box_10x40x1.y = DRAWER_INSIDE_DEPTH_10x40x1;
