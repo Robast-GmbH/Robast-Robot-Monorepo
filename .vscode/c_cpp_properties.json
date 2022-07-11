@@ -1,0 +1,29 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "${default}",
+        "limitSymbolsToIncludedHeaders": false
+      },
+      "includePath": [
+        "/workspaces/Ros_Hardware_Nodes/install/robast_nfc_gate/include/**",
+        "/workspaces/Ros_Hardware_Nodes/install/robast_drawer_sym/include/**",
+        "/workspaces/Ros_Hardware_Nodes/install/robast_drawer_manager/include/**",
+        "/workspaces/Ros_Hardware_Nodes/install/robast_drawer_gate/include/**",
+        "/workspaces/Ros_Hardware_Nodes/install/robast_ros2_msgs/include/**",
+        "/opt/ros/humble/include/**",
+        "/workspaces/Ros_Hardware_Nodes/src/robast_drawer_gate/include/**",
+        "/workspaces/Ros_Hardware_Nodes/src/robast_drawer_manager/include/**",
+        "/workspaces/Ros_Hardware_Nodes/src/robast_drawer_sym/include/**",
+        "/workspaces/Ros_Hardware_Nodes/src/robast_nfc_gate/include/**",
+        "/usr/include/**"
+      ],
+      "name": "ROS",
+      "intelliSenseMode": "gcc-x64",
+      "compilerPath": "/usr/bin/gcc",
+      "cStandard": "gnu11",
+      "cppStandard": "c++14"
+    }
+  ],
+  "version": 4
+}
