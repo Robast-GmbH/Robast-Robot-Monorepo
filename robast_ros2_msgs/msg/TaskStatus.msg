@@ -1,4 +1,4 @@
-bool is_on_way_to_loading_point
-bool is_drawer_beeing_loaded
-bool is_on_way_to_unloading_point
-bool is_drawer_beeing_unloaded
+bool action_has_started
+bool waiting_for_reader
+bool door_is_open
+ 
