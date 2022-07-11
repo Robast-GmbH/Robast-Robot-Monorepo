@@ -15,6 +15,10 @@ namespace robast_drawer_gate
       std::bind(&DrawerGate::cancel_callback, this, std::placeholders::_1),
       std::bind(&DrawerGate::accepted_callback, this, std::placeholders::_1));
 
+    this->shelf_setup_info_service = this->create_service<ShelfSetupInfo>(
+      "shelf_setup_info",
+      std::bind(&DrawerGate::provide_shelf_setup_info, this, std::placeholders::_1, std::placeholders::_2));
+
     this->setup_serial_can_ubs_converter();
     // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the open can channel to enable receiving CAN messages
     this->open_can_channel();
@@ -65,6 +69,34 @@ namespace robast_drawer_gate
     }
 
     this->serial_helper.close_serial();
+  }
+
+  void DrawerGate::provide_shelf_setup_info(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
+  {
+    robast_ros2_msgs::msg::Box box_10x40x1;
+    box_10x40x1.x = DRAWER_INSIDE_WIDTH_10x40x1;
+    box_10x40x1.y = DRAWER_INSIDE_DEPTH_10x40x1;
+    box_10x40x1.z = DRAWER_INSIDE_HEIGHT_10x40x1;
+
+    robast_ros2_msgs::msg::Box box_20x40x1;
+    box_20x40x1.x = DRAWER_INSIDE_WIDTH_20x40x1;
+    box_20x40x1.y = DRAWER_INSIDE_DEPTH_20x40x1;
+    box_20x40x1.z = DRAWER_INSIDE_HEIGHT_20x40x1;
+
+    robast_ros2_msgs::msg::Box box_30x40x1;
+    box_30x40x1.x = DRAWER_INSIDE_WIDTH_30x40x1;
+    box_30x40x1.y = DRAWER_INSIDE_DEPTH_30x40x1;
+    box_30x40x1.z = DRAWER_INSIDE_HEIGHT_30x40x1;
+
+    robast_ros2_msgs::msg::Drawer drawer;
+    drawer.drawer_address.drawer_controller_id = 1;
+    drawer.drawer_address.drawer_id = 1;
+    drawer.number_of_drawers = 1;
+    drawer.drawer_size = box_10x40x1;
+
+    // robast_ros2_msgs::msg::Drawer
+    // response->drawers = 
+
   }
 
   void DrawerGate::setup_serial_can_ubs_converter(void)
