@@ -53,6 +53,25 @@ namespace robast_drawer_gate
     std::thread{std::bind(&DrawerGate::open_drawer, this, std::placeholders::_1), goal_handle}.detach();
   }
 
+  void DrawerGate::update_drawer_status(std::vector<robast_can_msgs::CanMessage> drawer_feedback_can_msgs)
+  {
+    std::lock_guard<std::mutex> lock_guard(drawer_status_mutex);
+    for (uint8_t i = 0; i < drawer_feedback_can_msgs.size(); i++)
+    {
+      if (drawer_feedback_can_msgs.at(i).id == CAN_ID_DRAWER_FEEDBACK)
+      {
+        uint32_t drawer_controller_id = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data;
+        drawer_status drawer_status = {};
+        drawer_status.is_endstop_switch_1_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).data == 1;
+        drawer_status.is_lock_switch_1_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).data == 1;
+        drawer_status.is_endstop_switch_2_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).data == 1;
+        drawer_status.is_lock_switch_2_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).data == 1;
+        drawer_status_by_drawer_controller_id[drawer_controller_id] = drawer_status;
+      }
+    }
+
+  }
+
   void DrawerGate::timer_callback(void)
   {
     RCLCPP_INFO(this->get_logger(), "Timer callback triggert!");
@@ -63,10 +82,7 @@ namespace robast_drawer_gate
 
     std::vector<robast_can_msgs::CanMessage> received_can_msgs = robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, can_db.can_messages);
 
-    for (uint8_t i = 0; i < received_can_msgs.size(); i++)
-    {
-      RCLCPP_INFO(this->get_logger(), "received_can_msgs.at(i).can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data: %u", received_can_msgs.at(i).can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data);
-    }
+    this->update_drawer_status(received_can_msgs);
 
     this->serial_helper.close_serial();
   }
@@ -290,6 +306,8 @@ namespace robast_drawer_gate
     }
 
     this->serial_helper.close_serial();
+
+
 
     this->timer_ptr_->cancel(); // Cancel the timer that is handling the feedback of the 
 
