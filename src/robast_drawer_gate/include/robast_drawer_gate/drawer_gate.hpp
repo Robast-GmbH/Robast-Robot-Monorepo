@@ -83,6 +83,8 @@ namespace robast_drawer_gate
 
       void timer_callback(void);
 
+      void provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response);
+
       /**
        * @brief Service server execution callback
        */

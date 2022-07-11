@@ -17,7 +17,7 @@ namespace robast_drawer_gate
 
     this->shelf_setup_info_service = this->create_service<ShelfSetupInfo>(
       "shelf_setup_info",
-      std::bind(&DrawerGate::provide_shelf_setup_info, this, std::placeholders::_1, std::placeholders::_2));
+      std::bind(&DrawerGate::provide_shelf_setup_info_callback, this, std::placeholders::_1, std::placeholders::_2));
 
     this->setup_serial_can_ubs_converter();
     // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the open can channel to enable receiving CAN messages
@@ -71,6 +71,12 @@ namespace robast_drawer_gate
     this->serial_helper.close_serial();
   }
 
+  void DrawerGate::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
+  {
+    // this needs to return quickly to avoid blocking the executor, so spin up a new thread
+    std::thread{std::bind(&DrawerGate::provide_shelf_setup_info, this, std::placeholders::_1, std::placeholders::_2), request, response}.detach();
+  }
+
   void DrawerGate::provide_shelf_setup_info(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
   {
     robast_ros2_msgs::msg::Box box_10x40x1;
@@ -88,15 +94,37 @@ namespace robast_drawer_gate
     box_30x40x1.y = DRAWER_INSIDE_DEPTH_30x40x1;
     box_30x40x1.z = DRAWER_INSIDE_HEIGHT_30x40x1;
 
-    robast_ros2_msgs::msg::Drawer drawer;
-    drawer.drawer_address.drawer_controller_id = 1;
-    drawer.drawer_address.drawer_id = 1;
-    drawer.number_of_drawers = 1;
-    drawer.drawer_size = box_10x40x1;
+    robast_ros2_msgs::msg::Drawer drawer_1;
+    drawer_1.drawer_address.drawer_controller_id = 1;
+    drawer_1.drawer_address.drawer_id = 1;
+    drawer_1.number_of_drawers = 1;
+    drawer_1.drawer_size = box_10x40x1;
 
-    // robast_ros2_msgs::msg::Drawer
-    // response->drawers = 
+    robast_ros2_msgs::msg::Drawer drawer_2;
+    drawer_2.drawer_address.drawer_controller_id = 2;
+    drawer_2.drawer_address.drawer_id = 1;
+    drawer_2.number_of_drawers = 1;
+    drawer_2.drawer_size = box_10x40x1;
 
+    robast_ros2_msgs::msg::Drawer drawer_3;
+    drawer_3.drawer_address.drawer_controller_id = 3;
+    drawer_3.drawer_address.drawer_id = 1;
+    drawer_3.number_of_drawers = 1;
+    drawer_3.drawer_size = box_10x40x1;
+
+    robast_ros2_msgs::msg::Drawer drawer_4;
+    drawer_4.drawer_address.drawer_controller_id = 4;
+    drawer_4.drawer_address.drawer_id = 1;
+    drawer_4.number_of_drawers = 1;
+    drawer_4.drawer_size = box_20x40x1;
+
+    robast_ros2_msgs::msg::Drawer drawer_5;
+    drawer_5.drawer_address.drawer_controller_id = 5;
+    drawer_5.drawer_address.drawer_id = 1;
+    drawer_5.number_of_drawers = 1;
+    drawer_5.drawer_size = box_30x40x1;
+
+    response->drawers = {drawer_1, drawer_2, drawer_3, drawer_4, drawer_5};
   }
 
   void DrawerGate::setup_serial_can_ubs_converter(void)
