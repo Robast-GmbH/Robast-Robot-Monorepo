@@ -33,7 +33,7 @@
 
 #define LED_PIXEL_PIN GPIO_NUM_13
 
-#define NUM_LEDS 19 // number of LEDs for LED strip
+#define NUM_LEDS 25 // number of LEDs for LED strip
 
 CRGBArray<NUM_LEDS> leds;
 uint8_t led_red;
