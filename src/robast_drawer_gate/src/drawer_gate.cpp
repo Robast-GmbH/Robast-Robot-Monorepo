@@ -410,7 +410,7 @@ namespace robast_drawer_gate
     led_parameters led_parameters = {};
     led_parameters.led_red = 255;
     led_parameters.led_blue = 0;
-    led_parameters.led_green = 0;
+    led_parameters.led_green = 128;
     led_parameters.brightness = 150;
     led_parameters.mode = 2; // mode 0 = instantly light up LEDs, mode 1 = fade up led light, mode 2 = closing drawer led mode
 
