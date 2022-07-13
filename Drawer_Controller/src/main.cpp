@@ -358,6 +358,25 @@ void handle_CAN_msg(robast_can_msgs::CanMessage can_message)
   }
 }
 
+void handle_receiving_can_msg()
+{
+    Serial.println("Received CAN message!");
+
+    CAN0.readMsgBuf(&rx_msg_id, &rx_msg_dlc, rx_data_buf);
+
+    std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_msg_id, rx_data_buf, rx_msg_dlc, can_db.can_messages); 
+
+    if (can_message.has_value())
+    {
+      handle_CAN_msg(can_message.value());      
+    }
+    else
+    {
+      Serial.println("There is no CAN Message available in the CAN Database that corresponds to the msg id: ");
+      Serial.print(rx_msg_id, HEX);
+    }
+}
+
 void handle_reading_sensors(void)
 {
   // Tracking the moving average for the sensor pins helps to debounce them a little bit
@@ -421,7 +440,7 @@ void handle_LED_control(void)
     }
 }
 
-void handle_drawer_status_feedback(void)
+void sending_drawer_status_feedback(void)
 {
   robast_can_msgs::CanMessage can_msg_drawer_feedback = create_drawer_feedback_can_msg();
 
@@ -466,23 +485,9 @@ void setup()
 
 void loop()
 {
-  if(!digitalRead(MCP2515_INT))                         // If CAN0_INT pin is low, read receive buffer
+  if(!digitalRead(MCP2515_INT)) // If CAN0_INT pin is low, read receive buffer
   {
-    Serial.println("Received CAN message!");
-
-    CAN0.readMsgBuf(&rx_msg_id, &rx_msg_dlc, rx_data_buf);
-
-    std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(rx_msg_id, rx_data_buf, rx_msg_dlc, can_db.can_messages); 
-
-    if (can_message.has_value())
-    {
-      handle_CAN_msg(can_message.value());      
-    }
-    else
-    {
-      Serial.println("There is no CAN Message available in the CAN Database that corresponds to the msg id: ");
-      Serial.print(rx_msg_id, HEX);
-    }
+    handle_receiving_can_msg();
   }
 
   handle_LED_control();
@@ -494,7 +499,7 @@ void loop()
   {
     previous_millis = current_millis;
     
-    handle_drawer_status_feedback();
+    sending_drawer_status_feedback();
   }
 }
 
