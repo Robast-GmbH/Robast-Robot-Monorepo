@@ -314,11 +314,11 @@ namespace robast_drawer_gate
       });
   }
 
-  // TODO: Do we really need this?
   bool DrawerGate::is_initial_drawer_status_received(uint32_t drawer_controller_id)
   {
     if (drawer_status_by_drawer_controller_id.find(drawer_controller_id) == drawer_status_by_drawer_controller_id.end())
     {
+      RCLCPP_INFO(this->get_logger(), "Step 2: drawer_controller_id key is not yet existing in drawer_status_by_drawer_controller_id map"); // DEBUGGING
       // key does not exists in the map
       return false;
     } 
