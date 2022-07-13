@@ -88,7 +88,16 @@ namespace robast_drawer_gate
 
     std::vector<robast_can_msgs::CanMessage> received_can_msgs = robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, can_db.can_messages);
 
-    this->update_drawer_status(received_can_msgs);
+    if (cleared_serial_buffer_from_old_can_msgs) 
+    {
+      this->update_drawer_status(received_can_msgs);
+    }
+    else
+    {
+      // Dump only the very first received can msgs because they might contain old data in the buffer
+      cleared_serial_buffer_from_old_can_msgs = true;
+    }
+    
 
     this->serial_helper.close_serial();
   }
@@ -413,7 +422,14 @@ namespace robast_drawer_gate
 
     this->send_can_msg(can_msg_closed_drawer, led_parameters);
 
-    this->drawer_status_by_drawer_controller_id[drawer_controller_id].received_initial_drawer_status = false;
+     // Cancel the timer that is handling the feedback of the drawer_controller
+    this->timer_ptr_->cancel();
+
+    // Reset flag that is responsible for indicating that a up-to-date drawer_status was received
+    this->drawer_status_by_drawer_controller_id[drawer_controller_id].received_initial_drawer_status = false; 
+    
+    // Reset the flag that is responsible for clearing the serial buffer from old CAN messages
+    cleared_serial_buffer_from_old_can_msgs = false;
   }
   
   void DrawerGate::handle_drawer_user_access(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
@@ -459,8 +475,6 @@ namespace robast_drawer_gate
     // 6. step: LED feedback
     RCLCPP_INFO(this->get_logger(), "Step 6: handle_closed_drawer"); // DEBUGGING
     this->handle_closed_drawer(drawer_controller_id, drawer_id);
-
-    this->timer_ptr_->cancel(); // Cancel the timer that is handling the feedback of the 
 
     RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
   }

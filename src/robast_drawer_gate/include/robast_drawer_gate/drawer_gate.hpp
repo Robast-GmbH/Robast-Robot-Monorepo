@@ -82,6 +82,8 @@ namespace robast_drawer_gate
 
       std::map<uint32_t, drawer_status> drawer_status_by_drawer_controller_id;
 
+      bool cleared_serial_buffer_from_old_can_msgs; // flag, that is responsible for clearing the serial buffer from old CAN messages
+
       /* FUNCTIONS */
       void setup_serial_can_ubs_converter(void);
 
