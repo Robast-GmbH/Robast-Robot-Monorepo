@@ -119,6 +119,8 @@ namespace robast_drawer_gate
       void accepted_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
 
       void timer_callback(void);
+      
+      void update_drawer_status_from_can(void);
 
       void update_drawer_status(std::vector<robast_can_msgs::CanMessage> drawer_feedback_can_msgs);
 

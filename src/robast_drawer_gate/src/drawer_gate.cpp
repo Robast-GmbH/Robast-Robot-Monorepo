@@ -75,6 +75,11 @@ namespace robast_drawer_gate
   void DrawerGate::timer_callback(void)
   {
     RCLCPP_INFO(this->get_logger(), "Timer callback triggert!");
+    this->update_drawer_status_from_can();
+  }
+
+  void DrawerGate::update_drawer_status_from_can(void)
+  {
     this->setup_serial_can_ubs_converter();
     this->open_can_channel(); 
     std::string serial_read_ascii_command;
@@ -388,12 +393,16 @@ namespace robast_drawer_gate
     this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
     this->timer_ptr_ = this->create_wall_timer(1000ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
 
+    // Although the feedback is received periodical via the timer,
+    // we update the drawer_status once manually to make sure
+    // the drawer_status is up to date at the start
+    this->update_drawer_status_from_can();
+
     const auto goal = goal_handle->get_goal();
     auto feedback = std::make_shared<DrawerUserAccess::Feedback>();
     auto result = std::make_shared<DrawerUserAccess::Result>();
     uint32_t drawer_controller_id = goal->drawer.drawer_controller_id;
-    uint8_t drawer_id = goal->drawer.drawer_id;
-
+    uint8_t drawer_id = goal->drawer.drawer_id;    
 
     //TODO: Das  hier in switch cases ohne breakes umbauen
     // 1. step: Open lock of the drawer and light up LEDs to signalize which drawer should be openend
