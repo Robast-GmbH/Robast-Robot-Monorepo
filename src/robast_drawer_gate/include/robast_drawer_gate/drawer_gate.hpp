@@ -99,6 +99,8 @@ namespace robast_drawer_gate
 
       void open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id);
 
+      void wait_until_initial_drawer_status_received(uint32_t drawer_controller_id);
+
       void wait_until_drawer_is_opened(uint32_t drawer_controller_id, uint8_t drawer_id);
 
       bool is_initial_drawer_status_received(uint32_t drawer_controller_id);

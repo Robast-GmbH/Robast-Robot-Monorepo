@@ -294,20 +294,21 @@ namespace robast_drawer_gate
     this->send_can_msg(can_msg_open_drawer, led_parameters);
   }
 
+  void DrawerGate::wait_until_initial_drawer_status_received(uint32_t drawer_controller_id)
+  {
+    std::unique_lock<std::mutex> lock_guard_initial_drawer_status_received(this->drawer_status_mutex); // the lock will be released after the wait check
+    cv.wait(
+      lock_guard_initial_drawer_status_received, [this, drawer_controller_id]
+      {
+        return this->is_initial_drawer_status_received(drawer_controller_id);
+      });
+  }
+
   void DrawerGate::wait_until_drawer_is_opened(uint32_t drawer_controller_id, uint8_t drawer_id)
   {
-    // Wait until at least one feedback message was received from the drawer_controller
-    // std::unique_lock<std::mutex> lock_guard(this->drawer_status_mutex); // the lock will be released after the wait check
-    // cv.wait(
-    //   lock_guard, [this, drawer_controller_id]
-    //   {
-    //     return this->is_initial_drawer_status_received(drawer_controller_id);
-    //   });
-
-    // Now wait until the drawer is opend
-    std::unique_lock<std::mutex> lock_guard(this->drawer_status_mutex); // the lock will be released after the wait check
+    std::unique_lock<std::mutex> lock_guard_is_drawer_opend(this->drawer_status_mutex); // the lock will be released after the wait check
     cv.wait(
-      lock_guard, [this, drawer_controller_id, drawer_id]
+      lock_guard_is_drawer_opend, [this, drawer_controller_id, drawer_id]
       {
         return this->is_drawer_open(drawer_controller_id, drawer_id);
       });
@@ -330,6 +331,7 @@ namespace robast_drawer_gate
 
   bool DrawerGate::is_drawer_open(uint32_t drawer_controller_id, uint8_t drawer_id)
   {
+    RCLCPP_INFO(this->get_logger(), "Step 2.3: is_drawer_open"); // DEBUGGING
     if (drawer_status_by_drawer_controller_id.find(drawer_controller_id) == drawer_status_by_drawer_controller_id.end())
     {
       // key does not yet exist in the map
@@ -410,6 +412,8 @@ namespace robast_drawer_gate
     robast_can_msgs::CanMessage can_msg_closed_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, drawer_id, led_parameters, CAN_DATA_CLOSE_LOCK);
 
     this->send_can_msg(can_msg_closed_drawer, led_parameters);
+
+    this->drawer_status_by_drawer_controller_id[drawer_controller_id].received_initial_drawer_status = false;
   }
   
   void DrawerGate::handle_drawer_user_access(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
@@ -434,22 +438,26 @@ namespace robast_drawer_gate
     //TODO: Das  hier in switch cases ohne breakes umbauen
     // 1. step: Open lock of the drawer and light up LEDs to signalize which drawer should be openend
     RCLCPP_INFO(this->get_logger(), "Step 1: Open Drawer"); // DEBUGGING
-    this->open_drawer(drawer_controller_id, drawer_id);    
+    this->open_drawer(drawer_controller_id, drawer_id);
 
-    // 2. step: Wait until drawer is opened
-    RCLCPP_INFO(this->get_logger(), "Step 2: wait_until_drawer_is_opened"); // DEBUGGING
+    // 2. step: Wait until at least one drawer_status feedback message from the Drawer Controller is received  
+    RCLCPP_INFO(this->get_logger(), "Step 2: wait until inital feedback message was received from the drawer_controller"); // DEBUGGING
+    this->wait_until_initial_drawer_status_received(drawer_controller_id);
+
+    // 3. step: Wait until drawer is opened
+    RCLCPP_INFO(this->get_logger(), "Step 3: wait_until_drawer_is_opened"); // DEBUGGING
     this->wait_until_drawer_is_opened(drawer_controller_id, drawer_id);
 
-    // 3. step: After drawer was opened, close lock and change light color
-    RCLCPP_INFO(this->get_logger(), "Step 3: handle_open_drawer"); // DEBUGGING
+    // 4. step: After drawer was opened, close lock and change light color
+    RCLCPP_INFO(this->get_logger(), "Step 4: handle_open_drawer"); // DEBUGGING
     this->handle_open_drawer(drawer_controller_id, drawer_id);
 
-    // 4. step: Wait until drawer is closed again
-    RCLCPP_INFO(this->get_logger(), "Step 4: wait_until_drawer_is_closed"); // DEBUGGING
+    // 5. step: Wait until drawer is closed again
+    RCLCPP_INFO(this->get_logger(), "Step 5: wait_until_drawer_is_closed"); // DEBUGGING
     this->wait_until_drawer_is_closed(drawer_controller_id, drawer_id);
 
-    // 5. step: LED feedback
-    RCLCPP_INFO(this->get_logger(), "Step 5: handle_closed_drawer"); // DEBUGGING
+    // 6. step: LED feedback
+    RCLCPP_INFO(this->get_logger(), "Step 6: handle_closed_drawer"); // DEBUGGING
     this->handle_closed_drawer(drawer_controller_id, drawer_id);
 
     this->timer_ptr_->cancel(); // Cancel the timer that is handling the feedback of the 
