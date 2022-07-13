@@ -46,6 +46,7 @@ namespace robast_drawer_gate
     bool is_lock_switch_1_pushed;
     bool is_endstop_switch_2_pushed;
     bool is_lock_switch_2_pushed;
+    bool received_initial_drawer_status; // this is a flag to indicate that the drawer_status was received at least once at the beginning of the drawer access
   };
 
   class DrawerGate : public rclcpp::Node
@@ -99,6 +100,8 @@ namespace robast_drawer_gate
       void open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id);
 
       void wait_until_drawer_is_opened(uint32_t drawer_controller_id, uint8_t drawer_id);
+
+      bool is_initial_drawer_status_received(uint32_t drawer_controller_id);
 
       bool is_drawer_open(uint32_t drawer_controller_id, uint8_t drawer_id);
 

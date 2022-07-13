@@ -66,6 +66,7 @@ namespace robast_drawer_gate
         drawer_status.is_lock_switch_1_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).data == 1;
         drawer_status.is_endstop_switch_2_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).data == 1;
         drawer_status.is_lock_switch_2_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).data == 1;
+        drawer_status.received_initial_drawer_status = true;
         this->drawer_status_by_drawer_controller_id[drawer_controller_id] = drawer_status;
       }
     }
@@ -295,6 +296,15 @@ namespace robast_drawer_gate
 
   void DrawerGate::wait_until_drawer_is_opened(uint32_t drawer_controller_id, uint8_t drawer_id)
   {
+    // Wait until at least one feedback message was received from the drawer_controller
+    // std::unique_lock<std::mutex> lock_guard(this->drawer_status_mutex); // the lock will be released after the wait check
+    // cv.wait(
+    //   lock_guard, [this, drawer_controller_id]
+    //   {
+    //     return this->is_initial_drawer_status_received(drawer_controller_id);
+    //   });
+
+    // Now wait until the drawer is opend
     std::unique_lock<std::mutex> lock_guard(this->drawer_status_mutex); // the lock will be released after the wait check
     cv.wait(
       lock_guard, [this, drawer_controller_id, drawer_id]
@@ -303,18 +313,41 @@ namespace robast_drawer_gate
       });
   }
 
+  // TODO: Do we really need this?
+  bool DrawerGate::is_initial_drawer_status_received(uint32_t drawer_controller_id)
+  {
+    if (drawer_status_by_drawer_controller_id.find(drawer_controller_id) == drawer_status_by_drawer_controller_id.end())
+    {
+      // key does not exists in the map
+      return false;
+    } 
+    else
+    {
+      drawer_status drawer_status = this->drawer_status_by_drawer_controller_id[drawer_controller_id];
+      return drawer_status.received_initial_drawer_status;
+    }
+  }
+
   bool DrawerGate::is_drawer_open(uint32_t drawer_controller_id, uint8_t drawer_id)
   {
-    drawer_status drawer_status = this->drawer_status_by_drawer_controller_id[drawer_controller_id];
+    if (drawer_status_by_drawer_controller_id.find(drawer_controller_id) == drawer_status_by_drawer_controller_id.end())
+    {
+      // key does not yet exist in the map
+      return false;
+    } 
+    else
+    {
+      drawer_status drawer_status = this->drawer_status_by_drawer_controller_id[drawer_controller_id];
 
-    if (drawer_id == 1)
-    {
-      return !drawer_status.is_endstop_switch_1_pushed;
+      if (drawer_id == 1)
+      {
+        return !drawer_status.is_endstop_switch_1_pushed;
+      }
+      if (drawer_id == 2)
+      {
+        return !drawer_status.is_endstop_switch_2_pushed;
+      }  
     }
-    if (drawer_id == 2)
-    {
-      return !drawer_status.is_endstop_switch_2_pushed;
-    }  
 
     return false;
   }
@@ -326,7 +359,7 @@ namespace robast_drawer_gate
     led_parameters.led_blue = 255;
     led_parameters.led_green = 255;
     led_parameters.brightness = 150;
-    led_parameters.mode = 1; // mode 0 = instantly light up LEDs, mode 1 = fade up led light
+    led_parameters.mode = 0; // mode 0 = instantly light up LEDs, mode 1 = fade up led light
 
     robast_can_msgs::CanMessage can_msg_close_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, drawer_id, led_parameters, CAN_DATA_CLOSE_LOCK);
 
