@@ -33,8 +33,8 @@
 
 #define LED_PIXEL_PIN GPIO_NUM_13
 
-#define NUM_LEDS 19 // number of LEDs for LED strip
-#define MIDDLE_LED 9 // adress of the middle LED
+#define NUM_LEDS 25 // number of LEDs for LED strip
+#define MIDDLE_LED 13 // adress of the middle LED
 
 CRGBArray<NUM_LEDS> leds;
 uint8_t led_target_red;
