@@ -1,8 +1,10 @@
 #goal
 robast_ros2_msgs/Task task
+bool loading
 ---
 #result
-bool success  # indicates whether tasks was successful
+bool sucessful
+string error_message
 ---
 #feedback
 robast_ros2_msgs/TaskStatus task_status
