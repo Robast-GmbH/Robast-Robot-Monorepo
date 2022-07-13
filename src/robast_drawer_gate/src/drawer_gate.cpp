@@ -97,7 +97,6 @@ namespace robast_drawer_gate
       // Dump only the very first received can msgs because they might contain old data in the buffer
       cleared_serial_buffer_from_old_can_msgs = true;
     }
-    
 
     this->serial_helper.close_serial();
   }
@@ -327,9 +326,8 @@ namespace robast_drawer_gate
   {
     if (drawer_status_by_drawer_controller_id.find(drawer_controller_id) == drawer_status_by_drawer_controller_id.end())
     {
-      RCLCPP_INFO(this->get_logger(), "Step 2: drawer_controller_id key is not yet existing in drawer_status_by_drawer_controller_id map"); // DEBUGGING
       // key does not exists in the map
-      return false;
+      return false; 
     } 
     else
     {
@@ -449,33 +447,38 @@ namespace robast_drawer_gate
     auto feedback = std::make_shared<DrawerUserAccess::Feedback>();
     auto result = std::make_shared<DrawerUserAccess::Result>();
     uint32_t drawer_controller_id = goal->drawer.drawer_controller_id;
-    uint8_t drawer_id = goal->drawer.drawer_id;    
+    uint8_t drawer_id = goal->drawer.drawer_id;
+    uint8_t state = goal -> state; // variable to control which step of the drawer user access should be performed
+ 
+    switch (state)
+    {
+      case 1:
+        // 1. step: Open lock of the drawer and light up LEDs to signalize which drawer should be opened
+        this->open_drawer(drawer_controller_id, drawer_id);
+      
+      case 2:
+        // 2. step: Wait until at least one drawer_status feedback message from the Drawer Controller is received  
+        this->wait_until_initial_drawer_status_received(drawer_controller_id);
 
-    //TODO: Das  hier in switch cases ohne breakes umbauen
-    // 1. step: Open lock of the drawer and light up LEDs to signalize which drawer should be openend
-    RCLCPP_INFO(this->get_logger(), "Step 1: Open Drawer"); // DEBUGGING
-    this->open_drawer(drawer_controller_id, drawer_id);
+      case 3:
+        // 3. step: Wait until drawer is opened
+        this->wait_until_drawer_is_opened(drawer_controller_id, drawer_id);
 
-    // 2. step: Wait until at least one drawer_status feedback message from the Drawer Controller is received  
-    RCLCPP_INFO(this->get_logger(), "Step 2: wait until inital feedback message was received from the drawer_controller"); // DEBUGGING
-    this->wait_until_initial_drawer_status_received(drawer_controller_id);
+      case 4:
+        // 4. step: After drawer was opened, close lock and change light color
+        this->handle_open_drawer(drawer_controller_id, drawer_id);
 
-    // 3. step: Wait until drawer is opened
-    RCLCPP_INFO(this->get_logger(), "Step 3: wait_until_drawer_is_opened"); // DEBUGGING
-    this->wait_until_drawer_is_opened(drawer_controller_id, drawer_id);
+      case 5:
+        // 5. step: Wait until drawer is closed again
+        this->wait_until_drawer_is_closed(drawer_controller_id, drawer_id);
 
-    // 4. step: After drawer was opened, close lock and change light color
-    RCLCPP_INFO(this->get_logger(), "Step 4: handle_open_drawer"); // DEBUGGING
-    this->handle_open_drawer(drawer_controller_id, drawer_id);
-
-    // 5. step: Wait until drawer is closed again
-    RCLCPP_INFO(this->get_logger(), "Step 5: wait_until_drawer_is_closed"); // DEBUGGING
-    this->wait_until_drawer_is_closed(drawer_controller_id, drawer_id);
-
-    // 6. step: LED feedback
-    RCLCPP_INFO(this->get_logger(), "Step 6: handle_closed_drawer"); // DEBUGGING
-    this->handle_closed_drawer(drawer_controller_id, drawer_id);
-
+      case 6:
+        // 6. step: LED feedback
+        this->handle_closed_drawer(drawer_controller_id, drawer_id);
+      
+      default:
+        break;
+    }
     RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
   }
 }  // namespace robast_drawer_gate
