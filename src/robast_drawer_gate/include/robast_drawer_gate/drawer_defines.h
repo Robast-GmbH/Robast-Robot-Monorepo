@@ -1,9 +1,6 @@
 #ifndef DRAWER_DEFINES_HPP_
 #define DRAWER_DEFINES_HPP_
 
-#include "robast_ros2_msgs/msg/Box.hpp"
-
-
 namespace robast_drawer_gate
 {
     // Drawer Module with 10cm Height, 40cm Depth, 1 Drawer

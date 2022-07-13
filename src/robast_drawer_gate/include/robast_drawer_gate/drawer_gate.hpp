@@ -84,7 +84,11 @@ namespace robast_drawer_gate
       /* FUNCTIONS */
       void setup_serial_can_ubs_converter(void);
 
-      robast_can_msgs::CanMessage create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal, led_parameters led_parameters);
+      robast_can_msgs::CanMessage create_can_msg_to_open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters);
+
+      robast_can_msgs::CanMessage create_can_msg_for_opened_drawer(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters);
+
+      void send_can_msg(robast_can_msgs::CanMessage can_message, led_parameters led_parameters);
 
       void set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface can_baudrate);
 
@@ -93,6 +97,20 @@ namespace robast_drawer_gate
       void open_can_channel_listen_only_mode(void);
 
       void close_can_channel(void);
+
+      void open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id);
+
+      void wait_until_drawer_is_opened(uint32_t drawer_controller_id, uint8_t drawer_id);
+
+      bool is_drawer_open(uint32_t drawer_controller_id, uint8_t drawer_id);
+
+      void handle_open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id);
+
+      void wait_until_drawer_is_closed(uint32_t drawer_controller_id, uint8_t drawer_id);
+
+      bool is_drawer_closed(uint32_t drawer_controller_id, uint8_t drawer_id);
+
+      void handle_closed_drawer(uint32_t drawer_controller_id, uint8_t drawer_id);
 
       rclcpp_action::GoalResponse goal_callback(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const DrawerUserAccess::Goal> goal);
 
@@ -114,7 +132,7 @@ namespace robast_drawer_gate
       /**
        * @brief Action server execution callback
        */
-      void open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);  
+      void handle_drawer_user_access(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);  
   };
 }  // namespace robast_drawer_gate
 #endif  // ROBAST_DRAWER_GATE__DRAWER_GATE_HPP_

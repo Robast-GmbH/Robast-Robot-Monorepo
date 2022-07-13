@@ -50,12 +50,12 @@ namespace robast_drawer_gate
   void DrawerGate::accepted_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle)
   {
     // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-    std::thread{std::bind(&DrawerGate::open_drawer, this, std::placeholders::_1), goal_handle}.detach();
+    std::thread{std::bind(&DrawerGate::handle_drawer_user_access, this, std::placeholders::_1), goal_handle}.detach();
   }
 
   void DrawerGate::update_drawer_status(std::vector<robast_can_msgs::CanMessage> drawer_feedback_can_msgs)
   {
-    std::lock_guard<std::mutex> lock_guard(drawer_status_mutex);
+    std::lock_guard<std::mutex> scoped_lock(drawer_status_mutex); // the lock will be released after the scope of this function
     for (uint8_t i = 0; i < drawer_feedback_can_msgs.size(); i++)
     {
       if (drawer_feedback_can_msgs.at(i).id == CAN_ID_DRAWER_FEEDBACK)
@@ -66,10 +66,10 @@ namespace robast_drawer_gate
         drawer_status.is_lock_switch_1_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).data == 1;
         drawer_status.is_endstop_switch_2_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).data == 1;
         drawer_status.is_lock_switch_2_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).data == 1;
-        drawer_status_by_drawer_controller_id[drawer_controller_id] = drawer_status;
+        this->drawer_status_by_drawer_controller_id[drawer_controller_id] = drawer_status;
       }
     }
-
+    cv.notify_one(); // Notify the waiting thread in the open_drawer function to check if condition is now satisfied 
   }
 
   void DrawerGate::timer_callback(void)
@@ -155,26 +155,39 @@ namespace robast_drawer_gate
     this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
   }
 
-  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_user_access(std::shared_ptr<const DrawerUserAccess::Goal> goal, led_parameters led_parameters)
+  robast_can_msgs::CanMessage DrawerGate::create_can_msg_to_open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters)
   {
     robast_can_msgs::CanMessage can_msg_drawer_user_access = can_db.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
 
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = goal->drawer.drawer_controller_id;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = drawer_controller_id;
 
-    // DEBUGGING
-    if (goal->drawer.drawer_id == 0) 
-    {
-      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_CLOSE_LOCK;
-      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_CLOSE_LOCK;
-    }
-    if (goal->drawer.drawer_id == 1) 
+    if (drawer_id == 1) 
     {
       can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_OPEN_LOCK;
+      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_CLOSE_LOCK;
     }
-    if (goal->drawer.drawer_id == 2)
+    if (drawer_id == 2)
     {
+      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_CLOSE_LOCK;
       can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_OPEN_LOCK;
     }
+
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_RED).data = led_parameters.led_red;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_GREEN).data = led_parameters.led_green;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BLUE).data = led_parameters.led_blue;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data = led_parameters.brightness;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_MODE).data = led_parameters.mode;
+
+    return can_msg_drawer_user_access;
+  }
+
+  robast_can_msgs::CanMessage DrawerGate::create_can_msg_for_opened_drawer(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters)
+  {
+    robast_can_msgs::CanMessage can_msg_drawer_user_access = can_db.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
+
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = drawer_controller_id;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_CLOSE_LOCK;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_CLOSE_LOCK;
 
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_RED).data = led_parameters.led_red;
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_GREEN).data = led_parameters.led_green;
@@ -257,7 +270,117 @@ namespace robast_drawer_gate
     }
   }
   
-  void DrawerGate::open_drawer(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
+  void DrawerGate::send_can_msg(robast_can_msgs::CanMessage can_message, led_parameters led_parameters)
+  {
+    this->setup_serial_can_ubs_converter();
+
+    this->open_can_channel();
+
+    std::optional<std::string> ascii_cmd = robast_can_msgs::encode_can_message_into_ascii_command(can_message, can_db.can_messages);
+    
+    if (ascii_cmd.has_value())
+    {
+      std::string send_ascii_cmd_result = this->serial_helper.send_ascii_cmd(ascii_cmd.value());
+      if (send_ascii_cmd_result.size() > 0)
+      {
+        RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
+      }
+    }
+    this->serial_helper.close_serial();
+  }
+
+  void DrawerGate::open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id)
+  {
+    led_parameters led_parameters = {};
+    led_parameters.led_red = 0;
+    led_parameters.led_blue = 0;
+    led_parameters.led_green = 255;
+    led_parameters.brightness = 255;
+    led_parameters.mode = 1;
+
+    robast_can_msgs::CanMessage can_msg_open_drawer = DrawerGate::create_can_msg_to_open_drawer(drawer_controller_id, drawer_id, led_parameters);
+
+    this->send_can_msg(can_msg_open_drawer, led_parameters);
+  }
+
+  void DrawerGate::wait_until_drawer_is_opened(uint32_t drawer_controller_id, uint8_t drawer_id)
+  {
+    std::unique_lock<std::mutex> lock_guard(this->drawer_status_mutex); // the lock will be released after the wait check
+    cv.wait(
+      lock_guard, [this, drawer_controller_id, drawer_id]
+      {
+        return this->is_drawer_open(drawer_controller_id, drawer_id);
+      });
+  }
+
+  bool DrawerGate::is_drawer_open(uint32_t drawer_controller_id, uint8_t drawer_id)
+  {
+    drawer_status drawer_status = this->drawer_status_by_drawer_controller_id[drawer_controller_id];
+
+    if (drawer_id == 1)
+    {
+      return !drawer_status.is_endstop_switch_1_pushed;
+    }
+    if (drawer_id == 2)
+    {
+      return !drawer_status.is_endstop_switch_2_pushed;
+    }  
+
+    return false;
+  }
+
+  void DrawerGate::handle_open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id)
+  {
+    led_parameters led_parameters = {};
+    led_parameters.led_red = 255;
+    led_parameters.led_blue = 255;
+    led_parameters.led_green = 255;
+    led_parameters.brightness = 255;
+    led_parameters.mode = 1; // mode 0 = instantly light up LEDs, mode 1 = fade up led light
+
+    robast_can_msgs::CanMessage can_msg_open_drawer = DrawerGate::create_can_msg_for_opened_drawer(drawer_controller_id, drawer_id, led_parameters);
+
+    this->send_can_msg(can_msg_open_drawer, led_parameters);
+  }
+
+  void DrawerGate::wait_until_drawer_is_closed(uint32_t drawer_controller_id, uint8_t drawer_id)
+  {
+    std::unique_lock<std::mutex> lock_guard(this->drawer_status_mutex); // the lock will be released after the wait check
+    cv.wait(
+      lock_guard, [this, drawer_controller_id, drawer_id]
+      {
+        return this->is_drawer_closed(drawer_controller_id, drawer_id);
+      });
+  }
+
+  bool DrawerGate::is_drawer_closed(uint32_t drawer_controller_id, uint8_t drawer_id)
+  {
+    drawer_status drawer_status = this->drawer_status_by_drawer_controller_id[drawer_controller_id];
+
+    if (drawer_id == 1)
+    {
+      if (drawer_status.is_endstop_switch_1_pushed && !drawer_status.is_lock_switch_1_pushed)
+      {
+        return true;
+      }
+    }
+    if (drawer_id == 2)
+    {
+      if (drawer_status.is_endstop_switch_2_pushed && !drawer_status.is_lock_switch_2_pushed)
+      {
+        return true;
+      }
+    }  
+
+    return false;
+  }
+
+  void DrawerGate::handle_closed_drawer(uint32_t drawer_controller_id, uint8_t drawer_id)
+  {
+    //TODO: Implement
+  }
+  
+  void DrawerGate::handle_drawer_user_access(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
   {
     RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
 
@@ -268,46 +391,25 @@ namespace robast_drawer_gate
     const auto goal = goal_handle->get_goal();
     auto feedback = std::make_shared<DrawerUserAccess::Feedback>();
     auto result = std::make_shared<DrawerUserAccess::Result>();
-
-    led_parameters led_parameters = {};
-    // Debugging
-    if (goal->drawer.drawer_id == 1)
-    {
-      led_parameters.led_red = 00;
-      led_parameters.led_blue = 0;
-      led_parameters.led_green = 255;
-      led_parameters.brightness = 255;
-      led_parameters.mode = 1;
-    }
-    else if (goal->drawer.drawer_id == 0)
-    {
-      led_parameters.led_red = 100;
-      led_parameters.led_blue = 0;
-      led_parameters.led_green = 50;
-      led_parameters.brightness = 0;
-      led_parameters.mode = 1;
-    }  
-
-    robast_can_msgs::CanMessage can_msg_drawer_user_access = DrawerGate::create_can_msg_drawer_user_access(goal, led_parameters);
-
-    this->setup_serial_can_ubs_converter();
-
-    this->open_can_channel();
-
-    std::optional<std::string> ascii_cmd_drawer_user_access = robast_can_msgs::encode_can_message_into_ascii_command(can_msg_drawer_user_access, can_db.can_messages);
-    
-    if (ascii_cmd_drawer_user_access.has_value())
-    {
-      std::string send_ascii_cmd_result = this->serial_helper.send_ascii_cmd(ascii_cmd_drawer_user_access.value());
-      if (send_ascii_cmd_result.size() > 0)
-      {
-        RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
-      }
-    }
-
-    this->serial_helper.close_serial();
+    uint32_t drawer_controller_id = goal->drawer.drawer_controller_id;
+    uint8_t drawer_id = goal->drawer.drawer_id;
 
 
+    //TODO: Das  hier in switch cases ohne breakes umbauen
+    // 1. step: Open lock of the drawer and light up LEDs to signalize which drawer should be openend
+    this->open_drawer(drawer_controller_id, drawer_id);    
+
+    // 2. step: Wait until drawer is opened 
+    this->wait_until_drawer_is_opened(drawer_controller_id, drawer_id);
+
+    // 3. step: After drawer was opened, close lock and change light color
+    this->handle_open_drawer(drawer_controller_id, drawer_id);
+
+    // 4. step: Wait until drawer is closed again
+    this->wait_until_drawer_is_closed(drawer_controller_id, drawer_id);
+
+    // 5. step: LED feedback
+    this->handle_closed_drawer(drawer_controller_id, drawer_id);
 
     this->timer_ptr_->cancel(); // Cancel the timer that is handling the feedback of the 
 
