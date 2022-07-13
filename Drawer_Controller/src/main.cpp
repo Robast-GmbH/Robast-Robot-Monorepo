@@ -33,7 +33,8 @@
 
 #define LED_PIXEL_PIN GPIO_NUM_13
 
-#define NUM_LEDS 25 // number of LEDs for LED strip
+#define NUM_LEDS 19 // number of LEDs for LED strip
+#define MIDDLE_LED 9 // adress of the middle LED
 
 CRGBArray<NUM_LEDS> leds;
 uint8_t led_target_red;
@@ -64,27 +65,43 @@ float moving_average_drawer1_closed_pin = 0;
 float moving_average_sensor_lock2_pin = 0;
 float moving_average_drawer2_closed_pin = 0;
 
-hw_timer_t * timer = NULL;
-portMUX_TYPE timerMux = portMUX_INITIALIZER_UNLOCKED;
+hw_timer_t * fading_up_timer = NULL;
+portMUX_TYPE fading_up_timer_mux = portMUX_INITIALIZER_UNLOCKED;
+
+hw_timer_t * running_led_timer = NULL;
+portMUX_TYPE running_led_timer_mux = portMUX_INITIALIZER_UNLOCKED;
+
+volatile uint8_t running_led_offset_from_middle = 0;
+#define NUM_OF_LED_SHADOWS 3
 
 /*********************************************************************************************************
   FUNCTIONS
 *********************************************************************************************************/
 
-void IRAM_ATTR on_timer()
+void IRAM_ATTR on_timer_for_fading_up()
 {
   if (led_target_brightness > led_current_brightness)
   {
-    portENTER_CRITICAL_ISR(&timerMux);
+    portENTER_CRITICAL_ISR(&running_led_timer_mux);
     led_current_brightness++;
-    portEXIT_CRITICAL_ISR(&timerMux);
+    portEXIT_CRITICAL_ISR(&running_led_timer_mux);
   }
 
   if (led_target_brightness < led_current_brightness)
   {
-    portENTER_CRITICAL_ISR(&timerMux);
+    portENTER_CRITICAL_ISR(&running_led_timer_mux);
     led_current_brightness--;
-    portEXIT_CRITICAL_ISR(&timerMux);
+    portEXIT_CRITICAL_ISR(&running_led_timer_mux);
+  }
+}
+
+void IRAM_ATTR on_timer_for_running_led()
+{
+  if ((MIDDLE_LED - running_led_offset_from_middle) >= 0 - NUM_OF_LED_SHADOWS)
+  {
+    portENTER_CRITICAL_ISR(&fading_up_timer_mux);
+    running_led_offset_from_middle++;
+    portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
   }
 }
 
@@ -138,10 +155,15 @@ void initialize_LED_strip(void)
 
 void initialize_timer(void)
 {
-  timer = timerBegin(0, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
-  timerAttachInterrupt(timer, &on_timer, true);
-  timerAlarmWrite(timer, 3000, true); // With the alarm_value of 5000 the interrupt will be triggert 333/s
-  timerAlarmEnable(timer);
+  fading_up_timer = timerBegin(0, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
+  timerAttachInterrupt(fading_up_timer, &on_timer_for_fading_up, true);
+  timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s
+  timerAlarmEnable(fading_up_timer);
+
+  running_led_timer = timerBegin(1, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
+  timerAttachInterrupt(running_led_timer, &on_timer_for_running_led, true);
+  timerAlarmWrite(running_led_timer, 50000, true); // 50000 is a good value
+  timerAlarmEnable(running_led_timer);
 }
 
 void handle_locks(robast_can_msgs::CanMessage can_message)
@@ -217,8 +239,54 @@ void LED_fade_on_mode()
 
 void LED_closing_drawer_mode()
 {
-  //TODO: Do some cool stuff with the LEDs
-  LED_standard_mode();
+  if ((MIDDLE_LED - running_led_offset_from_middle) >= 0 - NUM_OF_LED_SHADOWS)
+  {
+    for(int i = 0; i < NUM_LEDS; i++)
+    {
+      if ((i == (MIDDLE_LED - running_led_offset_from_middle)) || (i == (MIDDLE_LED + running_led_offset_from_middle)))
+      {
+        leds[i] = CRGB(led_target_red, led_target_green, led_target_blue);
+      }
+      // Create a shadow of running LED with less brightness
+      else if ((running_led_offset_from_middle >= 1) && 
+               ((i == (MIDDLE_LED - running_led_offset_from_middle + 1)) || (i == (MIDDLE_LED + running_led_offset_from_middle - 1))))
+      {
+        leds[i] = CRGB(led_target_red/2, led_target_green/2, led_target_blue/2);
+      }
+      // Create a shadow of running LED with less brightness
+      else if ((running_led_offset_from_middle >= 2) && 
+               ((i == (MIDDLE_LED - running_led_offset_from_middle + 2)) || (i == (MIDDLE_LED + running_led_offset_from_middle - 2))))
+      {
+        leds[i] = CRGB(led_target_red/3, led_target_green/3, led_target_blue/3);
+      }
+      // Create a shadow of running LED with less brightness
+      else if ((running_led_offset_from_middle >= 3) && 
+               ((i == (MIDDLE_LED - running_led_offset_from_middle + 3)) || (i == (MIDDLE_LED + running_led_offset_from_middle - 3))))
+      {
+        leds[i] = CRGB(led_target_red/4, led_target_green/4, led_target_blue/4);
+      }
+      else
+      {
+        leds[i] = CRGB(0, 0, 0);
+      }
+    }
+    led_current_red = led_target_red;
+    led_current_green = led_target_green;
+    led_current_blue = led_target_green;
+    led_current_brightness = led_target_brightness;
+    FastLED.setBrightness(led_target_brightness);
+    FastLED.show();
+  }
+
+  if ((MIDDLE_LED - running_led_offset_from_middle) < 0 - NUM_OF_LED_SHADOWS)
+  {
+    for(int i = 0; i < NUM_LEDS; i++)
+    {
+      leds[i] = CRGB(0, 0, 0);
+    }
+    FastLED.setBrightness(0);
+    FastLED.show();
+  }
 
   // Once closing the drawer is finished, set back the interval time to the default value and deactivate broadcast feedback
   interval_drawer_feedback_in_ms = DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS;
@@ -232,6 +300,23 @@ void select_LED_strip_mode(robast_can_msgs::CanMessage can_message)
   led_target_blue = can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data;
   led_target_brightness = can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data;
   led_mode = can_message.can_signals.at(CAN_SIGNAL_LED_MODE).data;
+
+  switch (led_mode)
+    {
+      case 0:
+        break;
+
+      case 1:
+        break;
+
+      case 2:
+        portENTER_CRITICAL(&running_led_timer_mux);
+        running_led_offset_from_middle = 0;
+        portEXIT_CRITICAL(&running_led_timer_mux);
+      
+      default:
+        break;
+    }
 }
 
 void debug_prints(robast_can_msgs::CanMessage can_message)
@@ -328,6 +413,7 @@ void handle_LED_control(void)
 
       case 2:
         LED_closing_drawer_mode();
+        break;
       
       default:
         LED_standard_mode();
