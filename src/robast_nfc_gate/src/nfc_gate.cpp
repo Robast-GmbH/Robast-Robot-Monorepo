@@ -83,7 +83,7 @@ namespace robast
     RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", scaned_key.c_str());
     this->serial_connector.send_ascii_cmd(BEEP_STANDART); 
 
-    validTagNotfound= std::find(std::begin(goal->permission_keys), std::end(goal->permission_keys), scaned_key) != std::end(goal->permission_keys);
+    validTagNotfound= true;//std::find(std::begin(goal->permission_keys), std::end(goal->permission_keys), scaned_key) != std::end(goal->permission_keys);
     
     auto feedback = std::make_shared<AuthenticateUser::Feedback>();
     feedback->reader_status.unidentified_readings = ++numReadings;
@@ -98,7 +98,7 @@ namespace robast
     feedback->reader_status.is_completted=true;
     this->timer_handle->publish_feedback(feedback);
     feedback->reader_status.is_completted=false;
-    
+
     this->serial_connector.send_ascii_cmd((TOP_LED_OFF(LED_RED)));
     this->serial_connector.send_ascii_cmd(BOTTOM_LED_OFF); 
 

@@ -187,14 +187,15 @@ namespace robast
   void DrawerManager::start_open_drawer_action(const std::shared_ptr<GoalHandleDrawerInteraction> task_handle)
   {
     auto open_drawer_request = DrawerUserAccess ::Goal();
-      open_drawer_request.drawer= task_handle->get_goal()->task.drawer;
+    open_drawer_request.drawer= task_handle->get_goal()->task.drawer;
+    open_drawer_request.state=1;
     
-      auto send_goal_options = rclcpp_action::Client<DrawerUserAccess>::SendGoalOptions();
-      send_goal_options.goal_response_callback = bind(&DrawerManager::open_drawer_goal_response_callback, this, placeholders::_1);
-      send_goal_options.feedback_callback = bind(&DrawerManager::open_drawer_feedback_callback, this, placeholders::_1, placeholders:: _2);
-      send_goal_options.result_callback = bind(&DrawerManager::open_drawer_result_callback, this, placeholders::_1, task_handle);
+    auto send_goal_options = rclcpp_action::Client<DrawerUserAccess>::SendGoalOptions();
+    send_goal_options.goal_response_callback = bind(&DrawerManager::open_drawer_goal_response_callback, this, placeholders::_1);
+    send_goal_options.feedback_callback = bind(&DrawerManager::open_drawer_feedback_callback, this, placeholders::_1, placeholders:: _2);
+    send_goal_options.result_callback = bind(&DrawerManager::open_drawer_result_callback, this, placeholders::_1, task_handle);
  
-      this->open_drawers_client->async_send_goal(open_drawer_request, send_goal_options);
+    this->open_drawers_client->async_send_goal(open_drawer_request, send_goal_options);
 
   }
 
