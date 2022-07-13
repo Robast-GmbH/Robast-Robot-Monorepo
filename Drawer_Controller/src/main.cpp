@@ -36,10 +36,13 @@
 #define NUM_LEDS 25 // number of LEDs for LED strip
 
 CRGBArray<NUM_LEDS> leds;
-uint8_t led_red;
-uint8_t led_green;
-uint8_t led_blue;
+uint8_t led_target_red;
+uint8_t led_target_green;
+uint8_t led_target_blue;
 uint8_t led_target_brightness;
+uint8_t led_current_red;
+uint8_t led_current_green;
+uint8_t led_current_blue;
 volatile uint8_t led_current_brightness;
 uint8_t led_mode;
 
@@ -52,7 +55,9 @@ uint8_t rx_msg_dlc = 0;
 uint8_t rx_data_buf[8];
 
 unsigned long previous_millis = 0;
-const unsigned long interval_drawer_feedback_in_ms = 1000;
+#define DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS 1000
+unsigned long interval_drawer_feedback_in_ms = DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS;
+bool broadcast_feedback = false;
 
 float moving_average_sensor_lock1_pin = 0;
 float moving_average_drawer1_closed_pin = 0;
@@ -143,21 +148,23 @@ void handle_locks(robast_can_msgs::CanMessage can_message)
 {
   if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_OPEN_LOCK)
   {
+    // Once the opening of a lock is triggert, we want to activate the drawer feedback broadcast
+    broadcast_feedback = true;
+    interval_drawer_feedback_in_ms = 50;
     digitalWrite(PWR_CLOSE_LOCK1_PIN, LOW);
     digitalWrite(PWR_OPEN_LOCK1_PIN, HIGH);
-    Serial.print(" CAN_SIGNAL_OPEN_LOCK_1: ");
-    Serial.print(can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data, BIN);
   }
   if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_CLOSE_LOCK)
   {
     digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
     digitalWrite(PWR_CLOSE_LOCK1_PIN, HIGH);
-    Serial.print(" CAN_SIGNAL_OPEN_LOCK_1: ");
-    Serial.print(can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data, BIN);
   }
 
   if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_OPEN_LOCK)
   {
+    // Once the opening of a lock is triggert, we want to activate the drawer feedback broadcast
+    broadcast_feedback = true;
+    interval_drawer_feedback_in_ms = 50;
     digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
     digitalWrite(PWR_OPEN_LOCK2_PIN, HIGH);
   }
@@ -170,12 +177,18 @@ void handle_locks(robast_can_msgs::CanMessage can_message)
 
 void LED_standard_mode()
 {
-  if (led_target_brightness != led_current_brightness)
+  if (led_target_brightness != led_current_brightness ||
+      led_target_red != led_current_red ||
+      led_target_green != led_current_green ||
+      led_target_blue != led_current_blue)
   {
     for(int i = 0; i < NUM_LEDS; i++)
     {   
-      leds[i] = CRGB(led_red, led_green, led_blue);
+      leds[i] = CRGB(led_target_red, led_target_green, led_target_blue);
     }
+    led_current_red = led_target_red;
+    led_current_green = led_target_green;
+    led_current_blue = led_target_green;
     led_current_brightness = led_target_brightness;
     FastLED.setBrightness(led_target_brightness);
     FastLED.show();
@@ -185,22 +198,38 @@ void LED_standard_mode()
 void LED_fade_on_mode()
 {
   // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
-  if (led_current_brightness != led_target_brightness)
+  if (led_target_brightness != led_current_brightness ||
+      led_target_red != led_current_red ||
+      led_target_green != led_current_green ||
+      led_target_blue != led_current_blue)
   {
     for(int i = 0; i < NUM_LEDS; i++)
     {   
-      leds[i] = CRGB(led_red, led_green, led_blue);
+      leds[i] = CRGB(led_target_red, led_target_green, led_target_blue);
     }
+    led_current_red = led_target_red;
+    led_current_green = led_target_green;
+    led_current_blue = led_target_green;
     FastLED.setBrightness(led_current_brightness);
     FastLED.show();
   }  
 }
 
+void LED_closing_drawer_mode()
+{
+  //TODO: Do some cool stuff with the LEDs
+  LED_standard_mode();
+
+  // Once closing the drawer is finished, set back the interval time to the default value and deactivate broadcast feedback
+  interval_drawer_feedback_in_ms = DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS;
+  broadcast_feedback = false;
+}
+
 void select_LED_strip_mode(robast_can_msgs::CanMessage can_message)
 {
-  led_red = can_message.can_signals.at(CAN_SIGNAL_LED_RED).data;
-  led_green = can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data;
-  led_blue = can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data;
+  led_target_red = can_message.can_signals.at(CAN_SIGNAL_LED_RED).data;
+  led_target_green = can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data;
+  led_target_blue = can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data;
   led_target_brightness = can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data;
   led_mode = can_message.can_signals.at(CAN_SIGNAL_LED_MODE).data;
 }
@@ -296,11 +325,32 @@ void handle_LED_control(void)
       case 1:
         LED_fade_on_mode();
         break;
+
+      case 2:
+        LED_closing_drawer_mode();
       
       default:
         LED_standard_mode();
         break;
     }
+}
+
+void handle_drawer_status_feedback(void)
+{
+  robast_can_msgs::CanMessage can_msg_drawer_feedback = create_drawer_feedback_can_msg();
+
+  std::optional<robast_can_msgs::CanFrame> can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_msg_drawer_feedback, can_db.can_messages);
+
+  if (can_frame.has_value())
+  {
+    byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().data);
+    if(sndStat == CAN_OK){
+      Serial.println("Message Sent Successfully!");
+    } else {
+      Serial.print("Error Sending Message... CAN Status is: ");
+      Serial.println(sndStat);
+    }
+  }
 }
 
 
@@ -354,24 +404,11 @@ void loop()
   handle_reading_sensors();
 
   unsigned long current_millis = millis();
-  if (current_millis - previous_millis >= interval_drawer_feedback_in_ms)
+  if (current_millis - previous_millis >= interval_drawer_feedback_in_ms && broadcast_feedback)
   {
     previous_millis = current_millis;
     
-    robast_can_msgs::CanMessage can_msg_drawer_feedback = create_drawer_feedback_can_msg();
-
-    std::optional<robast_can_msgs::CanFrame> can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_msg_drawer_feedback, can_db.can_messages);
-
-    if (can_frame.has_value())
-    {
-      byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().data);
-      if(sndStat == CAN_OK){
-        Serial.println("Message Sent Successfully!");
-      } else {
-        Serial.print("Error Sending Message... CAN Status is: ");
-        Serial.println(sndStat);
-      }
-    }
+    handle_drawer_status_feedback();
   }
 }
 
