@@ -26,21 +26,26 @@ namespace robast
 
     public: 
       using ShelfSetupInfo              = robast_ros2_msgs::srv::ShelfSetupInfo;  // to get the types of modules in the Robot
+      
       using DrawerInteraction           = robast_ros2_msgs::action::DrawerInteraction;    // the Service provideded By this Node to perform 
       using GoalHandleDrawerInteraction = rclcpp_action::ServerGoalHandle<DrawerInteraction>;
-      using DrawerUserAccess            = robast_ros2_msgs::action::DrawerUserAccess; // interaction with the drawermodules 
+      
       using AuthenticateUser            = robast_ros2_msgs::action::AuthenticateUser;  //interaction with the 
-    
+      using GoalHandleAuthenticateUser  = rclcpp_action::ClientGoalHandle<AuthenticateUser>;
      
-     
+      using DrawerUserAccess            = robast_ros2_msgs::action::DrawerUserAccess; // interaction with the drawermodules 
+      using GoalHandleDrawerUserAccess   = rclcpp_action::ClientGoalHandle<DrawerUserAccess >;
 
       DrawerManager();
      // ~DrawerManager();
      
 
   private:
+    
+    rclcpp::TimerBase::SharedPtr door_timer;
   
     rclcpp::Service<ShelfSetupInfo>::SharedPtr drawers_info_server;
+    rclcpp::Client<ShelfSetupInfo>::SharedPtr drawers_info_client;
     
 
     rclcpp_action::Server<DrawerInteraction>::SharedPtr access_drawer_service;
@@ -54,19 +59,18 @@ namespace robast
     rclcpp_action::CancelResponse drawer_access_cancel_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle); 
     void drawer_access_accepted_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle);
 
+    void check_drawer_permission(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
     void open_drawer(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
     
-
-
-
+    void authentication_goal_response_callback( const GoalHandleAuthenticateUser::SharedPtr & goal_handle);
+    void authentication_feedback_callback( GoalHandleAuthenticateUser::SharedPtr, const std::shared_ptr<const AuthenticateUser::Feedback> feedback);
+    void authentication_result_callback(const GoalHandleAuthenticateUser::WrappedResult & result, const std::shared_ptr<GoalHandleDrawerInteraction> result_handle );
+  
     void remind_user_to_close_drawer();
-
-
-
-
-    void goal_response_callback( shared_future<rclcpp_action::ClientGoalHandle<DrawerUserAccess>::SharedPtr> future);
-    void open_drawer_feedback_callback( rclcpp_action::ClientGoalHandle<DrawerUserAccess>::SharedPtr, const shared_ptr<const DrawerUserAccess::Feedback> feedback);
-    void open_drawer_result_callback(const rclcpp_action::ClientGoalHandle<DrawerUserAccess>::WrappedResult & result);
+    void start_open_drawer_action(const std::shared_ptr<GoalHandleDrawerInteraction> task_handle);
+    void open_drawer_goal_response_callback( const GoalHandleDrawerUserAccess::SharedPtr & goal_handle);
+    void open_drawer_feedback_callback(  GoalHandleDrawerUserAccess::SharedPtr, const std::shared_ptr<const DrawerUserAccess::Feedback> feedback);
+    void open_drawer_result_callback(const GoalHandleDrawerUserAccess::WrappedResult & result, const std::shared_ptr<GoalHandleDrawerInteraction> result_handle);
 
 };
 

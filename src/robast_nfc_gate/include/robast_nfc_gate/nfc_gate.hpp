@@ -20,7 +20,7 @@ using namespace std;
 #include "robast_ros2_msgs/action/authenticate_user.hpp"
 #include "robast_ros2_msgs/srv/create_user_nfc_tag.hpp"
 #include "robast_nfc_gate/elatec_api.h"
-#include "include/robast_serial.h" //TODO: Fix that
+#include "include/robast_serial.h" 
    
 namespace robast
 { 
@@ -47,6 +47,7 @@ namespace robast
     //robast_serial::SerialHelper serial_connector;//= robast_serial::SerialHelper("");
     robast_serial::SerialHelper serial_connector = robast_serial::SerialHelper("/dev/serial/by-id/usb-Microchip_Technology__Inc._USBtin_A0211324-if00");
     rclcpp::TimerBase::SharedPtr timer;
+    shared_ptr<GoalHandleAuthenticateUser> timer_handle;
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
     rclcpp::Service<CreateUser>::SharedPtr create_user_server;
 
@@ -64,7 +65,7 @@ namespace robast
     void write_serial( string msg );
     string send_command(string command );
 
-    void scanTag( const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle); 
+    void scanTag(); 
     void writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
 };
 

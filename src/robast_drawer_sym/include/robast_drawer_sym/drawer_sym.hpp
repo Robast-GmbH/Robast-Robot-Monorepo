@@ -17,6 +17,7 @@ namespace robast
     private:
       using ShelfSetupInfo = robast_ros2_msgs::srv::ShelfSetupInfo; 
       using DrawerInteraction =robast_ros2_msgs::action::DrawerInteraction; 
+      using DrawerInteractionGoal = DrawerInteraction::Goal;
       
       using GoalHandleDrawerInteraction = rclcpp_action::ClientGoalHandle<DrawerInteraction>;
       
@@ -27,7 +28,7 @@ namespace robast
       rclcpp_action::Client<DrawerInteraction>::SharedPtr drawerActionsClients;
 
       void startTask(const std_msgs::msg::String::SharedPtr msg);
-      void split(string input, char deliminator,  vector<string> output); 
+      void split(string input, char deliminator,  vector<string> & output); 
       
       vector<robast_ros2_msgs::msg::Drawer, allocator<robast_ros2_msgs::msg::Drawer>> drawerList;
 
@@ -35,6 +36,10 @@ namespace robast
       void drawer_feedback_callback( GoalHandleDrawerInteraction::SharedPtr, const shared_ptr<const DrawerInteraction::Feedback> feedback);
       void drawer_result_callback(const GoalHandleDrawerInteraction::WrappedResult & result);
 
+
+      void drawer_info();
+      void open_drawer(std::vector<std::string> msg_split);
+      DrawerInteractionGoal create_dummy_drawer_interaction_msg();
 
     public:
     DrawerSym();

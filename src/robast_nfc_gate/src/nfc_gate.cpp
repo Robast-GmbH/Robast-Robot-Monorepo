@@ -42,19 +42,19 @@ namespace robast
   {
     RCLCPP_INFO(this->get_logger(), "scan task");
     numReadings=0;
- 
-    //timer = this->create_wall_timer( 500ms, bind(&NFCGate::scanTag, this, goal_handle));
-    std::thread{std::bind(&NFCGate::scanTag, this, placeholders::_1), goal_handle}.detach();
+    this->timer_handle= goal_handle;
+    timer = this->create_wall_timer( 500ms, bind(&NFCGate::scanTag, this));
+    //std::thread{std::bind(&NFCGate::scanTag, this, placeholders::_1), goal_handle}.detach();
   }
 
 
-  void NFCGate::scanTag(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle) 
+  void NFCGate::scanTag() 
   {
     auto reader_feedback = std::make_shared<robast_ros2_msgs::msg::NFCStatus>();
     string scaned_key, tag;  
     bool validTagNotfound= true;
     auto result = std::make_shared<AuthenticateUser::Result>();
-    const auto goal = goal_handle->get_goal();
+    const auto goal = timer_handle->get_goal();
 
     this->serial_connector.open_serial();
     this->serial_connector.send_ascii_cmd( SET_SERIAL_TO_ASCII);  
@@ -91,13 +91,14 @@ namespace robast
     {
       //feedback  
       feedback->reader_status.is_completted=false;
-      goal_handle->publish_feedback(feedback);
+      this->timer_handle->publish_feedback(feedback);
       return;
     }
     this->timer->cancel();
     feedback->reader_status.is_completted=true;
-    goal_handle->publish_feedback(feedback);
-
+    this->timer_handle->publish_feedback(feedback);
+    feedback->reader_status.is_completted=false;
+    
     this->serial_connector.send_ascii_cmd((TOP_LED_OFF(LED_RED)));
     this->serial_connector.send_ascii_cmd(BOTTOM_LED_OFF); 
 
@@ -109,7 +110,7 @@ namespace robast
         result-> permission_key_used = scaned_key;
         result-> sucessful = true;
         result-> error_message = ""; 
-        goal_handle->succeed(result);
+        this->timer_handle->succeed(result);
     }
   }
 

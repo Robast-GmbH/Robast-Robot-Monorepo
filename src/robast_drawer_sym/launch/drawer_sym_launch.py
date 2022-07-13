@@ -39,7 +39,7 @@ def generate_launch_description():
             )
         ld = LaunchDescription()
 
-        ld.add_action(start_drawer_gate_cmd)
+        #ld.add_action(start_drawer_gate_cmd)
         ld.add_action(start_nfc_gate_cmd)
         ld.add_action(start_drawer_manager_cmd)
         ld.add_action(start_drawer_sym_cmd)

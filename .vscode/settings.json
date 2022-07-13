@@ -69,9 +69,15 @@
         "list": "cpp",
         "unordered_set": "cpp",
         "shared_mutex": "cpp",
-        "typeindex": "cpp"
+        "typeindex": "cpp",
+        "*.idl": "cpp"
     },
     "python.autoComplete.extraPaths": [
+        "/workspaces/Ros_Hardware_Nodes/install/robast_ros2_msgs/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
         "/workspaces/Ros_Hardware_Nodes/install/robast_ros2_msgs/local/lib/python3.10/dist-packages",
         "/opt/ros/humble/lib/python3.10/site-packages",
         "/opt/ros/humble/local/lib/python3.10/dist-packages"
