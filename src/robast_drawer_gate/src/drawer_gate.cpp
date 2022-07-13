@@ -2,7 +2,7 @@
 
 
 // For DEBUGGING purposes this is the action send_goal command:
-// ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer: {drawer_controller_id: 1, drawer_id: 1}}"
+// ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer: {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
 
 namespace robast_drawer_gate
 {
@@ -75,7 +75,6 @@ namespace robast_drawer_gate
 
   void DrawerGate::timer_callback(void)
   {
-    RCLCPP_INFO(this->get_logger(), "Timer callback triggert!");
     this->update_drawer_status_from_can();
   }
 
@@ -338,7 +337,6 @@ namespace robast_drawer_gate
 
   bool DrawerGate::is_drawer_open(uint32_t drawer_controller_id, uint8_t drawer_id)
   {
-    RCLCPP_INFO(this->get_logger(), "Step 2.3: is_drawer_open"); // DEBUGGING
     if (drawer_status_by_drawer_controller_id.find(drawer_controller_id) == drawer_status_by_drawer_controller_id.end())
     {
       // key does not yet exist in the map
