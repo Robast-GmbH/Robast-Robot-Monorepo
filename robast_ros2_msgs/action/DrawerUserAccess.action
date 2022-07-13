@@ -1,5 +1,6 @@
 #goal
 robast_ros2_msgs/DrawerAddress drawer
+uint8 state  # controls from which step of the drawer user access should be performed, default should be 1
 ---
 #result
 bool success  # indicates whether closing of the drawer was successfull after opening it
