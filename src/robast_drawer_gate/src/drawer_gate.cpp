@@ -160,39 +160,24 @@ namespace robast_drawer_gate
     this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
   }
 
-  robast_can_msgs::CanMessage DrawerGate::create_can_msg_to_open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters)
+  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_user_access(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters, uint8_t can_data_open_lock)
   {
     robast_can_msgs::CanMessage can_msg_drawer_user_access = can_db.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
 
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = drawer_controller_id;
+
+    // Default state is lock close
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_CLOSE_LOCK;
+    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_CLOSE_LOCK;
 
     if (drawer_id == 1) 
     {
-      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_OPEN_LOCK;
-      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_CLOSE_LOCK;
+      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = can_data_open_lock;
     }
     if (drawer_id == 2)
     {
-      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_CLOSE_LOCK;
-      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_OPEN_LOCK;
+      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = can_data_open_lock;
     }
-
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_RED).data = led_parameters.led_red;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_GREEN).data = led_parameters.led_green;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BLUE).data = led_parameters.led_blue;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data = led_parameters.brightness;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_MODE).data = led_parameters.mode;
-
-    return can_msg_drawer_user_access;
-  }
-
-  robast_can_msgs::CanMessage DrawerGate::create_can_msg_for_opened_drawer(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters)
-  {
-    robast_can_msgs::CanMessage can_msg_drawer_user_access = can_db.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
-
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = drawer_controller_id;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_CLOSE_LOCK;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_CLOSE_LOCK;
 
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_RED).data = led_parameters.led_red;
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_GREEN).data = led_parameters.led_green;
@@ -303,7 +288,7 @@ namespace robast_drawer_gate
     led_parameters.brightness = 150;
     led_parameters.mode = 1;
 
-    robast_can_msgs::CanMessage can_msg_open_drawer = DrawerGate::create_can_msg_to_open_drawer(drawer_controller_id, drawer_id, led_parameters);
+    robast_can_msgs::CanMessage can_msg_open_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, drawer_id, led_parameters, CAN_DATA_OPEN_LOCK);
 
     this->send_can_msg(can_msg_open_drawer, led_parameters);
   }
@@ -343,9 +328,9 @@ namespace robast_drawer_gate
     led_parameters.brightness = 150;
     led_parameters.mode = 1; // mode 0 = instantly light up LEDs, mode 1 = fade up led light
 
-    robast_can_msgs::CanMessage can_msg_open_drawer = DrawerGate::create_can_msg_for_opened_drawer(drawer_controller_id, drawer_id, led_parameters);
+    robast_can_msgs::CanMessage can_msg_close_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, drawer_id, led_parameters, CAN_DATA_CLOSE_LOCK);
 
-    this->send_can_msg(can_msg_open_drawer, led_parameters);
+    this->send_can_msg(can_msg_close_drawer, led_parameters);
   }
 
   void DrawerGate::wait_until_drawer_is_closed(uint32_t drawer_controller_id, uint8_t drawer_id)
@@ -382,7 +367,16 @@ namespace robast_drawer_gate
 
   void DrawerGate::handle_closed_drawer(uint32_t drawer_controller_id, uint8_t drawer_id)
   {
-    //TODO: Implement
+    led_parameters led_parameters = {};
+    led_parameters.led_red = 255;
+    led_parameters.led_blue = 0;
+    led_parameters.led_green = 0;
+    led_parameters.brightness = 150;
+    led_parameters.mode = 2; // mode 0 = instantly light up LEDs, mode 1 = fade up led light, mode 2 = closing drawer led mode
+
+    robast_can_msgs::CanMessage can_msg_closed_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, drawer_id, led_parameters, CAN_DATA_CLOSE_LOCK);
+
+    this->send_can_msg(can_msg_closed_drawer, led_parameters);
   }
   
   void DrawerGate::handle_drawer_user_access(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
@@ -391,7 +385,7 @@ namespace robast_drawer_gate
 
     // Starting timer to receive feedback from drawer controller until the process of opening a drawer is finished
     this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
-    this->timer_ptr_ = this->create_wall_timer(1000ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
+    this->timer_ptr_ = this->create_wall_timer(50ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
 
     // Although the feedback is received periodical via the timer,
     // we update the drawer_status once manually to make sure

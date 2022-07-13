@@ -84,9 +84,7 @@ namespace robast_drawer_gate
       /* FUNCTIONS */
       void setup_serial_can_ubs_converter(void);
 
-      robast_can_msgs::CanMessage create_can_msg_to_open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters);
-
-      robast_can_msgs::CanMessage create_can_msg_for_opened_drawer(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters);
+      robast_can_msgs::CanMessage create_can_msg_drawer_user_access(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters, uint8_t can_data_open_lock);
 
       void send_can_msg(robast_can_msgs::CanMessage can_message, led_parameters led_parameters);
 
