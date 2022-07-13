@@ -295,7 +295,7 @@ namespace robast_drawer_gate
     led_parameters.led_red = 0;
     led_parameters.led_blue = 0;
     led_parameters.led_green = 255;
-    led_parameters.brightness = 255;
+    led_parameters.brightness = 150;
     led_parameters.mode = 1;
 
     robast_can_msgs::CanMessage can_msg_open_drawer = DrawerGate::create_can_msg_to_open_drawer(drawer_controller_id, drawer_id, led_parameters);
@@ -335,7 +335,7 @@ namespace robast_drawer_gate
     led_parameters.led_red = 255;
     led_parameters.led_blue = 255;
     led_parameters.led_green = 255;
-    led_parameters.brightness = 255;
+    led_parameters.brightness = 150;
     led_parameters.mode = 1; // mode 0 = instantly light up LEDs, mode 1 = fade up led light
 
     robast_can_msgs::CanMessage can_msg_open_drawer = DrawerGate::create_can_msg_for_opened_drawer(drawer_controller_id, drawer_id, led_parameters);
@@ -397,18 +397,23 @@ namespace robast_drawer_gate
 
     //TODO: Das  hier in switch cases ohne breakes umbauen
     // 1. step: Open lock of the drawer and light up LEDs to signalize which drawer should be openend
+    RCLCPP_INFO(this->get_logger(), "Step 1: Open Drawer"); // DEBUGGING
     this->open_drawer(drawer_controller_id, drawer_id);    
 
-    // 2. step: Wait until drawer is opened 
+    // 2. step: Wait until drawer is opened
+    RCLCPP_INFO(this->get_logger(), "Step 2: wait_until_drawer_is_opened"); // DEBUGGING
     this->wait_until_drawer_is_opened(drawer_controller_id, drawer_id);
 
     // 3. step: After drawer was opened, close lock and change light color
+    RCLCPP_INFO(this->get_logger(), "Step 3: handle_open_drawer"); // DEBUGGING
     this->handle_open_drawer(drawer_controller_id, drawer_id);
 
     // 4. step: Wait until drawer is closed again
+    RCLCPP_INFO(this->get_logger(), "Step 4: wait_until_drawer_is_closed"); // DEBUGGING
     this->wait_until_drawer_is_closed(drawer_controller_id, drawer_id);
 
     // 5. step: LED feedback
+    RCLCPP_INFO(this->get_logger(), "Step 5: handle_closed_drawer"); // DEBUGGING
     this->handle_closed_drawer(drawer_controller_id, drawer_id);
 
     this->timer_ptr_->cancel(); // Cancel the timer that is handling the feedback of the 
