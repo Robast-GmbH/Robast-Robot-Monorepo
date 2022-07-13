@@ -67,8 +67,6 @@ namespace robast_drawer_gate
         drawer_status.is_endstop_switch_2_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).data == 1;
         drawer_status.is_lock_switch_2_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).data == 1;
         this->drawer_status_by_drawer_controller_id[drawer_controller_id] = drawer_status;
-        RCLCPP_INFO(this->get_logger(), "Updated drawer_status!");
-        RCLCPP_INFO(this->get_logger(), "drawer_status.is_endstop_switch_1_pushed: %s", drawer_status.is_endstop_switch_1_pushed ? "true" : "false");
       }
     }
     cv.notify_one(); // Notify the waiting thread in the open_drawer function to check if condition is now satisfied 
