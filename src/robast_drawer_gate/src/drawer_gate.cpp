@@ -23,9 +23,6 @@ namespace robast_drawer_gate
     // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the open can channel to enable receiving CAN messages
     this->open_can_channel();
     this->serial_helper.close_serial();
-
-    //TODO: Timer callback, der regelmäßig aufgerufen wird und CAN Messages EINLIEST.
-    //TODO: Das sollte aber niemals gleichzeitig zum Abschicken von CAN Messages passieren, daher beide in eine Mutually Exclusive Callback Group packen!
   }
 
   //TODO: Dekonstruktor
@@ -410,7 +407,7 @@ namespace robast_drawer_gate
     led_parameters led_parameters = {};
     led_parameters.led_red = 255;
     led_parameters.led_blue = 0;
-    led_parameters.led_green = 0;
+    led_parameters.led_green = 128;
     led_parameters.brightness = 150;
     led_parameters.mode = 2; // mode 0 = instantly light up LEDs, mode 1 = fade up led light, mode 2 = closing drawer led mode
 
@@ -477,6 +474,9 @@ namespace robast_drawer_gate
       default:
         break;
     }
+
+    result->success = true;
+    goal_handle->succeed(result);
     RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
   }
 }  // namespace robast_drawer_gate
