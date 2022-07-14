@@ -6,8 +6,8 @@ namespace robast
   {
     RCLCPP_INFO(this->get_logger(), "Creating");
     this->drawers_info_server = this->create_service<ShelfSetupInfo>("Get_module_setup", bind(&DrawerManager::get_shelf_setup,this, placeholders::_1, placeholders::_2));
-    authenticate_user_client = rclcpp_action::create_client<AuthenticateUser>(this,"authenticate_user");
-    open_drawers_client = rclcpp_action::create_client<DrawerUserAccess>(this, "control_drawer");
+    authenticate_user_client = rclcpp_action::create_client<AuthenticateUser>(this,"/authenticate_user");
+    open_drawers_client = rclcpp_action::create_client<DrawerUserAccess>(this, "/control_drawer");
     
     this->access_drawer_service = rclcpp_action::create_server<DrawerInteraction>(
     this,
@@ -17,25 +17,23 @@ namespace robast
     bind(&DrawerManager::drawer_access_accepted_callback, this, placeholders::_1)
     );
 
-    this->authenticate_user_client = rclcpp_action::create_client<robast_ros2_msgs::action::AuthenticateUser>(this,"authenticate_drawer_user");
-    this->open_drawers_client = rclcpp_action::create_client<DrawerUserAccess>(this,"open_drawer_drawer");
   }
 
 
   void DrawerManager::get_shelf_setup(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
   {
-    drawers_info_client = this->create_client<ShelfSetupInfo>("shelf_setup_info");
+    drawers_info_client = this->create_client<ShelfSetupInfo>("/shelf_setup_info");
 
      auto clientRequest = std::make_shared<ShelfSetupInfo::Request>();
    
 
-    while (!drawers_info_client->wait_for_service(1s)) {
+    /*while (!drawers_info_client->wait_for_service(1s)) {
       if (!rclcpp::ok()) {
         RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service. Exiting.");
         return ;
       }
       RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service not available, waiting again...");
-    }
+    }*/
       auto service_responce_callback = [this, response]( rclcpp::Client<ShelfSetupInfo>::SharedFuture future) {
       response->drawers= future.get()->drawers;
     };
@@ -74,10 +72,11 @@ namespace robast
 
   void DrawerManager::check_drawer_permission(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle)
   {
-     const auto goal = goal_handle->get_goal();
+   
+    const auto goal = goal_handle->get_goal();
     
     // NFC Reader
-    if (!this->authenticate_user_client->wait_for_action_server()) 
+    /*if (!this->authenticate_user_client->wait_for_action_server()) 
     { 
       auto responce = std::shared_ptr<robast_ros2_msgs::action::DrawerInteraction::Result>(); 
       responce->error_message= "nfc_gate node is not responding";
@@ -87,8 +86,8 @@ namespace robast
       
     }
     else
-    {
-    
+    {*/
+      
       auto authentication_request = AuthenticateUser::Goal();
       authentication_request.permission_keys =  (goal.get()->loading ? goal.get()->task.ticket.load_key:goal.get()->task.ticket.drop_of_key);
     
@@ -98,7 +97,8 @@ namespace robast
       send_goal_options.result_callback = bind(&DrawerManager::authentication_result_callback, this, placeholders::_1, goal_handle );
  
       this->authenticate_user_client->async_send_goal(authentication_request, send_goal_options);
-    }
+      
+    //}
   }
   
   void DrawerManager::authentication_goal_response_callback( const GoalHandleAuthenticateUser::SharedPtr & goal_handle)
@@ -133,8 +133,8 @@ namespace robast
   
   void DrawerManager::authentication_result_callback(const GoalHandleAuthenticateUser::WrappedResult & result, const std::shared_ptr<GoalHandleDrawerInteraction> task_handle)
   {
-     
-    if (!this->open_drawers_client->wait_for_action_server()) 
+  
+    /*if (!this->open_drawers_client->wait_for_action_server()) 
     {
       auto responce = std::shared_ptr<robast_ros2_msgs::action::DrawerInteraction::Result>(); 
       responce->error_message= "drawer_gate node is not responding";
@@ -143,9 +143,9 @@ namespace robast
       RCLCPP_ERROR(this->get_logger(), "Failed to reach the Drawer_gate");
     }
     else
-    {
+    {*/
       start_open_drawer_action(task_handle);
-    }
+    //}
   }
 
   void DrawerManager::open_drawer_goal_response_callback( const GoalHandleDrawerUserAccess::SharedPtr & goal_handle)
@@ -194,7 +194,7 @@ namespace robast
     send_goal_options.goal_response_callback = bind(&DrawerManager::open_drawer_goal_response_callback, this, placeholders::_1);
     send_goal_options.feedback_callback = bind(&DrawerManager::open_drawer_feedback_callback, this, placeholders::_1, placeholders:: _2);
     send_goal_options.result_callback = bind(&DrawerManager::open_drawer_result_callback, this, placeholders::_1, task_handle);
- 
+    RCLCPP_INFO(this->get_logger(), " open drawer controller");
     this->open_drawers_client->async_send_goal(open_drawer_request, send_goal_options);
 
   }

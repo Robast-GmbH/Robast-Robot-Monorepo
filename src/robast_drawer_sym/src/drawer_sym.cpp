@@ -7,6 +7,7 @@ namespace robast
     {
         this->publisher = this->create_publisher<std_msgs::msg::String>("drawerInfo", 10);
         this->subscription = this->create_subscription<std_msgs::msg::String>( "drawerCommand", 10, bind(&DrawerSym::startTask, this, placeholders::_1));
+        this->drawerActionsClients = rclcpp_action::create_client<DrawerInteraction>(this, "drawerInteraction");
     }
 
     void DrawerSym::startTask(const std_msgs::msg::String::SharedPtr msg)
@@ -14,7 +15,7 @@ namespace robast
         vector<string> msg_split;
         this->split(msg->data.c_str(),' ', msg_split);
 
-         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "request Command: %s",msg_split.at(0).c_str());
+         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "request Command: |%s|",msg_split.at(0).c_str());
 
         if(msg_split.at(0)=="INFO")
         {
@@ -22,13 +23,8 @@ namespace robast
         }
         else if(msg_split.at(0)=="OPEN")
         {
-            open_drawer(msg_split);
-        }
-        else if(msg_split.at(0)=="HELP")
-        {
-             auto responce = std_msgs::msg::String();
-                    responce.data= "Shelf info: INFO \n open Drawer V1: DRAWER <LOADING/NOTLOADING> <controller_id> <drawer_id>\n Open Drawer V2: DRAWER <LOADING/NOTLOADING> <shelf info index> \n";
-                    this->publisher->publish(responce);
+            DrawerSym::open_drawer(msg_split);
+
         } 
         else
         {
@@ -72,6 +68,7 @@ namespace robast
 
     void DrawerSym::open_drawer(std::vector<std::string> msg_split)
     {
+        
         if (!drawerActionsClients->wait_for_action_server()) 
             {
                 RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
@@ -96,6 +93,8 @@ namespace robast
             send_goal_options.goal_response_callback = bind(&DrawerSym::drawer_goal_response_callback, this, placeholders::_1);
             send_goal_options.feedback_callback = bind(&DrawerSym::drawer_feedback_callback, this, placeholders::_1, placeholders::_2);
             send_goal_options.result_callback = bind(&DrawerSym::drawer_result_callback, this, placeholders::_1);
+
+        
             this->drawerActionsClients->async_send_goal(goal_msg, send_goal_options);
     } 
 
