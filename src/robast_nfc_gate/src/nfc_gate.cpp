@@ -4,7 +4,7 @@
 namespace robast
 {
 
-  NFCGate::NFCGate( ):NFCGate( "/dev/serial/by-id/usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04-if00" ) { }
+  NFCGate::NFCGate( ):NFCGate( "/dev/serial/by-id/usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04_B-if00" ) { }
 
   NFCGate::NFCGate( string serial_port_path ) : Node("robast_nfc_gate")
   {
@@ -34,7 +34,6 @@ namespace robast
   rclcpp_action::CancelResponse NFCGate::auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
   {
     RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
-    // (void)goal_handle;
     return rclcpp_action::CancelResponse::ACCEPT;
   }
 
@@ -68,12 +67,14 @@ namespace robast
       return;
     } 
 
-    RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
-    if(tag.length() <10)
+    RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str());
+    
+    if(tag[3]=='1')
     {
-      return;
+      validTagNotfound=false;
+      RCLCPP_INFO(this->get_logger(),"found");
     }
- 
+/*
     this->serial_connector.send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
     this->serial_connector.send_ascii_cmd(NFC_READ_MC("02"));
     if(this->serial_connector.read_serial(&scaned_key, 50)<=0)
@@ -84,7 +85,7 @@ namespace robast
     this->serial_connector.send_ascii_cmd(BEEP_STANDART); 
 
     validTagNotfound= true;//std::find(std::begin(goal->permission_keys), std::end(goal->permission_keys), scaned_key) != std::end(goal->permission_keys);
-    
+    */
     auto feedback = std::make_shared<AuthenticateUser::Feedback>();
     feedback->reader_status.unidentified_readings = ++numReadings;
     if(validTagNotfound)
@@ -98,7 +99,8 @@ namespace robast
     feedback->reader_status.is_completted=true;
     this->timer_handle->publish_feedback(feedback);
     feedback->reader_status.is_completted=false;
-
+    
+    this->serial_connector.send_ascii_cmd(BEEP_STANDART);
     this->serial_connector.send_ascii_cmd((TOP_LED_OFF(LED_RED)));
     this->serial_connector.send_ascii_cmd(BOTTOM_LED_OFF); 
 
@@ -114,7 +116,6 @@ namespace robast
     }
   }
 
-  //TODO: callback
   void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)
   {
       this->serial_connector.open_serial();
