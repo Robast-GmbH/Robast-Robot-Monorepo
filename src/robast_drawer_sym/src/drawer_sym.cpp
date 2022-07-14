@@ -22,7 +22,13 @@ namespace robast
         }
         else if(msg_split.at(0)=="OPEN")
         {
-            DrawerSym::open_drawer(msg_split);
+            open_drawer(msg_split);
+        }
+        else if(msg_split.at(0)=="HELP")
+        {
+             auto responce = std_msgs::msg::String();
+                    responce.data= "Shelf info: INFO \n open Drawer V1: DRAWER <LOADING/NOTLOADING> <controller_id> <drawer_id>\n Open Drawer V2: DRAWER <LOADING/NOTLOADING> <shelf info index> \n";
+                    this->publisher->publish(responce);
         } 
         else
         {
@@ -72,7 +78,7 @@ namespace robast
                 return;
             }
             auto goal_msg =create_dummy_drawer_interaction_msg();
-            goal_msg.loading= msg_split[1] == "LODING";
+            goal_msg.loading= msg_split[1] == "LOADING";
             
             
             if(msg_split.size() == 4)
