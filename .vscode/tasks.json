@@ -18,6 +18,13 @@
             "problemMatcher": []
         },
         {
+            "label": "Launch Drawer Simulation",
+            "detail": "Launch the drawer simulation/testing",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch robast_drawer_sym drawer_sym_launch.py",
+            "problemMatcher": []
+        },
+        {
             "label": "Open Drawer 1",
             "detail": "Send action message to open the drawer with the controller id 1",
             "type": "shell",
@@ -29,6 +36,13 @@
             "detail": "Send action message to open the drawer with the controller id 2",
             "type": "shell",
             "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer: {drawer_controller_id: 2, drawer_id: 1}, state: 1}'",
+            "problemMatcher": []
+        },
+        {
+            "label": "Drawer Sym Command",
+            "detail": "Send command to drawer simulation node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /drawerCommand std_msgs/String '{data: OPEN LOAD 1 1}' -1",
             "problemMatcher": []
         },
         {
