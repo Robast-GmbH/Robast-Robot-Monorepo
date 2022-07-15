@@ -2,6 +2,8 @@
 #include <mcp_can.h>
 #include <FastLED.h>
 
+#include "pinout_defines.h"
+
 #include "robast_can_msgs/can_db.h"
 #include "robast_can_msgs/can_helper.h"
 
@@ -9,32 +11,10 @@
   GLOBAL VARIABLES AND CONSTANTS
 *********************************************************************************************************/
 
-#define DRAWER_CONTROLLER_ID 1 //TODO: Every DRAWER_CONTROLLER needs to have his own id
-
-#define PWR_OPEN_LOCK1_PIN GPIO_NUM_22
-#define PWR_CLOSE_LOCK1_PIN GPIO_NUM_21
-#define SENSOR_LOCK1_PIN GPIO_NUM_36
-#define SENSOR_DRAWER1_CLOSED_PIN GPIO_NUM_39
-
-#define PWR_OPEN_LOCK2_PIN GPIO_NUM_4
-#define PWR_CLOSE_LOCK2_PIN GPIO_NUM_15
-#define SENSOR_LOCK2_PIN GPIO_NUM_34
-#define SENSOR_DRAWER2_CLOSED_PIN GPIO_NUM_35
-
-#define OE_TXB0104 GPIO_NUM_32
-#define MCP2515_INT GPIO_NUM_25
-#define MCP2515_RX0BF GPIO_NUM_26
-#define MCP2515_RX1BF GPIO_NUM_27
-
-#define SPI_MOSI GPIO_NUM_23
-#define SPI_MISO GPIO_NUM_19
-#define SPI_CLK GPIO_NUM_18
-#define SPI_CS GPIO_NUM_5
-
-#define LED_PIXEL_PIN GPIO_NUM_13
+#define DRAWER_CONTROLLER_ID 2 //TODO: Every DRAWER_CONTROLLER needs to have his own id
 
 #define NUM_LEDS 25 // number of LEDs for LED strip
-#define MIDDLE_LED 13 // adress of the middle LED
+#define MIDDLE_LED 13 // address of the middle LED, which is important for running LED mode
 
 CRGBArray<NUM_LEDS> leds;
 uint8_t led_target_red;
@@ -65,14 +45,18 @@ float moving_average_drawer1_closed_pin = 0;
 float moving_average_sensor_lock2_pin = 0;
 float moving_average_drawer2_closed_pin = 0;
 
+ // flags to store which state the locks should have
+bool open_lock_1 = false;
+bool open_lock_2 = false;
+
 hw_timer_t * fading_up_timer = NULL;
 portMUX_TYPE fading_up_timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
 hw_timer_t * running_led_timer = NULL;
 portMUX_TYPE running_led_timer_mux = portMUX_INITIALIZER_UNLOCKED;
 
-volatile uint8_t running_led_offset_from_middle = 0;
-#define NUM_OF_LED_SHADOWS 3
+volatile uint8_t running_led_offset_from_middle = 0; // this variable controls which LED is currently shining for the running LED mode
+#define NUM_OF_LED_SHADOWS 3 // Number of "shadow" LEDs for running LED. At the moment you need to do a few more changes to increase the number of shadow LEDs, in the future it should only be this define
 
 /*********************************************************************************************************
   FUNCTIONS
@@ -144,9 +128,12 @@ void initialize_locks(void)
 
   digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
   digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
+
+  open_lock_1 = false;
+  open_lock_2 = false;
 }
 
-void initialize_LED_strip(void)
+void initialize_led_strip(void)
 {
   FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_LEDS);
   led_current_brightness = 0;
@@ -162,42 +149,74 @@ void initialize_timer(void)
 
   running_led_timer = timerBegin(1, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
   timerAttachInterrupt(running_led_timer, &on_timer_for_running_led, true);
-  timerAlarmWrite(running_led_timer, 50000, true); // 50000 is a good value
+  timerAlarmWrite(running_led_timer, 50000, true); // 50000 is a good value. This defines how fast the LED will "run". Higher values will decrease the running speed.
   timerAlarmEnable(running_led_timer);
 }
 
-void handle_locks(robast_can_msgs::CanMessage can_message)
+void activate_drawer_feedback_broadcast(void)
 {
-  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_OPEN_LOCK)
+  broadcast_feedback = true;
+  interval_drawer_feedback_in_ms = 50;
+}
+
+void deactivate_drawer_feedback_broadcast(void)
+{
+  broadcast_feedback = false;
+  interval_drawer_feedback_in_ms = DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS;
+}
+
+void open_lock(uint8_t lock_id)
+{
+  if (lock_id == 1)
   {
-    // Once the opening of a lock is triggert, we want to activate the drawer feedback broadcast
-    broadcast_feedback = true;
-    interval_drawer_feedback_in_ms = 50;
     digitalWrite(PWR_CLOSE_LOCK1_PIN, LOW);
     digitalWrite(PWR_OPEN_LOCK1_PIN, HIGH);
   }
-  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_CLOSE_LOCK)
+  if (lock_id == 2)
+  {
+    digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
+    digitalWrite(PWR_OPEN_LOCK2_PIN, HIGH);
+  }
+}
+
+void close_lock(uint8_t lock_id)
+{
+  if (lock_id == 1)
   {
     digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
     digitalWrite(PWR_CLOSE_LOCK1_PIN, HIGH);
   }
-
-  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_OPEN_LOCK)
-  {
-    // Once the opening of a lock is triggert, we want to activate the drawer feedback broadcast
-    broadcast_feedback = true;
-    interval_drawer_feedback_in_ms = 50;
-    digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
-    digitalWrite(PWR_OPEN_LOCK2_PIN, HIGH);
-  }
-  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_CLOSE_LOCK)
+  if (lock_id == 2)
   {
     digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
     digitalWrite(PWR_CLOSE_LOCK2_PIN, HIGH);
   }
 }
 
-void LED_standard_mode()
+void handle_lock_status(robast_can_msgs::CanMessage can_message)
+{
+  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_OPEN_LOCK)
+  {
+    open_lock_1 = true;
+    activate_drawer_feedback_broadcast();
+  }
+  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_CLOSE_LOCK)
+  {
+    open_lock_1 = false;
+  }
+
+  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_OPEN_LOCK)
+  {
+    open_lock_2 = true;
+    activate_drawer_feedback_broadcast();
+  }
+  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_CLOSE_LOCK)
+  {
+    open_lock_2 = false;
+  }
+}
+
+void led_standard_mode()
 {
   if (led_target_brightness != led_current_brightness ||
       led_target_red != led_current_red ||
@@ -217,7 +236,7 @@ void LED_standard_mode()
   }
 }
 
-void LED_fade_on_mode()
+void led_fade_on_mode()
 {
   // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
   if (led_target_brightness != led_current_brightness ||
@@ -237,7 +256,7 @@ void LED_fade_on_mode()
   }  
 }
 
-void LED_closing_drawer_mode()
+void led_closing_drawer_mode()
 {
   if ((MIDDLE_LED - running_led_offset_from_middle) >= 0 - NUM_OF_LED_SHADOWS)
   {
@@ -289,11 +308,10 @@ void LED_closing_drawer_mode()
   }
 
   // Once closing the drawer is finished, set back the interval time to the default value and deactivate broadcast feedback
-  interval_drawer_feedback_in_ms = DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS;
-  broadcast_feedback = false;
+  deactivate_drawer_feedback_broadcast();
 }
 
-void select_LED_strip_mode(robast_can_msgs::CanMessage can_message)
+void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
 {
   led_target_red = can_message.can_signals.at(CAN_SIGNAL_LED_RED).data;
   led_target_green = can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data;
@@ -313,6 +331,7 @@ void select_LED_strip_mode(robast_can_msgs::CanMessage can_message)
         portENTER_CRITICAL(&running_led_timer_mux);
         running_led_offset_from_middle = 0;
         portEXIT_CRITICAL(&running_led_timer_mux);
+        break;
       
       default:
         break;
@@ -343,15 +362,15 @@ void debug_prints(robast_can_msgs::CanMessage can_message)
   Serial.println(can_message.can_signals.at(CAN_SIGNAL_LED_MODE).data, DEC);
 }
 
-void handle_CAN_msg(robast_can_msgs::CanMessage can_message)
+void handle_can_msg(robast_can_msgs::CanMessage can_message)
 {
   if (can_message.id == CAN_ID_DRAWER_USER_ACCESS)
   {
     if (can_message.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data == DRAWER_CONTROLLER_ID)
     {
-      handle_locks(can_message);
+      handle_lock_status(can_message);
 
-      select_LED_strip_mode(can_message);
+      select_led_strip_mode(can_message);
 
       debug_prints(can_message);
     }
@@ -360,6 +379,8 @@ void handle_CAN_msg(robast_can_msgs::CanMessage can_message)
 
 void handle_receiving_can_msg()
 {
+  if(!digitalRead(MCP2515_INT)) // If CAN0_INT pin is low, read receive buffer
+  {  
     Serial.println("Received CAN message!");
 
     CAN0.readMsgBuf(&rx_msg_id, &rx_msg_dlc, rx_data_buf);
@@ -368,13 +389,14 @@ void handle_receiving_can_msg()
 
     if (can_message.has_value())
     {
-      handle_CAN_msg(can_message.value());      
+      handle_can_msg(can_message.value());      
     }
     else
     {
       Serial.println("There is no CAN Message available in the CAN Database that corresponds to the msg id: ");
       Serial.print(rx_msg_id, HEX);
     }
+  }
 }
 
 void handle_reading_sensors(void)
@@ -418,24 +440,30 @@ robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
   return can_msg_drawer_feedback;
 }
 
-void handle_LED_control(void)
+void handle_lock_control(void)
+{
+  open_lock_1 ? open_lock(1) : close_lock(1);
+  open_lock_2 ? open_lock(2) : close_lock(2);
+}
+
+void handle_led_control(void)
 {
   switch (led_mode)
     {
       case 0:
-        LED_standard_mode();
+        led_standard_mode();
         break;
 
       case 1:
-        LED_fade_on_mode();
+        led_fade_on_mode();
         break;
 
       case 2:
-        LED_closing_drawer_mode();
+        led_closing_drawer_mode();
         break;
       
       default:
-        LED_standard_mode();
+        led_standard_mode();
         break;
     }
 }
@@ -458,6 +486,17 @@ void sending_drawer_status_feedback(void)
   }
 }
 
+void handle_sending_drawer_status_feedback(void)
+{
+  unsigned long current_millis = millis();
+  if (broadcast_feedback && (current_millis - previous_millis >= interval_drawer_feedback_in_ms))
+  {
+    previous_millis = current_millis;
+    
+    sending_drawer_status_feedback();
+  }
+}
+
 
 /*********************************************************************************************************
   SETUP
@@ -473,7 +512,7 @@ void setup()
 
   initialize_locks();
 
-  initialize_LED_strip();
+  initialize_led_strip();
 
   initialize_timer();
 }
@@ -485,22 +524,15 @@ void setup()
 
 void loop()
 {
-  if(!digitalRead(MCP2515_INT)) // If CAN0_INT pin is low, read receive buffer
-  {
-    handle_receiving_can_msg();
-  }
+  handle_receiving_can_msg();
 
-  handle_LED_control();
+  handle_lock_control();
+
+  handle_led_control();
   
   handle_reading_sensors();
 
-  unsigned long current_millis = millis();
-  if (current_millis - previous_millis >= interval_drawer_feedback_in_ms && broadcast_feedback)
-  {
-    previous_millis = current_millis;
-    
-    sending_drawer_status_feedback();
-  }
+  handle_sending_drawer_status_feedback();
 }
 
 
