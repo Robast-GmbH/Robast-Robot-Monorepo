@@ -449,26 +449,32 @@ namespace robast_drawer_gate
     {
       case 1:
         // 1. step: Open lock of the drawer and light up LEDs to signalize which drawer should be opened
+        RCLCPP_INFO(this->get_logger(), "Step 1: Open lock of the drawer and light up LEDs to signalize which drawer should be opened"); // DEBUGGING
         this->open_drawer(drawer_controller_id, drawer_id);
       
       case 2:
         // 2. step: Wait until at least one drawer_status feedback message from the Drawer Controller is received  
+        RCLCPP_INFO(this->get_logger(), "Step 2: Wait until at least one drawer_status feedback message from the Drawer Controller is received "); // DEBUGGING
         this->wait_until_initial_drawer_status_received(drawer_controller_id);
 
       case 3:
         // 3. step: Wait until drawer is opened
+        RCLCPP_INFO(this->get_logger(), "Step 3: Wait until drawer is opened"); // DEBUGGING
         this->wait_until_drawer_is_opened(drawer_controller_id, drawer_id);
 
       case 4:
         // 4. step: After drawer was opened, close lock and change light color
+        RCLCPP_INFO(this->get_logger(), "Step 4: After drawer was opened, close lock and change light color"); // DEBUGGING
         this->handle_open_drawer(drawer_controller_id, drawer_id);
 
       case 5:
         // 5. step: Wait until drawer is closed again
+        RCLCPP_INFO(this->get_logger(), "Step 5: Wait until drawer is closed again"); // DEBUGGING
         this->wait_until_drawer_is_closed(drawer_controller_id, drawer_id);
 
       case 6:
-        // 6. step: LED feedback
+        // 6. step: LED closed feedback
+        RCLCPP_INFO(this->get_logger(), "Step 6: LED closed feedback"); // DEBUGGING
         this->handle_closed_drawer(drawer_controller_id, drawer_id);
       
       default:
