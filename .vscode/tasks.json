@@ -11,6 +11,27 @@
             "problemMatcher": []
         },
         {
+            "label": "Launch Drawer Gate",
+            "detail": "Launch the drawer gate node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch robast_drawer_gate drawer_gate_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Open Drawer 1",
+            "detail": "Send action message to open the drawer with the controller id 1",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer: {drawer_controller_id: 1, drawer_id: 1}, state: 1}'",
+            "problemMatcher": []
+        },
+        {
+            "label": "Open Drawer 2",
+            "detail": "Send action message to open the drawer with the controller id 2",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer: {drawer_controller_id: 2, drawer_id: 1}, state: 1}'",
+            "problemMatcher": []
+        },
+        {
             "label": "clean-build",
             "detail": "Purges and symlink colcon build",
             "dependsOn": [
