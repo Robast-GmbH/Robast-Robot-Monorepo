@@ -45,7 +45,7 @@ float moving_average_drawer1_closed_pin = 0;
 float moving_average_sensor_lock2_pin = 0;
 float moving_average_drawer2_closed_pin = 0;
 
- // flags to store which state the locks should have
+// flags to store which state the locks should have
 bool open_lock_1 = false;
 bool open_lock_2 = false;
 
@@ -218,22 +218,16 @@ void handle_lock_status(robast_can_msgs::CanMessage can_message)
 
 void led_standard_mode()
 {
-  if (led_target_brightness != led_current_brightness ||
-      led_target_red != led_current_red ||
-      led_target_green != led_current_green ||
-      led_target_blue != led_current_blue)
-  {
-    for(int i = 0; i < NUM_LEDS; i++)
-    {   
-      leds[i] = CRGB(led_target_red, led_target_green, led_target_blue);
-    }
-    led_current_red = led_target_red;
-    led_current_green = led_target_green;
-    led_current_blue = led_target_green;
-    led_current_brightness = led_target_brightness;
-    FastLED.setBrightness(led_target_brightness);
-    FastLED.show();
+  for(int i = 0; i < NUM_LEDS; i++)
+  {   
+    leds[i] = CRGB(led_target_red, led_target_green, led_target_blue);
   }
+  led_current_red = led_target_red;
+  led_current_green = led_target_green;
+  led_current_blue = led_target_green;
+  led_current_brightness = led_target_brightness;
+  FastLED.setBrightness(led_target_brightness);
+  FastLED.show();
 }
 
 void led_fade_on_mode()
@@ -371,9 +365,9 @@ void handle_can_msg(robast_can_msgs::CanMessage can_message)
       handle_lock_status(can_message);
 
       select_led_strip_mode(can_message);
-
-      debug_prints(can_message);
     }
+
+    debug_prints(can_message);
   }
 }
 
