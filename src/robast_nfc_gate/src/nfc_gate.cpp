@@ -6,9 +6,9 @@ namespace robast
 
   NFCGate::NFCGate( ):NFCGate( "/dev/serial/by-id/usb-Robast_Authentication_NFC_Side_Reader" ) { }
 
-  NFCGate::NFCGate( string serial_port_path ) : Node("robast_nfc_gate")
+  NFCGate::NFCGate( string serial_port_path ) : Node("robast_nfc_gate"), serial_connector(serial_port_path)
   {
-
+    //this->serial_connector= new robast_serial::SerialHelper(); 
     RCLCPP_INFO(this->get_logger(), "constructor start: %s",serial_port_path.c_str()); 
     this->serial_connector=robast_serial::SerialHelper(serial_port_path);
     this->user_authenticate_server = rclcpp_action::create_server<AuthenticateUser>(

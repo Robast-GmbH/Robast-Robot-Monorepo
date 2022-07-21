@@ -45,7 +45,7 @@ namespace robast
    
     int numReadings;
     //robast_serial::SerialHelper serial_connector;//= robast_serial::SerialHelper("");
-    robast_serial::SerialHelper serial_connector = robast_serial::SerialHelper("/dev/serial/by-id/usb-Microchip_Technology__Inc._USBtin_A0211324-if00");
+    robast_serial::SerialHelper serial_connector;
     rclcpp::TimerBase::SharedPtr timer;
     shared_ptr<GoalHandleAuthenticateUser> timer_handle;
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
