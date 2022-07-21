@@ -73,7 +73,7 @@ namespace robast_drawer_gate
       rclcpp::TimerBase::SharedPtr timer_ptr_;
       rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service;
 
-      robast_serial::SerialHelper serial_helper = robast_serial::SerialHelper("/dev/serial/by-id/usb-Microchip_Technology__Inc._USBtin_A0211324-if00");
+      robast_serial::SerialHelper serial_helper = robast_serial::SerialHelper("/dev/serial/by-id/usb-Robast_Drawer_Serial_To_CAN");
 
       robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 

@@ -53,6 +53,13 @@
             "problemMatcher": []
         },
         {
+            "label": "Docker serial setup",
+            "detail": "copy the CAN and NFC device serial ports to new location with fixed name",
+            "type": "shell",
+            "command": "sudo bash .devcontainer/usb.sh ",
+            "problemMatcher": []
+        },
+        {
             "label": "clean-build",
             "detail": "Purges and symlink colcon build",
             "dependsOn": [

@@ -4,7 +4,7 @@
 namespace robast
 {
 
-  NFCGate::NFCGate( ):NFCGate( "/dev/serial/by-id/usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04-if00" ) { }
+  NFCGate::NFCGate( ):NFCGate( "/dev/serial/by-id/usb-Robast_Authentication_NFC_Side_Reader" ) { }
 
   NFCGate::NFCGate( string serial_port_path ) : Node("robast_nfc_gate")
   {
