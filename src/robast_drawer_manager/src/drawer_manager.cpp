@@ -143,13 +143,13 @@ namespace robast
      {
        start_open_drawer_action(task_handle);
      }
-     else 
+     /*else 
      {
       auto responce = std::shared_ptr<robast_ros2_msgs::action::DrawerInteraction::Result>(); 
       responce->sucessful= true;
       task_handle->succeed(responce);
 
-     }
+     }*/
 
   }
   void DrawerManager::start_open_drawer_action(const std::shared_ptr<GoalHandleDrawerInteraction> task_handle)
