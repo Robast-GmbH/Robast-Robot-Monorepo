@@ -44,7 +44,7 @@ namespace robast
     private:
    
     int numReadings;
-    //robast_serial::SerialHelper serial_connector;//= robast_serial::SerialHelper("");
+    
     robast_serial::SerialHelper serial_connector;
     rclcpp::TimerBase::SharedPtr timer;
     shared_ptr<GoalHandleAuthenticateUser> timer_handle;
