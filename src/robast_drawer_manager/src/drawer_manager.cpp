@@ -22,22 +22,11 @@ namespace robast
 
   void DrawerManager::get_shelf_setup(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
   {
+    
     drawers_info_client = this->create_client<ShelfSetupInfo>("/shelf_setup_info");
 
-     auto clientRequest = std::make_shared<ShelfSetupInfo::Request>();
-   
-
-    /*while (!drawers_info_client->wait_for_service(1s)) {
-      if (!rclcpp::ok()) {
-        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service. Exiting.");
-        return ;
-      }
-      RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service not available, waiting again...");
-    }*/
-      auto service_responce_callback = [this, response]( rclcpp::Client<ShelfSetupInfo>::SharedFuture future) {
-      response->drawers= future.get()->drawers;
-    };
-   
+    auto clientRequest = std::make_shared<ShelfSetupInfo::Request>();
+    auto service_responce_callback = [this, response]( rclcpp::Client<ShelfSetupInfo>::SharedFuture future) { response->drawers= future.get()->drawers;};
     auto result = drawers_info_client->async_send_request(request,service_responce_callback);
     
     // Wait for the result.
@@ -66,6 +55,7 @@ namespace robast
   void DrawerManager::drawer_access_accepted_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle)
   {
     RCLCPP_INFO(this->get_logger(), "open drawer");
+    RCLCPP_INFO(this->get_logger(), "authentication_result_callback %s", goal_handle->get_goal().get()->task.ticket.load_key);
     std::thread{std::bind(&DrawerManager::check_drawer_permission, this, goal_handle)}.detach();
   }
 
@@ -76,31 +66,19 @@ namespace robast
     const auto goal = goal_handle->get_goal();
     
     // NFC Reader
-    /*if (!this->authenticate_user_client->wait_for_action_server()) 
-    { 
-      auto responce = std::shared_ptr<robast_ros2_msgs::action::DrawerInteraction::Result>(); 
-      responce->error_message= "nfc_gate node is not responding";
-      responce->sucessful= false;
-      goal_handle->abort(responce);
-      RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
+    RCLCPP_INFO(this->get_logger(), "check_drawer_permission %s", goal_handle->get_goal().get()->task.ticket.load_key);
       
-    }
-    else
-    {*/
-      
-      auto authentication_request = AuthenticateUser::Goal();
-      authentication_request.permission_keys =  (goal.get()->loading ? goal.get()->task.ticket.load_key:goal.get()->task.ticket.drop_of_key);
+    auto authentication_request = AuthenticateUser::Goal();
+    authentication_request.permission_keys =  (goal.get()->loading ? goal.get()->task.ticket.load_key:goal.get()->task.ticket.drop_of_key);
     
-      auto send_goal_options = rclcpp_action::Client<AuthenticateUser>::SendGoalOptions();
-      send_goal_options.goal_response_callback = bind(&DrawerManager::authentication_goal_response_callback, this, placeholders::_1);
-      send_goal_options.feedback_callback = bind(&DrawerManager::authentication_feedback_callback, this, placeholders::_1, placeholders:: _2);
-      send_goal_options.result_callback = bind(&DrawerManager::authentication_result_callback, this, placeholders::_1, goal_handle );
+    auto send_goal_options = rclcpp_action::Client<AuthenticateUser>::SendGoalOptions();
+    send_goal_options.goal_response_callback = bind(&DrawerManager::authentication_goal_response_callback, this, placeholders::_1);
+    send_goal_options.feedback_callback = bind(&DrawerManager::authentication_feedback_callback, this, placeholders::_1, placeholders:: _2);
+    send_goal_options.result_callback = bind(&DrawerManager::authentication_result_callback, this, placeholders::_1, goal_handle );
  
-      this->authenticate_user_client->async_send_goal(authentication_request, send_goal_options);
-      
-    //}
+    this->authenticate_user_client->async_send_goal(authentication_request, send_goal_options);
   }
-  
+
   void DrawerManager::authentication_goal_response_callback( const GoalHandleAuthenticateUser::SharedPtr & goal_handle)
   {
     if (!goal_handle) 
@@ -133,19 +111,9 @@ namespace robast
   
   void DrawerManager::authentication_result_callback(const GoalHandleAuthenticateUser::WrappedResult & result, const std::shared_ptr<GoalHandleDrawerInteraction> task_handle)
   {
-  
-    /*if (!this->open_drawers_client->wait_for_action_server()) 
-    {
-      auto responce = std::shared_ptr<robast_ros2_msgs::action::DrawerInteraction::Result>(); 
-      responce->error_message= "drawer_gate node is not responding";
-      responce->sucessful= false;
-      task_handle->abort(responce);
-      RCLCPP_ERROR(this->get_logger(), "Failed to reach the Drawer_gate");
-    }
-    else
-    {*/
+
+       RCLCPP_INFO(this->get_logger(), "authentication_result_callback %s", task_handle->get_goal().get()->task.ticket.load_key[0].c_str());
       start_open_drawer_action(task_handle);
-    //}
   }
 
   void DrawerManager::open_drawer_goal_response_callback( const GoalHandleDrawerUserAccess::SharedPtr & goal_handle)
@@ -175,20 +143,20 @@ namespace robast
      {
        start_open_drawer_action(task_handle);
      }
-     else 
+     /*else 
      {
       auto responce = std::shared_ptr<robast_ros2_msgs::action::DrawerInteraction::Result>(); 
       responce->sucessful= true;
       task_handle->succeed(responce);
 
-     }
+     }*/
 
   }
   void DrawerManager::start_open_drawer_action(const std::shared_ptr<GoalHandleDrawerInteraction> task_handle)
   {
     auto open_drawer_request = DrawerUserAccess ::Goal();
     open_drawer_request.drawer= task_handle->get_goal()->task.drawer;
-    open_drawer_request.state=1;
+    open_drawer_request.state=6;
     
     auto send_goal_options = rclcpp_action::Client<DrawerUserAccess>::SendGoalOptions();
     send_goal_options.goal_response_callback = bind(&DrawerManager::open_drawer_goal_response_callback, this, placeholders::_1);

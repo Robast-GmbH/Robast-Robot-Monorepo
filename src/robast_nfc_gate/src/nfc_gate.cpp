@@ -4,7 +4,7 @@
 namespace robast
 {
 
-  NFCGate::NFCGate( ):NFCGate( "/dev/serial/by-id/usb-Robast_Authentication_NFC_Side_Reader" ) { }
+  NFCGate::NFCGate( ):NFCGate( "/dev/robast/robast_nfc" ) { }
 
   NFCGate::NFCGate( string serial_port_path ) : Node("robast_nfc_gate"), serial_connector(serial_port_path)
   {
@@ -20,7 +20,6 @@ namespace robast
       );
     this->create_user_server =this->create_service<CreateUser>("create_user_tag",bind(&NFCGate::writeTag, this, placeholders::_1, placeholders::_2));
     
-
     //RCLCPP_INFO(this->get_logger(), "constructor done");
   }
 
@@ -75,15 +74,7 @@ namespace robast
       return;
     } 
 
-    //RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str());
-    
-    //tag.pop_back();
-    /*if(tag=="00018020047A75B603")
-    {
-      TagValid=true;
-      RCLCPP_INFO(this->get_logger(),"found");
-    }*/
-
+   
     request=this->serial_connector.send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
     this->serial_connector.read_serial(&replay, 500);
     RCLCPP_INFO(this->get_logger(),"login responce %s ", replay.c_str());
@@ -94,7 +85,6 @@ namespace robast
       return;
     }
     RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", scaned_key.c_str());
-    //this->serial_connector.send_ascii_cmd(BEEP_STANDART); 
     scaned_key.pop_back();
     for( int i=0; i <goal->permission_keys.size(); i++)
     {
