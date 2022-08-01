@@ -1,1 +1,1 @@
-SUBSYSTEMS=="usb", ACTION=="add", ATTRS{idVendor}=="05e3",ATTRS{idProduct}=="0610", MODE="666", SYMLINK+="robast/robast_can"
+SUBSYSTEMS=="usb", ACTION=="add", ATTRS{idVendor}=="04d8",ATTRS{idProduct}=="000a", MODE="666", SYMLINK+="robast/robast_can"

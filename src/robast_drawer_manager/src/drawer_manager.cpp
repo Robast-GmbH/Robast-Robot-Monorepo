@@ -156,7 +156,7 @@ namespace robast
   {
     auto open_drawer_request = DrawerUserAccess ::Goal();
     open_drawer_request.drawer= task_handle->get_goal()->task.drawer;
-    open_drawer_request.state=6;
+    open_drawer_request.state=1;
     
     auto send_goal_options = rclcpp_action::Client<DrawerUserAccess>::SendGoalOptions();
     send_goal_options.goal_response_callback = bind(&DrawerManager::open_drawer_goal_response_callback, this, placeholders::_1);
