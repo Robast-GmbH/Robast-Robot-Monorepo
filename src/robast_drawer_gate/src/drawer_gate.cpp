@@ -28,8 +28,8 @@ namespace robast_drawer_gate
   //TODO: Dekonstruktor
 
   rclcpp_action::GoalResponse DrawerGate::goal_callback(
-      const rclcpp_action::GoalUUID & uuid,
-      std::shared_ptr<const DrawerUserAccess::Goal> goal)
+    const rclcpp_action::GoalUUID & uuid,
+    std::shared_ptr<const DrawerUserAccess::Goal> goal)
   {
     RCLCPP_INFO(this->get_logger(), "Received goal request");
     // (void)uuid;
@@ -441,8 +441,8 @@ namespace robast_drawer_gate
     const auto goal = goal_handle->get_goal();
     auto feedback = std::make_shared<DrawerUserAccess::Feedback>();
     auto result = std::make_shared<DrawerUserAccess::Result>();
-    uint32_t drawer_controller_id = goal->drawer.drawer_controller_id;
-    uint8_t drawer_id = goal->drawer.drawer_id;
+    uint32_t drawer_controller_id = goal->drawer_address.drawer_controller_id;
+    uint8_t drawer_id = goal->drawer_address.drawer_id;
     uint8_t state = goal -> state; // variable to control which step of the drawer user access should be performed
  
     switch (state)
@@ -481,7 +481,6 @@ namespace robast_drawer_gate
         break;
     }
 
-    result->success = true;
     goal_handle->succeed(result);
     RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
   }

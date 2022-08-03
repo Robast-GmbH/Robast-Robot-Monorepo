@@ -42,25 +42,27 @@ namespace robast
 
   private:
     
-    rclcpp::TimerBase::SharedPtr door_timer;
+    rclcpp::TimerBase::SharedPtr drawer_open_alert_timer;
   
     rclcpp::Service<ShelfSetupInfo>::SharedPtr drawers_info_server;
     rclcpp::Client<ShelfSetupInfo>::SharedPtr drawers_info_client;
-    
 
-    rclcpp_action::Server<DrawerInteraction>::SharedPtr access_drawer_service;
+    rclcpp_action::Server<DrawerInteraction>::SharedPtr drawer_interaction_server;
     rclcpp_action::Client<AuthenticateUser>::SharedPtr authenticate_user_client;
     rclcpp_action::Client<DrawerUserAccess>::SharedPtr open_drawers_client;
 
+    std::shared_ptr<GoalHandleDrawerInteraction> goal_handle_drawer_interaction;
 
     void get_shelf_setup(const shared_ptr<ShelfSetupInfo::Request> request, shared_ptr<ShelfSetupInfo::Response> response);
 
-    rclcpp_action::GoalResponse drawer_access_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const DrawerInteraction::Goal> goal);
-    rclcpp_action::CancelResponse drawer_access_cancel_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle); 
-    void drawer_access_accepted_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle);
+    rclcpp_action::GoalResponse drawer_interaction_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const DrawerInteraction::Goal> goal);
+    rclcpp_action::CancelResponse drawer_interaction_cancel_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle); 
+    void drawer_interaction_accepted_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle);
 
-    void check_drawer_permission(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
+    void handle_drawer_interaction(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
     void open_drawer(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
+
+    void check_permission_and_trigger_drawer_user_access();
     
     void authentication_goal_response_callback( const GoalHandleAuthenticateUser::SharedPtr & goal_handle);
     void authentication_feedback_callback( GoalHandleAuthenticateUser::SharedPtr, const std::shared_ptr<const AuthenticateUser::Feedback> feedback);

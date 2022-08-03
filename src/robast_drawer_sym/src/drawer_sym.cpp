@@ -5,9 +5,9 @@ namespace robast
 {
     DrawerSym::DrawerSym(): Node("robast_drawer_sym")
     {
-        this->publisher = this->create_publisher<std_msgs::msg::String>("drawerInfo", 10);
-        this->subscription = this->create_subscription<std_msgs::msg::String>( "drawerCommand", 10, bind(&DrawerSym::startTask, this, placeholders::_1));
-        this->drawerActionsClients = rclcpp_action::create_client<DrawerInteraction>(this, "drawerInteraction");
+        this->publisher = this->create_publisher<std_msgs::msg::String>("drawer_info", 10);
+        this->subscription = this->create_subscription<std_msgs::msg::String>( "drawer_command", 10, bind(&DrawerSym::startTask, this, placeholders::_1));
+        this->drawerActionsClients = rclcpp_action::create_client<DrawerInteraction>(this, "drawer_interaction");
     }
 
     void DrawerSym::startTask(const std_msgs::msg::String::SharedPtr msg)
@@ -15,7 +15,7 @@ namespace robast
         vector<string> msg_split;
         this->split(msg->data.c_str(),' ', msg_split);
 
-         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "request Command: |%s|",msg_split.at(0).c_str());
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "request Command: |%s|",msg_split.at(0).c_str());
 
         if(msg_split.at(0)=="INFO")
         {
@@ -24,7 +24,6 @@ namespace robast
         else if(msg_split.at(0)=="OPEN")
         {
             DrawerSym::open_drawer(msg_split);
-
         } 
         else
         {
@@ -80,13 +79,13 @@ namespace robast
             
             if(msg_split.size() == 4)
             {
-                goal_msg.task.drawer.drawer_controller_id= stoi(msg_split[2]);
-                goal_msg.task.drawer.drawer_id= stoi(msg_split[3]);
+                goal_msg.task.drawer_address.drawer_controller_id= stoi(msg_split[2]);
+                goal_msg.task.drawer_address.drawer_id= stoi(msg_split[3]);
             }
             else
             {
-                goal_msg.task.drawer.drawer_controller_id= this->drawerList[ stoi( msg_split[1])].drawer_address.drawer_controller_id;
-                goal_msg.task.drawer.drawer_id= this->drawerList[ stoi( msg_split[2])].drawer_address.drawer_id;
+                goal_msg.task.drawer_address.drawer_controller_id= this->drawerList[ stoi( msg_split[1])].drawer_address.drawer_controller_id;
+                goal_msg.task.drawer_address.drawer_id= this->drawerList[ stoi( msg_split[2])].drawer_address.drawer_id;
             }
 
             auto send_goal_options = rclcpp_action::Client<DrawerInteraction>::SendGoalOptions();
@@ -94,7 +93,6 @@ namespace robast
             send_goal_options.feedback_callback = bind(&DrawerSym::drawer_feedback_callback, this, placeholders::_1, placeholders::_2);
             send_goal_options.result_callback = bind(&DrawerSym::drawer_result_callback, this, placeholders::_1);
 
-        
             this->drawerActionsClients->async_send_goal(goal_msg, send_goal_options);
     } 
 
@@ -145,9 +143,25 @@ namespace robast
 
     void DrawerSym::drawer_result_callback(const GoalHandleDrawerInteraction::WrappedResult & result)
     {
-        auto responce = std_msgs::msg::String();
-        responce.data = "Door operation is done." ;
-        this->publisher->publish(responce);
+        switch (result.code)
+        {
+            case rclcpp_action::ResultCode::SUCCEEDED:
+                RCLCPP_INFO(this->get_logger(), "DrawerInteraction succeeded!");
+                break;
+            case rclcpp_action::ResultCode::ABORTED:
+                RCLCPP_ERROR(this->get_logger(), "DrawerInteraction Goal was aborted");
+                return;
+            case rclcpp_action::ResultCode::CANCELED:
+                RCLCPP_ERROR(this->get_logger(), "DrawerInteraction Goal was canceled");
+                return;
+            default:
+                RCLCPP_ERROR(this->get_logger(), "Unknown result code for DrawerInteraction");
+                return;
+        }
+
+        auto response = std_msgs::msg::String();
+        response.data = "Door operation is done." ;
+        this->publisher->publish(response);
     }
 
     void DrawerSym::split(string input, char deliminator,  vector<string> &output) 
