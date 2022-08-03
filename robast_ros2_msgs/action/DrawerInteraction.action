@@ -3,7 +3,6 @@ robast_ros2_msgs/Task task
 bool loading
 ---
 #result
-bool sucessful
 string error_message
 ---
 #feedback

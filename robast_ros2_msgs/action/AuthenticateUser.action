@@ -3,7 +3,6 @@ string[] permission_keys
 ---
 #result
 string permission_key_used
-bool sucessful
 string error_message
 ---
 #feedback
