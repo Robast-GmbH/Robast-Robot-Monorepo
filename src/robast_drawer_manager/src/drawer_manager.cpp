@@ -59,9 +59,46 @@ namespace robast
 
   void DrawerManager::handle_drawer_interaction(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle)
   {
-    this->goal_handle_drawer_interaction = goal_handle; //this is needed to end the action deep down in the callbacks
+    const auto goal = goal_handle->get_goal();
 
-    this->check_permission_and_trigger_drawer_user_access();
+    uint8_t state = 1;
+    switch (state)
+    {
+    case 1:
+      check_permission(goal->loading, goal->task->ticket->);
+
+    case 2:
+      handle_drawer_user_access();
+
+    case 3:
+      ask_user_for_reopening_drawer();
+    
+    default:
+      break;
+    }
+
+    auto response = std::shared_ptr<robast_ros2_msgs::action::DrawerInteraction::Result>();
+    response->error_message = "";
+    goal_handle->succeed(response);
+
+    // this->check_permission_and_trigger_drawer_user_access();
+  }
+
+  void DrawerManager::check_permission(bool loading, std::vector<string> load_keys, std::vector<string> drop_of_keys)
+  {    
+    // NFC Reader
+    RCLCPP_INFO(this->get_logger(), "check_drawer_permission for load_keys[0]: %s", load_keys[0]); //DEBUGGING
+      
+    auto authentication_request = AuthenticateUser::Goal();
+    authentication_request.permission_keys =  loading ? load_keys : drop_of_keys;
+    
+    auto send_goal_options = rclcpp_action::Client<AuthenticateUser>::SendGoalOptions();
+    send_goal_options.goal_response_callback = bind(&DrawerManager::authentication_goal_response_callback, this, placeholders::_1);
+    send_goal_options.feedback_callback = bind(&DrawerManager::authentication_feedback_callback, this, placeholders::_1, placeholders:: _2);
+    // in the authentication_result_callback the drawer user access will be triggered
+    send_goal_options.result_callback = bind(&DrawerManager::authentication_result_callback, this, placeholders::_1); //TODO: remove goal_handle_drawer_interaction
+ 
+    this->authenticate_user_client->async_send_goal(authentication_request, send_goal_options);
   }
 
   void DrawerManager::check_permission_and_trigger_drawer_user_access()

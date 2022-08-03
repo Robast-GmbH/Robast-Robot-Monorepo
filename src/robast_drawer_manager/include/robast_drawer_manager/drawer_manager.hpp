@@ -51,8 +51,6 @@ namespace robast
     rclcpp_action::Client<AuthenticateUser>::SharedPtr authenticate_user_client;
     rclcpp_action::Client<DrawerUserAccess>::SharedPtr open_drawers_client;
 
-    std::shared_ptr<GoalHandleDrawerInteraction> goal_handle_drawer_interaction;
-
     void get_shelf_setup(const shared_ptr<ShelfSetupInfo::Request> request, shared_ptr<ShelfSetupInfo::Response> response);
 
     rclcpp_action::GoalResponse drawer_interaction_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const DrawerInteraction::Goal> goal);
