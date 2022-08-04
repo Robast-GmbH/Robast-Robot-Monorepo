@@ -7,7 +7,7 @@ namespace robast
     RCLCPP_INFO(this->get_logger(), "Creating");
     this->drawers_info_server = this->create_service<ShelfSetupInfo>("get_module_setup", bind(&DrawerManager::get_shelf_setup,this, placeholders::_1, placeholders::_2));
     authenticate_user_client = rclcpp_action::create_client<AuthenticateUser>(this,"authenticate_user");
-    open_drawers_client = rclcpp_action::create_client<DrawerUserAccess>(this, "control_drawer");
+    user_drawer_access_client = rclcpp_action::create_client<DrawerUserAccess>(this, "control_drawer");
     
     this->drawer_interaction_server = rclcpp_action::create_server<DrawerInteraction>(
       this,
@@ -16,6 +16,7 @@ namespace robast
       bind(&DrawerManager::drawer_interaction_cancel_callback, this, placeholders::_1),
       bind(&DrawerManager::drawer_interaction_accepted_callback, this, placeholders::_1));
   }
+
 
   void DrawerManager::get_shelf_setup(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
   {
@@ -36,11 +37,13 @@ namespace robast
     }
   }
 
+
   rclcpp_action::GoalResponse DrawerManager::drawer_interaction_goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const DrawerInteraction::Goal> goal)
   {
     RCLCPP_INFO(this->get_logger(), "Received goal request");
     return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
+
 
   rclcpp_action::CancelResponse DrawerManager::drawer_interaction_cancel_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle)
   {
@@ -49,49 +52,61 @@ namespace robast
     return rclcpp_action::CancelResponse::ACCEPT;
   }
 
+
   void DrawerManager::drawer_interaction_accepted_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle)
   {
     RCLCPP_INFO(this->get_logger(), "open drawer"); //DEBUGGING
-    RCLCPP_INFO(this->get_logger(), "authentication_result_callback %s", goal_handle->get_goal().get()->task.ticket.load_keys); //DEBUGGING
+    RCLCPP_INFO(this->get_logger(), "authentication_result_callback %s", goal_handle->get_goal().get()->task.ticket.load_keys[0].c_str()); //DEBUGGING
     //TODO: Implement Unload
     std::thread{std::bind(&DrawerManager::handle_drawer_interaction, this, goal_handle)}.detach();
   }
 
   void DrawerManager::handle_drawer_interaction(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle)
   {
-    const auto goal = goal_handle->get_goal();
+    const std::shared_ptr<const robast_ros2_msgs::action::DrawerInteraction_Goal> goal = goal_handle->get_goal();
 
-    uint8_t state = 1;
-    switch (state)
-    {
-    case 1:
-      AuthenticateUserResultHandle user_id_action_handle = request_user_authentication(goal->loading, goal->task.ticket.load_keys, goal->task.ticket.drop_of_keys);
-
-    case 2:
-     if( wait_for_user_authentication(user_id_action_handle)=="")
-     {
-      return; 
-     }
-
-    case 3:
-      AuthenticateUserResultHandle drawer_open_action_handle =this->request_open_drawer()
-
-    case 4:
-    this->request_open_drawer();
-      //ask_user_for_reopening_drawer();
-    
-    default:
-      break;
-    }
-
-    auto response = std::shared_ptr<robast_ros2_msgs::action::DrawerInteraction::Result>();
+    this->drawer_interaction_state_machine(goal);    
+    auto response = std::make_shared<robast_ros2_msgs::action::DrawerInteraction::Result>();
     response->error_message = "";
     goal_handle->succeed(response);
-
-    // this->check_permission_and_trigger_drawer_user_access();
   }
 
-  AuthenticateUserResultHandle DrawerManager::request_user_authentication(bool loading, std::vector<string> load_keys, std::vector<string> drop_of_keys)
+
+  void DrawerManager::drawer_interaction_state_machine(const std::shared_ptr<const robast_ros2_msgs::action::DrawerInteraction_Goal> goal, uint8_t state)
+  {
+    switch (state)
+    {
+      case 1:
+      {
+        // 1. step: Authenticate the User that should access the drawer
+        DrawerManager::AuthenticateUserResultHandle user_id_action_handle = this->request_user_authentication(goal->loading, goal->task.ticket.load_keys, goal->task.ticket.drop_of_keys);
+        if (this->wait_for_user_authentication(user_id_action_handle) == "")
+        {
+          return; //TODO: Handle case of error
+        }       
+      }
+
+      case 2:
+      {
+        // 2. step: Start the drawer user access
+        DrawerManager::DrawerUserAccessResultHandle drawer_user_access_action_handle = this->request_drawer_user_access(goal->task.drawer_address);
+        this->wait_for_finished_drawer_user_access(drawer_user_access_action_handle);
+      }
+        
+      case 3:
+      {
+        // 3. step: Ask user if he wants to reopen the drawer again
+        this->ask_user_for_reopening_drawer(goal);
+      }
+      
+      default:
+        break;
+    }
+    return;
+  }
+
+
+  DrawerManager::AuthenticateUserResultHandle DrawerManager::request_user_authentication(bool loading, std::vector<string> load_keys, std::vector<string> drop_of_keys)
   {    
     // NFC Reader
     RCLCPP_INFO(this->get_logger(), "check_drawer_permission for load_keys[0]: %s", load_keys[0]); //DEBUGGING
@@ -106,32 +121,34 @@ namespace robast
     return this->authenticate_user_client->async_send_goal(authentication_request, send_goal_options);
   }
 
+
   string DrawerManager::wait_for_user_authentication(AuthenticateUserResultHandle action_handle)
   {
     auto action_result = this->authenticate_user_client->async_get_result(action_handle.get());
     auto result = action_result.get();
 
+    //TODO: What do we do in case of aborted or canceled?
     switch (result.code) 
     {
       case rclcpp_action::ResultCode::SUCCEEDED:
         break;
       case rclcpp_action::ResultCode::ABORTED:
-        RCLCPP_ERROR(this->get_logger(), "Goal was aborted");
+        RCLCPP_ERROR(this->get_logger(), "AuthenticateUser Goal was aborted");
         return"";
       case rclcpp_action::ResultCode::CANCELED:
-        RCLCPP_ERROR(this->get_logger(), "Goal was canceled");
+        RCLCPP_ERROR(this->get_logger(), "AuthenticateUser Goal was canceled");
         return"";
       default:
-        RCLCPP_ERROR(this->get_logger(), "Unknown result code");
+        RCLCPP_ERROR(this->get_logger(), "Unknown result code for AuthenticateUser");
         return"";
     }
 
-    RCLCPP_INFO(this->get_logger(), "Action done "); //DEBUGGING
+    RCLCPP_INFO(this->get_logger(), "AuthenticateUser action done "); //DEBUGGING
     return action_result.get().result.get()->permission_key_used;
   }
  
 
-  void DrawerManager::authentication_goal_response_callback( const GoalHandleAuthenticateUser::SharedPtr & goal_handle)
+  void DrawerManager::authentication_goal_response_callback (const GoalHandleAuthenticateUser::SharedPtr & goal_handle)
   {
     if (!goal_handle) 
     {
@@ -142,8 +159,9 @@ namespace robast
         RCLCPP_INFO(this->get_logger(), "Goal accepted by server, waiting for result");
     }
   }
+
   
-  void DrawerManager::authentication_feedback_callback(GoalHandleAuthenticateUser::SharedPtr, const std::shared_ptr<const AuthenticateUser::Feedback> feedback)
+  void DrawerManager::authentication_feedback_callback (GoalHandleAuthenticateUser::SharedPtr, const std::shared_ptr<const AuthenticateUser::Feedback> feedback)
   {
     if(feedback.get()->reader_status.is_reading)
     {
@@ -158,18 +176,59 @@ namespace robast
   }
 
 
-  void DrawerManager::request_open_drawer()
+  DrawerManager::DrawerUserAccessResultHandle DrawerManager::request_drawer_user_access(DrawerAddress drawer_address)
   {
-    auto open_drawer_request = DrawerUserAccess::Goal();
-    open_drawer_request.drawer_address = this->goal_handle_drawer_interaction->get_goal()->task.drawer_address; //ToDo fix
-    open_drawer_request.state = 6;
+    auto drawer_user_access_request = DrawerUserAccess::Goal();
+    drawer_user_access_request.drawer_address = drawer_address;
+    drawer_user_access_request.state = 6; //DEBUGGING //TODO: Change that back to 1
     
     auto send_goal_options = rclcpp_action::Client<DrawerUserAccess>::SendGoalOptions();
     send_goal_options.goal_response_callback = bind(&DrawerManager::open_drawer_goal_response_callback, this, placeholders::_1);
     send_goal_options.feedback_callback = bind(&DrawerManager::open_drawer_feedback_callback, this, placeholders::_1, placeholders:: _2);
-    //send_goal_options.result_callback = bind(&DrawerManager::open_drawer_result_callback, this, placeholders::_1, this->goal_handle_drawer_interaction);//TODO fix
-    RCLCPP_INFO(this->get_logger(), " open drawer controller");
-    return this->open_drawers_client->async_send_goal(open_drawer_request, send_goal_options);
+    RCLCPP_INFO(this->get_logger(), "Start drawer user access with drawer controller");
+    return this->user_drawer_access_client->async_send_goal(drawer_user_access_request, send_goal_options);
+  }
+
+
+  void DrawerManager::wait_for_finished_drawer_user_access(DrawerUserAccessResultHandle drawer_user_access_action_handle)
+  {
+    auto action_result = this->user_drawer_access_client->async_get_result(drawer_user_access_action_handle.get());
+    auto result = action_result.get();
+
+    //TODO: What do we do in case of aborted or canceled?
+    switch (result.code) 
+    {
+      case rclcpp_action::ResultCode::SUCCEEDED:
+        break;
+      case rclcpp_action::ResultCode::ABORTED:
+        RCLCPP_ERROR(this->get_logger(), "DrawerUserAccess Goal was aborted");
+        return;
+      case rclcpp_action::ResultCode::CANCELED:
+        RCLCPP_ERROR(this->get_logger(), "DrawerUserAccess Goal was canceled");
+        return;
+      default:
+        RCLCPP_ERROR(this->get_logger(), "Unknown result code for DrawerUserAccess");
+        return;
+    }
+
+    RCLCPP_INFO(this->get_logger(), "DrawerUserAccess action done "); //DEBUGGING
+    return;
+  }
+
+
+  void DrawerManager::ask_user_for_reopening_drawer(const std::shared_ptr<const robast_ros2_msgs::action::DrawerInteraction_Goal> goal)
+  {
+    RCLCPP_INFO(this->get_logger(), "UserInterface:: Wollen sie die Schublade noch mal öffnen?");
+    //TODO: Implement this
+    if (false) 
+    {
+      uint8_t state = 2;
+      this->drawer_interaction_state_machine(goal, state);
+    }
+    else
+    {
+      return;
+    }    
   }
 
 
@@ -193,39 +252,6 @@ namespace robast
     }
   }
 
-  void DrawerManager::open_drawer_result_callback(const GoalHandleDrawerUserAccess::WrappedResult & result, const std::shared_ptr<GoalHandleDrawerInteraction> task_handle )
-  {
-    switch (result.code) {
-      case rclcpp_action::ResultCode::SUCCEEDED:
-        break;
-      case rclcpp_action::ResultCode::ABORTED:
-        RCLCPP_ERROR(this->get_logger(), "DrawerUserAccess Goal was aborted");
-        //TODO: What do we do if DrawerUserAccess is not successful? Send message to staff?
-        return;
-      case rclcpp_action::ResultCode::CANCELED:
-        RCLCPP_ERROR(this->get_logger(), "DrawerUserAccess Goal was canceled");
-        //TODO: What do we do if DrawerUserAccess is not successful? Send message to staff?
-        return;
-      default:
-        RCLCPP_ERROR(this->get_logger(), "Unknown result code for DrawerUserAccess");
-        //TODO: What do we do if DrawerUserAccess is not successful? Send message to staff?
-        return;
-    }
-
-    RCLCPP_INFO(this->get_logger(), "UserInterface:: Wollen sie die Schublade noch mal öffnen?");
-    //TODO: Implement interaction with user interface
-    if(false)
-    {
-      //this->start_open_drawer_action(this->goal_handle_drawer_interaction);//ToDo  fix
-    }
-    else 
-     {
-      //TODO: Fix this
-      // auto response = std::shared_ptr<robast_ros2_msgs::action::DrawerInteraction::Result>();
-      // response->error_message = "";
-      // this->goal_handle_drawer_interaction->succeed(response);
-     }
-  }
 
   void DrawerManager::remind_user_to_close_drawer()
   {

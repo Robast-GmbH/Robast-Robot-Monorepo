@@ -36,7 +36,10 @@ namespace robast
      
       using DrawerUserAccess              = robast_ros2_msgs::action::DrawerUserAccess; // interaction with the drawermodules 
       using GoalHandleDrawerUserAccess    = rclcpp_action::ClientGoalHandle<DrawerUserAccess >;
+      using DrawerUserAccessResultHandle  = std::shared_future<std::shared_ptr<robast::DrawerManager::GoalHandleDrawerUserAccess>>;
 
+
+      using DrawerAddress                 = robast_ros2_msgs::msg::DrawerAddress;
 
       DrawerManager();
      // ~DrawerManager();
@@ -51,7 +54,7 @@ namespace robast
 
     rclcpp_action::Server<DrawerInteraction>::SharedPtr drawer_interaction_server;
     rclcpp_action::Client<AuthenticateUser>::SharedPtr authenticate_user_client;
-    rclcpp_action::Client<DrawerUserAccess>::SharedPtr open_drawers_client;
+    rclcpp_action::Client<DrawerUserAccess>::SharedPtr user_drawer_access_client;
 
 
     void get_shelf_setup(const shared_ptr<ShelfSetupInfo::Request> request, shared_ptr<ShelfSetupInfo::Response> response);
@@ -65,12 +68,16 @@ namespace robast
    
     void open_drawer_goal_response_callback( const GoalHandleDrawerUserAccess::SharedPtr & goal_handle);
     void open_drawer_feedback_callback(  GoalHandleDrawerUserAccess::SharedPtr, const std::shared_ptr<const DrawerUserAccess::Feedback> feedback);
-    void open_drawer_result_callback(const GoalHandleDrawerUserAccess::WrappedResult & result, const std::shared_ptr<GoalHandleDrawerInteraction> result_handle);
-    
-    AuthenticateUserResultHandle request_user_authentication(bool loading, std::vector<string> load_keys, std::vector<string> drop_of_keys);
-    string wait_for_user_authentication(AuthenticateUserResultHandle action_handle);
 
     void handle_drawer_interaction(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
+    void drawer_interaction_state_machine(const std::shared_ptr<const robast_ros2_msgs::action::DrawerInteraction_Goal> goal, uint8_t state = 1);
+
+    AuthenticateUserResultHandle request_user_authentication(bool loading, std::vector<string> load_keys, std::vector<string> drop_of_keys);
+    string wait_for_user_authentication(AuthenticateUserResultHandle action_handle);
+    DrawerUserAccessResultHandle request_drawer_user_access(DrawerAddress drawer_address);
+    void wait_for_finished_drawer_user_access(DrawerUserAccessResultHandle drawer_user_access_action_handle);
+    void ask_user_for_reopening_drawer(const std::shared_ptr<const robast_ros2_msgs::action::DrawerInteraction_Goal> goal);
+
     void open_drawer(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
     void remind_user_to_close_drawer();
     void start_open_drawer_action(const std::shared_ptr<GoalHandleDrawerInteraction> task_handle);
