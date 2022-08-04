@@ -131,6 +131,8 @@ namespace robast_drawer_gate
 
       void provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response);
 
+      void state_machine_drawer_gate(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t state);
+
       /**
        * @brief Service server execution callback
        */

@@ -422,27 +422,10 @@ namespace robast_drawer_gate
     // Reset the flag that is responsible for clearing the serial buffer from old CAN messages
     cleared_serial_buffer_from_old_can_msgs = false;
   }
-  
-  void DrawerGate::handle_drawer_user_access(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
+
+
+  void DrawerGate::state_machine_drawer_gate(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t state)
   {
-    RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
-
-    // Starting timer to receive feedback from drawer controller until the process of opening a drawer is finished
-    this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
-    this->timer_ptr_ = this->create_wall_timer(50ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
-
-    // Although the feedback is received periodical via the timer,
-    // we update the drawer_status once manually to make sure
-    // the drawer_status is up to date at the start
-    this->update_drawer_status_from_can();
-
-    const auto goal = goal_handle->get_goal();
-    auto feedback = std::make_shared<DrawerUserAccess::Feedback>();
-    auto result = std::make_shared<DrawerUserAccess::Result>();
-    uint32_t drawer_controller_id = goal->drawer_address.drawer_controller_id;
-    uint8_t drawer_id = goal->drawer_address.drawer_id;
-    uint8_t state = goal -> state; // variable to control which step of the drawer user access should be performed
- 
     switch (state)
     {
       case 1:
@@ -478,6 +461,30 @@ namespace robast_drawer_gate
       default:
         break;
     }
+  }
+
+  
+  void DrawerGate::handle_drawer_user_access(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
+  {
+    RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
+
+    // Starting timer to receive feedback from drawer controller until the process of opening a drawer is finished
+    this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
+    this->timer_ptr_ = this->create_wall_timer(50ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
+
+    // Although the feedback is received periodical via the timer,
+    // we update the drawer_status once manually to make sure
+    // the drawer_status is up to date at the start
+    this->update_drawer_status_from_can();
+
+    const auto goal = goal_handle->get_goal();
+    auto feedback = std::make_shared<DrawerUserAccess::Feedback>();
+    auto result = std::make_shared<DrawerUserAccess::Result>();
+    uint32_t drawer_controller_id = goal->drawer_address.drawer_controller_id;
+    uint8_t drawer_id = goal->drawer_address.drawer_id;
+    uint8_t state = goal -> state; // variable to control which step of the drawer user access should be performed
+ 
+    this->state_machine_drawer_gate(drawer_controller_id, drawer_id, state);
 
     goal_handle->succeed(result);
     RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
