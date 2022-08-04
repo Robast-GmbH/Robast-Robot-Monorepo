@@ -67,6 +67,13 @@
             "problemMatcher": []
         },
         {
+            "label": "Drawer Sym Info",
+            "detail": "Request the module setup from the simulation node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_command std_msgs/String '{data: INFO}' -1",
+            "problemMatcher": []
+        },
+        {
             "label": "Docker serial setup",
             "detail": "copy the CAN and NFC device serial ports to new location with fixed name",
             "type": "shell",

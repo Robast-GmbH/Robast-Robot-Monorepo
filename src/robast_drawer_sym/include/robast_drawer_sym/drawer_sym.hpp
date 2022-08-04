@@ -25,7 +25,7 @@ namespace robast
       rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription;
       
       rclcpp::Client<ShelfSetupInfo>::SharedPtr shelfInfoClient;
-      rclcpp_action::Client<DrawerInteraction>::SharedPtr drawerActionsClients;
+      rclcpp_action::Client<DrawerInteraction>::SharedPtr drawerInteractionClients;
 
       void startTask(const std_msgs::msg::String::SharedPtr msg);
       void split(string input, char deliminator,  vector<string> & output); 

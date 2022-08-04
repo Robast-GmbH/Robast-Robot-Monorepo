@@ -5,9 +5,14 @@ namespace robast
   DrawerManager::DrawerManager(): Node("drawer_manager_Node")
   {
     RCLCPP_INFO(this->get_logger(), "Creating");
+
+    callback_group = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
+    callback_group_executor.add_callback_group(callback_group, this->get_node_base_interface());
+
     this->drawers_info_server = this->create_service<ShelfSetupInfo>("get_module_setup", bind(&DrawerManager::get_shelf_setup,this, placeholders::_1, placeholders::_2));
-    authenticate_user_client = rclcpp_action::create_client<AuthenticateUser>(this,"authenticate_user");
-    user_drawer_access_client = rclcpp_action::create_client<DrawerUserAccess>(this, "control_drawer");
+    this->drawers_info_client = this->create_client<ShelfSetupInfo>("shelf_setup_info", rmw_qos_profile_services_default, callback_group);
+    this->authenticate_user_client = rclcpp_action::create_client<AuthenticateUser>(this,"authenticate_user");
+    this->user_drawer_access_client = rclcpp_action::create_client<DrawerUserAccess>(this, "control_drawer");
     
     this->drawer_interaction_server = rclcpp_action::create_server<DrawerInteraction>(
       this,
@@ -15,19 +20,14 @@ namespace robast
       bind(&DrawerManager::drawer_interaction_goal_callback, this, placeholders::_1, placeholders::_2),
       bind(&DrawerManager::drawer_interaction_cancel_callback, this, placeholders::_1),
       bind(&DrawerManager::drawer_interaction_accepted_callback, this, placeholders::_1));
+
+    RCLCPP_INFO(this->get_logger(), "Finished Creating");
   }
 
 
   void DrawerManager::get_shelf_setup(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
   {
-    
-    drawers_info_client = this->create_client<ShelfSetupInfo>("shelf_setup_info");
-
-    auto clientRequest = std::make_shared<ShelfSetupInfo::Request>();
-    auto service_responce_callback = [this, response]( rclcpp::Client<ShelfSetupInfo>::SharedFuture future) { response->drawers= future.get()->drawers;};
-    auto result = drawers_info_client->async_send_request(request,service_responce_callback);
-    
-    // Wait for the result.
+    // Wait for the service to be alive.
     while (!drawers_info_client->wait_for_service(1s)) {
       if (!rclcpp::ok()) {
         RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service. Exiting.");
@@ -35,6 +35,20 @@ namespace robast
       }
       RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service still running");
     }
+
+    auto clientRequest = std::make_shared<ShelfSetupInfo::Request>();
+    auto result_handle = drawers_info_client->async_send_request(request);
+
+    const std::chrono::seconds timeout = std::chrono::seconds(5);
+    if (callback_group_executor.spin_until_future_complete(result_handle, timeout) != rclcpp::FutureReturnCode::SUCCESS)
+    {
+      //TODO: Implement reasonable error handling
+      RCLCPP_ERROR(this->get_logger(), "get_shelf_setup service client: async_send_request failed"); // DEBUGGING
+    }
+
+    response->drawers = result_handle.get()->drawers;
+
+    RCLCPP_INFO(this->get_logger(), "get_shelf_setup finished"); // DEBUGGING
   }
 
 

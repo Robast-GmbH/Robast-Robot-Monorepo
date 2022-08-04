@@ -99,12 +99,6 @@ namespace robast_drawer_gate
 
   void DrawerGate::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
   {
-    // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-    std::thread{std::bind(&DrawerGate::provide_shelf_setup_info, this, std::placeholders::_1, std::placeholders::_2), request, response}.detach();
-  }
-
-  void DrawerGate::provide_shelf_setup_info(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
-  {
     //TODO: This should actually be done automatically by polling all drawer_controller on the CAN bus
 
     robast_ros2_msgs::msg::Box box_10x40x1;

@@ -46,6 +46,9 @@ namespace robast
      
 
   private:
+
+    rclcpp::CallbackGroup::SharedPtr callback_group;
+    rclcpp::executors::SingleThreadedExecutor callback_group_executor;
     
     rclcpp::TimerBase::SharedPtr drawer_open_alert_timer;
   

@@ -7,7 +7,7 @@ namespace robast
     {
         this->publisher = this->create_publisher<std_msgs::msg::String>("drawer_info", 10);
         this->subscription = this->create_subscription<std_msgs::msg::String>( "drawer_command", 10, bind(&DrawerSym::startTask, this, placeholders::_1));
-        this->drawerActionsClients = rclcpp_action::create_client<DrawerInteraction>(this, "drawer_interaction");
+        this->drawerInteractionClients = rclcpp_action::create_client<DrawerInteraction>(this, "drawer_interaction");
     }
 
     void DrawerSym::startTask(const std_msgs::msg::String::SharedPtr msg)
@@ -36,39 +36,41 @@ namespace robast
 
     void DrawerSym::drawer_info()
     {
-        shelfInfoClient = this->create_client<ShelfSetupInfo>("/Get_module_setup");
-            auto request = std::make_shared<ShelfSetupInfo::Request>();
-            
-            while (!shelfInfoClient->wait_for_service(1s)) 
+        shelfInfoClient = this->create_client<ShelfSetupInfo>("get_module_setup");
+        auto request = std::make_shared<ShelfSetupInfo::Request>();
+        
+        while (!shelfInfoClient->wait_for_service(1s)) 
+        {
+            if (!rclcpp::ok())
             {
-                if (!rclcpp::ok())
-                {
-                    RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service. Exiting.");
-                    return;
-                }
-                RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service not available, waiting again...");
+                RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service. Exiting.");
+                return;
             }
-            auto response_received_load_callback = [this]( rclcpp::Client<ShelfSetupInfo>::SharedFuture future) {
-                RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "result recived");
-                this->drawerList =future.get()->drawers;
-                for ( size_t i = 0; i != this->drawerList.size(); )
-                {
-                    auto responce = std_msgs::msg::String();
-                    auto drawer = this->drawerList [i];
-                    responce.data= drawer.drawer_address.drawer_controller_id + " : " + to_string(drawer.number_of_drawers) + " ( " + to_string(drawer.drawer_size.x) +" * "+ to_string(drawer.drawer_size.y)+" * "+ to_string(drawer.drawer_size.z);
-                    this->publisher->publish(responce);
-                }
-            };
+            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "service not available, waiting again...");
+        }
 
-            auto result = shelfInfoClient->async_send_request(request, response_received_load_callback );
+        auto response_received_load_callback = [this](rclcpp::Client<ShelfSetupInfo>::SharedFuture future)
+        {
+            RCLCPP_INFO(this->get_logger(), "result received");
+            this->drawerList =future.get()->drawers;
+            for ( size_t i = 0; i != this->drawerList.size(); i++)
+            {
+                auto response = std_msgs::msg::String();
+                auto drawer = this->drawerList [i];
+                response.data= drawer.drawer_address.drawer_controller_id + " : " + to_string(drawer.number_of_drawers) + " ( " + to_string(drawer.drawer_size.x) +" * "+ to_string(drawer.drawer_size.y)+" * "+ to_string(drawer.drawer_size.z);
+                this->publisher->publish(response);
+            }
+        };
 
-            RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "request send");
+        auto result = shelfInfoClient->async_send_request(request, response_received_load_callback );
+
+        RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "get_module_setup request sent!");
     }
 
     void DrawerSym::open_drawer(std::vector<std::string> msg_split)
     {
         
-        if (!drawerActionsClients->wait_for_action_server()) 
+        if (!drawerInteractionClients->wait_for_action_server()) 
             {
                 RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
                 return;
@@ -93,7 +95,7 @@ namespace robast
             send_goal_options.feedback_callback = bind(&DrawerSym::drawer_feedback_callback, this, placeholders::_1, placeholders::_2);
             send_goal_options.result_callback = bind(&DrawerSym::drawer_result_callback, this, placeholders::_1);
 
-            this->drawerActionsClients->async_send_goal(goal_msg, send_goal_options);
+            this->drawerInteractionClients->async_send_goal(goal_msg, send_goal_options);
     } 
 
     robast_ros2_msgs::action::DrawerInteraction::Goal DrawerSym::create_dummy_drawer_interaction_msg()
