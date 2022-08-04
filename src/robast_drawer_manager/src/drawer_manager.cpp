@@ -52,7 +52,7 @@ namespace robast
   void DrawerManager::drawer_interaction_accepted_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle)
   {
     RCLCPP_INFO(this->get_logger(), "open drawer"); //DEBUGGING
-    RCLCPP_INFO(this->get_logger(), "authentication_result_callback %s", goal_handle->get_goal().get()->task.ticket.load_key); //DEBUGGING
+    RCLCPP_INFO(this->get_logger(), "authentication_result_callback %s", goal_handle->get_goal().get()->task.ticket.load_keys); //DEBUGGING
     //TODO: Implement Unload
     std::thread{std::bind(&DrawerManager::handle_drawer_interaction, this, goal_handle)}.detach();
   }
@@ -65,13 +65,20 @@ namespace robast
     switch (state)
     {
     case 1:
-      check_permission(goal->loading, goal->task->ticket->);
+      AuthenticateUserResultHandle user_id_action_handle = request_user_authentication(goal->loading, goal->task.ticket.load_keys, goal->task.ticket.drop_of_keys);
 
     case 2:
-      handle_drawer_user_access();
+     if( wait_for_user_authentication(user_id_action_handle)=="")
+     {
+      return; 
+     }
 
     case 3:
-      ask_user_for_reopening_drawer();
+      AuthenticateUserResultHandle drawer_open_action_handle =this->request_open_drawer()
+
+    case 4:
+    this->request_open_drawer();
+      //ask_user_for_reopening_drawer();
     
     default:
       break;
@@ -84,7 +91,7 @@ namespace robast
     // this->check_permission_and_trigger_drawer_user_access();
   }
 
-  void DrawerManager::check_permission(bool loading, std::vector<string> load_keys, std::vector<string> drop_of_keys)
+  AuthenticateUserResultHandle DrawerManager::request_user_authentication(bool loading, std::vector<string> load_keys, std::vector<string> drop_of_keys)
   {    
     // NFC Reader
     RCLCPP_INFO(this->get_logger(), "check_drawer_permission for load_keys[0]: %s", load_keys[0]); //DEBUGGING
@@ -95,30 +102,34 @@ namespace robast
     auto send_goal_options = rclcpp_action::Client<AuthenticateUser>::SendGoalOptions();
     send_goal_options.goal_response_callback = bind(&DrawerManager::authentication_goal_response_callback, this, placeholders::_1);
     send_goal_options.feedback_callback = bind(&DrawerManager::authentication_feedback_callback, this, placeholders::_1, placeholders:: _2);
-    // in the authentication_result_callback the drawer user access will be triggered
-    send_goal_options.result_callback = bind(&DrawerManager::authentication_result_callback, this, placeholders::_1); //TODO: remove goal_handle_drawer_interaction
- 
-    this->authenticate_user_client->async_send_goal(authentication_request, send_goal_options);
+   
+    return this->authenticate_user_client->async_send_goal(authentication_request, send_goal_options);
   }
 
-  void DrawerManager::check_permission_and_trigger_drawer_user_access()
+  string DrawerManager::wait_for_user_authentication(AuthenticateUserResultHandle action_handle)
   {
-    const auto goal = this->goal_handle_drawer_interaction->get_goal();
-    
-    // NFC Reader
-    RCLCPP_INFO(this->get_logger(), "check_drawer_permission %s", this->goal_handle_drawer_interaction->get_goal().get()->task.ticket.load_key); //DEBUGGING
-      
-    auto authentication_request = AuthenticateUser::Goal();
-    authentication_request.permission_keys =  goal->loading ? goal->task.ticket.load_key : goal->task.ticket.drop_of_key;
-    
-    auto send_goal_options = rclcpp_action::Client<AuthenticateUser>::SendGoalOptions();
-    send_goal_options.goal_response_callback = bind(&DrawerManager::authentication_goal_response_callback, this, placeholders::_1);
-    send_goal_options.feedback_callback = bind(&DrawerManager::authentication_feedback_callback, this, placeholders::_1, placeholders:: _2);
-    // in the authentication_result_callback the drawer user access will be triggered
-    send_goal_options.result_callback = bind(&DrawerManager::authentication_result_callback, this, placeholders::_1, this->goal_handle_drawer_interaction); //TODO: remove goal_handle_drawer_interaction
- 
-    this->authenticate_user_client->async_send_goal(authentication_request, send_goal_options);
+    auto action_result = this->authenticate_user_client->async_get_result(action_handle.get());
+    auto result = action_result.get();
+
+    switch (result.code) 
+    {
+      case rclcpp_action::ResultCode::SUCCEEDED:
+        break;
+      case rclcpp_action::ResultCode::ABORTED:
+        RCLCPP_ERROR(this->get_logger(), "Goal was aborted");
+        return"";
+      case rclcpp_action::ResultCode::CANCELED:
+        RCLCPP_ERROR(this->get_logger(), "Goal was canceled");
+        return"";
+      default:
+        RCLCPP_ERROR(this->get_logger(), "Unknown result code");
+        return"";
+    }
+
+    RCLCPP_INFO(this->get_logger(), "Action done "); //DEBUGGING
+    return action_result.get().result.get()->permission_key_used;
   }
+ 
 
   void DrawerManager::authentication_goal_response_callback( const GoalHandleAuthenticateUser::SharedPtr & goal_handle)
   {
@@ -132,7 +143,6 @@ namespace robast
     }
   }
   
-  //TODO: parameter name missing for GoalHandleDrawerUserAccess::SharedPtr 
   void DrawerManager::authentication_feedback_callback(GoalHandleAuthenticateUser::SharedPtr, const std::shared_ptr<const AuthenticateUser::Feedback> feedback)
   {
     if(feedback.get()->reader_status.is_reading)
@@ -146,13 +156,22 @@ namespace robast
 
     return;
   }
-  
-  void DrawerManager::authentication_result_callback(const GoalHandleAuthenticateUser::WrappedResult & result, const std::shared_ptr<GoalHandleDrawerInteraction> task_handle)
+
+
+  void DrawerManager::request_open_drawer()
   {
-    RCLCPP_INFO(this->get_logger(), "authentication_result_callback %s", task_handle->get_goal().get()->task.ticket.load_key[0].c_str());
-    //TODO: Check if action result is successful 
-    this->start_open_drawer_action(task_handle);
+    auto open_drawer_request = DrawerUserAccess::Goal();
+    open_drawer_request.drawer_address = this->goal_handle_drawer_interaction->get_goal()->task.drawer_address; //ToDo fix
+    open_drawer_request.state = 6;
+    
+    auto send_goal_options = rclcpp_action::Client<DrawerUserAccess>::SendGoalOptions();
+    send_goal_options.goal_response_callback = bind(&DrawerManager::open_drawer_goal_response_callback, this, placeholders::_1);
+    send_goal_options.feedback_callback = bind(&DrawerManager::open_drawer_feedback_callback, this, placeholders::_1, placeholders:: _2);
+    //send_goal_options.result_callback = bind(&DrawerManager::open_drawer_result_callback, this, placeholders::_1, this->goal_handle_drawer_interaction);//TODO fix
+    RCLCPP_INFO(this->get_logger(), " open drawer controller");
+    return this->open_drawers_client->async_send_goal(open_drawer_request, send_goal_options);
   }
+
 
   void DrawerManager::open_drawer_goal_response_callback( const GoalHandleDrawerUserAccess::SharedPtr & goal_handle)
   {
@@ -197,7 +216,7 @@ namespace robast
     //TODO: Implement interaction with user interface
     if(false)
     {
-      this->start_open_drawer_action(this->goal_handle_drawer_interaction);
+      //this->start_open_drawer_action(this->goal_handle_drawer_interaction);//ToDo  fix
     }
     else 
      {
@@ -206,20 +225,6 @@ namespace robast
       // response->error_message = "";
       // this->goal_handle_drawer_interaction->succeed(response);
      }
-  }
-
-  void DrawerManager::start_open_drawer_action(const std::shared_ptr<GoalHandleDrawerInteraction> task_handle)
-  {
-    auto open_drawer_request = DrawerUserAccess::Goal();
-    open_drawer_request.drawer_address = this->goal_handle_drawer_interaction->get_goal()->task.drawer_address;
-    open_drawer_request.state = 6;
-    
-    auto send_goal_options = rclcpp_action::Client<DrawerUserAccess>::SendGoalOptions();
-    send_goal_options.goal_response_callback = bind(&DrawerManager::open_drawer_goal_response_callback, this, placeholders::_1);
-    send_goal_options.feedback_callback = bind(&DrawerManager::open_drawer_feedback_callback, this, placeholders::_1, placeholders:: _2);
-    send_goal_options.result_callback = bind(&DrawerManager::open_drawer_result_callback, this, placeholders::_1, this->goal_handle_drawer_interaction);
-    RCLCPP_INFO(this->get_logger(), " open drawer controller");
-    this->open_drawers_client->async_send_goal(open_drawer_request, send_goal_options);
   }
 
   void DrawerManager::remind_user_to_close_drawer()

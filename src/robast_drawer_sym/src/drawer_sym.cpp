@@ -115,8 +115,8 @@ namespace robast
         goal_msg.task.ticket.item_size.x = 0;
         goal_msg.task.ticket.item_size.y = 0;
         goal_msg.task.ticket.item_size.z = 0;
-        goal_msg.task.ticket.load_key =     vector<string> {"000101000000000000000000000000010001"};
-        goal_msg.task.ticket.drop_of_key =  vector<string> {"000101000000000000000000000000010001"};
+        goal_msg.task.ticket.load_keys =     vector<string> {"000101000000000000000000000000010001"};
+        goal_msg.task.ticket.drop_of_keys =  vector<string> {"000101000000000000000000000000010001"};
         return goal_msg;
     }
 
