@@ -275,6 +275,10 @@ namespace robast_drawer_gate
         RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
       }
     }
+    else
+    {
+      //TODO: Error handling
+    }
     this->serial_helper.close_serial();
   }
 
