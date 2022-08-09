@@ -28,21 +28,21 @@
             "label": "Open Drawer 1",
             "detail": "Send action message to open the drawer with the controller id 1",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer: {drawer_controller_id: 1, drawer_id: 1}, state: 1}'",
+            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer_address: {drawer_controller_id: 1, drawer_id: 1}, state: 1}'",
             "problemMatcher": []
         },
         {
             "label": "Open Drawer 2",
             "detail": "Send action message to open the drawer with the controller id 2",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer: {drawer_controller_id: 2, drawer_id: 1}, state: 1}'",
+            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer_address: {drawer_controller_id: 2, drawer_id: 1}, state: 1}'",
             "problemMatcher": []
         },
         {
             "label": "Open Drawer 3",
             "detail": "Send action message to open the drawer with the controller id 3",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer: {drawer_controller_id: 3, drawer_id: 1}, state: 1}'",
+            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer_address: {drawer_controller_id: 3, drawer_id: 1}, state: 1}'",
             "problemMatcher": []
         },
         {
