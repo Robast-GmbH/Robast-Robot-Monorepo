@@ -2,7 +2,7 @@
 
 
 // For DEBUGGING purposes this is the action send_goal command:
-// ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer: {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
+// ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer_address: {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
 
 namespace robast_drawer_gate
 {
@@ -20,8 +20,6 @@ namespace robast_drawer_gate
       std::bind(&DrawerGate::provide_shelf_setup_info_callback, this, std::placeholders::_1, std::placeholders::_2));
 
     this->setup_serial_can_ubs_converter();
-    // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the open can channel to enable receiving CAN messages
-    // this->open_can_channel();
     this->serial_helper.close_serial();
   }
 
@@ -156,7 +154,7 @@ namespace robast_drawer_gate
     }
     this->close_can_channel();
     this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
-    this->open_can_channel();
+    this->open_can_channel(); // the default state should be the open can channel to enable receiving CAN messages
   }
 
   robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_user_access(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters, uint8_t can_data_open_lock)
@@ -261,8 +259,6 @@ namespace robast_drawer_gate
   
   void DrawerGate::send_can_msg(robast_can_msgs::CanMessage can_message, led_parameters led_parameters)
   {
-    this->setup_serial_can_ubs_converter();
-
     std::optional<std::string> ascii_cmd = robast_can_msgs::encode_can_message_into_ascii_command(can_message, can_db.can_messages);
     
     if (ascii_cmd.has_value())
@@ -471,8 +467,7 @@ namespace robast_drawer_gate
     this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
     this->timer_ptr_ = this->create_wall_timer(50ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
 
-    // Although the feedback is received periodical via the timer,
-    // we update the drawer_status once manually to make sure
+    // Although the feedback is received periodical via the timer, we update the drawer_status once manually to make sure
     // the drawer_status is up to date at the start
     this->update_drawer_status_from_can();
 
