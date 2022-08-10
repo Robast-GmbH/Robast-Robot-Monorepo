@@ -1,62 +1,39 @@
-//{
-  // Use IntelliSense to learn about possible attributes.
-  // Hover to view descriptions of existing attributes.
-  // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
-  // ros2 run --prefix 'gdbserver localhost:3000' package exec
-  // colcon build <other_args> --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo
-  {
-    "version": "0.2.0",
-  "configurations": [
-    // Example launch of a python file
-    // {
-    //   "name": "Python: Current File",
-    //   "type": "python",
-    //   "request": "launch",
-    //   "program": "${file}",
-    //   "console": "integratedTerminal",
-    // },
-    {
-        "name": "C++ Debugger",
-        "request": "launch",
-        "type": "cppdbg",
-        "miDebuggerServerAddress": "localhost:3000",
-        "cwd": "/",
-        "program": "/workspaces/Robast_RosTheron/install/robast_map_update_module/lib/robast_map_update_module/map_combine_node"
-    },  
-     // Example gdb launch of a ros executable
-    // {
-    //   "name": "(gdb) Launch",
-    //   "type": "cppdbg",
-    //   "request": "launch",
-    //   "program": "${workspaceFolder}/install/${input:package}/lib/${input:package}/${input:program}",
-    //   "args": [],
-    //   "preLaunchTask": "build",
-    //   "stopAtEntry": true,
-    //   "cwd": "${workspaceFolder}",
-    //   "externalConsole": false,
-    //   "MIMode": "gdb",
-    //   "setupCommands": [
-    //     {
-    //       "description": "Enable pretty-printing for gdb",
-    //       "text": "-enable-pretty-printing",
-    //       "ignoreFailures": true
-    //     }
-    //   ]
-    // }
-  ]
-  // ,
-  // "inputs": [
-  //   {
-  //     "id": "package",
-  //     "type": "promptString",
-  //     "description": "Package name",
-  //     // "default": "examples_rclcpp_minimal_publisher"
-  //   },
-  //   {
-  //     "id": "program",
-  //     "type": "promptString",
-  //     "description": "Program name",
-  //     // "default": "publisher_member_function"
-  //   }
-  // ]
+{
+        "version": "0.2.0",
+        "configurations": [
+                {
+                        "name": "C++ Debugger",
+                        "request": "launch",
+                        "type": "cppdbg",
+                        "miDebuggerServerAddress": "localhost:3000",
+                        "cwd": "/",
+                        "program": "/workspaces/Robast_RosTheron/install/robast_map_update_module/lib/robast_map_update_module/map_combine_node"
+                },
+                {
+                        "name": "C/C++: g++ build and debug active file",
+                        "type": "cppdbg",
+                        "request": "launch",
+                        "program": "${fileDirname}/${fileBasenameNoExtension}",
+                        "args": [],
+                        "stopAtEntry": false,
+                        "cwd": "${fileDirname}",
+                        "environment": [],
+                        "externalConsole": false,
+                        "MIMode": "gdb",
+                        "setupCommands": [
+                                {
+                                        "description": "Enable pretty-printing for gdb",
+                                        "text": "-enable-pretty-printing",
+                                        "ignoreFailures": true
+                                },
+                                {
+                                        "description": "Set Disassembly Flavor to Intel",
+                                        "text": "-gdb-set disassembly-flavor intel",
+                                        "ignoreFailures": true
+                                }
+                        ],
+                        "preLaunchTask": "C/C++: g++ build active file",
+                        "miDebuggerPath": "/usr/bin/gdb"
+                }
+        ]
 }
