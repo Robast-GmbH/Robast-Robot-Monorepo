@@ -58,7 +58,7 @@ RUN apt-get update && apt-get install -y \
   && rosdep init || echo "rosdep already initialized"
   # General ros stuff
 
-RUN mkdir tmp && cd tmp && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
+RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
   && tar -xvzf v8.2.0.tar.gz \
   && cd openvdb-8.2.0/ \
   && mkdir builds && cd builds && cmake .. \
@@ -99,7 +99,7 @@ RUN apt-get update \
   && echo "cd ~/../../workspaces/Robast_RosTheron" >> /home/$USER/.bashrc \
   && echo 'export PS1="\[\e[31m\][\[\e[m\]\[\e[38;5;172m\]\u\[\e[m\]@\[\e[38;5;153m\]\h\[\e[m\]\[\e[38;5;214m\]\W\[\e[m\]\[\e[31m\]]\[\e[m\]\\$"' >> /home/$USER/.bashrc
 
-RUN apt-get update && apt-get upgrade
+RUN apt-get update && apt-get upgrade -y
 
 COPY "/entrypoint.sh" "/entrypoint.sh"
 #ENTRYPOINT ["/entrypoint.sh"]
