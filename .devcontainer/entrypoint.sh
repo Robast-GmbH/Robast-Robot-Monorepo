@@ -5,5 +5,7 @@
 #cp -r ./resource_retriever ~/rviz2_ws/src/rviz/rviz_rendering/include/
 #colcon build --merge-install
 cd ~/../../workspaces/Robast_RosTheron
+rosdep update
+rosdep install --from-paths src --ignore-src -r -y
 #sudo dos2unix shell_setup.sh
 #sudo /startup.sh

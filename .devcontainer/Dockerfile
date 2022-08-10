@@ -58,7 +58,13 @@ RUN apt-get update && apt-get install -y \
   && rosdep init || echo "rosdep already initialized"
   # General ros stuff
 
-  RUN apt-get update && apt-get install -y \
+RUN mkdir tmp && cd tmp && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
+  && tar -xvzf v8.2.0.tar.gz \
+  && cd openvdb-8.2.0/ \
+  && mkdir builds && cd builds && cmake .. \
+  && make && make install
+
+RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-xacro \
   # Install ros distro testing packages
   ros-${ROS_DISTRO}-ament-lint \
@@ -67,17 +73,17 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-launch-testing-ros \
   python3-autopep8 \
   # Install ROS Nav stuff 
-  ros-${ROS_DISTRO}-cartographer \
-  ros-${ROS_DISTRO}-cartographer-ros \
-  ros-${ROS_DISTRO}-navigation2 \
-  ros-${ROS_DISTRO}-nav2-bringup \
-  ros-${ROS_DISTRO}-robot-localization \
+  # ros-${ROS_DISTRO}-cartographer \
+  # ros-${ROS_DISTRO}-cartographer-ros \
+  # ros-${ROS_DISTRO}-navigation2 \
+  # ros-${ROS_DISTRO}-nav2-bringup \
+  # ros-${ROS_DISTRO}-robot-localization \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   # Depencencies needed to build the spatio_temporal_voxel_layer package:
-  libopenvdb-dev \
+  # libopenvdb-dev \
   # Dependencies needed to build the robot_localization package:
-	libgeographic-dev \
-  ros-${ROS_DISTRO}-geographic-msgs \
+	# libgeographic-dev \
+  # ros-${ROS_DISTRO}-geographic-msgs \
   ros-${ROS_DISTRO}-diagnostic-updater \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
@@ -92,6 +98,8 @@ RUN apt-get update \
   && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
   && echo "cd ~/../../workspaces/Robast_RosTheron" >> /home/$USER/.bashrc \
   && echo 'export PS1="\[\e[31m\][\[\e[m\]\[\e[38;5;172m\]\u\[\e[m\]@\[\e[38;5;153m\]\h\[\e[m\]\[\e[38;5;214m\]\W\[\e[m\]\[\e[31m\]]\[\e[m\]\\$"' >> /home/$USER/.bashrc
+
+RUN apt-get update && apt-get upgrade
 
 COPY "/entrypoint.sh" "/entrypoint.sh"
 #ENTRYPOINT ["/entrypoint.sh"]
