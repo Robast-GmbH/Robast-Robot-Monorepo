@@ -62,12 +62,12 @@ namespace robast_can_msgs
     /**
      * @brief Decodes an ASCII command sent from the USB-CAN adapter into a CAN message
      *
-     * @param ascii_command The ASCII command to be encoded
-     * @param ascii_command_length The number of chars the ASCII command contains
+     * @param ascii_commands_as_string The ASCII command to be encoded
+     * @param ascii_commands_length The number of chars the ASCII command contains
      * @param can_db_messages CAN messages from CAN database to encode the message with
      * @return std::optional<CanMessage>. Only contains a value if the can_message id exists in the can_db and the ascii command has the proper format.
      */
-    std::optional<CanMessage> decode_single_ascii_command_into_can_message(const char* ascii_command, uint8_t ascii_command_length, std::vector<CanMessage> can_db_messages); 
+    std::optional<CanMessage> decode_single_ascii_command_into_can_message(std::string ascii_commands_as_string, uint8_t ascii_commands_length, std::vector<CanMessage> can_db_messages); 
 
     /**
      * @brief Decodes string that may contain more than one ASCII commant sent from the USB-CAN adapter into a CAN message

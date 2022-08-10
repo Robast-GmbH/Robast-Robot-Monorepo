@@ -6,7 +6,7 @@
 
 /*
 * HOW TO RUN THIS TEST ON WINDOWS:
-* - Go to directory src/robast_msgs/robast_can_msgs_tests
+* - Go to directory src/robast_msgs/robast_can_msgs/tests
 * - Run the following commands:
 * g++ -std=c++17 -c .\tests_main.cpp
 * g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\can_helper.cpp -o test_executable -I ..\
@@ -15,7 +15,7 @@
 
 /*
 * HOW TO RUN THIS TEST ON LINUX:
-* - Go to directory src/robast_msgs/robast_can_msgs_tests
+* - Go to directory src/robast_msgs/robast_can_msgs/tests
 * - Run the following commands:
 * g++ -std=c++17 -c tests_main.cpp
 * g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ../can_helper.cpp -o test_executable -I ..\
@@ -466,10 +466,10 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
 
         WHEN("Decoding an ASCII command into a CAN message") {
             std::string ascii_command_drawer_feedback_1 = "t0018000203C04080C1C8";
-            std::optional<robast_can_msgs::CanMessage> decoded_can_message = robast_can_msgs::decode_single_ascii_command_into_can_message(&ascii_command_drawer_feedback_1[0], ascii_command_drawer_feedback_1.length(), can_db.can_messages);
+            std::optional<robast_can_msgs::CanMessage> decoded_can_message = robast_can_msgs::decode_single_ascii_command_into_can_message(ascii_command_drawer_feedback_1, ascii_command_drawer_feedback_1.length(), can_db.can_messages);
 
             std::string ascii_command_drawer_feedback_2 = "t002400000170";
-            std::optional<robast_can_msgs::CanMessage> decoded_can_message_drawer_feedback = robast_can_msgs::decode_single_ascii_command_into_can_message(&ascii_command_drawer_feedback_2[0], ascii_command_drawer_feedback_2.length(), can_db.can_messages);
+            std::optional<robast_can_msgs::CanMessage> decoded_can_message_drawer_feedback = robast_can_msgs::decode_single_ascii_command_into_can_message(ascii_command_drawer_feedback_2, ascii_command_drawer_feedback_2.length(), can_db.can_messages);
 
             THEN("The resulting CAN message should contain the correct data that was contained in the ASCII command") {
                 REQUIRE(decoded_can_message.has_value());
