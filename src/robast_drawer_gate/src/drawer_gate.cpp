@@ -21,7 +21,7 @@ namespace robast_drawer_gate
 
     this->setup_serial_can_ubs_converter();
     // When the USB-CAN Adapter isn't sending CAN messages, the default state should be the open can channel to enable receiving CAN messages
-    this->open_can_channel();
+    // this->open_can_channel();
     this->serial_helper.close_serial();
   }
 
@@ -77,10 +77,10 @@ namespace robast_drawer_gate
 
   void DrawerGate::update_drawer_status_from_can(void)
   {
-    this->setup_serial_can_ubs_converter();
-    this->open_can_channel(); 
     std::string serial_read_ascii_command;
     uint16_t num_of_received_bytes = this->serial_helper.read_serial(&serial_read_ascii_command, 200);
+
+    //RCLCPP_INFO(this->get_logger(), "Serial read: %s", serial_read_ascii_command.c_str()); //DEBUGGING
 
     std::vector<robast_can_msgs::CanMessage> received_can_msgs = robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, can_db.can_messages);
 
@@ -93,8 +93,6 @@ namespace robast_drawer_gate
       // Dump only the very first received can msgs because they might contain old data in the buffer
       cleared_serial_buffer_from_old_can_msgs = true;
     }
-
-    this->serial_helper.close_serial();
   }
 
   void DrawerGate::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
@@ -156,7 +154,9 @@ namespace robast_drawer_gate
     {
       RCLCPP_ERROR(this->get_logger(), "Error from opening serial Port: %s", setup_serial_port_result.c_str());
     }
+    this->close_can_channel();
     this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
+    this->open_can_channel();
   }
 
   robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_user_access(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters, uint8_t can_data_open_lock)
@@ -263,8 +263,6 @@ namespace robast_drawer_gate
   {
     this->setup_serial_can_ubs_converter();
 
-    this->open_can_channel();
-
     std::optional<std::string> ascii_cmd = robast_can_msgs::encode_can_message_into_ascii_command(can_message, can_db.can_messages);
     
     if (ascii_cmd.has_value())
@@ -279,7 +277,6 @@ namespace robast_drawer_gate
     {
       //TODO: Error handling
     }
-    this->serial_helper.close_serial();
   }
 
   void DrawerGate::open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id)
@@ -468,6 +465,8 @@ namespace robast_drawer_gate
   {
     RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
 
+    this->setup_serial_can_ubs_converter();
+
     // Starting timer to receive feedback from drawer controller until the process of opening a drawer is finished
     this->timer_cb_group_ = nullptr; //This might be replaced in the future to better use callback groups. With the default setting above (nullptr / None), the timer will use the node’s default Mutually Exclusive Callback Group.
     this->timer_ptr_ = this->create_wall_timer(50ms, std::bind(&DrawerGate::timer_callback, this), timer_cb_group_);
@@ -485,6 +484,8 @@ namespace robast_drawer_gate
     uint8_t state = goal -> state; // variable to control which step of the drawer user access should be performed
  
     this->state_machine_drawer_gate(drawer_controller_id, drawer_id, state);
+
+    this->serial_helper.close_serial();
 
     goal_handle->succeed(result);
     RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
