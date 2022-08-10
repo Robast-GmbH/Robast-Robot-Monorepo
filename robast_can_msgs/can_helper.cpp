@@ -130,18 +130,18 @@ namespace robast_can_msgs
         // If we received more than one CAN message, we need to split the received serial_read_ascii_command
         if (ascii_commands.length() > expected_num_of_bytes_ascii_cmd)
         {
+            // I don't know why, but:
+            // Some of the serial read results have 2 beginning bytes that contain the ASCII code 7
+            // Therefore remove the first to bytes from the read serial command
+            if ((ascii_commands[0] == 7) && (ascii_commands[1] == 7) && (ascii_commands.length() > 2))
+            {
+                ascii_commands.erase(ascii_commands.begin(), ascii_commands.begin() + 2);
+            }
+
             uint8_t num_of_received_can_msgs = ascii_commands.length() / expected_num_of_bytes_ascii_cmd;
             
             for (uint8_t i = 0; i < num_of_received_can_msgs; i++)
             {
-                // I don't know why, but:
-                // Some of the serial read results have 2 beginning bytes that contain the ASCII code 7
-                // Therefore remove the first to bytes from the read serial command
-                if ((ascii_commands[0] == 7) && (ascii_commands[1] == 7) && (ascii_commands.length() > 2))
-                {
-                    ascii_commands.erase(ascii_commands.begin(), ascii_commands.begin() + 2);
-                }
-
                 std::optional<CanMessage> decoded_can_message = decode_single_ascii_command_into_can_message(&ascii_commands[0], ascii_commands.length(), can_db_messages);
                 if (decoded_can_message.has_value())
                 {
@@ -151,6 +151,25 @@ namespace robast_can_msgs
                     }
                 }
                 ascii_commands.erase(ascii_commands.begin(), ascii_commands.begin() + expected_num_of_bytes_ascii_cmd);
+            }
+        }
+        else
+        {
+            // I don't know why, but:
+            // Some of the serial read results have 2 beginning bytes that contain the ASCII code 7
+            // Therefore remove the first to bytes from the read serial command
+            if ((ascii_commands[0] == 7) && (ascii_commands[1] == 7) && (ascii_commands.length() > 2))
+            {
+                ascii_commands.erase(ascii_commands.begin(), ascii_commands.begin() + 2);
+            }
+
+            std::optional<CanMessage> decoded_can_message = decode_single_ascii_command_into_can_message(&ascii_commands[0], ascii_commands.length(), can_db_messages);
+            if (decoded_can_message.has_value())
+            {
+                if (decoded_can_message.value().id == can_msgs_id)
+                {
+                    received_can_msgs.push_back(decoded_can_message.value());
+                }
             }
         }
         return received_can_msgs;
