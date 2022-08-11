@@ -52,7 +52,8 @@ def generate_launch_description():
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
-        'map_topic': "/robot/map"}
+        'global_frame': namespace+'_map',
+        'map_topic': "/map"}
 
     configured_params = RewrittenYaml(
         source_file=nav2_params_yaml,
