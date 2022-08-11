@@ -6,7 +6,7 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, GroupAction
 from launch.conditions import IfCondition, UnlessCondition
-from launch.substitutions import LaunchConfiguration, PythonExpression
+from launch.substitutions import LaunchConfiguration, PythonExpression, TextSubstitution
 from launch_ros.actions import Node
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -52,8 +52,13 @@ def generate_launch_description():
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
-        'global_frame': namespace+'_map',
+        'global_frame': "map",
         'map_topic': "/map"}
+
+    # if namespace != '':
+    #     param_substitutions['global_frame'] = [namespace, "_map"] #TODO irgendwie muss hier der "robot" namespace noch dazu aber ka wie
+    # stichwärter? evtl: TextSubstitution
+    # ansonsten idee: eine base yaml, in der namespace steht und diesen im text substituieren komplett
 
     configured_params = RewrittenYaml(
         source_file=nav2_params_yaml,
