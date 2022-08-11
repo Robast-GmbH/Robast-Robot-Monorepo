@@ -52,6 +52,7 @@ def generate_launch_description():
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
+        'global_frame': namespace+'_map',
         'map_topic': "/map"}
 
     configured_params = RewrittenYaml(
