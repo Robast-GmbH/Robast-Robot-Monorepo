@@ -95,9 +95,6 @@ def generate_launch_description():
         description='kind of slam toolbox node'
     )
 
-    # print('map_file_posegraph: {}'.format(slam_posegraph))
-    # print('map_file_posegraph: {}'.format(declare_slam_posegraph_file_cmd))
-
     # Make re-written yaml
     param_substitutions = {
         'namespace': namespace,

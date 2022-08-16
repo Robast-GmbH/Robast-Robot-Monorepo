@@ -11,10 +11,10 @@ slam_toolbox:
 
     # ROS Parameters
     map_name: /map 
-    odom_frame: odom
+    odom_frame: robot_odom
     map_frame: map
-    base_frame: base_footprint
-    scan_topic: /front_laser/scan
+    base_frame: robot_base_footprint
+    scan_topic: /robot/front_laser/scan
     mode: mapping #localization
     debug_logging: false
     throttle_scans: 1

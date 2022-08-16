@@ -1,17 +1,17 @@
 import os
-from typing import Mapping
 
 from ament_index_python.packages import get_package_share_directory
-from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
+from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
-    world_model = LaunchConfiguration('world_model')
+    namespace = LaunchConfiguration('namespace')
+    robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
+    world_posegraph = LaunchConfiguration('world_posegraph')
 
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_model',
@@ -19,13 +19,15 @@ def generate_launch_description():
         description='math to the world model'
     )
 
-    robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
-    world_posegraph = LaunchConfiguration('world_posegraph')
-
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_posegraph',
         default_value=os.path.join(robast_nav_launch_dir, 'maps', '6OG_Tiplu', '6OG'),
-        description='path to the world posegrapg'
+        description='path to the world posegraph'
+    )
+    declare_namespace_cmd = DeclareLaunchArgument(
+        'namespace',
+        default_value='',
+        description='Top level namespace'
     )
     slam_toolbox_params_yaml = os.path.join(robast_nav_launch_dir, 'config', 'slam_toolbox_params_offline.yaml')
     slam_launch_file = os.path.join(robast_nav_launch_dir, 'launch', 'slam_toolbox_base_launch.py')
@@ -36,7 +38,7 @@ def generate_launch_description():
         'slam_posegraph': world_posegraph,
         'slam_mode': 'mapping',
         'slam_map_topic': '/map',
-        'namespace': 'robot'
+        'namespace': namespace
     }.items()
 
     launch_slam_base_launch = IncludeLaunchDescription(
@@ -44,6 +46,7 @@ def generate_launch_description():
 
     ld = LaunchDescription()
     ld.add_action(declare_world_model_cmd)
+    ld.add_action(declare_namespace_cmd)
     ld.add_action(launch_slam_base_launch)
 
     return ld

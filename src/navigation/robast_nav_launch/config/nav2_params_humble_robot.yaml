@@ -1,9 +1,9 @@
 bt_navigator:
   ros__parameters:
     use_sim_time: True
-    global_frame: map
-    robot_base_frame: base_link
-    odom_topic: /odom
+    global_frame: robot_map
+    robot_base_frame: robot_base_link
+    odom_topic: /robot/robotnik_base_control/odom
     bt_loop_duration: 10 #neu
     default_server_timeout: 20 #neu
     enable_groot_monitoring: True
@@ -132,9 +132,9 @@ local_costmap:
     ros__parameters:
       update_frequency: 5.0
       publish_frequency: 2.0
-      global_frame: odom
-      robot_base_frame: base_link
-      map_topic: /map
+      global_frame: robot_odom
+      robot_base_frame: robot_base_link
+      map_topic: /robot/map
       use_sim_time: True
       rolling_window: true
       width: 5
@@ -149,7 +149,7 @@ local_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /front_laser/scan
+          topic: /robot/front_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -165,7 +165,7 @@ local_costmap:
         mark_threshold: 0
         observation_sources: scan
         scan:
-          topic: /front_laser/scan
+          topic: /robot/front_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -193,9 +193,9 @@ global_costmap:
     ros__parameters:
       update_frequency: 1.0
       publish_frequency: 1.0
-      global_frame: map
-      robot_base_frame: base_link
-      map_topic: /map
+      global_frame: robot_map
+      robot_base_frame: robot_base_link
+      map_topic: /robot/map
       use_sim_time: False
       footprint: "[ [0.45, 0.30], [0.45, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
       footprint_padding: 0.025
@@ -208,7 +208,7 @@ global_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /front_laser/scan
+          topic: /robot/front_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -330,8 +330,8 @@ behavior_server:
       plugin: "nav2_behaviors/DriveOnHeading"
     wait:
       plugin: "nav2_behaviors/Wait"
-    global_frame: odom
-    robot_base_frame: base_link
+    global_frame: robot_odom
+    robot_base_frame: robot_base_link
     transform_tolerance: 0.1
     use_sim_time: true
     simulate_ahead_time: 2.0

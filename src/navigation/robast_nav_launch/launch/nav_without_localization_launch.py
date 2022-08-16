@@ -1,3 +1,4 @@
+from distutils.log import error
 import os
 import yaml
 
@@ -24,10 +25,7 @@ def generate_launch_description():
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
 
     else:
-        default_bt_xml_filename = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'default_nav_to_pose_bt_xml.xml')
-        bt_xml_filename_door_bells = os.path.join(get_package_share_directory(
-            'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'default_nav_to_pose_bt_xml.xml')
+        error
 
     # nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'),
     #                                 'config', 'nav2_params_' + os.environ['ROS_DISTRO']+'.yaml')
@@ -48,18 +46,25 @@ def generate_launch_description():
     use_composition = LaunchConfiguration('use_composition')
     container_name = LaunchConfiguration('container_name')
     use_respawn = LaunchConfiguration('use_respawn')
+# ------------------------------------dumm aber ka wie sonst-------------------------------------
+    with open("environment_vars.yaml", 'r') as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
 
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
-        'global_frame': "map",
+        'global_frame': environment_yaml["prefix"]+"map",
         'map_topic': "/map"}
 
     # if namespace != '':
     #     param_substitutions['global_frame'] = [namespace, "_map"] #TODO irgendwie muss hier der "robot" namespace noch dazu aber ka wie
     # stichwärter? evtl: TextSubstitution
     # ansonsten idee: eine base yaml, in der namespace steht und diesen im text substituieren komplett
-
+# --------------------------------------------------------------------------------------------
     configured_params = RewrittenYaml(
         source_file=nav2_params_yaml,
         root_key=namespace,
@@ -74,20 +79,18 @@ def generate_launch_description():
         'bt_navigator',
         'waypoint_follower'
     ]
-    remappings = [('/cmd_vel', 'robot/robotnik_base_control/cmd_vel'),
-                  ('/odom', 'robot/robotnik_base_control/odom'),
-                  ('/robot/tf', 'tf'),
-                  ('/robot/tf_static', 'tf_static')
-                  ]
-
-    # Map fully qualified names to relative ones so the node's namespace can be prepended.
-    # In case of the transforms (tf), currently, there doesn't seem to be a better alternative
-    # https://github.com/ros/geometry2/issues/32
-    # https://github.com/ros/robot_state_publisher/pull/30
-    # TODO(orduno) Substitute with `PushNodeRemapping`
-    #              https://github.com/ros2/launch_ros/issues/56
-    # remappings = [('/robot/tf', 'tf'),
-    #               ('/robot/tf_static', 'tf_static')]
+    if environment_yaml["prefix"] == 'robot':
+        remappings = [('/cmd_vel', 'robot/robotnik_base_control/cmd_vel'),
+                      ('/odom', 'robot/robotnik_base_control/odom'),
+                      ('/robot/tf', 'tf'),
+                      ('/robot/tf_static', 'tf_static')
+                      ]
+    else:
+        remappings = [('/cmd_vel', 'cmd_vel'),
+                      ('/odom', 'odom'),
+                      ('/tf', 'tf'),
+                      ('/tf_static', 'tf_static')
+                      ]
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
