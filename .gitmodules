@@ -1,6 +1,6 @@
 [submodule "robot_localization.git"]
 	path = src/submodules/robot_localization
-	url = https://github.com/TipluJacob/robot_localization.git
+	url = https://github.com/cra-ros-pkg/robot_localization.git
 [submodule "aws_hospital_world.git"]
 	path = src/simulation/aws_hospital_world
 	url = https://github.com/TipluJacob/aws_hospital_world.git
