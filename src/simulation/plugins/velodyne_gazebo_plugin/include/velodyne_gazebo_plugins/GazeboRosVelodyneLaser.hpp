@@ -1,6 +1,7 @@
 
-#ifndef GAZEBO_ROS_Robosense_LASER_H_
-#define GAZEBO_ROS_Robosense_LASER_H_
+
+#ifndef GAZEBO_ROS_VELODYNE_LASER_H_
+#define GAZEBO_ROS_VELODYNE_LASER_H_
 
 #include <sdf/Param.hh>
 
@@ -17,14 +18,14 @@
 namespace gazebo
 {
 
-  class GazeboRosRobosenseLaser : public SensorPlugin
+  class GazeboRosVelodyneLaser : public SensorPlugin
   {
     /// \brief Constructor
     /// \param parent The parent entity, must be a Model or a Sensor
-    public: GazeboRosRobosenseLaser();
+    public: GazeboRosVelodyneLaser();
 
     /// \brief Destructor
-    public: ~GazeboRosRobosenseLaser();
+    public: ~GazeboRosVelodyneLaser();
 
     /// \brief Load the plugin
     /// \param take in SDF root element
@@ -94,4 +95,5 @@ namespace gazebo
   };
 
 } // namespace gazebo
-#endif /* GAZEBO_ROS_Robosense_LASER_H_ */
+
+#endif /* GAZEBO_ROS_VELODYNE_LASER_H_ */

@@ -1,5 +1,7 @@
 
-#include <robosense_gazebo_plugins/GazeboRosRobosenseLaser.hpp>
+
+#include <velodyne_gazebo_plugins/GazeboRosVelodyneLaser.hpp>
+
 #include <gazebo_ros/utils.hpp>
 
 #include <algorithm>
@@ -11,26 +13,25 @@ static_assert(GAZEBO_MAJOR_VERSION >= 11, "Gazebo version is too old");
 namespace gazebo
 {
 // Register this plugin with the simulator
-GZ_REGISTER_SENSOR_PLUGIN(GazeboRosRobosenseLaser)
+GZ_REGISTER_SENSOR_PLUGIN(GazeboRosVelodyneLaser)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constructor
-GazeboRosRobosenseLaser::GazeboRosRobosenseLaser() : min_range_(0), max_range_(0), gaussian_noise_(0)
+GazeboRosVelodyneLaser::GazeboRosVelodyneLaser() : min_range_(0), max_range_(0), gaussian_noise_(0)
 {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Destructor
-GazeboRosRobosenseLaser::~GazeboRosRobosenseLaser()
+GazeboRosVelodyneLaser::~GazeboRosVelodyneLaser()
 {
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Load the controller
-void GazeboRosRobosenseLaser::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
+void GazeboRosVelodyneLaser::Load(sensors::SensorPtr _parent, sdf::ElementPtr _sdf)
 {
-
-  gzdbg << "Loading GazeboRosRobosenseLaser\n";
+  gzdbg << "Loading GazeboRosVelodyneLaser\n";
 
   // Initialize Gazebo node
   gazebo_node_ = gazebo::transport::NodePtr(new gazebo::transport::Node());
@@ -47,21 +48,21 @@ void GazeboRosRobosenseLaser::Load(sensors::SensorPtr _parent, sdf::ElementPtr _
   frame_name_ = tf_resolve(tf_prefix, gazebo_ros::SensorFrameID(*_parent, *_sdf));
 
   if (!_sdf->HasElement("organize_cloud")) {
-    RCLCPP_INFO(ros_node_->get_logger(), "Robosense laser plugin missing <organize_cloud>, defaults to false");
+    RCLCPP_INFO(ros_node_->get_logger(), "Velodyne laser plugin missing <organize_cloud>, defaults to false");
     organize_cloud_ = false;
   } else {
     organize_cloud_ = _sdf->GetElement("organize_cloud")->Get<bool>();
   }
 
   if (!_sdf->HasElement("min_range")) {
-    RCLCPP_INFO(ros_node_->get_logger(), "Robosense laser plugin missing <min_range>, defaults to 0");
+    RCLCPP_INFO(ros_node_->get_logger(), "Velodyne laser plugin missing <min_range>, defaults to 0");
     min_range_ = 0;
   } else {
     min_range_ = _sdf->GetElement("min_range")->Get<double>();
   }
 
   if (!_sdf->HasElement("max_range")) {
-    RCLCPP_INFO(ros_node_->get_logger(), "Robosense laser plugin missing <max_range>, defaults to infinity");
+    RCLCPP_INFO(ros_node_->get_logger(), "Velodyne laser plugin missing <max_range>, defaults to infinity");
     max_range_ = INFINITY;
   } else {
     max_range_ = _sdf->GetElement("max_range")->Get<double>();
@@ -69,13 +70,13 @@ void GazeboRosRobosenseLaser::Load(sensors::SensorPtr _parent, sdf::ElementPtr _
 
   min_intensity_ = std::numeric_limits<double>::lowest();
   if (!_sdf->HasElement("min_intensity")) {
-    RCLCPP_INFO(ros_node_->get_logger(), "Robosense laser plugin missing <min_intensity>, defaults to no clipping");
+    RCLCPP_INFO(ros_node_->get_logger(), "Velodyne laser plugin missing <min_intensity>, defaults to no clipping");
   } else {
     min_intensity_ = _sdf->GetElement("min_intensity")->Get<double>();
   }
 
   if (!_sdf->HasElement("gaussian_noise")) {
-    RCLCPP_INFO(ros_node_->get_logger(), "Robosense laser plugin missing <gaussian_noise>, defaults to 0.0");
+    RCLCPP_INFO(ros_node_->get_logger(), "Velodyne laser plugin missing <gaussian_noise>, defaults to 0.0");
     gaussian_noise_ = 0;
   } else {
     gaussian_noise_ = _sdf->GetElement("gaussian_noise")->Get<double>();
@@ -87,20 +88,20 @@ void GazeboRosRobosenseLaser::Load(sensors::SensorPtr _parent, sdf::ElementPtr _
   // ROS2 publishers do not support connection callbacks (at least as of foxy)
   // Use timer to emulate ROS1 style connection callback
   using namespace std::chrono_literals;
-  timer_ = ros_node_->create_wall_timer(0.5s, std::bind(&GazeboRosRobosenseLaser::ConnectCb, this));
+  timer_ = ros_node_->create_wall_timer(0.5s, std::bind(&GazeboRosVelodyneLaser::ConnectCb, this));
 
-  RCLCPP_INFO(ros_node_->get_logger(), "Robosense laser plugin ready");
-  gzdbg << "GazeboRosRobosenseLaser LOADED\n";
+  RCLCPP_INFO(ros_node_->get_logger(), "Velodyne laser plugin ready");
+  gzdbg << "GazeboRosVelodyneLaser LOADED\n";
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Subscribe on-demand
-void GazeboRosRobosenseLaser::ConnectCb()
+void GazeboRosVelodyneLaser::ConnectCb()
 {
   std::lock_guard<std::mutex> lock(lock_);
   if (pub_->get_subscription_count()) {
     if (!sub_) {
-      sub_ = gazebo_node_->Subscribe(this->parent_ray_sensor_->Topic(), &GazeboRosRobosenseLaser::OnScan, this);
+      sub_ = gazebo_node_->Subscribe(this->parent_ray_sensor_->Topic(), &GazeboRosVelodyneLaser::OnScan, this);
     }
     parent_ray_sensor_->SetActive(true);
   } else {
@@ -112,7 +113,7 @@ void GazeboRosRobosenseLaser::ConnectCb()
   }
 }
 
-void GazeboRosRobosenseLaser::OnScan(ConstLaserScanStampedPtr& _msg)
+void GazeboRosVelodyneLaser::OnScan(ConstLaserScanStampedPtr& _msg)
 {
   const ignition::math::Angle maxAngle = _msg->scan().angle_max();
   const ignition::math::Angle minAngle = _msg->scan().angle_min();
