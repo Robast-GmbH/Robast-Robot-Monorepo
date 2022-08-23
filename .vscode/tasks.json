@@ -32,7 +32,7 @@
                         "label": "build-ros-theron",
                         "detail": "Symlink Build for Ros-Theron. Makes sure packages are build in the right order.",
                         "type": "shell",
-                        "command": "colcon build source install/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip aws_hospital_world robast_map_update_module",
+                        "command": "colcon build --packages-select robot_localization --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic; source install/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip aws_hospital_world robast_map_update_module",
                         "problemMatcher": []
                 },
                 {
