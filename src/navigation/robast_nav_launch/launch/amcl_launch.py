@@ -20,15 +20,22 @@ def generate_launch_description():
     init_x = environment_yaml["init_x"]
     init_y = environment_yaml["init_y"]
     init_yaw = environment_yaml["init_yaw"]
+    config_directory = environment_yaml["config_directory"]
+    is_simulation = environment_yaml["is_simulation"]
+
+    if (is_simulation):
+        map_file_yaml = os.path.join(get_package_share_directory('robast_nav_launch'), 'maps', '5OG.yaml')
+    else:
+        map_file_yaml = os.path.join(get_package_share_directory(
+            'robast_nav_launch'), 'maps', '6OG_Tiplu', 'Tiplu_6OG.yaml')
 
     nav2_localization_params_yaml = os.path.join(get_package_share_directory(
-        'robast_nav_launch'), 'config', 'localization_params.yaml')
-    map_file = os.path.join(get_package_share_directory('robast_nav_launch'), 'maps', '6OG_Tiplu', 'Tiplu_6OG.yaml')
+        'robast_nav_launch'), config_directory, 'localization_params.yaml')
 
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
     autostart = LaunchConfiguration('autostart')
-    # map_file = LaunchConfiguration('map_file')
+    map_file = LaunchConfiguration('map_file')
     map_server_map_topic = LaunchConfiguration('map_server_map_topic')
     amcl_map_topic = LaunchConfiguration('amcl_map_topic')
     use_respawn = LaunchConfiguration('use_respawn')
@@ -49,7 +56,7 @@ def generate_launch_description():
 
     param_substitutions = {
         'use_sim_time': use_sim_time,
-        # 'yaml_filename': map_file,
+        'yaml_filename': map_file,
         'namespace': namespace
     }
 
@@ -83,8 +90,7 @@ def generate_launch_description():
 
     map_file_cmd = DeclareLaunchArgument(
         'map_file',
-        default_value=os.path.join(get_package_share_directory('robast_nav_launch'),
-                                   'maps', 'Tiplu_6OG_2', 'Tiplu_6OG_2.yaml'),
+        default_value=map_file_yaml,
         description='map server map file to load')
 
     declare_use_respawn_cmd = DeclareLaunchArgument(

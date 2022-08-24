@@ -9,14 +9,21 @@ from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, GroupA
 from launch.conditions import IfCondition, UnlessCondition
 from launch.substitutions import LaunchConfiguration, PythonExpression, TextSubstitution
 from launch_ros.actions import Node
-from launch.actions import IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.descriptions import ComposableNode
 from launch_ros.actions import LoadComposableNodes
 from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
+
+    with open("environment_vars.yaml", 'r') as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    config_directory = environment_yaml["config_directory"]
 
     if(os.environ['ROS_DISTRO'] == 'humble'):
         default_bt_xml_filename = os.path.join(get_package_share_directory(
@@ -27,10 +34,8 @@ def generate_launch_description():
     else:
         error
 
-    # nav2_params_yaml = os.path.join(get_package_share_directory('robast_nav_launch'),
-    #                                 'config', 'nav2_params_' + os.environ['ROS_DISTRO']+'.yaml')
     recoveries_params_yaml = os.path.join(get_package_share_directory(
-        'robast_nav_launch'), 'config', 'recoveries_params.yaml')
+        'robast_nav_launch'), config_directory, 'recoveries_params.yaml')
 
     robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
     nav2_params_yaml = LaunchConfiguration('nav2_params_yaml')
@@ -46,25 +51,13 @@ def generate_launch_description():
     use_composition = LaunchConfiguration('use_composition')
     container_name = LaunchConfiguration('container_name')
     use_respawn = LaunchConfiguration('use_respawn')
-# ------------------------------------dumm aber ka wie sonst-------------------------------------
-    with open("environment_vars.yaml", 'r') as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
 
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
-        'global_frame': environment_yaml["prefix"]+"map",
+        # 'global_frame': environment_yaml["prefix"]+"map",
         'map_topic': "/map"}
 
-    # if namespace != '':
-    #     param_substitutions['global_frame'] = [namespace, "_map"] #TODO irgendwie muss hier der "robot" namespace noch dazu aber ka wie
-    # stichwärter? evtl: TextSubstitution
-    # ansonsten idee: eine base yaml, in der namespace steht und diesen im text substituieren komplett
-# --------------------------------------------------------------------------------------------
     configured_params = RewrittenYaml(
         source_file=nav2_params_yaml,
         root_key=namespace,
@@ -110,7 +103,7 @@ def generate_launch_description():
 
     nav2_params_yaml_cmd = DeclareLaunchArgument('nav2_params_yaml',
                                                  default_value=os.path.join(get_package_share_directory(
-                                                     'robast_nav_launch'), 'config', 'nav2_params_' + os.environ['ROS_DISTRO']+'.yaml'),
+                                                     'robast_nav_launch'), config_directory, 'nav2_params_' + os.environ['ROS_DISTRO']+'.yaml'),
                                                  description='Navigation params file'
                                                  )
 

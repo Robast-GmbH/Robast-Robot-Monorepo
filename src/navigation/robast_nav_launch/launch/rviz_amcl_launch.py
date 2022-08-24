@@ -13,6 +13,7 @@ def generate_launch_description():
         'robast_nav_launch'), 'config', 'nav2_default_view_amcl.rviz')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
+    namespace = LaunchConfiguration('namespace')
 
     return LaunchDescription([
         # Set env var to print messages to stdout immediately
@@ -22,11 +23,16 @@ def generate_launch_description():
             'use_sim_time', default_value='true',
             description='Use simulation (Gazebo) clock if true'),
 
+        DeclareLaunchArgument(
+            'namespace',
+            default_value='',
+            description='Top-level namespace'),
+
         Node(
             package='rviz2',
             executable='rviz2',
             name='rviz2',
-            namespace='robot',
+            namespace=namespace,
             arguments=['-d', rviz_config_dir],
             parameters=[{'use_sim_time': use_sim_time}],
             output='screen'),

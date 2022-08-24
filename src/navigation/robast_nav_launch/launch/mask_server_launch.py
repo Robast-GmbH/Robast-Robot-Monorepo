@@ -1,4 +1,5 @@
 import os
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -10,8 +11,25 @@ from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
+
+    with open("environment_vars.yaml", 'r') as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    is_simulation = environment_yaml["is_simulation"]
+
     # Get the launch directory
     costmap_filters_dir = get_package_share_directory('robast_nav_launch')
+
+    if (is_simulation):
+        mask_params_yaml_dir = os.path.join(costmap_filters_dir, 'masks', 'tiplu_fast_lane_params.yaml')
+        mask_file = os.path.join(costmap_filters_dir, 'masks', 'tiplu_fast_lane_mask.yaml')
+    else:
+        mask_params_yaml_dir = os.path.join(costmap_filters_dir, 'masks', 'Tiplu_6OG', 'Tiplu_6OG_mask_params.yaml')
+        mask_file = os.path.join(costmap_filters_dir, 'masks', 'Tiplu_6OG', 'Tiplu_6OG_no_go.yaml')
 
     # Create our own temporary YAML files that include substitutions
     lifecycle_nodes = ['filter_mask_server', 'costmap_filter_info_server']
@@ -40,12 +58,12 @@ def generate_launch_description():
 
     declare_params_file_cmd = DeclareLaunchArgument(
         'params_file',
-        default_value=os.path.join(costmap_filters_dir, 'masks', 'Tiplu_6OG', 'Tiplu_6OG_mask_params.yaml'),
+        default_value=mask_params_yaml_dir,
         description='Full path to the ROS 2 parameters file to use')
 
     declare_mask_yaml_file_cmd = DeclareLaunchArgument(
         'mask',
-        default_value=os.path.join(costmap_filters_dir, 'masks', 'Tiplu_6OG', 'Tiplu_6OG_no_go.yaml'),
+        default_value=mask_file,
         description='Full path to filter mask yaml file to load')
 
     # Make re-written yaml
