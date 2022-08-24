@@ -16,6 +16,3 @@
 [submodule "navigation2"]
 	path = src/navigation2
 	url = git@github.com:ros-planning/navigation2.git
-[submodule "src/submodules/robot_localization"]
-	path = src/submodules/robot_localization
-	url = https://github.com/cra-ros-pkg/robot_localization.git

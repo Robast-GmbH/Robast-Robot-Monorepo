@@ -77,7 +77,7 @@ RUN apt-get update && apt-get install -y \
   # ros-${ROS_DISTRO}-cartographer-ros \
   # ros-${ROS_DISTRO}-navigation2 \
   # ros-${ROS_DISTRO}-nav2-bringup \
-  # ros-${ROS_DISTRO}-robot-localization \
+  ros-${ROS_DISTRO}-robot-localization \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   # Depencencies needed to build the spatio_temporal_voxel_layer package:
   # libopenvdb-dev \
