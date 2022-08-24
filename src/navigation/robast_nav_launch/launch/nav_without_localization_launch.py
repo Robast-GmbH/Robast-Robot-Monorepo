@@ -2,7 +2,6 @@ from distutils.log import error
 import os
 import yaml
 
-
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable, GroupAction
@@ -30,7 +29,6 @@ def generate_launch_description():
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_goal_patience_and_recovery.xml')
         bt_xml_filename_door_bells = os.path.join(get_package_share_directory(
             'robast_nav_launch'), 'behavior_trees', os.environ['ROS_DISTRO'], 'navigate_to_pose_w_replanning_and_recovery.xml')
-
     else:
         error
 
