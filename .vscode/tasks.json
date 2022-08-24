@@ -87,42 +87,7 @@
                         "problemMatcher": []
                 },
                 {
-                        "label": "default_startup_xacro_amcl",
-                        "detail": "Starts TipluWorld, Nav, amcl",
-                        "dependsOn": [
-                                "start TipluWorld",
-                                "start amcl",
-                                "start keepout_mask",
-                                "start nav_without_localization",
-                                "start rviz_amcl"
-                        ],
-                        "problemMatcher": []
-                },
-                {
-                        "label": "default_startup_xacro_slam",
-                        "detail": "Starts TipluWorld, Nav, slam",
-                        "dependsOn": [
-                                "start TipluWorld",
-                                "start slam_toolbox",
-                                "start keepout_mask",
-                                "start nav_without_localization",
-                                "start rviz"
-                        ],
-                        "problemMatcher": []
-                },
-                {
                         "label": "default_startup_amcl_door_bells",
-                        "detail": "Starts TipluWorld, Nav, amcl, rviz, door_bells",
-                        "dependsOn": [
-                                "start TipluWorld",
-                                "start amcl",
-                                "start keepout_mask",
-                                "start nav_without_localization_with_door_bells_launch",
-                                "start rviz_amcl"
-                        ]
-                },
-                {
-                        "label": "default_xacro_startup_amcl_door_bells",
                         "detail": "Starts TipluWorld, Nav, amcl, rviz, door_bells",
                         "dependsOn": [
                                 "start TipluWorld",
@@ -205,7 +170,7 @@
                         "detail": "TipluWorld with rosboard on 8888",
                         "dependsOn": [
                                 "start tiplu_sim_xacro",
-                                "start rosboard"
+                                // "start rosboard"
                         ],
                         "problemMatcher": []
                 },
