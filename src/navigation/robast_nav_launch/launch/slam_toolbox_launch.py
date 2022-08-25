@@ -1,4 +1,5 @@
 import os
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch.actions import DeclareLaunchArgument
@@ -9,19 +10,28 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
+    with open("environment_vars.yaml", 'r') as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    config_directory = environment_yaml["config_directory"]
+    is_simulation = environment_yaml["is_simulation"]
+
     namespace = LaunchConfiguration('namespace')
     robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
     world_posegraph = LaunchConfiguration('world_posegraph')
 
-    declare_world_model_cmd = DeclareLaunchArgument(
-        'world_model',
-        default_value='5OG',
-        description='math to the world model'
-    )
+    if (is_simulation):
+        world_model = os.path.join(robast_nav_launch_dir, 'maps', '5OG')
+    else:
+        world_model = os.path.join(robast_nav_launch_dir, 'maps', '6OG_Tiplu', '6OG.yaml'),
 
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_posegraph',
-        default_value=os.path.join(robast_nav_launch_dir, 'maps', '6OG_Tiplu', '6OG'),
+        default_value=world_model,
         description='path to the world posegraph'
     )
     declare_namespace_cmd = DeclareLaunchArgument(
@@ -29,7 +39,7 @@ def generate_launch_description():
         default_value='',
         description='Top level namespace'
     )
-    slam_toolbox_params_yaml = os.path.join(robast_nav_launch_dir, 'config', 'slam_toolbox_params_offline.yaml')
+    slam_toolbox_params_yaml = os.path.join(robast_nav_launch_dir, config_directory, 'slam_toolbox_params_offline.yaml')
     slam_launch_file = os.path.join(robast_nav_launch_dir, 'launch', 'slam_toolbox_base_launch.py')
 
     slam_arguments = {

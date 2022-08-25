@@ -102,7 +102,7 @@ controller_server:
       max_angular_accel: 3.2
 
       simulate_ahead_time: 1.0
-      desired_linear_vel: 0.35
+      desired_linear_vel: 0.6
       max_linear_accel: 0.1
       max_linear_decel: 0.1
       lookahead_dist: 1.0
@@ -142,7 +142,7 @@ local_costmap:
       footprint: "[ [0.50, 0.30], [0.50, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
       footprint_padding: 0.025
       resolution: 0.025
-      plugins: ["obstacle_layer", "voxel_layer", "inflation_layer"]
+      plugins: ["voxel_layer", "inflation_layer"]
       # filters: ["keepout_filter"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"

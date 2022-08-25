@@ -30,14 +30,14 @@
                 },
                 {
                         "label": "build-ros-theron",
-                        "detail": "Symlink Build for Ros-Theron. Makes sure packages are build in the right order.",
+                        "detail": "Symlink Build for Ros-Theron.",
                         "type": "shell",
-                        "command": "colcon build --packages-select robot_localization --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic; source install/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip aws_hospital_world robast_map_update_module",
+                        "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip aws_hospital_world robast_map_update_module",
                         "problemMatcher": []
                 },
                 {
                         "label": "clean-build-ros-theron",
-                        "detail": "Purges and symlink builds for Ros-Theron. Makes sure packages are build in the right order.",
+                        "detail": "Purges and symlink builds for Ros-Theron.",
                         "dependsOn": [
                                 "purge",
                                 "build-ros-theron"
@@ -98,6 +98,18 @@
                         ]
                 },
                 {
+                        "label": "default_startup_robot_localization",
+                        "detail": "Starts TipluWorld, Nav, slam, robot_localization",
+                        "dependsOn": [
+                                "start TipluWorld",
+                                "start slam_toolbox",
+                                "start nav_without_localization",
+                                "start robot_localization",
+                                "start rviz"
+                        ],
+                        "problemMatcher": []
+                },
+                {
                         "label": "default_startup_amcl_robot_localization",
                         "detail": "Starts TipluWorld, Nav, amcl, robot_localization",
                         "dependsOn": [
@@ -146,7 +158,7 @@
                 {
                         "type": "shell",
                         "label": "start tiplu_sim_xacro",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch tiplu_world tiplu_world_launch.py",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch tiplu_world tiplu_world_launch.py run_gzclient:='False'",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

@@ -1,4 +1,5 @@
 import os
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
@@ -8,8 +9,18 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
+    with open("environment_vars.yaml", 'r') as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
 
-    rviz_config_dir = os.path.join(get_package_share_directory('robast_nav_launch'), 'config', 'nav2_default_view.rviz')
+    config_directory = environment_yaml["config_directory"]
+    is_simulation = environment_yaml["is_simulation"]
+
+    rviz_config_dir = os.path.join(get_package_share_directory('robast_nav_launch'),
+                                   config_directory, 'nav2_default_view.rviz')
 
     use_sim_time = LaunchConfiguration('use_sim_time')
     namespace = LaunchConfiguration('namespace')
