@@ -13,6 +13,3 @@
 [submodule "robotnik_sensors.git"]
 	path = src/simulation/robotnik_sensors
 	url = git@github.com:TipluJacob/robotnik_sensors.git
-[submodule "navigation2"]
-	path = src/navigation2
-	url = git@github.com:ros-planning/navigation2.git
