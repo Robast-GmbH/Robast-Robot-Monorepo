@@ -23,6 +23,12 @@ def generate_launch_description():
             print(exc)
 
     config_directory = environment_yaml["config_directory"]
+    is_simulation = environment_yaml["is_simulation"]
+
+    if (is_simulation):
+        use_sim_time_default = 'true'
+    else:
+        use_sim_time_default = 'false'
 
     if(os.environ['ROS_DISTRO'] == 'humble'):
         default_bt_xml_filename = os.path.join(get_package_share_directory(
@@ -91,7 +97,7 @@ def generate_launch_description():
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',
-        default_value='false',
+        default_value=use_sim_time_default,
         description='Use simulation (Gazebo) clock if true')
 
     declare_autostart_cmd = DeclareLaunchArgument(
