@@ -1,0 +1,108 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "detail": "Symlink Build for Ros-Theron. Makes sure packages are build in the right order.",
+            "type": "shell",
+            "command": "source ~/../../opt/ros/humble/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch Drawer Gate",
+            "detail": "Launch the drawer gate node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch robast_drawer_gate drawer_gate_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch Drawer Simulation",
+            "detail": "Launch the drawer simulation/testing",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch robast_drawer_sym drawer_sym_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Open Drawer 1",
+            "detail": "Send action message to open the drawer with the controller id 1",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer_address: {drawer_controller_id: 1, drawer_id: 1}, state: 1}'",
+            "problemMatcher": []
+        },
+        {
+            "label": "Open Drawer 2",
+            "detail": "Send action message to open the drawer with the controller id 2",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer_address: {drawer_controller_id: 2, drawer_id: 1}, state: 1}'",
+            "problemMatcher": []
+        },
+        {
+            "label": "Open Drawer 3",
+            "detail": "Send action message to open the drawer with the controller id 3",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess '{drawer_address: {drawer_controller_id: 3, drawer_id: 1}, state: 1}'",
+            "problemMatcher": []
+        },
+        {
+            "label": "Drawer Sym Command 1",
+            "detail": "Send the open drawer 1 comand to the drawer simulation node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_command std_msgs/String '{data: OPEN LOAD 1 1}' -1",
+            "problemMatcher": []
+        },
+        {
+            "label": "Drawer Sym Command 2",
+            "detail": "Send the open drawer 2 comand to the drawer simulation node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_command std_msgs/String '{data: OPEN LOAD 2 1}' -1",
+            "problemMatcher": []
+        },
+        {
+            "label": "Drawer Sym Command 3",
+            "detail": "Send the open drawer 3 comand to the simulation node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_command std_msgs/String '{data: OPEN LOAD 3 1}' -1",
+            "problemMatcher": []
+        },
+        {
+            "label": "Drawer Sym Info",
+            "detail": "Request the module setup from the simulation node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_command std_msgs/String '{data: INFO}' -1",
+            "problemMatcher": []
+        },
+        {
+            "label": "Docker serial setup",
+            "detail": "copy the CAN and NFC device serial ports to new location with fixed name",
+            "type": "shell",
+            "command": "sudo bash .devcontainer/usb.sh ",
+            "problemMatcher": []
+        },
+        {
+            "label": "clean-build",
+            "detail": "Purges and symlink colcon build",
+            "dependsOn": [
+                "purge",
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "purge",
+            "detail": "Purge workspace by deleting all generated files.",
+            "type": "shell",
+            "command": "rm -fr build install log; py3clean .",
+            "problemMatcher": []
+        },
+    ],
+    "inputs": [
+        {
+          "id": "package",
+          "type": "promptString",
+          "description": "Package name"
+        }
+      ]
+}
