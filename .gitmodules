@@ -1,3 +1,0 @@
-[submodule "robast_msgs.git"]
-	path = src/robast_msgs
-	url = git@github.com:Robast-GmbH/robast_msgs.git
