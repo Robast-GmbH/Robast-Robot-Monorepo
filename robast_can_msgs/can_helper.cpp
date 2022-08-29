@@ -86,20 +86,29 @@ namespace robast_can_msgs
     *       l: Data length (0-8)
     *       dd: Data byte value in hexadecimal format (00-FF)
     */
-    std::optional<CanMessage> decode_single_ascii_command_into_can_message(const char* ascii_command, uint8_t ascii_command_length, std::vector<CanMessage> can_db_messages)
+    std::optional<CanMessage> decode_single_ascii_command_into_can_message(std::string ascii_commands_as_string, uint8_t ascii_commands_length, std::vector<CanMessage> can_db_messages)
     {
-        if (ascii_command_length > 5 && ascii_command[0] == 't')
+        // I don't know why, but:
+        // Some of the serial read results have 2 beginning bytes that contain the ASCII code 7
+        // Therefore remove the first to bytes from the read serial command
+        if ((ascii_commands_as_string[0] == 7) && (ascii_commands_as_string[1] == 7) && (ascii_commands_as_string.length() > 2))
         {
-            std::string id_as_hex_string = std::string(ascii_command + 1, 3);
+            ascii_commands_as_string.erase(ascii_commands_as_string.begin(), ascii_commands_as_string.begin() + 2);
+        }
+
+        const char* ascii_commands = &ascii_commands_as_string[0];
+        if (ascii_commands_length > 5 && ascii_commands[0] == 't')
+        {
+            std::string id_as_hex_string = std::string(ascii_commands + 1, 3);
             uint32_t can_msg_id = hex_string_to_unsigned_int<uint32_t>(id_as_hex_string);
             for (uint16_t can_msgs_index = 0; can_msgs_index < can_db_messages.size(); can_msgs_index++)
             {
                 if (can_msg_id == can_db_messages[can_msgs_index].id)
                 {
-                    std::string dlc_as_hex_string = std::string(ascii_command + 4, 1);
+                    std::string dlc_as_hex_string = std::string(ascii_commands + 4, 1);
                     uint8_t dlc = hex_string_to_unsigned_int<uint8_t>(dlc_as_hex_string);
 
-                    std::string data_as_hex_string = std::string(ascii_command + 5, dlc*2);
+                    std::string data_as_hex_string = std::string(ascii_commands + 5, dlc*2);
                     uint64_t can_msg_data = hex_string_to_unsigned_int<uint64_t>(data_as_hex_string);
 
                     std::vector<CanSignal> can_signals = assign_data_to_can_signals(can_msg_data, can_db_messages, can_msgs_index);
@@ -134,15 +143,7 @@ namespace robast_can_msgs
             
             for (uint8_t i = 0; i < num_of_received_can_msgs; i++)
             {
-                // I don't know why, but:
-                // Some of the serial read results have 2 beginning bytes that contain the ASCII code 7
-                // Therefore remove the first to bytes from the read serial command
-                if ((ascii_commands[0] == 7) && (ascii_commands[1] == 7) && (ascii_commands.length() > 2))
-                {
-                    ascii_commands.erase(ascii_commands.begin(), ascii_commands.begin() + 2);
-                }
-
-                std::optional<CanMessage> decoded_can_message = decode_single_ascii_command_into_can_message(&ascii_commands[0], ascii_commands.length(), can_db_messages);
+                std::optional<CanMessage> decoded_can_message = decode_single_ascii_command_into_can_message(ascii_commands, ascii_commands.length(), can_db_messages);
                 if (decoded_can_message.has_value())
                 {
                     if (decoded_can_message.value().id == can_msgs_id)
@@ -151,6 +152,17 @@ namespace robast_can_msgs
                     }
                 }
                 ascii_commands.erase(ascii_commands.begin(), ascii_commands.begin() + expected_num_of_bytes_ascii_cmd);
+            }
+        }
+        else
+        {
+            std::optional<CanMessage> decoded_can_message = decode_single_ascii_command_into_can_message(ascii_commands, ascii_commands.length(), can_db_messages);
+            if (decoded_can_message.has_value())
+            {
+                if (decoded_can_message.value().id == can_msgs_id)
+                {
+                    received_can_msgs.push_back(decoded_can_message.value());
+                }
             }
         }
         return received_can_msgs;
