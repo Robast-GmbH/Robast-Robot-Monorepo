@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(robast_drawer_manager)
+project(drawer_manager)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -19,7 +19,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
-find_package(robast_ros2_msgs REQUIRED)
+find_package(communication_interfaces REQUIRED)
 
 include_directories(include)
 
@@ -36,7 +36,7 @@ add_library(${library_drawer_manager} SHARED
 
 set(dependencies
   rclcpp
-  robast_ros2_msgs
+  communication_interfaces
   rclcpp_action
 )
 

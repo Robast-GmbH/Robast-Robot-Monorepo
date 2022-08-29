@@ -1,16 +1,16 @@
 
-#include "robast_nfc_gate/nfc_gate.hpp"
+#include "nfc_gate/nfc_gate.hpp"
 
 namespace robast
 {
 
   NFCGate::NFCGate( ):NFCGate( "/dev/robast/robast_nfc" ) { }
 
-  NFCGate::NFCGate( string serial_port_path ) : Node("robast_nfc_gate"), serial_connector(serial_port_path)
+  NFCGate::NFCGate( string serial_port_path ) : Node("nfc_gate"), serial_connector(serial_port_path)
   {
-    //this->serial_connector= new robast_serial::SerialHelper(); 
+    //this->serial_connector= new serial_helper::SerialHelper(); 
     RCLCPP_INFO(this->get_logger(), "constructor start: %s",serial_port_path.c_str()); 
-    this->serial_connector=robast_serial::SerialHelper(serial_port_path);
+    this->serial_connector=serial_helper::SerialHelper(serial_port_path);
     this->user_authenticate_server = rclcpp_action::create_server<AuthenticateUser>(
       this,
       "authenticate_user",
@@ -49,7 +49,7 @@ namespace robast
 
   void NFCGate::scanTag() 
   {
-    auto reader_status = std::make_shared<robast_ros2_msgs::msg::NFCStatus>();
+    auto reader_status = std::make_shared<communication_interfaces::msg::NFCStatus>();
     reader_status->is_preparing = false;
     reader_status->is_reading = true;
     reader_status->is_completed = false;
@@ -178,4 +178,4 @@ namespace robast
     response-> error_message;
   }
 
-}  // namespace robast_drawer_gate
+}  // namespace drawer_gate

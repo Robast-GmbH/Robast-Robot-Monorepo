@@ -1,5 +1,5 @@
-#ifndef ROBAST_SERIAL_HPP_
-#define ROBAST_SERIAL_HPP_
+#ifndef SERIAL_HELPER_HPP_
+#define SERIAL_HELPER_HPP_
 
 #include <cstring>
 #include <string>
@@ -11,7 +11,7 @@
 
 using namespace std;
 
-namespace robast_serial
+namespace serial_helper
 {
     class SerialHelper
     {
@@ -35,4 +35,4 @@ namespace robast_serial
     };
 }
 
-#endif /* ROBAST_SERIAL_HPP_ */
+#endif /* SERIAL_HELPER_HPP_ */

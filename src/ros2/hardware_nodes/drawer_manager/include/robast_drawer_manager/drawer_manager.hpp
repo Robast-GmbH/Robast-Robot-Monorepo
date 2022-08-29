@@ -1,7 +1,7 @@
 
 
-#ifndef ROBAST_DRAWER_MANAGER_DRAWER_MANAGER_HPP_
-#define ROBAST_DRAWER_MANAGER__DRAWER_MANAGER_HPP_
+#ifndef DRAWER_MANAGER_DRAWER_MANAGER_HPP_
+#define DRAWER_MANAGER_DRAWER_MANAGER_HPP_
 
 #include <memory>
 #include <stdio.h>
@@ -10,11 +10,11 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
-#include "robast_ros2_msgs/srv/shelf_setup_info.hpp"
+#include "communication_interfaces/srv/shelf_setup_info.hpp"
 
-#include "robast_ros2_msgs/action/drawer_interaction.hpp"
-#include "robast_ros2_msgs/action/drawer_user_access.hpp"
-#include "robast_ros2_msgs/action/authenticate_user.hpp"
+#include "communication_interfaces/action/drawer_interaction.hpp"
+#include "communication_interfaces/action/drawer_user_access.hpp"
+#include "communication_interfaces/action/authenticate_user.hpp"
  using namespace std;
 
 namespace robast
@@ -25,21 +25,21 @@ namespace robast
   {
 
     public: 
-      using ShelfSetupInfo                = robast_ros2_msgs::srv::ShelfSetupInfo;  // to get the types of modules in the Robot
+      using ShelfSetupInfo                = communication_interfaces::srv::ShelfSetupInfo;  // to get the types of modules in the Robot
       
-      using DrawerInteraction             = robast_ros2_msgs::action::DrawerInteraction;    // the Service provideded By this Node to perform 
+      using DrawerInteraction             = communication_interfaces::action::DrawerInteraction;    // the Service provideded By this Node to perform 
       using GoalHandleDrawerInteraction   = rclcpp_action::ServerGoalHandle<DrawerInteraction>;
       
-      using AuthenticateUser              = robast_ros2_msgs::action::AuthenticateUser;  //interaction with the 
+      using AuthenticateUser              = communication_interfaces::action::AuthenticateUser;  //interaction with the 
       using GoalHandleAuthenticateUser    = rclcpp_action::ClientGoalHandle<AuthenticateUser>;
       using AuthenticateUserResultHandle  = std::shared_future<std::shared_ptr<robast::DrawerManager::GoalHandleAuthenticateUser>>;
      
-      using DrawerUserAccess              = robast_ros2_msgs::action::DrawerUserAccess; // interaction with the drawermodules 
+      using DrawerUserAccess              = communication_interfaces::action::DrawerUserAccess; // interaction with the drawermodules 
       using GoalHandleDrawerUserAccess    = rclcpp_action::ClientGoalHandle<DrawerUserAccess >;
       using DrawerUserAccessResultHandle  = std::shared_future<std::shared_ptr<robast::DrawerManager::GoalHandleDrawerUserAccess>>;
 
 
-      using DrawerAddress                 = robast_ros2_msgs::msg::DrawerAddress;
+      using DrawerAddress                 = communication_interfaces::msg::DrawerAddress;
 
       DrawerManager();
      // ~DrawerManager();
@@ -73,13 +73,13 @@ namespace robast
     void open_drawer_feedback_callback(  GoalHandleDrawerUserAccess::SharedPtr, const std::shared_ptr<const DrawerUserAccess::Feedback> feedback);
 
     void handle_drawer_interaction(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
-    void drawer_interaction_state_machine(const std::shared_ptr<const robast_ros2_msgs::action::DrawerInteraction_Goal> goal, uint8_t state = 1);
+    void drawer_interaction_state_machine(const std::shared_ptr<const communication_interfaces::action::DrawerInteraction_Goal> goal, uint8_t state = 1);
 
     AuthenticateUserResultHandle request_user_authentication(bool loading, std::vector<string> load_keys, std::vector<string> drop_of_keys);
     string wait_for_user_authentication(AuthenticateUserResultHandle action_handle);
     DrawerUserAccessResultHandle request_drawer_user_access(DrawerAddress drawer_address);
     void wait_for_finished_drawer_user_access(DrawerUserAccessResultHandle drawer_user_access_action_handle);
-    void ask_user_for_reopening_drawer(const std::shared_ptr<const robast_ros2_msgs::action::DrawerInteraction_Goal> goal);
+    void ask_user_for_reopening_drawer(const std::shared_ptr<const communication_interfaces::action::DrawerInteraction_Goal> goal);
 
     void open_drawer(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
     void remind_user_to_close_drawer();
@@ -87,6 +87,6 @@ namespace robast
     
 };
 
-}  // namespace robast_drawer_manager
+}  // namespace drawer_manager
 
-#endif  // ROBAST_DRAWER_MANAGER__DRAWER_MANAGER_HPP_
+#endif  // DRAWER_MANAGER_DRAWER_MANAGER_HPP_

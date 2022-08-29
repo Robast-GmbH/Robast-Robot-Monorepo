@@ -1,7 +1,7 @@
 # Ticket Header
 geometry_msgs/PoseStamped start_pose
 geometry_msgs/PoseStamped goal_pose
-robast_ros2_msgs/Box item_size
+communication_interfaces/Box item_size
 
 # Ticket Body
 string[] load_keys  # permission key for the persons that are allowed to load the drawer

@@ -1,9 +1,9 @@
 #goal
-robast_ros2_msgs/Task task
+communication_interfaces/Task task
 bool loading
 ---
 #result
 string error_message
 ---
 #feedback
-robast_ros2_msgs/TaskStatus task_status
+communication_interfaces/TaskStatus task_status

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(robast_drawer_gate)
+project(drawer_gate)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -19,10 +19,10 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
-find_package(robast_ros2_msgs REQUIRED)
+find_package(communication_interfaces REQUIRED)
 
 include_directories(../robast_msgs) # needed to find robast_msgs/robast_can_msgs
-include_directories(../robast_serial) # needed to find robast_serial
+include_directories(../serial_helper) # needed to find serial_helper
 
 include_directories(include)
 
@@ -36,13 +36,13 @@ set(library_drawer_gate ${executable_drawer_gate}_core)
 add_library(${library_drawer_gate} SHARED
   src/drawer_gate.cpp
   ../robast_msgs/robast_can_msgs/can_helper.cpp #TODO: This can probably be done better
-  ../robast_serial/src/robast_serial.cpp #TODO: This can probably be done better
+  ../serial_helper/src/serial_helper.cpp #TODO: This can probably be done better
 )
 
 set(dependencies
   rclcpp
   rclcpp_action
-  robast_ros2_msgs
+  communication_interfaces
 )
 
 ament_target_dependencies(${executable_drawer_gate}

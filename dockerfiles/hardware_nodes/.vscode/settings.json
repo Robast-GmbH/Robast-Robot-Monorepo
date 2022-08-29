@@ -73,12 +73,12 @@
         "*.idl": "cpp"
     },
     "python.autoComplete.extraPaths": [
-        "/workspaces/Ros_Hardware_Nodes/install/robast_ros2_msgs/local/lib/python3.10/dist-packages",
+        "/workspaces/Ros_Hardware_Nodes/install/communication_interfaces/local/lib/python3.10/dist-packages",
         "/opt/ros/humble/lib/python3.10/site-packages",
         "/opt/ros/humble/local/lib/python3.10/dist-packages"
     ],
     "python.analysis.extraPaths": [
-        "/workspaces/Ros_Hardware_Nodes/install/robast_ros2_msgs/local/lib/python3.10/dist-packages",
+        "/workspaces/Ros_Hardware_Nodes/install/communication_interfaces/local/lib/python3.10/dist-packages",
         "/opt/ros/humble/lib/python3.10/site-packages",
         "/opt/ros/humble/local/lib/python3.10/dist-packages"
     ]

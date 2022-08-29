@@ -6,7 +6,7 @@
 
 /*
 * HOW TO RUN THIS TEST ON WINDOWS:
-* - Go to directory src/robast_msgs/robast_can_msgs/tests
+* - Go to directory src/robast_msg/robast_can_msgs/tests
 * - Run the following commands:
 * g++ -std=c++17 -c .\tests_main.cpp
 * g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\can_helper.cpp -o test_executable -I ..\
@@ -15,7 +15,7 @@
 
 /*
 * HOW TO RUN THIS TEST ON LINUX:
-* - Go to directory src/robast_msgs/robast_can_msgs/tests
+* - Go to directory src/robast_msg/robast_can_msgs/tests
 * - Run the following commands:
 * g++ -std=c++17 -c tests_main.cpp
 * g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ../can_helper.cpp -o test_executable -I ..\

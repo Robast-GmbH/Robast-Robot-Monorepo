@@ -10,7 +10,7 @@ def generate_launch_description():
     
     # Nodes launching commands
     start_nfc_gate_cmd = launch_ros.actions.Node(
-            package='robast_nfc_gate',
+            package='nfc_gate',
             executable='nfc_gate',
             output='screen',
             emulate_tty=True,  # https://github.com/ros2/launch/issues/188

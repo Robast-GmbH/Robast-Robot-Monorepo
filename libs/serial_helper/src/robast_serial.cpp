@@ -1,6 +1,6 @@
-#include "../include/robast_serial.h"
+#include "../include/serial_helper.h"
 
-namespace robast_serial
+namespace serial_helper
 {
 
     SerialHelper::SerialHelper(string serial_path)

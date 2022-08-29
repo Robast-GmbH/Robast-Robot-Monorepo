@@ -1,4 +1,4 @@
-#include "robast_drawer_manager/drawer_manager.hpp"
+#include "drawer_manager/drawer_manager.hpp"
 
 namespace robast
 {
@@ -77,16 +77,16 @@ namespace robast
 
   void DrawerManager::handle_drawer_interaction(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle)
   {
-    const std::shared_ptr<const robast_ros2_msgs::action::DrawerInteraction_Goal> goal = goal_handle->get_goal();
+    const std::shared_ptr<const communication_interfaces::action::DrawerInteraction_Goal> goal = goal_handle->get_goal();
 
     this->drawer_interaction_state_machine(goal);    
-    auto response = std::make_shared<robast_ros2_msgs::action::DrawerInteraction::Result>();
+    auto response = std::make_shared<communication_interfaces::action::DrawerInteraction::Result>();
     response->error_message = "";
     goal_handle->succeed(response);
   }
 
 
-  void DrawerManager::drawer_interaction_state_machine(const std::shared_ptr<const robast_ros2_msgs::action::DrawerInteraction_Goal> goal, uint8_t state)
+  void DrawerManager::drawer_interaction_state_machine(const std::shared_ptr<const communication_interfaces::action::DrawerInteraction_Goal> goal, uint8_t state)
   {
     switch (state)
     {
@@ -230,7 +230,7 @@ namespace robast
   }
 
 
-  void DrawerManager::ask_user_for_reopening_drawer(const std::shared_ptr<const robast_ros2_msgs::action::DrawerInteraction_Goal> goal)
+  void DrawerManager::ask_user_for_reopening_drawer(const std::shared_ptr<const communication_interfaces::action::DrawerInteraction_Goal> goal)
   {
     RCLCPP_INFO(this->get_logger(), "UserInterface:: Wollen sie die Schublade noch mal öffnen?");
     //TODO: Implement this

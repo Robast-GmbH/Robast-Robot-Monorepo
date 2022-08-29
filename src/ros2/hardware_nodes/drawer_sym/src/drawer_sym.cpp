@@ -1,9 +1,9 @@
 
-#include "robast_drawer_sym/drawer_sym.hpp"
+#include "drawer_sym/drawer_sym.hpp"
 
 namespace robast
 {
-    DrawerSym::DrawerSym(): Node("robast_drawer_sym")
+    DrawerSym::DrawerSym(): Node("drawer_sym")
     {
         this->publisher = this->create_publisher<std_msgs::msg::String>("drawer_info", 10);
         this->subscription = this->create_subscription<std_msgs::msg::String>( "drawer_command", 10, bind(&DrawerSym::startTask, this, placeholders::_1));
@@ -98,7 +98,7 @@ namespace robast
             this->drawerInteractionClients->async_send_goal(goal_msg, send_goal_options);
     } 
 
-    robast_ros2_msgs::action::DrawerInteraction::Goal DrawerSym::create_dummy_drawer_interaction_msg()
+    communication_interfaces::action::DrawerInteraction::Goal DrawerSym::create_dummy_drawer_interaction_msg()
     {
         auto pose =geometry_msgs::msg::PoseStamped();
         pose.pose.position.x = 0;
@@ -106,14 +106,14 @@ namespace robast
         pose.pose.position.z = 0;
             
         auto goal_msg = DrawerInteractionGoal();
-        goal_msg.task= robast_ros2_msgs::msg::Task();
-        goal_msg.task.ticket= robast_ros2_msgs::msg::Ticket();
+        goal_msg.task= communication_interfaces::msg::Task();
+        goal_msg.task.ticket= communication_interfaces::msg::Ticket();
             
             
         goal_msg.task.ticket.start_pose = pose;
         goal_msg.task.ticket.goal_pose = pose;
 
-        goal_msg.task.ticket.item_size = robast_ros2_msgs::msg::Box();
+        goal_msg.task.ticket.item_size = communication_interfaces::msg::Box();
         goal_msg.task.ticket.item_size.x = 0;
         goal_msg.task.ticket.item_size.y = 0;
         goal_msg.task.ticket.item_size.z = 0;

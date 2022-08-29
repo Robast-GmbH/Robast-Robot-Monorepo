@@ -1,6 +1,6 @@
 #include <memory>
 
-#include "robast_nfc_gate/nfc_gate.hpp"
+#include "nfc_gate/nfc_gate.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char ** argv)

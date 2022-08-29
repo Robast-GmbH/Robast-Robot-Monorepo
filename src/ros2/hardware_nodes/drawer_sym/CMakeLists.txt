@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(robast_drawer_sym)
+project(drawer_sym)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -21,7 +21,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
-find_package(robast_ros2_msgs REQUIRED)
+find_package(communication_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
 
 
@@ -41,7 +41,7 @@ add_library(${library_drawer_sym} SHARED
 set(dependencies
   rclcpp
   rclcpp_action
-  robast_ros2_msgs
+  communication_interfaces
 )
 
 ament_target_dependencies(${executable_drawer_sym}

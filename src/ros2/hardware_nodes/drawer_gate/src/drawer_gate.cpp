@@ -1,12 +1,12 @@
-#include "robast_drawer_gate/drawer_gate.hpp"
+#include "drawer_gate/drawer_gate.hpp"
 
 
 // For DEBUGGING purposes this is the action send_goal command:
-// ros2 action send_goal /control_drawer robast_ros2_msgs/action/DrawerUserAccess "{drawer_address: {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
+// ros2 action send_goal /control_drawer communication_interfaces/action/DrawerUserAccess "{drawer_address: {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
 
-namespace robast_drawer_gate
+namespace drawer_gate
 {
-  DrawerGate::DrawerGate() : Node("robast_drawer_gate")
+  DrawerGate::DrawerGate() : Node("drawer_gate")
   {
     this->drawer_gate_server = rclcpp_action::create_server<DrawerUserAccess>(
       this,
@@ -97,46 +97,46 @@ namespace robast_drawer_gate
   {
     //TODO: This should actually be done automatically by polling all drawer_controller on the CAN bus
 
-    robast_ros2_msgs::msg::Box box_10x40x1;
+    communication_interfaces::msg::Box box_10x40x1;
     box_10x40x1.x = DRAWER_INSIDE_WIDTH_10x40x1;
     box_10x40x1.y = DRAWER_INSIDE_DEPTH_10x40x1;
     box_10x40x1.z = DRAWER_INSIDE_HEIGHT_10x40x1;
 
-    robast_ros2_msgs::msg::Box box_20x40x1;
+    communication_interfaces::msg::Box box_20x40x1;
     box_20x40x1.x = DRAWER_INSIDE_WIDTH_20x40x1;
     box_20x40x1.y = DRAWER_INSIDE_DEPTH_20x40x1;
     box_20x40x1.z = DRAWER_INSIDE_HEIGHT_20x40x1;
 
-    robast_ros2_msgs::msg::Box box_30x40x1;
+    communication_interfaces::msg::Box box_30x40x1;
     box_30x40x1.x = DRAWER_INSIDE_WIDTH_30x40x1;
     box_30x40x1.y = DRAWER_INSIDE_DEPTH_30x40x1;
     box_30x40x1.z = DRAWER_INSIDE_HEIGHT_30x40x1;
 
-    robast_ros2_msgs::msg::Drawer drawer_1;
+    communication_interfaces::msg::Drawer drawer_1;
     drawer_1.drawer_address.drawer_controller_id = 1;
     drawer_1.drawer_address.drawer_id = 1;
     drawer_1.number_of_drawers = 1;
     drawer_1.drawer_size = box_10x40x1;
 
-    robast_ros2_msgs::msg::Drawer drawer_2;
+    communication_interfaces::msg::Drawer drawer_2;
     drawer_2.drawer_address.drawer_controller_id = 2;
     drawer_2.drawer_address.drawer_id = 1;
     drawer_2.number_of_drawers = 1;
     drawer_2.drawer_size = box_10x40x1;
 
-    robast_ros2_msgs::msg::Drawer drawer_3;
+    communication_interfaces::msg::Drawer drawer_3;
     drawer_3.drawer_address.drawer_controller_id = 3;
     drawer_3.drawer_address.drawer_id = 1;
     drawer_3.number_of_drawers = 1;
     drawer_3.drawer_size = box_10x40x1;
 
-    robast_ros2_msgs::msg::Drawer drawer_4;
+    communication_interfaces::msg::Drawer drawer_4;
     drawer_4.drawer_address.drawer_controller_id = 4;
     drawer_4.drawer_address.drawer_id = 1;
     drawer_4.number_of_drawers = 1;
     drawer_4.drawer_size = box_20x40x1;
 
-    robast_ros2_msgs::msg::Drawer drawer_5;
+    communication_interfaces::msg::Drawer drawer_5;
     drawer_5.drawer_address.drawer_controller_id = 5;
     drawer_5.drawer_address.drawer_id = 1;
     drawer_5.number_of_drawers = 1;
@@ -485,4 +485,4 @@ namespace robast_drawer_gate
     goal_handle->succeed(result);
     RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
   }
-}  // namespace robast_drawer_gate
+}  // namespace drawer_gate

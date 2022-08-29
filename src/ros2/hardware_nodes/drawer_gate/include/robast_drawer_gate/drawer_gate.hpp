@@ -1,5 +1,5 @@
-#ifndef ROBAST_DRAWER_GATE__DRAWER_GATE_HPP_
-#define ROBAST_DRAWER_GATE__DRAWER_GATE_HPP_
+#ifndef DRAWER_GATE__DRAWER_GATE_HPP_
+#define DRAWER_GATE__DRAWER_GATE_HPP_
 
 #include <chrono>
 #include <inttypes.h>
@@ -19,17 +19,17 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
 
-#include "robast_ros2_msgs/action/drawer_user_access.hpp"
-#include "robast_ros2_msgs/srv/shelf_setup_info.hpp"
+#include "communication_interfaces/action/drawer_user_access.hpp"
+#include "communication_interfaces/srv/shelf_setup_info.hpp"
 
-#include "robast_drawer_gate/drawer_defines.h"
+#include "drawer_gate/drawer_defines.h"
 #include "robast_can_msgs/can_db.h"
 #include "robast_can_msgs/can_helper.h"
-#include "include/robast_serial.h" //TODO: Fix that
+#include "include/serial_helper.h" //TODO: Fix that
 
 using namespace std::chrono_literals;
 
-namespace robast_drawer_gate
+namespace drawer_gate
 {
   struct led_parameters
   {
@@ -52,16 +52,16 @@ namespace robast_drawer_gate
   class DrawerGate : public rclcpp::Node
   {
     public:
-      using DrawerUserAccess = robast_ros2_msgs::action::DrawerUserAccess;
+      using DrawerUserAccess = communication_interfaces::action::DrawerUserAccess;
       using GoalHandleDrawerUserAccess = rclcpp_action::ServerGoalHandle<DrawerUserAccess>;
-      using ShelfSetupInfo = robast_ros2_msgs::srv::ShelfSetupInfo;
+      using ShelfSetupInfo = communication_interfaces::srv::ShelfSetupInfo;
 
       /**
-       * @brief A constructor for robast_drawer_gate::DrawerGate class
+       * @brief A constructor for drawer_gate::DrawerGate class
        */
       DrawerGate();
       /**
-       * @brief A destructor for robast_drawer_gate::DrawerGate class
+       * @brief A destructor for drawer_gate::DrawerGate class
        */
       // ~DrawerGate();
       
@@ -73,7 +73,7 @@ namespace robast_drawer_gate
       rclcpp::TimerBase::SharedPtr timer_ptr_;
       rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service;
 
-      robast_serial::SerialHelper serial_helper = robast_serial::SerialHelper("/dev/robast/robast_can");
+      serial_helper::SerialHelper serial_helper = serial_helper::SerialHelper("/dev/robast/robast_can");
 
       robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
@@ -143,5 +143,5 @@ namespace robast_drawer_gate
        */
       void handle_drawer_user_access(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);  
   };
-}  // namespace robast_drawer_gate
-#endif  // ROBAST_DRAWER_GATE__DRAWER_GATE_HPP_
+}  // namespace drawer_gate
+#endif  // DRAWER_GATE__DRAWER_GATE_HPP_

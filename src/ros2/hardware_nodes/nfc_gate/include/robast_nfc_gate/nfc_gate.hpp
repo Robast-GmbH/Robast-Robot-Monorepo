@@ -1,5 +1,5 @@
-#ifndef ROBAST_NFC_GATE__NFC_GATE_HPP_
-#define ROBAST_NFC_GATE__NFC_GATE_HPP_
+#ifndef NFC_GATE__NFC_GATE_HPP_
+#define NFC_GATE__NFC_GATE_HPP_
 
 #include <inttypes.h>
 #include <memory>
@@ -17,10 +17,10 @@
 #include <unistd.h> // write(), read(), close()
 using namespace std;
 
-#include "robast_ros2_msgs/action/authenticate_user.hpp"
-#include "robast_ros2_msgs/srv/create_user_nfc_tag.hpp"
-#include "robast_nfc_gate/elatec_api.h"
-#include "include/robast_serial.h" 
+#include "communication_interfaces/action/authenticate_user.hpp"
+#include "communication_interfaces/srv/create_user_nfc_tag.hpp"
+#include "nfc_gate/elatec_api.h"
+#include "include/serial_helper.h" 
    
 namespace robast
 { 
@@ -31,12 +31,12 @@ namespace robast
 
     public:
 
-    using  AuthenticateUser= robast_ros2_msgs::action::AuthenticateUser;
+    using  AuthenticateUser= communication_interfaces::action::AuthenticateUser;
     using GoalHandleAuthenticateUser = rclcpp_action::ServerGoalHandle<AuthenticateUser>;
   
-    using CreateUser= robast_ros2_msgs::srv::CreateUserNfcTag;
+    using CreateUser= communication_interfaces::srv::CreateUserNfcTag;
     /**
-    * @brief A constructor for robast_nfc_gate::NFCGate class
+    * @brief A constructor for nfc_gate::NFCGate class
     */ 
     NFCGate();
     NFCGate(string serial_port_path );
@@ -45,7 +45,7 @@ namespace robast
    
     int numReadings;
     
-    robast_serial::SerialHelper serial_connector;
+    serial_helper::SerialHelper serial_connector;
     rclcpp::TimerBase::SharedPtr timer;
     shared_ptr<GoalHandleAuthenticateUser> timer_handle;
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
@@ -72,4 +72,4 @@ namespace robast
 
 
 }  // namespace robast
-#endif  // ROBAST_NFC_GATE__NFC_GATE_HPP_
+#endif  // NFC_GATE__NFC_GATE_HPP_

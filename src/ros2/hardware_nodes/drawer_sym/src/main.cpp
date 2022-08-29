@@ -1,6 +1,6 @@
 #include <memory>
 
-#include "robast_drawer_sym/drawer_sym.hpp"
+#include "drawer_sym/drawer_sym.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char ** argv)

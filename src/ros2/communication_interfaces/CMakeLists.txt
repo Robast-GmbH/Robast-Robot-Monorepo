@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(robast_ros2_msgs)
+project(communication_interfaces)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)

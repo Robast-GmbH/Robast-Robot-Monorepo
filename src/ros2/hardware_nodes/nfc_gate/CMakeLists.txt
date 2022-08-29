@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(robast_nfc_gate)
+project(nfc_gate)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -21,10 +21,10 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
-find_package(robast_ros2_msgs REQUIRED)
+find_package(communication_interfaces REQUIRED)
 
 
-include_directories(../robast_serial) # needed to find robast_msgs/robast_can_msgs
+include_directories(../serial_helper) # needed to find robast_msg/robast_can_msgs
 
 
 include_directories(include)
@@ -38,7 +38,7 @@ set(library_nfc_gate ${executable_nfc_gate}_core)
 
 add_library(${library_nfc_gate} SHARED
   src/nfc_gate.cpp
-  ../robast_serial/src/robast_serial.cpp #TODO: This can probably be done better
+  ../serial_helper/src/serial_helper.cpp #TODO: This can probably be done better
 )
 
 
@@ -46,7 +46,7 @@ add_library(${library_nfc_gate} SHARED
 set(dependencies
   rclcpp
   rclcpp_action
-  robast_ros2_msgs
+  communication_interfaces
 )
 
 ament_target_dependencies(${executable_nfc_gate}

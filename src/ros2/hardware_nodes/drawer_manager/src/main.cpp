@@ -1,6 +1,6 @@
 #include <memory>
 
-#include "robast_drawer_manager/drawer_manager.hpp"
+#include "drawer_manager/drawer_manager.hpp"
 #include "rclcpp/rclcpp.hpp"
 
 int main(int argc, char ** argv)
