@@ -21,8 +21,11 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(communication_interfaces REQUIRED)
 
-include_directories(../robast_msgs) # needed to find robast_msgs/robast_can_msgs
-include_directories(../serial_helper) # needed to find serial_helper
+set(can_msg_dir /workspace/libs/can)
+set(serial_helper_dir /workspace/libs/serial_helper)
+
+include_directories(${can_msg_dir}) # needed to find robast_msgs/robast_can_msgs
+include_directories(${serial_helper_dir}) # needed to find serial_helper
 
 include_directories(include)
 
@@ -35,8 +38,8 @@ set(library_drawer_gate ${executable_drawer_gate}_core)
 
 add_library(${library_drawer_gate} SHARED
   src/drawer_gate.cpp
-  ../robast_msgs/robast_can_msgs/can_helper.cpp #TODO: This can probably be done better
-  ../serial_helper/src/serial_helper.cpp #TODO: This can probably be done better
+  ${can_msg_dir}/src/can_helper.cpp #TODO: This can probably be done better
+  ${serial_helper_dir}/src/serial_helper.cpp #TODO: This can probably be done better
 )
 
 set(dependencies

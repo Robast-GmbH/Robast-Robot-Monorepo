@@ -24,7 +24,8 @@ find_package(rclcpp_action REQUIRED)
 find_package(communication_interfaces REQUIRED)
 
 
-include_directories(../serial_helper) # needed to find robast_msg/robast_can_msgs
+set(serial_helper_dir /workspace/libs/serial_helper)
+include_directories(${serial_helper_dir}) # needed to find robast_msg/robast_can_msgs
 
 
 include_directories(include)
@@ -38,7 +39,7 @@ set(library_nfc_gate ${executable_nfc_gate}_core)
 
 add_library(${library_nfc_gate} SHARED
   src/nfc_gate.cpp
-  ../serial_helper/src/serial_helper.cpp #TODO: This can probably be done better
+  ${serial_helper_dir}/src/serial_helper.cpp #TODO: This can probably be done better
 )
 
 
