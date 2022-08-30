@@ -7,14 +7,14 @@
             "label": "setup",
             "detail": "sets up the frontend and starts it",
             "type": "shell",
-            "command": "cd robast1/; npm install; npm start;",
+            "command": "cd react_frontend/; npm install; npm start;",
             "problemMatcher": []
         },
         {
             "label": "start",
             "detail": "start the app",
             "type": "shell",
-            "command": "cd robast1/; npm start"
+            "command": "cd react_frontend/; npm start"
         }        
     ]
 }
