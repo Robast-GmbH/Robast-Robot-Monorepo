@@ -316,12 +316,16 @@ void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
   switch (led_mode)
     {
       case 0:
+        // standard mode
         break;
 
       case 1:
+        led_current_brightness = 0;
+        // fade on mode
         break;
 
       case 2:
+        // led closing drawer mode
         portENTER_CRITICAL(&running_led_timer_mux);
         running_led_offset_from_middle = 0;
         portEXIT_CRITICAL(&running_led_timer_mux);
