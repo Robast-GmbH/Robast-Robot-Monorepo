@@ -1,0 +1,13 @@
+version: '3'
+services:
+  hardware_nodes:
+    build: 
+      context: .
+      dockerfile: ../../src/ros2/hardware_nodes/Dockerfile
+    restart: on-failure
+    network_mode: host
+    volumes:
+      # Mount the root folder that contains .git
+      - .:/workspace:cached
+      - ../../src/ros2/hardware_nodes/:/workspace/src/hardware_nodes
+    command: /bin/bash -c "cd /workspace/ && source /opt/ros/humble/setup.bash && colcon build && source install/setup.bash;"
