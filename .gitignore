@@ -200,3 +200,9 @@ CATKIN_IGNORE
 *.exe
 *.out
 *.app
+.db
+*/db.json
+
+__pycache__
+site-packages
+venv

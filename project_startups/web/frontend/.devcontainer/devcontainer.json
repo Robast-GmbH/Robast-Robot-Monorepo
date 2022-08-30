@@ -1,0 +1,28 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"dockerFile": "Dockerfile",
+	"build": {
+		"args": {
+			"WORKSPACE": "${containerWorkspaceFolder}",
+		}
+	},
+	"remoteUser": "ubuntu",
+	"runArgs": [
+		"--name=web-frontend",
+		"--network=host",		
+		"--cap-add=SYS_PTRACE",
+		"--security-opt=seccomp:unconfined",
+		"--security-opt=apparmor:unconfined",
+	],
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"streetsidesoftware.code-spell-checker",
+		"yzhang.markdown-all-in-one"
+	]
+}
