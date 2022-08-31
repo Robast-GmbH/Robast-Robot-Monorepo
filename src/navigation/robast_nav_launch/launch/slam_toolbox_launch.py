@@ -27,7 +27,7 @@ def generate_launch_description():
     if (is_simulation):
         world_model = os.path.join(robast_nav_launch_dir, 'maps', '5OG')
     else:
-        world_model = os.path.join(robast_nav_launch_dir, 'maps', '6OG_Tiplu', '6OG.yaml'),
+        world_model = os.path.join(robast_nav_launch_dir, 'maps', '6OG_Tiplu', '6OG'),
 
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_posegraph',
