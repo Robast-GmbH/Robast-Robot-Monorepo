@@ -1,18 +1,19 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"dockerFile": "Dockerfile",
+	"dockerFile": "../../../../src/web/frontend/react_frontend/Dockerfile",
 	"build": {
 		"args": {
 			"WORKSPACE": "${containerWorkspaceFolder}",
 		}
 	},
-	"remoteUser": "ubuntu",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../../src/web/frontend/react_frontend/,target=/workspace/react_frontend,type=bind"
+	],
+	"workspaceFolder": "/workspace",
 	"runArgs": [
 		"--name=web-frontend",
-		"--network=host",		
-		"--cap-add=SYS_PTRACE",
-		"--security-opt=seccomp:unconfined",
-		"--security-opt=apparmor:unconfined",
+		"--network=host"		
 	],
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
