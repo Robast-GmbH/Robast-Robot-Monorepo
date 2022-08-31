@@ -184,7 +184,7 @@ def generate_launch_description():
                 respawn_delay=2.0,
                 parameters=[
                     configured_params,
-                    {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
+                    # {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
                 ],
                 remappings=remappings,
                 # condition=UnlessCondition(use_interim_goal)
