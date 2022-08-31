@@ -1,7 +1,7 @@
 bt_navigator:
   ros__parameters:
     use_sim_time: True
-    global_frame: robot_map
+    global_frame: map
     robot_base_frame: robot_base_link
     odom_topic: /robot/robotnik_base_control/odom
     bt_loop_duration: 10 #neu
@@ -134,7 +134,7 @@ local_costmap:
       publish_frequency: 2.0
       global_frame: robot_odom
       robot_base_frame: robot_base_link
-      map_topic: /robot/map
+      map_topic: /map
       use_sim_time: True
       rolling_window: true
       width: 5
@@ -193,9 +193,9 @@ global_costmap:
     ros__parameters:
       update_frequency: 1.0
       publish_frequency: 1.0
-      global_frame: robot_map
+      global_frame: map
       robot_base_frame: robot_base_link
-      map_topic: /robot/map
+      map_topic: /map
       use_sim_time: False
       footprint: "[ [0.45, 0.30], [0.45, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
       footprint_padding: 0.025

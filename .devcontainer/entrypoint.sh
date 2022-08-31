@@ -5,6 +5,7 @@
 #cp -r ./resource_retriever ~/rviz2_ws/src/rviz/rviz_rendering/include/
 #colcon build --merge-install
 cd ~/../../workspaces/Robast_RosTheron
+sudo apt-get update && sudo apt-get upgrade -y
 rosdep update
 rosdep install --from-paths src --ignore-src -r -y
 #sudo dos2unix shell_setup.sh

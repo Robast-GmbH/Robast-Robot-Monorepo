@@ -76,18 +76,25 @@ def generate_launch_description():
         'bt_navigator',
         'waypoint_follower'
     ]
-    if environment_yaml["prefix"] == 'robot':
-        remappings = [('/cmd_vel', 'robot/robotnik_base_control/cmd_vel'),
-                      ('/odom', 'robot/robotnik_base_control/odom'),
-                      ('/robot/tf', 'tf'),
-                      ('/robot/tf_static', 'tf_static')
-                      ]
-    else:
-        remappings = [('/cmd_vel', 'cmd_vel'),
-                      ('/odom', 'odom'),
-                      ('/tf', 'tf'),
-                      ('/tf_static', 'tf_static')
-                      ]
+
+    remappings = [('/cmd_vel', 'robot/robotnik_base_control/cmd_vel'),
+                  ('/odom', 'robot/robotnik_base_control/odom'),
+                  ('/robot/tf', 'tf'),
+                  ('/robot/tf_static', 'tf_static')
+                  ]
+
+    # if environment_yaml["prefix"] == 'robot':
+    #     remappings = [('/cmd_vel', 'robot/robotnik_base_control/cmd_vel'),
+    #                   ('/odom', 'robot/robotnik_base_control/odom'),
+    #                   ('/robot/tf', 'tf'),
+    #                   ('/robot/tf_static', 'tf_static')
+    #                   ]
+    # else:
+    #     remappings = [('/cmd_vel', 'cmd_vel'),
+    #                   ('/odom', 'odom'),
+    #                   ('/tf', 'tf'),
+    #                   ('/tf_static', 'tf_static')
+    #                   ]
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',

@@ -2,8 +2,8 @@ bt_navigator:
   ros__parameters:
     use_sim_time: True
     global_frame: map
-    robot_base_frame: base_link
-    odom_topic: /odom
+    robot_base_frame: robot_base_link
+    odom_topic: /robot/odom
     bt_loop_duration: 10 #neu
     default_server_timeout: 20 #neu
     enable_groot_monitoring: True
@@ -96,20 +96,20 @@ controller_server:
     FollowPath:
       # plugin: "nav2_rotation_shim_controller::RotationShimController"
       plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
-      angular_dist_threshold: 0.785
+      angular_dist_threshold: 0.39
       forward_sampling_distance: 0.5
-      rotate_to_heading_angular_vel: 0.5
-      max_angular_accel: 1.0
+      rotate_to_heading_angular_vel: 0.8
+      max_angular_accel: 1.6
 
       simulate_ahead_time: 1.0
-      desired_linear_vel: 0.05
+      desired_linear_vel: 0.35
       max_linear_accel: 0.1
-      max_linear_decel: 0.05
+      max_linear_decel: 0.1
       lookahead_dist: 1.0
       min_lookahead_dist: 0.35
       max_lookahead_dist: 1.3
       lookahead_time: 1.5
-      transform_tolerance: 0.1
+      transform_tolerance: 0.3
       use_velocity_scaled_lookahead_dist: true
       # use_approach_linear_velocity_scaling: true
       min_approach_linear_velocity: 0.05
@@ -120,7 +120,7 @@ controller_server:
       regulated_linear_scaling_min_speed: 0.25
       use_rotate_to_heading: true
       allow_reversing: false
-      rotate_to_heading_min_angle: 0.785
+      rotate_to_heading_min_angle: 0.39
       goal_dist_tol: 0.25
 
 
@@ -132,8 +132,8 @@ local_costmap:
     ros__parameters:
       update_frequency: 5.0
       publish_frequency: 2.0
-      global_frame: odom
-      robot_base_frame: base_link
+      global_frame: robot_odom
+      robot_base_frame: robot_base_link
       map_topic: /map
       use_sim_time: True
       rolling_window: true
@@ -149,7 +149,7 @@ local_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /front_laser/scan
+          topic: /robot/front_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -165,7 +165,7 @@ local_costmap:
         mark_threshold: 0
         observation_sources: scan
         scan:
-          topic: /front_laser/scan
+          topic: /robot/front_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -194,7 +194,7 @@ global_costmap:
       update_frequency: 1.0
       publish_frequency: 1.0
       global_frame: map
-      robot_base_frame: base_link
+      robot_base_frame: robot_base_link
       map_topic: /map
       use_sim_time: False
       footprint: "[ [0.45, 0.30], [0.45, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
@@ -208,7 +208,7 @@ global_costmap:
         enabled: True
         observation_sources: scan
         scan:
-          topic: /front_laser/scan
+          topic: /robot/front_laser/scan
           max_obstacle_height: 2.0
           clearing: True
           marking: True
@@ -227,7 +227,7 @@ global_costmap:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
         subscribe_to_updates: false
-        transform_tolerance: 0.1
+        transform_tolerance: 0.2
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 5.0
@@ -330,9 +330,9 @@ behavior_server:
       plugin: "nav2_behaviors/DriveOnHeading"
     wait:
       plugin: "nav2_behaviors/Wait"
-    global_frame: odom
-    robot_base_frame: base_link
-    transform_tolerance: 0.1
+    global_frame: robot_odom
+    robot_base_frame: robot_base_link
+    transform_tolerance: 0.2
     use_sim_time: true
     simulate_ahead_time: 2.0
     max_rotational_vel: 1.0
