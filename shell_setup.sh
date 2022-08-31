@@ -18,18 +18,18 @@ export GAZEBO_PLUGIN_PATH=/workspaces/Robast_RosTheron/gaz/plugins:${GAZEBO_PLUG
 # export ROBOT_MODEL=rb_theron #rb_theron or turtlebot3_waffle
 
 # # Inititial pose of the robot, which is important for spawning the robot in the map AND for start position for SLAM
-if [ $WORLD_MODEL = "5OG" ] || [ $WORLD_MODEL = "5OG_with_furniture" ];
-then
-	export WORLD_MODEL=$WORLD_MODEL
-	export POSE_INIT_X=8.59
-	export POSE_INIT_Y=-13.45
-	export POSE_INIT_Z=0.35
-else
-	export WORLD_MODEL=$WORLD_MODEL
-	export POSE_INIT_X=0.0
-	export POSE_INIT_Y=10.0
-	export POSE_INIT_Z=0.35
-fi
+# if [ $WORLD_MODEL = "5OG" ] || [ $WORLD_MODEL = "5OG_with_furniture" ];
+# then
+# 	export WORLD_MODEL=$WORLD_MODEL
+# 	export POSE_INIT_X=8.59
+# 	export POSE_INIT_Y=-13.45
+# 	export POSE_INIT_Z=0.35
+# else
+# 	export WORLD_MODEL=$WORLD_MODEL
+# 	export POSE_INIT_X=0.0
+# 	export POSE_INIT_Y=10.0
+# 	export POSE_INIT_Z=0.35
+# fi
 
 # Source
 source install/setup.bash
