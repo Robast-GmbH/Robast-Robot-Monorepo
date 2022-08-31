@@ -64,6 +64,17 @@
                         "problemMatcher": []
                 },
                 {
+                        "label": "default_startup_heiligenhafen",
+                        "detail": "Starts Heiligenhafen, Nav, slam",
+                        "dependsOn": [
+                                "start heiligenhafen_sim",
+                                "start slam_toolbox_heiligenhafen",
+                                "start nav_without_localization",
+                                "start rviz"
+                        ],
+                        "problemMatcher": []
+                },
+                {
                         "label": "default_startup_amcl",
                         "detail": "Starts TipluWorld, Nav, amcl",
                         "dependsOn": [
@@ -157,8 +168,8 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start tiplu_sim_xacro",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch tiplu_world tiplu_world_launch.py run_gzclient:='False'",
+                        "label": "start heiligenhafen_sim",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch heiligenhafen heiligenhafen_world_launch.py run_gzclient:='True'",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -181,7 +192,7 @@
                         "label": "start TipluWorld",
                         "detail": "TipluWorld with rosboard on 8888",
                         "dependsOn": [
-                                "start tiplu_sim_xacro",
+                                "start tiplu_sim",
                                 // "start rosboard"
                         ],
                         "problemMatcher": []
@@ -239,6 +250,16 @@
                         "type": "shell",
                         "label": "start slam_toolbox",
                         "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch slam_toolbox_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start slam_toolbox_heiligenhafen",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch slam_toolbox_launch.py world_posegraph:='cannot_be_empty'",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
