@@ -1,5 +1,4 @@
-FROM dorowu/ubuntu-desktop-lxde-vnc:focal
- 
+FROM ubuntu:focal
  
 ENV DEBIAN_FRONTEND=noninteractive
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
@@ -13,18 +12,9 @@ RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group
 ENV USER ubuntu
 
 ENV DEBIAN_FRONTEND=
-
 ENV DEBIAN_FRONTEND=noninteractive
-RUN curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.38.0/install.sh | bash
-RUN echo 'export NVM_DIR="$HOME/.nvm"'                                       >> "$HOME/.bashrc"
-RUN echo '[ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"  # This loads nvm' >> "$HOME/.bashrc"
-RUN echo '[ -s "$NVM_DIR/bash_completion" ] && . "$NVM_DIR/bash_completion" # This loads nvm bash_completion' >> "$HOME/.bashrc"
-RUN bash -c 'source $HOME/.nvm/nvm.sh   && \
-    nvm install node                    && \
-    npm install -g doctoc urchin eclint dockerfile_lint && \
-    npm install --prefix "$HOME/.nvm/"'
-#RUN export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")" [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-#RUN nvm install node
-ENV DEBIAN_FRONTEND= 
+RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+RUN sudo apt install nodejs
 
+ENV DEBIAN_FRONTEND=
 ENTRYPOINT [ "entrypoint.sh" ]
