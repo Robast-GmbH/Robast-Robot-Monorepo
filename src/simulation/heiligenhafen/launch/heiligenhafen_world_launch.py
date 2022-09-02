@@ -25,7 +25,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time')
     init_x = LaunchConfiguration('init_x', default="0.0")
     init_y = LaunchConfiguration('init_y', default="0.0")
-    init_yaw = LaunchConfiguration('init_yaw', default="0.0")
+    init_yaw = LaunchConfiguration('init_yaw', default="3.14")
     world_model = LaunchConfiguration('world_model')
     robot_name = LaunchConfiguration('robot_name')
     extra_gazebo_args = LaunchConfiguration('extra_gazebo_args')

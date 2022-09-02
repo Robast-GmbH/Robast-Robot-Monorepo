@@ -27,8 +27,18 @@ def generate_launch_description():
 
     if (is_simulation):
         use_sim_time_default = 'true'
+        remappings = [('/cmd_vel', 'cmd_vel'),
+                      ('/odom', 'odom'),
+                      ('/tf', 'tf'),
+                      ('/tf_static', 'tf_static')
+                      ]
     else:
         use_sim_time_default = 'false'
+        remappings = [('/cmd_vel', 'robot/robotnik_base_control/cmd_vel'),
+                      ('/odom', 'robot/robotnik_base_control/odom'),
+                      ('/robot/tf', 'tf'),
+                      ('/robot/tf_static', 'tf_static')
+                      ]
 
     if(os.environ['ROS_DISTRO'] == 'humble'):
         default_bt_xml_filename = os.path.join(get_package_share_directory(
@@ -76,25 +86,6 @@ def generate_launch_description():
         'bt_navigator',
         'waypoint_follower'
     ]
-
-    remappings = [('/cmd_vel', 'robot/robotnik_base_control/cmd_vel'),
-                  ('/odom', 'robot/robotnik_base_control/odom'),
-                  ('/robot/tf', 'tf'),
-                  ('/robot/tf_static', 'tf_static')
-                  ]
-
-    # if environment_yaml["prefix"] == 'robot':
-    #     remappings = [('/cmd_vel', 'robot/robotnik_base_control/cmd_vel'),
-    #                   ('/odom', 'robot/robotnik_base_control/odom'),
-    #                   ('/robot/tf', 'tf'),
-    #                   ('/robot/tf_static', 'tf_static')
-    #                   ]
-    # else:
-    #     remappings = [('/cmd_vel', 'cmd_vel'),
-    #                   ('/odom', 'odom'),
-    #                   ('/tf', 'tf'),
-    #                   ('/tf_static', 'tf_static')
-    #                   ]
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
