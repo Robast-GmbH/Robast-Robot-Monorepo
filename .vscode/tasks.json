@@ -68,7 +68,7 @@
                         "detail": "Starts Heiligenhafen, Nav, slam",
                         "dependsOn": [
                                 "start heiligenhafen_sim",
-                                "start slam_toolbox_heiligenhafen",
+                                "start heiligenhafen_commander",
                                 "start nav_without_localization",
                                 "start rviz"
                         ],
@@ -170,6 +170,17 @@
                         "type": "shell",
                         "label": "start heiligenhafen_sim",
                         "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch heiligenhafen heiligenhafen_world_launch.py run_gzclient:='True'",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start heiligenhafen_commander",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch heiligenhafen_commander heiligenhafen_commander_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
