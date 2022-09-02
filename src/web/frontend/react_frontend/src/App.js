@@ -4,10 +4,10 @@ import { useState, useEffect } from 'react'
 import AddOrder from './components/AddOrder.js'
 import Footer from './components/Footer.js'
 import About from './components/About.js'
-import Popup from 'reactjs-popup';
-import RosMap from './components/RosMap.js'
 import ShowOrders from './components/ShowOrders.js'
 import React from 'react'
+import ControlSwitch from './components/ControlSwitch.js'
+
 
 const user_id = 1;
 function App() {
@@ -15,8 +15,8 @@ function App() {
   const [showOrder, setShowOrder] = useState(false)
   const [popupIsOpen, setPopupIsOpen] = useState(false)
   const [orders, setOrders] = useState([
-
   ])
+
   const [OrderCoords, setOrderCoords] = useState({
     Coords:{x:0, y:0, scale_x:0, scale_y:0}})
 
@@ -36,30 +36,33 @@ function App() {
     getOrders()
   }, [])
 
+ 
+
   const fetchUser = async () => {
-    const res = await fetch(`http://localhost:8000/users/${user_id}`)
+    const res = await fetch(`http://172.18.0.2:8000/users/${user_id}`)
     const data = await res.json()
 
     return data;
   }
 
   const fetchOrders = async () => {
-    const res = await fetch(`http://localhost:8000/orders`)
+    const res = await fetch(`http://172.18.0.2:8000/orders`)
     const data = await res.json()
 
     return data;
   }
 
   const fetchOrder = async (id) => {
-    const res = await fetch(`http://localhost:8000/orders/${id}`)
+    const res = await fetch(`http://172.18.0.2:80000orders/${id}`)
     const data = await res.json()
 
     return data;
   }
+ 
 
   //DELETE
   const deleteOrder = async (id) => {
-    await fetch(`http://localhost:8000/orders/${id}`, { method: 'DELETE' })
+    await fetch(`http://172.18.0.2:8000/orders/${id}`, { method: 'DELETE' })
 
     setOrders(orders.filter((order) => order.id !== id));
   }
@@ -69,7 +72,7 @@ function App() {
     const updatedOrder = { ...orderToToggle, recurring_order: !orderToToggle.recurring_order }
     
 
-    const res = await fetch(`http://localhost:8000/orders/${order_id}`, {
+    const res = await fetch(`http://172.18.0.2:8000/orders/${order_id}`, {
       method: 'PUT',
       headers: {
         'Content-type': 'application/json'
@@ -87,7 +90,7 @@ function App() {
 
   const addOrder = async (order) => {
     console.log(order)
-    const res = await fetch(`http://localhost:8000/users/${user_id}/order`, {
+    const res = await fetch(`http://172.18.0.2:8000/users/${user_id}/order`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
@@ -126,14 +129,9 @@ function App() {
         <Route path='/' exact render={(props) => (
           <>
             {showOrder  && <ShowOrders orders={orders} onDelete={deleteOrder} onToggle={toggleRecurringOrder}></ShowOrders>}
-            {<h1>click on the location to order too</h1>}
-
-            <RosMap onClick={showCoords} />
-            <Popup open={popupIsOpen} closeOnDocumentClick onClose={closeModal}>
-              <>
-                {<AddOrder onAdd={addOrder} coords={OrderCoords} />}
-              </>
-            </Popup>
+            
+            {<ControlSwitch/>}
+            
           </>
         )} />
         <Route path='/about' component={About}></Route>
@@ -148,3 +146,12 @@ export default App;
 
 
 // get json from apenapi: https://www.npmjs.com/package/openapi-typescript
+
+/*
+<RosMap onClick={showCoords} />
+            <Popup open={popupIsOpen} closeOnDocumentClick onClose={closeModal}>
+              <>
+                {<AddOrder onAdd={addOrder} coords={OrderCoords} />}
+              </>
+            </Popup>
+*/

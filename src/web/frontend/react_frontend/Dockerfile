@@ -14,7 +14,12 @@ ENV USER ubuntu
 ENV DEBIAN_FRONTEND=
 ENV DEBIAN_FRONTEND=noninteractive
 RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-RUN sudo apt install nodejs
+RUN apt install nodejs
+RUN apt-get update && apt upgrade -y && apt-get install net-tools 
+RUN npm install @mui/material @emotion/react @emotion/styled
+
+
+
 
 ENV DEBIAN_FRONTEND=
 ENTRYPOINT [ "entrypoint.sh" ]
