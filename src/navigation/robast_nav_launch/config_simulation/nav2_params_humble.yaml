@@ -94,13 +94,13 @@ controller_server:
       yaw_goal_tolerance: 0.25
     # DWB parameters
     FollowPath:
-      # plugin: "nav2_rotation_shim_controller::RotationShimController"
-      plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
-      angular_dist_threshold: 0.785
+      plugin: "nav2_rotation_shim_controller::RotationShimController"
+      # plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      primary_controller: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      angular_dist_threshold: 0.39
       forward_sampling_distance: 0.5
-      rotate_to_heading_angular_vel: 1.8
-      max_angular_accel: 3.2
-
+      rotate_to_heading_angular_vel: 0.8
+      max_angular_accel: 1.6
       simulate_ahead_time: 1.0
       desired_linear_vel: 0.6
       max_linear_accel: 0.1
