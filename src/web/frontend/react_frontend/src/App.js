@@ -131,8 +131,7 @@ function App() {
     })
     const data = await res.json()
     console.log(data)
-    setDrawers([...drawer, data])
-    closeModal()
+    setDrawers(fetchDrawersByRobot())
   }
 
 
