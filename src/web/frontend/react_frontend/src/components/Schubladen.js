@@ -6,8 +6,8 @@ const Schubladen = ({schubladen, onChange}) => {
         return (
                 <>
                   {
-                          schubladen.map((schublade) => (<Schublade 
-                                key={schublade.id} 
+                          schubladen.Sort((a,b)=>a.index-b.index).map((schublade) => (<Schublade 
+                                key={schublade.index} 
                                 schublade={schublade} 
                                 onChange = {onChange} 
                                />))

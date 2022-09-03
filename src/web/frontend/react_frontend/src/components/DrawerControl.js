@@ -9,7 +9,7 @@ export default function DrawerControl() {
   
   return (
     <ButtonGroup variant="contained" aria-label="outlined primary button group" orientation="vertical">
-{ .map(item =>(
+{ [].map(item =>(
       <Button> {item} </Button>))}
     </ButtonGroup>
   );

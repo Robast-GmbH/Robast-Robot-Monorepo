@@ -14,8 +14,8 @@ function App() {
   const [showAddOrder, setShowAddOrder] = useState(false)
   const [showOrder, setShowOrder] = useState(false)
   const [popupIsOpen, setPopupIsOpen] = useState(false)
-  const [orders, setOrders] = useState([
-  ])
+  const [orders, setOrders] = useState([])
+  const [drawers, setDrawers]= useState([])
 
   const [OrderCoords, setOrderCoords] = useState({
     Coords:{x:0, y:0, scale_x:0, scale_y:0}})
@@ -29,8 +29,10 @@ function App() {
   useEffect(() => {
     const getOrders = async () => {
       const ordersFromServer = await fetchOrders()
+      const drawersFromServer =await fetchDrawersByRobot(1)
       console.log(ordersFromServer)
       setOrders(ordersFromServer)
+      setDrawers(drawersFromServer)
     }
 
     getOrders()
@@ -102,6 +104,38 @@ function App() {
     setOrders([...orders, data])
     closeModal()
   }
+  
+  //Drawer
+  const fetchDrawersByRobot = async (robot_id) => {
+    const res = await fetch(`http://172.18.0.2:8000/orders/drawers/${robot_id}`)
+    const data = await res.json()
+
+    return data;
+  }
+
+  const fetchDrawer = async (robot_id, index) => {
+    const res = await fetch(`http://172.18.0.2:80000/drawers/${robot_id}/${index}`)
+    const data = await res.json()
+
+    return data;
+  }
+
+  const updateDrawer = async (drawer) => {
+    console.log(drawer)
+    const res = await fetch(`http://172.18.0.2:8000/drawers/1/`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(drawer)
+    })
+    const data = await res.json()
+    console.log(data)
+    setDrawers([...drawer, data])
+    closeModal()
+  }
+
+
 
   const showCoords = (event) => {
 
