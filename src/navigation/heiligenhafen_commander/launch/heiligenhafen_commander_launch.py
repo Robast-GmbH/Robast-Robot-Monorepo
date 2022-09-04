@@ -67,7 +67,7 @@ def generate_launch_description():
     # start the demo autonomy task
     demo_cmd = Node(
         package='heiligenhafen_commander',
-        executable='commander',
+        executable='main',
         emulate_tty=True,
         output='screen')
 
