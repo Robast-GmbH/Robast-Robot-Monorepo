@@ -1,7 +1,7 @@
 import PropTypes from 'prop-types'
 import { FaTimes } from 'react-icons/fa'
 
-const Task = ({ order: order, onDelete, onToggle }) => {
+const Order = ({ order: order, onDelete, onToggle }) => {
         return (
                 <div className={`task ${order.recurring_order ? 'recurring_order' : ''}`} onDoubleClick={() => onToggle(order.id)}>
                         <h3>
@@ -21,9 +21,9 @@ const Task = ({ order: order, onDelete, onToggle }) => {
 
 
 
-Task.propTypes = {
+Order.propTypes = {
         onDelete: PropTypes.func,
         onToggle: PropTypes.func,
 }
 
-export default Task
+export default Order
