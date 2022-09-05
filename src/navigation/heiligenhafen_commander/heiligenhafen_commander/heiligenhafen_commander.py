@@ -18,7 +18,7 @@ class HeiligenhafenCommander(Node):
         self.target_waypoint = 1
 
         self.waypoint_following_is_activated = True
-        self.client = self.create_client(SetBool, 'activate_waypoint_following', self.activate_waypoint_following)
+        self.client = self.create_service(SetBool, 'activate_waypoint_following', self.activate_waypoint_following)
 
         # Wait for navigation to fully activate, since autostarting nav2
         self.navigator.waitUntilNav2Active()
@@ -48,8 +48,11 @@ class HeiligenhafenCommander(Node):
         goal_pose_1.pose.position.x = 0.0
         goal_pose_1.pose.position.y = -3.00
         yaw_1 = 0.0
-        goal_pose_1.pose.orientation = geometry_msgs.msg.Quaternion(
-            self.get_quaternion_from_euler(0.0, 0.0, yaw_1))
+        qx, qy, qz, qw = self.get_quaternion_from_euler(0, 0, yaw_1)
+        goal_pose_1.pose.orientation.x = qx
+        goal_pose_1.pose.orientation.y = qy
+        goal_pose_1.pose.orientation.z = qz
+        goal_pose_1.pose.orientation.w = qw
 
         goal_pose_2 = PoseStamped()
         goal_pose_2.header.frame_id = header_frame_id
@@ -57,8 +60,11 @@ class HeiligenhafenCommander(Node):
         goal_pose_2.pose.position.x = -6.0
         goal_pose_2.pose.position.y = -3.00
         yaw_2 = 0.0
-        goal_pose_2.pose.orientation = geometry_msgs.msg.Quaternion(
-            self.get_quaternion_from_euler(0.0, 0.0, yaw_2))
+        qx, qy, qz, qw = self.get_quaternion_from_euler(0, 0, yaw_2)
+        goal_pose_2.pose.orientation.x = qx
+        goal_pose_2.pose.orientation.y = qy
+        goal_pose_2.pose.orientation.z = qz
+        goal_pose_2.pose.orientation.w = qw
 
         goal_pose_3 = PoseStamped()
         goal_pose_3.header.frame_id = header_frame_id
@@ -66,8 +72,11 @@ class HeiligenhafenCommander(Node):
         goal_pose_3.pose.position.x = -6.0
         goal_pose_3.pose.position.y = 3.00
         yaw_3 = 0.0
-        goal_pose_3.pose.orientation = geometry_msgs.msg.Quaternion(
-            self.get_quaternion_from_euler(0.0, 0.0, yaw_3))
+        qx, qy, qz, qw = self.get_quaternion_from_euler(0, 0, yaw_3)
+        goal_pose_3.pose.orientation.x = qx
+        goal_pose_3.pose.orientation.y = qy
+        goal_pose_3.pose.orientation.z = qz
+        goal_pose_3.pose.orientation.w = qw
 
         goal_pose_4 = PoseStamped()
         goal_pose_4.header.frame_id = header_frame_id
@@ -75,8 +84,11 @@ class HeiligenhafenCommander(Node):
         goal_pose_4.pose.position.x = 0.0
         goal_pose_4.pose.position.y = 3.00
         yaw_4 = 0.0
-        goal_pose_4.pose.orientation = geometry_msgs.msg.Quaternion(
-            self.get_quaternion_from_euler(0.0, 0.0, yaw_4))
+        qx, qy, qz, qw = self.get_quaternion_from_euler(0, 0, yaw_4)
+        goal_pose_4.pose.orientation.x = qx
+        goal_pose_4.pose.orientation.y = qy
+        goal_pose_4.pose.orientation.z = qz
+        goal_pose_4.pose.orientation.w = qw
 
         self.target_pose_by_waypoint_number = {
             1: goal_pose_1,
@@ -112,7 +124,7 @@ class HeiligenhafenCommander(Node):
                 self.target_waypoint = 1
                 return
 
-    def get_quaternion_from_euler(roll, pitch, yaw):
+    def get_quaternion_from_euler(self, roll, pitch, yaw):
         """
         Convert an Euler angle to a quaternion.
 
