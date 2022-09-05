@@ -1,5 +1,5 @@
 import Header from './components/Header.js'
-import { BrowserRouter as Router, Route } from 'react-router-dom'
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
 import { useState, useEffect } from 'react'
 import AddOrder from './components/AddOrder.js'
 import Footer from './components/Footer.js'
@@ -7,6 +7,13 @@ import About from './components/About.js'
 import ShowOrders from './components/ShowOrders.js'
 import React from 'react'
 import ControlSwitch from './components/ControlSwitch.js'
+import CallRobotPosition from './components/CallRobotPosition.js'
+import MapPositions from './components/MapPositions.js'
+import SendGoal from './components/SendGoal.js'
+import Button from './components/Button.js'
+import AddMapPosition from './components/AddMapPosition.js'
+import Popup from 'reactjs-popup';
+
 
 const backend_address = `http://localhost:8000`
 const user_id = 1;
@@ -15,6 +22,13 @@ function App() {
   const [showOrder, setShowOrder] = useState(false)
   const [popupIsOpen, setPopupIsOpen] = useState(false)
   const [orders, setOrders] = useState([])
+  const [mapPositions, setMapPositions] = useState([
+    { 
+      id: 1,
+      title: 'example position',
+      Coordinates: {x:0.0, y: 0.0}
+    }
+  ])
   const [drawers, setDrawers]= useState([])
 
   const [OrderCoords, setOrderCoords] = useState({
@@ -38,6 +52,26 @@ function App() {
     getOrders()
   }, [])
 
+  // useEffect(() => {
+  //   const getMapPositions = async () => {
+  //     const mapPositionsFromServer = await fetchMapPositions()
+  //     console.log(mapPositionsFromServer)
+  //     setMapPositions(mapPositionsFromServer)
+  //   }
+
+  //   getMapPositions()
+  // }, [])
+  
+  // useEffect(() => {
+  //   const getGoals = async () => {
+  //     const mapPositionsFromServer = await fetchMapPositions()
+  //     console.log(mapPositionsFromServer)
+  //     setMapPositions(mapPositionsFromServer)
+  //   }
+
+  //   getGoals()
+  // }, [])
+
  
 
   const fetchUser = async () => {
@@ -49,6 +83,12 @@ function App() {
 
   const fetchOrders = async () => {
     const res = await fetch(`${backend_address}/orders`)
+    const data = await res.json()
+
+    return data;
+  }
+  const fetchMapPositions = async () => {
+    const res = await fetch(`${backend_address}/mappositions`)
     const data = await res.json()
 
     return data;
@@ -104,6 +144,21 @@ function App() {
     setOrders([...orders, data])
     closeModal()
   }
+
+  const addMapPosition = async (mapPosition) => {
+    console.log(mapPosition)
+    const res = await fetch(`${backend_address}/users/${user_id}/mapposition`, {
+      method: 'POST',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(mapPosition)
+    })
+    const data = await res.json()
+    console.log(data)
+    setMapPositions([...mapPositions, data])
+    closeModal()
+  }
   
   //Drawer
   const fetchDrawersByRobot = async (robot_id) => {
@@ -155,21 +210,36 @@ function App() {
       
       <div className='container' id="Map">
         <Header
-          labelOpen={"Show Orders"}
+          labelOpen={"Add Position"}
           onAdd={() => setShowOrder(!showOrder)}
           showAdd={showOrder} />
 
-        <Route path='/' exact render={(props) => (
-          <>
-            {showOrder  && <ShowOrders orders={orders} onDelete={deleteOrder} onToggle={toggleRecurringOrder}></ShowOrders>}
-            
-            {<ControlSwitch/>}
-            
-          </>
-        )} />
-        <Route path='/about' component={About}></Route>
-        <Footer />
+        {showOrder && <AddMapPosition onAdd={addMapPosition}/>}
+            {mapPositions.length > 0 ? (
+              <MapPositions mapPositions={mapPositions}/>
+              ):(
+                'No map positions set yet'
+              )
+        }
+        {/* <MapPositions mapPositions={mapPositions} sendGoal={SendGoal}></MapPositions>
+        <Button text={'Add Map Position'} ></Button> */}
+        <Switch>
 
+          <Route path='/' elements={
+            <>
+            {<AddMapPosition onAdd={addMapPosition}/>}
+            {mapPositions.length > 0 ? (
+              <MapPositions mapPositions={mapPositions}/>
+              ):(
+                'No map positions set yet'
+                )}
+            </>
+
+          } />
+        
+          <Route path='/about' component={About}></Route>
+        </Switch>
+        <Footer />
       </div>
     </Router>
   );

@@ -25,6 +25,7 @@
 		"laurenttreguier.uncrustify",
 		"ms-azuretools.vscode-docker",
 		"streetsidesoftware.code-spell-checker",
-		"yzhang.markdown-all-in-one"
+		"yzhang.markdown-all-in-one",
+		"dsznajder.es7-react-js-snippets"
 	]
 }
