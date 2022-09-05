@@ -8,7 +8,7 @@ import ShowOrders from './components/ShowOrders.js'
 import React from 'react'
 import ControlSwitch from './components/ControlSwitch.js'
 
-
+const backend_address = `http://localhost:8000`
 const user_id = 1;
 function App() {
   const [showAddOrder, setShowAddOrder] = useState(false)
@@ -41,21 +41,21 @@ function App() {
  
 
   const fetchUser = async () => {
-    const res = await fetch(`http://172.18.0.2:8000/users/${user_id}`)
+    const res = await fetch(`${backend_address}/users/${user_id}`)
     const data = await res.json()
 
     return data;
   }
 
   const fetchOrders = async () => {
-    const res = await fetch(`http://172.18.0.2:8000/orders`)
+    const res = await fetch(`${backend_address}/orders`)
     const data = await res.json()
 
     return data;
   }
 
   const fetchOrder = async (id) => {
-    const res = await fetch(`http://172.18.0.2:80000orders/${id}`)
+    const res = await fetch(`${backend_address}/orders/${id}`)
     const data = await res.json()
 
     return data;
@@ -64,7 +64,7 @@ function App() {
 
   //DELETE
   const deleteOrder = async (id) => {
-    await fetch(`http://172.18.0.2:8000/orders/${id}`, { method: 'DELETE' })
+    await fetch(`${backend_address}/orders/${id}`, { method: 'DELETE' })
 
     setOrders(orders.filter((order) => order.id !== id));
   }
@@ -74,7 +74,7 @@ function App() {
     const updatedOrder = { ...orderToToggle, recurring_order: !orderToToggle.recurring_order }
     
 
-    const res = await fetch(`http://172.18.0.2:8000/orders/${order_id}`, {
+    const res = await fetch(`${backend_address}/orders/${order_id}`, {
       method: 'PUT',
       headers: {
         'Content-type': 'application/json'
@@ -92,7 +92,7 @@ function App() {
 
   const addOrder = async (order) => {
     console.log(order)
-    const res = await fetch(`http://172.18.0.2:8000/users/${user_id}/order`, {
+    const res = await fetch(`${backend_address}/users/${user_id}/order`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
@@ -107,14 +107,14 @@ function App() {
   
   //Drawer
   const fetchDrawersByRobot = async (robot_id) => {
-    const res = await fetch(`http://172.18.0.2:8000/orders/drawers/${robot_id}`)
+    const res = await fetch(`${backend_address}/orders/drawers/${robot_id}`)
     const data = await res.json()
 
     return data;
   }
 
   const fetchDrawer = async (robot_id, index) => {
-    const res = await fetch(`http://172.18.0.2:80000/drawers/${robot_id}/${index}`)
+    const res = await fetch(`${backend_address}/drawers/${robot_id}/${index}`)
     const data = await res.json()
 
     return data;
@@ -122,7 +122,7 @@ function App() {
 
   const updateDrawer = async (drawer) => {
     console.log(drawer)
-    const res = await fetch(`http://172.18.0.2:8000/drawers/1/`, {
+    const res = await fetch(`${backend_address}/drawers/1/`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
