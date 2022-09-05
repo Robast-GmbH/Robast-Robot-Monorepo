@@ -5,25 +5,25 @@ import PropTypes from 'prop-types'
 
 
 const AddMapPosition = ({ onAdd }) => {
-        const [positionItemTitle, setPositionItemTitle] = useState('')
-        const [positionXCoordinate, setPositionXCoordinate] = useState(0.0)
-        const [positionYCoordinate, setPositionYCoordinate] = useState(0.0)
+        const [name, setPositionItemTitle] = useState('')
+        const [x, setPositionXCoordinate] = useState(0.0)
+        const [y, setPositionYCoordinate] = useState(0.0)
 
         const onSubmit = (e) => {
                 e.preventDefault()
-                if (!positionItemTitle) {
+                if (!name) {
                         alert('Add a Title')
                         return
                 }
-                if (!positionXCoordinate) {
+                if (!x) {
                         alert('Add a X-Coordinate') //TODO: CHECK IF TYPE IS CORRECT
                         return
                 }
-                if (!positionYCoordinate) {
+                if (!y) {
                         alert('Add a Y-Coordinate') //TODO: CHECK IF TYPE IS CORRECT
                         return
                 }
-                onAdd({ positionItemTitle, positionXCoordinate, positionYCoordinate})
+                onAdd({ name, x, y})
                 setPositionItemTitle('')
                 setPositionXCoordinate(0.0)
                 setPositionYCoordinate(0.0)
@@ -34,19 +34,19 @@ const AddMapPosition = ({ onAdd }) => {
                         <div className='form-control'>
                                 <label>Title</label>
                                 <input type='positionItemTitle' placeholder='Kitchen'
-                                        value={positionItemTitle} onChange={(e) => setPositionItemTitle(e.target.value)} />
+                                        value={name} onChange={(e) => setPositionItemTitle(e.target.value)} />
                         </div>
 
                         <div className='form-control'>
                                 <label>X-Coordinate</label>
                                 <input type='positionItem' placeholder='0.0'
-                                        value={positionXCoordinate} onChange={(e) => setPositionXCoordinate(e.target.value)} />
+                                        value={x} onChange={(e) => setPositionXCoordinate(parseFloat(e.target.value))} />
                         </div>
 
                         <div className='form-control'>
                                 <label>Y-Coordinate</label>
                                 <input type='positionItem' placeholder='0.0'
-                                        value={positionYCoordinate} onChange={(e) => setPositionYCoordinate(e.target.value)} />
+                                        value={y} onChange={(e) => setPositionYCoordinate(parseFloat(e.target.value))} />
                         </div>
 
                         <input type='submit' value='Save' className='btn btn-block' />

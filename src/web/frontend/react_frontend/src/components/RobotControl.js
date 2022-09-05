@@ -1,13 +1,19 @@
 import PropTypes from 'prop-types'
 import SimpleMap from './SimpleMap';
-import CallRobot from './CallRobot';
+import MapPositions from './MapPositions';
 
 
-export default function RobotControl() {
+export default function RobotControl({mapPositions,sendGoal}) {
     return (
               <div id = "robotControl">
                   <SimpleMap/>
-                  <CallRobot/>
+                  
+                  {mapPositions.length > 0 ? (
+              <MapPositions mapPositions={mapPositions} sendGoal={sendGoal}/>
+              ):(
+                'No map positions set yet'
+              )
+        }
               </div>
     );
 

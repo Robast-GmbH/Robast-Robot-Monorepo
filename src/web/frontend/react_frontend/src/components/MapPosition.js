@@ -1,12 +1,13 @@
 import React from 'react'
-import Button from './Button'
+import Button from '@mui/material/Button';
 
-const MapPosition = ({mapPositions}) => {
+const MapPosition = ({ mapPosition, sendGoal} ) => {
   return (
     <div className='mapPositions'>
-        <Button text={mapPositions.title}></Button>
+        <Button id={mapPosition.id} onclick={sendGoal}> {mapPosition.name}</Button>
     </div>
   )
 }
 
 export default MapPosition
+//<Button onclick={sendGoal} id={key}> {mapPosition.name}</Button>

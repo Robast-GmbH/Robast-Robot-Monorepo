@@ -1,9 +1,7 @@
 import React from 'react'
 
-const SendGoal = () => {
-  return (
-    <div>SendGoal</div>
-  )
+const SendGoal = (x,y) => {
+
 }
 
 export default SendGoal

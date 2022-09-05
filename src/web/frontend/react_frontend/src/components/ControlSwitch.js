@@ -8,10 +8,7 @@ import RobotControl from './RobotControl';
 import DrawerControl from './DrawerControl.js';
 import  { useState } from "react";
 
-const TabData=[
-  { id:0, content:  <RobotControl/> , label: "Roboter Steuern"},
-  { id:1, content:  <DrawerControl/> , label: "Schubladen Öffnen"}
-  ];
+
 
 function TabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -46,26 +43,25 @@ function a11yProps(index) {
   };
 }
 
-
-export default function ControlSwitch() {
+export default function ControlSwitch( {Tablist}) {
   const [value, setValue] = React.useState(0);
-  const [list, updateList] = TabData;
-
+  const [list, updateList] = Tablist;
+  
   const handleChange = (event, newValue) => {
     setValue(newValue);
   };
-
+  
   return (
     <div>
       <Box sx={{ width: '100%' }}>
         <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
           <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered={true}>
-            { TabData.map(item =>(
-                <Tab label={item.label} {...a11yProps(item.id)} />
+            {Tablist.map(item =>(
+                <Tab key= {item.id} label={item.label} {...a11yProps(item.id)} />
               ))}
           </Tabs>
         </Box>
-        { TabData.map(item =>(
+        {  Tablist.map(item =>(
                 <TabPanel value={value} index={item.id}>
                    {item.content}
                </TabPanel>

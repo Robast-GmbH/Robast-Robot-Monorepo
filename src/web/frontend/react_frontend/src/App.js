@@ -7,12 +7,14 @@ import About from './components/About.js'
 import ShowOrders from './components/ShowOrders.js'
 import React from 'react'
 import ControlSwitch from './components/ControlSwitch.js'
-import CallRobotPosition from './components/CallRobotPosition.js'
 import MapPositions from './components/MapPositions.js'
 import SendGoal from './components/SendGoal.js'
 import Button from './components/Button.js'
 import AddMapPosition from './components/AddMapPosition.js'
 import Popup from 'reactjs-popup';
+import RobotControl from './components/RobotControl.js'
+import DrawerControl from './components/DrawerControl.js'
+
 
 
 const backend_address = `http://localhost:8000`
@@ -22,13 +24,7 @@ function App() {
   const [showOrder, setShowOrder] = useState(false)
   const [popupIsOpen, setPopupIsOpen] = useState(false)
   const [orders, setOrders] = useState([])
-  const [mapPositions, setMapPositions] = useState([
-    { 
-      id: 1,
-      title: 'example position',
-      Coordinates: {x:0.0, y: 0.0}
-    }
-  ])
+  const [mapPositions, setMapPositions] = useState([])
   const [drawers, setDrawers]= useState([])
 
   const [OrderCoords, setOrderCoords] = useState({
@@ -39,12 +35,11 @@ function App() {
 
   const closeModal = () => setPopupIsOpen(false);
   const openModal = () => setPopupIsOpen(true);
+  const closePositionPppUp= () => setShowOrder(false);
 
   useEffect(() => {
     const getOrders = async () => {
       const ordersFromServer = await fetchOrders()
-      const drawersFromServer =await fetchDrawersByRobot(1)
-      console.log(ordersFromServer)
       setOrders(ordersFromServer)
       setDrawers(drawersFromServer)
     }
@@ -52,28 +47,27 @@ function App() {
     getOrders()
   }, [])
 
-  // useEffect(() => {
-  //   const getMapPositions = async () => {
-  //     const mapPositionsFromServer = await fetchMapPositions()
-  //     console.log(mapPositionsFromServer)
-  //     setMapPositions(mapPositionsFromServer)
-  //   }
+   useEffect(() => {
+     const getMapPositions = async () => {
+     const mapPositionsFromServer = await fetchMapPositions()
+     //console.log(mapPositionsFromServer)
+     setMapPositions(mapPositionsFromServer)
+    }
 
-  //   getMapPositions()
-  // }, [])
+     getMapPositions()
+   }, [])
+
+   useEffect(() => {
+    const getDrawers= async () => {
+      const drawersFromServer =await fetchDrawersByRobot(1)
+    //console.log(drawersFromServer)
+    setDrawers(drawersFromServer)
+   }
+
+    getDrawers()
+  }, [])
   
-  // useEffect(() => {
-  //   const getGoals = async () => {
-  //     const mapPositionsFromServer = await fetchMapPositions()
-  //     console.log(mapPositionsFromServer)
-  //     setMapPositions(mapPositionsFromServer)
-  //   }
-
-  //   getGoals()
-  // }, [])
-
- 
-
+  
   const fetchUser = async () => {
     const res = await fetch(`${backend_address}/users/${user_id}`)
     const data = await res.json()
@@ -146,8 +140,7 @@ function App() {
   }
 
   const addMapPosition = async (mapPosition) => {
-    console.log(mapPosition)
-    const res = await fetch(`${backend_address}/users/${user_id}/mapposition`, {
+    const res = await fetch(`${backend_address}/mappositions`, {
       method: 'POST',
       headers: {
         'Content-type': 'application/json'
@@ -188,8 +181,22 @@ function App() {
     console.log(data)
     setDrawers(fetchDrawersByRobot())
   }
-
-
+  const tabData=[
+    { id:0, content:  <RobotControl mapPositions= {mapPositions} sendGoal={} /> , label: "Roboter Steuern"},
+    { id:1, content:  <DrawerControl/> , label: "Schubladen Öffnen"}
+    ];
+const sendGoal =async (mapPosition) => {
+  console.log(mapPosition)
+  const res = await fetch(`${backend_address}/drawers/1/`, {
+    method: 'POST',
+    headers: {
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify(drawer)
+  })
+  const data = await res.json()
+  console.log(data)
+  setDrawers(fetchDrawersByRobot())
 
   const showCoords = (event) => {
 
@@ -213,16 +220,16 @@ function App() {
           labelOpen={"Add Position"}
           onAdd={() => setShowOrder(!showOrder)}
           showAdd={showOrder} />
-
-        {showOrder && <AddMapPosition onAdd={addMapPosition}/>}
-            {mapPositions.length > 0 ? (
-              <MapPositions mapPositions={mapPositions}/>
-              ):(
-                'No map positions set yet'
-              )
-        }
-        {/* <MapPositions mapPositions={mapPositions} sendGoal={SendGoal}></MapPositions>
-        <Button text={'Add Map Position'} ></Button> */}
+          <Popup open={showOrder} closeOnDocumentClick onClose={closePositionPppUp}>
+              <>
+             <h1>Add aposition</h1>
+                { <AddMapPosition onAdd={addMapPosition}/>}
+              </>
+          </Popup>
+       
+      
+        {<ControlSwitch Tablist= {tabData}/>}
+       
         <Switch>
 
           <Route path='/' elements={
