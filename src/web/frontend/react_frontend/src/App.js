@@ -36,25 +36,24 @@ function App() {
   const closeModal = () => setPopupIsOpen(false);
   const openModal = () => setPopupIsOpen(true);
   const closePositionPppUp= () => setShowOrder(false);
-
+/*
   useEffect(() => {
     const getOrders = async () => {
       const ordersFromServer = await fetchOrders()
       setOrders(ordersFromServer)
-      setDrawers(drawersFromServer)
     }
 
     getOrders()
-  }, [])
+  }, [])*/
 
-   useEffect(() => {
+   /*useEffect(() => {
      const getMapPositions = async () => {
      const mapPositionsFromServer = await fetchMapPositions()
      //console.log(mapPositionsFromServer)
      setMapPositions(mapPositionsFromServer)
-    }
+    }*/
 
-     getMapPositions()
+    /* getMapPositions()
    }, [])
 
    useEffect(() => {
@@ -65,7 +64,7 @@ function App() {
    }
 
     getDrawers()
-  }, [])
+  }, [])*/
   
   
   const fetchUser = async () => {
@@ -181,22 +180,25 @@ function App() {
     console.log(data)
     setDrawers(fetchDrawersByRobot())
   }
-  const tabData=[
-    { id:0, content:  <RobotControl mapPositions= {mapPositions} sendGoal={} /> , label: "Roboter Steuern"},
-    { id:1, content:  <DrawerControl/> , label: "Schubladen Öffnen"}
-    ];
-const sendGoal =async (mapPosition) => {
+  
+
+const sendGoal =async (mapPosition) => { //ToDo
   console.log(mapPosition)
   const res = await fetch(`${backend_address}/drawers/1/`, {
     method: 'POST',
     headers: {
       'Content-type': 'application/json'
     },
-    body: JSON.stringify(drawer)
+    body: JSON.stringify(mapPosition)
   })
   const data = await res.json()
   console.log(data)
   setDrawers(fetchDrawersByRobot())
+}
+const tabData=[
+  { id:0, content:  <RobotControl mapPositions= {mapPositions} sendGoal={(event)=>{}}/> , label: "Roboter Steuern"},
+  { id:1, content:  <DrawerControl drawers= {drawers}/> , label: "Schubladen Öffnen"}
+  ];
 
   const showCoords = (event) => {
 
@@ -251,6 +253,7 @@ const sendGoal =async (mapPosition) => {
     </Router>
   );
 }
+
 
 export default App;
 

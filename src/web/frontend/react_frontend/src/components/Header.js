@@ -11,19 +11,20 @@ const Header = ({ onAdd, showAdd, labelOpen, labelClose }) => {
                 <header className='header'>
                         
                         <DisplayAnImage logo={Logo}></DisplayAnImage>
-                        {location.pathname === '/' && (<Button
-                                color={showAdd ? 'red' : 'green'}
-                                text={showAdd ? labelClose : labelOpen}
-                                onClick={onAdd}
-                        />)}
+                        
                 </header>
         )
 }
 
 Header.defaultProps = {
         lable: 'Robast Logo',
-        labelClose: 'Close',
-        labelOpen: 'View Order',
+        //labelClose: 'Close',
+        //labelOpen: 'View Order',
 }
 
 export default Header
+/*{location.pathname === '/' && (<Button
+                                color={showAdd ? 'red' : 'green'}
+                                text={showAdd ? labelClose : labelOpen}
+                                onClick={onAdd}
+                        />)} */

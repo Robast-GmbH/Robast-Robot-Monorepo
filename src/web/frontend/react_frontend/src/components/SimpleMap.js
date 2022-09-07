@@ -5,20 +5,12 @@ import PropTypes from 'prop-types'
 
 
 
-const styles = StyleSheet.create({
-        container: {
-                paddingTop: 10,
-              },
-              tinyLogo: {
-                width: 1500,
-                height: 500,
-              },
-});
+
 
 function SimpleMap( ) {
         return (
                 <div id="SimpleMap">
-                      <DisplayAnImage logo = {TempMap} styleIn={styles}/>  
+                      <DisplayAnImage logo = {TempMap} />  
                 </div>
         )
 }

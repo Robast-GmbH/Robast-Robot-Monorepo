@@ -18,7 +18,7 @@ const styles = StyleSheet.create({
 function RosMap( {onClick}) {
         return (
                 <div id="RosMap">
-                      <DisplayAnImage onClick={onClick} logo = {TipluOg} styleIn={styles}/>  
+                      <DisplayAnImage onClick={onClick} logo = {TipluOg}/>  
                 </div>
         )
 }
