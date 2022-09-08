@@ -8,14 +8,13 @@ import Button from './Button';
 const MapPositions = ({mapPositions, sendGoal}) => {
   
   return (
-    <div>
-      <ButtonGroup variant="contained" aria-label="outlined primary button group">
-        {mapPositions.map((mapPositions) => (
+    <div id="mapPositions">
+      {mapPositions.map((mapPositions) => (
         
-          <MapPosition mapPosition={mapPositions} sendGoal={sendGoal} />
+        <MapPosition mapPosition={mapPositions} sendGoal={sendGoal} />
         ))}
-      </ButtonGroup>
     </div>
+    
   )
 }
 

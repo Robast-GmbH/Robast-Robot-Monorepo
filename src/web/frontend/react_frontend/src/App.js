@@ -23,9 +23,11 @@ function App() {
   const [showAddOrder, setShowAddOrder] = useState(false)
   const [showOrder, setShowOrder] = useState(false)
   const [popupIsOpen, setPopupIsOpen] = useState(false)
+  const [AddPositionIsOpen, setAddPositionIsOpen]=useState(false)
   const [orders, setOrders] = useState([])
   const [mapPositions, setMapPositions] = useState([])
   const [drawers, setDrawers]= useState([])
+
 
   const [OrderCoords, setOrderCoords] = useState({
     Coords:{x:0, y:0, scale_x:0, scale_y:0}})
@@ -46,25 +48,25 @@ function App() {
     getOrders()
   }, [])*/
 
-   /*useEffect(() => {
+   useEffect(() => {
      const getMapPositions = async () => {
-     const mapPositionsFromServer = await fetchMapPositions()
-     //console.log(mapPositionsFromServer)
-     setMapPositions(mapPositionsFromServer)
-    }*/
+      const mapPositionsFromServer = await fetchMapPositions()
+      //console.log(mapPositionsFromServer)
+      setMapPositions(mapPositionsFromServer)
+    }
 
-    /* getMapPositions()
+     getMapPositions()
    }, [])
 
    useEffect(() => {
     const getDrawers= async () => {
       const drawersFromServer =await fetchDrawersByRobot(1)
-    //console.log(drawersFromServer)
-    setDrawers(drawersFromServer)
+      console.log({drawersFromServer})
+      setDrawers(drawersFromServer)
    }
 
     getDrawers()
-  }, [])*/
+  }, [])
   
   
   const fetchUser = async () => {
@@ -154,7 +156,7 @@ function App() {
   
   //Drawer
   const fetchDrawersByRobot = async (robot_id) => {
-    const res = await fetch(`${backend_address}/orders/drawers/${robot_id}`)
+    const res = await fetch(`${backend_address}/drawers/${robot_id}`)
     const data = await res.json()
 
     return data;
@@ -178,7 +180,7 @@ function App() {
     })
     const data = await res.json()
     console.log(data)
-    setDrawers(fetchDrawersByRobot())
+    setDrawers(fetchDrawersByRobot(1))
   }
   
 
@@ -193,60 +195,33 @@ const sendGoal =async (mapPosition) => { //ToDo
   })
   const data = await res.json()
   console.log(data)
-  setDrawers(fetchDrawersByRobot())
+  setDrawers(fetchDrawersByRobot(1))
 }
+console.log({drawers})
 const tabData=[
-  { id:0, content:  <RobotControl mapPositions= {mapPositions} sendGoal={(event)=>{}}/> , label: "Roboter Steuern"},
+  { id:0, content:  <RobotControl mapPositions= {mapPositions} sendGoal={(event)=>{}} addMapPosition={addMapPosition}/> , label: "Roboter Steuern"},
   { id:1, content:  <DrawerControl drawers= {drawers}/> , label: "Schubladen Öffnen"}
   ];
-
-  const showCoords = (event) => {
-
-    openModal();
-    const rect = document.getElementById('RosMap').getBoundingClientRect();
-    const map_x = event.clientX - rect.left;
-    const map_y = event.clientY - rect.top;   
-    
-    setOrderCoords({x:map_x, y:map_y, clientX:1500, clientY:500});
-    console.log(rect);
-    console.log(OrderCoords);
-    console.log("map_x: " + map_x + ", map_y:" + map_y);
-  }
 
   return (
 
     <Router>
       
       <div className='container' id="Map">
-        <Header
-          labelOpen={"Add Position"}
-          onAdd={() => setShowOrder(!showOrder)}
-          showAdd={showOrder} />
-          <Popup open={showOrder} closeOnDocumentClick onClose={closePositionPppUp}>
-              <>
-             <h1>Add aposition</h1>
-                { <AddMapPosition onAdd={addMapPosition}/>}
-              </>
-          </Popup>
+        <Header />
+          
        
-      
-        {<ControlSwitch Tablist= {tabData}/>}
        
         <Switch>
 
-          <Route path='/' elements={
-            <>
-            {<AddMapPosition onAdd={addMapPosition}/>}
-            {mapPositions.length > 0 ? (
-              <MapPositions mapPositions={mapPositions}/>
-              ):(
-                'No map positions set yet'
-                )}
-            </>
-
-          } />
+        <Route path='/' exact render={(props) => (
+          <>
+             {<ControlSwitch Tablist= {tabData}/>}
+          </>
+        )} />
         
           <Route path='/about' component={About}></Route>
+          <Route path='/refill' component={Refill}></Route>
         </Switch>
         <Footer />
       </div>
@@ -258,13 +233,3 @@ const tabData=[
 export default App;
 
 
-// get json from apenapi: https://www.npmjs.com/package/openapi-typescript
-
-/*
-<RosMap onClick={showCoords} />
-            <Popup open={popupIsOpen} closeOnDocumentClick onClose={closeModal}>
-              <>
-                {<AddOrder onAdd={addOrder} coords={OrderCoords} />}
-              </>
-            </Popup>
-*/

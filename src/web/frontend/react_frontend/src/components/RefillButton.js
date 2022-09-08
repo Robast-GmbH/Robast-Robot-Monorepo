@@ -3,23 +3,28 @@ import * as React from 'react';
 import PropTypes from 'prop-types'
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-//import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Grow from '@mui/material/Grow';
 import Paper from '@mui/material/Paper';
 import Popper from '@mui/material/Popper';
 import MenuItem from '@mui/material/MenuItem';
 import MenuList from '@mui/material/MenuList';
+import Drawers from './Drawers';
 
 const RefillButton = ({ drawers, refillAction }) => {
     const [open, setOpen] = React.useState(false);
     const anchorRef = React.useRef(null);
     const [selectedIndex, setSelectedIndex] = React.useState(1);
-
+    console.log(drawers[selectedIndex].name)
+     if (drawers.length== 0 ){
+      return (<div></div>);
+     }
         return (
+          
             <React.Fragment>
             <ButtonGroup variant="contained" ref={anchorRef} aria-label="split button">
-              <Button onClick={refillAction(drawers[selectedIndex])}>{drawers[selectedIndex].name}</Button>
+            <Button >{drawers[selectedIndex].name}</Button>{/*onClick={refillAction(drawers[selectedIndex])}*/}
               <Button
                 size="small"
                 aria-controls={open ? 'split-button-menu' : undefined}
@@ -28,7 +33,7 @@ const RefillButton = ({ drawers, refillAction }) => {
                 aria-haspopup="menu"
                 onClick={setOpen((prevOpen) => !prevOpen)}
               >
-                <ArrowDropDownIcon />
+              <ArrowDropDownIcon />
               </Button>
             </ButtonGroup>
             <Popper
@@ -76,12 +81,14 @@ const RefillButton = ({ drawers, refillAction }) => {
               )}
             </Popper>
           </React.Fragment>
-        )
+        ) 
+        
 }
+
 export default RefillButton
 RefillButton.propTypes = {
-        onDelete: PropTypes.func,
-        onToggle: PropTypes.func,
+        drawers: PropTypes.arrayOf(Drawers),
+        refillAction : PropTypes.func,
 }
 
 

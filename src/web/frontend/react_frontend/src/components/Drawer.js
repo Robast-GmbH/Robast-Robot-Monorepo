@@ -7,7 +7,7 @@ import Button from '@mui/material/Button';
 const Drawer = ({ drawer, openDrawer} ) => {
   return (
     <div className='drawer'>
-        <Button id={drawer.id} onclick={(event)=>{openDrawer(drawer)}}> {drawer.name}</Button>
+        <Button class=" DrawerSelector" id={drawer.id} onclick={(event)=>{openDrawer(drawer)}}> {drawer.name}</Button>
     </div>
   )
 }
@@ -19,4 +19,3 @@ Drawer.propTypes = {
 
 
 export default  Drawer
-//<Button onclick={sendGoal} id={key}> {drawer.name}</Button>

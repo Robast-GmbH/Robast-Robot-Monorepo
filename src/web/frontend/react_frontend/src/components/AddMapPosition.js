@@ -23,7 +23,7 @@ const AddMapPosition = ({ onAdd }) => {
                         alert('Add a Y-Coordinate') //TODO: CHECK IF TYPE IS CORRECT
                         return
                 }
-                onAdd({ name, x, y})
+                onAdd({ name, float:x, float:y})
                 setPositionItemTitle('')
                 setPositionXCoordinate(0.0)
                 setPositionYCoordinate(0.0)

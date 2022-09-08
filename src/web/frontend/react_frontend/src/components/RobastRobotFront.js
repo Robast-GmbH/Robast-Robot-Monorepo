@@ -7,7 +7,7 @@ import PropTypes from 'prop-types'
 function RobastRobotFront( ) {
         return (
                 <div id="RobastRobotFront">
-                      <DisplayAnImage logo = {R1}/>  
+                      <img src={R1} draggable="false" alt="Robot_image"/>  
                 </div>
         )
 }

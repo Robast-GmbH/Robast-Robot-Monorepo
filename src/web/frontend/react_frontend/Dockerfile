@@ -16,7 +16,8 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
 RUN apt install nodejs
 RUN apt-get update && apt upgrade -y && apt-get install net-tools 
-RUN npm install @mui/material @emotion/react @emotion/styled
+RUN npm install @mui/material @emotion/react @emotion/styled && \
+    npm install @mui/icons-material
 
 
 

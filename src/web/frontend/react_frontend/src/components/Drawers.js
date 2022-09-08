@@ -5,15 +5,15 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 
 
 const Drawers = ({drawers, openDrawer}) => {
-console.log(drawers)
+console.log({drawers})
   return (
     <>
-    <ButtonGroup variant="contained" aria-label="outlined primary button group" orientation="vertical">
+    <div id="OpenDrawer"  aria-label="outlined primary button group" orientation="vertical">
     {drawers.map((drawer) => (
         <Drawer drawer={drawer} openDrawer={openDrawer} />
     ))  
     }
-    </ButtonGroup>
+    </div>
     </>
   )
 }
