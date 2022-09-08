@@ -94,13 +94,13 @@ controller_server:
       yaw_goal_tolerance: 0.25
     # DWB parameters
     FollowPath:
-      # plugin: "nav2_rotation_shim_controller::RotationShimController"
-      plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
-      angular_dist_threshold: 0.785
+      plugin: "nav2_rotation_shim_controller::RotationShimController"
+      # plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      primary_controller: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      angular_dist_threshold: 0.39
       forward_sampling_distance: 0.5
-      rotate_to_heading_angular_vel: 1.8
-      max_angular_accel: 3.2
-
+      rotate_to_heading_angular_vel: 0.8
+      max_angular_accel: 1.6
       simulate_ahead_time: 1.0
       desired_linear_vel: 0.6
       max_linear_accel: 0.1
@@ -136,7 +136,10 @@ local_costmap:
       robot_base_frame: base_link
       map_topic: /map
       use_sim_time: True
-      rolling_window: true
+      always_send_full_costmap: True # Whether to send full costmap every update, rather than updates
+      rolling_window: true # Whether costmap should roll with robot base frame.
+      lethal_cost_threshold: 100 # Minimum cost of an occupancy grid map to be considered a lethal obstacle.
+      track_unknown_space: True # If false, treats unknown space as free space, else as unknown space
       width: 5
       height: 5
       footprint: "[ [0.50, 0.30], [0.50, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
@@ -157,25 +160,24 @@ local_costmap:
       voxel_layer:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
-        footprint_clearing_enabled: True # Clear any occupied cells under robot footprint.
-        publish_voxel_map: True
+        footprint_clearing_enabled: True # Clear any occupied cells under robot footprint
+        max_obstacle_height: 2.2 # Maximum height to add return to occupancy grid.
         origin_z: 0.0 # Where to start marking voxels (m).
-        z_resolution: 0.05 # Resolution of voxels in height (m). Default: 0.2
         z_voxels: 16 # Number of voxels high to mark, maximum 16.
         unknown_threshold: 15 # Minimum number of empty voxels in a column to mark as unknown in 2D occupancy grid. Default: 15 
-        mark_threshold: 0 # Minimum number of voxels in a column to mark as occupied in 2D occupancy grid.
-        max_obstacle_height: 2.0 # Maximum height to add return to occupancy grid.
-        combination_method: 1 # Enum for method to add data to master costmap, default to maximum.
-        publish_voxel_map: False # Whether to publish 3D voxel grid for debug, computationally expensive.
-        observation_sources: pointcloud scan
+        z_resolution: 0.15 # Resolution of voxels in height (m)
+        mark_threshold: 0 # Minimum number of voxels in a column to mark as occupied in 2D occupancy grid
+        combination_method: 1 # Enum for method to add data to master costmap, default to maximum
+        publish_voxel_map: True # Whether to publish 3D voxel grid for debug, computationally expensive
+        observation_sources: scan pointcloud  # namespace of sources of data
         pointcloud:
           topic: /top_laser_controller/out
           sensor_frame: "" # Frame of sensor, to use if not provided by message. If empty, uses message frame_id.
           observation_persistence: 0.0 # How long to store messages in a buffer to add to costmap before removing them (s).
           expected_update_rate: 0.0 # Expected rate to get new data from sensor. Default: 0.0
           data_type: "PointCloud2"
-          min_obstacle_height: 0.1 # Minimum height to add return to occupancy grid.
-          max_obstacle_height: 2.0 # Maximum height to add return to occupancy grid.
+          min_obstacle_height: 0.15 # Minimum height to add return to occupancy grid.
+          max_obstacle_height: 2.25 # Maximum height to add return to occupancy grid.
           inf_is_valid: False # Are infinite returns from laser scanners valid measurements to raycast. Default: false
           marking: True # Whether source should mark in costmap.
           clearing: True # Whether source should raytrace clear in costmap.
@@ -197,7 +199,6 @@ local_costmap:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 3.0
         inflation_radius: 1.70      
-      always_send_full_costmap: True
   local_costmap_client:
     ros__parameters:
       use_sim_time: False

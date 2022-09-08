@@ -24,7 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-                'commander = heiligenhafen_commander.commander:main',
+                'main = heiligenhafen_commander.main:main',
         ],
     },
 )
