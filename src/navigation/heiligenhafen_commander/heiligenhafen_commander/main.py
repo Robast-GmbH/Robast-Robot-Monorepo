@@ -1,6 +1,6 @@
 import rclpy
 
-from heiligenhafen_commander import HeiligenhafenCommander
+from heiligenhafen_commander.heiligenhafen_commander import HeiligenhafenCommander
 
 
 def main():
