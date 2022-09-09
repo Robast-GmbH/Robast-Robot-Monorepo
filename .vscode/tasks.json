@@ -47,7 +47,7 @@
             "label": "build-ros-simple-fleetmanagement",
             "detail": "Symlink Build for fleetmanagement.",
             "type": "shell",
-            "command": "colcon build --packages-select simple_fleetmanagement --symlink-install;",
+            "command": "colcon build --packages-select communication_interfaces --symlink-install; colcon build --packages-select simple_fleetmanagement --symlink-install;",
             "problemMatcher": [],
         },
 
