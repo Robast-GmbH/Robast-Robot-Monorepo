@@ -1,10 +1,12 @@
 from pickletools import uint8
+from xmlrpc.client import Boolean
 import rclpy
 import requests
 import time
 import numpy as np
 from rclpy.node import Node
 from rclpy.action import ActionClient
+from . import HH_Nav_Statemachine
 from std_msgs.msg import UInt8, UInt8MultiArray
 from datetime import datetime
 from typing import List
@@ -44,12 +46,12 @@ class SimpleFleetmanagement(Node):
         self.initialize_ros_robot_refill_status_subscription()
         self.initialize_web_schnittstelle()
         self.setup_navigator()
-        self.initialize_statemachine()
+        # self.initialize_statemachine()
 
         self.setup_drawer_interaction()
         self.get_logger().info("The simple fleetmanagement is running")
         self.start_web_interface()
-        self.start_statemachine()
+        # self.start_statemachine()
 
     def setup_drawer_interaction(self):
         self.drawer_gate_action_client = ActionClient(self, DrawerUserAccess, "control_drawer")
@@ -85,13 +87,22 @@ class SimpleFleetmanagement(Node):
             self.backend_polling_intervall, self._webInterface.backend_polling())
 
     def initialize_statemachine(self):
-        self.navigation_trigger = self.create_timer(
-            self.navigation_update_interval, self.handle_waypoint_follow_callback)
-        self.state_machine_state = 1
-        pass
+        # self.navigation_trigger = self.create_timer(
+        #     self.navigation_update_interval, self.handle_waypoint_follow_callback)
+        # self.state_machine_state = 1
+        # pass
+        functions_fo_statemachine = {
+            "check_status": self.check_status,
+            "is_any_drawer_open": self.is_any_drawer_open,
+            "navigator_cancel_task": self.navigator_cancel_task,
+            "get_waypoints_by_id": self.get_waypoints_by_id,
+            "navigate_to_pose": self.navigate_to_pose,
+            "open_drawer": self.open_drawer
+        }
+        self.HH_state_machine = HH_Nav_Statemachine.HHStateMachine(functions_by_functionname=functions_fo_statemachine)
 
     def start_statemachine(self):
-        pass
+        self.HH_state_machine.start()
 
     def set_robot_status_callback(self, msg):
         # self.get_logger().info("Received robot status: {1}", str(msg.data))
@@ -99,19 +110,19 @@ class SimpleFleetmanagement(Node):
             self.robot_status = static_params.RobotStatus.is_homing
             self.get_logger().info("Setting Robot status to homing!")
         else:
-            if len(self.target_pose_by_waypoint_number) > 1:
+            if len(self.target_pose_by_waypoint_id) > 1:
                 if(msg.data == static_params.RobotStatus.is_running):
                     self.robot_status = static_params.RobotStatus.is_running
                     self.get_logger().info("Activating the waypoint following. Number of current waypoints: " +
-                                           str(len(self.target_pose_by_waypoint_number)))
+                                           str(len(self.target_pose_by_waypoint_id)))
                 elif (msg.data == static_params.RobotStatus.is_pausing):
                     self.robot_status = static_params.RobotStatus.is_pausing
                     self.get_logger().info("Deactivating the waypoint following. Number of current waypoints: " +
-                                           str(len(self.target_pose_by_waypoint_number)))
+                                           str(len(self.target_pose_by_waypoint_id)))
             else:
                 self.robot_status = static_params.RobotStatus.is_pausing
                 self.get_logger().info("Deactivating the waypoint following because the number of current waypoints is below 1. Number of current waypoints: " +
-                                       str(len(self.target_pose_by_waypoint_number)))
+                                       str(len(self.target_pose_by_waypoint_id)))
 
     def handle_waypoint_follow_callback(self):
         if (self.robot_status == static_params.RobotStatus.is_running):
@@ -129,13 +140,34 @@ class SimpleFleetmanagement(Node):
         initial_pose_yaw = 3.14
         self.set_initial_pose(initial_pose_x, initial_pose_y, initial_pose_yaw)
 
-        self.target_pose_by_waypoint_number = {}
+        self.target_pose_by_waypoint_id = {}
         self._webInterface.set_navigator_waypoints_from_backend()
 
         # Waypoint following needs to be activated via the corresponding topic
         self.robot_status = static_params.RobotStatus.is_pausing
 
         self.waypoint_following_is_activated = True
+
+    def navigate_to_pose(self, waypoint_id):
+        self.navigator.goToPose(self.target_pose_by_waypoint_id[waypoint_id])
+
+    def navigator_cancel_task(self):
+        self.navigator.cancelTask()
+
+    def check_navigator_status(self):
+        return self.navigator.getResult()
+
+    def open_drawer(self, number):
+        pass
+
+    def check_status(self):
+        return self.robot_status
+
+    def is_drawer_open(self, id):
+        pass
+
+    def is_any_drawer_open(self) -> Boolean:
+        pass
 
     def create_pose(self, pose_x, pose_y, pose_yaw) -> PoseStamped:
         pose = PoseStamped()
@@ -157,9 +189,12 @@ class SimpleFleetmanagement(Node):
 
     def set_waypoint(self, waypoint_id, waypoint_pose_x, waypoint_pose_y, waypoint_pose_yaw):
         goal_pose = self.create_pose(waypoint_pose_x, waypoint_pose_y, waypoint_pose_yaw)
-        self.target_pose_by_waypoint_number[waypoint_id] = goal_pose
+        self.target_pose_by_waypoint_id[waypoint_id] = goal_pose
         self.get_logger().info(
             'New waypoint with waypoint_id {0}, x = {1}, y = {2}, yaw = {3} was added to target waypoints!'.format(waypoint_id, waypoint_pose_x, waypoint_pose_y, waypoint_pose_yaw))
+
+    def get_waypoints_by_id(self):
+        return self.target_pose_by_waypoint_id
 
     def get_drawer_open_ros_function(self, goal_msg):
         self.drawer_gate_action_client.wait_for_server()
@@ -180,10 +215,10 @@ class SimpleFleetmanagement(Node):
         nav_goal_door_bell = self.order_queue[0][2]
 
     def state_machine(self):
-        match self.state_machine_state < len(self.target_pose_by_waypoint_number):
+        match self.state_machine_state < len(self.target_pose_by_waypoint_id):
             case 1:
                 self.get_logger().info("navigate to waypoint {1}", self.state_machine_state)
-                self.navigator.goToPose(self.target_pose_by_waypoint_number[self.state_machine_state])
+                self.navigator.goToPose(self.target_pose_by_waypoint_id[self.state_machine_state])
                 self.state_machine_state += 1
                 return
             # If an exact match is not confirmed, this last case will be used if provided

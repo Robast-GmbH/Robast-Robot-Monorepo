@@ -1,3 +1,4 @@
+from ast import Try
 from logging import error
 from multiprocessing import get_logger
 import requests
@@ -32,7 +33,10 @@ class WebInterface:
                 drawer_address.drawer_id = 1  # there can be either 1 or 2 drawers per module, for now its only 1 drawer
                 goal_msg.drawer_address = drawer_address
                 goal_msg.state = 1
-                self.functions["get_drawer_open_ros_function"](goal_msg)
+                try:
+                    self.functions["get_drawer_open_ros_function"](goal_msg)
+                except:
+                    print("get_drawer_open_ros_function im web interface down")
                 response = requests.delete(api_url)
                 if(response.status_code == 200):
                     get_logger().info(
@@ -48,7 +52,10 @@ class WebInterface:
         response = web_module.getDataFromServer(self.base_url + "/robot/status")
         if(response != None):
             robot_status = response.json()
-            self.functions["publish_robot_status"](robot_status)
+            try:
+                self.functions["publish_robot_status"](robot_status)
+            except:
+                print("publish_robot_status im web interface down")
 
     def get_drawer_refilling_status(self):
         response = web_module.getDataFromServer(self.base_url + "/drawer/empty")
@@ -56,13 +63,19 @@ class WebInterface:
             drawer_controller_ids_to_be_refilled = []
             response_data = response.json()
             drawer_controller_ids_to_be_refilled = drawer_helper_module.get_list_of_drawer_ids(response_data)
-            self.functions["publish_drawer_refill_status"](drawer_controller_ids_to_be_refilled)
+            try:
+                self.functions["publish_drawer_refill_status"](drawer_controller_ids_to_be_refilled)
+            except:
+                print("publish_drawer_refill_status im web interface down")
 
     def set_navigator_waypoints_from_backend(self):
         response = web_module.getDataFromServer(self.base_url + "/map_positions")
         if(response != None):
             for waypoint in response.json():
-                self.functions["set_waypoint"](waypoint["id"], waypoint["x"], waypoint["y"], waypoint["t"])
+                try:
+                    self.functions["set_waypoint"](waypoint["id"], waypoint["x"], waypoint["y"], waypoint["t"])
+                except:
+                    print("set_waypoint im web interface down")
 
     def backend_polling(self):
         self.get_robot_status()

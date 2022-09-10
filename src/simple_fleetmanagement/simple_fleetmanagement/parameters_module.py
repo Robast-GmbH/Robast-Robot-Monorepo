@@ -9,6 +9,8 @@ class RobotStatus(Enum):
 
 NUM_OF_DRAWERS = 5
 
+HOME_WAYPOINT_ID = 1
+
 
 class RobotStates(Enum):
     RUNNING = 1
