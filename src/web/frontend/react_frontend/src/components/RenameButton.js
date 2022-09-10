@@ -7,7 +7,7 @@ const RenameButton = ({button, name}) => {
                 <>
                   {
                           orders.map((order) => (<Order 
-                                key={order.id} 
+                                key={order.drawer_controller_id} 
                                 order={order} 
                                 onDelete = {onDelete} 
                                 onToggle = {onToggle}/>))

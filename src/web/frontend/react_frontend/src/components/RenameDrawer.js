@@ -1,13 +1,13 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import Drawer from './Drawer'
+import Select from 'react-select'
 
 
-
-
-const RenameDrawer = ({ onEdit, drawers }) => {
+const RenameDrawer = ({ renameDrawer, drawers }) => {
         const [selected_drawer_id, setselectedDrawerID] = useState(0)
         const [new_name, setNewName] = useState('')
+
         const onSubmit = (e) => {
                 e.preventDefault()
                 if (!selected_drawer_id) {
@@ -18,25 +18,33 @@ const RenameDrawer = ({ onEdit, drawers }) => {
                         alert('Wähle eien neuen Namen') //TODO: CHECK IF TYPE IS CORRECT
                         return
                 }
-               
-                onEdit({ selected_drawer_id, new_name})
+                const newDrawer=drawers.find(d=>d.id===selected_drawer_id)
+                console.log(newDrawer)
+                newDrawer.content=new_name
+                renameDrawer(newDrawer)
                 setselectedDrawerID(0)
+                setNewName("")
+                window.parent.location.reload(false)
         }
-        drawers= drawers.drawers;
+        console.log(drawers)
+        const options = [ ] 
+              options.forEach((drawer)=>{
+                options.push({value: drawer.id, label: drawer.content + " ( Schublade " + drawer.drawer_controller_id + " )" }) 
+            })
+              
+              
         return (
                 <form className='rename-form' onSubmit={onSubmit}>
                         <div className='form-control'>
                         <label for="drawers">Schublade</label>
-                        <select onChange={(e) => setselectedDrawerID(e.target.value)} >
-                                {drawers.map((drawer) => {
-                                        {console.log(drawer)}
-                                        <option value={drawer.id}>{drawer.name+" (Nr. "+drawer.id+") "}</option>
-                                })}
-                        </select>
+                        <Select options={options} onChange= {(event) => { setselectedDrawerID(event.value)}}/>
+                        
                         </div>
                         <div className='form-control'>
                                 <label>Alter Name</label>
-                                <label>{drawers[selected_drawer_id].name}</label>
+                                { selected_drawer_id>0? 
+                                        (<label>{drawers.find(d=>d.id===selected_drawer_id).content} </label>):("")
+                                }                                
                                 
                         </div>
 
@@ -51,7 +59,7 @@ const RenameDrawer = ({ onEdit, drawers }) => {
         )
 }
 RenameDrawer.propTypes = {
-        onEdit: PropTypes.func,
+        renameDrawer: PropTypes.func,
         drawers: PropTypes.arrayOf(Drawer),
 }
 export default RenameDrawer

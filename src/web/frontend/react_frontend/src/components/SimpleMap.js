@@ -1,4 +1,4 @@
-import DisplayAnImage from './DisplayAnImage'
+
 import TempMap from '../imgs/temp_quadrat.png'
 
 

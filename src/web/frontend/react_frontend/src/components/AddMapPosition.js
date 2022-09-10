@@ -8,6 +8,7 @@ const AddMapPosition = ({ onAdd }) => {
         const [name, setPositionItemTitle] = useState('')
         const [x, setPositionXCoordinate] = useState(0.0)
         const [y, setPositionYCoordinate] = useState(0.0)
+        const [t, setTheta] = useState(0.0)
 
         const onSubmit = (e) => {
                 e.preventDefault()
@@ -23,10 +24,17 @@ const AddMapPosition = ({ onAdd }) => {
                         alert('Add a Y-Coordinate') //TODO: CHECK IF TYPE IS CORRECT
                         return
                 }
-                onAdd({ name, float:x, float:y})
+                if (!t) {
+                        alert('Add Theta') //TODO: CHECK IF TYPE IS CORRECT
+                        return
+                }
+                
+                onAdd({ name, x, y, t})
                 setPositionItemTitle('')
                 setPositionXCoordinate(0.0)
                 setPositionYCoordinate(0.0)
+                setTheta(0.0)
+                window.parent.location.reload(false)
         }
 
         return (
@@ -47,6 +55,12 @@ const AddMapPosition = ({ onAdd }) => {
                                 <label>Y-Coordinate</label>
                                 <input type='positionItem' placeholder='0.0'
                                         value={y} onChange={(e) => setPositionYCoordinate(parseFloat(e.target.value))} />
+                        </div>
+
+                        <div className='form-control'>
+                                <label>Theta</label>
+                                <input type='positionItem' placeholder='0.0'
+                                        value={t} onChange={(e) => setTheta(parseFloat(e.target.value))} />
                         </div>
 
                         <input type='submit' value='Save' className='btn btn-block' />

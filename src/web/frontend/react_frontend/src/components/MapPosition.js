@@ -4,9 +4,10 @@ import PropTypes from 'prop-types'
 
 
 const MapPosition = ({ mapPosition, sendGoal} ) => {
+ // console.log(mapPosition)
   return (
     <div className='mapPosition'>
-        <Button id={mapPosition.id} onclick={(event)=>{sendGoal(mapPosition)}}> {mapPosition.name}</Button>
+        <Button id={mapPosition.id} onClick={(event)=>{sendGoal(mapPosition.id)}}> {mapPosition.name}</Button>
     </div>
   )
 }

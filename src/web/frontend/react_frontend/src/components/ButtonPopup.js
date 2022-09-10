@@ -30,4 +30,8 @@ export default function ButtonPopUp({name, caption,  popUp }) {
 
             </div>
           );
+}ButtonPopUp.propTypes = {
+  name: PropTypes.string,
+  caption: PropTypes.string,
+  popUp: PropTypes.func,
 }
