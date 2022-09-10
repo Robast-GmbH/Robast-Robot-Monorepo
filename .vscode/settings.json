@@ -2,7 +2,7 @@
     "editor.formatOnSave": true,
     "editor.wordWrap": "on",
     "editor.wordWrapColumn": 120,
-    "editor.tabSize": 8,
+    "editor.tabSize": 4,
     "editor.rulers": [
         120
     ],
