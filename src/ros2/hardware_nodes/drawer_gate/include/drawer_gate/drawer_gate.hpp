@@ -84,6 +84,8 @@ namespace drawer_gate
 
       std::map<uint32_t, drawer_status> drawer_status_by_drawer_controller_id_;
 
+      bool drawer_is_beeing_accessed_; // this bool makes sure that only one drawer is accessed at any one time
+
       bool cleared_serial_buffer_from_old_can_msgs_; // flag, that is responsible for clearing the serial buffer from old CAN messages
 
       std::map<uint32_t, bool> drawer_to_be_refilled_by_drawer_controller_id_;

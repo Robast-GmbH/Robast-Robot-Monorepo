@@ -24,6 +24,8 @@ namespace drawer_gate
 
     this->setup_serial_can_ubs_converter();
     // this->serial_helper_.close_serial();
+
+    this->drawer_is_beeing_accessed_ = false;
   }
 
   //TODO: Dekonstruktor with this->serial_helper_.close_serial();
@@ -99,7 +101,11 @@ namespace drawer_gate
   void DrawerGate::drawer_refill_topic_callback(const std_msgs::msg::UInt8MultiArray & msg)
   {
     // How to publish test msg: ros2 topic pub /drawer_refill_status std_msgs/msg/UInt8MultiArray "{layout: {dim: [], data_offset: 0}, data: [1, 2, 3]}"
-  
+    if (drawer_is_beeing_accessed_)
+    {
+      RCLCPP_INFO(this->get_logger(), "There is currently a drawer beeing accessed so drawer refill status will be changed after drawer access is finished!"); // DEBUGGING
+      return;
+    }
 
     for (uint8_t i = 0; i < std::size(msg.data); i++)
     {
@@ -125,9 +131,9 @@ namespace drawer_gate
     // Check if there is one drawer_controller_id that isn't sent anymore, which means it has been refilled
 
     // Create a map iterator and point to beginning of map
-    std::map<uint32_t, bool>::iterator it = drawer_to_be_refilled_by_drawer_controller_id_.begin();
+    std::map<uint32_t, bool>::iterator it = this->drawer_to_be_refilled_by_drawer_controller_id_.begin();
     // Iterate over the map using c++11 range based for loop
-    for (std::pair<uint32_t, bool> element : drawer_to_be_refilled_by_drawer_controller_id_)
+    for (std::pair<uint32_t, bool> element : this->drawer_to_be_refilled_by_drawer_controller_id_)
     {   
       uint32_t drawer_controller_id = element.first; // Accessing KEY from element
       bool drawer_needs_to_be_refilled = element.second; // Accessing VALUE from element
@@ -540,6 +546,14 @@ namespace drawer_gate
   {
     RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
 
+    if (drawer_is_beeing_accessed_)
+    {
+      RCLCPP_INFO(this->get_logger(), "There is currently another drawer beeing accessed so accessing another drawer is denied!"); // DEBUGGING
+      return;
+    }
+
+    drawer_is_beeing_accessed_ = true;
+
     this->setup_serial_can_ubs_converter();
 
     // Starting timer to receive feedback from drawer controller until the process of opening a drawer is finished
@@ -562,6 +576,11 @@ namespace drawer_gate
     // this->serial_helper_.close_serial();
 
     goal_handle->succeed(result);
+
+    drawer_is_beeing_accessed_ = false;
+    //TODO: Wait a little bit to clear drawer_to_be_refilled_by_drawer_controller_id_ to give LEDs enough time to make suitable lightshow
+    this->drawer_to_be_refilled_by_drawer_controller_id_.clear(); // clear this mapping so it is again checked, if drawer still needs to be refilled
+
     RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
   }
 }  // namespace drawer_gate
