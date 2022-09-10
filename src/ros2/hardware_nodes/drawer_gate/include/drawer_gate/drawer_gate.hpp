@@ -21,11 +21,12 @@
 
 #include "communication_interfaces/action/drawer_user_access.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
+#include "std_msgs/msg/u_int8_multi_array.hpp"
 
 #include "drawer_gate/drawer_defines.h"
 #include "/workspace/libs/can/include/can_db.hpp"
 #include "/workspace/libs/can/include/can_helper.h"
-#include "include/serial_helper.h" //TODO: Fix that
+#include "/workspace/libs/serial_helper/include/serial_helper.h"
 
 using namespace std::chrono_literals;
 
@@ -68,28 +69,31 @@ namespace drawer_gate
 
     private:
       /* VARIABLES */
-      rclcpp_action::Server<DrawerUserAccess>::SharedPtr drawer_gate_server;
+      rclcpp_action::Server<DrawerUserAccess>::SharedPtr drawer_gate_server_;
       rclcpp::CallbackGroup::SharedPtr timer_cb_group_;
       rclcpp::TimerBase::SharedPtr timer_ptr_;
-      rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service;
+      rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service_;
+      rclcpp::Subscription<std_msgs::msg::UInt8MultiArray>::SharedPtr drawer_refill_subscription_;
 
-      serial_helper::SerialHelper serial_helper = serial_helper::SerialHelper("/dev/robast/robast_can");
+      serial_helper::SerialHelper serial_helper_ = serial_helper::SerialHelper("/dev/robast/robast_can");
 
-      robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
+      robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
 
-      std::condition_variable cv;
-      std::mutex drawer_status_mutex;
+      std::condition_variable cv_;
+      std::mutex drawer_status_mutex_;
 
-      std::map<uint32_t, drawer_status> drawer_status_by_drawer_controller_id;
+      std::map<uint32_t, drawer_status> drawer_status_by_drawer_controller_id_;
 
-      bool cleared_serial_buffer_from_old_can_msgs; // flag, that is responsible for clearing the serial buffer from old CAN messages
+      bool cleared_serial_buffer_from_old_can_msgs_; // flag, that is responsible for clearing the serial buffer from old CAN messages
+
+      std::map<uint32_t, bool> drawer_to_be_refilled_by_drawer_controller_id_;
 
       /* FUNCTIONS */
       void setup_serial_can_ubs_converter(void);
 
       robast_can_msgs::CanMessage create_can_msg_drawer_user_access(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters, uint8_t can_data_open_lock);
 
-      void send_can_msg(robast_can_msgs::CanMessage can_message, led_parameters led_parameters);
+      void send_can_msg(robast_can_msgs::CanMessage can_message);
 
       void set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface can_baudrate);
 
@@ -129,14 +133,19 @@ namespace drawer_gate
 
       void update_drawer_status(std::vector<robast_can_msgs::CanMessage> drawer_feedback_can_msgs);
 
-      void provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response);
-
       void state_machine_drawer_gate(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t state);
+
+      void send_drawer_refill_status(uint32_t drawer_controller_id, bool refill_drawer);
+
+      /**
+       * @brief Topic subscriber execution callback
+       */
+      void drawer_refill_topic_callback(const std_msgs::msg::UInt8MultiArray & msg);
 
       /**
        * @brief Service server execution callback
        */
-      void provide_shelf_setup_info(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response);
+      void provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response);
 
       /**
        * @brief Action server execution callback
