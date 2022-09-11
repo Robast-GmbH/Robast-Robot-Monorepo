@@ -46,9 +46,7 @@ RUN apt-get update && apt-get install -y \
   # Install ros distro testing packages
   python3-autopep8 \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-  ros-${ROS_DISTRO}-diagnostic-updater \
-  && rm -rf /var/lib/apt/lists/* \
-  && rosdep init || echo "rosdep already initialized"
+  ros-${ROS_DISTRO}-diagnostic-updater
   
 RUN apt-get update \
   #&& apt-get install -y sudo \
