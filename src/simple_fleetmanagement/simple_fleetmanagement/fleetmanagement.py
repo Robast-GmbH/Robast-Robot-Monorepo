@@ -44,14 +44,14 @@ class SimpleFleetmanagement(Node):
         self.initialize_ros_robot_status_communication()
 
         self.initialize_ros_robot_refill_status_subscription()
-        self.initialize_web_schnittstelle()
+        self.initialize_web_interface()
         self.setup_navigator()
-        # self.initialize_statemachine()
+        self.initialize_statemachine()
 
         self.setup_drawer_interaction()
         self.get_logger().info("The simple fleetmanagement is running")
         self.start_web_interface()
-        # self.start_statemachine()
+        self.start_statemachine()
 
     def setup_drawer_interaction(self):
         self.drawer_gate_action_client = ActionClient(self, DrawerUserAccess, "control_drawer")
@@ -73,7 +73,7 @@ class SimpleFleetmanagement(Node):
             self.set_robot_status_callback,
             10)
 
-    def initialize_web_schnittstelle(self):
+    def initialize_web_interface(self):
         functions_for_web = {
             "get_drawer_open_ros_function": self.get_drawer_open_ros_function,
             "publish_robot_status": self.publish_robot_status,
@@ -84,7 +84,7 @@ class SimpleFleetmanagement(Node):
 
     def start_web_interface(self):
         self._backend_polling_timer = self.create_timer(
-            self.backend_polling_intervall, self._webInterface.backend_polling())
+            self.backend_polling_intervall, self._webInterface.backend_polling)
 
     def initialize_statemachine(self):
         # self.navigation_trigger = self.create_timer(
@@ -106,16 +106,16 @@ class SimpleFleetmanagement(Node):
 
     def set_robot_status_callback(self, msg):
         # self.get_logger().info("Received robot status: {1}", str(msg.data))
-        if (msg.data == static_params.RobotStatus.is_homing):
+        if (static_params.RobotStatus(msg.data) == static_params.RobotStatus.is_homing):
             self.robot_status = static_params.RobotStatus.is_homing
             self.get_logger().info("Setting Robot status to homing!")
         else:
             if len(self.target_pose_by_waypoint_id) > 1:
-                if(msg.data == static_params.RobotStatus.is_running):
+                if(static_params.RobotStatus(msg.data) == static_params.RobotStatus.is_running):
                     self.robot_status = static_params.RobotStatus.is_running
                     self.get_logger().info("Activating the waypoint following. Number of current waypoints: " +
                                            str(len(self.target_pose_by_waypoint_id)))
-                elif (msg.data == static_params.RobotStatus.is_pausing):
+                elif (static_params.RobotStatus(msg.data) == static_params.RobotStatus.is_pausing):
                     self.robot_status = static_params.RobotStatus.is_pausing
                     self.get_logger().info("Deactivating the waypoint following. Number of current waypoints: " +
                                            str(len(self.target_pose_by_waypoint_id)))
@@ -125,7 +125,7 @@ class SimpleFleetmanagement(Node):
                                        str(len(self.target_pose_by_waypoint_id)))
 
     def handle_waypoint_follow_callback(self):
-        if (self.robot_status == static_params.RobotStatus.is_running):
+        if (static_params.RobotStatus(self.robot_status) == static_params.RobotStatus.is_running):
             if (self.navigator.isTaskComplete()):
                 self.state_machine()
         else:
