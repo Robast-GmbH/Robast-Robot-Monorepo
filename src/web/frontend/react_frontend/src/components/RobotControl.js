@@ -1,16 +1,19 @@
 import PropTypes from 'prop-types';
 import { useState, useEffect } from 'react';
 import SimpleMap from './SimpleMap';
-import MapPositions from './MapPositions';
-import ButtonPopUp from './ButtonPopup';
-import AddMapPosition from './AddMapPosition';
-import IconButton from '@mui/material/IconButton';
-import Button from '@mui/material/Button';
-import Stack from '@mui/material/Stack';
 
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import PauseIcon from '@mui/icons-material/Pause';
 import HomeIcon from '@mui/icons-material/Home';
+//import IconButton from '@mui/material/IconButton';
+
+import ButtonPopUp from './ButtonPopup';
+import AddMapPosition from './AddMapPosition';
+
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+
+import GoalSelector from './GoalSelector';
 
 const popupModal= (addMapPosition)=> {return ( 
 <div>
@@ -20,7 +23,7 @@ const popupModal= (addMapPosition)=> {return (
   ); }
   
 
-export default function RobotControl({mapPositions, sendGoal,  addMapPosition, robotStatusChange}) {
+export default function RobotControl({user, mapPositions, sendGoal,  addMapPosition, robotStatusChange}) {
   
   return (
             <div class = "RobotControl" >
@@ -51,15 +54,10 @@ export default function RobotControl({mapPositions, sendGoal,  addMapPosition, r
               </div>
 
               <SimpleMap/>
-              <Stack direction="row" spacing={1}>
-              {mapPositions.length > 0 ? (
-                <MapPositions mapPositions={mapPositions} sendGoal={sendGoal}/>
-              ):('')
-              }
-              </Stack>
-            <br></br>  
-            <ButtonPopUp name="AddPosition" caption="Neuer Punkt" popUp= {popupModal(addMapPosition)}/>
-             
+              {user.admin?(<GoalSelector mapPositions={mapPositions} sendGoal= {sendGoal}/>):("")}
+            
+              
+              {user.admin?(<ButtonPopUp name="AddPosition" caption="Neuer Punkt" popUp= {popupModal(addMapPosition)}/>):("")}
 
             </div>
           );

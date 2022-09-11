@@ -11,26 +11,11 @@ import DrawerControl from './components/DrawerControl.js'
 
 
 const backend_address = `http://localhost:8000`
-const user_id = 1;
 function App() {
-  //const [showAddOrder, setShowAddOrder] = useState(false)
-  //const [showOrder, setShowOrder] = useState(false)
-  //const [popupIsOpen, setPopupIsOpen] = useState(false)
-  //const [AddPositionIsOpen, setAddPositionIsOpen]=useState(false)
-  //const [orders, setOrders] = useState([])
+
   const [mapPositions, setMapPositions] = useState([])
   const [drawers, setDrawers]= useState([])
-
-
-  //const [OrderCoords, setOrderCoords] = useState({
-  //  Coords:{x:0, y:0, scale_x:0, scale_y:0}})
-
-  //const [User, setUser] = useState({
-  //    Metadata:{id:0, email: "", name:""}})
-
-  //const closeModal = () => setPopupIsOpen(false);
-  //const openModal = () => setPopupIsOpen(true);
-  //const closePositionPppUp= () => setShowOrder(false);
+  const [user, setUser] = useState({id: 0 , name: "Guest", admin: false})
 
 
    useEffect(() => {
@@ -48,15 +33,33 @@ function App() {
     updateDrawersFromDB()
     setInterval(() => { updateDrawersFromDB()},30000);
   }, [])
-  
-  
-  
-  // const fetchUser = async () => {
-  //   const res = await fetch(`${backend_address}/users/${user_id}`)
-  //   const data = await res.json()
 
-  //   return data;
-  // }
+  useEffect(() => {
+    const getUser = async () => {
+    const userFromServer = await fetchUser()
+    if (userFromServer!="")
+    {
+      setUser(userFromServer)
+    }
+   }
+    getUser()
+  }, [])
+  
+  
+  
+  const fetchUser = async () => {
+    const user_id= sessionStorage.getItem('token')
+    
+      const res = await fetch(`${backend_address}/users/${user_id}`)
+      const data = await res.json() 
+     
+      if(res.ok)
+        return data;
+      else
+         return ""
+  }
+ 
+
   const updateDrawersFromDB= async () => {
     const drawersFromServer =await fetchDrawers()
     //console.log({drawersFromServer})
@@ -98,18 +101,18 @@ function App() {
     return data;
   }
 
-  const renameDrawer = (drawer) => {
+  const renameDrawer = async (drawer) => {
     console.log(drawer)
-    // const res = await fetch(`${backend_address}/drawers/${drawer.drawer_controller_id}`, {
-    //   method: 'PUT',
-    //   headers: {
-    //     'Content-type': 'application/json'
-    //   },
-    //   body: JSON.stringify(drawer)
-    // })
-    // const data = await res.json()
-    // console.log(data)
-    // setDrawers(fetchDrawers())
+    const res = await fetch(`${backend_address}/drawers/${drawer.drawer_controller_id}`, {
+      method: 'PUT',
+      headers: {
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify(drawer)
+    })
+    const data = await res.json()
+    console.log(data)
+    setDrawers(fetchDrawers())
   }
   
 
@@ -166,9 +169,36 @@ const toggleEmpty= async (drawer) => {
   updateDrawersFromDB()
 }
 
+const userLogIn=async (user)=>{
+  console.log(user)
+  const res = await fetch(`${backend_address}/users/login`,{
+  method: 'POST',
+  headers: {
+    'Content-type': 'application/json'
+  },
+  body: JSON.stringify(user)
+})
+
+    const data = await res.json()
+    console.log(data)
+    if(data!= null){
+      sessionStorage.setItem('token',data.id );
+      setUser(data)
+      return true
+    }
+    return false
+  
+}
+
+const userLogOut= ()=>{
+  console.log("logout")
+  sessionStorage.removeItem('token');
+  window.parent.location.reload(false)
+}
+
 const tabData=[
-  { id:0, content:  <RobotControl mapPositions= {mapPositions} sendGoal={sendGoal} addMapPosition={addMapPosition} robotStatusChange= {changeStatus} /> , label: "Roboter Steuern"},
-  { id:1, content:  <DrawerControl drawers= {drawers} renameDrawer= {renameDrawer} openDrawer={openDrawer} getDrawers= {fetchDrawers} toggleEmpty={toggleEmpty} /> , label: "Schubladen Öffnen"}
+  { id:0, content:  <RobotControl  user={user} mapPositions= {mapPositions} sendGoal={sendGoal} addMapPosition={addMapPosition} robotStatusChange= {changeStatus} /> , label: "Roboter Steuern"},
+  { id:1, content:  <DrawerControl user={user} drawers= {drawers} renameDrawer= {renameDrawer} openDrawer={openDrawer} getDrawers= {fetchDrawers} toggleEmpty={toggleEmpty} /> , label: "Schubladen Öffnen"}
   ];
 
   return (
@@ -176,20 +206,18 @@ const tabData=[
     <Router>
       
       <div className='container' id="Map">
-        <Header />
-          
-       
-       
-        <Switch>
-
-        <Route path='/' exact render={(props) => (
-          <>
-             {<ControlSwitch Tablist= {tabData}/>}
-          </>
-        )} />
+        <div  id="main">
+          <Header user= {user} login= {userLogIn} logout={ userLogOut} />
+          <Switch>
+            <Route path='/' exact render={(props) => (
+              <>
+                {<ControlSwitch Tablist= {tabData}/>}
+              </>
+              )} />
         
-          <Route path='/about' component={About}></Route>
-        </Switch>
+            <Route path='/about' component={About}></Route>
+          </Switch>
+        </div>
         <Footer />
       </div>
     </Router>

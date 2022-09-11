@@ -185,11 +185,26 @@ body {
   float:right;
 
 }
+
 #AddPosition_executor{
   position:relative;
+  top:-33px;
   left: 6%;
-
 }
+
+#emptySelector {
+  display: block;
+  text-align: center;
+  width: 70%;
+  padding-bottom:2% ;
+} 
+
+
+
+.refillDrawers{
+  padding-left: 20%;
+}
+
 
 #popup-2 {
   padding: 10%;
@@ -266,8 +281,12 @@ body {
 }
 
 footer {
-  margin-top: 30px;
+  
+  margin-top: 6%;
   text-align: center;
+  width: 700px;
+  
+  
 }
 .popup-content {
   margin: auto;

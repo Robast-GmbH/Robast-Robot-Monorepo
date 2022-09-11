@@ -4,15 +4,14 @@ import PropTypes from 'prop-types'
 import ButtonGroup from '@mui/material/ButtonGroup';
 
 
-const Drawers = ({drawers, openDrawer,toggleEmpty}) => {
-console.log({drawers})
+const Drawers = ({drawers, user, openDrawer,toggleEmpty}) => {
   return (
     <>
     <div id="OpenDrawer"  aria-label="outlined primary button group" orientation="vertical">
     {drawers.map((drawer) => (
-        <Drawer drawer = {drawer} openDrawer = {openDrawer} toggleEmpty = {toggleEmpty} />
-    ))  
-    }
+        <Drawer key={drawer.id} drawer = {drawer} openDrawer = {openDrawer} toggleEmpty = {toggleEmpty} user={user} />
+    ))}
+    
     </div>
     </>
   )
@@ -20,7 +19,9 @@ console.log({drawers})
 
 Drawers.propTypes = {
     drawers: PropTypes.array,
+    user:PropTypes.object,
     openDrawer: PropTypes.func,
+    toggleEmpty: PropTypes.func,
 }
 
 

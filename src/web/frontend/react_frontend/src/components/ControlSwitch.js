@@ -44,11 +44,13 @@ function a11yProps(index) {
 }
 
 export default function ControlSwitch( {Tablist}) {
-  const [value, setValue] = React.useState(0);
+  const [value, setValue] = React.useState(sessionStorage.getItem('tap-value')==1?1:0);
   const [list, updateList] = Tablist;
+ 
   
   const handleChange = (event, newValue) => {
     setValue(newValue);
+    sessionStorage.setItem('tap-value', newValue)
   };
   
   return (
@@ -69,5 +71,6 @@ export default function ControlSwitch( {Tablist}) {
         
       </Box>
     </div>
+    
   );
 }

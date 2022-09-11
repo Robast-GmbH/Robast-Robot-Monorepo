@@ -2,15 +2,17 @@ import Button from './Button'
 import { useLocation } from 'react-router-dom'
 import DisplayAnImage from './DisplayAnImage';
 import Logo from '../imgs/Logo.png';
+import UserSwitch from './UserSwitch';
 
 
-const Header = ({ onAdd, showAdd, labelOpen, labelClose }) => {
+const Header = ({user, login, logout}) => {
 
         const location = useLocation()
         return (
                 <header className='header'>
                         
                         <DisplayAnImage logo={Logo}></DisplayAnImage>
+                        < UserSwitch user = {user} login={login} logout={logout} />
                         
                 </header>
         )

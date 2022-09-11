@@ -24,12 +24,14 @@ const RenameDrawer = ({ renameDrawer, drawers }) => {
                 renameDrawer(newDrawer)
                 setselectedDrawerID(0)
                 setNewName("")
+                sessionStorage.setItem('tap-value', 1);
                 window.parent.location.reload(false)
         }
-        console.log(drawers)
+        
         const options = [ ] 
-              options.forEach((drawer)=>{
-                options.push({value: drawer.id, label: drawer.content + " ( Schublade " + drawer.drawer_controller_id + " )" }) 
+              drawers.forEach((drawer)=>{
+                
+                options.push({value: drawer.id, label: drawer.drawer_controller_id + " (" + drawer.content + " )" }) 
             })
               
               
@@ -40,17 +42,17 @@ const RenameDrawer = ({ renameDrawer, drawers }) => {
                         <Select options={options} onChange= {(event) => { setselectedDrawerID(event.value)}}/>
                         
                         </div>
-                        <div className='form-control'>
+                       {/*<div className='form-control'>
                                 <label>Alter Name</label>
                                 { selected_drawer_id>0? 
                                         (<label>{drawers.find(d=>d.id===selected_drawer_id).content} </label>):("")
                                 }                                
                                 
-                        </div>
+                        </div>*/}
 
                         <div className='form-control'>
-                                <label>Neuer Name</label>
-                                <input type='newTitle' placeholder='Bier'
+                                <label> Füllung</label>
+                                <input type='newTitle' placeholder= {selected_drawer_id>0? ( drawers.find(d=>d.id===selected_drawer_id).content ):("")}
                                         value={new_name} onChange={(e) => setNewName(e.target.value)} />
                         </div>
 

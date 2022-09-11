@@ -9,9 +9,9 @@ const MapPositions = ({mapPositions, sendGoal}) => {
   
   return (
     <div id="mapPositions">
-      {mapPositions.map((mapPositions) => (
+      {mapPositions.map((mapPosition) => (
         
-        <MapPosition mapPosition={mapPositions} sendGoal={sendGoal} />
+        <MapPosition key={mapPosition.id}  mapPosition={mapPosition} sendGoal={sendGoal} />
         ))}
     </div>
     

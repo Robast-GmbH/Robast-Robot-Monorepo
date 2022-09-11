@@ -33,5 +33,5 @@ export default function ButtonPopUp({name, caption,  popUp }) {
 }ButtonPopUp.propTypes = {
   name: PropTypes.string,
   caption: PropTypes.string,
-  popUp: PropTypes.func,
+  popUp: PropTypes.object,
 }
