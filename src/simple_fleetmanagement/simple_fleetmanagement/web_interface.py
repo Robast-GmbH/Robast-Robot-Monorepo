@@ -36,7 +36,7 @@ class WebInterface:
                 try:
                     self.functions["get_drawer_open_ros_function"](goal_msg)
                 except:
-                    print("get_drawer_open_ros_function im web interface down")
+                    print("get_drawer_open_ros_function im web interface failed")
                 response = requests.delete(api_url)
                 if(response.status_code == 200):
                     get_logger().info(
@@ -55,7 +55,7 @@ class WebInterface:
             try:
                 self.functions["publish_robot_status"](robot_status)
             except:
-                print("publish_robot_status im web interface down")
+                print("publish_robot_status im web interface failed")
 
     def get_drawer_refilling_status(self):
         response = web_module.getDataFromServer(self.base_url + "/drawer/empty")
@@ -66,16 +66,16 @@ class WebInterface:
             try:
                 self.functions["publish_drawer_refill_status"](drawer_controller_ids_to_be_refilled)
             except:
-                print("publish_drawer_refill_status im web interface down")
+                print("publish_drawer_refill_status im web interface failed")
 
     def set_navigator_waypoints_from_backend(self):
         response = web_module.getDataFromServer(self.base_url + "/map_positions")
         if(response != None):
             for waypoint in response.json():
                 try:
-                    self.functions["set_waypoint"](waypoint["id"], waypoint["x"], waypoint["y"], waypoint["t"])
+                    self.functions["add_waypoint"](waypoint["id"], waypoint["x"], waypoint["y"], waypoint["t"])
                 except:
-                    print("set_waypoint im web interface down")
+                    print("add_waypoint im web interface failed" + str(waypoint))
 
     def backend_polling(self):
         self.get_robot_status()

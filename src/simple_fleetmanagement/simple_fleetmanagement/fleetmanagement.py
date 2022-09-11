@@ -1,4 +1,6 @@
+import asyncio
 from pickletools import uint8
+import queue
 from xmlrpc.client import Boolean
 import rclpy
 import requests
@@ -36,6 +38,8 @@ class SimpleFleetmanagement(Node):
         self.navigation_update_interval = 0.5  # seconds
         self.goal_reach_epsilon = 0.4  # meter
         self.error_reset_time = 20  # seconds
+        self.check_state_intervall = 0.5
+        self.execute_state_intervall = 2
 
         self.order_queue = []
         self.waypoint_queue = []
@@ -78,7 +82,7 @@ class SimpleFleetmanagement(Node):
             "get_drawer_open_ros_function": self.get_drawer_open_ros_function,
             "publish_robot_status": self.publish_robot_status,
             "publish_drawer_refill_status": self.publish_drawer_refill_status,
-            "set_waypoint": self.set_waypoint
+            "add_waypoint": self.add_waypoint
         }
         self._webInterface = web_interface.WebInterface("http://localhost:8000", functions_for_web)
 
@@ -97,35 +101,38 @@ class SimpleFleetmanagement(Node):
             "navigator_cancel_task": self.navigator_cancel_task,
             "get_waypoints_by_id": self.get_waypoints_by_id,
             "navigate_to_pose": self.navigate_to_pose,
-            "open_drawer": self.open_drawer
+            "open_drawer": self.open_drawer,
+            "check_navigator_status": self.check_navigator_status,
+            "is_navigator_Task_complete": self.is_navigator_Task_complete
         }
         self.HH_state_machine = HH_Nav_Statemachine.HHStateMachine(functions_by_functionname=functions_fo_statemachine)
 
     def start_statemachine(self):
-        self.HH_state_machine.start()
+        self.run_state_timer = self.create_timer(self.execute_state_intervall, self.HH_state_machine.run_state)
+        self.check_state_timer = self.create_timer(self.check_state_intervall, self.HH_state_machine.check_state)
 
     def set_robot_status_callback(self, msg):
         # self.get_logger().info("Received robot status: {1}", str(msg.data))
-        if (static_params.RobotStatus(msg.data) == static_params.RobotStatus.is_homing):
-            self.robot_status = static_params.RobotStatus.is_homing
+        if (static_params.RobotStates(msg.data) == static_params.RobotStates.HOMING):
+            self.robot_status = static_params.RobotStates.HOMING
             self.get_logger().info("Setting Robot status to homing!")
         else:
             if len(self.target_pose_by_waypoint_id) > 1:
-                if(static_params.RobotStatus(msg.data) == static_params.RobotStatus.is_running):
-                    self.robot_status = static_params.RobotStatus.is_running
+                if(static_params.RobotStates(msg.data) == static_params.RobotStates.RUNNING):
+                    self.robot_status = static_params.RobotStates.RUNNING
                     self.get_logger().info("Activating the waypoint following. Number of current waypoints: " +
                                            str(len(self.target_pose_by_waypoint_id)))
-                elif (static_params.RobotStatus(msg.data) == static_params.RobotStatus.is_pausing):
-                    self.robot_status = static_params.RobotStatus.is_pausing
+                elif (static_params.RobotStates(msg.data) == static_params.RobotStates.PAUSE):
+                    self.robot_status = static_params.RobotStates.PAUSE
                     self.get_logger().info("Deactivating the waypoint following. Number of current waypoints: " +
                                            str(len(self.target_pose_by_waypoint_id)))
             else:
-                self.robot_status = static_params.RobotStatus.is_pausing
+                self.robot_status = static_params.RobotStates.PAUSE
                 self.get_logger().info("Deactivating the waypoint following because the number of current waypoints is below 1. Number of current waypoints: " +
                                        str(len(self.target_pose_by_waypoint_id)))
 
     def handle_waypoint_follow_callback(self):
-        if (static_params.RobotStatus(self.robot_status) == static_params.RobotStatus.is_running):
+        if (static_params.RobotStates(self.robot_status) == static_params.RobotStates.RUNNING):
             if (self.navigator.isTaskComplete()):
                 self.state_machine()
         else:
@@ -144,18 +151,24 @@ class SimpleFleetmanagement(Node):
         self._webInterface.set_navigator_waypoints_from_backend()
 
         # Waypoint following needs to be activated via the corresponding topic
-        self.robot_status = static_params.RobotStatus.is_pausing
+        self.robot_status = static_params.RobotStates.PAUSE
 
         self.waypoint_following_is_activated = True
 
-    def navigate_to_pose(self, waypoint_id):
-        self.navigator.goToPose(self.target_pose_by_waypoint_id[waypoint_id])
+    def navigate_to_pose(self, waypoint_id: int):
+        try:
+            self.navigator.goToPose(self.target_pose_by_waypoint_id[int(waypoint_id)])
+        except:
+            self.get_logger().warn("goToPose failed at waypoint:"+str(waypoint_id))
 
     def navigator_cancel_task(self):
         self.navigator.cancelTask()
 
     def check_navigator_status(self):
         return self.navigator.getResult()
+
+    def is_navigator_Task_complete(self):
+        return self.navigator.isTaskComplete()
 
     def open_drawer(self, number):
         pass
@@ -187,9 +200,9 @@ class SimpleFleetmanagement(Node):
         initial_pose = self.create_pose(initial_pose_x, initial_pose_y, initial_pose_yaw)
         self.navigator.setInitialPose(initial_pose)
 
-    def set_waypoint(self, waypoint_id, waypoint_pose_x, waypoint_pose_y, waypoint_pose_yaw):
+    def add_waypoint(self, waypoint_id: int, waypoint_pose_x, waypoint_pose_y, waypoint_pose_yaw):
         goal_pose = self.create_pose(waypoint_pose_x, waypoint_pose_y, waypoint_pose_yaw)
-        self.target_pose_by_waypoint_id[waypoint_id] = goal_pose
+        self.target_pose_by_waypoint_id.update({waypoint_id: goal_pose})
         self.get_logger().info(
             'New waypoint with waypoint_id {0}, x = {1}, y = {2}, yaw = {3} was added to target waypoints!'.format(waypoint_id, waypoint_pose_x, waypoint_pose_y, waypoint_pose_yaw))
 

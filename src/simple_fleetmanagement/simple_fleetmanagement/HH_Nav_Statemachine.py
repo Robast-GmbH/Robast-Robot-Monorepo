@@ -5,7 +5,8 @@ from .parameters_module import RobotStates, HOME_WAYPOINT_ID
 from typing import Dict
 from . import generic_state_machine
 from asyncio import threads
-from threading import Thread
+from time import sleep
+from threading import Thread, Timer
 
 
 class HHStateMachine:
@@ -13,6 +14,7 @@ class HHStateMachine:
         self.functions_by_functionname = functions_by_functionname
         self.check_status_function = functions_by_functionname["check_status"]
         self.current_waypoint = HOME_WAYPOINT_ID
+        self.active = False
         self.stateFunction_by_state = {
             RobotStates.PAUSE: self.statePause,
             RobotStates.RUNNING: self.stateRunning,
@@ -47,35 +49,20 @@ class HHStateMachine:
         self.state_machine = generic_state_machine.generic_state_machine(
             self.stateFunction_by_state,
             self.changeStateCondition_by_newState_by_OldState,
-            self.changeStateFunction_by_newState_by_OldState)
-        self._thread_changeState = Thread(target=self.between_callback_changeState)
-        self._thread_running = Thread(target=self.between_callback_running)
+            self.changeStateFunction_by_newState_by_OldState,
+            self.check_status_function())
 
         # threads für die beiden funktionen initialisieren
 
-    def start(self):
-        self._thread_changeState.start()
-        self._thread_running.start()
+    def run(self):
+        self.state_machine.changeState()
+        self.state_machine.runState()
 
-    async def some_callback_changeState(self):
-        await self.state_machine.changeState()
+    def check_state(self):
+        self.state_machine.changeState()
 
-    def between_callback_changeState(self):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-        loop.run_until_complete(self.some_callback_changeState())
-        loop.close()
-
-    async def some_callback_running(self):
-        await self.state_machine.running()
-
-    def between_callback_running(self):
-        loop = asyncio.new_event_loop()
-        asyncio.set_event_loop(loop)
-
-        loop.run_until_complete(self.some_callback_running())
-        loop.close()
+    def run_state(self):
+        self.state_machine.runState()
 
     def checkCondition_running_to_pause(self) -> Boolean:
         return self.check_status_function() == RobotStates.PAUSE
@@ -100,6 +87,7 @@ class HHStateMachine:
 
     def changeState_running_to_pause(self):
         self.functions_by_functionname["navigator_cancel_task"]()
+        self.active = False
 
     def changeState_pause_to_drawer_open(self):
         pass
@@ -108,32 +96,34 @@ class HHStateMachine:
         pass
 
     def changeState_pause_to_running(self):
-        # loop über navgoals senden starten
         pass
 
     def changeState_drawer_open_to_pause(self):
-        # nix. warten
         pass
 
     def changeState_homing_to_pause(self):
         self.functions_by_functionname["navigator_cancel_task"]()
+        self.active = False
 
     def stateRunning(self):
-        waypoints_by_id = self.functions_by_functionname["get_waypoints_by_id"]()
-        current_waypoint = self.current_waypoint
-        for waypoint_id in range(current_waypoint, waypoints_by_id):
-            self.current_waypoint = waypoint_id
-            self.functions_by_functionname["navigate_to_pose"](waypoints_by_id[waypoint_id])
-        self.current_waypoint = HOME_WAYPOINT_ID
+        if self.active == True or self.check_status_function() != RobotStates.RUNNING:
+            return
+        elif(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
+            self.active = True
+            self.functions_by_functionname["navigate_to_pose"](self.current_waypoint)
+            if((self.current_waypoint) < len(self.functions_by_functionname["get_waypoints_by_id"]())):
+                self.current_waypoint += 1
+            else:
+                self.current_waypoint = 1
+            self.active = False
 
     def statePause(self):
         # nix machen evtl sicherheitshalber hier immer cancel task für nav machen
-        pass
+        self.functions_by_functionname["navigator_cancel_task"]()
 
     def stateDrawerOpen(self, drawer_id):
         if not self.functions_by_functionname["is_any_drawer_open"]():
             self.functions_by_functionname["open_drawer"](drawer_id)
-        pass
 
     def stateHoming(self):
         self.functions_by_functionname["navigate_to_pose"](HOME_WAYPOINT_ID)
