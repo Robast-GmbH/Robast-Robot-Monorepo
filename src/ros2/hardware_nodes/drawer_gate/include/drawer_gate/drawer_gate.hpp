@@ -13,6 +13,7 @@
 #include <mutex>
 #include <condition_variable>
 #include <map>
+#include <queue>
 // Linux headers for serial communication
 #include <fcntl.h> // Contains file controls like O_RDWR
 #include <errno.h> // Error integer and strerror() function
@@ -74,6 +75,7 @@ namespace drawer_gate
       rclcpp::TimerBase::SharedPtr timer_ptr_;
       rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service_;
       rclcpp::Subscription<std_msgs::msg::UInt8MultiArray>::SharedPtr drawer_refill_subscription_;
+      rclcpp::TimerBase::SharedPtr send_ascii_cmds_timer_;
 
       serial_helper::SerialHelper serial_helper_ = serial_helper::SerialHelper("/dev/robast/robast_can");
 
@@ -85,6 +87,8 @@ namespace drawer_gate
       std::map<uint32_t, drawer_status> drawer_status_by_drawer_controller_id_;
 
       bool drawer_is_beeing_accessed_; // this bool makes sure that only one drawer is accessed at any one time
+
+      queue <string> ascii_cmd_queue_; // queue that contains all ascii commands to be sent to the usb serial can adapter to make sure there is enough time between each ascii command, otherwise some commands might get lost
 
       bool cleared_serial_buffer_from_old_can_msgs_; // flag, that is responsible for clearing the serial buffer from old CAN messages
 
@@ -130,6 +134,8 @@ namespace drawer_gate
       void accepted_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
 
       void timer_callback(void);
+
+      void send_ascii_cmds_timer_callback(void);
       
       void update_drawer_status_from_can(void);
 

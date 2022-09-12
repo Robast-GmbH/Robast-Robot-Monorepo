@@ -22,6 +22,9 @@ namespace drawer_gate
     this->drawer_refill_subscription_ = this->create_subscription<std_msgs::msg::UInt8MultiArray>(
       "drawer_refill_status", 10, std::bind(&DrawerGate::drawer_refill_topic_callback, this, std::placeholders::_1));
 
+    // Some tests show that a timer period of 3 ms is to fast and asci cmds get lost at this speed, with 4 ms it worked, so use 5ms with safety margin
+    this->send_ascii_cmds_timer_ = this->create_wall_timer(5ms, std::bind(&DrawerGate::send_ascii_cmds_timer_callback, this));
+
     this->setup_serial_can_ubs_converter();
     // this->serial_helper_.close_serial();
 
@@ -73,6 +76,25 @@ namespace drawer_gate
     cv_.notify_one(); // Notify the waiting thread in the open_drawer function to check if condition is now satisfied 
   }
 
+
+  // This timer callback makes sure there is enough time between each ascii command, otherwise some commands might get lost
+  void DrawerGate::send_ascii_cmds_timer_callback(void)
+  {
+    if (this->ascii_cmd_queue_.empty())
+    {
+      return;
+    }
+    else
+    {
+      std::string send_ascii_cmd_result = this->serial_helper_.send_ascii_cmd(this->ascii_cmd_queue_.front());
+      if (send_ascii_cmd_result.size() > 0)
+      {
+        RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
+      }
+      this->ascii_cmd_queue_.pop(); //remove first element of the queue
+    }
+  }
+
   void DrawerGate::timer_callback(void)
   {
     this->update_drawer_status_from_can();
@@ -85,7 +107,7 @@ namespace drawer_gate
 
     //RCLCPP_INFO(this->get_logger(), "Serial read: %s", serial_read_ascii_command.c_str()); //DEBUGGING
 
-    std::vector<robast_can_msgs::CanMessage> received_can_msgs = robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, can_db_.can_messages);
+    std::vector<robast_can_msgs::CanMessage> received_can_msgs = robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, this->can_db_.can_messages);
 
     if (cleared_serial_buffer_from_old_can_msgs_) 
     {
@@ -158,7 +180,7 @@ namespace drawer_gate
     {
       led_parameters.led_red = 0;
       led_parameters.led_blue = 255;
-      led_parameters.led_green = 150;
+      led_parameters.led_green = 50;
       led_parameters.brightness = 150;
       led_parameters.mode = 3;
       RCLCPP_INFO(this->get_logger(), "Drawer with drawer controller id %i needs to be refilled! Sending CAN message!", drawer_controller_id);
@@ -167,7 +189,7 @@ namespace drawer_gate
     {
       led_parameters.led_red = 0;
       led_parameters.led_blue = 255;
-      led_parameters.led_green = 150;
+      led_parameters.led_green = 50;
       led_parameters.brightness = 150;
       led_parameters.mode = 2;
       RCLCPP_INFO(this->get_logger(), "Drawer with drawer controller id %i was refilled! Sending CAN message!", drawer_controller_id);
@@ -244,7 +266,7 @@ namespace drawer_gate
 
   robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_user_access(uint32_t drawer_controller_id, uint8_t drawer_id, led_parameters led_parameters, uint8_t can_data_open_lock)
   {
-    robast_can_msgs::CanMessage can_msg_drawer_user_access = can_db_.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
+    robast_can_msgs::CanMessage can_msg_drawer_user_access = this->can_db_.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
 
     can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = drawer_controller_id;
 
@@ -308,51 +330,31 @@ namespace drawer_gate
         break;
     }
 
-    std::string send_ascii_cmd_result = this->serial_helper_.send_ascii_cmd(msg);
-    if (send_ascii_cmd_result.size() > 0)
-    {
-      RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
-    }
+    this->ascii_cmd_queue_.push(msg);
   }
 
   void DrawerGate::open_can_channel(void)
   {
-    std::string send_ascii_cmd_result = this->serial_helper_.send_ascii_cmd("O");
-    if (send_ascii_cmd_result.size() > 0)
-    {
-      RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
-    }
+    this->ascii_cmd_queue_.push("O");
   }
 
   void DrawerGate::open_can_channel_listen_only_mode(void)
   {
-    std::string send_ascii_cmd_result = this->serial_helper_.send_ascii_cmd("L");
-    if (send_ascii_cmd_result.size() > 0)
-    {
-      RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
-    }
+    this->ascii_cmd_queue_.push("L");
   }
 
   void DrawerGate::close_can_channel(void)
   {
-    std::string send_ascii_cmd_result = this->serial_helper_.send_ascii_cmd("C");
-    if (send_ascii_cmd_result.size() > 0)
-    {
-      RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
-    }
+    this->ascii_cmd_queue_.push("C");
   }
   
   void DrawerGate::send_can_msg(robast_can_msgs::CanMessage can_message)
   {
-    std::optional<std::string> ascii_cmd = robast_can_msgs::encode_can_message_into_ascii_command(can_message, can_db_.can_messages);
+    std::optional<std::string> ascii_cmd = robast_can_msgs::encode_can_message_into_ascii_command(can_message, this->can_db_.can_messages);
     
     if (ascii_cmd.has_value())
     {
-      std::string send_ascii_cmd_result = this->serial_helper_.send_ascii_cmd(ascii_cmd.value());
-      if (send_ascii_cmd_result.size() > 0)
-      {
-        RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
-      }
+      this->ascii_cmd_queue_.push(ascii_cmd.value());
     }
     else
     {
