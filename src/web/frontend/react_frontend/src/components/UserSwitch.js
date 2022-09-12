@@ -65,11 +65,9 @@ const UserSwitch = ({user, login, logout}) => {
     const token = sessionStorage.getItem('token')
     user.name="test"
     return (
-            <div class= "login">
-                    {user.id == 0 ?(loginDisplay({login})):(userDisplay({user, logout} ))}
-            </div>
-
-            
+      <>
+        {user.id == 0 ?(loginDisplay({login})):(userDisplay({user, logout} ))}
+      </>
     )
 }
 

@@ -7,12 +7,9 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 const Drawers = ({drawers, user, openDrawer,toggleEmpty}) => {
   return (
     <>
-    <div id="OpenDrawer"  aria-label="outlined primary button group" orientation="vertical">
-    {drawers.map((drawer) => (
-        <Drawer key={drawer.id} drawer = {drawer} openDrawer = {openDrawer} toggleEmpty = {toggleEmpty} user={user} />
-    ))}
-    
-    </div>
+      {drawers.map((drawer) => (
+          <Drawer key={drawer.id} drawer = {drawer} openDrawer = {openDrawer} toggleEmpty = {toggleEmpty} user={user} />
+      ))}
     </>
   )
 }

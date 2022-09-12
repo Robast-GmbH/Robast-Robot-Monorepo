@@ -16,19 +16,16 @@ export default function ButtonPopUp({name, caption,  popUp }) {
   const openModal = () => setPopupIsOpen(true);
   
   return (
-            <div id= {name}>
-             
-              
+            <>
               <Button id={name+"_executor"} class="NiceButton" variant="contained" onClick={openModal} >{caption}</Button>
-              
-              <Popup open={popupIsOpen} closeOnDocumentClick onClose={closeModal}>
-              <>
-              {popUp}
             
-              </>
-            </Popup>
-
-            </div>
+              <Popup open={popupIsOpen} closeOnDocumentClick onClose={closeModal}>
+                <>
+                {popUp}
+              
+                </>
+              </Popup>
+            </>
           );
 }ButtonPopUp.propTypes = {
   name: PropTypes.string,

@@ -15,10 +15,10 @@ const Drawer = ({ drawer, user, openDrawer, toggleEmpty} ) => {
         <Button class=" DrawerSelector" id={drawer.id} onClick={(event)=>{openDrawer(drawer)}}> 
           {drawer.content} 
         </Button>
-        <IconButton id="empty_button" color={drawer.empty?"error": "primary"} aria-label="toggel empty state" onClick={user.admin? (event)=>{toggleEmpty(drawer)}:()=>{}}>
-        {drawer.empty? <NoDrinksIcon/> : user.admin?<LocalBarIcon/>:""}
+
+        <IconButton color={drawer.empty ? "error" : "primary"} aria-label="toggle empty state" onClick={user.admin? (event)=>{toggleEmpty(drawer)}:()=>{}}>
+          {drawer.empty? <NoDrinksIcon/> : <LocalBarIcon/>}
         </IconButton>
-     
     </div>
   )
 }

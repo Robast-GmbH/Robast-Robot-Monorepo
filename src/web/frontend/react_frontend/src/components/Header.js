@@ -12,7 +12,7 @@ const Header = ({user, login, logout}) => {
                 <header className='header'>
                         
                         <DisplayAnImage logo={Logo}></DisplayAnImage>
-                        < UserSwitch user = {user} login={login} logout={logout} />
+                        <UserSwitch user = {user} login={login} logout={logout} />
                         
                 </header>
         )

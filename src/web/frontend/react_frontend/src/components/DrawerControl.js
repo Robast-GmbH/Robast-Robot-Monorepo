@@ -7,7 +7,7 @@ import Drawers from './Drawers';
 import RobastRobotFront from './RobastRobotFront'
 import ButtonPopUp from './ButtonPopup';
 import RenameDrawer from './RenameDrawer';
-import RefillDrawers from './RefillDrawers'
+import RefillDrawers from './RefillDrawers';
 
 
 
@@ -34,17 +34,25 @@ const popUpModalRefill= ( toggleEmpty, drawers )=>
 const DrawerControl= ({drawers, user, openDrawer, renameDrawer, toggleEmpty})=> {
  
   return (
-    <div className='drawer_page'> 
-      <Drawers drawers={drawers} openDrawer={openDrawer} toggleEmpty= {toggleEmpty} user= {user}/>
-      <div>
-        <RobastRobotFront/>   
-        <Stack direction="row" spacing={2} id="drawer_controlls">
-          {console.log(user)}
-          {user.admin? <ButtonPopUp name="rename_drawer" caption="Umbennen" popUp={popUpModalRename(renameDrawer, drawers)} />:""}
-          <ButtonPopUp name="refill_drawer" caption="Bearbeiten" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
+    <>
+      <Stack direction="row">
+        { /** Bild */}
+        <Stack>
+          <RobastRobotFront/>  
+
+          <Stack direction="row" spacing={2} id="drawer_controlls">
+            {console.log(user)}
+            {user.admin? <ButtonPopUp name="rename_drawer" caption="Umbennen" popUp={popUpModalRename(renameDrawer, drawers)} />:""}
+            <ButtonPopUp name="refill_drawer" caption="Bearbeiten" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
+          </Stack>
         </Stack>
-      </div>
-    </div>
+
+        { /** Drawer */}
+        <Stack id="drawer_list">
+          <Drawers drawers={drawers} openDrawer={openDrawer} toggleEmpty= {toggleEmpty} user= {user}/>
+        </Stack>
+      </Stack>
+    </>
     
   )
 }
