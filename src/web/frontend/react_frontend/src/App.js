@@ -48,16 +48,20 @@ function App() {
   
   
   const fetchUser = async () => {
-    const user_id= sessionStorage.getItem('token')
     
-      const res = await fetch(`${backend_address}/users/${user_id}`)
-      const data = await res.json() 
-     
-      if(res.ok)
-        return data;
-      else
-         return ""
+    const user_id= sessionStorage.getItem('token')
+    if(user_id=="undefined")
+    {
+      return ""
+    }
+    const res = await fetch(`${backend_address}/users/${user_id}`)
+    const data = await res.json()  
+    if(res.ok)
+      return data;
+    else
+      return ""
   }
+
  
 
   const updateDrawersFromDB= async () => {
@@ -182,6 +186,7 @@ const userLogIn=async (user)=>{
     const data = await res.json()
     console.log(data)
     if(data!= null){
+      console.log(data)
       sessionStorage.setItem('token',data.id );
       setUser(data)
       return true

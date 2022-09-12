@@ -1,6 +1,8 @@
 import * as React from 'react';
 import PropTypes from 'prop-types'
 
+import Stack from '@mui/material/Stack';
+
 import Drawers from './Drawers';
 import RobastRobotFront from './RobastRobotFront'
 import ButtonPopUp from './ButtonPopup';
@@ -23,7 +25,7 @@ const popUpModalRefill= ( toggleEmpty, drawers )=>
 {
   return(
     <div>
-        <h1>Edit Drawer</h1>
+        <h1>Füllstand ändern</h1>
         {<RefillDrawers drawers= {drawers} toggleEmpty={toggleEmpty} />}
     </div>
   );
@@ -32,14 +34,16 @@ const popUpModalRefill= ( toggleEmpty, drawers )=>
 const DrawerControl= ({drawers, user, openDrawer, renameDrawer, toggleEmpty})=> {
  
   return (
-    <div>
-      <RobastRobotFront/>
+    <div className='drawer_page'> 
       <Drawers drawers={drawers} openDrawer={openDrawer} toggleEmpty= {toggleEmpty} user= {user}/>
-      
-       <ButtonPopUp name="rename_drawer" caption="Umbennen" popUp={popUpModalRename(renameDrawer, drawers)} />
-      <ButtonPopUp name="refill_drawer" caption="Refill" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
-
-      
+      <div>
+        <RobastRobotFront/>   
+        <Stack direction="row" spacing={2} id="drawer_controlls">
+          {console.log(user)}
+          {user.admin? <ButtonPopUp name="rename_drawer" caption="Umbennen" popUp={popUpModalRename(renameDrawer, drawers)} />:""}
+          <ButtonPopUp name="refill_drawer" caption="Bearbeiten" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
+        </Stack>
+      </div>
     </div>
     
   )

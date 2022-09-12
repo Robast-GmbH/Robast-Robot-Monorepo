@@ -52,14 +52,6 @@ body {
   
 }
 
-#RobastRobotFront img {
-  position:relative;
-  width: 25%;
-  left: 0;
-  top: -23px;
-  z-index: 10;
-  float:left
-}
 
 .ControlPanel{
   display: flex;
@@ -199,12 +191,33 @@ body {
   padding-bottom:2% ;
 } 
 
+#RobastRobotFront img {
+  position:relative;
+  width: 24%;
+  left: 0;
+  
+  z-index: 10;
+  float:left;
+}
 
+#drawer_controlls{
+
+  position:relative;
+  float: left;  
+  width: 10%;
+  left: -10px;;
+
+}
 
 .refillDrawers{
   padding-left: 20%;
 }
-
+#drawer_page{
+  position: relative;
+  height: 100px;
+  width: 200%;
+  background-color: #41b9d6;
+}
 
 #popup-2 {
   padding: 10%;
@@ -281,12 +294,9 @@ body {
 }
 
 footer {
-  
-  margin-top: 6%;
+  position: relative;
   text-align: center;
-  width: 700px;
-  
-  
+  z-index: -10;
 }
 .popup-content {
   margin: auto;
