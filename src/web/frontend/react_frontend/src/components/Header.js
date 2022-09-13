@@ -11,7 +11,7 @@ const Header = ({user, login, logout}) => {
         return (
                 <header className='header'>
                         
-                        <DisplayAnImage logo={Logo}></DisplayAnImage>
+                        <DisplayAnImage logo={Logo} ></DisplayAnImage>
                         <UserManagement user = {user} login={login} logout={logout} />
                         
                 </header>

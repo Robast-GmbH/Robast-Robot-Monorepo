@@ -7,17 +7,18 @@ import React from 'react'
 import ControlSwitch from './components/ControlSwitch.js'
 import RobotControl from './components/RobotControl.js'
 import DrawerControl from './components/DrawerControl.js'
+import Stack from '@mui/material/Stack';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-
-
-const backend_address = `http://localhost:8000`
+const backend_address = ``
 function App() {
 
   const [mapPositions, setMapPositions] = useState([])
   const [drawers, setDrawers]= useState([])
   const [user, setUser] = useState({id: 0 , name: "Guest", admin: false})
 
-
+/*
    useEffect(() => {
      const getMapPositions = async () => {
       const mapPositionsFromServer = await fetchMapPositions()
@@ -27,13 +28,13 @@ function App() {
 
      getMapPositions()
    }, [])
-
+*/
    useEffect(() => {
     
     updateDrawersFromDB()
     setInterval(() => { updateDrawersFromDB()},30000);
   }, [])
-
+/*
   useEffect(() => {
     const getUser = async () => {
     const userFromServer = await fetchUser()
@@ -46,7 +47,7 @@ function App() {
   }, [])
   
   
-  
+  */
   const fetchUser = async () => {
     
     const user_id= sessionStorage.getItem('token')
@@ -200,18 +201,19 @@ const userLogOut= ()=>{
   sessionStorage.removeItem('token');
   window.parent.location.reload(false)
 }
-
+const theme = useTheme();
+const matches = useMediaQuery(theme.breakpoints.up('sm'));
 const tabData=[
-  { id:0, content:  <RobotControl  user={user} mapPositions= {mapPositions} sendGoal={sendGoal} addMapPosition={addMapPosition} robotStatusChange= {changeStatus} /> , label: "Roboter Steuern"},
-  { id:1, content:  <DrawerControl user={user} drawers= {drawers} renameDrawer= {renameDrawer} openDrawer={openDrawer} getDrawers= {fetchDrawers} toggleEmpty={toggleEmpty} /> , label: "Schubladen Öffnen"}
+  { id:0, content:  <RobotControl  user={user} mapPositions= {mapPositions} sendGoal={sendGoal} addMapPosition={addMapPosition} robotStatusChange= {changeStatus} /> , label: (matches?"Roboter steuern": "Steuern") },
+  { id:1, content:  <DrawerControl user={user} drawers= {drawers} renameDrawer= {renameDrawer} openDrawer={openDrawer} getDrawers= {fetchDrawers} toggleEmpty={toggleEmpty} /> , label: (matches? "Schubladen öffnen" : "Schubladen")}
   ];
 
   return (
 
     <Router>
       
-      <div className='container' id="Map">
-        <div  id="main">
+      <Stack className= {matches? "container": "Mcontainer"} id="Map" direction="row">
+        <Stack id="main" sx={{ flexGrow: 1 }}>
           <Header user= {user} login= {userLogIn} logout={ userLogOut} />
           <Switch>
             <Route path='/' exact render={(props) => (
@@ -222,9 +224,9 @@ const tabData=[
         
             <Route path='/about' component={About}></Route>
           </Switch>
-        </div>
-        <Footer />
-      </div>
+        </Stack>
+       {/* <Footer />*/}
+      </Stack>
     </Router>
   );
 }

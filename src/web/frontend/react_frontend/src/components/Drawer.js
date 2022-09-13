@@ -6,43 +6,27 @@ import React from 'react'
 import ButtonUnstyled from '@mui/base/ButtonUnstyled';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
 import { styled } from '@mui/system';
+import Button from '@mui/material/Button';
 
-const DrawerButton = styled(ButtonUnstyled)`
-  outline: none;
-  border-width: 0;
-  border-radius: 66px;
-  background-image: linear-gradient(to right, #1565c0, #2f7ed8, #5a8fcb, #6ca2e1);
-  background-size: 300% 100%;
-  color: #fff;
-  transition: all .3s;
-  font-size: 30px;
-  box-sizing: border-box;
-  padding: 20px 40px;
-  flex-grow: 1;
-  cursor: pointer;
-  margin-right: 10px;
-  user-select: none;
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-  &:hover {
-    background-position: 100% 0;
-  }
-
-  &:active {
-    background-position: 100% 0;
-  }
-`;
 
 
 const Drawer = ({ drawer, user, openDrawer, toggleEmpty} ) => {
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
   return (
     <div className='drawer'>
-        <DrawerButton class="DrawerSelector" id={"drawer" + drawer.id} onClick={(event)=>{openDrawer(drawer)}}> 
+        <Button className= {matches ? "DrawerButton"  : "MDrawerButton"} variant="contained" id={"drawer" + drawer.id} onClick={(event)=>{openDrawer(drawer)}}> 
           {drawer.content} 
-        </DrawerButton>
+        </Button>
 
-        {user.admin===true? (<IconButton color={drawer.empty ? "error" : "primary"} aria-label="toggle empty state" onClick= {(event)=>{toggleEmpty(drawer)}}>
-          {drawer.empty? <NoDrinksIcon/> : <LocalBarIcon/>}
-        </IconButton>):(drawer.empty? <NoDrinksIcon color= "error"/> : <LocalBarIcon sx={{ color:"#FFF" }}/>)}
+        <div className="drawerStatusIcon">
+          { user.admin === true ?  (<IconButton color={(drawer.empty) ? "error" : "success"} aria-label="toggle empty state" onClick= {(event)=>{toggleEmpty(drawer)}}>
+            {drawer.empty? <NoDrinksIcon/> : <LocalBarIcon/>}
+          </IconButton>):(drawer.empty? <NoDrinksIcon color= "error"/> : <LocalBarIcon sx={{ color:"#FFF" }}/>)}
+        </div>
     </div>
   )
 }

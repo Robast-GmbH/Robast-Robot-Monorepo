@@ -7,6 +7,9 @@ import Box from '@mui/material/Box';
 import RobotControl from './RobotControl';
 import DrawerControl from './DrawerControl.js';
 import  { useState } from "react";
+import Stack from '@mui/material/Stack';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 
 
@@ -16,6 +19,7 @@ function TabPanel(props) {
   return (
     <div
       role="tabpanel"
+      style={ {flexGrow: 1}}
       hidden={value !== index}
       id={`simple-tabpanel-${index}`}
       aria-labelledby={`simple-tab-${index}`}
@@ -52,25 +56,31 @@ export default function ControlSwitch( {Tablist}) {
     setValue(newValue);
     sessionStorage.setItem('tap-value', newValue)
   };
+
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
   
   return (
-    <div>
-      <Box sx={{ width: '100%' }}>
-        <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-          <Tabs value={value} onChange={handleChange} aria-label="basic tabs example" centered={true}>
-            {Tablist.map(item =>(
-                <Tab key= {item.id} label={item.label} {...a11yProps(item.id)} />
-              ))}
-          </Tabs>
-        </Box>
-        {  Tablist.map(item =>(
+   
+
+    <Stack direction={ matches ? "row" : "column" } >
+      <Tabs
+        orientation={ matches ? "vertical" : "horizontal" }
+        variant="scrollable"
+        value={value}
+        onChange={handleChange}
+        aria-label="Vertical tabs example"
+        sx={{ borderRight: 0, borderColor: 'divider' }}
+      >
+        {Tablist.map(item =>( <Tab key= {item.id} label={item.label} {...a11yProps(item.id)} /> ))}
+      </Tabs>
+      {  Tablist.map(item =>(
                 <TabPanel value={value} index={item.id}>
                    {item.content}
                </TabPanel>
               ))}
-        
-      </Box>
-    </div>
-    
+      
+    </Stack>
   );
 }
+     

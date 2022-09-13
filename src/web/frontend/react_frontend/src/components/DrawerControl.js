@@ -8,6 +8,8 @@ import RobastRobotFront from './RobastRobotFront'
 import ButtonPopUp from './ButtonPopup';
 import RenameDrawer from './RenameDrawer';
 import RefillDrawers from './RefillDrawers';
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 
 
@@ -31,18 +33,19 @@ const popUpModalRefill= ( toggleEmpty, drawers )=>
 }
 
 const DrawerControl= ({drawers, user, openDrawer, renameDrawer, toggleEmpty})=> {
- 
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
   return (
     <>
-      <Stack direction="row">
+      <Stack direction={ matches ? "row":"column-reverse"}  spacing={4}>
         { /** Bild */}
-        <Stack mr="80px">
+        <Stack mr={ matches ? "80px":"0px"} direction="column" >
           <RobastRobotFront/>  
 
-          <Stack direction="row" spacing={2} id="drawer_controlls">
+          <Stack direction="row" spacing={1} id="drawer_controlls" orientation="center" >
             {console.log(user)}
             {user.admin? <ButtonPopUp name="rename_drawer" caption="Umbennen" popUp={popUpModalRename(renameDrawer, drawers)} />:""}
-            <ButtonPopUp name="refill_drawer" caption="Leer/ Refill" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
+            <ButtonPopUp name="refill_drawer" caption="Leer / Befüllen" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
           </Stack>
         </Stack>
 

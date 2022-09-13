@@ -32,7 +32,7 @@ export default function ButtonPopUp({name, caption,  popUp }) {
   
   return (
     <>
-        <Button variant="contained" onClick={openModal}>{caption}</Button>
+        <Button variant="contained" onClick={openModal} sx={{ mr: 3 }}>{caption}</Button>
         <Modal
           open={popupIsOpen}
           onClose={closeModal}

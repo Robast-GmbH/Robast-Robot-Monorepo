@@ -10,9 +10,15 @@ body {
 }
 
 .container {
-  max-width: 800px;
+  max-width: 1024px;
   margin: 0 auto;
-  padding: 30px;
+  padding: 40px;
+}
+
+.Mcontainer {
+  max-width: 1024px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
 .header {
@@ -32,7 +38,7 @@ body {
 
 .ControlPanel{
   display: flex;
-  justify-content: center;
+  justify-content:space-evenly;
   align-items: center;
   text-align: center;
   
@@ -40,7 +46,6 @@ body {
 }
 .ControlPanel button
 {
-  margin-left: 20px;
 }
 
 
@@ -49,24 +54,28 @@ body {
   
 }
 
-.DrawerSelector {
-  outline: none;
-  border-width: 0;
-  border-radius: 66px;
-  background-image: linear-gradient(to right, #1565c0, #2f7ed8, #6bd7f1, #7ddbf3);
-  background-size: 300% 100%;
-  color: #fff;
-  transition: all .3s;
-  font-size: 30px;
-  box-sizing: border-box;
-  padding: 20px 40px;
-  flex-grow: 1;
-  cursor: pointer;
-  margin-right: 10px;
+.DrawerButton {
+  width: 100%;
+  height: 75px;
+  font-size: 24px !important;
+  padding-left: 60px !important;
+  padding-right: 60px !important;
+  max-width: 350px;
+  white-space: nowrap;
+}
+.MDrawerButton {
+  width: 100%;
+  height: 60px;
+  font-size: 18px !important;
+  padding-left: 60px !important;
+  padding-right: 60px !important;
+  white-space: nowrap;
 }
 
-.DrawerSelector:hover {
-  background-position: 100% 0;
+.drawerStatusIcon {
+  position: absolute;
+  right: 20px;
+  display:flex;
 }
 
 .mapPosition 
@@ -130,6 +139,8 @@ body {
   margin-bottom: 20px;
   flex-grow: 1;
   align-items: center;
+  position: relative;
+  justify-content: flex-end;
 }
 
 .drawer:last-child {
@@ -137,8 +148,8 @@ body {
 }
 
 #drawer_controlls{
-
-  position:relative;
+  text-align: center;
+  justify-content:center;
 
 }
 
