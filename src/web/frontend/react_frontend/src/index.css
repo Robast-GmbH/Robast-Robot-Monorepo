@@ -44,11 +44,10 @@ body {
   
   
 }
-.ControlPanel button
-{
+
+#refill_drawer{
+  margin-left: 24px !important;
 }
-
-
 
 #OpenDrawer{
   

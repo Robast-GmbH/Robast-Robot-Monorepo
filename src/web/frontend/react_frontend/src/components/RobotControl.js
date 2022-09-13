@@ -13,6 +13,9 @@ import AddMapPosition from './AddMapPosition';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
 
+import { useTheme } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
+
 import GoalSelector from './GoalSelector';
 
 const popupModal= (addMapPosition)=> {return ( 
@@ -23,20 +26,21 @@ const popupModal= (addMapPosition)=> {return (
   
 
 export default function RobotControl({user, mapPositions, sendGoal,  addMapPosition, robotStatusChange}) {
-  
+  const theme = useTheme();
+  const matches = useMediaQuery(theme.breakpoints.up('sm'));
   return (
           <Stack>
           
               
                <Stack direction="row" spacing={1}   justifyContent="center" >
                 <Button id="Pause"  variant="contained" color="primary" startIcon={<PauseIcon />} onClick={(prop)=>{robotStatusChange(2)}} >
-                  Pause
+                  {(matches?"Pause": "")} 
                 </Button>
                 <Button id="Resume"  variant="contained" color="primary" startIcon={<PlayArrowIcon />} onClick={(prop)=>{robotStatusChange(1)}} >
-                Resume
+                 {(matches?"Resume": "")} 
                 </Button>
                 <Button id="Resume"  variant="contained" color="primary" startIcon={<HomeIcon />} onClick={(prop)=>{robotStatusChange(3)}} >
-                Home
+                  {(matches?"Home": "")} 
                 </Button>
                 </Stack>
 

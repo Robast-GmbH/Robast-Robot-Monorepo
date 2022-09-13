@@ -39,14 +39,14 @@ const DrawerControl= ({drawers, user, openDrawer, renameDrawer, toggleEmpty})=> 
     <>
       <Stack direction={ matches ? "row":"column-reverse"}  spacing={4}>
         { /** Bild */}
-        <Stack mr={ matches ? "80px":"0px"} direction="column" >
+        <Stack  mr={ matches ? "80px":"0px"} direction="column" >
           <RobastRobotFront/>  
 
-          <Stack direction="row" spacing={1} id="drawer_controlls" orientation="center" >
+          { <Stack direction="row" spacing={1} id="drawer_controlls" orientation="center" >
             {console.log(user)}
             {user.admin? <ButtonPopUp name="rename_drawer" caption="Umbennen" popUp={popUpModalRename(renameDrawer, drawers)} />:""}
-            <ButtonPopUp name="refill_drawer" caption="Leer / Befüllen" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
-          </Stack>
+            <ButtonPopUp name= {user.admin? "admin_refill_drawer" :"refill_drawer"} caption="Leer / Befüllen" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
+          </Stack>}
         </Stack>
 
         { /** Drawer */}

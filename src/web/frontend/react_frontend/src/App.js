@@ -11,14 +11,14 @@ import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const backend_address = ``
+const backend_address = `http://10.10.13.2:8000`
 function App() {
 
   const [mapPositions, setMapPositions] = useState([])
   const [drawers, setDrawers]= useState([])
   const [user, setUser] = useState({id: 0 , name: "Guest", admin: false})
 
-/*
+
    useEffect(() => {
      const getMapPositions = async () => {
       const mapPositionsFromServer = await fetchMapPositions()
@@ -28,13 +28,13 @@ function App() {
 
      getMapPositions()
    }, [])
-*/
+
    useEffect(() => {
     
     updateDrawersFromDB()
     setInterval(() => { updateDrawersFromDB()},30000);
   }, [])
-/*
+
   useEffect(() => {
     const getUser = async () => {
     const userFromServer = await fetchUser()
@@ -47,7 +47,7 @@ function App() {
   }, [])
   
   
-  */
+  
   const fetchUser = async () => {
     
     const user_id= sessionStorage.getItem('token')
@@ -201,8 +201,10 @@ const userLogOut= ()=>{
   sessionStorage.removeItem('token');
   window.parent.location.reload(false)
 }
+
 const theme = useTheme();
 const matches = useMediaQuery(theme.breakpoints.up('sm'));
+
 const tabData=[
   { id:0, content:  <RobotControl  user={user} mapPositions= {mapPositions} sendGoal={sendGoal} addMapPosition={addMapPosition} robotStatusChange= {changeStatus} /> , label: (matches?"Roboter steuern": "Steuern") },
   { id:1, content:  <DrawerControl user={user} drawers= {drawers} renameDrawer= {renameDrawer} openDrawer={openDrawer} getDrawers= {fetchDrawers} toggleEmpty={toggleEmpty} /> , label: (matches? "Schubladen öffnen" : "Schubladen")}

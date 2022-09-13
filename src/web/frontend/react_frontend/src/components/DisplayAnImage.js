@@ -23,6 +23,21 @@ const styles = StyleSheet.create({
   }
 });
 
+const mstyles = StyleSheet.create({
+  tinyLogo: {
+    width: 125,
+    height: 65,
+  },
+  logo: {
+    width: 330,
+    height: 29,
+  },
+  container: {
+    paddingTop: 10,
+  },
+  
+});
+
 
 
 const DisplayAnImage = ({ onClick, logo }) => {
@@ -31,11 +46,11 @@ const DisplayAnImage = ({ onClick, logo }) => {
   const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
   return (
-    <View id="ist" style={styles.container}>
+    <View id="ist" style={(matches? styles.container: mstyles.container)}>
 
       
       <ImageBackground
-        style={styles.tinyLogo}
+        style={matches?styles.tinyLogo: mstyles.tinyLogo}
         source={logo} onClick={onClick}></ImageBackground>
       
     </View>
