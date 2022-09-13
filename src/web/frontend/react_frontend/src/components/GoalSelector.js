@@ -7,7 +7,7 @@ const GoalSelector = ({mapPositions, sendGoal}) => {
   
     return (
 
-        <Stack direction="row" spacing={1}>
+        <Stack direction="row" spacing={1} flexWrap= "wrap" >
         {mapPositions.length > 0 ? (
           <MapPositions mapPositions={mapPositions} sendGoal={sendGoal}/>
         ):('')

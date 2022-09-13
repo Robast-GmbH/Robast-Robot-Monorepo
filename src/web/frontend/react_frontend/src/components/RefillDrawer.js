@@ -10,17 +10,25 @@ import LocalBarIcon from '@mui/icons-material/LocalBar';
 
 import Stack from '@mui/material/Stack';
 
+
+
 const RefillDrawer = ({ drawer, toggleEmpty }) => {
         const [isEmtpty, setIsEmtpty] = React.useState(drawer.empty);
+
+
+        const handleRefill = (event, newRefill) => {
+                if (newRefill !== null) {
+                        setIsEmtpty(newRefill)
+                        toggleEmpty(drawer)
+                }
+        };
     return(  
-                <Stack direction="row" spacing={5} id= "emptySelector" >
-                        <label width="20%">{drawer.content+" :"}</label>   
+                <Stack direction="row" spacing={5} id= "emptySelector" justify-content= "space-between">
+                        <label className='empty_label' width="20%"  >{drawer.content+" :"}</label>   
                         <ToggleButtonGroup
                                 value={isEmtpty}
                                 exclusive
-                                onChange={(e, state)=> {setIsEmtpty(state)
-                                                        toggleEmpty(drawer)
-                                                        }}
+                                onChange= {handleRefill}
                                 aria-label="text alignment"
                                 >
                 

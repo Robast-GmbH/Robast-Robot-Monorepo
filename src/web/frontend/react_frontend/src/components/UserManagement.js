@@ -11,7 +11,7 @@ const stringAvatar = (name) => {
       sx: {
         bgcolor: stringToColor(name),
       },
-      children: `${name.split(' ')[0][0]}`,
+      children: `${name.split(' ')[0][0]}${name.split(' ')[1][0]}`,
     };
   }
 
@@ -37,17 +37,15 @@ const stringToColor = (string) => {
 
 const loginPopupModal= (login)=> {
   return ( 
-  <div>
-    <h1> Login </h1>
-    {<Login  login= {login}/>}
-  </div>
+    <Login  login= {login}/>
     ); }
 
 const userDisplay= ({logout, user})=>
 {
+  console.log(user)
     return( 
         <Stack spacing={2} direction="row">
-            <Avatar {...stringAvatar(user.name)}/> 
+            <Avatar {...stringAvatar(user.full_name)}/> 
             <Button id="logOut" variant="text" size="small" onClick={logout}>Logout</Button>
         </Stack>
     );
@@ -60,15 +58,15 @@ const loginDisplay = ({login})=>
   )
 }
 
-const UserSwitch = ({user, login, logout}) => {
+const UserManagement = ({user, login, logout}) => {
     
     const token = sessionStorage.getItem('token')
-    user.name="test"
+    
     return (
       <>
-        {user.id == 0 ?(loginDisplay({login})):(userDisplay({user, logout} ))}
+        {user.id === 0 ?(loginDisplay({login})):(userDisplay({user, logout} ))}
       </>
     )
 }
 
-export default UserSwitch
+export default UserManagement

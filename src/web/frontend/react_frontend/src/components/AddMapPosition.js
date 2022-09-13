@@ -1,5 +1,8 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 
 
@@ -9,6 +12,13 @@ const AddMapPosition = ({ onAdd }) => {
         const [x, setPositionXCoordinate] = useState(0.0)
         const [y, setPositionYCoordinate] = useState(0.0)
         const [t, setTheta] = useState(0.0)
+
+        const [name_error, setTitleError] = useState("")
+        const [x_error, setXError] = useState("")
+        const [y_error, setYError] = useState("")
+        const [t_error, setTError] = useState("")
+
+
 
         const onSubmit = (e) => {
                 e.preventDefault()
@@ -38,37 +48,20 @@ const AddMapPosition = ({ onAdd }) => {
         }
 
         return (
-                <form className='add-form' onSubmit={onSubmit}>
-                        <div className='form-control'>
-                                <label>Title</label>
-                                <input type='positionItemTitle' placeholder='Kitchen'
-                                        value={name} onChange={(e) => setPositionItemTitle(e.target.value)} />
-                        </div>
-
-                        <div className='form-control'>
-                                <label>X-Coordinate</label>
-                                <input type='positionItem' placeholder='0.0'
-                                        value={x} onChange={(e) => setPositionXCoordinate(parseFloat(e.target.value))} />
-                        </div>
-
-                        <div className='form-control'>
-                                <label>Y-Coordinate</label>
-                                <input type='positionItem' placeholder='0.0'
-                                        value={y} onChange={(e) => setPositionYCoordinate(parseFloat(e.target.value))} />
-                        </div>
-
-                        <div className='form-control'>
-                                <label>Theta</label>
-                                <input type='positionItem' placeholder='0.0'
-                                        value={t} onChange={(e) => setTheta(parseFloat(e.target.value))} />
-                        </div>
-
-                        <input type='submit' value='Save' className='btn btn-block' />
-                </form>
+                <Stack spacing={2} className="popup">
+                     <h1>Neues Ziel </h1>   
+                     <TextField id="new_point_name" label="name" variant="outlined" onChange={(e) => setPositionItemTitle(e.target.value)}/>
+                     <TextField id="new_point_x" label="x" variant="outlined" onChange={(e) => setPositionXCoordinate(parseFloat(e.target.value))} />
+                     <TextField id="new_point_y" label="y" variant="outlined" onChange={(e) => setPositionYCoordinate(parseFloat(e.target.value))} />
+                     <TextField id="new_point_t" label="t" variant="outlined" onChange={(e) => setTheta(parseFloat(e.target.value))} />
+                     <Button variant="contained" onClick={onSubmit} >Speichern</Button>
+                </Stack>
+      
         )
 }
 AddMapPosition.propTypes = {
         onAdd: PropTypes.func
 }
 export default AddMapPosition
+
 

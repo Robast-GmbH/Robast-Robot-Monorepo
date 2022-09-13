@@ -6,9 +6,7 @@ import PropTypes from 'prop-types'
 const MapPosition = ({ mapPosition, sendGoal} ) => {
  // console.log(mapPosition)
   return (
-    <div className='mapPosition'>
-        <Button id={mapPosition.id} onClick={(event)=>{sendGoal(mapPosition.id)}}> {mapPosition.name}</Button>
-    </div>
+        <Button id={mapPosition.id} variant="outlined" onClick={(event)=>{sendGoal(mapPosition.id)}}> {mapPosition.name}</Button>
   )
 }
 

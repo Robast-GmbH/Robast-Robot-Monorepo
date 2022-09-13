@@ -1,7 +1,15 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 import Drawer from './Drawer'
-import Select from 'react-select'
+
+import InputLabel from '@mui/material/InputLabel';
+import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+
 
 
 const RenameDrawer = ({ renameDrawer, drawers }) => {
@@ -28,36 +36,36 @@ const RenameDrawer = ({ renameDrawer, drawers }) => {
                 window.parent.location.reload(false)
         }
         
-        const options = [ ] 
-              drawers.forEach((drawer)=>{
-                
-                options.push({value: drawer.id, label: drawer.drawer_controller_id + " (" + drawer.content + " )" }) 
-            })
-              
-              
         return (
-                <form className='rename-form' onSubmit={onSubmit}>
-                        <div className='form-control'>
-                        <label for="drawers">Schublade</label>
-                        <Select options={options} onChange= {(event) => { setselectedDrawerID(event.value)}}/>
-                        
-                        </div>
-                       {/*<div className='form-control'>
-                                <label>Alter Name</label>
-                                { selected_drawer_id>0? 
-                                        (<label>{drawers.find(d=>d.id===selected_drawer_id).content} </label>):("")
-                                }                                
-                                
-                        </div>*/}
 
-                        <div className='form-control'>
-                                <label> Füllung</label>
-                                <input type='newTitle' placeholder= {selected_drawer_id>0? ( drawers.find(d=>d.id===selected_drawer_id).content ):("")}
-                                        value={new_name} onChange={(e) => setNewName(e.target.value)} />
-                        </div>
 
-                        <input type='submit' value='Save' className='btn btn-block' />
-                </form>
+                <Stack spacing={3} className="popup"> 
+                <InputLabel id="titel_rename">Schublade umbenennen </InputLabel>
+               
+
+                <FormControl fullWidth>
+                        <InputLabel id="demo-simple-select-label">Schublade</InputLabel>
+                        <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={selected_drawer_id}
+                label="Schublade"
+                onChange= {(event) => { setselectedDrawerID(event.target.value)}}
+                >
+                       
+                        {drawers.map((drawer)=>{
+                             return   <MenuItem value={ drawer.id}>{drawer.drawer_controller_id + " (" + drawer.content + " )"} </MenuItem>
+                        })}
+
+                </Select>
+                </FormControl>
+
+                { selected_drawer_id>0?   (<TextField  label ="Alte Füllung" defaultValue={drawers.find(d=>d.id===selected_drawer_id).content} disabled />):("") }  
+                <TextField id="content_rename" label="Füllung" variant="outlined" onChange={(e) => setNewName(e.target.value)} />
+  
+                <Button variant="contained" onClick={onSubmit} >Speichern</Button>
+           </Stack>
+                
         )
 }
 RenameDrawer.propTypes = {

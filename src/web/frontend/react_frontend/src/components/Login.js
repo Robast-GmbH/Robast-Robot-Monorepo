@@ -1,5 +1,7 @@
 import { useState } from 'react'
-import PropTypes from 'prop-types'
+import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
 
 
 const Login = ({login}) => {
@@ -31,20 +33,14 @@ const Login = ({login}) => {
         }
               
         return (
-                <form className='rename-form' onSubmit={onSubmit}>
-                        
+                <Stack spacing={4}>
+                        <h1> Login </h1>
+                        <TextField id="outlined-basic" label="Benutzername" variant="outlined" onChange={(e) => setUserName(e.target.value)} />
+                        <TextField id="outlined-basic1" type='password' label="Passwort" variant="outlined" onChange={(e) => setPassword(e.target.value)} />
+                        <Button variant="contained" onClick={onSubmit} >login</Button>
 
-                        <div className='form-control'>
-                                <label> Benutzername</label>
-                                <input type='text' value={name} onChange={(e) => setUserName(e.target.value)} />
-                        </div>
-                        <div className='form-control'>
-                                <label> Passwort</label>
-                                <input type='password' value={hashed_password} onChange={(e) => setPassword(e.target.value)} />
-                        </div>
-
-                        <input type='submit' value='Save' className='btn btn-block' />
-                </form>
-        
+                </Stack>
+                               
+                
 )}
 export default Login

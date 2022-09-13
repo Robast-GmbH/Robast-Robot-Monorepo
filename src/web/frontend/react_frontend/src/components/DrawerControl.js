@@ -15,19 +15,18 @@ import RefillDrawers from './RefillDrawers';
 const popUpModalRename= (renameDrawer, drawers)=> 
 {
   return ( 
-  <div>
-    <h1>Edit Drawer</h1>
-    {<RenameDrawer renameDrawer={renameDrawer} drawers={drawers}/>}
-  </div>
-    ); }
+            <>
+                {<RenameDrawer renameDrawer={renameDrawer} drawers={drawers}/>}
+            </> 
+     );
+  }
 
 const popUpModalRefill= ( toggleEmpty, drawers )=>
 {
   return(
-    <div>
-        <h1>Füllstand ändern</h1>
+    <>
         {<RefillDrawers drawers= {drawers} toggleEmpty={toggleEmpty} />}
-    </div>
+    </>
   );
 }
 
@@ -37,13 +36,13 @@ const DrawerControl= ({drawers, user, openDrawer, renameDrawer, toggleEmpty})=> 
     <>
       <Stack direction="row">
         { /** Bild */}
-        <Stack>
+        <Stack mr="80px">
           <RobastRobotFront/>  
 
           <Stack direction="row" spacing={2} id="drawer_controlls">
             {console.log(user)}
             {user.admin? <ButtonPopUp name="rename_drawer" caption="Umbennen" popUp={popUpModalRename(renameDrawer, drawers)} />:""}
-            <ButtonPopUp name="refill_drawer" caption="Bearbeiten" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
+            <ButtonPopUp name="refill_drawer" caption="Leer/ Refill" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
           </Stack>
         </Stack>
 

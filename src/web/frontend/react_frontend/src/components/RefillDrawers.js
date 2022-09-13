@@ -1,17 +1,17 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
-import Button from '@mui/material/Button';
 import RefillDrawer from './RefillDrawer';
+import Stack from '@mui/material/Stack';
 
 
 const RefillDrawers = ({drawers, toggleEmpty}) => {
     return (
-            <div class= "refillDrawers">
+                <Stack spacing={2}>
                     {drawers.map((drawer) => (
+                        
                         <RefillDrawer key={drawer.id} drawer = {drawer} toggleEmpty = {toggleEmpty} />
                     ))}
-            </div>
-
+                </Stack>
             
     )
 }

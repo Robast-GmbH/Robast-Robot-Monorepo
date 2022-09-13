@@ -16,30 +16,19 @@ import Stack from '@mui/material/Stack';
 import GoalSelector from './GoalSelector';
 
 const popupModal= (addMapPosition)=> {return ( 
-<div>
-  <h1>Add a Waypoint</h1>
+<>
   {<AddMapPosition onAdd={addMapPosition}/>}
-</div>
+</>
   ); }
   
 
 export default function RobotControl({user, mapPositions, sendGoal,  addMapPosition, robotStatusChange}) {
   
   return (
-            <div class = "RobotControl" >
-              <div class ="ControlPanel">
-             { /* <Stack direction="row" spacing={1}>
-                  <IconButton id="Pause"  variant="contained" color="error" size	="large" onClick={(prop)=>{robotStatusChange(2)}} >
-                    <PauseIcon/>
-                  </IconButton>
-                  <IconButton id="Resume" variant="contained" color= "success" size	="large"  onClick={(prop)=>{robotStatusChange(1)}} >
-                    <PlayArrowIcon/>
-                  </IconButton>
-                  <IconButton id="Home" variant="contained" color= "info" size	="large"  onClick={(prop)=>{robotStatusChange(3)}} >
-                    <HomeIcon/>
-                  </IconButton>
-                </Stack> */}
-               <Stack direction="row" spacing={1}>
+          <Stack>
+          
+              
+               <Stack direction="row" spacing={1}   justifyContent="center" >
                 <Button id="Pause"  variant="contained" color="primary" startIcon={<PauseIcon />} onClick={(prop)=>{robotStatusChange(2)}} >
                   Pause
                 </Button>
@@ -50,15 +39,12 @@ export default function RobotControl({user, mapPositions, sendGoal,  addMapPosit
                 Home
                 </Button>
                 </Stack>
-                
-              </div>
 
               <SimpleMap/>
-              {user.admin?(<GoalSelector mapPositions={mapPositions} sendGoal= {sendGoal}/>):("")}
-            
-              
-              {user.admin?(<ButtonPopUp name="AddPosition" caption="Neuer Punkt" popUp= {popupModal(addMapPosition)}/>):("")}
-
-            </div>
+              <Stack direction="row" justifyContent= "space-between" >
+                {user.admin?(<GoalSelector mapPositions={mapPositions} sendGoal= {sendGoal}/>):("")}
+                {user.admin?(<ButtonPopUp name="AddPosition" caption="Neuer Punkt" popUp= {popupModal(addMapPosition)}/>):("")}
+              </Stack>
+            </Stack>
           );
 }

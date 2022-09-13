@@ -2,7 +2,7 @@ import Button from './Button'
 import { useLocation } from 'react-router-dom'
 import DisplayAnImage from './DisplayAnImage';
 import Logo from '../imgs/Logo.png';
-import UserSwitch from './UserSwitch';
+import UserManagement from './UserManagement';
 
 
 const Header = ({user, login, logout}) => {
@@ -12,7 +12,7 @@ const Header = ({user, login, logout}) => {
                 <header className='header'>
                         
                         <DisplayAnImage logo={Logo}></DisplayAnImage>
-                        <UserSwitch user = {user} login={login} logout={logout} />
+                        <UserManagement user = {user} login={login} logout={logout} />
                         
                 </header>
         )
@@ -20,13 +20,6 @@ const Header = ({user, login, logout}) => {
 
 Header.defaultProps = {
         lable: 'Robast Logo',
-        //labelClose: 'Close',
-        //labelOpen: 'View Order',
 }
 
 export default Header
-/*{location.pathname === '/' && (<Button
-                                color={showAdd ? 'red' : 'green'}
-                                text={showAdd ? labelClose : labelOpen}
-                                onClick={onAdd}
-                        />)} */

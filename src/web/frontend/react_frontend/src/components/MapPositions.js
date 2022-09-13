@@ -8,12 +8,12 @@ import Button from './Button';
 const MapPositions = ({mapPositions, sendGoal}) => {
   
   return (
-    <div id="mapPositions">
+    <>
       {mapPositions.map((mapPosition) => (
         
         <MapPosition key={mapPosition.id}  mapPosition={mapPosition} sendGoal={sendGoal} />
         ))}
-    </div>
+    </>
     
   )
 }
