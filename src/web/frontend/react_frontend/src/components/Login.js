@@ -34,7 +34,8 @@ const Login = ({login}) => {
               
         return (
                 <Stack spacing={4}>
-                        <h1> Login </h1>
+                        <h2> Login </h2>
+                        
                         <TextField id="outlined-basic" label="Benutzername" variant="outlined" onChange={(e) => setUserName(e.target.value)} />
                         <TextField id="outlined-basic1" type='password' label="Passwort" variant="outlined" onChange={(e) => setPassword(e.target.value)} />
                         <Button variant="contained" onClick={onSubmit} >login</Button>

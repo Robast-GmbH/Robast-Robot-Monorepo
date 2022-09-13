@@ -4,6 +4,7 @@ import PropTypes from 'prop-types'
 
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import InputLabel from '@mui/material/InputLabel';
 
 import NoDrinksIcon from '@mui/icons-material/NoDrinks';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
@@ -24,7 +25,7 @@ const RefillDrawer = ({ drawer, toggleEmpty }) => {
         };
     return(  
                 <Stack direction="row" spacing={5} id= "emptySelector" justify-content= "space-between">
-                        <label className='empty_label' width="20%"  >{drawer.content+" :"}</label>   
+                        <InputLabel id="titel_rename">{drawer.content+" :"} </InputLabel>
                         <ToggleButtonGroup
                                 value={isEmtpty}
                                 exclusive

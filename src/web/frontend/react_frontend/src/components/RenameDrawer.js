@@ -40,7 +40,7 @@ const RenameDrawer = ({ renameDrawer, drawers }) => {
 
 
                 <Stack spacing={3} className="popup"> 
-                <InputLabel id="titel_rename">Schublade umbenennen </InputLabel>
+                <h2 id="titel_rename">Schublade umbenennen </h2>
                
 
                 <FormControl fullWidth>

@@ -14,6 +14,7 @@ const style = {
   position: 'absolute',
   top: '50%',
   left: '50%',
+  padding:'200px',
   transform: 'translate(-50%, -50%)',
   width: 400,
   bgcolor: 'background.paper',

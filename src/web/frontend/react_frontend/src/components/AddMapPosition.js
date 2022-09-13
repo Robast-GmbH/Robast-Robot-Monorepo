@@ -3,6 +3,7 @@ import PropTypes from 'prop-types'
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
+import InputLabel from '@mui/material/InputLabel';
 
 
 
@@ -49,7 +50,7 @@ const AddMapPosition = ({ onAdd }) => {
 
         return (
                 <Stack spacing={2} className="popup">
-                     <h1>Neues Ziel </h1>   
+                      <h2>Neues Ziel</h2> 
                      <TextField id="new_point_name" label="name" variant="outlined" onChange={(e) => setPositionItemTitle(e.target.value)}/>
                      <TextField id="new_point_x" label="x" variant="outlined" onChange={(e) => setPositionXCoordinate(parseFloat(e.target.value))} />
                      <TextField id="new_point_y" label="y" variant="outlined" onChange={(e) => setPositionYCoordinate(parseFloat(e.target.value))} />
