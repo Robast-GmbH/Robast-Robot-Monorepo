@@ -54,7 +54,7 @@ const userDisplay= ({logout, user})=>
 const loginDisplay = ({login})=>
 {
   return(
-      <ButtonPopUp caption="Login" key="login_button" name="login" popUp={loginPopupModal(login)} />
+      <ButtonPopUp caption="Admin Login" key="login_button" name="login" popUp={loginPopupModal(login)} />
   )
 }
 
