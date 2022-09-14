@@ -39,9 +39,9 @@ export default function RobotControl({user, mapPositions, sendGoal,  addMapPosit
                 <Button id="Resume"  variant="contained" color="primary" startIcon={<PlayArrowIcon />} onClick={(prop)=>{robotStatusChange(1)}} >
                  {(matches?"Resume": "")} 
                 </Button>
-                <Button id="Resume"  variant="contained" color="primary" startIcon={<HomeIcon />} onClick={(prop)=>{robotStatusChange(3)}} >
+                {user.admin?(<Button id="Resume"  variant="contained" color="primary" startIcon={<HomeIcon />} onClick={(prop)=>{robotStatusChange(3)}} >
                   {(matches?"Home": "")} 
-                </Button>
+                </Button>):("")}
                 </Stack>
 
               <SimpleMap/>
