@@ -20,6 +20,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(communication_interfaces REQUIRED)
+find_package(std_msgs REQUIRED)
 
 set(can_msg_dir /workspace/libs/can)
 set(serial_helper_dir /workspace/libs/serial_helper)

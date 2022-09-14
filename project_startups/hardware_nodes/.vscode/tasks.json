@@ -46,6 +46,20 @@
             "problemMatcher": []
         },
         {
+            "label": "Open Drawer 4",
+            "detail": "Send action message to open the drawer with the controller id 4",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 action send_goal /control_drawer communication_interfaces/action/DrawerUserAccess '{drawer_address: {drawer_controller_id: 4, drawer_id: 1}, state: 1}'",
+            "problemMatcher": []
+        },
+        {
+            "label": "Open Drawer 5",
+            "detail": "Send action message to open the drawer with the controller id 5",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 action send_goal /control_drawer communication_interfaces/action/DrawerUserAccess '{drawer_address: {drawer_controller_id: 5, drawer_id: 1}, state: 1}'",
+            "problemMatcher": []
+        },
+        {
             "label": "Drawer Sym Command 1",
             "detail": "Send the open drawer 1 comand to the drawer simulation node",
             "type": "shell",
