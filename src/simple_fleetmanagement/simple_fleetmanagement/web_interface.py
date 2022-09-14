@@ -6,6 +6,7 @@ from . import parameters_module as params
 from . import web_module
 from . import drawer_helper_module
 from typing import Dict
+import json
 
 try:
     from communication_interfaces.action import DrawerUserAccess
@@ -76,6 +77,19 @@ class WebInterface:
                     self.functions["add_waypoint"](waypoint["id"], waypoint["x"], waypoint["y"], waypoint["t"])
                 except:
                     print("add_waypoint im web interface failed" + str(waypoint))
+
+    def get_set_goal_from_backend(self):
+        response = web_module.getDataFromServer(self.base_url + "/map_positions")
+        if(response != None):
+            for waypoint in response.json():
+                try:
+                    self.functions["add_waypoint"](waypoint["id"], waypoint["x"], waypoint["y"], waypoint["t"])
+                except:
+                    print("add_waypoint im web interface failed" + str(waypoint))
+
+    def change_state_in_backend(self, state):
+        web_module.setDataOnServer(self.base_url + "/robot/status/", json.dump(state))
+        return
 
     def backend_polling(self):
         self.get_robot_status()

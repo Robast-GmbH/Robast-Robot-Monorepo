@@ -45,6 +45,7 @@ class SimpleFleetmanagement(Node):
         self.order_queue = []
         self.waypoint_queue = []
         self.last_feedback = datetime.now()
+        self.specificGoal = 0
 
         self.initialize_ros_robot_status_communication()
 
@@ -83,7 +84,8 @@ class SimpleFleetmanagement(Node):
             "get_drawer_open_ros_function": self.get_drawer_open_ros_function,
             "publish_robot_status": self.publish_robot_status,
             "publish_drawer_refill_status": self.publish_drawer_refill_status,
-            "add_waypoint": self.add_waypoint
+            "add_waypoint": self.add_waypoint,
+            "set_goal": self.set_goal
         }
         self._webInterface = web_interface.WebInterface("http://localhost:8000", functions_for_web)
 
@@ -104,9 +106,20 @@ class SimpleFleetmanagement(Node):
             "navigate_to_pose": self.navigate_to_pose,
             "open_drawer": self.open_drawer,
             "check_navigator_status": self.check_navigator_status,
-            "is_navigator_Task_complete": self.is_navigator_Task_complete
+            "is_navigator_Task_complete": self.is_navigator_Task_complete,
+            "get_goal": self.get_goal,
+            "set_state_in_backend": self.set_state
         }
         self.HH_state_machine = HH_Nav_Statemachine.HHStateMachine(functions_by_functionname=functions_fo_statemachine)
+
+    def get_goal(self):
+        return self.specificGoal
+
+    def set_goal(self, goal):
+        self.specificGoal = goal
+
+    def set_state(self, state):
+        self._webInterface.change_state_in_backend(state)
 
     def start_statemachine(self):
         self.run_state_timer = self.create_timer(self.execute_state_intervall, self.HH_state_machine.run_state)

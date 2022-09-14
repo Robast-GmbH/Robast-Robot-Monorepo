@@ -71,6 +71,9 @@ class HHStateMachine:
     def checkCondition_pause_to_homing(self) -> Boolean:
         return self.check_status_function() == RobotStates.HOMING
 
+    def checkCondition_pause_to_specific_move(self) -> Boolean:
+        return self.check_status_function() == RobotStates.SPECIAL
+
     def checkCondition_pause_to_running(self) -> Boolean:
         return self.check_status_function() == RobotStates.RUNNING
 
@@ -85,7 +88,6 @@ class HHStateMachine:
 
     def changeState_running_to_pause(self):
         self.functions_by_functionname["navigator_cancel_task"]()
-        self.active = False
 
     def changeState_pause_to_drawer_open(self):
         pass
@@ -96,8 +98,15 @@ class HHStateMachine:
     def changeState_pause_to_running(self):
         pass
 
+    def changeState_pause_to_specific_move(self):
+
+        pass
+
     def changeState_drawer_open_to_pause(self):
         pass
+
+    def changeState_specific_move_to_pause(self):
+        self.active = False
 
     def changeState_homing_to_pause(self):
         self.functions_by_functionname["navigator_cancel_task"]()
@@ -126,4 +135,15 @@ class HHStateMachine:
             self.functions_by_functionname["open_drawer"](drawer_id)
 
     def stateHoming(self):
-        self.functions_by_functionname["navigate_to_pose"](HOME_WAYPOINT_ID)
+        if(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
+            self.active = True
+            self.functions_by_functionname["navigate_to_pose"](HOME_WAYPOINT_ID)
+            self.active = False
+            self.functions_by_functionname["set_state_in_backend"](RobotStates.PAUSE)
+
+    def moveToSpecificWaypoint(self):
+        if(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
+            self.active = True
+            self.functions_by_functionname["navigate_to_pose"](self.functions_by_functionname["get_goal"])
+            self.active = False
+            self.functions_by_functionname["set_state_in_backend"](RobotStates.PAUSE)
