@@ -4,9 +4,7 @@ from xmlrpc.client import Boolean
 from .parameters_module import RobotStates, HOME_WAYPOINT_ID
 from typing import Dict
 from . import generic_state_machine
-from asyncio import threads
 from time import sleep
-from threading import Thread, Timer
 
 
 class HHStateMachine:
@@ -112,7 +110,9 @@ class HHStateMachine:
             self.active = True
             self.functions_by_functionname["navigate_to_pose"](self.current_waypoint)
             if((self.current_waypoint) < len(self.functions_by_functionname["get_waypoints_by_id"]())):
+                print("waypoint erreicht")
                 self.current_waypoint += 1
+                sleep(30)
             else:
                 self.current_waypoint = 1
             self.active = False

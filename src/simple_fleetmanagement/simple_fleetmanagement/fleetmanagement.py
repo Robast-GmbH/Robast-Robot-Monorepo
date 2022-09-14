@@ -12,6 +12,7 @@ from . import HH_Nav_Statemachine
 from std_msgs.msg import UInt8, UInt8MultiArray
 from datetime import datetime
 from typing import List
+import time
 
 
 # from . import state_machine
@@ -226,19 +227,6 @@ class SimpleFleetmanagement(Node):
     def create_waypoints_for_task(self, order_id):
         nav_goal_within_room = self.order_queue[0][1]
         nav_goal_door_bell = self.order_queue[0][2]
-
-    def state_machine(self):
-        match self.state_machine_state < len(self.target_pose_by_waypoint_id):
-            case 1:
-                self.get_logger().info("navigate to waypoint {1}", self.state_machine_state)
-                self.navigator.goToPose(self.target_pose_by_waypoint_id[self.state_machine_state])
-                self.state_machine_state += 1
-                return
-            # If an exact match is not confirmed, this last case will be used if provided
-            case _:
-                self.get_logger().info("Navigation loop finised. Will restart now")
-                self.state_machine_state = 1
-                return
 
     # def send_nav_goal(self):
     #     if len(self.order_queue) > 0:
