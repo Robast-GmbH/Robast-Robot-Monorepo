@@ -15,7 +15,8 @@ namespace robast_can_msgs
 
             const uint32_t id;
             const uint8_t dlc;
-            void set_data(uint8_t data);
+            void set_data(uint8_t* data);
+			uint8_t* get_data();
             
         protected:
             uint8_t* data_;

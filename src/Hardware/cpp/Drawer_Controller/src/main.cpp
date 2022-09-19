@@ -4,8 +4,8 @@
 
 #include "pinout_defines.h"
 
-#include "robast_can_msgs/can_db.h"
-#include "robast_can_msgs/can_helper.h"
+#include "can_db.hpp"
+#include "can_helper.h"
 
 /*********************************************************************************************************
   GLOBAL VARIABLES AND CONSTANTS
@@ -474,7 +474,7 @@ void sending_drawer_status_feedback(void)
 
   if (can_frame.has_value())
   {
-    byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().data);
+    byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().get_data());
     if(sndStat == CAN_OK){
       Serial.println("Message Sent Successfully!");
     } else {
