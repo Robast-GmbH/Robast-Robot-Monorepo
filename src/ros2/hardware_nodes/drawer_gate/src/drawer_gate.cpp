@@ -55,12 +55,12 @@ namespace drawer_gate
     {
       if (drawer_feedback_can_msgs.at(i).id == CAN_ID_DRAWER_FEEDBACK)
       {
-        uint32_t drawer_controller_id = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data;
+        uint32_t drawer_controller_id = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data();
         drawer_status drawer_status = {};
-        drawer_status.is_endstop_switch_1_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).data == 1;
-        drawer_status.is_lock_switch_1_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).data == 1;
-        drawer_status.is_endstop_switch_2_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).data == 1;
-        drawer_status.is_lock_switch_2_pushed = drawer_feedback_can_msgs.at(i).can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).data == 1;
+        drawer_status.is_endstop_switch_1_pushed = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).get_data() == 1;
+        drawer_status.is_lock_switch_1_pushed = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).get_data() == 1;
+        drawer_status.is_endstop_switch_2_pushed = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).get_data() == 1;
+        drawer_status.is_lock_switch_2_pushed = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).get_data() == 1;
         drawer_status.received_initial_drawer_status = true;
         this->drawer_status_by_drawer_controller_id[drawer_controller_id] = drawer_status;
       }
@@ -161,26 +161,26 @@ namespace drawer_gate
   {
     robast_can_msgs::CanMessage can_msg_drawer_user_access = can_db.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
 
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = drawer_controller_id;
+    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(drawer_controller_id);
 
     // Default state is lock close
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = CAN_DATA_CLOSE_LOCK;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = CAN_DATA_CLOSE_LOCK;
+    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).set_data(CAN_DATA_CLOSE_LOCK);
+    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).set_data(CAN_DATA_CLOSE_LOCK);
 
     if (drawer_id == 1) 
     {
-      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data = can_data_open_lock;
+      can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).set_data(can_data_open_lock);
     }
     if (drawer_id == 2)
     {
-      can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data = can_data_open_lock;
+      can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).set_data(can_data_open_lock);
     }
 
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_RED).data = led_parameters.led_red;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_GREEN).data = led_parameters.led_green;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BLUE).data = led_parameters.led_blue;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data = led_parameters.brightness;
-    can_msg_drawer_user_access.can_signals.at(CAN_SIGNAL_LED_MODE).data = led_parameters.mode;
+    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_LED_RED).set_data(led_parameters.led_red);
+    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_LED_GREEN).set_data(led_parameters.led_green);
+    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_LED_BLUE).set_data(led_parameters.led_blue);
+    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).set_data(led_parameters.brightness);
+    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_LED_MODE).set_data(led_parameters.mode);
 
     return can_msg_drawer_user_access;
   }
