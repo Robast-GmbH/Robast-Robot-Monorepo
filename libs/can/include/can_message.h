@@ -21,6 +21,11 @@ namespace robast_can_msgs
              */
             CanMessage(uint32_t id_in, uint8_t dlc_in, std::vector<CanSignal> can_signals_in) : id{id_in}, dlc{dlc_in}, can_signals_{can_signals_in} {}
 
+            /**
+             * @brief A deconstructor for robast_can_msgs::CanMessage class
+             */
+            ~CanMessage() = default;
+
             const uint32_t id;
             const uint8_t dlc;
 

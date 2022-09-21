@@ -14,6 +14,11 @@ namespace robast_can_msgs
              */
             CanDb() = default;
 
+            /**
+             * @brief A destructor for robast_can_msgs::CanDb class
+             */
+            ~CanDb() = default;
+
             // Vector that contains all the CAN messages stored in the CanDb
             const std::vector<CanMessage> can_messages = {
                 CanMessage(

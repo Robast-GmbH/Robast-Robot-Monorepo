@@ -14,6 +14,11 @@ namespace robast_can_msgs
              */
             CanFrame(uint32_t id_in, uint8_t dlc_in, uint8_t data_in[]) : id{id_in}, dlc{dlc_in}, data_{data_in} {}
 
+            /**
+             * @brief A destructor for robast_can_msgs::CanFrame class
+             */
+            ~CanFrame() = default;
+
             const uint32_t id;
             const uint8_t dlc;
 
