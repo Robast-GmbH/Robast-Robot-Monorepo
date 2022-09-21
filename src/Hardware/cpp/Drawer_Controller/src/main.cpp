@@ -67,16 +67,16 @@ void IRAM_ATTR on_timer_for_fading()
 {
   if (led_target_brightness > led_current_brightness)
   {
-    portENTER_CRITICAL_ISR(&running_led_timer_mux);
+    portENTER_CRITICAL_ISR(&fading_up_timer_mux);
     led_current_brightness++;
-    portEXIT_CRITICAL_ISR(&running_led_timer_mux);
+    portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
   }
 
   if (led_target_brightness < led_current_brightness)
   {
-    portENTER_CRITICAL_ISR(&running_led_timer_mux);
+    portENTER_CRITICAL_ISR(&fading_up_timer_mux);
     led_current_brightness--;
-    portEXIT_CRITICAL_ISR(&running_led_timer_mux);
+    portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
   }
 }
 
@@ -84,9 +84,9 @@ void IRAM_ATTR on_timer_for_running_led()
 {
   if ((MIDDLE_LED - running_led_offset_from_middle) >= 0 - NUM_OF_LED_SHADOWS)
   {
-    portENTER_CRITICAL_ISR(&fading_up_timer_mux);
+    portENTER_CRITICAL_ISR(&running_led_timer_mux);
     running_led_offset_from_middle++;
-    portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
+    portEXIT_CRITICAL_ISR(&running_led_timer_mux);
   }
 }
 
@@ -351,9 +351,13 @@ void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
         break;
 
       case 1:
-        timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s
-        led_current_brightness = 0;
         // fade on mode
+        timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s
+        portENTER_CRITICAL(&fading_up_timer_mux);
+        led_current_brightness = 0;
+        portENTER_CRITICAL(&fading_up_timer_mux);
+        
+        
         break;
 
       case 2:
