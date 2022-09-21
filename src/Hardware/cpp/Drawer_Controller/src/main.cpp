@@ -409,31 +409,35 @@ void handle_reading_sensors(void)
 robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
 {
   robast_can_msgs::CanMessage can_msg_drawer_feedback = can_db.can_messages.at(CAN_MSG_DRAWER_FEEDBACK);
-  can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(DRAWER_CONTROLLER_ID);
+  std::vector can_signals_drawer_feedback = can_msg_drawer_feedback.get_can_signals();
+
+  can_signals_drawer_feedback.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(DRAWER_CONTROLLER_ID);
 
   if (moving_average_drawer1_closed_pin > 0.9){
-    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).set_data(1);
+    can_signals_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).set_data(1);
   } else {
-    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).set_data(0);
+    can_signals_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).set_data(0);
   }
 
   if (moving_average_sensor_lock1_pin > 0.9){
-    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).set_data(1);
+    can_signals_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).set_data(1);
   } else {
-    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).set_data(0);
+    can_signals_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).set_data(0);
   }
 
   if (moving_average_drawer2_closed_pin > 0.9){
-    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).set_data(1);
+    can_signals_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).set_data(1);
   } else {
-    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).set_data(0);
+    can_signals_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).set_data(0);
   }
 
   if (moving_average_sensor_lock2_pin > 0.9){
-    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).set_data(1);
+    can_signals_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).set_data(1);
   } else {
-    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).set_data(0);
+    can_signals_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).set_data(0);
   }
+
+  can_msg_drawer_feedback.set_can_signals(can_signals_drawer_feedback);
 
   return can_msg_drawer_feedback;
 }

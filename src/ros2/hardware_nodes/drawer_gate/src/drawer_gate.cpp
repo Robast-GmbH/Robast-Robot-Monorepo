@@ -73,7 +73,7 @@ namespace drawer_gate
         this->drawer_status_by_drawer_controller_id_[drawer_controller_id] = drawer_status;
       }
     }
-    cv_.notify_one(); // Notify the waiting thread in the open_drawer function to check if condition is now satisfied 
+    this->cv_.notify_one(); // Notify the waiting thread in the open_drawer function to check if condition is now satisfied 
   }
 
 
@@ -82,6 +82,7 @@ namespace drawer_gate
   {
     if (this->ascii_cmd_queue_.empty())
     {
+      this->send_ascii_cmds_timer_->cancel(); // cancel the time when queue is empty
       return;
     }
     else
@@ -109,14 +110,14 @@ namespace drawer_gate
 
     std::vector<robast_can_msgs::CanMessage> received_can_msgs = robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, this->can_db_.can_messages);
 
-    if (cleared_serial_buffer_from_old_can_msgs_) 
+    if (this->cleared_serial_buffer_from_old_can_msgs_) 
     {
       this->update_drawer_status(received_can_msgs);
     }
     else
     {
       // Dump only the very first received can msgs because they might contain old data in the buffer
-      cleared_serial_buffer_from_old_can_msgs_ = true;
+      this->cleared_serial_buffer_from_old_can_msgs_ = true;
     }
   }
 
@@ -268,28 +269,46 @@ namespace drawer_gate
   {
     robast_can_msgs::CanMessage can_msg_drawer_user_access = this->can_db_.can_messages.at(CAN_MSG_DRAWER_USER_ACCESS);
 
-    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(drawer_controller_id);
+    std::vector can_signals_drawer_user_access = can_msg_drawer_user_access.get_can_signals();
+
+    can_signals_drawer_user_access.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(drawer_controller_id);
 
     // Default state is lock close
-    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).set_data(CAN_DATA_CLOSE_LOCK);
-    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).set_data(CAN_DATA_CLOSE_LOCK);
+    can_signals_drawer_user_access.at(CAN_SIGNAL_OPEN_LOCK_1).set_data(CAN_DATA_CLOSE_LOCK);
+    can_signals_drawer_user_access.at(CAN_SIGNAL_OPEN_LOCK_2).set_data(CAN_DATA_CLOSE_LOCK);
 
     if (drawer_id == 1) 
     {
-      can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).set_data(can_data_open_lock);
+      can_signals_drawer_user_access.at(CAN_SIGNAL_OPEN_LOCK_1).set_data(can_data_open_lock);
     }
     if (drawer_id == 2)
     {
-      can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).set_data(can_data_open_lock);
+      can_signals_drawer_user_access.at(CAN_SIGNAL_OPEN_LOCK_2).set_data(can_data_open_lock);
     }
 
-    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_LED_RED).set_data(led_parameters.led_red);
-    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_LED_GREEN).set_data(led_parameters.led_green);
-    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_LED_BLUE).set_data(led_parameters.led_blue);
-    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).set_data(led_parameters.brightness);
-    can_msg_drawer_user_access.get_can_signals().at(CAN_SIGNAL_LED_MODE).set_data(led_parameters.mode);
+    can_signals_drawer_user_access.at(CAN_SIGNAL_LED_RED).set_data(led_parameters.led_red);
+    can_signals_drawer_user_access.at(CAN_SIGNAL_LED_GREEN).set_data(led_parameters.led_green);
+    can_signals_drawer_user_access.at(CAN_SIGNAL_LED_BLUE).set_data(led_parameters.led_blue);
+    can_signals_drawer_user_access.at(CAN_SIGNAL_LED_BRIGHTNESS).set_data(led_parameters.brightness);
+    can_signals_drawer_user_access.at(CAN_SIGNAL_LED_MODE).set_data(led_parameters.mode);
+
+    can_msg_drawer_user_access.set_can_signals(can_signals_drawer_user_access);
 
     return can_msg_drawer_user_access;
+  }
+
+  void DrawerGate::add_ascii_cmd_to_queue(std::string ascii_cmd)
+  {
+    // if queue was empty, the timer has been canceled before, so start timer for timer callbacks which trigger sending the ascii cmds
+    if (this->ascii_cmd_queue_.empty())
+    {
+      this->ascii_cmd_queue_.push(ascii_cmd);
+      this->send_ascii_cmds_timer_ = this->create_wall_timer(5ms, std::bind(&DrawerGate::send_ascii_cmds_timer_callback, this));
+    }
+    else
+    {
+      this->ascii_cmd_queue_.push(ascii_cmd);
+    }
   }
 
   void DrawerGate::set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface can_baudrate)
@@ -330,22 +349,22 @@ namespace drawer_gate
         break;
     }
 
-    this->ascii_cmd_queue_.push(msg);
+    this->add_ascii_cmd_to_queue(msg);
   }
 
   void DrawerGate::open_can_channel(void)
   {
-    this->ascii_cmd_queue_.push("O");
+    this->add_ascii_cmd_to_queue("O");
   }
 
   void DrawerGate::open_can_channel_listen_only_mode(void)
   {
-    this->ascii_cmd_queue_.push("L");
+    this->add_ascii_cmd_to_queue("L");
   }
 
   void DrawerGate::close_can_channel(void)
   {
-    this->ascii_cmd_queue_.push("C");
+    this->add_ascii_cmd_to_queue("C");
   }
   
   void DrawerGate::send_can_msg(robast_can_msgs::CanMessage can_message)
@@ -354,7 +373,7 @@ namespace drawer_gate
     
     if (ascii_cmd.has_value())
     {
-      this->ascii_cmd_queue_.push(ascii_cmd.value());
+      this->add_ascii_cmd_to_queue(ascii_cmd.value());
     }
     else
     {
@@ -379,7 +398,7 @@ namespace drawer_gate
   void DrawerGate::wait_until_initial_drawer_status_received(uint32_t drawer_controller_id)
   {
     std::unique_lock<std::mutex> lock_guard_initial_drawer_status_received(this->drawer_status_mutex_); // the lock will be released after the wait check
-    cv_.wait(
+    this->cv_.wait(
       lock_guard_initial_drawer_status_received, [this, drawer_controller_id]
       {
         return this->is_initial_drawer_status_received(drawer_controller_id);
@@ -389,7 +408,7 @@ namespace drawer_gate
   void DrawerGate::wait_until_drawer_is_opened(uint32_t drawer_controller_id, uint8_t drawer_id)
   {
     std::unique_lock<std::mutex> lock_guard_is_drawer_opend(this->drawer_status_mutex_); // the lock will be released after the wait check
-    cv_.wait(
+    this->cv_.wait(
       lock_guard_is_drawer_opend, [this, drawer_controller_id, drawer_id]
       {
         return this->is_drawer_open(drawer_controller_id, drawer_id);
@@ -451,7 +470,7 @@ namespace drawer_gate
   void DrawerGate::wait_until_drawer_is_closed(uint32_t drawer_controller_id, uint8_t drawer_id)
   {
     std::unique_lock<std::mutex> lock_guard(this->drawer_status_mutex_); // the lock will be released after the wait check
-    cv_.wait(
+    this->cv_.wait(
       lock_guard, [this, drawer_controller_id, drawer_id]
       {
         return this->is_drawer_closed(drawer_controller_id, drawer_id);
@@ -500,7 +519,7 @@ namespace drawer_gate
     this->drawer_status_by_drawer_controller_id_[drawer_controller_id].received_initial_drawer_status = false; 
     
     // Reset the flag that is responsible for clearing the serial buffer from old CAN messages
-    cleared_serial_buffer_from_old_can_msgs_ = false;
+    this->cleared_serial_buffer_from_old_can_msgs_ = false;
   }
 
 
@@ -548,13 +567,13 @@ namespace drawer_gate
   {
     RCLCPP_INFO(this->get_logger(), "Executing goal"); // DEBUGGING
 
-    if (drawer_is_beeing_accessed_)
+    if (this->drawer_is_beeing_accessed_)
     {
       RCLCPP_INFO(this->get_logger(), "There is currently another drawer beeing accessed so accessing another drawer is denied!"); // DEBUGGING
       return;
     }
 
-    drawer_is_beeing_accessed_ = true;
+    this->drawer_is_beeing_accessed_ = true;
 
     this->setup_serial_can_ubs_converter();
 
@@ -575,11 +594,9 @@ namespace drawer_gate
  
     this->state_machine_drawer_gate(drawer_controller_id, drawer_id, state);
 
-    // this->serial_helper_.close_serial();
-
     goal_handle->succeed(result);
 
-    drawer_is_beeing_accessed_ = false;
+    this->drawer_is_beeing_accessed_ = false;
     //TODO: Wait a little bit to clear drawer_to_be_refilled_by_drawer_controller_id_ to give LEDs enough time to make suitable lightshow
     this->drawer_to_be_refilled_by_drawer_controller_id_.clear(); // clear this mapping so it is again checked, if drawer still needs to be refilled
 

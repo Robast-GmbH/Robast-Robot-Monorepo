@@ -135,6 +135,8 @@ namespace drawer_gate
 
       void timer_callback(void);
 
+      void add_ascii_cmd_to_queue(std::string ascii_cmd);
+
       void send_ascii_cmds_timer_callback(void);
       
       void update_drawer_status_from_can(void);
