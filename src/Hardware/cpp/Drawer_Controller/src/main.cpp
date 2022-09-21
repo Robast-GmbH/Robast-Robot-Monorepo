@@ -21,6 +21,7 @@ uint8_t led_target_red;
 uint8_t led_target_green;
 uint8_t led_target_blue;
 uint8_t led_target_brightness;
+uint8_t led_target_brightness_fade_on_fade_off;
 uint8_t led_current_red;
 uint8_t led_current_green;
 uint8_t led_current_blue;
@@ -62,7 +63,7 @@ volatile uint8_t running_led_offset_from_middle = 0; // this variable controls w
   FUNCTIONS
 *********************************************************************************************************/
 
-void IRAM_ATTR on_timer_for_fading_up()
+void IRAM_ATTR on_timer_for_fading()
 {
   if (led_target_brightness > led_current_brightness)
   {
@@ -143,7 +144,7 @@ void initialize_led_strip(void)
 void initialize_timer(void)
 {
   fading_up_timer = timerBegin(0, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
-  timerAttachInterrupt(fading_up_timer, &on_timer_for_fading_up, true);
+  timerAttachInterrupt(fading_up_timer, &on_timer_for_fading, true);
   timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s
   timerAlarmEnable(fading_up_timer);
 
@@ -305,6 +306,36 @@ void led_closing_drawer_mode()
   deactivate_drawer_feedback_broadcast();
 }
 
+void led_fade_on_fade_off_mode()
+{
+  // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
+  if (led_target_brightness != led_current_brightness ||
+      led_target_red != led_current_red ||
+      led_target_green != led_current_green ||
+      led_target_blue != led_current_blue)
+  {
+    for(int i = 0; i < NUM_LEDS; i++)
+    {   
+      leds[i] = CRGB(led_target_red, led_target_green, led_target_blue);
+    }
+    led_current_red = led_target_red;
+    led_current_green = led_target_green;
+    led_current_blue = led_target_green;
+    FastLED.setBrightness(led_current_brightness);
+    FastLED.show();
+  }
+
+  // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
+  if (led_current_brightness == 0)
+  {
+    led_target_brightness = led_target_brightness_fade_on_fade_off;
+  }
+  else if (led_current_brightness == led_target_brightness_fade_on_fade_off)
+  {
+    led_target_brightness = 0;
+  }
+}
+
 void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
 {
   led_target_red = can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data();
@@ -320,6 +351,7 @@ void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
         break;
 
       case 1:
+        timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s
         led_current_brightness = 0;
         // fade on mode
         break;
@@ -330,6 +362,12 @@ void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
         running_led_offset_from_middle = 0;
         portEXIT_CRITICAL(&running_led_timer_mux);
         break;
+
+      case 3:
+        // led fade on + fade off mode
+        timerAlarmWrite(fading_up_timer, 10000, true); // fade on + fade off should be more slowly than only fading on, so choose a bigger value for the alarm_value
+        led_current_brightness = 0;
+        led_target_brightness_fade_on_fade_off = led_target_brightness;
       
       default:
         break;
@@ -462,6 +500,10 @@ void handle_led_control(void)
 
       case 2:
         led_closing_drawer_mode();
+        break;
+
+      case 3:
+        led_fade_on_fade_off_mode();
         break;
       
       default:
