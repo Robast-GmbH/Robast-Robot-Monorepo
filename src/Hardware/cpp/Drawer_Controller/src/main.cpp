@@ -4,8 +4,8 @@
 
 #include "pinout_defines.h"
 
-#include "robast_can_msgs/can_db.h"
-#include "robast_can_msgs/can_helper.h"
+#include "can_db.hpp"
+#include "can_helper.h"
 
 /*********************************************************************************************************
   GLOBAL VARIABLES AND CONSTANTS
@@ -195,22 +195,22 @@ void close_lock(uint8_t lock_id)
 
 void handle_lock_status(robast_can_msgs::CanMessage can_message)
 {
-  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_OPEN_LOCK)
+  if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_OPEN_LOCK)
   {
     open_lock_1 = true;
     activate_drawer_feedback_broadcast();
   }
-  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data == CAN_DATA_CLOSE_LOCK)
+  if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_CLOSE_LOCK)
   {
     open_lock_1 = false;
   }
 
-  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_OPEN_LOCK)
+  if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_OPEN_LOCK)
   {
     open_lock_2 = true;
     activate_drawer_feedback_broadcast();
   }
-  if (can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data == CAN_DATA_CLOSE_LOCK)
+  if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_CLOSE_LOCK)
   {
     open_lock_2 = false;
   }
@@ -307,11 +307,11 @@ void led_closing_drawer_mode()
 
 void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
 {
-  led_target_red = can_message.can_signals.at(CAN_SIGNAL_LED_RED).data;
-  led_target_green = can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data;
-  led_target_blue = can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data;
-  led_target_brightness = can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data;
-  led_mode = can_message.can_signals.at(CAN_SIGNAL_LED_MODE).data;
+  led_target_red = can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data();
+  led_target_green = can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data();
+  led_target_blue = can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data();
+  led_target_brightness = can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data();
+  led_mode = can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
 
   switch (led_mode)
     {
@@ -343,28 +343,28 @@ void debug_prints(robast_can_msgs::CanMessage can_message)
   Serial.print(" rx_dlc: ");
   Serial.print(uint8_t(rx_msg_dlc), DEC);
   Serial.print(" DRAWER ID: ");
-  Serial.print(can_message.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data, HEX);
+  Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data(), HEX);
   Serial.print(" CAN_SIGNAL_OPEN_LOCK_1: ");
-  Serial.print(can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_1).data, BIN);
+  Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data(), BIN);
   Serial.print(" CAN_SIGNAL_OPEN_LOCK_2: ");
-  Serial.print(can_message.can_signals.at(CAN_SIGNAL_OPEN_LOCK_2).data, BIN);
+  Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data(), BIN);
   Serial.print(" LED RED: ");
-  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_RED).data, DEC);
+  Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data(), DEC);
   Serial.print(" LED GREEN: ");
-  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_GREEN).data, DEC);
+  Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data(), DEC);
   Serial.print(" LED BLUE: ");
-  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_BLUE).data, DEC);
+  Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data(), DEC);
   Serial.print(" LED BRIGHTNESS: ");
-  Serial.print(can_message.can_signals.at(CAN_SIGNAL_LED_BRIGHTNESS).data, DEC);
+  Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data(), DEC);
   Serial.print(" LED MODE: ");
-  Serial.println(can_message.can_signals.at(CAN_SIGNAL_LED_MODE).data, DEC);
+  Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data(), DEC);
 }
 
 void handle_can_msg(robast_can_msgs::CanMessage can_message)
 {
   if (can_message.id == CAN_ID_DRAWER_USER_ACCESS)
   {
-    if (can_message.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data == DRAWER_CONTROLLER_ID)
+    if (can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data() == DRAWER_CONTROLLER_ID)
     {
       handle_lock_status(can_message);
 
@@ -409,30 +409,30 @@ void handle_reading_sensors(void)
 robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
 {
   robast_can_msgs::CanMessage can_msg_drawer_feedback = can_db.can_messages.at(CAN_MSG_DRAWER_FEEDBACK);
-  can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).data = DRAWER_CONTROLLER_ID;
+  can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(DRAWER_CONTROLLER_ID);
 
   if (moving_average_drawer1_closed_pin > 0.9){
-    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).data = 1;
+    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).set_data(1);
   } else {
-    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).data = 0;
+    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).set_data(0);
   }
 
   if (moving_average_sensor_lock1_pin > 0.9){
-    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).data = 1;
+    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).set_data(1);
   } else {
-    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).data = 0;
+    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).set_data(0);
   }
 
   if (moving_average_drawer2_closed_pin > 0.9){
-    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).data = 1;
+    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).set_data(1);
   } else {
-    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).data = 0;
+    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).set_data(0);
   }
 
   if (moving_average_sensor_lock2_pin > 0.9){
-    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).data = 1;
+    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).set_data(1);
   } else {
-    can_msg_drawer_feedback.can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).data = 0;
+    can_msg_drawer_feedback.get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).set_data(0);
   }
 
   return can_msg_drawer_feedback;
@@ -474,7 +474,7 @@ void sending_drawer_status_feedback(void)
 
   if (can_frame.has_value())
   {
-    byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().data);
+    byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().get_data());
     if(sndStat == CAN_OK){
       Serial.println("Message Sent Successfully!");
     } else {

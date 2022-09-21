@@ -20,10 +20,10 @@ namespace robast_can_msgs
     {
         std::vector<CanSignal> can_signals;
         uint8_t dlc = can_db_messages[can_msgs_index].dlc;
-        for (uint16_t i = 0; i < can_db_messages[can_msgs_index].can_signals.size(); i++)
+        for (uint16_t i = 0; i < can_db_messages[can_msgs_index].get_can_signals().size(); i++)
         {
-            uint8_t bit_start = can_db_messages[can_msgs_index].can_signals[i].bit_start;
-            uint8_t bit_length = can_db_messages[can_msgs_index].can_signals[i].bit_length;
+            uint8_t bit_start = can_db_messages[can_msgs_index].get_can_signals()[i].get_bit_start();
+            uint8_t bit_length = can_db_messages[can_msgs_index].get_can_signals()[i].get_bit_length();
             
             uint64_t can_signal_data = (can_msg_data << (bit_start + 8*(8-dlc))) >> (64 - bit_length);
 
@@ -234,10 +234,10 @@ namespace robast_can_msgs
     uint64_t join_together_CAN_data_from_CAN_message(CanMessage can_message)
     {  
         uint64_t can_data = 0;
-        for (uint8_t i = 0; i < can_message.can_signals.size(); i++)
+        for (uint8_t i = 0; i < can_message.get_can_signals().size(); i++)
         {
-            uint64_t can_signal_data = can_message.can_signals[i].data;
-            can_data = can_data | (can_signal_data << (64 - can_message.can_signals[i].bit_start - can_message.can_signals[i].bit_length));
+            uint64_t can_signal_data = can_message.get_can_signals()[i].get_data();
+            can_data = can_data | (can_signal_data << (64 - can_message.get_can_signals()[i].get_bit_start() - can_message.get_can_signals()[i].get_bit_length()));
         }
         return can_data;
     }

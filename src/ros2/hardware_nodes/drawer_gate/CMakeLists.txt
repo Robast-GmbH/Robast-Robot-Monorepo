@@ -40,6 +40,9 @@ set(library_drawer_gate ${executable_drawer_gate}_core)
 add_library(${library_drawer_gate} SHARED
   src/drawer_gate.cpp
   ${can_msg_dir}/src/can_helper.cpp #TODO: This can probably be done better
+  ${can_msg_dir}/src/can_frame.cpp #TODO: This can probably be done better
+  ${can_msg_dir}/src/can_message.cpp #TODO: This can probably be done better
+  ${can_msg_dir}/src/can_signal.cpp #TODO: This can probably be done better
   ${serial_helper_dir}/src/serial_helper.cpp #TODO: This can probably be done better
 )
 

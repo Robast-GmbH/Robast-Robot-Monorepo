@@ -2,6 +2,7 @@
 #define CAN_FRAME_HPP_
 
 #include <cmath>
+#include <cstdint>
 
 namespace robast_can_msgs
 {
@@ -15,7 +16,16 @@ namespace robast_can_msgs
 
             const uint32_t id;
             const uint8_t dlc;
-            void set_data(uint8_t data);
+
+            /**
+             * @brief A setter function for the data of the CanFrame
+             */
+            void set_data(uint8_t* data);
+
+            /**
+             * @brief A getter function for the data of the CanFrame
+             */
+			uint8_t* get_data();
             
         protected:
             uint8_t* data_;
