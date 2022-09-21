@@ -11,7 +11,7 @@
   GLOBAL VARIABLES AND CONSTANTS
 *********************************************************************************************************/
 
-#define DRAWER_CONTROLLER_ID 2 //TODO: Every DRAWER_CONTROLLER needs to have his own id
+#define DRAWER_CONTROLLER_ID 1 //TODO: Every DRAWER_CONTROLLER needs to have his own id
 
 #define NUM_LEDS 25 // number of LEDs for LED strip
 #define MIDDLE_LED 13 // address of the middle LED, which is important for running LED mode
@@ -352,12 +352,10 @@ void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
 
       case 1:
         // fade on mode
-        timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s
+        timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s    
         portENTER_CRITICAL(&fading_up_timer_mux);
         led_current_brightness = 0;
-        portENTER_CRITICAL(&fading_up_timer_mux);
-        
-        
+        portEXIT_CRITICAL(&fading_up_timer_mux);  
         break;
 
       case 2:
@@ -370,7 +368,9 @@ void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
       case 3:
         // led fade on + fade off mode
         timerAlarmWrite(fading_up_timer, 10000, true); // fade on + fade off should be more slowly than only fading on, so choose a bigger value for the alarm_value
+        portENTER_CRITICAL(&fading_up_timer_mux);
         led_current_brightness = 0;
+        portEXIT_CRITICAL(&fading_up_timer_mux);
         led_target_brightness_fade_on_fade_off = led_target_brightness;
       
       default:
