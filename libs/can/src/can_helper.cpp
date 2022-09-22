@@ -33,19 +33,25 @@ namespace robast_can_msgs
         return can_signals;
     }
 
-    std::optional<CanFrame> encode_can_message_into_can_frame(CanMessage can_message, std::vector<CanMessage> can_db_messages)
+    CanFrame encode_can_message_into_can_frame(CanMessage can_message, std::vector<CanMessage> can_db_messages)
     { 
         for (uint16_t j = 0; j < can_db_messages.size(); j++)
         {
             if (can_message.get_id() == can_db_messages[j].get_id())
             {
                 uint64_t can_data = join_together_CAN_data_from_CAN_message(can_message);
-                uint8_t* can_data_bytes = (uint8_t*) malloc (8 * sizeof(uint8_t));
+                uint8_t can_data_bytes[8];
                 u64_to_eight_bytes(can_data, can_data_bytes);
                 return CanFrame(can_message.get_id(), can_message.get_dlc(), can_data_bytes);
             }
         }
-        return std::nullopt;
+        // Please mind: We used to return std::option<CanFrame> for this function, but this didn't work
+        // due to the fact that an Object wrapped into a CanFrame will be created once temporary and then
+        // moved into the storage within the std::optional<> wrapping. This causes the destructor of the
+        // CanFrame class to be called twice, where there is a free() operation, which can't be called twice.
+        // Therefore return just the object CanFrame and in case there is a bad argument input (wrong CAN ID)
+        // we throw an exception.
+        throw std::invalid_argument("The CAN message that should be encoded into a CAN frame has an ID which is not yet defined in the CAN database!");
     }
 
     /* The USB-CAN Controller is controlled via simple ASCII commands over the serial port.
@@ -205,7 +211,6 @@ namespace robast_can_msgs
             big_endian = input;
         }
 
-        std::cout << "vor memcopy result[0]: " << (int)result[0] << std::endl;
         std::memcpy(result, &big_endian, sizeof(big_endian));
     }
 

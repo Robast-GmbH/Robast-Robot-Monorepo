@@ -6,19 +6,19 @@
 
 /*
 * HOW TO RUN THIS TEST ON WINDOWS:
-* - Go to directory src/robast_msg/robast_can_msgs/tests
+* - Go to directory libs/can/tests
 * - Run the following commands:
 * g++ -std=c++17 -c .\tests_main.cpp
-* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\src\* -o test_executable -I ..
+* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\src\* -o test_executable -I .. -Wall -Wextra -Wuseless-cast -Wdouble-promotion -Wnull-dereference -Wpedantic -Wshadow -Wnon-virtual-dtor -Wlogical-op
 * .\test_executable.exe
 */
 
 /*
 * HOW TO RUN THIS TEST ON LINUX:
-* - Go to directory src/robast_msg/robast_can_msgs/tests
+* - Go to directory libs/can/tests
 * - Run the following commands:
 * g++ -std=c++17 -c tests_main.cpp
-* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ../src/* -o test_executable -I ..
+* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ../src/* -o test_executable -I .. -Wall -Wextra -Wuseless-cast -Wdouble-promotion -Wnull-dereference -Wpedantic -Wshadow -Wnon-virtual-dtor -Wlogical-op
 * ./test_executable
 */
 
@@ -357,23 +357,21 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         }
 
         WHEN("Encoding a CAN message with an id, that exists in the can_db messages") {
-            std::optional<robast_can_msgs::CanFrame> encoded_can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_message, can_db.can_messages);
+            robast_can_msgs::CanFrame encoded_can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_message, can_db.can_messages);
 
             THEN("The resulting CanFrame Class should contain all the data that was contained in the CanMessage class") {
-                REQUIRE(encoded_can_frame.has_value());
-                REQUIRE(encoded_can_frame.value().get_id() == can_message.get_id());
-                REQUIRE(encoded_can_frame.value().get_dlc() == can_message.get_dlc());
+                REQUIRE(encoded_can_frame.get_id() == can_message.get_id());
+                REQUIRE(encoded_can_frame.get_dlc() == can_message.get_dlc());
                 for(uint8_t i=0; i<dlc; i++) {
-                    REQUIRE(encoded_can_frame.value().get_data()[i] == u8_can_data[i]);
+                    REQUIRE(encoded_can_frame.get_data()[i] == u8_can_data[i]);
                 }
             }
         }
 
         WHEN("Encoding a CAN message with an id, that does not exist in the can_db messages") {
-            std::optional<robast_can_msgs::CanFrame> encoded_can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_message_invalid_id, can_db.can_messages);
 
-            THEN("The resulting CanFrame should not contain a value") {
-                REQUIRE_FALSE(encoded_can_frame.has_value());
+            THEN("The resulting CanFrame should throw a invalid_argument exception") {
+                REQUIRE_THROWS_AS(robast_can_msgs::encode_can_message_into_can_frame(can_message_invalid_id, can_db.can_messages), std::invalid_argument);
             }
         }
 

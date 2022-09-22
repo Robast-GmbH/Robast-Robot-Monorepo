@@ -5,6 +5,8 @@
 #include <cstdint>
 #include <cstring>
 
+#include "can_db_defines.h"
+
 namespace robast_can_msgs
 {
     class CanFrame

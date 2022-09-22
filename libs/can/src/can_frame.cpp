@@ -6,8 +6,8 @@ namespace robast_can_msgs
     {
         this->id_ = id_in;
         this->dlc_ = dlc_in;
-        this->data_ = (uint8_t*) malloc (8 * sizeof(uint8_t));
-        std::memcpy(this->data_, data_in, 8);
+        this->data_ = (uint8_t*) malloc (CAN_STD_MSG_DLC_MAXIMUM * sizeof(uint8_t));
+        std::memcpy(this->data_, data_in, CAN_STD_MSG_DLC_MAXIMUM);
     }
 
     CanFrame::~CanFrame()

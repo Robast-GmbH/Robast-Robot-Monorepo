@@ -3,6 +3,8 @@
 
 namespace robast_can_msgs
 {
+    #define CAN_STD_MSG_DLC_MAXIMUM 8
+
     #define NUM_OF_CAN_MSGS 2
 
     #define CAN_ID_DRAWER_USER_ACCESS 0x001

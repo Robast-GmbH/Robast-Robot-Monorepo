@@ -520,17 +520,24 @@ void sending_drawer_status_feedback(void)
 {
   robast_can_msgs::CanMessage can_msg_drawer_feedback = create_drawer_feedback_can_msg();
 
-  std::optional<robast_can_msgs::CanFrame> can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_msg_drawer_feedback, can_db.can_messages);
-
-  if (can_frame.has_value())
+  try
   {
-    byte sndStat = CAN0.sendMsgBuf(can_frame.value().get_id(), 0, can_frame.value().get_dlc(), can_frame.value().get_data());
-    if(sndStat == CAN_OK){
+    robast_can_msgs::CanFrame can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_msg_drawer_feedback, can_db.can_messages);
+    byte sndStat = CAN0.sendMsgBuf(can_frame.get_id(), 0, can_frame.get_dlc(), can_frame.get_data());
+    if(sndStat == CAN_OK)
+    {
       Serial.println("Message Sent Successfully!");
-    } else {
+    }
+    else
+    {
       Serial.print("Error Sending Message... CAN Status is: ");
       Serial.println(sndStat);
-    }
+    }  
+  }
+  catch (const std::invalid_argument& exception)
+  {
+    Serial.print("Exception accurred while encoding CAN message into can frame. Exception message: ");
+    Serial.println(exception.what());
   }
 }
 

@@ -9,7 +9,7 @@
 #include <array>
 #include <algorithm>
 #include <iomanip>
-#include <iostream> //only for debugging
+#include <stdexcept>
 
 #include "can_message.h"
 #include "can_frame.h"
@@ -48,7 +48,7 @@ namespace robast_can_msgs
      * @param can_db_messages CAN messages from CAN database to encode the message with
      * @return std::optional<CanFrame>. Only contains a value if the can_message id exists in the can_db.
      */
-    std::optional<CanFrame> encode_can_message_into_can_frame(CanMessage can_message, std::vector<CanMessage> can_db_messages);  
+    CanFrame encode_can_message_into_can_frame(CanMessage can_message, std::vector<CanMessage> can_db_messages);  
 
     /**
      * @brief Encodes CAN message into a ASCII command, which is needed for the USB-CAN adapter
