@@ -1,0 +1,15 @@
+[submodule "spatio_temporal_voxel_layer.git"]
+	path = src/submodules/spatio_temporal_voxel_layer
+	url = https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
+[submodule "rosboard.git"]
+	path = src/submodules/rosboard
+	url = https://github.com/TAlscher/rosboard.git
+[submodule "Groot.git"]
+	path = src/test_and_debug/Groot
+	url = https://github.com/BehaviorTree/Groot.git
+[submodule "rb_theron_common.git"]
+	path = src/simulation/rb_theron_common
+	url = https://github.com/TorbenZurhelle/rb_theron_common.git
+[submodule "robotnik_sensors.git"]
+	path = src/simulation/robotnik_sensors
+	url = git@github.com:TipluJacob/robotnik_sensors.git
