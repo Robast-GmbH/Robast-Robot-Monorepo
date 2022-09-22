@@ -404,7 +404,7 @@ void debug_prints(robast_can_msgs::CanMessage can_message)
 
 void handle_can_msg(robast_can_msgs::CanMessage can_message)
 {
-  if (can_message.id == CAN_ID_DRAWER_USER_ACCESS)
+  if (can_message.get_id() == CAN_ID_DRAWER_USER_ACCESS)
   {
     if (can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data() == DRAWER_CONTROLLER_ID)
     {
@@ -524,7 +524,7 @@ void sending_drawer_status_feedback(void)
 
   if (can_frame.has_value())
   {
-    byte sndStat = CAN0.sendMsgBuf(can_frame.value().id, 0, can_frame.value().dlc, can_frame.value().get_data());
+    byte sndStat = CAN0.sendMsgBuf(can_frame.value().get_id(), 0, can_frame.value().get_dlc(), can_frame.value().get_data());
     if(sndStat == CAN_OK){
       Serial.println("Message Sent Successfully!");
     } else {

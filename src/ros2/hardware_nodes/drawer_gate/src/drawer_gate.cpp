@@ -61,7 +61,7 @@ namespace drawer_gate
     std::lock_guard<std::mutex> scoped_lock(drawer_status_mutex_); // the lock will be released after the scope of this function
     for (uint8_t i = 0; i < drawer_feedback_can_msgs.size(); i++)
     {
-      if (drawer_feedback_can_msgs.at(i).id == CAN_ID_DRAWER_FEEDBACK)
+      if (drawer_feedback_can_msgs.at(i).get_id() == CAN_ID_DRAWER_FEEDBACK)
       {
         uint32_t drawer_controller_id = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data();
         drawer_status drawer_status = {};

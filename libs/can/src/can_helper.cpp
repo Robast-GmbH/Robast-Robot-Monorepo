@@ -6,7 +6,7 @@ namespace robast_can_msgs
     {
         for (uint16_t can_msgs_index = 0; can_msgs_index < can_db_messages.size(); can_msgs_index++)
         {
-            if (msg_id == can_db_messages[can_msgs_index].id)
+            if (msg_id == can_db_messages[can_msgs_index].get_id())
             {
                 uint64_t can_msg_data = join_together_CAN_data_bytes_from_array(data, dlc);
                 std::vector<CanSignal> can_signals = assign_data_to_can_signals(can_msg_data, can_db_messages, can_msgs_index);
@@ -19,7 +19,7 @@ namespace robast_can_msgs
     std::vector<CanSignal> assign_data_to_can_signals(uint64_t can_msg_data, std::vector<CanMessage> can_db_messages, uint16_t can_msgs_index)
     {
         std::vector<CanSignal> can_signals;
-        uint8_t dlc = can_db_messages[can_msgs_index].dlc;
+        uint8_t dlc = can_db_messages[can_msgs_index].get_dlc();
         for (uint16_t i = 0; i < can_db_messages[can_msgs_index].get_can_signals().size(); i++)
         {
             uint8_t bit_start = can_db_messages[can_msgs_index].get_can_signals()[i].get_bit_start();
@@ -37,12 +37,13 @@ namespace robast_can_msgs
     { 
         for (uint16_t j = 0; j < can_db_messages.size(); j++)
         {
-            if (can_message.id == can_db_messages[j].id)
+            if (can_message.get_id() == can_db_messages[j].get_id())
             {
                 uint64_t can_data = join_together_CAN_data_from_CAN_message(can_message);
                 uint8_t* can_data_bytes = (uint8_t*) malloc (8 * sizeof(uint8_t));
                 u64_to_eight_bytes(can_data, can_data_bytes);
                 return CanFrame(can_message.id, can_message.dlc, can_data_bytes);
+                return CanFrame(can_message.get_id(), can_message.get_dlc(), can_data_bytes);
             }
         }
         return std::nullopt;
@@ -60,16 +61,16 @@ namespace robast_can_msgs
     {
         for (uint16_t j = 0; j < can_db_messages.size(); j++)
         {
-            if (can_message.id == can_db_messages[j].id)
+            if (can_message.get_id() == can_db_messages[j].get_id())
             {
                 uint64_t can_data = join_together_CAN_data_from_CAN_message(can_message);
-                can_data = can_data >> ((8 - can_message.dlc) * 8);
+                can_data = can_data >> ((8 - can_message.get_dlc()) * 8);
 
                 std::string ascii_command = "t";
                 
-                ascii_command.append(uint_to_hex_string(can_message.id, 3));
-                ascii_command.append(std::to_string(can_message.dlc));
-                ascii_command.append(uint_to_hex_string(can_data, can_message.dlc*2));
+                ascii_command.append(uint_to_hex_string(can_message.get_id(), 3));
+                ascii_command.append(std::to_string(can_message.get_dlc()));
+                ascii_command.append(uint_to_hex_string(can_data, can_message.get_dlc()*2));
 
                 return ascii_command;
             }
@@ -103,7 +104,7 @@ namespace robast_can_msgs
             uint32_t can_msg_id = hex_string_to_unsigned_int<uint32_t>(id_as_hex_string);
             for (uint16_t can_msgs_index = 0; can_msgs_index < can_db_messages.size(); can_msgs_index++)
             {
-                if (can_msg_id == can_db_messages[can_msgs_index].id)
+                if (can_msg_id == can_db_messages[can_msgs_index].get_id())
                 {
                     std::string dlc_as_hex_string = std::string(ascii_commands + 4, 1);
                     uint8_t dlc = hex_string_to_unsigned_int<uint8_t>(dlc_as_hex_string);
@@ -146,7 +147,7 @@ namespace robast_can_msgs
                 std::optional<CanMessage> decoded_can_message = decode_single_ascii_command_into_can_message(ascii_commands, ascii_commands.length(), can_db_messages);
                 if (decoded_can_message.has_value())
                 {
-                    if (decoded_can_message.value().id == can_msgs_id)
+                    if (decoded_can_message.value().get_id() == can_msgs_id)
                     {
                         received_can_msgs.push_back(decoded_can_message.value());
                     }
@@ -159,7 +160,7 @@ namespace robast_can_msgs
             std::optional<CanMessage> decoded_can_message = decode_single_ascii_command_into_can_message(ascii_commands, ascii_commands.length(), can_db_messages);
             if (decoded_can_message.has_value())
             {
-                if (decoded_can_message.value().id == can_msgs_id)
+                if (decoded_can_message.value().get_id() == can_msgs_id)
                 {
                     received_can_msgs.push_back(decoded_can_message.value());
                 }
@@ -205,7 +206,8 @@ namespace robast_can_msgs
             big_endian = input;
         }
 
-        std::memcpy(result, &big_endian, sizeof(input) );    
+        std::cout << "vor memcopy result[0]: " << (int)result[0] << std::endl;
+        std::memcpy(result, &big_endian, sizeof(big_endian));
     }
 
     template <typename T>

@@ -120,8 +120,8 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                         });
 
                 THEN("The created CanMessage class should encapsulate the data correctly") {
-                    REQUIRE(can_message.id == msg_id);
-                    REQUIRE(can_message.dlc == dlc);
+                    REQUIRE(can_message.get_id() == msg_id);
+                    REQUIRE(can_message.get_dlc() == dlc);
 
                     REQUIRE(can_message.get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_bit_start() == can_signal_drawer_id.get_bit_start());
                     REQUIRE(can_message.get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_bit_length() == can_signal_drawer_id.get_bit_length());
@@ -160,8 +160,8 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                     robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
                     THEN("The created CanDb class should contain the correct id, dlc and CanSignals with the correct bit_start and bit_length and data should be default 0.") {
-                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].id == CAN_ID_DRAWER_USER_ACCESS);
-                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].dlc == CAN_DLC_DRAWER_USER_ACCESS);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].get_id() == CAN_ID_DRAWER_USER_ACCESS);
+                        REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].get_dlc() == CAN_DLC_DRAWER_USER_ACCESS);
 
                         REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_bit_start() == can_signal_drawer_id.get_bit_start());
                         REQUIRE(can_db.can_messages[CAN_MSG_DRAWER_USER_ACCESS].get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_bit_length() == can_signal_drawer_id.get_bit_length());
@@ -203,8 +203,8 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
             robast_can_msgs::CanFrame can_frame = robast_can_msgs::CanFrame(msg_id, dlc, u8_can_data); 
 
             THEN("The created CanFrame class should encapsulate the data correctly") {
-                REQUIRE(can_frame.id == msg_id);
-                REQUIRE(can_frame.dlc == dlc);
+                REQUIRE(can_frame.get_id() == msg_id);
+                REQUIRE(can_frame.get_dlc() == dlc);
                 for (uint8_t i=0; i<dlc; i++) {
                     REQUIRE(can_frame.get_data()[i] == u8_can_data[i]);
                 }            
@@ -361,8 +361,8 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
 
             THEN("The resulting CanFrame Class should contain all the data that was contained in the CanMessage class") {
                 REQUIRE(encoded_can_frame.has_value());
-                REQUIRE(encoded_can_frame.value().id == can_message.id);
-                REQUIRE(encoded_can_frame.value().dlc == can_message.dlc);
+                REQUIRE(encoded_can_frame.value().get_id() == can_message.get_id());
+                REQUIRE(encoded_can_frame.value().get_dlc() == can_message.get_dlc());
                 for(uint8_t i=0; i<dlc; i++) {
                     REQUIRE(encoded_can_frame.value().get_data()[i] == u8_can_data[i]);
                 }
@@ -391,8 +391,8 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
 
             THEN("The resulting CanMessage class should contain all the data that was contained in the CanMessage class") {
                 REQUIRE(decoded_can_message.has_value());
-                REQUIRE(decoded_can_message.value().id == can_message.id);
-                REQUIRE(decoded_can_message.value().dlc == can_message.dlc);
+                REQUIRE(decoded_can_message.value().get_id() == can_message.get_id());
+                REQUIRE(decoded_can_message.value().get_dlc() == can_message.get_dlc());
 
                 REQUIRE(decoded_can_message.value().get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_bit_start() == bit_start_drawer_id);
                 REQUIRE(decoded_can_message.value().get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_bit_length() == bit_length_drawer_id);
@@ -473,8 +473,8 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
 
             THEN("The resulting CAN message should contain the correct data that was contained in the ASCII command") {
                 REQUIRE(decoded_can_message.has_value());
-                REQUIRE(decoded_can_message.value().id == can_message.id);
-                REQUIRE(decoded_can_message.value().dlc == can_message.dlc);
+                REQUIRE(decoded_can_message.value().get_id() == can_message.get_id());
+                REQUIRE(decoded_can_message.value().get_dlc() == can_message.get_dlc());
 
                 REQUIRE(decoded_can_message.value().get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_bit_start() == bit_start_drawer_id);
                 REQUIRE(decoded_can_message.value().get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_bit_length() == bit_length_drawer_id);
@@ -509,8 +509,8 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
                 REQUIRE(decoded_can_message.value().get_can_signals()[CAN_SIGNAL_LED_MODE].get_data() == data_LED_mode);
 
                 REQUIRE(decoded_can_message_drawer_feedback.has_value());
-                REQUIRE(decoded_can_message_drawer_feedback.value().id == 2);
-                REQUIRE(decoded_can_message_drawer_feedback.value().dlc == 4);
+                REQUIRE(decoded_can_message_drawer_feedback.value().get_id() == 2);
+                REQUIRE(decoded_can_message_drawer_feedback.value().get_dlc() == 4);
 
                 REQUIRE(decoded_can_message_drawer_feedback.value().get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_data() == 1);
                 REQUIRE(decoded_can_message_drawer_feedback.value().get_can_signals()[CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED].get_data() == 0);

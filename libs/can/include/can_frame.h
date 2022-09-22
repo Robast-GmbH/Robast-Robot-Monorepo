@@ -3,6 +3,7 @@
 
 #include <cmath>
 #include <cstdint>
+#include <cstring>
 
 namespace robast_can_msgs
 {
@@ -12,15 +13,11 @@ namespace robast_can_msgs
             /**
              * @brief A constructor for robast_can_msgs::CanFrame class
              */
-            CanFrame(uint32_t id_in, uint8_t dlc_in, uint8_t data_in[]) : id{id_in}, dlc{dlc_in}, data_{data_in} {}
-
+            CanFrame(uint32_t id_in, uint8_t dlc_in, uint8_t data_in[]);
             /**
              * @brief A destructor for robast_can_msgs::CanFrame class
              */
-            ~CanFrame() = default;
-
-            const uint32_t id;
-            const uint8_t dlc;
+            ~CanFrame();
 
             /**
              * @brief A setter function for the data of the CanFrame
@@ -31,9 +28,21 @@ namespace robast_can_msgs
              * @brief A getter function for the data of the CanFrame
              */
 			uint8_t* get_data();
+
+            /**
+             * @brief A getter function for the id of the CanFrame
+             */
+			uint32_t get_id() const;
+
+            /**
+             * @brief A getter function for the dlc of the CanFrame
+             */
+			uint8_t get_dlc() const;
             
         protected:
             uint8_t* data_;
+            uint8_t dlc_;
+            uint32_t id_;
     };
 
 }

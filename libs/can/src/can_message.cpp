@@ -11,4 +11,14 @@ namespace robast_can_msgs
     {
         return this->can_signals_;
     }
+
+    uint32_t CanMessage::get_id() const
+    {
+        return this->id_;
+    }
+
+    uint8_t CanMessage::get_dlc() const
+    {
+        return this->dlc_;
+    }
 }
