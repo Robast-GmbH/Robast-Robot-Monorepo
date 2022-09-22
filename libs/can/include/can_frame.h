@@ -29,7 +29,7 @@ namespace robast_can_msgs
             /**
              * @brief A getter function for the data of the CanFrame
              */
-			uint8_t* get_data();
+			uint8_t* get_data() const;
 
             /**
              * @brief A getter function for the id of the CanFrame

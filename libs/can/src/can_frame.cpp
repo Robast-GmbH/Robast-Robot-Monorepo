@@ -20,7 +20,7 @@ namespace robast_can_msgs
         this->data_ = data;
     }
 	
-	uint8_t* CanFrame::get_data()
+	uint8_t* CanFrame::get_data() const
     {
         return this->data_;
     }

@@ -27,17 +27,17 @@ namespace robast_can_msgs
             /**
              * @brief A getter function for the data of the CanSignal
              */
-			uint64_t get_data();
+			uint64_t get_data() const;
 
             /**
              * @brief A getter function for the bit_start of the CanSignal
              */
-			uint8_t get_bit_start();
+			uint8_t get_bit_start() const;
 
             /**
              * @brief A getter function for the bit_length of the CanSignal
              */
-			uint8_t get_bit_length();
+			uint8_t get_bit_length() const;
 
         protected:
             uint64_t data_;

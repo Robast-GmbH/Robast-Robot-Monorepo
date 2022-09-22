@@ -7,17 +7,17 @@ namespace robast_can_msgs
         this->data_ = data;
     }
 	
-	uint64_t CanSignal::get_data()
+	uint64_t CanSignal::get_data() const
     {
         return this->data_;
     }
 
-    uint8_t CanSignal::get_bit_start()
+    uint8_t CanSignal::get_bit_start() const
     {
         return this->bit_start_;
     }
 
-    uint8_t CanSignal::get_bit_length()
+    uint8_t CanSignal::get_bit_length() const
     {
         return this->bit_length_;
     }
