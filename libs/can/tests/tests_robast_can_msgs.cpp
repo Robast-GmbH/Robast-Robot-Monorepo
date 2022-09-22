@@ -9,7 +9,7 @@
 * - Go to directory src/robast_msg/robast_can_msgs/tests
 * - Run the following commands:
 * g++ -std=c++17 -c .\tests_main.cpp
-* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\src\* -o test_executable -I ..\
+* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\src\* -o test_executable -I ..
 * .\test_executable.exe
 */
 
@@ -18,7 +18,7 @@
 * - Go to directory src/robast_msg/robast_can_msgs/tests
 * - Run the following commands:
 * g++ -std=c++17 -c tests_main.cpp
-* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ../src/* -o test_executable -I ..\
+* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ../src/* -o test_executable -I ..
 * ./test_executable
 */
 

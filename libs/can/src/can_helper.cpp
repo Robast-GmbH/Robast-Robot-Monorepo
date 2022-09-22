@@ -42,7 +42,6 @@ namespace robast_can_msgs
                 uint64_t can_data = join_together_CAN_data_from_CAN_message(can_message);
                 uint8_t* can_data_bytes = (uint8_t*) malloc (8 * sizeof(uint8_t));
                 u64_to_eight_bytes(can_data, can_data_bytes);
-                return CanFrame(can_message.id, can_message.dlc, can_data_bytes);
                 return CanFrame(can_message.get_id(), can_message.get_dlc(), can_data_bytes);
             }
         }
