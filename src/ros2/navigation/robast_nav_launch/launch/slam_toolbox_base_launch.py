@@ -15,7 +15,7 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
 
-    with open("environment_vars.yaml", 'r') as stream:
+    with open("environment_vars.yaml", "r") as stream:
         try:
             environment_yaml = yaml.safe_load(stream)
             print(environment_yaml)
@@ -26,45 +26,50 @@ def generate_launch_description():
     init_y = environment_yaml["init_y"]
     init_yaw = environment_yaml["init_yaw"]
 
-    robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
+    robast_nav_launch_dir = get_package_share_directory("robast_nav_launch")
 
-    namespace = LaunchConfiguration('namespace')
-    use_sim_time = LaunchConfiguration('use_sim_time')
-    autostart = LaunchConfiguration('autostart')
-    slam_params_file = LaunchConfiguration('slam_params_file')
-    slam_posegraph = LaunchConfiguration('slam_posegraph')
+    namespace = LaunchConfiguration("namespace")
+    use_sim_time = LaunchConfiguration("use_sim_time")
+    autostart = LaunchConfiguration("autostart")
+    slam_params_file = LaunchConfiguration("slam_params_file")
+    slam_posegraph = LaunchConfiguration("slam_posegraph")
     # robot_start_pose = LaunchConfiguration('map_start_pose')
-    slam_mode = LaunchConfiguration('slam_mode')
-    slam_map_topic = LaunchConfiguration('slam_map_topic')
-    transform_publish_period = LaunchConfiguration('transform_publish_period')
-    slam_executable = LaunchConfiguration('slam_executable')
+    slam_mode = LaunchConfiguration("slam_mode")
+    slam_map_topic = LaunchConfiguration("slam_map_topic")
+    transform_publish_period = LaunchConfiguration("transform_publish_period")
+    slam_executable = LaunchConfiguration("slam_executable")
 
     # setup launch arguments (ist tatsächlich übersichtlicher und relevant um die zu überschreiben, wenn du von wo anders aufrufst)
 
     declare_namespace_cmd = DeclareLaunchArgument(
-        'namespace',
-        default_value='',
-        description='Top-level namespace')
+        "namespace", default_value="", description="Top-level namespace"
+    )
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
-        'use_sim_time',
-        default_value='true',
-        description='Use simulation (Gazebo) clock if true')
+        "use_sim_time",
+        default_value="true",
+        description="Use simulation (Gazebo) clock if true",
+    )
 
     declare_autostart_cmd = DeclareLaunchArgument(
-        'autostart',
-        default_value='true',
-        description='Automatically startup the nav2 stack')
+        "autostart",
+        default_value="true",
+        description="Automatically startup the nav2 stack",
+    )
 
     declare_slam_toolbox_params_file_cmd = DeclareLaunchArgument(
-        'slam_params_file',
-        default_value=os.path.join(robast_nav_launch_dir, 'config', 'slam_toolbox_params_offline.yaml'),
-        description='Full path to the ROS 2 slam params file to use')
+        "slam_params_file",
+        default_value=os.path.join(
+            robast_nav_launch_dir, "config", "slam", "slam_toolbox_params_offline.yaml"
+        ),
+        description="Full path to the ROS 2 slam params file to use",
+    )
 
     declare_slam_posegraph_file_cmd = DeclareLaunchArgument(
-        'slam_posegraph',
-        default_value=os.path.join(robast_nav_launch_dir, 'maps', "new_6OG"),
-        description='Full path to the slam_toolbox posegraph map file to use')
+        "slam_posegraph",
+        default_value=os.path.join(robast_nav_launch_dir, "maps", "new_6OG"),
+        description="Full path to the slam_toolbox posegraph map file to use",
+    )
 
     # declare_robot_start_pose_cmd = DeclareLaunchArgument(
     #     'robot_start_pose',
@@ -72,79 +77,81 @@ def generate_launch_description():
     #     description='Coordinates the robot spawns in the simulation')
 
     declare_slam_mode_param_cmd = DeclareLaunchArgument(
-        'slam_mode',
-        default_value='mapping',
-        description='You can choose between mapping and localization'
+        "slam_mode",
+        default_value="mapping",
+        description="You can choose between mapping and localization",
     )
 
     declare_slam_map_topic_cmd = DeclareLaunchArgument(
-        'slam_map_topic',
-        default_value='map',
-        description='Name of the occupancy grid topic e.g. /map'
+        "slam_map_topic",
+        default_value="map",
+        description="Name of the occupancy grid topic e.g. /map",
     )
 
     declare_transform_publish_period_cmd = DeclareLaunchArgument(
-        'transform_publish_period',
-        default_value='0.02',
-        description='if 0 never publishes odometry Wenn der zuhoch => nav ist nurnoch in recovery'
+        "transform_publish_period",
+        default_value="0.02",
+        description="if 0 never publishes odometry Wenn der zuhoch => nav ist nurnoch in recovery",
     )
 
     declare_slam_executable_cmd = DeclareLaunchArgument(
-        'slam_executable',
-        default_value='sync_slam_toolbox_node',
-        description='kind of slam toolbox node'
+        "slam_executable",
+        default_value="sync_slam_toolbox_node",
+        description="kind of slam toolbox node",
     )
 
     # Make re-written yaml
     param_substitutions = {
-        'namespace': namespace,
-        'map_file_name': slam_posegraph,
+        "namespace": namespace,
+        "map_file_name": slam_posegraph,
         # 'use_sim_time': use_sim_time,
-        'mode': slam_mode,
-        'map_name': slam_map_topic,
-        'transform_publish_period': transform_publish_period}
+        "mode": slam_mode,
+        "map_name": slam_map_topic,
+        "transform_publish_period": transform_publish_period,
+    }
 
     configured_params = RewrittenYaml(
         source_file=slam_params_file,
         root_key=namespace,
         param_rewrites=param_substitutions,
-        convert_types=True)
+        convert_types=True,
+    )
 
-    remappings_amcl = [('/map', 'map'),
-                       ('/map_metadata', 'map_metadata')]
+    remappings_amcl = [("/map", "map"), ("/map_metadata", "map_metadata")]
 
     remappings_map_server = remappings_amcl
 
     start_slam_toolbox_cmd = Node(
-        package='slam_toolbox',
+        package="slam_toolbox",
         executable=slam_executable,
         namespace=namespace,
-        name='slam_toolbox',
-        output='screen',
+        name="slam_toolbox",
+        output="screen",
         parameters=[
             configured_params,
-            {'map_file_name': slam_posegraph},
-            {'use_sim_time': use_sim_time},
-            {'map_start_pose': [float(init_x), float(init_y), float(init_yaw)]}
+            {"map_file_name": slam_posegraph},
+            {"use_sim_time": use_sim_time},
+            {"map_start_pose": [float(init_x), float(init_y), float(init_yaw)]},
         ],
-        remappings=remappings_map_server
+        remappings=remappings_map_server,
     )
 
     start_lifecycle_manager_cmd = Node(
-        package='nav2_lifecycle_manager',
-        executable='lifecycle_manager',
-        name='lifecycle_manager_navigation',
+        package="nav2_lifecycle_manager",
+        executable="lifecycle_manager",
+        name="lifecycle_manager_navigation",
         namespace=namespace,
-        output='screen',
+        output="screen",
         parameters=[
-            {'use_sim_time': use_sim_time},
-            {'autostart': autostart},
-            {'node_names': ['slam_toolbox']}
-        ])
+            {"use_sim_time": use_sim_time},
+            {"autostart": autostart},
+            {"node_names": ["slam_toolbox"]},
+        ],
+    )
 
     ld = LaunchDescription()
     # Set env var to print messages to stdout immediately
-    ld.add_action(SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'))
+    ld.add_action(SetEnvironmentVariable("RCUTILS_LOGGING_BUFFERED_STREAM", "1"))
 
     # arguments
     ld.add_action(declare_namespace_cmd)

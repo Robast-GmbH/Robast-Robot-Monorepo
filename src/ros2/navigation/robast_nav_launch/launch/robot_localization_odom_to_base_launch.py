@@ -11,7 +11,7 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
 
-    with open("environment_vars.yaml", 'r') as stream:
+    with open("environment_vars.yaml", "r") as stream:
         try:
             environment_yaml = yaml.safe_load(stream)
             print(environment_yaml)
@@ -20,8 +20,12 @@ def generate_launch_description():
 
     config_directory = environment_yaml["config_directory"]
 
-    robot_localization_params_yaml = os.path.join(get_package_share_directory(
-        'robast_nav_launch'), config_directory, 'robot_localization_ekf_odom_to_base.yaml')
+    robot_localization_params_yaml = os.path.join(
+        get_package_share_directory("robast_nav_launch"),
+        config_directory,
+        "localization",
+        "robot_localization_ekf_odom_to_base.yaml",
+    )
 
     # Please mind:
     # Because we have config files for simulation and real life we set use_sim_time directly in the config files
@@ -47,16 +51,17 @@ def generate_launch_description():
     #     convert_types=True)
 
     start_robot_localization_cmd = Node(
-        package='robot_localization',
-        executable='ekf_node',
-        name='ekf_filter_node',
-        output='screen',
-        parameters=[robot_localization_params_yaml])
+        package="robot_localization",
+        executable="ekf_node",
+        name="ekf_filter_node",
+        output="screen",
+        parameters=[robot_localization_params_yaml],
+    )
 
     ld = LaunchDescription()
 
     # Set env var to print messages to stdout immediately
-    ld.add_action(SetEnvironmentVariable('RCUTILS_LOGGING_BUFFERED_STREAM', '1'))
+    ld.add_action(SetEnvironmentVariable("RCUTILS_LOGGING_BUFFERED_STREAM", "1"))
 
     # ld.add_action(declare_namespace_cmd)
     # ld.add_action(declare_use_sim_time_cmd)

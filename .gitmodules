@@ -8,8 +8,8 @@
 	path = src/test_and_debug/Groot
 	url = https://github.com/BehaviorTree/Groot.git
 [submodule "rb_theron_common.git"]
-	path = src/simulation/rb_theron_common
+	path = src/ros2/robot_description/rb_theron_common
 	url = https://github.com/TorbenZurhelle/rb_theron_common.git
 [submodule "robotnik_sensors.git"]
-	path = src/simulation/robotnik_sensors
+	path = src/ros2/robot_description/robotnik_sensors
 	url = git@github.com:TipluJacob/robotnik_sensors.git

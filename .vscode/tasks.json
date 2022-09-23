@@ -136,7 +136,7 @@
                 {
                         "type": "shell",
                         "label": "start keepout_mask",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch mask_server_launch.py",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup mask_server_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -220,7 +220,7 @@
                 {
                         "type": "shell",
                         "label": "start rviz",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch rviz_launch.py",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup rviz_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -230,7 +230,7 @@
                 {
                         "type": "shell",
                         "label": "start rviz_amcl",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch rviz_amcl_launch.py",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup rviz_amcl_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -240,7 +240,7 @@
                 {
                         "type": "shell",
                         "label": "start nav_without_localization",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_launch.py",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup nav_without_localization_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -250,7 +250,7 @@
                 {
                         "type": "shell",
                         "label": "start nav_without_localization_with_door_bells_launch",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_launch.py use_interim_goal:=true",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup nav_without_localization_launch.py use_interim_goal:=true",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -260,7 +260,7 @@
                 {
                         "type": "shell",
                         "label": "start slam_toolbox",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch slam_toolbox_launch.py",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup slam_toolbox_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -270,7 +270,7 @@
                 {
                         "type": "shell",
                         "label": "start slam_toolbox_heiligenhafen",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch slam_toolbox_launch.py world_posegraph:='cannot_be_empty'",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup slam_toolbox_launch.py world_posegraph:='cannot_be_empty'",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -280,7 +280,7 @@
                 {
                         "type": "shell",
                         "label": "start amcl_with_slam_mapping",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch slam_with_amcl_launch.py",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup slam_with_amcl_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -290,7 +290,7 @@
                 {
                         "type": "shell",
                         "label": "start amcl",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch amcl_launch.py",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup amcl_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -300,7 +300,7 @@
                 {
                         "type": "shell",
                         "label": "start robot_localization",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch robot_localization_odom_to_base_launch.py;",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py;",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -390,7 +390,7 @@
                 {
                         "type": "shell",
                         "label": "start nav_without_localization_with_map_buffer",
-                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch robast_nav_launch nav_without_localization_launch.py use_map_buffer:=true",
+                        "command": "source /workspaces/Robast_RosTheron/shell_setup.sh; ros2 launch nav_bringup nav_without_localization_launch.py use_map_buffer:=true",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

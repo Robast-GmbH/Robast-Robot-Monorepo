@@ -17,7 +17,7 @@ POSE_INIT_Z = os.environ['POSE_INIT_Z']
 
 def generate_launch_description():
 
-    robast_nav_launch_dir = get_package_share_directory('robast_nav_launch')
+    nav_bringup_dir = get_package_share_directory('nav_bringup')
 
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')

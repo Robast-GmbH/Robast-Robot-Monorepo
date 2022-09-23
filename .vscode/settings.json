@@ -137,5 +137,6 @@
         "editor.defaultFormatter": "ms-python.python"
     },
     "C_Cpp.default.cppStandard": "c++20",
-    "cmake.configureOnOpen": false
+    "cmake.configureOnOpen": false,
+    "python.formatting.provider": "black"
 }
