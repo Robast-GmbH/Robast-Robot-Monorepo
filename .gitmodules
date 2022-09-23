@@ -1,11 +1,11 @@
 [submodule "spatio_temporal_voxel_layer.git"]
-	path = src/submodules/spatio_temporal_voxel_layer
+	path = src/ros2/navigation/external_plugins/spatio_temporal_voxel_layer
 	url = https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
 [submodule "rosboard.git"]
-	path = src/submodules/rosboard
+	path = src/ros2/test_and_debug/rosboard
 	url = https://github.com/TAlscher/rosboard.git
 [submodule "Groot.git"]
-	path = src/test_and_debug/Groot
+	path = src/ros2/test_and_debug/Groot
 	url = https://github.com/BehaviorTree/Groot.git
 [submodule "rb_theron_common.git"]
 	path = src/ros2/robot_description/rb_theron_common
