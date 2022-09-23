@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+	<!-- Rubber wheel transmission -->
+	<xacro:macro name="rubber_wheel_transmission" params="prefix">
+	<!-- Transmission is important to link the joints and the controller (see rb_theron_control/config/rb_theron_control.yaml)-->
+		<transmission name="${prefix}_wheel_joint_trans">
+			<type>transmission_interface/SimpleTransmission</type>
+			<joint name="${prefix}_wheel_joint">
+				<!-- for the gazebo plugin -->
+				<!--hardwareInterface>EffortJointInterface</hardwareInterface-->
+				<!-- for ros control controller -->
+				<hardwareInterface>hardware_interface/VelocityJointInterface</hardwareInterface>
+			</joint>            
+			<actuator name="${prefix}_wheel_joint_motor">       
+				<mechanicalReduction>1</mechanicalReduction>
+				<motorTorqueConstant>20</motorTorqueConstant>
+			</actuator>
+		</transmission>
+
+		<ros2_control name="${prefix}_wheel_joint_ros2_control" type="system">
+			<!-- <hardware>
+				<xacro:if value="${use_fake_hardware}">
+				<plugin>fake_components/GenericSystem</plugin>
+				<param name="fake_sensor_commands">${fake_sensor_commands}</param>
+				<param name="state_following_offset">0.0</param>
+				</xacro:if>
+				<xacro:unless value="${use_fake_hardware}">
+				<plugin>ros2_control_demo_hardware/DiffBotSystemHardware</plugin>
+				<param name="example_param_hw_start_duration_sec">2.0</param>
+				<param name="example_param_hw_stop_duration_sec">3.0</param>
+				</xacro:unless>
+			</hardware> -->
+			<hardware>
+				<plugin>fake_components/GenericSystem</plugin>
+			</hardware>    
+			<joint name="${prefix}_wheel_joint">
+				<command_interface name="velocity">
+				<param name="min">-1</param>
+				<param name="max">1</param>
+				</command_interface>
+				<state_interface name="position"/>
+				<state_interface name="velocity"/>
+			</joint>
+		</ros2_control>
+
+
+	</xacro:macro>
+
+</robot>
