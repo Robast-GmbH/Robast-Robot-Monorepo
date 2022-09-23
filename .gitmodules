@@ -7,6 +7,3 @@
 [submodule "Groot.git"]
 	path = src/ros2/test_and_debug/Groot
 	url = https://github.com/BehaviorTree/Groot.git
-[submodule "rb_theron_common.git"]
-	path = src/ros2/robot_description/rb_theron_common
-	url = https://github.com/TorbenZurhelle/rb_theron_common.git
