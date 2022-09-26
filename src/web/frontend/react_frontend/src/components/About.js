@@ -1,5 +1,4 @@
 import { Link} from 'react-router-dom'
-import DebugRequester from './DebugRequester'
 
 function About() {
         return (

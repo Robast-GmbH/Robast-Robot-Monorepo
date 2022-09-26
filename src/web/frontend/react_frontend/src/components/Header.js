@@ -1,4 +1,3 @@
-import Button from './Button'
 import { useLocation } from 'react-router-dom'
 import DisplayAnImage from './DisplayAnImage';
 import Logo from '../imgs/Logo.png';
