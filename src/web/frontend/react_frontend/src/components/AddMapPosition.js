@@ -3,10 +3,6 @@ import PropTypes from 'prop-types'
 import Stack from '@mui/material/Stack';
 import TextField from '@mui/material/TextField';
 import Button from '@mui/material/Button';
-import InputLabel from '@mui/material/InputLabel';
-
-
-
 
 const AddMapPosition = ({ onAdd }) => {
         const [name, setPositionItemTitle] = useState('')
