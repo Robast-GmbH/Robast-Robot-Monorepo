@@ -72,18 +72,7 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-launch-testing-ament-cmake \
   ros-${ROS_DISTRO}-launch-testing-ros \
   python3-autopep8 \
-  # Install ROS Nav stuff 
-  # ros-${ROS_DISTRO}-cartographer \
-  # ros-${ROS_DISTRO}-cartographer-ros \
-  # ros-${ROS_DISTRO}-navigation2 \
-  # ros-${ROS_DISTRO}-nav2-bringup \
-  # ros-${ROS_DISTRO}-robot-localization \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-  # Depencencies needed to build the spatio_temporal_voxel_layer package:
-  # libopenvdb-dev \
-  # Dependencies needed to build the robot_localization package:
-	# libgeographic-dev \
-  # ros-${ROS_DISTRO}-geographic-msgs \
   ros-${ROS_DISTRO}-diagnostic-updater \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
@@ -101,7 +90,7 @@ RUN apt-get update \
 
 RUN apt-get update && apt-get upgrade -y
 
-COPY "/entrypoint.sh" "/entrypoint.sh"
+# COPY "/entrypoint.sh" "/entrypoint.sh"
 #ENTRYPOINT ["/entrypoint.sh"]
 
 
