@@ -7,7 +7,7 @@ services:
       dockerfile: ../../src/ros2/simulation/Dockerfile
     image: robast1
     volumes:
-      - ./simulation:/workspace/
+      - ./simulation/:/workspace/:cached
       - ../../src/ros2/simulation:/workspace/src/simulation:cached
       - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
@@ -21,7 +21,7 @@ services:
       dockerfile: ../../src/ros2/navigation/Dockerfile
     image: robast2
     volumes:
-      - ./navigation:/workspace/
+      - ./navigation/:/workspace/:cached
       - ../../src/ros2/navigation:/workspace/src/navigation:cached
       - ../../src/ros2/communication_interfaces:/workspace/src/communication_interfaces:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
