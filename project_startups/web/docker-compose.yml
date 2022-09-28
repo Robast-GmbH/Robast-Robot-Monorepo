@@ -10,8 +10,6 @@ services:
       - ./backend/:/workspace/:cached
       - ../../src/web/backend:/workspace/src/:cached
     network_mode: "host"
-    ports:
-      - "8000:8000"
     # command: /bin/sh -c "while sleep 1000; do :; done"
     command: /bin/sh -c "python /workspace/src/main.py"
     
@@ -25,7 +23,10 @@ services:
       - ./frontend/:/workspace/:cached
       - ../../src/web/frontend/react_frontend:/workspace/src/:cached
     network_mode: "host"
-    ports:
-      - "3000:3000"
     command: /bin/sh -c "while sleep 1000; do :; done"
 
+
+networks:
+  host:
+    name: host
+    external: true
