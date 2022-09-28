@@ -2,7 +2,7 @@ import yaml
 from PIL import Image
 import schemas
 
-[x,y] = Image.open("/workspaces/Robast_Server/base.png").size
+[x,y] = Image.open("/workspace/src/base.png").size
 
 def readMapSetup(filename):
     with open(filename, 'r') as file:

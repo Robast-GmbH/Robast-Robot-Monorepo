@@ -3,27 +3,29 @@ version: '3.9'
 services:
   backend:
     build:
-      context: .
-      dockerfile: ../../src/web/backend/Dockerfile
+      context: ../../src/web/backend
+      dockerfile: /Dockerfile
+    image: backend:fast_api
     volumes:
       - ./backend/:/workspace/:cached
-      # - ../../src/web/backend:/workspace/src/:cached
+      - ../../src/web/backend:/workspace/src/:cached
     network_mode: "host"
-    command: /bin/sh -c "while sleep 1000; do :; done"
+    ports:
+      - "8000:8000"
+    # command: /bin/sh -c "while sleep 1000; do :; done"
+    command: /bin/sh -c "python /workspace/src/main.py"
     
   #evtl mit profiles testen um nur backend oder nur frontend zu starten
   frontend:
     build:
-      context: .
-      dockerfile: ../../src/web/frontend/react_frontend/Dockerfile
+      context: ../../src/web/frontend/react_frontend
+      dockerfile: /Dockerfile
+    image: frontend:react_frontend
     volumes:
       - ./frontend/:/workspace/:cached
-      - ../../src/src/web/frontend/react_frontend:/workspace/src/:cached
+      - ../../src/web/frontend/react_frontend:/workspace/src/:cached
     network_mode: "host"
+    ports:
+      - "3000:3000"
     command: /bin/sh -c "while sleep 1000; do :; done"
 
-
-networks:
-  host:
-    name: host
-    external: true
