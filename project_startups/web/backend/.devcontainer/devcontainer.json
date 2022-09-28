@@ -10,6 +10,7 @@
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
 	},
+	"forwardPorts": [8000],
 	"extensions": [
 		"dotjoshjohnson.xml",
 		"laurenttreguier.uncrustify",
