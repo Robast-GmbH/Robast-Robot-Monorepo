@@ -1,11 +1,8 @@
 import PropTypes from 'prop-types'
-import { FaTimes } from 'react-icons/fa'
 import NoDrinksIcon from '@mui/icons-material/NoDrinks';
 import IconButton from '@mui/material/IconButton';
 import React from 'react'
-import ButtonUnstyled from '@mui/base/ButtonUnstyled';
 import LocalBarIcon from '@mui/icons-material/LocalBar';
-import { styled } from '@mui/system';
 import Button from '@mui/material/Button';
 
 import { useTheme } from '@mui/material/styles';

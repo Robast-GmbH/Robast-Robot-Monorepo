@@ -1,9 +1,6 @@
 import { useState } from 'react'
 import PropTypes from 'prop-types'
 
-
-
-
 const AddOrder = ({ onAdd, coords }) => {
         const [order_item, setOrderItem] = useState('')
         const [recurring_order, setRecurringOrder] = useState(false)

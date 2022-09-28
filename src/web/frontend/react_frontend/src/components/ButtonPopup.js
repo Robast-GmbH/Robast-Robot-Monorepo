@@ -1,8 +1,4 @@
 import PropTypes from 'prop-types'
-import SimpleMap from './SimpleMap';
-import MapPositions from './MapPositions';
-import AddMapPosition from './AddMapPosition';
-import Popup from 'reactjs-popup';
 
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
