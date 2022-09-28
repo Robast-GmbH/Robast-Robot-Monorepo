@@ -1,0 +1,44 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+
+	"name": "Robast Simulation",
+	"dockerComposeFile": "../../docker-compose.yml",
+	"service": "navigation",
+	"workspaceFolder": "/workspace",
+	"shutdownAction": "stopCompose",
+	"remoteUser": "ubuntu",
+	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
+	// "dockerFile": "../../../../src/ros2/simulation/Dockerfile",
+	// "build": {
+	// 	"args": {
+	// 		"WORKSPACE": "${containerWorkspaceFolder}"
+	// 	}
+	// },
+	// "runArgs": [
+	// 	"--name=simulation_docker",
+	// 	"--network=host",		
+	// 	"--cap-add=SYS_PTRACE",
+	// 	"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
+	// ],
+	// "containerEnv": { "DISPLAY": "${localEnv:DISPLAY}" },
+	// // Set *default* container specific settings.json values on container create.
+	"postStartCommand": "./entrypoint.sh",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"ms-iot.vscode-ros",
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"redhat.vscode-yaml",
+		"smilerobotics.urdf",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one",
+		"jaehyunshim.vscode-ros2",
+		"tomoki1207.pdf"
+	]
+}

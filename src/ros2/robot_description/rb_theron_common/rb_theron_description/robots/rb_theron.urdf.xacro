@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<robot name="rb_theron"
+	xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+
+	<!-- ***************** -->
+	<!-- Imported elements -->
+	<!-- ***************** -->
+
+	<!-- First we import all posible elements defined in the urdf.xacro files. All these elements are defined as macro:xacros -->
+
+	<!-- Import differential base elements -->
+	<xacro:include filename="$(find rb_theron_description)/urdf/bases/theron_base.urdf.xacro" />
+
+	<!-- Import wheels -->
+	<xacro:include filename="$(find rb_theron_description)/urdf/wheels/rubber_wheel_150.urdf.xacro" />
+
+	<!-- Import casters -->
+	<xacro:include filename="$(find rb_theron_description)/urdf/wheels/castor.urdf.xacro" />
+
+	<!-- Import rocker bogie -->
+	<xacro:include filename="$(find rb_theron_description)/urdf/rocker/mcq_prototype_rocker.urdf.xacro" />
+
+	<!-- Import all available sensors -->
+	<xacro:include filename="$(find robotnik_sensors)/urdf/all_sensors.urdf.xacro" />
+
+	<!-- Import Gazebo Stuff -->
+	<xacro:include filename="$(find rb_theron_description)/urdf/common.gazebo.xacro" />
+
+
+	<!-- ***************** -->
+	<!-- Global parameters -->
+	<!-- ***************** -->
+	<xacro:property name="PI" value="3.1415926535897931"/>
+
+	<!-- Wheel parameters -->
+	<!-- x,y,z in translation from base_link to the center of the wheel -->
+	<xacro:property name="rocker_offset_x" value="0.1175" />
+	<xacro:property name="rocker_offset_y" value="0.1725" />
+	<xacro:property name="rocker_offset_z" value="0.0428" />
+
+	<!-- Castor paramters -->
+	<xacro:property name="caster_offset_x" value="-0.235" />
+	<xacro:property name="caster_offset_y" value="0.1725" />
+	<xacro:property name="caster_offset_z" value="0.0428" />
+
+
+	<xacro:property name="wheel_offset_z" value="0.015" />
+
+	<!-- Flag to select the high or low quality model -->
+	<xacro:property name="hq" value="true" />
+
+	<!-- *************** -->
+	<!-- Robots Elements -->
+	<!-- *************** -->
+
+	<xacro:arg name="prefix" default=""/>
+
+	<!-- Here we create the robot elements using the xacro:macros imported at the beggining of this file -->
+	<!-- this property is for the chassis -->
+
+	<!-- rbogie base -->
+	<xacro:theron_base prefix="$(arg prefix)" publish_bf="true" hq="${hq}" />
+
+	<!-- Gazebo ros control pluggins -->
+	<xacro:ros_control prefix="$(arg prefix)"/>
+
+	<xacro:gazebo_colors prefix="$(arg prefix)"/>
+
+	<!-- WHEELS -->
+	<xacro:rocker prefix="$(arg prefix)right" parent="$(arg prefix)base_link" reflect="true" hq="${hq}">
+		<origin xyz="${rocker_offset_x} -${rocker_offset_y} ${rocker_offset_z}" rpy="0 0 0"/>
+	</xacro:rocker>
+
+	<xacro:rocker prefix="$(arg prefix)left" parent="$(arg prefix)base_link" reflect="false" hq="${hq}">
+		<origin xyz="${rocker_offset_x} ${rocker_offset_y} ${rocker_offset_z}" rpy="0 0 0"/>
+	</xacro:rocker>
+
+	<xacro:caster prefix="$(arg prefix)left" parent="$(arg prefix)base_link" hq="${hq}">
+		<origin xyz="${caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
+	</xacro:caster>
+
+	<xacro:caster prefix="$(arg prefix)right" parent="$(arg prefix)base_link" hq="${hq}">
+		<origin xyz="${caster_offset_x} ${-caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
+	</xacro:caster>
+
+
+	<!-- SENSORS -->
+	<!-- TODO: Should be sensor_intel_d435, but this one isn't migrated to ros2 yet -->
+	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
+	<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" prefix_topic="front_realsense_camera">
+		<origin xyz="0.3305 0.0 0.1468" rpy="0 0 0"/>
+	</xacro:sensor_r430>
+
+	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" prefix_topic="back_realsense_camera">
+		<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
+	</xacro:sensor_r430>
+
+  	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
+	<!--xacro:sensor_orbbec_astra prefix="$(arg prefix)front_rgbd_camera" parent="$(arg prefix)base_link" prefix_topic="front_rgbd_camera">
+		<origin xyz="0.3305 0.0 0.1898" rpy="0 0 0"/>
+	</xacro:sensor_orbbec_astra -->
+
+	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link">
+		<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
+	</xacro:sensor_imu_hector>
+
+	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" prefix_topic="front_laser" min_angle="-1.9507619" max_angle="1.9507619">
+		<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
+	</xacro:sensor_sick_nanoscan3>
+
+	<!--<xacro:sensor_rs_lidar_16 prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" prefix_topic="top_laser" min_angle="-3.1416" max_angle="3.1416">
+		<origin xyz="0.214 0.0 0.275" rpy="-1.57079632679 0 -0.23"/>
+	</xacro:sensor_rs_lidar_16>-->
+
+	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser"  parent="$(arg prefix)base_link" prefix_topic="top_laser" range_min="0.1" range_max="90" hfov="360" samples="1200" vfov="90.0" lasers="32" fps="15" gpu="false">
+            <origin xyz="0.28 -0.159 1.22" rpy="-1.570796326795 0 -1.570796326795"/>
+        </xacro:sensor_rs_bpearl>
+
+	<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="back_laser" min_angle="-1.8107619" max_angle="1.8107619">
+		<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
+	</xacro:sensor_sick_nanoscan3> -->
+
+	<xacro:arg name="camera_name"   default="oak" />
+	<xacro:arg name="camera_model"  default="OAK-D-LITE" />
+	<xacro:arg name="base_frame"    default="oak-d_frame" />
+	<xacro:arg name="cam_pos_x"     default="0.347" />
+	<xacro:arg name="cam_pos_y"     default="-0.159" />
+	<xacro:arg name="cam_pos_z"     default="1.149" />
+	<xacro:arg name="cam_roll"      default="0.0" />
+	<xacro:arg name="cam_pitch"     default="0.0" />
+	<xacro:arg name="cam_yaw"       default="0.0" />
+
+	<xacro:depthai_camera camera_name = "$(arg camera_name)" parent = "$(arg prefix)base_link" camera_model = "$(arg camera_model)" base_frame = "$(arg base_frame)" cam_pos_x = "$(arg cam_pos_x)" cam_pos_y = "$(arg cam_pos_y)" cam_pos_z = "$(arg cam_pos_z)" cam_roll = "$(arg cam_roll)" cam_pitch = "$(arg cam_pitch)" cam_yaw = "$(arg cam_yaw)"/>
+
+	<!-- ROBAST Module Cage -->
+	<!-- <xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
+	<xacro:module_cage prefix="$(arg prefix)module_cage" parent="$(arg prefix)base_link">
+		<origin xyz="0.35 -0.0 -0.075" rpy="0 0 1.570796326794896619"/>
+	</xacro:module_cage> -->
+
+</robot>

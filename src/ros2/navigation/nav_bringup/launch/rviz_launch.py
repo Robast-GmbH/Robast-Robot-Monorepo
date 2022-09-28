@@ -1,0 +1,53 @@
+import os
+import yaml
+
+from ament_index_python.packages import get_package_share_directory
+from launch import LaunchDescription
+from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
+
+
+def generate_launch_description():
+    with open("environment_vars.yaml", "r") as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
+
+    config_directory = environment_yaml["config_directory"]
+    is_simulation = environment_yaml["is_simulation"]
+
+    rviz_config_dir = os.path.join(
+        get_package_share_directory("nav_bringup"),
+        "rviz",
+        "nav2_default_view.rviz",
+    )
+
+    use_sim_time = LaunchConfiguration("use_sim_time")
+    namespace = LaunchConfiguration("namespace")
+
+    return LaunchDescription(
+        [
+            # Set env var to print messages to stdout immediately
+            SetEnvironmentVariable("RCUTILS_LOGGING_BUFFERED_STREAM", "1"),
+            DeclareLaunchArgument(
+                "use_sim_time",
+                default_value="true",
+                description="Use simulation (Gazebo) clock if true",
+            ),
+            DeclareLaunchArgument(
+                "namespace", default_value="", description="Top-level namespace"
+            ),
+            Node(
+                package="rviz2",
+                executable="rviz2",
+                name="rviz2",
+                namespace=namespace,
+                arguments=["-d", rviz_config_dir],
+                parameters=[{"use_sim_time": use_sim_time}],
+                output="screen",
+            ),
+        ]
+    )

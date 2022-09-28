@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<robot name="simple_pole"
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+	<xacro:macro name="box_inertia_robot" params="m x y z">
+	        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+	                  iyy="${m*(x*x+z*z)/12}" iyz = "0"
+	                  izz="${m*(x*x+z*z)/12}" />
+	</xacro:macro>
+
+  <xacro:macro name="mcq_pole" params="prefix parent *origin">
+
+		<joint name="${prefix}pole_joint" type="fixed">
+			<parent link="${parent}"/>
+			<child link="${prefix}pole_link"/>
+			<xacro:insert_block name="origin" />
+		</joint>
+
+    <!-- BASE_LINK -->
+    <link name="${prefix}pole_link">
+      <inertial>
+        <mass value="10.0" />
+        <origin xyz="0 0 0" />
+	    <xacro:box_inertia_robot m="10" x="0.25" y="0.25" z="1.55"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+		  		<!-- in this case change origin -->
+          <geometry>
+            <!-- <box size="0.25 0.25 1.55"/> -->
+            <mesh filename="$(find rb_theron_description)/meshes/pole/mcq_pole.stl"/>
+          </geometry>
+        <material name="darkgrey">
+          <color rgba="0.1 0.1 0.1 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0 " />
+        <geometry>
+          <!-- <box size="0.25 0.25 1.55"/> -->
+          <mesh filename="$(find rb_theron_description)/meshes/pole/mcq_pole.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <gazebo reference="${prefix}pole_link">
+			<mu1 value="100.0"/>
+			<mu2 value="100.0"/>
+			<kp value="500000.0" />
+			<kd value="1.0" />
+			<material>Gazebo/Yellow</material>
+			<turnGravityOff>false</turnGravityOff>
+
+
+			<!--kp>500000.0</kp>
+			<kd>10.0</kd>
+			<mu1>10</mu1>
+			<mu2>10</mu2>
+			<fdir1>1 0 0</fdir1-->
+			<!--minDepth>0.001</minDepth-->
+			<!--material>Gazebo/Black</material-->
+			<!--mu1 value="10"/>
+			<mu2 value="5"/>
+			<kp value="500000.0" />
+			<kd value="10.0" />
+			<fdir1 value="1 0 0"/>
+			<material>Gazebo/Yellow</material>
+			<turnGravityOff>false</turnGravityOff-->
+		</gazebo>
+
+  </xacro:macro>
+</robot>

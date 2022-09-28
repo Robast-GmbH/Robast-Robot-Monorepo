@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<robot name="rbogie_base"
+  xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+<xacro:macro name="box_inertia_robot" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                  iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                  izz="${m*(x*x+z*z)/12}" />
+</xacro:macro>
+
+  <xacro:macro name="theron_base" params="prefix publish_bf hq">
+
+    <!-- Robot mechanical and motor parameters -->
+    <xacro:property name="PI" value="3.1415926535897931"/>
+    <!-- xacro:property name="wheel_width" value="0.150" / -->
+
+    <!-- BASE FOOTPRINT -->
+    <xacro:if value="${publish_bf}">
+      <link name="${prefix}base_footprint">
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <box size="0.001 0.001 0.001" />
+          </geometry>
+        </visual>
+      </link>
+
+      <joint name="${prefix}base_footprint_joint" type="fixed">
+        <origin xyz="0 0 ${wheel_radius - wheel_offset_z}" rpy="0 0 0" />
+        <parent link="${prefix}base_footprint"/>
+        <child link="${prefix}base_link" />
+      </joint>
+    </xacro:if>
+
+    <!-- BASE_LINK -->
+    <link name="${prefix}base_link">
+      <inertial>
+        <mass value="50.0" />
+        <origin xyz="-0.120 0 0" />
+	    <xacro:box_inertia_robot m="50" x="0.700" y="0.600" z="0.350"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <xacro:if value="${hq}">
+          <geometry>
+            <mesh filename="$(find rb_theron_description)/meshes/bases/theron_base.stl"/>
+          </geometry>
+        </xacro:if>
+        <xacro:unless value="${hq}">
+		  <!-- in this case change origin -->
+          <geometry>
+            <box size="0.700 0.600 0.350"/>
+          </geometry>
+        </xacro:unless>
+        <material name="darkgrey">
+          <color rgba="0.1 0.1 0.1 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0 " />
+        <geometry>
+          <!--box size="0.390 0.240 0.165"/-->
+          <mesh filename="$(find rb_theron_description)/meshes/bases/theron_base.stl"/>
+        </geometry>
+      </collision>
+    </link>
+
+
+   <link name="${prefix}bottom_cover_link">
+      <inertial>
+        <mass value="2.0" />
+        <origin xyz="0 0 0" />
+	    <xacro:box_inertia_robot m="2" x="0.700" y="0.600" z="0.350"/>
+      </inertial>
+      <visual>
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <xacro:if value="${hq}">
+          <geometry>
+            <mesh filename="$(find rb_theron_description)/meshes/bases/mcq_prototype_bottom_cover.dae"/>
+          </geometry>
+        </xacro:if>
+        <xacro:unless value="${hq}">
+          <geometry>
+            <box size="0.700 0.600 0.350"/>
+          </geometry>
+        </xacro:unless>
+        <material name="darkgrey">
+          <color rgba="0.1 0.1 0.1 1"/>
+        </material>
+      </visual>
+      <collision>
+        <origin xyz="0 0 0" rpy="0 0 0 " />
+        <geometry>
+          <mesh filename="$(find rb_theron_description)/meshes/bases/mcq_prototype_bottom_cover.dae"/>
+        </geometry>
+      </collision>
+    </link> 
+
+     <joint name="${prefix}bottom_cover_joint" type="fixed">
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <parent link="${prefix}base_link"/>
+       <child link="${prefix}bottom_cover_link"/>
+    </joint>
+
+    <!-- DOCKING CONTACTS -->
+    <!--joint name="${prefix}base_docking_joint" type="fixed">
+      <origin xyz="0.030 0.000 0.068" rpy="0 0 0 " />
+      <parent link="${prefix}front_cover_link"/>
+      <child link="${prefix}base_docking_contact_link" />
+    </joint-->
+
+    <!-- DOCKING LINK -->
+    <!--link name="${prefix}base_docking_contact_link" /-->
+
+  </xacro:macro>
+</robot>

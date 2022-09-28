@@ -1,0 +1,8 @@
+version: '3.4'
+
+services:
+  monorepo:
+    image: monorepo
+    build:
+      context: .
+      dockerfile: ./Dockerfile
