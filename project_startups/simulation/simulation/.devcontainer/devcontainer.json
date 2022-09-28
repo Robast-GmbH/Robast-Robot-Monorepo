@@ -6,7 +6,7 @@
 	"service": "navigation",
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
-	"remoteUser": "ubuntu",
+	"remoteUser": "robast",
 	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
 	// "dockerFile": "../../../../src/ros2/simulation/Dockerfile",
 	// "build": {
