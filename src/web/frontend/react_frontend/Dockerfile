@@ -19,9 +19,6 @@ RUN apt-get update && apt upgrade -y && apt-get install net-tools
 RUN npm install @mui/material @emotion/react @emotion/styled && \
     npm install @mui/icons-material && \
     npm i --save react-select
-
-
-
-
 ENV DEBIAN_FRONTEND=
-ENTRYPOINT [ "entrypoint.sh" ]
+# COPY . .
+# ENTRYPOINT [ "entrypoint.sh" ]

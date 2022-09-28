@@ -1,0 +1,29 @@
+version: '3.9'
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: ../../src/web/backend/Dockerfile
+    volumes:
+      - ./backend/:/workspace/:cached
+      # - ../../src/web/backend:/workspace/src/:cached
+    network_mode: "host"
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    
+  #evtl mit profiles testen um nur backend oder nur frontend zu starten
+  frontend:
+    build:
+      context: .
+      dockerfile: ../../src/web/frontend/react_frontend/Dockerfile
+    volumes:
+      - ./frontend/:/workspace/:cached
+      - ../../src/src/web/frontend/react_frontend:/workspace/src/:cached
+    network_mode: "host"
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
+
+networks:
+  host:
+    name: host
+    external: true

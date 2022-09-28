@@ -1,0 +1,22 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"name": "Backend",
+	"dockerComposeFile": "../../docker-compose.yml",
+	"service": "backend",
+	"workspaceFolder": "/workspace",
+	"shutdownAction": "stopCompose",
+	// "forwardPorts": [8000],
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"streetsidesoftware.code-spell-checker",
+		"yzhang.markdown-all-in-one",
+		"ms-python.python",
+		"redhat.vscode-yaml"
+	]
+}

@@ -7,8 +7,6 @@ __pycache__/
 *.so
 
 # Distribution / packaging
-src/aws-robomaker-hospital-world/*
-src/robot_localization/*
 src/ros2_nav_files/*
 .Python
 */build/
@@ -26,6 +24,7 @@ lib64/
 parts/
 sdist/
 var/
+wheels/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -206,3 +205,7 @@ CATKIN_IGNORE
 __pycache__
 site-packages
 venv
+
+#export/saves
+*.db
+*.idea
