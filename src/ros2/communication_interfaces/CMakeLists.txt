@@ -37,6 +37,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/AuthenticateUser.action"
   "action/DrawerInteraction.action"
   "action/DrawerUserAccess.action"
+  "action/ComputeInterimGoal.action"
+  "action/ImportYamlPoses.action"
 
   "srv/CreateUserNfcTag.srv"
   "srv/HandleDrawer.srv"

@@ -21,7 +21,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
-find_package(robast_msgs REQUIRED)
+find_package(communication_interfaces REQUIRED)
 find_package(nav2_util REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
@@ -52,7 +52,7 @@ set(dependencies
   rclcpp_lifecycle
   yaml_cpp_vendor
   nav2_util
-  robast_msgs
+  communication_interfaces
   tf2
   tf2_geometry_msgs
 )

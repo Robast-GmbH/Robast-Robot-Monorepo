@@ -4,16 +4,16 @@
 #include <string>
 
 #include "nav2_behavior_tree/bt_action_node.hpp"
-#include "robast_msgs/action/compute_interim_goal.hpp"
+#include "communication_interfaces/action/compute_interim_goal.hpp"
 
 
 namespace nav2_behavior_tree
 {
 
 /**
- * @brief A nav2_behavior_tree::BtActionNode class that wraps robast_msgs::action::ComputeInterimGoal
+ * @brief A nav2_behavior_tree::BtActionNode class that wraps communication_interfaces::action::ComputeInterimGoal
  */
-class InterimGoalCompAction : public BtActionNode<robast_msgs::action::ComputeInterimGoal>
+class InterimGoalCompAction : public BtActionNode<communication_interfaces::action::ComputeInterimGoal>
 {
 public:
   /**
