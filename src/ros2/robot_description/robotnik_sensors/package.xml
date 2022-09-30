@@ -20,12 +20,15 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <build_depend>urdf</build_depend>
-  <build_depend>xacro</build_depend>
-  <run_depend>urdf</run_depend>
-  <run_depend>xacro</run_depend>
-  <run_depend>hector_gazebo_plugins</run_depend>
-  <run_depend>gazebo_plugins</run_depend>
+  <depend>urdf</depend>
+  <depend>xacro</depend>
+  <!--depend>gazebo_plugins</depend-->
+
+  <!-- Not available from ROS2 repository -->
+  <!-- <depend>hector_gazebo_plugins</depend> -->
+
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
 
   <export>
     <build_type>ament_cmake</build_type>
