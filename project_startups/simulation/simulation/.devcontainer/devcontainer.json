@@ -3,7 +3,7 @@
 
 	"name": "Robast Simulation",
 	"dockerComposeFile": "../../docker-compose.yml",
-	"service": "navigation",
+	"service": "simulation",
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
 	"remoteUser": "robast",

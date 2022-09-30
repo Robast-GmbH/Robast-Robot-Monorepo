@@ -1,7 +1,7 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
 
-	"name": "Robast Simulation",
+	"name": "Robast Navigation",
 	"dockerComposeFile": "../../docker-compose.yml",
 	"service": "navigation",
 	"workspaceFolder": "/workspace",
