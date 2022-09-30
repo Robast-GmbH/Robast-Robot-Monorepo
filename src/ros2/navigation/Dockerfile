@@ -5,7 +5,7 @@ FROM ros:humble as base
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
-    apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu && \
+    apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu gnupg2 && \
     rm -rf /var/lib/apt/lists/*
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group --groups adm,sudo ubuntu && \
@@ -42,6 +42,16 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
   # General ros stuff
+
+RUN apt-get update && apt-get install -y \
+    curl \
+    gnupg2 \
+  && curl http://repo.ros2.org/repos.key | apt-key add - \
+  && sh -c 'echo "deb [arch=amd64,arm64] http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list' \
+  && apt-get update && apt-get install -y \
+    ros-${ROS_DISTRO}-desktop \
+    python3-argcomplete \
+  && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
   && tar -xvzf v8.2.0.tar.gz \
