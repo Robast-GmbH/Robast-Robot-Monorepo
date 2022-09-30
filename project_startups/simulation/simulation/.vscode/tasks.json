@@ -40,7 +40,7 @@
                         "detail": "Purges and symlink builds.",
                         "dependsOn": [
                                 "purge",
-                                "build-ros-theron"
+                                "build"
                         ],
                         "dependsOrder": "sequence",
                         "problemMatcher": []
