@@ -42,5 +42,5 @@ install(DIRECTORY include/
 
 install(TARGETS
     GazeboRosVelodyneLaser
-    DESTINATION share/../../../gaz/plugins
+    DESTINATION /workspace/install/gazebo_plugins
 )

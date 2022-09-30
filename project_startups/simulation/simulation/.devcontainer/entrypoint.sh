@@ -13,4 +13,4 @@ rosdep install --from-paths src --ignore-src -r -y
 
 export GAZEBO_MODEL_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}
 export GAZEBO_MODEL_PATH=/workspace/src/simulation/tiplu_world/models/furniture:${GAZEBO_MODEL_PATH}
-export GAZEBO_PLUGIN_PATH=/workspace/gaz/plugins:${GAZEBO_PLUGIN_PATH}
+export GAZEBO_PLUGIN_PATH=/workspace/install/gazebo_plugins:${GAZEBO_PLUGIN_PATH}

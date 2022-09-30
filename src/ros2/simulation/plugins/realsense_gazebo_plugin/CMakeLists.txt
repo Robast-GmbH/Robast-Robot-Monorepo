@@ -52,7 +52,7 @@ target_link_libraries(${PROJECT_NAME} ${GAZEBO_LIBRARIES})
 
 install(TARGETS
 ${PROJECT_NAME} 
-DESTINATION share/../../../gaz/plugins
+DESTINATION /workspace/install/gazebo_plugins
 )
 
 install(DIRECTORY include/
