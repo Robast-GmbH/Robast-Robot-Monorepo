@@ -85,7 +85,7 @@
 	</xacro:caster>
 
 
-	<!-- SENSORS -->
+	<!-- SENSORS  DEBUGG-->
 	<!-- TODO: Should be sensor_intel_d435, but this one isn't migrated to ros2 yet -->
 	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
 	<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" prefix_topic="front_realsense_camera">
