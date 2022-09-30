@@ -10,3 +10,7 @@ rosdep update
 rosdep install --from-paths src --ignore-src -r -y
 #sudo dos2unix shell_setup.sh
 #sudo /startup.sh
+
+export GAZEBO_MODEL_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}
+export GAZEBO_MODEL_PATH=/workspace/src/simulation/tiplu_world/models/furniture:${GAZEBO_MODEL_PATH}
+export GAZEBO_PLUGIN_PATH=/workspaces/gaz/plugins:${GAZEBO_PLUGIN_PATH}
