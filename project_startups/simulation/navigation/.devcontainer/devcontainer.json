@@ -22,7 +22,7 @@
 	// ],
 	// "containerEnv": { "DISPLAY": "${localEnv:DISPLAY}" },
 	// // Set *default* container specific settings.json values on container create.
-	"postStartCommand": "./entrypoint.sh",
+	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
 	},
