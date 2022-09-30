@@ -21,6 +21,7 @@ ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
 ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
 
 RUN apt-get update && apt-get install -y \

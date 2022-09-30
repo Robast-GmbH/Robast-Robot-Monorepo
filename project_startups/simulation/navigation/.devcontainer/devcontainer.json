@@ -8,20 +8,6 @@
 	"shutdownAction": "stopCompose",
 	"remoteUser": "ubuntu",
 	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
-	// "dockerFile": "../../../../src/ros2/simulation/Dockerfile",
-	// "build": {
-	// 	"args": {
-	// 		"WORKSPACE": "${containerWorkspaceFolder}"
-	// 	}
-	// },
-	// "runArgs": [
-	// 	"--name=simulation_docker",
-	// 	"--network=host",		
-	// 	"--cap-add=SYS_PTRACE",
-	// 	"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
-	// ],
-	// "containerEnv": { "DISPLAY": "${localEnv:DISPLAY}" },
-	// // Set *default* container specific settings.json values on container create.
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
