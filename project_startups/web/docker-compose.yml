@@ -11,7 +11,6 @@ services:
     volumes:
       - ./backend/:/workspace/:cached
       - ../../src/web/backend:/workspace/src/:cached
-    network_mode: "host"
     # command: /bin/sh -c "while sleep 1000; do :; done"
     command: /bin/sh -c "python /workspace/src/main.py"
     
@@ -26,5 +25,4 @@ services:
     volumes:
       - ./frontend/:/workspace/:cached
       - ../../src/web/frontend/react_frontend:/workspace/src/:cached
-    network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
