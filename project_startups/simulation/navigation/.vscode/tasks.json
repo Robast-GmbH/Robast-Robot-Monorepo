@@ -3,7 +3,7 @@
         "tasks": [
                 {
                         "label": "test",
-                        "detail": "Run all unit tests and show results.",
+                        "detail": "Run all unit tests and show results!",
                         "type": "shell",
                         "command": "colcon test --merge-install; colcon test-result",
                         "group": {
