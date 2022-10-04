@@ -28,5 +28,10 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && rosdep init || echo "rosdep already initialized"
 
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV GAZEBO_MODEL_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}
+ENV GAZEBO_MODEL_PATH=/workspace/src/simulation/tiplu_world/models/furniture:${GAZEBO_MODEL_PATH}
+ENV GAZEBO_PLUGIN_PATH=/workspace/install/gazebo_plugins:${GAZEBO_PLUGIN_PATH}
+
 #COPY "/entrypoint.sh" "/entrypoint.sh"
 #ENTRYPOINT ["/entrypoint.sh"]
