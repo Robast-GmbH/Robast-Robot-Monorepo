@@ -113,6 +113,8 @@ class HHStateMachine:
             self.functions_by_functionname["navigate_to_pose"](self.current_waypoint)
             if((self.current_waypoint) < len(self.functions_by_functionname["get_waypoints_by_id"]())):
                 self.current_waypoint += 1
+                print("sleep")
+                sleep(30)
             else:
                 self.current_waypoint = 1
             self.active = False

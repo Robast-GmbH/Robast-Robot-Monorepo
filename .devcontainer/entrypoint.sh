@@ -6,3 +6,5 @@ rosdep install --from-paths src --ignore-src -r -y
 #sudo dos2unix shell_setup.sh
 #sudo /startup.sh
 
+# Source
+source shell_setup.sh

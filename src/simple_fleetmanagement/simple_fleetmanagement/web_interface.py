@@ -19,34 +19,38 @@ class WebInterface:
         self.base_url = base_url
         self.functions = functions
 
-    # checke nicht was das machen soll TODO refactor
-
     def get_drawer_open_status(self):
         api_url = self.base_url+"/drawer/open"
         response = web_module.getDataFromServer(api_url)
         if (response != None):
             drawer_controller_id = response.json()
             if (drawer_controller_id > 0):
-                goal_msg = DrawerUserAccess.Goal()
-                drawer_address = DrawerAddress()
-                drawer_address.drawer_controller_id = drawer_controller_id
-                drawer_address.drawer_id = 1  # there can be either 1 or 2 drawers per module, for now its only 1 drawer
-                goal_msg.drawer_address = drawer_address
-                goal_msg.state = 1
-                try:
-                    self.functions["get_drawer_open_ros_function"](goal_msg)
-                except:
-                    print("get_drawer_open_ros_function im web interface failed")
-                response = requests.delete(api_url)
-                if(response.status_code == 200):
-                    get_logger().info(
-                        "Opening of drawer with drawer_controller_id {0} was successfull!".format(drawer_controller_id))
-                else:
-                    get_logger().warning(
-                        "Drawer_controller_id {0} could not be deleted from drawer/open/ request!".format(drawer_controller_id))
-            elif (drawer_controller_id > params.NUM_OF_DRAWERS):
+                self.trigger_drawer_user_access(drawer_controller_id)
+                self.delete_request(api_url)
+            else:
                 get_logger().warning(
                     "Request for opening drawer with invalid drawer_controller_id: {0}".format(drawer_controller_id))
+
+    def delete_request(self, api_url):
+        response = requests.delete(api_url)
+        if(response.status_code == 200):
+            get_logger().info(
+                "Deleting request for {0} was successfull!".format(api_url))
+        else:
+            get_logger().warning(
+                "Deleting request for {0} was NOT successfull!".format(api_url))
+
+    def trigger_drawer_user_access(self, drawer_controller_id):
+        goal_msg = DrawerUserAccess.Goal()
+        drawer_address = DrawerAddress()
+        drawer_address.drawer_controller_id = drawer_controller_id
+        drawer_address.drawer_id = 1  # there can be either 1 or 2 drawers per module, for now its only 1 drawer
+        goal_msg.drawer_address = drawer_address
+        goal_msg.state = 1
+        try:
+            self.functions["trigger_open_drawer_ros_function"](goal_msg)
+        except:
+            print("trigger_open_drawer_ros_function im web interface failed")
 
     def get_robot_status(self):
         response = web_module.getDataFromServer(self.base_url + "/robot/status")
@@ -77,7 +81,10 @@ class WebInterface:
                 except:
                     print("add_waypoint im web interface failed" + str(waypoint))
 
-    def backend_polling(self):
+    def backend_polling_UI(self):
         self.get_robot_status()
         self.get_drawer_open_status()
         self.get_drawer_refilling_status()
+
+    def backend_polling_ROS(self):
+        self.set_navigator_waypoints_from_backend()
