@@ -17,10 +17,16 @@
 #include <unistd.h> // write(), read(), close()
 using namespace std;
 
+#ifdef GTEST
+#define private public
+#define protected public
+#endif
+
 #include "communication_interfaces/action/authenticate_user.hpp"
 #include "communication_interfaces/srv/create_user_nfc_tag.hpp"
 #include "nfc_gate/elatec_api.h"
 #include "include/serial_helper.h" 
+
    
 namespace robast
 { 
@@ -31,42 +37,44 @@ namespace robast
 
     public:
 
-    using  AuthenticateUser= communication_interfaces::action::AuthenticateUser;
-    using GoalHandleAuthenticateUser = rclcpp_action::ServerGoalHandle<AuthenticateUser>;
-  
-    using CreateUser= communication_interfaces::srv::CreateUserNfcTag;
-    /**
-    * @brief A constructor for nfc_gate::NFCGate class
-    */ 
-    NFCGate();
-    NFCGate(string serial_port_path );
-   
+      using  AuthenticateUser= communication_interfaces::action::AuthenticateUser;
+      using GoalHandleAuthenticateUser = rclcpp_action::ServerGoalHandle<AuthenticateUser>;
+      using CreateUser= communication_interfaces::srv::CreateUserNfcTag;
+
+      /**
+      * @brief A constructor for nfc_gate::NFCGate class
+      */ 
+      NFCGate();
+      NFCGate(string serial_port_path );
+      NFCGate( serial_helper::ISerialHelper *serial_connector );
+      void scanTag(); 
+    
     private:
    
-    int numReadings;
+      int numReadings;
     
-    serial_helper::SerialHelper serial_connector;
-    rclcpp::TimerBase::SharedPtr timer;
-    shared_ptr<GoalHandleAuthenticateUser> timer_handle;
-    rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
-    rclcpp::Service<CreateUser>::SharedPtr create_user_server;
+      serial_helper::ISerialHelper *serial_connector;
+      rclcpp::TimerBase::SharedPtr timer;
+      shared_ptr<GoalHandleAuthenticateUser> timer_handle;
+      rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
+      rclcpp::Service<CreateUser>::SharedPtr create_user_server;
 
     
 
-    rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal);
-    rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle); 
-    void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-    void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);  
+      rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal);
+      rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle); 
+      void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+      void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);  
    
-    void open_serial();
-    void close_serial();
+      void open_serial();
+      void close_serial();
     
-    string read_serial( );
-    void write_serial( string msg );
-    string send_command(string command );
+      string read_serial( );
+      void write_serial( string msg );
+      string send_command(string command );
 
-    void scanTag(); 
-    void writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
+    
+      void writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
 };
 
 

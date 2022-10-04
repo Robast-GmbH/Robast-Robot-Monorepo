@@ -5,12 +5,15 @@ namespace robast
 {
 
   NFCGate::NFCGate( ):NFCGate( "/dev/robast/robast_nfc" ) { }
-
-  NFCGate::NFCGate( string serial_port_path ) : Node("nfc_gate"), serial_connector(serial_port_path)
+  NFCGate::NFCGate( string serial_port_path ):NFCGate( new serial_helper::SerialHelper(serial_port_path))
   {
-    //this->serial_connector= new serial_helper::SerialHelper(); 
-    RCLCPP_INFO(this->get_logger(), "constructor start: %s",serial_port_path.c_str()); 
-    this->serial_connector=serial_helper::SerialHelper(serial_port_path);
+     RCLCPP_INFO(this->get_logger(), "constructor start: %s",serial_port_path.c_str()); 
+  } 
+
+  NFCGate::NFCGate( serial_helper::ISerialHelper* serial_connector  ) : Node("nfc_gate")
+  {
+    
+    this->serial_connector= serial_connector;// new serial_helper::SerialHelper(serial_port_path);
     this->user_authenticate_server = rclcpp_action::create_server<AuthenticateUser>(
       this,
       "authenticate_user",
@@ -22,8 +25,7 @@ namespace robast
     
     //RCLCPP_INFO(this->get_logger(), "constructor done");
   }
-
-
+  
   rclcpp_action::GoalResponse NFCGate::auth_goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal)
   {
     RCLCPP_INFO(this->get_logger(), "Received goal request");
@@ -58,32 +60,32 @@ namespace robast
     auto result = std::make_shared<AuthenticateUser::Result>();
     const auto goal = timer_handle->get_goal();
 
-    this->serial_connector.open_serial();
-    request = this->serial_connector.send_ascii_cmd( SET_SERIAL_TO_ASCII);  
-    this->serial_connector.read_serial(&response, 5010);
+    this->serial_connector->open_serial();
+    request = this->serial_connector->send_ascii_cmd( SET_SERIAL_TO_ASCII);  
+    this->serial_connector->read_serial(&response, 5010);
 
-    request = this->serial_connector.send_ascii_cmd(BOTTOM_LED_ON);
-    this->serial_connector.read_serial(&response, 500);
+    request = this->serial_connector->send_ascii_cmd(BOTTOM_LED_ON);
+    this->serial_connector->read_serial(&response, 500);
     
-    request = this->serial_connector.send_ascii_cmd((TOP_LEDS_INIT(LED_RED)));
-    this->serial_connector.read_serial(&response, 50);
+    request = this->serial_connector->send_ascii_cmd((TOP_LEDS_INIT(LED_RED)));
+    this->serial_connector->read_serial(&response, 50);
     
-    request = this->serial_connector.send_ascii_cmd(TOP_LEDS_ON(LED_RED));
-    this->serial_connector.read_serial(&response, 500);
+    request = this->serial_connector->send_ascii_cmd(TOP_LEDS_ON(LED_RED));
+    this->serial_connector->read_serial(&response, 500);
 
-    request = this->serial_connector.send_ascii_cmd(SEARCH_TAG);
-    if(this->serial_connector.read_serial(&tag, 500)<=0)
+    request = this->serial_connector->send_ascii_cmd(SEARCH_TAG);
+    if(this->serial_connector->read_serial(&tag, 500)<=0)
     {
       return;
     } 
 
    
-    request=this->serial_connector.send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
-    this->serial_connector.read_serial(&response, 500);
+    request=this->serial_connector->send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
+    this->serial_connector->read_serial(&response, 500);
     RCLCPP_INFO(this->get_logger(),"login response %s ", response.c_str());
     
-    request= this->serial_connector.send_ascii_cmd(NFC_READ_MC("02"));
-    if(this->serial_connector.read_serial(&scanned_key, 500)<=0)
+    request= this->serial_connector->send_ascii_cmd(NFC_READ_MC("02"));
+    if(this->serial_connector->read_serial(&scanned_key, 500)<=0)
     {
       return;
     }
@@ -113,12 +115,12 @@ namespace robast
       this->timer_handle->publish_feedback(feedback);
       
       //this->serial_connector.send_ascii_cmd(BEEP_STANDART);
-      this->serial_connector.send_ascii_cmd((TOP_LED_OFF(LED_RED)));
-      this->serial_connector.read_serial(&response, 50);
-      this->serial_connector.send_ascii_cmd(BOTTOM_LED_OFF); 
-      this->serial_connector.read_serial(&response, 50);
+      this->serial_connector->send_ascii_cmd((TOP_LED_OFF(LED_RED)));
+      this->serial_connector->read_serial(&response, 50);
+      this->serial_connector->send_ascii_cmd(BOTTOM_LED_OFF); 
+      this->serial_connector->read_serial(&response, 50);
 
-      this->serial_connector.close_serial();
+      this->serial_connector->close_serial();
 
       // Check if goal is done
       if (rclcpp::ok()) 
@@ -132,19 +134,19 @@ namespace robast
 
   void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)
   {
-      this->serial_connector.open_serial();
-      this->serial_connector.send_ascii_cmd(SET_SERIAL_TO_ASCII);
+      this->serial_connector->open_serial();
+      this->serial_connector->send_ascii_cmd(SET_SERIAL_TO_ASCII);
   
-      this->serial_connector.send_ascii_cmd(BOTTOM_LED_ON);
-      this->serial_connector.send_ascii_cmd((TOP_LEDS_INIT(LED_RED)));
-      this->serial_connector.send_ascii_cmd(TOP_LEDS_ON(LED_RED));
+      this->serial_connector->send_ascii_cmd(BOTTOM_LED_ON);
+      this->serial_connector->send_ascii_cmd((TOP_LEDS_INIT(LED_RED)));
+      this->serial_connector->send_ascii_cmd(TOP_LEDS_ON(LED_RED));
   
       string tag;
       //wait for the Tag and read TAG ID 
       do{ 
     
-      this->serial_connector.send_ascii_cmd(SEARCH_TAG);//search for a tag with the length of 10
-      if(this->serial_connector.read_serial(&tag, 50)<=0)
+      this->serial_connector->send_ascii_cmd(SEARCH_TAG);//search for a tag with the length of 10
+      if(this->serial_connector->read_serial(&tag, 50)<=0)
       {
           return;
       } 
@@ -153,11 +155,11 @@ namespace robast
       } while(tag.length() <10);
   
       RCLCPP_INFO(this->get_logger(),"READ");
-      this->serial_connector.send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
+      this->serial_connector->send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
     
-      this->serial_connector.send_ascii_cmd(NFC_WRITE_MC("02",/*request->card_key*/"000001000000100"));//ToDo dynamic key defination 
+      this->serial_connector->send_ascii_cmd(NFC_WRITE_MC("02",/*request->card_key*/"000001000000100"));//ToDo dynamic key defination 
    
-      if( this->serial_connector.read_serial(&tag, 50)<=0)
+      if( this->serial_connector->read_serial(&tag, 50)<=0)
       {
         return;
       } 
@@ -168,10 +170,10 @@ namespace robast
     
 
     //show that aktion is done
-      this->serial_connector.send_ascii_cmd(BEEP_STANDART);   
-      this->serial_connector.send_ascii_cmd((TOP_LED_OFF(LED_RED)));
-      this->serial_connector.send_ascii_cmd(BOTTOM_LED_OFF); 
-      this->serial_connector.close_serial();
+      this->serial_connector->send_ascii_cmd(BEEP_STANDART);   
+      this->serial_connector->send_ascii_cmd((TOP_LED_OFF(LED_RED)));
+      this->serial_connector->send_ascii_cmd(BOTTOM_LED_OFF); 
+      this->serial_connector->close_serial();
 
     response-> sucessful= true;
     response-> card_id= tag;

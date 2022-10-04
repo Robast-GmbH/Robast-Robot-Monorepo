@@ -8,12 +8,13 @@
 #include <errno.h> // Error integer and strerror() function
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
+#include "i_serial_helper.h"
 
 using namespace std;
 
 namespace serial_helper
 {
-    class SerialHelper
+    class SerialHelper:public ISerialHelper
     {
         private:
             /* data */

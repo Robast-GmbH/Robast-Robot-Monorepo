@@ -40,6 +40,8 @@ set(library_nfc_gate ${executable_nfc_gate}_core)
 add_library(${library_nfc_gate} SHARED
   src/nfc_gate.cpp
   ${serial_helper_dir}/src/serial_helper.cpp #TODO: This can probably be done better
+  ${serial_helper_dir}/src/mock_serial_helper.cpp
+  ${serial_helper_dir}/include/i_serial_helper.h
 )
 
 
@@ -87,8 +89,23 @@ install(DIRECTORY
 )
 
 if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
+  find_package(ament_cmake_gtest REQUIRED)
+  find_package(ros_testing REQUIRED)
+
+  # the following lines skip linters
+  set(ament_cmake_cppcheck_FOUND TRUE)
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  set(ament_cmake_flake8_FOUND TRUE)
+  set(ament_cmake_uncrustify_FOUND TRUE)
+
+
+  ament_add_gtest_executable(nfc_gate_test
+    test/nfc_gate_test.cpp
+  )
+  
+  ament_target_dependencies(nfc_gate_test ${dependencies})
+  add_ros_test(test/launch/nfc_gate_test.test.py TIMEOUT 120 ARGS "test_binary_dir:=${CMAKE_CURRENT_BINARY_DIR}")
 endif()
 
 ament_export_include_directories(include)
