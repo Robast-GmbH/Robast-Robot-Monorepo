@@ -1,7 +1,6 @@
 import Header from './components/Header.js'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import { useState, useEffect,useRef } from 'react'
-import Footer from './components/Footer.js'
+import { useState, useEffect } from 'react'
 import About from './components/About.js'
 import React from 'react'
 import ControlSwitch from './components/ControlSwitch.js'
@@ -38,7 +37,7 @@ function App() {
   useEffect(() => {
     const getUser = async () => {
     const userFromServer = await fetchUser()
-    if (userFromServer!="")
+    if (userFromServer!=="")
     {
       setUser(userFromServer)
     }
@@ -51,7 +50,7 @@ function App() {
   const fetchUser = async () => {
     
     const user_id= sessionStorage.getItem('token')
-    if(user_id=="undefined")
+    if(user_id === "undefined")
     {
       return ""
     }
@@ -99,12 +98,7 @@ function App() {
     return data;
   }
 
-  const fetchDrawer = async ( index) => {
-    const res = await fetch(`${backend_address}/drawers/${index}`)
-    const data = await res.json()
-
-    return data;
-  }
+  
 
   const renameDrawer = async (drawer) => {
     console.log(drawer)

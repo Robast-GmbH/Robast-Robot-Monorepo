@@ -1,7 +1,5 @@
-import DisplayAnImage from './DisplayAnImage'
-import {StyleSheet } from 'react-native';
+
 import R1 from './../imgs/RobastR1.png'
-import PropTypes from 'prop-types'
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 

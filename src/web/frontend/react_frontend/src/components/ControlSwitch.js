@@ -45,8 +45,8 @@ function a11yProps(index) {
 }
 
 export default function ControlSwitch( {Tablist}) {
-  const [value, setValue] = React.useState(sessionStorage.getItem('tap-value')==1?1:0);
-  const [list, updateList] = Tablist;
+  const [value, setValue] = React.useState(sessionStorage.getItem('tap-value')===1?1:0);
+  //const [list, updateList] = Tablist;
  
   
   const handleChange = (event, newValue) => {

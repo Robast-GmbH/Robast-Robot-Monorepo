@@ -3,7 +3,7 @@ import PropTypes from 'prop-types'
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Modal from '@mui/material/Modal';
-import { useState, useEffect } from 'react'
+import useState  from 'react'
 
 
 const style = {
