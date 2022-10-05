@@ -49,11 +49,17 @@ def generate_launch_description():
             os.environ["ROS_DISTRO"],
             "navigate_to_pose_w_replanning_goal_patience_and_recovery.xml",
         )
+        default_bt_xml_filename_through_pose = os.path.join(
+            get_package_share_directory("nav_bringup"),
+            "behavior_trees",
+            os.environ["ROS_DISTRO"],
+            "navigate_through_poses_w_replanning_and_recovery.xml",
+        )
         bt_xml_filename_door_bells = os.path.join(
             get_package_share_directory("nav_bringup"),
             "behavior_trees",
             os.environ["ROS_DISTRO"],
-            "navigate_to_pose_w_replanning_and_recovery.xml",
+            "navigate_to_pose_w_replanning_goal_patience_and_recovery.xml.xml",
         )
     else:
         error
@@ -215,7 +221,8 @@ def generate_launch_description():
                 respawn_delay=2.0,
                 parameters=[
                     configured_params,
-                    # {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
+                    {'default_nav_to_pose_bt_xml': default_bt_xml_filename},
+                    {'default_nav_through_poses_bt_xml': default_bt_xml_filename_through_pose}
                 ],
                 remappings=remappings,
                 # condition=UnlessCondition(use_interim_goal)

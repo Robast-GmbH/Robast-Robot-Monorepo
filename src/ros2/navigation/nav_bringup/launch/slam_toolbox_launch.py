@@ -27,7 +27,7 @@ def generate_launch_description():
     if is_simulation:
         world_model = os.path.join(nav_bringup_dir, "maps", "5OG", "5OG")
     else:
-        world_model = (os.path.join(nav_bringup_dir, "maps", "6OG_Tiplu", "6OG"),)
+        world_model = (os.path.join(nav_bringup_dir, "maps", "new6OG", "tiplu_new"),)
 
     declare_world_model_cmd = DeclareLaunchArgument(
         "world_posegraph",
