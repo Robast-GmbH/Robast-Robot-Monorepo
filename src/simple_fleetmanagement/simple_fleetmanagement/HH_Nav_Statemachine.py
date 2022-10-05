@@ -116,15 +116,28 @@ class HHStateMachine:
         if self.active == True or self.check_status_function() != RobotStates.RUNNING:
             return
         elif(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
-            self.active = True
-            self.functions_by_functionname["navigate_to_pose"](self.current_waypoint)
-            if((self.current_waypoint) < len(self.functions_by_functionname["get_waypoints_by_id"]())):
-                print("waypoint erreicht")
+            self.active = True    
+            
+            user_waypoint=self.functions_by_functionname["get_waypoint_goal"]()
+            print(str(user_waypoint)+" uw") 
+            if( user_waypoint != None):
+                print("User defined waypoint"+str(self.current_waypoint )+"->"+str(user_waypoint))
+                self.current_waypoint = user_waypoint
+                self.functions_by_functionname["reset_waypoint"]()
+                
+                
+            elif((self.current_waypoint) < len(self.functions_by_functionname["get_waypoints_by_id"]())):
+                print("waypoint erreicht") 
                 self.current_waypoint += 1
+                print(self.current_waypoint) 
                 sleep(30)
             else:
                 self.current_waypoint = 1
+                print("waypoint list restart") 
+            
+            
             self.active = False
+            
 
     def statePause(self):
         # nix machen evtl sicherheitshalber hier immer cancel task für nav machen
@@ -137,13 +150,21 @@ class HHStateMachine:
     def stateHoming(self):
         if(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
             self.active = True
-            self.functions_by_functionname["navigate_to_pose"](HOME_WAYPOINT_ID)
+            self.functions_by_functionname["navigate_to_waypoint"](HOME_WAYPOINT_ID)
             self.active = False
             self.functions_by_functionname["set_state_in_backend"](RobotStates.PAUSE)
 
     def moveToSpecificWaypoint(self):
         if(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
             self.active = True
-            self.functions_by_functionname["navigate_to_pose"](self.functions_by_functionname["get_goal"])
+            self.functions_by_functionname["navigate_to_waypoint"](self.functions_by_functionname["get_waypoint_goal"])
             self.active = False
             self.functions_by_functionname["set_state_in_backend"](RobotStates.PAUSE)
+
+    def moveToSpecificPoint(self):
+        if(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
+            self.active = True
+            self.functions_by_functionname["navigate_to_pose"](self.functions_by_functionname["get_pose_goal"])
+            self.active = False
+            self.functions_by_functionname["set_state_in_backend"](RobotStates.PAUSE)
+
