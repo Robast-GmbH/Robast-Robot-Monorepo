@@ -35,7 +35,8 @@ class SimpleFleetmanagement(Node):
     def __init__(self):
         super().__init__('simple_fleetmanagement')
 
-        self.backend_polling_intervall = 5  # seconds
+        self.backend_polling_ROS_intervall = 15  # seconds
+        self.backend_polling_UI_intervall = 0.5  # seconds
         self.navigation_update_interval = 0.5  # seconds
         self.goal_reach_epsilon = 0.4  # meter
         self.error_reset_time = 20  # seconds
@@ -82,7 +83,7 @@ class SimpleFleetmanagement(Node):
 
     def initialize_web_interface(self):
         functions_for_web = {
-            "get_drawer_open_ros_function": self.get_drawer_open_ros_function,
+            "trigger_open_drawer_ros_function": self.trigger_open_drawer_ros_function,
             "publish_robot_status": self.publish_robot_status,
             "publish_drawer_refill_status": self.publish_drawer_refill_status,
             "add_waypoint": self.add_waypoint,
@@ -92,14 +93,12 @@ class SimpleFleetmanagement(Node):
         self._webInterface = web_interface.WebInterface("http://localhost:8000", functions_for_web)
 
     def start_web_interface(self):
+        self._backend_polling_UI_timer = self.create_timer(
+            self.backend_polling_UI_intervall, self._webInterface.backend_polling_UI)
         self._backend_polling_timer = self.create_timer(
-            self.backend_polling_intervall, self._webInterface.backend_polling)
+            self.backend_polling_ROS_intervall, self._webInterface.backend_polling_ROS)
 
     def initialize_statemachine(self):
-        # self.navigation_trigger = self.create_timer(
-        #     self.navigation_update_interval, self.handle_waypoint_follow_callback)
-        # self.state_machine_state = 1
-        # pass
         functions_fo_statemachine = {
             "check_status": self.check_status,
             "is_any_drawer_open": self.is_any_drawer_open,
@@ -170,9 +169,9 @@ class SimpleFleetmanagement(Node):
     def setup_navigator(self):
         self.navigator = BasicNavigator()
         self.header_frame_id = 'map'
-        initial_pose_x = 0.0
+        initial_pose_x = -1.0
         initial_pose_y = 0.0
-        initial_pose_yaw = 3.14
+        initial_pose_yaw = 4.0
         self.set_initial_pose(initial_pose_x, initial_pose_y, initial_pose_yaw)
 
         self.target_pose_by_waypoint_id = {}
@@ -243,7 +242,7 @@ class SimpleFleetmanagement(Node):
     def get_waypoints_by_id(self):
         return self.target_pose_by_waypoint_id
 
-    def get_drawer_open_ros_function(self, goal_msg):
+    def trigger_open_drawer_ros_function(self, goal_msg):
         self.drawer_gate_action_client.wait_for_server()
         self.drawer_gate_action_client.send_goal_async(goal_msg)  # TODO: Do something with the result
 
