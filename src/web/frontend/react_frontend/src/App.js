@@ -151,6 +151,7 @@ const changeStatus= async(statusID) =>  {
 
 const openDrawer= async (drawer) => {
   console.log(drawer)
+  changeStatus(2)
   const res = await fetch(`${backend_address}/drawer/${drawer.drawer_controller_id}/open/`, {
     method: 'PUT',
     headers: {
