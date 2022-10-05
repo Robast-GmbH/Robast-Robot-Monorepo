@@ -3,6 +3,15 @@
 
 namespace drawer_gate
 {
+    //TODO: This enum should be shared with the ESP32 code as well
+    enum LedMode
+    {
+        steady_light = 0,
+        fade_up = 1,
+        running_led_from_mid_to_outside = 2,
+        slow_fade_up_fade_down = 3,
+    };
+
     // Drawer Module with 10cm Height, 40cm Depth, 1 Drawer
     #define DRAWER_INSIDE_WIDTH_10x40x1 310
     #define DRAWER_INSIDE_DEPTH_10x40x1 400
