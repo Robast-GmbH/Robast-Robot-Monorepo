@@ -119,21 +119,22 @@ class HHStateMachine:
             self.active = True    
             
             user_waypoint=self.functions_by_functionname["get_waypoint_goal"]()
-            print(str(user_waypoint)+" uw") 
+            print("waypoint erreicht") 
+            
+            if(user_waypoint not in self.functions_by_functionname["get_waypoints_by_id"]()):
+                user_waypoint= None
+                
             if( user_waypoint != None):
-                print("User defined waypoint"+str(self.current_waypoint )+"->"+str(user_waypoint))
                 self.current_waypoint = user_waypoint
                 self.functions_by_functionname["reset_waypoint"]()
                 
                 
             elif((self.current_waypoint) < len(self.functions_by_functionname["get_waypoints_by_id"]())):
-                print("waypoint erreicht") 
+                
                 self.current_waypoint += 1
-                print(self.current_waypoint) 
                 sleep(30)
             else:
                 self.current_waypoint = 1
-                print("waypoint list restart") 
             
             
             self.active = False

@@ -41,3 +41,15 @@ def setDataOnServer(url, data):
         return None
     else:
         return response
+
+def deleteDataOnServer(url, data):
+    checkConnection(url)
+    if(data== None):
+        response = requests.delete(url)
+    else:
+        response = requests.delete(url, json=data)
+    if(response.status_code != 200):
+        get_logger().warning('Response code from api_url ' + str(url) + ' is ' + str(response.status_code))
+        return None
+    else:
+        return response
