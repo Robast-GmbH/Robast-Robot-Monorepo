@@ -6,7 +6,7 @@
 			"WORKSPACE": "${containerWorkspaceFolder}"
 		}
 	},
-	// "remoteUser": "ubuntu",
+	"remoteUser": "ubuntu",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/navigation/,target=/workspace/src/navigation,type=bind",
