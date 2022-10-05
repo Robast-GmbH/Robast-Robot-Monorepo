@@ -106,7 +106,7 @@
                 },
                 {
                         "label": "default_startup_robot_localization",
-                        "detail": "Starts Nav, slam, robot_localization, rviz",
+                        "detail": "Starts Nav, slam, robot_localization for odom->base, rviz",
                         "dependsOn": [
                                 "start slam_toolbox",
                                 "start nav_without_localization",
@@ -117,12 +117,25 @@
                 },
                 {
                         "label": "default_startup_amcl_robot_localization",
-                        "detail": "Starts Nav, amcl, robot_localization, keepout_mask, rviz",
+                        "detail": "Starts Nav, amcl, robot_localization for odom->base, keepout_mask, rviz",
                         "dependsOn": [
                                 "start amcl",
                                 "start keepout_mask",
                                 "start nav_without_localization",
                                 "start robot_localization",
+                                "start rviz_amcl"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "default_startup_amcl_robot_localization_global",
+                        "detail": "Starts Nav, amcl, robot_localization for map->odom->base, keepout_mask, rviz",
+                        "dependsOn": [
+                                "start amcl",
+                                "start keepout_mask",
+                                "start nav_without_localization",
+                                "start robot_localization",
+                                "start robot_localization_global",
                                 "start rviz_amcl"
                         ],
                         "problemMatcher": []
@@ -266,6 +279,16 @@
                         "type": "shell",
                         "label": "start robot_localization",
                         "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py;",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start robot_localization_global",
+                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup robot_localization_map_to_odom_launch.py;",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
