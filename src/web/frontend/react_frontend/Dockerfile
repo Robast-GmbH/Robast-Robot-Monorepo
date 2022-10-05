@@ -20,5 +20,6 @@ RUN npm install @mui/material @emotion/react @emotion/styled && \
     npm install @mui/icons-material && \
     npm i --save react-select
 ENV DEBIAN_FRONTEND=
+RUN npm install -g serve
 # COPY . .
 # ENTRYPOINT [ "entrypoint.sh" ]

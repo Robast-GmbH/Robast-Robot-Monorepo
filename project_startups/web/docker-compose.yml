@@ -25,4 +25,4 @@ services:
     volumes:
       - ./frontend/:/workspace/:cached
       - ../../src/web/frontend/react_frontend:/workspace/src/:cached
-    command: /bin/sh -c "while sleep 1000; do :; done"
+    command: /bin/sh -c "serve -s /workspace/src/build"
