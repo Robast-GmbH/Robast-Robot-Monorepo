@@ -10,13 +10,6 @@ const AddMapPosition = ({ onAdd }) => {
         const [y, setPositionYCoordinate] = useState(0.0)
         const [t, setTheta] = useState(0.0)
 
-        const [name_error, setTitleError] = useState("")
-        const [x_error, setXError] = useState("")
-        const [y_error, setYError] = useState("")
-        const [t_error, setTError] = useState("")
-
-
-
         const onSubmit = (e) => {
                 e.preventDefault()
                 if (!name) {
