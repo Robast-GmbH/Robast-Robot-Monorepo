@@ -6,6 +6,8 @@ from . import parameters_module as params
 from . import web_module
 from . import drawer_helper_module
 from typing import Dict
+import json
+
 
 try:
     from communication_interfaces.action import DrawerUserAccess
@@ -27,7 +29,7 @@ class WebInterface:
             if (drawer_controller_id > 0):
                 self.trigger_drawer_user_access(drawer_controller_id)
                 self.delete_request(api_url)
-            else:
+            elif(drawer_controller_id != -1):
                 get_logger().warning(
                     "Request for opening drawer with invalid drawer_controller_id: {0}".format(drawer_controller_id))
 
@@ -80,6 +82,21 @@ class WebInterface:
                     self.functions["add_waypoint"](waypoint["id"], waypoint["x"], waypoint["y"], waypoint["t"])
                 except:
                     print("add_waypoint im web interface failed" + str(waypoint))
+
+    def get_set_goal_from_backend(self):
+        response = web_module.getDataFromServer(self.base_url + "/map_positions")
+        if(response != None):
+            for waypoint in response.json():
+                try:
+                    self.functions["add_waypoint"](waypoint["id"], waypoint["x"], waypoint["y"], waypoint["t"])
+                except:
+                    print("add_waypoint im web interface failed" + str(waypoint))
+
+    def change_state_in_backend(self, state):
+        result = json.dumps(state)
+        print(result)
+        web_module.setDataOnServer(self.base_url + "/robot/status/?status="+result, result)
+        return
 
     def backend_polling_UI(self):
         self.get_robot_status()

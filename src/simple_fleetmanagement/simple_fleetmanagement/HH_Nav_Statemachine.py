@@ -1,4 +1,5 @@
 import asyncio
+import threading
 from typing import Dict
 from xmlrpc.client import Boolean
 from .parameters_module import RobotStates, HOME_WAYPOINT_ID
@@ -13,6 +14,7 @@ class HHStateMachine:
         self.check_status_function = functions_by_functionname["check_status"]
         self.current_waypoint = HOME_WAYPOINT_ID
         self.active = False
+        self.waiting = False
         self.stateFunction_by_state = {
             RobotStates.PAUSE: self.statePause,
             RobotStates.RUNNING: self.stateRunning,
@@ -104,7 +106,7 @@ class HHStateMachine:
         self.active = False
 
     def stateRunning(self):
-        if self.active == True or self.check_status_function() != RobotStates.RUNNING:
+        if self.waiting or self.active == True or self.check_status_function() != RobotStates.RUNNING:
             return
         elif(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
             self.active = True
@@ -112,10 +114,16 @@ class HHStateMachine:
             if((self.current_waypoint) < len(self.functions_by_functionname["get_waypoints_by_id"]())):
                 print("waypoint erreicht")
                 self.current_waypoint += 1
-                sleep(30)
+                self.waiting = True
+                self.timer = threading.Timer(30.0, self.change_waiting)
+                self.timer.start()
             else:
                 self.current_waypoint = 1
             self.active = False
+
+    def change_waiting(self):
+        self.waiting = False
+        print("waiting ended")
 
     def statePause(self):
         # nix machen evtl sicherheitshalber hier immer cancel task für nav machen

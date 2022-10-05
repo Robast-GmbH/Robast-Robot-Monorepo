@@ -1,6 +1,7 @@
 import asyncio
 from pickletools import uint8
 import queue
+import threading
 from xmlrpc.client import Boolean
 import rclpy
 import requests
@@ -103,7 +104,9 @@ class SimpleFleetmanagement(Node):
             "navigate_to_pose": self.navigate_to_pose,
             "open_drawer": self.open_drawer,
             "check_navigator_status": self.check_navigator_status,
-            "is_navigator_Task_complete": self.is_navigator_Task_complete
+            "is_navigator_Task_complete": self.is_navigator_Task_complete,
+            "get_goal": self.get_goal,
+            "set_state_in_backend": self.set_state
         }
         self.HH_state_machine = HH_Nav_Statemachine.HHStateMachine(functions_by_functionname=functions_fo_statemachine)
 
@@ -118,11 +121,11 @@ class SimpleFleetmanagement(Node):
             self.get_logger().info("Setting Robot status to homing!")
         else:
             if len(self.target_pose_by_waypoint_id) > 1:
-                if(static_params.RobotStates(msg.data) == static_params.RobotStates.RUNNING):
+                if(static_params.RobotStates(msg.data) == static_params.RobotStates.RUNNING and self.robot_status != static_params.RobotStates.RUNNING):
                     self.robot_status = static_params.RobotStates.RUNNING
                     self.get_logger().info("Activating the waypoint following. Number of current waypoints: " +
                                            str(len(self.target_pose_by_waypoint_id)))
-                elif (static_params.RobotStates(msg.data) == static_params.RobotStates.PAUSE):
+                elif (static_params.RobotStates(msg.data) == static_params.RobotStates.PAUSE and self.robot_status != static_params.RobotStates.PAUSE):
                     self.robot_status = static_params.RobotStates.PAUSE
                     self.get_logger().info("Deactivating the waypoint following. Number of current waypoints: " +
                                            str(len(self.target_pose_by_waypoint_id)))
@@ -182,6 +185,16 @@ class SimpleFleetmanagement(Node):
     def is_any_drawer_open(self) -> Boolean:
         pass
 
+    def get_goal(self):
+        return self.specificGoal
+
+    def set_goal(self, goal):
+        self.specificGoal = goal
+
+    def set_state(self, state):
+        self._webInterface.change_state_in_backend(state)
+        print("state set")
+
     def create_pose(self, pose_x, pose_y, pose_yaw) -> PoseStamped:
         pose = PoseStamped()
         pose.header.frame_id = self.header_frame_id
@@ -203,7 +216,7 @@ class SimpleFleetmanagement(Node):
     def add_waypoint(self, waypoint_id: int, waypoint_pose_x, waypoint_pose_y, waypoint_pose_yaw):
         goal_pose = self.create_pose(waypoint_pose_x, waypoint_pose_y, waypoint_pose_yaw)
         self.target_pose_by_waypoint_id.update({waypoint_id: goal_pose})
-        self.get_logger().info(
+        self.get_logger().debug(
             'New waypoint with waypoint_id {0}, x = {1}, y = {2}, yaw = {3} was added to target waypoints!'.format(waypoint_id, waypoint_pose_x, waypoint_pose_y, waypoint_pose_yaw))
 
     def get_waypoints_by_id(self):
@@ -211,7 +224,17 @@ class SimpleFleetmanagement(Node):
 
     def trigger_open_drawer_ros_function(self, goal_msg):
         self.drawer_gate_action_client.wait_for_server()
-        self.drawer_gate_action_client.send_goal_async(goal_msg)  # TODO: Do something with the result
+        self.drawer_gate_action_client.send_goal_async(goal_msg).add_done_callback(
+            lambda future: future.result().get_result_async().add_done_callback(self.drawer_closed_callback))
+
+    def drawer_closed_callback(self, future: asyncio.Future):
+        self.timer = threading.Timer(5.0, self.set_state, [static_params.RobotStates.RUNNING])
+        self.timer.start()
+        print("closed1")
+
+    def set_test_running(self):
+        self.set_state(static_params.RobotStates.RUNNING)
+        print("closed")
 
     def publish_robot_status(self, status):
         msg = UInt8()
@@ -257,16 +280,16 @@ class SimpleFleetmanagement(Node):
         # else:
         #    self.get_logger().debug('Received feedback: {0}'.format(feedback.distance_remaining))
 
-    def goal_response_callback(self, order_id, future):
+    def drawer_response_callback(self, order_id, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().info('Goal rejected :(')
             return
         self.get_logger().info('Goal accepted :)')
 
-        self._get_result_future = goal_handle.get_result_async()
+        self._get_drawer_result_future = goal_handle.get_result_async()
         def order_get_result_callback(a): return self.get_result_callback(order_id, a)
-        self._get_result_future.add_done_callback(order_get_result_callback)
+        self._get_drawer_result_future.add_done_callback(order_get_result_callback)
 
     # def get_result_callback(self, order_id, future):
     #     result = future.result().result
