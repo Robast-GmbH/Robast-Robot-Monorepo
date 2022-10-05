@@ -1,4 +1,3 @@
-
 import R1 from './../imgs/RobastR1.png'
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';

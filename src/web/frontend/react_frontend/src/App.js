@@ -30,9 +30,10 @@ function App() {
    }, [])
 
    useEffect(() => {
-    
+     
     updateDrawersFromDB()
     setInterval(() => { updateDrawersFromDB()},30000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -51,7 +52,7 @@ function App() {
   const fetchUser = async () => {
     
     const user_id= sessionStorage.getItem('token')
-    if(user_id === "undefined")
+    if(user_id==="undefined"|| user_id=== null)
     {
       return ""
     }
@@ -98,8 +99,6 @@ function App() {
 
     return data;
   }
-
-  
 
   const renameDrawer = async (drawer) => {
     console.log(drawer)
