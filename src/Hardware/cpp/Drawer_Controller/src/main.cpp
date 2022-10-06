@@ -134,11 +134,20 @@ void initialize_locks(void)
   open_lock_2 = false;
 }
 
+void led_init_mode()
+{
+  led_target_red = 0;
+  led_target_green = 155;
+  led_target_blue = 155;
+  led_target_brightness = 25;
+}
+
 void initialize_led_strip(void)
 {
   FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_LEDS);
   led_current_brightness = 0;
   led_target_brightness = 0;
+  led_init_mode();
 }
 
 void initialize_timer(void)
@@ -225,7 +234,7 @@ void led_standard_mode()
   }
   led_current_red = led_target_red;
   led_current_green = led_target_green;
-  led_current_blue = led_target_green;
+  led_current_blue = led_target_blue;
   led_current_brightness = led_target_brightness;
   FastLED.setBrightness(led_target_brightness);
   FastLED.show();
@@ -245,7 +254,7 @@ void led_fade_on_mode()
     }
     led_current_red = led_target_red;
     led_current_green = led_target_green;
-    led_current_blue = led_target_green;
+    led_current_blue = led_target_blue;
     FastLED.setBrightness(led_current_brightness);
     FastLED.show();
   }  
@@ -286,7 +295,7 @@ void led_closing_drawer_mode()
     }
     led_current_red = led_target_red;
     led_current_green = led_target_green;
-    led_current_blue = led_target_green;
+    led_current_blue = led_target_blue;
     led_current_brightness = led_target_brightness;
     FastLED.setBrightness(led_target_brightness);
     FastLED.show();
@@ -320,7 +329,7 @@ void led_fade_on_fade_off_mode()
     }
     led_current_red = led_target_red;
     led_current_green = led_target_green;
-    led_current_blue = led_target_green;
+    led_current_blue = led_target_blue;
     FastLED.setBrightness(led_current_brightness);
     FastLED.show();
   }
