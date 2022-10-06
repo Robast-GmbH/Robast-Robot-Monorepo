@@ -1,5 +1,5 @@
 
-import TempMap from '../imgs/temp_quadrat.png'
+import TempMap from '../imgs/RobastVisitenkarte2.jpg'
 
 
 
