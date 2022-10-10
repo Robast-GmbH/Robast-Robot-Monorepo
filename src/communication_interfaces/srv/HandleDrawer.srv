@@ -1,6 +1,0 @@
-# request
-string[] permission_keys  # permission key for the persons that are allowed to access the drawer
-uint16 drawer_id 
----
-# response
-bool success

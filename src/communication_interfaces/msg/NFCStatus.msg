@@ -1,4 +1,0 @@
-bool is_preparing
-bool is_reading
-bool is_completed
-uint8 reading_attempts

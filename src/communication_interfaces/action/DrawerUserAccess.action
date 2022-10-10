@@ -1,8 +1,0 @@
-#goal
-communication_interfaces/DrawerAddress drawer_address
-uint8 state  # controls from which step of the drawer user access should be performed, default should be 1
----
-#result
----
-#feedback
-bool is_drawer_open  # information of the sensor data about the status of the electrical locker

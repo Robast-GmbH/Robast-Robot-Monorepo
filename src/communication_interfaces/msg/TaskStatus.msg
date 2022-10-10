@@ -1,4 +1,0 @@
-bool action_has_started
-bool waiting_for_reader
-bool drawer_is_open
- 
