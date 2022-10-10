@@ -32,7 +32,7 @@ def generate_launch_description():
             get_package_share_directory("nav_bringup"),
             "maps",
             "new6OG",
-            "tiplu_new.yaml",
+            "tiplu_6OG.yaml",
         )
 
     nav2_localization_params_yaml = os.path.join(
