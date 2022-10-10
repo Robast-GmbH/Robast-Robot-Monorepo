@@ -1,0 +1,9 @@
+#goal
+communication_interfaces/Task task
+bool loading
+---
+#result
+string error_message
+---
+#feedback
+communication_interfaces/TaskStatus task_status

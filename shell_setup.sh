@@ -1,4 +1,5 @@
 #!/bin/sh
+
 # Setup Environmental Path Variables
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 export ROS_DOMAIN_ID=0
@@ -33,4 +34,3 @@ export GAZEBO_PLUGIN_PATH=/workspaces/Robast_RosTheron/gaz/plugins:${GAZEBO_PLUG
 
 # Source
 source install/setup.bash
-source /usr/share/gazebo/setup.sh

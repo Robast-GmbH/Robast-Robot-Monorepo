@@ -1,13 +1,15 @@
 {
-    "editor.tabSize": 8,
+    "editor.formatOnSave": true,
+    "editor.wordWrap": "on",
+    "editor.wordWrapColumn": 120,
+    "editor.tabSize": 4,
     "editor.rulers": [
-        100
+        120
     ],
     "editor.defaultFormatter": "LaurentTreguier.uncrustify",
     "files.associations": {
         "*.repos": "yaml",
         "*.world": "xml",
-        "*.xacro": "xml"
     },
     // Environment file lets vscode find python files within workspace
     "python.envFile": "${workspaceFolder}/.env",

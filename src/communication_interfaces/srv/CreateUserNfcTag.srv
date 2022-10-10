@@ -1,0 +1,7 @@
+#goal
+string card_key
+---
+#result
+bool sucessful
+string card_id
+string error_message
