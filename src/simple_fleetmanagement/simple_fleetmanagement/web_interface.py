@@ -62,6 +62,45 @@ class WebInterface:
                 self.functions["publish_robot_status"](robot_status)
             except:
                 print("publish_robot_status im web interface failed")
+    
+    def get_next_waypoint_goal(self):
+        response = web_module.getDataFromServer(self.base_url + "/robot/goal")
+        if(response != None):
+            next_waypoint = response.json()
+            try:
+                self.functions["set_waypoint_goal"](next_waypoint["id"])
+            except:
+                print("set_waypoint_goal im web interface failed")
+
+    def clear_next_waypoint_goal(self):
+        response = web_module.deleteDataOnServer(self.base_url + "/robot/goal",None)
+        if(response != None):
+            next_pose = response.json()
+            try:
+                self.functions["set_waypoint_goal"](None)
+            except:
+                print("clear_waypoint_goal im web interface failed")
+    
+
+    def get_next_pose_goal(self):
+        response = web_module.getDataFromServer(self.base_url + "")
+        if(response != None):
+            next_pose = response.json()
+            try:
+                self.functions["set_pose_goal"](next_pose["x"], next_pose["y"], next_pose["t"])
+            except:
+                print("set_pose_goal im web interface failed")
+    
+    def clear_next_pose_goal(self):
+        response = web_module.deleteDataOnServer(self.base_url + "")
+        if(response != None):
+            next_pose = response.json()
+            try:
+                self.functions["set_pose_goal"](None)
+            except:
+                print("clear_pose_goal im web interface failed")
+
+
 
     def get_drawer_refilling_status(self):
         response = web_module.getDataFromServer(self.base_url + "/drawer/empty")
@@ -101,6 +140,7 @@ class WebInterface:
     def backend_polling_UI(self):
         self.get_robot_status()
         self.get_drawer_open_status()
+        self.get_next_waypoint_goal()
         self.get_drawer_refilling_status()
 
     def backend_polling_ROS(self):

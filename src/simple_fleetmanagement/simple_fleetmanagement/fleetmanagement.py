@@ -47,6 +47,8 @@ class SimpleFleetmanagement(Node):
         self.order_queue = []
         self.waypoint_queue = []
         self.last_feedback = datetime.now()
+        self.specificGoal = 0
+        self.goalPose= (0,0,0,0)
 
         self.initialize_ros_robot_status_communication()
 
@@ -85,7 +87,9 @@ class SimpleFleetmanagement(Node):
             "trigger_open_drawer_ros_function": self.trigger_open_drawer_ros_function,
             "publish_robot_status": self.publish_robot_status,
             "publish_drawer_refill_status": self.publish_drawer_refill_status,
-            "add_waypoint": self.add_waypoint
+            "add_waypoint": self.add_waypoint,
+            "set_waypoint_goal": self.set_waypoint_goal,
+            "set_pose_goal": self.set_pose_goal
         }
         self._webInterface = web_interface.WebInterface("http://localhost:8000", functions_for_web)
 
@@ -102,13 +106,34 @@ class SimpleFleetmanagement(Node):
             "navigator_cancel_task": self.navigator_cancel_task,
             "get_waypoints_by_id": self.get_waypoints_by_id,
             "navigate_to_pose": self.navigate_to_pose,
+            "navigate_to_waypoint": self.navigate_to_waypoint,
             "open_drawer": self.open_drawer,
             "check_navigator_status": self.check_navigator_status,
             "is_navigator_Task_complete": self.is_navigator_Task_complete,
-            "get_goal": self.get_goal,
+            "get_waypoint_goal": self.get_waypoint_goal,
+            "reset_waypoint": self.reset_waypoint,
+            "get_pose_goal": self.get_pose_goal,
             "set_state_in_backend": self.set_state
         }
         self.HH_state_machine = HH_Nav_Statemachine.HHStateMachine(functions_by_functionname=functions_fo_statemachine)
+
+    def get_waypoint_goal(self):
+        return self.specificGoal
+
+    def set_waypoint_goal(self, goal):
+        self.specificGoal = goal
+    
+    def reset_waypoint(self):
+         self._webInterface.clear_next_waypoint_goal()
+    
+    def get_pose_goal(self):
+        return self.goalPose
+
+    def set_pose_goal(self, goal):
+        self.goalPose = goal
+
+    def set_state(self, state):
+        self._webInterface.change_state_in_backend(state)
 
     def start_statemachine(self):
         self.run_state_timer = self.create_timer(self.execute_state_intervall, self.HH_state_machine.run_state)
@@ -158,11 +183,17 @@ class SimpleFleetmanagement(Node):
 
         self.waypoint_following_is_activated = True
 
-    def navigate_to_pose(self, waypoint_id: int):
+    def navigate_to_waypoint(self, waypoint_id: int):
         try:
             self.navigator.goToPose(self.target_pose_by_waypoint_id[int(waypoint_id)])
         except:
             self.get_logger().warn("goToPose failed at waypoint:"+str(waypoint_id))
+
+    def navigate_to_pose(self, pose ):
+        try:
+            self.navigator.goToPose(self.create_pose(pose[0],pose[1], pose[2] ))
+        except:
+            self.get_logger().warn("goToPose failed ( x:"+ pose[0] +", y:"+ pose[1] +", w:"+pose[2] )
 
     def navigator_cancel_task(self):
         self.navigator.cancelTask()

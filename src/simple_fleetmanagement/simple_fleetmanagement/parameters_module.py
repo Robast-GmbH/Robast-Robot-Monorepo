@@ -17,3 +17,4 @@ class RobotStates(Enum):
     PAUSE = 2
     HOMING = 3
     DRAWER_OPEN = 4
+    SPECIAL = 5

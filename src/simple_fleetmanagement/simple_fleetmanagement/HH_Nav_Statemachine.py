@@ -73,6 +73,9 @@ class HHStateMachine:
     def checkCondition_pause_to_homing(self) -> Boolean:
         return self.check_status_function() == RobotStates.HOMING
 
+    def checkCondition_pause_to_specific_move(self) -> Boolean:
+        return self.check_status_function() == RobotStates.SPECIAL
+
     def checkCondition_pause_to_running(self) -> Boolean:
         return self.check_status_function() == RobotStates.RUNNING
 
@@ -87,7 +90,6 @@ class HHStateMachine:
 
     def changeState_running_to_pause(self):
         self.functions_by_functionname["navigator_cancel_task"]()
-        self.active = False
 
     def changeState_pause_to_drawer_open(self):
         pass
@@ -98,8 +100,15 @@ class HHStateMachine:
     def changeState_pause_to_running(self):
         pass
 
+    def changeState_pause_to_specific_move(self):
+
+        pass
+
     def changeState_drawer_open_to_pause(self):
         pass
+
+    def changeState_specific_move_to_pause(self):
+        self.active = False
 
     def changeState_homing_to_pause(self):
         self.functions_by_functionname["navigator_cancel_task"]()
@@ -109,17 +118,31 @@ class HHStateMachine:
         if self.waiting or self.active == True or self.check_status_function() != RobotStates.RUNNING:
             return
         elif(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
-            self.active = True
-            self.functions_by_functionname["navigate_to_pose"](self.current_waypoint)
-            if((self.current_waypoint) < len(self.functions_by_functionname["get_waypoints_by_id"]())):
-                print("waypoint erreicht")
+            self.active = True    
+            
+            user_waypoint=self.functions_by_functionname["get_waypoint_goal"]()
+            print("waypoint erreicht") 
+            
+            if(user_waypoint not in self.functions_by_functionname["get_waypoints_by_id"]()):
+                user_waypoint= None
+                
+            if( user_waypoint != None):
+                self.current_waypoint = user_waypoint
+                self.functions_by_functionname["reset_waypoint"]()
+                
+                
+            elif((self.current_waypoint) < len(self.functions_by_functionname["get_waypoints_by_id"]())):
+                
                 self.current_waypoint += 1
                 self.waiting = True
                 self.timer = threading.Timer(30.0, self.change_waiting)
                 self.timer.start()
             else:
                 self.current_waypoint = 1
+            
+            
             self.active = False
+            
 
     def change_waiting(self):
         self.waiting = False
@@ -134,4 +157,23 @@ class HHStateMachine:
             self.functions_by_functionname["open_drawer"](drawer_id)
 
     def stateHoming(self):
-        self.functions_by_functionname["navigate_to_pose"](HOME_WAYPOINT_ID)
+        if(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
+            self.active = True
+            self.functions_by_functionname["navigate_to_waypoint"](HOME_WAYPOINT_ID)
+            self.active = False
+            self.functions_by_functionname["set_state_in_backend"](RobotStates.PAUSE)
+
+    def moveToSpecificWaypoint(self):
+        if(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
+            self.active = True
+            self.functions_by_functionname["navigate_to_waypoint"](self.functions_by_functionname["get_waypoint_goal"])
+            self.active = False
+            self.functions_by_functionname["set_state_in_backend"](RobotStates.PAUSE)
+
+    def moveToSpecificPoint(self):
+        if(self.active == False and self.functions_by_functionname["is_navigator_Task_complete"]()):
+            self.active = True
+            self.functions_by_functionname["navigate_to_pose"](self.functions_by_functionname["get_pose_goal"])
+            self.active = False
+            self.functions_by_functionname["set_state_in_backend"](RobotStates.PAUSE)
+
