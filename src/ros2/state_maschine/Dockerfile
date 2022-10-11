@@ -33,6 +33,7 @@ RUN apt-get update && apt-get install -q -y --no-install-recommends xterm
 RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --merge-install"
 
 RUN echo "source /home/ros2_ws/install/setup.sh" >> ~/.bashrc
+RUN echo "source /opt/ros/galactic/setup.sh" >> ~/.bashrc
 
 ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
 ENV COLCON_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
