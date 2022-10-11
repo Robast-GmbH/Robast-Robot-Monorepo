@@ -11,10 +11,13 @@
 		"source=${localWorkspaceFolder}/../../src/ros2/state_maschine/,target=/workspace/src/state_maschine,type=bind",
 	],
 	"workspaceFolder": "/workspace",
+	"remoteUser": "robast",
 	"runArgs": [
 		"--name=state_maschine",
 		"--network=host",
+		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
 	],
+	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {

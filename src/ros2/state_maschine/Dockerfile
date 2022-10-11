@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y \
   python3-vcstool \
   dirmngr \
   git \
+  curl \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   && rosdep init || echo "rosdep already initialized"
 
@@ -35,6 +36,8 @@ RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --merge-inst
 RUN echo "source /home/ros2_ws/install/setup.sh" >> ~/.bashrc
 RUN echo "source /opt/ros/galactic/setup.sh" >> ~/.bashrc
 
+RUN curl -s https://1bde9b1a2e969457e8926f37a0a94a7f22c43a4056da8037:@packagecloud.io/install/repositories/robosoft-ai/SMACC2_RTA-startup/script.deb.sh | sudo bash
+
 ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
 ENV COLCON_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
 ENV LD_LIBRARY_PATH=/opt/ros/${ROS_DISTRO}/lib
@@ -44,3 +47,8 @@ ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
 ENV ROS_DOMAIN_ID=0
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
+    echo robast:robast | chpasswd && \
+    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV USER robast
