@@ -27,6 +27,13 @@
             "command": "rm -fr build install log; py3clean .",
             "problemMatcher": []
         },
+        {
+            "label": "start smacc_rta",
+            "detail": "start the smacc 2 analyzer",
+            "type": "shell",
+            "command": "source /opt/ros/galactic/setup.bash; ros2 run smacc2_rta smacc2_rta",
+            "problemMatcher": []
+        },
     ],
     "inputs": [
         {
