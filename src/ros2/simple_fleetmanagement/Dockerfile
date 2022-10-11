@@ -61,7 +61,7 @@ RUN apt-get update \
 
 RUN apt-get update && apt-get upgrade -y
 
-COPY "/entrypoint.sh" "/entrypoint.sh"
+# COPY "/entrypoint.sh" "/entrypoint.sh"
 #ENTRYPOINT ["/entrypoint.sh"]
 
 
