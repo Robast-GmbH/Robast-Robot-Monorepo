@@ -36,7 +36,7 @@ long unsigned int rx_msg_id;
 uint8_t rx_msg_dlc = 0;
 uint8_t rx_data_buf[8];
 
-unsigned long previous_millis = 0;
+unsigned long previous_millis_drawer_status_fb = 0;
 #define DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS 1000
 unsigned long interval_drawer_feedback_in_ms = DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS;
 bool broadcast_feedback = false;
@@ -49,6 +49,11 @@ float moving_average_drawer2_closed_pin = 0;
 // flags to store which state the locks should have
 bool open_lock_1 = false;
 bool open_lock_2 = false;
+
+// the time in ms the lock mechanism needs to open resp. close the lock
+#define LOCK_MECHANISM_TIME 5000
+unsigned long previous_millis_open_lock_1 = 0;
+unsigned long previous_millis_open_lock_2 = 0;
 
 hw_timer_t * fading_up_timer = NULL;
 portMUX_TYPE fading_up_timer_mux = portMUX_INITIALIZER_UNLOCKED;
@@ -495,8 +500,20 @@ robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
 
 void handle_lock_control(void)
 {
-  open_lock_1 ? open_lock(1) : close_lock(1);
-  open_lock_2 ? open_lock(2) : close_lock(2);
+  unsigned long current_millis_open_lock_1 = millis();
+  unsigned long current_millis_open_lock_2 = millis();
+
+  if (current_millis_open_lock_1 - previous_millis_open_lock_1 >= LOCK_MECHANISM_TIME)
+  {
+    previous_millis_open_lock_1 = current_millis_open_lock_1;
+    open_lock_1 ? open_lock(1) : close_lock(1);
+  }
+
+  if (current_millis_open_lock_2 - previous_millis_open_lock_2 >= LOCK_MECHANISM_TIME)
+  {
+    previous_millis_open_lock_2 = current_millis_open_lock_2;
+    open_lock_2 ? open_lock(2) : close_lock(2);
+  }
 }
 
 void handle_led_control(void)
@@ -552,10 +569,10 @@ void sending_drawer_status_feedback(void)
 
 void handle_sending_drawer_status_feedback(void)
 {
-  unsigned long current_millis = millis();
-  if (broadcast_feedback && (current_millis - previous_millis >= interval_drawer_feedback_in_ms))
+  unsigned long current_millis_drawer_status_fb = millis();
+  if (broadcast_feedback && (current_millis_drawer_status_fb - previous_millis_drawer_status_fb >= interval_drawer_feedback_in_ms))
   {
-    previous_millis = current_millis;
+    previous_millis_drawer_status_fb = current_millis_drawer_status_fb;
     
     sending_drawer_status_feedback();
   }
