@@ -49,9 +49,15 @@ float moving_average_drawer2_closed_pin = 0;
 // flags to store which state the locks should have
 bool open_lock_1 = false;
 bool open_lock_2 = false;
+// flagt to store state of the lock of the previous step
+bool open_lock_1_previous_step = false;
+bool open_lock_2_previous_step = false;
+// flag to indicate that lock state needs to change
+bool change_lock_1_state = false;
+bool change_lock_2_state = false;
 
 // the time in ms the lock mechanism needs to open resp. close the lock
-#define LOCK_MECHANISM_TIME 5000
+#define LOCK_MECHANISM_TIME 700 // according to the datasheet a minimum of 600ms is required
 unsigned long previous_millis_open_lock_1 = 0;
 unsigned long previous_millis_open_lock_2 = 0;
 
@@ -229,6 +235,12 @@ void handle_lock_status(robast_can_msgs::CanMessage can_message)
   {
     open_lock_2 = false;
   }
+
+  change_lock_1_state = open_lock_1 == open_lock_1_previous_step ? false : true;
+  change_lock_2_state = open_lock_2 == open_lock_2_previous_step ? false : true;
+
+  open_lock_1_previous_step = open_lock_1;
+  open_lock_2_previous_step = open_lock_2;
 }
 
 void led_standard_mode()
@@ -503,13 +515,13 @@ void handle_lock_control(void)
   unsigned long current_millis_open_lock_1 = millis();
   unsigned long current_millis_open_lock_2 = millis();
 
-  if (current_millis_open_lock_1 - previous_millis_open_lock_1 >= LOCK_MECHANISM_TIME)
+  if (change_lock_1_state && (current_millis_open_lock_1 - previous_millis_open_lock_1 >= LOCK_MECHANISM_TIME))
   {
     previous_millis_open_lock_1 = current_millis_open_lock_1;
     open_lock_1 ? open_lock(1) : close_lock(1);
   }
 
-  if (current_millis_open_lock_2 - previous_millis_open_lock_2 >= LOCK_MECHANISM_TIME)
+  if (change_lock_2_state && (current_millis_open_lock_2 - previous_millis_open_lock_2 >= LOCK_MECHANISM_TIME))
   {
     previous_millis_open_lock_2 = current_millis_open_lock_2;
     open_lock_2 ? open_lock(2) : close_lock(2);
