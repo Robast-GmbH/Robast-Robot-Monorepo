@@ -33,9 +33,6 @@ RUN apt-get update && apt-get install -q -y --no-install-recommends xterm
 
 RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --merge-install"
 
-RUN echo "source /home/ros2_ws/install/setup.sh" >> ~/.bashrc
-RUN echo "source /opt/ros/galactic/setup.sh" >> ~/.bashrc
-
 RUN curl -s https://1bde9b1a2e969457e8926f37a0a94a7f22c43a4056da8037:@packagecloud.io/install/repositories/robosoft-ai/SMACC2_RTA-startup/script.deb.sh | sudo bash
 
 ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
@@ -48,7 +45,11 @@ ENV ROS_VERSION=2
 ENV ROS_DOMAIN_ID=0
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
+RUN apt -y install ros-galactic-smacc2-rta
+
+ENV USER robast
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
+    echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
+    echo "if [ -f /home/ros2_ws/install/setup.bash ]; then source /home/ros2_ws/install/setup.bash; fi" >> /home/$USER/.bashrc \
     echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
