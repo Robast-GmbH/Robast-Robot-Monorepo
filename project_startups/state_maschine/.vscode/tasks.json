@@ -7,7 +7,7 @@
             "label": "build",
             "detail": "Symlink Build for Ros-Theron. Makes sure packages are build in the right order.",
             "type": "shell",
-            "command": "source ~/../../opt/ros/humble/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "command": "source /opt/ros/galactic/setup.bash; source /home/ros2_ws/install/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
             "problemMatcher": []
         },
         {

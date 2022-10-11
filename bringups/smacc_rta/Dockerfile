@@ -12,27 +12,6 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   && rosdep init || echo "rosdep already initialized"
 
-ARG GIT_BRANCH
-ARG LOCAL_FOLDER_SOURCE=0
-
-WORKDIR "/home/ros2_ws/src"
-
-RUN echo "x23"
-ADD . /home/ros2_ws/src/SMACC2
-RUN if [ $LOCAL_FOLDER_SOURCE -eq 0 ] ; then (echo "downloading repo" && rm -R /home/ros2_ws/src/SMACC2  && git clone -b ${ROS_DISTRO} https://github.com/robosoft-ai/SMACC2.git /home/ros2_ws/src/SMACC2); else  (echo "using local copy" &&  rm -R /home/ros2_ws/src/SMACC2/.git); fi
-WORKDIR "/home/ros2_ws"
-
-# install dependencies and build
-RUN ls src && vcs import  src --skip-existing --input src/SMACC2/SMACC2-not-released.${ROS_DISTRO}.repos \
-  && ls src
-
-RUN apt-get update && apt-get upgrade -y
-RUN rosdep update
-RUN rosdep install --from-paths src --ignore-src -r -y
-RUN apt-get update && apt-get install -q -y --no-install-recommends xterm
-
-RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --merge-install"
-
 RUN curl -s https://1bde9b1a2e969457e8926f37a0a94a7f22c43a4056da8037:@packagecloud.io/install/repositories/robosoft-ai/SMACC2_RTA-startup/script.deb.sh | sudo bash
 
 ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
