@@ -28,10 +28,10 @@
             "problemMatcher": []
         },
         {
-            "label": "start smacc_rta",
-            "detail": "start the smacc 2 analyzer",
+            "label": "start sm_three_some",
+            "detail": "start the smacc2 sm_three_some reference project",
             "type": "shell",
-            "command": "source /opt/ros/galactic/setup.bash; ros2 run smacc2_rta smacc2_rta",
+            "command": "source install/setup.bash; ros2 launch sm_three_some sm_three_some_launch.py",
             "problemMatcher": []
         },
     ],
