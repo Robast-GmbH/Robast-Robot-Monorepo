@@ -214,6 +214,20 @@ void close_lock(uint8_t lock_id)
   }
 }
 
+void set_lock_output_low(uint8_t lock_id)
+{
+  if (lock_id == 1)
+  {
+    digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
+    digitalWrite(PWR_CLOSE_LOCK1_PIN, LOW);
+  }
+  if (lock_id == 2)
+  {
+    digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
+    digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
+  }
+}
+
 void handle_lock_status(robast_can_msgs::CanMessage can_message)
 {
   if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_OPEN_LOCK)
@@ -235,12 +249,6 @@ void handle_lock_status(robast_can_msgs::CanMessage can_message)
   {
     open_lock_2 = false;
   }
-
-  change_lock_1_state = open_lock_1 == open_lock_1_previous_step ? false : true;
-  change_lock_2_state = open_lock_2 == open_lock_2_previous_step ? false : true;
-
-  open_lock_1_previous_step = open_lock_1;
-  open_lock_2_previous_step = open_lock_2;
 }
 
 void led_standard_mode()
@@ -512,19 +520,35 @@ robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
 
 void handle_lock_control(void)
 {
+  // Mind that the state for open_lock_1 and open_lock_2 is changed in the handle_lock_status function when a CAN msg is received
+  change_lock_1_state = open_lock_1 == open_lock_1_previous_step ? false : true;
+  change_lock_2_state = open_lock_2 == open_lock_2_previous_step ? false : true;
+
   unsigned long current_millis_open_lock_1 = millis();
   unsigned long current_millis_open_lock_2 = millis();
 
   if (change_lock_1_state && (current_millis_open_lock_1 - previous_millis_open_lock_1 >= LOCK_MECHANISM_TIME))
   {
+    open_lock_1_previous_step = open_lock_1;
     previous_millis_open_lock_1 = current_millis_open_lock_1;
     open_lock_1 ? open_lock(1) : close_lock(1);
+  }
+  else if (!change_lock_1_state && (current_millis_open_lock_1 - previous_millis_open_lock_1 >= LOCK_MECHANISM_TIME))
+  {
+    // this makes sure, there is only a 5V pulse with the duration of LOCK_MECHANISM_TIME on the respective input of the lock
+    set_lock_output_low(1);
   }
 
   if (change_lock_2_state && (current_millis_open_lock_2 - previous_millis_open_lock_2 >= LOCK_MECHANISM_TIME))
   {
+    open_lock_2_previous_step = open_lock_2;
     previous_millis_open_lock_2 = current_millis_open_lock_2;
     open_lock_2 ? open_lock(2) : close_lock(2);
+  }
+  else if (!change_lock_2_state && (current_millis_open_lock_2 - previous_millis_open_lock_2 >= LOCK_MECHANISM_TIME))
+  {
+    // this makes sure, there is only a 5V pulse with the duration of LOCK_MECHANISM_TIME on the respective input of the lock
+    set_lock_output_low(1);
   }
 }
 
