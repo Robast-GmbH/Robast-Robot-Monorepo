@@ -31,7 +31,7 @@ RUN rosdep update
 RUN rosdep install --from-paths src --ignore-src -r -y
 RUN apt-get update && apt-get install -q -y --no-install-recommends xterm
 
-RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --merge-install"
+RUN bash -c "source /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --merge-install --parallel-workers 16 --packages-skip sm_advanced_recovery_1 sm_atomic sm_atomic_24hr sm_atomic_hierarchy sm_autoware_avp sm_aws_warehouse_navigation sm_branching sm_dance_bot sm_dance_bot_strikes_back sm_dance_bot_warehouse sm_dance_bot_warehouse_2 sm_dance_bot_warehouse_3 sm_drawer_gate sm_ferrari sm_husky_barrel_search_1 sm_multi_stage_1 sm_multi_ur5_sim sm_pack_ml sm_pubsub_1 sm_respira_1 sm_test_moveit_ur5_sim sm_three_some"
 
 ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
 ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
