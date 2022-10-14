@@ -215,7 +215,7 @@ void close_lock(uint8_t lock_id)
 }
 
 void set_lock_output_low(uint8_t lock_id)
-{
+{ 
   if (lock_id == 1)
   {
     digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
@@ -548,7 +548,7 @@ void handle_lock_control(void)
   else if (!change_lock_2_state && (current_millis_open_lock_2 - previous_millis_open_lock_2 >= LOCK_MECHANISM_TIME))
   {
     // this makes sure, there is only a 5V pulse with the duration of LOCK_MECHANISM_TIME on the respective input of the lock
-    set_lock_output_low(1);
+    set_lock_output_low(2);
   }
 }
 
