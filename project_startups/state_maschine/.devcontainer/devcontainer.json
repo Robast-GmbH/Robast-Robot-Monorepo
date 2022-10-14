@@ -15,7 +15,9 @@
 	"runArgs": [
 		"--name=state_maschine",
 		"--network=host",
-		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
+		"--volume=/tmp/.X11-unix:/tmp/.X11-unix",
+		"--cpus=24",
+		"--memory=20g"
 	],
 	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
