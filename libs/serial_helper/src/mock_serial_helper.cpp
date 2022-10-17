@@ -1,8 +1,9 @@
   #include "../include/mock_serial_helper.h"
+  #include <map>
 
 namespace serial_helper
 {
-            MockSerialHelper(map<string,string > responces );
+             MockSerialHelper::MockSerialHelper(map<string,string > responces )
             {
                 this->responces = responces;
             }

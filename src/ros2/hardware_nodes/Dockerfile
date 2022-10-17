@@ -5,6 +5,9 @@ RUN apt-get update && apt-get install -y \
   python3-colcon-common-extensions \
   python3-pip \
   python3-rosdep \
+  ros-humble-ros-testing \
+  ros-humble-ament-cmake-test\
   && rosdep init || echo "rosdep already initialized"
+
 
 ENV ROS_DOMAIN_ID=0

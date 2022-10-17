@@ -22,11 +22,14 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(communication_interfaces REQUIRED)
+find_package(ament_cmake_catch2 REQUIRED)
 
 
 set(serial_helper_dir /workspace/libs/serial_helper)
 include_directories(${serial_helper_dir}) # needed to find robast_msg/robast_can_msgs
 
+set(catch2_dir /workspace/libs/catch)
+include_directories(${catch2_dir})
 
 include_directories(include)
 
@@ -42,6 +45,7 @@ add_library(${library_nfc_gate} SHARED
   ${serial_helper_dir}/src/serial_helper.cpp #TODO: This can probably be done better
   ${serial_helper_dir}/src/mock_serial_helper.cpp
   ${serial_helper_dir}/include/i_serial_helper.h
+  ${catch2_dir}/catch.hpp
 )
 
 
@@ -88,25 +92,30 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}/
 )
 
-if(BUILD_TESTING)
-  find_package(ament_cmake_gtest REQUIRED)
-  find_package(ros_testing REQUIRED)
+#if(BUILD_TESTING)
+#  find_package(ament_cmake_catch2 QUIET)
+#  find_package(ros_testing REQUIRED)
 
   # the following lines skip linters
-  set(ament_cmake_cppcheck_FOUND TRUE)
-  set(ament_cmake_copyright_FOUND TRUE)
-  set(ament_cmake_cpplint_FOUND TRUE)
-  set(ament_cmake_flake8_FOUND TRUE)
-  set(ament_cmake_uncrustify_FOUND TRUE)
+#  set(ament_cmake_cppcheck_FOUND TRUE)
+#  set(ament_cmake_copyright_FOUND TRUE)
+#  set(ament_cmake_cpplint_FOUND TRUE)
+#  set(ament_cmake_flake8_FOUND TRUE)
+#  set(ament_cmake_uncrustify_FOUND TRUE)
 
 
-  ament_add_gtest_executable(nfc_gate_test
-    test/nfc_gate_test.cpp
-  )
+#  ament_add_catch2(nfc_gate_test
+#    test/nfc_gate_test.cpp
+#  )
   
-  ament_target_dependencies(nfc_gate_test ${dependencies})
-  add_ros_test(test/launch/nfc_gate_test.test.py TIMEOUT 120 ARGS "test_binary_dir:=${CMAKE_CURRENT_BINARY_DIR}")
-endif()
+# ament_target_dependencies(nfc_gate_test ${dependencies})
+
+#  add_ros_test(test/launch/nfc_gate_test.test.py TIMEOUT 120 ARGS "test_binary_dir:=${CMAKE_CURRENT_BINARY_DIR}")
+#endif()
+ament_add_catch2(nfc_gate_test
+  test/main.cpp
+  test/nfc_gate_test.cpp
+)
 
 ament_export_include_directories(include)
 
