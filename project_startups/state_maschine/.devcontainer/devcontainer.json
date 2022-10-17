@@ -9,6 +9,7 @@
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/state_maschine/,target=/workspace/src/state_maschine,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
 	],
 	"workspaceFolder": "/workspace",
 	"remoteUser": "robast",
