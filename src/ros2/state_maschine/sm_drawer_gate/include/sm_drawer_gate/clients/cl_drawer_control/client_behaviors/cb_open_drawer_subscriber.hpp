@@ -13,6 +13,7 @@ struct EvCbReceivedMsg : sc::event<EvCbReceivedMsg>
 };
 
 //--------------------------------------------------------------------------------------
+
 class CbOpenDrawerSubscriber
 : public smacc2::client_behaviors::CbSubscriptionCallbackBase<communication_interfaces::msg::DrawerAddress>
 {
@@ -26,10 +27,15 @@ public:
 
   void onMessageReceived(const communication_interfaces::msg::DrawerAddress & msg) override
   {
+    last_msg = msg;   
+
     //TODO: drawer address in class varible schreiben
     auto ev = new EvCbReceivedMsg();
     this->postEvent(ev);
+    RCLCPP_INFO(getLogger(), "msg");
   }
+protected:
+  communication_interfaces::msg::DrawerAddress last_msg;
 };
 }  // namespace cl_drawer_control
 }  // namespace sm_drawer_gate
