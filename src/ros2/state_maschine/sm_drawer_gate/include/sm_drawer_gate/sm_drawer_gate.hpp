@@ -61,7 +61,7 @@ struct SmDrawerGate : public smacc2::SmaccStateMachineBase<SmDrawerGate, MsDrawe
 }  // namespace sm_three_some
 
 // MODE STATES
-#include <sm_drawer_gate/mode_states/ms_run.hpp>
+#include <sm_drawer_gate/mode_states/ms_drawer_control_run_mode.hpp>
 
 // #include <sm_drawer_gate/mode_states/ms_recover.hpp>
 
