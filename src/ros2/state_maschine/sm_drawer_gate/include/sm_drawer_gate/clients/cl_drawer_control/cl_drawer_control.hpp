@@ -10,7 +10,10 @@ namespace cl_drawer_control
 class ClDrawerControl : public smacc2::client_bases::SmaccSubscriberClient<communication_interfaces::msg::DrawerAddress>
 {
 public:
-  ClDrawerControl() {}
+  ClDrawerControl(std::string topicname)
+  : smacc2::client_bases::SmaccSubscriberClient<communication_interfaces::msg::DrawerAddress>(topicname)
+  {
+  }
 };
 }  // namespace cl_drawer_control
 }  // namespace sm_drawer_gate
