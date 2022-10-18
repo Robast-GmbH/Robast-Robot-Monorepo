@@ -2,6 +2,7 @@
 
 #include <smacc2/smacc_orthogonal.hpp>
 #include <sm_drawer_gate/clients/cl_drawer_control/cl_drawer_control.hpp>
+#include <sm_drawer_gate/clients/cl_drawer_control/components/cp_drawer_address.hpp>
 
 using namespace std::chrono_literals;
 
@@ -13,6 +14,8 @@ public:
   void onInitialize() override
   {
     auto clDrawerControl = this->createClient<cl_drawer_control::ClDrawerControl>("/open_drawer");
+
+    clDrawerControl->createComponent<cl_drawer_control::CpDrawerAddress>();
   }
 };
 }  // namespace sm_drawer_gate
