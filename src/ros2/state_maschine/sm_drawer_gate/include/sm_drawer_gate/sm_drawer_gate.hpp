@@ -36,7 +36,7 @@ class SsDrawerAccess;
 // STATES
 class StLoopDrawerAccess;  // first state specially needs a forward declaration
 
-class MsRun;
+class MsDrawerControlRunMode;
 // class MsRecover;
 
 // struct EvToDeep : sc::event<EvToDeep>
@@ -48,7 +48,7 @@ class MsRun;
 // };
 
 // STATE MACHINE
-struct SmDrawerGate : public smacc2::SmaccStateMachineBase<SmDrawerGate, MsRun>
+struct SmDrawerGate : public smacc2::SmaccStateMachineBase<SmDrawerGate, MsDrawerControlRunMode>
 {
   using SmaccStateMachineBase::SmaccStateMachineBase;
 

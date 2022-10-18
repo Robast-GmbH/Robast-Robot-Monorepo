@@ -5,7 +5,7 @@
 namespace sm_drawer_gate
 {
 // STATE DECLARATION
-struct StLoopDrawerAccess : smacc2::SmaccState<StLoopDrawerAccess, MsRun>
+struct StLoopDrawerAccess : smacc2::SmaccState<StLoopDrawerAccess, MsDrawerControlRunMode>
 {
   using SmaccState::SmaccState;
 
