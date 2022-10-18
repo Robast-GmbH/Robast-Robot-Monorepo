@@ -35,6 +35,7 @@ namespace sm_drawer_gate
 
 // STATES
 class StLoopDrawerAccess;  // first state specially needs a forward declaration
+class StOpenDrawer;
 
 class MsDrawerControlRunMode;
 // class MsRecover;
@@ -67,4 +68,6 @@ struct SmDrawerGate : public smacc2::SmaccStateMachineBase<SmDrawerGate, MsDrawe
 
 // STATES
 #include <sm_drawer_gate/states/st_loop_drawer_access.hpp>
+#include <sm_drawer_gate/states/st_open_drawer.hpp>
 // #include <sm_drawer_gate/superstates/ss_drawer_access.hpp>
+

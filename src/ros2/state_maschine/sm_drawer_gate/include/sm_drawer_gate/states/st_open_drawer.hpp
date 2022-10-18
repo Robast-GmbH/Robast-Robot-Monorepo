@@ -5,17 +5,17 @@
 namespace sm_drawer_gate
 {
 // STATE DECLARATION
-struct StLoopDrawerAccess : smacc2::SmaccState<StLoopDrawerAccess, MsDrawerControlRunMode>
+struct StOpenDrawer : smacc2::SmaccState<StOpenDrawer, MsDrawerControlRunMode>
 {
   using SmaccState::SmaccState;
 
   // DECLARE CUSTOM OBJECT TAGS
-  struct ReceivedMsg : SUCCESS{};
+  struct ReceivedMsg : SUCCESS{}; //TODO: This should actually be named transition?
 
   // TRANSITION TABLE
   typedef mpl::list<
 
-    Transition<EvTopicMessage<CbOpenDrawerSubscriber, OrDrawerControl, communication_interfaces::msg::DrawerAddress>, StOpenDrawer, ReceivedMsg>
+    Transition<EvTopicMessage<CbOpenDrawerSubscriber, OrDrawerControl, communication_interfaces::msg::DrawerAddress>, StLoopDrawerAccess, ReceivedMsg>
 
     >reactions;
 
