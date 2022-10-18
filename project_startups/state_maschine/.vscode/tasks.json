@@ -7,7 +7,14 @@
             "label": "build",
             "detail": "Symlink Build for Ros-Theron. Makes sure packages are build in the right order.",
             "type": "shell",
-            "command": "source /opt/ros/galactic/setup.bash; source /home/ros2_ws/install/setup.bash; colcon build --symlink-install --parallel-workers 16 --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "command": "source /opt/ros/galactic/setup.bash; source /home/ros2_ws/install/setup.bash; colcon build --symlink-install --continue-on-error --parallel-workers 16 --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "problemMatcher": []
+        },
+        {
+            "label": "build sm_drawer_gate",
+            "detail": "Symlink Build for Ros-Theron. Makes sure packages are build in the right order.",
+            "type": "shell",
+            "command": "source /opt/ros/galactic/setup.bash; source /home/ros2_ws/install/setup.bash; clear; colcon build --symlink-install --packages-select sm_drawer_gate --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
             "problemMatcher": []
         },
         {
