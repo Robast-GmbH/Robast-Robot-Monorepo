@@ -41,6 +41,13 @@
             "command": "source install/setup.bash; ros2 launch sm_three_some sm_three_some_launch.py",
             "problemMatcher": []
         },
+        {
+            "label": "start sm_drawer_gate",
+            "detail": "start the sm_drawer_gate reference project",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch sm_drawer_gate sm_drawer_gate_launch.py",
+            "problemMatcher": []
+        },
     ],
     "inputs": [
         {
