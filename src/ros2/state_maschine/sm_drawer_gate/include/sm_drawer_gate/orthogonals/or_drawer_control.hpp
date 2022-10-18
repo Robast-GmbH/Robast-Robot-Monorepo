@@ -12,7 +12,7 @@ class OrDrawerControl : public smacc2::Orthogonal<OrDrawerControl>
 public:
   void onInitialize() override
   {
-    auto clDrawerControl = this->createClient<cl_drawer_control::ClDrawerControl>("open_drawer");
+    auto clDrawerControl = this->createClient<cl_drawer_control::ClDrawerControl>("/open_drawer");
   }
 };
 }  // namespace sm_drawer_gate

@@ -11,7 +11,7 @@ class OrTimer : public smacc2::Orthogonal<OrTimer>
 public:
   void onInitialize() override
   {
-    auto actionclient = this->createClient<cl_ros_timer::ClRosTimer>(500ms);
+    auto actionclient = this->createClient<cl_ros_timer::ClRosTimer>(5000ms);
   }
 };
 }  // namespace sm_drawer_gate

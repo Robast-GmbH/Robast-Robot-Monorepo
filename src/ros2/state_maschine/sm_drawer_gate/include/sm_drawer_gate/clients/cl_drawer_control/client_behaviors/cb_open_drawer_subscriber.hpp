@@ -27,12 +27,12 @@ public:
 
   void onMessageReceived(const communication_interfaces::msg::DrawerAddress & msg) override
   {
-    last_msg = msg;   
+    last_msg = *msg;   
 
     //TODO: drawer address in class varible schreiben
     auto ev = new EvCbReceivedMsg();
     this->postEvent(ev);
-    RCLCPP_INFO(getLogger(), "msg");
+    RCLCPP_INFO(getLogger(), "last_msg");
   }
 protected:
   communication_interfaces::msg::DrawerAddress last_msg;
