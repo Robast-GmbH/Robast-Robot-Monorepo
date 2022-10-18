@@ -15,7 +15,7 @@ public:
   {
     auto clDrawerControl = this->createClient<cl_drawer_control::ClDrawerControl>("/open_drawer");
 
-    clDrawerControl->createComponent<cl_drawer_control::CpDrawerAddress>();
+    // clDrawerControl->createComponent<cl_drawer_control::CpDrawerAddress>();
   }
 };
 }  // namespace sm_drawer_gate
