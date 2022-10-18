@@ -15,7 +15,7 @@ struct StLoopDrawerAccess : smacc2::SmaccState<StLoopDrawerAccess, MsDrawerContr
   // TRANSITION TABLE
   typedef mpl::list<
 
-    Transition<EvTopicMessage<CbOpenDrawerSubscriber, OrDrawerControl>, SsDrawerAccess, ReceivedMsg>,
+    Transition<EvTopicMessage<CbOpenDrawerSubscriber, OrDrawerControl>, StLoopDrawerAccess, ReceivedMsg>,
 
     >reactions;
 

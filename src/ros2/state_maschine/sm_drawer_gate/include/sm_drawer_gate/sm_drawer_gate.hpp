@@ -27,10 +27,10 @@ using namespace smacc2::default_events;
 namespace sm_drawer_gate
 {
 // SUPERSTATES
-namespace SSDrawerAccess
-{
-class SsDrawerAccess;
-}  // namespace SSDrawerAccess
+// namespace SSDrawerAccess
+// {
+// class SsDrawerAccess;
+// }  // namespace SSDrawerAccess
 
 
 // STATES
@@ -67,4 +67,4 @@ struct SmDrawerGate : public smacc2::SmaccStateMachineBase<SmDrawerGate, MsDrawe
 
 // STATES
 #include <sm_drawer_gate/states/st_loop_drawer_access.hpp>
-#include <sm_drawer_gate/superstates/ss_drawer_access.hpp>
+// #include <sm_drawer_gate/superstates/ss_drawer_access.hpp>
