@@ -8,7 +8,8 @@ namespace sm_drawer_gate
 {
 namespace cl_drawer_control
 {
-struct EvCbReceivedMsg : sc::event<EvCbReceivedMsg>
+template <typename TSource, typename TOrthogonal>
+struct EvCbReceivedMsg : sc::event<EvCbReceivedMsg<TSource, TOrthogonal>>
 {
 };
 
@@ -25,15 +26,24 @@ public:
     smacc2::client_behaviors::CbSubscriptionCallbackBase<communication_interfaces::msg::DrawerAddress>::onEntry();
   }
 
+  template <typename TOrthogonal, typename TSourceObject>
+  void onOrthogonalAllocation()
+  {
+    postMyEvent_ = [=] { this->postEvent<EvCbReceivedMsg<TSourceObject, TOrthogonal>>(); };
+    RCLCPP_INFO(getLogger(), "onOrthogonalAllocation !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"); //DEBUGGING
+  }
+
   void onMessageReceived(const communication_interfaces::msg::DrawerAddress & msg) override
   {
     last_msg = msg;   
 
     //TODO: drawer address in class varible schreiben
-    auto ev = new EvCbReceivedMsg();
-    this->postEvent(ev);
-    RCLCPP_INFO(getLogger(), "last_msg");
+    RCLCPP_INFO(getLogger(), "Received Drawer Address: %i", msg.drawer_controller_id);
+    this->postMyEvent_();
   }
+
+  std::function<void()> postMyEvent_;
+
 protected:
   communication_interfaces::msg::DrawerAddress last_msg;
 };

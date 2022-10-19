@@ -15,7 +15,7 @@ struct StOpenDrawer : smacc2::SmaccState<StOpenDrawer, MsDrawerControlRunMode>
   // TRANSITION TABLE
   typedef mpl::list<
 
-    Transition<EvTopicMessage<CbOpenDrawerSubscriber, OrDrawerControl, communication_interfaces::msg::DrawerAddress>, StLoopDrawerAccess, ReceivedMsg>
+    Transition<EvCbReceivedMsg<CbOpenDrawerSubscriber, OrDrawerControl>, StLoopDrawerAccess, ReceivedMsg>
 
     >reactions;
 
