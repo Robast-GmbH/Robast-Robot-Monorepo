@@ -24,6 +24,6 @@
 #define BOTTOM_LED_ON "0408"
 #define BOTTOM_LED_OFF "0409"
 
-#define BOOL_SUCESS "0001"
+#define BOOL_SUCCESS "0001"
 
 #endif  // NFC_GATE__NFC_GATE_HPP_

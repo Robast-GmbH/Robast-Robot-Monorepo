@@ -5,7 +5,7 @@ namespace serial_helper
 
     SerialHelper::SerialHelper(string serial_path)
     {
-        this->serial_path = serial_path;
+        this->serial_path_ = serial_path;
     }
     
     SerialHelper::~SerialHelper()
@@ -14,9 +14,9 @@ namespace serial_helper
 
     string SerialHelper::open_serial()
     {
-        this->serial_port = open(this->serial_path.c_str() , O_RDWR);
+        this->serial_port_ = open(this->serial_path_.c_str() , O_RDWR);
         // Check for errors
-        if (this->serial_port < 0) {
+        if (this->serial_port_ < 0) {
             string result = "Error from open: ";
             result.append(strerror(errno));
             result.append("\n");
@@ -27,7 +27,7 @@ namespace serial_helper
         struct termios tty;
 
         // Read in existing settings, and handle any error
-        if(tcgetattr(this->serial_port, &tty) != 0) {
+        if(tcgetattr(this->serial_port_, &tty) != 0) {
             string result = "Error from tcgetattr: ";
             result.append(strerror(errno));
             result.append("\n");
@@ -62,7 +62,7 @@ namespace serial_helper
         cfsetospeed(&tty, B9600);
 
         // Save tty settings, also checking for error
-        if (tcsetattr(this->serial_port, TCSANOW, &tty) != 0) {
+        if (tcsetattr(this->serial_port_, TCSANOW, &tty) != 0) {
             string result = "Error from tcgetattr: ";
             result.append(strerror(errno));
             result.append("\n");
@@ -73,8 +73,8 @@ namespace serial_helper
 
     void SerialHelper::close_serial()
     {
-        close(this->serial_port);
-        this->serial_port = -1;
+        close(this->serial_port_);
+        this->serial_port_ = -1;
     }
 
     uint16_t SerialHelper::read_serial(string* result, uint16_t max_num_bytes)
@@ -82,7 +82,7 @@ namespace serial_helper
         char read_buf [256];
         memset(&read_buf, '\0', sizeof(read_buf));
         int num_bytes;
-        num_bytes = read(this->serial_port, &read_buf, sizeof(read_buf));
+        num_bytes = read(this->serial_port_, &read_buf, sizeof(read_buf));
         if( num_bytes > max_num_bytes)
         {
             *result = "Error reading: ";
@@ -96,17 +96,33 @@ namespace serial_helper
 
     string SerialHelper::write_serial(string msg)
     {
-        if (this->serial_port < 0)
+        if (this->serial_port_ < 0)
         {
             string errno_string(errno, sizeof(errno));
             return "Error " + errno_string + " from open: " + strerror(errno) + "\n";
         }
-        write(this->serial_port, &msg[0], msg.length());
+        write(this->serial_port_, &msg[0], msg.length());
         return "";
     }
 
     string SerialHelper::send_ascii_cmd(string cmd)
     {
         return this->write_serial(cmd + "\r");
+    }
+
+    string SerialHelper::ascii_interaction(string cmd, string* responce, uint16_t responce_size )
+    {
+        string request_result = this->send_ascii_cmd(cmd);
+        if(request_result!="")
+        {
+            return request_result;
+        }
+
+        uint16_t respnce_result = this->read_serial(responce, responce_size); 
+        if(respnce_result == 0)
+        {
+            return "Error message could not be recived.";
+        } 
+        return *responce;
     }
 }

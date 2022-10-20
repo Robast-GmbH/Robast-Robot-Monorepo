@@ -23,13 +23,14 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(ament_cmake_catch2 REQUIRED)
+find_package(ament_cmake_uncrustify REQUIRED)
 
 
 set(serial_helper_dir /workspace/libs/serial_helper)
 include_directories(${serial_helper_dir}) # needed to find robast_msg/robast_can_msgs
 
-set(catch2_dir /workspace/libs/catch)
-include_directories(${catch2_dir})
+set(test_lib_dir /workspace/libs/test)
+include_directories(${test_lib_dir})
 
 include_directories(include)
 
@@ -40,15 +41,33 @@ add_executable(${executable_nfc_gate}
 
 set(library_nfc_gate ${executable_nfc_gate}_core)
 
-add_library(${library_nfc_gate} SHARED
+add_library(library_nfc_gate SHARED
   src/nfc_gate.cpp
   ${serial_helper_dir}/src/serial_helper.cpp #TODO: This can probably be done better
-  ${serial_helper_dir}/src/mock_serial_helper.cpp
   ${serial_helper_dir}/include/i_serial_helper.h
-  ${catch2_dir}/catch.hpp
+  ${test_lib_dir}/catch.hpp
+  ${test_lib_dir}/fakeit.hpp
 )
 
+if(BUILD_TESTING)
+  file(GLOB_RECURSE unit_test_srcs "test/*.cpp")
 
+  ament_add_catch2(
+  nfc_gate_test test/main.cpp ${unit_test_srcs}
+  TIMEOUT 300
+  )
+
+target_link_libraries(nfc_gate_test
+      library_nfc_gate
+      rclcpp::rclcpp
+      rclcpp_action::rclcpp_action
+  )
+  
+  target_include_directories(nfc_gate_test
+  PRIVATE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
+  )
+endif()
 
 set(dependencies
   rclcpp
@@ -60,10 +79,10 @@ ament_target_dependencies(${executable_nfc_gate}
   ${dependencies}
 )
 
-target_link_libraries(${executable_nfc_gate} ${library_nfc_gate})
+target_link_libraries(${executable_nfc_gate} library_nfc_gate)
 
 
-ament_target_dependencies(${library_nfc_gate}
+ament_target_dependencies(library_nfc_gate
   ${dependencies}
 )
 
@@ -72,7 +91,7 @@ target_include_directories(nfc_gate PUBLIC
   $<INSTALL_INTERFACE:include>)
 
 install(TARGETS
-  ${library_nfc_gate}
+  library_nfc_gate
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -90,31 +109,6 @@ install(DIRECTORY include/
 install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}/
-)
-
-#if(BUILD_TESTING)
-#  find_package(ament_cmake_catch2 QUIET)
-#  find_package(ros_testing REQUIRED)
-
-  # the following lines skip linters
-#  set(ament_cmake_cppcheck_FOUND TRUE)
-#  set(ament_cmake_copyright_FOUND TRUE)
-#  set(ament_cmake_cpplint_FOUND TRUE)
-#  set(ament_cmake_flake8_FOUND TRUE)
-#  set(ament_cmake_uncrustify_FOUND TRUE)
-
-
-#  ament_add_catch2(nfc_gate_test
-#    test/nfc_gate_test.cpp
-#  )
-  
-# ament_target_dependencies(nfc_gate_test ${dependencies})
-
-#  add_ros_test(test/launch/nfc_gate_test.test.py TIMEOUT 120 ARGS "test_binary_dir:=${CMAKE_CURRENT_BINARY_DIR}")
-#endif()
-ament_add_catch2(nfc_gate_test
-  test/main.cpp
-  test/nfc_gate_test.cpp
 )
 
 ament_export_include_directories(include)

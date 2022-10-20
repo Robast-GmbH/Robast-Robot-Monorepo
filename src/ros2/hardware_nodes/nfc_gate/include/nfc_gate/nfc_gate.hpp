@@ -46,14 +46,20 @@ namespace robast
       */ 
       NFCGate();
       NFCGate(string serial_port_path );
-      NFCGate( serial_helper::ISerialHelper *serial_connector );
+      NFCGate(serial_helper::ISerialHelper *serial_connector );
       void scanTag(); 
-    
+      void startUpScanner();
+      string executeScan();
+     string validateKey(string target, std::vector<std::string>list);
+      void turnOffScanner();
     private:
-   
+      
+    
+     
+      
       int numReadings;
     
-      serial_helper::ISerialHelper *serial_connector;
+      serial_helper::ISerialHelper *serial_connector_;
       rclcpp::TimerBase::SharedPtr timer;
       shared_ptr<GoalHandleAuthenticateUser> timer_handle;
       rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;

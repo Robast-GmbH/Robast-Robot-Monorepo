@@ -22,6 +22,8 @@ namespace serial_helper
             virtual string write_serial(string msg) = 0;
 
             virtual string send_ascii_cmd(string cmd) = 0;
+
+            virtual string ascii_interaction(string cmd, string* responce, uint16_t responce_size )=0;
     };
 }
 

@@ -18,8 +18,8 @@ namespace serial_helper
     {
         private:
             /* data */
-            string serial_path;
-            int serial_port;
+            string serial_path_;
+            int serial_port_;
 
         public:
             SerialHelper(string serial_path);
@@ -29,10 +29,9 @@ namespace serial_helper
             void close_serial();
 
             uint16_t read_serial(string* result, uint16_t max_num_bytes);
-
             string write_serial(string msg);
-
-            string send_ascii_cmd(string cmd);
+            string send_ascii_cmd(string cmd);            
+            string ascii_interaction(string cmd, string* responce, uint16_t responce_size );
     };
 }
 

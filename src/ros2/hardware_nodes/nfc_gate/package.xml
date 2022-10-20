@@ -13,9 +13,6 @@
   <depend>rclcpp_action</depend>
   <depend>communication_interfaces</depend>
 
- <!--<test_depend>ament_cmake_catch2</test_depend>
- <test_depend>ros_testing</test_depend>
--->
   <test_depend>ament_cmake_catch2</test_depend>
   <export>
     <build_type>ament_cmake</build_type>

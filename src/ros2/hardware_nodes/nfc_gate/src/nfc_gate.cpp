@@ -12,8 +12,7 @@ namespace robast
 
   NFCGate::NFCGate( serial_helper::ISerialHelper* serial_connector  ) : Node("nfc_gate")
   {
-    
-    this->serial_connector= serial_connector;// new serial_helper::SerialHelper(serial_port_path);
+    this->serial_connector_ = serial_connector;// new serial_helper::SerialHelper(serial_port_path);
     this->user_authenticate_server = rclcpp_action::create_server<AuthenticateUser>(
       this,
       "authenticate_user",
@@ -48,6 +47,61 @@ namespace robast
     
   }
 
+  void NFCGate::startUpScanner()
+  {
+    string response;
+    this->serial_connector_->open_serial();
+    this->serial_connector_->send_ascii_cmd( SET_SERIAL_TO_ASCII);  
+    this->serial_connector_->send_ascii_cmd(BOTTOM_LED_ON);
+    this->serial_connector_->send_ascii_cmd(TOP_LEDS_INIT(LED_RED));
+    this->serial_connector_->send_ascii_cmd(TOP_LEDS_ON(LED_RED));
+  }
+
+  string NFCGate::executeScan()
+  {
+    string response, scanned_key;
+    string replay =this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, 500);
+    if(replay.find("Error")!= string::npos) 
+    {
+      return "";
+    } 
+
+    this->serial_connector_->ascii_interaction(NFC_LOGIN_MC_STANDART("00"),&response, 500);
+    RCLCPP_INFO(this->get_logger(),"login response %s ", response.c_str());
+    
+    replay = this->serial_connector_->ascii_interaction(NFC_READ_MC("02"),&scanned_key, 500);
+    
+    if(replay.find("Error")!= string::npos)
+    {
+      return "";
+    }
+
+    RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", scanned_key.c_str());
+    scanned_key.pop_back(); // remove '/r'
+    return scanned_key;
+   
+  }
+  
+  string NFCGate::validateKey(string scanned_key, std::vector<std::string> allValidKeys )
+  {
+    for( int i=0; i < allValidKeys.size(); i++)
+    {
+      if(allValidKeys[i] == scanned_key)
+      {
+        RCLCPP_INFO(this->get_logger(),"found");
+        return allValidKeys[i];
+      }
+    }
+    return "";
+  }
+
+  void NFCGate::turnOffScanner()
+  {
+      //this->serial_connector.send_ascii_cmd(BEEP_STANDART);
+      this->serial_connector_->send_ascii_cmd (TOP_LED_OFF(LED_RED));
+      this->serial_connector_->send_ascii_cmd(BOTTOM_LED_OFF);
+      this->serial_connector_->close_serial();  
+  }
 
   void NFCGate::scanTag() 
   {
@@ -55,98 +109,54 @@ namespace robast
     reader_status->is_preparing = false;
     reader_status->is_reading = true;
     reader_status->is_completed = false;
-    string scanned_key, tag, response, request;  
-    bool is_tag_valid = false;
+    string scanned_key,response, request; 
+    bool is_tag_valid= false; 
+    
     auto result = std::make_shared<AuthenticateUser::Result>();
     const auto goal = timer_handle->get_goal();
-
-    this->serial_connector->open_serial();
-    request = this->serial_connector->send_ascii_cmd( SET_SERIAL_TO_ASCII);  
-    this->serial_connector->read_serial(&response, 5010);
-
-    request = this->serial_connector->send_ascii_cmd(BOTTOM_LED_ON);
-    this->serial_connector->read_serial(&response, 500);
     
-    request = this->serial_connector->send_ascii_cmd((TOP_LEDS_INIT(LED_RED)));
-    this->serial_connector->read_serial(&response, 50);
-    
-    request = this->serial_connector->send_ascii_cmd(TOP_LEDS_ON(LED_RED));
-    this->serial_connector->read_serial(&response, 500);
+    startUpScanner();
 
-    request = this->serial_connector->send_ascii_cmd(SEARCH_TAG);
-    if(this->serial_connector->read_serial(&tag, 500)<=0)
+    scanned_key= executeScan();
+    if(scanned_key == "")
     {
-      return;
-    } 
-
-   
-    request=this->serial_connector->send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
-    this->serial_connector->read_serial(&response, 500);
-    RCLCPP_INFO(this->get_logger(),"login response %s ", response.c_str());
-    
-    request= this->serial_connector->send_ascii_cmd(NFC_READ_MC("02"));
-    if(this->serial_connector->read_serial(&scanned_key, 500)<=0)
-    {
-      return;
+       return;
     }
-    RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", scanned_key.c_str());
-    scanned_key.pop_back(); // remove '/r'
-    for( int i=0; i < goal->permission_keys.size(); i++)
-    {
-      if(goal->permission_keys[i] == scanned_key)
-      {
-        is_tag_valid = true;
-        RCLCPP_INFO(this->get_logger(),"found");
-        break;
-      }
-    } 
-    
+    scanned_key= validateKey(scanned_key, (std::vector<std::string>)goal->permission_keys);
+   
     auto feedback = std::make_shared<AuthenticateUser::Feedback>();
     feedback->reader_status.reading_attempts = ++numReadings;
-    if(!is_tag_valid)
+    
+    if(scanned_key=="")
     {
       this->timer_handle->publish_feedback(feedback);
       return;
     }
-    else
-    {
-      this->timer->cancel();
-      feedback->reader_status.is_completed = true;
-      this->timer_handle->publish_feedback(feedback);
+     else{
+       this->timer->cancel();
+       feedback->reader_status.is_completed = true;
+       this->timer_handle->publish_feedback(feedback);
+       turnOffScanner();
       
-      //this->serial_connector.send_ascii_cmd(BEEP_STANDART);
-      this->serial_connector->send_ascii_cmd((TOP_LED_OFF(LED_RED)));
-      this->serial_connector->read_serial(&response, 50);
-      this->serial_connector->send_ascii_cmd(BOTTOM_LED_OFF); 
-      this->serial_connector->read_serial(&response, 50);
-
-      this->serial_connector->close_serial();
-
-      // Check if goal is done
-      if (rclcpp::ok()) 
-      {
-          result->permission_key_used = scanned_key;
+       if (rclcpp::ok()) 
+       {
+           result->permission_key_used = scanned_key;
           result->error_message = ""; 
-          this->timer_handle->succeed(result);
-      }
-    }    
+           this->timer_handle->succeed(result);
+       } 
+     }   
   }
 
   void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)
   {
-      this->serial_connector->open_serial();
-      this->serial_connector->send_ascii_cmd(SET_SERIAL_TO_ASCII);
-  
-      this->serial_connector->send_ascii_cmd(BOTTOM_LED_ON);
-      this->serial_connector->send_ascii_cmd((TOP_LEDS_INIT(LED_RED)));
-      this->serial_connector->send_ascii_cmd(TOP_LEDS_ON(LED_RED));
+      startUpScanner();
   
       string tag;
       //wait for the Tag and read TAG ID 
       do{ 
     
-      this->serial_connector->send_ascii_cmd(SEARCH_TAG);//search for a tag with the length of 10
-      if(this->serial_connector->read_serial(&tag, 50)<=0)
+      this->serial_connector_->send_ascii_cmd(SEARCH_TAG);//search for a tag with the length of 10
+      if(this->serial_connector_->read_serial(&tag, 50)<=0)
       {
           return;
       } 
@@ -155,25 +165,20 @@ namespace robast
       } while(tag.length() <10);
   
       RCLCPP_INFO(this->get_logger(),"READ");
-      this->serial_connector->send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
-    
-      this->serial_connector->send_ascii_cmd(NFC_WRITE_MC("02",/*request->card_key*/"000001000000100"));//ToDo dynamic key defination 
+      this->serial_connector_->send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
+      this->serial_connector_->send_ascii_cmd(NFC_WRITE_MC("02",/*request->card_key*/"000001000000100"));//ToDo dynamic key defination 
    
-      if( this->serial_connector->read_serial(&tag, 50)<=0)
+      if( this->serial_connector_->read_serial(&tag, 50)<=0)
       {
         return;
       } 
-      if(tag!=BOOL_SUCESS)
+
+      if(tag!=BOOL_SUCCESS)
       {
         return;
       }
     
-
-    //show that aktion is done
-      this->serial_connector->send_ascii_cmd(BEEP_STANDART);   
-      this->serial_connector->send_ascii_cmd((TOP_LED_OFF(LED_RED)));
-      this->serial_connector->send_ascii_cmd(BOTTOM_LED_OFF); 
-      this->serial_connector->close_serial();
+    turnOffScanner();
 
     response-> sucessful= true;
     response-> card_id= tag;
