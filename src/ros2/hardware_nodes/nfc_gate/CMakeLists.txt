@@ -54,7 +54,6 @@ if(BUILD_TESTING)
 
   ament_add_catch2(
   nfc_gate_test test/main.cpp ${unit_test_srcs}
-  TIMEOUT 300
   )
 
 target_link_libraries(nfc_gate_test
