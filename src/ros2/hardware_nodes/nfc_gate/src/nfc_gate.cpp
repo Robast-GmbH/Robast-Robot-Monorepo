@@ -20,9 +20,14 @@ namespace robast
       bind(&NFCGate::auth_cancel_callback, this, placeholders::_1),
       bind(&NFCGate::auth_accepted_callback, this, placeholders::_1)
       );
-    this->create_user_server =this->create_service<CreateUser>("create_user_tag",bind(&NFCGate::writeTag, this, placeholders::_1, placeholders::_2));
+    this->create_user_server =this->create_service<CreateUser>("create_user_tag",bind(&NFCGate::write_tag, this, placeholders::_1, placeholders::_2));
     
     //RCLCPP_INFO(this->get_logger(), "constructor done");
+  }
+
+  void NFCGate::change_serial_helper(serial_helper::ISerialHelper* serial_connector)
+  {
+    this->serial_connector_=serial_connector;
   }
   
   rclcpp_action::GoalResponse NFCGate::auth_goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal)
@@ -42,12 +47,12 @@ namespace robast
     RCLCPP_INFO(this->get_logger(), "scan task");
     numReadings = 0;
     this->timer_handle = goal_handle;
-    timer = this->create_wall_timer( 500ms, bind(&NFCGate::scanTag, this));
+    timer = this->create_wall_timer( 500ms, bind(&NFCGate::reader_procedure, this));
     //std::thread{std::bind(&NFCGate::scanTag, this, placeholders::_1), goal_handle}.detach();
     
   }
 
-  void NFCGate::startUpScanner()
+  void NFCGate::start_up_scanner()
   {
     string response;
     this->serial_connector_->open_serial();
@@ -57,7 +62,7 @@ namespace robast
     this->serial_connector_->send_ascii_cmd(TOP_LEDS_ON(LED_RED));
   }
 
-  string NFCGate::executeScan()
+  string NFCGate::scan_tag()
   {
     string response, scanned_key;
     string replay =this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, 500);
@@ -82,7 +87,7 @@ namespace robast
    
   }
   
-  string NFCGate::validateKey(string scanned_key, std::vector<std::string> allValidKeys )
+  string NFCGate::validate_key(string scanned_key, std::vector<std::string> allValidKeys )
   {
     for( int i=0; i < allValidKeys.size(); i++)
     {
@@ -95,7 +100,7 @@ namespace robast
     return "";
   }
 
-  void NFCGate::turnOffScanner()
+  void NFCGate::turn_off_scanner()
   {
       //this->serial_connector.send_ascii_cmd(BEEP_STANDART);
       this->serial_connector_->send_ascii_cmd (TOP_LED_OFF(LED_RED));
@@ -103,7 +108,26 @@ namespace robast
       this->serial_connector_->close_serial();  
   }
 
-  void NFCGate::scanTag() 
+  string NFCGate::execute_scan(std::vector<std::string> permission_keys)
+  {
+    start_up_scanner();
+
+    string scanned_key= scan_tag();
+    if(scanned_key == "")
+    {
+       return"";
+    }
+    
+    scanned_key= validate_key(scanned_key, permission_keys);
+    if(scanned_key!="")
+    {
+      turn_off_scanner();
+    }
+    
+    return scanned_key;
+  }
+
+  void NFCGate::reader_procedure() 
   {
     auto reader_status = std::make_shared<communication_interfaces::msg::NFCStatus>();
     reader_status->is_preparing = false;
@@ -115,15 +139,8 @@ namespace robast
     auto result = std::make_shared<AuthenticateUser::Result>();
     const auto goal = timer_handle->get_goal();
     
-    startUpScanner();
-
-    scanned_key= executeScan();
-    if(scanned_key == "")
-    {
-       return;
-    }
-    scanned_key= validateKey(scanned_key, (std::vector<std::string>)goal->permission_keys);
-   
+    scanned_key = execute_scan(goal->permission_keys);
+      
     auto feedback = std::make_shared<AuthenticateUser::Feedback>();
     feedback->reader_status.reading_attempts = ++numReadings;
     
@@ -132,12 +149,11 @@ namespace robast
       this->timer_handle->publish_feedback(feedback);
       return;
     }
-     else{
+    else{
        this->timer->cancel();
        feedback->reader_status.is_completed = true;
        this->timer_handle->publish_feedback(feedback);
-       turnOffScanner();
-      
+       
        if (rclcpp::ok()) 
        {
            result->permission_key_used = scanned_key;
@@ -147,9 +163,9 @@ namespace robast
      }   
   }
 
-  void NFCGate::writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)
+  void NFCGate::write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)
   {
-      startUpScanner();
+      start_up_scanner();
   
       string tag;
       //wait for the Tag and read TAG ID 
@@ -178,7 +194,7 @@ namespace robast
         return;
       }
     
-    turnOffScanner();
+    turn_off_scanner();
 
     response-> sucessful= true;
     response-> card_id= tag;

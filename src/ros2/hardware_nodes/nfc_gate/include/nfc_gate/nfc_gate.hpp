@@ -47,18 +47,17 @@ namespace robast
       NFCGate();
       NFCGate(string serial_port_path );
       NFCGate(serial_helper::ISerialHelper *serial_connector );
-      void scanTag(); 
-      void startUpScanner();
-      string executeScan();
-     string validateKey(string target, std::vector<std::string>list);
-      void turnOffScanner();
+
+      string execute_scan(std::vector<std::string> permission_keys);
+      string validate_key(string target, std::vector<std::string>list);
+      void change_serial_helper(serial_helper::ISerialHelper* serial_connector );
+    
     private:
-      
-    
-     
-      
       int numReadings;
-    
+      string  scan_tag(); 
+      void reader_procedure();
+      void start_up_scanner(); 
+      void turn_off_scanner();
       serial_helper::ISerialHelper *serial_connector_;
       rclcpp::TimerBase::SharedPtr timer;
       shared_ptr<GoalHandleAuthenticateUser> timer_handle;
@@ -71,16 +70,9 @@ namespace robast
       rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle); 
       void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
       void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);  
-   
-      void open_serial();
-      void close_serial();
+  
     
-      string read_serial( );
-      void write_serial( string msg );
-      string send_command(string command );
-
-    
-      void writeTag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
+      void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
 };
 
 
