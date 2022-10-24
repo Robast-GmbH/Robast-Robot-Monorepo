@@ -22,6 +22,12 @@ public:
   void MessageCallbackDrawerAddress(const communication_interfaces::msg::DrawerAddress & msg)
   {
     this->drawer_address_ = msg;
+    RCLCPP_INFO(getLogger(), " +++++++++++++++++++++++++++ MessageCallbackDrawerAddress in CpDrawerAddress! %i", 1);
+  }
+
+  communication_interfaces::msg::DrawerAddress getLastMsg()
+  {
+    return this->drawer_address_;
   }
 };
 }  // namespace cl_drawer_control

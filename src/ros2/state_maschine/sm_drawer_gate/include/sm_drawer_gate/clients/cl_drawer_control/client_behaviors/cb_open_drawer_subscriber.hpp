@@ -35,17 +35,27 @@ public:
 
   void onMessageReceived(const communication_interfaces::msg::DrawerAddress & msg) override
   {
-    last_msg = msg;   
+    last_msg = msg;
+    // drawer_controller_id = msg.drawer_controller_id;
+    this->drawer_controller_id = 7;
 
     //TODO: drawer address in class varible schreiben
     RCLCPP_INFO(getLogger(), "Received Drawer Address: %i", msg.drawer_controller_id);
     this->postMyEvent_();
   }
 
+  int getLastMsg()
+  {
+    return 1;
+  }
+
   std::function<void()> postMyEvent_;
+
+  uint8_t drawer_controller_id;
 
 protected:
   communication_interfaces::msg::DrawerAddress last_msg;
+  
 };
 }  // namespace cl_drawer_control
 }  // namespace sm_drawer_gate

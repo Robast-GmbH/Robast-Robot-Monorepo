@@ -29,6 +29,16 @@ struct StLoopDrawerAccess : smacc2::SmaccState<StLoopDrawerAccess, MsDrawerContr
 
   void onEntry() { RCLCPP_INFO(getLogger(), "On Entry!"); }
 
-  void onExit() { RCLCPP_INFO(getLogger(), "On Exit!"); }
+  void onExit()
+  {
+    cl_drawer_control::ClDrawerControl * drawerclient;
+    this->requiresClient(drawerclient);
+    RCLCPP_INFO(getLogger(), "-------------------------On reading!");
+    auto data = drawerclient->getComponent<CpDrawerAddress>()->getLastMsg();
+    auto old_msg = this->getOrthogonal<OrDrawerControl>()->getClientBehavior<CbOpenDrawerSubscriber>()->getLastMsg();
+    RCLCPP_INFO(getLogger(), "-------------------------On writing!%i", data.drawer_controller_id);
+    // data->setData(msging);
+    RCLCPP_INFO(getLogger(), "On Exit!");
+  }
 };
 }  // namespace sm_drawer_gate

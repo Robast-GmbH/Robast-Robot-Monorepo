@@ -27,8 +27,18 @@ struct StOpenDrawer : smacc2::SmaccState<StOpenDrawer, MsDrawerControlRunMode>
 
   void runtimeConfigure() {}
 
-  void onEntry() { RCLCPP_INFO(getLogger(), "On Entry!"); }
+  void onEntry() 
+  {
+    cl_drawer_control::ClDrawerControl * drawerclient;
+    this->requiresClient(drawerclient);
+    RCLCPP_INFO(getLogger(), "On Entry-------------------------On reading!");
+    auto data = drawerclient->getComponent<CpDrawerAddress>()->getLastMsg();
+    RCLCPP_INFO(getLogger(), "On Entry-------------------------On writing!%i", data.drawer_controller_id);
+    // data->setData(msging);
+    RCLCPP_INFO(getLogger(), "On Entry!");
+  }
 
   void onExit() { RCLCPP_INFO(getLogger(), "On Exit!"); }
+
 };
 }  // namespace sm_drawer_gate
