@@ -1,4 +1,4 @@
-FROM ros:galactic
+FROM ros:humble
 
 RUN apt-get update && apt-get install -y \
   build-essential \
