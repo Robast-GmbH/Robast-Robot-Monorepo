@@ -1,6 +1,6 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"dockerFile": "../../../src/ros2/navigation/Dockerfile",
+	"dockerFile": "../../../src/ros2/simple_fleetmanagement/Dockerfile",
 	"build": {
 		"args": {
 			"WORKSPACE": "${containerWorkspaceFolder}"
@@ -9,12 +9,12 @@
 	"remoteUser": "ubuntu",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
-		"source=${localWorkspaceFolder}/../../src/ros2/navigation/,target=/workspace/src/navigation,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/simple_fleetmanagement/,target=/workspace/src/simple_fleetmanagement,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind"
 	],
 	"workspaceFolder": "/workspace",
 	"runArgs": [
-		"--name=navigation",
+		"--name=fleetmanagement",
 		"--network=host"
 	],
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",

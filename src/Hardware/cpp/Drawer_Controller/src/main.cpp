@@ -36,7 +36,7 @@ long unsigned int rx_msg_id;
 uint8_t rx_msg_dlc = 0;
 uint8_t rx_data_buf[8];
 
-unsigned long previous_millis = 0;
+unsigned long previous_millis_drawer_status_fb = 0;
 #define DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS 1000
 unsigned long interval_drawer_feedback_in_ms = DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS;
 bool broadcast_feedback = false;
@@ -49,6 +49,17 @@ float moving_average_drawer2_closed_pin = 0;
 // flags to store which state the locks should have
 bool open_lock_1 = false;
 bool open_lock_2 = false;
+// flagt to store state of the lock of the previous step
+bool open_lock_1_previous_step = false;
+bool open_lock_2_previous_step = false;
+// flag to indicate that lock state needs to change
+bool change_lock_1_state = false;
+bool change_lock_2_state = false;
+
+// the time in ms the lock mechanism needs to open resp. close the lock
+#define LOCK_MECHANISM_TIME 700 // according to the datasheet a minimum of 600ms is required
+unsigned long previous_millis_open_lock_1 = 0;
+unsigned long previous_millis_open_lock_2 = 0;
 
 hw_timer_t * fading_up_timer = NULL;
 portMUX_TYPE fading_up_timer_mux = portMUX_INITIALIZER_UNLOCKED;
@@ -200,6 +211,20 @@ void close_lock(uint8_t lock_id)
   {
     digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
     digitalWrite(PWR_CLOSE_LOCK2_PIN, HIGH);
+  }
+}
+
+void set_lock_output_low(uint8_t lock_id)
+{ 
+  if (lock_id == 1)
+  {
+    digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
+    digitalWrite(PWR_CLOSE_LOCK1_PIN, LOW);
+  }
+  if (lock_id == 2)
+  {
+    digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
+    digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
   }
 }
 
@@ -495,8 +520,36 @@ robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
 
 void handle_lock_control(void)
 {
-  open_lock_1 ? open_lock(1) : close_lock(1);
-  open_lock_2 ? open_lock(2) : close_lock(2);
+  // Mind that the state for open_lock_1 and open_lock_2 is changed in the handle_lock_status function when a CAN msg is received
+  change_lock_1_state = open_lock_1 == open_lock_1_previous_step ? false : true;
+  change_lock_2_state = open_lock_2 == open_lock_2_previous_step ? false : true;
+
+  unsigned long current_millis_open_lock_1 = millis();
+  unsigned long current_millis_open_lock_2 = millis();
+
+  if (change_lock_1_state && (current_millis_open_lock_1 - previous_millis_open_lock_1 >= LOCK_MECHANISM_TIME))
+  {
+    open_lock_1_previous_step = open_lock_1;
+    previous_millis_open_lock_1 = current_millis_open_lock_1;
+    open_lock_1 ? open_lock(1) : close_lock(1);
+  }
+  else if (!change_lock_1_state && (current_millis_open_lock_1 - previous_millis_open_lock_1 >= LOCK_MECHANISM_TIME))
+  {
+    // this makes sure, there is only a 5V pulse with the duration of LOCK_MECHANISM_TIME on the respective input of the lock
+    set_lock_output_low(1);
+  }
+
+  if (change_lock_2_state && (current_millis_open_lock_2 - previous_millis_open_lock_2 >= LOCK_MECHANISM_TIME))
+  {
+    open_lock_2_previous_step = open_lock_2;
+    previous_millis_open_lock_2 = current_millis_open_lock_2;
+    open_lock_2 ? open_lock(2) : close_lock(2);
+  }
+  else if (!change_lock_2_state && (current_millis_open_lock_2 - previous_millis_open_lock_2 >= LOCK_MECHANISM_TIME))
+  {
+    // this makes sure, there is only a 5V pulse with the duration of LOCK_MECHANISM_TIME on the respective input of the lock
+    set_lock_output_low(2);
+  }
 }
 
 void handle_led_control(void)
@@ -552,10 +605,10 @@ void sending_drawer_status_feedback(void)
 
 void handle_sending_drawer_status_feedback(void)
 {
-  unsigned long current_millis = millis();
-  if (broadcast_feedback && (current_millis - previous_millis >= interval_drawer_feedback_in_ms))
+  unsigned long current_millis_drawer_status_fb = millis();
+  if (broadcast_feedback && (current_millis_drawer_status_fb - previous_millis_drawer_status_fb >= interval_drawer_feedback_in_ms))
   {
-    previous_millis = current_millis;
+    previous_millis_drawer_status_fb = current_millis_drawer_status_fb;
     
     sending_drawer_status_feedback();
   }
