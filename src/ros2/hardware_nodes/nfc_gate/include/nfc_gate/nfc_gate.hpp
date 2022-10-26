@@ -48,13 +48,13 @@ namespace robast
       NFCGate(string serial_port_path );
       NFCGate(serial_helper::ISerialHelper *serial_connector );
 
-      string execute_scan(std::vector<std::string> permission_keys);
-      string validate_key(string target, std::vector<std::string>list);
+      string execute_scan(std::vector<std::string> permission_keys, bool* found);
+      string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found );
       void change_serial_helper(serial_helper::ISerialHelper* serial_connector );
+      string scan_tag(bool* found); 
     
     private:
       int numReadings;
-      string  scan_tag(); 
       void reader_procedure();
       void start_up_scanner(); 
       void turn_off_scanner();

@@ -7,7 +7,7 @@ namespace robast
   NFCGate::NFCGate( ):NFCGate( "/dev/robast/robast_nfc" ) { }
   NFCGate::NFCGate( string serial_port_path ):NFCGate( new serial_helper::SerialHelper(serial_port_path))
   {
-     RCLCPP_INFO(this->get_logger(), "constructor start: %s",serial_port_path.c_str()); 
+     
   } 
 
   NFCGate::NFCGate( serial_helper::ISerialHelper* serial_connector  ) : Node("nfc_gate")
@@ -21,8 +21,6 @@ namespace robast
       bind(&NFCGate::auth_accepted_callback, this, placeholders::_1)
       );
     this->create_user_server =this->create_service<CreateUser>("create_user_tag",bind(&NFCGate::write_tag, this, placeholders::_1, placeholders::_2));
-    
-    //RCLCPP_INFO(this->get_logger(), "constructor done");
   }
 
   void NFCGate::change_serial_helper(serial_helper::ISerialHelper* serial_connector)
@@ -49,7 +47,6 @@ namespace robast
     this->timer_handle = goal_handle;
     timer = this->create_wall_timer( 500ms, bind(&NFCGate::reader_procedure, this));
     //std::thread{std::bind(&NFCGate::scanTag, this, placeholders::_1), goal_handle}.detach();
-    
   }
 
   void NFCGate::start_up_scanner()
@@ -62,12 +59,13 @@ namespace robast
     this->serial_connector_->send_ascii_cmd(TOP_LEDS_ON(LED_RED));
   }
 
-  string NFCGate::scan_tag()
+  string NFCGate::scan_tag(bool* found)
   {
     string response, scanned_key;
     string replay =this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, 500);
-    if(replay.find("Error")!= string::npos) 
+    if(replay == "0000") 
     {
+      *found =false;
       return "";
     } 
 
@@ -76,27 +74,31 @@ namespace robast
     
     replay = this->serial_connector_->ascii_interaction(NFC_READ_MC("02"),&scanned_key, 500);
     
-    if(replay.find("Error")!= string::npos)
+    if(replay== "0000")
     {
+      *found =false;
       return "";
     }
 
     RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", scanned_key.c_str());
-    scanned_key.pop_back(); // remove '/r'
+    *found=true;
     return scanned_key;
    
   }
   
-  string NFCGate::validate_key(string scanned_key, std::vector<std::string> allValidKeys )
+  string NFCGate::validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found )
   {
+    RCLCPP_INFO(this->get_logger(), scanned_key.c_str());
     for( int i=0; i < allValidKeys.size(); i++)
     {
       if(allValidKeys[i] == scanned_key)
       {
         RCLCPP_INFO(this->get_logger(),"found");
+        *found = true;
         return allValidKeys[i];
       }
     }
+    *found = false;
     return "";
   }
 
@@ -108,22 +110,18 @@ namespace robast
       this->serial_connector_->close_serial();  
   }
 
-  string NFCGate::execute_scan(std::vector<std::string> permission_keys)
+  string NFCGate::execute_scan(std::vector<std::string> permission_keys, bool* found)
   {
-    start_up_scanner();
+   
+    start_up_scanner();  
+   
+    string scanned_key= scan_tag(found);
+    RCLCPP_INFO(this->get_logger(),scanned_key.c_str());
+    // abort this scan attempt if the reader could not detect a compatible card. 
+    if(!found) return"";
+    RCLCPP_INFO(this->get_logger(),scanned_key.c_str());
+    scanned_key= this->validate_key(scanned_key, permission_keys, found);
 
-    string scanned_key= scan_tag();
-    if(scanned_key == "")
-    {
-       return"";
-    }
-    
-    scanned_key= validate_key(scanned_key, permission_keys);
-    if(scanned_key!="")
-    {
-      turn_off_scanner();
-    }
-    
     return scanned_key;
   }
 
@@ -133,18 +131,18 @@ namespace robast
     reader_status->is_preparing = false;
     reader_status->is_reading = true;
     reader_status->is_completed = false;
-    string scanned_key,response, request; 
-    bool is_tag_valid= false; 
+    string scanned_key;
+    bool found= false; 
     
     auto result = std::make_shared<AuthenticateUser::Result>();
     const auto goal = timer_handle->get_goal();
     
-    scanned_key = execute_scan(goal->permission_keys);
-      
+    scanned_key = execute_scan(goal->permission_keys, &found);
+   
     auto feedback = std::make_shared<AuthenticateUser::Feedback>();
     feedback->reader_status.reading_attempts = ++numReadings;
     
-    if(scanned_key=="")
+    if(!found)
     {
       this->timer_handle->publish_feedback(feedback);
       return;
@@ -156,9 +154,10 @@ namespace robast
        
        if (rclcpp::ok()) 
        {
-           result->permission_key_used = scanned_key;
+          turn_off_scanner();
+          result->permission_key_used = scanned_key;
           result->error_message = ""; 
-           this->timer_handle->succeed(result);
+          this->timer_handle->succeed(result);
        } 
      }   
   }
@@ -177,10 +176,8 @@ namespace robast
           return;
       } 
 
-      RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
+      //RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
       } while(tag.length() <10);
-  
-      RCLCPP_INFO(this->get_logger(),"READ");
       this->serial_connector_->send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
       this->serial_connector_->send_ascii_cmd(NFC_WRITE_MC("02",/*request->card_key*/"000001000000100"));//ToDo dynamic key defination 
    

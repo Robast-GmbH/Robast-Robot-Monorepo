@@ -119,10 +119,7 @@ namespace serial_helper
         }
 
         uint16_t respnce_result = this->read_serial(responce, responce_size); 
-        if(respnce_result == 0)
-        {
-            return "Error message could not be recived.";
-        } 
+        (*responce).pop_back(); // remove '/r'
         return *responce;
     }
 }
