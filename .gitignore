@@ -130,7 +130,6 @@ web_video
 
 #generelle tags, die nicht in commit kommen
 demo
-test
 *.pdf
 *.gv
 
