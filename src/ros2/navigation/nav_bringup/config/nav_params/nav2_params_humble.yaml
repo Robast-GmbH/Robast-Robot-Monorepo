@@ -1,6 +1,6 @@
 bt_navigator:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
     global_frame: map
     robot_base_frame: robot_base_link
     odom_topic: /robot/odom
@@ -66,7 +66,7 @@ bt_navigator:
 
 controller_server:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
     controller_frequency: 20.0
     min_x_velocity_threshold: 0.001
     min_y_velocity_threshold: 0.5
@@ -90,12 +90,12 @@ controller_server:
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.25
+      xy_goal_tolerance: 0.5
       yaw_goal_tolerance: 0.25
     # DWB parameters
     FollowPath:
-      plugin: "nav2_rotation_shim_controller::RotationShimController"
-      # plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
+      # plugin: "nav2_rotation_shim_controller::RotationShimController"
+      plugin: "nav2_regulated_pure_pursuit_controller::RegulatedPurePursuitController"
       primary_controller: "dwb_core::DWBLocalPlanner"
       angular_dist_threshold: 0.39
       forward_sampling_distance: 0.5
@@ -138,33 +138,33 @@ controller_server:
       PathDist.scale: 32.0
       GoalDist.scale: 24.0
       RotateToGoal.scale: 32.0
-      RotateToGoal.slowing_factor: 5.0
+      RotateToGoal.slowing_factor: 2.0
       RotateToGoal.lookahead_time: -1.0
-      # desired_linear_vel: 0.35
-      # max_linear_accel: 0.1
-      # max_linear_decel: 0.1
-      # lookahead_dist: 1.0
-      # min_lookahead_dist: 0.35
-      # max_lookahead_dist: 1.3
-      # lookahead_time: 1.5
+      desired_linear_vel: 0.35
+      max_linear_accel: 0.1
+      max_linear_decel: 0.1
+      lookahead_dist: 1.0
+      min_lookahead_dist: 0.35
+      max_lookahead_dist: 1.3
+      lookahead_time: 1.5
       # transform_tolerance: 0.3
-      # use_velocity_scaled_lookahead_dist: true
-      # # use_approach_linear_velocity_scaling: true
-      # min_approach_linear_velocity: 0.05
-      # max_allowed_time_to_collision: 1.0
-      # use_regulated_linear_velocity_scaling: true
-      # use_cost_regulated_linear_velocity_scaling: true
-      # regulated_linear_scaling_min_radius: 1.1
-      # regulated_linear_scaling_min_speed: 0.25
-      # use_rotate_to_heading: true
-      # allow_reversing: false
-      # rotate_to_heading_min_angle: 0.39
-      # goal_dist_tol: 0.25
+      use_velocity_scaled_lookahead_dist: true
+      # use_approach_linear_velocity_scaling: true
+      min_approach_linear_velocity: 0.05
+      max_allowed_time_to_collision: 1.0
+      use_regulated_linear_velocity_scaling: true
+      use_cost_regulated_linear_velocity_scaling: true
+      regulated_linear_scaling_min_radius: 1.1
+      regulated_linear_scaling_min_speed: 0.25
+      use_rotate_to_heading: true
+      allow_reversing: false
+      rotate_to_heading_min_angle: 0.39
+      goal_dist_tol: 0.5
 
 
 controller_server_rclcpp_node:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
 local_costmap:
   local_costmap:
     ros__parameters:
@@ -173,12 +173,12 @@ local_costmap:
       global_frame: robot_odom
       robot_base_frame: robot_base_link
       map_topic: /map
-      use_sim_time: True
+      use_sim_time: False
       rolling_window: true
       width: 5
       height: 5
       footprint: "[ [0.50, 0.30], [0.50, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
-      footprint_padding: 0.025
+      footprint_padding: 0.1
       resolution: 0.025
       plugins: ["obstacle_layer", "voxel_layer", "inflation_layer"]
       # filters: ["keepout_filter"]
@@ -196,15 +196,15 @@ local_costmap:
         plugin: "nav2_costmap_2d::VoxelLayer"
         enabled: True
         footprint_clearing_enabled: True # Clear any occupied cells under robot footprint
-        max_obstacle_height: 3.0 # Maximum height to add return to occupancy grid.
+        max_obstacle_height: 2.0 # Maximum height to add return to occupancy grid.
         z_voxels: 16 # Number of voxels high to mark, maximum 16.
         origin_z: 0.0 # Where to start marking voxels (m)
         z_resolution: 0.20 # Resolution of voxels in height (m)
         unknown_threshold: 15 # Minimum number of empty voxels in a column to mark as unknown in 2D occupancy grid
-        mark_threshold: 3 # Minimum number of voxels in a column to mark as occupied in 2D occupancy grid
+        mark_threshold: 0 # Minimum number of voxels in a column to mark as occupied in 2D occupancy grid
         combination_method: 1 # Enum for method to add data to master costmap, default to maximum
-        publish_voxel_map: True # Whether to publish 3D voxel grid for debug, computationally expensive
-        observation_sources: scan pointcloud_mark pointcloud_clear  # namespace of sources of data
+        publish_voxel_map: False # Whether to publish 3D voxel grid for debug, computationally expensive
+        observation_sources: scan  # namespace of sources of data
         scan:
           topic: /robot/front_laser/scan
           max_obstacle_height: 2.0
@@ -217,7 +217,7 @@ local_costmap:
           obstacle_min_range: 0.0
         pointcloud_mark:
           data_type: "PointCloud2"
-          topic: /robot/top_laser/points_raw #/robot/robot_front_rgbd_camera_/depth/color/points
+          topic: /robot/bpearl_laser/scan #/robot/robot_front_rgbd_camera_/depth/color/points
           # sensor_frame: "robot_front_rgbd_camera_depth_optical_frame" # Frame of sensor, to use if not provided by message. If empty, uses message frame_id.
           observation_persistence: 0.0 # How long to store messages in a buffer to add to costmap before removing them (s).
           expected_update_rate: 0.0 # Expected rate to get new data from sensor. Default: 0.0
@@ -225,7 +225,7 @@ local_costmap:
           max_obstacle_height: 2.0 # Maximum height to add return to occupancy grid.
           inf_is_valid: False # Are infinite returns from laser scanners valid measurements to raycast. Default: false
           marking: True # Whether source should mark in costmap.
-          clearing: False # Whether source should raytrace clear in costmap.
+          clearing: True # Whether source should raytrace clear in costmap.
           obstacle_max_range: 1.5 # Maximum range to mark obstacles in costmap.
           obstacle_min_range: 0.0 # Minimum range to mark obstacles in costmap.
           raytrace_max_range: 2.0 # Maximum range to raytrace clear obstacles from costmap.
@@ -233,7 +233,7 @@ local_costmap:
 
         pointcloud_clear:
           data_type: "PointCloud2"
-          topic: /robot/top_laser/points_raw
+          topic: /robot/bpearl_laser/scan
           # sensor_frame: "robot_front_rgbd_camera_depth_optical_frame" # Frame of sensor, to use if not provided by message. If empty, uses message frame_id.
           observation_persistence: 0.0 # How long to store messages in a buffer to add to costmap before removing them (s).
           expected_update_rate: 0.0 # Expected rate to get new data from sensor. Default: 0.0
@@ -269,12 +269,11 @@ global_costmap:
       robot_base_frame: robot_base_link
       map_topic: /map
       use_sim_time: False
-      footprint: "[ [0.45, 0.30], [0.45, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
-      footprint_padding: 0.025
+      footprint: "[ [0.40, 0.30], [0.40, -0.30], [-0.35, -0.30], [-0.35, 0.30] ]" # rb_theron footprint
+      footprint_padding: 0.1
       resolution: 0.025
       track_unknown_space: true
       plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
-      filters: ["keepout_filter"]
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -299,7 +298,7 @@ global_costmap:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
         subscribe_to_updates: false
-        transform_tolerance: 0.2
+        transform_tolerance: 0.1
       inflation_layer:
         plugin: "nav2_costmap_2d::InflationLayer"
         cost_scaling_factor: 5.0
@@ -312,7 +311,7 @@ planner_server:
   ros__parameters:
     planner_plugins: ["GridBased"]
     expected_planner_frequency: 20.0
-    use_sim_time: True
+    use_sim_time: False
     GridBased:
       plugin: "nav2_navfn_planner/NavfnPlanner"
       tolerance: 0.1 #er hat hier auch 0.5
@@ -376,11 +375,11 @@ planner_server:
 
 planner_server_rclcpp_node:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
 
 smoother_server:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
     smoother_plugins: ["simple_smoother"]
     simple_smoother:
       plugin: "nav2_smoother::SimpleSmoother"
@@ -401,7 +400,7 @@ behavior_server:
     global_frame: robot_odom
     robot_base_frame: robot_base_link
     transform_tolerance: 0.2
-    use_sim_time: true
+    use_sim_time: False
     simulate_ahead_time: 2.0
     max_rotational_vel: 1.0
     min_rotational_vel: 0.4
@@ -409,7 +408,7 @@ behavior_server:
 
 robot_state_publisher:
   ros__parameters:
-    use_sim_time: True
+    use_sim_time: False
 
 waypoint_follower:
   ros__parameters:

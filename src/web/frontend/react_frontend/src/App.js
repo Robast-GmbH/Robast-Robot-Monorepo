@@ -11,7 +11,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 
-const backend_address = `http://10.10.23.6:8000`
+const backend_address = `http://192.168.0.200:8000`
 function App() {
 
   const [mapPositions, setMapPositions] = useState([])
@@ -201,8 +201,8 @@ const theme = useTheme();
 const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
 const tabData=[
-  { id:0, content:  <RobotControl  user={user} mapPositions= {mapPositions} sendGoal={sendGoal} addMapPosition={addMapPosition} robotStatusChange= {changeStatus} /> , label: (matches?"Roboter steuern": "Steuern") },
-  { id:1, content:  <DrawerControl user={user} drawers= {drawers} renameDrawer= {renameDrawer} openDrawer={openDrawer} getDrawers= {fetchDrawers} toggleEmpty={toggleEmpty} /> , label: (matches? "Schubladen öffnen" : "Schubladen")}
+  { id:0, content:  <DrawerControl user={user} drawers= {drawers} renameDrawer= {renameDrawer} openDrawer={openDrawer} getDrawers= {fetchDrawers} toggleEmpty={toggleEmpty} /> , label: (matches? "Schubladen öffnen" : "Schubladen")},
+  { id:1, content:  <RobotControl  user={user} mapPositions= {mapPositions} sendGoal={sendGoal} addMapPosition={addMapPosition} robotStatusChange= {changeStatus} /> , label: (matches?"Roboter steuern": "Steuern") }
   ];
 
   return (

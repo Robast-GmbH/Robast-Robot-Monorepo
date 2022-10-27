@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
   python3-pip \
   python3-rosdep \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+  libboost-all-dev\
   && rosdep init || echo "rosdep already initialized"
 
 ENV ROS_DOMAIN_ID=0
