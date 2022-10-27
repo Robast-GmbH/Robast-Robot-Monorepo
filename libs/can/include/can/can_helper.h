@@ -112,7 +112,15 @@ namespace robast_can_msgs
      * @return The data, that was contained in the string, as an unsigned integer.
      */
     template <typename T>
-    T hex_string_to_unsigned_int(std::string hex_string);
+    T hex_string_to_unsigned_int(std::string hex_string)
+    {
+        // Mind that defining templates functions within the cpp file makes problems
+        // when building with -DCMAKE_BUILD_TYPE=RelWithDebInfo because of the optimization
+        // Therefore we define it within the header.
+        T result;
+        result = std::stoul(hex_string, nullptr, 16);
+        return result;
+    }
 
     /**
      * @brief Swap Endian
@@ -120,7 +128,20 @@ namespace robast_can_msgs
      * @param val The value that's supposed to be swapped
      */
     template <typename T>
-    void SwapEndian(T &val);
+    void SwapEndian(T &val)
+    {
+        // Mind that defining templates functions within the cpp file makes problems
+        // when building with -DCMAKE_BUILD_TYPE=RelWithDebInfo because of the optimization
+        // Therefore we define it within the header.
+        union U {
+            T val;
+            std::array<uint8_t, sizeof(T)> raw;
+        } src, dst;
+
+        src.val = val;
+        std::reverse_copy(src.raw.begin(), src.raw.end(), dst.raw.begin());
+        val = dst.val;
+    }
 
     /**
      * @brief Converts a uint32 into a string where the numbers are represented in hex format in uppercase

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.8)
+cmake_minimum_required(VERSION 3.5)
 project(can)
 
 # Default to C99
@@ -14,15 +14,22 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_catch2 REQUIRED)
 
-if(BUILD_TESTING)
-    add_library(library_can SHARED
-        ${CMAKE_CURRENT_LIST_DIR}/src/can_frame.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/can_helper.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/can_message.cpp
-        ${CMAKE_CURRENT_LIST_DIR}/src/can_signal.cpp
-    )
-    file(GLOB_RECURSE unit_test_srcs "test/*.cpp")
+add_library(library_can SHARED
+    ${CMAKE_CURRENT_LIST_DIR}/src/can_frame.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/can_helper.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/can_message.cpp
+    ${CMAKE_CURRENT_LIST_DIR}/src/can_signal.cpp
+)
 
+target_include_directories(library_can
+    PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+    $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+) 
+
+if(BUILD_TESTING)    
+    file(GLOB_RECURSE unit_test_srcs "test/*.cpp")
+    
     ament_add_catch2(
         can_test test/tests_main.cpp ${unit_test_srcs}
     )
@@ -36,3 +43,20 @@ if(BUILD_TESTING)
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
     )
 endif()
+
+install(TARGETS
+    library_can
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY include/
+    DESTINATION include/  
+)
+
+ament_export_include_directories(include)
+
+ament_export_libraries(library_can)
+
+ament_package()
