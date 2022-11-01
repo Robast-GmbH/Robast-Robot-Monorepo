@@ -1,5 +1,4 @@
-import PropTypes from 'prop-types';
-import { useState, useEffect } from 'react';
+
 import SimpleMap from './SimpleMap';
 
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';

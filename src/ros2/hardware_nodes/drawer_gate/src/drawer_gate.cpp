@@ -29,6 +29,8 @@ namespace drawer_gate
     // this->serial_helper_.close_serial();
 
     this->drawer_is_beeing_accessed_ = false;
+
+    this->handle_default_led_status_for_all_drawers();
   }
 
   //TODO: Dekonstruktor with this->serial_helper_.close_serial();
@@ -180,11 +182,15 @@ namespace drawer_gate
     if (refill_drawer)
     {
       led_parameters.led_red = 0;
-      led_parameters.led_blue = 255;
-      led_parameters.led_green = 50;
-      led_parameters.brightness = 150;
-      led_parameters.mode = 3;
+      led_parameters.led_blue = 0;
+      led_parameters.led_green = 0;
+      led_parameters.brightness = 0;
+      led_parameters.mode = LedMode::steady_light;
       RCLCPP_INFO(this->get_logger(), "Drawer with drawer controller id %i needs to be refilled! Sending CAN message!", drawer_controller_id);
+
+      robast_can_msgs::CanMessage can_msg_refill_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, 1, led_parameters, CAN_DATA_CLOSE_LOCK);
+
+      this->send_can_msg(can_msg_refill_drawer);
     }
     else
     {
@@ -192,19 +198,29 @@ namespace drawer_gate
       led_parameters.led_blue = 255;
       led_parameters.led_green = 50;
       led_parameters.brightness = 150;
-      led_parameters.mode = 2;
+      led_parameters.mode = LedMode::running_led_from_mid_to_outside;
       RCLCPP_INFO(this->get_logger(), "Drawer with drawer controller id %i was refilled! Sending CAN message!", drawer_controller_id);
+
+      robast_can_msgs::CanMessage can_msg_refill_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, 1, led_parameters, CAN_DATA_CLOSE_LOCK);
+
+      //TODO: The timer callback from this->create_wall_timer(5ms, std::bind(&DrawerGate::send_ascii_cmds_timer_callback, this)) is not called while async wait is "blocking"?!
+      //TODO: Use boost::asio::deadline_timer instead of create wall timer (https://www.boost.org/doc/libs/1_64_0/doc/html/boost_asio/tutorial/tuttimer2.html)
+      // this->send_can_msg(can_msg_refill_drawer); 
+
+      // RCLCPP_INFO(this->get_logger(), "Timer 1 finished!");
+
+      // Wait a little bit to clear drawer_to_be_refilled_by_drawer_controller_id_ to give LEDs enough time to make suitable lightshow when closing
+      //TODO: Adjust waiting time
+      boost::asio::io_context io;
+      boost::asio::steady_timer t(io, boost::asio::chrono::milliseconds(1));
+      t.async_wait(boost::bind(&DrawerGate::send_default_led_status_to_drawer, this, drawer_controller_id));
+      io.run();
     }  
-
-    robast_can_msgs::CanMessage can_msg_refill_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, 1, led_parameters, CAN_DATA_CLOSE_LOCK);
-
-    this->send_can_msg(can_msg_refill_drawer);
   }
 
-  void DrawerGate::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
+  std::vector<communication_interfaces::msg::Drawer> DrawerGate::get_all_mounted_drawers()
   {
     //TODO: This should actually be done automatically by polling all drawer_controller on the CAN bus
-
     communication_interfaces::msg::Box box_10x40x1;
     box_10x40x1.x = DRAWER_INSIDE_WIDTH_10x40x1;
     box_10x40x1.y = DRAWER_INSIDE_DEPTH_10x40x1;
@@ -250,7 +266,12 @@ namespace drawer_gate
     drawer_5.number_of_drawers = 1;
     drawer_5.drawer_size = box_30x40x1;
 
-    response->drawers = {drawer_1, drawer_2, drawer_3, drawer_4, drawer_5};
+    return {drawer_1, drawer_2, drawer_3, drawer_4, drawer_5};
+  }
+
+  void DrawerGate::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
+  {
+    response->drawers = this->get_all_mounted_drawers();
   }
 
   void DrawerGate::setup_serial_can_ubs_converter(void)
@@ -388,7 +409,7 @@ namespace drawer_gate
     led_parameters.led_blue = 0;
     led_parameters.led_green = 255;
     led_parameters.brightness = 150;
-    led_parameters.mode = 1;
+    led_parameters.mode = LedMode::fade_up;
 
     robast_can_msgs::CanMessage can_msg_open_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, drawer_id, led_parameters, CAN_DATA_OPEN_LOCK);
 
@@ -460,7 +481,7 @@ namespace drawer_gate
     led_parameters.led_blue = 255;
     led_parameters.led_green = 255;
     led_parameters.brightness = 150;
-    led_parameters.mode = 0; // mode 0 = instantly light up LEDs, mode 1 = fade up led light
+    led_parameters.mode = LedMode::steady_light;
 
     robast_can_msgs::CanMessage can_msg_close_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, drawer_id, led_parameters, CAN_DATA_CLOSE_LOCK);
 
@@ -506,7 +527,7 @@ namespace drawer_gate
     led_parameters.led_blue = 0;
     led_parameters.led_green = 128;
     led_parameters.brightness = 150;
-    led_parameters.mode = 2; // mode 0 = instantly light up LEDs, mode 1 = fade up led light, mode 2 = closing drawer led mode
+    led_parameters.mode = LedMode::running_led_from_mid_to_outside;
 
     robast_can_msgs::CanMessage can_msg_closed_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, drawer_id, led_parameters, CAN_DATA_CLOSE_LOCK);
 
@@ -522,46 +543,88 @@ namespace drawer_gate
     this->cleared_serial_buffer_from_old_can_msgs_ = false;
   }
 
+  void DrawerGate::send_default_led_status_to_drawer(uint32_t drawer_controller_id)
+  {
+    led_parameters led_parameters = {};
+    led_parameters.led_red = 0;
+    led_parameters.led_blue = 255;
+    led_parameters.led_green = 50;
+    led_parameters.brightness = 100;
+    led_parameters.mode = LedMode::steady_light;
+
+    //TODO: Find the right drawer_id (now its just a magical number 1 for now)
+    robast_can_msgs::CanMessage can_msg_closed_drawer = DrawerGate::create_can_msg_drawer_user_access(drawer_controller_id, 1, led_parameters, CAN_DATA_CLOSE_LOCK);
+
+    this->send_can_msg(can_msg_closed_drawer);
+
+    RCLCPP_INFO(this->get_logger(), "Setting default LED status for drawer controller id %i", drawer_controller_id); // DEBUGGING
+  }
+
+  void DrawerGate::handle_default_led_status_for_all_drawers()
+  {
+    for (communication_interfaces::msg::Drawer drawer : this->get_all_mounted_drawers())
+    {
+      if (this->drawer_to_be_refilled_by_drawer_controller_id_.find(drawer.drawer_address.drawer_controller_id) == this->drawer_to_be_refilled_by_drawer_controller_id_.end())
+      {
+        // not found, meaning that drawer should just light up in default state
+        this->send_default_led_status_to_drawer(drawer.drawer_address.drawer_controller_id);
+      }
+      else
+      {
+        // found, meaning that drawer needs to be refilled. This is handled in the drawer_refill_topic_callback
+      }
+    }
+  }
+
+  void DrawerGate::handle_default_drawer_status(uint32_t drawer_controller_id)
+  {
+    this->drawer_is_beeing_accessed_ = false;
+    
+    // Wait a little bit to clear drawer_to_be_refilled_by_drawer_controller_id_ to give LEDs enough time to make suitable lightshow when closing
+    boost::asio::io_context io;
+    boost::asio::steady_timer t(io, boost::asio::chrono::milliseconds(800));
+    t.async_wait(boost::bind(&DrawerGate::handle_default_led_status_for_all_drawers, this));
+    io.run();
+
+    this->drawer_to_be_refilled_by_drawer_controller_id_.clear(); // clear this mapping so it is again checked and resynchronized, if drawer still needs to be refilled
+  }
 
   void DrawerGate::state_machine_drawer_gate(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t state)
   {
     switch (state)
     {
       case 1:
-        // 1. step: Open lock of the drawer and light up LEDs to signalize which drawer should be opened
         RCLCPP_INFO(this->get_logger(), "Step 1: Open lock of the drawer and light up LEDs to signalize which drawer should be opened"); // DEBUGGING
         this->open_drawer(drawer_controller_id, drawer_id);
       
       case 2:
-        // 2. step: Wait until at least one drawer_status feedback message from the Drawer Controller is received  
         RCLCPP_INFO(this->get_logger(), "Step 2: Wait until at least one drawer_status feedback message from the Drawer Controller is received "); // DEBUGGING
         this->wait_until_initial_drawer_status_received(drawer_controller_id);
 
       case 3:
-        // 3. step: Wait until drawer is opened
         RCLCPP_INFO(this->get_logger(), "Step 3: Wait until drawer is opened"); // DEBUGGING
         this->wait_until_drawer_is_opened(drawer_controller_id, drawer_id);
 
       case 4:
-        // 4. step: After drawer was opened, close lock and change light color
         RCLCPP_INFO(this->get_logger(), "Step 4: After drawer was opened, close lock and change light color"); // DEBUGGING
         this->handle_open_drawer(drawer_controller_id, drawer_id);
 
       case 5:
-        // 5. step: Wait until drawer is closed again
         RCLCPP_INFO(this->get_logger(), "Step 5: Wait until drawer is closed again"); // DEBUGGING
         this->wait_until_drawer_is_closed(drawer_controller_id, drawer_id);
 
       case 6:
-        // 6. step: LED closed feedback
         RCLCPP_INFO(this->get_logger(), "Step 6: LED closed feedback"); // DEBUGGING
         this->handle_closed_drawer(drawer_controller_id, drawer_id);
-      
+
+      case 7:
+        RCLCPP_INFO(this->get_logger(), "Step 7: Sending default LED status"); // DEBUGGING
+        this->handle_default_drawer_status(drawer_controller_id);
+
       default:
         break;
     }
   }
-
   
   void DrawerGate::handle_drawer_user_access(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle) 
   {
@@ -595,10 +658,6 @@ namespace drawer_gate
     this->state_machine_drawer_gate(drawer_controller_id, drawer_id, state);
 
     goal_handle->succeed(result);
-
-    this->drawer_is_beeing_accessed_ = false;
-    //TODO: Wait a little bit to clear drawer_to_be_refilled_by_drawer_controller_id_ to give LEDs enough time to make suitable lightshow
-    this->drawer_to_be_refilled_by_drawer_controller_id_.clear(); // clear this mapping so it is again checked, if drawer still needs to be refilled
 
     RCLCPP_INFO(this->get_logger(), "Finished executing goal"); // DEBUGGING
   }

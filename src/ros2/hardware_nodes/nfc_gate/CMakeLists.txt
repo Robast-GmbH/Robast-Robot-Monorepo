@@ -17,20 +17,13 @@ endif()
 
 
 # find dependencies
-
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(ament_cmake_catch2 REQUIRED)
 find_package(ament_cmake_uncrustify REQUIRED)
-
-
-set(serial_helper_dir /workspace/libs/serial_helper)
-include_directories(${serial_helper_dir}) # needed to find robast_msg/robast_can_msgs
-
-set(test_lib_dir /workspace/libs/test)
-include_directories(${test_lib_dir})
+find_package(serial_helper REQUIRED)
 
 include_directories(include)
 
@@ -54,18 +47,18 @@ if(BUILD_TESTING)
   file(GLOB_RECURSE unit_test_srcs "test/*.cpp")
 
   ament_add_catch2(
-  nfc_gate_test test/main.cpp ${unit_test_srcs}
+    nfc_gate_test test/main.cpp ${unit_test_srcs}
   )
 
-target_link_libraries(nfc_gate_test
-      library_nfc_gate
-      rclcpp::rclcpp
-      rclcpp_action::rclcpp_action
+  target_link_libraries(nfc_gate_test
+    library_nfc_gate
+    rclcpp::rclcpp
+    rclcpp_action::rclcpp_action
   )
   
   target_include_directories(nfc_gate_test
-  PRIVATE
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
+    PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
   )
 endif()
 
@@ -73,6 +66,7 @@ set(dependencies
   rclcpp
   rclcpp_action
   communication_interfaces
+  serial_helper
 )
 
 ament_target_dependencies(${executable_nfc_gate}

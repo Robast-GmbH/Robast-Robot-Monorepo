@@ -27,7 +27,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
-#include "robast_msgs/action/import_yaml_poses.hpp"
+#include "communication_interfaces/action/import_yaml_poses.hpp"
 #include "yaml-cpp/yaml.h"
 
 namespace robast_nav_poses_importer
@@ -40,7 +40,7 @@ namespace robast_nav_poses_importer
 class YamlPosesImporter : public nav2_util::LifecycleNode
 {
 public:
-  using ActionT = robast_msgs::action::ImportYamlPoses;
+  using ActionT = communication_interfaces::action::ImportYamlPoses;
   using ActionServer = nav2_util::SimpleActionServer<ActionT>;
   /**
    * @brief A constructor for robast_nav_poses_importer::YamlPosesImporter class

@@ -1,0 +1,679 @@
+{
+        "version": "2.0.0",
+        "tasks": [
+                {
+                        "label": "test",
+                        "detail": "Run all unit tests and show results.",
+                        "type": "shell",
+                        "command": "colcon test --merge-install; colcon test-result",
+                        "group": {
+                                "kind": "test",
+                                "isDefault": true
+                        }
+                },
+                {
+                        "label": "clean-ros",
+                        "detail": "Clean ros colcon build",
+                        "type": "shell",
+                        "command": "colcon build --cmake-target clean",
+                        "problemMatcher": "$gcc"
+                },
+                {
+                        "label": "clean",
+                        "detail": "Purge and clean ros colcon build",
+                        "dependsOn": [
+                                "purge",
+                                "clean-ros"
+                        ],
+                        "dependsOrder": "sequence",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "build-ros-theron",
+                        "detail": "Symlink Build for Ros-Theron.",
+                        "type": "shell",
+                        "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip aws_hospital_world robast_map_update_module",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "clean-build-ros-theron",
+                        "detail": "Purges and symlink builds for Ros-Theron.",
+                        "dependsOn": [
+                                "purge",
+                                "build-ros-theron"
+                        ],
+                        "dependsOrder": "sequence",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "purge",
+                        "detail": "Purge workspace by deleting all generated files.",
+                        "type": "shell",
+                        "command": "rm -fr build install log; py3clean .",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "default_startup",
+                        "detail": "Starts TipluWorld, Nav, slam",
+                        "dependsOn": [
+                                "start TipluWorld",
+                                "start slam_toolbox",
+                                "start nav_without_localization",
+                                "start rviz"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "default_startup_heiligenhafen",
+                        "detail": "Starts Heiligenhafen, Nav, slam",
+                        "dependsOn": [
+                                "start heiligenhafen_sim",
+                                "start heiligenhafen_commander",
+                                "start nav_without_localization",
+                                "start rviz"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "default_startup_amcl",
+                        "detail": "Starts TipluWorld, Nav, amcl",
+                        "dependsOn": [
+                                "start TipluWorld",
+                                "start amcl",
+                                "start keepout_mask",
+                                "start nav_without_localization",
+                                "start rviz_amcl"
+                        ]
+                },
+                {
+                        "label": "default_startup_amcl_with_mapping",
+                        "detail": "Starts TipluWorld, Nav, amcl",
+                        "dependsOn": [
+                                "start TipluWorld",
+                                "start keepout_mask",
+                                "start nav_without_localization",
+                                "start rviz_amcl",
+                                "start amcl_with_slam_mapping"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "default_startup_amcl_door_bells",
+                        "detail": "Starts TipluWorld, Nav, amcl, rviz, door_bells",
+                        "dependsOn": [
+                                "start TipluWorld",
+                                "start amcl",
+                                "start keepout_mask",
+                                "start nav_without_localization_with_door_bells_launch",
+                                "start rviz_amcl"
+                        ]
+                },
+                {
+                        "label": "default_startup_robot_localization",
+                        "detail": "Starts TipluWorld, Nav, slam, robot_localization",
+                        "dependsOn": [
+                                "start TipluWorld",
+                                "start slam_toolbox",
+                                "start nav_without_localization",
+                                "start robot_localization",
+                                "start rviz"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "default_startup_amcl_robot_localization",
+                        "detail": "Starts TipluWorld, Nav, amcl, robot_localization",
+                        "dependsOn": [
+                                "start TipluWorld",
+                                "start amcl",
+                                "start keepout_mask",
+                                "start nav_without_localization",
+                                "start robot_localization",
+                                "start rviz_amcl"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "type": "shell",
+                        "label": "start keepout_mask",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup mask_server_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start rosboard",
+                        "command": "source install/setup.bash; ros2 run rosboard rosboard_node",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start tiplu_sim",
+                        "command": "source install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py run_gzclient:='False'",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start heiligenhafen_sim",
+                        "command": "source install/setup.bash; ros2 launch heiligenhafen heiligenhafen_world_launch.py run_gzclient:='True'",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start heiligenhafen_commander",
+                        "command": "source install/setup.bash; ros2 launch heiligenhafen_commander heiligenhafen_commander_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start tiplu_sim_high_rf",
+                        "command": "source install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py world_model:='/workspaces/Robast_RosTheron/install/tiplu_world/share/tiplu_world/worlds/5OG_high_rtf/5OG_high_rtf.model' run_gz_client:='False'",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "label": "start TipluWorld",
+                        "detail": "TipluWorld with rosboard on 8888",
+                        "dependsOn": [
+                                "start tiplu_sim",
+                                // "start rosboard"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "start TipluWorld_high_rf",
+                        "detail": "TipluWorld with rosboard on 8888",
+                        "dependsOn": [
+                                "start tiplu_sim_high_rf",
+                                "start rosboard"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "type": "shell",
+                        "label": "start rviz",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup rviz_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start rviz_amcl",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup rviz_amcl_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start nav_without_localization",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start nav_without_localization_with_door_bells_launch",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py use_interim_goal:=true",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start slam_toolbox",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start slam_toolbox_heiligenhafen",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py world_posegraph:='cannot_be_empty'",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start amcl_with_slam_mapping",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup slam_with_amcl_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start amcl",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup amcl_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start robot_localization",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py;",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "label": "waypoint_test",
+                        "detail": "Starts TipluWorld, Nav, slam, waypoint test",
+                        "dependsOrder": "sequence",
+                        "dependsOn": [
+                                "build tests",
+                                "waypoint_test_follow"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "waypoint_amcl_test",
+                        "detail": "Starts TipluWorld, Nav, slam, waypoint test",
+                        "dependsOrder": "sequence",
+                        "dependsOn": [
+                                "build tests",
+                                "waypoint_test_follow_amcl"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "waypoint_amcl_with_mapping_test",
+                        "detail": "Starts TipluWorld, Nav, slam, waypoint test",
+                        "dependsOrder": "sequence",
+                        "dependsOn": [
+                                "build tests",
+                                "waypoint_amcl_with_mapping_test_base"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "type": "shell",
+                        "label": "build tests",
+                        "command": "source install/setup.bash; colcon build --symlink-install --packages-select testing_tools",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "testing"
+                        }
+                },
+                {
+                        "label": "waypoint_test_follow_amcl",
+                        "detail": "Starts TipluWorld, Nav, slam, waypoint test, rviz",
+                        "dependsOn": [
+                                "start TipluWorld_high_rf",
+                                "start keepout_mask",
+                                "start amcl",
+                                "start nav_without_localization_with_door_bells_launch",
+                                "start follow_waypoint_test",
+                                "start rviz_amcl"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "waypoint_test_follow",
+                        "detail": "Starts TipluWorld, Nav, slam, waypoint test, start rviz",
+                        "dependsOn": [
+                                "start TipluWorld_high_rf",
+                                "start keepout_mask",
+                                "start slam_toolbox",
+                                "start nav_without_localization_with_map_buffer",
+                                "start follow_waypoint_test",
+                                "start rviz"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "waypoint_amcl_with_mapping_test_base",
+                        "detail": "starts the stack with live mapping",
+                        "dependsOn": [
+                                "start TipluWorld_high_rf",
+                                "start keepout_mask",
+                                "start amcl_with_slam_mapping",
+                                "start nav_without_localization_with_door_bells_launch",
+                                "start follow_waypoint_test",
+                                "start rviz_amcl"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "type": "shell",
+                        "label": "start nav_without_localization_with_map_buffer",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py use_map_buffer:=true",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true,
+                                "group": "waypoint_testing"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start follow_waypoint_test",
+                        "command": "source install/setup.bash; ros2 launch testing_tools create_waypoints_launch.py num_of_waypoints:=200",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "waypoint_testing"
+                        }
+                },
+                {
+                        "label": "fix",
+                        "detail": "Reformat files with uncrustify.",
+                        "type": "shell",
+                        "command": "ament_uncrustify --reformat src/",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "uncrustify",
+                        "detail": "Lint files with uncrustify.",
+                        "type": "shell",
+                        "command": "ament_uncrustify src/",
+                        "presentation": {
+                                "panel": "dedicated",
+                                "reveal": "silent",
+                                "clear": true
+                        },
+                        "problemMatcher": [
+                                {
+                                        "owner": "uncrustify",
+                                        "source": " uncrustify",
+                                        "fileLocation": "relative",
+                                        "pattern": [
+                                                {
+                                                        "regexp": "^(.*)'(.*)':",
+                                                        "kind": "file",
+                                                        "file": 2,
+                                                        "message": 1
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "label": "cpplint",
+                        "detail": "Lint files with cpplint.",
+                        "type": "shell",
+                        "command": "ament_cpplint src/",
+                        "presentation": {
+                                "panel": "dedicated",
+                                "reveal": "silent",
+                                "clear": true
+                        },
+                        "problemMatcher": [
+                                {
+                                        "owner": "cpplint",
+                                        "source": " cpplint",
+                                        "fileLocation": "absolute",
+                                        "pattern": [
+                                                {
+                                                        "regexp": "^(.+):(\\d+):\\s+(.+)\\[(.+)\\]$",
+                                                        "file": 1,
+                                                        "line": 2,
+                                                        "message": 3,
+                                                        "code": 4
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "label": "cppcheck",
+                        "detail": "Run static code checker cppcheck.",
+                        "type": "shell",
+                        "command": "ament_cppcheck src/",
+                        "presentation": {
+                                "panel": "dedicated",
+                                "reveal": "silent",
+                                "clear": true
+                        },
+                        "problemMatcher": [
+                                {
+                                        "owner": "cppcheck",
+                                        "source": "cppcheck",
+                                        "pattern": [
+                                                {
+                                                        "regexp": "^\\[(.+):(\\d+)\\]:\\s+(.+)$",
+                                                        "file": 1,
+                                                        "line": 2,
+                                                        "message": 3
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "label": "lint_cmake",
+                        "detail": "Run lint on cmake files.",
+                        "type": "shell",
+                        "command": "ament_lint_cmake src/",
+                        "presentation": {
+                                "panel": "dedicated",
+                                "reveal": "silent",
+                                "clear": true
+                        },
+                        "problemMatcher": [
+                                {
+                                        "owner": "lint_cmake",
+                                        "source": "lint_cmake",
+                                        "pattern": [
+                                                {
+                                                        "regexp": "^(.+):(\\d+):\\s+(.+)$",
+                                                        "file": 1,
+                                                        "line": 2,
+                                                        "message": 3
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "label": "flake8",
+                        "detail": "Run flake8 on python files.",
+                        "type": "shell",
+                        "command": "ament_flake8 src/",
+                        "presentation": {
+                                "panel": "dedicated",
+                                "reveal": "silent",
+                                "clear": true
+                        },
+                        "problemMatcher": [
+                                {
+                                        "owner": "flake8",
+                                        "source": "flake8",
+                                        "pattern": [
+                                                {
+                                                        "code": 4,
+                                                        "column": 3,
+                                                        "file": 1,
+                                                        "line": 2,
+                                                        "message": 5,
+                                                        "regexp": "^(.+):(\\d+):(\\d+): (\\w\\d+) (.+)$"
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "label": "pep257",
+                        "detail": "Run pep257 on python files.",
+                        "type": "shell",
+                        "command": "ament_pep257 src/",
+                        "presentation": {
+                                "panel": "dedicated",
+                                "reveal": "silent",
+                                "clear": true
+                        },
+                        "problemMatcher": [
+                                {
+                                        "owner": "pep257",
+                                        "source": "pep257",
+                                        "pattern": [
+                                                {
+                                                        "regexp": "^(.+):(\\d+)\\s+(.+):\\s+(.+):\\s+(.+)$",
+                                                        "file": 1,
+                                                        "line": 2,
+                                                        "code": 4,
+                                                        "message": 5
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "label": "xmllint",
+                        "detail": "Run xmllint on xml files.",
+                        "type": "shell",
+                        "command": "ament_xmllint src/",
+                        "presentation": {
+                                "panel": "dedicated",
+                                "reveal": "silent",
+                                "clear": true
+                        },
+                        "problemMatcher": [
+                                {
+                                        "owner": "xmllint",
+                                        "source": "xmllint",
+                                        "fileLocation": "absolute",
+                                        "pattern": [
+                                                {
+                                                        "regexp": "^(.+):(\\d+):\\s+(.+)\\s+:\\s+(.+)$",
+                                                        "file": 1,
+                                                        "line": 2,
+                                                        "code": 3,
+                                                        "message": 4
+                                                }
+                                        ]
+                                }
+                        ]
+                },
+                {
+                        "label": "lint all",
+                        "detail": "Run all linters.",
+                        "dependsOn": [
+                                "cppcheck",
+                                "cpplint",
+                                "flake8",
+                                "lint_cmake",
+                                "pep257",
+                                "xmllint",
+                                "uncrustify"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "new ament_cmake package",
+                        "detail": "Create a new ROS cpp package from a template.",
+                        "type": "shell",
+                        "command": "ros2 pkg create --destination-directory src --build-type ament_cmake ${input:package}",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "new ament_python package",
+                        "detail": "Create a new ROS python package from a template.",
+                        "type": "shell",
+                        "command": "ros2 pkg create --destination-directory src --build-type ament_python ${input:package}",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "import from workspace file",
+                        "detail": "Use vcs to import modules specified by a workspace/rosinstall file.",
+                        "type": "shell",
+                        "command": "vcs import < src/ros2.repos src",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "update workspace file",
+                        "detail": "Use vcs to update repositories in src to workspace file.",
+                        "type": "shell",
+                        "command": "vcs export src > src/ros2.repos",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "install dependencies",
+                        "detail": "Install all dependencies specified in the workspaces package.xml files.",
+                        "type": "shell",
+                        "command": "sudo apt-get update && rosdep update && rosdep install --from-paths src --ignore-src -y",
+                        "problemMatcher": []
+                },
+                {
+                        "type": "cppbuild",
+                        "label": "C/C++: g++ build active file",
+                        "command": "/usr/bin/g++",
+                        "args": [
+                                "-fdiagnostics-color=always",
+                                "-g",
+                                "${file}",
+                                "-o",
+                                "${fileDirname}/${fileBasenameNoExtension}"
+                        ],
+                        "options": {
+                                "cwd": "${fileDirname}"
+                        },
+                        "problemMatcher": [
+                                "$gcc"
+                        ],
+                        "group": "build",
+                        "detail": "Task generated by Debugger."
+                }
+        ],
+        "inputs": [
+                {
+                        "id": "package",
+                        "type": "promptString",
+                        "description": "Package name"
+                }
+        ]
+}

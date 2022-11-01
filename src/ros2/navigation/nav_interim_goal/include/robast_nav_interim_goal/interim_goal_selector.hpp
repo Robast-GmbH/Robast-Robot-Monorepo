@@ -26,7 +26,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
-#include "robast_msgs/action/compute_interim_goal.hpp"
+#include "communication_interfaces/action/compute_interim_goal.hpp"
 
 namespace robast_nav_interim_goal
 {
@@ -53,7 +53,7 @@ enum class ActionStatus
 class InterimGoalSelector : public nav2_util::LifecycleNode
 {
 public:
-  using ActionT = robast_msgs::action::ComputeInterimGoal;
+  using ActionT = communication_interfaces::action::ComputeInterimGoal;
   using ActionServer = nav2_util::SimpleActionServer<ActionT>;
 
   /**

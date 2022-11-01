@@ -60,7 +60,7 @@ const loginDisplay = ({login})=>
 
 const UserManagement = ({user, login, logout}) => {
     
-    const token = sessionStorage.getItem('token')
+    //const token = sessionStorage.getItem('token')
     
     return (
       <>

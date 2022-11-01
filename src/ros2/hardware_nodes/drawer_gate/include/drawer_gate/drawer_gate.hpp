@@ -20,14 +20,19 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h> // write(), read(), close()
 
+// Used for the async timer
+#include <iostream>
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+
 #include "communication_interfaces/action/drawer_user_access.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "std_msgs/msg/u_int8_multi_array.hpp"
 
 #include "drawer_gate/drawer_defines.h"
-#include "/workspace/libs/can/include/can_db.hpp"
-#include "/workspace/libs/can/include/can_helper.h"
-#include "/workspace/libs/serial_helper/include/serial_helper.h"
+#include "can/can_db.hpp"
+#include "can/can_helper.h"
+#include "serial_helper/serial_helper.h"
 
 using namespace std::chrono_literals;
 
@@ -127,6 +132,12 @@ namespace drawer_gate
 
       void handle_closed_drawer(uint32_t drawer_controller_id, uint8_t drawer_id);
 
+      void handle_default_drawer_status(uint32_t drawer_controller_id);
+
+      void send_default_led_status_to_drawer(uint32_t drawer_controller_id);
+
+      void handle_default_led_status_for_all_drawers();
+
       rclcpp_action::GoalResponse goal_callback(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const DrawerUserAccess::Goal> goal);
 
       rclcpp_action::CancelResponse cancel_callback(const std::shared_ptr<GoalHandleDrawerUserAccess> goal_handle);
@@ -146,6 +157,8 @@ namespace drawer_gate
       void state_machine_drawer_gate(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t state);
 
       void send_drawer_refill_status(uint32_t drawer_controller_id, bool refill_drawer);
+
+      std::vector<communication_interfaces::msg::Drawer> get_all_mounted_drawers();
 
       /**
        * @brief Topic subscriber execution callback

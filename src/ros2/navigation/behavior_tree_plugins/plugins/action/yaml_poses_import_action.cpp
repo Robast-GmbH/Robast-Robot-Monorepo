@@ -13,7 +13,7 @@ ImportYamlPosesAction::ImportYamlPosesAction(
   const std::string & xml_tag_name,
   const std::string & action_name,
   const BT::NodeConfiguration & conf)
-: BtActionNode<robast_msgs::action::ImportYamlPoses>(xml_tag_name, action_name, conf)
+: BtActionNode<communication_interfaces::action::ImportYamlPoses>(xml_tag_name, action_name, conf)
 {
 }
 

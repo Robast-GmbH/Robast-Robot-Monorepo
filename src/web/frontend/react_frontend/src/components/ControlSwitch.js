@@ -45,8 +45,8 @@ function a11yProps(index) {
 }
 
 export default function ControlSwitch( {Tablist}) {
-  const [value, setValue] = React.useState(sessionStorage.getItem('tap-value')==1?1:0);
-  const [list, updateList] = Tablist;
+  const [value, setValue] = React.useState(sessionStorage.getItem('tap-value')===1?1:0);
+ 
  
   
   const handleChange = (event, newValue) => {
@@ -72,7 +72,7 @@ export default function ControlSwitch( {Tablist}) {
         {Tablist.map(item =>( <Tab key= {item.id} label={item.label} {...a11yProps(item.id)} /> ))}
       </Tabs>
       {  Tablist.map(item =>(
-                <TabPanel value={value} index={item.id}>
+                <TabPanel key={item.id}  value={value} index={item.id}>
                    {item.content}
                </TabPanel>
               ))}

@@ -29,6 +29,7 @@ body {
 }
 
 #SimpleMap img {
+  padding-top: 150px;
   width: 100%;
   margin-left: auto;
   margin-right: auto; 

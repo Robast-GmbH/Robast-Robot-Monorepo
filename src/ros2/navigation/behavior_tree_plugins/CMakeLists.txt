@@ -21,7 +21,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(nav2_msgs REQUIRED)
-find_package(robast_msgs REQUIRED)
+find_package(communication_interfaces REQUIRED)
 find_package(geometry_msgs REQUIRED)
 find_package(nav2_behavior_tree REQUIRED)
 find_package(behaviortree_cpp_v3 REQUIRED)
@@ -47,7 +47,7 @@ set(dependencies
   std_msgs
   std_srvs
   nav2_util
-  robast_msgs
+  communication_interfaces
   geometry_msgs
   nav_msgs
 )
