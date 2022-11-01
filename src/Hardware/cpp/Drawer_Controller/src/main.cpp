@@ -4,8 +4,9 @@
 
 #include "pinout_defines.h"
 
-#include "can_db.hpp"
-#include "can_helper.h"
+#include "can/can_db.hpp"
+#include "can/can_helper.h"
+
 
 /*********************************************************************************************************
   GLOBAL VARIABLES AND CONSTANTS

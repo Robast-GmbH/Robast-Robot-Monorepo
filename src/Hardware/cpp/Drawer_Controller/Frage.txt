@@ -1,4 +1,0 @@
-hier auch keine CMakeList?
-
-die geben doch eig an, wie ding ecompiled werdne sollen und wo her die files zum compile kommen. 
-hier brauchst du ja auch "externen" code aka "robast_msgs"
