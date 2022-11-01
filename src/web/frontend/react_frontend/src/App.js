@@ -1,7 +1,6 @@
 import Header from './components/Header.js'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import { useState, useEffect,useRef } from 'react'
-import Footer from './components/Footer.js'
+import { useState, useEffect } from 'react'
 import About from './components/About.js'
 import React from 'react'
 import ControlSwitch from './components/ControlSwitch.js'
@@ -11,7 +10,8 @@ import Stack from '@mui/material/Stack';
 import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
-const backend_address = `http://10.10.13.2:8000`
+
+const backend_address = `http://192.168.0.200:8000`
 function App() {
 
   const [mapPositions, setMapPositions] = useState([])
@@ -30,15 +30,16 @@ function App() {
    }, [])
 
    useEffect(() => {
-    
+     
     updateDrawersFromDB()
     setInterval(() => { updateDrawersFromDB()},30000);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
     const getUser = async () => {
     const userFromServer = await fetchUser()
-    if (userFromServer!="")
+    if (userFromServer!=="")
     {
       setUser(userFromServer)
     }
@@ -51,7 +52,7 @@ function App() {
   const fetchUser = async () => {
     
     const user_id= sessionStorage.getItem('token')
-    if(user_id=="undefined")
+    if(user_id==="undefined"|| user_id=== null)
     {
       return ""
     }
@@ -94,13 +95,6 @@ function App() {
   //Drawer
   const fetchDrawers = async () => {
     const res = await fetch(`${backend_address}/drawers/`)
-    const data = await res.json()
-
-    return data;
-  }
-
-  const fetchDrawer = async ( index) => {
-    const res = await fetch(`${backend_address}/drawers/${index}`)
     const data = await res.json()
 
     return data;
@@ -150,6 +144,7 @@ const changeStatus= async(statusID) =>  {
 
 const openDrawer= async (drawer) => {
   console.log(drawer)
+  changeStatus(2)
   const res = await fetch(`${backend_address}/drawer/${drawer.drawer_controller_id}/open/`, {
     method: 'PUT',
     headers: {
@@ -206,8 +201,8 @@ const theme = useTheme();
 const matches = useMediaQuery(theme.breakpoints.up('sm'));
 
 const tabData=[
-  { id:0, content:  <RobotControl  user={user} mapPositions= {mapPositions} sendGoal={sendGoal} addMapPosition={addMapPosition} robotStatusChange= {changeStatus} /> , label: (matches?"Roboter steuern": "Steuern") },
-  { id:1, content:  <DrawerControl user={user} drawers= {drawers} renameDrawer= {renameDrawer} openDrawer={openDrawer} getDrawers= {fetchDrawers} toggleEmpty={toggleEmpty} /> , label: (matches? "Schubladen öffnen" : "Schubladen")}
+  { id:0, content:  <DrawerControl user={user} drawers= {drawers} renameDrawer= {renameDrawer} openDrawer={openDrawer} getDrawers= {fetchDrawers} toggleEmpty={toggleEmpty} /> , label: (matches? "Schubladen öffnen" : "Schubladen")},
+  { id:1, content:  <RobotControl  user={user} mapPositions= {mapPositions} sendGoal={sendGoal} addMapPosition={addMapPosition} robotStatusChange= {changeStatus} /> , label: (matches?"Roboter steuern": "Steuern") }
   ];
 
   return (

@@ -6,6 +6,8 @@ services:
       context: .
       dockerfile: ../../src/ros2/simulation/Dockerfile
     image: robast1
+    environment:
+      - ROS_DOMAIN_ID=1
     volumes:
       - ./simulation/:/workspace/:cached
       - ../../src/ros2/simulation:/workspace/src/simulation:cached
@@ -20,6 +22,8 @@ services:
       context: .
       dockerfile: ../../src/ros2/navigation/Dockerfile
     image: robast2
+    environment:
+      - ROS_DOMAIN_ID=1
     volumes:
       - ./navigation/:/workspace/:cached
       - ../../src/ros2/navigation:/workspace/src/navigation:cached

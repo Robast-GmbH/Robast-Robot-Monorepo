@@ -39,11 +39,11 @@ ament_target_dependencies(AutonomousActorPlugin
 
 install(TARGETS
   AutonomousActorPlugin
-  DESTINATION share/../../../gaz/plugins)
+  DESTINATION /workspace/install/gazebo_plugins)
 
   install(TARGETS
   CollisionActorPlugin
-  DESTINATION share/../../../gaz/plugins)
+  DESTINATION /workspace/install/gazebo_plugins)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

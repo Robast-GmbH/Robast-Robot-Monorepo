@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "robast_msgs/action/compute_interim_goal.hpp"
+#include "communication_interfaces/action/compute_interim_goal.hpp"
 #include "behavior_tree_plugins/plugins/action/interim_goal_selector_action.hpp"
 
 namespace nav2_behavior_tree
@@ -14,7 +14,7 @@ InterimGoalCompAction::InterimGoalCompAction(
   const std::string & xml_tag_name,
   const std::string & action_name,
   const BT::NodeConfiguration & conf)
-: BtActionNode<robast_msgs::action::ComputeInterimGoal>(xml_tag_name, action_name, conf)
+: BtActionNode<communication_interfaces::action::ComputeInterimGoal>(xml_tag_name, action_name, conf)
 {
 }
 

@@ -33,10 +33,10 @@ def generate_launch_description():
         )
     else:
         mask_params_yaml_dir = os.path.join(
-            costmap_filters_dir, "masks", "Tiplu_6OG", "Tiplu_6OG_mask_params.yaml"
+            costmap_filters_dir, "masks", "new6OG", "mask_tiplu_6OG_params.yaml"
         )
         mask_file = os.path.join(
-            costmap_filters_dir, "masks", "Tiplu_6OG", "Tiplu_6OG_no_go.yaml"
+            costmap_filters_dir, "masks", "new6OG", "mask_tiplu_6OG.yaml"
         )
 
     # Create our own temporary YAML files that include substitutions

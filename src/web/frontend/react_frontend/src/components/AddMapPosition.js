@@ -6,16 +6,9 @@ import Button from '@mui/material/Button';
 
 const AddMapPosition = ({ onAdd }) => {
         const [name, setPositionItemTitle] = useState('')
-        const [x, setPositionXCoordinate] = useState(0.0)
-        const [y, setPositionYCoordinate] = useState(0.0)
-        const [t, setTheta] = useState(0.0)
-
-        const [name_error, setTitleError] = useState("")
-        const [x_error, setXError] = useState("")
-        const [y_error, setYError] = useState("")
-        const [t_error, setTError] = useState("")
-
-
+        const [x, setPositionXCoordinate] = useState(-0.999994 )
+        const [y, setPositionYCoordinate] = useState(-0.999994 )
+        const [t, setTheta] = useState(-0.999994 )
 
         const onSubmit = (e) => {
                 e.preventDefault()
@@ -23,24 +16,25 @@ const AddMapPosition = ({ onAdd }) => {
                         alert('Add a Title')
                         return
                 }
-                if (!x) {
+                
+                if (isNaN(x) || x=== -0.999994) {
                         alert('Add a X-Coordinate') //TODO: CHECK IF TYPE IS CORRECT
                         return
                 }
-                if (!y) {
+                if (isNaN(y) || y=== -0.999994) {
                         alert('Add a Y-Coordinate') //TODO: CHECK IF TYPE IS CORRECT
                         return
                 }
-                if (!t) {
+                if (isNaN(t)|| x=== -0.999994) {
                         alert('Add Theta') //TODO: CHECK IF TYPE IS CORRECT
                         return
                 }
                 
                 onAdd({ name, x, y, t})
                 setPositionItemTitle('')
-                setPositionXCoordinate(0.0)
-                setPositionYCoordinate(0.0)
-                setTheta(0.0)
+                setPositionXCoordinate(parseFloat(0))
+                setPositionYCoordinate(parseFloat(0))
+                setTheta(parseFloat(0))
                 window.parent.location.reload(false)
         }
 

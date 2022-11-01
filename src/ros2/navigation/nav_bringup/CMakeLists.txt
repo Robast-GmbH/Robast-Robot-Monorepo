@@ -24,7 +24,6 @@ find_package(robot_localization REQUIRED)
 
 nav2_package()
 
-
 install(DIRECTORY
 launch
 config
@@ -32,6 +31,7 @@ config_simulation
 maps
 masks
 behavior_trees
+rviz
 DESTINATION share/${PROJECT_NAME}/
 )
 

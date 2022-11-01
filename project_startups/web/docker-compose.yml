@@ -6,10 +6,11 @@ services:
       context: ../../src/web/backend
       dockerfile: Dockerfile
     image: backend:fast_api
+    ports:
+      - "8000:8000"
     volumes:
       - ./backend/:/workspace/:cached
       - ../../src/web/backend:/workspace/src/:cached
-    network_mode: "host"
     # command: /bin/sh -c "while sleep 1000; do :; done"
     command: /bin/sh -c "python /workspace/src/main.py"
     
@@ -19,14 +20,9 @@ services:
       context: ../../src/web/frontend/react_frontend/
       dockerfile: Dockerfile
     image: frontend:react_frontend
+    ports:
+      - "3000:3000"
     volumes:
       - ./frontend/:/workspace/:cached
       - ../../src/web/frontend/react_frontend:/workspace/src/:cached
-    network_mode: "host"
-    command: /bin/sh -c "while sleep 1000; do :; done"
-
-
-networks:
-  host:
-    name: host
-    external: true
+    command: /bin/sh -c "serve -s /workspace/src/build"

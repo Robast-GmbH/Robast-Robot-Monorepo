@@ -15,7 +15,7 @@ slam_toolbox:
     map_frame: map
     base_frame: robot_base_footprint
     scan_topic: /robot/front_laser/scan
-    mode: mapping #localization
+    mode: localization #mapping #localization
     debug_logging: false
     throttle_scans: 1
     transform_publish_period: 0.02 #if 0 never publishes odometry #der zuhoch = nav ist nurnoch in recovery

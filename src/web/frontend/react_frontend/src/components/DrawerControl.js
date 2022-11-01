@@ -43,7 +43,6 @@ const DrawerControl= ({drawers, user, openDrawer, renameDrawer, toggleEmpty})=> 
           <RobastRobotFront/>  
 
           { <Stack direction="row" spacing={1} id="drawer_controlls" orientation="center" >
-            {console.log(user)}
             {user.admin? <ButtonPopUp name="rename_drawer" caption="Umbennen" popUp={popUpModalRename(renameDrawer, drawers)} />:""}
             <ButtonPopUp name= {user.admin? "admin_refill_drawer" :"refill_drawer"} caption="Leer / Befüllen" popUp={popUpModalRefill(toggleEmpty, drawers)}/>
           </Stack>}

@@ -1,4 +1,4 @@
-import { useLocation } from 'react-router-dom'
+
 import DisplayAnImage from './DisplayAnImage';
 import Logo from '../imgs/Logo.png';
 import UserManagement from './UserManagement';
@@ -6,7 +6,7 @@ import UserManagement from './UserManagement';
 
 const Header = ({user, login, logout}) => {
 
-        const location = useLocation()
+        
         return (
                 <header className='header'>
                         
