@@ -3,7 +3,8 @@
 #include <FastLED.h>
 
 #include "pinout_defines.h"
-
+#include "lock.hpp"
+#include "led.hpp"
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
 
@@ -31,6 +32,9 @@ uint8_t led_mode;
 
 MCP_CAN CAN0(SPI_CS);
 
+lock::lock lock_1 = lock::lock();
+lock::lock lock_2 = lock::lock();
+
 robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
 long unsigned int rx_msg_id;
@@ -46,21 +50,6 @@ float moving_average_sensor_lock1_pin = 0;
 float moving_average_drawer1_closed_pin = 0;
 float moving_average_sensor_lock2_pin = 0;
 float moving_average_drawer2_closed_pin = 0;
-
-// flags to store which state the locks should have
-bool open_lock_1 = false;
-bool open_lock_2 = false;
-// flagt to store state of the lock of the previous step
-bool open_lock_1_previous_step = false;
-bool open_lock_2_previous_step = false;
-// flag to indicate that lock state needs to change
-bool change_lock_1_state = false;
-bool change_lock_2_state = false;
-
-// the time in ms the lock mechanism needs to open resp. close the lock
-#define LOCK_MECHANISM_TIME 700 // according to the datasheet a minimum of 600ms is required
-unsigned long previous_millis_open_lock_1 = 0;
-unsigned long previous_millis_open_lock_2 = 0;
 
 hw_timer_t * fading_up_timer = NULL;
 portMUX_TYPE fading_up_timer_mux = portMUX_INITIALIZER_UNLOCKED;
@@ -124,28 +113,6 @@ void initialize_can_controller(void)
   pinMode(MCP2515_INT, INPUT);  // Configuring pin for /INT input
 }
 
-void initialize_locks(void)
-{
-  pinMode(PWR_OPEN_LOCK1_PIN, OUTPUT);
-  pinMode(PWR_CLOSE_LOCK1_PIN, OUTPUT);
-  pinMode(SENSOR_LOCK1_PIN, INPUT);
-  pinMode(SENSOR_DRAWER1_CLOSED_PIN, INPUT);
-
-  pinMode(PWR_OPEN_LOCK2_PIN, OUTPUT);
-  pinMode(PWR_CLOSE_LOCK2_PIN, OUTPUT);
-  pinMode(SENSOR_LOCK2_PIN, INPUT);
-  pinMode(SENSOR_DRAWER2_CLOSED_PIN, INPUT);
-
-  digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
-  digitalWrite(PWR_CLOSE_LOCK1_PIN, LOW);
-
-  digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
-  digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
-
-  open_lock_1 = false;
-  open_lock_2 = false;
-}
-
 void led_init_mode()
 {
   led_target_red = 0;
@@ -187,68 +154,26 @@ void deactivate_drawer_feedback_broadcast(void)
   interval_drawer_feedback_in_ms = DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS;
 }
 
-void open_lock(uint8_t lock_id)
-{
-  if (lock_id == 1)
-  {
-    digitalWrite(PWR_CLOSE_LOCK1_PIN, LOW);
-    digitalWrite(PWR_OPEN_LOCK1_PIN, HIGH);
-  }
-  if (lock_id == 2)
-  {
-    digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
-    digitalWrite(PWR_OPEN_LOCK2_PIN, HIGH);
-  }
-}
-
-void close_lock(uint8_t lock_id)
-{
-  if (lock_id == 1)
-  {
-    digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
-    digitalWrite(PWR_CLOSE_LOCK1_PIN, HIGH);
-  }
-  if (lock_id == 2)
-  {
-    digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
-    digitalWrite(PWR_CLOSE_LOCK2_PIN, HIGH);
-  }
-}
-
-void set_lock_output_low(uint8_t lock_id)
-{ 
-  if (lock_id == 1)
-  {
-    digitalWrite(PWR_OPEN_LOCK1_PIN, LOW);
-    digitalWrite(PWR_CLOSE_LOCK1_PIN, LOW);
-  }
-  if (lock_id == 2)
-  {
-    digitalWrite(PWR_OPEN_LOCK2_PIN, LOW);
-    digitalWrite(PWR_CLOSE_LOCK2_PIN, LOW);
-  }
-}
-
 void handle_lock_status(robast_can_msgs::CanMessage can_message)
 {
   if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_OPEN_LOCK)
   {
-    open_lock_1 = true;
+    lock_1.set_open_lock_current_step(true);
     activate_drawer_feedback_broadcast();
   }
   if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_CLOSE_LOCK)
   {
-    open_lock_1 = false;
+    lock_1.set_open_lock_current_step(false);
   }
 
   if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_OPEN_LOCK)
   {
-    open_lock_2 = true;
+    lock_2.set_open_lock_current_step(true);
     activate_drawer_feedback_broadcast();
   }
   if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_CLOSE_LOCK)
   {
-    open_lock_2 = false;
+    lock_2.set_open_lock_current_step(false);
   }
 }
 
@@ -519,39 +444,7 @@ robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
   return can_msg_drawer_feedback;
 }
 
-void handle_lock_control(void)
-{
-  // Mind that the state for open_lock_1 and open_lock_2 is changed in the handle_lock_status function when a CAN msg is received
-  change_lock_1_state = open_lock_1 == open_lock_1_previous_step ? false : true;
-  change_lock_2_state = open_lock_2 == open_lock_2_previous_step ? false : true;
 
-  unsigned long current_millis_open_lock_1 = millis();
-  unsigned long current_millis_open_lock_2 = millis();
-
-  if (change_lock_1_state && (current_millis_open_lock_1 - previous_millis_open_lock_1 >= LOCK_MECHANISM_TIME))
-  {
-    open_lock_1_previous_step = open_lock_1;
-    previous_millis_open_lock_1 = current_millis_open_lock_1;
-    open_lock_1 ? open_lock(1) : close_lock(1);
-  }
-  else if (!change_lock_1_state && (current_millis_open_lock_1 - previous_millis_open_lock_1 >= LOCK_MECHANISM_TIME))
-  {
-    // this makes sure, there is only a 5V pulse with the duration of LOCK_MECHANISM_TIME on the respective input of the lock
-    set_lock_output_low(1);
-  }
-
-  if (change_lock_2_state && (current_millis_open_lock_2 - previous_millis_open_lock_2 >= LOCK_MECHANISM_TIME))
-  {
-    open_lock_2_previous_step = open_lock_2;
-    previous_millis_open_lock_2 = current_millis_open_lock_2;
-    open_lock_2 ? open_lock(2) : close_lock(2);
-  }
-  else if (!change_lock_2_state && (current_millis_open_lock_2 - previous_millis_open_lock_2 >= LOCK_MECHANISM_TIME))
-  {
-    // this makes sure, there is only a 5V pulse with the duration of LOCK_MECHANISM_TIME on the respective input of the lock
-    set_lock_output_low(2);
-  }
-}
 
 void handle_led_control(void)
 {
@@ -628,7 +521,8 @@ void setup()
 
   initialize_can_controller();
 
-  initialize_locks();
+  lock_1.initialize_locks(PWR_OPEN_LOCK1_PIN, PWR_CLOSE_LOCK1_PIN, SENSOR_LOCK1_PIN, SENSOR_DRAWER1_CLOSED_PIN);
+  lock_2.initialize_locks(PWR_OPEN_LOCK2_PIN, PWR_CLOSE_LOCK2_PIN, SENSOR_LOCK2_PIN, SENSOR_DRAWER2_CLOSED_PIN);
 
   initialize_led_strip();
 
@@ -644,7 +538,8 @@ void loop()
 {
   handle_receiving_can_msg();
 
-  handle_lock_control();
+  lock_1.handle_lock_control();
+  lock_2.handle_lock_control();
 
   handle_led_control();
   
