@@ -1,6 +1,7 @@
 #goal
 communication_interfaces/Task task
 bool loading
+uint8 state # 0: normaler process, 1: nur NFC, 2: Nur Schublade   
 ---
 #result
 string error_message

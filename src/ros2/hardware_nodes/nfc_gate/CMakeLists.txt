@@ -43,6 +43,7 @@ set(library_nfc_gate ${executable_nfc_gate}_core)
 
 add_library(library_nfc_gate SHARED
   src/nfc_gate.cpp
+  src/serial_helper_mock.cpp
   ${serial_helper_dir}/src/serial_helper.cpp #TODO: This can probably be done better
   ${serial_helper_dir}/include/i_serial_helper.h
   ${test_lib_dir}/catch.hpp

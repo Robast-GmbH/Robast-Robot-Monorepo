@@ -1,26 +1,41 @@
 
 #include "nfc_gate/nfc_gate.hpp"
 
+
 namespace robast
 {
 
   NFCGate::NFCGate( ):NFCGate( "/dev/robast/robast_nfc" ) { }
-  NFCGate::NFCGate( string serial_port_path ):NFCGate( new serial_helper::SerialHelper(serial_port_path))
-  {
-     
-  } 
+  NFCGate::NFCGate( string serial_port_path ):NFCGate( new serial_helper::SerialHelper(serial_port_path)){}
 
   NFCGate::NFCGate( serial_helper::ISerialHelper* serial_connector  ) : Node("nfc_gate")
   {
-    this->serial_connector_ = serial_connector;// new serial_helper::SerialHelper(serial_port_path);
+
+    
+    declare_parameter("debug", false);
+    debug = get_parameter("debug ").as_bool();
+    if(debug )
+    {
+      this->mock_serial_connector();
+    }else 
+    {
+      this->serial_connector_ = serial_connector;// new serial_helper::SerialHelper(serial_port_path);
+    }
+
+   
     this->user_authenticate_server = rclcpp_action::create_server<AuthenticateUser>(
       this,
       "authenticate_user",
-      bind(&NFCGate::auth_goal_callback, this, placeholders::_1, placeholders::_2),
-      bind(&NFCGate::auth_cancel_callback, this, placeholders::_1),
-      bind(&NFCGate::auth_accepted_callback, this, placeholders::_1)
+      bind(&NFCGate::auth_goal_callback, this, std::placeholders::_1, std::placeholders::_2),
+      bind(&NFCGate::auth_cancel_callback, this, std::placeholders::_1),
+      bind(&NFCGate::auth_accepted_callback, this, std::placeholders::_1)
       );
-    this->create_user_server =this->create_service<CreateUser>("create_user_tag",bind(&NFCGate::write_tag, this, placeholders::_1, placeholders::_2));
+    this->create_user_server =this->create_service<CreateUser>("create_user_tag",bind(&NFCGate::write_tag, this, std::placeholders::_1, std::placeholders::_2));
+  }
+
+  void NFCGate::mock_serial_connector()
+  {
+    this->serial_connector_=nullptr;
   }
 
   void NFCGate::change_serial_helper(serial_helper::ISerialHelper* serial_connector)
@@ -30,12 +45,14 @@ namespace robast
   
   rclcpp_action::GoalResponse NFCGate::auth_goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal)
   {
+    (void) uuid;
     RCLCPP_INFO(this->get_logger(), "Received goal request");
     return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
 
   rclcpp_action::CancelResponse NFCGate::auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
   {
+    (void) goal_handle;
     RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
     return rclcpp_action::CancelResponse::ACCEPT;
   }
@@ -51,19 +68,25 @@ namespace robast
 
   void NFCGate::start_up_scanner()
   {
+    this->serial_connector_->open_serial(); 
     string response;
-    this->serial_connector_->open_serial();
-    this->serial_connector_->send_ascii_cmd( SET_SERIAL_TO_ASCII);  
-    this->serial_connector_->send_ascii_cmd(BOTTOM_LED_ON);
-    this->serial_connector_->send_ascii_cmd(TOP_LEDS_INIT(LED_RED));
-    this->serial_connector_->send_ascii_cmd(TOP_LEDS_ON(LED_RED));
+    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, 500);
+    if(response != DEVICE_STATE_CONFIGURED)
+    {
+      RCLCPP_ERROR(this->get_logger(), "NFC Device is not setup properly. nfc Node shutting down");
+      rclcpp::shutdown();
+    }
+    this->serial_connector_->ascii_interaction(SET_SERIAL_TO_ASCII,&response, 500);  
+    this->serial_connector_->ascii_interaction(BOTTOM_LED_ON, &response, 500);
+    this->serial_connector_->ascii_interaction(TOP_LEDS_INIT(LED_RED),&response, 500);
+    this->serial_connector_->ascii_interaction(TOP_LEDS_ON(LED_RED),&response, 500);
   }
 
   string NFCGate::scan_tag(bool* found)
   {
     string response, scanned_key;
     string replay =this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, 500);
-    if(replay == "0000") 
+    if(replay == RESPONCE_ERROR) 
     {
       *found =false;
       return "";
@@ -74,7 +97,7 @@ namespace robast
     
     replay = this->serial_connector_->ascii_interaction(NFC_READ_MC("02"),&scanned_key, 500);
     
-    if(replay== "0000")
+    if(replay== RESPONCE_ERROR)
     {
       *found =false;
       return "";
@@ -119,9 +142,9 @@ namespace robast
     RCLCPP_INFO(this->get_logger(),scanned_key.c_str());
     // abort this scan attempt if the reader could not detect a compatible card. 
     if(!found) return"";
-    RCLCPP_INFO(this->get_logger(),scanned_key.c_str());
+    
     scanned_key= this->validate_key(scanned_key, permission_keys, found);
-
+    RCLCPP_INFO(this->get_logger(),("scanned key "+scanned_key).c_str());
     return scanned_key;
   }
 
@@ -144,6 +167,7 @@ namespace robast
     
     if(!found)
     {
+      RCLCPP_INFO(this->get_logger(),scanned_key.c_str());
       this->timer_handle->publish_feedback(feedback);
       return;
     }
@@ -164,6 +188,7 @@ namespace robast
 
   void NFCGate::write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)
   {
+    (void) request;
       start_up_scanner();
   
       string tag;
@@ -186,7 +211,7 @@ namespace robast
         return;
       } 
 
-      if(tag!=BOOL_SUCCESS)
+      if(tag!=RESPONCE_SUCCESS)
       {
         return;
       }

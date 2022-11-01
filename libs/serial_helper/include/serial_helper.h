@@ -1,6 +1,9 @@
 #ifndef SERIAL_HELPER_HPP_
 #define SERIAL_HELPER_HPP_
 
+#include <iostream>
+#include <fstream>
+
 #include <cstring>
 #include <string>
 // Linux headers for serial communication

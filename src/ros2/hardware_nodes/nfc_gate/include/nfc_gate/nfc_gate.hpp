@@ -55,6 +55,7 @@ namespace robast
     
     private:
       int numReadings;
+      bool debug;
       void reader_procedure();
       void start_up_scanner(); 
       void turn_off_scanner();
@@ -64,15 +65,12 @@ namespace robast
       rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
       rclcpp::Service<CreateUser>::SharedPtr create_user_server;
 
-    
-
       rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal);
       rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle); 
       void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
       void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);  
-  
-    
       void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
+      void mock_serial_connector();
 };
 
 

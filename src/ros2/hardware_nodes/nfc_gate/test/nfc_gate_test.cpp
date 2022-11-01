@@ -72,6 +72,8 @@ namespace robast{
       {  
         When(Method(mock,ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
         {
+          (void) responce_size;
+          (void)cmd;
           return *responce ="0000";
         }); 
         
@@ -89,6 +91,7 @@ namespace robast{
         string key_from_card= "";  
         When(Method(mock,ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
         {
+          (void) responce_size;
           if(cmd==NFC_READ_MC("02"))
           {
 
@@ -110,6 +113,7 @@ namespace robast{
         string key_from_card= "6df1933415dde9fa1f9f6998a26b40db";  
         When(Method(mock,ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
         {
+          (void) responce_size;
           if(cmd==NFC_READ_MC("02"))
           {
 
@@ -150,6 +154,7 @@ namespace robast{
         string key_from_card= "6df1933415dde9fa1f9f6998a26b40db";  
         When(Method(mock,ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
         {
+          (void)responce_size;
           if(cmd==NFC_READ_MC("02"))
           {
               return *responce =key_from_card;
@@ -170,6 +175,8 @@ namespace robast{
         string key_from_card= "";  
         When(Method(mock,ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
         {
+          (void)responce_size;
+          (void) cmd;
           if(cmd==NFC_READ_MC("02"))
           {
 
