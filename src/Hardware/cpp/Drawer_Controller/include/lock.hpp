@@ -10,10 +10,10 @@ namespace lock
     // the time in ms the lock mechanism needs to open resp. close the lock
     #define LOCK_MECHANISM_TIME 700 // according to the datasheet a minimum of 600ms is required
 
-    class lock
+    class Lock
     {
         public:
-            lock() {}
+            Lock() {}
 
             void initialize_locks(uint8_t power_open_pin, uint8_t power_close_pin, uint8_t sensor_lock_pin, uint8_t sensor_drawer_closed_pin)
             {
@@ -42,12 +42,12 @@ namespace lock
                 {
                     this->open_lock_previous_step_ = this->open_lock_current_step_;
                     this->previous_millis_open_lock_ = current_millis_open_lock;
-                    this->open_lock_current_step_ ? open_lock() : close_lock();
+                    this->open_lock_current_step_ ? this->open_lock() : this->close_lock();
                 }
                 else if (!change_lock_state && (current_millis_open_lock - this->previous_millis_open_lock_ >= LOCK_MECHANISM_TIME))
                 {
                     // this makes sure, there is only a 5V pulse with the duration of LOCK_MECHANISM_TIME on the respective input of the lock
-                    set_lock_output_low();
+                    this->set_lock_output_low();
                 }
             }
 

@@ -1,10 +1,9 @@
 #include <Arduino.h>
 #include <mcp_can.h>
-#include <FastLED.h>
 
 #include "pinout_defines.h"
 #include "lock.hpp"
-#include "led.hpp"
+#include "led_strip.hpp"
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
 
@@ -15,25 +14,12 @@
 
 #define DRAWER_CONTROLLER_ID 1 //TODO: Every DRAWER_CONTROLLER needs to have his own id
 
-#define NUM_LEDS 25 // number of LEDs for LED strip
-#define MIDDLE_LED 13 // address of the middle LED, which is important for running LED mode
-
-CRGBArray<NUM_LEDS> leds;
-uint8_t led_target_red;
-uint8_t led_target_green;
-uint8_t led_target_blue;
-uint8_t led_target_brightness;
-uint8_t led_target_brightness_fade_on_fade_off;
-uint8_t led_current_red;
-uint8_t led_current_green;
-uint8_t led_current_blue;
-volatile uint8_t led_current_brightness;
-uint8_t led_mode;
-
 MCP_CAN CAN0(SPI_CS);
 
-lock::lock lock_1 = lock::lock();
-lock::lock lock_2 = lock::lock();
+lock::Lock LOCK_1 = lock::Lock();
+lock::Lock LOCK_2 = lock::Lock();
+
+led_strip::LedStrip LED_STRIP = led_strip::LedStrip(25, 13, 3);
 
 robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
@@ -51,45 +37,10 @@ float moving_average_drawer1_closed_pin = 0;
 float moving_average_sensor_lock2_pin = 0;
 float moving_average_drawer2_closed_pin = 0;
 
-hw_timer_t * fading_up_timer = NULL;
-portMUX_TYPE fading_up_timer_mux = portMUX_INITIALIZER_UNLOCKED;
-
-hw_timer_t * running_led_timer = NULL;
-portMUX_TYPE running_led_timer_mux = portMUX_INITIALIZER_UNLOCKED;
-
-volatile uint8_t running_led_offset_from_middle = 0; // this variable controls which LED is currently shining for the running LED mode
-#define NUM_OF_LED_SHADOWS 3 // Number of "shadow" LEDs for running LED. At the moment you need to do a few more changes to increase the number of shadow LEDs, in the future it should only be this define
-
 /*********************************************************************************************************
   FUNCTIONS
 *********************************************************************************************************/
 
-void IRAM_ATTR on_timer_for_fading()
-{
-  if (led_target_brightness > led_current_brightness)
-  {
-    portENTER_CRITICAL_ISR(&fading_up_timer_mux);
-    led_current_brightness++;
-    portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
-  }
-
-  if (led_target_brightness < led_current_brightness)
-  {
-    portENTER_CRITICAL_ISR(&fading_up_timer_mux);
-    led_current_brightness--;
-    portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
-  }
-}
-
-void IRAM_ATTR on_timer_for_running_led()
-{
-  if ((MIDDLE_LED - running_led_offset_from_middle) >= 0 - NUM_OF_LED_SHADOWS)
-  {
-    portENTER_CRITICAL_ISR(&running_led_timer_mux);
-    running_led_offset_from_middle++;
-    portEXIT_CRITICAL_ISR(&running_led_timer_mux);
-  }
-}
 
 void initialize_voltage_translator(void)
 {
@@ -113,35 +64,6 @@ void initialize_can_controller(void)
   pinMode(MCP2515_INT, INPUT);  // Configuring pin for /INT input
 }
 
-void led_init_mode()
-{
-  led_target_red = 0;
-  led_target_green = 155;
-  led_target_blue = 155;
-  led_target_brightness = 25;
-}
-
-void initialize_led_strip(void)
-{
-  FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_LEDS);
-  led_current_brightness = 0;
-  led_target_brightness = 0;
-  led_init_mode();
-}
-
-void initialize_timer(void)
-{
-  fading_up_timer = timerBegin(0, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
-  timerAttachInterrupt(fading_up_timer, &on_timer_for_fading, true);
-  timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s
-  timerAlarmEnable(fading_up_timer);
-
-  running_led_timer = timerBegin(1, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
-  timerAttachInterrupt(running_led_timer, &on_timer_for_running_led, true);
-  timerAlarmWrite(running_led_timer, 50000, true); // 50000 is a good value. This defines how fast the LED will "run". Higher values will decrease the running speed.
-  timerAlarmEnable(running_led_timer);
-}
-
 void activate_drawer_feedback_broadcast(void)
 {
   broadcast_feedback = true;
@@ -158,184 +80,23 @@ void handle_lock_status(robast_can_msgs::CanMessage can_message)
 {
   if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_OPEN_LOCK)
   {
-    lock_1.set_open_lock_current_step(true);
+    LOCK_1.set_open_lock_current_step(true);
     activate_drawer_feedback_broadcast();
   }
   if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_CLOSE_LOCK)
   {
-    lock_1.set_open_lock_current_step(false);
+    LOCK_1.set_open_lock_current_step(false);
   }
 
   if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_OPEN_LOCK)
   {
-    lock_2.set_open_lock_current_step(true);
+    LOCK_2.set_open_lock_current_step(true);
     activate_drawer_feedback_broadcast();
   }
   if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_CLOSE_LOCK)
   {
-    lock_2.set_open_lock_current_step(false);
+    LOCK_2.set_open_lock_current_step(false);
   }
-}
-
-void led_standard_mode()
-{
-  for(int i = 0; i < NUM_LEDS; i++)
-  {   
-    leds[i] = CRGB(led_target_red, led_target_green, led_target_blue);
-  }
-  led_current_red = led_target_red;
-  led_current_green = led_target_green;
-  led_current_blue = led_target_blue;
-  led_current_brightness = led_target_brightness;
-  FastLED.setBrightness(led_target_brightness);
-  FastLED.show();
-}
-
-void led_fade_on_mode()
-{
-  // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
-  if (led_target_brightness != led_current_brightness ||
-      led_target_red != led_current_red ||
-      led_target_green != led_current_green ||
-      led_target_blue != led_current_blue)
-  {
-    for(int i = 0; i < NUM_LEDS; i++)
-    {   
-      leds[i] = CRGB(led_target_red, led_target_green, led_target_blue);
-    }
-    led_current_red = led_target_red;
-    led_current_green = led_target_green;
-    led_current_blue = led_target_blue;
-    FastLED.setBrightness(led_current_brightness);
-    FastLED.show();
-  }  
-}
-
-void led_closing_drawer_mode()
-{
-  if ((MIDDLE_LED - running_led_offset_from_middle) >= 0 - NUM_OF_LED_SHADOWS)
-  {
-    for(int i = 0; i < NUM_LEDS; i++)
-    {
-      if ((i == (MIDDLE_LED - running_led_offset_from_middle)) || (i == (MIDDLE_LED + running_led_offset_from_middle)))
-      {
-        leds[i] = CRGB(led_target_red, led_target_green, led_target_blue);
-      }
-      // Create a shadow of running LED with less brightness
-      else if ((running_led_offset_from_middle >= 1) && 
-               ((i == (MIDDLE_LED - running_led_offset_from_middle + 1)) || (i == (MIDDLE_LED + running_led_offset_from_middle - 1))))
-      {
-        leds[i] = CRGB(led_target_red/2, led_target_green/2, led_target_blue/2);
-      }
-      // Create a shadow of running LED with less brightness
-      else if ((running_led_offset_from_middle >= 2) && 
-               ((i == (MIDDLE_LED - running_led_offset_from_middle + 2)) || (i == (MIDDLE_LED + running_led_offset_from_middle - 2))))
-      {
-        leds[i] = CRGB(led_target_red/3, led_target_green/3, led_target_blue/3);
-      }
-      // Create a shadow of running LED with less brightness
-      else if ((running_led_offset_from_middle >= 3) && 
-               ((i == (MIDDLE_LED - running_led_offset_from_middle + 3)) || (i == (MIDDLE_LED + running_led_offset_from_middle - 3))))
-      {
-        leds[i] = CRGB(led_target_red/4, led_target_green/4, led_target_blue/4);
-      }
-      else
-      {
-        leds[i] = CRGB(0, 0, 0);
-      }
-    }
-    led_current_red = led_target_red;
-    led_current_green = led_target_green;
-    led_current_blue = led_target_blue;
-    led_current_brightness = led_target_brightness;
-    FastLED.setBrightness(led_target_brightness);
-    FastLED.show();
-  }
-
-  if ((MIDDLE_LED - running_led_offset_from_middle) < 0 - NUM_OF_LED_SHADOWS)
-  {
-    for(int i = 0; i < NUM_LEDS; i++)
-    {
-      leds[i] = CRGB(0, 0, 0);
-    }
-    FastLED.setBrightness(0);
-    FastLED.show();
-  }
-
-  // Once closing the drawer is finished, set back the interval time to the default value and deactivate broadcast feedback
-  deactivate_drawer_feedback_broadcast();
-}
-
-void led_fade_on_fade_off_mode()
-{
-  // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
-  if (led_target_brightness != led_current_brightness ||
-      led_target_red != led_current_red ||
-      led_target_green != led_current_green ||
-      led_target_blue != led_current_blue)
-  {
-    for(int i = 0; i < NUM_LEDS; i++)
-    {   
-      leds[i] = CRGB(led_target_red, led_target_green, led_target_blue);
-    }
-    led_current_red = led_target_red;
-    led_current_green = led_target_green;
-    led_current_blue = led_target_blue;
-    FastLED.setBrightness(led_current_brightness);
-    FastLED.show();
-  }
-
-  // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
-  if (led_current_brightness == 0)
-  {
-    led_target_brightness = led_target_brightness_fade_on_fade_off;
-  }
-  else if (led_current_brightness == led_target_brightness_fade_on_fade_off)
-  {
-    led_target_brightness = 0;
-  }
-}
-
-void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
-{
-  led_target_red = can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data();
-  led_target_green = can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data();
-  led_target_blue = can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data();
-  led_target_brightness = can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data();
-  led_mode = can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
-
-  switch (led_mode)
-    {
-      case 0:
-        // standard mode
-        break;
-
-      case 1:
-        // fade on mode
-        timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s    
-        portENTER_CRITICAL(&fading_up_timer_mux);
-        led_current_brightness = 0;
-        portEXIT_CRITICAL(&fading_up_timer_mux);  
-        break;
-
-      case 2:
-        // led closing drawer mode
-        portENTER_CRITICAL(&running_led_timer_mux);
-        running_led_offset_from_middle = 0;
-        portEXIT_CRITICAL(&running_led_timer_mux);
-        break;
-
-      case 3:
-        // led fade on + fade off mode
-        timerAlarmWrite(fading_up_timer, 10000, true); // fade on + fade off should be more slowly than only fading on, so choose a bigger value for the alarm_value
-        portENTER_CRITICAL(&fading_up_timer_mux);
-        led_current_brightness = 0;
-        portEXIT_CRITICAL(&fading_up_timer_mux);
-        led_target_brightness_fade_on_fade_off = led_target_brightness;
-      
-      default:
-        break;
-    }
 }
 
 void debug_prints(robast_can_msgs::CanMessage can_message)
@@ -370,7 +131,7 @@ void handle_can_msg(robast_can_msgs::CanMessage can_message)
     {
       handle_lock_status(can_message);
 
-      select_led_strip_mode(can_message);
+      LED_STRIP.select_led_strip_mode(can_message);
     }
 
     debug_prints(can_message);
@@ -444,34 +205,6 @@ robast_can_msgs::CanMessage create_drawer_feedback_can_msg()
   return can_msg_drawer_feedback;
 }
 
-
-
-void handle_led_control(void)
-{
-  switch (led_mode)
-    {
-      case 0:
-        led_standard_mode();
-        break;
-
-      case 1:
-        led_fade_on_mode();
-        break;
-
-      case 2:
-        led_closing_drawer_mode();
-        break;
-
-      case 3:
-        led_fade_on_fade_off_mode();
-        break;
-      
-      default:
-        led_standard_mode();
-        break;
-    }
-}
-
 void sending_drawer_status_feedback(void)
 {
   robast_can_msgs::CanMessage can_msg_drawer_feedback = create_drawer_feedback_can_msg();
@@ -521,12 +254,10 @@ void setup()
 
   initialize_can_controller();
 
-  lock_1.initialize_locks(PWR_OPEN_LOCK1_PIN, PWR_CLOSE_LOCK1_PIN, SENSOR_LOCK1_PIN, SENSOR_DRAWER1_CLOSED_PIN);
-  lock_2.initialize_locks(PWR_OPEN_LOCK2_PIN, PWR_CLOSE_LOCK2_PIN, SENSOR_LOCK2_PIN, SENSOR_DRAWER2_CLOSED_PIN);
+  LOCK_1.initialize_locks(PWR_OPEN_LOCK1_PIN, PWR_CLOSE_LOCK1_PIN, SENSOR_LOCK1_PIN, SENSOR_DRAWER1_CLOSED_PIN);
+  LOCK_2.initialize_locks(PWR_OPEN_LOCK2_PIN, PWR_CLOSE_LOCK2_PIN, SENSOR_LOCK2_PIN, SENSOR_DRAWER2_CLOSED_PIN);
 
-  initialize_led_strip();
-
-  initialize_timer();
+  LED_STRIP.initialize_led_strip();
 }
 
 
@@ -538,10 +269,10 @@ void loop()
 {
   handle_receiving_can_msg();
 
-  lock_1.handle_lock_control();
-  lock_2.handle_lock_control();
+  LOCK_1.handle_lock_control();
+  LOCK_2.handle_lock_control();
 
-  handle_led_control();
+  LED_STRIP.handle_led_control();
   
   handle_reading_sensors();
 
