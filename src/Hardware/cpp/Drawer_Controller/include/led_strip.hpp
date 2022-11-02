@@ -13,11 +13,12 @@ namespace led_strip
     class LedStrip
     {
         public:
-            LedStrip(uint8_t num_leds, uint8_t middle_led, uint8_t num_of_led_shadows)
+            LedStrip(uint8_t num_leds, uint8_t middle_led, uint8_t num_of_led_shadows, uint8_t class_instance_id)
             {
                 this->num_leds_ = num_leds; 
                 this->middle_led_ = middle_led;
                 this->num_of_led_shadows_ = num_of_led_shadows;
+                this->class_instance_id_ = class_instance_id;
             }
 
             void initialize_led_strip(void)
@@ -99,6 +100,14 @@ namespace led_strip
 
 
         private:
+            // To make the led strip brightness fade, we use ISRs. But these need to be static,
+            // therefore the ISR does not know for which instance of a class it should change the member variables (e.g. led_current_brightness_).
+            // To work around this, we need some glue routines to enable an interface between an ISR and an instance of a class like described here:
+            // https://arduino.stackexchange.com/questions/89173/attach-the-arduino-isr-function-to-the-class-member
+            static const uint8_t num_of_class_instances_ = 2;
+            static LedStrip * instances [num_of_class_instances_];
+            uint8_t class_instance_id_;
+
             uint8_t num_leds_; // number of LEDs for LED strip
             uint8_t middle_led_; // address of the middle LED, which is important for running LED mode
             uint8_t num_of_led_shadows_; // Number of "shadow" LEDs for running LED. At the moment you need to do a few more changes to increase the number of shadow LEDs, in the future it should only be this define
@@ -218,9 +227,6 @@ namespace led_strip
                     FastLED.setBrightness(0);
                     FastLED.show();
                 }
-
-                // Once closing the drawer is finished, set back the interval time to the default value and deactivate broadcast feedback
-                deactivate_drawer_feedback_broadcast();
             }
 
             void led_fade_on_fade_off_mode()
@@ -253,46 +259,84 @@ namespace led_strip
                 }
             }
 
-            void IRAM_ATTR on_timer_for_fading()
+            static void IRAM_ATTR on_timer_for_fading_instance_1()
             {
-                if (this->led_target_brightness_ > this->led_current_brightness_)
-                {
-                    portENTER_CRITICAL_ISR(&this->fading_up_timer_mux_);
-                    this->led_current_brightness_++;
-                    portEXIT_CRITICAL_ISR(&this->fading_up_timer_mux_);
-                }
+                // if (LedStrip::instances[0]->led_target_brightness_ > LedStrip::instances[0]->led_current_brightness_)
+                // {
+                //     portENTER_CRITICAL_ISR(&LedStrip::instances[0]->fading_up_timer_mux_);
+                //     // LedStrip::instances[0]->led_current_brightness_++;
+                //     portEXIT_CRITICAL_ISR(&LedStrip::instances[0]->fading_up_timer_mux_);
+                // }
 
-                if (this->led_target_brightness_ < this->led_current_brightness_)
-                {
-                    portENTER_CRITICAL_ISR(&this->fading_up_timer_mux_);
-                    this->led_current_brightness_--;
-                    portEXIT_CRITICAL_ISR(&this->fading_up_timer_mux_);
-                }
+                // if (LedStrip::instances[0]->led_target_brightness_ < LedStrip::instances[0]->led_current_brightness_)
+                // {
+                //     portENTER_CRITICAL_ISR(&LedStrip::instances[0]->fading_up_timer_mux_);
+                //     // LedStrip::instances[0]->led_current_brightness_--;
+                //     portEXIT_CRITICAL_ISR(&LedStrip::instances[0]->fading_up_timer_mux_);
+                // }
             }
 
-            void IRAM_ATTR on_timer_for_running_led()
+            static void IRAM_ATTR on_timer_for_running_led_instance_1()
             {
-                if ((this->middle_led_ - this->running_led_offset_from_middle_) >= 0 - this->num_of_led_shadows_)
-                {
-                    portENTER_CRITICAL_ISR(&this->running_led_timer_mux_);
-                    this->running_led_offset_from_middle_++;
-                    portEXIT_CRITICAL_ISR(&this->running_led_timer_mux_);
-                }
+                // if ((LedStrip::instances[0]->middle_led_ - LedStrip::instances[0]->running_led_offset_from_middle_) >= 0 - LedStrip::instances[0]->num_of_led_shadows_)
+                // {
+                //     portENTER_CRITICAL_ISR(&LedStrip::instances[0]->running_led_timer_mux_);
+                //     // LedStrip::instances[0]->running_led_offset_from_middle_++;
+                //     portEXIT_CRITICAL_ISR(&LedStrip::instances[0]->running_led_timer_mux_);
+                // }
+            }
+
+            static void IRAM_ATTR on_timer_for_fading_instance_2()
+            {
+                // if (LedStrip::instances[1]->led_target_brightness_ > LedStrip::instances[1]->led_current_brightness_)
+                // {
+                //     portENTER_CRITICAL_ISR(&LedStrip::instances[1]->fading_up_timer_mux_);
+                //     // LedStrip::instances[1]->led_current_brightness_++;
+                //     portEXIT_CRITICAL_ISR(&LedStrip::instances[1]->fading_up_timer_mux_);
+                // }
+
+                // if (LedStrip::instances[1]->led_target_brightness_ < LedStrip::instances[1]->led_current_brightness_)
+                // {
+                //     portENTER_CRITICAL_ISR(&LedStrip::instances[1]->fading_up_timer_mux_);
+                //     // LedStrip::instances[1]->led_current_brightness_--;
+                //     portEXIT_CRITICAL_ISR(&LedStrip::instances[1]->fading_up_timer_mux_);
+                // }
+            }
+
+            static void IRAM_ATTR on_timer_for_running_led_instance_2()
+            {
+                // if ((LedStrip::instances[1]->middle_led_ - LedStrip::instances[1]->running_led_offset_from_middle_) >= 0 - LedStrip::instances[1]->num_of_led_shadows_)
+                // {
+                //     portENTER_CRITICAL_ISR(&LedStrip::instances[1]->running_led_timer_mux_);
+                //     // LedStrip::instances[1]->running_led_offset_from_middle_++;
+                //     portEXIT_CRITICAL_ISR(&LedStrip::instances[1]->running_led_timer_mux_);
+                // }
             }
 
             void initialize_timer()
             {
                 this->fading_up_timer_ = timerBegin(0, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
-                timerAttachInterrupt(this->fading_up_timer_, this->on_timer_for_fading(), true);
                 timerAlarmWrite(this->fading_up_timer_, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s
                 timerAlarmEnable(this->fading_up_timer_);
 
                 this->running_led_timer_ = timerBegin(1, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
-                timerAttachInterrupt(this->running_led_timer_, this->on_timer_for_running_led(), true);
                 timerAlarmWrite(this->running_led_timer_, 50000, true); // 50000 is a good value. This defines how fast the LED will "run". Higher values will decrease the running speed.
                 timerAlarmEnable(this->running_led_timer_);
-            }
 
+                switch (this->class_instance_id_)
+                {
+                    case 1:
+                        timerAttachInterrupt(this->fading_up_timer_, &on_timer_for_fading_instance_1, true);
+                        timerAttachInterrupt(this->running_led_timer_, &on_timer_for_running_led_instance_1, true);
+                        instances [0] = this;
+                        break;
+
+                    case 2:
+                        timerAttachInterrupt(this->fading_up_timer_, &on_timer_for_fading_instance_2, true);
+                        timerAttachInterrupt(this->running_led_timer_, &on_timer_for_running_led_instance_2, true);
+                        instances [1] = this;
+                }
+            }
     };
     
 } // namespace led_strip
