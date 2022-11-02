@@ -56,6 +56,27 @@ namespace lock
                 this->open_lock_current_step_ = open_lock_current_step;
             }
 
+            void handle_reading_sensors()
+            {
+                Serial.print("moving_average_sensor_lock_pin_: ");
+                Serial.println(float(this->moving_average_sensor_lock_pin_), DEC);
+                Serial.print("moving_average_drawer_closed_pin_: ");
+                Serial.println(float(this->moving_average_drawer_closed_pin_), DEC);
+                // Tracking the moving average for the sensor pins helps to debounce them a little bit
+                this->moving_average_sensor_lock_pin_ = 0.2 * digitalRead(this->sensor_lock_pin_) + 0.8 * this->moving_average_sensor_lock_pin_;
+                this->moving_average_drawer_closed_pin_ = 0.2 * digitalRead(this->sensor_drawer_closed_pin_) + 0.8 * this->moving_average_drawer_closed_pin_;
+            }
+
+            float get_moving_average_sensor_lock_pin()
+            {
+                return this->moving_average_sensor_lock_pin_;
+            }
+
+            float get_moving_average_drawer_closed_pin()
+            {
+                return this->moving_average_drawer_closed_pin_;
+            }
+
 
         private:
             uint8_t power_open_pin_;
@@ -67,6 +88,9 @@ namespace lock
             bool open_lock_previous_step_ = false;   // flag to store state of the lock of the previous step
 
             unsigned long previous_millis_open_lock_ = 0;
+
+            float moving_average_sensor_lock_pin_ = 0;
+            float moving_average_drawer_closed_pin_ = 0;
 
             void open_lock()
             {
