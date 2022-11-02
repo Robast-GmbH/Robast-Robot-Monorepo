@@ -19,7 +19,8 @@ MCP_CAN CAN0(SPI_CS);
 lock::Lock LOCK_1 = lock::Lock();
 lock::Lock LOCK_2 = lock::Lock();
 
-led_strip::LedStrip LED_STRIP = led_strip::LedStrip(25, 13, 3);
+led_strip::LedStrip LED_STRIP = led_strip::LedStrip(25, 13, 3, 1);
+led_strip::LedStrip * led_strip::LedStrip::instances [2] = { NULL, NULL };
 
 robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
