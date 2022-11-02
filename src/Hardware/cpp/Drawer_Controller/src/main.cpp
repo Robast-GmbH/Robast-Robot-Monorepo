@@ -19,9 +19,6 @@ MCP_CAN CAN0(SPI_CS);
 lock::Lock LOCK_1 = lock::Lock();
 lock::Lock LOCK_2 = lock::Lock();
 
-led_strip::LedStrip LED_STRIP = led_strip::LedStrip(25, 13, 3, 1);
-led_strip::LedStrip * led_strip::LedStrip::instances [2] = { NULL, NULL };
-
 robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
 long unsigned int rx_msg_id;
@@ -132,7 +129,7 @@ void handle_can_msg(robast_can_msgs::CanMessage can_message)
     {
       handle_lock_status(can_message);
 
-      LED_STRIP.select_led_strip_mode(can_message);
+      led_strip::select_led_strip_mode(can_message);
     }
 
     debug_prints(can_message);
@@ -258,7 +255,7 @@ void setup()
   LOCK_1.initialize_locks(PWR_OPEN_LOCK1_PIN, PWR_CLOSE_LOCK1_PIN, SENSOR_LOCK1_PIN, SENSOR_DRAWER1_CLOSED_PIN);
   LOCK_2.initialize_locks(PWR_OPEN_LOCK2_PIN, PWR_CLOSE_LOCK2_PIN, SENSOR_LOCK2_PIN, SENSOR_DRAWER2_CLOSED_PIN);
 
-  LED_STRIP.initialize_led_strip();
+  led_strip::initialize_led_strip();
 }
 
 
@@ -273,7 +270,7 @@ void loop()
   LOCK_1.handle_lock_control();
   LOCK_2.handle_lock_control();
 
-  LED_STRIP.handle_led_control();
+  led_strip::handle_led_control();
   
   handle_reading_sensors();
 
