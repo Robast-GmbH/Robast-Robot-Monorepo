@@ -194,19 +194,28 @@ namespace can
 
             void handle_can_msg(robast_can_msgs::CanMessage can_message)
             {
-            if (can_message.get_id() == CAN_ID_DRAWER_USER_ACCESS)
+                if (can_message.get_id() == CAN_ID_DRAWER_LOCK)
                 {
                     if (can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data() == this->drawer_controller_id_)
                     {
                         this->handle_lock_status(can_message);
+                    }
+
+                    this->debug_prints_drawer_lock(can_message);
+                }
+
+                if (can_message.get_id() == CAN_ID_DRAWER_LED)
+                {
+                    if (can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data() == this->drawer_controller_id_)
+                    {
                         led_strip::select_led_strip_mode(can_message);
                     }
 
-                    this->debug_prints(can_message);
+                    this->debug_prints_drawer_led(can_message);
                 }
             }
 
-            void debug_prints(robast_can_msgs::CanMessage can_message)
+            void debug_prints_drawer_lock(robast_can_msgs::CanMessage can_message)
             {
                 Serial.print("Standard ID: ");
                 Serial.print(this->rx_msg_id_, HEX);
@@ -218,6 +227,10 @@ namespace can
                 Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data(), BIN);
                 Serial.print(" CAN_SIGNAL_OPEN_LOCK_2: ");
                 Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data(), BIN);
+            }
+
+            void debug_prints_drawer_led(robast_can_msgs::CanMessage can_message)
+            {
                 Serial.print(" LED RED: ");
                 Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data(), DEC);
                 Serial.print(" LED GREEN: ");
@@ -229,7 +242,6 @@ namespace can
                 Serial.print(" LED MODE: ");
                 Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data(), DEC);
             }
-
     };
 } // namespace can
 
