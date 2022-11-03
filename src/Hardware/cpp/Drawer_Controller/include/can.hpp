@@ -226,11 +226,17 @@ namespace can
                 Serial.print(" CAN_SIGNAL_OPEN_LOCK_1: ");
                 Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data(), BIN);
                 Serial.print(" CAN_SIGNAL_OPEN_LOCK_2: ");
-                Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data(), BIN);
+                Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data(), BIN);
             }
 
             void debug_prints_drawer_led(robast_can_msgs::CanMessage can_message)
             {
+                Serial.print("Standard ID: ");
+                Serial.print(this->rx_msg_id_, HEX);
+                Serial.print(" rx_dlc: ");
+                Serial.print(uint8_t(this->rx_msg_dlc_), DEC);
+                Serial.print(" DRAWER ID: ");
+                Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data(), HEX);
                 Serial.print(" LED RED: ");
                 Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data(), DEC);
                 Serial.print(" LED GREEN: ");
