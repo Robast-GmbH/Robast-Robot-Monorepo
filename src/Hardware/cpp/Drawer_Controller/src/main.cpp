@@ -4,18 +4,16 @@
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
 
-
-
 /*********************************************************************************************************
   GLOBAL VARIABLES AND CONSTANTS
 *********************************************************************************************************/
 
-#define DRAWER_CONTROLLER_ID 2 //TODO: Every DRAWER_CONTROLLER needs to have his own id
+#define DRAWER_CONTROLLER_ID 1 //TODO: Every DRAWER_CONTROLLER needs to have his own id
 
 lock::Lock LOCK_1 = lock::Lock();
 lock::Lock LOCK_2 = lock::Lock();
 
-can::Can CAN = can::Can(DRAWER_CONTROLLER_ID, LOCK_1, LOCK_2);
+can::Can CAN = can::Can(DRAWER_CONTROLLER_ID, &LOCK_1, &LOCK_2);
 
 
 /*********************************************************************************************************

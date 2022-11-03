@@ -58,10 +58,6 @@ namespace lock
 
             void handle_reading_sensors()
             {
-                Serial.print("moving_average_sensor_lock_pin_: ");
-                Serial.println(float(this->moving_average_sensor_lock_pin_), DEC);
-                Serial.print("moving_average_drawer_closed_pin_: ");
-                Serial.println(float(this->moving_average_drawer_closed_pin_), DEC);
                 // Tracking the moving average for the sensor pins helps to debounce them a little bit
                 this->moving_average_sensor_lock_pin_ = 0.2 * digitalRead(this->sensor_lock_pin_) + 0.8 * this->moving_average_sensor_lock_pin_;
                 this->moving_average_drawer_closed_pin_ = 0.2 * digitalRead(this->sensor_drawer_closed_pin_) + 0.8 * this->moving_average_drawer_closed_pin_;
@@ -111,6 +107,5 @@ namespace lock
             }
     };
 } // namespace lock
-
 
 #endif // LOCK_HPP

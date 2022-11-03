@@ -13,7 +13,7 @@ namespace led_strip
     /*********************************************************************************************************
      GLOBAL VARIABLES AND CONSTANTS
     *********************************************************************************************************/
-   #define NUM_OF_LEDS 25
+    #define NUM_OF_LEDS 25
 
     struct {
         uint8_t num_leds; // number of LEDs for LED strip

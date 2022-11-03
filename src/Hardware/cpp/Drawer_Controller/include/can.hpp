@@ -12,7 +12,7 @@ namespace can
     class Can
     {
         public:
-            Can(uint32_t drawer_controller_id, lock::Lock lock_1, lock::Lock lock_2)
+            Can(uint32_t drawer_controller_id, lock::Lock *lock_1, lock::Lock *lock_2)
             {
                 this->drawer_controller_id_ = drawer_controller_id;
                 this->lock_1_ = lock_1;
@@ -87,8 +87,8 @@ namespace can
 
             uint32_t drawer_controller_id_;
 
-            lock::Lock lock_1_;
-            lock::Lock lock_2_;
+            lock::Lock *lock_1_;
+            lock::Lock *lock_2_;
 
             long unsigned int rx_msg_id_;
             uint8_t rx_msg_dlc_ = 0;
@@ -112,22 +112,22 @@ namespace can
             {
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_OPEN_LOCK)
                 {
-                    this->lock_1_.set_open_lock_current_step(true);
+                    this->lock_1_->set_open_lock_current_step(true);
                     activate_drawer_feedback_broadcast();
                 }
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_CLOSE_LOCK)
                 {
-                    this->lock_1_.set_open_lock_current_step(false);
+                    this->lock_1_->set_open_lock_current_step(false);
                 }
 
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_OPEN_LOCK)
                 {
-                    this->lock_2_.set_open_lock_current_step(true);
+                    this->lock_2_->set_open_lock_current_step(true);
                     activate_drawer_feedback_broadcast();
                 }
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_CLOSE_LOCK)
                 {
-                    this->lock_2_.set_open_lock_current_step(false);
+                    this->lock_2_->set_open_lock_current_step(false);
                 }
             }
 
@@ -138,25 +138,25 @@ namespace can
 
                 can_signals_drawer_feedback.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(this->drawer_controller_id_);
 
-                if (this->lock_1_.get_moving_average_drawer_closed_pin() > 0.9){
+                if (this->lock_1_->get_moving_average_drawer_closed_pin() > 0.9){
                     can_signals_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).set_data(1);
                 } else {
                     can_signals_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).set_data(0);
                 }
 
-                if (this->lock_1_.get_moving_average_sensor_lock_pin() > 0.9){
+                if (this->lock_1_->get_moving_average_sensor_lock_pin() > 0.9){
                     can_signals_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).set_data(1);
                 } else {
                     can_signals_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).set_data(0);
                 }
 
-                if (this->lock_2_.get_moving_average_drawer_closed_pin() > 0.9){
+                if (this->lock_2_->get_moving_average_drawer_closed_pin() > 0.9){
                     can_signals_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).set_data(1);
                 } else {
                     can_signals_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).set_data(0);
                 }
 
-                if (this->lock_2_.get_moving_average_sensor_lock_pin() > 0.9){
+                if (this->lock_2_->get_moving_average_sensor_lock_pin() > 0.9){
                     can_signals_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).set_data(1);
                 } else {
                     can_signals_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).set_data(0);
