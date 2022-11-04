@@ -25,7 +25,7 @@ namespace robast_can_msgs
             uint8_t bit_start = can_db_messages[can_msgs_index].get_can_signals()[i].get_bit_start();
             uint8_t bit_length = can_db_messages[can_msgs_index].get_can_signals()[i].get_bit_length();
             
-            uint64_t can_signal_data = (can_msg_data << (bit_start + 8*(8-dlc))) >> (64 - bit_length);
+            uint64_t can_signal_data = (can_msg_data << bit_start) >> (64 - bit_length);
 
             robast_can_msgs::CanSignal can_signal = CanSignal(bit_start, bit_length, can_signal_data);
             can_signals.push_back(can_signal);
@@ -115,7 +115,7 @@ namespace robast_can_msgs
                     uint8_t dlc = hex_string_to_unsigned_int<uint8_t>(dlc_as_hex_string);
 
                     std::string data_as_hex_string = std::string(ascii_commands + 5, dlc*2);
-                    uint64_t can_msg_data = hex_string_to_unsigned_int<uint64_t>(data_as_hex_string);
+                    uint64_t can_msg_data = hex_string_to_unsigned_int<uint64_t>(data_as_hex_string) << ((8 - dlc) * 8);
 
                     std::vector<CanSignal> can_signals = assign_data_to_can_signals(can_msg_data, can_db_messages, can_msgs_index);
 

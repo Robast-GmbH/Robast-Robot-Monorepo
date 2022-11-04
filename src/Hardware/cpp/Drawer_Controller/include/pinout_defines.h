@@ -1,5 +1,5 @@
-#ifndef PINOUT_DEFINES_DEFINES_HPP_
-#define PINOUT_DEFINES_DEFINES_HPP_
+#ifndef PINOUT_DEFINES_HPP_
+#define PINOUT_DEFINES_HPP_
 
 /*********************************************************************************************************
   PINOUT DEFINES
@@ -29,4 +29,4 @@
 
 
 
-#endif /* PINOUT_DEFINES_DEFINES_HPP_ */
+#endif /* PINOUT_DEFINES_HPP_ */
