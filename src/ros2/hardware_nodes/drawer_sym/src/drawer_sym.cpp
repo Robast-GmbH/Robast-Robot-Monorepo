@@ -24,7 +24,12 @@ namespace robast
         else if(msg_split.at(0)=="OPEN")
         {
             DrawerSym::open_drawer(msg_split);
-        } 
+        }
+        else if(msg_split.at(0)=="TEST")
+        {
+            DrawerSym::open_drawer_test(msg_split);
+        }
+
         else
         {
             RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "The recived Commad \"%s\" in unknown.", msg_split.at(0).c_str());
@@ -69,15 +74,9 @@ namespace robast
 
     void DrawerSym::open_drawer(std::vector<std::string> msg_split)
     {
-        
-        if (!drawerInteractionClients->wait_for_action_server()) 
-            {
-                RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
-                return;
-            }
-            auto goal_msg =create_dummy_drawer_interaction_msg();
+            communication_interfaces::action::DrawerInteraction::Goal goal_msg =create_dummy_drawer_interaction_msg();
             goal_msg.loading= msg_split[1] == "LOADING";
-            
+            goal_msg.state=0;
             
             if(msg_split.size() == 4)
             {
@@ -90,12 +89,43 @@ namespace robast
                 goal_msg.task.drawer_address.drawer_id= this->drawerList[ stoi( msg_split[2])].drawer_address.drawer_id;
             }
 
+            send_drawer_interaction( goal_msg);         
+    } 
+
+    void DrawerSym::send_drawer_interaction(communication_interfaces::action::DrawerInteraction::Goal goal_msg)
+    { 
             auto send_goal_options = rclcpp_action::Client<DrawerInteraction>::SendGoalOptions();
             send_goal_options.goal_response_callback = bind(&DrawerSym::drawer_goal_response_callback, this, placeholders::_1);
             send_goal_options.feedback_callback = bind(&DrawerSym::drawer_feedback_callback, this, placeholders::_1, placeholders::_2);
             send_goal_options.result_callback = bind(&DrawerSym::drawer_result_callback, this, placeholders::_1);
 
             this->drawerInteractionClients->async_send_goal(goal_msg, send_goal_options);
+    }
+
+    void DrawerSym::open_drawer_test(std::vector<std::string> msg_split)
+    {
+        
+        if (!drawerInteractionClients->wait_for_action_server()) 
+            {
+                RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
+                return;
+            }
+            communication_interfaces::action::DrawerInteraction::Goal goal_msg =create_dummy_drawer_interaction_msg();
+             goal_msg.state= atoi( msg_split[1].c_str());
+             goal_msg.loading= msg_split[2] == "LOADING";
+           
+            
+            if(msg_split.size() == 4)
+            {
+                goal_msg.task.drawer_address.drawer_controller_id= stoi(msg_split[3]);
+                goal_msg.task.drawer_address.drawer_id= stoi(msg_split[4]);
+            }
+            else
+            {
+                goal_msg.task.drawer_address.drawer_controller_id= this->drawerList[ stoi( msg_split[2])].drawer_address.drawer_controller_id;
+                goal_msg.task.drawer_address.drawer_id= this->drawerList[ stoi( msg_split[3])].drawer_address.drawer_id;
+            }
+            this->send_drawer_interaction( goal_msg);    
     } 
 
     communication_interfaces::action::DrawerInteraction::Goal DrawerSym::create_dummy_drawer_interaction_msg()
@@ -138,6 +168,7 @@ namespace robast
 
     void DrawerSym::drawer_feedback_callback( GoalHandleDrawerInteraction::SharedPtr, const shared_ptr<const DrawerInteraction::Feedback> feedback)
     {
+        (void) feedback;
         auto responce = std_msgs::msg::String();
         responce.data = "feedback:" ;
         this->publisher->publish(responce);

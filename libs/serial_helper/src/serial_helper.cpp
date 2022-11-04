@@ -1,5 +1,5 @@
 #include "../include/serial_helper/serial_helper.h"
-
+#define DEBUG_LOG false
 namespace serial_helper
 {
 
@@ -70,7 +70,7 @@ namespace serial_helper
         }
         return "";
     }
-
+ 
     void SerialHelper::close_serial()
     {
         close(this->serial_port_);
@@ -91,22 +91,43 @@ namespace serial_helper
             return 0;
         }
         *result = string(read_buf, num_bytes);
+        if(DEBUG_LOG)
+        {
+            ofstream logfile;
+            logfile.open ("Communication.log", std::ios_base::app);
+            logfile << "recived: "+*result << endl;
+            logfile.close();
+        }
         return num_bytes;
     }
 
     string SerialHelper::write_serial(string msg)
-    {
+    { 
+       
+       
+        
         if (this->serial_port_ < 0)
         {
             string errno_string(errno, sizeof(errno));
             return "Error " + errno_string + " from open: " + strerror(errno) + "\n";
+
         }
+
+        if(DEBUG_LOG)
+        {   
+            ofstream logfile;
+            logfile.open ("Communication.log", std::ios_base::app);
+            logfile << "send: "+msg << endl;
+            logfile.close();
+        }
+
         write(this->serial_port_, &msg[0], msg.length());
         return "";
     }
 
     string SerialHelper::send_ascii_cmd(string cmd)
     {
+       
         return this->write_serial(cmd + "\r");
     }
 
@@ -118,7 +139,7 @@ namespace serial_helper
             return request_result;
         }
 
-        uint16_t respnce_result = this->read_serial(responce, responce_size); 
+        this->read_serial(responce, responce_size); 
         (*responce).pop_back(); // remove '/r'
         return *responce;
     }

@@ -10,8 +10,6 @@ namespace serial_helper
 {
     class ISerialHelper
     {
-        
-
         public:
             
             virtual string open_serial()= 0;

@@ -54,6 +54,8 @@ namespace robast
 
   rclcpp_action::GoalResponse DrawerManager::drawer_interaction_goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const DrawerInteraction::Goal> goal)
   {
+    (void) uuid;
+    (void) goal;
     RCLCPP_INFO(this->get_logger(), "Received goal request");
     return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
@@ -61,6 +63,7 @@ namespace robast
 
   rclcpp_action::CancelResponse DrawerManager::drawer_interaction_cancel_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle)
   {
+    (void) goal_handle;
     RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
     // (void)goal_handle;
     return rclcpp_action::CancelResponse::ACCEPT;
@@ -88,6 +91,14 @@ namespace robast
 
   void DrawerManager::drawer_interaction_state_machine(const std::shared_ptr<const communication_interfaces::action::DrawerInteraction_Goal> goal, uint8_t state)
   {
+    bool is_single_state=false;
+
+    if(state==1 &&  goal-> state!= 0)
+    {
+      is_single_state=true;
+      state = goal->state;
+    }
+
     switch (state)
     {
       case 1:
@@ -97,24 +108,26 @@ namespace robast
         if (this->wait_for_user_authentication(user_id_action_handle) == "")
         {
           return; //TODO: Handle case of error
-        }       
+        }     
+        if(is_single_state) break;  
+        
       }
-
       case 2:
       {
         // 2. step: Start the drawer user access
         DrawerManager::DrawerUserAccessResultHandle drawer_user_access_action_handle = this->request_drawer_user_access(goal->task.drawer_address);
         this->wait_for_finished_drawer_user_access(drawer_user_access_action_handle);
-      }
-        
+        if(is_single_state) break; 
+      } 
       case 3:
       {
         // 3. step: Ask user if he wants to reopen the drawer again
         this->ask_user_for_reopening_drawer(goal);
       }
-      
       default:
+      {
         break;
+      }
     }
     return;
   }
@@ -123,7 +136,7 @@ namespace robast
   DrawerManager::AuthenticateUserResultHandle DrawerManager::request_user_authentication(bool loading, std::vector<string> load_keys, std::vector<string> drop_of_keys)
   {    
     // NFC Reader
-    RCLCPP_INFO(this->get_logger(), "check_drawer_permission for load_keys[0]: %s", load_keys[0]); //DEBUGGING
+    RCLCPP_INFO(this->get_logger(), "check_drawer_permission for load_keys[0]: %s", load_keys[0].c_str()); //DEBUGGING
       
     auto authentication_request = AuthenticateUser::Goal();
     authentication_request.permission_keys =  loading ? load_keys : drop_of_keys;

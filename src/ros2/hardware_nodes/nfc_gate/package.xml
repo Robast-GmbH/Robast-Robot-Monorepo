@@ -14,6 +14,9 @@
   <depend>communication_interfaces</depend>
   <depend>serial_helper</depend>
 
+  <exec_depend>launch_testing</exec_depend>
+  <exec_depend>launch_ros</exec_depend>
+
   <test_depend>ament_cmake_catch2</test_depend>
   <export>
     <build_type>ament_cmake</build_type>

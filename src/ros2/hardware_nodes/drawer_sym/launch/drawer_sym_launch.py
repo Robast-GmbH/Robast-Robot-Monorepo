@@ -9,12 +9,12 @@ def generate_launch_description():
 
     # Nodes launching commands
         
-        start_drawer_gate_cmd = launch_ros.actions.Node(
-            package='drawer_gate',
-            executable='drawer_gate',
-            output='screen',
-            emulate_tty=True,  # https://github.com/ros2/launch/issues/188
-            )
+        # start_drawer_gate_cmd = launch_ros.actions.Node(
+        #     package='drawer_gate',
+        #     executable='drawer_gate',
+        #     output='screen',
+        #     emulate_tty=True,  # https://github.com/ros2/launch/issues/188
+        #     )
 
         start_nfc_gate_cmd = launch_ros.actions.Node(
             package='nfc_gate',
@@ -39,7 +39,7 @@ def generate_launch_description():
             )
         ld = LaunchDescription()
 
-        ld.add_action(start_drawer_gate_cmd)
+        #ld.add_action(start_drawer_gate_cmd)
         ld.add_action(start_nfc_gate_cmd)
         ld.add_action(start_drawer_manager_cmd)
         ld.add_action(start_drawer_sym_cmd)

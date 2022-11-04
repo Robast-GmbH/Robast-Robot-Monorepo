@@ -25,7 +25,8 @@ using namespace std;
 #include "communication_interfaces/action/authenticate_user.hpp"
 #include "communication_interfaces/srv/create_user_nfc_tag.hpp"
 #include "nfc_gate/elatec_api.h"
-#include "serial_helper/serial_helper.h" 
+#include "serial_helper/serial_helper.h"
+#include "serial_helper_mock.hpp" 
 
    
 namespace robast
@@ -47,14 +48,18 @@ namespace robast
       NFCGate();
       NFCGate(string serial_port_path );
       NFCGate(serial_helper::ISerialHelper *serial_connector );
-
+      
       string execute_scan(std::vector<std::string> permission_keys, bool* found);
       string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found );
       void change_serial_helper(serial_helper::ISerialHelper* serial_connector );
       string scan_tag(bool* found); 
+      
+      
+      void mock_connector(string key);
     
     private:
       int numReadings;
+      bool debug=false;
       void reader_procedure();
       void start_up_scanner(); 
       void turn_off_scanner();
@@ -64,15 +69,12 @@ namespace robast
       rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
       rclcpp::Service<CreateUser>::SharedPtr create_user_server;
 
-    
-
       rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal);
       rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle); 
       void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
       void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);  
-  
-    
       void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
+      void mock_connector();
 };
 
 
