@@ -1,5 +1,5 @@
 #include "../include/serial_helper/serial_helper.h"
-
+#define DEBUG_LOG false
 namespace serial_helper
 {
 
@@ -91,10 +91,13 @@ namespace serial_helper
             return 0;
         }
         *result = string(read_buf, num_bytes);
-        //ofstream logfile;
-        // logfile.open ("Read.log", std::ios_base::app);
-        // logfile << *result << endl;
-        // logfile.close();
+        if(DEBUG_LOG)
+        {
+            ofstream logfile;
+            logfile.open ("Communication.log", std::ios_base::app);
+            logfile << "recived: "+*result << endl;
+            logfile.close();
+        }
         return num_bytes;
     }
 
@@ -108,13 +111,17 @@ namespace serial_helper
             string errno_string(errno, sizeof(errno));
             return "Error " + errno_string + " from open: " + strerror(errno) + "\n";
 
-        }   
-        //ofstream logfile;
-        // logfile.open ("Write.log", std::ios_base::app);
-        // logfile << msg << endl;
-        // logfile.close();
-        write(this->serial_port_, &msg[0], msg.length());
+        }
 
+        if(DEBUG_LOG)
+        {   
+            ofstream logfile;
+            logfile.open ("Communication.log", std::ios_base::app);
+            logfile << "send: "+msg << endl;
+            logfile.close();
+        }
+
+        write(this->serial_port_, &msg[0], msg.length());
         return "";
     }
 

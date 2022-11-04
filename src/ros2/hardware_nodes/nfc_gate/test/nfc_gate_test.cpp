@@ -158,6 +158,9 @@ namespace robast{
           if(cmd==NFC_READ_MC("02"))
           {
               return *responce =key_from_card;
+          }else if(cmd==DEVICE_STATE)
+          {
+              return *responce = RESPONCE_DEVICE_STATE_CONFIGURED;
           }
           return *responce ="0001";
         }); 
@@ -179,10 +182,12 @@ namespace robast{
           (void) cmd;
           if(cmd==NFC_READ_MC("02"))
           {
-
               return *responce =key_from_card;
+          }else if(cmd==DEVICE_STATE)
+          {
+              return *responce = RESPONCE_DEVICE_STATE_CONFIGURED;
           }
-          return *responce ="0001";
+          return *responce ="0002";
         }); 
         
         THEN("The reader returns an empty sting")

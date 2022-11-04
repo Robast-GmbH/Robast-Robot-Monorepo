@@ -1,4 +1,3 @@
-
 #include "nfc_gate/nfc_gate.hpp"
 
 
@@ -12,14 +11,19 @@ namespace robast
   {
 
     
-    declare_parameter("debug", false);
-    debug = get_parameter("debug ").as_bool();
-    if(debug )
-    {
-      this->mock_serial_connector();
-    }else 
-    {
-      this->serial_connector_ = serial_connector;// new serial_helper::SerialHelper(serial_port_path);
+     declare_parameter("debug", false);
+     declare_parameter("key", "");
+     debug = get_parameter("debug").as_bool();
+   
+      if(debug )
+      {
+       RCLCPP_INFO(this->get_logger(), "Debug mode: on");
+        string key =get_parameter("key").as_string();
+        this->mock_connector(key);
+      }else 
+      {
+        
+       this->serial_connector_ = serial_connector;// new serial_helper::SerialHelper(serial_port_path);
     }
 
    
@@ -33,9 +37,9 @@ namespace robast
     this->create_user_server =this->create_service<CreateUser>("create_user_tag",bind(&NFCGate::write_tag, this, std::placeholders::_1, std::placeholders::_2));
   }
 
-  void NFCGate::mock_serial_connector()
+  void NFCGate::mock_connector(string key)
   {
-    this->serial_connector_=nullptr;
+    this->serial_connector_=   new serial_helper::MockSerialHelper(key);
   }
 
   void NFCGate::change_serial_helper(serial_helper::ISerialHelper* serial_connector)
@@ -71,11 +75,15 @@ namespace robast
     this->serial_connector_->open_serial(); 
     string response;
     this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, 500);
-    if(response != DEVICE_STATE_CONFIGURED)
-    {
-      RCLCPP_ERROR(this->get_logger(), "NFC Device is not setup properly. nfc Node shutting down");
-      rclcpp::shutdown();
-    }
+    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, 500);
+    
+     if(response != RESPONCE_DEVICE_STATE_CONFIGURED)
+     {
+      
+       RCLCPP_ERROR(this->get_logger(), "NFC Device is not setup properly. nfc Node shutting down(%s)", response.c_str());
+       rclcpp::shutdown();
+     }
+
     this->serial_connector_->ascii_interaction(SET_SERIAL_TO_ASCII,&response, 500);  
     this->serial_connector_->ascii_interaction(BOTTOM_LED_ON, &response, 500);
     this->serial_connector_->ascii_interaction(TOP_LEDS_INIT(LED_RED),&response, 500);
@@ -169,19 +177,23 @@ namespace robast
     {
       RCLCPP_INFO(this->get_logger(),scanned_key.c_str());
       this->timer_handle->publish_feedback(feedback);
+      RCLCPP_INFO(this->get_logger(),"FEEEDBACK");
       return;
     }
     else{
        this->timer->cancel();
        feedback->reader_status.is_completed = true;
        this->timer_handle->publish_feedback(feedback);
+       RCLCPP_INFO(this->get_logger(),"FEEEDBACK FINAL ");
        
        if (rclcpp::ok()) 
        {
+         
           turn_off_scanner();
           result->permission_key_used = scanned_key;
           result->error_message = ""; 
           this->timer_handle->succeed(result);
+          RCLCPP_INFO(this->get_logger(),("DONE::scanned key: "+scanned_key).c_str());
        } 
      }   
   }
@@ -194,17 +206,16 @@ namespace robast
       string tag;
       //wait for the Tag and read TAG ID 
       do{ 
-    
-      this->serial_connector_->send_ascii_cmd(SEARCH_TAG);//search for a tag with the length of 10
-      if(this->serial_connector_->read_serial(&tag, 50)<=0)
-      {
-          return;
-      } 
+        this->serial_connector_->send_ascii_cmd(SEARCH_TAG);//search for a tag with the length of 10
+        if(this->serial_connector_->read_serial(&tag, 50)<=0)
+        {
+            return;
+        } 
 
-      //RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
+        //RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
       } while(tag.length() <10);
       this->serial_connector_->send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
-      this->serial_connector_->send_ascii_cmd(NFC_WRITE_MC("02",/*request->card_key*/"000001000000100"));//ToDo dynamic key defination 
+      this->serial_connector_->send_ascii_cmd(NFC_WRITE_MC("02","000001000000100"));//ToDo dynamic key defination 
    
       if( this->serial_connector_->read_serial(&tag, 50)<=0)
       {

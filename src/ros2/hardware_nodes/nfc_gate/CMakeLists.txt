@@ -24,6 +24,7 @@ find_package(communication_interfaces REQUIRED)
 find_package(ament_cmake_catch2 REQUIRED)
 find_package(ament_cmake_uncrustify REQUIRED)
 find_package(serial_helper REQUIRED)
+find_package(launch_testing_ament_cmake REQUIRED) 
 
 include_directories(include)
 
@@ -37,14 +38,13 @@ set(library_nfc_gate ${executable_nfc_gate}_core)
 add_library(library_nfc_gate SHARED
   src/nfc_gate.cpp
   src/serial_helper_mock.cpp
-  ${serial_helper_dir}/src/serial_helper.cpp #TODO: This can probably be done better
-  ${serial_helper_dir}/include/i_serial_helper.h
-  ${test_lib_dir}/catch.hpp
-  ${test_lib_dir}/fakeit.hpp
 )
 
 if(BUILD_TESTING)
   file(GLOB_RECURSE unit_test_srcs "test/*.cpp")
+
+     
+  add_launch_test(test/node_test_launch_testing.py)
 
   ament_add_catch2(
     nfc_gate_test test/main.cpp ${unit_test_srcs}
@@ -83,6 +83,12 @@ ament_target_dependencies(library_nfc_gate
 target_include_directories(nfc_gate PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
+
+install(FILES
+  test/node_test_launch_testing.py
+  test/node_test_expected_data.yaml 
+  test/node_test_input_data.yaml 
+  DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS
   library_nfc_gate
