@@ -33,7 +33,7 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
         uint64_t data_LED_blue = 3;    
         uint64_t data_LED_brightness = 7;
         uint64_t data_LED_mode = 1;
-        uint8_t u8_can_data[8] = {0x01,0x02,0x03,data_LED_red,data_LED_green,data_LED_blue,data_LED_brightness,0b00100000};
+        uint8_t u8_can_data[8] = {0x01,0x02,0x03,(uint8_t)data_LED_red,(uint8_t)data_LED_green,(uint8_t)data_LED_blue,(uint8_t)data_LED_brightness,0b00100000};
 
         WHEN("Creating the CanSignal classes") {
             uint8_t bit_start_drawer_id = CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START;
@@ -195,7 +195,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]") {
         uint64_t data_LED_blue = 3;    
         uint64_t data_LED_brightness = 7;
         uint64_t data_LED_mode = 1;
-        uint8_t u8_can_data[8] = {0x01,0x02,0x03,data_LED_red,data_LED_green,data_LED_blue,data_LED_brightness,0b00100000};
+        uint8_t u8_can_data[8] = {0x01,0x02,0x03,(uint8_t)data_LED_red,(uint8_t)data_LED_green,(uint8_t)data_LED_blue,(uint8_t)data_LED_brightness,0b00100000};
 
         uint64_t u64_can_data_expected = 0x0102030102030720;
         uint64_t u64_can_data_not_expected = 0x0907060509030201;
