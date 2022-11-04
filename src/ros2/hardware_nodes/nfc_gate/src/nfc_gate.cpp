@@ -50,20 +50,20 @@ namespace robast
   rclcpp_action::GoalResponse NFCGate::auth_goal_callback( const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal)
   {
     (void) uuid;
-    RCLCPP_INFO(this->get_logger(), "Received goal request");
+    
     return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
 
   rclcpp_action::CancelResponse NFCGate::auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
   {
     (void) goal_handle;
-    RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
+   
     return rclcpp_action::CancelResponse::ACCEPT;
   }
 
   void NFCGate::auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
   {
-    RCLCPP_INFO(this->get_logger(), "scan task");
+
     numReadings = 0;
     this->timer_handle = goal_handle;
     timer = this->create_wall_timer( 500ms, bind(&NFCGate::reader_procedure, this));
@@ -101,8 +101,6 @@ namespace robast
     } 
 
     this->serial_connector_->ascii_interaction(NFC_LOGIN_MC_STANDART("00"),&response, 500);
-    RCLCPP_INFO(this->get_logger(),"login response %s ", response.c_str());
-    
     replay = this->serial_connector_->ascii_interaction(NFC_READ_MC("02"),&scanned_key, 500);
     
     if(replay== RESPONCE_ERROR)
@@ -111,7 +109,6 @@ namespace robast
       return "";
     }
 
-    RCLCPP_INFO(this->get_logger(),"data on the Tag %s ", scanned_key.c_str());
     *found=true;
     return scanned_key;
    
@@ -119,12 +116,10 @@ namespace robast
   
   string NFCGate::validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found )
   {
-    RCLCPP_INFO(this->get_logger(), scanned_key.c_str());
     for( int i=0; i < allValidKeys.size(); i++)
     {
       if(allValidKeys[i] == scanned_key)
       {
-        RCLCPP_INFO(this->get_logger(),"found");
         *found = true;
         return allValidKeys[i];
       }
@@ -147,12 +142,10 @@ namespace robast
     start_up_scanner();  
    
     string scanned_key= scan_tag(found);
-    RCLCPP_INFO(this->get_logger(),scanned_key.c_str());
     // abort this scan attempt if the reader could not detect a compatible card. 
     if(!found) return"";
     
     scanned_key= this->validate_key(scanned_key, permission_keys, found);
-    RCLCPP_INFO(this->get_logger(),("scanned key "+scanned_key).c_str());
     return scanned_key;
   }
 
@@ -175,16 +168,13 @@ namespace robast
     
     if(!found)
     {
-      RCLCPP_INFO(this->get_logger(),scanned_key.c_str());
       this->timer_handle->publish_feedback(feedback);
-      RCLCPP_INFO(this->get_logger(),"FEEEDBACK");
       return;
     }
     else{
        this->timer->cancel();
        feedback->reader_status.is_completed = true;
        this->timer_handle->publish_feedback(feedback);
-       RCLCPP_INFO(this->get_logger(),"FEEEDBACK FINAL ");
        
        if (rclcpp::ok()) 
        {
@@ -193,7 +183,6 @@ namespace robast
           result->permission_key_used = scanned_key;
           result->error_message = ""; 
           this->timer_handle->succeed(result);
-          RCLCPP_INFO(this->get_logger(),("DONE::scanned key: "+scanned_key).c_str());
        } 
      }   
   }
