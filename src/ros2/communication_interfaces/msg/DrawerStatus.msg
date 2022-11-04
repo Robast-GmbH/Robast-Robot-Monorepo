@@ -1,0 +1,2 @@
+communication_interfaces/DrawerAddress drawer_address
+bool drawer_is_open
