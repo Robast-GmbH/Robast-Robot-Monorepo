@@ -1,6 +1,9 @@
-name: PlatformIO CI
+name: Hardware Nodes
 
-on: [push]
+on:
+  push:
+    branches:
+      - 'main'
 
 jobs:
   build:
@@ -10,36 +13,41 @@ jobs:
     steps:
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
-    - name: Cache pip
-      uses: actions/cache@v3
       with:
-        path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
-        restore-keys: |
-          ${{ runner.os }}-pip-
-    - name: Cache PlatformIO
-      uses: actions/cache@v3
+          fetch-depth: 2
+
+    - name: Check if the Docker file was changed 
+      shell: pwsh
+      # Give an id to the step, so we can reference it later
+      id: check_file_changed
+      working-directory: src/ros2/hardware_nodes
+      run: |
+        # Diff HEAD with the previous commit
+        $diff = git diff --name-only HEAD^ HEAD
+
+        # Check if a file under docs/ or with the .md extension has changed (added, modified, deleted)
+        $SourceDiff = $diff | Where-Object { $_ -match 'dockefile' }
+        $HasDiff = $SourceDiff.Length -gt 0
+
+        # Set the output named "docs_changed"
+        Write-Host "::set-output name=docs_changed::$HasDiff"
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
       with:
-        path: ~/.platformio
-        key: ${{ runner.os }}-${{ hashFiles('**/lockfiles') }}
-    - name: Set up Python
-      uses: actions/setup-python@v3
-    - name: Install PlatformIO
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build docker if dockerfile changed
+      working-directory: src/ros2/hardware_nodes
+      if: steps.check_file_changed.outputs.docs_changed == 'true'
       run: |
-        python -m pip install --upgrade pip
-        pip install --upgrade platformio
-    - name: Run PlatformIO
-      working-directory: src/Hardware/cpp/Drawer_Controller
-      run: pio test -e native
-    - name: Install g++ compiler
-      run: |
-        sudo apt install build-essential
-    - name: Build Tests
-      working-directory: libs/can/tests
-      run: |
-        g++ -std=c++17 -c tests_main.cpp
-        g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ../src/* -o test_executable -I .. -Wall -Wextra -Wuseless-cast -Wdouble-promotion -Wnull-dereference -Wpedantic -Wshadow -Wnon-virtual-dtor -Wlogical-op  
-    - name: Execute Tests
-      working-directory: libs/can/tests
-      run: |
-        ./test_executable
+            docker build . --tag ghcr.io/robast-gmbh/monorepo/latest 
+            docker run ghcr.io/robast-gmbh/monorepo/latest 
+            docker push ghcr.io/robast-gmbh/monorepo/latest 
+
+    - name: Run docker and execute tests
+      working-directory: src/ros2/hardware_nodes
+      run: docker run -v $(pwd):/workspace/src/hardware_nodes -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces -v $(pwd)/../../../libs:/workspace/libs --name hardware_nodes_container ghcr.io/robast-gmbh/monorepo/latest /bin/sh -c "cd /workspace/ sudo apt-get update && sudo apt-get upgrade -y; rosdep update; rosdep install --from-paths src --ignore-src -r -y; source install/setup.bash; colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic; colcon test --event-handler=console_direct+; colcon test-result --all"
+   
