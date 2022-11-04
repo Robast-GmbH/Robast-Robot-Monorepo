@@ -17,16 +17,14 @@ endif()
 
 
 # find dependencies
-
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(communication_interfaces REQUIRED)
-
-
-set(serial_helper_dir /workspace/libs/serial_helper)
-include_directories(${serial_helper_dir}) # needed to find robast_msg/robast_can_msgs
-
+find_package(ament_cmake_catch2 REQUIRED)
+find_package(ament_cmake_uncrustify REQUIRED)
+find_package(serial_helper REQUIRED)
+find_package(launch_testing_ament_cmake REQUIRED) 
 
 include_directories(include)
 
@@ -37,27 +35,48 @@ add_executable(${executable_nfc_gate}
 
 set(library_nfc_gate ${executable_nfc_gate}_core)
 
-add_library(${library_nfc_gate} SHARED
+add_library(library_nfc_gate SHARED
   src/nfc_gate.cpp
-  ${serial_helper_dir}/src/serial_helper.cpp #TODO: This can probably be done better
+  src/serial_helper_mock.cpp
 )
 
+if(BUILD_TESTING)
+  file(GLOB_RECURSE unit_test_srcs "test/*.cpp")
 
+     
+  add_launch_test(test/node_test_launch_testing.py)
+
+  ament_add_catch2(
+    nfc_gate_test test/main.cpp ${unit_test_srcs}
+  )
+
+  target_link_libraries(nfc_gate_test
+    library_nfc_gate
+    rclcpp::rclcpp
+    rclcpp_action::rclcpp_action
+  )
+  
+  target_include_directories(nfc_gate_test
+    PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
+  )
+endif()
 
 set(dependencies
   rclcpp
   rclcpp_action
   communication_interfaces
+  serial_helper
 )
 
 ament_target_dependencies(${executable_nfc_gate}
   ${dependencies}
 )
 
-target_link_libraries(${executable_nfc_gate} ${library_nfc_gate})
+target_link_libraries(${executable_nfc_gate} library_nfc_gate)
 
 
-ament_target_dependencies(${library_nfc_gate}
+ament_target_dependencies(library_nfc_gate
   ${dependencies}
 )
 
@@ -65,8 +84,14 @@ target_include_directories(nfc_gate PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+install(FILES
+  test/node_test_launch_testing.py
+  test/node_test_expected_data.yaml 
+  test/node_test_input_data.yaml 
+  DESTINATION lib/${PROJECT_NAME})
+
 install(TARGETS
-  ${library_nfc_gate}
+  library_nfc_gate
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -85,11 +110,6 @@ install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}/
 )
-
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  ament_lint_auto_find_test_dependencies()
-endif()
 
 ament_export_include_directories(include)
 

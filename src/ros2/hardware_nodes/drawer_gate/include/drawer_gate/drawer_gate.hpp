@@ -30,9 +30,9 @@
 #include "std_msgs/msg/u_int8_multi_array.hpp"
 
 #include "drawer_gate/drawer_defines.h"
-#include "/workspace/libs/can/include/can_db.hpp"
-#include "/workspace/libs/can/include/can_helper.h"
-#include "/workspace/libs/serial_helper/include/serial_helper.h"
+#include "can/can_db.hpp"
+#include "can/can_helper.h"
+#include "serial_helper/serial_helper.h"
 
 using namespace std::chrono_literals;
 

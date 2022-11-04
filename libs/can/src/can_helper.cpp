@@ -1,4 +1,4 @@
-#include "../include/can_helper.h"
+#include "../include/can/can_helper.h"
 
 namespace robast_can_msgs
 {
@@ -174,14 +174,6 @@ namespace robast_can_msgs
         return received_can_msgs;
     }
 
-    template <typename T>
-    T hex_string_to_unsigned_int(std::string hex_string)
-    {
-        T result;
-        result = std::stoul(hex_string, nullptr, 16);
-        return result;
-    }
-
     std::string uint_to_hex_string(uint32_t input, int num_of_digits)
     {
         std::stringstream stream;
@@ -212,18 +204,6 @@ namespace robast_can_msgs
         }
 
         std::memcpy(result, &big_endian, sizeof(big_endian));
-    }
-
-    template <typename T>
-    void SwapEndian(T &val) {
-        union U {
-            T val;
-            std::array<uint8_t, sizeof(T)> raw;
-        } src, dst;
-
-        src.val = val;
-        std::reverse_copy(src.raw.begin(), src.raw.end(), dst.raw.begin());
-        val = dst.val;
     }
 
     uint64_t join_together_CAN_data_bytes_from_array(uint8_t data[], uint8_t dlc)

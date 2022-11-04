@@ -15,18 +15,21 @@ namespace robast
   class DrawerSym : public rclcpp::Node
   {
     private:
+    
       using ShelfSetupInfo = communication_interfaces::srv::ShelfSetupInfo; 
       using DrawerInteraction =communication_interfaces::action::DrawerInteraction; 
       using DrawerInteractionGoal = DrawerInteraction::Goal;
       
       using GoalHandleDrawerInteraction = rclcpp_action::ClientGoalHandle<DrawerInteraction>;
       
+      bool debug;
       rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher;
       rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription;
       
       rclcpp::Client<ShelfSetupInfo>::SharedPtr shelfInfoClient;
       rclcpp_action::Client<DrawerInteraction>::SharedPtr drawerInteractionClients;
 
+      
       void startTask(const std_msgs::msg::String::SharedPtr msg);
       void split(string input, char deliminator,  vector<string> & output); 
       
@@ -40,7 +43,8 @@ namespace robast
       void drawer_info();
       void open_drawer(std::vector<std::string> msg_split);
       DrawerInteractionGoal create_dummy_drawer_interaction_msg();
-
+      void open_drawer_test(std::vector<std::string> msg_split);
+      void send_drawer_interaction(communication_interfaces::action::DrawerInteraction::Goal goal_msg);
     public:
     DrawerSym();
   };
