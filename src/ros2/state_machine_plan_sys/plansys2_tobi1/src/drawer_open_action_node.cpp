@@ -7,6 +7,9 @@
 #include <rclcpp/qos.hpp>
 
 #include "plansys2_executor/ActionExecutorClient.hpp"
+#include "communication_interfaces/msg/drawer_address.hpp"
+#include "communication_interfaces/msg/drawer_status.hpp"
+#include "communication_interfaces/msg/drawer_leds.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
@@ -18,7 +21,7 @@ class DrawerOpenAction : public plansys2::ActionExecutorClient
 public:
   DrawerOpenAction()
       : plansys2::ActionExecutorClient("drawer_open", 500ms)
-  {
+  { 
     qos_ = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
