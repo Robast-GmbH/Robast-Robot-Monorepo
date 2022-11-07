@@ -1,13 +1,14 @@
 #include "drawer_gate/drawer_gate.hpp"
 
-
 // For DEBUGGING purposes this is the action send_goal command:
 // ros2 action send_goal /control_drawer communication_interfaces/action/DrawerUserAccess "{drawer_address: {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
 
 namespace drawer_gate
 {
-  DrawerGate::DrawerGate() : Node("drawer_gate")
+  DrawerGate::DrawerGate(const string serial_path) : Node("drawer_gate")
   {
+    this->serial_helper_ = std::make_shared<serial_helper::SerialHelper>(serial_path);
+
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
@@ -29,33 +30,33 @@ namespace drawer_gate
     this->send_ascii_cmds_timer_ = this->create_wall_timer(5ms, std::bind(&DrawerGate::send_ascii_cmds_timer_callback, this));
 
     this->setup_serial_can_ubs_converter();
-    // this->serial_helper_.close_serial();
+    // this->serial_helper_->close_serial();
   }
 
-  //TODO: Dekonstruktor with this->serial_helper_.close_serial();
+  //TODO: Dekonstruktor with this->serial_helper_->close_serial();
 
 
-  void DrawerGate::open_drawer_topic_callback(const DrawerAddress & msg) const
+  void DrawerGate::open_drawer_topic_callback(const DrawerAddress & msg)
   {
     RCLCPP_INFO(this->get_logger(), "I heard: '%i'", msg.drawer_controller_id); // Debugging
 
     // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-    // std::thread{std::bind(&DrawerGate::open_drawer, this, std::placeholders::_1), msg}.detach();
+    // std::thread{std::bind(&DrawerGate::open_drawer, this, std::placeholders::_1), msg}.detach(); //TODO: Maybe we should get this back running?
 
     uint32_t drawer_controller_id = msg.drawer_controller_id;
     uint8_t drawer_id = msg.drawer_id;
 
-    robast_can_msgs::CanMessage can_msg_open_lock = DrawerGate::create_can_msg_drawer_lock(drawer_controller_id, drawer_id, CAN_DATA_OPEN_LOCK);
+    robast_can_msgs::CanMessage can_msg_open_lock = this->create_can_msg_drawer_lock(drawer_controller_id, drawer_id, CAN_DATA_OPEN_LOCK);
 
     this->send_can_msg(can_msg_open_lock);
   }
 
-  void DrawerGate::drawer_leds_topic_callback(const DrawerLeds & msg) const
+  void DrawerGate::drawer_leds_topic_callback(const DrawerLeds & msg)
   {
     RCLCPP_INFO(this->get_logger(), "I heard: '%i'", msg.red); // Debugging
 
-    // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-    // std::thread{std::bind(&DrawerGate::change_drawer_led_color, this, std::placeholders::_1), msg}.detach();
+    //this needs to return quickly to avoid blocking the executor, so spin up a new thread
+    //std::thread{std::bind(&DrawerGate::change_drawer_led_color, this, std::placeholders::_1), msg}.detach(); //TODO: Maybe we should get this back running?
 
     led_parameters led_parameters = {};
     led_parameters.led_red = msg.red;
@@ -64,14 +65,14 @@ namespace drawer_gate
     led_parameters.brightness = msg.brightness;
     led_parameters.mode = msg.mode;
 
-    robast_can_msgs::CanMessage can_msg_drawer_led = DrawerGate::create_can_msg_drawer_led(msg.drawer_address.drawer_controller_id, led_parameters);
+    robast_can_msgs::CanMessage can_msg_drawer_led = this->create_can_msg_drawer_led(msg.drawer_address.drawer_controller_id, led_parameters);
 
     this->send_can_msg(can_msg_drawer_led);
   }
 
   void DrawerGate::open_drawer(const DrawerAddress & msg)
   {
-    robast_can_msgs::CanMessage can_msg_open_lock = DrawerGate::create_can_msg_drawer_lock(msg.drawer_controller_id, msg.drawer_id, CAN_DATA_OPEN_LOCK);
+    robast_can_msgs::CanMessage can_msg_open_lock = this->create_can_msg_drawer_lock(msg.drawer_controller_id, msg.drawer_id, CAN_DATA_OPEN_LOCK);
 
     this->send_can_msg(can_msg_open_lock);
   }
@@ -85,7 +86,7 @@ namespace drawer_gate
     led_parameters.brightness = msg.brightness;
     led_parameters.mode = msg.mode;
 
-    robast_can_msgs::CanMessage can_msg_drawer_led = DrawerGate::create_can_msg_drawer_led(msg.drawer_address.drawer_controller_id, led_parameters);
+    robast_can_msgs::CanMessage can_msg_drawer_led = this->create_can_msg_drawer_led(msg.drawer_address.drawer_controller_id, led_parameters);
 
     this->send_can_msg(can_msg_drawer_led);
   }
@@ -121,7 +122,7 @@ namespace drawer_gate
     }
     else
     {
-      std::string send_ascii_cmd_result = this->serial_helper_.send_ascii_cmd(this->ascii_cmd_queue_.front());
+      std::string send_ascii_cmd_result = this->serial_helper_->send_ascii_cmd(this->ascii_cmd_queue_.front());
       if (send_ascii_cmd_result.size() > 0)
       {
         RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
@@ -138,7 +139,7 @@ namespace drawer_gate
   void DrawerGate::update_drawer_status_from_can(void)
   {
     std::string serial_read_ascii_command;
-    uint16_t num_of_received_bytes = this->serial_helper_.read_serial(&serial_read_ascii_command, 200);
+    uint16_t num_of_received_bytes = this->serial_helper_->read_serial(&serial_read_ascii_command, 200);
 
     //RCLCPP_INFO(this->get_logger(), "Serial read: %s", serial_read_ascii_command.c_str()); //DEBUGGING
 
@@ -213,7 +214,7 @@ namespace drawer_gate
 
   void DrawerGate::setup_serial_can_ubs_converter(void)
   {
-    std::string setup_serial_port_result = this->serial_helper_.open_serial();
+    std::string setup_serial_port_result = this->serial_helper_->open_serial();
     if (setup_serial_port_result.size() > 0)
     {
       RCLCPP_ERROR(this->get_logger(), "Error from opening serial Port: %s", setup_serial_port_result.c_str());
@@ -223,7 +224,7 @@ namespace drawer_gate
     this->open_can_channel(); // the default state should be the open can channel to enable receiving CAN messages
   }
 
-  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t can_data_open_lock)
+  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t can_data_open_lock) const
   {
     robast_can_msgs::CanMessage can_msg_drawer_lock = this->can_db_.can_messages.at(CAN_MSG_DRAWER_LOCK);
 
@@ -249,7 +250,7 @@ namespace drawer_gate
     return can_msg_drawer_lock;
   }
 
-  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_led(uint32_t drawer_controller_id, led_parameters led_parameters)
+  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_led(uint32_t drawer_controller_id, led_parameters led_parameters) const
   {
     robast_can_msgs::CanMessage can_msg_drawer_led = this->can_db_.can_messages.at(CAN_MSG_DRAWER_LED);
 
@@ -452,7 +453,7 @@ namespace drawer_gate
     led_parameters.brightness = 100;
     led_parameters.mode = LedMode::steady_light;
 
-    robast_can_msgs::CanMessage can_msg_default_led_status = DrawerGate::create_can_msg_drawer_led(drawer_controller_id, led_parameters);
+    robast_can_msgs::CanMessage can_msg_default_led_status = this->create_can_msg_drawer_led(drawer_controller_id, led_parameters);
 
     this->send_can_msg(can_msg_default_led_status);
 

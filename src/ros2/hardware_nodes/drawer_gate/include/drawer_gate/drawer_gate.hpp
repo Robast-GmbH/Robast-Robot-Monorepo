@@ -69,7 +69,7 @@ namespace drawer_gate
       /**
        * @brief A constructor for drawer_gate::DrawerGate class
        */
-      DrawerGate();
+      DrawerGate(const string serial_path = "/dev/robast/robast_can");
       /**
        * @brief A destructor for drawer_gate::DrawerGate class
        */
@@ -86,7 +86,7 @@ namespace drawer_gate
       rclcpp::Publisher<DrawerStatus>::SharedPtr drawer_status_publisher_;
       rclcpp::TimerBase::SharedPtr send_ascii_cmds_timer_;
 
-      serial_helper::SerialHelper serial_helper_ = serial_helper::SerialHelper("/dev/robast/robast_can");
+      std::shared_ptr<serial_helper::SerialHelper> serial_helper_;
 
       robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
 
@@ -102,19 +102,19 @@ namespace drawer_gate
       std::map<uint32_t, bool> drawer_to_be_refilled_by_drawer_controller_id_;
 
       /* FUNCTIONS */
-      void open_drawer_topic_callback(const DrawerAddress & msg) const;
+      void open_drawer_topic_callback(const DrawerAddress & msg);
 
       void open_drawer(const DrawerAddress & msg);
 
-      void drawer_leds_topic_callback(const DrawerLeds & msg) const;
+      void drawer_leds_topic_callback(const DrawerLeds & msg);
 
       void change_drawer_led_color(const DrawerLeds & msg);
 
       void setup_serial_can_ubs_converter(void);
 
-      robast_can_msgs::CanMessage create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t can_data_open_lock);
+      robast_can_msgs::CanMessage create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t can_data_open_lock) const;
 
-      robast_can_msgs::CanMessage create_can_msg_drawer_led(uint32_t drawer_controller_id, led_parameters led_parameters);
+      robast_can_msgs::CanMessage create_can_msg_drawer_led(uint32_t drawer_controller_id, led_parameters led_parameters) const;
 
       void send_can_msg(robast_can_msgs::CanMessage can_message);
 
