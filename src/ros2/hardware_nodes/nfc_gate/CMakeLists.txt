@@ -37,7 +37,8 @@ set(library_nfc_gate ${executable_nfc_gate}_core)
 
 add_library(library_nfc_gate SHARED
   src/nfc_gate.cpp
-  src/serial_helper_mock.cpp
+  src/test_serial_helper.cpp
+  src/test_nfc_gate.cpp
 )
 
 if(BUILD_TESTING)

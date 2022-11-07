@@ -1,35 +1,35 @@
-#include "nfc_gate/serial_helper_mock.hpp"
+#include "nfc_gate/test_serial_helper.hpp"
 
 namespace serial_helper
 {           
     
-    MockSerialHelper::MockSerialHelper(string key)
+    TestSerialHelper::TestSerialHelper(string key)
     {
         key_code= key; 
     }    
     
-    MockSerialHelper::~MockSerialHelper()
+    TestSerialHelper::~TestSerialHelper()
     {
 
     }
     
-    string MockSerialHelper::open_serial()
+    string TestSerialHelper::open_serial()
     {
         return "0001";
     }
 
-    void MockSerialHelper::close_serial()
+    void TestSerialHelper::close_serial()
     {
        
     }
 
-    uint16_t MockSerialHelper::read_serial(string* result, uint16_t max_num_bytes)
+    uint16_t TestSerialHelper::read_serial(string* result, uint16_t max_num_bytes)
     {
         *result= "0001";
         return 4;
     }
 
-    string MockSerialHelper::write_serial(string msg) 
+    string TestSerialHelper::write_serial(string msg) 
     {
          if(msg==NFC_READ_MC("02"))
         {
@@ -39,7 +39,7 @@ namespace serial_helper
         return "0001";
     }
 
-    string MockSerialHelper::send_ascii_cmd(string cmd)
+    string TestSerialHelper::send_ascii_cmd(string cmd)
     {
         if(cmd==NFC_READ_MC("02"))
         {
@@ -49,7 +49,7 @@ namespace serial_helper
         return "0001";
     }
 
-    string MockSerialHelper::ascii_interaction(string cmd, string* responce, uint16_t responce_size )
+    string TestSerialHelper::ascii_interaction(string cmd, string* responce, uint16_t responce_size )
     {
         (void) responce_size;
         if(cmd == NFC_READ_MC("02"))

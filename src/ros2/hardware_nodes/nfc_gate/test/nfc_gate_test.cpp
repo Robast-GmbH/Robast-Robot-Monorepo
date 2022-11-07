@@ -10,7 +10,7 @@ namespace robast{
     GIVEN("The Serial reader gets mocked and initiated in the NFC gate Node and there is a list with possible keys, which could be the read key"){
       rclcpp::init(0, nullptr);
       NFCGate* nfc_reader = new NFCGate();
-      std::vector<std::string> list{"12bab1cc5b867068c127a6c8299e3f61","6df1933415dde9fa1f9f6998a26b40db", "901a21f36bffa1aba7ba4aab8b922b11", "068d85abf2395b8b21ed6811bf0dc99e", "fd1e2319321f28245f0963fe7f77b770"}; 
+      std::vector<std::string> list{"12bab1cc5b867068c127a6c8299e3f61", "6df1933415dde9fa1f9f6998a26b40db", "901a21f36bffa1aba7ba4aab8b922b11", "068d85abf2395b8b21ed6811bf0dc99e", "fd1e2319321f28245f0963fe7f77b770"}; 
       
       WHEN("Key is on the List")
       { 
@@ -38,7 +38,7 @@ namespace robast{
         } 
       }
 
-       WHEN("Key is empty string")
+      WHEN("Key is empty string")
       {
         string empty_key="";
         
@@ -66,11 +66,11 @@ namespace robast{
       bool found;
 
       NFCGate* nfc_reader = new NFCGate();
-      nfc_reader->change_serial_helper(&mock.get());
+      //nfc_reader->change_serial_helper(&mock.get());
       
       WHEN("No card is detected")
       {  
-        When(Method(mock,ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
+        When(Method(mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
         {
           (void) responce_size;
           (void)cmd;
@@ -89,7 +89,7 @@ namespace robast{
       WHEN("The key from the card is empty")
       {  
         string key_from_card= "";  
-        When(Method(mock,ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
+        When(Method(mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
         {
           (void) responce_size;
           if(cmd==NFC_READ_MC("02"))
@@ -110,16 +110,17 @@ namespace robast{
       
       WHEN("The key from the card is correct formated")
       {  
+        
         string key_from_card= "6df1933415dde9fa1f9f6998a26b40db";  
-        When(Method(mock,ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
+        When(Method(mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
         {
           (void) responce_size;
-          if(cmd==NFC_READ_MC("02"))
+          if(cmd == NFC_READ_MC("02"))
           {
 
-              return *responce =key_from_card;
+              return *responce = key_from_card;
           }
-          return *responce ="0001";
+          return *responce = "0001";
         }); 
         
         THEN("The reader returns the scanned key, indecates that a Key has been found and on the serial connection the a NFC login message followed by a Read Message was send in the reading process to get the data from the card")
@@ -128,7 +129,7 @@ namespace robast{
             string key = nfc_reader->scan_tag(&found);
             CHECK(found);
             CHECK( key == key_from_card);
-            REQUIRE(Verify(Method(mock,ascii_interaction).Using(NFC_LOGIN_MC_STANDART("00"),_, _), Method(mock,ascii_interaction).Using(NFC_READ_MC("02"),_, _)));
+            REQUIRE(Verify(Method(mock,ascii_interaction).Using(NFC_LOGIN_MC_STANDART("00"), _, _), Method(mock,ascii_interaction).Using(NFC_READ_MC("02"), _, _)));
           }
       }
       
@@ -140,13 +141,13 @@ namespace robast{
     GIVEN("the mocked reader gets used in the nfc gate with a list of possible keys"){
       rclcpp::init(0, nullptr);
       Mock<serial_helper::ISerialHelper> mock;
-      Method(mock,open_serial)="";
-      Fake(Method(mock,close_serial));
-      Method(mock,ascii_interaction);
-      Method(mock,send_ascii_cmd)="";
+      Method(mock, open_serial)="";
+      Fake(Method(mock, close_serial));
+      Method(mock, ascii_interaction);
+      Method(mock, send_ascii_cmd)="";
 
       NFCGate* nfc_reader = new NFCGate();
-      nfc_reader->change_serial_helper(&mock.get());
+      //nfc_reader->change_serial_helper(&mock.get());
       std::vector<std::string> list{"12bab1cc5b867068c127a6c8299e3f61","6df1933415dde9fa1f9f6998a26b40db", "901a21f36bffa1aba7ba4aab8b922b11", "068d85abf2395b8b21ed6811bf0dc99e", "fd1e2319321f28245f0963fe7f77b770"}; 
         
       WHEN("The key from the card is in the list of possible keys")
@@ -162,7 +163,7 @@ namespace robast{
           {
               return *responce = RESPONCE_DEVICE_STATE_CONFIGURED;
           }
-          return *responce ="0001";
+          return *responce = "0001";
         }); 
         
         THEN(" the reader returns the scanned key  and a NFC login message followed by a Read Message should have been performed to read data from the Card")
@@ -175,15 +176,16 @@ namespace robast{
 
       WHEN("The key from the card is not in the list of possible keys")
       {  
-        string key_from_card= "";  
-        When(Method(mock,ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
+        string key_from_card = "";  
+        When(Method(mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto & responce, auto responce_size )-> string
         {
           (void)responce_size;
           (void) cmd;
           if(cmd==NFC_READ_MC("02"))
           {
               return *responce =key_from_card;
-          }else if(cmd==DEVICE_STATE)
+          }
+          else if(cmd==DEVICE_STATE)
           {
               return *responce = RESPONCE_DEVICE_STATE_CONFIGURED;
           }
