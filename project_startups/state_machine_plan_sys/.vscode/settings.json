@@ -104,5 +104,24 @@
         "typeindex": "cpp",
         "typeinfo": "cpp",
         "variant": "cpp"
-    }
+    },
+    "files.autoSave": "onFocusChange",
+    "editor.tabSize": 4,
+    "editor.codeActionsOnSave": {
+    "source.fixAll": true,
+    "source.organizeImports": true
+    },
+    "editor.minimap.autohide": true,
+    "c-cpp-flylint.clang.defines": [
+    
+    ],
+    "editor.formatOnSave": true,
+    "C_Cpp.formatting": "vcFormat",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "newLine",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "newLine",
+    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
+    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
+    "C_Cpp.vcFormat.space.betweenEmptySquareBrackets": true,
+    "editor.formatOnType": true
 }
