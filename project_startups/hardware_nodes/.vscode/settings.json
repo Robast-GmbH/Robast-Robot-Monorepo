@@ -1,4 +1,14 @@
 {
+    "python.autoComplete.extraPaths": [
+        "/workspaces/Ros_Hardware_Nodes/install/communication_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/workspaces/Ros_Hardware_Nodes/install/communication_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/humble/lib/python3.10/site-packages",
+        "/opt/ros/humble/local/lib/python3.10/dist-packages"
+    ],
     "files.associations": {
         "functional": "cpp",
         "array": "cpp",
@@ -70,16 +80,30 @@
         "unordered_set": "cpp",
         "shared_mutex": "cpp",
         "typeindex": "cpp",
-        "*.idl": "cpp"
+        "*.idl": "cpp",
+        "any": "cpp",
+        "strstream": "cpp",
+        "complex": "cpp",
+        "coroutine": "cpp",
+        "source_location": "cpp",
+        "cfenv": "cpp",
+        "*.ipp": "cpp"
     },
-    "python.autoComplete.extraPaths": [
-        "/workspaces/Ros_Hardware_Nodes/install/communication_interfaces/local/lib/python3.10/dist-packages",
-        "/opt/ros/humble/lib/python3.10/site-packages",
-        "/opt/ros/humble/local/lib/python3.10/dist-packages"
-    ],
-    "python.analysis.extraPaths": [
-        "/workspaces/Ros_Hardware_Nodes/install/communication_interfaces/local/lib/python3.10/dist-packages",
-        "/opt/ros/humble/lib/python3.10/site-packages",
-        "/opt/ros/humble/local/lib/python3.10/dist-packages"
-    ]
+    "files.autoSave": "onFocusChange",
+    "editor.tabSize": 4,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": true,
+        "source.organizeImports": true
+    },
+    "editor.minimap.autohide": true,
+    "c-cpp-flylint.clang.defines": [],
+    "editor.formatOnSave": true,
+    "C_Cpp.formatting": "vcFormat",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "newLine",
+    "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "newLine",
+    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
+    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
+    "C_Cpp.vcFormat.space.betweenEmptySquareBrackets": true,
+    "editor.formatOnType": true
 }
