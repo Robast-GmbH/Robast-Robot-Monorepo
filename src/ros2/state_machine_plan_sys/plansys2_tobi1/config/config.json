@@ -1,0 +1,42 @@
+{
+    "colors": [
+        {
+            "id": "red",
+            "red": 255,
+            "blue": 0,
+            "green": 0,
+            "brightness": 100,
+            "mode": 0
+        },
+        {
+            "id": "blue",
+            "red": 0,
+            "blue": 255,
+            "green": 0,
+            "brightness": 100,
+            "mode": 0
+        },
+        {
+            "id": "green",
+            "red": 0,
+            "blue": 0,
+            "green": 255,
+            "brightness": 100,
+            "mode": 0
+        },
+        {
+            "id": "animation",
+            "red": 0,
+            "blue": 0,
+            "green": 0,
+            "brightness": 100,
+            "mode": 1
+        }
+    ],
+    "drawers": [
+        {
+            "id": "red",
+            "red": 255
+        }
+    ]
+}
