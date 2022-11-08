@@ -44,14 +44,14 @@ set(library_nfc_gate ${executable_nfc_gate}_core)
 
 set(library_nfc_gate_test ${executable_nfc_gate_test}_core)
 
-add_library(library_nfc_gate_test SHARED
+add_library(${library_nfc_gate_test} SHARED
   src/nfc_gate.cpp
   test/src/mock_serial_helper.cpp
   test/src/test_nfc_gate.cpp
 )
 
 
-add_library(library_nfc_gate SHARED
+add_library(${library_nfc_gate} SHARED
   src/nfc_gate.cpp
 )
 
@@ -66,20 +66,20 @@ ament_target_dependencies(${executable_nfc_gate}
   ${dependencies}
 )
 
-target_link_libraries(${executable_nfc_gate} library_nfc_gate)
+target_link_libraries(${executable_nfc_gate} ${library_nfc_gate})
 
 
-ament_target_dependencies(library_nfc_gate
+ament_target_dependencies(${library_nfc_gate}
   ${dependencies}
 )
 ament_target_dependencies(${executable_nfc_gate_test}
   ${dependencies}
 )
 
-target_link_libraries(${executable_nfc_gate_test} library_nfc_gate_test)
+target_link_libraries(${executable_nfc_gate_test} ${library_nfc_gate_test})
 
 
-ament_target_dependencies(library_nfc_gate_test
+ament_target_dependencies(${library_nfc_gate_test}
   ${dependencies}
 )
 target_include_directories(nfc_gate PUBLIC
@@ -102,7 +102,7 @@ if(BUILD_TESTING)
   )
 
   target_link_libraries(nfc_gate_unittest
-    library_nfc_gate
+    ${library_nfc_gate}
     rclcpp::rclcpp
     rclcpp_action::rclcpp_action
   )
@@ -120,7 +120,7 @@ install(FILES
   DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS
-  library_nfc_gate
+  ${library_nfc_gate}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
