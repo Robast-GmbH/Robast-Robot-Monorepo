@@ -17,12 +17,15 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(ament_cmake_catch2 REQUIRED)
+find_package(ament_cmake_uncrustify REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
-find_package(communication_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(communication_interfaces REQUIRED)
 find_package(can REQUIRED)
 find_package(serial_helper REQUIRED)
+find_package(launch_testing_ament_cmake REQUIRED) 
 
 include_directories(include)
 
@@ -59,6 +62,30 @@ target_include_directories(drawer_gate PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+if(BUILD_TESTING)
+  file(GLOB_RECURSE unit_test_srcs "test/unit_tests/*.cpp")
+
+  add_launch_test(test/ros2_tests/node_test_launch_testing.py)
+
+  ament_add_catch2(
+    drawer_gate_test test/unit_tests/main.cpp ${unit_test_srcs}
+  )
+
+  ament_target_dependencies(drawer_gate_test
+    ${dependencies}
+  )
+
+  target_link_libraries(drawer_gate_test
+    ${library_drawer_gate}
+    rclcpp::rclcpp
+  )
+  
+  target_include_directories(drawer_gate_test
+    PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
+  )
+endif()
+
 install(TARGETS
   ${library_drawer_gate}
   ARCHIVE DESTINATION lib
@@ -68,7 +95,7 @@ install(TARGETS
 
 install(TARGETS
   ${executable_drawer_gate}
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
+  RUNTIME DESTINATION lib/${PROJECT_NAME}1
 )
 
 install(DIRECTORY include/
@@ -80,16 +107,11 @@ install(DIRECTORY
   DESTINATION share/${PROJECT_NAME}/
 )
 
-if(BUILD_TESTING)
-  # find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # uncomment the line when a copyright and license is not present in all source files
-  #set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # uncomment the line when this package is not in a git repo
-  #set(ament_cmake_cpplint_FOUND TRUE)
-  # ament_lint_auto_find_test_dependencies()
-endif()
+install(FILES
+  test/ros2_tests/node_test_launch_testing.py
+  test/ros2_tests/node_test_expected_data.yaml 
+  test/ros2_tests/node_test_input_data.yaml 
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_export_include_directories(include)
 
