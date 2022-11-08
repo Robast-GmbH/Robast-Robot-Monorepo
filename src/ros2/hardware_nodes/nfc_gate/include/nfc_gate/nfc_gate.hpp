@@ -25,44 +25,44 @@
 
 using namespace std;
 namespace robast
-{ 
+{
 
-  
+
   class NFCGate : public rclcpp::Node
   {
 
-    public:
-      using  AuthenticateUser= communication_interfaces::action::AuthenticateUser;
-      using GoalHandleAuthenticateUser = rclcpp_action::ServerGoalHandle<AuthenticateUser>;
-      using CreateUser= communication_interfaces::srv::CreateUserNfcTag;
+  public:
+    using  AuthenticateUser = communication_interfaces::action::AuthenticateUser;
+    using GoalHandleAuthenticateUser = rclcpp_action::ServerGoalHandle<AuthenticateUser>;
+    using CreateUser = communication_interfaces::srv::CreateUserNfcTag;
 
-      NFCGate(string serial_port_path = "/dev/robast/robast_nfc");
-      
-      string execute_scan(std::vector<std::string> permission_keys, bool* found);
-      string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found);
-      string scan_tag(bool* found); 
+    NFCGate(string serial_port_path = "/dev/robast/robast_nfc");
+    ~NFCGate();
+    string execute_scan(std::vector<std::string> permission_keys, bool* found);
+    string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found);
+    string scan_tag(bool* found);
 
-      friend class test_nfc_gate;
-      
-    private:
-      int numReadings;
-   
-      std::shared_ptr<serial_helper::SerialHelper> serial_connector_;
-      rclcpp::TimerBase::SharedPtr timer;
-      shared_ptr<GoalHandleAuthenticateUser> timer_handle;
-      rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
-      rclcpp::Service<CreateUser>::SharedPtr create_user_server;
-      
-      rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const AuthenticateUser::Goal> goal);
-      rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle); 
-      void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-      void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);  
+    friend class TestNFCGate;
 
-      void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
-      void start_up_scanner(); 
-      void reader_procedure();
-      void turn_off_scanner();
-};
+  private:
+    int numReadings;
+
+    serial_helper::ISerialHelper* serial_connector_;
+    rclcpp::TimerBase::SharedPtr timer;
+    shared_ptr<GoalHandleAuthenticateUser> timer_handle;
+    rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
+    rclcpp::Service<CreateUser>::SharedPtr create_user_server;
+
+    rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID& uuid, shared_ptr<const AuthenticateUser::Goal> goal);
+    rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+    void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+    void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+
+    void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
+    void start_up_scanner();
+    void reader_procedure();
+    void turn_off_scanner();
+  };
 
 
 

@@ -37,9 +37,9 @@ def generate_test_description():
 
     dut = Node(
         package='nfc_gate',
-        executable='nfc_gate',
+        executable='nfc_gate_test',
         name='nfc_gate',
-        parameters=[{"debug":True, "key":input_data['nfc']['card_content']}]
+        parameters=[{"key":input_data['nfc']['card_content']}]
     )
     context = {'dut': dut  }
 
