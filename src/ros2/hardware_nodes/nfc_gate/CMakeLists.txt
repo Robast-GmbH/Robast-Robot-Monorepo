@@ -33,26 +33,21 @@ include_directories(test/include)
 set(executable_nfc_gate nfc_gate)
 set(executable_nfc_gate_test nfc_gate_test)
 
-
 add_executable(${executable_nfc_gate}
   src/main.cpp)
-
 add_executable(${executable_nfc_gate_test}
   test/ros2_tests/main.cpp)
 
 set(library_nfc_gate ${executable_nfc_gate}_core)
-
 set(library_nfc_gate_test ${executable_nfc_gate_test}_core)
 
+add_library(${library_nfc_gate} SHARED
+src/nfc_gate.cpp
+)
 add_library(${library_nfc_gate_test} SHARED
   src/nfc_gate.cpp
   test/src/mock_serial_helper.cpp
   test/src/test_nfc_gate.cpp
-)
-
-
-add_library(${library_nfc_gate} SHARED
-  src/nfc_gate.cpp
 )
 
 set(dependencies
@@ -65,23 +60,20 @@ set(dependencies
 ament_target_dependencies(${executable_nfc_gate}
   ${dependencies}
 )
-
 target_link_libraries(${executable_nfc_gate} ${library_nfc_gate})
 
+ament_target_dependencies(${executable_nfc_gate_test}
+  ${dependencies}
+)
+target_link_libraries(${executable_nfc_gate_test} ${library_nfc_gate_test})
 
 ament_target_dependencies(${library_nfc_gate}
   ${dependencies}
 )
-ament_target_dependencies(${executable_nfc_gate_test}
-  ${dependencies}
-)
-
-target_link_libraries(${executable_nfc_gate_test} ${library_nfc_gate_test})
-
-
 ament_target_dependencies(${library_nfc_gate_test}
   ${dependencies}
 )
+
 target_include_directories(nfc_gate PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
@@ -94,53 +86,53 @@ if(BUILD_TESTING)
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
 
   ament_add_catch2(
-    nfc_gate_unittest test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
+    nfc_gate_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
   )
 
-  ament_target_dependencies(nfc_gate_unittest
+  ament_target_dependencies(nfc_gate_unit_test
     ${dependencies}
   )
 
-  target_link_libraries(nfc_gate_unittest
+  target_link_libraries(nfc_gate_unit_test
     ${library_nfc_gate}
     rclcpp::rclcpp
     rclcpp_action::rclcpp_action
   )
   
-  target_include_directories(nfc_gate_unittest
+  target_include_directories(nfc_gate_unit_test
     PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
   )
 endif()
+
+install(TARGETS
+${library_nfc_gate}
+${library_nfc_gate_test}
+ARCHIVE DESTINATION lib
+LIBRARY DESTINATION lib
+RUNTIME DESTINATION bin
+)
+
+install(TARGETS
+${executable_nfc_gate}
+${executable_nfc_gate_test}
+RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+DESTINATION include/
+)
+
+install(DIRECTORY
+launch
+DESTINATION share/${PROJECT_NAME}/
+)
 
 install(FILES
   test/ros2_tests/node_test_launch_testing.py
   test/ros2_tests/node_test_expected_data.yaml 
   test/ros2_tests/node_test_input_data.yaml 
   DESTINATION lib/${PROJECT_NAME})
-
-install(TARGETS
-  ${library_nfc_gate}
-  ${library_nfc_gate_test}
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
-
-install(TARGETS
-  ${executable_nfc_gate}
-  ${executable_nfc_gate_test}
-  RUNTIME DESTINATION lib/${PROJECT_NAME}
-)
-
-install(DIRECTORY include/
-  DESTINATION include/
-)
-
-install(DIRECTORY
-  launch
-  DESTINATION share/${PROJECT_NAME}/
-)
 
 ament_export_include_directories(include)
 
