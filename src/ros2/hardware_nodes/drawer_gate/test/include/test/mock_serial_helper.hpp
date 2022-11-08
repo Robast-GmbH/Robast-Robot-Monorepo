@@ -1,14 +1,13 @@
 
 #include "serial_helper/i_serial_helper.h" 
-#include "nfc_gate/elatec_api.h"
 
 namespace serial_helper
 {
 
-    class MockSerialHelper :public ISerialHelper
+    class MockSerialHelper : public ISerialHelper
     {
     public:
-        MockSerialHelper(string key);
+        MockSerialHelper();
         ~MockSerialHelper();
 
         string open_serial();

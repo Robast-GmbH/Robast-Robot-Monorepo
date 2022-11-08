@@ -28,16 +28,26 @@ find_package(serial_helper REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED) 
 
 include_directories(include)
+include_directories(test/include)
 
 set(executable_drawer_gate drawer_gate)
+set(executable_drawer_gate_test drawer_gate_test)
 
 add_executable(${executable_drawer_gate}
   src/main.cpp)
+add_executable(${executable_drawer_gate_test}
+  test/ros2_tests/main.cpp)
 
 set(library_drawer_gate ${executable_drawer_gate}_core)
+set(library_drawer_gate_test ${executable_drawer_gate_test}_core)
 
 add_library(${library_drawer_gate} SHARED
   src/drawer_gate.cpp
+)
+add_library(${library_drawer_gate_test} SHARED
+  src/drawer_gate.cpp
+  test/src/mock_serial_helper.cpp
+  test/src/test_drawer_gate.cpp
 )
 
 set(dependencies
@@ -51,10 +61,17 @@ set(dependencies
 ament_target_dependencies(${executable_drawer_gate}
   ${dependencies}
 )
-
 target_link_libraries(${executable_drawer_gate} ${library_drawer_gate})
 
+ament_target_dependencies(${executable_drawer_gate_test}
+  ${dependencies}
+)
+target_link_libraries(${executable_drawer_gate_test} ${library_drawer_gate_test})
+
 ament_target_dependencies(${library_drawer_gate}
+  ${dependencies}
+)
+ament_target_dependencies(${library_drawer_gate_test}
   ${dependencies}
 )
 
@@ -64,23 +81,24 @@ target_include_directories(drawer_gate PUBLIC
 
 if(BUILD_TESTING)
   file(GLOB_RECURSE unit_test_srcs "test/unit_tests/*.cpp")
+  file(GLOB_RECURSE test_srcs "test/src/*.cpp")
 
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
 
   ament_add_catch2(
-    drawer_gate_test test/unit_tests/main.cpp ${unit_test_srcs}
+    drawer_gate_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
   )
 
-  ament_target_dependencies(drawer_gate_test
+  ament_target_dependencies(drawer_gate_unit_test
     ${dependencies}
   )
 
-  target_link_libraries(drawer_gate_test
+  target_link_libraries(drawer_gate_unit_test
     ${library_drawer_gate}
     rclcpp::rclcpp
   )
   
-  target_include_directories(drawer_gate_test
+  target_include_directories(drawer_gate_unit_test
     PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
   )
@@ -88,6 +106,7 @@ endif()
 
 install(TARGETS
   ${library_drawer_gate}
+  ${library_drawer_gate_test}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -95,6 +114,7 @@ install(TARGETS
 
 install(TARGETS
   ${executable_drawer_gate}
+  ${executable_drawer_gate_test}
   RUNTIME DESTINATION lib/${PROJECT_NAME}1
 )
 
