@@ -10,5 +10,9 @@ namespace robast
     public:
         TestNFCGate(serial_helper::ISerialHelper* serial_connector);
         TestNFCGate();
+        
+        string execute_scan(std::vector<std::string> permission_keys, bool* found);
+        string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found);
+        string scan_tag(bool* found);
     };
 }

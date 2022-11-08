@@ -27,10 +27,8 @@ using namespace std;
 namespace robast
 {
 
-
   class NFCGate : public rclcpp::Node
   {
-
   public:
     using  AuthenticateUser = communication_interfaces::action::AuthenticateUser;
     using GoalHandleAuthenticateUser = rclcpp_action::ServerGoalHandle<AuthenticateUser>;
@@ -38,11 +36,8 @@ namespace robast
 
     NFCGate(string serial_port_path = "/dev/robast/robast_nfc");
     ~NFCGate();
-    string execute_scan(std::vector<std::string> permission_keys, bool* found);
-    string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found);
-    string scan_tag(bool* found);
 
-    friend class TestNFCGate;
+    friend class TestNFCGate; // this class has full access to all private and protected parts of this class
 
   private:
     int numReadings;
@@ -57,6 +52,10 @@ namespace robast
     rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
     void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
     void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+
+    string execute_scan(std::vector<std::string> permission_keys, bool* found);
+    string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found);
+    string scan_tag(bool* found);
 
     void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
     void start_up_scanner();
