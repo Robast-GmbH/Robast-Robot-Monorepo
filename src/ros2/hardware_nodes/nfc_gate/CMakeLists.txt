@@ -121,6 +121,7 @@ install(FILES
 
 install(TARGETS
   ${library_nfc_gate}
+  ${library_nfc_gate_test}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
