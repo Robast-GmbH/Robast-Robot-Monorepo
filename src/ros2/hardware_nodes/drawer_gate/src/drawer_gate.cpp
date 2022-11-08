@@ -7,7 +7,7 @@ namespace drawer_gate
 {
   DrawerGate::DrawerGate(const string serial_path) : Node("drawer_gate")
   {
-    this->serial_helper_ = std::make_shared<serial_helper::SerialHelper>(serial_path);
+    this->serial_helper_ = new serial_helper::SerialHelper(serial_path);
 
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
@@ -19,7 +19,7 @@ namespace drawer_gate
 
     this->drawer_leds_subscription_ = this->create_subscription<DrawerLeds>(
       "drawer_leds", qos, std::bind(&DrawerGate::drawer_leds_topic_callback, this, std::placeholders::_1));
-    
+
     this->drawer_status_publisher_ = this->create_publisher<DrawerStatus>("drawer_is_open", qos);
 
     this->shelf_setup_info_service_ = this->create_service<ShelfSetupInfo>(
@@ -33,15 +33,15 @@ namespace drawer_gate
     // this->serial_helper_->close_serial();
   }
 
-  //TODO: Dekonstruktor with this->serial_helper_->close_serial();
+  DrawerGate::~DrawerGate()
+  {
+    this->serial_helper_->close_serial();
+    delete this->serial_helper_;
+  }
 
-
-  void DrawerGate::open_drawer_topic_callback(const DrawerAddress & msg)
+  void DrawerGate::open_drawer_topic_callback(const DrawerAddress& msg)
   {
     RCLCPP_INFO(this->get_logger(), "I heard: '%i'", msg.drawer_controller_id); // Debugging
-
-    // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-    // std::thread{std::bind(&DrawerGate::open_drawer, this, std::placeholders::_1), msg}.detach(); //TODO: Maybe we should get this back running?
 
     uint32_t drawer_controller_id = msg.drawer_controller_id;
     uint8_t drawer_id = msg.drawer_id;
@@ -51,34 +51,10 @@ namespace drawer_gate
     this->send_can_msg(can_msg_open_lock);
   }
 
-  void DrawerGate::drawer_leds_topic_callback(const DrawerLeds & msg)
+  void DrawerGate::drawer_leds_topic_callback(const DrawerLeds& msg)
   {
     RCLCPP_INFO(this->get_logger(), "I heard: '%i'", msg.red); // Debugging
 
-    //this needs to return quickly to avoid blocking the executor, so spin up a new thread
-    //std::thread{std::bind(&DrawerGate::change_drawer_led_color, this, std::placeholders::_1), msg}.detach(); //TODO: Maybe we should get this back running?
-
-    led_parameters led_parameters = {};
-    led_parameters.led_red = msg.red;
-    led_parameters.led_blue = msg.blue;
-    led_parameters.led_green = msg.green;
-    led_parameters.brightness = msg.brightness;
-    led_parameters.mode = msg.mode;
-
-    robast_can_msgs::CanMessage can_msg_drawer_led = this->create_can_msg_drawer_led(msg.drawer_address.drawer_controller_id, led_parameters);
-
-    this->send_can_msg(can_msg_drawer_led);
-  }
-
-  void DrawerGate::open_drawer(const DrawerAddress & msg)
-  {
-    robast_can_msgs::CanMessage can_msg_open_lock = this->create_can_msg_drawer_lock(msg.drawer_controller_id, msg.drawer_id, CAN_DATA_OPEN_LOCK);
-
-    this->send_can_msg(can_msg_open_lock);
-  }
-
-  void DrawerGate::change_drawer_led_color(const DrawerLeds & msg)
-  {
     led_parameters led_parameters = {};
     led_parameters.led_red = msg.red;
     led_parameters.led_blue = msg.blue;
@@ -145,7 +121,7 @@ namespace drawer_gate
 
     std::vector<robast_can_msgs::CanMessage> received_can_msgs = robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, this->can_db_.can_messages);
 
-    if (this->cleared_serial_buffer_from_old_can_msgs_) 
+    if (this->cleared_serial_buffer_from_old_can_msgs_)
     {
       this->update_drawer_status(received_can_msgs);
     }
@@ -204,7 +180,7 @@ namespace drawer_gate
     drawer_5.number_of_drawers = 1;
     drawer_5.drawer_size = box_30x40x1;
 
-    return {drawer_1, drawer_2, drawer_3, drawer_4, drawer_5};
+    return { drawer_1, drawer_2, drawer_3, drawer_4, drawer_5 };
   }
 
   void DrawerGate::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
@@ -236,7 +212,7 @@ namespace drawer_gate
     can_signals_drawer_lock.at(CAN_SIGNAL_OPEN_LOCK_1).set_data(CAN_DATA_CLOSE_LOCK);
     can_signals_drawer_lock.at(CAN_SIGNAL_OPEN_LOCK_2).set_data(CAN_DATA_CLOSE_LOCK);
 
-    if (drawer_id == 1) 
+    if (drawer_id == 1)
     {
       can_signals_drawer_lock.at(CAN_SIGNAL_OPEN_LOCK_1).set_data(can_data_open_lock);
     }
@@ -289,36 +265,36 @@ namespace drawer_gate
 
     switch (can_baudrate)
     {
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_10kbps:
-        msg = "S0";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_20kbps:
-        msg = "S1";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_50kbps:
-        msg = "S2";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_100kbps:
-        msg = "S3";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_125kbps:
-        msg = "S4";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps:
-        msg = "S5";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_500kbps:
-        msg = "S6";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_800kbps:
-        msg = "S7";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_1000kbps:
-        msg = "S8";
-        break;
-      default:
-        msg = "S5";
-        break;
+    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_10kbps:
+      msg = "S0";
+      break;
+    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_20kbps:
+      msg = "S1";
+      break;
+    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_50kbps:
+      msg = "S2";
+      break;
+    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_100kbps:
+      msg = "S3";
+      break;
+    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_125kbps:
+      msg = "S4";
+      break;
+    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps:
+      msg = "S5";
+      break;
+    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_500kbps:
+      msg = "S6";
+      break;
+    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_800kbps:
+      msg = "S7";
+      break;
+    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_1000kbps:
+      msg = "S8";
+      break;
+    default:
+      msg = "S5";
+      break;
     }
 
     this->add_ascii_cmd_to_queue(msg);
@@ -338,11 +314,11 @@ namespace drawer_gate
   {
     this->add_ascii_cmd_to_queue("C");
   }
-  
+
   void DrawerGate::send_can_msg(robast_can_msgs::CanMessage can_message)
   {
     std::optional<std::string> ascii_cmd = robast_can_msgs::encode_can_message_into_ascii_command(can_message, this->can_db_.can_messages);
-    
+
     if (ascii_cmd.has_value())
     {
       this->add_ascii_cmd_to_queue(ascii_cmd.value());
@@ -378,8 +354,8 @@ namespace drawer_gate
     if (drawer_status_by_drawer_controller_id_.find(drawer_controller_id) == drawer_status_by_drawer_controller_id_.end())
     {
       // key does not exists in the map
-      return false; 
-    } 
+      return false;
+    }
     else
     {
       drawer_status drawer_status = this->drawer_status_by_drawer_controller_id_[drawer_controller_id];
@@ -393,7 +369,7 @@ namespace drawer_gate
     {
       // key does not yet exist in the map
       return false;
-    } 
+    }
     else
     {
       drawer_status drawer_status = this->drawer_status_by_drawer_controller_id_[drawer_controller_id];
@@ -405,7 +381,7 @@ namespace drawer_gate
       if (drawer_id == 2)
       {
         return !drawer_status.is_endstop_switch_2_pushed;
-      }  
+      }
     }
 
     return false;
@@ -438,7 +414,7 @@ namespace drawer_gate
       {
         return true;
       }
-    }  
+    }
 
     return false;
   }
@@ -477,7 +453,7 @@ namespace drawer_gate
   }
 
   void DrawerGate::handle_default_drawer_status(uint32_t drawer_controller_id)
-  {    
+  {
     // Wait a little bit to clear drawer_to_be_refilled_by_drawer_controller_id_ to give LEDs enough time to make suitable lightshow when closing
     boost::asio::io_context io;
     boost::asio::steady_timer t(io, boost::asio::chrono::milliseconds(800));
