@@ -35,8 +35,29 @@
     ],
     "drawers": [
         {
-            "id": "red",
-            "red": 255
+            "id": "Drawer1",
+            "drawer_controller_id": 1019,
+            "drawer_id": 1
+        },
+        {
+            "id": "Drawer2",
+            "drawer_controller_id": 1020,
+            "drawer_id": 2
+        },
+        {
+            "id": "Drawer3",
+            "drawer_controller_id": 1021,
+            "drawer_id": 3
+        },
+        {
+            "id": "Drawer4",
+            "drawer_controller_id": 1022,
+            "drawer_id": 4
+        },
+        {
+            "id": "Drawer5",
+            "drawer_controller_id": 1023,
+            "drawer_id": 5
         }
     ]
 }
