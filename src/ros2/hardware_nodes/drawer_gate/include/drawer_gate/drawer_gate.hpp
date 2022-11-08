@@ -74,6 +74,7 @@ namespace drawer_gate
      */
     ~DrawerGate();
 
+    friend class TestDrawerGate; // this class has full access to all private and protected parts of this class
 
   private:
     /* VARIABLES */

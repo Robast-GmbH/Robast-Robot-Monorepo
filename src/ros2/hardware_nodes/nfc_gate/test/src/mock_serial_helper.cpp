@@ -49,23 +49,23 @@ namespace serial_helper
         return "0001";
     }
 
-    string MockSerialHelper::ascii_interaction(string cmd, string* responce, uint16_t responce_size)
+    string MockSerialHelper::ascii_interaction(string cmd, string* response, uint16_t response_size)
     {
-        (void)responce_size;
+        (void)response_size;
         if (cmd == NFC_READ_MC("02"))
         {
-            *responce = key_code;
+            *response = key_code;
         }
         else if (cmd == DEVICE_STATE)
         {
-            *responce = RESPONCE_DEVICE_STATE_CONFIGURED;
+            *response = RESPONCE_DEVICE_STATE_CONFIGURED;
         }
         else
         {
-            *responce = "0001";
+            *response = "0001";
         }
 
-        return *responce;
+        return *response;
     }
 
 }
