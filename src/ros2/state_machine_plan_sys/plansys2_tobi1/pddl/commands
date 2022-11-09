@@ -1,0 +1,39 @@
+set instance robot1 robot 
+set instance drawer1 drawer
+set instance drawer2 drawer
+set instance drawer3 drawer
+set instance drawer4 drawer
+set instance drawer5 drawer
+set instance blue led_color
+set instance green led_color
+set instance white led_color
+set instance animation led_color
+
+
+set predicate (color_transition blue green)
+set predicate (color_transition green white)
+set predicate (color_transition white animation)
+set predicate (color_transition animation blue)
+
+set predicate (led_color_is robot1 drawer1 blue)
+set predicate (led_color_is robot1 drawer2 blue)
+set predicate (led_color_is robot1 drawer3 blue)
+set predicate (led_color_is robot1 drawer4 blue)
+set predicate (led_color_is robot1 drawer5 blue)
+
+set predicate (drawer_is_locked robot1 drawer1)
+set predicate (drawer_is_locked robot1 drawer2)
+set predicate (drawer_is_locked robot1 drawer3)
+set predicate (drawer_is_locked robot1 drawer4)
+set predicate (drawer_is_locked robot1 drawer5)
+
+set predicate (drawer_is_locked robot1 drawer1)
+set predicate (drawer_is_closed robot1 drawer1)
+
+set goal (and(not(drawer_is_closed robot1 drawer1)) (led_color_is robot1 drawer1 white))
+
+get plan
+
+run (drawer_unlock robot1 drawer1 blue white)
+
+
