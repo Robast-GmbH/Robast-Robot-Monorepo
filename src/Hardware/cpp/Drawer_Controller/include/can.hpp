@@ -59,27 +59,16 @@ namespace can
                 }
             }
 
-            void activate_drawer_feedback_broadcast(void)
-            {
-                this->broadcast_feedback_ = true;
-                this->interval_drawer_feedback_in_ms_ = 50;
-            }
-
-            void deactivate_drawer_feedback_broadcast(void)
-            {
-                this->broadcast_feedback_ = false;
-                this->interval_drawer_feedback_in_ms_ = DEFAULT_INTERVAL_DRAWER_FEEDBACK_IN_MS_;
-            }
-
             void handle_sending_drawer_status_feedback(void)
             {
-                unsigned long current_millis_drawer_status_fb = millis();
-                if (this->broadcast_feedback_ && (current_millis_drawer_status_fb - this->previous_millis_drawer_status_fb_ >= this->interval_drawer_feedback_in_ms_))
-                {
-                    this->previous_millis_drawer_status_fb_ = current_millis_drawer_status_fb;
-                    
-                    this->sending_drawer_status_feedback();
-                }
+                bool is_endstop_switch_1_pushed = this->lock_1_->get_moving_average_drawer_closed_pin() > 0.9;
+                bool is_lock_switch_1_pushed = this->lock_1_->get_moving_average_sensor_lock_pin() > 0.9;
+                bool is_endstop_switch_2_pushed = this->lock_2_->get_moving_average_drawer_closed_pin() > 0.9;
+                bool is_lock_switch_2_pushed = this->lock_2_->get_moving_average_sensor_lock_pin() > 0.9;
+
+                this->handle_drawer_is_open_feedback(is_endstop_switch_1_pushed, is_endstop_switch_2_pushed);
+
+                this->handle_drawer_is_closed_feedback(is_endstop_switch_1_pushed, is_lock_switch_1_pushed, is_endstop_switch_2_pushed, is_lock_switch_2_pushed);                
             }
 
         private:
@@ -89,6 +78,9 @@ namespace can
 
             lock::Lock *lock_1_;
             lock::Lock *lock_2_;
+
+            bool drawer_1_opening_in_progress_ = false;
+            bool drawer_2_opening_in_progress_ = false;
 
             long unsigned int rx_msg_id_;
             uint8_t rx_msg_dlc_ = 0;
@@ -113,7 +105,7 @@ namespace can
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_OPEN_LOCK)
                 {
                     this->lock_1_->set_open_lock_current_step(true);
-                    activate_drawer_feedback_broadcast();
+                    this->drawer_1_opening_in_progress_ = true;
                 }
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_CLOSE_LOCK)
                 {
@@ -123,7 +115,7 @@ namespace can
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_OPEN_LOCK)
                 {
                     this->lock_2_->set_open_lock_current_step(true);
-                    activate_drawer_feedback_broadcast();
+                    this->drawer_2_opening_in_progress_ = true;
                 }
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_CLOSE_LOCK)
                 {
@@ -212,6 +204,36 @@ namespace can
                     }
 
                     this->debug_prints_drawer_led(can_message);
+                }
+            }
+
+            void handle_drawer_is_open_feedback(bool is_endstop_switch_1_pushed, bool is_endstop_switch_2_pushed)
+            {
+                bool is_drawer_1_open = !is_endstop_switch_1_pushed;
+                bool is_drawer_2_open = !is_endstop_switch_2_pushed;
+                if (this->drawer_1_opening_in_progress_ && is_drawer_1_open)
+                {
+                    this->sending_drawer_status_feedback();
+                }
+                if (this->drawer_2_opening_in_progress_ && is_drawer_2_open)
+                {
+                    this->sending_drawer_status_feedback();
+                }
+            }
+
+            void handle_drawer_is_closed_feedback(bool is_endstop_switch_1_pushed, bool is_lock_switch_1_pushed, bool is_endstop_switch_2_pushed, bool is_lock_switch_2_pushed)
+            {
+                bool is_drawer_1_closed = is_endstop_switch_1_pushed && !is_lock_switch_1_pushed;
+                bool is_drawer_2_closed = is_endstop_switch_2_pushed && !is_lock_switch_2_pushed;
+                if (this->drawer_1_opening_in_progress_ && is_drawer_1_closed)
+                {
+                    this->sending_drawer_status_feedback();
+                    this->drawer_1_opening_in_progress_ = false;
+                }
+                if (this->drawer_2_opening_in_progress_ && is_drawer_2_closed)
+                {
+                    this->sending_drawer_status_feedback();
+                    this->drawer_2_opening_in_progress_ = false;
                 }
             }
 
