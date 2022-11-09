@@ -63,7 +63,7 @@ public:
 
 
     std::string drawer = get_arguments()[1];
-    std::string led_color = get_arguments()[4];
+    std::string led_color = get_arguments()[3];
 
 
     return ActionExecutorClient::on_activate(previous_state);
@@ -88,12 +88,14 @@ private:
     reader.parse(file, configJsonData);
     for (int i = 0; i < configJsonData["colors"].size(); i++)
     {
-      auto jsonColor = configJsonData["colors"];
-      led_color::led_color color = { jsonColor[i]["red"].asUInt(),
-      jsonColor["blue"].asUInt(),
-      jsonColor["green"].asUInt(),
-      jsonColor["brightness"].asUInt(),
-      jsonColor["mode"].asUInt() };
+      auto jsonColor = configJsonData["colors"][i];
+      led_color::led_color color = {
+        jsonColor["red"].asUInt(),
+        jsonColor["blue"].asUInt(),
+        jsonColor["green"].asUInt(),
+        jsonColor["brightness"].asUInt(),
+        jsonColor["mode"].asUInt()
+      };
       std::string color_name = configJsonData["colors"][i]["id"].asCString();
       available_colors_.insert({ color_name, color });
     }

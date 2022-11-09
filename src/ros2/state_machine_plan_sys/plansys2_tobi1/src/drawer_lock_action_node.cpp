@@ -46,7 +46,7 @@ public:
     led_pub_->on_activate();
 
     std::string drawer = get_arguments()[1];
-    std::string action_color = get_arguments()[4];
+    std::string action_color = get_arguments()[3];
 
     communication_interfaces::msg::DrawerAddress drawer_unlock_msg;
     drawer_unlock_msg.set__drawer_id(std::get<0>(module_names_[drawer]));
@@ -79,8 +79,8 @@ private:
     reader.parse(file, configJsonData);
     for (int i = 0; i < configJsonData["colors"].size(); i++)
     {
-      auto jsonColor = configJsonData["colors"];
-      led_color::led_color color = { jsonColor[i]["red"].asUInt(),
+      auto jsonColor = configJsonData["colors"][i];
+      led_color::led_color color = { jsonColor["red"].asUInt(),
       jsonColor["blue"].asUInt(),
       jsonColor["green"].asUInt(),
       jsonColor["brightness"].asUInt(),
