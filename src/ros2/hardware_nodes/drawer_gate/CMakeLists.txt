@@ -115,7 +115,7 @@ install(TARGETS
 install(TARGETS
   ${executable_drawer_gate}
   ${executable_drawer_gate_test}
-  RUNTIME DESTINATION lib/${PROJECT_NAME}1
+  RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
 install(DIRECTORY include/

@@ -5,7 +5,7 @@
 namespace serial_helper
 {
 
-    class MockSerialHelper :public ISerialHelper
+    class MockSerialHelper : public ISerialHelper
     {
     public:
         MockSerialHelper(string key);

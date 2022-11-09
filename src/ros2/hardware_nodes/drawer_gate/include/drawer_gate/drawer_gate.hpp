@@ -54,7 +54,6 @@ namespace drawer_gate
     bool is_lock_switch_1_pushed;
     bool is_endstop_switch_2_pushed;
     bool is_lock_switch_2_pushed;
-    bool received_initial_drawer_status; // this is a flag to indicate that the drawer_status was received at least once at the beginning of the drawer access
   };
 
   class DrawerGate : public rclcpp::Node
@@ -78,12 +77,11 @@ namespace drawer_gate
 
   private:
     /* VARIABLES */
-    rclcpp::CallbackGroup::SharedPtr timer_cb_group_;
-    rclcpp::TimerBase::SharedPtr timer_ptr_;
     rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service_;
     rclcpp::Subscription<DrawerAddress>::SharedPtr open_drawer_subscription_;
     rclcpp::Subscription<DrawerLeds>::SharedPtr drawer_leds_subscription_;
     rclcpp::Publisher<DrawerStatus>::SharedPtr drawer_status_publisher_;
+    rclcpp::TimerBase::SharedPtr receive_can_msgs_timer_;
     rclcpp::TimerBase::SharedPtr send_ascii_cmds_timer_;
 
     serial_helper::ISerialHelper* serial_helper_;
@@ -98,6 +96,8 @@ namespace drawer_gate
     queue<string> ascii_cmd_queue_; // queue that contains all ascii commands to be sent to the usb serial can adapter to make sure there is enough time between each ascii command, otherwise some commands might get lost
 
     bool cleared_serial_buffer_from_old_can_msgs_; // flag, that is responsible for clearing the serial buffer from old CAN messages
+
+    bool serial_can_usb_converter_is_set_up_; // flag to prevent that setup routine for serial can usb converter is executed more than once and we need this for testability
 
     std::map<uint32_t, bool> drawer_to_be_refilled_by_drawer_controller_id_;
 
@@ -122,27 +122,7 @@ namespace drawer_gate
 
     void close_can_channel(void);
 
-    void wait_until_initial_drawer_status_received(uint32_t drawer_controller_id);
-
-    void wait_until_drawer_is_opened(uint32_t drawer_controller_id, uint8_t drawer_id);
-
-    bool is_initial_drawer_status_received(uint32_t drawer_controller_id);
-
-    bool is_drawer_open(uint32_t drawer_controller_id, uint8_t drawer_id);
-
-    void handle_open_drawer(uint32_t drawer_controller_id, uint8_t drawer_id);
-
-    void wait_until_drawer_is_closed(uint32_t drawer_controller_id, uint8_t drawer_id);
-
-    bool is_drawer_closed(uint32_t drawer_controller_id, uint8_t drawer_id);
-
-    void handle_default_drawer_status(uint32_t drawer_controller_id);
-
-    void send_default_led_status_to_drawer(uint32_t drawer_controller_id);
-
-    void handle_default_led_status_for_all_drawers();
-
-    void timer_callback(void);
+    void receive_can_msgs_callback(void);
 
     void add_ascii_cmd_to_queue(std::string ascii_cmd);
 
@@ -151,6 +131,10 @@ namespace drawer_gate
     void update_drawer_status_from_can(void);
 
     void update_drawer_status(std::vector<robast_can_msgs::CanMessage> drawer_feedback_can_msgs);
+
+    void send_drawer_is_open_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, uint8_t drawer_id);
+
+    void send_drawer_is_closed_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, uint8_t drawer_id);
 
     std::vector<communication_interfaces::msg::Drawer> get_all_mounted_drawers();
 

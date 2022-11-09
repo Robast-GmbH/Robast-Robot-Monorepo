@@ -1,6 +1,10 @@
-msg:
+drawer_leds:
   red: 1
   blue: 2
   green: 3
   brightness: 7
   mode: 1
+
+open_drawer:
+  drawer_controller_id: 0x010203
+  drawer_id: 2

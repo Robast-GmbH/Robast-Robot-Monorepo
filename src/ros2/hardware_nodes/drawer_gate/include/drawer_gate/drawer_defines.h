@@ -12,20 +12,24 @@ namespace drawer_gate
         slow_fade_up_fade_down = 3,
     };
 
-    // Drawer Module with 10cm Height, 40cm Depth, 1 Drawer
-    #define DRAWER_INSIDE_WIDTH_10x40x1 310
-    #define DRAWER_INSIDE_DEPTH_10x40x1 400
-    #define DRAWER_INSIDE_HEIGHT_10x40x1 74
+    // Some tests show that a timer period of 3 ms is to fast and asci cmds get lost at this speed, with 4 ms it worked, so use 5ms with safety margin
+#define TIMER_PERIOD_SEND_ASCII_CMDS 5ms 
+#define TIMER_PERIOD_RECEIVE_CAN_MSGS 50ms
 
-    // Drawer Module with 20cm Height, 40cm Depth, 1 Drawer
-    #define DRAWER_INSIDE_WIDTH_20x40x1 310
-    #define DRAWER_INSIDE_DEPTH_20x40x1 400
-    #define DRAWER_INSIDE_HEIGHT_20x40x1 177
+// Drawer Module with 10cm Height, 40cm Depth, 1 Drawer
+#define DRAWER_INSIDE_WIDTH_10x40x1 310
+#define DRAWER_INSIDE_DEPTH_10x40x1 400
+#define DRAWER_INSIDE_HEIGHT_10x40x1 74
 
-    // Drawer Module with 30cm Height, 40cm Depth, 1 Drawer
-    #define DRAWER_INSIDE_WIDTH_30x40x1 310
-    #define DRAWER_INSIDE_DEPTH_30x40x1 400
-    #define DRAWER_INSIDE_HEIGHT_30x40x1 282
+// Drawer Module with 20cm Height, 40cm Depth, 1 Drawer
+#define DRAWER_INSIDE_WIDTH_20x40x1 310
+#define DRAWER_INSIDE_DEPTH_20x40x1 400
+#define DRAWER_INSIDE_HEIGHT_20x40x1 177
+
+// Drawer Module with 30cm Height, 40cm Depth, 1 Drawer
+#define DRAWER_INSIDE_WIDTH_30x40x1 310
+#define DRAWER_INSIDE_DEPTH_30x40x1 400
+#define DRAWER_INSIDE_HEIGHT_30x40x1 282
 }
 
 #endif /* DRAWER_DEFINES_HPP_ */

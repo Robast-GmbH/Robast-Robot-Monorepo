@@ -109,7 +109,6 @@ class TestProcessOutput(unittest.TestCase):
 
         try:
             
-            end_time = time.time() + 1
             while not self.is_action_done:
                 rclpy.spin_once(self.node, timeout_sec=10.1)
             
