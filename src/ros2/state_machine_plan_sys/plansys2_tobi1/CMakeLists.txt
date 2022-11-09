@@ -33,12 +33,15 @@ set(dependencies
   plansys2_pddl_parser
   jsoncpp
   communication_interfaces
-
 )
+
 include_directories(include)
 # target_include_directories(led_colors PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/plansys2_tobi1/led_colors.hpp)
 add_executable(drawer_open_action_node src/drawer_open_action_node.cpp )
 ament_target_dependencies(drawer_open_action_node ${dependencies})
+
+target_link_libraries(drawer_open_action_node jsoncpp_lib)
+
 # target_link_libraries(drawer_open_action_node PRIVATE communication_interfaces::led_colors)
 
 # target_include_directories(led_colors PUBLIC
@@ -46,8 +49,16 @@ ament_target_dependencies(drawer_open_action_node ${dependencies})
 #   $<INSTALL_INTERFACE:include/plansys2_tobi1>
 # )
 
+target_include_directories(drawer_open_action_node PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>)
 
-install(DIRECTORY launch pddl config DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY
+  # launch
+  pddl
+  config
+  DESTINATION share/${PROJECT_NAME}
+)
 
 install(TARGETS
   drawer_open_action_node  
@@ -55,6 +66,5 @@ install(TARGETS
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
-
 
 ament_package()
