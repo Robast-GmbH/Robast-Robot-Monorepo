@@ -24,7 +24,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     # Get the launch directory
-    example_dir = get_package_share_directory('plansys2_tobi1')
+    example_dir = get_package_share_directory('plansys2_drawer')
     namespace = LaunchConfiguration('namespace')
 
     declare_namespace_cmd = DeclareLaunchArgument(
@@ -44,7 +44,7 @@ def generate_launch_description():
 
     # Specify the actions
     drawer_close_cmd = Node(
-        package='plansys2_tobi1',
+        package='plansys2_drawer',
         executable='drawer_close_action_node',
         name='drawer_close_action_node',
         namespace=namespace,
@@ -52,7 +52,7 @@ def generate_launch_description():
         parameters=[])
 
     drawer_lock_cmd = Node(
-        package='plansys2_tobi1',
+        package='plansys2_drawer',
         executable='drawer_lock_action_node',
         name='drawer_lock_action_node',
         namespace=namespace,
@@ -60,7 +60,7 @@ def generate_launch_description():
         parameters=[])
 
     drawer_unlock_cmd = Node(
-        package='plansys2_tobi1',
+        package='plansys2_drawer',
         executable='drawer_unlock_action_node',
         name='drawer_unlock_action_node',
         namespace=namespace,
@@ -68,7 +68,7 @@ def generate_launch_description():
         parameters=[])
 
     drawer_open_charge_cmd = Node(
-        package='plansys2_tobi1',
+        package='plansys2_drawer',
         executable='drawer_open_action_node',
         name='drawer_open_action_node',
         namespace=namespace,

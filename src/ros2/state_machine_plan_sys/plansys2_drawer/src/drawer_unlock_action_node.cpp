@@ -13,7 +13,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
-#include "plansys2_tobi1/led_colors.hpp"
+#include "plansys2_drawer/led_colors.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -21,11 +21,11 @@
 
 using namespace std::chrono_literals;
 
-class DrawerCloseAction : public plansys2::ActionExecutorClient
+class DrawerUnlockAction : public plansys2::ActionExecutorClient
 {
 public:
-  DrawerCloseAction()
-    : plansys2::ActionExecutorClient("drawer_lock", 500ms), qos_(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2))
+  DrawerUnlockAction()
+    : plansys2::ActionExecutorClient("drawer_unlock", 500ms), qos_(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2))
   {
     qos_.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos_.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
@@ -42,7 +42,9 @@ public:
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
     on_activate(const rclcpp_lifecycle::State& previous_state)
   {
+    open_drawer_pub_ = this->create_publisher<communication_interfaces::msg::DrawerAddress>("/open_drawer", qos_);
     led_pub_ = this->create_publisher<communication_interfaces::msg::DrawerLeds>("/drawer_leds", qos_);
+    open_drawer_pub_->on_activate();
     led_pub_->on_activate();
 
     std::string drawer = get_arguments()[1];
@@ -54,9 +56,10 @@ public:
 
     communication_interfaces::msg::DrawerLeds drawer_led_msg = led_color::add_leds_to_msg(available_colors_[action_color]);
     drawer_led_msg.set__drawer_address(drawer_unlock_msg);
-    led_pub_->publish(drawer_led_msg);
 
-    finish(true, 1.0, "Drawer light changed to default");
+    led_pub_->publish(drawer_led_msg);
+    open_drawer_pub_->publish(drawer_unlock_msg);
+    finish(true, 1.0, "drawer unlocked");
 
     return ActionExecutorClient::on_activate(previous_state);
   }
@@ -64,6 +67,7 @@ public:
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
     on_deactivate(const rclcpp_lifecycle::State& previous_state)
   {
+    open_drawer_pub_->on_deactivate();
     led_pub_->on_deactivate();
 
     return ActionExecutorClient::on_deactivate(previous_state);
@@ -73,22 +77,23 @@ private:
   void import_settings()
   {
     //TODO remove hardcoded path
-    std::ifstream file("/workspace/src/state_machine_plan_sys/plansys2_tobi1/config/config.json");
+    std::ifstream file("/workspace/src/state_machine_plan_sys/plansys2_drawer/config/config.json");
     Json::Reader reader;
     Json::Value configJsonData;
     reader.parse(file, configJsonData);
     for (int i = 0; i < configJsonData["colors"].size(); i++)
     {
       auto jsonColor = configJsonData["colors"][i];
-      led_color::led_color color = { jsonColor["red"].asUInt(),
-      jsonColor["blue"].asUInt(),
-      jsonColor["green"].asUInt(),
-      jsonColor["brightness"].asUInt(),
-      jsonColor["mode"].asUInt() };
+      led_color::led_color color = {
+        jsonColor["red"].asUInt(),
+        jsonColor["blue"].asUInt(),
+        jsonColor["green"].asUInt(),
+        jsonColor["brightness"].asUInt(),
+        jsonColor["mode"].asUInt()
+      };
       std::string color_name = configJsonData["colors"][i]["id"].asCString();
       available_colors_.insert({ color_name, color });
     }
-
     for (int i = 0; i < configJsonData["drawers"].size(); i++)
     {
       auto drawerJson = configJsonData["drawers"][i];
@@ -100,13 +105,14 @@ private:
   }
 
   void do_work()
-  {}
+  {
+    //everything happens on activation    
+  }
 
-  rclcpp::Subscription<communication_interfaces::msg::DrawerStatus>::SharedPtr drawer_status_sub_;
+  rclcpp_lifecycle::LifecyclePublisher<communication_interfaces::msg::DrawerAddress>::SharedPtr open_drawer_pub_;
   rclcpp_lifecycle::LifecyclePublisher<communication_interfaces::msg::DrawerLeds>::SharedPtr led_pub_;
   rclcpp::QoS qos_;
 
-  bool received_msg_;
   std::map<std::string, led_color::led_color> available_colors_;
   std::map<std::string, std::tuple<uint8_t, uint32_t>> module_names_;
 };
@@ -114,9 +120,9 @@ private:
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<DrawerCloseAction>();
+  auto node = std::make_shared<DrawerUnlockAction>();
 
-  node->set_parameter(rclcpp::Parameter("action_name", "drawer_lock"));
+  node->set_parameter(rclcpp::Parameter("action_name", "drawer_unlock"));
   node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
   rclcpp::spin(node->get_node_base_interface());

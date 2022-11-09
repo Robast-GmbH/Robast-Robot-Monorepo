@@ -13,7 +13,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
-#include "plansys2_tobi1/led_colors.hpp"
+#include "plansys2_drawer/led_colors.hpp"
 
 #include <iostream>
 #include <fstream>
@@ -21,11 +21,11 @@
 
 using namespace std::chrono_literals;
 
-class DrawerCloseAction : public plansys2::ActionExecutorClient
+class DrawerOpenAction : public plansys2::ActionExecutorClient
 {
 public:
-  DrawerCloseAction()
-    : plansys2::ActionExecutorClient("drawer_close", 500ms), qos_(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2))
+  DrawerOpenAction()
+    : plansys2::ActionExecutorClient("drawer_open", 500ms), qos_(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2))
   {
     qos_.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos_.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
@@ -34,7 +34,8 @@ public:
     drawer_status_sub_ = this->create_subscription<communication_interfaces::msg::DrawerStatus>(
       "/drawer_is_open",
       qos_,
-      std::bind(&DrawerCloseAction::current_pos_callback, this, std::placeholders::_1));
+      std::bind(&DrawerOpenAction::current_pos_callback, this, std::placeholders::_1));
+
   }
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
@@ -46,7 +47,7 @@ public:
 
   void current_pos_callback(const communication_interfaces::msg::DrawerStatus::SharedPtr msg)
   {
-    if (!msg->drawer_is_open)
+    if (msg->drawer_is_open)
     {
       received_msg_ = true;
     }
@@ -59,6 +60,11 @@ public:
     led_pub_->on_activate();
 
     received_msg_ = false;
+
+
+    std::string drawer = get_arguments()[1];
+    std::string led_color = get_arguments()[3];
+
 
     return ActionExecutorClient::on_activate(previous_state);
   }
@@ -76,7 +82,7 @@ private:
   void import_settings()
   {
     //TODO remove hardcoded path
-    std::ifstream file("/workspace/src/state_machine_plan_sys/plansys2_tobi1/config/config.json");
+    std::ifstream file("/workspace/src/state_machine_plan_sys/plansys2_drawer/config/config.json");
     Json::Reader reader;
     Json::Value configJsonData;
     reader.parse(file, configJsonData);
@@ -119,7 +125,7 @@ private:
       drawer_led_msg.set__drawer_address(drawer_unlock_msg);
       led_pub_->publish(drawer_led_msg);
 
-      finish(true, 1.0, "Closing completed");
+      finish(true, 1.0, "Opening completed");
     }
   }
 
@@ -135,9 +141,9 @@ private:
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<DrawerCloseAction>();
+  auto node = std::make_shared<DrawerOpenAction>();
 
-  node->set_parameter(rclcpp::Parameter("action_name", "drawer_close"));
+  node->set_parameter(rclcpp::Parameter("action_name", "drawer_open"));
   node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
   rclcpp::spin(node->get_node_base_interface());
