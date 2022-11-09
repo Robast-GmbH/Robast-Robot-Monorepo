@@ -19,17 +19,14 @@
 
         (color_transition ?r - robot ?d - drawer ?original_color ?new_color - led_color)
 
-        (led_color_is_green ?r - robot ?d - drawer ?lc - led_color)
-        (led_color_is_blue ?r - robot ?d - drawer ?lc - led_color)
-        (led_color_is_white ?r - robot ?d - drawer ?lc - led_color)
-        (led_color_is_animation ?r - robot ?d - drawer ?lc - led_color)
+        (led_color_is ?r - robot ?d - drawer ?l - led_color)
 
         (robot_available ?r - robot)
 
     );; end Predicates ;;;;;;;;;;;;;;;;;;;;
     ;; Functions ;;;;;;;;;;;;;;;;;;;;;;;;;
     (:functions
-        (led_color_is ?r - robot ?d - drawer ?lc - led_color)
+        ; (led_color_is ?r - robot ?d - drawer ?lc - led_color)
 
     );; end Functions ;;;;;;;;;;;;;;;;;;;;
     ;; Actions ;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -49,33 +46,34 @@
     ; )
 
     (:durative-action drawer_unlock
-        :parameters (?r - robot ?d - drawer ?lo - lock ?lc - led_color)
+        :parameters (?r - robot ?d - drawer ?lo - lock ?lc1 ?lc2 - led_color)
         :duration ( = ?duration 1)
         :condition (and
             (at start(drawer_available ?r ?d))
             (at start(robot_available ?r))
-            (at start(led_color_is_blue ?r ?d ?lc))
+            (at start(led_color_is ?r ?d ?lc1))
             (at start(drawer_is_locked ?r ?d ?lo))
             (at start(not(drawer_is_open ?r ?d)))
+            (at start((color_transition ?r - robot ?d - drawer ?lc1 ?lc2 - led_color)))
         )
         :effect (and
             (at start(not(robot_available ?r)))
             (at start(not(drawer_available ?r ?d)))
             (at end(drawer_available ?r ?d))
             (at end(robot_available ?r))
-            (at end(led_color_is_green ?r ?d ?lc))
+            (at end(led_color_is ?r ?d ?lc2))
             (at end(not(drawer_is_locked ?r ?d ?lo)))
             (at end(not(drawer_is_open ?r ?d)))
         )
     )
 
     (:durative-action drawer_open
-        :parameters (?r - robot ?d - drawer ?lo - lock ?lc - led_color)
+        :parameters (?r - robot ?d - drawer ?lo - lock ?lc1 ?lc2 - led_color)
         :duration ( = ?duration 1)
         :condition (and
             (at start(drawer_available ?r ?d))
             (at start(robot_available ?r))
-            (at start(led_color_is_green ?r ?d ?lc))
+            (at start(led_color_is?r ?d ?lc1))
             (at start(not(drawer_is_locked ?r ?d ?lo)))
             (at start(not(drawer_is_open ?r ?d)))
         )
@@ -84,19 +82,19 @@
             (at start(not(drawer_available ?r ?d)))
             (at end(robot_available ?r))
             (at end(drawer_available ?r ?d))
-            (at end(led_color_is_white ?r ?d ?lc))
+            (at end(led_color_is ?r ?d ?lc2))
             (at end(not(drawer_is_locked ?r ?d ?lo)))
             (at end(drawer_is_open ?r ?d))
         )
     )
 
     (:durative-action drawer_close
-        :parameters (?r - robot ?d - drawer ?lo - lock ?lc - led_color)
+        :parameters (?r - robot ?d - drawer ?lo - lock ?lc1 ?lc2 - led_color)
         :duration ( = ?duration 1)
         :condition (and
             (at start(drawer_available ?r ?d))
             (at start(robot_available ?r))
-            (at start(led_color_is_white ?r ?d ?lc))
+            (at start(led_color_is ?r ?d ?lc1))
             (at start(not(drawer_is_locked ?r ?d ?lo)))
             (at start(drawer_is_open ?r ?d))
         )
@@ -105,19 +103,19 @@
             (at start(not(drawer_available ?r ?d)))
             (at end(robot_available ?r))
             (at end(drawer_available ?r ?d))
-            (at end(led_color_is_animation ?r ?d ?lc))
+            (at end(led_color_is ?r ?d ?lc2))
             (at end(not(drawer_is_open ?r ?d)))
             (at end(drawer_is_locked ?r ?d ?lo))
         )
     )
 
     (:durative-action drawer_lock
-        :parameters (?r - robot ?d - drawer ?lo - lock ?lc - led_color)
+        :parameters (?r - robot ?d - drawer ?lo - lock ?lc1 ?lc2 - led_color)
         :duration ( = ?duration 1)
         :condition (and
             (at start(drawer_available ?r ?d))
             (at start(robot_available ?r))
-            (at start(led_color_is_animation ?r ?d ?lc))
+            (at start(led_color_is ?r ?d ?lc1))
             (at end(not(drawer_is_open ?r ?d)))
             (at end(drawer_is_locked ?r ?d ?lo))
         )
@@ -126,7 +124,7 @@
             (at start(not(drawer_available ?r ?d)))
             (at end(robot_available ?r))
             (at end(drawer_available ?r ?d))
-            (at end(led_color_is_blue ?r ?d ?lc))
+            (at end(led_color_is ?r ?d ?lc2))
             (at end(not(drawer_is_open ?r ?d)))
             (at end(drawer_is_locked ?r ?d ?lo))
         )
