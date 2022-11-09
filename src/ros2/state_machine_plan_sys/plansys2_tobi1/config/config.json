@@ -35,27 +35,27 @@
     ],
     "drawers": [
         {
-            "id": "Drawer1",
+            "id": "drawer1",
             "drawer_controller_id": 1,
             "drawer_id": 1
         },
         {
-            "id": "Drawer2",
+            "id": "drawer2",
             "drawer_controller_id": 2,
             "drawer_id": 1
         },
         {
-            "id": "Drawer3",
+            "id": "drawer3",
             "drawer_controller_id": 3,
             "drawer_id": 1
         },
         {
-            "id": "Drawer4",
+            "id": "drawer4",
             "drawer_controller_id": 4,
             "drawer_id": 1
         },
         {
-            "id": "Drawer5",
+            "id": "drawer5",
             "drawer_controller_id": 5,
             "drawer_id": 1
         }
