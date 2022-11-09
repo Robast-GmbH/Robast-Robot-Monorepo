@@ -21,11 +21,11 @@
 
 using namespace std::chrono_literals;
 
-class DrawerOpenAction : public plansys2::ActionExecutorClient
+class DrawerCloseAction : public plansys2::ActionExecutorClient
 {
 public:
-  DrawerOpenAction()
-    : plansys2::ActionExecutorClient("drawer_open", 500ms), qos_(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2))
+  DrawerCloseAction()
+    : plansys2::ActionExecutorClient("drawer_close", 500ms), qos_(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2))
   {
     qos_.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos_.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
@@ -34,8 +34,7 @@ public:
     drawer_status_sub_ = this->create_subscription<communication_interfaces::msg::DrawerStatus>(
       "/drawer_is_open",
       qos_,
-      std::bind(&DrawerOpenAction::current_pos_callback, this, std::placeholders::_1));
-
+      std::bind(&DrawerCloseAction::current_pos_callback, this, std::placeholders::_1));
   }
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
@@ -47,7 +46,7 @@ public:
 
   void current_pos_callback(const communication_interfaces::msg::DrawerStatus::SharedPtr msg)
   {
-    if (msg->drawer_is_open)
+    if (!msg->drawer_is_open)
     {
       received_msg_ = true;
     }
@@ -60,11 +59,6 @@ public:
     led_pub_->on_activate();
 
     received_msg_ = false;
-
-
-    std::string drawer = get_arguments()[1];
-    std::string led_color = get_arguments()[4];
-
 
     return ActionExecutorClient::on_activate(previous_state);
   }
@@ -113,7 +107,7 @@ private:
     if (received_msg_)
     {
       std::string drawer = get_arguments()[1];
-      std::string action_color = get_arguments()[3];
+      std::string action_color = get_arguments()[4];
 
       communication_interfaces::msg::DrawerAddress drawer_unlock_msg;
       drawer_unlock_msg.set__drawer_id(std::get<0>(module_names_[drawer]));
@@ -123,7 +117,7 @@ private:
       drawer_led_msg.set__drawer_address(drawer_unlock_msg);
       led_pub_->publish(drawer_led_msg);
 
-      finish(true, 1.0, "Opening completed");
+      finish(true, 1.0, "Closing completed");
     }
   }
 
@@ -139,9 +133,9 @@ private:
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<DrawerOpenAction>();
+  auto node = std::make_shared<DrawerCloseAction>();
 
-  node->set_parameter(rclcpp::Parameter("action_name", "drawer_open"));
+  node->set_parameter(rclcpp::Parameter("action_name", "drawer_close"));
   node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
   rclcpp::spin(node->get_node_base_interface());

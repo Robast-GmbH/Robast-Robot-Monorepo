@@ -21,10 +21,10 @@
 
 using namespace std::chrono_literals;
 
-class DrawerOpenAction : public plansys2::ActionExecutorClient
+class DrawerUnlockAction : public plansys2::ActionExecutorClient
 {
 public:
-  DrawerOpenAction()
+  DrawerUnlockAction()
     : plansys2::ActionExecutorClient("drawer_unlock", 500ms), qos_(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2))
   {
     qos_.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
@@ -48,7 +48,7 @@ public:
     led_pub_->on_activate();
 
     std::string drawer = get_arguments()[1];
-    std::string action_color = get_arguments()[3];
+    std::string action_color = get_arguments()[4];
 
     communication_interfaces::msg::DrawerAddress drawer_unlock_msg;
     drawer_unlock_msg.set__drawer_id(std::get<0>(module_names_[drawer]));
@@ -59,6 +59,7 @@ public:
 
     led_pub_->publish(drawer_led_msg);
     open_drawer_pub_->publish(drawer_unlock_msg);
+    finish(true, 1.0, "drawer unlocked");
 
     return ActionExecutorClient::on_activate(previous_state);
   }
@@ -118,7 +119,7 @@ private:
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<DrawerOpenAction>();
+  auto node = std::make_shared<DrawerUnlockAction>();
 
   node->set_parameter(rclcpp::Parameter("action_name", "drawer_unlock"));
   node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);

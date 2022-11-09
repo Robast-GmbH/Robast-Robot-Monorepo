@@ -36,35 +36,43 @@ set(dependencies
 )
 
 include_directories(include)
-# target_include_directories(led_colors PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include/plansys2_tobi1/led_colors.hpp)
+add_executable(drawer_unlock_action_node src/drawer_unlock_action_node.cpp )
+ament_target_dependencies(drawer_unlock_action_node ${dependencies})
+target_link_libraries(drawer_unlock_action_node jsoncpp_lib)
+
 add_executable(drawer_open_action_node src/drawer_open_action_node.cpp )
 ament_target_dependencies(drawer_open_action_node ${dependencies})
-
 target_link_libraries(drawer_open_action_node jsoncpp_lib)
 
-# target_link_libraries(drawer_open_action_node PRIVATE communication_interfaces::led_colors)
+add_executable(drawer_close_action_node src/drawer_close_action_node.cpp )
+target_link_libraries(drawer_close_action_node jsoncpp_lib)
+ament_target_dependencies(drawer_close_action_node ${dependencies})
 
-# target_include_directories(led_colors PUBLIC
-#   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/plansys2_tobi1>
-#   $<INSTALL_INTERFACE:include/plansys2_tobi1>
-# )
+add_executable(drawer_lock_action_node src/drawer_lock_action_node.cpp )
+target_link_libraries(drawer_lock_action_node jsoncpp_lib)
+ament_target_dependencies(drawer_lock_action_node ${dependencies})
 
-target_include_directories(drawer_open_action_node PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+set(executables
+drawer_unlock_action_node
+drawer_open_action_node
+drawer_close_action_node
+drawer_lock_action_node
+)
+
 
 install(DIRECTORY
-  # launch
+  launch
   pddl
   config
   DESTINATION share/${PROJECT_NAME}
 )
 
 install(TARGETS
-  drawer_open_action_node  
+${executables}  
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
+ament_export_dependencies(${dependencies})
 ament_package()

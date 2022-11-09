@@ -21,21 +21,15 @@
 
 using namespace std::chrono_literals;
 
-class DrawerOpenAction : public plansys2::ActionExecutorClient
+class DrawerCloseAction : public plansys2::ActionExecutorClient
 {
 public:
-  DrawerOpenAction()
-    : plansys2::ActionExecutorClient("drawer_open", 500ms), qos_(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2))
+  DrawerCloseAction()
+    : plansys2::ActionExecutorClient("drawer_lock", 500ms), qos_(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2))
   {
     qos_.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos_.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
     qos_.avoid_ros_namespace_conventions(false);
-    received_msg_ = false;
-    drawer_status_sub_ = this->create_subscription<communication_interfaces::msg::DrawerStatus>(
-      "/drawer_is_open",
-      qos_,
-      std::bind(&DrawerOpenAction::current_pos_callback, this, std::placeholders::_1));
-
   }
 
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
@@ -45,26 +39,24 @@ public:
     return rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn::SUCCESS;
   }
 
-  void current_pos_callback(const communication_interfaces::msg::DrawerStatus::SharedPtr msg)
-  {
-    if (msg->drawer_is_open)
-    {
-      received_msg_ = true;
-    }
-  }
-
   rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn
     on_activate(const rclcpp_lifecycle::State& previous_state)
   {
     led_pub_ = this->create_publisher<communication_interfaces::msg::DrawerLeds>("/drawer_leds", qos_);
     led_pub_->on_activate();
 
-    received_msg_ = false;
-
-
     std::string drawer = get_arguments()[1];
-    std::string led_color = get_arguments()[4];
+    std::string action_color = get_arguments()[4];
 
+    communication_interfaces::msg::DrawerAddress drawer_unlock_msg;
+    drawer_unlock_msg.set__drawer_id(std::get<0>(module_names_[drawer]));
+    drawer_unlock_msg.set__drawer_controller_id(std::get<1>(module_names_[drawer]));
+
+    communication_interfaces::msg::DrawerLeds drawer_led_msg = led_color::add_leds_to_msg(available_colors_[action_color]);
+    drawer_led_msg.set__drawer_address(drawer_unlock_msg);
+    led_pub_->publish(drawer_led_msg);
+
+    finish(true, 1.0, "Drawer light changed to default");
 
     return ActionExecutorClient::on_activate(previous_state);
   }
@@ -73,7 +65,6 @@ public:
     on_deactivate(const rclcpp_lifecycle::State& previous_state)
   {
     led_pub_->on_deactivate();
-    received_msg_ = false;
 
     return ActionExecutorClient::on_deactivate(previous_state);
   }
@@ -109,23 +100,7 @@ private:
   }
 
   void do_work()
-  {
-    if (received_msg_)
-    {
-      std::string drawer = get_arguments()[1];
-      std::string action_color = get_arguments()[3];
-
-      communication_interfaces::msg::DrawerAddress drawer_unlock_msg;
-      drawer_unlock_msg.set__drawer_id(std::get<0>(module_names_[drawer]));
-      drawer_unlock_msg.set__drawer_controller_id(std::get<1>(module_names_[drawer]));
-
-      communication_interfaces::msg::DrawerLeds drawer_led_msg = led_color::add_leds_to_msg(available_colors_[action_color]);
-      drawer_led_msg.set__drawer_address(drawer_unlock_msg);
-      led_pub_->publish(drawer_led_msg);
-
-      finish(true, 1.0, "Opening completed");
-    }
-  }
+  {}
 
   rclcpp::Subscription<communication_interfaces::msg::DrawerStatus>::SharedPtr drawer_status_sub_;
   rclcpp_lifecycle::LifecyclePublisher<communication_interfaces::msg::DrawerLeds>::SharedPtr led_pub_;
@@ -139,9 +114,9 @@ private:
 int main(int argc, char** argv)
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<DrawerOpenAction>();
+  auto node = std::make_shared<DrawerCloseAction>();
 
-  node->set_parameter(rclcpp::Parameter("action_name", "drawer_open"));
+  node->set_parameter(rclcpp::Parameter("action_name", "drawer_lock"));
   node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
   rclcpp::spin(node->get_node_base_interface());
