@@ -1,4 +1,6 @@
 #include "test/mock_serial_helper.hpp"
+#include <iostream>
+#include <fstream>
 
 namespace serial_helper
 {
@@ -19,7 +21,30 @@ namespace serial_helper
 
     uint16_t MockSerialHelper::read_serial(string* result, uint16_t max_num_bytes)
     {
-        *result = "t003400000680";
+        robast_can_msgs::CanMessage can_message = robast_can_msgs::CanMessage(
+            CAN_ID_DRAWER_FEEDBACK,
+            CAN_DLC_DRAWER_FEEDBACK,
+            {
+                robast_can_msgs::CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, 6),
+                robast_can_msgs::CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_LENGTH, 1),
+                robast_can_msgs::CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_LENGTH, 0),
+                robast_can_msgs::CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_LENGTH, 0),
+                robast_can_msgs::CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_LENGTH, 0),
+            });
+        robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
+
+        std::optional<std::string> ascii_command = robast_can_msgs::encode_can_message_into_ascii_command(can_message, can_db.can_messages);
+
+        *result = ascii_command.value();
+
+        ofstream myfile;
+        myfile.open("example.txt");
+        myfile << "ascii_command.value(): " << ascii_command.value() << "\n";
+        myfile << "can_message.get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_data(): " << can_message.get_can_signals()[CAN_SIGNAL_DRAWER_CONTROLLER_ID].get_data() << "\n";
+        myfile.close();
+
+        std::cout << "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX" << ascii_command.value();
+        // *result = "t003400000680";
         return 1;
     }
 
