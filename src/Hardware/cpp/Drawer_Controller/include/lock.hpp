@@ -42,7 +42,7 @@ namespace lock
                 {
                     this->open_lock_previous_step_ = this->open_lock_current_step_;
                     this->previous_millis_open_lock_ = current_millis_open_lock;
-                    this->open_lock_current_step_ ? this->open_lock() : this->close_lock();
+                    this->open_lock_current_step_ ? this->open_lock() : this->close_lock();                    
                 }
                 else if (!change_lock_state && (current_millis_open_lock - this->previous_millis_open_lock_ >= LOCK_MECHANISM_TIME))
                 {
