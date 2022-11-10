@@ -224,18 +224,7 @@ namespace robast_can_msgs
         for (uint8_t i = 0; i < can_message.get_can_signals().size(); i++)
         {
             uint64_t can_signal_data = can_message.get_can_signals()[i].get_data();
-            std::cout << "can_message.get_id(): " << can_message.get_id() << std::endl; //DEBUGGING
-            std::cout << "can_data: " << std::hex << can_data << std::endl; //DEBUGGING
-            std::cout << "can_signal_data: " << std::hex << can_signal_data << std::endl; //DEBUGGING
-            std::cout << "can_signal_data shift left by 40: " << std::hex << (can_signal_data << 40) << std::endl; //DEBUGGING
-            std::cout << "can_data | can_signal_data shift left by 40: " << std::hex << (can_data | (can_signal_data << 40)) << std::endl; //DEBUGGING
-            uint8_t bit_left_shift = 64 - (can_message.get_can_signals()[i].get_bit_start() - can_message.get_can_signals()[i].get_bit_length());
-            uint64_t can_data_shifted_left = can_signal_data << bit_left_shift;
-            can_data = can_data | can_data_shifted_left;
-            std::cout << "bit_left_shift = " << unsigned(bit_left_shift) << std::endl;
-            std::cout << "can_data_shifted_left = " << unsigned(can_data_shifted_left) << std::endl;
-            std::cout << "can_data: " << std::hex << can_data << std::endl; //DEBUGGING
-
+            can_data = can_data | (can_signal_data << (64 - can_message.get_can_signals()[i].get_bit_start() - can_message.get_can_signals()[i].get_bit_length()));
         }
         return can_data;
     }

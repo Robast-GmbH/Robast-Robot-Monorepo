@@ -270,7 +270,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
             CAN_ID_DRAWER_FEEDBACK,
             CAN_DLC_DRAWER_FEEDBACK,
             {
-                robast_can_msgs::CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, 0x010203),
+                robast_can_msgs::CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 0x010203),
                 robast_can_msgs::CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_LENGTH, 1),
                 robast_can_msgs::CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_LENGTH, 0),
                 robast_can_msgs::CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_LENGTH, 0),
@@ -280,8 +280,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
         ascii_command_expected_drawer_feedback.append(std::to_string(CAN_ID_DRAWER_FEEDBACK));
         ascii_command_expected_drawer_feedback.append(std::to_string(CAN_DLC_DRAWER_FEEDBACK));
         ascii_command_expected_drawer_feedback.append("01020380");
-        uint64_t u64_can_data_expected_drawer_feedback = 0x01020380;
-
+        uint64_t u64_can_data_expected_drawer_feedback = 0x0102038000000000;
 
         robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
