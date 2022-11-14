@@ -144,13 +144,17 @@ namespace drawer_gate
 
   void DrawerGate::update_drawer_status_from_can(void)
   {
-    std::string serial_read_ascii_command;
-    uint16_t num_of_received_bytes = this->serial_helper_->read_serial(&serial_read_ascii_command, 200);
-
-    //TODO: Find a proper boundary for serial_read_ascii_command.length() 
-    if (this->serial_can_usb_converter_is_set_up_ && serial_read_ascii_command.length() > 2)
+    if (!this->serial_can_usb_converter_is_set_up_)
     {
-      // RCLCPP_INFO(this->get_logger(), "Serial read: %s", serial_read_ascii_command.c_str()); //DEBUGGING
+      this->setup_serial_can_ubs_converter(); //mind that this should actually be done in the constructor, but due to testability we need to execute this here
+    }
+
+    std::string serial_read_ascii_command;
+    uint16_t num_of_received_bytes = this->serial_helper_->read_serial(&serial_read_ascii_command, 500);
+
+    if (this->serial_can_usb_converter_is_set_up_ && num_of_received_bytes > 0)
+    {
+      RCLCPP_INFO(this->get_logger(), "Serial read: %s", serial_read_ascii_command.c_str()); //DEBUGGING
       std::vector<robast_can_msgs::CanMessage> received_can_msgs = robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, this->can_db_.can_messages);
       this->update_drawer_status(received_can_msgs);
     }

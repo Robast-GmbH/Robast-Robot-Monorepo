@@ -1,8 +1,9 @@
 #include "../include/can/can_helper.h"
+#include <iostream> //DEBUGGING
 
 namespace robast_can_msgs
 {
-    std::optional<CanMessage> decode_can_message(uint32_t msg_id, uint8_t data[], uint8_t dlc, std::vector<CanMessage> can_db_messages)
+    std::optional<CanMessage> decode_can_message(uint32_t msg_id, uint8_t data[ ], uint8_t dlc, std::vector<CanMessage> can_db_messages)
     {
         for (uint16_t can_msgs_index = 0; can_msgs_index < can_db_messages.size(); can_msgs_index++)
         {
@@ -24,7 +25,7 @@ namespace robast_can_msgs
         {
             uint8_t bit_start = can_db_messages[can_msgs_index].get_can_signals()[i].get_bit_start();
             uint8_t bit_length = can_db_messages[can_msgs_index].get_can_signals()[i].get_bit_length();
-            
+
             uint64_t can_signal_data = (can_msg_data << bit_start) >> (64 - bit_length);
 
             robast_can_msgs::CanSignal can_signal = CanSignal(bit_start, bit_length, can_signal_data);
@@ -34,7 +35,7 @@ namespace robast_can_msgs
     }
 
     CanFrame encode_can_message_into_can_frame(CanMessage can_message, std::vector<CanMessage> can_db_messages)
-    { 
+    {
         for (uint16_t j = 0; j < can_db_messages.size(); j++)
         {
             if (can_message.get_id() == can_db_messages[j].get_id())
@@ -72,10 +73,10 @@ namespace robast_can_msgs
                 can_data = can_data >> ((8 - can_message.get_dlc()) * 8);
 
                 std::string ascii_command = "t";
-                
+
                 ascii_command.append(uint_to_hex_string(can_message.get_id(), 3));
                 ascii_command.append(std::to_string(can_message.get_dlc()));
-                ascii_command.append(uint_to_hex_string(can_data, can_message.get_dlc()*2));
+                ascii_command.append(uint_to_hex_string(can_data, can_message.get_dlc() * 2));
 
                 return ascii_command;
             }
@@ -114,7 +115,7 @@ namespace robast_can_msgs
                     std::string dlc_as_hex_string = std::string(ascii_commands + 4, 1);
                     uint8_t dlc = hex_string_to_unsigned_int<uint8_t>(dlc_as_hex_string);
 
-                    std::string data_as_hex_string = std::string(ascii_commands + 5, dlc*2);
+                    std::string data_as_hex_string = std::string(ascii_commands + 5, dlc * 2);
                     uint64_t can_msg_data = hex_string_to_unsigned_int<uint64_t>(data_as_hex_string) << ((8 - dlc) * 8);
 
                     std::vector<CanSignal> can_signals = assign_data_to_can_signals(can_msg_data, can_db_messages, can_msgs_index);
@@ -146,7 +147,7 @@ namespace robast_can_msgs
         if (ascii_commands.length() > expected_num_of_bytes_ascii_cmd)
         {
             uint8_t num_of_received_can_msgs = ascii_commands.length() / expected_num_of_bytes_ascii_cmd;
-            
+
             for (uint8_t i = 0; i < num_of_received_can_msgs; i++)
             {
                 std::optional<CanMessage> decoded_can_message = decode_single_ascii_command_into_can_message(ascii_commands, ascii_commands.length(), can_db_messages);
@@ -188,15 +189,15 @@ namespace robast_can_msgs
         return stream.str();
     }
 
-    void u64_to_eight_bytes(uint64_t input, uint8_t *result)
+    void u64_to_eight_bytes(uint64_t input, uint8_t* result)
     {
         uint64_t big_endian;
         int check_for_little_endian = 1;
         // little endian if true
-        if (*(char *)&check_for_little_endian == 1)
+        if (*(char*)&check_for_little_endian == 1)
         {
             SwapEndian<uint64_t>(input);
-            big_endian = input; 
+            big_endian = input;
         }
         else
         {
@@ -206,19 +207,19 @@ namespace robast_can_msgs
         std::memcpy(result, &big_endian, sizeof(big_endian));
     }
 
-    uint64_t join_together_CAN_data_bytes_from_array(uint8_t data[], uint8_t dlc)
+    uint64_t join_together_CAN_data_bytes_from_array(uint8_t data[ ], uint8_t dlc)
     {
         uint64_t can_data = 0;
         for (int i = 0; i < dlc; i++)
         {
             uint64_t can_byte = data[i];
-            can_data = (can_byte << (7-i)*8) | can_data;            
+            can_data = (can_byte << (7 - i) * 8) | can_data;
         }
         return can_data;
     }
 
     uint64_t join_together_CAN_data_from_CAN_message(CanMessage can_message)
-    {  
+    {
         uint64_t can_data = 0;
         for (uint8_t i = 0; i < can_message.get_can_signals().size(); i++)
         {
