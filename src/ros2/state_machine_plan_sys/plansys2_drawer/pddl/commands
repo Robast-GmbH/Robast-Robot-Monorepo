@@ -9,6 +9,8 @@ set instance green led_color
 set instance white led_color
 set instance animation led_color
 
+set predicate (robot_available robot1)
+set predicate (drawer_available robot1 drawer1)
 
 set predicate (color_transition blue green)
 set predicate (color_transition green white)
@@ -27,13 +29,11 @@ set predicate (drawer_is_locked robot1 drawer3)
 set predicate (drawer_is_locked robot1 drawer4)
 set predicate (drawer_is_locked robot1 drawer5)
 
-set predicate (drawer_is_locked robot1 drawer1)
 set predicate (drawer_is_closed robot1 drawer1)
 
-set goal (and(not(drawer_is_closed robot1 drawer1)) (led_color_is robot1 drawer1 white))
+set goal (and(led_color_is robot1 drawer1 white))
 
 get plan
 
-run (drawer_unlock robot1 drawer1 blue white)
 
 

@@ -103,7 +103,14 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "*.idl": "cpp",
+        "*.ipp": "cpp"
     },
     "files.autoSave": "onFocusChange",
     "editor.tabSize": 4,
@@ -115,7 +122,7 @@
     "c-cpp-flylint.clang.defines": [
     
     ],
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "C_Cpp.formatting": "vcFormat",
     "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
     "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "newLine",
