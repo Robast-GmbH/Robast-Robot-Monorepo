@@ -79,9 +79,6 @@ namespace can
             lock::Lock *lock_1_;
             lock::Lock *lock_2_;
 
-            bool drawer_1_opening_in_progress_ = false;
-            bool drawer_2_opening_in_progress_ = false;
-
             bool drawer_1_open_feedback_can_msg_sent_ = false;
             bool drawer_2_open_feedback_can_msg_sent_ = false;
 
@@ -107,14 +104,15 @@ namespace can
             {
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_OPEN_LOCK)
                 {
-                    if (this->drawer_1_opening_in_progress_)
+                    if (this->lock_1_->is_drawer_opening_in_progress())
                     {
                         Serial.println("Drawer 1 opening is already in progress, so lock won't be opened again!");
                     }
                     else
                     {
                         this->lock_1_->set_open_lock_current_step(true);
-                        this->drawer_1_opening_in_progress_ = true;
+                        this->lock_1_->set_timestamp_last_lock_change();
+                        this->lock_1_->set_drawer_opening_is_in_progress(true);
                     }
                 }
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data() == CAN_DATA_CLOSE_LOCK)
@@ -124,14 +122,15 @@ namespace can
 
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_OPEN_LOCK)
                 {
-                    if (this->drawer_2_opening_in_progress_)
+                    if (this->lock_2_->is_drawer_opening_in_progress())
                     {
                         Serial.println("Drawer 2 opening is already in progress, so lock won't be opened again!");
                     }
                     else
                     {
                         this->lock_2_->set_open_lock_current_step(true);
-                        this->drawer_2_opening_in_progress_ = true;
+                        this->lock_2_->set_timestamp_last_lock_change();
+                        this->lock_2_->set_drawer_opening_is_in_progress(true);
                     }
                 }
                 if (can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_2).get_data() == CAN_DATA_CLOSE_LOCK)
@@ -228,13 +227,13 @@ namespace can
             {
                 bool is_drawer_1_open = !is_endstop_switch_1_pushed;
                 bool is_drawer_2_open = !is_endstop_switch_2_pushed;
-                if (this->drawer_1_opening_in_progress_ && is_drawer_1_open && !this->drawer_1_open_feedback_can_msg_sent_)
+                if (this->lock_1_->is_drawer_opening_in_progress() && is_drawer_1_open && !this->drawer_1_open_feedback_can_msg_sent_)
                 {
                     this->sending_drawer_status_feedback();
                     this->lock_1_->set_open_lock_current_step(false); // this makes sure the lock automatically closes as soon as the drawer is opened
                     this->drawer_1_open_feedback_can_msg_sent_ = true; // makes sure the feedback msg is only sent once
                 }
-                if (this->drawer_2_opening_in_progress_ && is_drawer_2_open && !this->drawer_2_open_feedback_can_msg_sent_)
+                if (this->lock_2_->is_drawer_opening_in_progress() && is_drawer_2_open && !this->drawer_2_open_feedback_can_msg_sent_)
                 {
                     this->sending_drawer_status_feedback();
                     this->lock_2_->set_open_lock_current_step(false); // this makes sure the lock automatically closes as soon as the drawer is opened
@@ -246,16 +245,16 @@ namespace can
             {
                 bool is_drawer_1_closed = is_endstop_switch_1_pushed && !is_lock_switch_1_pushed;
                 bool is_drawer_2_closed = is_endstop_switch_2_pushed && !is_lock_switch_2_pushed;
-                if (this->drawer_1_opening_in_progress_ && is_drawer_1_closed && this->drawer_1_open_feedback_can_msg_sent_)
+                if (this->lock_1_->is_drawer_opening_in_progress() && is_drawer_1_closed && this->drawer_1_open_feedback_can_msg_sent_)
                 {
                     this->sending_drawer_status_feedback();
-                    this->drawer_1_opening_in_progress_ = false;
+                    this->lock_1_->set_drawer_opening_is_in_progress(false);
                     this->drawer_1_open_feedback_can_msg_sent_ = false; // reset this flag for the next opening of the drawer
                 }
-                if (this->drawer_2_opening_in_progress_ && is_drawer_2_closed && this->drawer_2_open_feedback_can_msg_sent_)
+                if (this->lock_2_->is_drawer_opening_in_progress() && is_drawer_2_closed && this->drawer_2_open_feedback_can_msg_sent_)
                 {
                     this->sending_drawer_status_feedback();
-                    this->drawer_2_opening_in_progress_ = false;
+                    this->lock_2_->set_drawer_opening_is_in_progress(false);
                     this->drawer_2_open_feedback_can_msg_sent_ = false; // reset this flag for the next opening of the drawer
                 }
             }
