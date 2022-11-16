@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<root main_tree_to_execute="BehaviorTree">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <Action ID="DrawerOpenReq" drawer_address="{drawer}" topic_name="topic"/>
+            <Action ID="OpenDrawer" drawer_address="{drawer}"/>
+            <Action ID="ChangeLedColor" blue="0" brightness="128" drawer_address="{drawer}" green="255" mode="1" red="0"/>
+            <Condition ID="drawer_is_open"/>
+            <Action ID="ChangeLedColor" blue="255" brightness="128" drawer_address="{drawer}" green="255" mode="1" red="255"/>
+            <Condition ID="drawer_is_closed"/>
+            <Action ID="ChangeLedColor" blue="0" brightness="0" drawer_address="{drawer}" green="0" mode="3" red="0"/>
+            <Action ID="ChangeLedColor" blue="255" brightness="128" drawer_address="{drawer}" green="0" mode="1" red="0"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ChangeLedColor">
+            <input_port default="0" name="blue">uint8</input_port>
+            <input_port default="0" name="brightness">uint8 to determine the brightness</input_port>
+            <input_port default="{drawer}" name="drawer_address"/>
+            <input_port default="0" name="green">uint8</input_port>
+            <input_port default="0" name="mode">uint8. describes the kind of animation thats used</input_port>
+            <input_port default="0" name="red">uint8</input_port>
+        </Action>
+        <Action ID="DrawerOpenReq">
+            <output_port default="{drawer}" name="drawer_address"/>
+            <input_port default="topic" name="topic_name"/>
+        </Action>
+        <Action ID="OpenDrawer">
+            <input_port default="{drawer}" name="drawer_address"/>
+        </Action>
+        <Condition ID="drawer_is_closed"/>
+        <Condition ID="drawer_is_open"/>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
