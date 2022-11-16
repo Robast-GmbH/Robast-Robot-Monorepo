@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "${default}",
+                "limitSymbolsToIncludedHeaders": false
+            },
+            "includePath": [
+                "/workspace/install/**",
+                "/opt/ros/humble/include/**",
+                "/workspace/src/communication_interfaces/**",
+                "/workspace/src/statemachine**",
+                "/workspace/build/**",
+                "${workspaceFolder}/src/statemachine/BehaviorTree.CPP/include",
+                "${workspaceFolder}/src/statemachine/bt_plugins/include"
+            ],
+            "name": "ROS2",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "gnu11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
