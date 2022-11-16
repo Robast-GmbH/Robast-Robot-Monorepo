@@ -46,13 +46,16 @@ namespace drawer_gate
     uint32_t drawer_controller_id = msg.drawer_controller_id;
     uint8_t drawer_id = msg.drawer_id;
 
+    if (drawer_controller_id == 0 && drawer_id == 0)
+    {
+      return;
+    }
     robast_can_msgs::CanMessage can_msg_open_lock = this->create_can_msg_drawer_lock(drawer_controller_id, drawer_id, CAN_DATA_OPEN_LOCK);
 
     // start timer to enable receiving feedback via the can bus
     this->receive_can_msgs_timer_ = this->create_wall_timer(TIMER_PERIOD_RECEIVE_CAN_MSGS, std::bind(&DrawerGate::receive_can_msgs_callback, this));
 
     this->send_can_msg(can_msg_open_lock);
-
   }
 
   void DrawerGate::drawer_leds_topic_callback(const DrawerLeds& msg)
