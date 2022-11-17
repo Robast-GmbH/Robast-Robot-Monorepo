@@ -2,6 +2,7 @@ FROM ghcr.io/robast-gmbh/monorepo/communication_interfaces-latest AS communicati
 FROM ghcr.io/robast-gmbh/monorepo/libs AS libs
 
 FROM ros:humble-ros-core As build
+RUN apt-get update 
 RUN apt-get update && apt-get install -y \
     build-essential \
     python3-colcon-common-extensions \
