@@ -32,20 +32,20 @@ jobs:
     - name: Build Hardware libs
       working-directory: libs
       run: |
-            docker build deploy.Dockerfile --tag ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy
             docker run ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy 
             docker push ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy 
     
     - name: Build Communication Interfaces
       working-directory: src/ros2/communication_interfaces
       run: |
-            docker build deploy.Dockerfile --tag ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy
             docker run ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy 
             docker push ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy 
 
     - name: Build Hardware nodes 
       working-directory: src/ros2/hardware_nodes
       run: |
-            docker build deploy.Dockerfile --tag ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy
             docker run ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
             docker push ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
