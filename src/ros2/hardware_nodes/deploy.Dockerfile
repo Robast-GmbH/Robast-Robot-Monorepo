@@ -1,5 +1,5 @@
-FROM ghcr.io/robast-gmbh/monorepo/communication_interfaces-latest AS communication_interfaces
-FROM ghcr.io/robast-gmbh/monorepo/libs AS libs
+FROM ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy  AS communication_interfaces
+FROM ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy AS libs
 
 FROM ros:humble-ros-core As build
 RUN apt-get update 

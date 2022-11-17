@@ -30,7 +30,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build Hardware libs
-      working-directory: libs/**
+      working-directory: libs
       run: |
             docker build deploy.Dockerfile --tag ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy
             docker run ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy 
