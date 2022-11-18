@@ -5,7 +5,7 @@ RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group
     echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV USER robast
 
-RUN apt-get update && apt-get upgrade -y \
+RUN apt-get update && apt-get upgrade -y &&\
     apt-get install -y \
     build-essential \
     python3-colcon-common-extensions \
@@ -16,7 +16,7 @@ RUN apt-get update && apt-get upgrade -y \
     libboost-dev \
     libncurses5-dev \
     libncursesw5-dev \
-    qt5-default \
+    qtbase5-dev \
     libqt5svg5-dev \
     && rosdep init || echo "rosdep already initialized"
 
