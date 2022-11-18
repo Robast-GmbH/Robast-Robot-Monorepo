@@ -7,4 +7,4 @@ rosdep install --from-paths src --ignore-src -r -y
 #sudo /startup.sh
 
 # Source
-source shell_setup.sh
+#source shell_setup.sh

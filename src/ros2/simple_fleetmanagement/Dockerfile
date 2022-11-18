@@ -1,4 +1,4 @@
-FROM ros:humble-ros-core-jammy as base
+FROM ros:humble-ros-core
 
 
  
