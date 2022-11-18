@@ -1,11 +1,6 @@
-#include <string>
-#include <vector>
-#include "bt_plugins/condition/drawer_open_request_condition.hpp"
-#include "std_msgs/msg/string.hpp"
+#include "bt_plugins/action/drawer_open_request_action.hpp"
 
 
-
-#include "rclcpp/rclcpp.hpp"
 
 namespace drawer_statemachine
 {
@@ -14,8 +9,8 @@ namespace drawer_statemachine
 
     DrawerOpenReq::DrawerOpenReq(
         const std::string& name,
-        const BT::NodeConfiguration& conf)
-        : BT::SyncActionNode(name, conf)
+        const BT::NodeConfiguration& config)
+        : BT::AsyncActionNode(name, config)
     {
         node_ = config().blackboard->get<rclcpp::Node::SharedPtr>("node");
         callback_group_ = node_->create_callback_group(
@@ -30,11 +25,12 @@ namespace drawer_statemachine
 
         rclcpp::SubscriptionOptions sub_option;
         sub_option.callback_group = callback_group_;
-        drawer_open_sub = node_->create_subscription<communication_interfaces::msg::DrawerAddress>(
+        drawer_open_sub_ = node_->create_subscription<communication_interfaces::msg::DrawerAddress>(
             topic_name_,
             qos,
             std::bind(&DrawerOpenReq::callbackDrawerOpenReq, this, _1),
             sub_option);
+        new_message_ = false;
     }
 
     BT::NodeStatus DrawerOpenReq::tick()
@@ -46,31 +42,23 @@ namespace drawer_statemachine
         // If the default planner is not specified then we work in "required planner mode":
         // In this mode, the behavior returns failure if the planner selection is not received from
         // the topic input.
-        if (last_selected_planner_.empty())
+        if (new_message_)
         {
-            std::string default_planner;
-            getInput("default_planner", default_planner);
-            if (default_planner.empty())
-            {
-                return BT::NodeStatus::FAILURE;
-            }
-            else
-            {
-                last_selected_planner_ = default_planner;
-            }
+            setOutput("drawer_address", drawer_address_);
+            new_message_ = false;
+            return BT::NodeStatus::SUCCESS;
         }
 
-        setOutput("selected_planner", last_selected_planner_);
-
-        return BT::NodeStatus::SUCCESS;
+        return BT::NodeStatus::RUNNING;
     }
 
     void
         DrawerOpenReq::callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
     {
-        last_selected_planner_ = msg->data;
+        drawer_address_.drawer_controller_id = msg->drawer_controller_id;
+        drawer_address_.drawer_id = msg->drawer_id;
+        new_message_ = true;
     }
-
 
 }  // namespace drawer_statemachine
 

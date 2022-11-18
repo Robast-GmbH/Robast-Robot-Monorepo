@@ -1,9 +1,15 @@
+#ifndef DRAWEROPENREQ_BT_NODES_H
+#define DRAWEROPENREQ_BT_NODES_H
+
 #include <string>
 #include <vector>
 #include <memory>
 
 
-#include "behaviortree_cpp_v3/condition_node.h"
+#include "rclcpp/rclcpp.hpp"
+
+#include "behaviortree_cpp_v3/action_node.h"
+#include "std_msgs/msg/string.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
 
 namespace drawer_statemachine
@@ -12,17 +18,12 @@ namespace drawer_statemachine
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
      * updated on the blackboard and FAILURE otherwise
      */
-    class DrawerOpenReq : public BT::SyncActionNode
+    class DrawerOpenReq : public BT::AsyncActionNode
     {
-    public:
-        /**
-         * @brief A constructor for nav2_behavior_tree::GoalUpdatedCondition
-         * @param action_name Name for the XML tag for this node
-         * @param conf BT node configuration
-         */
+        public:        
         DrawerOpenReq(
-            const std::string& action_name,
-            const BT::NodeConfiguration& conf);
+            const std::string& name,
+            const BT::NodeConfiguration& config);
 
         DrawerOpenReq() = delete;
 
@@ -45,16 +46,20 @@ namespace drawer_statemachine
             };
         }
 
-        
 
     protected:
         std::string topic_name_;
-        void DrawerOpenReq::callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg);
+        void callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg);
 
     private:
+        rclcpp::Node::SharedPtr node_;
+
+
         rclcpp::CallbackGroup::SharedPtr callback_group_;
         rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
-        rclcpp::Subscription<std_msgs::msg::String>::SharedPtr drawer_open_sub;
-
+        rclcpp::Subscription<communication_interfaces::msg::DrawerAddress>::SharedPtr drawer_open_sub_;
+        communication_interfaces::msg::DrawerAddress drawer_address_;
+        bool new_message_;
     };
 }
+#endif 
