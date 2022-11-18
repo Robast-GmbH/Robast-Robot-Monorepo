@@ -6,6 +6,8 @@ FROM ros:humble-ros-core AS build
 RUN apt-get update && apt-get install -y \
   cmake \
   python3-argcomplete \
+  python3-pip \
+  python3-rosdep \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
 
@@ -22,5 +24,3 @@ WORKDIR workspace/
 SHELL ["/bin/bash", "-c"]
 RUN source /opt/ros/humble/setup.bash\
     colcon build
-
-
