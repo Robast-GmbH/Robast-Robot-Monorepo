@@ -71,7 +71,7 @@
       <inertial>
         <mass value="${rocker_support_mass}" />
         <origin xyz="0 0 0" />
-        <cylinder_inertia  m="${rocker_support_mass}" r="0.010" h="0.010" />  <!--Check these values -->
+        <xacro:cylinder_inertia  m="${rocker_support_mass}" r="0.010" h="0.010" />  <!--Check these values -->
       </inertial>
 	</link> 
   

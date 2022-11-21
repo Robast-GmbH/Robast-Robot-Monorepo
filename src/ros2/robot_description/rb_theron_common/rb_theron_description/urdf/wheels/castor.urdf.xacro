@@ -53,7 +53,7 @@
       <inertial>
         <mass value="${caster_support_mass}" />
         <origin xyz="0 0 0" />
-        <cylinder_inertia  m="${caster_support_mass}" r="0.010" h="0.010" />  <!--Check these values -->
+        <xacro:cylinder_inertia  m="${caster_support_mass}" r="0.010" h="0.010" />  <!--Check these values -->
       </inertial>
     </link> 
 
@@ -109,7 +109,7 @@
       <inertial>
         <mass value="${caster_mass}" />
         <origin xyz="0 0 0" />
-        <cylinder_inertia  m="${caster_mass}" r="${caster_radius}" h="${caster_height}" />
+        <xacro:cylinder_inertia  m="${caster_mass}" r="${caster_radius}" h="${caster_height}" />
       </inertial>
     </link> 
 
