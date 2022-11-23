@@ -46,8 +46,9 @@
 
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
-          <geometry>     
-	       <mesh filename="$(find rb_theron_description)/meshes/wheels/mcq_prototype_base_castor.dae" />
+          <geometry>
+            <box size="0.022 0.022 0.01" />
+	          <!-- <mesh filename="$(find rb_theron_description)/meshes/wheels/mcq_prototype_base_castor.dae" /> -->
           </geometry> 
       </collision>    
       <inertial>

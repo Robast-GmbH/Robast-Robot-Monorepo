@@ -45,12 +45,12 @@
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
           <xacro:if value="${reflect}">
-            <geometry>     
-	          <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_r.dae" />
+            <geometry> 
+	            <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_r.dae" />
             </geometry>         
           </xacro:if>
           <xacro:unless value="${reflect}">
-            <geometry>     
+            <geometry>
               <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_l.dae" />
             </geometry>			  
 		  </xacro:unless>
@@ -58,13 +58,15 @@
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
           <xacro:if value="${reflect}">
-            <geometry>     
-	          <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_r.dae" />
+            <geometry>
+              <box size="0.2 0.022 0.01" />  
+	            <!-- <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_r.dae" /> -->
             </geometry> 
           </xacro:if>
           <xacro:unless value="${reflect}">
-            <geometry>     
-              <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_l.dae" />
+            <geometry>    
+                <box size="0.2 0.022 0.01" /> 
+                <!-- <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_l.dae" /> -->
             </geometry>			  
 		  </xacro:unless>
       </collision>    
