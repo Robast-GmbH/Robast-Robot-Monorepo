@@ -42,5 +42,5 @@ jobs:
       working-directory: src/ros2/navigation
       run: |
             docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/navigation_deploy
-            docker run ghcr.io/robast-gmbh/monorepo/navigationdeploy 
+            docker run ghcr.io/robast-gmbh/monorepo/navigation_deploy 
             docker push ghcr.io/robast-gmbh/monorepo/navigation_deploy 
