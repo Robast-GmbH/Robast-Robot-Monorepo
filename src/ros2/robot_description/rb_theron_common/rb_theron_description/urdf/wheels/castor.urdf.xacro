@@ -39,9 +39,14 @@
     <link name="${prefix}support">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
-          <geometry>     
-	       <mesh filename="$(find rb_theron_description)/meshes/wheels/mcq_prototype_base_castor.dae" />
-          </geometry>         
+        <geometry>
+          <xacro:if value="${hq}">
+            <mesh filename="$(find rb_theron_description)/meshes/wheels/mcq_prototype_base_castor.dae" />
+          </xacro:if>
+          <xacro:unless value="${hq}">
+            <box size="0.022 0.022 0.01" />
+          </xacro:unless>
+        </geometry>    
       </visual>
 
       <collision>

@@ -48,7 +48,7 @@
 	<xacro:property name="wheel_offset_z" value="0.015" />
 
 	<!-- Flag to select the high or low quality model -->
-	<xacro:property name="hq" value="true" />
+	<xacro:property name="hq" value="false" />
 
 	<!-- *************** -->
 	<!-- Robots Elements -->
@@ -88,11 +88,11 @@
 	<!-- SENSORS  DEBUGG-->
 	<!-- TODO: Should be sensor_intel_d435, but this one isn't migrated to ros2 yet -->
 	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
-	<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" prefix_topic="front_realsense_camera">
+	<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" prefix_topic="front_realsense_camera" hq="${hq}">
 		<origin xyz="0.3305 0.0 0.1468" rpy="0 0 0"/>
 	</xacro:sensor_r430>
 
-	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" prefix_topic="back_realsense_camera">
+	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" prefix_topic="back_realsense_camera" hq="${hq}">
 		<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
 
@@ -105,7 +105,7 @@
 		<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
 	</xacro:sensor_imu_hector>
 
-	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" prefix_topic="front_laser" min_angle="-1.9507619" max_angle="1.9507619">
+	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619">
 		<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
 	</xacro:sensor_sick_nanoscan3>
 
@@ -113,7 +113,7 @@
 		<origin xyz="0.214 0.0 0.275" rpy="-1.57079632679 0 -0.23"/>
 	</xacro:sensor_rs_lidar_16>-->
 
-	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser"  parent="$(arg prefix)base_link" prefix_topic="top_laser" range_min="0.1" range_max="90" hfov="360" samples="1200" vfov="90.0" lasers="32" fps="15" gpu="false">
+	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser"  parent="$(arg prefix)base_link" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1200" vfov="90.0" lasers="32" fps="15" gpu="false">
             <origin xyz="0.28 -0.159 1.22" rpy="-1.570796326795 0 -1.570796326795"/>
         </xacro:sensor_rs_bpearl>
 
@@ -131,7 +131,7 @@
 	<xacro:arg name="cam_pitch"     default="0.0" />
 	<xacro:arg name="cam_yaw"       default="0.0" />
 
-	<xacro:depthai_camera camera_name = "$(arg camera_name)" parent = "$(arg prefix)base_link" camera_model = "$(arg camera_model)" base_frame = "$(arg base_frame)" cam_pos_x = "$(arg cam_pos_x)" cam_pos_y = "$(arg cam_pos_y)" cam_pos_z = "$(arg cam_pos_z)" cam_roll = "$(arg cam_roll)" cam_pitch = "$(arg cam_pitch)" cam_yaw = "$(arg cam_yaw)"/>
+	<!-- <xacro:depthai_camera camera_name = "$(arg camera_name)" parent = "$(arg prefix)base_link" camera_model = "$(arg camera_model)" base_frame = "$(arg base_frame)" cam_pos_x = "$(arg cam_pos_x)" cam_pos_y = "$(arg cam_pos_y)" cam_pos_z = "$(arg cam_pos_z)" cam_roll = "$(arg cam_roll)" cam_pitch = "$(arg cam_pitch)" cam_yaw = "$(arg cam_yaw)"/> -->
 
 	<!-- ROBAST Module Cage -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />

@@ -38,22 +38,34 @@
       <limit lower="-0.5" upper="0.5" effort="100" velocity="100"/>
       <joint_properties damping="0.1" friction="0.1"/>
 	</joint>
-	
-	
-	
+		
 	<link name="${prefix}rsupport">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
           <xacro:if value="${reflect}">
-            <geometry> 
-	            <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_r.dae" />
-            </geometry>         
+            <xacro:if value="${hq}">
+	            <geometry>
+                <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_r.stl" />
+              </geometry>
+            </xacro:if>
+            <xacro:unless value="${hq}">
+              <geometry>
+                <box size="0.2 0.022 0.01" />  
+              </geometry>
+            </xacro:unless>     
           </xacro:if>
           <xacro:unless value="${reflect}">
-            <geometry>
-              <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_l.dae" />
-            </geometry>			  
-		  </xacro:unless>
+            <xacro:if value="${hq}">
+              <geometry>
+                <mesh filename="$(find rb_theron_description)/meshes/rocker/mcq_prototype_rocker_l.stl" />
+              </geometry>
+            </xacro:if>
+            <xacro:unless value="${hq}">
+              <geometry>
+                <box size="0.2 0.022 0.01" />  
+              </geometry>
+            </xacro:unless>   
+		      </xacro:unless>
       </visual>
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
@@ -110,9 +122,6 @@
 				<state_interface name="velocity"/>
 			</joint>
 		</ros2_control>
-    
-	<!-- Flag to select the high or low quality model -->
-	<xacro:property name="hq" value="true" />
 	    
     <xacro:property name="wheel_offset_x" value="-0.1175" />
     <xacro:if value="${reflect}">    
@@ -144,23 +153,6 @@
 		<origin xyz="${caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
 	</xacro:caster>
 
-    <!-- gazebo reference="${prefix}support">
-			<mu1 value="5.0"/>
-			<mu2 value="0.5"/>
-			<kp value="10000000.0" />
-			<kd value="1.0" />
-			<fdir1 value="1 0 0"/>
-      <turnGravityOff>false</turnGravityOff>
-    </gazebo>
-    
-     <gazebo reference="${prefix}_wheel">
-			<mu1 value="5.0"/>
-			<mu2 value="0.5"/>
-			<kp value="10000000.0" />
-			<kd value="1.0" />
-			<fdir1 value="1 0 0"/>
-      <turnGravityOff>false</turnGravityOff>
-    </gazebo --> 
  </xacro:macro> 
 
 </robot>

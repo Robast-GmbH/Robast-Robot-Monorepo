@@ -2,7 +2,7 @@
 <robot name="sensor_sick_nanoscan3"
 	xmlns:xacro="http://wiki.ros.org/xacro">
 
-	<xacro:macro name="sensor_sick_nanoscan3" params="prefix parent prefix_topic:='front_laser' *origin max_angle:=2.3998 min_angle:=-2.3998 gpu:=^|false">
+	<xacro:macro name="sensor_sick_nanoscan3" params="prefix parent prefix_topic:='front_laser' hq *origin max_angle:=2.3998 min_angle:=-2.3998 gpu:=^|false">
 
 		<joint name="${prefix}_base_joint" type="fixed">
 			<xacro:insert_block name="origin" />
@@ -15,16 +15,23 @@
 				<origin xyz="0 0 0" rpy="0 0 0"/>
 				<geometry>
 					<!--<box size="0.106 0.094 0.152"/>-->
-					<cylinder radius="0.058" length="0.152"/>
+					<cylinder radius="0.058" length="0.07"/>
 					<!-- <mesh filename="$(find robotnik_sensors)/meshes/sick_nanoscan3.stl"/> -->
 				</geometry>
 			</collision>
 
 			<visual>
 				<origin xyz="0 0 0" rpy="0 0 0"/>
-				<geometry>
-					<mesh filename="$(find robotnik_sensors)/meshes/sick_nanoscan3.stl"/>
-				</geometry>
+				<xacro:if value="${hq}">
+					<geometry>
+						<mesh filename="$(find robotnik_sensors)/meshes/sick_nanoscan3.stl"/>
+					</geometry>
+				</xacro:if>
+				<xacro:unless value="${hq}">
+					<geometry>
+						<cylinder radius="0.058" length="0.07"/>
+					</geometry>
+				</xacro:unless>
 			</visual>
 
 			<inertial>
