@@ -139,4 +139,10 @@
 		<origin xyz="0.35 -0.0 -0.075" rpy="0 0 1.570796326794896619"/>
 	</xacro:module_cage> -->
 
+	<!-- ROBAST Drawer -->
+	<xacro:include filename="$(find rb_theron_description)/urdf/drawer/drawer.urdf.xacro" />
+	<xacro:drawer prefix="$(arg prefix)first" parent="$(arg prefix)base_link">
+		<origin xyz="0.0 0.0 0.3" rpy="0 0 0"/>
+	</xacro:drawer>
+
 </robot>
