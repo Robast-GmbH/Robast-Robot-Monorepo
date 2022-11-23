@@ -1,5 +1,5 @@
-#ifndef DRAWEROPENREQ_BT_NODES_H
-#define DRAWEROPENREQ_BT_NODES_H
+#ifndef OPENDRAWER_BT_NODES_H
+#define OPENDRAWER_BT_NODES_H
 
 #include <string>
 #include <vector>
@@ -18,14 +18,14 @@ namespace drawer_statemachine
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
      * updated on the blackboard and FAILURE otherwise
      */
-    class DrawerOpenReq : public BT::AsyncActionNode
+    class OpenDrawer : public BT::AsyncActionNode
     {
-    public:        
-        DrawerOpenReq(
+    public:
+        OpenDrawer(
             const std::string& name,
             const BT::NodeConfiguration& config);
 
-        DrawerOpenReq() = delete;
+        OpenDrawer() = delete;
 
         /**
          * @brief The main override required by a BT action
@@ -41,24 +41,27 @@ namespace drawer_statemachine
         {
             return
             {
-              BT::InputPort<std::string>("topic_name", "topic", ""),
-              BT::OutputPort<communication_interfaces::msg::DrawerAddress>("drawer_address", "topic")
+                BT::InputPort<communication_interfaces::msg::DrawerAddress>(
+                    "drawer_address","address of the drawer that should execute the action"
+                ),
+                BT::InputPort<std::string>(
+                    "drawer_open_topic",
+                    "/open_drawer",
+                    "topic thats used to execute the action"
+                )
             };
         }
 
 
     protected:
         std::string topic_name_;
-        void callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg);
 
     private:
         rclcpp::Node::SharedPtr node_;
 
-        rclcpp::CallbackGroup::SharedPtr callback_group_;
-        rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
-        rclcpp::Subscription<communication_interfaces::msg::DrawerAddress>::SharedPtr drawer_open_sub_;
-        communication_interfaces::msg::DrawerAddress drawer_address_;
-        bool new_message_;
+        // rclcpp::CallbackGroup::SharedPtr callback_group_;
+        // rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
+        rclcpp::Publisher<communication_interfaces::msg::DrawerAddress>::SharedPtr open_publisher_;
     };
 }
 #endif 

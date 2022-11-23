@@ -12,7 +12,7 @@ namespace drawer_statemachine
         const BT::NodeConfiguration& config)
         : BT::AsyncActionNode(name, config)
     {
-        node_ = config().blackboard->get<rclcpp::Node::SharedPtr>("node");
+        node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
         callback_group_ = node_->create_callback_group(
             rclcpp::CallbackGroupType::MutuallyExclusive,
             false);
@@ -37,11 +37,6 @@ namespace drawer_statemachine
     {
         callback_group_executor_.spin_some();
 
-        // This behavior always use the last selected planner received from the topic input.
-        // When no input is specified it uses the default planner.
-        // If the default planner is not specified then we work in "required planner mode":
-        // In this mode, the behavior returns failure if the planner selection is not received from
-        // the topic input.
         if (new_message_)
         {
             setOutput("drawer_address", drawer_address_);
