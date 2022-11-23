@@ -23,7 +23,6 @@ ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
-
 RUN apt-get update && apt-get install -y \
   cmake \
   gdb \
@@ -91,7 +90,6 @@ RUN cd /workspace; \
     source /opt/ros/humble/setup.bash; \
     colcon build --cmake-args --packages-skip aws_hospital_world robast_map_update_module
 COPY ./environment_vars.yaml /workspace/environment_vars.yaml
-
 
 
 FROM ros:humble-ros-core as final 
