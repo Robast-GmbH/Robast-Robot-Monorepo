@@ -4,6 +4,7 @@
             <input_port name="blue" default="0">uint8</input_port>
             <input_port name="brightness" default="0">uint8 to determine the brightness</input_port>
             <input_port name="drawer_address" default="{drawer}"/>
+            <input_port name="drawer_led_topic" default="/drawer_leds"/>
             <input_port name="green" default="0">uint8</input_port>
             <input_port name="mode" default="0">uint8. describes the kind of animation thats used</input_port>
             <input_port name="red" default="0">uint8</input_port>
@@ -14,9 +15,12 @@
         </Action>
         <Action ID="OpenDrawer">
             <input_port name="drawer_address" default="{drawer}"/>
+            <input_port name="drawer_open_topic" default="/open_drawer"/>
         </Action>
-        <Condition ID="drawer_is_closed"/>
-        <Condition ID="drawer_is_open"/>
+        <Condition ID="DrawerStatusCondition">
+            <input_port name="target_value" default="false"/>
+            <input_port name="topic" default="/drawer_is_open"/>
+        </Condition>
     </TreeNodesModel>
 </root>
 
