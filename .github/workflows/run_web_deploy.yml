@@ -1,0 +1,41 @@
+name: Web Deploy
+
+on:
+  push:
+    branches:
+      - "dev/RE-774"
+      - "main"
+    paths:
+    - "src/web/**"
+      
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v3
+      with:
+          fetch-depth: 2
+   
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and Publish web backend
+      working-directory: src/web/backend
+      run: |
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy
+            docker run ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
+            docker push ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
+   
+    - name: Build and Publish web frontend
+      working-directory: src/web/frontend
+      run: |
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy
+            docker run ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
+            docker push ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
