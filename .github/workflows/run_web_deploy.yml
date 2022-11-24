@@ -29,13 +29,13 @@ jobs:
     - name: Build and Publish web backend
       working-directory: src/web/backend
       run: |
-            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy
-            docker run ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
-            docker push ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/backend_web_deploy
+            docker run ghcr.io/robast-gmbh/monorepo/backend_web_deploy 
+            docker push ghcr.io/robast-gmbh/monorepo/backend_web_deploy 
    
     - name: Build and Publish web frontend
       working-directory: src/web/frontend
       run: |
-            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy
-            docker run ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
-            docker push ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/frontend_web_deploy
+            docker run ghcr.io/robast-gmbh/monorepo/frontend_web_deploy 
+            docker push ghcr.io/robast-gmbh/monorepo/frontend_web_deploy 
