@@ -37,9 +37,10 @@ RUN apt-get update && apt-get install -y \
     && rosdep init || echo "rosdep already initialized"
 COPY --from=build /workspace/install /workspace/install
 
-#SHELL ["/bin/bash", "-c"]
-# RUN TODO Start Nodes. 
-
+SHELL ["/bin/bash", "-c"]
+RUN cd /workspace; \
+    source install/setup.bash; \
+    ros2 launch drawer_gate drawer_gate_launch.py
 
 ENV ROS_DOMAIN_ID=0
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
