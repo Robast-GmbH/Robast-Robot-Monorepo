@@ -29,7 +29,7 @@ ENV DEBIAN_FRONTEND=
  #    npm run build \
  #    serve -s build&
 
-WORKDIR workspace/src/
-RUN npm install
-CMD ["npm", "start"]  
-EXPOSE 3000
+# WORKDIR workspace/src/
+# RUN npm install
+# CMD ["npm", "start"]  
+# EXPOSE 3000
