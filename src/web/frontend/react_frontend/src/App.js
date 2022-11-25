@@ -22,7 +22,7 @@ function App() {
    useEffect(() => {
      const getMapPositions = async () => {
       const mapPositionsFromServer = await fetchMapPositions()
-      // console.log(mapPositionsFromServer)
+      //console.log(mapPositionsFromServer)
       setMapPositions(mapPositionsFromServer)
     }
 
