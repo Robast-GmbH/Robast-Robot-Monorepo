@@ -26,12 +26,12 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build and Publish Web-Backend
-      working-directory: src/web/backend
-      run: |
-            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/backend_web_deploy
-            docker run ghcr.io/robast-gmbh/monorepo/backend_web_deploy 
-            docker push ghcr.io/robast-gmbh/monorepo/backend_web_deploy 
+    # - name: Build and Publish Web-Backend
+    #   working-directory: src/web/backend
+    #   run: |
+    #         docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/backend_web_deploy
+    #         docker run ghcr.io/robast-gmbh/monorepo/backend_web_deploy 
+    #         docker push ghcr.io/robast-gmbh/monorepo/backend_web_deploy 
    
     - name: Build and Publish Web-Frontend
       working-directory: src/web/frontend
