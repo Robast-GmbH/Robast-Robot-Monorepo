@@ -14,15 +14,15 @@ ENV USER ubuntu
 COPY . /workspace/src
 
 ENV DEBIAN_FRONTEND=
-# ENV DEBIAN_FRONTEND=noninteractive
-# RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
-# RUN apt install nodejs
-# RUN apt-get update && apt upgrade -y && apt-get install net-tools 
-# RUN npm install @mui/material @emotion/react @emotion/styled && \
-#     npm install @mui/icons-material && \
-#     npm i --save react-select
-# ENV DEBIAN_FRONTEND=
-#RUN npm install -g serve
+ENV DEBIAN_FRONTEND=noninteractive
+RUN curl -sL https://deb.nodesource.com/setup_14.x | sudo -E bash -
+RUN apt install nodejs
+RUN apt-get update && apt upgrade -y && apt-get install net-tools 
+RUN npm install @mui/material @emotion/react @emotion/styled && \
+    npm install @mui/icons-material && \
+    npm i --save react-select
+ENV DEBIAN_FRONTEND=
+# RUN npm install -g serve
 
  #SHELL ["/bin/bash", "-c"]
  #RUN cd workspace/src/; \
