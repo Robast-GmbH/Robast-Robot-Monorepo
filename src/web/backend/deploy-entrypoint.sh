@@ -1,2 +1,2 @@
 #!/bin/bash
-python /workspace/src/main.py
+python /workspace/src/main.py&
