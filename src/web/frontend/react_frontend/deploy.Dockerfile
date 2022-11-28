@@ -37,3 +37,4 @@ RUN     npm install -g serve;\
 #CMD ["npm, start"]  
 ENTRYPOINT ["./workspace/src/deploy-entrypoint.sh" ]
 EXPOSE 3000
+CMD tail -f /dev/null
