@@ -32,9 +32,6 @@ RUN     npm install -g serve;\
         npm run build;\
         serve -s build & 
         
-#WORKDIR workspace/src
-#CMD [ "serve" ,"-s", "build"]
-#CMD ["npm, start"]  
 ENTRYPOINT ["./workspace/src/deploy-entrypoint.sh" ]
 EXPOSE 3000
 CMD tail -f /dev/null
