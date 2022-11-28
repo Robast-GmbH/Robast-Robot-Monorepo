@@ -9,7 +9,7 @@ on:
     - "src/web/**"
       
 jobs:
-  build:
+  deploy:
 
     runs-on: ubuntu-latest
 

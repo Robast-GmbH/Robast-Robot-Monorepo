@@ -5,6 +5,7 @@ COPY . /workspace/src
 RUN pip install --no-cache-dir -r /workspace/src/requirements.txt
 
 
-# CMD [ "python", "/workspace/src/main.py" ]
+ CMD [ "python", "/workspace/src/main.py" ]
 
 EXPOSE 8000
+#CMD tail -f /dev/null
