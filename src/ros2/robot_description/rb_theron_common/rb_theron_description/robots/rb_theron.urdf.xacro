@@ -60,10 +60,9 @@
 	<!-- this property is for the chassis -->
 
 	<!-- rbogie base -->
-	<xacro:theron_base prefix="$(arg prefix)" publish_bf="true" hq="${hq}" />
+	<xacro:theron_base prefix="$(arg prefix)" publish_bf="false" hq="${hq}" />
 
-	<!-- Gazebo ros control pluggins -->
-	<xacro:ros_control prefix="$(arg prefix)"/>
+
 
 	<xacro:gazebo_colors prefix="$(arg prefix)"/>
 
@@ -144,5 +143,8 @@
 	<xacro:drawer prefix="$(arg prefix)first" parent="$(arg prefix)base_link">
 		<origin xyz="0.105 0.0 0.3" rpy="0 0 0"/>
 	</xacro:drawer>
+
+	<!-- Gazebo ros control pluggins -->
+	<xacro:ros_control prefix="$(arg prefix)"/>
 
 </robot>
