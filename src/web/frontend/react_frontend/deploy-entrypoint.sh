@@ -4,5 +4,7 @@
  npm ci
  npm run build&
  serve -s build&
-
-tail -f /dev/null
+if $DOCKER_RUNMODE == "Infinite"
+then
+  tail -f /dev/null
+fi
