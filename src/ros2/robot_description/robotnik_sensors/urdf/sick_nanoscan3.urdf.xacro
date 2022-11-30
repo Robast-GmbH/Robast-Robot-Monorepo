@@ -59,16 +59,18 @@
 
 			<xacro:if value="${gpu}">
 				<xacro:property name="ray_type" value="gpu_ray" />
-				<xacro:property name="plugin_lib" value="libgazebo_ros_ray_sensor.so" />
+				<xacro:property name="plugin_lib" value="libgz-sim-sensors-system.so" />
 			</xacro:if>
 			<xacro:unless value="${gpu}">
 				<xacro:property name="ray_type" value="ray" />
-				<xacro:property name="plugin_lib" value="libgazebo_ros_ray_sensor.so" />
+				<xacro:property name="plugin_lib" value="libgz-sim-sensors-system.so" />
 			</xacro:unless>
 
 			<sensor type="${ray_type}" name="${prefix}_sensor">
-				<pose>0 0 0 0 0 0</pose>
-				<visualize>false</visualize>
+				<pose relative_to='${prefix}_link'>0 0 0 0 0 0</pose>
+				<topic>${prefix_topic}/scan</topic>
+				<always_on>1</always_on>
+    				<visualize>true</visualize>
 				<update_rate>12.5</update_rate>
 				<ray>
 					<scan>
@@ -78,6 +80,12 @@
 							<min_angle>${min_angle}</min_angle>
 							<max_angle>${max_angle}</max_angle>
 						</horizontal>
+						<vertical>
+							<samples>1</samples>
+							<resolution>0.01</resolution> <!-- TODO: CHECK IF THIS VALUE IS CORRECT -->
+							<min_angle>0</min_angle>
+							<max_angle>0</max_angle>
+						</vertical>
 					</scan>
 					<range>
 						<min>0.065</min>
@@ -90,13 +98,8 @@
 						<stddev>0.03</stddev>
 					</noise>
 				</ray>
-				<plugin name="${prefix}_controller" filename="${plugin_lib}">
-					<ros>
-						<remapping>~/out:=${prefix_topic}/scan</remapping>
-					</ros>
-					<frame_name>${prefix}_link</frame_name>
-					<output_type>sensor_msgs/LaserScan</output_type>
-					<!-- if not global (leading /) sets the current namespace as a prefix (/ns/name_laser_link) -->
+				<plugin name="gz::sim::systems::Sensors" filename="${plugin_lib}">
+					<render_engine>ogre2</render_engine>
 				</plugin>
 			</sensor>
 		</gazebo>
