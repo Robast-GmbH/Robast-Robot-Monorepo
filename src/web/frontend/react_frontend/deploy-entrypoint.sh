@@ -4,6 +4,7 @@
  npm ci
  npm run build&
  serve -s build&
-if [ -z ${DOCKER_MODE+x} ]; then
+ echo ${DOCKER_MODE};
+ if [ -z ${DOCKER_MODE+x} ]; then
     tail -f /dev/null
-fi
+ fi
