@@ -4,7 +4,6 @@
  npm ci
  npm run build&
  serve -s build&
-if $DOCKER_Deployment != "True"
-then
-  tail -f /dev/null
+if [ -z ${DOCKER_MODE+x} ]; then
+    tail -f /dev/null
 fi
