@@ -4,7 +4,7 @@
  npm ci
  npm run build&
  serve -s build&
-if $DOCKER_RUNMODE == "Infinite"
+if $DOCKER_Deployment != "True"
 then
   tail -f /dev/null
 fi

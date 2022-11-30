@@ -35,6 +35,8 @@ jobs:
    
     - name: Build and Publish Web-Frontend
       working-directory: src/web/frontend/react_frontend
+      env:
+        DOCKER_Deployment: "True"
       run: |
             docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/frontend_web_deploy
             docker run ghcr.io/robast-gmbh/monorepo/frontend_web_deploy 
