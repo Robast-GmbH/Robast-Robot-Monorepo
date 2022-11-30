@@ -24,7 +24,6 @@ RUN npm install @mui/material @emotion/react @emotion/styled && \
 ENV DEBIAN_FRONTEND=
 
 
-
 # SHELL ["/bin/bash", "-c"]
 # RUN     cd workspace/src;\
 #         npm ci;
