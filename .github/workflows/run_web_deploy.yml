@@ -39,5 +39,5 @@ jobs:
         DOCKER_Deployment: "True"
       run: |
             docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/frontend_web_deploy
-            docker run ghcr.io/robast-gmbh/monorepo/frontend_web_deploy -e "DOCKER_MODE=DEPLOY" 
+            docker run ghcr.io/robast-gmbh/monorepo/frontend_web_deploy --env "DOCKER_MODE= DEPLOY"
             docker push ghcr.io/robast-gmbh/monorepo/frontend_web_deploy 
