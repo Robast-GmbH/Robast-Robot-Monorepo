@@ -1,10 +1,11 @@
 #!/bin/bash
  cd  /workspace/src
  npm install -g serve
- npm ci
- npm run build&
- serve -s build&
+ 
  echo ${DOCKER_MODE};
  if [ -z ${DOCKER_MODE+x} ]; then
-    tail -f /dev/null
+   npm ci 
+   npm run build&
+   serve -s build&
+   tail -f /dev/null
  fi

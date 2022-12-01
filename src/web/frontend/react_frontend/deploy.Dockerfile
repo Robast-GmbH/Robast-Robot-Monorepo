@@ -22,16 +22,6 @@ RUN npm install @mui/material @emotion/react @emotion/styled && \
     npm install @mui/icons-material && \
     npm i --save react-select
 ENV DEBIAN_FRONTEND=
-
-
-
-# SHELL ["/bin/bash", "-c"]
-# RUN     cd workspace/src;\
-#         npm ci;
-
-# RUN     npm install -g serve;\
-#         npm run build;\
-#         serve -s build & 
-        
+      
 ENTRYPOINT ["/workspace/src/deploy-entrypoint.sh"]
 EXPOSE 3000
