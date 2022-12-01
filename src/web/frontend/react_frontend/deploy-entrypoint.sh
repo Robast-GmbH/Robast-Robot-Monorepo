@@ -7,5 +7,5 @@
    npm ci 
    npm run build&
    serve -s build&
-   tail -f /dev/null
+   # tail -f /dev/null
  fi
