@@ -5,6 +5,6 @@
  npm run build&
  serve -s build&
  echo ${DOCKER_MODE};
- if [ -z ${DOCKER_MODE+x} ]; then
+ if ![ -z ${DOCKER_MODE+x} ]; then
     tail -f /dev/null
  fi
