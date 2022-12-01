@@ -1,4 +1,6 @@
 import os
+import xacro
+import yaml
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -13,50 +15,98 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
+    with open("environment_vars.yaml", 'r') as stream:
+        try:
+            environment_yaml = yaml.safe_load(stream)
+            print(environment_yaml)
+        except yaml.YAMLError as exc:
+            print(exc)
 
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
     gz_ros_bridge_yaml = os.path.join(get_package_share_directory('tiplu_world'), 'config', 'gz_ros_bridge.yaml')
 
-    rviz_launch_arg = DeclareLaunchArgument(
-        'rviz', default_value='true',
-        description='Open RViz.'
+    robot_xml = xacro.process_file(os.path.join(get_package_share_directory(
+        'rb_theron_description'), 'robots', environment_yaml["robot"]+'.urdf.xacro'), mappings={'prefix': environment_yaml["prefix"]}).toxml()
+
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    world_model = LaunchConfiguration('world_model')
+    robot_name = LaunchConfiguration('robot_name')
+
+    declare_namespace_cmd = DeclareLaunchArgument(
+        'namespace',
+        default_value='',
+        description='Top-level namespace'
     )
 
-    gz_sim = IncludeLaunchDescription(
+    declare_robot_model_cmd = DeclareLaunchArgument(
+        'robot_name',
+        default_value='rb_theron',
+        description='name of the robot in the simulation'
+    )
+
+    declare_world_model_cmd = DeclareLaunchArgument(
+        'world_model',
+        default_value=os.path.join(get_package_share_directory('tiplu_world'), 'worlds', '6OG' + '.sdf'),
+        description='math to the world model'
+    )
+
+    declare_use_sim_time_cmd = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value='true',
+        description='whether to use sim time or not'
+    )
+
+    start_robot_state_publisher_cmd = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        name="robot_state_publisher",
+        parameters=[
+                {'use_sim_time': use_sim_time},
+                {'robot_description': robot_xml}
+        ],
+        output="screen",
+    )
+
+    gz_sim_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py'),
         ),
-        launch_arguments={'gz_args': PathJoinSubstitution([
-            get_package_share_directory('tiplu_world'),
-            'worlds',
-            'tiplu_office.sdf'
-        ])}.items(),
+        launch_arguments={'gz_args': world_model}.items(),
     )
 
-    # RViz
-    rviz = Node(
-       package='rviz2',
-       executable='rviz2',
-       condition=IfCondition(LaunchConfiguration('rviz'))
+    spawn_robot_cmd = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=[
+            '-name', robot_name,
+            '-topic', 'robot_description',
+        ],
+        output='screen',
     )
 
-    # Bridge
-    bridge = Node(
+    gz_ros_bridge_cmd = Node(
         package='ros_gz_bridge',
         executable='parameter_bridge',
-        # arguments=['/model/vehicle_blue/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
-        #            '/model/vehicle_blue/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry',
-        #            '/model/vehicle_green/cmd_vel@geometry_msgs/msg/Twist@gz.msgs.Twist',
-        #            '/model/vehicle_green/odometry@nav_msgs/msg/Odometry@gz.msgs.Odometry'],
         parameters=[
                 {'config_file': gz_ros_bridge_yaml},
         ],
         output='screen'
     )
 
-    return LaunchDescription([
-        gz_sim,
-        rviz_launch_arg,
-        bridge,
-        rviz
-    ])
+    ld = LaunchDescription()
+
+    # arguments
+    ld.add_action(declare_namespace_cmd)
+    ld.add_action(declare_use_sim_time_cmd)
+    ld.add_action(declare_world_model_cmd)
+    ld.add_action(declare_robot_model_cmd)
+
+    # included launches
+    ld.add_action(gz_sim_cmd)
+
+    # nodes
+    ld.add_action(start_robot_state_publisher_cmd)
+    ld.add_action(spawn_robot_cmd)
+    ld.add_action(gz_ros_bridge_cmd)
+
+    return ld
