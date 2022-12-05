@@ -47,5 +47,5 @@ jobs:
       working-directory: src/ros2/hardware_nodes
       run: |
             docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy
-            docker run ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
+            docker run  -e DOCKER_MODE='DEPLOY' ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
             docker push ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 

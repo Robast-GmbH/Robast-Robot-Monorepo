@@ -109,5 +109,5 @@ RUN cd /workspace; \
 RUN cd /workspace; \
     source install/setup.bash; \
     ros2 launch nav_bringup nav_without_localization_launch.py&
-    
-CMD tail -f /dev/null
+
+ENTRYPOINT ["/workspace/src/deploy-entrypoint.sh" ]
