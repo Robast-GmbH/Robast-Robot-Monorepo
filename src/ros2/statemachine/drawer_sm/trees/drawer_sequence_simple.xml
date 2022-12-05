@@ -1,0 +1,35 @@
+ <root main_tree_to_execute = "MainTree" >
+     <BehaviorTree ID="MainTree">
+        <Sequence name="root_sequence">
+            <ApproachObject name="approach_object"/>
+            <Condition ID="DrawerStatusCondition" target_value="false" topic="/drawer_is_open"/>
+
+
+        </Sequence>
+     </BehaviorTree>
+     <TreeNodesModel>
+        <Action ID="ChangeLedColor">
+            <input_port default="0" name="blue">uint8</input_port>
+            <input_port default="0" name="brightness">uint8 to determine the brightness</input_port>
+            <input_port default="{drawer}" name="drawer_address"/>
+            <input_port default="drawer_leds" name="led_topic"/>
+            <input_port default="0" name="green">uint8</input_port>
+            <input_port default="0" name="mode">uint8. describes the kind of animation thats used</input_port>
+            <input_port default="0" name="red">uint8</input_port>
+        </Action>
+        <Action ID="DrawerOpenReq">
+            <output_port default="{drawer}" name="drawer_address"/>
+            <input_port default="topic" name="topic_name"/>
+        </Action>
+        <Action ID="OpenDrawer">
+            <input_port default="{drawer}" name="drawer_address"/>
+            <input_port default="/open_drawer" name="drawer_open_topic"/>
+        </Action>
+        <Condition ID="DrawerStatusCondition">
+            <input_port name="target value" default="false"/>
+            <input_port name="topic" default="/drawer_is_open"/>
+        </Condition>
+        <Condition ID="drawer_is_closed"/>
+        <Condition ID="drawer_is_open"/>
+    </TreeNodesModel>
+ </root>

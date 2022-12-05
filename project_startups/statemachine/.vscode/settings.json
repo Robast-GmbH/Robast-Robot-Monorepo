@@ -107,5 +107,6 @@
     "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
     "C_Cpp.vcFormat.space.betweenEmptySquareBrackets": true,
     "cSpell.allowCompoundWords": true,
-    "editor.formatOnType": true
+    "editor.formatOnType": true,
+    "cmake.sourceDirectory": "${workspaceFolder}/src/statemachine/bt_plugins"
 }

@@ -13,18 +13,36 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 # find_package(behaviortree_cpp_v3)
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(communication_interfaces REQUIRED)
+find_package(behaviortree_cpp_v3 REQUIRED)
+find_package(bt_plugins REQUIRED)
 
+set(dependencies
+  rclcpp
+  rclcpp_action
+  std_msgs
+  communication_interfaces
+  behaviortree_cpp_v3
+  bt_plugins
+)
 
-if(BUILD_TESTING)
-  find_package(ament_lint_auto REQUIRED)
-  # the following line skips the linter which checks for copyrights
-  # comment the line when a copyright and license is added to all source files
-  set(ament_cmake_copyright_FOUND TRUE)
-  # the following line skips cpplint (only works in a git repo)
-  # comment the line when this package is in a git repo and when
-  # a copyright and license is added to all source files
-  set(ament_cmake_cpplint_FOUND TRUE)
-  ament_lint_auto_find_test_dependencies()
-endif()
+add_executable(drawer_sm2 src/drawer_sm.cpp)
+
+ament_target_dependencies(drawer_sm2
+  ${dependencies}
+)
+
+# target_link_libraries(drawe_sm2 ${dependencies})
+
 
 ament_package()
+install(TARGETS
+drawer_sm2
+  DESTINATION lib/${PROJECT_NAME})
+
+  install(DIRECTORY
+  trees
+    DESTINATION trees)
