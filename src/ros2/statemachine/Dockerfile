@@ -18,6 +18,7 @@ RUN apt-get update && apt-get upgrade -y &&\
     libncursesw5-dev \
     qtbase5-dev \
     libqt5svg5-dev \
+    gdb \
     && rosdep init || echo "rosdep already initialized"
 
 RUN apt-get update \
