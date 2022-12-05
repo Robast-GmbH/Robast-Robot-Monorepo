@@ -9,3 +9,22 @@
   direction: GZ_TO_ROS      # Default "BIDIRECTIONAL" - Bridge both directions
                             # "GZ_TO_ROS" - Bridge Ignition topic to ROS
                             # "ROS_TO_GZ" - Bridge ROS topic to Ignition
+
+- ros_topic_name: "/joint_states"
+  gz_topic_name: "/world/6OG/model/rb_theron/joint_state"
+  ros_type_name: "sensor_msgs/msg/JointState"
+  gz_type_name: "gz.msgs.Model"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: BIDIRECTIONAL                      
+
+
+- ros_topic_name: "/front_laser/scan"
+  gz_topic_name: "/front_laser/scan"
+  ros_type_name: "sensor_msgs/msg/LaserScan"
+  gz_type_name: "gz.msgs.LaserScan"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS     

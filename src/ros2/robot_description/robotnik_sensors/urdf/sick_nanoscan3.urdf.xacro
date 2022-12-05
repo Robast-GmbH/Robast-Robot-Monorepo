@@ -59,18 +59,18 @@
 
 			<xacro:if value="${gpu}">
 				<xacro:property name="ray_type" value="gpu_ray" />
-				<xacro:property name="plugin_lib" value="libgz-sim-sensors-system.so" />
+				<xacro:property name="plugin_lib" value="gz-sim-sensors-system" />
 			</xacro:if>
 			<xacro:unless value="${gpu}">
 				<xacro:property name="ray_type" value="ray" />
-				<xacro:property name="plugin_lib" value="libgz-sim-sensors-system.so" />
+				<xacro:property name="plugin_lib" value="gz-sim-sensors-system" />
 			</xacro:unless>
 
 			<sensor type="${ray_type}" name="${prefix}_sensor">
 				<pose relative_to='${prefix}_link'>0 0 0 0 0 0</pose>
 				<topic>${prefix_topic}/scan</topic>
 				<always_on>1</always_on>
-    				<visualize>true</visualize>
+    				<visualize>false</visualize>
 				<update_rate>12.5</update_rate>
 				<ray>
 					<scan>
