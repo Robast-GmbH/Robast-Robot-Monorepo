@@ -50,6 +50,8 @@
 	<!-- Flag to select the high or low quality model -->
 	<xacro:property name="hq" value="true" />
 
+	<xacro:property name="publish_bf" value="true"/>
+
 	<!-- *************** -->
 	<!-- Robots Elements -->
 	<!-- *************** -->
@@ -60,7 +62,7 @@
 	<!-- this property is for the chassis -->
 
 	<!-- rbogie base -->
-	<xacro:theron_base prefix="$(arg prefix)" publish_bf="true" hq="${hq}" />
+	<xacro:theron_base prefix="$(arg prefix)" publish_bf="${publish_bf}" hq="${hq}" />
 
 
 	<xacro:gazebo_colors prefix="$(arg prefix)"/>
@@ -145,6 +147,6 @@
 
 
 	<!-- Gazebo ros control pluggins -->
-	<xacro:ros_control prefix="$(arg prefix)"/>
+	<xacro:ros_control prefix="$(arg prefix)" publish_bf="${publish_bf}"/>
 
 </robot>
