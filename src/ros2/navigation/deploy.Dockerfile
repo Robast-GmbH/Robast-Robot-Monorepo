@@ -59,11 +59,6 @@ RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/o
   && make && make install
 
 RUN apt-get update && apt-get install -y \
-  # Install ros distro testing packages
-  # ros-${ROS_DISTRO}-ament-lint \
-  # ros-${ROS_DISTRO}-launch-testing \
-  # ros-${ROS_DISTRO}-launch-testing-ament-cmake \
-  # ros-${ROS_DISTRO}-launch-testing-ros \
   python3-autopep8 \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   ros-${ROS_DISTRO}-diagnostic-updater \
@@ -95,19 +90,11 @@ COPY ./environment_vars.yaml /workspace/environment_vars.yaml
 FROM ros:humble-ros-core as final 
 COPY --from=build /workspace/install /workspace/install 
 COPY --from=build /workspace/src/navigation/environment_vars.yaml /workspace/environment_vars.yaml
+COPY --from=build /workspace/src/navigation/deploy-entrypoint.sh . 
 
 RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-navigation2\ 
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     python3-requests 
 
-SHELL ["/bin/bash", "-c"]
-RUN cd /workspace; \
-    source install/setup.bash; \
-    ros2 launch nav_bringup slam_toolbox_launch.py&
-
-RUN cd /workspace; \
-    source install/setup.bash; \
-    ros2 launch nav_bringup nav_without_localization_launch.py&
-    
-CMD tail -f /dev/null
+ENTRYPOINT ["/deploy-entrypoint.sh" ]

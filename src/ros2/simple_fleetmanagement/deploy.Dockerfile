@@ -2,6 +2,7 @@ FROM ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy  AS communicat
 
 
 FROM ros:humble-ros-core AS build
+
 RUN apt-get update && apt-get install -y \
  build-essential \
   python3-colcon-common-extensions \
@@ -28,7 +29,8 @@ RUN apt-get update && apt-get install -y \
   # Install ros distro testing packages
   python3-autopep8 \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-  ros-${ROS_DISTRO}-diagnostic-updater
+  ros-${ROS_DISTRO}-diagnostic-updater \
+  python3-requests 
   
 RUN apt-get update \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
@@ -60,13 +62,9 @@ RUN apt-get update && apt-get install -y \
     python3-rosdep \
     python3-requests \
     && rosdep init || echo "rosdep already initialized"
+    
 COPY --from=build /workspace/install /workspace/install 
-
-SHELL ["/bin/bash", "-c"]
-RUN cd /workspace; \
-    source install/setup.bash; \
-    ros2 run simple_fleetmanagement fleetmanagement
-
+COPY --from=build /workspace/src/fleetmanagement/deploy-entrypoint.sh / 
 ENV ROS_DOMAIN_ID=0
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-CMD tail -f /dev/null
+ENTRYPOINT ["/deploy-entrypoint.sh" ]

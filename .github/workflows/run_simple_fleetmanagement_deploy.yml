@@ -3,7 +3,6 @@ name: simple fleetmanagement Deploy
 on:
   push:
     branches:
-      - "dev/RE-774"
       - "main"
     paths:
     - "src/ros2/simple_fleetmanagement/**"
@@ -40,5 +39,5 @@ jobs:
       working-directory: src/ros2/simple_fleetmanagement
       run: |
             docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/simple_fleetmanagement_deploy
-            docker run ghcr.io/robast-gmbh/monorepo/simple_fleetmanagement_deploy 
+            docker run -e DOCKER_MODE='DEPLOY' ghcr.io/robast-gmbh/monorepo/simple_fleetmanagement_deploy 
             docker push ghcr.io/robast-gmbh/monorepo/simple_fleetmanagement_deploy 
