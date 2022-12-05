@@ -1,7 +1,7 @@
 <?xml version="1.0" ?>
 
 <sdf version="1.8">
-  <world name="tiplu_office">
+  <world name="6OG">
 
     <light name="sun" type="directional">
       <cast_shadows>true</cast_shadows>
