@@ -59,11 +59,6 @@ RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/o
   && make && make install
 
 RUN apt-get update && apt-get install -y \
-  # Install ros distro testing packages
-  # ros-${ROS_DISTRO}-ament-lint \
-  # ros-${ROS_DISTRO}-launch-testing \
-  # ros-${ROS_DISTRO}-launch-testing-ament-cmake \
-  # ros-${ROS_DISTRO}-launch-testing-ros \
   python3-autopep8 \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   ros-${ROS_DISTRO}-diagnostic-updater \

@@ -28,7 +28,9 @@ RUN apt-get update && apt-get install -y \
   # Install ros distro testing packages
   python3-autopep8 \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-  ros-${ROS_DISTRO}-diagnostic-updater
+  ros-${ROS_DISTRO}-diagnostic-updater \
+  ros-${ROS_DISTRO}-navigation2 \ 
+  python3-requests 
   
 RUN apt-get update \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
