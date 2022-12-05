@@ -47,7 +47,7 @@ def generate_launch_description():
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_model',
         default_value=os.path.join(get_package_share_directory('tiplu_world'), 'worlds', '6OG' + '.sdf'),
-        description='math to the world model'
+        description='path to the world model'
     )
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
