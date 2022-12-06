@@ -1,4 +1,4 @@
-FROM ros:humble
+FROM moveit/moveit2:humble-release
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
