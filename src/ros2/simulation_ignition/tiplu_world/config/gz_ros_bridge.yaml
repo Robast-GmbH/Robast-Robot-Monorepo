@@ -27,7 +27,7 @@
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
-  direction: GZ_TO_ROS     
+  direction: GZ_TO_ROS
 
 - ros_topic_name: "/clock"
   gz_topic_name: "/clock"
@@ -36,4 +36,13 @@
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
-  direction: GZ_TO_ROS     
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/odom"
+  gz_topic_name: "/model/rb_theron/odometry"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.Odometry"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
