@@ -62,6 +62,7 @@ RUN apt-get update && apt-get install -y \
     python3-rosdep \
     python3-requests \
     && rosdep init || echo "rosdep already initialized"
+    
 COPY --from=build /workspace/install /workspace/install 
 COPY --from=build /workspace/src/fleetmanagement/deploy-entrypoint.sh / 
 ENV ROS_DOMAIN_ID=0

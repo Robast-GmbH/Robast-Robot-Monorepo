@@ -36,7 +36,7 @@ RUN apt-get update && apt-get install -y \
     python3-rosdep \
     && rosdep init || echo "rosdep already initialized"
 COPY --from=build /workspace/install /workspace/install
-
+COPY --from=build /workspace/src/hardware_nodes/deploy-entrypoint.sh .
 ENV ROS_DOMAIN_ID=0
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-ENTRYPOINT ["/workspace/src/deploy-entrypoint.sh" ]
+ENTRYPOINT ["/deploy-entrypoint.sh" ]
