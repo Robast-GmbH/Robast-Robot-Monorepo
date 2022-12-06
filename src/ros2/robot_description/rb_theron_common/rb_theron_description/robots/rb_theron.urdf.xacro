@@ -51,7 +51,7 @@
 	<xacro:property name="hq" value="true" />
 
 	<!-- Flag to determine if the base_footprint should be published or not -->
-	<xacro:property name="publish_bf" value="false"/>
+	<xacro:property name="publish_bf" value="true"/>
 
 	<!-- This name should match the "-name" argument we need to declare when spawing the robot into ign gazebo -->
 	<xacro:property name="robot_name" value="rb_theron"/>
