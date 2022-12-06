@@ -3,7 +3,6 @@ name: Web Deploy
 on:
   push:
     branches:
-      - "dev/RE-774"
       - "main"
     paths:
     - "src/web/**"
