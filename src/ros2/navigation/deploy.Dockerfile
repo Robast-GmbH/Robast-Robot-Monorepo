@@ -90,6 +90,7 @@ COPY ./environment_vars.yaml /workspace/environment_vars.yaml
 FROM ros:humble-ros-core as final 
 COPY --from=build /workspace/install /workspace/install 
 COPY --from=build /workspace/src/navigation/environment_vars.yaml /workspace/environment_vars.yaml
+COPY --from=build /workspace/src/navigation/deploy-entrypoint.sh . 
 
 RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-navigation2\ 
@@ -105,4 +106,4 @@ RUN cd /workspace; \
     source install/setup.bash; \
     ros2 launch nav_bringup nav_without_localization_launch.py&
 
-ENTRYPOINT ["/workspace/src/deploy-entrypoint.sh" ]
+ENTRYPOINT ["/deploy-entrypoint.sh" ]
