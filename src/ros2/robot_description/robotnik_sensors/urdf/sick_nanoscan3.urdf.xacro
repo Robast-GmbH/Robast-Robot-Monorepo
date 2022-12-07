@@ -2,7 +2,14 @@
 <robot name="sensor_sick_nanoscan3"
 	xmlns:xacro="http://wiki.ros.org/xacro">
 
-	<xacro:macro name="sensor_sick_nanoscan3" params="prefix parent prefix_topic:='front_laser' hq *origin max_angle:=2.3998 min_angle:=-2.3998 gpu:=^|false">
+	<xacro:macro name="sensor_sick_nanoscan3" params="prefix parent publish_bf robot_name prefix_topic:='front_laser' hq *origin max_angle:=2.3998 min_angle:=-2.3998 gpu:=^|false">
+
+		<xacro:if value="${publish_bf}">
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}_link" />
+		</xacro:if>
+		<xacro:unless value="${publish_bf}">
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}_link" />
+		</xacro:unless>
 
 		<joint name="${prefix}_base_joint" type="fixed">
 			<xacro:insert_block name="origin" />
@@ -43,11 +50,11 @@
 
 		<joint name="${prefix}_joint" type="fixed">
 			<parent link="${prefix}_base_link"/>
-			<child link="${prefix}_link"/>
+			<child link="${sensor_link_name}"/>
 			<origin xyz="0.0 0 0.0505" rpy="0 0 0"/>
 		</joint>
 
-		<link name="${prefix}_link" />
+		<link name="${sensor_link_name}" />
 
 		<!-- Sick sensor sensor for simulation -->
 		<xacro:sensor_sick_nanoscan3_gazebo />
@@ -55,22 +62,22 @@
 	</xacro:macro>
 
 	<xacro:macro name="sensor_sick_nanoscan3_gazebo">
-		<gazebo reference="${prefix}_link">
+		<gazebo reference="${sensor_link_name}">
 
 			<xacro:if value="${gpu}">
 				<xacro:property name="ray_type" value="gpu_ray" />
-				<xacro:property name="plugin_lib" value="libgz-sim-sensors-system.so" />
+				<xacro:property name="plugin_lib" value="gz-sim-sensors-system" />
 			</xacro:if>
 			<xacro:unless value="${gpu}">
 				<xacro:property name="ray_type" value="ray" />
-				<xacro:property name="plugin_lib" value="libgz-sim-sensors-system.so" />
+				<xacro:property name="plugin_lib" value="gz-sim-sensors-system" />
 			</xacro:unless>
 
-			<sensor type="${ray_type}" name="${prefix}_sensor">
-				<pose relative_to='${prefix}_link'>0 0 0 0 0 0</pose>
+			<sensor type="${ray_type}" name="${prefix}_link">
+				<pose relative_to='${sensor_link_name}'>0 0 0 0 0 0</pose>
 				<topic>${prefix_topic}/scan</topic>
 				<always_on>1</always_on>
-    				<visualize>true</visualize>
+    				<visualize>false</visualize>
 				<update_rate>12.5</update_rate>
 				<ray>
 					<scan>
