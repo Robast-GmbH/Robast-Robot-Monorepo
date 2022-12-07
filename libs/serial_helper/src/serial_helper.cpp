@@ -7,16 +7,16 @@ namespace serial_helper
     {
         this->serial_path_ = serial_path;
     }
-    
+
     SerialHelper::~SerialHelper()
-    {
-    }
+    {}
 
     string SerialHelper::open_serial()
     {
-        this->serial_port_ = open(this->serial_path_.c_str() , O_RDWR);
+        this->serial_port_ = open(this->serial_path_.c_str(), O_RDWR);
         // Check for errors
-        if (this->serial_port_ < 0) {
+        if (this->serial_port_ < 0)
+        {
             string result = "Error from open: ";
             result.append(strerror(errno));
             result.append("\n");
@@ -27,7 +27,8 @@ namespace serial_helper
         struct termios tty;
 
         // Read in existing settings, and handle any error
-        if(tcgetattr(this->serial_port_, &tty) != 0) {
+        if (tcgetattr(this->serial_port_, &tty) != 0)
+        {
             string result = "Error from tcgetattr: ";
             result.append(strerror(errno));
             result.append("\n");
@@ -47,7 +48,7 @@ namespace serial_helper
         tty.c_lflag &= ~ECHONL; // Disable new-line echo
         tty.c_lflag &= ~ISIG; // Disable interpretation of INTR, QUIT and SUSP
         tty.c_iflag &= ~(IXON | IXOFF | IXANY); // Turn off s/w flow ctrl
-        tty.c_iflag &= ~(IGNBRK|BRKINT|PARMRK|ISTRIP|INLCR|IGNCR|ICRNL); // Disable any special handling of received bytes
+        tty.c_iflag &= ~(IGNBRK | BRKINT | PARMRK | ISTRIP | INLCR | IGNCR | ICRNL); // Disable any special handling of received bytes
 
         tty.c_oflag &= ~OPOST; // Prevent special interpretation of output bytes (e.g. newline chars)
         tty.c_oflag &= ~ONLCR; // Prevent conversion of newline to carriage return/line feed
@@ -62,7 +63,8 @@ namespace serial_helper
         cfsetospeed(&tty, B9600);
 
         // Save tty settings, also checking for error
-        if (tcsetattr(this->serial_port_, TCSANOW, &tty) != 0) {
+        if (tcsetattr(this->serial_port_, TCSANOW, &tty) != 0)
+        {
             string result = "Error from tcgetattr: ";
             result.append(strerror(errno));
             result.append("\n");
@@ -70,7 +72,7 @@ namespace serial_helper
         }
         return "";
     }
- 
+
     void SerialHelper::close_serial()
     {
         close(this->serial_port_);
@@ -79,11 +81,11 @@ namespace serial_helper
 
     uint16_t SerialHelper::read_serial(string* result, uint16_t max_num_bytes)
     {
-        char read_buf [256];
+        char read_buf[256];
         memset(&read_buf, '\0', sizeof(read_buf));
         int num_bytes;
         num_bytes = read(this->serial_port_, &read_buf, sizeof(read_buf));
-        if( num_bytes > max_num_bytes)
+        if (num_bytes > max_num_bytes)
         {
             *result = "Error reading: ";
             result->append(strerror(errno));
@@ -91,33 +93,30 @@ namespace serial_helper
             return 0;
         }
         *result = string(read_buf, num_bytes);
-        if(DEBUG_LOG)
+        if (DEBUG_LOG)
         {
             ofstream logfile;
-            logfile.open ("Communication.log", std::ios_base::app);
-            logfile << "recived: "+*result << endl;
+            logfile.open("Communication.log", std::ios_base::app);
+            logfile << "recived: " + *result << endl;
             logfile.close();
         }
         return num_bytes;
     }
 
     string SerialHelper::write_serial(string msg)
-    { 
-       
-       
-        
+    {
+
         if (this->serial_port_ < 0)
         {
             string errno_string(errno, sizeof(errno));
             return "Error " + errno_string + " from open: " + strerror(errno) + "\n";
-
         }
 
-        if(DEBUG_LOG)
-        {   
+        if (DEBUG_LOG)
+        {
             ofstream logfile;
-            logfile.open ("Communication.log", std::ios_base::app);
-            logfile << "send: "+msg << endl;
+            logfile.open("Communication.log", std::ios_base::app);
+            logfile << "send: " + msg << endl;
             logfile.close();
         }
 
@@ -127,19 +126,19 @@ namespace serial_helper
 
     string SerialHelper::send_ascii_cmd(string cmd)
     {
-       
+
         return this->write_serial(cmd + "\r");
     }
 
-    string SerialHelper::ascii_interaction(string cmd, string* responce, uint16_t responce_size )
+    string SerialHelper::ascii_interaction(string cmd, string* responce, uint16_t responce_size)
     {
         string request_result = this->send_ascii_cmd(cmd);
-        if(request_result!="")
+        if (request_result != "")
         {
             return request_result;
         }
 
-        this->read_serial(responce, responce_size); 
+        this->read_serial(responce, responce_size);
         (*responce).pop_back(); // remove '/r'
         return *responce;
     }

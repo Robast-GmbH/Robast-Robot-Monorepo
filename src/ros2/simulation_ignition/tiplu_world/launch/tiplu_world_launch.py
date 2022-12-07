@@ -80,6 +80,7 @@ def generate_launch_description():
         arguments=[
             '-name', robot_name,
             '-topic', 'robot_description',
+            '-z', "0.1",
         ],
         output='screen',
     )

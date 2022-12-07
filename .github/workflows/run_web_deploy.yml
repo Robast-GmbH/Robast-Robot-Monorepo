@@ -1,0 +1,42 @@
+name: Web Deploy
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+    - "src/web/**"
+      
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v3
+      with:
+          fetch-depth: 2
+   
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and Publish Web-Backend
+      working-directory: src/web/backend
+      run: |
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/backend_web_deploy
+            docker run -e DOCKER_MODE='DEPLOY' ghcr.io/robast-gmbh/monorepo/backend_web_deploy 
+            docker push ghcr.io/robast-gmbh/monorepo/backend_web_deploy 
+   
+    - name: Build and Publish Web-Frontend
+      working-directory: src/web/frontend/react_frontend
+      env:
+        DOCKER_MODE: "DEPLOY"
+      run: |
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/frontend_web_deploy
+            docker run -e DOCKER_MODE='DEPLOY' ghcr.io/robast-gmbh/monorepo/frontend_web_deploy 
+            docker push ghcr.io/robast-gmbh/monorepo/frontend_web_deploy 
