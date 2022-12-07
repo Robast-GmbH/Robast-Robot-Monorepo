@@ -46,8 +46,9 @@
     
     
       <include>
-        <uri>model://5OG_waende</uri>
-      </include>
+        <uri>file:///workspace/src/simulation/tiplu_world/models/5OG_waende</uri>
+        <name>5OG_waende</name>
+      </include> 
 
   </world>
 </sdf>
