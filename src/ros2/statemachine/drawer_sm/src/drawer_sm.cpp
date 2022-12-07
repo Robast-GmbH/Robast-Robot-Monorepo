@@ -13,56 +13,38 @@
 #include "bt_plugins/condition/drawer_status_condition.hpp"
 #include "bt_plugins/example_plugin.hpp"
 
-namespace drawer_statemachine
-{
-  class BTTicker : public rclcpp::Node
-  {
-  public:
-    BTTicker(BT::BehaviorTreeFactory* factory)
-      : Node("bt_ticker")
-    {
-      std::cout << "BTTicker" << std::endl;
+#include "../include/drawer_sm/behavior_tree_engine.hpp"
 
-      std::cout << "hinzugefügt is" << std::endl;
+// namespace drawer_statemachine
+// {
+//   class BTTicker : public rclcpp::Node
+//   {
+//   public:
+//     BTTicker(BT::BehaviorTreeFactory* factory)
+//       : Node("bt_ticker")
+//     {
+//       std::cout << "BTTicker" << std::endl;
 
-    }
+//       std::cout << "hinzugefügt is" << std::endl;
 
-  private:
-  };
-}
+//     }
+
+//   private:
+//   };
+// }
 
 using namespace drawer_statemachine;
 int main(int argc, char* argv[ ])
 {
   rclcpp::init(argc, argv);
-  static rclcpp::Node::SharedPtr node_;
-  static BT::NodeConfiguration* config_;
-  static std::shared_ptr<BT::BehaviorTreeFactory> factory_ = std::make_shared<BT::BehaviorTreeFactory>(BT::BehaviorTreeFactory());
-  // BT::BehaviorTreeFactory factory;
-
-
-  config_ = new BT::NodeConfiguration();
-
-  // Create the blackboard that will be shared by all of the nodes in the tree
-  config_->blackboard = BT::Blackboard::create();
-  // Put items on the blackboard
-  config_->blackboard->set<rclcpp::Node::SharedPtr>(
-    "node",
-    node_);
-  config_->blackboard->set<std::chrono::milliseconds>(
-    "bt_loop_duration",
-    std::chrono::milliseconds(10));
-
-  factory_->registerNodeType<DrawerStatusCondition>("DrawerStatusCondition");
-  factory_->registerNodeType<ChangeLED>("ChangeLED");
-  factory_->registerNodeType<DrawerOpenReq>("DrawerOpenReq");
-  factory_->registerNodeType<OpenDrawer>("OpenDrawer");
-  factory_->registerNodeType<ApproachObject>("ApproachObject");
-  // std::cout << "print" << std::endl;
-  BT::Tree tree = factory_->createTreeFromFile("/workspace/src/statemachine/drawer_sm/trees/drawer_sequence_simple.xml");
-  // std::cout << "was los hier" << std::endl;
-  tree.tickRootWhileRunning();
-  // rclcpp::spin(std::make_shared<drawer_statemachine::BTTicker>(&factory_));
+  const std::vector<std::string> plugins = {
+    "change_led_action",
+    "drawer_open_request_action",
+    "open_drawer_action",
+    "drawer_status_condition",
+    "example_plugin"
+  };
+  auto bt_engine = std::make_unique<BehaviorTreeEngine>(plugins);
   rclcpp::shutdown();
   return 0;
 }
