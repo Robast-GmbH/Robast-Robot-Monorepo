@@ -49,6 +49,7 @@ RUN mkdir -p workspace_ros_gz/ros_gz && cd workspace_ros_gz/ros_gz && git clone 
    && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV IGN_FILE_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}
 
 #COPY "/entrypoint.sh" "/entrypoint.sh"
 #ENTRYPOINT ["/entrypoint.sh"]
