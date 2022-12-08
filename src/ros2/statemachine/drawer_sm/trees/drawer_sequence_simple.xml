@@ -1,7 +1,6 @@
  <root main_tree_to_execute = "MainTree" >
      <BehaviorTree ID="MainTree">
         <Sequence name="root_sequence">
-            <ApproachObject name="approach_object"/>
             <Condition ID="DrawerStatusCondition" target_value="false" topic="/drawer_is_open"/>
 
 
