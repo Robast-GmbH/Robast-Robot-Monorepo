@@ -31,6 +31,9 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time')
     world_model = LaunchConfiguration('world_model')
     robot_name = LaunchConfiguration('robot_name')
+    init_x = LaunchConfiguration('init_x', default="-17")
+    init_y = LaunchConfiguration('init_y', default="-5.45")
+    init_yaw = LaunchConfiguration('init_yaw', default="3.14")
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
@@ -80,7 +83,10 @@ def generate_launch_description():
         arguments=[
             '-name', robot_name,
             '-topic', 'robot_description',
-            '-z', "0.1",
+            '-z', "0.2",
+            '-x', init_x,
+            '-y', init_y,
+            '-Y', init_yaw,
         ],
         output='screen',
     )
