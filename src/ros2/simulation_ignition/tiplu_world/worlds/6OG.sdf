@@ -46,8 +46,8 @@
     
     
       <include>
-        <uri>file:///workspace/src/simulation/tiplu_world/models/5OG_waende</uri>
-        <name>5OG_waende</name>
+        <uri>file:///workspace/src/simulation/tiplu_world/models/6OG</uri>
+        <name>6OG</name>
       </include> 
 
   </world>
