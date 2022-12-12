@@ -2,7 +2,7 @@
      <BehaviorTree ID="MainTree">
         <Sequence name="root_sequence">
             <Action ID="Hans" name="approach_object"/>
-            <Condition ID="DrawerStatusCondition" name="test" target_value="false" topic="drawer_is_open"/>
+            <Action ID="DrawerOpenReq" drawer_address="{drawer}" drawer_address_topic="topic"/>
 
 
 
@@ -21,7 +21,7 @@
         </Action>
         <Action ID="DrawerOpenReq">
             <output_port default="{drawer}" name="drawer_address"/>
-            <input_port default="topic" name="topic_name"/>
+            <input_port default="topic" name="drawer_address_topic"/>
         </Action>
         <Action ID="OpenDrawer">
             <input_port default="{drawer}" name="drawer_address"/>

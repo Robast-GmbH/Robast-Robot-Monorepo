@@ -1,6 +1,7 @@
 <root>
     <TreeNodesModel>
-        <Action ID="ChangeLedColor">
+        <Action ID="Hans"/>
+        <Action ID="ChangeLED">
             <input_port name="blue" default="0">uint8</input_port>
             <input_port name="brightness" default="0">uint8 to determine the brightness</input_port>
             <input_port name="drawer_address" default="{drawer}"/>

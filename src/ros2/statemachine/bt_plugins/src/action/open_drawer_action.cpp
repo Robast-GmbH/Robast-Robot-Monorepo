@@ -32,6 +32,8 @@ namespace drawer_statemachine
     {
         communication_interfaces::msg::DrawerAddress drawer_address;
         // callback_group_executor_.spin_some();
+        RCLCPP_INFO(rclcpp::get_logger("OpenDrawer"), "lass mal drawer aufmachen");
+
         getInput("drawer_address", drawer_address);
         open_publisher_->publish(drawer_address);
         

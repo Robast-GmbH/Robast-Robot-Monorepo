@@ -53,7 +53,6 @@ namespace drawer_statemachine
                     tree->rootNode()->halt();
                     return BtStatus::CANCELED;
                 }
-
                 result = tree->tickRoot();
 
                 onLoop();

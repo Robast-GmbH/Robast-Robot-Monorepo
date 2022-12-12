@@ -43,13 +43,16 @@ int main(int argc, char* argv[ ])
 {
   rclcpp::init(argc, argv);
   const std::vector<std::string> plugins = {
-    "change_led_action_bt_node",
+    "Hans",
     "drawer_open_request_action_bt_node",
-    "open_drawer_action_bt_node",
-    "drawer_status_condition_bt_node",
-    "example_action_bt_node"
   };
-  auto client_node_ = std::make_shared<rclcpp::Node>("_");
+  // "change_led_action_bt_node",
+  // "open_drawer_action_bt_node",
+  // "drawer_open_request_action_bt_node",
+  // "drawer_status_condition_bt_node",
+  // "example_action_bt_node"
+  
+  auto client_node_ = std::make_shared<rclcpp::Node>("tree_node");
   static BT::NodeConfiguration* config_;
   config_ = new BT::NodeConfiguration();
 
