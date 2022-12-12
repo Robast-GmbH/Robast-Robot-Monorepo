@@ -65,38 +65,30 @@ int main(int argc, char* argv[ ])
   blackboard->set<std::chrono::milliseconds>(
     "bt_loop_duration",
     std::chrono::milliseconds(10));
-  // BT::BehaviorTreeFactory factory___ = BT::BehaviorTreeFactory();
-  // BT::XMLParser parser(factory___);
-  // parser.loadFromFile("/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml");
   auto bt_engine = std::make_unique<BehaviorTreeEngine>(plugins);
 
-  BT::Tree bt = bt_engine->createTreeFromFile("/workspace/install/drawer_sm/trees/trees/drawer_sequence2.xml", blackboard);
+  BT::Tree bt = bt_engine->createTreeFromFile("/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml", blackboard);
 
-  // auto is_canceling = [&]() {
-  //   if (action_server_ == nullptr)
-  //   {
-  //     RCLCPP_DEBUG(rclcpp::get_logger("Main"), "Action server unavailable. Canceling.");
-  //     return true;
-  //   }
-  //   if (!action_server_->is_server_active())
-  //   {
-  //     RCLCPP_DEBUG(rclcpp::get_logger("Main"), "Action server is inactive. Canceling.");
-  //     return true;
-  //   }
-  //   return action_server_->is_cancel_requested();
-  // };
+  auto is_canceling = [&]() {
+    return false;
+  };
 
-  // auto on_loop = [&]() {
-  //   if (action_server_->is_preempt_requested() && on_preempt_callback_)
-  //   {
-  //     on_preempt_callback_(action_server_->get_pending_goal());
-  //   }
-  //   topic_logger_->flush();
-  //   on_loop_callback_();
-  // };
+  auto on_loop = [&]() {
+    // std::cout << "on_loop" <<std::endl;
+  };
 
+  // auto bt_action_server_ = std::make_unique<BtActionServer<std::string>>(
+  //   client_node_,
+  //   "getName()",
+  //   plugins,
+  //   "/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml",
+  //   std::bind([&]() {return true;}),
+  //   std::bind([&]() {return true;}),
+  //   std::bind([&]() {return true;}),
+  //   std::bind([&]() {return true;}));
+  
 
-  // BtStatus rc = bt_engine->run(&bt, on_loop, is_canceling, bt_loop_duration_);
+  BtStatus rc = bt_engine->run(&bt, on_loop, is_canceling, std::chrono::milliseconds(10));
   rclcpp::shutdown();
   return 0;
 }
