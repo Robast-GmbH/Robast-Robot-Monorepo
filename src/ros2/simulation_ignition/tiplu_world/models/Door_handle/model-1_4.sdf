@@ -5,7 +5,7 @@
       <collision name="collision">
         <geometry>
           <mesh>
-            <uri>model://door_handle/meshes/door_handle.dae</uri>
+            <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/Door_handle.dae</uri>
           </mesh>
         </geometry>
       </collision>
@@ -13,7 +13,7 @@
       <visual name="visual">
         <geometry>
           <mesh>
-            <uri>model://door_handle/meshes/door_handle.dae</uri>
+            <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/Door_handle.dae</uri>
           </mesh>
         </geometry>
       </visual>

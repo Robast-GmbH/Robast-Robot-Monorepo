@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.5">
-  <model name="hinged_door">
+  <model name="Hinged_door">
     <link name="frame">
       <pose>0.06 -0.0005 0 0 0 0</pose>
       <collision name="collision_1">
@@ -31,7 +31,7 @@
         <pose>0 -0.06858 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://hinged_door/meshes/frame.dae</uri>
+            <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door/meshes/frame.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -62,7 +62,7 @@
         <pose>0 -0.06858 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://hinged_door/meshes/door.dae</uri>
+            <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door/meshes/door.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -73,7 +73,7 @@
         <pose>0.015 -0.015 0 -1.57 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://door_handle/meshes/handle.dae</uri>
+            <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/handle.dae</uri>
           </mesh>
         </geometry>
       </collision>
@@ -81,7 +81,7 @@
         <pose>0.015 -0.015 0 -1.57 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://door_handle/meshes/handle.dae</uri>
+            <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/handle.dae</uri>
           </mesh>
         </geometry>
       </visual>
@@ -89,7 +89,7 @@
         <pose>0.015 -0.055 0 1.57 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://door_handle/meshes/handle.dae</uri>
+            <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/handle.dae</uri>
           </mesh>
         </geometry>
       </collision>
@@ -97,7 +97,7 @@
         <pose>0.015 -0.055 0 1.57 0 0</pose>
         <geometry>
           <mesh>
-            <uri>model://door_handle/meshes/handle.dae</uri>
+            <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/handle.dae</uri>
           </mesh>
         </geometry>
       </visual>
