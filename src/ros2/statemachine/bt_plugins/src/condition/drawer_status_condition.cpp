@@ -15,6 +15,13 @@ namespace drawer_statemachine
 
         getInput("topic", topic_name_);
 
+        if (topic_name_ == "")
+        {
+            auto var = getInput<std::string>("topic");
+            std::cout << var.value() << std::endl;
+            topic_name_ = "/drawer_is_open";
+        }
+
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
 

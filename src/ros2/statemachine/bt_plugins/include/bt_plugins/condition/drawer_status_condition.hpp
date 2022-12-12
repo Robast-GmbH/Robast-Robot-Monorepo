@@ -22,7 +22,7 @@ namespace drawer_statemachine
             {
                 return
                 {
-                    BT::InputPort<bool>("target_value"),
+                    BT::InputPort<bool>("target_value", "false"),
                     BT::InputPort<std::string>("topic", "/drawer_is_open")
                 };
             }

@@ -61,7 +61,7 @@ namespace drawer_statemachine
                     "drawer_address","address of the drawer that should execute the action"
                 ),
                 BT::InputPort<std::string>(
-                    "drawer_led_topic",
+                    "led_topic",
                     "/drawer_leds",
                     "topic thats used to execute the action"
                 )

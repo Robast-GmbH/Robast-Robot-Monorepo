@@ -1,13 +1,16 @@
  <root main_tree_to_execute = "MainTree" >
      <BehaviorTree ID="MainTree">
         <Sequence name="root_sequence">
-            <Condition ID="DrawerStatusCondition" target_value="false" topic="/drawer_is_open"/>
+            <Action ID="Hans" name="approach_object"/>
+            <Condition ID="DrawerStatusCondition" name="test" target_value="false" topic="drawer_is_open"/>
+
 
 
         </Sequence>
      </BehaviorTree>
      <TreeNodesModel>
-        <Action ID="ChangeLedColor">
+        <Action ID="Hans" name="hans"/>
+        <Action ID="ChangeLED">
             <input_port default="0" name="blue">uint8</input_port>
             <input_port default="0" name="brightness">uint8 to determine the brightness</input_port>
             <input_port default="{drawer}" name="drawer_address"/>

@@ -41,7 +41,7 @@ namespace drawer_statemachine
         {
             return
             {
-              BT::InputPort<std::string>("topic_name", "topic", ""),
+              BT::InputPort<std::string>("drawer_address_topic", "topic", "empty"),
               BT::OutputPort<communication_interfaces::msg::DrawerAddress>("drawer_address", "topic")
             };
         }

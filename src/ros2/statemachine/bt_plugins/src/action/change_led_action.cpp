@@ -14,7 +14,7 @@ namespace drawer_statemachine
     {
         node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
 
-        getInput("drawer_led_topic", topic_name_);
+        getInput("led_topic", topic_name_);
 
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();

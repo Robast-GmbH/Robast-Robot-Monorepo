@@ -5,17 +5,17 @@
         <Sequence>
             <Action ID="DrawerOpenReq" drawer_address="{drawer}" topic_name="topic"/>
             <Action ID="OpenDrawer" drawer_address="{drawer}"/>
-            <Action ID="ChangeLedColor" blue="0" brightness="128" drawer_address="{drawer}" green="255" mode="1" red="0"/>
+            <Action ID="ChangeLED" blue="0" brightness="128" drawer_address="{drawer}" green="255" mode="1" red="0"/>
             <Condition ID="DrawerStatusCondition" target_value="true" topic="/drawer_is_open"/>
-            <Action ID="ChangeLedColor" blue="255" brightness="128" drawer_address="{drawer}" green="255" mode="1" red="255"/>
+            <Action ID="ChangeLED" blue="255" brightness="128" drawer_address="{drawer}" green="255" mode="1" red="255"/>
             <Condition ID="DrawerStatusCondition" target_value="false" topic="/drawer_is_open"/>
-            <Action ID="ChangeLedColor" blue="0" brightness="0" drawer_address="{drawer}" green="0" mode="3" red="0"/>
-            <Action ID="ChangeLedColor" blue="255" brightness="128" drawer_address="{drawer}" green="0" mode="1" red="0"/>
+            <Action ID="ChangeLED" blue="0" brightness="0" drawer_address="{drawer}" green="0" mode="3" red="0"/>
+            <Action ID="ChangeLED" blue="255" brightness="128" drawer_address="{drawer}" green="0" mode="1" red="0"/>
         </Sequence>
     </BehaviorTree>
     <!-- ////////// -->
     <TreeNodesModel>
-        <Action ID="ChangeLedColor">
+        <Action ID="ChangeLED">
             <input_port default="0" name="blue">uint8</input_port>
             <input_port default="0" name="brightness">uint8 to determine the brightness</input_port>
             <input_port default="{drawer}" name="drawer_address"/>

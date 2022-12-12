@@ -39,17 +39,20 @@ namespace drawer_statemachine
 
         if (new_message_)
         {
+            RCLCPP_DEBUG(rclcpp::get_logger("DrawerOpenReq"), "new drawer_address publlished\n drawer_id:%d",drawer_address_.drawer_id);
             setOutput("drawer_address", drawer_address_);
             new_message_ = false;
             return BT::NodeStatus::SUCCESS;
         }
-
+        RCLCPP_DEBUG(rclcpp::get_logger("DrawerOpenReq"), "ticked drawer open req");
         return BT::NodeStatus::RUNNING;
     }
 
     void
         DrawerOpenReq::callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
     {
+        // RCLCPP_DEBUG(rclcpp::get_logger("DrawerOpenReq"), "received request");
+        std::cout << "subscribed bitch" << std::endl;
         drawer_address_.drawer_controller_id = msg->drawer_controller_id;
         drawer_address_.drawer_id = msg->drawer_id;
         new_message_ = true;
