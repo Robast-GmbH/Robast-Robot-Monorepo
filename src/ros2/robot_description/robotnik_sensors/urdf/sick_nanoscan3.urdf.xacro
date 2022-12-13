@@ -66,11 +66,11 @@
 
 			<xacro:if value="${gpu}">
 				<xacro:property name="ray_type" value="gpu_ray" />
-				<xacro:property name="plugin_lib" value="gz-sim-sensors-system" />
+				<xacro:property name="plugin_lib" value="libignition-gazebo-sensors-system.so" />
 			</xacro:if>
 			<xacro:unless value="${gpu}">
 				<xacro:property name="ray_type" value="ray" />
-				<xacro:property name="plugin_lib" value="gz-sim-sensors-system" />
+				<xacro:property name="plugin_lib" value="libignition-gazebo-sensors-system.so" />
 			</xacro:unless>
 
 			<sensor type="${ray_type}" name="${prefix}_link">
@@ -105,7 +105,7 @@
 						<stddev>0.03</stddev>
 					</noise>
 				</ray>
-				<plugin name="gz::sim::systems::Sensors" filename="${plugin_lib}">
+				<plugin name="ignition::gazebo::systems::Sensors" filename="${plugin_lib}">
 					<render_engine>ogre2</render_engine>
 				</plugin>
 			</sensor>

@@ -9,13 +9,13 @@
 			</plugin> -->
 			
 			<plugin
-				filename="gz-sim-joint-state-publisher-system"
-				name="gz::sim::systems::JointStatePublisher">
+				filename="libignition-gazebo-joint-state-publisher-system"
+				name="ignition::gazebo::systems::JointStatePublisher">
 			</plugin>
 
 			<plugin
-				filename="libgz-sim-diff-drive-system.so"
-				name="gz::sim::systems::DiffDrive">
+				filename="libignition-gazebo-diff-drive-system.so"
+				name="ignition::gazebo::systems::DiffDrive">
 				<left_joint>$(arg prefix)left_wheel_joint</left_joint>
 				<right_joint>$(arg prefix)right_wheel_joint</right_joint>
 
