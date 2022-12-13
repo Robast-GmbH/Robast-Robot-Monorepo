@@ -69,38 +69,61 @@
     </link>
     <link name="handles">
       <pose>0.0 0.8 1.05 0 3.14 1.57</pose>
-      <!-- <collision name="handle1_collision">
-        <pose>0.015 -0.015 0 -1.57 0 0</pose>
+        <collision name="handle1_part1_collision">
+          <pose>0.015 -0.015 0 -1.57 0 0</pose>
+          <geometry>
+           <cylinder>
+              <radius>0.01</radius>
+              <length>0.3</length>
+            </cylinder>
+          </geometry>
+        </collision> 
+        <visual name="handle1_part1_visual">
+          <pose>0.015 -0.015 0 -1.57 0 0</pose>
+          <geometry>
+            <cylinder>
+              <radius>0.01</radius>
+              <length>0.3</length>
+            </cylinder>
+          </geometry>
+        </visual>
+        <collision name="handle1_part2_collision">
+          <pose>0.12 -0.13 0 -1.57 0 -1.5</pose>
+          <geometry>
+           <cylinder>
+              <radius>0.03</radius>
+              <length>0.2</length>
+            </cylinder>
+          </geometry>
+        </collision> 
+       <visual name="handle1_part2_visual">
+        <pose>0.12 -0.13 0 -1.57 0 -1.5</pose>
         <geometry>
-          <mesh>
-            <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/handle.dae</uri>
-          </mesh>
-        </geometry>
-      </collision> -->
-      <visual name="handle1_visual">
-        <pose>0.015 -0.015 0 -1.57 0 0</pose>
-        <geometry>
-          <mesh>
-            <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/handle.dae</uri>
-          </mesh>
+          <cylinder>
+            <radius>0.03</radius>
+            <length>0.2</length>
+          </cylinder>
         </geometry>
       </visual>
-      <!-- <collision name="handle2_collision">
-        <pose>0.015 -0.055 0 1.57 0 0</pose>
+       <collision name="handle1_part3_collision">
+          <pose>0.12 0.13 0 -1.57 0 -1.5</pose>
+          <geometry>
+           <cylinder>
+              <radius>0.03</radius>
+              <length>0.2</length>
+            </cylinder>
+          </geometry>
+        </collision> 
+      <visual name="handle1_part3_visual">
+        <pose>0.12 0.13 0 -1.57 0 -1.5</pose>
         <geometry>
-          <mesh>
-            <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/handle.dae</uri>
-          </mesh>
-        </geometry>
-      </collision> -->
-      <visual name="handle2_visual">
-        <pose>0.015 -0.055 0 1.57 0 0</pose>
-        <geometry>
-          <mesh>
-            <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/handle.dae</uri>
-          </mesh>
+          <cylinder>
+            <radius>0.03</radius>
+            <length>0.2</length>
+          </cylinder>
         </geometry>
       </visual>
+    
     </link>
     <joint name="handle" type="revolute">
       <parent>door</parent>
