@@ -3,5 +3,5 @@ from moveit_configs_utils.launches import generate_move_group_launch
 
 
 def generate_launch_description():
-    moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer_v2").to_moveit_configs()
+    moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer").to_moveit_configs()
     return generate_move_group_launch(moveit_config)
