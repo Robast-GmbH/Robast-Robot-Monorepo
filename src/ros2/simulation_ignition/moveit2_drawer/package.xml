@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>moveit2_drawer_v2</name>
+  <name>moveit2_drawer</name>
   <version>0.3.0</version>
   <description>
      An automatically generated package with all the configuration and launch files for using the rb_theron with the MoveIt Motion Planning Framework
