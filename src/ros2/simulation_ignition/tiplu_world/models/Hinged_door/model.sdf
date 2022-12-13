@@ -69,14 +69,14 @@
     </link>
     <link name="handles">
       <pose>0.0 0.8 1.05 0 3.14 1.57</pose>
-      <collision name="handle1_collision">
+      <!-- <collision name="handle1_collision">
         <pose>0.015 -0.015 0 -1.57 0 0</pose>
         <geometry>
           <mesh>
             <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/handle.dae</uri>
           </mesh>
         </geometry>
-      </collision>
+      </collision> -->
       <visual name="handle1_visual">
         <pose>0.015 -0.015 0 -1.57 0 0</pose>
         <geometry>
@@ -85,14 +85,14 @@
           </mesh>
         </geometry>
       </visual>
-      <collision name="handle2_collision">
+      <!-- <collision name="handle2_collision">
         <pose>0.015 -0.055 0 1.57 0 0</pose>
         <geometry>
           <mesh>
             <uri>file:///workspace/src/simulation/tiplu_world/models/Door_handle/meshes/handle.dae</uri>
           </mesh>
         </geometry>
-      </collision>
+      </collision> -->
       <visual name="handle2_visual">
         <pose>0.015 -0.055 0 1.57 0 0</pose>
         <geometry>
