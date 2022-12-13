@@ -1,0 +1,12 @@
+# MoveIt uses this configuration for controller management
+
+moveit_controller_manager: moveit_ros_control_interface/MoveItControllerManager
+
+moveit_simple_controller_manager:
+  controller_names:
+    - planning_group_controller
+
+  planning_group_controller:
+    type: FollowJointTrajectory
+    joints:
+      - top_drawer_joint
