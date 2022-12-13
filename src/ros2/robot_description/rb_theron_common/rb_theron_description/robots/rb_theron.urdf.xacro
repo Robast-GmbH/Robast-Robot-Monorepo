@@ -48,7 +48,7 @@
 	<xacro:property name="wheel_offset_z" value="0.015" />
 
 	<!-- Flag to select the high or low quality model -->
-	<xacro:property name="hq" value="true" />
+	<xacro:property name="hq" value="false" />
 
 	<!-- Flag to determine if the base_footprint should be published or not -->
 	<xacro:property name="publish_bf" value="true"/>
@@ -139,16 +139,16 @@
 	<!-- <xacro:depthai_camera camera_name = "$(arg camera_name)" parent = "$(arg prefix)base_link" camera_model = "$(arg camera_model)" base_frame = "$(arg base_frame)" cam_pos_x = "$(arg cam_pos_x)" cam_pos_y = "$(arg cam_pos_y)" cam_pos_z = "$(arg cam_pos_z)" cam_roll = "$(arg cam_roll)" cam_pitch = "$(arg cam_pitch)" cam_yaw = "$(arg cam_yaw)"/> -->
 
 	<!-- ROBAST Module Cage -->
-	<!-- <xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
+	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
 	<xacro:module_cage prefix="$(arg prefix)module_cage" parent="$(arg prefix)base_link">
 		<origin xyz="0.35 -0.0 -0.075" rpy="0 0 1.570796326794896619"/>
-	</xacro:module_cage> -->
+	</xacro:module_cage>
 
 	<!-- ROBAST Drawer -->
-	<!-- <xacro:include filename="$(find rb_theron_description)/urdf/drawer/drawer.urdf.xacro" />
+	<xacro:include filename="$(find rb_theron_description)/urdf/drawer/drawer.urdf.xacro" />
 	<xacro:drawer prefix="$(arg prefix)first" parent="$(arg prefix)base_link">
 		<origin xyz="0.105 0.0 0.3" rpy="0 0 0"/>
-	</xacro:drawer> -->
+	</xacro:drawer>
 
 
 	<!-- Gazebo ros control pluggins -->
