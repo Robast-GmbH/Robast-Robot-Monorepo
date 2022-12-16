@@ -73,7 +73,7 @@
 				<xacro:property name="plugin_lib" value="gz-sim-sensors-system" />
 			</xacro:unless>
 
-			<sensor type="${ray_type}" name="${prefix}_link">
+			<sensor type="${ray_type}" name="${prefix}_Ray">
 				<pose relative_to='${sensor_link_name}'>0 0 0 0 0 0</pose>
 				<topic>${prefix_topic}/scan</topic>
 				<always_on>1</always_on>
@@ -105,10 +105,8 @@
 						<stddev>0.03</stddev>
 					</noise>
 				</ray>
-				<plugin name="gz::sim::systems::Sensors" filename="${plugin_lib}">
-					<render_engine>ogre2</render_engine>
-				</plugin>
 			</sensor>
+
 		</gazebo>
 	</xacro:macro>
 

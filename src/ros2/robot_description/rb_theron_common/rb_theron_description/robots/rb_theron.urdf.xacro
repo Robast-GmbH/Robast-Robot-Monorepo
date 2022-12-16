@@ -125,7 +125,12 @@
 	<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="back_laser" min_angle="-1.8107619" max_angle="1.8107619">
 		<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
 	</xacro:sensor_sick_nanoscan3> -->
-
+	<gazebo>
+		<plugin name="gz::sim::systems::Sensors" filename="gz-sim-sensors-system">
+			<render_engine>ogre2</render_engine>
+		</plugin>
+	</gazebo>
+	
 	<xacro:arg name="camera_name"   default="oak" />
 	<xacro:arg name="camera_model"  default="OAK-D-LITE" />
 	<xacro:arg name="base_frame"    default="oak-d_frame" />
@@ -153,5 +158,5 @@
 
 	<!-- Gazebo ros control pluggins -->
 	<xacro:ros_control prefix="$(arg prefix)" publish_bf="${publish_bf}"/>
-
+	
 </robot>
