@@ -118,9 +118,9 @@
 		<origin xyz="0.214 0.0 0.275" rpy="-1.57079632679 0 -0.23"/>
 	</xacro:sensor_rs_lidar_16>-->
 
-	<!-- <xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser"  parent="$(arg prefix)base_link" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1200" vfov="90.0" lasers="32" fps="15" gpu="false">
+	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser"  parent="$(arg prefix)base_link" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1200" vfov="90.0" lasers="32" fps="15" gpu="false">
             <origin xyz="0.28 -0.159 1.22" rpy="-1.570796326795 0 -1.570796326795"/>
-        </xacro:sensor_rs_bpearl> -->
+        </xacro:sensor_rs_bpearl>
 
 	<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="back_laser" min_angle="-1.8107619" max_angle="1.8107619">
 		<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
