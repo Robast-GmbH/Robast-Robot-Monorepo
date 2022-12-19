@@ -155,11 +155,11 @@ namespace can
                 Serial.print(" CAN_SIGNAL_MOTOR_ID: ");
                 Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_MOTOR_ID).get_data(), BIN);
                 Serial.print(" CAN_SIGNAL_MOTOR_E1: ");
-                Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_MOTOR_E1).get_data(), BIN);
+                Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_MOTOR_E1).get_data(), BIN);
                 Serial.print(" CAN_SIGNAL_MOTOR_E2: ");
-                Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_MOTOR_E2).get_data(), BIN);
+                Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_MOTOR_E2).get_data(), BIN);
                 Serial.print(" CAN_SIGNAL_MOTOR_E3: ");
-                Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_MOTOR_E3).get_data(), BIN);
+                Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_MOTOR_E3).get_data(), BIN);
                 Serial.print(" CAN_SIGNAL_MOTOR_E4: ");
                 Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_MOTOR_E4).get_data(), BIN);
             }
