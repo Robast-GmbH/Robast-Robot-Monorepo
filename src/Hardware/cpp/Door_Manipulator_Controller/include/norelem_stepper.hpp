@@ -21,7 +21,7 @@ namespace norelem_stepper
                 this->motor_start_pin_ = motor_start_pin;
                 this->motor_e1_pin_ = motor_e1_pin;
                 this->motor_e2_pin_ = motor_e2_pin;
-                this->motor_e3_pin_ = motor_e2_pin;
+                this->motor_e3_pin_ = motor_e3_pin;
 
                 pinMode(this->motor_start_pin_, OUTPUT);
                 pinMode(this->motor_e1_pin_, OUTPUT);
@@ -32,13 +32,14 @@ namespace norelem_stepper
                 digitalWrite(this->motor_e1_pin_, HIGH);
                 digitalWrite(this->motor_e2_pin_, HIGH);
                 digitalWrite(this->motor_e3_pin_, HIGH);
+                Serial.println("Norelem Stepper initialization completed!");
             }
 
             void switch_motor_state()
             {
                 // in order to switch the motor state, we need to toggle the start pin from HIGH -> LOW -> HIGH
                 this->set_motor_start_pin(false);
-                delay(10); //TODO: Check how much delay is neccesarry
+                delay(100); //TODO: Check how much delay is neccesarry
                 this->set_motor_start_pin(true);
             }            
 
@@ -49,39 +50,39 @@ namespace norelem_stepper
                     case 1:
                         if (state)
                         {
-                            digitalWrite(this->motor_e1_pin_, HIGH);
-                            Serial.println("Setting motor e1 pin high");
+                            digitalWrite(this->motor_e1_pin_, LOW);
+                            Serial.println("Setting motor e1 pin low");
                         }
                         else
                         {
-                            digitalWrite(this->motor_e1_pin_, LOW);
-                            Serial.println("Setting motor e1 pin low");
+                            digitalWrite(this->motor_e1_pin_, HIGH);
+                            Serial.println("Setting motor e1 pin high");
                         }
                         break;
                     
                     case 2:
                         if (state)
                         {
-                            digitalWrite(this->motor_e2_pin_, HIGH);
-                            Serial.println("Setting motor e2 pin high");
+                            digitalWrite(this->motor_e2_pin_, LOW);
+                            Serial.println("Setting motor e2 pin low");
                         }
                         else
                         {
-                            digitalWrite(this->motor_e2_pin_, LOW);
-                            Serial.println("Setting motor e2 pin low");
+                            digitalWrite(this->motor_e2_pin_, HIGH);
+                            Serial.println("Setting motor e2 pin high");
                         }
                         break;
 
                     case 3:
                         if (state)
                         {
-                            digitalWrite(this->motor_e3_pin_, HIGH);
-                            Serial.println("Setting motor e3 pin high");
+                            digitalWrite(this->motor_e3_pin_, LOW);
+                            Serial.println("Setting motor e3 pin low");
                         }
                         else
                         {
-                            digitalWrite(this->motor_e3_pin_, LOW);
-                            Serial.println("Setting motor e3 pin low");
+                            digitalWrite(this->motor_e3_pin_, HIGH);
+                            Serial.println("Setting motor e3 pin high");
                         }
                         break;
                     
