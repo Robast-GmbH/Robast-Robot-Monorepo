@@ -21,13 +21,14 @@ unsigned long last_timestamp = 0;
 bool motor_clock_state;
 
 // Fahrprogramme
-// E1 = Fahre Relativ -20 Schritte
-// E2 = Fahre Relativ +20 Schritte
-// E1 E2 = Geschwindigkeit 0 Hz
-// E3 = Geschwindigkeit -50 Hz
-// E3 E1 = Geschwindigkeit +50 Hz
-// E3 E2 = Geschwindigkeit -100 Hz
-// E3 E2 E1 = Geschwindigkeit +100 Hz
+// alle 0   = Geschwindigkeit    0 Hz
+// E1       = Geschwindigkeit    0 Hz
+// E2       = Geschwindigkeit  -50 Hz
+// E1 E2    = Geschwindigkeit  +50 Hz
+// E3       = Geschwindigkeit -100 Hz
+// E3 E1    = Geschwindigkeit +100 Hz
+// E3 E2    = Geschwindigkeit -150 Hz
+// E3 E2 E1 = Geschwindigkeit +150 Hz
 
 
 /*********************************************************************************************************
@@ -42,6 +43,7 @@ void setup()
 
   STEPPER_1.initialize(MOTOR_1_START_PIN, MOTOR_1_INPUT_1_PIN, MOTOR_1_INPUT_2_PIN, MOTOR_1_INPUT_3_PIN);
   STEPPER_2.initialize(MOTOR_2_START_PIN, MOTOR_2_INPUT_1_PIN, MOTOR_2_INPUT_2_PIN, MOTOR_2_INPUT_3_PIN);
+  STEPPER_3.initialize(MOTOR_3_START_PIN, MOTOR_3_INPUT_1_PIN, MOTOR_3_INPUT_2_PIN, MOTOR_3_INPUT_3_PIN);
 }
 
 
