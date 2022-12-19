@@ -66,7 +66,7 @@
                 {
                         "type": "shell",
                         "label": "start tiplu_sim",
-                        "command": "source /workspace/install/setup.bash; source /usr/share/gazebo/setup.sh; ros2 launch tiplu_world tiplu_world_launch.py run_gzclient:='True'",
+                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -76,30 +76,14 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start tiplu_sim_high_rf",
-                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py world_model:='/workspaces/Robast_RosTheron/install/tiplu_world/share/tiplu_world/worlds/5OG_high_rtf/5OG_high_rtf.model' run_gz_client:='False'",
+                        "label": "start moveit_drawer",
+                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world moveit_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
                                 "focus": false,
                                 "group": "default_start"
                         }
-                },
-                {
-                        "label": "start TipluWorld",
-                        "detail": "TipluWorld",
-                        "dependsOn": [
-                                "start tiplu_sim",
-                        ],
-                        "problemMatcher": []
-                },
-                {
-                        "label": "start TipluWorld_high_rf",
-                        "detail": "TipluWorld",
-                        "dependsOn": [
-                                "start tiplu_sim_high_rf",
-                        ],
-                        "problemMatcher": []
                 },
                 {
                         "type": "shell",
