@@ -16,23 +16,86 @@ namespace norelem_stepper
         public:
             NorelemStepper() {}
 
-            void initialize(uint8_t motor_start_pin, uint8_t motor_input_1, uint8_t motor_input_2, uint8_t motor_input_3)
+            void initialize(uint8_t motor_start_pin, uint8_t motor_e1_pin, uint8_t motor_e2_pin, uint8_t motor_e3_pin)
             {
                 this->motor_start_pin_ = motor_start_pin;
-                this->motor_input_1_ = motor_input_1;
-                this->motor_input_2_ = motor_input_2;
-                this->motor_input_3_ = motor_input_3;
+                this->motor_e1_pin_ = motor_e1_pin;
+                this->motor_e2_pin_ = motor_e2_pin;
+                this->motor_e3_pin_ = motor_e2_pin;
 
                 pinMode(this->motor_start_pin_, OUTPUT);
-                pinMode(this->motor_input_1_, OUTPUT);
-                pinMode(this->motor_input_2_, OUTPUT);
-                pinMode(this->motor_input_3_, INPUT);
+                pinMode(this->motor_e1_pin_, OUTPUT);
+                pinMode(this->motor_e2_pin_, OUTPUT);
+                pinMode(this->motor_e3_pin_, OUTPUT);
 
                 digitalWrite(this->motor_start_pin_, LOW);
-                digitalWrite(this->motor_input_1_, HIGH);
-                digitalWrite(this->motor_input_2_, HIGH);
-                digitalWrite(this->motor_input_3_, HIGH);
+                digitalWrite(this->motor_e1_pin_, HIGH);
+                digitalWrite(this->motor_e2_pin_, HIGH);
+                digitalWrite(this->motor_e3_pin_, HIGH);
             }
+
+            void switch_motor_state()
+            {
+                // in order to switch the motor state, we need to toggle the start pin from HIGH -> LOW -> HIGH
+                this->set_motor_start_pin(false);
+                delay(10); //TODO: Check how much delay is neccesarry
+                this->set_motor_start_pin(true);
+            }            
+
+            void set_motor_input_pin(uint8_t input_id, bool state)
+            {
+                switch (input_id)
+                {
+                    case 1:
+                        if (state)
+                        {
+                            digitalWrite(this->motor_e1_pin_, HIGH);
+                            Serial.println("Setting motor e1 pin high");
+                        }
+                        else
+                        {
+                            digitalWrite(this->motor_e1_pin_, LOW);
+                            Serial.println("Setting motor e1 pin low");
+                        }
+                        break;
+                    
+                    case 2:
+                        if (state)
+                        {
+                            digitalWrite(this->motor_e2_pin_, HIGH);
+                            Serial.println("Setting motor e2 pin high");
+                        }
+                        else
+                        {
+                            digitalWrite(this->motor_e2_pin_, LOW);
+                            Serial.println("Setting motor e2 pin low");
+                        }
+                        break;
+
+                    case 3:
+                        if (state)
+                        {
+                            digitalWrite(this->motor_e3_pin_, HIGH);
+                            Serial.println("Setting motor e3 pin high");
+                        }
+                        else
+                        {
+                            digitalWrite(this->motor_e3_pin_, LOW);
+                            Serial.println("Setting motor e3 pin low");
+                        }
+                        break;
+                    
+                    default:
+                        Serial.println("Requested motor input pin is not implemented!");
+                        break;
+                }
+            }
+
+        private:
+            uint8_t motor_start_pin_;
+            uint8_t motor_e1_pin_;
+            uint8_t motor_e2_pin_;
+            uint8_t motor_e3_pin_;
 
             void set_motor_start_pin(bool state)
             {
@@ -47,12 +110,6 @@ namespace norelem_stepper
                     Serial.println("Setting motor start pin low");
                 }
             }
-
-        private:
-            uint8_t motor_start_pin_;
-            uint8_t motor_input_1_;
-            uint8_t motor_input_2_;
-            uint8_t motor_input_3_;
 
     };
 } // namespace norelem_stepper
