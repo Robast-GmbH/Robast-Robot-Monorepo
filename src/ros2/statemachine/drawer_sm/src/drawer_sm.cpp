@@ -7,6 +7,8 @@
 #include "behaviortree_cpp_v3/bt_factory.h"
 
 #include "rclcpp/rclcpp.hpp"
+#include "rclcpp_lifecycle/lifecycle_node.hpp"
+
 #include "bt_plugins/action/change_led_action.hpp"
 #include "bt_plugins/action/drawer_open_request_action.hpp"
 #include "bt_plugins/action/open_drawer_action.hpp"
@@ -52,10 +54,10 @@ int main(int argc, char* argv[ ])
   // "drawer_status_condition_bt_node",
   // "example_action_bt_node"
   
-  auto client_node_ = std::make_shared<rclcpp::Node>("tree_node");
+  rclcpp_lifecycle::LifecycleNode::WeakPtr parent_node;
+  auto client_node_ = parent_node.lock();
   static BT::NodeConfiguration* config_;
   config_ = new BT::NodeConfiguration();
-
   // Create the blackboard that will be shared by all of the nodes in the tree
   auto blackboard = BT::Blackboard::create();
   // Put items on the blackboard
@@ -88,6 +90,7 @@ int main(int argc, char* argv[ ])
   //   std::bind([&]() {return true;}));
   
 
+  rclcpp::spin(client_node_);
   BtStatus rc = bt_engine->run(&bt, on_loop, is_canceling, std::chrono::milliseconds(10));
   rclcpp::shutdown();
   return 0;
