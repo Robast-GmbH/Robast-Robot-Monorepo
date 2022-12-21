@@ -52,6 +52,18 @@ namespace robast_can_msgs
                         CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_LENGTH, 0),
                         CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_LENGTH, 0)
                     }
+                ),
+                CanMessage(
+                    CAN_ID_DOOR_MANIPULATOR,
+                    CAN_DLC_DOOR_MANIPULATOR,
+                    {
+                        CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_MOTOR_ID_BIT_START, CAN_SIGNAL_MOTOR_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_MOTOR_E1_BIT_START, CAN_SIGNAL_MOTOR_E1_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_MOTOR_E2_BIT_START, CAN_SIGNAL_MOTOR_E2_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_MOTOR_E3_BIT_START, CAN_SIGNAL_MOTOR_E3_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_MOTOR_E4_BIT_START, CAN_SIGNAL_MOTOR_E4_BIT_LENGTH, 0),
+                    }
                 )
             };
     };
