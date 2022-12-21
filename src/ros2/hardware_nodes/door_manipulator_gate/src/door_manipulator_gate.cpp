@@ -29,6 +29,7 @@ namespace door_manipulator_gate
     void DoorManipulatorGate::control_norelem_stepper_topic_callback(const NorelemStepperControl& msg)
     {
         RCLCPP_INFO(this->get_logger(), "I heard from control_norelem_stepper topic the drawer_controller_id: '%i'", msg.drawer_controller_id); // Debugging
+        RCLCPP_INFO(this->get_logger(), "I heard from control_norelem_stepper topic the msg.motor_id: '%i'", msg.motor_id); // Debugging
 
         uint32_t drawer_controller_id = msg.drawer_controller_id;
 
@@ -73,7 +74,6 @@ namespace door_manipulator_gate
 
         if (ascii_cmd.has_value())
         {
-            RCLCPP_INFO(this->get_logger(), "ascii_cmd: '%s'", ascii_cmd.value().c_str()); // Debugging
             this->add_ascii_cmd_to_queue(ascii_cmd.value());
         }
         else
