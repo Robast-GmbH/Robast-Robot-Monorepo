@@ -50,6 +50,13 @@
 	<!-- Flag to select the high or low quality model -->
 	<xacro:property name="hq" value="true" />
 
+	<!-- Flag to determine if the base_footprint should be published or not -->
+	<xacro:property name="publish_bf" value="true"/>
+
+	<!-- This name should match the "-name" argument we need to declare when spawing the robot into ign gazebo -->
+	<xacro:property name="robot_name" value="rb_theron"/>
+
+
 	<!-- *************** -->
 	<!-- Robots Elements -->
 	<!-- *************** -->
@@ -60,7 +67,7 @@
 	<!-- this property is for the chassis -->
 
 	<!-- rbogie base -->
-	<xacro:theron_base prefix="$(arg prefix)" publish_bf="true" hq="${hq}" />
+	<xacro:theron_base prefix="$(arg prefix)" publish_bf="${publish_bf}" hq="${hq}" />
 
 
 	<xacro:gazebo_colors prefix="$(arg prefix)"/>
@@ -103,7 +110,7 @@
 		<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
 	</xacro:sensor_imu_hector>
 
-	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619">
+	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619" gpu="true">
 		<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
 	</xacro:sensor_sick_nanoscan3>
 
@@ -145,6 +152,6 @@
 
 
 	<!-- Gazebo ros control pluggins -->
-	<xacro:ros_control prefix="$(arg prefix)"/>
+	<xacro:ros_control prefix="$(arg prefix)" publish_bf="${publish_bf}"/>
 
 </robot>

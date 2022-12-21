@@ -2,67 +2,37 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
 	<!-- ROS CONTROL GAZEBO PLUGIN -->
-	<xacro:macro name="ros_control" params="prefix">
+	<xacro:macro name="ros_control" params="prefix publish_bf">
 		<gazebo>
 			<!-- <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
 				<parameters>$(find rb_theron_description)/config/rb_theron_controller.yaml</parameters>
 			</plugin> -->
-			<plugin name="joint_state" filename="libgazebo_ros_joint_state_publisher.so">
-				<ros>
-					<remapping>~/out:=joint_states</remapping>
-				</ros>
-				<alwaysOn>1</alwaysOn>
-				<update_rate>30</update_rate>
-
-				<joint_name>$(arg prefix)leftjoint_rsupport</joint_name>
-				<joint_name>$(arg prefix)rightjoint_rsupport</joint_name>
-
-				<joint_name>$(arg prefix)left_wheel_joint</joint_name>
-				<joint_name>$(arg prefix)right_wheel_joint</joint_name>
-
-				<joint_name>$(arg prefix)leftcastorjoint_support</joint_name>
-				<joint_name>$(arg prefix)rightcastorjoint_support</joint_name>
-
-				<joint_name>$(arg prefix)leftcastorjoint_wheel</joint_name>
-				<joint_name>$(arg prefix)rightcastorjoint_wheel</joint_name>
-
-				<joint_name>$(arg prefix)leftjoint_support</joint_name>
-				<joint_name>$(arg prefix)rightjoint_support</joint_name>
-
-				<joint_name>$(arg prefix)leftjoint_wheel</joint_name>
-				<joint_name>$(arg prefix)rightjoint_wheel</joint_name>
-
-				<joint_name>top_drawer_joint</joint_name>
 			
+			<plugin
+				filename="gz-sim-joint-state-publisher-system"
+				name="gz::sim::systems::JointStatePublisher">
 			</plugin>
-			<plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">
-				<alwaysOn>1</alwaysOn>
 
-				<update_rate>30</update_rate>
-
-				<!-- wheels -->
+			<plugin
+				filename="libgz-sim-diff-drive-system.so"
+				name="gz::sim::systems::DiffDrive">
 				<left_joint>$(arg prefix)left_wheel_joint</left_joint>
 				<right_joint>$(arg prefix)right_wheel_joint</right_joint>
 
-				<!-- kinematics -->
 				<wheel_separation>0.5032</wheel_separation>
-				<wheel_diameter>0.1524</wheel_diameter>
+				<wheel_radius>0.0762</wheel_radius>
+				
+				<odom_publish_frequency>30</odom_publish_frequency>
+				<topic>cmd_vel</topic>
 
-				<!-- limits -->
-				<max_wheel_torque>20</max_wheel_torque>
-				<max_wheel_acceleration>2.5</max_wheel_acceleration>
+				<frame_id>$(arg prefix)odom</frame_id>
 
-				<command_topic>cmd_vel</command_topic>
-
-				<!-- output -->
-				<publish_odom>true</publish_odom>
-				<publish_odom_tf>true</publish_odom_tf>
-				<publish_wheel_tf>false</publish_wheel_tf>
-
-				<odometry_topic>odom</odometry_topic>
-				<odometry_frame>$(arg prefix)odom</odometry_frame>
-				<!-- <base_frame>$(arg prefix)base_footprint</base_frame> -->
-    				<robot_base_frame>$(arg prefix)base_footprint</robot_base_frame>
+				<xacro:if value="${publish_bf}">
+					<child_frame_id>$(arg prefix)base_footprint</child_frame_id>
+				</xacro:if>
+				<xacro:unless value="${publish_bf}">
+					<child_frame_id>$(arg prefix)base_link</child_frame_id>
+				</xacro:unless>
 			</plugin>
 		</gazebo>
 

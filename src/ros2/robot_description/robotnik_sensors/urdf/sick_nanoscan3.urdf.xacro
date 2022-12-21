@@ -2,7 +2,14 @@
 <robot name="sensor_sick_nanoscan3"
 	xmlns:xacro="http://wiki.ros.org/xacro">
 
-	<xacro:macro name="sensor_sick_nanoscan3" params="prefix parent prefix_topic:='front_laser' hq *origin max_angle:=2.3998 min_angle:=-2.3998 gpu:=^|false">
+	<xacro:macro name="sensor_sick_nanoscan3" params="prefix parent publish_bf robot_name prefix_topic:='front_laser' hq *origin max_angle:=2.3998 min_angle:=-2.3998 gpu:=^|false">
+
+		<xacro:if value="${publish_bf}">
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}_link" />
+		</xacro:if>
+		<xacro:unless value="${publish_bf}">
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}_link" />
+		</xacro:unless>
 
 		<joint name="${prefix}_base_joint" type="fixed">
 			<xacro:insert_block name="origin" />
@@ -43,11 +50,11 @@
 
 		<joint name="${prefix}_joint" type="fixed">
 			<parent link="${prefix}_base_link"/>
-			<child link="${prefix}_link"/>
+			<child link="${sensor_link_name}"/>
 			<origin xyz="0.0 0 0.0505" rpy="0 0 0"/>
 		</joint>
 
-		<link name="${prefix}_link" />
+		<link name="${sensor_link_name}" />
 
 		<!-- Sick sensor sensor for simulation -->
 		<xacro:sensor_sick_nanoscan3_gazebo />
@@ -55,20 +62,22 @@
 	</xacro:macro>
 
 	<xacro:macro name="sensor_sick_nanoscan3_gazebo">
-		<gazebo reference="${prefix}_link">
+		<gazebo reference="${sensor_link_name}">
 
 			<xacro:if value="${gpu}">
 				<xacro:property name="ray_type" value="gpu_ray" />
-				<xacro:property name="plugin_lib" value="libgazebo_ros_ray_sensor.so" />
+				<xacro:property name="plugin_lib" value="gz-sim-sensors-system" />
 			</xacro:if>
 			<xacro:unless value="${gpu}">
 				<xacro:property name="ray_type" value="ray" />
-				<xacro:property name="plugin_lib" value="libgazebo_ros_ray_sensor.so" />
+				<xacro:property name="plugin_lib" value="gz-sim-sensors-system" />
 			</xacro:unless>
 
-			<sensor type="${ray_type}" name="${prefix}_sensor">
-				<pose>0 0 0 0 0 0</pose>
-				<visualize>false</visualize>
+			<sensor type="${ray_type}" name="${prefix}_link">
+				<pose relative_to='${sensor_link_name}'>0 0 0 0 0 0</pose>
+				<topic>${prefix_topic}/scan</topic>
+				<always_on>1</always_on>
+    				<visualize>false</visualize>
 				<update_rate>12.5</update_rate>
 				<ray>
 					<scan>
@@ -78,6 +87,12 @@
 							<min_angle>${min_angle}</min_angle>
 							<max_angle>${max_angle}</max_angle>
 						</horizontal>
+						<vertical>
+							<samples>1</samples>
+							<resolution>0.01</resolution> <!-- TODO: CHECK IF THIS VALUE IS CORRECT -->
+							<min_angle>0</min_angle>
+							<max_angle>0</max_angle>
+						</vertical>
 					</scan>
 					<range>
 						<min>0.065</min>
@@ -90,13 +105,8 @@
 						<stddev>0.03</stddev>
 					</noise>
 				</ray>
-				<plugin name="${prefix}_controller" filename="${plugin_lib}">
-					<ros>
-						<remapping>~/out:=${prefix_topic}/scan</remapping>
-					</ros>
-					<frame_name>${prefix}_link</frame_name>
-					<output_type>sensor_msgs/LaserScan</output_type>
-					<!-- if not global (leading /) sets the current namespace as a prefix (/ns/name_laser_link) -->
+				<plugin name="gz::sim::systems::Sensors" filename="${plugin_lib}">
+					<render_engine>ogre2</render_engine>
 				</plugin>
 			</sensor>
 		</gazebo>
