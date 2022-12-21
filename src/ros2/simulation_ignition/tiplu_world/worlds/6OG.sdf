@@ -44,11 +44,16 @@
       </link>
     </model>
     
-    
       <include>
-        <uri>file:///workspace/src/simulation/tiplu_world/models/5OG_waende</uri>
-        <name>5OG_waende</name>
-      </include> 
+        <uri>file:///workspace/src/simulation/tiplu_world/models/6OG</uri>
+        <name>6OG</name>
+      </include>  
 
+      <include>
+        <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door</uri>
+        <pose> 5.1 1.8 0.1 0 0 1.570</pose>
+        <name>Hinged_door</name>
+      </include>  
+    
   </world>
 </sdf>
