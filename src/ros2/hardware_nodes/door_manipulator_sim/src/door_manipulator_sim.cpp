@@ -26,71 +26,71 @@ namespace door_manipulator_sim
             switch (ascii_value)
             {
                 case 113:
-                    set_Motor(1, 0);
+                    set_Motor(1, -3);
                     break;
                 case 119:
-                    set_Motor(1, 1);
+                    set_Motor(1, -2);
                     break;
                 case 101:
-                    set_Motor(1, 2);
+                    set_Motor(1, -1);
                     break;
                 case 114:
-                    set_Motor(1, 3);
+                    set_Motor(1, 0);
                     break;
                 case 116:
-                    set_Motor(1, 4);
+                    set_Motor(1, 1);
                     break;
                 case 122:
-                    set_Motor(1, 5);
+                    set_Motor(1, 2);
                     break;
                 case 117:
-                    set_Motor(1, 6);
+                    set_Motor(1, 3);
                     break;
 
 
                 case 97:
-                    set_Motor(2, 0);
+                    set_Motor(2, -3);
                     break;
                 case 115:
-                    set_Motor(2, 1);
+                    set_Motor(2, -2);
                     break;
                 case 100:
-                    set_Motor(2, 2);
+                    set_Motor(2, -1);
                     break;
                 case 102:
-                    set_Motor(2, 3);
+                    set_Motor(2, 0);
                     break;
                 case 103:
-                    set_Motor(2, 4);
+                    set_Motor(2, 1);
                     break;
                 case 104:
-                    set_Motor(2, 5);
+                    set_Motor(2, 2);
                     break;
                 case 106:
-                    set_Motor(2, 6);
+                    set_Motor(2, 3);
                     break;
 
                 
                 case 121:
-                    set_Motor(3, 0);
+                    set_Motor(3, -3);
                     break;
                 case 120:
-                    set_Motor(3, 1);
+                    set_Motor(3, -2);
                     break;
                 case 99:
-                    set_Motor(3, 2);
+                    set_Motor(3, -1);
                     break;
                 case 118:
-                    set_Motor(3, 3);
+                    set_Motor(3, 0);
                     break;
                 case 98:
-                    set_Motor(3, 4);
+                    set_Motor(3, 1);
                     break;
                 case 110:
-                    set_Motor(3, 5);
+                    set_Motor(3, 2);
                     break;
                 case 109:
-                    set_Motor(3, 6);
+                    set_Motor(3, 3);
                     break;
 
                 default:
@@ -127,30 +127,29 @@ namespace door_manipulator_sim
 
                 switch (speed)
                 {
-                case 1:
+                case -3:
                     message.motor_e2 = true;
                     message.motor_e3 = true;
-                    
+                    break;
+                case -2:
+                    message.motor_e3 = true;
+                    break;
+                case -1:
+                    message.motor_e2 = true;
+                    break;
+                case -0:
+                    message.motor_e1 = true;
+                    break;
+                case 1:
+                    message.motor_e1 = true;
+                    message.motor_e2 = true;
                     break;
                 case 2:
-                    message.motor_e3 = true;
-                    break;
-                case 3:
-                    message.motor_e2 = true;
-                    break;
-                case 4:
-                    message.motor_e1 = true;
-                    break;
-                case 5:
-                    message.motor_e1 = true;
-                    message.motor_e2 = true;
-                    break;
-                case 6:
                     message.motor_e1 = true;
                     message.motor_e3 = true;
                     
                     break;
-                case 7:
+                case 3:
                     message.motor_e1 = true;
                     message.motor_e2 = true;
                     message.motor_e3 = true;
