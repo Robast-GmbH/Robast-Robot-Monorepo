@@ -5,6 +5,7 @@ namespace door_manipulator_sim
 {   
         DoorManipulatorSim::DoorManipulatorSim(): Node("door_manipulator_sim")
         {
+             RCLCPP_INFO(this->get_logger(), "Speed 0: Motor1= R , Motor2 = F , Motor 3 = V");
             auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
             qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
             qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
