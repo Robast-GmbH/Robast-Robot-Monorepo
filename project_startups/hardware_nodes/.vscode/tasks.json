@@ -60,6 +60,48 @@
             "problemMatcher": []
         },
         {
+            "label": "Move Norelem Stepper 2 forward slow",
+            "detail": "Send topic message to move the norelem stepper motor 2 forward",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 2, motor_e1: 0, motor_e2: 1, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Move Norelem Stepper 2 backward slow",
+            "detail": "Send topic message to move the norelem stepper motor 2 backward",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 2, motor_e1: 1, motor_e2: 1, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Stop Norelem Stepper 2 motion",
+            "detail": "Send topic message to stop the norelem stepper motor 2 motion",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 2, motor_e1: 1, motor_e2: 0, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Move Norelem Stepper 3 forward slow",
+            "detail": "Send topic message to move the norelem stepper motor 3 forward",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 3, motor_e1: 0, motor_e2: 1, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Move Norelem Stepper 3 backward slow",
+            "detail": "Send topic message to move the norelem stepper motor 3 backward",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 3, motor_e1: 1, motor_e2: 1, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Stop Norelem Stepper 3 motion",
+            "detail": "Send topic message to stop the norelem stepper motor 3 motion",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 3, motor_e1: 1, motor_e2: 0, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
             "label": "Open Drawer 1",
             "detail": "Send topic message to open the drawer with the controller id 1",
             "type": "shell",
