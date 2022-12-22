@@ -3,8 +3,14 @@
 
   <xacro:property name="M_PI" value="3.1415926535897931" />
 
-  <xacro:macro name="sensor_rs_bpearl" params="prefix parent prefix_topic hq *origin range_min range_max hfov samples vfov lasers fps gpu:=true">
+  <xacro:macro name="sensor_rs_bpearl" params="prefix parent publish_bf robot_name prefix_topic hq *origin range_min range_max hfov samples vfov lasers fps gpu:=true">
 
+    <xacro:if value="${publish_bf}">
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}_link" />
+		</xacro:if>
+		<xacro:unless value="${publish_bf}">
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}_link" />
+		</xacro:unless>
 
     <joint name="${prefix}_base_joint" type="fixed">
       <xacro:insert_block name="origin" />
@@ -46,18 +52,19 @@
 
     <joint name="${prefix}_joint" type="fixed">
       <parent link="${prefix}_base_link"/>
-      <child link="${prefix}_link" />
+      <child link="${sensor_link_name}"/>
       <origin xyz="0 0 0.09427" rpy="0 0 0"/>
     </joint>
-    <link name="${prefix}_link"/>
+    
+    <link name="${sensor_link_name}" />
 
-  <xacro:sensor_rs_bpearl_gazebo range_min="${range_min}" range_max="${range_max}" hfov="${hfov}" samples="${samples}" vfov="${vfov}" lasers="${lasers}" fps="${fps}" gpu="${gpu}"/>
+    <xacro:sensor_rs_bpearl_gazebo range_min="${range_min}" range_max="${range_max}" hfov="${hfov}" samples="${samples}" vfov="${vfov}" lasers="${lasers}" fps="${fps}" gpu="${gpu}"/>
 
   </xacro:macro>
 
   <xacro:macro name="sensor_rs_bpearl_gazebo" params="range_min range_max hfov samples vfov lasers fps gpu">
 
-    <gazebo reference="${prefix}_base_link">
+    <gazebo reference="${sensor_link_name}">
       <visual>  
         <material>  
           <ambient>0.5 0.5 0.5 1.0</ambient>  
@@ -68,7 +75,7 @@
       </visual>  
     </gazebo>
 
-    <gazebo reference="${prefix}_link">
+    <gazebo reference="${sensor_link_name}">
 
       <visual>  
         <material>  
@@ -78,7 +85,8 @@
           <emissive>0.0 0.0 0.0 0.0</emissive>  
         </material>  
       </visual>  
-      <sensor name='gpu_lidar' type='gpu_lidar'>
+      <sensor name='${prefix}_link' type='gpu_lidar'>
+        <pose relative_to='${sensor_link_name}'>0 0 0 0 0 0</pose>
         <visualize>true</visualize>
         <topic>bpearl_laser/scan</topic>
         <update_rate>10</update_rate>
