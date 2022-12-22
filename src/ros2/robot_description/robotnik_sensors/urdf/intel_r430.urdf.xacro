@@ -23,7 +23,14 @@
   <xacro:property name="r430_cam_depth_py" value="-0.0115"/>
   <xacro:property name="r430_cam_depth_pz" value="0.0"/>
 
-  <xacro:macro name="sensor_r430" params="prefix parent prefix_topic:='front_rgbd_camera' hq *origin">
+  <xacro:macro name="sensor_r430" params="prefix parent publish_bf robot_name prefix_topic:='front_rgbd_camera' hq *origin">
+
+    <xacro:if value="${publish_bf}">
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}" />
+		</xacro:if>
+		<xacro:unless value="${publish_bf}">
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}" />
+		</xacro:unless>
 
     <!-- camera body, with origin at bottom screw mount -->
     <joint name="${prefix}_camera_joint" type="fixed">
@@ -72,9 +79,16 @@
     <joint name="${prefix}_camera_depth_optical_joint" type="fixed">
       <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
       <parent link="${prefix}_camera_depth_frame" />
-      <child link="${prefix}_camera_depth_optical_frame" />
+      <child link="${sensor_link_name}_depth_link" />
     </joint>
-    <link name="${prefix}_camera_depth_optical_frame"/>
+    <link name="${sensor_link_name}_depth_link"/>
+
+    <joint name="${prefix}_camera_color_joint" type="fixed">
+      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      <parent link="${prefix}_camera_depth_frame" />
+      <child link="${sensor_link_name}_color_link" />
+    </joint>
+    <link name="${sensor_link_name}_color_link"/>
 
     <!-- camera left IR joints and links -->
     <joint name="${prefix}_camera_left_ir_joint" type="fixed">
@@ -128,108 +142,110 @@
   <xacro:macro name="sensor_r430_gazebo">
 
     <!-- gazebo reference="${prefix}_rgb_base_link" -->
-    <gazebo reference="${prefix}_camera_link">
-
-
-      <sensor name="${prefix}_color" type="camera">
-				<pose relative_to='${prefix}_camera_depth_frame'>-0.1 0 0 0 0 0</pose>
+    <gazebo reference="${sensor_link_name}_color_link">
+      <sensor name="${prefix}_color_link" type="camera">
+				<pose relative_to='${sensor_link_name}_color_link'>-0.1 0 0 0 0 0</pose>
 				<topic>${prefix_topic}/color</topic>
-        			<camera name="r430">
-          				<horizontal_fov>1.2112585008840648</horizontal_fov>
-          				<image>
-            					<width>640</width>
-            					<height>480</height>
-            					<format>RGB_INT8</format>
-          				</image>
-          				<clip>
-            					<near>0.1</near>
-            					<far>100</far>
-          				</clip>
-    		      			<noise>
-            					<type>gaussian</type>
-            					<mean>0.0</mean>
-            					<stddev>0.007</stddev>
-          				</noise>
-        			</camera>
-        			
-        			<always_on>1</always_on>
-        			<update_rate>30</update_rate>
-        			<visualize>1</visualize>
-      			</sensor>
+        <camera name="r430">
+            <horizontal_fov>1.2112585008840648</horizontal_fov>
+            <image>
+                <width>640</width>
+                <height>480</height>
+                <format>RGB_INT8</format>
+            </image>
+            <clip>
+                <near>0.1</near>
+                <far>100</far>
+            </clip>
+              <noise>
+                <type>gaussian</type>
+                <mean>0.0</mean>
+                <stddev>0.007</stddev>
+            </noise>
+        </camera>
+        
+        <always_on>1</always_on>
+        <update_rate>30</update_rate>
+        <visualize>1</visualize>
+      </sensor>
+    </gazebo>
 
-            <sensor name="${prefix}_ired1" type="camera">
-            <pose relative_to='${prefix}_camera_depth_frame'>-0.2 0 0 0 0 0</pose>
-				    <topic>${prefix_topic}/${prefix}/ired1</topic>
-              <camera name="r430">
-                <horizontal_fov>${91.2*M_PI/180.0}</horizontal_fov>
-                <image>
-                  <width>640</width>
-                  <height>480</height>
-                  <format>L_INT8</format>
-                </image>
-                <clip>
-                  <near>0.3</near>
-                  <far>10.0</far>
-                </clip>
-                <noise>
-                  <type>gaussian</type>
-                  <mean>0.0</mean>
-                  <stddev>0.05</stddev>
-                </noise>
-              </camera>
-              <always_on>1</always_on>
-              <update_rate>90</update_rate>
-              <visualize>0</visualize>
-            </sensor>
+    <gazebo reference="${prefix}_camera_link">
+      <sensor name="${prefix}_ired1" type="camera">
+      <pose relative_to='${prefix}_camera_depth_frame'>-0.2 0 0 0 0 0</pose>
+      <topic>${prefix_topic}/${prefix}/ired1</topic>
+        <camera name="r430">
+          <horizontal_fov>${91.2*M_PI/180.0}</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>L_INT8</format>
+          </image>
+          <clip>
+            <near>0.3</near>
+            <far>10.0</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.05</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>90</update_rate>
+        <visualize>0</visualize>
+      </sensor>
 
-            <sensor name="${prefix}_ired2" type="camera">
-               <pose relative_to='${prefix}_camera_depth_frame'>0.2 0 0 0 0 0</pose>
-            		<topic>${prefix_topic}/${prefix}/ired2</topic>
-                <camera name="r430">
-                  <horizontal_fov>1.4870205226991688</horizontal_fov>
-                  <image>
-                    <width>640</width>
-                    <height>480</height>
-                    <format>L_INT8</format>
-                  </image>
-                  <clip>
-                    <near>0.3</near>
-                    <far>10.0</far>
-                  </clip>
-                  <noise>
-                    <type>gaussian</type>
-                    <mean>0.0</mean>
-                    <stddev>0.05</stddev>
-                  </noise>
-                </camera>
-                <always_on>1</always_on>
-                <update_rate>90</update_rate>
-                <visualize>0</visualize>
-              </sensor>
+      <sensor name="${prefix}_ired2" type="camera">
+        <pose relative_to='${prefix}_camera_depth_frame'>0.2 0 0 0 0 0</pose>
+        <topic>${prefix_topic}/${prefix}/ired2</topic>
+        <camera name="r430">
+          <horizontal_fov>1.4870205226991688</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+            <format>L_INT8</format>
+          </image>
+          <clip>
+            <near>0.3</near>
+            <far>10.0</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.05</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>90</update_rate>
+        <visualize>0</visualize>
+      </sensor>
+    </gazebo>
 
-              <sensor name="${prefix}_depth" type="depth">
-                <pose relative_to='${prefix}_camera_depth_frame'>0.1 0 0 0 0 0</pose>
-            		<topic>${prefix_topic}/${prefix}/depth</topic>
-                <camera name="r430">
-                 <horizontal_fov>${91.2*M_PI/180.0}</horizontal_fov>
-                 <image>
-                   <width>640</width>
-                   <height>480</height>
-                 </image>
-                 <clip>
-                   <near>0.3</near>
-                   <far>10.0</far>
-                 </clip>
-                 <noise>
-                   <type>gaussian</type>
-                   <mean>0.0</mean>
-                   <stddev>0.100</stddev>
-                 </noise>
-                </camera>
-                <always_on>1</always_on>
-                <update_rate>15</update_rate>
-                <visualize>0</visualize>
-              </sensor>
+    <gazebo reference="${sensor_link_name}_depth_link">
+      <sensor name="${prefix}_depth_link" type="depth">
+        <pose relative_to='${sensor_link_name}_depth_link'>0.1 0 0 0 0 0</pose>
+        <topic>${prefix_topic}/${prefix}/depth</topic>
+        <camera name="r430">
+          <horizontal_fov>${91.2*M_PI/180.0}</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+          </image>
+          <clip>
+            <near>0.3</near>
+            <far>10.0</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.100</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>15</update_rate>
+        <visualize>0</visualize>
+      </sensor>
     </gazebo>
     <!-- <gazebo>
       <plugin filename="librealsense_gazebo_plugin.so" name="r430">

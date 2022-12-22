@@ -47,7 +47,7 @@
   lazy: false               # Default "false"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/front_realsense_camera/front_realsense_camera/depth"
+- ros_topic_name: "/front_realsense_camera/depth"
   gz_topic_name: "/front_realsense_camera/front_realsense_camera/depth"
   ros_type_name: "sensor_msgs/msg/Image"
   gz_type_name: "ignition.msgs.Image"
@@ -56,7 +56,7 @@
   lazy: false               # Default "false"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/front_realsense_camera/front_realsense_camera/depth/points"
+- ros_topic_name: "/front_realsense_camera/depth/points"
   gz_topic_name: "/front_realsense_camera/front_realsense_camera/depth/points"
   ros_type_name: "sensor_msgs/msg/PointCloud2"
   gz_type_name: "ignition.msgs.PointCloudPacked"
