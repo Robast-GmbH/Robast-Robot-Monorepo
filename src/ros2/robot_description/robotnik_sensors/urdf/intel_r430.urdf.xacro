@@ -36,10 +36,10 @@
     <joint name="${prefix}_camera_joint" type="fixed">
       <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
-      <child link="${prefix}_camera_link" />
+      <child link="${prefix}_link" />
     </joint>
 
-    <link name="${prefix}_camera_link">
+    <link name="${prefix}_link">
       <visual>
         <!-- origin xyz="0 ${-r430_cam_mount_from_center_offset} ${r430_cam_height/2}" rpy="${M_PI/2} 0 ${M_PI/2}"/ -->
         <origin xyz="0 ${-r430_cam_mount_from_center_offset} 0" rpy="0 0 0"/>
@@ -71,7 +71,7 @@
     <!-- camera depth joints and links -->
     <joint name="${prefix}_camera_depth_joint" type="fixed">
       <origin xyz="${r430_cam_depth_px} ${r430_cam_depth_py} ${r430_cam_depth_pz}" rpy="0 0 0"/>
-      <parent link="${prefix}_camera_link"/>
+      <parent link="${prefix}_link"/>
       <child link="${prefix}_camera_depth_frame" />
     </joint>
     <link name="${prefix}_camera_depth_frame"/>
@@ -142,9 +142,8 @@
   <xacro:macro name="sensor_r430_gazebo">
 
     <!-- gazebo reference="${prefix}_rgb_base_link" -->
-    <gazebo reference="${sensor_link_name}_color_link">
+    <gazebo reference="${prefix}_link">
       <sensor name="${prefix}_color_link" type="camera">
-				<pose relative_to='${sensor_link_name}_color_link'>-0.1 0 0 0 0 0</pose>
 				<topic>${prefix_topic}/color</topic>
         <camera name="r430">
             <horizontal_fov>1.2112585008840648</horizontal_fov>
@@ -168,11 +167,8 @@
         <update_rate>30</update_rate>
         <visualize>1</visualize>
       </sensor>
-    </gazebo>
-
-    <gazebo reference="${prefix}_camera_link">
+      
       <sensor name="${prefix}_ired1" type="camera">
-      <pose relative_to='${prefix}_camera_depth_frame'>-0.2 0 0 0 0 0</pose>
       <topic>${prefix_topic}/${prefix}/ired1</topic>
         <camera name="r430">
           <horizontal_fov>${91.2*M_PI/180.0}</horizontal_fov>
@@ -197,7 +193,6 @@
       </sensor>
 
       <sensor name="${prefix}_ired2" type="camera">
-        <pose relative_to='${prefix}_camera_depth_frame'>0.2 0 0 0 0 0</pose>
         <topic>${prefix_topic}/${prefix}/ired2</topic>
         <camera name="r430">
           <horizontal_fov>1.4870205226991688</horizontal_fov>
@@ -220,11 +215,8 @@
         <update_rate>90</update_rate>
         <visualize>0</visualize>
       </sensor>
-    </gazebo>
 
-    <gazebo reference="${sensor_link_name}_depth_link">
       <sensor name="${prefix}_depth_link" type="depth">
-        <pose relative_to='${sensor_link_name}_depth_link'>0.1 0 0 0 0 0</pose>
         <topic>${prefix_topic}/${prefix}/depth</topic>
         <camera name="r430">
           <horizontal_fov>${91.2*M_PI/180.0}</horizontal_fov>
