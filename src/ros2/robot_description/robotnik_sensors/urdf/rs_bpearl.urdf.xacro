@@ -86,7 +86,6 @@
         </material>  
       </visual>  
       <sensor name='${prefix}_link' type='gpu_lidar'>
-        <pose relative_to='${sensor_link_name}'>0 0 0 0 0 0</pose>
         <visualize>true</visualize>
         <topic>bpearl_laser/scan</topic>
         <update_rate>10</update_rate>
