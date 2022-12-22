@@ -126,7 +126,7 @@
 		<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
 	</xacro:sensor_sick_nanoscan3> -->
 	<gazebo>
-		<plugin name="gz::sim::systems::Sensors" filename="gz-sim-sensors-system">
+		<plugin name="ignition::gazebo::systems::Sensors" filename="libignition-gazebo-sensors-system.so">
 			<render_engine>ogre2</render_engine>
 		</plugin>
 	</gazebo>
