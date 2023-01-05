@@ -24,7 +24,7 @@
 namespace ros_bt_basics
 {
 
-  BtNavigator::BtNavigator(const rclcpp::NodeOptions& options)
+  BtActor::BtActor(const rclcpp::NodeOptions& options)
     : nav2_util::LifecycleNode("bt_navigator", "", options)
   {
     RCLCPP_INFO(get_logger(), "Creating");
@@ -41,11 +41,11 @@ namespace ros_bt_basics
 
   }
 
-  BtNavigator::~BtNavigator()
+  BtActor::~BtActor()
   {}
 
   nav2_util::CallbackReturn
-    BtNavigator::on_configure(const rclcpp_lifecycle::State& /*state*/)
+    BtActor::on_configure(const rclcpp_lifecycle::State& /*state*/)
   {
     RCLCPP_INFO(get_logger(), "Configuring");
 
@@ -62,7 +62,7 @@ namespace ros_bt_basics
   }
 
   nav2_util::CallbackReturn
-    BtNavigator::on_activate(const rclcpp_lifecycle::State& /*state*/)
+    BtActor::on_activate(const rclcpp_lifecycle::State& /*state*/)
   {
     RCLCPP_INFO(get_logger(), "Activating");
 
@@ -74,7 +74,7 @@ namespace ros_bt_basics
   }
 
   nav2_util::CallbackReturn
-    BtNavigator::on_deactivate(const rclcpp_lifecycle::State& /*state*/)
+    BtActor::on_deactivate(const rclcpp_lifecycle::State& /*state*/)
   {
     RCLCPP_INFO(get_logger(), "Deactivating");
 
@@ -85,7 +85,7 @@ namespace ros_bt_basics
   }
 
   nav2_util::CallbackReturn
-    BtNavigator::on_cleanup(const rclcpp_lifecycle::State& /*state*/)
+    BtActor::on_cleanup(const rclcpp_lifecycle::State& /*state*/)
   {
     RCLCPP_INFO(get_logger(), "Cleaning up");
 
@@ -95,7 +95,7 @@ namespace ros_bt_basics
   }
 
   nav2_util::CallbackReturn
-    BtNavigator::on_shutdown(const rclcpp_lifecycle::State& /*state*/)
+    BtActor::on_shutdown(const rclcpp_lifecycle::State& /*state*/)
   {
     RCLCPP_INFO(get_logger(), "Shutting down");
     return nav2_util::CallbackReturn::SUCCESS;

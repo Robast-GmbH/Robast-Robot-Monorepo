@@ -29,22 +29,22 @@ namespace ros_bt_basics
 {
 
 /**
- * @class nav2_bt_navigator::BtNavigator
+ * @class nav2_bt_navigator::BtActor
  * @brief An action server that uses behavior tree for navigating a robot to its
  * goal position.
  */
-class BtNavigator : public nav2_util::LifecycleNode
+class BtActor : public nav2_util::LifecycleNode
 {
 public:
   /**
-   * @brief A constructor for nav2_bt_navigator::BtNavigator class
+   * @brief A constructor for nav2_bt_navigator::BtActor class
    * @param options Additional options to control creation of the node.
    */
-  explicit BtNavigator(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
+  explicit BtActor(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
   /**
-   * @brief A destructor for nav2_bt_navigator::BtNavigator class
+   * @brief A destructor for nav2_bt_navigator::BtActor class
    */
-  ~BtNavigator();
+  ~BtActor();
 
 protected:
   /**
