@@ -16,27 +16,25 @@ namespace bt_basics
 
         DrawerAccessActor():Actor()
         {}
-        bool configure(rclcpp_lifecycle::LifecycleNode::WeakPtr node) override;
+        bool configure(rclcpp_lifecycle::LifecycleNode::WeakPtr parent_node) override;
         bool cleanup() override;
         std::string getName() { return std::string("drawer_access_actor"); }
         std::string getDefaultBTFilepath(rclcpp_lifecycleNode::LifecycleNode::WeakPtr node) override;
 
     protected:
-        bool requestRecieved(ActionT::ConstSharedPtr request) override;
+        // bool requestRecieved(ActionT::ConstSharedPtr request) override;
         void onLoop() override;
-        void onActionRecieved(ActionT::SharedPtr drawerAddress) override;
+        // void onActionRecieved(ActionT::SharedPtr drawerAddress) override;
         void actionCompleated(ActionT::SharedPtr result,
             //TODO nav BT
             ) override;
-        
+
         rclcpp::Time start_time_;
         //TODO muss das ne action sein?
         rclcpp::Subscription<ActionT>::SharedPtr drawer_sub_;
         rclcpp_action::Client<ActionT>::SharedPtr self_client_;
 
-        std::string goal_blackboard_id_;
-        std::string path_blackboard_id_;
-
-
-    }
+        std::string drawer_blackboard_id_;
+        // std::string path_blackboard_id_;
+    };
 }
