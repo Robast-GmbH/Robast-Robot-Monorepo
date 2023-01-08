@@ -4,7 +4,7 @@
 #include <memory>
 #include <string>
 
-#include "behaviortree_cpp_v3/bt_factory.h"
+#include "behaviortree_cpp/bt_factory.h"
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
@@ -17,26 +17,33 @@
 
 #include "bt_plugins/behavior_tree_engine.hpp"
 
-#include "behaviortree_cpp_v3/behavior_tree.h"
-#include "behaviortree_cpp_v3/xml_parsing.h"
-#include "behaviortree_cpp_v3/loggers/bt_zmq_publisher.h"
+#include "behaviortree_cpp/behavior_tree.h"
+#include "behaviortree_cpp/xml_parsing.h"
+#include "behaviortree_cpp/loggers/bt_zmq_publisher.h"
+// #include "nav2_lifecycle_manager/lifecycle_manager.hpp"
+
 
 // namespace drawer_statemachine
 // {
-//   class BTTicker : public rclcpp::Node
-//   {
-//   public:
-//     BTTicker(BT::BehaviorTreeFactory* factory)
-//       : Node("bt_ticker")
-//     {
-//       std::cout << "BTTicker" << std::endl;
+  class BTTicker : public rclcpp::Node
+  {
+  public:
+    BTTicker()
+      : Node("bt_ticker")
+    {
+      timer_ = this->create_wall_timer(
+      500ms, std::bind(&BTTicker::ticking, this));
 
-//       std::cout << "hinzugefügt is" << std::endl;
+    }
 
-//     }
+  private:
+    void ticking()
+    {
+      
+    }
+    rclcpp::TimerBase::SharedPtr timer_;
 
-//   private:
-//   };
+  };
 // }
 
 using namespace drawer_statemachine;
@@ -48,22 +55,25 @@ int main(int argc, char* argv[ ])
     "Hans",
     "drawer_open_request_action_bt_node",
   };
+  // auto node = std::make_shared<nav2_lifecycle_manager::LifecycleManager>();
+  
+
   // "change_led_action_bt_node",
   // "open_drawer_action_bt_node",
   // "drawer_open_request_action_bt_node",
   // "drawer_status_condition_bt_node",
   // "example_action_bt_node"
-  
-  rclcpp_lifecycle::LifecycleNode::WeakPtr parent_node;
-  auto client_node_ = parent_node.lock();
-  static BT::NodeConfiguration* config_;
-  config_ = new BT::NodeConfiguration();
+  rclcpp::Node node = rclcpp::Node("node");
+  rclcpp::Node::SharedPtr parent_node = std::make_shared<BTTicker>();
+  // auto client_node_ = parent_node.lock();
+  static BT::NodeConfig* config_;
+  config_ = new BT::NodeConfig();
   // Create the blackboard that will be shared by all of the nodes in the tree
   auto blackboard = BT::Blackboard::create();
   // Put items on the blackboard
   blackboard->set<rclcpp::Node::SharedPtr>(
     "node",
-    client_node_);
+    parent_node);
   blackboard->set<std::chrono::milliseconds>(
     "bt_loop_duration",
     std::chrono::milliseconds(10));
@@ -90,7 +100,7 @@ int main(int argc, char* argv[ ])
   //   std::bind([&]() {return true;}));
   
 
-  rclcpp::spin(client_node_);
+  // rclcpp::spin(client_node_);
   BtStatus rc = bt_engine->run(&bt, on_loop, is_canceling, std::chrono::milliseconds(10));
   rclcpp::shutdown();
   return 0;

@@ -9,7 +9,7 @@ namespace drawer_statemachine
 
     ChangeLED::ChangeLED(
         const std::string& name,
-        const BT::NodeConfiguration& config)
+        const BT::NodeConfig& config)
         : BT::SyncActionNode(name, config)
     {
         node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
@@ -40,7 +40,7 @@ namespace drawer_statemachine
 
 }  // namespace drawer_statemachine
 
-#include "behaviortree_cpp_v3/bt_factory.h"
+#include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
     factory.registerNodeType<drawer_statemachine::ChangeLED>("ChangeLED");

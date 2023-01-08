@@ -5,7 +5,7 @@ namespace drawer_statemachine
 {
     DrawerStatusCondition::DrawerStatusCondition(
         const std::string& name,
-        const BT::NodeConfiguration& config) : BT::ConditionNode(name, config)
+        const BT::NodeConfig& config) : BT::ConditionNode(name, config)
     {
         node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
         callback_group_ = node_->create_callback_group(
@@ -54,7 +54,7 @@ namespace drawer_statemachine
     }
 }
 
-#include "behaviortree_cpp_v3/bt_factory.h"
+#include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
     factory.registerNodeType<drawer_statemachine::DrawerStatusCondition>("DrawerStatusCondition");

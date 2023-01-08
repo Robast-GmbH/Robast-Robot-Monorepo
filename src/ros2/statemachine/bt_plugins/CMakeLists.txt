@@ -11,7 +11,7 @@ find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(communication_interfaces REQUIRED)
-find_package(behaviortree_cpp_v3 REQUIRED)
+find_package(behaviortree_cpp REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
@@ -21,7 +21,7 @@ set(dependencies
   rclcpp_action
   std_msgs
   communication_interfaces
-  behaviortree_cpp_v3
+  behaviortree_cpp
 )
 include_directories(
   include

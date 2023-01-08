@@ -5,7 +5,7 @@
 #include <memory>
 
 #include "rclcpp/rclcpp.hpp"
-#include "behaviortree_cpp_v3/condition_node.h"
+#include "behaviortree_cpp/condition_node.h"
 #include "communication_interfaces/msg/drawer_status.hpp"
 
 namespace drawer_statemachine
@@ -13,7 +13,7 @@ namespace drawer_statemachine
     class DrawerStatusCondition : public BT::ConditionNode
     {
         public:
-            DrawerStatusCondition(const std::string& name, const BT::NodeConfiguration& config);
+            DrawerStatusCondition(const std::string& name, const BT::NodeConfig& config);
             DrawerStatusCondition() = delete;
 
             BT::NodeStatus tick() override;

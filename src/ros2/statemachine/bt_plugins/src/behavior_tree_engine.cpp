@@ -20,7 +20,8 @@
 #include <vector>
 
 #include "rclcpp/rclcpp.hpp"
-#include "behaviortree_cpp_v3/utils/shared_library.h"
+#include "behaviortree_cpp/bt_factory.h"
+#include "behaviortree_cpp/utils/shared_library.h"
 
 namespace drawer_statemachine
 {
@@ -50,10 +51,10 @@ namespace drawer_statemachine
             {
                 if (cancelRequested())
                 {
-                    tree->rootNode()->halt();
+                    tree->haltTree();
                     return BtStatus::CANCELED;
                 }
-                result = tree->tickRoot();
+                result = tree->tickOnce();
 
                 onLoop();
 
@@ -97,13 +98,13 @@ namespace drawer_statemachine
         }
 
         // this halt signal should propagate through the entire tree.
-        root_node->halt();
+        root_node->haltNode();
 
         // but, just in case...
         auto visitor = [](BT::TreeNode* node) {
             if (node->status() == BT::NodeStatus::RUNNING)
             {
-                node->halt();
+                node->haltNode();
             }
         };
         BT::applyRecursiveVisitor(root_node, visitor);

@@ -11,7 +11,8 @@
                 "/workspace/src/communication_interfaces/**",
                 "/workspace/src/statemachine**",
                 "/workspace/build/**",
-                "${workspaceFolder}/src/statemachine/BehaviorTree.CPP/include",
+                "/workspace/install/behaviortree_cpp/**",
+                "${workspaceFolder}/src/statemachine/bt_v4/BehaviorTree_CPP/include",
                 "${workspaceFolder}/src/statemachine/bt_plugins/include"
             ],
             "name": "ROS2",

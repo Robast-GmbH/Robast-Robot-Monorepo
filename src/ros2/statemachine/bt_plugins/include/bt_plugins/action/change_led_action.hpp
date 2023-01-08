@@ -8,7 +8,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "behaviortree_cpp_v3/action_node.h"
+#include "behaviortree_cpp/action_node.h"
 #include "std_msgs/msg/string.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
 #include "communication_interfaces/msg/drawer_leds.hpp"
@@ -24,7 +24,7 @@ namespace drawer_statemachine
     public:
         ChangeLED(
             const std::string& name,
-            const BT::NodeConfiguration& config);
+            const BT::NodeConfig& config);
 
         ChangeLED() = delete;
 

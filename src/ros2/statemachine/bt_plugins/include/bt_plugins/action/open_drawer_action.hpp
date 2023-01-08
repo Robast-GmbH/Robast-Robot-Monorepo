@@ -8,7 +8,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "behaviortree_cpp_v3/action_node.h"
+#include "behaviortree_cpp/action_node.h"
 #include "std_msgs/msg/string.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
 
@@ -18,12 +18,12 @@ namespace drawer_statemachine
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
      * updated on the blackboard and FAILURE otherwise
      */
-    class OpenDrawer : public BT::AsyncActionNode
+    class OpenDrawer : public BT::ThreadedAction
     {
     public:
         OpenDrawer(
             const std::string& name,
-            const BT::NodeConfiguration& config);
+            const BT::NodeConfig& config);
 
         OpenDrawer() = delete;
 

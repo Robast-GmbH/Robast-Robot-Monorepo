@@ -13,17 +13,19 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(communication_interfaces REQUIRED)
-find_package(behaviortree_cpp_v3 REQUIRED)
+find_package(behaviortree_cpp REQUIRED)
 find_package(bt_plugins REQUIRED)
 
 set(dependencies
   rclcpp
   rclcpp_action
+  rclcpp_lifecycle
   std_msgs
   communication_interfaces
-  behaviortree_cpp_v3
+  behaviortree_cpp
   bt_plugins
 )
 
