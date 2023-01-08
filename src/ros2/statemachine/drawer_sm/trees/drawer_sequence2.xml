@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<root BTCPP_format="4">
+    <!-- ////////// -->
+    <BehaviorTree ID="BehaviorTree">
+        <Sequence>
+            <Action ID="DrawerOpenReq" drawer_address="{drawer}" drawer_address_topic="topic"/>
+            <Action ID="OpenDrawer" drawer_address="{drawer}" drawer_open_topic="/open_drawer"/>
+            <Action ID="ChangeLED" blue="0" brightness="128" drawer_address="{drawer}" green="255" led_topic="drawer_leds" mode="1" red="0"/>
+            <Condition ID="DrawerStatusCondition" target_value="true" topic="/drawer_is_open"/>
+            <Action ID="ChangeLED" blue="255" brightness="128" drawer_address="{drawer}" green="255" led_topic="drawer_leds" mode="1" red="255"/>
+            <Condition ID="DrawerStatusCondition" target_value="false" topic="/drawer_is_open"/>
+            <Action ID="ChangeLED" blue="0" brightness="0" drawer_address="{drawer}" green="0" led_topic="drawer_leds" mode="3" red="0"/>
+            <Action ID="ChangeLED" blue="255" brightness="128" drawer_address="{drawer}" green="0" led_topic="drawer_leds" mode="1" red="0"/>
+        </Sequence>
+    </BehaviorTree>
+    <!-- ////////// -->
+    <TreeNodesModel>
+        <Action ID="ChangeLED">
+            <input_port default="0" name="blue">uint8</input_port>
+            <input_port default="0" name="brightness">uint8 to determine the brightness</input_port>
+            <input_port default="{drawer}" name="drawer_address"/>
+            <input_port default="0" name="green">uint8</input_port>
+            <input_port default="drawer_leds" name="led_topic"/>
+            <input_port default="0" name="mode">uint8. describes the kind of animation thats used</input_port>
+            <input_port default="0" name="red">uint8</input_port>
+        </Action>
+        <Action ID="DrawerOpenReq">
+            <output_port default="{drawer}" name="drawer_address"/>
+            <input_port default="topic" name="drawer_address_topic"/>
+        </Action>
+        <Condition ID="DrawerStatusCondition">
+            <input_port default="false" name="target_value"/>
+            <input_port default="/drawer_is_open" name="topic"/>
+        </Condition>
+        <Action ID="OpenDrawer">
+            <input_port default="{drawer}" name="drawer_address"/>
+            <input_port default="/open_drawer" name="drawer_open_topic"/>
+        </Action>
+    </TreeNodesModel>
+    <!-- ////////// -->
+</root>
