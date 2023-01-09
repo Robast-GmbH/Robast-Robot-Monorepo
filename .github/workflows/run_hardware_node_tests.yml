@@ -49,5 +49,5 @@ jobs:
 
     - name: Run docker and execute tests
       working-directory: src/ros2/hardware_nodes
-      run: docker run -v $(pwd):/workspace/src/hardware_nodes -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces -v $(pwd)/../../../libs:/workspace/libs --name hardware_nodes_container ghcr.io/robast-gmbh/monorepo/hardware_nodes_test-latest  /bin/sh -c "cd /workspace/ sudo apt-get update && sudo apt-get upgrade -y; rosdep update; rosdep install --from-paths src --ignore-src -r -y; source install/setup.bash; colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic; colcon test --event-handler=console_direct+; colcon test-result --all"
+      run: docker run -v $(pwd):/workspace/src/hardware_nodes -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces -v $(pwd)/../../../libs:/workspace/libs --name hardware_nodes_container ghcr.io/robast-gmbh/monorepo/hardware_nodes_test  /bin/sh -c "cd /workspace/ sudo apt-get update && sudo apt-get upgrade -y; rosdep update; rosdep install --from-paths src --ignore-src -r -y; source install/setup.bash; colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic; colcon test --event-handler=console_direct+; colcon test-result --all"
    
