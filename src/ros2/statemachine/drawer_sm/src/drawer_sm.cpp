@@ -20,6 +20,8 @@
 #include "behaviortree_cpp/behavior_tree.h"
 #include "behaviortree_cpp/xml_parsing.h"
 #include "behaviortree_cpp/loggers/bt_zmq_publisher.h"
+
+#include "std_msgs/msg/empty.hpp"
 // #include "nav2_lifecycle_manager/lifecycle_manager.hpp"
 
 
@@ -47,10 +49,18 @@
         std::chrono::milliseconds(10));
       auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
       bt_ = bt_engine->createTreeFromFile("/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml", blackboard);
-      using namespace std::chrono_literals;
-      timer_ = this->create_wall_timer(
-      500ms, std::bind(&BTTicker::ticking, this));
+      // using namespace std::chrono_literals;
+      // timer_ = this->create_wall_timer(
+      // 500ms, std::bind(&BTTicker::ticking, this));
+      rclcpp::QoS qos(rclcpp::KeepLast(1));
+      qos.transient_local().reliable();
 
+      start_bt_sub_ = this->create_subscription<std_msgs::msg::Empty>(
+          "start_bt",
+          qos,
+          std::bind(&BTTicker::callbackRunBT, this, std::placeholders::_1)   );
+
+      
     }
 
   private:
@@ -60,10 +70,18 @@
       bt_.tickOnce();
       std::cout << "ticked" << std::endl;
     }
-    
+    void
+        callbackRunBT(const std_msgs::msg::Empty msg)
+    {
+      using namespace std::chrono_literals;
+      bt_.tickWhileRunning(500ms);
+      return;
+    }
+
     rclcpp::TimerBase::SharedPtr timer_;
     // drawer_statemachine::BehaviorTreeEngine bt_engine_;
     BT::Tree bt_;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr start_bt_sub_;
 
   };
 // }
