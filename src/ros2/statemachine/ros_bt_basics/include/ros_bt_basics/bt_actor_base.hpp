@@ -77,19 +77,19 @@ namespace bt_basics
             clock_ = node->get_clock();
             plugin_muxer_ = plugin_muxer;
 
-            // get the default behavior tree for this navigator
+            // get the default behavior tree for this 
             std::string default_bt_xml_filename = getDefaultBTFilepath(parent_node);
 
-            // Create the Behavior Tree Action Server for this navigator
+            // Create the Behavior Tree Action Server for this 
             bt_action_server_ = std::make_unique<nav2_behavior_tree::BtActionServer<ActionT>>(
                 node,
                 getName(),
                 plugin_lib_names,
                 default_bt_xml_filename,
-                std::bind(&Navigator::onGoalReceived, this, std::placeholders::_1),
-                std::bind(&Navigator::onLoop, this),
-                std::bind(&Navigator::onPreempt, this, std::placeholders::_1),
-                std::bind(&Navigator::onCompletion, this, std::placeholders::_1, std::placeholders::_2));
+                std::bind(&BaseActor::onGoalReceived, this, std::placeholders::_1),
+                std::bind(&BaseActor::onLoop, this),
+                std::bind(&BaseActor::onPreempt, this, std::placeholders::_1),
+                std::bind(&BaseActor::onCompletion, this, std::placeholders::_1, std::placeholders::_2));
 
             bool ok = true;
             if (!bt_action_server_->on_configure()) {
@@ -97,7 +97,7 @@ namespace bt_basics
             }
             BT::Blackboard::Ptr blackboard = bt_action_server_->getBlackboard();
 
-            return configure(parent_node, odom_smoother) && ok;
+            return configure(parent_node) && ok;
         }
         bool on_activate()
         {
@@ -157,35 +157,32 @@ namespace bt_basics
         virtual ~BaseActor() = default;
         
     protected:
-        bool onGoalReceived(typename ActionT::Goal::ConstSharedPtr goal)
+        bool onGoalReceived(typename ActionT::ConstSharedPtr goal)
         {//TODO nix nav
-            if (plugin_muxer_->isNavigating()) {
+            if (plugin_muxer_->isActive()) {
             RCLCPP_ERROR(
                 logger_,
-                "Requested navigation from %s while another navigator is processing,"
+                "Requested navigation from %s while another actor is processing,"
                 " rejecting request.", getName().c_str());
             return false;
             }
 
-            bool goal_accepted = goalReceived(goal);
-
-            if (goal_accepted) {
-                plugin_muxer_->startNavigating(getName());
-            }
+                plugin_muxer_->startActor(getName());
+            
 
             return goal_accepted;
         }
 
         /**
-         * @brief An intermediate completion function to mux navigators
+         * @brief An intermediate completion function to mux actors
          */
         //TODO nix nav
         void onCompletion(
             typename ActionT::Result::SharedPtr result,
             const nav2_behavior_tree::BtStatus final_bt_status)
         {
-            plugin_muxer_->stopNavigating(getName());
-            goalCompleted(result, final_bt_status);
+            plugin_muxer_->stopActor(getName());
+            actionCompleted(result, final_bt_status);
         }
 
         /**
