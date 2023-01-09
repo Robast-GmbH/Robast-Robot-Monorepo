@@ -11,6 +11,13 @@
             "problemMatcher": []
         },
         {
+            "label": "debug_build",
+            "detail": "Symlink Build of the project",
+            "type": "shell",
+            "command": "clear; colcon build --symlink-install --packages-skip nav2_behavior_tree groot --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic",
+            "problemMatcher": []
+        },
+        {
             "label": "purge",
             "detail": "delete /install /log /build",
             "type": "shell",
