@@ -10,7 +10,7 @@ namespace drawer_statemachine
     DrawerOpenReq::DrawerOpenReq(
         const std::string& name,
         const BT::NodeConfig& config)
-        : BT::ThreadedAction(name, config)
+        : BT::StatefulActionNode(name, config)
     {
         node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
         callback_group_ = node_->create_callback_group(
@@ -33,8 +33,25 @@ namespace drawer_statemachine
         new_message_ = false;
     }
 
-    BT::NodeStatus DrawerOpenReq::tick()
-    {
+    // BT::NodeStatus DrawerOpenReq::tick()
+    // {
+    //     callback_group_executor_.spin_some();
+
+    //     if (new_message_)
+    //     {
+    //         RCLCPP_INFO(rclcpp::get_logger("DrawerOpenReq"), "new drawer_address publlished\n drawer_id:%d",drawer_address_.drawer_id);
+    //         setOutput("drawer_address", drawer_address_);
+    //         new_message_ = false;
+    //         return BT::NodeStatus::SUCCESS;
+    //     }
+    //     RCLCPP_INFO(rclcpp::get_logger("DrawerOpenReq"), "ticked drawer open req");
+    //     return BT::NodeStatus::RUNNING;
+    // }
+
+    BT::NodeStatus DrawerOpenReq::onStart(){
+        return BT::NodeStatus::RUNNING;
+    }
+    BT::NodeStatus DrawerOpenReq::onRunning(){
         callback_group_executor_.spin_some();
 
         if (new_message_)
@@ -47,7 +64,11 @@ namespace drawer_statemachine
         RCLCPP_INFO(rclcpp::get_logger("DrawerOpenReq"), "ticked drawer open req");
         return BT::NodeStatus::RUNNING;
     }
+    void DrawerOpenReq::onHalted(){
+        std::cout << "SleepNode interrupted" << std::endl;
+    }
 
+    
     void
         DrawerOpenReq::callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
     {

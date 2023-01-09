@@ -18,7 +18,7 @@ namespace drawer_statemachine
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
      * updated on the blackboard and FAILURE otherwise
      */
-    class DrawerOpenReq : public BT::ThreadedAction
+    class DrawerOpenReq : public BT::StatefulActionNode
     {
     public:        
         DrawerOpenReq(
@@ -31,7 +31,9 @@ namespace drawer_statemachine
          * @brief The main override required by a BT action
          * @return BT::NodeStatus Status of tick execution
          */
-        BT::NodeStatus tick() override;
+        BT::NodeStatus onStart() override;
+        BT::NodeStatus onRunning() override;
+        void onHalted() override;
 
         /**
          * @brief Creates list of BT ports
