@@ -39,7 +39,7 @@ namespace norelem_stepper
             {
                 // in order to switch the motor state, we need to toggle the start pin from HIGH -> LOW -> HIGH
                 this->set_motor_start_pin(false);
-                delay(100); //TODO: Check how much delay is neccesarry
+                delay(500); //TODO: Check how much delay is neccesarry
                 this->set_motor_start_pin(true);
             }            
 
