@@ -3,9 +3,6 @@
         <Sequence name="root_sequence">
             <Action ID="Hans" name="approach_object"/>
             <Action ID="DrawerOpenReq" drawer_address="{drawer}" drawer_address_topic="topic"/>
-
-
-
         </Sequence>
      </BehaviorTree>
      <TreeNodesModel>

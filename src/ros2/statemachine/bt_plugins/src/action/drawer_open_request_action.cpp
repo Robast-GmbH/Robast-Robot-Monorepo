@@ -33,21 +33,6 @@ namespace drawer_statemachine
         new_message_ = false;
     }
 
-    // BT::NodeStatus DrawerOpenReq::tick()
-    // {
-    //     callback_group_executor_.spin_some();
-
-    //     if (new_message_)
-    //     {
-    //         RCLCPP_INFO(rclcpp::get_logger("DrawerOpenReq"), "new drawer_address publlished\n drawer_id:%d",drawer_address_.drawer_id);
-    //         setOutput("drawer_address", drawer_address_);
-    //         new_message_ = false;
-    //         return BT::NodeStatus::SUCCESS;
-    //     }
-    //     RCLCPP_INFO(rclcpp::get_logger("DrawerOpenReq"), "ticked drawer open req");
-    //     return BT::NodeStatus::RUNNING;
-    // }
-
     BT::NodeStatus DrawerOpenReq::onStart(){
         return BT::NodeStatus::RUNNING;
     }
@@ -61,19 +46,17 @@ namespace drawer_statemachine
             new_message_ = false;
             return BT::NodeStatus::SUCCESS;
         }
-        RCLCPP_INFO(rclcpp::get_logger("DrawerOpenReq"), "ticked drawer open req");
         return BT::NodeStatus::RUNNING;
     }
     void DrawerOpenReq::onHalted(){
-        std::cout << "SleepNode interrupted" << std::endl;
+        drawer_open_sub_.reset();
     }
 
     
     void
         DrawerOpenReq::callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
     {
-        // RCLCPP_DEBUG(rclcpp::get_logger("DrawerOpenReq"), "received request");
-        RCLCPP_INFO(rclcpp::get_logger("DrawerOpenReq"), "whatsub");
+        RCLCPP_DEBUG(rclcpp::get_logger("DrawerOpenReq"), "received request");
         drawer_address_.drawer_controller_id = msg->drawer_controller_id;
         drawer_address_.drawer_id = msg->drawer_id;
         new_message_ = true;
