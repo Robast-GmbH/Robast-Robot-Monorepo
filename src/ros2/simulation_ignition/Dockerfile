@@ -58,7 +58,8 @@ RUN mkdir -p workspace_ros_gz/gz_ros2_control && cd workspace_ros_gz/gz_ros2_con
   && . /opt/ros/${ROS_DISTRO}/setup.sh \
   && rosdep update \
   && rosdep install --from-paths /workspace_ros_gz/gz_ros2_control --ignore-src --rosdistro $ROS_DISTRO -r -y \
-  && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install
+  && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install \
+  && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV IGN_FILE_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}
