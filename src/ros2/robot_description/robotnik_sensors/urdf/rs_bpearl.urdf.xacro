@@ -95,12 +95,12 @@
                           <samples>440</samples>
                           <resolution>1</resolution>
                           <min_angle>0</min_angle>
-                          <max_angle>1.570796326795</max_angle>
+                          <max_angle>3.14159265359</max_angle>
                   </horizontal>
                   <vertical>
                           <samples>32</samples>
                           <resolution>1</resolution>
-                          <min_angle>-3.14159265359</min_angle> <!-- -180° -->
+                          <min_angle>0</min_angle> <!-- -180° -->
                           <max_angle>3.14159265359</max_angle> <!-- +180° -->
                   </vertical>
           </scan>
