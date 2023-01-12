@@ -7,6 +7,6 @@
 [submodule "Groot.git"]
 	path = src/ros2/test_and_debug/Groot
 	url = https://github.com/BehaviorTree/Groot.git
-[submodule "Behaviortree"]
+[submodule "BehaviorTree.CPP.git"]
 	path = src/ros2/statemachine/BehaviorTree.CPP
 	url = git@github.com:BehaviorTree/BehaviorTree.CPP.git
