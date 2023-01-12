@@ -87,6 +87,17 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start rb_theron_controller_manager",
+                        "command": "source /workspace/install/setup.bash; ros2 launch rb_theron_controller_manager rb_theron_controller_manager_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start rviz",
                         "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup rviz_launch.py",
                         "problemMatcher": [],
