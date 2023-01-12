@@ -22,6 +22,7 @@
 #include "communication_interfaces/srv/create_user_nfc_tag.hpp"
 #include "nfc_gate/elatec_api.h"
 #include "serial_helper/serial_helper.h"
+#include "postgresql_helper/postgresql_helper.h"
 
 using namespace std;
 namespace robast
@@ -43,6 +44,7 @@ namespace robast
     int numReadings;
 
     serial_helper::ISerialHelper* serial_connector_;
+    postgresql_helper::postgresql_helper* db_conncetor_;
     rclcpp::TimerBase::SharedPtr timer;
     shared_ptr<GoalHandleAuthenticateUser> timer_handle;
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
@@ -54,7 +56,7 @@ namespace robast
     void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
 
     string execute_scan(std::vector<std::string> permission_keys, bool* found);
-    string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found);
+    string validate_key(string scanned_key, std::vector<std::string> allValidUser, bool* found);
     string scan_tag(bool* found);
 
     void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
