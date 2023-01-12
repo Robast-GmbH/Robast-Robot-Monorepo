@@ -31,6 +31,8 @@
 
 				<joint_name>$(arg prefix)leftjoint_wheel</joint_name>
 				<joint_name>$(arg prefix)rightjoint_wheel</joint_name>
+
+				<joint_name>top_drawer_joint</joint_name>
 			
 			</plugin>
 			<plugin name="diff_drive" filename="libgazebo_ros_diff_drive.so">

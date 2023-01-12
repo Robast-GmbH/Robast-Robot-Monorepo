@@ -1,0 +1,50 @@
+name: Hardware Nodes Deploy
+
+on:
+  push:
+    branches:
+      - "main"
+    paths:
+    - "src/ros2/hardware_nodes/**"
+    - "src/ros2/communication_interfaces/**"
+    - "libs/**"
+      
+jobs:
+  deploy:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v3
+      with:
+          fetch-depth: 2
+    
+   
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Build and Publish Hardware libs
+      working-directory: libs
+      run: |
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy
+            docker run ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy 
+            docker push ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy 
+    
+    - name: Build and Publish Communication Interfaces
+      working-directory: src/ros2/communication_interfaces
+      run: |
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy
+            docker run ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy  
+            docker push ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy 
+
+    - name: Build and Publish Hardware nodes 
+      working-directory: src/ros2/hardware_nodes
+      run: |
+            docker build -f deploy.Dockerfile . --tag ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy
+            docker run  -e DOCKER_MODE='DEPLOY' ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 
+            docker push ghcr.io/robast-gmbh/monorepo/hardware_nodes_deploy 

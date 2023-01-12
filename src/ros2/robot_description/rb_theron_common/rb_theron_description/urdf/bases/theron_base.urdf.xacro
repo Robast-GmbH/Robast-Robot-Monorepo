@@ -23,6 +23,12 @@
             <box size="0.001 0.001 0.001" />
           </geometry>
         </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <box size="0.001 0.001 0.001" />
+          </geometry>
+        </collision>
       </link>
 
       <joint name="${prefix}base_footprint_joint" type="fixed">
@@ -40,16 +46,16 @@
 	    <xacro:box_inertia_robot m="50" x="0.700" y="0.600" z="0.350"/>
       </inertial>
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0" />
         <xacro:if value="${hq}">
+          <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>
             <mesh filename="$(find rb_theron_description)/meshes/bases/theron_base.stl"/>
           </geometry>
         </xacro:if>
         <xacro:unless value="${hq}">
-		  <!-- in this case change origin -->
+          <origin xyz="0 0 0.05" rpy="0 0 0" />
           <geometry>
-            <box size="0.700 0.600 0.350"/>
+            <box size="0.390 0.240 0.165"/>
           </geometry>
         </xacro:unless>
         <material name="darkgrey">
@@ -57,10 +63,10 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0 " />
+        <origin xyz="0 0 0.05" rpy="0 0 0 " />
         <geometry>
-          <!--box size="0.390 0.240 0.165"/-->
-          <mesh filename="$(find rb_theron_description)/meshes/bases/theron_base.stl"/>
+          <box size="0.390 0.240 0.165"/>
+          <!-- <mesh filename="$(find rb_theron_description)/meshes/bases/theron_base.stl"/> -->
         </geometry>
       </collision>
     </link>
@@ -73,15 +79,16 @@
 	    <xacro:box_inertia_robot m="2" x="0.700" y="0.600" z="0.350"/>
       </inertial>
       <visual>
-        <origin xyz="0 0 0" rpy="0 0 0" />
         <xacro:if value="${hq}">
+          <origin xyz="0 0 0" rpy="0 0 0"/>
           <geometry>
             <mesh filename="$(find rb_theron_description)/meshes/bases/mcq_prototype_bottom_cover.dae"/>
           </geometry>
         </xacro:if>
         <xacro:unless value="${hq}">
+          <origin xyz="0 0 0.2" rpy="0 0 0"/>
           <geometry>
-            <box size="0.700 0.600 0.350"/>
+            <box size="0.655 0.54 0.02"/>
           </geometry>
         </xacro:unless>
         <material name="darkgrey">
@@ -89,9 +96,10 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0" rpy="0 0 0 " />
+        <origin xyz="0 0 0.2" rpy="0 0 0" />
         <geometry>
-          <mesh filename="$(find rb_theron_description)/meshes/bases/mcq_prototype_bottom_cover.dae"/>
+          <box size="0.655 0.54 0.02"/>
+          <!-- <mesh filename="$(find rb_theron_description)/meshes/bases/mcq_prototype_bottom_cover.dae"/> -->
         </geometry>
       </collision>
     </link> 

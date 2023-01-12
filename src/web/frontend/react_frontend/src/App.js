@@ -11,7 +11,7 @@ import { useTheme } from '@mui/material/styles';
 import useMediaQuery from '@mui/material/useMediaQuery';
 
 
-const backend_address = `http://192.168.0.200:8000`
+const backend_address = `http://localhost:8000`
 function App() {
 
   const [mapPositions, setMapPositions] = useState([])
@@ -22,7 +22,7 @@ function App() {
    useEffect(() => {
      const getMapPositions = async () => {
       const mapPositionsFromServer = await fetchMapPositions()
-     //console.log(mapPositionsFromServer)
+      //console.log(mapPositionsFromServer) 
       setMapPositions(mapPositionsFromServer)
     }
 

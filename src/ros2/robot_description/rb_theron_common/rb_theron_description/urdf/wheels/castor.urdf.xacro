@@ -39,21 +39,27 @@
     <link name="${prefix}support">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
-          <geometry>     
-	       <mesh filename="$(find rb_theron_description)/meshes/wheels/mcq_prototype_base_castor.dae" />
-          </geometry>         
+        <geometry>
+          <xacro:if value="${hq}">
+            <mesh filename="$(find rb_theron_description)/meshes/wheels/mcq_prototype_base_castor.dae" />
+          </xacro:if>
+          <xacro:unless value="${hq}">
+            <box size="0.022 0.022 0.01" />
+          </xacro:unless>
+        </geometry>    
       </visual>
 
       <collision>
         <origin xyz="0 0 0" rpy="0 0 0" />
-          <geometry>     
-	       <mesh filename="$(find rb_theron_description)/meshes/wheels/mcq_prototype_base_castor.dae" />
+          <geometry>
+            <box size="0.022 0.022 0.01" />
+	          <!-- <mesh filename="$(find rb_theron_description)/meshes/wheels/mcq_prototype_base_castor.dae" /> -->
           </geometry> 
       </collision>    
       <inertial>
         <mass value="${caster_support_mass}" />
         <origin xyz="0 0 0" />
-        <cylinder_inertia  m="${caster_support_mass}" r="0.010" h="0.010" />  <!--Check these values -->
+        <xacro:cylinder_inertia  m="${caster_support_mass}" r="0.010" h="0.010" />  <!--Check these values -->
       </inertial>
     </link> 
 
@@ -109,7 +115,7 @@
       <inertial>
         <mass value="${caster_mass}" />
         <origin xyz="0 0 0" />
-        <cylinder_inertia  m="${caster_mass}" r="${caster_radius}" h="${caster_height}" />
+        <xacro:cylinder_inertia  m="${caster_mass}" r="${caster_radius}" h="${caster_height}" />
       </inertial>
     </link> 
 
