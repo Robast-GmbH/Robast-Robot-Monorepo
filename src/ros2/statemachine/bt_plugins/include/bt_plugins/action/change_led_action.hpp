@@ -75,6 +75,8 @@ namespace drawer_statemachine
     private:
         rclcpp::Node::SharedPtr node_;
         rclcpp::Publisher<communication_interfaces::msg::DrawerLeds>::SharedPtr led_publisher_;
+        communication_interfaces::msg::DrawerLeds drawer_leds_;
+
     };
 }
 #endif 

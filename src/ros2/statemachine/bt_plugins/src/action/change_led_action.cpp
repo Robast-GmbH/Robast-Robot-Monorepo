@@ -1,6 +1,27 @@
 #include "bt_plugins/action/change_led_action.hpp"
+#include <cassert>
+#include <charconv>
+#include <iomanip>
+#include <iostream>
+#include <optional>
+#include <string_view>
+#include <system_error>
 
 
+namespace BT
+{
+    template <>
+    uint8_t convertFromString<uint16_t>(StringView str)
+    {
+        uint8_t result = 0;
+        auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
+        if(ec != std::errc())
+        {
+            throw RuntimeError(StrCat("Can't convert string [", str, "] to uint8_t"));
+        }
+    return result;
+    }
+}
 
 namespace drawer_statemachine
 {
@@ -22,18 +43,23 @@ namespace drawer_statemachine
         rclcpp::SubscriptionOptions sub_option;
         // sub_option.callback_group = callback_group_;
         led_publisher_ = node_->create_publisher<communication_interfaces::msg::DrawerLeds>(topic_name_, qos);
+        getInput("drawer_address", drawer_leds_.drawer_address);
+        getInput("blue", drawer_leds_.blue);
+        getInput("red", drawer_leds_.red);
+        getInput("green", drawer_leds_.green);
+        getInput("brightness", drawer_leds_.brightness);
+        getInput("mode", drawer_leds_.mode);
     }
 
     BT::NodeStatus ChangeLED::tick()
     {
-        communication_interfaces::msg::DrawerLeds drawer_leds;
-        getInput("drawer_address", drawer_leds.drawer_address);
-        getInput("blue", drawer_leds.blue);
-        getInput("red", drawer_leds.red);
-        getInput("green", drawer_leds.green);
-        getInput("brightness", drawer_leds.brightness);
-        getInput("mode", drawer_leds.mode);
-        led_publisher_->publish(drawer_leds);
+        getInput("drawer_address", drawer_leds_.drawer_address);
+        getInput("blue", drawer_leds_.blue);
+        getInput("red", drawer_leds_.red);
+        getInput("green", drawer_leds_.green);
+        getInput("brightness", drawer_leds_.brightness);
+        getInput("mode", drawer_leds_.mode);
+        led_publisher_->publish(drawer_leds_);
         
         return BT::NodeStatus::SUCCESS;
     }

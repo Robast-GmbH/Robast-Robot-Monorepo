@@ -37,7 +37,6 @@ int main(int argc, char* argv[ ])
     rclcpp::init(argc, argv);
     std::string path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence2.xml";
     const std::vector<std::string> plugins = {
-        "Hans",
         "drawer_open_request_action_bt_node",
         "change_led_action_bt_node",
         "open_drawer_action_bt_node",
