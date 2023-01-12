@@ -25,7 +25,7 @@ target_include_directories(library_postgresql_helper
 ) 
 
 install(TARGETS
-    library_serial_helper
+    library_postgresql_helper
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
