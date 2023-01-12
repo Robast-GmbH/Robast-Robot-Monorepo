@@ -11,7 +11,7 @@
 namespace BT
 {
     template <>
-    uint8_t convertFromString<uint16_t>(StringView str)
+    uint8_t convertFromString<uint8_t>(StringView str)
     {
         uint8_t result = 0;
         auto [ptr, ec] = std::from_chars(str.data(), str.data() + str.size(), result);
