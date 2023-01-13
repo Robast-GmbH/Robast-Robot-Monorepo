@@ -2,8 +2,8 @@
 <root BTCPP_format="4">
   <BehaviorTree ID="BehaviorTree">
     <Sequence>
-      <DrawerOpenReq drawer_address_topic="topic"
-                     drawer_address="{drawer}"/>
+      <!-- <DrawerOpenReq drawer_address_topic="topic"
+                     drawer_address="{drawer}"/> -->
       <OpenDrawer drawer_address="{drawer}"
                   drawer_open_topic="/open_drawer"/>
       <ChangeLED blue="0"

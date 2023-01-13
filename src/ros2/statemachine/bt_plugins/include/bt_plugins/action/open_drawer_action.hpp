@@ -60,6 +60,7 @@ namespace drawer_statemachine
 
     private:
         rclcpp::Node::SharedPtr node_;
+        communication_interfaces::msg::DrawerAddress drawer_address_;
 
         // rclcpp::CallbackGroup::SharedPtr callback_group_;
         // rclcpp::executors::SingleThreadedExecutor callback_group_executor_;

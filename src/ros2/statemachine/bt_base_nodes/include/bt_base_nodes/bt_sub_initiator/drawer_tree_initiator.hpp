@@ -19,12 +19,18 @@ namespace bt_base_nodes
     public:
         DrawerTreeInitiator(std::string bt_path, std::vector<std::string> plugins) : BTSubBase(bt_path, plugins)
         {
+            communication_interfaces::msg::DrawerAddress tmp;
+            tmp.drawer_controller_id = 0;
+            tmp.drawer_id = 0;
+            _blackboard->set<communication_interfaces::msg::DrawerAddress>("drawer_address", tmp);            
+            _bt = bt_engine_->createTreeFromFile(bt_path, _blackboard);
             init_subscriber("open_request");
         }
 
     protected:
         void callbackRunBT(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
-        {            
+        {
+            _blackboard->set<communication_interfaces::msg::DrawerAddress>("drawer_address", *msg);
             _bt.tickWhileRunning(std::chrono::milliseconds(10));
             reset_subscriber();
         }

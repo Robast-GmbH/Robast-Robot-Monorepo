@@ -19,6 +19,7 @@ namespace drawer_statemachine
         // callback_group_executor_.add_callback_group(callback_group_, node_->get_node_base_interface());
 
         getInput("drawer_open_topic", topic_name_);
+        drawer_address_ = config.blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
 
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
@@ -34,12 +35,10 @@ namespace drawer_statemachine
     
     BT::NodeStatus OpenDrawer::onRunning()
     {
-        communication_interfaces::msg::DrawerAddress drawer_address;
-        getInput("drawer_address", drawer_address);
-        RCLCPP_DEBUG(rclcpp::get_logger("OpenDrawer"), "lass mal drawer aufmachen");
-
-        getInput("drawer_address", drawer_address);
-        open_publisher_->publish(drawer_address);
+        
+        // getInput("drawer_address", drawer_address_);
+        RCLCPP_DEBUG(rclcpp::get_logger("OpenDrawer"), "open drawer ");
+        open_publisher_->publish(drawer_address_);
         
         return BT::NodeStatus::SUCCESS;
     }

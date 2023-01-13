@@ -35,10 +35,10 @@ namespace bt_base_nodes
       _blackboard->set<std::chrono::milliseconds>(
         "bt_loop_duration",
         std::chrono::milliseconds(10));
-      
       bt_engine_ = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins_);
-      _bt = bt_engine_->createTreeFromFile(bt_path, _blackboard);
-      init_subscriber("default");
+      // bt_engine_ = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins_);
+      // _bt = bt_engine_->createTreeFromFile(bt_path, _blackboard);
+      // init_subscriber("default");
     }
 
   protected:
@@ -69,12 +69,12 @@ namespace bt_base_nodes
     
     BT::Tree _bt;
     BT::Blackboard::Ptr _blackboard;
+    std::unique_ptr<drawer_statemachine::BehaviorTreeEngine> bt_engine_;
     
   private:
     
     const std::vector<std::string> plugins_;
     typename rclcpp::Subscription<TopicT>::SharedPtr start_bt_sub_;
-    std::unique_ptr<drawer_statemachine::BehaviorTreeEngine> bt_engine_;
 
   };
 }
