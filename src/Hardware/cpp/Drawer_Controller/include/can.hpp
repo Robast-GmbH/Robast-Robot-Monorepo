@@ -2,7 +2,7 @@
 #define CAN_HPP
 
 #include <Arduino.h>
-#include <mcp_can.h>
+#include <ACAN2515.h>
 
 #include "pinout_defines.h"
 #include "lock.hpp"
@@ -23,16 +23,21 @@ namespace can
             {
                 this->initialize_voltage_translator();
 
-                if(this->CAN0_.begin(MCP_ANY, CAN_250KBPS, MCP_8MHZ) == CAN_OK)
-                {
-                    Serial.println("MCP2515 Initialized Successfully!");
-                }
-                else 
-                {
-                    Serial.println("Error Initializing MCP2515...");
-                } 
+                //--- Configure SPI
+                SPI.begin(SPI_CLK, SPI_MISO, SPI_MOSI, SPI_CS);
 
-                this->CAN0_.setMode(MCP_NORMAL);   // Change to normal mode to allow messages to be transmitted
+                ACAN2515Settings settings2515 (this->QUARTZ_FREQUENCY_, this->CAN_BIT_RATE_);
+
+                const uint32_t errorCode2515 = this->CAN0_.begin (settings2515, &this->CAN0_.isr) ; //TODO: Fix that
+                if (errorCode2515 == 0)
+                {
+                    Serial.println ("ACAN2515 configuration: ok") ;
+                }
+                else
+                {
+                    Serial.print ("ACAN2515 configuration error 0x") ;
+                    Serial.println (errorCode2515, HEX) ;
+                }
 
                 pinMode(MCP2515_INT, INPUT);  // Configuring pin for /INT input
             }
@@ -43,9 +48,18 @@ namespace can
                 {  
                     Serial.println("Received CAN message!");
 
-                    this->CAN0_.readMsgBuf(&this->rx_msg_id_, &this->rx_msg_dlc_, this->rx_data_buf_);
+                    CANMessage frame;
 
-                    std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(this->rx_msg_id_, this->rx_data_buf_, this->rx_msg_dlc_, this->can_db_.can_messages); 
+                    if (this->CAN0_.available ())
+                    {
+                        this->CAN0_.receive(frame);
+                        Serial.println("Received CAN frame!");
+                    }
+
+                    this->rx_msg_id_ = frame.id;
+                    this->rx_msg_dlc_ = frame.len;
+
+                    std::optional<robast_can_msgs::CanMessage> can_message = robast_can_msgs::decode_can_message(this->rx_msg_id_, frame.data, this->rx_msg_dlc_, this->can_db_.can_messages); 
 
                     if (can_message.has_value())
                     {
@@ -72,7 +86,16 @@ namespace can
             }
 
         private:
-            MCP_CAN CAN0_ = MCP_CAN(SPI_CS);
+            static const uint32_t CAN_BIT_RATE_ = 250 * 1000 ;
+
+            static const byte MCP2515_CS_  = SPI_CS ; // CS input of MCP2515
+            static const byte MCP2515_SCK_ = SPI_CLK ; // SCK input of MCP2515
+            static const byte MCP2515_SI_  = SPI_MOSI ; // SI input of MCP2515
+            static const byte MCP2515_SO_  = SPI_MISO ; // SO output of MCP2515
+
+            static const uint32_t QUARTZ_FREQUENCY_ = 8 * 1000 * 1000 ; // 8 MHz
+
+            ACAN2515 CAN0_ = ACAN2515(MCP2515_CS_, SPI, MCP2515_INT);
 
             uint32_t drawer_controller_id_;
 
@@ -182,16 +205,16 @@ namespace can
                 try
                 {
                     robast_can_msgs::CanFrame can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_msg_drawer_feedback, can_db_.can_messages);
-                    byte sndStat = this->CAN0_.sendMsgBuf(can_frame.get_id(), 0, can_frame.get_dlc(), can_frame.get_data());
-                    if(sndStat == CAN_OK)
-                    {
-                    Serial.println("Message Sent Successfully!");
-                    }
-                    else
-                    {
-                    Serial.print("Error Sending Message... CAN Status is: ");
-                    Serial.println(sndStat);
-                    }  
+                    // byte sndStat = this->CAN0_.sendMsgBuf(can_frame.get_id(), 0, can_frame.get_dlc(), can_frame.get_data());
+                    // if(sndStat == CAN_OK)
+                    // {
+                    // Serial.println("Message Sent Successfully!");
+                    // }
+                    // else
+                    // {
+                    // Serial.print("Error Sending Message... CAN Status is: ");
+                    // Serial.println(sndStat);
+                    // }  
                 }
                 catch (const std::invalid_argument& exception)
                 {
