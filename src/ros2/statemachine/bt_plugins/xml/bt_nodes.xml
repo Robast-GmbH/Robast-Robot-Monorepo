@@ -12,7 +12,7 @@
         </Action>
         <Action ID="DrawerOpenReq">
             <output_port name="drawer_address" default="{drawer}"/>
-            <input_port name="topic_name" default="topic"/>
+            <input_port name="topic_name" default="/open_request"/>
         </Action>
         <Action ID="OpenDrawer">
             <input_port name="drawer_address" default="{drawer}"/>
