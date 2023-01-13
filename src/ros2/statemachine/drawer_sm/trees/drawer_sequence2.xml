@@ -76,7 +76,7 @@
     </Condition>
     <Action ID="OpenDrawer"
             editable="false">
-      <input_port name="drawer_address"
+      <output_port name="drawer_address"
                   default="{drawer}"/>
       <input_port name="drawer_open_topic"
                   default="/open_drawer"/>

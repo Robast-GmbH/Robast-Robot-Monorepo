@@ -43,8 +43,8 @@ namespace drawer_statemachine
         {
             return
             {
-                BT::InputPort<communication_interfaces::msg::DrawerAddress>(
-                    "drawer_address","address of the drawer that should execute the action"
+                BT::OutputPort<communication_interfaces::msg::DrawerAddress>(
+                    "drawer_address","address of the drawer thats used to execute the action"
                 ),
                 BT::InputPort<std::string>(
                     "drawer_open_topic",

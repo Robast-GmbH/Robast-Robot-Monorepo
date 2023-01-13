@@ -20,7 +20,7 @@ namespace drawer_statemachine
         // callback_group_executor_.add_callback_group(callback_group_, node_->get_node_base_interface());
 
         getInput("drawer_open_topic", topic_name_);
-        std::scoped_lock l(_blackboard->entryMutex());
+        // std::scoped_lock l(_blackboard->entryMutex());
         node_ = _blackboard->get<rclcpp::Node::SharedPtr>("node");
         drawer_address_ = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
         rclcpp::QoS qos(rclcpp::KeepLast(1));
@@ -37,9 +37,9 @@ namespace drawer_statemachine
     
     BT::NodeStatus OpenDrawer::onRunning()
     {
-        std::scoped_lock l(_blackboard->entryMutex());
-        // getInput("drawer_address", drawer_address_);
+        // std::scoped_lock l(_blackboard->entryMutex());
         drawer_address_ = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
+        setOutput("drawer_address", drawer_address_);
         RCLCPP_DEBUG(rclcpp::get_logger("OpenDrawer"), "open drawer ");
         open_publisher_->publish(drawer_address_);
         

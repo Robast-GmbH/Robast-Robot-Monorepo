@@ -41,14 +41,7 @@ namespace drawer_statemachine
         qos.transient_local().reliable();
 
         rclcpp::SubscriptionOptions sub_option;
-        // sub_option.callback_group = callback_group_;
         led_publisher_ = node_->create_publisher<communication_interfaces::msg::DrawerLeds>(topic_name_, qos);
-        getInput("drawer_address", drawer_leds_.drawer_address);
-        getInput("blue", drawer_leds_.blue);
-        getInput("red", drawer_leds_.red);
-        getInput("green", drawer_leds_.green);
-        getInput("brightness", drawer_leds_.brightness);
-        getInput("mode", drawer_leds_.mode);
     }
 
     BT::NodeStatus ChangeLED::tick()
