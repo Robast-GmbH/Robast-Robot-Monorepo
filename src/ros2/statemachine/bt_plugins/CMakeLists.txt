@@ -37,9 +37,6 @@ ament_target_dependencies(${library_name}
   ${dependencies}
 )
 
-add_library(Hans SHARED src/action/example_plugin.cpp)
-list(APPEND plugin_libs Hans)
-
 add_library(change_led_action_bt_node SHARED src/action/change_led_action.cpp)
 list(APPEND plugin_libs change_led_action_bt_node)
 

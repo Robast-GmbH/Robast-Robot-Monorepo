@@ -13,7 +13,6 @@
 #include "bt_plugins/action/drawer_open_request_action.hpp"
 #include "bt_plugins/action/open_drawer_action.hpp"
 #include "bt_plugins/condition/drawer_status_condition.hpp"
-#include "bt_plugins/action/example_plugin.hpp"
 
 #include "bt_plugins/behavior_tree_engine.hpp"
 
