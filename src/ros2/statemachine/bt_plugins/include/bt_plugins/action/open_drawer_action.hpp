@@ -57,6 +57,7 @@ namespace drawer_statemachine
 
     protected:
         std::string topic_name_;
+        BT::Blackboard::Ptr _blackboard;
 
     private:
         rclcpp::Node::SharedPtr node_;
