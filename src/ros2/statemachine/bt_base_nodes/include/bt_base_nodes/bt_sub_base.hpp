@@ -48,7 +48,6 @@ namespace bt_base_nodes
       RCLCPP_DEBUG(rclcpp::get_logger("BTSubBase"), "Baum Startet");
       _bt.tickWhileRunning();
       RCLCPP_DEBUG(rclcpp::get_logger("BTSubBase"), "Baum Vorbei");
-      reset_subscriber();
     }
 
     void reset_subscriber()

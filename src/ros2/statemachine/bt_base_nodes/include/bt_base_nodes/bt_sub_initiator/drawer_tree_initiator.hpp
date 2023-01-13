@@ -21,7 +21,7 @@ namespace bt_base_nodes
         {
             communication_interfaces::msg::DrawerAddress tmp;
             tmp.drawer_controller_id = 0;
-            tmp.drawer_id = 0;
+            tmp.drawer_id = 10;
             _blackboard->set<communication_interfaces::msg::DrawerAddress>("drawer_address", tmp);            
             _bt = bt_engine_->createTreeFromFile(bt_path, _blackboard);
             init_subscriber("open_request");
@@ -32,7 +32,6 @@ namespace bt_base_nodes
         {
             _blackboard->set<communication_interfaces::msg::DrawerAddress>("drawer_address", *msg);
             _bt.tickWhileRunning(std::chrono::milliseconds(10));
-            reset_subscriber();
         }
     };
 }
