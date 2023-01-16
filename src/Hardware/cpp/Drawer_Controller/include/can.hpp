@@ -9,6 +9,8 @@
 
 namespace can
 {
+    ACAN2515 acan_2515 (SPI_CS, SPI, MCP2515_INT) ;
+
     class Can
     {
         public:
@@ -28,7 +30,7 @@ namespace can
 
                 ACAN2515Settings settings2515 (this->QUARTZ_FREQUENCY_, this->CAN_BIT_RATE_);
 
-                const uint32_t errorCode2515 = this->CAN0_.begin (settings2515, &this->CAN0_.isr) ; //TODO: Fix that
+                const uint32_t errorCode2515 = acan_2515.begin (settings2515, [] { acan_2515.isr () ; });
                 if (errorCode2515 == 0)
                 {
                     Serial.println ("ACAN2515 configuration: ok") ;
@@ -44,17 +46,12 @@ namespace can
 
             void handle_receiving_can_msg()
             {
-                if(!digitalRead(MCP2515_INT)) // If CAN0__INT pin is low, read receive buffer
-                {  
+                if (acan_2515.available ())
+                {
                     Serial.println("Received CAN message!");
 
                     CANMessage frame;
-
-                    if (this->CAN0_.available ())
-                    {
-                        this->CAN0_.receive(frame);
-                        Serial.println("Received CAN frame!");
-                    }
+                    acan_2515.receive(frame);
 
                     this->rx_msg_id_ = frame.id;
                     this->rx_msg_dlc_ = frame.len;
@@ -205,16 +202,24 @@ namespace can
                 try
                 {
                     robast_can_msgs::CanFrame can_frame = robast_can_msgs::encode_can_message_into_can_frame(can_msg_drawer_feedback, can_db_.can_messages);
-                    // byte sndStat = this->CAN0_.sendMsgBuf(can_frame.get_id(), 0, can_frame.get_dlc(), can_frame.get_data());
-                    // if(sndStat == CAN_OK)
-                    // {
-                    // Serial.println("Message Sent Successfully!");
-                    // }
-                    // else
-                    // {
-                    // Serial.print("Error Sending Message... CAN Status is: ");
-                    // Serial.println(sndStat);
-                    // }  
+
+                    CANMessage mcp2515_frame;
+                    mcp2515_frame.id = can_frame.get_id();
+                    mcp2515_frame.len = can_frame.get_dlc();
+                    for (uint8_t i = 0; i < can_frame.get_dlc(); i++)
+                    {
+                        mcp2515_frame.data[i] = can_frame.get_data()[i];
+                    }
+
+                    const bool ok = acan_2515.tryToSend(mcp2515_frame);
+                    if (ok)
+                    {
+                        Serial.println("Message Sent Successfully!");
+                    }
+                    else
+                    {
+                        Serial.println("Error accured while sending CAn message!");
+                    }
                 }
                 catch (const std::invalid_argument& exception)
                 {
