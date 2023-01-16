@@ -14,6 +14,15 @@ namespace led_strip
      GLOBAL VARIABLES AND CONSTANTS
     *********************************************************************************************************/
     #define NUM_OF_LEDS 25
+    #define MAX_NUM_OF_LED_MODES_IN_QUEUE 2
+
+    enum LedMode
+    {
+        steady_light = 0,
+        fade_up = 1,
+        running_led_from_mid_to_outside = 2,
+        slow_fade_up_fade_down = 3,
+    };
 
     struct {
         uint8_t num_leds; // number of LEDs for LED strip
@@ -24,6 +33,7 @@ namespace led_strip
         uint8_t led_current_red;
         uint8_t led_current_green;
         uint8_t led_current_blue;
+        uint8_t led_current_mode;
 
         uint8_t led_target_brightness;
         uint8_t led_target_red;
@@ -31,7 +41,9 @@ namespace led_strip
         uint8_t led_target_blue;
         uint8_t led_target_brightness_fade_on_fade_off;
         
-        uint8_t led_mode;
+        // std::queue<uint8_t> led_mode_queue; // this queue makes sure, that a requested led modes gets its time to finish the animation before the next led mode is started
+
+        QueueHandle_t led_mode_queue;
 
         volatile uint8_t running_led_offset_from_middle; // this variable controls which LED is currently shining for the running LED mode
     } led_strip_1, led_strip_2; // currently we don't need led_strip_2, this is just here for example 
@@ -54,30 +66,36 @@ namespace led_strip
         led_strip_1.led_target_green = can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data();
         led_strip_1.led_target_blue = can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data();
         led_strip_1.led_target_brightness = can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data();
-        led_strip_1.led_mode = can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
+        uint8_t led_mode = can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
 
-        switch (led_strip_1.led_mode)
+        Serial.print("Selecting led strip mode: ");
+        Serial.println(led_mode, DEC);
+
+        xQueueSend(led_strip_1.led_mode_queue, &led_mode, 0); // setting the third argument to 0 makes sure, filling the queue wont block, if the queue is already full
+        xQueuePeek(led_strip_1.led_mode_queue, &led_strip_1.led_current_mode, 0);
+
+        switch (led_strip_1.led_current_mode)
             {
-            case 0:
+            case LedMode::steady_light:
                 // standard mode
                 break;
 
-            case 1:
-                // fade on mode
+            case LedMode::fade_up:
+                // fade up mode
                 timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s    
                 portENTER_CRITICAL(&fading_up_timer_mux);
                 led_strip_1.led_current_brightness = 0;
                 portEXIT_CRITICAL(&fading_up_timer_mux);  
                 break;
 
-            case 2:
+            case LedMode::running_led_from_mid_to_outside:
                 // led closing drawer mode
                 portENTER_CRITICAL(&running_led_timer_mux);
                 led_strip_1.running_led_offset_from_middle = 0;
                 portEXIT_CRITICAL(&running_led_timer_mux);
                 break;
 
-            case 3:
+            case LedMode::slow_fade_up_fade_down:
                 // led fade on + fade off mode
                 timerAlarmWrite(fading_up_timer, 10000, true); // fade on + fade off should be more slowly than only fading on, so choose a bigger value for the alarm_value
                 portENTER_CRITICAL(&fading_up_timer_mux);
@@ -97,6 +115,19 @@ namespace led_strip
         led_strip_1.led_target_blue = 155;
         led_strip_1.led_target_brightness = 25;
         led_strip_1.running_led_offset_from_middle = 0;
+        led_strip_1.led_current_mode = 1;
+    }
+
+    void handle_strip_1_running_led_mode_finished()
+    {
+        if ((led_strip_1.middle_led - led_strip_1.running_led_offset_from_middle) == (0 - led_strip_1.num_of_led_shadows))
+        {
+            if (led_strip_1.led_current_mode == LedMode::running_led_from_mid_to_outside)
+            {
+                // Receving the next led mode from the queue and removing it upon consumption
+                xQueueReceive(led_strip_1.led_mode_queue, &led_strip_1.led_current_mode, 0);
+            }
+        }
     }
 
     void led_standard_mode()
@@ -111,6 +142,13 @@ namespace led_strip
         led_strip_1.led_current_brightness = led_strip_1.led_target_brightness;
         FastLED.setBrightness(led_strip_1.led_target_brightness);
         FastLED.show();
+
+        if (led_strip_1.led_current_mode == LedMode::steady_light)
+        {
+            // Receving the next led mode from the queue and removing it upon consumption
+            xQueueReceive(led_strip_1.led_mode_queue, &led_strip_1.led_current_mode, 0);
+        }
+
     }
 
     void led_fade_on_mode()
@@ -130,6 +168,14 @@ namespace led_strip
             led_strip_1.led_current_blue = led_strip_1.led_target_blue;
             FastLED.setBrightness(led_strip_1.led_current_brightness);
             FastLED.show();
+        }
+        else if (led_strip_1.led_target_brightness == led_strip_1.led_current_brightness)
+        {
+            if (led_strip_1.led_current_mode == LedMode::fade_up)
+            {
+                // Receving the next led mode from the queue and removing it upon consumption
+                xQueueReceive(led_strip_1.led_mode_queue, &led_strip_1.led_current_mode, 0);
+            }
         }
     }
 
@@ -188,6 +234,8 @@ namespace led_strip
             FastLED.setBrightness(0);
             FastLED.show();
         }
+
+        handle_strip_1_running_led_mode_finished();
     }
 
     void led_fade_on_fade_off_mode()
@@ -253,14 +301,14 @@ namespace led_strip
 
     static void IRAM_ATTR on_timer_for_running_led()
     {
-        if ((led_strip_1.middle_led - led_strip_1.running_led_offset_from_middle) >= 0 - led_strip_1.num_of_led_shadows)
+        if ((led_strip_1.middle_led - led_strip_1.running_led_offset_from_middle) >= (0 - led_strip_1.num_of_led_shadows))
         {
             portENTER_CRITICAL_ISR(&running_led_timer_mux);
             led_strip_1.running_led_offset_from_middle++;
             portEXIT_CRITICAL_ISR(&running_led_timer_mux);
         }
 
-        if ((led_strip_2.middle_led - led_strip_2.running_led_offset_from_middle) >= 0 - led_strip_2.num_of_led_shadows)
+        if ((led_strip_2.middle_led - led_strip_2.running_led_offset_from_middle) >= (0 - led_strip_2.num_of_led_shadows))
         {
             portENTER_CRITICAL_ISR(&running_led_timer_mux);
             led_strip_2.running_led_offset_from_middle++;
@@ -279,27 +327,27 @@ namespace led_strip
         running_led_timer_mux = portMUX_INITIALIZER_UNLOCKED;
         running_led_timer = timerBegin(1, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
         timerAttachInterrupt(running_led_timer, &on_timer_for_running_led, true);
-        timerAlarmWrite(running_led_timer, 50000, true); // 50000 is a good value. This defines how fast the LED will "run". Higher values will decrease the running speed.
+        timerAlarmWrite(running_led_timer, 250000, true); // 50000 is a good value. This defines how fast the LED will "run". Higher values will decrease the running speed.
         timerAlarmEnable(running_led_timer);
     }
 
     void handle_led_control(void)
     {
-        switch (led_strip_1.led_mode)
+        switch (led_strip_1.led_current_mode)
             {
-            case 0:
+            case LedMode::steady_light:
                 led_standard_mode();
                 break;
 
-            case 1:
+            case LedMode::fade_up:
                 led_fade_on_mode();
                 break;
 
-            case 2:
+            case LedMode::running_led_from_mid_to_outside:
                 led_closing_drawer_mode();
                 break;
 
-            case 3:
+            case LedMode::slow_fade_up_fade_down:
                 led_fade_on_fade_off_mode();
                 break;
             
@@ -318,6 +366,12 @@ namespace led_strip
         led_strip_1.num_of_led_shadows = 3;
 
         FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_OF_LEDS);
+
+        led_strip_1.led_mode_queue = xQueueCreate(MAX_NUM_OF_LED_MODES_IN_QUEUE, sizeof(uint8_t));
+        if(led_strip_1.led_mode_queue == NULL)
+        {
+            Serial.println("Error creating the led mode queue");
+        }
 
         led_init_mode();
         initialize_timer();
