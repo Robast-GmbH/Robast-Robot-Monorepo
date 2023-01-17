@@ -24,10 +24,19 @@ namespace led_strip
         slow_fade_up_fade_down = 3,
     };
 
+    // this queue makes sure, that a requested led modes gets its time to finish the animation before the next led mode is started
+    struct LedTargetSettings {
+        uint8_t led_target_mode;
+        uint8_t led_target_brightness;
+        uint8_t led_target_red;
+        uint8_t led_target_green;
+        uint8_t led_target_blue;
+    } led_strip_1_target_settings;
+
     struct {
-        uint8_t num_leds; // number of LEDs for LED strip
-        uint8_t middle_led; // address of the middle LED, which is important for running LED mode
-        uint8_t num_of_led_shadows; // Number of "shadow" LEDs for running LED. At the moment you need to do a few more changes to increase the number of shadow LEDs, in the future it should only be this define
+        const uint8_t num_leds = NUM_OF_LEDS; // number of LEDs for LED strip
+        const uint8_t middle_led = 13; // address of the middle LED, which is important for running LED mode
+        const uint8_t num_of_led_shadows = 3; // Number of "shadow" LEDs for running LED. At the moment you need to do a few more changes to increase the number of shadow LEDs, in the future it should only be this define
 
         volatile uint8_t led_current_brightness;
         uint8_t led_current_red;
@@ -35,15 +44,9 @@ namespace led_strip
         uint8_t led_current_blue;
         uint8_t led_current_mode;
 
-        uint8_t led_target_brightness;
-        uint8_t led_target_red;
-        uint8_t led_target_green;
-        uint8_t led_target_blue;
         uint8_t led_target_brightness_fade_on_fade_off;
-        
-        // std::queue<uint8_t> led_mode_queue; // this queue makes sure, that a requested led modes gets its time to finish the animation before the next led mode is started
 
-        QueueHandle_t led_mode_queue;
+        QueueHandle_t led_target_settings_queue;
 
         volatile uint8_t running_led_offset_from_middle; // this variable controls which LED is currently shining for the running LED mode
     } led_strip_1, led_strip_2; // currently we don't need led_strip_2, this is just here for example 
@@ -59,30 +62,19 @@ namespace led_strip
     /*********************************************************************************************************
      FUNCTIONS
     *********************************************************************************************************/
-
-    void select_led_strip_mode(robast_can_msgs::CanMessage can_message)
+    void select_led_strip_mode()
     {
-        led_strip_1.led_target_red = can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data();
-        led_strip_1.led_target_green = can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data();
-        led_strip_1.led_target_blue = can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data();
-        led_strip_1.led_target_brightness = can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data();
-        uint8_t led_mode = can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
-
-        Serial.print("Selecting led strip mode: ");
-        Serial.println(led_mode, DEC);
-
-        xQueueSend(led_strip_1.led_mode_queue, &led_mode, 0); // setting the third argument to 0 makes sure, filling the queue wont block, if the queue is already full
-        xQueuePeek(led_strip_1.led_mode_queue, &led_strip_1.led_current_mode, 0);
-
-        switch (led_strip_1.led_current_mode)
+        switch (led_strip_1_target_settings.led_target_mode)
             {
             case LedMode::steady_light:
                 // standard mode
+                led_strip_1.led_current_mode = LedMode::steady_light;
                 break;
 
             case LedMode::fade_up:
                 // fade up mode
-                timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s    
+                led_strip_1.led_current_mode = LedMode::fade_up;
+                timerAlarmWrite(fading_up_timer, 30000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s    
                 portENTER_CRITICAL(&fading_up_timer_mux);
                 led_strip_1.led_current_brightness = 0;
                 portEXIT_CRITICAL(&fading_up_timer_mux);  
@@ -90,6 +82,7 @@ namespace led_strip
 
             case LedMode::running_led_from_mid_to_outside:
                 // led closing drawer mode
+                led_strip_1.led_current_mode = LedMode::running_led_from_mid_to_outside;
                 portENTER_CRITICAL(&running_led_timer_mux);
                 led_strip_1.running_led_offset_from_middle = 0;
                 portEXIT_CRITICAL(&running_led_timer_mux);
@@ -97,36 +90,62 @@ namespace led_strip
 
             case LedMode::slow_fade_up_fade_down:
                 // led fade on + fade off mode
+                led_strip_1.led_current_mode = LedMode::slow_fade_up_fade_down;
                 timerAlarmWrite(fading_up_timer, 10000, true); // fade on + fade off should be more slowly than only fading on, so choose a bigger value for the alarm_value
                 portENTER_CRITICAL(&fading_up_timer_mux);
                 led_strip_1.led_current_brightness = 0;
                 portEXIT_CRITICAL(&fading_up_timer_mux);
-                led_strip_1.led_target_brightness_fade_on_fade_off = led_strip_1.led_target_brightness;
+                led_strip_1.led_target_brightness_fade_on_fade_off = led_strip_1_target_settings.led_target_brightness;
             
             default:
                 break;
             }
     }
 
+    void add_led_strip_mode_to_queue(robast_can_msgs::CanMessage can_message)
+    {
+        auto led_target_settings = LedTargetSettings{};
+        led_target_settings.led_target_red = can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data();
+        led_target_settings.led_target_green = can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data();
+        led_target_settings.led_target_blue = can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data();
+        led_target_settings.led_target_brightness = can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data();
+        led_target_settings.led_target_mode = can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
+
+        Serial.print("Writing led strip mode to queue: "); //DEBUGGING
+        Serial.println(led_target_settings.led_target_mode, DEC); //DEBUGGING
+
+        // Adding led mode to queue
+        xQueueSend(led_strip_1.led_target_settings_queue, &led_target_settings, 0); // setting the third argument to 0 makes sure, filling the queue wont block, if the queue is already full
+
+        uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip_1.led_target_settings_queue);
+
+        Serial.print("Led modes in queue: "); //DEBUGGING
+        Serial.println(led_modes_in_queue, DEC); //DEBUGGING
+
+        if (led_modes_in_queue == 1) {
+            // Receving the next led mode from the queue and removing it upon consumption
+            xQueueReceive(led_strip_1.led_target_settings_queue, &led_strip_1_target_settings, 0);
+            select_led_strip_mode();
+        }
+    }
+
     void led_init_mode()
     {
-        led_strip_1.led_target_red = 0;
-        led_strip_1.led_target_green = 155;
-        led_strip_1.led_target_blue = 155;
-        led_strip_1.led_target_brightness = 25;
+        led_strip_1_target_settings.led_target_red = 0;
+        led_strip_1_target_settings.led_target_green = 155;
+        led_strip_1_target_settings.led_target_blue = 155;
+        led_strip_1_target_settings.led_target_brightness = 25;
         led_strip_1.running_led_offset_from_middle = 0;
         led_strip_1.led_current_mode = 1;
     }
 
-    void handle_strip_1_running_led_mode_finished()
+    void get_new_target_led_settings_from_queue()
     {
-        if ((led_strip_1.middle_led - led_strip_1.running_led_offset_from_middle) == (0 - led_strip_1.num_of_led_shadows))
-        {
-            if (led_strip_1.led_current_mode == LedMode::running_led_from_mid_to_outside)
-            {
-                // Receving the next led mode from the queue and removing it upon consumption
-                xQueueReceive(led_strip_1.led_mode_queue, &led_strip_1.led_current_mode, 0);
-            }
+        uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip_1.led_target_settings_queue);
+        if (led_modes_in_queue >= 1) {
+            // Receving the next led mode from the queue and removing it upon consumption
+            xQueueReceive(led_strip_1.led_target_settings_queue, &led_strip_1_target_settings, 0);
+            select_led_strip_mode();
         }
     }
 
@@ -134,48 +153,40 @@ namespace led_strip
     {
         for(int i = 0; i < led_strip_1.num_leds; i++)
         {   
-            leds[i] = CRGB(led_strip_1.led_target_red, led_strip_1.led_target_green, led_strip_1.led_target_blue);
+            leds[i] = CRGB(led_strip_1_target_settings.led_target_red, led_strip_1_target_settings.led_target_green, led_strip_1_target_settings.led_target_blue);
         }
-        led_strip_1.led_current_red = led_strip_1.led_target_red;
-        led_strip_1.led_current_green = led_strip_1.led_target_green;
-        led_strip_1.led_current_blue = led_strip_1.led_target_blue;
-        led_strip_1.led_current_brightness = led_strip_1.led_target_brightness;
-        FastLED.setBrightness(led_strip_1.led_target_brightness);
+        led_strip_1.led_current_red = led_strip_1_target_settings.led_target_red;
+        led_strip_1.led_current_green = led_strip_1_target_settings.led_target_green;
+        led_strip_1.led_current_blue = led_strip_1_target_settings.led_target_blue;
+        led_strip_1.led_current_brightness = led_strip_1_target_settings.led_target_brightness;
+        FastLED.setBrightness(led_strip_1_target_settings.led_target_brightness);
         FastLED.show();
 
-        if (led_strip_1.led_current_mode == LedMode::steady_light)
-        {
-            // Receving the next led mode from the queue and removing it upon consumption
-            xQueueReceive(led_strip_1.led_mode_queue, &led_strip_1.led_current_mode, 0);
-        }
+        get_new_target_led_settings_from_queue();
 
     }
 
     void led_fade_on_mode()
     {
         // Mind that the variable led_current_brightness_ is increased/decreased in a seperate interrupt
-        if (led_strip_1.led_target_brightness != led_strip_1.led_current_brightness ||
-            led_strip_1.led_target_red != led_strip_1.led_current_red ||
-            led_strip_1.led_target_green != led_strip_1.led_current_green ||
-            led_strip_1.led_target_blue != led_strip_1.led_current_blue)
+        if (led_strip_1_target_settings.led_target_brightness != led_strip_1.led_current_brightness ||
+            led_strip_1_target_settings.led_target_red != led_strip_1.led_current_red ||
+            led_strip_1_target_settings.led_target_green != led_strip_1.led_current_green ||
+            led_strip_1_target_settings.led_target_blue != led_strip_1.led_current_blue)
         {
             for(int i = 0; i < led_strip_1.num_leds; i++)
             {   
-                leds[i] = CRGB(led_strip_1.led_target_red, led_strip_1.led_target_green, led_strip_1.led_target_blue);
+                leds[i] = CRGB(led_strip_1_target_settings.led_target_red, led_strip_1_target_settings.led_target_green, led_strip_1_target_settings.led_target_blue);
             }
-            led_strip_1.led_current_red = led_strip_1.led_target_red;
-            led_strip_1.led_current_green = led_strip_1.led_target_green;
-            led_strip_1.led_current_blue = led_strip_1.led_target_blue;
+            led_strip_1.led_current_red = led_strip_1_target_settings.led_target_red;
+            led_strip_1.led_current_green = led_strip_1_target_settings.led_target_green;
+            led_strip_1.led_current_blue = led_strip_1_target_settings.led_target_blue;
             FastLED.setBrightness(led_strip_1.led_current_brightness);
             FastLED.show();
         }
-        else if (led_strip_1.led_target_brightness == led_strip_1.led_current_brightness)
+        else if (led_strip_1_target_settings.led_target_brightness == led_strip_1.led_current_brightness)
         {
-            if (led_strip_1.led_current_mode == LedMode::fade_up)
-            {
-                // Receving the next led mode from the queue and removing it upon consumption
-                xQueueReceive(led_strip_1.led_mode_queue, &led_strip_1.led_current_mode, 0);
-            }
+            get_new_target_led_settings_from_queue();
         }
     }
 
@@ -192,36 +203,36 @@ namespace led_strip
             {
                 if ((i == (middle_led - running_led_offset_from_middle)) || (i == (middle_led + running_led_offset_from_middle)))
                 {
-                    leds[i] = CRGB(led_strip_1.led_target_red, led_strip_1.led_target_green, led_strip_1.led_target_blue);
+                    leds[i] = CRGB(led_strip_1_target_settings.led_target_red, led_strip_1_target_settings.led_target_green, led_strip_1_target_settings.led_target_blue);
                 }
                 // Create a shadow of running LED with less brightness
                 else if ((running_led_offset_from_middle >= 1) && 
                         ((i == (middle_led - running_led_offset_from_middle + 1)) || (i == (middle_led + running_led_offset_from_middle - 1))))
                 {
-                    leds[i] = CRGB(led_strip_1.led_target_red/2, led_strip_1.led_target_green/2, led_strip_1.led_target_blue/2);
+                    leds[i] = CRGB(led_strip_1_target_settings.led_target_red/2, led_strip_1_target_settings.led_target_green/2, led_strip_1_target_settings.led_target_blue/2);
                 }
                 // Create a shadow of running LED with less brightness
                 else if ((running_led_offset_from_middle >= 2) && 
                         ((i == (middle_led - running_led_offset_from_middle + 2)) || (i == (middle_led + running_led_offset_from_middle - 2))))
                 {
-                    leds[i] = CRGB(led_strip_1.led_target_red/3, led_strip_1.led_target_green/3, led_strip_1.led_target_blue/3);
+                    leds[i] = CRGB(led_strip_1_target_settings.led_target_red/3, led_strip_1_target_settings.led_target_green/3, led_strip_1_target_settings.led_target_blue/3);
                 }
                 // Create a shadow of running LED with less brightness
                 else if ((running_led_offset_from_middle >= 3) && 
                         ((i == (middle_led - running_led_offset_from_middle + 3)) || (i == (middle_led + running_led_offset_from_middle - 3))))
                 {
-                    leds[i] = CRGB(led_strip_1.led_target_red/4, led_strip_1.led_target_green/4, led_strip_1.led_target_blue/4);
+                    leds[i] = CRGB(led_strip_1_target_settings.led_target_red/4, led_strip_1_target_settings.led_target_green/4, led_strip_1_target_settings.led_target_blue/4);
                 }
                 else
                 {
                     leds[i] = CRGB(0, 0, 0);
                 }
             }
-            led_strip_1.led_current_red = led_strip_1.led_target_red;
-            led_strip_1.led_current_green = led_strip_1.led_target_green;
-            led_strip_1.led_current_blue = led_strip_1.led_target_blue;
-            led_strip_1.led_current_brightness = led_strip_1.led_target_brightness;
-            FastLED.setBrightness(led_strip_1.led_target_brightness);
+            led_strip_1.led_current_red = led_strip_1_target_settings.led_target_red;
+            led_strip_1.led_current_green = led_strip_1_target_settings.led_target_green;
+            led_strip_1.led_current_blue = led_strip_1_target_settings.led_target_blue;
+            led_strip_1.led_current_brightness = led_strip_1_target_settings.led_target_brightness;
+            FastLED.setBrightness(led_strip_1_target_settings.led_target_brightness);
             FastLED.show();
         }
 
@@ -235,24 +246,27 @@ namespace led_strip
             FastLED.show();
         }
 
-        handle_strip_1_running_led_mode_finished();
+        if ((led_strip_1.middle_led - led_strip_1.running_led_offset_from_middle) == (0 - led_strip_1.num_of_led_shadows))
+        {
+            get_new_target_led_settings_from_queue();
+        }
     }
 
     void led_fade_on_fade_off_mode()
     {
         // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
-        if (led_strip_1.led_target_brightness != led_strip_1.led_current_brightness ||
-            led_strip_1.led_target_red != led_strip_1.led_current_red ||
-            led_strip_1.led_target_green != led_strip_1.led_current_green ||
-            led_strip_1.led_target_blue != led_strip_1.led_current_blue)
+        if (led_strip_1_target_settings.led_target_brightness != led_strip_1.led_current_brightness ||
+            led_strip_1_target_settings.led_target_red != led_strip_1.led_current_red ||
+            led_strip_1_target_settings.led_target_green != led_strip_1.led_current_green ||
+            led_strip_1_target_settings.led_target_blue != led_strip_1.led_current_blue)
         {
             for(int i = 0; i < led_strip_1.num_leds; i++)
             {   
-                leds[i] = CRGB(led_strip_1.led_target_red, led_strip_1.led_target_green, led_strip_1.led_target_blue);
+                leds[i] = CRGB(led_strip_1_target_settings.led_target_red, led_strip_1_target_settings.led_target_green, led_strip_1_target_settings.led_target_blue);
             }
-            led_strip_1.led_current_red = led_strip_1.led_target_red;
-            led_strip_1.led_current_green = led_strip_1.led_target_green;
-            led_strip_1.led_current_blue = led_strip_1.led_target_blue;
+            led_strip_1.led_current_red = led_strip_1_target_settings.led_target_red;
+            led_strip_1.led_current_green = led_strip_1_target_settings.led_target_green;
+            led_strip_1.led_current_blue = led_strip_1_target_settings.led_target_blue;
             FastLED.setBrightness(led_strip_1.led_current_brightness);
             FastLED.show();
         }
@@ -260,38 +274,38 @@ namespace led_strip
         // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
         if (led_strip_1.led_current_brightness == 0)
         {
-            led_strip_1.led_target_brightness = led_strip_1.led_target_brightness_fade_on_fade_off;
+            led_strip_1_target_settings.led_target_brightness = led_strip_1.led_target_brightness_fade_on_fade_off;
         }
         else if (led_strip_1.led_current_brightness == led_strip_1.led_target_brightness_fade_on_fade_off)
         {
-            led_strip_1.led_target_brightness = 0;
+            led_strip_1_target_settings.led_target_brightness = 0;
         }
     }
 
     static void IRAM_ATTR on_timer_for_fading()
     {
-        if (led_strip_1.led_target_brightness > led_strip_1.led_current_brightness)
+        if (led_strip_1_target_settings.led_target_brightness > led_strip_1.led_current_brightness)
         {
             portENTER_CRITICAL_ISR(&fading_up_timer_mux);
             led_strip_1.led_current_brightness++;
             portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
         }
 
-        if (led_strip_1.led_target_brightness < led_strip_1.led_current_brightness)
+        if (led_strip_1_target_settings.led_target_brightness < led_strip_1.led_current_brightness)
         {
             portENTER_CRITICAL_ISR(&fading_up_timer_mux);
             led_strip_1.led_current_brightness--;
             portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
         }
 
-        if (led_strip_2.led_target_brightness > led_strip_2.led_current_brightness)
+        if (led_strip_1_target_settings.led_target_brightness > led_strip_2.led_current_brightness)
         {
             portENTER_CRITICAL_ISR(&fading_up_timer_mux);
             led_strip_2.led_current_brightness++;
             portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
         }
 
-        if (led_strip_2.led_target_brightness < led_strip_2.led_current_brightness)
+        if (led_strip_1_target_settings.led_target_brightness < led_strip_2.led_current_brightness)
         {
             portENTER_CRITICAL_ISR(&fading_up_timer_mux);
             led_strip_2.led_current_brightness--;
@@ -357,21 +371,23 @@ namespace led_strip
             }
     }
 
+    void initialize_queue(void)
+    {
+        led_strip_1.led_target_settings_queue = xQueueCreate(MAX_NUM_OF_LED_MODES_IN_QUEUE, sizeof(LedTargetSettings));
+        if(led_strip_1.led_target_settings_queue == NULL)
+        {
+            Serial.println("Error creating the led mode queue");
+        }
+    }
+
     void initialize_led_strip(void)
     {
         std::memset(&led_strip_1, 0, sizeof(led_strip_1));
         std::memset(&led_strip_2, 0, sizeof(led_strip_2)); // currently we don't need led_strip_2, this is just here for example 
-        led_strip_1.num_leds = 25;
-        led_strip_1.middle_led = 13;
-        led_strip_1.num_of_led_shadows = 3;
 
         FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_OF_LEDS);
 
-        led_strip_1.led_mode_queue = xQueueCreate(MAX_NUM_OF_LED_MODES_IN_QUEUE, sizeof(uint8_t));
-        if(led_strip_1.led_mode_queue == NULL)
-        {
-            Serial.println("Error creating the led mode queue");
-        }
+        initialize_queue();
 
         led_init_mode();
         initialize_timer();

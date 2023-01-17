@@ -244,7 +244,7 @@ namespace can
                 {
                     if (can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data() == this->drawer_controller_id_)
                     {
-                        led_strip::select_led_strip_mode(can_message);
+                        led_strip::add_led_strip_mode_to_queue(can_message);
                     }
 
                     this->debug_prints_drawer_led(can_message);
