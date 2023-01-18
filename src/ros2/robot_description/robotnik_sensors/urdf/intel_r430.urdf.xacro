@@ -77,7 +77,7 @@
     <link name="${prefix}_camera_depth_frame"/>
     
     <joint name="${prefix}_camera_depth_optical_joint" type="fixed">
-      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
+      <origin xyz="0 0 0" rpy="0 0 0" />
       <parent link="${prefix}_camera_depth_frame" />
       <child link="${sensor_link_name}_depth_link" />
     </joint>
@@ -236,7 +236,7 @@
         </camera>
         <always_on>1</always_on>
         <update_rate>15</update_rate>
-        <visualize>0</visualize>
+        <visualize>1</visualize>
       </sensor>
     </gazebo>
     <!-- <gazebo>
