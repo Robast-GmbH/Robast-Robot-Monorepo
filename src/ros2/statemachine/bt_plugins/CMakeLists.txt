@@ -67,6 +67,10 @@ install(DIRECTORY include/
 
 install(FILES xml/bt_nodes.xml DESTINATION share/${PROJECT_NAME})
 
+if (BUILD_TESTING)
+    # add_subdirectory(tests)
+endif()
+
 ament_export_include_directories(
   include
 )
