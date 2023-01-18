@@ -12,7 +12,6 @@
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/statemachine/,target=/workspace/src/statemachine,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/test_and_debug/Groot,target=/workspace/src/groot,type=bind"
 	],
 	"workspaceFolder": "/workspace",
 	"runArgs": [
@@ -21,7 +20,7 @@
 	],
 	"remoteUser": "robast",
 	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
-	// "postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
+	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
 	},
