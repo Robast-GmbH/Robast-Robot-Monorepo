@@ -53,16 +53,15 @@
                 <limit lower="0.0" upper="${0.95*drawer_size_y}" effort="100" velocity="100" />
         </joint>
 
-        <transmission name="${prefix}_drawer_joint">
-                <type>transmission_interface/SimpleTransmission</type>
-                <joint name="top_drawer_joint">
-                        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-                </joint>
-                <actuator name="${prefix}_drawer_joint_motor">
-                        <mechanicalReduction>1</mechanicalReduction>
-                        <motorTorqueConstant>1</motorTorqueConstant>
-                </actuator>
-        </transmission>
+        <plugin filename="ignition-gazebo-joint-position-controller-system" name="ignition::gazebo::systems::JointPositionController">
+                <joint_name>top_drawer_joint</joint_name>
+                <p_gain>50000.0</p_gain>
+                <i_gain>100</i_gain>
+                <d_gain>1000</d_gain>
+                <i_max>200</i_max>
+                <i_min>-200</i_min>
+        </plugin>
+
 </xacro:macro>
 
 

@@ -15,10 +15,10 @@ def generate_launch_description():
     ld = LaunchDescription()
     
     # joint parameter for rb_theron
-    joint_names_list=["top_drawer_joint", "test"]
+    joint_names_list=["top_drawer_joint"]
     ign_joint_topics_list=[]
     for joint_name in joint_names_list:
-        ign_joint_topics_list.append("/model/ur10/joint/%s/0/cmd_pos"%joint_name)
+        ign_joint_topics_list.append("/model/rb_theron/joint/%s/0/cmd_pos"%joint_name)
     
     # ROS <- IGN, joint state publisher
     joint_state_publisher = Node(
@@ -43,6 +43,6 @@ def generate_launch_description():
                            ],
                 output='screen') 
 
-    ld.add_action(joint_state_publisher)
+    # ld.add_action(joint_state_publisher)
     ld.add_action(joint_controller)          
     return ld
