@@ -4,7 +4,9 @@ on:
   pull_request:
     types:
       - opened
-
+    paths:
+      - src/ros2/hardware_nodes
+       
 jobs:
   test:
 
@@ -16,22 +18,6 @@ jobs:
       with:
           fetch-depth: 2
 
-    - name: Check if the Docker file was changed 
-      shell: pwsh
-      # Give an id to the step, so we can reference it later
-      id: check_file_changed
-      working-directory: src/ros2/hardware_nodes
-      run: |
-        # Diff HEAD with the previous commit
-        $diff = git diff --name-only HEAD^ HEAD
-
-        # Check if a file under docs/ or with the .md extension has changed (added, modified, deleted)
-        $SourceDiff = $diff | Where-Object { $_ -match 'dockerfile' }
-        $HasDiff = $SourceDiff.Length -gt 0
-
-        # Set the output named "docs_changed"
-        Write-Host "::set-output name=docs_changed::$HasDiff"
-
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2
       with:
@@ -39,9 +25,8 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build docker if dockerfile changed
-      working-directory: src/ros2/hardware_nodes
-      if: steps.check_file_changed.outputs.docs_changed == 'true'
+    - name: Build docker
+      working-directory: src/ros2/hardware_nodes 
       run: |
             docker build . --tag ghcr.io/robast-gmbh/monorepo/hardware_nodes_test
             docker run ghcr.io/robast-gmbh/monorepo/hardware_nodes_test 
