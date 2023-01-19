@@ -4,9 +4,10 @@ name: Hardware Nodes Test
 
 on:
   pull_request:
-
+    types: [opened, synchronize, reopened]
     paths:
       - src/ros2/hardware_nodes
+      - .github/workflows
        
 jobs:
   test:
