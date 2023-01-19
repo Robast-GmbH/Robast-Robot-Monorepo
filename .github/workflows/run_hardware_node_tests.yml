@@ -6,8 +6,8 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - src/ros2/hardware_nodes
-      - .github/workflows
+      - src/ros2/hardware_nodes/*
+      - .github/workflows/*
        
 jobs:
   test:
