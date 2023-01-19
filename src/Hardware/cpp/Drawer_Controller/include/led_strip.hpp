@@ -14,6 +14,8 @@ namespace led_strip
      GLOBAL VARIABLES AND CONSTANTS
     *********************************************************************************************************/
     #define NUM_OF_LEDS 25
+    #define MIDDLE_LED 13
+    #define NUM_OF_LED_SHADOWS 3
     #define MAX_NUM_OF_LED_MODES_IN_QUEUE 2
 
     enum LedMode
@@ -33,23 +35,28 @@ namespace led_strip
         uint8_t led_target_blue;
     } led_strip_1_target_settings;
 
-    struct {
-        const uint8_t num_leds = NUM_OF_LEDS; // number of LEDs for LED strip
-        const uint8_t middle_led = 13; // address of the middle LED, which is important for running LED mode
-        const uint8_t num_of_led_shadows = 3; // Number of "shadow" LEDs for running LED. At the moment you need to do a few more changes to increase the number of shadow LEDs, in the future it should only be this define
+    struct LedStrip {
+        const uint8_t num_leds; // number of LEDs for LED strip
+        const uint8_t middle_led; // address of the middle LED, which is important for running LED mode
+        const uint8_t num_of_led_shadows; // Number of "shadow" LEDs for running LED. At the moment you need to do a few more changes to increase the number of shadow LEDs, in the future it should only be this define
 
-        volatile uint8_t led_current_brightness;
-        uint8_t led_current_red;
-        uint8_t led_current_green;
-        uint8_t led_current_blue;
-        uint8_t led_current_mode;
+        volatile uint8_t led_current_brightness = 0;
+        uint8_t led_current_red = 0;
+        uint8_t led_current_green = 0;
+        uint8_t led_current_blue = 0;
+        uint8_t led_current_mode = 0;
 
-        uint8_t led_target_brightness_fade_on_fade_off;
+        uint8_t led_target_brightness_fade_on_fade_off = 0;
 
         QueueHandle_t led_target_settings_queue;
 
-        volatile uint8_t running_led_offset_from_middle; // this variable controls which LED is currently shining for the running LED mode
-    } led_strip_1, led_strip_2; // currently we don't need led_strip_2, this is just here for example 
+        volatile uint8_t running_led_offset_from_middle = 0; // this variable controls which LED is currently shining for the running LED mode
+
+        LedStrip(const uint8_t num_leds_input, const uint8_t middle_led_input, const uint8_t num_of_led_shadows_input) : num_leds(num_leds_input), middle_led(middle_led_input), num_of_led_shadows(num_of_led_shadows_input){}
+    };
+
+    LedStrip led_strip_1 = LedStrip(NUM_OF_LEDS, MIDDLE_LED, NUM_OF_LED_SHADOWS);
+    LedStrip led_strip_2 = LedStrip(NUM_OF_LEDS, MIDDLE_LED, NUM_OF_LED_SHADOWS); // currently we don't need led_strip_2, this is just here for example 
 
     CRGBArray<NUM_OF_LEDS> leds;
 
@@ -382,12 +389,9 @@ namespace led_strip
 
     void initialize_led_strip(void)
     {
-        std::memset(&led_strip_1, 0, sizeof(led_strip_1));
-        std::memset(&led_strip_2, 0, sizeof(led_strip_2)); // currently we don't need led_strip_2, this is just here for example 
+        initialize_queue();
 
         FastLED.addLeds<NEOPIXEL,LED_PIXEL_PIN>(leds, NUM_OF_LEDS);
-
-        initialize_queue();
 
         led_init_mode();
         initialize_timer();
