@@ -45,7 +45,7 @@
                 <turnGravityOff>false</turnGravityOff>
         </gazebo>
 
-        <joint name="top_drawer_joint" type="prismatic" >
+        <joint name="${prefix}_drawer_joint" type="prismatic" >
                 <axis xyz="1 0 0" />
                 <parent link="${parent}" />
                 <child link="${prefix}_drawer" />
@@ -55,7 +55,7 @@
 
         <gazebo>
                 <plugin filename="libignition-gazebo-joint-position-controller-system.so" name="ignition::gazebo::systems::JointPositionController">
-                        <joint_name>top_drawer_joint</joint_name>
+                        <joint_name>${prefix}_drawer_joint</joint_name>
                         <p_gain>50000.0</p_gain>
                         <i_gain>100</i_gain>
                         <d_gain>1000</d_gain>
