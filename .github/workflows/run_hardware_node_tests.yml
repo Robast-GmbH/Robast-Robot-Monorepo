@@ -2,8 +2,7 @@ name: Hardware Nodes Test
 
 on:
   pull_request:
-    types:
-      - opened
+
     paths:
       - src/ros2/hardware_nodes
        
