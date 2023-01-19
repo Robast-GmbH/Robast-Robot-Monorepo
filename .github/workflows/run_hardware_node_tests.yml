@@ -4,7 +4,9 @@ name: Hardware Nodes Test
 
 on:
   pull_request:
-
+    types:
+      - synchronize
+      - opened
     paths:
       - src/ros2/hardware_nodes
        
