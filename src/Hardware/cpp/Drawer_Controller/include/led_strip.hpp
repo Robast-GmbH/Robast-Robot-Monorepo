@@ -14,7 +14,7 @@ namespace led_strip
      GLOBAL VARIABLES AND CONSTANTS
     *********************************************************************************************************/
     #define NUM_OF_LEDS 25
-    #define MIDDLE_LED 13
+    #define MIDDLE_LED 12
     #define NUM_OF_LED_SHADOWS 3
     #define MAX_NUM_OF_LED_MODES_IN_QUEUE 2
 
