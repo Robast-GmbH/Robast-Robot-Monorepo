@@ -130,8 +130,8 @@ namespace led_strip
         Serial.println(led_modes_in_queue, DEC); //DEBUGGING
 
         if (led_modes_in_queue == 1) {
-            // Receving the next led target settings from the queue and removing it upon consumption
-            xQueueReceive(led_strip_1.led_target_settings_queue, &led_strip_1_target_settings, 0);
+             // Get the current target led settings from queue without removing it, because it will we removed after the animation is finished
+            xQueuePeek(led_strip_1.led_target_settings_queue, &led_strip_1_target_settings, 0);
             select_led_strip_mode();
         }
     }
@@ -148,10 +148,12 @@ namespace led_strip
 
     void get_new_target_led_settings_from_queue()
     {
+        xQueueReceive(led_strip_1.led_target_settings_queue, &led_strip_1_target_settings, 0); // Remove the last target led settings from queue
         uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip_1.led_target_settings_queue);
+
+        // In case there is another target led setting waiting in the queue, get it and start it
         if (led_modes_in_queue >= 1) {
-            // Receving the next led target settings from the queue and removing it upon consumption
-            xQueueReceive(led_strip_1.led_target_settings_queue, &led_strip_1_target_settings, 0);
+            xQueuePeek(led_strip_1.led_target_settings_queue, &led_strip_1_target_settings, 0); // Get the current target led settings from queue without removing it
             select_led_strip_mode();
         }
     }
