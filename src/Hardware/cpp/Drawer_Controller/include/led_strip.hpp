@@ -81,7 +81,7 @@ namespace led_strip
             case LedMode::fade_up:
                 // fade up mode
                 led_strip_1.led_current_mode = LedMode::fade_up;
-                timerAlarmWrite(fading_up_timer, 30000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s    
+                timerAlarmWrite(fading_up_timer, 3000, true); // With the alarm_value of 3000 the interrupt will be triggert 333/s    
                 portENTER_CRITICAL(&fading_up_timer_mux);
                 led_strip_1.led_current_brightness = 0;
                 portEXIT_CRITICAL(&fading_up_timer_mux);  
@@ -350,7 +350,7 @@ namespace led_strip
         running_led_timer_mux = portMUX_INITIALIZER_UNLOCKED;
         running_led_timer = timerBegin(1, 80, true); // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
         timerAttachInterrupt(running_led_timer, &on_timer_for_running_led, true);
-        timerAlarmWrite(running_led_timer, 250000, true); // 50000 is a good value. This defines how fast the LED will "run". Higher values will decrease the running speed.
+        timerAlarmWrite(running_led_timer, 50000, true); // 50000 is a good value. This defines how fast the LED will "run". Higher values will decrease the running speed.
         timerAlarmEnable(running_led_timer);
     }
 
