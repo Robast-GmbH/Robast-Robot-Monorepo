@@ -123,7 +123,7 @@ namespace led_strip
         Serial.println(led_modes_in_queue, DEC); //DEBUGGING
 
         if (led_modes_in_queue == 1) {
-            // Receving the next led mode from the queue and removing it upon consumption
+            // Receving the next led target settings from the queue and removing it upon consumption
             xQueueReceive(led_strip_1.led_target_settings_queue, &led_strip_1_target_settings, 0);
             select_led_strip_mode();
         }
@@ -143,7 +143,7 @@ namespace led_strip
     {
         uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip_1.led_target_settings_queue);
         if (led_modes_in_queue >= 1) {
-            // Receving the next led mode from the queue and removing it upon consumption
+            // Receving the next led target settings from the queue and removing it upon consumption
             xQueueReceive(led_strip_1.led_target_settings_queue, &led_strip_1_target_settings, 0);
             select_led_strip_mode();
         }
@@ -159,7 +159,7 @@ namespace led_strip
         led_strip_1.led_current_green = led_strip_1_target_settings.led_target_green;
         led_strip_1.led_current_blue = led_strip_1_target_settings.led_target_blue;
         led_strip_1.led_current_brightness = led_strip_1_target_settings.led_target_brightness;
-        FastLED.setBrightness(led_strip_1_target_settings.led_target_brightness);
+        FastLED.setBrightness(led_strip_1.led_current_brightness);
         FastLED.show();
 
         get_new_target_led_settings_from_queue();
@@ -232,7 +232,7 @@ namespace led_strip
             led_strip_1.led_current_green = led_strip_1_target_settings.led_target_green;
             led_strip_1.led_current_blue = led_strip_1_target_settings.led_target_blue;
             led_strip_1.led_current_brightness = led_strip_1_target_settings.led_target_brightness;
-            FastLED.setBrightness(led_strip_1_target_settings.led_target_brightness);
+            FastLED.setBrightness(led_strip_1.led_current_brightness);
             FastLED.show();
         }
 
