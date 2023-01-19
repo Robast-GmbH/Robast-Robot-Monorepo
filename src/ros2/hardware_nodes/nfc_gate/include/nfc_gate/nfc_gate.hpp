@@ -44,7 +44,7 @@ namespace robast
     int numReadings;
 
     serial_helper::ISerialHelper* serial_connector_;
-    postgresql_helper::postgresql_helper* db_conncetor_;
+    DB::PostgreSqlHelper* db_conncetor_;
     rclcpp::TimerBase::SharedPtr timer;
     shared_ptr<GoalHandleAuthenticateUser> timer_handle;
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;

@@ -8,26 +8,25 @@
 #include <string>
 #include <iostream>
 #include <pqxx/pqxx>
-#include "i_postgresql_helper.h"
+#include "i_db_helper.h"
 
-using namespace std;
 
-namespace postgresql_helper
+namespace DB
 {
-    class PostgreSqlHelper:public IPostgreSqlHelper
+    class PostgreSqlHelper:public IDBHelper
     {
         private:
             pqxx::connection connection_handle;
-            string connection_string;
+            std::string connection_string;
 
         public:
-            PostgreSqlHelper(string username, string password, string host, string dbname );
+            PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname );
             ~PostgreSqlHelper();
 
-            string open_connection();
+            std::string open_connection();
             void close_connection();
-            bool perform_querry(*string SqlStatments, **string result );
-            int perform_transaction(*string SqlStatements); 
+            bool perform_querry(std::string SqlStatment, std::string** result);
+            int perform_transaction(std::string SqlStatement); 
             
 
     };

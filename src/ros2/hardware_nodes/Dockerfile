@@ -9,14 +9,14 @@ RUN apt-get update && apt-get install -y \
   libboost-all-dev \
   ros-humble-ros-testing \
   ros-humble-ament-cmake-test \
-  ros-humble-launch-testing\ 
-  postgresql\
-  postgresql-contrib\
-  libpqxx-4.0\
-  libpq-dev\
-  libpqxx-dev\
+  ros-humble-launch-testing \
+  libpqxx-dev \
   && rosdep init || echo "rosdep already initialized"
 
 
 ENV ROS_DOMAIN_ID=0
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+
+
+

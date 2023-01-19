@@ -1,68 +1,64 @@
 #include "../include/postgresql_helper/postgresql_helper.h"
 
-namespace postgresql_helper
+namespace DB
 {
-    PostgreSqlHelper(string username, string password, string host, string dbname  )
+    PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname )
     {
-      connection_string ="user="+username+" password="+password+" host="+host+" port=5432 dbname="+dbname+" target_session_attrs=read-write"
+        connection_string = "user=" + username + " password=" + password + " host=" + host + " port=5432 dbname=" + dbname + " target_session_attrs=read-write";
     }
 
-    ~PostgreSqlHelper()
+    PostgreSqlHelper::~PostgreSqlHelper()
     {
         close_connection();
     }
 
-    string open_connection()
+    std::string PostgreSqlHelper::open_connection()
     {
-        try {
-                connection_handle(connection_string);
-            } catch (const exception &e) {
-                cerr << e.what() << endl;
-            }
+       pqxx::connection connection_handle{connection_string.c_str() };
     }
 
-    void close_connection()
+    void PostgreSqlHelper::close_connection()
     {
-        connection_handle.disconnect ();
+        connection_handle.disconnect();
     }
 
-    bool perform_querry(*string sqlStatment, **string result, *string resultHeader)
+    bool PostgreSqlHelper::perform_querry(std::string sqlStatment, std::string** result)
     {
         if(!connection_handle.is_open())
         {
             open_connection();
         }
-        pqxx::nontransaction query_handle(C);
+         pqxx::nontransaction query_handle(connection_handle);
 
-        pqxx::result_handle result_handle( query_handle.exec(sqlStatement));
-        resultHeader= new string[result.colums];
+         result_handle result_handle{ query_handle.exec(sqlStatement) };
+        resultHeader= new std::string[result.colums];
 
-        for (int i= 0; i<=result_handle.colums; i++)
-        {
-            resultHeader[i]= column_name(i);
-        }
-        result= new string[result_handle.columns][result_handle.size()]
-        int y=0;
-        for (result::const_iterator c = result_handle.begin(); c != result_handle.end(); ++c)
-        {
+        // for (int i= 0; i<=result_handle.colums; i++)
+        // {
+        //     resultHeader[i]= column_name(i);
+        // }
+        // result = new std::string[result_handle.columns][result_handle.size()];
+        // int y=0;
+        // // for (int c = result_handle.begin(); c != result_handle.end(); ++c)
+        // // {
 
-            for(int x =0; x<=result_handle.colums)
-            {
-                result[y][x]=c[x]
-            } 
-            y++;
-        }
+        // //     for (int x = 0; x <= result_handle.colums; x++)
+        // //     {
+        // //         result[y][x] = c[x];
+        // //     }
+        // //     y++;
+        // // }
     }
     
-    int perform_transaction(*string SqlStatements)
+    int PostgreSqlHelper::perform_transaction(std::string SqlStatement)
     {
-        if(!connection_handle.is_open())
-        {
-            open_connection();
-        }
-        work query_handle(C);
-        pqxx::result_handle result_handle( query_handle.exec( SqlStatements));
-        query_handle.commit();
-        return result_handle.affected_rows();
+        // if(!connection_handle.is_open())
+        // {
+        //     open_connection();
+        // }
+        // pqxx::work query_handle(connection_handle);
+        // pqxx::result_handle result_handle( query_handle.exec( SqlStatements));
+        // query_handle.commit();
+        // return result_handle.affected_rows();
     }
 }
