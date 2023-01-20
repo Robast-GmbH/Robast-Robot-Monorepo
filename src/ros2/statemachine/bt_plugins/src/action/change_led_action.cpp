@@ -36,25 +36,45 @@ namespace drawer_statemachine
         node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
 
         getInput("led_topic", topic_name_);
-
-        rclcpp::QoS qos(rclcpp::KeepLast(1));
-        qos.transient_local().reliable();
-
-        rclcpp::SubscriptionOptions sub_option;
-        led_publisher_ = node_->create_publisher<communication_interfaces::msg::DrawerLeds>(topic_name_, qos);
-    }
-
-    BT::NodeStatus ChangeLED::tick()
-    {
         getInput("drawer_address", drawer_leds_.drawer_address);
         getInput("blue", drawer_leds_.blue);
         getInput("red", drawer_leds_.red);
         getInput("green", drawer_leds_.green);
         getInput("brightness", drawer_leds_.brightness);
         getInput("mode", drawer_leds_.mode);
-        led_publisher_->publish(drawer_leds_);
+        initializePublisher();
         
+    }
+
+    void ChangeLED::initializePublisher()
+    {
+        rclcpp::QoS qos(rclcpp::KeepLast(1));
+        qos.transient_local().reliable();
+        led_publisher_ = node_->create_publisher<communication_interfaces::msg::DrawerLeds>(topic_name_, qos);
+    }
+
+    const communication_interfaces::msg::DrawerLeds ChangeLED::getDrawerLED()
+    {
+        return drawer_leds_;
+    }
+
+
+    BT::NodeStatus ChangeLED::tick()
+    {
+        // getInput("drawer_address", drawer_leds_.drawer_address);
+        // getInput("blue", drawer_leds_.blue);
+        // getInput("red", drawer_leds_.red);
+        // getInput("green", drawer_leds_.green);
+        // getInput("brightness", drawer_leds_.brightness);
+        // getInput("mode", drawer_leds_.mode);
+        ChangeLED::publish();
+
         return BT::NodeStatus::SUCCESS;
+    }
+
+    void ChangeLED::publish()
+    {
+        led_publisher_->publish(drawer_leds_);        
     }
 
 }  // namespace drawer_statemachine

@@ -2,9 +2,12 @@ cmake_minimum_required(VERSION 3.8)
 project(bt_plugins)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-  add_compile_options(-Wall -Wextra -Wpedantic)
+add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+Include(FetchContent)
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
@@ -68,7 +71,44 @@ install(DIRECTORY include/
 install(FILES xml/bt_nodes.xml DESTINATION share/${PROJECT_NAME})
 
 if (BUILD_TESTING)
-    # add_subdirectory(tests)
+
+  FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG        ab6c7375be9a8e71ee84c6f8537113f9f47daf99 # should equal tag v3.2.1
+  )
+  FetchContent_MakeAvailable(Catch2)
+
+
+  include_directories(tests/*)
+  add_library(test_helper SHARED tests/test_helper.cpp)
+  list(APPEND test_libs test_helper)
+
+  add_executable(led_test tests/actions/change_led_action_test.cpp)
+  list(APPEND test_executables led_test)
+  add_executable(open_drawer_test tests/actions/open_drawer_action_test.cpp)
+  list(APPEND test_executables open_drawer_test)
+
+  ament_target_dependencies(${test_libs}
+  ${dependencies})
+  
+  foreach(test ${test_executables})
+  target_link_libraries(${test}
+  ${library_name}
+  ${plugin_libs}  
+  ${test_libs}
+  Catch2::Catch2 
+  Catch2::Catch2WithMain
+  )
+  ament_target_dependencies(${test}
+  ${dependencies})
+    include(Catch)
+    catch_discover_tests(${test})
+  endforeach()
+  
+  
+
+  # include(CTest)
 endif()
 
 ament_export_include_directories(
