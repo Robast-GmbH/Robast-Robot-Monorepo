@@ -108,7 +108,7 @@ if (BUILD_TESTING)
   
   
 
-  # include(CTest)
+  include(CTest)
 endif()
 
 ament_export_include_directories(
