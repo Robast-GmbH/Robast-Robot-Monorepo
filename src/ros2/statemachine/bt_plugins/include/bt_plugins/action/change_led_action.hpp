@@ -34,6 +34,8 @@ namespace drawer_statemachine
          */
         BT::NodeStatus tick() override;
 
+        const communication_interfaces::msg::DrawerLeds getDrawerLED();
+
         /**
          * @brief Creates list of BT ports
          * @return BT::PortsList Containing node-specific ports
@@ -71,6 +73,8 @@ namespace drawer_statemachine
 
     protected:
         std::string topic_name_;
+        virtual void publish();
+        virtual void initializePublisher();
 
     private:
         rclcpp::Node::SharedPtr node_;

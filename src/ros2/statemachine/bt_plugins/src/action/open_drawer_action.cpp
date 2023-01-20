@@ -14,10 +14,6 @@ namespace drawer_statemachine
     {
         _blackboard = config.blackboard;
 
-        // callback_group_ = node_->create_callback_group(
-        //     rclcpp::CallbackGroupType::MutuallyExclusive,
-        //     false);
-        // callback_group_executor_.add_callback_group(callback_group_, node_->get_node_base_interface());
 
         getInput("drawer_open_topic", topic_name_);
         // std::scoped_lock l(_blackboard->entryMutex());
