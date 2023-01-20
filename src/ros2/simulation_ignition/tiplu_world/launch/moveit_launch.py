@@ -1,23 +1,15 @@
 from launch import LaunchDescription
-from launch.actions import (
-    DeclareLaunchArgument,
-    IncludeLaunchDescription,
-)
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.conditions import IfCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
-
 from launch_ros.actions import Node
 from launch_ros.parameter_descriptions import ParameterValue
-
+from moveit_configs_utils import MoveItConfigsBuilder
+from moveit_configs_utils.launch_utils import (DeclareBooleanLaunchArg,
+                                               add_debuggable_node)
 from srdfdom.srdf import SRDF
 
-from moveit_configs_utils.launch_utils import (
-    add_debuggable_node,
-    DeclareBooleanLaunchArg,
-)
-
-from moveit_configs_utils import MoveItConfigsBuilder
 
 def generate_launch_description():
         """
@@ -30,7 +22,7 @@ def generate_launch_description():
         * moveit_rviz
         * ros2_control_node + controller spawners
         """
-        moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer").to_moveit_configs()
+        moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer_package").to_moveit_configs()
 
         ld = LaunchDescription()
         ld.add_action(
@@ -149,30 +141,30 @@ def generate_launch_description():
         )
 
         # Fake joint driver
-        ld.add_action(
-                Node(
-                package="controller_manager",
-                executable="ros2_control_node",
-                parameters=[
-                        moveit_config.robot_description,
-                        str(moveit_config.package_path / "config/ros2_controllers.yaml"),
-                        {"use_sim_time": True},
-                ],
-                )
-        )
+        # ld.add_action(
+        #         Node(
+        #         package="controller_manager",
+        #         executable="ros2_control_node",
+        #         parameters=[
+        #                 moveit_config.robot_description,
+        #                 str(moveit_config.package_path / "config/ros2_controllers.yaml"),
+        #                 {"use_sim_time": True},
+        #         ],
+        #         )
+        # )
 
-        controller_names = moveit_config.trajectory_execution.get(
-                "moveit_simple_controller_manager", {}
-        ).get("controller_names", [])
+        # controller_names = moveit_config.trajectory_execution.get(
+        #         "moveit_simple_controller_manager", {}
+        # ).get("controller_names", [])
 
-        for controller in controller_names + ["joint_state_broadcaster"]:
-                ld.add_action(
-                Node(
-                        package="controller_manager",
-                        executable="spawner",
-                        arguments=[controller],
-                        output="screen",
-                )
-        )
+        # for controller in controller_names + ["joint_state_broadcaster"]:
+        #         ld.add_action(
+        #         Node(
+        #                 package="controller_manager",
+        #                 executable="spawner",
+        #                 arguments=[controller],
+        #                 output="screen",
+        #         )
+        # )
 
         return ld

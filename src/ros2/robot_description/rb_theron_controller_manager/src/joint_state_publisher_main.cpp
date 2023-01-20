@@ -21,7 +21,7 @@ int main(int argc, char* argv[])
 
     // create publisher
     auto joint_publisher = std::make_shared<rb_theron_controller_manager::JointStatePublisher>(ros_node,
-        joint_names, "joint_states", ign_topic,update_rate);
+        joint_names, "joint_states", ign_topic, update_rate);
     // run node until it's exited
     rclcpp::spin(ros_node);
     //clean up

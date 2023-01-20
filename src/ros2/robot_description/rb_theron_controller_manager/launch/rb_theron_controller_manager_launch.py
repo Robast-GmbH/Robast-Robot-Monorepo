@@ -32,7 +32,7 @@ def generate_launch_description():
                 output='screen')
     
     #  ROS -> IGN,  joint controller
-    joint_controller = Node(
+    joint_position_controller = Node(
                 package='rb_theron_controller_manager', 
                 executable='joint_position_controller',
                 name="rb_theron_joint_position_controller",
@@ -42,7 +42,18 @@ def generate_launch_description():
                             {"rate": 200},
                            ],
                 output='screen') 
+    joint_trajectory_controller = Node(
+                package='rb_theron_controller_manager', 
+                executable='joint_trajectory_controller',
+                name="rb_theron_joint_trajectory_controller",
+                parameters=[
+                            {"joint_names": joint_names_list},
+                            {"ign_joint_topics": ign_joint_topics_list},
+                            {"rate": 200},
+                           ],
+                output='screen') 
 
     # ld.add_action(joint_state_publisher)
-    ld.add_action(joint_controller)          
+    # ld.add_action(joint_position_controller)   
+    ld.add_action(joint_trajectory_controller)          
     return ld
