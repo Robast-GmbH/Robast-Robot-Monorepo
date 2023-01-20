@@ -15,7 +15,7 @@ def generate_launch_description():
     ld = LaunchDescription()
     
     # joint parameter for rb_theron
-    joint_names_list=["top_drawer_joint"]
+    joint_names_list=["first_drawer_joint", "second_drawer_joint"]
     ign_joint_topics_list=[]
     for joint_name in joint_names_list:
         ign_joint_topics_list.append("/model/rb_theron/joint/%s/0/cmd_pos"%joint_name)

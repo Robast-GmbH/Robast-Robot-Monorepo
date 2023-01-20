@@ -101,6 +101,11 @@ void JointTrajectoryController::execute(const std::shared_ptr<rclcpp_action::Ser
   //send goals
   bool all_succeed = true;
 
+  trajectory_msgs::msg::JointTrajectory trajectory_msg;
+  trajectory_msg = goal->trajectory;
+
+  this->setJointTrajectoryCb(std::make_shared<trajectory_msgs::msg::JointTrajectory>(trajectory_msg));
+
   // Populate a goal
 //   std::vector<hrim_actuator_rotaryservo_actions::action::GoalJointTrajectory::Goal> vector_goal;
 //   for(int i = 0; i < action_clients.size(); i++){
@@ -209,12 +214,20 @@ void JointTrajectoryController::updatePositionTimerCb()
 
 void JointTrajectoryController::setJointTrajectoryCb(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
 {
+    RCLCPP_INFO(this->get_logger(), "!!!!!!!!!!!!!!!!!!!!!!!!! CALLING setJointTrajectoryCb");
+    
     //check
-    if (msg->joint_names.size() < joint_names_.size()) {
+    if (msg->joint_names.size() < joint_names_.size())
+    {
+        RCLCPP_INFO(this->get_logger(), "!!!!!!!!!!!!!!!!!!!!!!!!! RETURNING 1 setJointTrajectoryCb");
         return;
     }
     for (size_t k = 0; k < joint_names_.size(); k++) {
-        if (joint_names_[k] != msg->joint_names[k]) {
+        if (joint_names_[k] != msg->joint_names[k])
+        {
+            RCLCPP_INFO(this->get_logger(), "joint_names_[k]: %s", joint_names_[k].c_str());
+            RCLCPP_INFO(this->get_logger(), "msg->joint_names[k]: %s", msg->joint_names[k].c_str());
+            RCLCPP_INFO(this->get_logger(), "!!!!!!!!!!!!!!!!!!!!!!!!! RETURNING 2 setJointTrajectoryCb");
             return;
         }
     }
@@ -224,7 +237,7 @@ void JointTrajectoryController::setJointTrajectoryCb(const trajectory_msgs::msg:
 
         auto chain_size = static_cast<unsigned int>(joint_names_.size());
         auto points_size = static_cast<unsigned int>(msg->points.size());
-        //std::cout<<"get trajectory msg:"<<points_size<<std::endl;
+        std::cout<<"get trajectory msg:"<<points_size<<std::endl; //DEBUGGING
         points_.resize(points_size);
         for (unsigned int i = 0; i < points_size; ++i) {
             points_[i].positions.resize(chain_size);
