@@ -22,7 +22,7 @@ def generate_launch_description():
         * moveit_rviz
         * ros2_control_node + controller spawners
         """
-        moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer_package").to_moveit_configs()
+        moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer").to_moveit_configs()
 
         ld = LaunchDescription()
         ld.add_action(
