@@ -8,9 +8,9 @@ int main(int argc, char* argv[])
     auto ros_node = std::make_shared<rclcpp::Node>("joint_position_controller");
     // variable
     std::vector<std::string> joint_names;
-    std::vector<std::string> default_joint_names = { "first_drawer_joint" };
+    std::vector<std::string> default_joint_names = {"drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"};
     std::vector<std::string> ign_joint_topics;
-    std::vector<std::string> default_ign_joint_topics = {"first_drawer_joint"};
+    std::vector<std::string> default_ign_joint_topics = {"drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"};
     int update_rate;
     // parameters
     ros_node->declare_parameter("joint_names", default_joint_names);

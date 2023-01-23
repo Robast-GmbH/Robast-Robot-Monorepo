@@ -13,8 +13,11 @@ controller_manager:
 drawer_planning_group_controller:
   ros__parameters:
     joints:
-      - first_drawer_joint
-      - second_drawer_joint
+      - drawer_1_joint
+      - drawer_2_joint
+      - drawer_3_joint
+      - drawer_4_joint
+      - drawer_5_joint
     command_interfaces:
       - position
     state_interfaces:
