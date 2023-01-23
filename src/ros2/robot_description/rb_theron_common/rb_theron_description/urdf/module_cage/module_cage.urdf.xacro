@@ -7,41 +7,46 @@
 			izz="${m*(x*x+z*z)/12}" />
 </xacro:macro>
 
-  <xacro:macro name="module_cage" params="prefix parent *origin">
+<xacro:macro name="module_cage" params="prefix parent *origin hq">
 
-		<joint name="${prefix}module_cage_joint" type="fixed">
-			<parent link="${parent}"/>
-			<child link="${prefix}module_cage_link"/>
-			<xacro:insert_block name="origin" />
-		</joint>
+  <joint name="${prefix}module_cage_joint" type="fixed">
+    <parent link="${parent}"/>
+    <child link="${prefix}module_cage_link"/>
+    <xacro:insert_block name="origin" />
+  </joint>
 
-    <!-- BASE_LINK -->
-    <link name="${prefix}module_cage_link">
-      <inertial>
-        <mass value="10.0" />
-        <origin xyz="0 0 0" />
-	    <xacro:box_inertia_robot m="10" x="0.25" y="0.25" z="1.55"/>
-      </inertial>
-      <visual>
-	  <origin xyz="0 ${0.655-0.167} 0.8" rpy="0 0 1.57" />
-        <!-- <origin xyz="0 0 0" rpy="0 0 0" /> -->
-          <geometry>
-            <!-- <box size="0.25 0.25 1.55"/> -->
-	    <box size="0.03 0.43 1.05"/>
-            <!-- <mesh filename="$(find rb_theron_description)/meshes/module_cage/module_cage.stl" scale="0.001 0.001 0.001"/> -->
-          </geometry>
-        <material name="darkgrey">
-          <color rgba="0.1 0.1 0.1 1"/>
-        </material>
-      </visual>
-      <collision>
-        <origin xyz="0 ${0.655-0.167} 0.8" rpy="0 0 1.57" />
+  <!-- BASE_LINK -->
+  <link name="${prefix}module_cage_link">
+    <inertial>
+      <mass value="25.0" />
+      <origin xyz="0 0 0" />
+      <xacro:box_inertia_robot m="10" x="0.25" y="0.25" z="1.55"/>
+    </inertial>
+    <visual>
+      <xacro:if value="${hq}">
+        <origin xyz="0 0 0" rpy="0 0 0" />
+        <geometry>
+          <mesh filename="$(find rb_theron_description)/meshes/module_cage/module_cage.stl" scale="0.001 0.001 0.001"/>
+        </geometry>
+      </xacro:if>
+      <xacro:unless value="${hq}">
+        <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
           <box size="0.03 0.43 1.05"/>
-          <!-- <mesh filename="$(find rb_theron_description)/meshes/module_cage/module_cage.stl" scale="0.001 0.001 0.001"/> -->
         </geometry>
-      </collision>
-    </link>
+      </xacro:unless>
+      <material name="darkgrey">
+        <color rgba="0.1 0.1 0.1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <box size="0.03 0.43 1.05"/>
+        <!-- <mesh filename="$(find rb_theron_description)/meshes/module_cage/module_cage.stl" scale="0.001 0.001 0.001"/> -->
+      </geometry>
+    </collision>
+  </link>
 
-  </xacro:macro>
+</xacro:macro>
 </robot>

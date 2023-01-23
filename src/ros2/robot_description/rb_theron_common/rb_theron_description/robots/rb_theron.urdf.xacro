@@ -145,20 +145,33 @@
 
 	<!-- ROBAST Module Cage -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
-	<xacro:module_cage prefix="$(arg prefix)module_cage" parent="$(arg prefix)base_link">
-		<origin xyz="0.35 -0.0 -0.075" rpy="0 0 1.570796326794896619"/>
+	<xacro:module_cage prefix="$(arg prefix)module_cage" parent="$(arg prefix)base_link" hq="${hq}" >
+		<origin xyz="-0.15 0.0 0.725" rpy="0 0 0"/>
 	</xacro:module_cage>
 
 	<!-- ROBAST Drawer -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/drawer/drawer.urdf.xacro" />
-	<xacro:drawer prefix="$(arg prefix)first" parent="$(arg prefix)base_link">
-		<origin xyz="0.105 0.0 0.3" rpy="0 0 0"/>
+	<xacro:drawer prefix="$(arg prefix)" suffix="5" parent="$(arg prefix)base_link" drawer_size_z="0.28">
+		<origin xyz="0.125 0.0 0.42" rpy="0 0 0"/>
 	</xacro:drawer>
-	<xacro:include filename="$(find rb_theron_description)/urdf/drawer/drawer.urdf.xacro" />
-	<xacro:drawer prefix="$(arg prefix)second" parent="$(arg prefix)base_link">
-		<origin xyz="0.105 0.0 0.5" rpy="0 0 0"/>
+	<xacro:drawer prefix="$(arg prefix)" suffix="4" parent="$(arg prefix)base_link" drawer_size_z="0.18">
+		<origin xyz="0.125 0.0 0.67" rpy="0 0 0"/>
+	</xacro:drawer>
+	<xacro:drawer prefix="$(arg prefix)" suffix="3" parent="$(arg prefix)base_link" drawer_size_z="0.08">
+		<origin xyz="0.125 0.0 0.82" rpy="0 0 0"/>
+	</xacro:drawer>
+	<xacro:drawer prefix="$(arg prefix)" suffix="2" parent="$(arg prefix)base_link" drawer_size_z="0.08">
+		<origin xyz="0.125 0.0 0.92" rpy="0 0 0"/>
+	</xacro:drawer>
+	<xacro:drawer prefix="$(arg prefix)" suffix="1" parent="$(arg prefix)base_link" drawer_size_z="0.08">
+		<origin xyz="0.125 0.0 1.02" rpy="0 0 0"/>
 	</xacro:drawer>
 
+	<!-- ROBAST Door Opening Mechanism -->
+	<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
+	<xacro:door_opening_mechanism prefix="$(arg prefix)door_opening_mechanism" parent="$(arg prefix)base_link" hq="${hq}" >
+		<origin xyz="-0.3 0 0.725" rpy="0 0 0"/>
+	</xacro:door_opening_mechanism>
 
 	<!-- Gazebo ros control pluggins -->
 	<xacro:ros_control prefix="$(arg prefix)" publish_bf="${publish_bf}"/>
