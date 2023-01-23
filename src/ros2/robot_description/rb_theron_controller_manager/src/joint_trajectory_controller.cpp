@@ -45,11 +45,6 @@ JointTrajectoryController::JointTrajectoryController(const rclcpp::NodeOptions &
         std::bind(&JointTrajectoryController::handle_cancel, this, _1),
         std::bind(&JointTrajectoryController::handle_accepted, this, _1));
 
-
-    // //create ros pub and sub
-    // ros_cmd_joint_trajectory_sub_ = nh_->create_subscription<trajectory_msgs::msg::JointTrajectory>(ros_cmd_topic, 10,
-    //     std::bind(&jointTrajectoryController::setJointTrajectoryCb, this, std::placeholders::_1));
-
     
     auto period = std::chrono::microseconds(1000000 / update_rate);
     update_position_timer_ = this->create_wall_timer(period, std::bind(&JointTrajectoryController::updatePositionTimerCb, this));
@@ -67,18 +62,6 @@ rclcpp_action::GoalResponse JointTrajectoryController::handle_goal(
 {
   RCLCPP_INFO(this->get_logger(), "Received goal request with order");
   (void)uuid;
-
-  for(int i = 0; i <  goal->trajectory.points.size(); i++) {
-    for(int j = 0; j <  goal->trajectory.points[i].positions.size(); j++) {
-      printf("position:\t%.5f\t",  goal->trajectory.points[i].positions[j]);
-    }
-    printf("\n");
-    for(int j = 0; j <  goal->trajectory.points[i].velocities.size(); j++) {
-      printf("velocities:\t%.5f\t",  goal->trajectory.points[i].velocities[j]);
-    }
-    printf("\n");
-    printf("time_from_start %u %u\n", goal->trajectory.points[i].time_from_start.sec, goal->trajectory.points[i].time_from_start.nanosec);
-  }
 
   return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
 }
@@ -106,59 +89,24 @@ void JointTrajectoryController::execute(const std::shared_ptr<rclcpp_action::Ser
 
   this->setJointTrajectoryCb(std::make_shared<trajectory_msgs::msg::JointTrajectory>(trajectory_msg));
 
-  // Populate a goal
-//   std::vector<hrim_actuator_rotaryservo_actions::action::GoalJointTrajectory::Goal> vector_goal;
-//   for(int i = 0; i < action_clients.size(); i++){
-//     vector_goal.push_back(hrim_actuator_rotaryservo_actions::action::GoalJointTrajectory::Goal());
-//   }
+  if (rclcpp::ok())
+  {
+    std::unique_lock<std::mutex> lock_until_trajectory_motion_is_finished(this->cv_mutex_);
+    this->cv_.wait(
+      lock_until_trajectory_motion_is_finished, [this]
+      {
+        // this block behaves like:
+        // while (!is_trajectory_motion_finished()) wait(lck);
+        return this->is_trajectory_motion_finished();
+      });
+    goal_handle->succeed(result);
+    RCLCPP_INFO(this->get_logger(), "Goal Succeeded");
+  }
+}
 
-//   for(unsigned int v = 0; v < vector_goal.size(); v++){
-//     vector_goal[v].trajectory.points.resize(goal->trajectory.points.size());
-//     for(unsigned int i = 0; i < goal->trajectory.points.size(); i++){
-//       vector_goal[v].trajectory.points[i].positions.resize(1);
-//       vector_goal[v].trajectory.points[i].velocities.resize(1);
-//       vector_goal[v].trajectory.points[i].accelerations.resize(1);
-
-//       vector_goal[v].trajectory.points[i].positions[0] = goal->trajectory.points[i].positions[v];
-//       vector_goal[v].trajectory.points[i].velocities[0] = goal->trajectory.points[i].velocities[v];
-//       vector_goal[v].trajectory.points[i].accelerations[0] = goal->trajectory.points[i].accelerations[v];
-//       vector_goal[v].trajectory.points[i].time_from_start.sec = goal->trajectory.points[i].time_from_start.sec;
-//       vector_goal[v].trajectory.points[i].time_from_start.nanosec = goal->trajectory.points[i].time_from_start.nanosec;
-//     }
-
-//     double wait_time = (double)(vector_goal[v].trajectory.points[goal->trajectory.points.size()-1].time_from_start.sec) +
-//                        (double)(vector_goal[v].trajectory.points[goal->trajectory.points.size()-1].time_from_start.nanosec/1e+9) + 1.0;
-//   }
-
-//   for(unsigned int v = 0; v < vector_goal.size(); v++){
-//     all_succeed &= action_clients.at(v)->send_goal(vector_goal[v]);
-//   }
-
-//   if(!all_succeed){
-//     RCLCPP_ERROR(this->get_logger(), "Not all action commands succeeded. Exit.");
-//     goal_handle->abort(result);
-//     return;
-//   }
-
-//   RCLCPP_INFO(this->get_logger(), "All goal commands sent");
-
-
-//   RCLCPP_INFO(this->get_logger(), "Executing goal");
-
-//   while(true){
-//     all_succeed = true;
-//     for(unsigned int v = 0; v < vector_goal.size(); v++){
-//       all_succeed &= action_clients.at(v)->is_goal_done();
-//     }
-//     if(all_succeed)
-//       break;
-//   }
-
-//   // // Check if goal is done
-//   if (rclcpp::ok()) {
-//     goal_handle->succeed(result);
-//     RCLCPP_INFO(this->get_logger(), "Goal Suceeded");
-//   }
+bool JointTrajectoryController::is_trajectory_motion_finished()
+{
+    return !this->has_trajectory_;
 }
 
 void JointTrajectoryController::handle_accepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<control_msgs::action::FollowJointTrajectory>> goal_handle)
@@ -172,14 +120,17 @@ void JointTrajectoryController::handle_accepted(const std::shared_ptr<rclcpp_act
 
 void JointTrajectoryController::updatePositionTimerCb()
 {
-    std::lock_guard<std::mutex> lock(trajectory_mut_);
+    std::lock_guard<std::mutex> lock(this->trajectory_mutex_);
     //wait trajectory
-    if (!has_trajectory_) {
+    if (!this->has_trajectory_) {
         return;
     }
     //check index of trajectory points
-    if (trajectory_index_ >= points_.size()) {
-        has_trajectory_ = false;
+    if (trajectory_index_ >= points_.size())
+    {
+        std::lock_guard<std::mutex> scoped_lock(this->cv_mutex_); // the lock will be released after the scope of this function
+        this->has_trajectory_ = false;
+        this->cv_.notify_one();
         return;
     }
     // trajectory roll-out based on time, this is not the most efficient way to set things
@@ -213,27 +164,21 @@ void JointTrajectoryController::updatePositionTimerCb()
 }
 
 void JointTrajectoryController::setJointTrajectoryCb(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
-{
-    RCLCPP_INFO(this->get_logger(), "!!!!!!!!!!!!!!!!!!!!!!!!! CALLING setJointTrajectoryCb");
-    
+{   
     //check
     if (msg->joint_names.size() < joint_names_.size())
     {
-        RCLCPP_INFO(this->get_logger(), "!!!!!!!!!!!!!!!!!!!!!!!!! RETURNING 1 setJointTrajectoryCb");
         return;
     }
     for (size_t k = 0; k < joint_names_.size(); k++) {
         if (joint_names_[k] != msg->joint_names[k])
         {
-            RCLCPP_INFO(this->get_logger(), "joint_names_[k]: %s", joint_names_[k].c_str());
-            RCLCPP_INFO(this->get_logger(), "msg->joint_names[k]: %s", msg->joint_names[k].c_str());
-            RCLCPP_INFO(this->get_logger(), "!!!!!!!!!!!!!!!!!!!!!!!!! RETURNING 2 setJointTrajectoryCb");
             return;
         }
     }
     //get points
     {
-        std::lock_guard<std::mutex> lock(trajectory_mut_);
+        std::lock_guard<std::mutex> lock(this->trajectory_mutex_);
 
         auto chain_size = static_cast<unsigned int>(joint_names_.size());
         auto points_size = static_cast<unsigned int>(msg->points.size());
@@ -248,7 +193,7 @@ void JointTrajectoryController::setJointTrajectoryCb(const trajectory_msgs::msg:
         }
         // trajectory start time
         trajectory_start_time_ = rclcpp::Clock().now();
-        has_trajectory_ = true;
-        trajectory_index_ = 0;
+        this->has_trajectory_ = true;
+        this->trajectory_index_ = 0;
     }
 }
