@@ -145,7 +145,7 @@
 
 	<!-- ROBAST Module Cage -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
-	<xacro:module_cage prefix="$(arg prefix)module_cage" parent="$(arg prefix)base_link" hq="${hq}" >
+	<xacro:module_cage prefix="$(arg prefix)" parent="$(arg prefix)base_link" hq="${hq}" >
 		<origin xyz="-0.15 0.0 0.725" rpy="0 0 0"/>
 	</xacro:module_cage>
 
