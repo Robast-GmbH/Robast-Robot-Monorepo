@@ -1,4 +1,5 @@
 # Default initial positions for rb_theron's ros2_control fake system
 
 initial_positions:
-  top_drawer_joint: 0
+  first_drawer_joint: 0
+  second_drawer_joint: 0

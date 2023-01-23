@@ -8,10 +8,17 @@
                 <!-- By default, set up controllers for simulation. This won't work on real hardware -->
                 <plugin>mock_components/GenericSystem</plugin>
             </hardware>
-            <joint name="top_drawer_joint">
+            <joint name="first_drawer_joint">
                 <command_interface name="position"/>
                 <state_interface name="position">
-                  <param name="initial_value">${initial_positions['top_drawer_joint']}</param>
+                  <param name="initial_value">${initial_positions['first_drawer_joint']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>
+            <joint name="second_drawer_joint">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['second_drawer_joint']}</param>
                 </state_interface>
                 <state_interface name="velocity"/>
             </joint>

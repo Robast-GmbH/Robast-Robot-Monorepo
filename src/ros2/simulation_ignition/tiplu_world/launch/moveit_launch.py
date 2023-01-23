@@ -140,31 +140,4 @@ def generate_launch_description():
                 parameters=rviz_parameters,
         )
 
-        # Fake joint driver
-        # ld.add_action(
-        #         Node(
-        #         package="controller_manager",
-        #         executable="ros2_control_node",
-        #         parameters=[
-        #                 moveit_config.robot_description,
-        #                 str(moveit_config.package_path / "config/ros2_controllers.yaml"),
-        #                 {"use_sim_time": True},
-        #         ],
-        #         )
-        # )
-
-        # controller_names = moveit_config.trajectory_execution.get(
-        #         "moveit_simple_controller_manager", {}
-        # ).get("controller_names", [])
-
-        # for controller in controller_names + ["joint_state_broadcaster"]:
-        #         ld.add_action(
-        #         Node(
-        #                 package="controller_manager",
-        #                 executable="spawner",
-        #                 arguments=[controller],
-        #                 output="screen",
-        #         )
-        # )
-
         return ld
