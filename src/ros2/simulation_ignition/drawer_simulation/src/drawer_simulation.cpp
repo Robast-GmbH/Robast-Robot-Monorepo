@@ -28,7 +28,9 @@ int main(int argc, char * argv[])
                 msg.position.x = 0.28;
                 return msg;
         }();
-        move_group_interface.setPoseTarget(target_pose);
+        // move_group_interface.setPoseTarget(target_pose);
+
+        move_group_interface.setJointValueTarget("drawer_1_joint", 0.1);
 
         // Create a plan to that target pose
         auto const [success, plan] = [&move_group_interface]{
