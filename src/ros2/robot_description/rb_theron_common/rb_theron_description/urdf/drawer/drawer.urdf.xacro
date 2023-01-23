@@ -9,7 +9,10 @@
 
     <xacro:property name="drawer_size_x" value="0.45" />
     <xacro:property name="drawer_size_y" value="0.358" />
-    <xacro:property name="drawer_mass" value="1.5" />
+    <!-- Mass should actually not be that small, but there is an issue, that if there is too much load on the theron base,
+      it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
+      therefore steering of the rb_theron becomes impossible -->
+    <xacro:property name="drawer_mass" value="0.1" />
 
     <xacro:property name="drawer_offset_x" value="0.0" />
     <xacro:property name="drawer_offset_y" value="0.0" />
