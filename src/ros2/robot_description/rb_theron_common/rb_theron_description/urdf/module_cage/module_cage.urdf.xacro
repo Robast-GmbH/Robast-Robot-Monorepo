@@ -24,7 +24,7 @@
     </inertial>
     <visual>
       <xacro:if value="${hq}">
-        <origin xyz="0 0 0" rpy="0 0 0" />
+        <origin xyz="0.5 0.0 -0.8" rpy="0 0 1.57" />
         <geometry>
           <mesh filename="$(find rb_theron_description)/meshes/module_cage/module_cage.stl" scale="0.001 0.001 0.001"/>
         </geometry>
