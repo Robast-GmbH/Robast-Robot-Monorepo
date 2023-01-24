@@ -108,5 +108,6 @@
     "C_Cpp.vcFormat.space.betweenEmptySquareBrackets": true,
     "cSpell.allowCompoundWords": true,
     "editor.formatOnType": true,
+    "testExplorer.useNativeTesting": true,
     "cmake.sourceDirectory": "${workspaceFolder}/src/statemachine/bt_plugins"
 }

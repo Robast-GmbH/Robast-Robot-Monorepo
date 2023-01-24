@@ -21,12 +21,9 @@
 #include "behaviortree_cpp/loggers/bt_zmq_publisher.h"
 
 #include "std_msgs/msg/empty.hpp"
-// #include "nav2_lifecycle_manager/lifecycle_manager.hpp"
 
 
-// namespace drawer_statemachine
-// {
-  class BTTicker : public rclcpp::Node
+class BTTicker: public rclcpp::Node
   {
   public:
     BTTicker():Node("bt_tickers")
@@ -48,9 +45,43 @@
         std::chrono::milliseconds(10));
       auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
       bt_ = bt_engine->createTreeFromFile("/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml", blackboard);
+      if (bt_.subtrees[0])
+      {
+        for (auto plugin_name = plugins.begin(); plugin_name != plugins.end(); plugin_name++)
+        {
+          bool found = false;
+          // if (!std::find(
+          //   bt_.subtrees[0]->nodes.begin()->registrationName(), bt_.subtrees[0]->nodes.end()->registrationName(), plugin_name) !=
+          //   bt_.subtrees[0]->nodes.end()->registrationName())
+          // {
+          //   std::cout << "error" << std::endl;
+          // }
+          auto iter = bt_.subtrees[0]->nodes.begin();
+          for (; iter != bt_.subtrees[0]->nodes.end(); iter++)
+          {
+            if ((*iter)->registrationName() == "DrawerOpenReq")
+            {
+              drawer_statemachine::DrawerOpenReq* node = dynamic_cast<drawer_statemachine::DrawerOpenReq*> ((*iter).get());
+              std::cout << "found: " << *plugin_name << "\n";
+              found = true;
+              
+              break;
+            }
+          }
+          if (found)
+          {
+            std::cout << "fuck yea" << "\n";
+          }
+
+
+        }          
+        // }
+        // std::cout << bt_.subtrees[0]->nodes[0]->registrationName() << std::endl;
+      }
       // using namespace std::chrono_literals;
       // timer_ = this->create_wall_timer(
       // 500ms, std::bind(&BTTicker::ticking, this));
+      
       rclcpp::QoS qos(rclcpp::KeepLast(1));
       qos.transient_local().reliable();
 
@@ -83,13 +114,51 @@
     rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr start_bt_sub_;
 
   };
-// }
+
 
 using namespace drawer_statemachine;
 
 int main(int argc, char* argv[ ])
 {
   rclcpp::init(argc, argv);
+  const std::vector<std::string> plugins = {
+                "change_led_action_bt_node",
+  };
+  static rclcpp::Node::SharedPtr node = std::make_shared<rclcpp::Node>("test");
+  static BT::NodeConfig* config_;
+  config_ = new BT::NodeConfig();
+  auto blackboard = BT::Blackboard::create();
+  blackboard->set<std::chrono::milliseconds>(
+      "bt_loop_duration",
+      std::chrono::milliseconds(10));
+  communication_interfaces::msg::DrawerLeds expected_drawer_led;
+  expected_drawer_led.red = 5;
+  expected_drawer_led.green = 255;
+  expected_drawer_led.blue = 10;
+  expected_drawer_led.mode = 1;
+  expected_drawer_led.brightness = 128;
+  std::string led_tree_xml =
+          R"(
+          <root BTCPP_format="4" >
+              <BehaviorTree ID="MainTree">
+                  <ChangeLED 
+                      blue="10"
+                      brightness="128"
+                      drawer_address="{drawer}"
+                      green="255"
+                      led_topic="drawer_leds"
+                      mode="1"
+                      red="5"/>
+              </BehaviorTree>
+          </root>)";
+  
+
+  blackboard->set<rclcpp::Node::SharedPtr>(
+      "node",
+      node);
+  auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
+  auto bt = bt_engine->createTreeFromText(led_tree_xml, blackboard);
+  
   rclcpp::spin(std::make_shared<BTTicker>());
   rclcpp::shutdown();
   return 0;

@@ -8,16 +8,12 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 Include(FetchContent)
-# find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
-# uncomment the following section in order to fill in
-# further dependencies manually.
-# find_package(<dependency> REQUIRED)
 
 set(dependencies
   rclcpp
@@ -88,21 +84,23 @@ if (BUILD_TESTING)
   list(APPEND test_executables led_test)
   add_executable(open_drawer_test tests/actions/open_drawer_action_test.cpp)
   list(APPEND test_executables open_drawer_test)
+  add_executable(drawer_status_condition_test tests/conditions/drawer_status_condition_test.cpp)
+  list(APPEND test_executables drawer_status_condition_test)
 
   ament_target_dependencies(${test_libs}
   ${dependencies})
   
   foreach(test ${test_executables})
-  target_link_libraries(${test}
-  ${library_name}
-  ${plugin_libs}  
-  ${test_libs}
-  Catch2::Catch2 
-  Catch2::Catch2WithMain
-  )
-  ament_target_dependencies(${test}
-  ${dependencies})
-    include(Catch)
+    target_link_libraries(${test}
+    ${library_name}
+    ${plugin_libs}  
+    ${test_libs}
+    Catch2::Catch2 
+    Catch2::Catch2WithMain
+    )
+    ament_target_dependencies(${test}
+    ${dependencies})
+      include(Catch)
     catch_discover_tests(${test})
   endforeach()
   

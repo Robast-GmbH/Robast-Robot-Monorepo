@@ -52,8 +52,7 @@ namespace bt_base_nodes
 
     void reset_subscriber()
     {
-      start_bt_sub_.reset();
-      
+      start_bt_sub_.reset();      
     }
 
     void init_subscriber(std::string topic = "start_bt")

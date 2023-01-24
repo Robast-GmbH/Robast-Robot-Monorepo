@@ -26,13 +26,14 @@
 	},
 	"extensions": [
 		"dotjoshjohnson.xml",
-		"laurenttreguier.uncrustify",		
+		"laurenttreguier.uncrustify",
 		"ms-python.python",
 		"ms-vscode.cpptools",
 		"streetsidesoftware.code-spell-checker",
 		"twxs.cmake",
 		"yzhang.markdown-all-in-one",
 		"jaehyunshim.vscode-ros2",
-		"tomoki1207.pdf"
+		"tomoki1207.pdf",
+		"matepek.vscode-catch2-test-adapter"
 	]
 }
