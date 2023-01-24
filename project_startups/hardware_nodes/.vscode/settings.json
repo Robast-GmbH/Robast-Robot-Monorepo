@@ -87,7 +87,8 @@
         "coroutine": "cpp",
         "source_location": "cpp",
         "cfenv": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "pqxx": "cpp"
     },
     "files.autoSave": "onFocusChange",
     "editor.tabSize": 4,

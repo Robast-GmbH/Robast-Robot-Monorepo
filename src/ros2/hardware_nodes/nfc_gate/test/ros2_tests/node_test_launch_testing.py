@@ -39,7 +39,10 @@ def generate_test_description():
         package='nfc_gate',
         executable='nfc_gate_test',
         name='nfc_gate',
-        parameters=[{"key":input_data['nfc']['card_content']}]
+        parameters=[{"key":input_data['nfc']['card_content'],
+                    "User1_key":input_data['nfc']['card_content'],
+                    "User1_name":input_data['nfc']['authorised_user']
+                     }]
     )
     context = {'dut': dut  }
 
@@ -88,7 +91,7 @@ class TestProcessOutput(unittest.TestCase):
         self.is_action_done=False
         # create action massage
         test_goal_msg = AuthenticateUser.Goal()
-        test_goal_msg.permission_keys = [input_data['nfc']['authorised_user_code']]
+        test_goal_msg.permission_keys = [input_data['nfc']['authorised_user']]
 
         #call the Service to test
         self._action_client = ActionClient(self.node, AuthenticateUser, 'authenticate_user')

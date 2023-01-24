@@ -25,6 +25,7 @@ find_package(ament_cmake_catch2 REQUIRED)
 find_package(ament_cmake_uncrustify REQUIRED)
 find_package(serial_helper REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED) 
+find_package(db_helper REQUIRED)
 
 include_directories(include)
 include_directories(test/include)
@@ -47,6 +48,7 @@ src/nfc_gate.cpp
 add_library(${library_nfc_gate_test} SHARED
   src/nfc_gate.cpp
   test/src/mock_serial_helper.cpp
+  test/src/mock_postgresql_helper.cpp
   test/src/test_nfc_gate.cpp
 )
 
@@ -55,6 +57,7 @@ set(dependencies
   rclcpp_action
   communication_interfaces
   serial_helper
+  db_helper
 )
 
 ament_target_dependencies(${executable_nfc_gate}

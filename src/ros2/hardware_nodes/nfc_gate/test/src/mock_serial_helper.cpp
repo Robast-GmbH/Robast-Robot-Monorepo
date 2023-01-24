@@ -33,7 +33,7 @@ namespace serial_helper
     {
         if (msg == NFC_READ_MC("02"))
         {
-
+            
             return key_code;
         }
         return "0001";

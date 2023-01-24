@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(postgresql_helper)
+project(db_helper)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -14,18 +14,23 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_catch2 REQUIRED)
 
-add_library(library_postgresql_helper SHARED
+add_library(library_db_helper SHARED
     ${CMAKE_CURRENT_LIST_DIR}/src/postgresql_helper.cpp
 )
 
-target_include_directories(library_postgresql_helper
+target_include_directories(library_db_helper
     PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
     $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 ) 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lpqxx")
+
+set(PQXX /usr/local/include/pqxx)
+
+find_library(PQXX_LIB pqxx)
 
 install(TARGETS
-    library_postgresql_helper
+    library_db_helper
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
@@ -37,6 +42,7 @@ install(DIRECTORY include/
 
 ament_export_include_directories(include)
 
-ament_export_libraries(library_postgresql_helper)
+ament_export_libraries(library_db_helper)
 
 ament_package()
+TARGET_LINK_LIBRARIES(library_db_helper  ${PQXX_LIB})

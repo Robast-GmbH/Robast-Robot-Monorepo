@@ -6,17 +6,16 @@
 
 #include <cstring>
 #include <string>
-#include <iostream>
 #include <pqxx/pqxx>
 #include "i_db_helper.h"
 
 
-namespace DB
+namespace db
 {
     class PostgreSqlHelper:public IDBHelper
     {
         private:
-            pqxx::connection connection_handle;
+            pqxx::connection* connection_handle;
             std::string connection_string;
 
         public:
@@ -25,9 +24,11 @@ namespace DB
 
             std::string open_connection();
             void close_connection();
-            bool perform_querry(std::string SqlStatment, std::string** result);
-            int perform_transaction(std::string SqlStatement); 
-            
+            bool perform_query(std::string sqlStatment, std::vector< std::vector<std::string> >* result_data, std::vector<std::string>* result_header);
+            int perform_transaction(std::string SqlStatement);
+            bool checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::string* name);
+    
+
 
     };
 }
