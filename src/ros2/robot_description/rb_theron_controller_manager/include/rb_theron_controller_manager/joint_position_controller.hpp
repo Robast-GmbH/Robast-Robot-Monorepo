@@ -23,11 +23,11 @@ class JointPositionController {
                     
         private:
         rclcpp::Node::SharedPtr nh_;
-        std::shared_ptr<gz::transport::Node> ign_node_;
+        std::shared_ptr<gz::transport::Node> gz_node_;
         // ros pub and sub
         rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr ros_cmd_joint_state_sub_;
         //gz pub
-        std::vector<std::shared_ptr<gz::transport::Node::Publisher>> ign_cmd_joint_pubs_;
+        std::vector<std::shared_ptr<gz::transport::Node::Publisher>> gz_cmd_joint_pubs_;
         // joint names and map
         std::vector<std::string> joint_names_;
         std::unordered_map<std::string, int> joint_names_map_;

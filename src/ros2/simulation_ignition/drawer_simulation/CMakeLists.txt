@@ -8,18 +8,33 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(communication_interfaces REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
+
+include_directories(include)
 
 set(executable_drawer_simulation drawer_simulation)
 
-add_executable(${executable_drawer_simulation} src/drawer_simulation.cpp)
+add_executable(${executable_drawer_simulation} src/drawer_simulation_main.cpp)
+
+set(library_drawer_simulation ${executable_drawer_simulation}_core)
+
+add_library(${library_drawer_simulation} SHARED
+  src/drawer_simulation.cpp
+)
 
 set(dependencies
   rclcpp
   moveit_ros_planning_interface
+  communication_interfaces
 )
 
 ament_target_dependencies(${executable_drawer_simulation}
+  ${dependencies}
+)
+target_link_libraries(${executable_drawer_simulation} ${library_drawer_simulation})
+
+ament_target_dependencies(${library_drawer_simulation}
   ${dependencies}
 )
 
@@ -38,6 +53,10 @@ endif()
 install(TARGETS
   ${executable_drawer_simulation}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
 )
 
 install(DIRECTORY

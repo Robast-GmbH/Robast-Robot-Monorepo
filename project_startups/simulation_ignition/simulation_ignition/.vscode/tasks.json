@@ -98,6 +98,17 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start drawer_simulation",
+                        "command": "source /workspace/install/setup.bash; ros2 launch drawer_simulation drawer_simulation_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start rviz",
                         "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup rviz_launch.py",
                         "problemMatcher": [],

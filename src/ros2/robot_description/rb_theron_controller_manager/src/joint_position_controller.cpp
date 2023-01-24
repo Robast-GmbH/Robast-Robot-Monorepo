@@ -10,7 +10,7 @@ JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& 
 {
     // ROS and gz node
     nh_ = nh;
-    ign_node_ = std::make_shared<gz::transport::Node>();
+    gz_node_ = std::make_shared<gz::transport::Node>();
     //check
     if (joint_names.size() != gz_cmd_topics.size()) {
         std::cout << "[JointPositionController ERROR]:the size of arrays are not matched!" << std::endl;
@@ -27,8 +27,8 @@ JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& 
     //create gz pub
     for (size_t i = 0; i < gz_cmd_topics.size(); i++) {
         auto pub = std::make_shared<gz::transport::Node::Publisher>(
-            ign_node_->Advertise<gz::msgs::Double>(gz_cmd_topics[i]));
-        ign_cmd_joint_pubs_.push_back(pub);
+            gz_node_->Advertise<gz::msgs::Double>(gz_cmd_topics[i]));
+        gz_cmd_joint_pubs_.push_back(pub);
     }
 }
 
@@ -40,7 +40,7 @@ void JointPositionController::setJointPositionCb(const sensor_msgs::msg::JointSt
             int idx = joint_names_map_[msg->name[i]];
             gz::msgs::Double ign_msg;
             ign_msg.set_data(msg->position[i]);
-            ign_cmd_joint_pubs_[idx]->Publish(ign_msg);
+            gz_cmd_joint_pubs_[idx]->Publish(ign_msg);
         }
     }
 }

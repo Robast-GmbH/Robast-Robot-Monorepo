@@ -20,18 +20,6 @@ def generate_launch_description():
     for joint_name in joint_names_list:
         gz_joint_topics_list.append("/model/rb_theron/joint/%s/0/cmd_pos"%joint_name)
     
-    # ROS <- IGN, joint state publisher
-    # Usually we should not need this, because this is done by an ignition plugin
-    joint_state_publisher = Node(
-                package='rb_theron_controller_manager', 
-                executable='joint_state_publisher',
-                name="rb_theron_joint_state_publisher",
-                parameters=[
-                            {"joint_names": joint_names_list},
-                            {"ign_topic": "/world/default/model/rb_theron/joint_state"},
-                           ],
-                output='screen')
-    
     #  ROS -> IGN,  joint position controller
     # We can either use the joint position controller or the joint trajectory controller.
     # In case we want moveit to plan and execute the motion, we have to go with the trajectory controller

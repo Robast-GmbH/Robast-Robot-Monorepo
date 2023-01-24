@@ -21,7 +21,7 @@ JointTrajectoryController::JointTrajectoryController(const rclcpp::NodeOptions &
     update_rate = this->get_parameter("rate").as_int();
     
     // ROS and gz node
-    this->ign_node_ = std::make_shared<gz::transport::Node>();
+    this->gz_node_ = std::make_shared<gz::transport::Node>();
     //check
     if (joint_names.size() != gz_joint_topics.size()) {
         std::cout << "[JointTrajectoryController ERROR]:the size of arrays are not matched!" << std::endl;
@@ -51,8 +51,8 @@ JointTrajectoryController::JointTrajectoryController(const rclcpp::NodeOptions &
     //create gz pub
     for (size_t i = 0; i < gz_joint_topics.size(); i++) {
         auto pub = std::make_shared<gz::transport::Node::Publisher>(
-            ign_node_->Advertise<gz::msgs::Double>(gz_joint_topics[i]));
-        ign_cmd_joint_pubs_.push_back(pub);
+            gz_node_->Advertise<gz::msgs::Double>(gz_joint_topics[i]));
+        gz_cmd_joint_pubs_.push_back(pub);
     }
 }
 
@@ -158,7 +158,7 @@ void JointTrajectoryController::updatePositionTimerCb()
     for (size_t i = 0; i < joint_names_.size(); ++i) {
         gz::msgs::Double ign_msg;
         ign_msg.set_data(target_positions_[i]);
-        ign_cmd_joint_pubs_[i]->Publish(ign_msg);
+        gz_cmd_joint_pubs_[i]->Publish(ign_msg);
     }
 }
 

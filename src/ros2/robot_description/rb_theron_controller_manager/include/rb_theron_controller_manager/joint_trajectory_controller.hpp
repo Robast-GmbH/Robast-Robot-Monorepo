@@ -38,14 +38,14 @@ class JointTrajectoryController : public rclcpp::Node {
         bool is_trajectory_motion_finished();
 
     private:
-        std::shared_ptr<gz::transport::Node> ign_node_;
+        std::shared_ptr<gz::transport::Node> gz_node_;
         // ros pub and sub
         // rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr ros_cmd_joint_state_sub_;
 
         rclcpp_action::Server<control_msgs::action::FollowJointTrajectory>::SharedPtr action_server_;
         
         //gz pub
-        std::vector<std::shared_ptr<gz::transport::Node::Publisher>> ign_cmd_joint_pubs_;
+        std::vector<std::shared_ptr<gz::transport::Node::Publisher>> gz_cmd_joint_pubs_;
         rclcpp::TimerBase::SharedPtr update_position_timer_;
         // joint names and map
         std::vector<std::string> joint_names_;
