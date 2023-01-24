@@ -7,7 +7,6 @@ endif()
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-Include(FetchContent)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
@@ -66,7 +65,8 @@ install(DIRECTORY include/
 
 install(FILES xml/bt_nodes.xml DESTINATION share/${PROJECT_NAME})
 
-if (BUILD_TESTING)
+if(BUILD_TESTING)
+  include(FetchContent)
 
   FetchContent_Declare(
     Catch2
@@ -89,13 +89,13 @@ if (BUILD_TESTING)
 
   ament_target_dependencies(${test_libs}
   ${dependencies})
-  
+
   foreach(test ${test_executables})
     target_link_libraries(${test}
     ${library_name}
-    ${plugin_libs}  
+    ${plugin_libs}
     ${test_libs}
-    Catch2::Catch2 
+    Catch2::Catch2
     Catch2::Catch2WithMain
     )
     ament_target_dependencies(${test}
@@ -103,10 +103,19 @@ if (BUILD_TESTING)
       include(Catch)
     catch_discover_tests(${test})
   endforeach()
-  
-  
 
   include(CTest)
+
+  # find_package(ament_cmake_lint_cmake REQUIRED)
+  # ament_lint_cmake()
+  find_package(ament_cmake_flake8 REQUIRED)
+  ament_flake8()
+  find_package(ament_cmake_xmllint REQUIRED)
+  ament_xmllint()
+  find_package(ament_cmake_pep257 REQUIRED)
+  ament_pep257()
+  find_package(ament_cmake_cppcheck REQUIRED)
+  ament_cppcheck()
 endif()
 
 ament_export_include_directories(

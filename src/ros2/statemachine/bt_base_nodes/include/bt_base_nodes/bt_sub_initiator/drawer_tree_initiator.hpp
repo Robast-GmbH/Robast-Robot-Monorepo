@@ -17,15 +17,8 @@ namespace bt_base_nodes
     class DrawerTreeInitiator : public bt_base_nodes::BTSubBase<communication_interfaces::msg::DrawerAddress> {
 
     public:
-        DrawerTreeInitiator(std::string bt_path, std::vector<std::string> plugins) : BTSubBase(bt_path, plugins)
-        {
-            communication_interfaces::msg::DrawerAddress tmp;
-            tmp.drawer_controller_id = 0;
-            tmp.drawer_id = 10;
-            _blackboard->set<communication_interfaces::msg::DrawerAddress>("drawer_address", tmp);            
-            _bt = bt_engine_->createTreeFromFile(bt_path, _blackboard);
-            init_subscriber("open_request");
-        }
+        DrawerTreeInitiator(const rclcpp::NodeOptions & options = rclcpp::NodeOptions()) : BTSubBase(options)
+        {}
 
     protected:
         void callbackRunBT(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
@@ -47,7 +40,7 @@ int main(int argc, char* argv[ ])
         "open_drawer_action_bt_node",
         "drawer_status_condition_bt_node"
     };
-    rclcpp::spin(std::make_shared<bt_base_nodes::DrawerTreeInitiator>(path, plugins));
+    rclcpp::spin(std::make_shared<bt_base_nodes::DrawerTreeInitiator>());
     rclcpp::shutdown();
     return 0;
 }

@@ -21,7 +21,7 @@
             "label": "purge",
             "detail": "delete /install /log /build",
             "type": "shell",
-            "command": "rm -r ${cwd}/install ${cwd}/log ${cwd}/build",
+            "command": "rm -f -r ${cwd}/install ${cwd}/log ${cwd}/build ",
             "problemMatcher": []
         },
         {
@@ -46,7 +46,7 @@
                 "build"
             ],
             "dependsOrder": "sequence",
-            "command": "source install/setup.bash; colcon test --event-handler=console_direct+; colcon test-result ",
+            "command": "source install/setup.bash; colcon test; colcon test-result ",
             "problemMatcher": []
         },
         // Linting and static code analysis tasks

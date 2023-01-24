@@ -78,7 +78,8 @@
         "forward_list": "cpp",
         "fstream": "cpp",
         "span": "cpp",
-        "cfenv": "cpp"
+        "cfenv": "cpp",
+        "regex": "cpp"
     },
     "python.formatting.autopep8Path": "/usr/bin/autopep8",
     "python.formatting.autopep8Args": [

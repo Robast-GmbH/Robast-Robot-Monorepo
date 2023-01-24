@@ -18,7 +18,7 @@ namespace drawer_statemachine
         getInput("drawer_open_topic", topic_name_);
         // std::scoped_lock l(_blackboard->entryMutex());
         node_ = _blackboard->get<rclcpp::Node::SharedPtr>("node");
-        drawer_address_ = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
+        // drawer_address_ = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
 

@@ -18,6 +18,7 @@
   <depend>communication_interfaces</depend>
   <depend>std_msgs</depend>
   <depend>behaviortree_cpp</depend>
+  <depend>bt_base_nodes</depend>
   
   <!-- <depend>behaviortree_cpp_v3</depend> -->
 

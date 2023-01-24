@@ -29,7 +29,6 @@ class BTTicker: public rclcpp::Node
     BTTicker():Node("bt_tickers")
     {
       const std::vector<std::string> plugins = {
-        "Hans",
         "drawer_open_request_action_bt_node",
       };
       static BT::NodeConfig* config_;
@@ -44,18 +43,13 @@ class BTTicker: public rclcpp::Node
         "bt_loop_duration",
         std::chrono::milliseconds(10));
       auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
-      bt_ = bt_engine->createTreeFromFile("/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml", blackboard);
+      std::string path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml";
+      bt_ = bt_engine->createTreeFromFile(path, blackboard);
       if (bt_.subtrees[0])
       {
         for (auto plugin_name = plugins.begin(); plugin_name != plugins.end(); plugin_name++)
         {
           bool found = false;
-          // if (!std::find(
-          //   bt_.subtrees[0]->nodes.begin()->registrationName(), bt_.subtrees[0]->nodes.end()->registrationName(), plugin_name) !=
-          //   bt_.subtrees[0]->nodes.end()->registrationName())
-          // {
-          //   std::cout << "error" << std::endl;
-          // }
           auto iter = bt_.subtrees[0]->nodes.begin();
           for (; iter != bt_.subtrees[0]->nodes.end(); iter++)
           {
@@ -72,15 +66,8 @@ class BTTicker: public rclcpp::Node
           {
             std::cout << "fuck yea" << "\n";
           }
-
-
         }          
-        // }
-        // std::cout << bt_.subtrees[0]->nodes[0]->registrationName() << std::endl;
       }
-      // using namespace std::chrono_literals;
-      // timer_ = this->create_wall_timer(
-      // 500ms, std::bind(&BTTicker::ticking, this));
       
       rclcpp::QoS qos(rclcpp::KeepLast(1));
       qos.transient_local().reliable();
@@ -116,10 +103,10 @@ class BTTicker: public rclcpp::Node
   };
 
 
-using namespace drawer_statemachine;
 
 int main(int argc, char* argv[ ])
 {
+  using namespace drawer_statemachine;
   rclcpp::init(argc, argv);
   const std::vector<std::string> plugins = {
                 "change_led_action_bt_node",
