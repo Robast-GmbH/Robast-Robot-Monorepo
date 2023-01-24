@@ -9,21 +9,21 @@ JointTrajectoryController::JointTrajectoryController(const rclcpp::NodeOptions &
     // variable
     std::vector<std::string> joint_names;
     std::vector<std::string> default_joint_names = {"drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"};
-    std::vector<std::string> ign_joint_topics;
-    std::vector<std::string> default_ign_joint_topics = {"drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"};
+    std::vector<std::string> gz_joint_topics;
+    std::vector<std::string> default_gz_joint_topics = {"drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"};
     int update_rate;
     // parameters
     this->declare_parameter("joint_names", default_joint_names);
-    this->declare_parameter("ign_joint_topics", default_ign_joint_topics);
+    this->declare_parameter("gz_joint_topics", default_gz_joint_topics);
     this->declare_parameter("rate", 200);
     joint_names = this->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
-    ign_joint_topics = this->get_parameter("ign_joint_topics").get_parameter_value().get<std::vector<std::string>>();
+    gz_joint_topics = this->get_parameter("gz_joint_topics").get_parameter_value().get<std::vector<std::string>>();
     update_rate = this->get_parameter("rate").as_int();
     
-    // ROS and Ignition node
-    this->ign_node_ = std::make_shared<ignition::transport::Node>();
+    // ROS and gz node
+    this->ign_node_ = std::make_shared<gz::transport::Node>();
     //check
-    if (joint_names.size() != ign_joint_topics.size()) {
+    if (joint_names.size() != gz_joint_topics.size()) {
         std::cout << "[JointTrajectoryController ERROR]:the size of arrays are not matched!" << std::endl;
         return;
     }
@@ -48,10 +48,10 @@ JointTrajectoryController::JointTrajectoryController(const rclcpp::NodeOptions &
     
     auto period = std::chrono::microseconds(1000000 / update_rate);
     update_position_timer_ = this->create_wall_timer(period, std::bind(&JointTrajectoryController::updatePositionTimerCb, this));
-    //create ignition pub
-    for (size_t i = 0; i < ign_joint_topics.size(); i++) {
-        auto pub = std::make_shared<ignition::transport::Node::Publisher>(
-            ign_node_->Advertise<ignition::msgs::Double>(ign_joint_topics[i]));
+    //create gz pub
+    for (size_t i = 0; i < gz_joint_topics.size(); i++) {
+        auto pub = std::make_shared<gz::transport::Node::Publisher>(
+            ign_node_->Advertise<gz::msgs::Double>(gz_joint_topics[i]));
         ign_cmd_joint_pubs_.push_back(pub);
     }
 }
@@ -154,9 +154,9 @@ void JointTrajectoryController::updatePositionTimerCb()
         }
         trajectory_index_++;
     }
-    //publish control msg to ignition
+    //publish control msg to gz
     for (size_t i = 0; i < joint_names_.size(); ++i) {
-        ignition::msgs::Double ign_msg;
+        gz::msgs::Double ign_msg;
         ign_msg.set_data(target_positions_[i]);
         ign_cmd_joint_pubs_[i]->Publish(ign_msg);
     }

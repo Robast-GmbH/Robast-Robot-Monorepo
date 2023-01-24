@@ -16,9 +16,9 @@ def generate_launch_description():
     
     # joint parameter for rb_theron
     joint_names_list=["drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"]
-    ign_joint_topics_list=[]
+    gz_joint_topics_list=[]
     for joint_name in joint_names_list:
-        ign_joint_topics_list.append("/model/rb_theron/joint/%s/0/cmd_pos"%joint_name)
+        gz_joint_topics_list.append("/model/rb_theron/joint/%s/0/cmd_pos"%joint_name)
     
     # ROS <- IGN, joint state publisher
     # Usually we should not need this, because this is done by an ignition plugin
@@ -41,7 +41,7 @@ def generate_launch_description():
                 name="rb_theron_joint_position_controller",
                 parameters=[
                             {"joint_names": joint_names_list},
-                            {"ign_joint_topics": ign_joint_topics_list},
+                            {"gz_joint_topics": gz_joint_topics_list},
                             {"rate": 200},
                            ],
                 output='screen')
@@ -52,12 +52,12 @@ def generate_launch_description():
                 name="rb_theron_joint_trajectory_controller",
                 parameters=[
                             {"joint_names": joint_names_list},
-                            {"ign_joint_topics": ign_joint_topics_list},
+                            {"gz_joint_topics": gz_joint_topics_list},
                             {"rate": 200},
                            ],
                 output='screen') 
 
     # ld.add_action(joint_state_publisher)
-    # ld.add_action(joint_position_controller)   
+    ld.add_action(joint_position_controller)   
     ld.add_action(joint_trajectory_controller)          
     return ld

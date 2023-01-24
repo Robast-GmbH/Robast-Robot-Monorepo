@@ -32,7 +32,7 @@
 	  </link>
 
 	  <gazebo>
-		<plugin name="ignition::gazebo::systems::Imu" filename="libignition-gazebo-imu-system.so">
+		<plugin name="gz::sim::systems::Imu" filename="libgz-sim-imu-system.so">
 			<always_on>1</always_on>
 			<update_rate>50</update_rate>
 			<topic>${topic}</topic>

@@ -6,13 +6,13 @@ using namespace rb_theron_controller_manager;
 JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& nh,
     const std::vector<std::string>& joint_names,
     const std::string& ros_cmd_topic,
-    const std::vector<std::string>& ign_cmd_topics)
+    const std::vector<std::string>& gz_cmd_topics)
 {
-    // ROS and Ignition node
+    // ROS and gz node
     nh_ = nh;
-    ign_node_ = std::make_shared<ignition::transport::Node>();
+    ign_node_ = std::make_shared<gz::transport::Node>();
     //check
-    if (joint_names.size() != ign_cmd_topics.size()) {
+    if (joint_names.size() != gz_cmd_topics.size()) {
         std::cout << "[JointPositionController ERROR]:the size of arrays are not matched!" << std::endl;
         return;
     }
@@ -24,10 +24,10 @@ JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& 
     //create ros pub and sub
     ros_cmd_joint_state_sub_ = nh_->create_subscription<sensor_msgs::msg::JointState>(ros_cmd_topic, 10,
         std::bind(&JointPositionController::setJointPositionCb, this, std::placeholders::_1));
-    //create ignition pub
-    for (size_t i = 0; i < ign_cmd_topics.size(); i++) {
-        auto pub = std::make_shared<ignition::transport::Node::Publisher>(
-            ign_node_->Advertise<ignition::msgs::Double>(ign_cmd_topics[i]));
+    //create gz pub
+    for (size_t i = 0; i < gz_cmd_topics.size(); i++) {
+        auto pub = std::make_shared<gz::transport::Node::Publisher>(
+            ign_node_->Advertise<gz::msgs::Double>(gz_cmd_topics[i]));
         ign_cmd_joint_pubs_.push_back(pub);
     }
 }
@@ -38,7 +38,7 @@ void JointPositionController::setJointPositionCb(const sensor_msgs::msg::JointSt
         if (joint_names_map_.find(msg->name[i]) != joint_names_map_.end()) {
             //find joint name in `joint_names_` .
             int idx = joint_names_map_[msg->name[i]];
-            ignition::msgs::Double ign_msg;
+            gz::msgs::Double ign_msg;
             ign_msg.set_data(msg->position[i]);
             ign_cmd_joint_pubs_[idx]->Publish(ign_msg);
         }

@@ -2,7 +2,7 @@
 - ros_topic_name: "tf"
   gz_topic_name: "/model/rb_theron/tf"
   ros_type_name: "tf2_msgs/msg/TFMessage"
-  gz_type_name: "ignition.msgs.Pose_V"
+  gz_type_name: "gz.msgs.Pose_V"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -13,7 +13,7 @@
 - ros_topic_name: "/joint_states"
   gz_topic_name: "/world/6OG/model/rb_theron/joint_state"
   ros_type_name: "sensor_msgs/msg/JointState"
-  gz_type_name: "ignition.msgs.Model"
+  gz_type_name: "gz.msgs.Model"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -23,7 +23,7 @@
 - ros_topic_name: "/front_laser/scan"
   gz_topic_name: "/front_laser/scan"
   ros_type_name: "sensor_msgs/msg/LaserScan"
-  gz_type_name: "ignition.msgs.LaserScan"
+  gz_type_name: "gz.msgs.LaserScan"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -32,7 +32,7 @@
 - ros_topic_name: "/bpearl_laser/scan/points"
   gz_topic_name: "/bpearl_laser/scan/points"
   ros_type_name: "sensor_msgs/msg/PointCloud2"
-  gz_type_name: "ignition.msgs.PointCloudPacked"
+  gz_type_name: "gz.msgs.PointCloudPacked"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -41,7 +41,7 @@
 - ros_topic_name: "/front_realsense_camera/color"
   gz_topic_name: "/front_realsense_camera/color"
   ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "ignition.msgs.Image"
+  gz_type_name: "gz.msgs.Image"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -50,7 +50,7 @@
 - ros_topic_name: "/front_realsense_camera/depth"
   gz_topic_name: "/front_realsense_camera/front_realsense_camera/depth"
   ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "ignition.msgs.Image"
+  gz_type_name: "gz.msgs.Image"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -59,7 +59,7 @@
 - ros_topic_name: "/front_realsense_camera/depth/points"
   gz_topic_name: "/front_realsense_camera/front_realsense_camera/depth/points"
   ros_type_name: "sensor_msgs/msg/PointCloud2"
-  gz_type_name: "ignition.msgs.PointCloudPacked"
+  gz_type_name: "gz.msgs.PointCloudPacked"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -68,7 +68,7 @@
 - ros_topic_name: "/back_realsense_camera/color"
   gz_topic_name: "/back_realsense_camera/color"
   ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "ignition.msgs.Image"
+  gz_type_name: "gz.msgs.Image"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -77,7 +77,7 @@
 - ros_topic_name: "/back_realsense_camera/depth"
   gz_topic_name: "/back_realsense_camera/back_realsense_camera/depth"
   ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "ignition.msgs.Image"
+  gz_type_name: "gz.msgs.Image"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -86,7 +86,7 @@
 - ros_topic_name: "/back_realsense_camera/depth/points"
   gz_topic_name: "/back_realsense_camera/back_realsense_camera/depth/points"
   ros_type_name: "sensor_msgs/msg/PointCloud2"
-  gz_type_name: "ignition.msgs.PointCloudPacked"
+  gz_type_name: "gz.msgs.PointCloudPacked"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -95,7 +95,7 @@
 - ros_topic_name: "/clock"
   gz_topic_name: "/clock"
   ros_type_name: "rosgraph_msgs/msg/Clock"
-  gz_type_name: "ignition.msgs.Clock"
+  gz_type_name: "gz.msgs.Clock"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -104,7 +104,7 @@
 - ros_topic_name: "/odom"
   gz_topic_name: "/model/rb_theron/odometry"
   ros_type_name: "nav_msgs/msg/Odometry"
-  gz_type_name: "ignition.msgs.Odometry"
+  gz_type_name: "gz.msgs.Odometry"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
@@ -113,7 +113,7 @@
 - ros_topic_name: "/cmd_vel"
   gz_topic_name: "/cmd_vel"
   ros_type_name: "geometry_msgs/msg/Twist"
-  gz_type_name: "ignition.msgs.Twist"
+  gz_type_name: "gz.msgs.Twist"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"

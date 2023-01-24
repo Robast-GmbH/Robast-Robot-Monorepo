@@ -4,7 +4,8 @@
 #include <mutex>
 #include <condition_variable>
 #include <rclcpp/rclcpp.hpp>
-#include <ignition/transport/Node.hh>
+#include <gz/transport/Node.hh>
+#include <gz/msgs.hh>
 #include "rclcpp_action/rclcpp_action.hpp"
 #include <sensor_msgs/msg/joint_state.hpp>
 #include "control_msgs/action/follow_joint_trajectory.hpp"
@@ -37,14 +38,14 @@ class JointTrajectoryController : public rclcpp::Node {
         bool is_trajectory_motion_finished();
 
     private:
-        std::shared_ptr<ignition::transport::Node> ign_node_;
+        std::shared_ptr<gz::transport::Node> ign_node_;
         // ros pub and sub
         // rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr ros_cmd_joint_state_sub_;
 
         rclcpp_action::Server<control_msgs::action::FollowJointTrajectory>::SharedPtr action_server_;
         
-        //ignition pub
-        std::vector<std::shared_ptr<ignition::transport::Node::Publisher>> ign_cmd_joint_pubs_;
+        //gz pub
+        std::vector<std::shared_ptr<gz::transport::Node::Publisher>> ign_cmd_joint_pubs_;
         rclcpp::TimerBase::SharedPtr update_position_timer_;
         // joint names and map
         std::vector<std::string> joint_names_;

@@ -56,7 +56,7 @@
         </joint>
 
         <gazebo>
-            <plugin filename="libignition-gazebo-joint-position-controller-system.so" name="ignition::gazebo::systems::JointPositionController">
+            <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
                 <joint_name>${prefix}drawer_${suffix}_joint</joint_name>
                 <p_gain>50000.0</p_gain>
                 <i_gain>100</i_gain>
