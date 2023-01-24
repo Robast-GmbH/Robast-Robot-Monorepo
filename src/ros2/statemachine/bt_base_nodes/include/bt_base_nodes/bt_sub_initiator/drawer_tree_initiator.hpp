@@ -30,17 +30,3 @@ namespace bt_base_nodes
 }
 #endif
 
-int main(int argc, char* argv[ ])
-{
-    rclcpp::init(argc, argv);
-    std::string path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml";
-    const std::vector<std::string> plugins = {
-        "drawer_open_request_action_bt_node",
-        "change_led_action_bt_node",
-        "open_drawer_action_bt_node",
-        "drawer_status_condition_bt_node"
-    };
-    rclcpp::spin(std::make_shared<bt_base_nodes::DrawerTreeInitiator>());
-    rclcpp::shutdown();
-    return 0;
-}

@@ -32,7 +32,12 @@ namespace bt_base_nodes
   {
   public:
     BTSubBase(const rclcpp::NodeOptions & options):Node("bt_tickers", options)
+    {   
+    }
+
+    void configure()
     {
+      
       static BT::NodeConfig* config_;
       config_ = new BT::NodeConfig();
       std::string path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml";
@@ -51,14 +56,13 @@ namespace bt_base_nodes
       // Put items on the blackboard
       _blackboard->set<rclcpp::Node::SharedPtr>(
         "node",
-        std::shared_ptr<rclcpp::Node>(this));
+        std::shared_ptr<rclcpp::Node>(shared_from_this()));
       _blackboard->set<std::chrono::milliseconds>(
         "bt_loop_duration",
         std::chrono::milliseconds(10));
       _bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins_);
       _bt = _bt_engine->createTreeFromFile(bt_path_, _blackboard);
       init_subscriber("open_request");
-
     }
 
   protected:
