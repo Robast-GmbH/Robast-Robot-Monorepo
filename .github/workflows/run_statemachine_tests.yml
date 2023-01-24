@@ -1,10 +1,6 @@
 name: Statemachine Test
 
 on:
-  push:
-    branches:
-      - dev/RE-836
-
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
