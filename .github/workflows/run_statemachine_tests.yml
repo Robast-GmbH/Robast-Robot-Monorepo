@@ -33,11 +33,11 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: Build docker
-      working-directory: src/ros2/$project 
+      working-directory: src/ros2/$Project 
       run: |
-            docker build . --tag ghcr.io/robast-gmbh/monorepo/$project_test
-            docker run ghcr.io/robast-gmbh/monorepo/$project_test 
-            docker push ghcr.io/robast-gmbh/monorepo/$project_test 
+            docker build . --tag ghcr.io/robast-gmbh/monorepo/$Project_test
+            docker run ghcr.io/robast-gmbh/monorepo/$Project 
+            docker push ghcr.io/robast-gmbh/monorepo/$Project_test 
     - name: Run docker and execute tests
-      working-directory: src/ros2/$project
-      run: docker run -v $(pwd):/workspace/src/$project -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces --name $project_container ghcr.io/robast-gmbh/monorepo/$project_test  /bin/sh -c "cd /workspace/ sudo apt-get update && sudo apt-get upgrade -y; rosdep update; rosdep install --from-paths src --ignore-src -r -y; source install/setup.bash; colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic; colcon test --event-handler=console_direct+; colcon test-result --all"
+      working-directory: src/ros2/$Project
+      run: docker run -v $(pwd):/workspace/src/$Project -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces --name $Project_container ghcr.io/robast-gmbh/monorepo/$Project_test  /bin/sh -c "cd /workspace/ sudo apt-get update && sudo apt-get upgrade -y; rosdep update; rosdep install --from-paths src --ignore-src -r -y; source install/setup.bash; colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic; colcon test --event-handler=console_direct+; colcon test-result --all"
