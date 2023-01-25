@@ -28,8 +28,6 @@ class BTTicker: public rclcpp::Node
   public:
     BTTicker():Node("bt_tickers")
     {
-      
-                
       }
       void configure()
       {
@@ -50,8 +48,8 @@ class BTTicker: public rclcpp::Node
           std::chrono::milliseconds(10));
         auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
         
-        std::string path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml";
-        bt_ = bt_engine->createTreeFromFile(path, blackboard);
+        std::string default_path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml";
+        bt_ = bt_engine->createTreeFromFile(default_path, blackboard);
         if (bt_.subtrees[0])
         {
           for (auto plugin_name = plugins.begin(); plugin_name != plugins.end(); plugin_name++)
@@ -82,9 +80,7 @@ class BTTicker: public rclcpp::Node
       start_bt_sub_ = this->create_subscription<std_msgs::msg::Empty>(
           "start_bt",
           qos,
-          std::bind(&BTTicker::callbackRunBT, this, std::placeholders::_1)   );
-
-      
+          std::bind(&BTTicker::callbackRunBT, this, std::placeholders::_1)   );      
     }
 
   private:

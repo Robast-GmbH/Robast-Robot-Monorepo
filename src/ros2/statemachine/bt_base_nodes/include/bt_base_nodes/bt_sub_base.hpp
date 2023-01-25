@@ -15,15 +15,6 @@
 #include "behaviortree_cpp/loggers/bt_zmq_publisher.h"
 #include "bt_plugins/behavior_tree_engine.hpp"
 
-/*
-this->declare_parameter("joint_names", default_joint_names);
-this->declare_parameter("ign_joint_topics", default_ign_joint_topics);
-this->declare_parameter("rate", 200);
-joint_names = this->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
-ign_joint_topics = this->get_parameter("ign_joint_topics").get_parameter_value().get<std::vector<std::string>>();
-update_rate = this->get_parameter("rate").as_int();
-*/
-
 
 namespace bt_base_nodes
 {
@@ -42,7 +33,6 @@ namespace bt_base_nodes
       config_ = new BT::NodeConfig();
       std::string path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml";
       const std::vector<std::string> default_plugins = {
-        "drawer_open_request_action_bt_node",
         "change_led_action_bt_node",
         "open_drawer_action_bt_node",
         "drawer_status_condition_bt_node"
@@ -56,7 +46,7 @@ namespace bt_base_nodes
       // Put items on the blackboard
       _blackboard->set<rclcpp::Node::SharedPtr>(
         "node",
-        std::shared_ptr<rclcpp::Node>(shared_from_this()));
+        shared_from_this());
       _blackboard->set<std::chrono::milliseconds>(
         "bt_loop_duration",
         std::chrono::milliseconds(10));
