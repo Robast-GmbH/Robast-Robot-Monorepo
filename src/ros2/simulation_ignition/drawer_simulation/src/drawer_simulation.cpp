@@ -20,6 +20,14 @@ namespace drawer_simulation
         this->drawer_status_publisher_ = this->create_publisher<DrawerStatus>("drawer_is_open", qos);
     }
 
+    void DrawerSimulation::send_drawer_is_open_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, uint8_t drawer_id)
+    {
+        RCLCPP_INFO(this->get_logger(), "Sending send_drawer_is_open_feedback with drawer_controller_id: '%i'", drawer_status_msg.drawer_address.drawer_controller_id); // Debugging
+        drawer_status_msg.drawer_address.drawer_id = drawer_id;
+        drawer_status_msg.drawer_is_open = true;
+        this->drawer_status_publisher_->publish(drawer_status_msg);
+    }
+
     std::shared_ptr<rclcpp::Node> DrawerSimulation::get_shared_pointer_of_node()
     {
         return std::enable_shared_from_this<rclcpp::Node>::shared_from_this();
@@ -61,6 +69,7 @@ namespace drawer_simulation
         {
             move_group_interface.execute(plan);
             //TODO: Report that drawer was opened successfull
+            // this->send_drawer_is_open_feedback();
         }
         else
         {

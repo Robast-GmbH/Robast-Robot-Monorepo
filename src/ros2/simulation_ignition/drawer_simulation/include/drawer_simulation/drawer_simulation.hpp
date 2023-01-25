@@ -33,6 +33,8 @@ namespace drawer_simulation
 
             void drawer_leds_topic_callback(const DrawerLeds& msg);
 
+            void send_drawer_is_open_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, uint8_t drawer_id);
+
     };
 }
 #endif //RB_THERON__DRAWER_SIMULATION_HPP_
