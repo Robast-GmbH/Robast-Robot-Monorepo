@@ -67,7 +67,6 @@ namespace test
                 auto bt = bt_engine->createTreeFromText(led_tree_xml, blackboard);
                 THEN("A Subtree should exist")
                 {
-                    // REQUIRE(true);
                     REQUIRE(bt.subtrees[0]);
                     WHEN("this Tree exists")
                     {
