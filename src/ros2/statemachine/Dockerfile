@@ -11,9 +11,6 @@ RUN apt-get update && apt-get upgrade -y &&\
     cmake \
     git \
     curl \
-    unzip \
-    tar \
-    zip \
     python3-colcon-common-extensions \
     python3-pip \
     python3-rosdep \
@@ -26,9 +23,6 @@ RUN apt-get update && apt-get upgrade -y &&\
     libqt5svg5-dev \
     gdb \
     && rosdep init || echo "rosdep already initialized"
-
-WORKDIR /opt/vcpkg
-RUN git clone https://github.com/Microsoft/vcpkg.git /opt/vcpkg
 
 WORKDIR /workspace
 
