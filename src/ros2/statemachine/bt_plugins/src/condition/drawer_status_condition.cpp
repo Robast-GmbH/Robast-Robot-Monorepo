@@ -32,9 +32,9 @@ namespace drawer_statemachine
             qos,
             std::bind(&DrawerStatusCondition::callbackDrawerFeedback, this, std::placeholders::_1),
             sub_option);
-        last_message_ = false;
 
         getInput("target_value", target_value_);
+        last_message_ = !target_value_;
     }
 
     BT::NodeStatus DrawerStatusCondition::tick()
