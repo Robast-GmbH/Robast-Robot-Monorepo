@@ -27,7 +27,7 @@
                  drawer_address="{drawer}"
                  green="128"
                  led_topic="drawer_leds"
-                 mode="3"
+                 mode="2"
                  red="255"/>
       <ChangeLED blue="155"
                  brightness="25"
