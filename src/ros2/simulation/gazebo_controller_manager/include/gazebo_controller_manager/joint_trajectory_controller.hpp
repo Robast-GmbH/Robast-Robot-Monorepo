@@ -11,7 +11,7 @@
 #include "control_msgs/action/follow_joint_trajectory.hpp"
 #include <unordered_map>
 
-namespace ignition_controller_manager
+namespace gazebo_controller_manager
 {
 
     class JointTrajectoryController: public rclcpp::Node

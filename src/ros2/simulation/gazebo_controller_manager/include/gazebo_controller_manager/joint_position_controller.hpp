@@ -8,7 +8,7 @@
 #include <sensor_msgs/msg/joint_state.hpp>
 #include <unordered_map>
 
-namespace ignition_controller_manager
+namespace gazebo_controller_manager
 {
 
     class JointPositionController

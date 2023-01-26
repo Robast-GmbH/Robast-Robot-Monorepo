@@ -87,8 +87,8 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start ignition_controller_manager",
-                        "command": "source /workspace/install/setup.bash; ros2 launch ignition_controller_manager ignition_controller_manager_launch.py",
+                        "label": "start gazebo_controller_manager",
+                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_controller_manager_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -109,11 +109,11 @@
                 },
                 {
                         "label": "startup_sim_with_drawer_simulation",
-                        "detail": "Starts tiplu_sim, moveit_drawer, ignition_controller_manager and drawer_gate_simulation",
+                        "detail": "Starts tiplu_sim, moveit_drawer, gazebo_controller_manager and drawer_gate_simulation",
                         "dependsOn": [
                                 "start tiplu_sim",
                                 "start moveit_drawer",
-                                "start ignition_controller_manager",
+                                "start gazebo_controller_manager",
                                 "start drawer_gate_simulation"
                         ]
                 },

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(ignition_controller_manager)
+project(gazebo_controller_manager)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)

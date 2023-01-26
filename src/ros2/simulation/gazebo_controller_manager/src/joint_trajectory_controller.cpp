@@ -1,8 +1,8 @@
-#include "ignition_controller_manager/joint_trajectory_controller.hpp"
+#include "gazebo_controller_manager/joint_trajectory_controller.hpp"
 
 using namespace std;
 using namespace std::placeholders;
-using namespace ignition_controller_manager;
+using namespace gazebo_controller_manager;
 
 JointTrajectoryController::JointTrajectoryController(const rclcpp::NodeOptions & options) : Node("joint_trajectory_controller", options)
 {
