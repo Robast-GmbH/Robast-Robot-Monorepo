@@ -22,8 +22,11 @@ namespace rb_theron_controller_manager
 
             using FollowJointTrajectory = control_msgs::action::FollowJointTrajectory;
 
-        private:
+     private:
+            void initialize_gz_transport_node(std::vector<std::string> joint_names, std::vector<std::string> gz_joint_topics);
+        
             void setJointTrajectoryCb(const trajectory_msgs::msg::JointTrajectory::SharedPtr);
+            
             void updatePositionTimerCb();
 
             rclcpp_action::GoalResponse handle_goal(
@@ -40,10 +43,7 @@ namespace rb_theron_controller_manager
             bool is_trajectory_motion_finished();
 
         private:
-            std::shared_ptr<gz::transport::Node> gz_node_;
-            // ros pub and sub
-            // rclcpp::Subscription<sensor_msgs::msg::JointState>::SharedPtr ros_cmd_joint_state_sub_;
-
+            std::shared_ptr<gz::transport::Node> gz_transport_node_;
             rclcpp_action::Server<control_msgs::action::FollowJointTrajectory>::SharedPtr action_server_;
             
             //gz pub

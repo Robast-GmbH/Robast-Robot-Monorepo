@@ -33,6 +33,7 @@ def generate_launch_description():
                             {"joint_names": joint_names_list},
                             {"gz_joint_topics": gz_joint_topics_list},
                             {"rate": 200},
+                            {"follow_joint_trajectory_action": "/drawer_planning_group_controller/follow_joint_trajectory"}
                            ],
                 output='screen') 
 

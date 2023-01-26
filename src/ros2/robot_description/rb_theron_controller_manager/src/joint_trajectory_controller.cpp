@@ -8,51 +8,67 @@ JointTrajectoryController::JointTrajectoryController(const rclcpp::NodeOptions &
 {
     // variable
     std::vector<std::string> joint_names;
-    std::vector<std::string> default_joint_names = {"drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"};
+    const std::vector<std::string> default_joint_names = { "drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint" };
+    
     std::vector<std::string> gz_joint_topics;
-    std::vector<std::string> default_gz_joint_topics = {"drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"};
+    const std::vector<std::string> default_gz_joint_topics = { "drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint" };
+    
     int update_rate;
-    // parameters
+    const int default_update_rate = 200;
+
+    std::string follow_joint_trajectory_action;
+    const std::string default_follow_joint_trajectory_action = "/planning_group_controller/follow_joint_trajectory";
+    
+    // Declare parameters
     this->declare_parameter("joint_names", default_joint_names);
     this->declare_parameter("gz_joint_topics", default_gz_joint_topics);
-    this->declare_parameter("rate", 200);
+    this->declare_parameter("rate", default_update_rate);
+    this->declare_parameter("follow_joint_trajectory_action", default_follow_joint_trajectory_action);
+
+    // Get Parameters
     joint_names = this->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
     gz_joint_topics = this->get_parameter("gz_joint_topics").get_parameter_value().get<std::vector<std::string>>();
     update_rate = this->get_parameter("rate").as_int();
-    
-    // ROS and gz node
-    this->gz_node_ = std::make_shared<gz::transport::Node>();
-    //check
-    if (joint_names.size() != gz_joint_topics.size()) {
-        std::cout << "[JointTrajectoryController ERROR]:the size of arrays are not matched!" << std::endl;
-        return;
-    }
-    this->joint_names_ = joint_names;
-    this->joint_num_ = joint_names_.size();
-    //init joint_names_map_ and target_positions_
-    for (size_t i = 0; i < joint_num_; i++) {
-        joint_names_map_[joint_names_[i]] = i;
-        target_positions_.push_back(0);
-    }
+    follow_joint_trajectory_action = this->get_parameter("follow_joint_trajectory_action").as_string();
+
+    this->initialize_gz_transport_node(joint_names, gz_joint_topics);
 
     this->action_server_ = rclcpp_action::create_server<control_msgs::action::FollowJointTrajectory>(
         this->get_node_base_interface(),
         this->get_node_clock_interface(),
         this->get_node_logging_interface(),
         this->get_node_waitables_interface(),
-        "/drawer_planning_group_controller/follow_joint_trajectory",
+        follow_joint_trajectory_action,
         std::bind(&JointTrajectoryController::handle_goal, this, _1, _2),
         std::bind(&JointTrajectoryController::handle_cancel, this, _1),
         std::bind(&JointTrajectoryController::handle_accepted, this, _1));
 
     
     auto period = std::chrono::microseconds(1000000 / update_rate);
-    update_position_timer_ = this->create_wall_timer(period, std::bind(&JointTrajectoryController::updatePositionTimerCb, this));
+    this->update_position_timer_ = this->create_wall_timer(period, std::bind(&JointTrajectoryController::updatePositionTimerCb, this));
     //create gz pub
     for (size_t i = 0; i < gz_joint_topics.size(); i++) {
         auto pub = std::make_shared<gz::transport::Node::Publisher>(
-            gz_node_->Advertise<gz::msgs::Double>(gz_joint_topics[i]));
-        gz_cmd_joint_pubs_.push_back(pub);
+            this->gz_transport_node_->Advertise<gz::msgs::Double>(gz_joint_topics[i]));
+        this->gz_cmd_joint_pubs_.push_back(pub);
+    }
+}
+
+void JointTrajectoryController::initialize_gz_transport_node(std::vector<std::string> joint_names, std::vector<std::string> gz_joint_topics)
+{
+    // ROS and gz node
+    this->gz_transport_node_ = std::make_shared<gz::transport::Node>();
+    //check
+    if (joint_names.size() != gz_joint_topics.size()) {
+        RCLCPP_ERROR(this->get_logger(), "The size of arrays are not matched!");
+        return;
+    }
+    this->joint_names_ = joint_names;
+    this->joint_num_ = this->joint_names_.size();
+    //init joint_names_map_ and target_positions_
+    for (size_t i = 0; i < this->joint_num_; i++) {
+        this->joint_names_map_[this->joint_names_[i]] = i;
+        this->target_positions_.push_back(0);
     }
 }
 
