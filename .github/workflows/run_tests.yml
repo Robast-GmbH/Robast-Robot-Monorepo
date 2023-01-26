@@ -22,6 +22,12 @@ jobs:
           workflows:
             - '.github/workflows/*'
 
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
     #run hardware_nodes
     # - name: hardware_nodes tests
     #   if: steps.filter.outputs.hardware_nodes == 'true' || steps.filter.outputs.workflows == 'true' || steps.filter.outputs.communication_interfaces == 'true'
