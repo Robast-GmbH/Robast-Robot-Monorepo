@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
   ros-humble-ament-cmake-test \
   ros-humble-launch-testing \
   libpqxx-dev \
+  git \
   && rosdep init || echo "rosdep already initialized"
 
 
