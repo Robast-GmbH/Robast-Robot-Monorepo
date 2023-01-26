@@ -7,8 +7,7 @@
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "communication_interfaces/action/drawer_interaction.hpp"
 #include <string.h>
-using namespace std;
-   
+
 namespace robast
 { 
   
@@ -31,12 +30,12 @@ namespace robast
 
       
       void startTask(const std_msgs::msg::String::SharedPtr msg);
-      void split(string input, char deliminator,  vector<string> & output); 
+      void split(std::string input, char deliminator,  std::vector<std::string> & output); 
       
-      vector<communication_interfaces::msg::Drawer, allocator<communication_interfaces::msg::Drawer>> drawerList;
+      std::vector<communication_interfaces::msg::Drawer, std::allocator<communication_interfaces::msg::Drawer>> drawerList;
 
       void drawer_goal_response_callback(const GoalHandleDrawerInteraction::SharedPtr & goal_handle);
-      void drawer_feedback_callback( GoalHandleDrawerInteraction::SharedPtr, const shared_ptr<const DrawerInteraction::Feedback> feedback);
+      void drawer_feedback_callback( GoalHandleDrawerInteraction::SharedPtr, const std::shared_ptr<const DrawerInteraction::Feedback> feedback);
       void drawer_result_callback(const GoalHandleDrawerInteraction::WrappedResult & result);
 
 

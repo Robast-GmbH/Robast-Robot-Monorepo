@@ -1,9 +1,9 @@
-#include "catch.hpp"
+#include <catch2/catch.hpp>
 #include "fakeit.hpp"
 #include "test/test_nfc_gate.hpp"
 
 
-using namespace fakeit;
+
 namespace robast
 {
 
@@ -12,15 +12,15 @@ namespace robast
     GIVEN("The Serial reader gets mocked and initiated in the NFC gate Node and there is a list with possible keys, which could be the read key")
     {
       rclcpp::init(0, nullptr);
-      Mock<serial_helper::ISerialHelper> Serial_helper_mock;
+      fakeit::Mock<serial_helper::ISerialHelper> Serial_helper_mock;
       Method(Serial_helper_mock, open_serial) = "";
-      Fake(Method(Serial_helper_mock, close_serial));
+      fakeit::Fake(Method(Serial_helper_mock, close_serial));
       Method(Serial_helper_mock, ascii_interaction);
       Method(Serial_helper_mock, send_ascii_cmd) = "";
-      Mock<db_helper::IDBHelper> db_helper_mock;
+      fakeit::Mock<db_helper::IDBHelper> db_helper_mock;
       Method(db_helper_mock, open_connection) = "";
       Method(db_helper_mock, close_connection);
-      When(Method(db_helper_mock, perform_query)).AlwaysDo([=](std::string sqlStatment, std::vector< std::vector<std::string> >*result_data, std::vector<std::string> *result_header) -> bool
+      fakeit::When(Method(db_helper_mock, perform_query)).AlwaysDo([=](std::string sqlStatment, std::vector< std::vector<std::string> >*result_data, std::vector<std::string> *result_header) -> bool
         {
           if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != string::npos)
           {
@@ -34,7 +34,7 @@ namespace robast
             return false;
           }
         });
-       When(Method(db_helper_mock, checkUserTag)).AlwaysDo([=](std::string sqlStatment, std::vector<std::string> Lookup_scope, std::string*result_data) -> bool
+       fakeit::When(Method(db_helper_mock, checkUserTag)).AlwaysDo([=](std::string sqlStatment, std::vector<std::string> Lookup_scope, std::string*result_data) -> bool
         {
           if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != string::npos)
           {
@@ -101,19 +101,19 @@ namespace robast
     GIVEN("The Serial reader gets mocked and initiated in the NFC gate Node.")
     {
       rclcpp::init(0, nullptr);
-      Mock<serial_helper::ISerialHelper> serial_helper_mock;
+      fakeit::Mock<serial_helper::ISerialHelper> serial_helper_mock;
       Method(serial_helper_mock, open_serial) = "";
-      Fake(Method(serial_helper_mock, close_serial));
+      fakeit::Fake(Method(serial_helper_mock, close_serial));
       Method(serial_helper_mock, ascii_interaction);
       Method(serial_helper_mock, send_ascii_cmd) = "";
       bool found;
-      Mock<db_helper::IDBHelper> db_helper_mock;
+      fakeit::Mock<db_helper::IDBHelper> db_helper_mock;
       TestNFCGate* nfc_reader = new TestNFCGate(&serial_helper_mock.get(), &db_helper_mock.get());
 
 
       WHEN("No card is detected")
       {
-        When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
+        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
           {
             (void)responce_size;
             (void)cmd;
@@ -132,7 +132,7 @@ namespace robast
       WHEN("The key from the card is empty")
       {
         string key_from_card = "";
-        When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
+        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
           {
             (void)responce_size;
             if (cmd == NFC_READ_MC("02"))
@@ -155,7 +155,7 @@ namespace robast
       {
 
         string key_from_card = "6df1933415dde9fa1f9f6998a26b40db";
-        When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
+        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
           {
             (void)responce_size;
             if (cmd == NFC_READ_MC("02"))
@@ -172,7 +172,7 @@ namespace robast
           string key = nfc_reader->scan_tag(&found);
           CHECK(found);
           CHECK(key == key_from_card);
-          REQUIRE(Verify(Method(serial_helper_mock, ascii_interaction).Using(NFC_LOGIN_MC_STANDART("00"), _, _), Method(serial_helper_mock, ascii_interaction).Using(NFC_READ_MC("02"), _, _)));
+          REQUIRE(fakeit::Verify(Method(serial_helper_mock, ascii_interaction).Using(NFC_LOGIN_MC_STANDART("00"), fakeit::_, fakeit::_), Method(serial_helper_mock, ascii_interaction).Using(NFC_READ_MC("02"), fakeit::_, fakeit::_)));
         }
       }
 
@@ -185,14 +185,14 @@ namespace robast
     GIVEN("the mocked reader gets used in the nfc gate with a list of possible keys")
     {
       rclcpp::init(0, nullptr);
-      Mock<serial_helper::ISerialHelper> serial_helper_mock;
+      fakeit::Mock<serial_helper::ISerialHelper> serial_helper_mock;
       Method(serial_helper_mock, open_serial) = "";
-      Fake(Method(serial_helper_mock, close_serial));
+      fakeit::Fake(Method(serial_helper_mock, close_serial));
       Method(serial_helper_mock, ascii_interaction);
       Method(serial_helper_mock, send_ascii_cmd) = "";
-      Mock<db_helper::IDBHelper> db_helper_mock;
+      fakeit::Mock<db_helper::IDBHelper> db_helper_mock;
      
-      When(Method(db_helper_mock, checkUserTag)).AlwaysDo([=](std::string sqlStatment, std::vector<std::string> Lookup_scope, std::string*result_data) -> bool
+      fakeit::When(Method(db_helper_mock, checkUserTag)).AlwaysDo([=](std::string sqlStatment, std::vector<std::string> Lookup_scope, std::string*result_data) -> bool
         {
           if (sqlStatment.find("6df1933415dde9fa1f9f6998a26b40db") != string::npos)
           {
@@ -214,7 +214,7 @@ namespace robast
       WHEN("The key from the card is in the list of possible keys")
       {
         string key_from_card = "6df1933415dde9fa1f9f6998a26b40db";
-        When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
+        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
           {
             (void)responce_size;
             if (cmd == NFC_READ_MC("02"))
@@ -239,7 +239,7 @@ namespace robast
       WHEN("The key from the card is not in the list of possible keys")
       {
         string key_from_card = "";
-        When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
+        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
           {
             (void)responce_size;
             (void)cmd;

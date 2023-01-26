@@ -2,7 +2,6 @@
 #include "mock_serial_helper.hpp"
 #include "mock_postgresql_helper.hpp"
 
-using namespace std;
 namespace robast
 {
     class TestNFCGate : public NFCGate
@@ -11,8 +10,8 @@ namespace robast
         TestNFCGate(serial_helper::ISerialHelper* serial_connector, db_helper::IDBHelper* db_connector);
         TestNFCGate();
 
-        string execute_scan(std::vector<std::string> permission_keys, bool* found);
-        string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found);
-        string scan_tag(bool* found);
+        std::string execute_scan(std::vector<std::string> permission_keys, bool* found);
+        std::string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found);
+        std::string scan_tag(bool* found);
     };
 }

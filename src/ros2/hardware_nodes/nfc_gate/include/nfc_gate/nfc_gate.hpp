@@ -24,7 +24,7 @@
 #include "serial_helper/serial_helper.h"
 #include "db_helper/postgresql_connector.h"
 
-using namespace std;
+
 namespace robast
 {
 
