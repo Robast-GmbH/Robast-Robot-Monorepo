@@ -4,7 +4,6 @@ on: push
   # pull_request:
   #   types: [opened, synchronize, reopened]
     
-#kann man alles mit "strategy: matrix cooler machen. ist mir aber aktuell zu aufwendig"
 jobs:
   test:
     runs-on: ubuntu-latest
