@@ -75,6 +75,14 @@ rclcpp_action::CancelResponse JointTrajectoryController::handle_cancel(
   return rclcpp_action::CancelResponse::ACCEPT;
 }
 
+void JointTrajectoryController::handle_accepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<control_msgs::action::FollowJointTrajectory>> goal_handle)
+{
+  RCLCPP_INFO(this->get_logger(), "handle_accepted and executing");
+
+  // this needs to return quickly to avoid blocking the executor, so spin up a new thread
+  std::thread{std::bind(&JointTrajectoryController::execute, this, _1), goal_handle}.detach();
+}
+
 void JointTrajectoryController::execute(const std::shared_ptr<rclcpp_action::ServerGoalHandle<control_msgs::action::FollowJointTrajectory>> goal_handle)
 {
   auto result = std::make_shared<control_msgs::action::FollowJointTrajectory::Result>();
@@ -107,14 +115,6 @@ void JointTrajectoryController::execute(const std::shared_ptr<rclcpp_action::Ser
 bool JointTrajectoryController::is_trajectory_motion_finished()
 {
     return !this->has_trajectory_;
-}
-
-void JointTrajectoryController::handle_accepted(const std::shared_ptr<rclcpp_action::ServerGoalHandle<control_msgs::action::FollowJointTrajectory>> goal_handle)
-{
-  RCLCPP_INFO(this->get_logger(), "handle_accepted and executing");
-
-  // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-  std::thread{std::bind(&JointTrajectoryController::execute, this, _1), goal_handle}.detach();
 }
 
 void JointTrajectoryController::updatePositionTimerCb()

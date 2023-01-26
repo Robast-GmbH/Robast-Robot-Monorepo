@@ -37,6 +37,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     python3-rosdep \
     python3-vcstool \
+    libboost-all-dev \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     && rm -rf /var/lib/apt/lists/* \
     && rosdep init || echo "rosdep already initialized"

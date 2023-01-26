@@ -2,6 +2,12 @@
 #define RB_THERON__DRAWER_SIMULATION_HPP_
 
 #include <memory>
+
+// Used for the async timer
+#include <iostream>
+#include <boost/asio.hpp>
+#include <boost/bind.hpp>
+
 #include <rclcpp/rclcpp.hpp>
 #include <moveit/move_group_interface/move_group_interface.h>
 
@@ -18,6 +24,7 @@ namespace drawer_simulation
             using DrawerAddress = communication_interfaces::msg::DrawerAddress;
             using DrawerLeds = communication_interfaces::msg::DrawerLeds;
             using DrawerStatus = communication_interfaces::msg::DrawerStatus;
+            using MoveGroupInterface = moveit::planning_interface::MoveGroupInterface;
 
             DrawerSimulation();
             ~DrawerSimulation() {};
@@ -27,14 +34,25 @@ namespace drawer_simulation
             rclcpp::Subscription<DrawerLeds>::SharedPtr drawer_leds_subscription_;
             rclcpp::Publisher<DrawerStatus>::SharedPtr drawer_status_publisher_;
 
+            const float target_pose_open_drawer_ = 0.34;
+            const float target_pose_closed_drawer_ = 0;
+            const int default_time_until_drawer_closes_automatically_ = 3000; // ms
+
+            uint32_t time_until_drawer_closes_automatically_;
+
             std::shared_ptr<rclcpp::Node> get_shared_pointer_of_node();
 
             void open_drawer_topic_callback(const DrawerAddress& msg);
 
+            void move_drawer_in_simulation_to_target_pose(MoveGroupInterface* move_group_interface, const DrawerAddress drawer_address, const float target_pose);
+
+            void async_wait_until_closing_drawer_in_simulation(const int time_until_drawer_closing, MoveGroupInterface *move_group_interface, const DrawerAddress drawer_address, const float target_pose);
+
+            void open_drawer_in_simulation(MoveGroupInterface* move_group_interface, const DrawerAddress drawer_address, const float target_pose);
+
             void drawer_leds_topic_callback(const DrawerLeds& msg);
 
-            void send_drawer_is_open_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, uint8_t drawer_id);
-
+            void send_drawer_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, bool drawer_is_open);
     };
 }
 #endif //RB_THERON__DRAWER_SIMULATION_HPP_
