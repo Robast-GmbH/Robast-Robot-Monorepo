@@ -8,7 +8,7 @@ endif()
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -21,7 +21,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(communication_interfaces REQUIRED)
-find_package(ament_cmake_catch2 REQUIRED)
 find_package(ament_cmake_uncrustify REQUIRED)
 find_package(serial_helper REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED) 
@@ -82,13 +81,26 @@ target_include_directories(nfc_gate PUBLIC
   $<INSTALL_INTERFACE:include>)
 
 if(BUILD_TESTING)
+
+  include(FetchContent)
+
+  FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG        v2.13.10 # should equal tag v3.2.1
+  )
+  FetchContent_MakeAvailable(Catch2)
+
   file(GLOB_RECURSE unit_test_srcs "test/unit_tests/*.cpp")
 
   file(GLOB_RECURSE test_srcs "test/src/*.cpp")
 
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
 
-  ament_add_catch2(
+  # ament_add_catch2(
+  #   nfc_gate_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
+  # )
+  add_executable(
     nfc_gate_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
   )
 
@@ -100,12 +112,21 @@ if(BUILD_TESTING)
     ${library_nfc_gate}
     rclcpp::rclcpp
     rclcpp_action::rclcpp_action
+    Catch2::Catch2
   )
   
   target_include_directories(nfc_gate_unit_test
     PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
   )
+  find_package(ament_cmake_flake8 REQUIRED)
+  ament_flake8()
+  find_package(ament_cmake_xmllint REQUIRED)
+  ament_xmllint()
+  find_package(ament_cmake_pep257 REQUIRED)
+  ament_pep257()
+  find_package(ament_cmake_cppcheck REQUIRED)
+  ament_cppcheck()
 endif()
 
 install(TARGETS

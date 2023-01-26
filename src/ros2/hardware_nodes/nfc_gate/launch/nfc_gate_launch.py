@@ -3,11 +3,7 @@ import launch_ros.actions
 
 
 def generate_launch_description():
-    # Parameters
-    use_sim_time = True
-    autostart = True
 
-    
     # Nodes launching commands
     start_nfc_gate_cmd = launch_ros.actions.Node(
             package='nfc_gate',
