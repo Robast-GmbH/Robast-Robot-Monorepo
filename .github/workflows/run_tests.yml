@@ -17,7 +17,7 @@ jobs:
             - 'src/ros2/hardware_nodes/*'
           statemachine:
             - 'src/ros2/statemachine/*'
-          communication_interfaces  
+          communication_interfaces:
             - 'src/ros2/communication_interfaces/*'
 
     #run hardware_nodes
