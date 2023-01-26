@@ -1,0 +1,144 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "detail": "Symlink Build.",
+            "type": "shell",
+            "command": "source ~/../../opt/ros/humble/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch Drawer Gate",
+            "detail": "Launch the drawer gate node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch drawer_gate drawer_gate_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch Door Maniplator Gate",
+            "detail": "Launch the door manipulator gate node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch door_manipulator_gate door_manipulator_gate_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch Door Maniplator Sim",
+            "detail": "Launch the door manipulator Sim node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 run door_manipulator_sim door_manipulator_sim"j,
+            "problemMatcher": []
+        },
+        {
+            "label": "Move Norelem Stepper 1 forward slow",
+            "detail": "Send topic message to move the norelem stepper motor 1 forward",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 1, motor_e1: 0, motor_e2: 1, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Move Norelem Stepper 1 backward slow",
+            "detail": "Send topic message to move the norelem stepper motor 1 backward",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 1, motor_e1: 1, motor_e2: 1, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Stop Norelem Stepper 1 motion",
+            "detail": "Send topic message to stop the norelem stepper motor 1 motion",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 1, motor_e1: 1, motor_e2: 0, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Move Norelem Stepper 2 forward slow",
+            "detail": "Send topic message to move the norelem stepper motor 2 forward",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 2, motor_e1: 0, motor_e2: 1, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Move Norelem Stepper 2 backward slow",
+            "detail": "Send topic message to move the norelem stepper motor 2 backward",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 2, motor_e1: 1, motor_e2: 1, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Stop Norelem Stepper 2 motion",
+            "detail": "Send topic message to stop the norelem stepper motor 2 motion",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 2, motor_e1: 1, motor_e2: 0, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Move Norelem Stepper 3 forward slow",
+            "detail": "Send topic message to move the norelem stepper motor 3 forward",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 3, motor_e1: 0, motor_e2: 1, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Move Norelem Stepper 3 backward slow",
+            "detail": "Send topic message to move the norelem stepper motor 3 backward",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 3, motor_e1: 1, motor_e2: 1, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Stop Norelem Stepper 3 motion",
+            "detail": "Send topic message to stop the norelem stepper motor 3 motion",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 topic pub /control_norelem_stepper communication_interfaces/msg/NorelemStepperControl '{drawer_controller_id: 6, motor_id: 3, motor_e1: 1, motor_e2: 0, motor_e3: 0, motor_e4: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test",
+            "detail": "Build and executes all tests and shows the links to the testreport with Errors",
+            "type": "shell",
+            "dependsOn": [
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "command": "source install/setup.bash; colcon test --event-handler=console_direct+; colcon test-result --all",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test nfc gate",
+            "detail": "Build and executes nfc gate tests and shows the links to the testreport with Errors",
+            "type": "shell",
+            "dependsOn": [
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "command": "clear; source install/setup.bash; colcon test --packages-select nfc_gate --event-handler=console_direct+; colcon test-result --all",
+            "problemMatcher": []
+        },
+        {
+            "label": "clean-build",
+            "detail": "Purges and symlink colcon build",
+            "dependsOn": [
+                "purge",
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "purge",
+            "detail": "Purge workspace by deleting all generated files.",
+            "type": "shell",
+            "command": "rm -fr build install log; py3clean .",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "package",
+            "type": "promptString",
+            "description": "Package name"
+        }
+    ]
+}
