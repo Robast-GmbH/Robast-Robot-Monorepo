@@ -21,7 +21,7 @@ namespace rb_theron_controller_manager
             ~JointPositionController() {};
 
         private:
-            void setJointPositionCb(const sensor_msgs::msg::JointState::SharedPtr msg);
+            void set_joint_position_cb(const sensor_msgs::msg::JointState::SharedPtr msg);
                         
             private:
             rclcpp::Node::SharedPtr nh_;

@@ -9,11 +9,11 @@ JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& 
     const std::vector<std::string>& gz_cmd_topics)
 {
     // ROS and gz node
-    nh_ = nh;
-    gz_node_ = std::make_shared<gz::transport::Node>();
+    this->nh_ = nh;
+    this->gz_node_ = std::make_shared<gz::transport::Node>();
     //check
     if (joint_names.size() != gz_cmd_topics.size()) {
-        std::cout << "[JointPositionController ERROR]:the size of arrays are not matched!" << std::endl;
+        RCLCPP_ERROR(this->nh_ ->get_logger(), "The size of arrays are not matched!");
         return;
     }
     joint_names_ = joint_names;
@@ -23,7 +23,7 @@ JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& 
     }
     //create ros pub and sub
     ros_cmd_joint_state_sub_ = nh_->create_subscription<sensor_msgs::msg::JointState>(ros_cmd_topic, 10,
-        std::bind(&JointPositionController::setJointPositionCb, this, std::placeholders::_1));
+        std::bind(&JointPositionController::set_joint_position_cb, this, std::placeholders::_1));
     //create gz pub
     for (size_t i = 0; i < gz_cmd_topics.size(); i++) {
         auto pub = std::make_shared<gz::transport::Node::Publisher>(
@@ -32,7 +32,7 @@ JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& 
     }
 }
 
-void JointPositionController::setJointPositionCb(const sensor_msgs::msg::JointState::SharedPtr msg)
+void JointPositionController::set_joint_position_cb(const sensor_msgs::msg::JointState::SharedPtr msg)
 {
     for (auto i = 0u; i < msg->position.size(); ++i) {
         if (joint_names_map_.find(msg->name[i]) != joint_names_map_.end()) {

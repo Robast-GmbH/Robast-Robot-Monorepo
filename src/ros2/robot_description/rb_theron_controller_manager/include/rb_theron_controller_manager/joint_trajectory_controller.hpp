@@ -25,9 +25,9 @@ namespace rb_theron_controller_manager
      private:
             void initialize_gz_transport_node(std::vector<std::string> joint_names, std::vector<std::string> gz_joint_topics);
         
-            void setJointTrajectoryCb(const trajectory_msgs::msg::JointTrajectory::SharedPtr);
+            void set_joint_trajectory_cb(const trajectory_msgs::msg::JointTrajectory::SharedPtr);
             
-            void updatePositionTimerCb();
+            void update_position_timer_cb();
 
             rclcpp_action::GoalResponse handle_goal(
                 const rclcpp_action::GoalUUID & uuid,

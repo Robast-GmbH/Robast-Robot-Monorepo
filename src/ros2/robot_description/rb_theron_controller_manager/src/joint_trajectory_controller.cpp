@@ -45,7 +45,7 @@ JointTrajectoryController::JointTrajectoryController(const rclcpp::NodeOptions &
 
     
     auto period = std::chrono::microseconds(1000000 / update_rate);
-    this->update_position_timer_ = this->create_wall_timer(period, std::bind(&JointTrajectoryController::updatePositionTimerCb, this));
+    this->update_position_timer_ = this->create_wall_timer(period, std::bind(&JointTrajectoryController::update_position_timer_cb, this));
     //create gz pub
     for (size_t i = 0; i < gz_joint_topics.size(); i++) {
         auto pub = std::make_shared<gz::transport::Node::Publisher>(
@@ -111,7 +111,7 @@ void JointTrajectoryController::execute(const std::shared_ptr<rclcpp_action::Ser
   trajectory_msgs::msg::JointTrajectory trajectory_msg;
   trajectory_msg = goal->trajectory;
 
-  this->setJointTrajectoryCb(std::make_shared<trajectory_msgs::msg::JointTrajectory>(trajectory_msg));
+  this->set_joint_trajectory_cb(std::make_shared<trajectory_msgs::msg::JointTrajectory>(trajectory_msg));
 
   if (rclcpp::ok())
   {
@@ -133,7 +133,7 @@ bool JointTrajectoryController::is_trajectory_motion_finished()
     return !this->has_trajectory_;
 }
 
-void JointTrajectoryController::updatePositionTimerCb()
+void JointTrajectoryController::update_position_timer_cb()
 {
     std::lock_guard<std::mutex> lock(this->trajectory_mutex_);
     //wait trajectory
@@ -178,7 +178,7 @@ void JointTrajectoryController::updatePositionTimerCb()
     }
 }
 
-void JointTrajectoryController::setJointTrajectoryCb(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
+void JointTrajectoryController::set_joint_trajectory_cb(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
 {   
     //check
     if (msg->joint_names.size() < joint_names_.size())
