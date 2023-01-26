@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(drawer_simulation)
+project(drawer_gate_simulation)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -13,14 +13,14 @@ find_package(moveit_ros_planning_interface REQUIRED)
 
 include_directories(include)
 
-set(executable_drawer_simulation drawer_simulation)
+set(executable_drawer_gate_simulation drawer_gate_simulation)
 
-add_executable(${executable_drawer_simulation} src/drawer_simulation_main.cpp)
+add_executable(${executable_drawer_gate_simulation} src/drawer_gate_simulation_main.cpp)
 
-set(library_drawer_simulation ${executable_drawer_simulation}_core)
+set(library_drawer_gate_simulation ${executable_drawer_gate_simulation}_core)
 
-add_library(${library_drawer_simulation} SHARED
-  src/drawer_simulation.cpp
+add_library(${library_drawer_gate_simulation} SHARED
+  src/drawer_gate_simulation.cpp
 )
 
 set(dependencies
@@ -29,12 +29,12 @@ set(dependencies
   communication_interfaces
 )
 
-ament_target_dependencies(${executable_drawer_simulation}
+ament_target_dependencies(${executable_drawer_gate_simulation}
   ${dependencies}
 )
-target_link_libraries(${executable_drawer_simulation} ${library_drawer_simulation})
+target_link_libraries(${executable_drawer_gate_simulation} ${library_drawer_gate_simulation})
 
-ament_target_dependencies(${library_drawer_simulation}
+ament_target_dependencies(${library_drawer_gate_simulation}
   ${dependencies}
 )
 
@@ -51,7 +51,7 @@ if(BUILD_TESTING)
 endif()
 
 install(TARGETS
-  ${executable_drawer_simulation}
+  ${executable_drawer_gate_simulation}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -1,14 +1,14 @@
-#include "drawer_simulation/drawer_simulation.hpp"
+#include "drawer_gate_simulation/drawer_gate_simulation.hpp"
 
-namespace drawer_simulation
+namespace drawer_gate_simulation
 {
     /* You can manually trigger this with this topic publish:
     ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress "{drawer_controller_id: 1, drawer_id: 1}" --once
     */
 
-    DrawerSimulation::DrawerSimulation(): Node("drawer_simulation")
+    DrawerSimulation::DrawerSimulation(): Node("drawer_gate_simulation")
     {
-        RCLCPP_INFO(this->get_logger(), "Creating Drawer Simulation Node!"); // Debugging
+        RCLCPP_INFO(this->get_logger(), "Creating Drawer Gate Simulation Node!"); // Debugging
 
         this->declare_parameter("time_until_drawer_closes_automatically_in_ms", this->default_time_until_drawer_closes_automatically_);
         this->time_until_drawer_closes_automatically_ = this->get_parameter("time_until_drawer_closes_automatically_in_ms").as_int();

@@ -1,7 +1,7 @@
-#include "rb_theron_controller_manager/joint_position_controller.hpp"
+#include "ignition_controller_manager/joint_position_controller.hpp"
 
 using namespace std;
-using namespace rb_theron_controller_manager;
+using namespace ignition_controller_manager;
 
 JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& nh,
     const std::vector<std::string>& joint_names,

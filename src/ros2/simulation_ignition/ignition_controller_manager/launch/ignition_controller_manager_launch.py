@@ -15,7 +15,7 @@ def generate_launch_description():
     # We can either use the joint position controller or the joint trajectory controller.
     # In case we want moveit to plan and execute the motion, we have to go with the trajectory controller
     joint_position_controller = Node(
-                package='rb_theron_controller_manager', 
+                package='ignition_controller_manager', 
                 executable='joint_position_controller',
                 name="rb_theron_joint_position_controller",
                 parameters=[
@@ -26,7 +26,7 @@ def generate_launch_description():
                 output='screen')
     
     joint_trajectory_controller = Node(
-                package='rb_theron_controller_manager', 
+                package='ignition_controller_manager', 
                 executable='joint_trajectory_controller',
                 name="rb_theron_joint_trajectory_controller",
                 parameters=[

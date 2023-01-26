@@ -1,5 +1,5 @@
-#ifndef RB_THERON__DRAWER_SIMULATION_HPP_
-#define RB_THERON__DRAWER_SIMULATION_HPP_
+#ifndef RB_THERON__drawer_gate_simulation_HPP_
+#define RB_THERON__drawer_gate_simulation_HPP_
 
 #include <memory>
 
@@ -15,7 +15,7 @@
 #include "communication_interfaces/msg/drawer_leds.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
 
-namespace drawer_simulation
+namespace drawer_gate_simulation
 {
 
     class DrawerSimulation : public rclcpp::Node
@@ -55,4 +55,4 @@ namespace drawer_simulation
             void send_drawer_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, bool drawer_is_open);
     };
 }
-#endif //RB_THERON__DRAWER_SIMULATION_HPP_
+#endif //RB_THERON__drawer_gate_simulation_HPP_

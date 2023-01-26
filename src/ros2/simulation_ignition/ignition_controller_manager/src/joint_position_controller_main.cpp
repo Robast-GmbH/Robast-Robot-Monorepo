@@ -1,5 +1,5 @@
 #include <rclcpp/rclcpp.hpp>
-#include <rb_theron_controller_manager/joint_position_controller.hpp>
+#include <ignition_controller_manager/joint_position_controller.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -18,7 +18,7 @@ int main(int argc, char* argv[])
     joint_names = ros_node->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
     gz_joint_topics = ros_node->get_parameter("gz_joint_topics").get_parameter_value().get<std::vector<std::string>>();
     // create controller 
-    auto joint_position_controller = std::make_shared<rb_theron_controller_manager::JointPositionController>(ros_node,
+    auto joint_position_controller = std::make_shared<ignition_controller_manager::JointPositionController>(ros_node,
         joint_names, "set_joint_state", gz_joint_topics);
     // run node until it's exited
     rclcpp::spin(ros_node);

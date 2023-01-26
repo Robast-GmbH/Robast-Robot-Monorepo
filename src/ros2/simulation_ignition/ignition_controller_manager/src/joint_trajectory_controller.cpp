@@ -1,8 +1,8 @@
-#include "rb_theron_controller_manager/joint_trajectory_controller.hpp"
+#include "ignition_controller_manager/joint_trajectory_controller.hpp"
 
 using namespace std;
 using namespace std::placeholders;
-using namespace rb_theron_controller_manager;
+using namespace ignition_controller_manager;
 
 JointTrajectoryController::JointTrajectoryController(const rclcpp::NodeOptions & options) : Node("joint_trajectory_controller", options)
 {
@@ -104,9 +104,6 @@ void JointTrajectoryController::execute(const std::shared_ptr<rclcpp_action::Ser
   auto result = std::make_shared<control_msgs::action::FollowJointTrajectory::Result>();
 
   const auto goal = goal_handle->get_goal();
-
-  //send goals
-  bool all_succeed = true;
 
   trajectory_msgs::msg::JointTrajectory trajectory_msg;
   trajectory_msg = goal->trajectory;
