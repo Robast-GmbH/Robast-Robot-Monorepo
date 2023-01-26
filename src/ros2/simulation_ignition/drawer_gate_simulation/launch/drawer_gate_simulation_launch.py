@@ -12,6 +12,7 @@ def generate_launch_description():
                 name="drawer_gate_simulation",
                 parameters=[
                             {"time_until_drawer_closes_automatically_in_ms": 5000},
+                            {"moveit2_planning_group_name": "drawer_planning_group"},
                            ],
                 output='screen')
 

@@ -2,16 +2,15 @@
 
 namespace drawer_gate_simulation
 {
-    /* You can manually trigger this with this topic publish:
-    ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress "{drawer_controller_id: 1, drawer_id: 1}" --once
-    */
-
     DrawerSimulation::DrawerSimulation(): Node("drawer_gate_simulation")
     {
         RCLCPP_INFO(this->get_logger(), "Creating Drawer Gate Simulation Node!"); // Debugging
 
         this->declare_parameter("time_until_drawer_closes_automatically_in_ms", this->default_time_until_drawer_closes_automatically_);
         this->time_until_drawer_closes_automatically_ = this->get_parameter("time_until_drawer_closes_automatically_in_ms").as_int();
+
+        this->declare_parameter("moveit2_planning_group_name", this->default_moveit2_planning_group_name_);
+        this->moveit2_planning_group_name_ = this->get_parameter("moveit2_planning_group_name").as_string();
 
         auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
         qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
@@ -27,7 +26,7 @@ namespace drawer_gate_simulation
         this->drawer_status_publisher_ = this->create_publisher<DrawerStatus>("drawer_is_open", qos);
     }
 
-    void DrawerSimulation::send_drawer_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, bool drawer_is_open)
+    void DrawerSimulation::send_drawer_feedback(DrawerStatus drawer_status_msg, bool drawer_is_open)
     {
         RCLCPP_INFO(this->get_logger(), "Sending send_drawer_feedback with drawer_controller_id: '%i'", drawer_status_msg.drawer_address.drawer_controller_id); // Debugging
         drawer_status_msg.drawer_is_open = drawer_is_open;
@@ -105,7 +104,7 @@ namespace drawer_gate_simulation
         drawer_address.drawer_controller_id = msg.drawer_controller_id;
         drawer_address.drawer_id = msg.drawer_id;
         
-        auto move_group_interface = MoveGroupInterface(this->get_shared_pointer_of_node(), "drawer_planning_group");
+        auto move_group_interface = MoveGroupInterface(this->get_shared_pointer_of_node(), this->moveit2_planning_group_name_);
 
         this->open_drawer_in_simulation(&move_group_interface, drawer_address, this->target_pose_open_drawer_);
         

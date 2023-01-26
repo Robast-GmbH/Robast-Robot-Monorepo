@@ -36,9 +36,13 @@ namespace drawer_gate_simulation
 
             const float target_pose_open_drawer_ = 0.34;
             const float target_pose_closed_drawer_ = 0;
+            
+            uint32_t time_until_drawer_closes_automatically_;
             const int default_time_until_drawer_closes_automatically_ = 3000; // ms
 
-            uint32_t time_until_drawer_closes_automatically_;
+            std::string moveit2_planning_group_name_;
+            const std::string default_moveit2_planning_group_name_ = "drawer_planning_group";
+
 
             std::shared_ptr<rclcpp::Node> get_shared_pointer_of_node();
 
