@@ -32,7 +32,7 @@
                         "label": "build",
                         "detail": "Symlink Build",
                         "type": "shell",
-                        "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+                        "command": "colcon build --symlink-install --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
                         "problemMatcher": []
                 },
                 {
@@ -54,8 +54,8 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start rosboard",
-                        "command": "source /workspace/install/setup.bash; ros2 run rosboard rosboard_node",
+                        "label": "Convert RB Theron xacro -> urdf",
+                        "command": "source /workspace/install/setup.bash; cd /workspace/src/robot_description/rb_theron_common/rb_theron_description/robots/; xacro rb_theron.urdf.xacro > rb_theron_single_urdf.urdf",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -66,7 +66,7 @@
                 {
                         "type": "shell",
                         "label": "start tiplu_sim",
-                        "command": "source /workspace/install/setup.bash; source /usr/share/gazebo/setup.sh; ros2 launch tiplu_world tiplu_world_launch.py run_gzclient:='True'",
+                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -76,8 +76,8 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start heiligenhafen_sim",
-                        "command": "source /workspace/install/setup.bash; ros2 launch heiligenhafen heiligenhafen_world_launch.py run_gzclient:='True'",
+                        "label": "start moveit_drawer",
+                        "command": "source /workspace/install/setup.bash; ros2 launch moveit2_drawer moveit_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -87,8 +87,8 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start tiplu_sim_high_rf",
-                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py world_model:='/workspaces/Robast_RosTheron/install/tiplu_world/share/tiplu_world/worlds/5OG_high_rtf/5OG_high_rtf.model' run_gz_client:='False'",
+                        "label": "start ignition_controller_manager",
+                        "command": "source /workspace/install/setup.bash; ros2 launch ignition_controller_manager ignition_controller_manager_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -97,20 +97,25 @@
                         }
                 },
                 {
-                        "label": "start TipluWorld",
-                        "detail": "TipluWorld",
+                        "type": "shell",
+                        "label": "start drawer_gate_simulation",
+                        "command": "source /workspace/install/setup.bash; ros2 launch drawer_gate_simulation drawer_gate_simulation_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "label": "startup_sim_with_drawer_simulation",
+                        "detail": "Starts tiplu_sim, moveit_drawer, ignition_controller_manager and drawer_gate_simulation",
                         "dependsOn": [
                                 "start tiplu_sim",
-                        ],
-                        "problemMatcher": []
-                },
-                {
-                        "label": "start TipluWorld_high_rf",
-                        "detail": "TipluWorld",
-                        "dependsOn": [
-                                "start tiplu_sim_high_rf",
-                        ],
-                        "problemMatcher": []
+                                "start moveit_drawer",
+                                "start ignition_controller_manager",
+                                "start drawer_gate_simulation"
+                        ]
                 },
                 {
                         "type": "shell",
@@ -121,6 +126,41 @@
                                 "echo": false,
                                 "focus": true
                         }
+                },
+                {
+                        "label": "Open drawer 1 in simulation",
+                        "detail": "Send topic message to open drawer 1 in simulation. The drawer will automatically be closed after a predetermined time period.",
+                        "type": "shell",
+                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{drawer_controller_id: 1, drawer_id: 1}' --once",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "Open drawer 2 in simulation",
+                        "detail": "Send topic message to open drawer 2 in simulation. The drawer will automatically be closed after a predetermined time period.",
+                        "type": "shell",
+                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{drawer_controller_id: 2, drawer_id: 1}' --once",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "Open drawer 3 in simulation",
+                        "detail": "Send topic message to open drawer 3 in simulation. The drawer will automatically be closed after a predetermined time period.",
+                        "type": "shell",
+                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{drawer_controller_id: 3, drawer_id: 1}' --once",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "Open drawer 4 in simulation",
+                        "detail": "Send topic message to open drawer 4 in simulation. The drawer will automatically be closed after a predetermined time period.",
+                        "type": "shell",
+                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{drawer_controller_id: 4, drawer_id: 1}' --once",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "Open drawer 5 in simulation",
+                        "detail": "Send topic message to open drawer 5 in simulation. The drawer will automatically be closed after a predetermined time period.",
+                        "type": "shell",
+                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{drawer_controller_id: 5, drawer_id: 1}' --once",
+                        "problemMatcher": []
                 },
                 {
                         "type": "shell",
