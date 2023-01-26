@@ -23,35 +23,25 @@ jobs:
             - '.github/workflows/*'
 
     #run hardware_nodes
-    - name: hardware_nodes tests
-      if: steps.filter.outputs.hardware_nodes == 'true' || steps.filter.outputs.workflows == 'true'
-      env:
-        Project: hardware_nodes
-      working-directory: src/ros2/${{ env.Project }}
-      run: |
-          docker build . --tag ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
-          docker run -v $(pwd):/workspace/src/${{ env.Project }} -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}  /bin/sh -c "cd /workspace/ && sudo apt-get update && sudo apt-get upgrade -y && rosdep update && rosdep install --from-paths src --ignore-src -r -y && colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic && colcon test --event-handler=console_direct+ && colcon test-result --all
-          docker push ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
+    # - name: hardware_nodes tests
+    #   if: steps.filter.outputs.hardware_nodes == 'true' || steps.filter.outputs.workflows == 'true' || steps.filter.outputs.communication_interfaces == 'true'
+    #   env:
+    #     Project: hardware_nodes
+    #   working-directory: src/ros2/${{ env.Project }}
+    #   run: |
+    #       docker build . --tag ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
+    #       docker push ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
+    #       docker run -v $(pwd):/workspace/src/${{ env.Project }} -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}  /bin/sh -c "cd /workspace/ && sudo apt-get update && sudo apt-get upgrade -y && rosdep update && rosdep install --from-paths src --ignore-src -r -y && colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic && colcon test --event-handler=console_direct+ && colcon test-result --all
     
     - name: statemachine tests
-      if: steps.filter.outputs.statemachine == 'true' || steps.filter.outputs.workflows == 'true'
+      if: steps.filter.outputs.statemachine == 'true' || steps.filter.outputs.workflows == 'true' || steps.filter.outputs.communication_interfaces == 'true'
       env:
         Project: statemachine
       working-directory: src/ros2/${{ env.Project }}
       run: |
           docker build . --tag ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
-          docker run -v $(pwd):/workspace/src/${{ env.Project }} -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}  /bin/sh -c "cd /workspace/ && sudo apt-get update && sudo apt-get upgrade -y && rosdep update && rosdep install --from-paths src --ignore-src -r -y && colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic && colcon test --event-handler=console_direct+ && colcon test-result --all
           docker push ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
-
-    - name: communication_interfaces tests
-      if: steps.filter.outputs.communication_interfaces == 'true' || steps.filter.outputs.workflows == 'true'
-      env:
-        Project: communication_interfaces
-      working-directory: src/ros2/${{ env.Project }}
-      run: |
-          docker build . --tag ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
           docker run -v $(pwd):/workspace/src/${{ env.Project }} -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}  /bin/sh -c "cd /workspace/ && sudo apt-get update && sudo apt-get upgrade -y && rosdep update && rosdep install --from-paths src --ignore-src -r -y && colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic && colcon test --event-handler=console_direct+ && colcon test-result --all
-          docker push ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
 
     # - name: workflow tests
     #   if: steps.filter.outputs.workflow == 'true'
