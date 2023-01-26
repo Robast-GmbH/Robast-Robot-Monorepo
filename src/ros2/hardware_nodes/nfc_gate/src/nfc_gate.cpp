@@ -7,6 +7,7 @@ namespace robast
   NFCGate::NFCGate(string serial_port_path) :Node("nfc_gate")
   {
     this->serial_connector_ = new serial_helper::SerialHelper(serial_port_path);
+    this->db_conncetor_= new db_helper::PostgreSqlHelper("robot", "123456789", "10.10.23.9", "robast");
 
     this->user_authenticate_server = rclcpp_action::create_server<AuthenticateUser>(
       this,
@@ -89,20 +90,23 @@ namespace robast
 
   }
 
-  string NFCGate::validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found)
+  string NFCGate::validate_key(string scanned_key, std::vector<std::string> allValidUser, bool* found)
   {
-    for (int i = 0; i < allValidKeys.size(); i++)
+    std::string name;
+     *found = db_conncetor_->checkUserTag(scanned_key, allValidUser, &name);
+    
+    
+    if (*found)
     {
-      if (allValidKeys[i] == scanned_key)
-      {
-        *found = true;
-        return allValidKeys[i];
-      }
+      return name;
     }
-    *found = false;
-    return "";
+    else
+    {
+      return "";
+    }
+    
   }
-
+  
   void NFCGate::turn_off_scanner()
   {
     //this->serial_connector.send_ascii_cmd(BEEP_STANDART);
@@ -111,7 +115,7 @@ namespace robast
     this->serial_connector_->close_serial();
   }
 
-  string NFCGate::execute_scan(std::vector<std::string> permission_keys, bool* found)
+  string NFCGate::execute_scan(std::vector<std::string> permission_users, bool* found)
   {
 
     start_up_scanner();
@@ -120,8 +124,9 @@ namespace robast
     // abort this scan attempt if the reader could not detect a compatible card. 
     if (!found) return"";
 
-    scanned_key = this->validate_key(scanned_key, permission_keys, found);
-    return scanned_key;
+    string found_user = this->validate_key(scanned_key, permission_users, found);
+    RCLCPP_INFO(this->get_logger(),"scanned tag: %s ",found_user.c_str() );
+    return found_user;
   }
 
   void NFCGate::reader_procedure()
