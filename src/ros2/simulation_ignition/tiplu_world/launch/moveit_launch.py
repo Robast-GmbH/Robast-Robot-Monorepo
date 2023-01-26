@@ -52,15 +52,6 @@ def generate_launch_description():
                         )
                 )
 
-        # Given the published joint states, publish tf for the robot links
-        ld.add_action(
-                IncludeLaunchDescription(
-                        PythonLaunchDescriptionSource(
-                                str(moveit_config.package_path / "launch/rsp.launch.py")
-                        ),
-                )
-        )
-
         ld.add_action(DeclareBooleanLaunchArg("debug", default_value=False))
         ld.add_action(
                 DeclareBooleanLaunchArg("allow_trajectory_execution", default_value=True)
