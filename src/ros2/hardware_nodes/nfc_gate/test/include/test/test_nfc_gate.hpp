@@ -1,5 +1,6 @@
 #include "nfc_gate/nfc_gate.hpp"
 #include "mock_serial_helper.hpp"
+#include "mock_postgresql_helper.hpp"
 
 using namespace std;
 namespace robast
@@ -7,7 +8,7 @@ namespace robast
     class TestNFCGate : public NFCGate
     {
     public:
-        TestNFCGate(serial_helper::ISerialHelper* serial_connector);
+        TestNFCGate(serial_helper::ISerialHelper* serial_connector, db_helper::IDBHelper* db_connector);
         TestNFCGate();
 
         string execute_scan(std::vector<std::string> permission_keys, bool* found);
