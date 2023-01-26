@@ -1,6 +1,5 @@
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.launch_description_sources import PythonLaunchDescriptionSource
+from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.parameter_descriptions import ParameterValue
 from moveit_configs_utils import MoveItConfigsBuilder
@@ -9,16 +8,7 @@ from moveit_configs_utils.launch_utils import (DeclareBooleanLaunchArg,
 
 
 def generate_launch_description():
-        """
-        Launches a self contained demo
 
-        Includes
-        * static_virtual_joint_tfs
-        * robot_state_publisher
-        * move_group
-        * moveit_rviz
-        * ros2_control_node + controller spawners
-        """
         moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer").to_moveit_configs()
 
         ld = LaunchDescription()
@@ -37,17 +27,6 @@ def generate_launch_description():
                 )
         )
         ld.add_action(DeclareBooleanLaunchArg("use_rviz", default_value=True))
-
-        # If there are virtual joints, broadcast static tf by including virtual_joints launch
-        virtual_joints_launch = (
-                moveit_config.package_path / "launch/static_virtual_joint_tfs.launch.py"
-        )
-        if virtual_joints_launch.exists():
-                ld.add_action(
-                        IncludeLaunchDescription(
-                                PythonLaunchDescriptionSource(str(virtual_joints_launch)),
-                        )
-                )
 
         ld.add_action(DeclareBooleanLaunchArg("debug", default_value=False))
         ld.add_action(
