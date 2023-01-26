@@ -5,11 +5,11 @@
 
 namespace drawer_gate
 {
-  DrawerGate::DrawerGate(const string serial_path) : Node("drawer_gate")
+  DrawerGate::DrawerGate(const string serial_path): Node("drawer_gate")
   {
     this->serial_helper_ = new serial_helper::SerialHelper(serial_path);
 
-    auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
+    auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
     qos.avoid_ros_namespace_conventions(false);
@@ -90,11 +90,11 @@ namespace drawer_gate
 
         communication_interfaces::msg::DrawerStatus drawer_status_msg = DrawerStatus();
         drawer_status_msg.drawer_address.drawer_controller_id = drawer_controller_id;
-        if (drawer_status.is_endstop_switch_1_pushed)
+        if (!drawer_status.is_endstop_switch_1_pushed)
         {
           this->send_drawer_is_open_feedback(drawer_status_msg, 1);
         }
-        if (drawer_status.is_endstop_switch_1_pushed && !drawer_status.is_endstop_switch_1_pushed)
+        if (!drawer_status.is_lock_switch_1_pushed && drawer_status.is_endstop_switch_1_pushed)
         {
           this->send_drawer_is_closed_feedback(drawer_status_msg, 1);
         }
@@ -153,7 +153,7 @@ namespace drawer_gate
     }
 
     std::string serial_read_ascii_command;
-    uint16_t num_of_received_bytes = this->serial_helper_->read_serial(&serial_read_ascii_command, 500);
+    uint16_t num_of_received_bytes = this->serial_helper_->read_serial(&serial_read_ascii_command, 100);
 
     if (this->serial_can_usb_converter_is_set_up_ && num_of_received_bytes > 0)
     {
@@ -164,8 +164,11 @@ namespace drawer_gate
     else
     {
       // Dump only the very first received can msgs because they might contain old data in the buffer
-      this->cleared_serial_buffer_from_old_can_msgs_ = true;
-      this->receive_can_msgs_timer_->cancel(); // cancel the timer after first message was cleared
+      if (!this->cleared_serial_buffer_from_old_can_msgs_)
+      {
+        this->receive_can_msgs_timer_->cancel(); // cancel the timer after first message was cleared
+        this->cleared_serial_buffer_from_old_can_msgs_ = true;
+      }
     }
   }
 
@@ -237,6 +240,7 @@ namespace drawer_gate
     this->open_can_channel(); // the default state should be the open can channel to enable receiving CAN messages
 
     this->serial_can_usb_converter_is_set_up_ = true;
+    RCLCPP_INFO(this->get_logger(), "Setting up serial can usb converter finished!"); //DEBUGGING
   }
 
   robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t can_data_open_lock) const

@@ -1,0 +1,39 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+
+	"dockerFile": "../../../src/ros2/statemachine/Dockerfile",
+	"name": "Robast Drawer Statemachine",
+	"build": {
+		"args": {
+			"WORKSPACE": "${containerWorkspaceFolder}"
+		}
+	},
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../src/ros2/statemachine/,target=/workspace/src/statemachine,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
+	],
+	"workspaceFolder": "/workspace",
+	"runArgs": [
+		"--name=statemachine",
+		"--network=host"
+	],
+	"remoteUser": "robast",
+	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
+	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one",
+		"jaehyunshim.vscode-ros2",
+		"tomoki1207.pdf",
+		"matepek.vscode-catch2-test-adapter"
+	]
+}
