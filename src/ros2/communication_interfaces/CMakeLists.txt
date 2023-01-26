@@ -44,7 +44,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/HandleDrawer.srv"
   "srv/ShelfSetupInfo.srv"
   "srv/ShowDrawerInterface.srv"
-  
+
   "msg/Box.msg"
   "msg/Drawer.msg"
   "msg/DrawerAddress.msg"
@@ -57,6 +57,17 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/NorelemStepperControl.msg"
   DEPENDENCIES builtin_interfaces geometry_msgs std_msgs nav_msgs
 )
+
+if(BUILD_TESTING)
+  find_package(ament_cmake_lint_cmake REQUIRED)
+  ament_lint_cmake()
+  find_package(ament_cmake_flake8 REQUIRED)
+  ament_flake8()
+  find_package(ament_cmake_xmllint REQUIRED)
+  ament_xmllint()
+  find_package(ament_cmake_pep257 REQUIRED)
+  ament_pep257()
+endif()
 
 ament_export_dependencies(rosidl_default_runtime)
 
