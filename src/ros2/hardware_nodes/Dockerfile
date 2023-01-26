@@ -1,4 +1,4 @@
-OM ros:humble-ros-core
+FROM ros:humble-ros-core
 
 RUN apt-get update && apt-get install -y \
   build-essential \
