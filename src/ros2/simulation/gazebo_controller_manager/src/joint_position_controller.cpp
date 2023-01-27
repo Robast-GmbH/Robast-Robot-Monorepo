@@ -13,7 +13,7 @@ JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& 
     this->gz_node_ = std::make_shared<gz::transport::Node>();
     //check
     if (joint_names.size() != gz_cmd_topics.size()) {
-        RCLCPP_ERROR(this->nh_ ->get_logger(), "The size of arrays are not matched!");
+        RCLCPP_ERROR(this->nh_->get_logger(), "The size of the arrays joint_names and gz_cmd_topics are not matched!");
         return;
     }
     joint_names_ = joint_names;

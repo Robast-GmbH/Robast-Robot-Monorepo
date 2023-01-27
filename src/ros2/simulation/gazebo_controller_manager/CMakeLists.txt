@@ -15,55 +15,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-
-# ignition package
-message(STATUS "$ENV{IGNITION_VERSION}")
-# Citadel
-if("$ENV{IGNITION_VERSION}" STREQUAL "citadel")
-  set(ignition_transport_version ignition-transport8)
-  set(ignition_msgs_version ignition-msgs5)
-
-  set(IGN_TRANSPORT_VER ${ignition-transport8_VERSION_MAJOR})
-  set(IGN_MSGS_VER ${ignition-msgs5_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Citadel")
-# Dome
-elseif("$ENV{IGNITION_VERSION}" STREQUAL "dome")
-  set(ignition_transport_version ignition-transport9)
-  set(ignition_msgs_version ignition-msgs6)
-
-  set(IGN_TRANSPORT_VER ${ignition-transport9_VERSION_MAJOR})
-  set(IGN_MSGS_VER ${ignition-msgs6_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Dome")
-# Fortress
-elseif("$ENV{IGNITION_VERSION}" STREQUAL "fortress")
-  set(ignition_transport_version ignition-transport11)
-  set(ignition_msgs_version ignition-msgs8)
-
-  set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
-  set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Fortress")
-# Garden
-elseif("$ENV{IGNITION_VERSION}" STREQUAL "garden")
-  set(ignition_transport_version gz-transport12)
-  set(ignition_msgs_version gz-msgs9)
-
-  set(IGN_TRANSPORT_VER ${gz-transport12_VERSION_MAJOR})
-  set(IGN_MSGS_VER ${gz-msgs9_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Gazebo Garden")
-# Default to Fortress
-else()
-  set(ignition_transport_version ignition-transport11)
-  set(ignition_msgs_version ignition-msgs8)
-
-  set(IGN_TRANSPORT_VER ${ignition-transport11_VERSION_MAJOR})
-  set(IGN_MSGS_VER ${ignition-msgs8_VERSION_MAJOR})
-
-  message(STATUS "Compiling against Ignition Fortress")
-endif()
+set(gz_transport_version gz-transport12)
+set(gz_msgs_version gz-msgs9)
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
@@ -72,8 +25,8 @@ find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(control_msgs REQUIRED)
-find_package(${ignition_transport_version} REQUIRED)
-find_package(${ignition_msgs_version} REQUIRED)
+find_package(${gz_transport_version} REQUIRED)
+find_package(${gz_msgs_version} REQUIRED)
 
 set(dependencies
   rclcpp
@@ -81,8 +34,8 @@ set(dependencies
   std_msgs
   sensor_msgs
   control_msgs
-  ${ignition_transport_version}
-  ${ignition_msgs_version}
+  ${gz_transport_version}
+  ${gz_msgs_version}
 )
 
 include_directories(include)

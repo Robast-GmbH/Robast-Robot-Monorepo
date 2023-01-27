@@ -20,9 +20,7 @@ namespace gazebo_controller_manager
             JointTrajectoryController(const rclcpp::NodeOptions & options = rclcpp::NodeOptions());
             ~JointTrajectoryController() {};
 
-            using FollowJointTrajectory = control_msgs::action::FollowJointTrajectory;
-
-     private:
+        private:
             void initialize_gz_transport_node(std::vector<std::string> joint_names, std::vector<std::string> gz_joint_topics);
         
             void set_joint_trajectory_cb(const trajectory_msgs::msg::JointTrajectory::SharedPtr);

@@ -14,10 +14,6 @@
   <depend>std_msgs</depend>
   <depend>sensor_msgs</depend>
   <depend>control_msgs</depend>
-  
-  <!-- Gazebo Garden dependeny (for now these packages are installed manually in the dockerfile) -->
-  <!-- <depend>gz-transport12</depend> -->
-  <!-- <depend>gz-msgs9</depend> -->
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>

@@ -1,5 +1,5 @@
-#ifndef RB_THERON__drawer_gate_simulation_HPP_
-#define RB_THERON__drawer_gate_simulation_HPP_
+#ifndef RB_THERON__DRAWER_GATE_SIMULATION_HPP_
+#define RB_THERON__DRAWER_GATE_SIMULATION_HPP_
 
 #include <memory>
 
@@ -58,5 +58,5 @@ namespace drawer_gate_simulation
 
             void send_drawer_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, bool drawer_is_open);
     };
-}
-#endif //RB_THERON__drawer_gate_simulation_HPP_
+}  // namespace drawer_gate_simulation
+#endif  //RB_THERON__DRAWER_GATE_SIMULATION_HPP_

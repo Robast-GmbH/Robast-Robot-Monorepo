@@ -60,7 +60,7 @@ void JointTrajectoryController::initialize_gz_transport_node(std::vector<std::st
     this->gz_transport_node_ = std::make_shared<gz::transport::Node>();
     //check
     if (joint_names.size() != gz_joint_topics.size()) {
-        RCLCPP_ERROR(this->get_logger(), "The size of arrays are not matched!");
+        RCLCPP_ERROR(this->get_logger(), "The size of the arrays joint_names and gz_cmd_topics are not matched!");
         return;
     }
     this->joint_names_ = joint_names;
@@ -116,8 +116,6 @@ void JointTrajectoryController::execute(const std::shared_ptr<rclcpp_action::Ser
     this->cv_.wait(
       lock_until_trajectory_motion_is_finished, [this]
       {
-        // this block behaves like:
-        // while (!is_trajectory_motion_finished()) wait(lck);
         return this->is_trajectory_motion_finished();
       });
     goal_handle->succeed(result);
