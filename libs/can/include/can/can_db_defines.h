@@ -1,5 +1,5 @@
-#ifndef CAN_DB_DEFINES_HPP_
-#define CAN_DB_DEFINES_HPP_
+#ifndef CAN__CAN_DB_DEFINES_H_
+#define CAN__CAN_DB_DEFINES_H_
 
 namespace robast_can_msgs
 {
@@ -113,6 +113,6 @@ namespace robast_can_msgs
 
     #define CAN_DATA_SWITCH_IS_NOT_PUSHED 0
     #define CAN_DATA_SWITCH_IS_PUSHED 1
-}
+}  // namespace robast_can_msgs
 
-#endif /* CAN_DB_DEFINES_HPP_ */
+#endif  // CAN__CAN_DB_DEFINES_H_

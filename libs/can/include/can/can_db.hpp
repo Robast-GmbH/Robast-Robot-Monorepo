@@ -1,8 +1,10 @@
-#ifndef CAN_DB_HPP_
-#define CAN_DB_HPP_
+#ifndef CAN__CAN_DB_HPP_
+#define CAN__CAN_DB_HPP_
 
-#include "can_message.h"
-#include "can_db_defines.h"
+#include <vector>
+
+#include "can/can_message.h"
+#include "can/can_db_defines.h"
 
 namespace robast_can_msgs
 {
@@ -67,6 +69,6 @@ namespace robast_can_msgs
                 )
             };
     };
-}
+}  // namespace robast_can_msgs
 
-#endif /* CAN_DB_HPP_ */
+#endif  // CAN__CAN_DB_HPP_

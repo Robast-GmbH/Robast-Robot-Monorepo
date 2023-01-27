@@ -10,9 +10,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(communication_interfaces REQUIRED)
 
-
 include_directories(include)
-
 
 set(executable_door_manipulator_hmi door_manipulator_hmi)
 
