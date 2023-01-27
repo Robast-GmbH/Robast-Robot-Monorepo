@@ -1,5 +1,5 @@
-#if !defined(CAN_HPP)
-#define CAN_HPP
+#if !defined(DOOR_MANIPULATOR_CAN_HPP)
+#define DOOR_MANIPULATOR_CAN_HPP
 
 #include <Arduino.h>
 #include <mcp_can.h>
@@ -169,4 +169,4 @@ namespace can
 
 
 
-#endif // CAN_HPP
+#endif // DOOR_MANIPULATOR_CAN_HPP

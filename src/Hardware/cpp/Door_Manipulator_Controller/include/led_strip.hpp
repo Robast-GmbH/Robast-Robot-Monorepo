@@ -1,5 +1,5 @@
-#if !defined(LED_STRIP_HPP)
-#define LED_STRIP_HPP
+#if !defined(DOOR_MANIPULATOR_LED_STRIP_HPP)
+#define DOOR_MANIPULATOR_LED_STRIP_HPP
 
 #include <Arduino.h>
 #include <FastLED.h>
@@ -326,4 +326,4 @@ namespace led_strip
 } // namespace led_strip
 
 
-#endif // LED_STRIP_HPP
+#endif // DOOR_MANIPULATOR_LED_STRIP_HPP

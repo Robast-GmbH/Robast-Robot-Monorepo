@@ -1,5 +1,5 @@
-#if !defined(LOCK_HPP)
-#define LOCK_HPP
+#if !defined(DOOR_MANIPULATOR_LOCK_HPP)
+#define DOOR_MANIPULATOR_LOCK_HPP
 
 #include <Arduino.h>
 
@@ -138,4 +138,4 @@ namespace lock
     };
 } // namespace lock
 
-#endif // LOCK_HPP
+#endif // DOOR_MANIPULATOR_LOCK_HPP

@@ -1,5 +1,5 @@
-#ifndef PINOUT_DEFINES_HPP_
-#define PINOUT_DEFINES_HPP_
+#ifndef DOOR_MANIPULATOR_PINOUT_DEFINES_HPP
+#define DOOR_MANIPULATOR_PINOUT_DEFINES_HPP
 
 /*********************************************************************************************************
   PINOUT DEFINES
@@ -42,4 +42,4 @@
 #define SPI_CS GPIO_NUM_5
 
 
-#endif /* PINOUT_DEFINES_HPP_ */
+#endif /* DOOR_MANIPULATOR_PINOUT_DEFINES_HPP */

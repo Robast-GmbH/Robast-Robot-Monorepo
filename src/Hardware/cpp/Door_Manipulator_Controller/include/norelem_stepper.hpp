@@ -1,5 +1,5 @@
-#if !defined(NORELEM_STEPPER_HPP)
-#define NORELEM_STEPPER_HPP
+#if !defined(DOOR_MANIPULATOR_NORELEM_STEPPER_HPP)
+#define DOOR_MANIPULATOR_NORELEM_STEPPER_HPP
 
 #include <Arduino.h>
 
@@ -115,4 +115,4 @@ namespace norelem_stepper
     };
 } // namespace norelem_stepper
 
-#endif // NORELEM_STEPPER_HPP
+#endif // DOOR_MANIPULATOR_NORELEM_STEPPER_HPP
