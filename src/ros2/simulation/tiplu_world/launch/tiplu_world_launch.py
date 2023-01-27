@@ -1,15 +1,13 @@
 import os
+
 import xacro
 import yaml
-
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.conditions import IfCondition
-from launch.actions import IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
 from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
-from launch.actions import DeclareLaunchArgument
+from launch_ros.actions import Node
 
 
 def generate_launch_description():
@@ -19,16 +17,19 @@ def generate_launch_description():
             print(environment_yaml)
         except yaml.YAMLError as exc:
             print(exc)
+
+    pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
+    gz_ros_bridge_yaml = os.path.join(get_package_share_directory('tiplu_world'), 'config', 'gz_ros_bridge.yaml')
+
     robot_xml = xacro.process_file(os.path.join(get_package_share_directory(
         'rb_theron_description'), 'robots', environment_yaml["robot"]+'.urdf.xacro'), mappings={'prefix': environment_yaml["prefix"]}).toxml()
 
     use_sim_time = LaunchConfiguration('use_sim_time')
-    init_x = LaunchConfiguration('init_x', default="8.59")
-    init_y = LaunchConfiguration('init_y', default="-13.45")
-    init_yaw = LaunchConfiguration('init_yaw', default="3.14")
     world_model = LaunchConfiguration('world_model')
     robot_name = LaunchConfiguration('robot_name')
-    extra_gazebo_args = LaunchConfiguration('extra_gazebo_args')
+    init_x = LaunchConfiguration('init_x', default="-17")
+    init_y = LaunchConfiguration('init_y', default="-5.45")
+    init_yaw = LaunchConfiguration('init_yaw', default="3.14")
 
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
@@ -36,32 +37,22 @@ def generate_launch_description():
         description='Top-level namespace'
     )
 
-    run_gzclient_cmd = DeclareLaunchArgument(
-        'run_gzclient',
-        default_value='True',
-        description='Top-level namespace'
+    declare_robot_model_cmd = DeclareLaunchArgument(
+        'robot_name',
+        default_value='rb_theron',
+        description='name of the robot in the simulation'
     )
 
     declare_world_model_cmd = DeclareLaunchArgument(
         'world_model',
-        default_value=os.path.join(get_package_share_directory('tiplu_world'), 'worlds', '5OG', '5OG' + '.model'),
-        description='math to the world model'
+        default_value=os.path.join(get_package_share_directory('tiplu_world'), 'worlds', '6OG' + '.sdf'),
+        description='path to the world model'
     )
-
-    declare_robot_model_cmd = DeclareLaunchArgument(
-        'robot_name',
-        default_value='rb_theron',
-        description='name of the robot in the simulation')
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         'use_sim_time',
         default_value='true',
-        description='whether to use sim time or not')
-
-    declare_extra_gazebo_args_cmd = DeclareLaunchArgument(
-        'extra_gazebo_args',
-        default_value='',
-        description='extra_gazebo_args e.g. --lockstep'
+        description='whether to use sim time or not'
     )
 
     start_robot_state_publisher_cmd = Node(
@@ -70,35 +61,40 @@ def generate_launch_description():
         name="robot_state_publisher",
         parameters=[
                 {'use_sim_time': use_sim_time},
-                # {'robot_description': Command(['xacro', ' ', xacro_path, ' gazebo:=False'])}
                 {'robot_description': robot_xml}
         ],
-        output="screen")
-
-    pkg_gazebo_ros = get_package_share_directory('gazebo_ros')
-
-    start_gzserver_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(pkg_gazebo_ros, 'launch', 'gzserver.launch.py')
-        ),
-        launch_arguments={'world': world_model, 'extra_gazebo_args': extra_gazebo_args}.items(),
+        output="screen",
     )
 
-    start_gzclient_cmd = IncludeLaunchDescription(
+    gz_sim_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_gazebo_ros, 'launch', 'gzclient.launch.py')
+            os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py'),
         ),
-        condition=IfCondition(LaunchConfiguration("run_gzclient"))
+        launch_arguments={'gz_args': world_model}.items(),
     )
 
-    spawn_robot_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            os.path.join(get_package_share_directory('tiplu_world'), 'launch', 'spawn_robot_launch.py')
-        ),
-        launch_arguments={'init_x': init_x, 'init_y': init_y, 'init_yaw': init_yaw, 'robot_name': robot_name}.items(),
+    spawn_robot_cmd = Node(
+        package='ros_gz_sim',
+        executable='create',
+        arguments=[
+            '-name', robot_name,
+            '-topic', 'robot_description',
+            '-z', "0.2",
+            '-x', init_x,
+            '-y', init_y,
+            '-Y', init_yaw,
+        ],
+        output='screen',
     )
 
-    print('world_file_path : {}'.format(world_model))
+    gz_ros_bridge_cmd = Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        parameters=[
+                {'config_file': gz_ros_bridge_yaml},
+        ],
+        output='screen'
+    )
 
     ld = LaunchDescription()
 
@@ -106,49 +102,14 @@ def generate_launch_description():
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_world_model_cmd)
-    ld.add_action(run_gzclient_cmd)
     ld.add_action(declare_robot_model_cmd)
-    ld.add_action(declare_extra_gazebo_args_cmd)
 
     # included launches
-    ld.add_action(start_gzserver_cmd)
-    ld.add_action(start_gzclient_cmd)
+    ld.add_action(gz_sim_cmd)
 
     # nodes
     ld.add_action(start_robot_state_publisher_cmd)
-
-    # late execute
     ld.add_action(spawn_robot_cmd)
+    ld.add_action(gz_ros_bridge_cmd)
 
     return ld
-
-    # launch_file_dir = os.path.join(get_package_share_directory('tiplu_world'), 'launch')
-    # rb_theron_controller_dir = os.path.join(get_package_share_directory(
-    #     'rb_theron_description'), 'config', 'rb_theron_controller.yaml')
-
-    # Node(
-    #     package="controller_manager",
-    #     executable="ros2_control_node",
-    #     parameters=[
-    #         {"robot_description": get_robot_xml()},
-    #         {'use_sim_time': use_sim_time},
-    #         rb_theron_controller_dir],
-    #     output={
-    #         "stdout": "screen",
-    #         "stderr": "screen",
-    #     },
-    # ),
-
-    # Node(
-    #     package="controller_manager",
-    #     executable="spawner.py",
-    #     arguments=["diffbot_base_controller"],
-    #     output="screen",
-    # ),
-
-    # Node(
-    #     package="controller_manager",
-    #     executable="spawner.py",
-    #     arguments=["joint_state_broadcaster"],
-    #     output="screen",
-    # ),

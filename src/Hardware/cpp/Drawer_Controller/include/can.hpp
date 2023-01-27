@@ -1,5 +1,5 @@
-#if !defined(CAN_HPP)
-#define CAN_HPP
+#if !defined(DRAWER_CONTROLLER_CAN_HPP)
+#define DRAWER_CONTROLLER_CAN_HPP
 
 #include <Arduino.h>
 #include <ACAN2515.h>
@@ -325,4 +325,4 @@ namespace can
 
 
 
-#endif // CAN_HPP
+#endif // DRAWER_CONTROLLER_CAN_HPP

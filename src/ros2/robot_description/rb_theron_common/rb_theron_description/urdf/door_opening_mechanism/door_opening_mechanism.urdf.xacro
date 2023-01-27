@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<robot name="door_opening_mechanism" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="box_inertia_robot" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                izz="${m*(x*x+z*z)/12}" />
+    </xacro:macro>
+
+    <xacro:macro name="door_opening_mechanism" params="prefix parent *origin hq">
+
+    <joint name="${prefix}door_opening_mechanism_joint" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${prefix}door_opening_mechanism_link"/>
+        <xacro:insert_block name="origin" />
+    </joint>
+
+    <!-- BASE_LINK -->
+    <link name="${prefix}door_opening_mechanism_link">
+        <inertial>
+            <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
+            it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
+            therefore steering of the rb_theron becomes impossible -->
+            <mass value="0.0" />
+            <origin xyz="0 0 0" />
+            <xacro:box_inertia_robot m="100" x="0.25" y="0.25" z="1.55"/>
+        </inertial>
+        <visual>
+            <xacro:if value="${hq}">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                <box size="0.03 0.43 1.05"/>
+                </geometry>
+            </xacro:if>
+            <xacro:unless value="${hq}">
+                <origin xyz="0 0 0" rpy="0 0 0" />
+                <geometry>
+                <box size="0.03 0.43 1.05"/>
+                </geometry>
+            </xacro:unless>
+            <material name="darkgrey">
+                <color rgba="0.1 0.1 0.1 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.03 0.43 1.05"/>
+            </geometry>
+        </collision>
+    </link>
+
+    </xacro:macro>
+</robot>

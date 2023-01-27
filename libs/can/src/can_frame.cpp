@@ -19,7 +19,7 @@ namespace robast_can_msgs
     {
         this->data_ = data;
     }
-	
+
 	uint8_t* CanFrame::get_data() const
     {
         return this->data_;
@@ -34,4 +34,4 @@ namespace robast_can_msgs
     {
         return this->dlc_;
     }
-}
+}  // namespace robast_can_msgs
