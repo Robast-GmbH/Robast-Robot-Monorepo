@@ -5,7 +5,7 @@ namespace db_helper
 {
     PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname )
     {
-        connection_string = "user=" + username + " password=" + password + " host=" + host + " port=5432 dbname=" + dbname + " target_session_attrs=read-write";
+        connection_string_ = "user=" + username + " password=" + password + " host=" + host + " port=5432 dbname=" + dbname + " target_session_attrs=read-write";
     }
 
     PostgreSqlHelper::~PostgreSqlHelper()
@@ -15,18 +15,18 @@ namespace db_helper
 
     std::string PostgreSqlHelper::open_connection()
     {
-        connection_handle =  new pqxx::connection(connection_string);
+        connection_handle_ =  new pqxx::connection(connection_string_);
     }
 
     void PostgreSqlHelper::close_connection()
     {
-        connection_handle->disconnect();
+        connection_handle_->disconnect();
     }
 
     bool PostgreSqlHelper::perform_query(std::string sqlStatment, std::vector< std::vector<std::string> >*result_data, std::vector<std::string>* result_header )
     {
         // make the Query from the DB
-        pqxx::work session{ *connection_handle };
+        pqxx::work session{ *connection_handle_ };
         open_connection();
         pqxx::result raw_db_feedback{ session.exec(sqlStatment) };
         close_connection();
@@ -75,7 +75,7 @@ namespace db_helper
     int PostgreSqlHelper::perform_transaction(std::string SqlStatement)
     {
         open_connection();
-        pqxx::work query_handle{ *connection_handle };
+        pqxx::work query_handle{ *connection_handle_ };
         pqxx::result result_handle{ query_handle.exec(SqlStatement)};
         int affected_Rows = result_handle.affected_rows();
         query_handle.commit();

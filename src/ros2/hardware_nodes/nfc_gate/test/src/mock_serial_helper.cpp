@@ -5,7 +5,7 @@ namespace serial_helper
 
     MockSerialHelper::MockSerialHelper(std::string key)
     {
-        key_code = key;
+        key_code_ = key;
     }
 
     MockSerialHelper::~MockSerialHelper()
@@ -34,7 +34,7 @@ namespace serial_helper
         if (msg == NFC_READ_MC("02"))
         {
 
-            return key_code;
+            return key_code_;
         }
         return "0001";
     }
@@ -44,7 +44,7 @@ namespace serial_helper
         if (cmd == NFC_READ_MC("02"))
         {
 
-            return key_code;
+            return key_code_;
         }
         return "0001";
     }
@@ -54,7 +54,7 @@ namespace serial_helper
         (void)response_size;
         if (cmd == NFC_READ_MC("02"))
         {
-            *response = key_code;
+            *response = key_code_;
         }
         else if (cmd == DEVICE_STATE)
         {

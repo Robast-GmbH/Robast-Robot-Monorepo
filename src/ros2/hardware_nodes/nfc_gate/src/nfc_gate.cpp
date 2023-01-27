@@ -9,7 +9,7 @@ namespace robast
     this->serial_connector_ = new serial_helper::SerialHelper(serial_port_path);
     this->db_conncetor_= new db_helper::PostgreSqlHelper("robot", "123456789", "10.10.23.9", "robast");
 
-    this->user_authenticate_server = rclcpp_action::create_server<AuthenticateUser>(
+    this->user_authenticate_server_ = rclcpp_action::create_server<AuthenticateUser>(
       this,
       "authenticate_user",
       std::bind(&NFCGate::auth_goal_callback, this, std::placeholders::_1, std::placeholders::_2),
@@ -17,7 +17,7 @@ namespace robast
       std::bind(&NFCGate::auth_accepted_callback, this, std::placeholders::_1)
       );
 
-    this->create_user_server = this->create_service<CreateUser>("create_user_tag", bind(&NFCGate::write_tag, this, std::placeholders::_1, std::placeholders::_2));
+    this->create_user_server_ = this->create_service<CreateUser>("create_user_tag", bind(&NFCGate::write_tag, this, std::placeholders::_1, std::placeholders::_2));
   }
 
   NFCGate::~NFCGate()
@@ -40,9 +40,9 @@ namespace robast
   void NFCGate::auth_accepted_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle)
   {
 
-    numReadings = 0;
-    this->timer_handle = goal_handle;
-    timer = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&NFCGate::reader_procedure, this));
+    numReadings_ = 0;
+    this->timer_handle_ = goal_handle;
+    timer_ = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&NFCGate::reader_procedure, this));
     //std::thread{std::bind(&NFCGate::scanTag, this, placeholders::_1), goal_handle}.detach();
   }
 
@@ -139,23 +139,23 @@ namespace robast
     bool found = false;
 
     auto result = std::make_shared<AuthenticateUser::Result>();
-    const auto goal = timer_handle->get_goal();
+    const auto goal = timer_handle_->get_goal();
 
     scanned_key = execute_scan(goal->permission_keys, &found);
 
     auto feedback = std::make_shared<AuthenticateUser::Feedback>();
-    feedback->reader_status.reading_attempts = ++numReadings;
+    feedback->reader_status.reading_attempts = ++numReadings_;
 
     if (!found)
     {
-      this->timer_handle->publish_feedback(feedback);
+      this->timer_handle_->publish_feedback(feedback);
       return;
     }
     else
     {
-      this->timer->cancel();
+      this->timer_->cancel();
       feedback->reader_status.is_completed = true;
-      this->timer_handle->publish_feedback(feedback);
+      this->timer_handle_->publish_feedback(feedback);
 
       if (rclcpp::ok())
       {
@@ -163,7 +163,7 @@ namespace robast
         turn_off_scanner();
         result->permission_key_used = scanned_key;
         result->error_message = "";
-        this->timer_handle->succeed(result);
+        this->timer_handle_->succeed(result);
       }
     }
   }

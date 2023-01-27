@@ -91,15 +91,8 @@ if(BUILD_TESTING)
   )
   FetchContent_MakeAvailable(Catch2)
 
-  file(GLOB_RECURSE unit_test_srcs "test/unit_tests/*.cpp")
-
-  file(GLOB_RECURSE test_srcs "test/src/*.cpp")
-
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
 
-  # ament_add_catch2(
-  #   nfc_gate_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
-  # )
   add_executable(
     nfc_gate_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
   )

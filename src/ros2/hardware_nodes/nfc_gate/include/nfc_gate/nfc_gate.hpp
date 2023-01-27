@@ -40,14 +40,14 @@ namespace robast
     friend class TestNFCGate; // this class has full access to all private and protected parts of this class
 
   private:
-    int numReadings;
+    int numReadings_;
 
     serial_helper::ISerialHelper* serial_connector_;
     db_helper::IDBHelper* db_conncetor_;
-    rclcpp::TimerBase::SharedPtr timer;
-    std::shared_ptr<GoalHandleAuthenticateUser> timer_handle;
-    rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
-    rclcpp::Service<CreateUser>::SharedPtr create_user_server;
+    rclcpp::TimerBase::SharedPtr timer_;
+    std::shared_ptr<GoalHandleAuthenticateUser> timer_handle_;
+    rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server_;
+    rclcpp::Service<CreateUser>::SharedPtr create_user_server_;
 
     rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID& uuid, std::shared_ptr<const AuthenticateUser::Goal> goal);
     rclcpp_action::CancelResponse auth_cancel_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);

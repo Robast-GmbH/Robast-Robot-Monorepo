@@ -20,6 +20,6 @@ namespace serial_helper
         std::string ascii_interaction(std::string cmd, std::string* response, uint16_t response_size);
 
     private:
-        std::string key_code;
+        std::string key_code_;
     };
 }
