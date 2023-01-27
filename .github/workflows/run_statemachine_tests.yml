@@ -1,15 +1,15 @@
 name: Statemachine Test
 
-on: push
-  # pull_request:
-  #   types: [opened, synchronize, reopened]
-  #   paths:
-  #     - src/ros2/statemachine/*
-  #     - src/ros2/communication_interfaces/*
-  #     - .github/workflows/*
+on: 
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - src/ros2/statemachine/*
+      - src/ros2/communication_interfaces/*
+      - .github/workflows/*
        
 jobs:
-  test:
+  test-run-statemachine:
 
     runs-on: ubuntu-latest
     env:
@@ -22,7 +22,7 @@ jobs:
       with:
         filters: |
           hardware_docker_changed:
-            - '.github/workflows/*'
+            - 'src/ros2/hardware_nodes/Dockerfile'
           statemachine_docker_changed:
             - 'src/ros2/statemachine/Dockerfile'
 
@@ -30,7 +30,6 @@ jobs:
       uses: actions/checkout@v3
       with:
           submodules: recursive
-            
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2
@@ -39,22 +38,13 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-    # - name: Build docker
-    #   if: steps.filter.outputs.statemachine_docker_changed == 'true'
-    #   working-directory: src/ros2/${{ env.Project }}
-    #   run: |
-    #         docker build . --tag ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
-    #         docker push ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
-    - name: Build and push
-      uses: docker/build-push-action@v2
-      with:
-        context: .
-        file: ./src/ros2/${{ env.Project }}/Dockerfile
-        push: true
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
-        cache-from: type=gha
-        cache-to: type=gha
+    - name: Build docker
+      if: steps.filter.outputs.statemachine_docker_changed == 'true'
+      working-directory: src/ros2/${{ env.Project }}
+      run: |
+            docker build . --tag ghcr.io/robast-gmbh/monorepo/${{ env.Project }}_test
+            docker push ghcr.io/robast-gmbh/monorepo/${{ env.Project }}_test
         
     - name: Run docker and execute tests
       working-directory: src/ros2/${{ env.Project }}
-      run: docker run -v $(pwd):/workspace/src/${{ env.Project }} -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}  /bin/sh -c "cd /workspace/ && sudo apt-get update && sudo apt-get upgrade -y && rosdep update && rosdep install --from-paths src --ignore-src -r -y && colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic && colcon test --event-handler=console_direct+ && colcon test-result --all"
+      run: docker run -v $(pwd):/workspace/src/${{ env.Project }} -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}_test  /bin/sh -c "cd /workspace/ && sudo apt-get update && sudo apt-get upgrade -y && rosdep update && rosdep install --from-paths src --ignore-src -r -y && colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic && colcon test --event-handler=console_direct+ && colcon test-result --all"
