@@ -3,9 +3,6 @@ from launch import LaunchDescription
 
 
 def generate_launch_description():
-    # Parameters
-    use_sim_time = True
-    autostart = True
 
     # Nodes launching commands
     start_door_manipulator_gate_cmd = launch_ros.actions.Node(
