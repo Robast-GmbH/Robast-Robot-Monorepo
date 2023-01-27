@@ -13,9 +13,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "communication_interfaces/msg/norelem_stepper_control.hpp"
 
-using namespace std;
-using namespace std::chrono_literals;
-
 namespace door_manipulator_sim
 {
     class DoorManipulatorSim: public rclcpp::Node
@@ -28,11 +25,11 @@ namespace door_manipulator_sim
         rclcpp::TimerBase::SharedPtr timer_;
         rclcpp::Publisher<norolem_msg>::SharedPtr publisher_;
 
-        
+
         void timer_callback();
         int getkey(void);
         void set_Motor(int motor_id, int speed);
-        
+
     }; // namespace door_manipulator_sim
 
 }
