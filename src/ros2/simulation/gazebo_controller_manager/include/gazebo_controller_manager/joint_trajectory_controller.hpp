@@ -13,7 +13,6 @@
 
 namespace gazebo_controller_manager
 {
-
     class JointTrajectoryController: public rclcpp::Node
     {
         public:
