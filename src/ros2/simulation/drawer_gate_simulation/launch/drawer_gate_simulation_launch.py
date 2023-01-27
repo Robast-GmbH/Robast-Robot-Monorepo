@@ -7,7 +7,7 @@ def generate_launch_description():
     ld = LaunchDescription()
     
     drawer_gate_simulation_node = Node(
-                package='drawer_gate_simulation', 
+                package='drawer_gate_simulation',
                 executable='drawer_gate_simulation',
                 name="drawer_gate_simulation",
                 parameters=[
@@ -16,5 +16,5 @@ def generate_launch_description():
                            ],
                 output='screen')
 
-    ld.add_action(drawer_gate_simulation_node)          
+    ld.add_action(drawer_gate_simulation_node)
     return ld
