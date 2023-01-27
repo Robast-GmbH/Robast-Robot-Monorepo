@@ -22,7 +22,7 @@ jobs:
       with:
         filters: |
           hardware_docker_changed:
-            - 'src/ros2/hardware_nodes/Dockerfile'
+            - '.github/workflows/*'
           statemachine_docker_changed:
             - 'src/ros2/statemachine/Dockerfile'
 
@@ -51,7 +51,7 @@ jobs:
         context: .
         file: ./src/ros2/${{ env.Project }}/Dockerfile
         push: true
-        tags: /robast-gmbh/monorepo/${{ env.Project }}
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
         cache-from: type=gha
         cache-to: type=gha
         
