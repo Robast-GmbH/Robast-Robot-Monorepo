@@ -34,7 +34,6 @@ endif()
 install(
   DIRECTORY
     config
-    launch
     robots
     urdf
     meshes

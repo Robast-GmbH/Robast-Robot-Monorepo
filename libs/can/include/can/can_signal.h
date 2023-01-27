@@ -1,7 +1,6 @@
-#ifndef CAN_SIGNAL_HPP_
-#define CAN_SIGNAL_HPP_
+#ifndef CAN__CAN_SIGNAL_H_
+#define CAN__CAN_SIGNAL_H_
 
-#include <cmath>
 #include <cstdint>
 
 namespace robast_can_msgs
@@ -12,7 +11,7 @@ namespace robast_can_msgs
             /**
              * @brief A constructor for robast_can_msgs::CanSignal class
              */
-            CanSignal(uint8_t bit_start_in, uint8_t bit_length_in, uint64_t data_in) : bit_start_{bit_start_in}, bit_length_{bit_length_in}, data_{data_in} {}
+            CanSignal(uint8_t bit_start_in, uint8_t bit_length_in, uint64_t data_in): bit_start_{ bit_start_in }, bit_length_{ bit_length_in }, data_{ data_in } {}
 
             /**
              * @brief A destructor for robast_can_msgs::CanSignal class
@@ -27,23 +26,23 @@ namespace robast_can_msgs
             /**
              * @brief A getter function for the data of the CanSignal
              */
-			uint64_t get_data() const;
+            uint64_t get_data() const;
 
             /**
              * @brief A getter function for the bit_start of the CanSignal
              */
-			uint8_t get_bit_start() const;
+            uint8_t get_bit_start() const;
 
             /**
              * @brief A getter function for the bit_length of the CanSignal
              */
-			uint8_t get_bit_length() const;
+            uint8_t get_bit_length() const;
 
         protected:
             uint64_t data_;
             uint8_t bit_start_;
-            uint8_t bit_length_; // number of bits for this can_signal
+            uint8_t bit_length_;  // number of bits for this can_signal
     };
-}
+}  // namespace robast_can_msgs
 
-#endif /* CAN_SIGNAL_HPP_ */
+#endif  // CAN__CAN_SIGNAL_H_

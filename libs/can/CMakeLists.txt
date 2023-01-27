@@ -27,21 +27,45 @@ target_include_directories(library_can
     $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 ) 
 
-if(BUILD_TESTING)    
-    file(GLOB_RECURSE unit_test_srcs "test/*.cpp")
+if(BUILD_TESTING)   
+    include(FetchContent)
+
+    FetchContent_Declare(
+        Catch2
+        GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+        GIT_TAG        v3.2.1 # should equal tag v3.2.1
+    )
+    FetchContent_MakeAvailable(Catch2)
     
-    ament_add_catch2(
-        can_test test/tests_main.cpp ${unit_test_srcs}
+    add_executable(
+        can_test test/tests_robast_can_msgs.cpp ${unit_test_srcs}
     )
 
     target_link_libraries(can_test
         library_can
+        Catch2::Catch2
+        Catch2::Catch2WithMain
     )
+
+    ament_target_dependencies(can_test ${dependencies})
+    include(Catch)
+    catch_discover_tests(can_test)
 
     target_include_directories(can_test
         PRIVATE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
     )
+
+    include(CTest)
+
+    find_package(ament_cmake_flake8 REQUIRED)
+    ament_flake8()
+    find_package(ament_cmake_xmllint REQUIRED)
+    ament_xmllint()
+    find_package(ament_cmake_pep257 REQUIRED)
+    ament_pep257()
+    find_package(ament_cmake_cppcheck REQUIRED)
+    ament_cppcheck()
 endif()
 
 install(TARGETS

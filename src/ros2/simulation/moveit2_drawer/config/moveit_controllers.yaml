@@ -11,4 +11,8 @@ moveit_simple_controller_manager:
     action_ns: follow_joint_trajectory
     default: true
     joints:
-      - top_drawer_joint
+      - drawer_1_joint
+      - drawer_2_joint
+      - drawer_3_joint
+      - drawer_4_joint
+      - drawer_5_joint

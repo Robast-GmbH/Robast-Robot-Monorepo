@@ -6,7 +6,7 @@ namespace robast_can_msgs
     {
         this->can_signals_ = can_signals;
     }
-	
+
 	std::vector<CanSignal> CanMessage::get_can_signals() const
     {
         return this->can_signals_;
@@ -21,4 +21,4 @@ namespace robast_can_msgs
     {
         return this->dlc_;
     }
-}
+}  // namespace robast_can_msgs

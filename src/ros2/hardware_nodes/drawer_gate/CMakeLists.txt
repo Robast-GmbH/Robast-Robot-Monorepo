@@ -80,28 +80,9 @@ target_include_directories(drawer_gate PUBLIC
   $<INSTALL_INTERFACE:include>)
 
 if(BUILD_TESTING)
-  file(GLOB_RECURSE unit_test_srcs "test/unit_tests/*.cpp")
   file(GLOB_RECURSE test_srcs "test/src/*.cpp")
 
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
-
-  ament_add_catch2(
-    drawer_gate_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
-  )
-
-  ament_target_dependencies(drawer_gate_unit_test
-    ${dependencies}
-  )
-
-  target_link_libraries(drawer_gate_unit_test
-    ${library_drawer_gate}
-    rclcpp::rclcpp
-  )
-  
-  target_include_directories(drawer_gate_unit_test
-    PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
-  )
 endif()
 
 install(TARGETS

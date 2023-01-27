@@ -54,6 +54,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Task.msg"
   "msg/TaskStatus.msg"
   "msg/Ticket.msg"
+  "msg/NorelemStepperControl.msg"
   DEPENDENCIES builtin_interfaces geometry_msgs std_msgs nav_msgs
 )
 

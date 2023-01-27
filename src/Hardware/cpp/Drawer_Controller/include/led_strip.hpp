@@ -1,5 +1,5 @@
-#if !defined(LED_STRIP_HPP)
-#define LED_STRIP_HPP
+#if !defined(DRAWER_CONTROLLER_LED_STRIP_HPP)
+#define DRAWER_CONTROLLER_LED_STRIP_HPP
 
 #include <Arduino.h>
 #include <FastLED.h>
@@ -402,4 +402,4 @@ namespace led_strip
 } // namespace led_strip
 
 
-#endif // LED_STRIP_HPP
+#endif // DRAWER_CONTROLLER_LED_STRIP_HPP

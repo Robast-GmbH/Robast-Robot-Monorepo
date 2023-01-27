@@ -32,29 +32,12 @@
 	  </link>
 
 	  <gazebo>
-	    <plugin name="${prefix}_controller" filename="libhector_gazebo_ros_imu.so">
-	       <alwaysOn>true</alwaysOn>
-	       <topicName>${topic}</topicName>
-		   <serviceName>${prefix}imu/service</serviceName>
-		   <bodyName>${prefix}_link</bodyName>
-		   <frameId>${prefix}_link</frameId>
-	       <updateRate>50.0</updateRate>
-
-	       <gaussianNoise>0.00</gaussianNoise>
-           <yawOffset>0.0</yawOffset>
-           <yawDrift>0.0</yawDrift>
-           <yawGaussianNoise>0.0</yawGaussianNoise>
-
-           <!-- angular velocities parameters -->
-           <rateOffset>0.0 0.0 0.0</rateOffset>
-           <rateDrift>0.0 0.0 0.0</rateDrift>
-           <rateGaussianNoise>0.0 0.0 0.0</rateGaussianNoise>
-
-           <!-- linear accelerations parameters -->
-           <accelOffset>0.0 0.0 0.0</accelOffset>
-           <accelDrift>0.0 0.0 0.0</accelDrift>
-           <accelGaussianNoise>0.0 0.0 0.0</accelGaussianNoise>
-	    </plugin>
+		<plugin name="gz::sim::systems::Imu" filename="libgz-sim-imu-system.so">
+			<always_on>1</always_on>
+			<update_rate>50</update_rate>
+			<topic>${topic}</topic>
+			<visualize>true</visualize>
+		</plugin>
 	  </gazebo>
 
   </xacro:macro>

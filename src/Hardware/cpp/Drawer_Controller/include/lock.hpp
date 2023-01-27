@@ -1,5 +1,5 @@
-#if !defined(LOCK_HPP)
-#define LOCK_HPP
+#if !defined(DRAWER_CONTROLLER_LOCK_HPP)
+#define DRAWER_CONTROLLER_LOCK_HPP
 
 #include <Arduino.h>
 
@@ -138,4 +138,4 @@ namespace lock
     };
 } // namespace lock
 
-#endif // LOCK_HPP
+#endif // DRAWER_CONTROLLER_LOCK_HPP
