@@ -39,12 +39,21 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build docker
-      if: steps.filter.outputs.statemachine_docker_changed == 'true'
-      working-directory: src/ros2/${{ env.Project }}
-      run: |
-            docker build . --tag ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
-            docker push ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
+    # - name: Build docker
+    #   if: steps.filter.outputs.statemachine_docker_changed == 'true'
+    #   working-directory: src/ros2/${{ env.Project }}
+    #   run: |
+    #         docker build . --tag ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
+    #         docker push ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
+    - name: Build and push
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        file: ./src/ros2/${{ env.Project }}/Dockerfile
+        push: true
+        tags: /robast-gmbh/monorepo/${{ env.Project }}
+        cache-from: type=gha
+        cache-to: type=gha
         
     - name: Run docker and execute tests
       working-directory: src/ros2/${{ env.Project }}
