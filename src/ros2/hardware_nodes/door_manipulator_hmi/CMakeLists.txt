@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(door_manipulator_sim)
+project(door_manipulator_hmi)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -14,15 +14,15 @@ find_package(communication_interfaces REQUIRED)
 include_directories(include)
 
 
-set(executable_door_manipulator_sim door_manipulator_sim)
+set(executable_door_manipulator_hmi door_manipulator_hmi)
 
-add_executable(${executable_door_manipulator_sim}
+add_executable(${executable_door_manipulator_hmi}
   src/main.cpp)
 
-  set(library_door_manipulator_sim ${executable_door_manipulator_sim}_core)
+  set(library_door_manipulator_hmi ${executable_door_manipulator_hmi}_core)
 
-  add_library(${library_door_manipulator_sim} SHARED
-    src/door_manipulator_sim.cpp
+  add_library(${library_door_manipulator_hmi} SHARED
+    src/door_manipulator_hmi.cpp
   )
 
 set(dependencies
@@ -35,30 +35,30 @@ set(dependencies
   communication_interfaces
 )
 
-ament_target_dependencies(${executable_door_manipulator_sim}
+ament_target_dependencies(${executable_door_manipulator_hmi}
   ${dependencies}
 )
 
-target_link_libraries(${executable_door_manipulator_sim} ${library_door_manipulator_sim})
+target_link_libraries(${executable_door_manipulator_hmi} ${library_door_manipulator_hmi})
 
 
-ament_target_dependencies(${library_door_manipulator_sim}
+ament_target_dependencies(${library_door_manipulator_hmi}
   ${dependencies}
 )
 
-target_include_directories(door_manipulator_sim PUBLIC
+target_include_directories(door_manipulator_hmi PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
 install(TARGETS
-  ${library_door_manipulator_sim}
+  ${library_door_manipulator_hmi}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
 install(TARGETS
-  ${executable_door_manipulator_sim}
+  ${executable_door_manipulator_hmi}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 

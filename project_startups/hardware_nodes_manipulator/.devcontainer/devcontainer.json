@@ -9,7 +9,7 @@
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/door_manipulator_gate,target=/workspace/src/hardware_nodes/door_manipulator_gate,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/door_manipulator_sim,target=/workspace/src/hardware_nodes/door_manipulator_sim,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/door_manipulator_hmi,target=/workspace/src/hardware_nodes/door_manipulator_hmi,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
 		"source=${localWorkspaceFolder}/../../libs/,target=/workspace/libs,type=bind"
 	],

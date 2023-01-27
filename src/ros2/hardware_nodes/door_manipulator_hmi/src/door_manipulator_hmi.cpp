@@ -1,9 +1,9 @@
 
-#include "door_manipulator_sim/door_manipulator_sim.hpp"
+#include "door_manipulator_hmi/door_manipulator_hmi.hpp"
 
-namespace door_manipulator_sim
+namespace door_manipulator_hmi
 {
-    DoorManipulatorSim::DoorManipulatorSim(): Node("door_manipulator_sim")
+    DoorManipulatorSim::DoorManipulatorSim(): Node("door_manipulator_hmi")
     {
         RCLCPP_INFO(this->get_logger(), "Speed 0: Motor1= R , Motor2 = F , Motor 3 = V");
         auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));

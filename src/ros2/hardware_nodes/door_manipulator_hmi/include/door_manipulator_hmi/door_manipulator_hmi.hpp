@@ -1,5 +1,5 @@
-#ifndef DOOR_MANIPULATOR_GATE__DOOR_MANIPULATOR_SIM_HPP_
-#define DOOR_MANIPULATOR_GATE__DOOR_MANIPULATOR_SIM_HPP_
+#ifndef DOOR_MANIPULATOR_HMI_HPP_
+#define DOOR_MANIPULATOR_HMI_HPP_
 
 #include <chrono>
 #include <functional>
@@ -13,7 +13,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "communication_interfaces/msg/norelem_stepper_control.hpp"
 
-namespace door_manipulator_sim
+namespace door_manipulator_hmi
 {
     class DoorManipulatorSim: public rclcpp::Node
     {
@@ -30,8 +30,8 @@ namespace door_manipulator_sim
         int getkey(void);
         void set_Motor(int motor_id, int speed);
 
-    }; // namespace door_manipulator_sim
+    }; // namespace door_manipulator_hmi
 
 }
 
-#endif  // DOOR_MANIPULATOR_SIM__DOOR_MANIPULATOR_SIM_HPP_
+#endif  // DOOR_MANIPULATOR_HMI_HPP_
