@@ -31,20 +31,6 @@ namespace robast_can_msgs
             can_signals.push_back(can_signal);
         }
         return can_signals;
-
-        //         std::vector<CanSignal> can_signals;
-        // uint8_t dlc = can_db_messages[can_msgs_index].get_dlc();
-        // for (uint16_t i = 0; i < can_db_messages[can_msgs_index].get_can_signals().size(); i++)
-        // {
-        //     uint8_t bit_start = can_db_messages[can_msgs_index].get_can_signals()[i].get_bit_start();
-        //     uint8_t bit_length = can_db_messages[can_msgs_index].get_can_signals()[i].get_bit_length();
-
-        //     uint64_t can_signal_data = (can_msg_data << bit_start) >> (64 - bit_length);
-
-        //     robast_can_msgs::CanSignal can_signal = CanSignal(bit_start, bit_length, can_signal_data);
-        //     can_signals.push_back(can_signal);
-        // }
-        // return can_signals;
     }
 
     CanFrame encode_can_message_into_can_frame(CanMessage can_message, std::vector<CanMessage> can_db_messages)

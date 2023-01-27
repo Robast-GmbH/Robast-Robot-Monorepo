@@ -36,8 +36,6 @@ if(BUILD_TESTING)
         GIT_TAG        v3.2.1 # should equal tag v3.2.1
     )
     FetchContent_MakeAvailable(Catch2)
-
-    file(GLOB_RECURSE unit_test_srcs "test/*.cpp")
     
     add_executable(
         can_test test/tests_robast_can_msgs.cpp ${unit_test_srcs}
