@@ -11,7 +11,7 @@ namespace serial_helper
     MockSerialHelper::~MockSerialHelper()
     {}
 
-    string MockSerialHelper::open_serial()
+    std::string MockSerialHelper::open_serial()
     {
         return "";
     }
@@ -19,7 +19,7 @@ namespace serial_helper
     void MockSerialHelper::close_serial()
     {}
 
-    uint16_t MockSerialHelper::read_serial(string* result, uint16_t max_num_bytes)
+    uint16_t MockSerialHelper::read_serial(std::string* result, uint16_t max_num_bytes)
     {
         robast_can_msgs::CanMessage can_message = robast_can_msgs::CanMessage(
             CAN_ID_DRAWER_FEEDBACK,
@@ -40,17 +40,17 @@ namespace serial_helper
         return 1;
     }
 
-    string MockSerialHelper::write_serial(string msg)
+    std::string MockSerialHelper::write_serial(std::string msg)
     {
         return "";
     }
 
-    string MockSerialHelper::send_ascii_cmd(string cmd)
+    std::string MockSerialHelper::send_ascii_cmd(std::string cmd)
     {
         return "";
     }
 
-    string MockSerialHelper::ascii_interaction(string cmd, string* response, uint16_t response_size)
+    std::string MockSerialHelper::ascii_interaction(std::string cmd, std::string* response, uint16_t response_size)
     {}
 
 }

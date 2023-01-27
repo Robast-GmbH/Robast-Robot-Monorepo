@@ -8,17 +8,18 @@ namespace serial_helper
     class MockSerialHelper : public ISerialHelper
     {
     public:
-        MockSerialHelper(string key);
+        MockSerialHelper(std::string key);
+        MockSerialHelper();
         ~MockSerialHelper();
 
-        string open_serial();
+        std::string open_serial();
         void close_serial();
-        uint16_t read_serial(string* result, uint16_t max_num_bytes);
-        string write_serial(string msg);
-        string send_ascii_cmd(string cmd);
-        string ascii_interaction(string cmd, string* response, uint16_t response_size);
+        uint16_t read_serial(std::string* result, uint16_t max_num_bytes);
+        std::string write_serial(std::string msg);
+        std::string send_ascii_cmd(std::string cmd);
+        std::string ascii_interaction(std::string cmd, std::string* response, uint16_t response_size);
 
     private:
-        string key_code;
+        std::string key_code_;
     };
 }

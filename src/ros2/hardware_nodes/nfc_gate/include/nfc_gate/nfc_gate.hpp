@@ -35,29 +35,29 @@ namespace robast
     using GoalHandleAuthenticateUser = rclcpp_action::ServerGoalHandle<AuthenticateUser>;
     using CreateUser = communication_interfaces::srv::CreateUserNfcTag;
 
-    NFCGate(string serial_port_path = "/dev/robast/robast_nfc");
+    NFCGate(std::string serial_port_path = "/dev/robast/robast_nfc");
     ~NFCGate();
 
     friend class TestNFCGate; // this class has full access to all private and protected parts of this class
 
   private:
-    int numReadings;
+    int numReadings_;
 
     serial_helper::ISerialHelper* serial_connector_;
     db_helper::IDBHelper* db_conncetor_;
     rclcpp::TimerBase::SharedPtr timer;
-    shared_ptr<GoalHandleAuthenticateUser> timer_handle;
-    rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
-    rclcpp::Service<CreateUser>::SharedPtr create_user_server;
+    std::shared_ptr<GoalHandleAuthenticateUser> timer_handle_;
+    rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server_;
+    rclcpp::Service<CreateUser>::SharedPtr create_user_server_;
 
-    rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID& uuid, shared_ptr<const AuthenticateUser::Goal> goal);
-    rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-    void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-    void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+    rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID& uuid, std::shared_ptr<const AuthenticateUser::Goal> goal);
+    rclcpp_action::CancelResponse auth_cancel_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+    void auth_accepted_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+    void auth_authenticate_user(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
 
-    string execute_scan(std::vector<std::string> permission_users, bool* found);
-    string validate_key(string scanned_key, std::vector<std::string> allValidUser, bool* found);
-    string scan_tag(bool* found);
+    std::string execute_scan(std::vector<std::string> permission_users, std::unique_ptr<bool> found);
+    std::string validate_key(std::string scanned_key, std::vector<std::string> allValidUser, std::unique_ptr<bool> found);
+    std::string scan_tag(std::unique_ptr<bool> found);
 
     void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
     void start_up_scanner();

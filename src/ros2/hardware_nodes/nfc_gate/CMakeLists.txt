@@ -97,9 +97,6 @@ if(BUILD_TESTING)
 
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
 
-  # ament_add_catch2(
-  #   nfc_gate_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
-  # )
   add_executable(
     nfc_gate_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
   )

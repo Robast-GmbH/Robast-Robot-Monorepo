@@ -16,8 +16,8 @@ namespace db_helper
     class PostgreSqlHelper:public IDBHelper
     {
         private:
-            pqxx::connection* connection_handle;
-            std::string connection_string;
+            std::unique_ptr <pqxx::connection> connection_handle_;
+            std::string connection_string_;
 
         public:
             PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname );

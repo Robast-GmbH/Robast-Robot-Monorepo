@@ -4,24 +4,22 @@
 #include <cstring>
 #include <string>
 
-using namespace std;
-
 namespace serial_helper
 {
     class ISerialHelper
     {
     public:
 
-        virtual string open_serial() = 0;
+        virtual std::string open_serial() = 0;
         virtual void close_serial() = 0;
 
-        virtual uint16_t read_serial(string* result, uint16_t max_num_bytes) = 0;
+        virtual uint16_t read_serial(std::string* result, uint16_t max_num_bytes) = 0;
 
-        virtual string write_serial(string msg) = 0;
+        virtual std::string write_serial(std::string msg) = 0;
 
-        virtual string send_ascii_cmd(string cmd) = 0;
+        virtual std::string send_ascii_cmd(std::string cmd) = 0;
 
-        virtual string ascii_interaction(string cmd, string* response, uint16_t response_size) = 0;
+        virtual std::string ascii_interaction(std::string cmd, std::string* response, uint16_t response_size) = 0;
     };
 }
 

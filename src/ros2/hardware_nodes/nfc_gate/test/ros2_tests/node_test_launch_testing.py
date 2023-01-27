@@ -1,18 +1,17 @@
-import unittest
-import yaml
-
 import os
-import ament_index_python
+import unittest
 
-import rclpy
+import ament_index_python
 import launch
-from launch_ros.actions import Node
 import launch_testing
 import launch_testing.actions
 import launch_testing.util
+import pytest
+import rclpy
+import yaml
+from launch_ros.actions import Node
 from rclpy.action import ActionClient
 
-import pytest
 from communication_interfaces.action import AuthenticateUser
 
 
@@ -37,7 +36,12 @@ def generate_test_description():
         parameters=[{
                         "key": input_data['nfc']['card_content'],
                         "User1_key": input_data['nfc']['card_content'],
-                        "User1_name": input_data['nfc']['authorised_user']
+                        "User1_name": input_data['nfc']['authorised_user'],
+                        "User2_key": input_data['nfc']['card_content'],
+                        "User2_name": input_data['nfc']['authorised_user'],
+                        "User3_key": input_data['nfc']['card_content'],
+                        "User3_name": input_data['nfc']['authorised_user']
+
                     }]
     )
     context = {'dut': dut}

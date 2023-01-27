@@ -3,7 +3,7 @@
 namespace serial_helper
 {
 
-    SerialHelper::SerialHelper(string serial_path)
+    SerialHelper::SerialHelper(std::string serial_path)
     {
         this->serial_path_ = serial_path;
     }
@@ -11,13 +11,13 @@ namespace serial_helper
     SerialHelper::~SerialHelper()
     {}
 
-    string SerialHelper::open_serial()
+    std::string SerialHelper::open_serial()
     {
         this->serial_port_ = open(this->serial_path_.c_str(), O_RDWR);
         // Check for errors
         if (this->serial_port_ < 0)
         {
-            string result = "Error from open: ";
+            std::string result = "Error from open: ";
             result.append(strerror(errno));
             result.append("\n");
             return result;
@@ -29,7 +29,7 @@ namespace serial_helper
         // Read in existing settings, and handle any error
         if (tcgetattr(this->serial_port_, &tty) != 0)
         {
-            string result = "Error from tcgetattr: ";
+            std::string result = "Error from tcgetattr: ";
             result.append(strerror(errno));
             result.append("\n");
             return result;
@@ -65,7 +65,7 @@ namespace serial_helper
         // Save tty settings, also checking for error
         if (tcsetattr(this->serial_port_, TCSANOW, &tty) != 0)
         {
-            string result = "Error from tcgetattr: ";
+            std::string result = "Error from tcgetattr: ";
             result.append(strerror(errno));
             result.append("\n");
             return result;
@@ -79,7 +79,7 @@ namespace serial_helper
         this->serial_port_ = -1;
     }
 
-    uint16_t SerialHelper::read_serial(string* result, uint16_t max_num_bytes)
+    uint16_t SerialHelper::read_serial(std::string* result, uint16_t max_num_bytes)
     {
         char read_buf[256];
         memset(&read_buf, '\0', sizeof(read_buf));
@@ -92,31 +92,31 @@ namespace serial_helper
             result->append("/n");
             return 0;
         }
-        *result = string(read_buf, num_bytes);
+        *result = std::string(read_buf, num_bytes);
         if (DEBUG_LOG)
         {
-            ofstream logfile;
+            std::ofstream logfile;
             logfile.open("Communication.log", std::ios_base::app);
-            logfile << "recived: " + *result << endl;
+            logfile << "recived: " + *result << std::endl;
             logfile.close();
         }
         return num_bytes;
     }
 
-    string SerialHelper::write_serial(string msg)
+    std::string SerialHelper::write_serial(std::string msg)
     {
 
         if (this->serial_port_ < 0)
         {
-            string errno_string(errno, sizeof(errno));
+            std::string errno_string(errno, sizeof(errno));
             return "Error " + errno_string + " from open: " + strerror(errno) + "\n";
         }
 
         if (DEBUG_LOG)
         {
-            ofstream logfile;
+            std::ofstream logfile;
             logfile.open("Communication.log", std::ios_base::app);
-            logfile << "send: " + msg << endl;
+            logfile << "send: " + msg << std::endl;
             logfile.close();
         }
 
@@ -124,15 +124,15 @@ namespace serial_helper
         return "";
     }
 
-    string SerialHelper::send_ascii_cmd(string cmd)
+    std::string SerialHelper::send_ascii_cmd(std::string cmd)
     {
 
         return this->write_serial(cmd + "\r");
     }
 
-    string SerialHelper::ascii_interaction(string cmd, string* responce, uint16_t responce_size)
+    std::string SerialHelper::ascii_interaction(std::string cmd, std::string* responce, uint16_t responce_size)
     {
-        string request_result = this->send_ascii_cmd(cmd);
+        std::string request_result = this->send_ascii_cmd(cmd);
         if (request_result != "")
         {
             return request_result;

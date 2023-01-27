@@ -8,15 +8,15 @@
 
 
 
-#define NFC_LOGIN_MC(KEY, KEY_TYPE, SECTOR)  string("0B00") + string(KEY) + string(KEY_TYPE) + string(SECTOR)
-#define NFC_LOGIN_MC_STANDART(SECTOR) string("0B00FFFFFFFFFFFF00") + string(SECTOR)
-#define NFC_READ_MC(BLOCK) string("0B01") + string(BLOCK)
-#define NFC_WRITE_MC(BLOCK,DATA)  string("0B02") + string(BLOCK)+ string(DATA)//Data ist als HEX string of 16Byte
+#define NFC_LOGIN_MC(KEY, KEY_TYPE, SECTOR)  std::string("0B00") + std::string(KEY) + std::string(KEY_TYPE) + std::string(SECTOR)
+#define NFC_LOGIN_MC_STANDART(SECTOR) std::string("0B00FFFFFFFFFFFF00") + std::string(SECTOR)
+#define NFC_READ_MC(BLOCK) std::string("0B01") + std::string(BLOCK)
+#define NFC_WRITE_MC(BLOCK,DATA)  std::string("0B02") + std::string(BLOCK)+ std::string(DATA)//Data ist als HEX string of 16Byte
 
 
-#define TOP_LEDS_INIT(COLOR) string("0410") + string(COLOR)
-#define TOP_LEDS_ON(COLOR) string("0411") + string(COLOR)
-#define TOP_LED_OFF(COLOR) string("0412") + string(COLOR)
+#define TOP_LEDS_INIT(COLOR) std::string("0410") + std::string(COLOR)
+#define TOP_LEDS_ON(COLOR) std::string("0411") + std::string(COLOR)
+#define TOP_LED_OFF(COLOR) std::string("0412") + std::string(COLOR)
 
 
 #define LED_RED "05"
@@ -25,7 +25,7 @@
 #define BOTTOM_LED_ON "0408"
 #define BOTTOM_LED_OFF "0409"
 
-#define BEEP(VOLUME,FREQUENCY,ON_TIME, OFF_TIME)  string("0407") + string(VOLUME)+ string(FREQUENCY)+ string(ON_TIME)+ string(OFF_TIME)
+#define BEEP(VOLUME,FREQUENCY,ON_TIME, OFF_TIME)  std::string("0407") + std::string(VOLUME)+ std::string(FREQUENCY)+ std::string(ON_TIME)+ std::string(OFF_TIME)
 #define BEEP_STANDART "0407166009F401F401"
 
 

@@ -5,7 +5,7 @@
 
 namespace drawer_gate
 {
-  DrawerGate::DrawerGate(const string serial_path) : Node("drawer_gate")
+  DrawerGate::DrawerGate(const std::string serial_path) : Node("drawer_gate")
   {
     this->serial_helper_ = new serial_helper::SerialHelper(serial_path);
 
