@@ -12,7 +12,6 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_catch2 REQUIRED)
 
 add_library(library_db_helper SHARED
     ${CMAKE_CURRENT_LIST_DIR}/src/postgresql_connector.cpp

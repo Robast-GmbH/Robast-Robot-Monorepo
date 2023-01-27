@@ -3,7 +3,7 @@
 namespace serial_helper
 {
 
-    MockSerialHelper::MockSerialHelper(string key)
+    MockSerialHelper::MockSerialHelper(std::string key)
     {
         key_code = key;
     }
@@ -13,7 +13,7 @@ namespace serial_helper
 
     }
 
-    string MockSerialHelper::open_serial()
+    std::string MockSerialHelper::open_serial()
     {
         return "0001";
     }
@@ -23,13 +23,13 @@ namespace serial_helper
 
     }
 
-    uint16_t MockSerialHelper::read_serial(string* result, uint16_t max_num_bytes)
+    uint16_t MockSerialHelper::read_serial(std::string* result, uint16_t max_num_bytes)
     {
         *result = "0001";
         return 4;
     }
 
-    string MockSerialHelper::write_serial(string msg)
+    std::string MockSerialHelper::write_serial(std::string msg)
     {
         if (msg == NFC_READ_MC("02"))
         {
@@ -39,7 +39,7 @@ namespace serial_helper
         return "0001";
     }
 
-    string MockSerialHelper::send_ascii_cmd(string cmd)
+    std::string MockSerialHelper::send_ascii_cmd(std::string cmd)
     {
         if (cmd == NFC_READ_MC("02"))
         {
@@ -49,7 +49,7 @@ namespace serial_helper
         return "0001";
     }
 
-    string MockSerialHelper::ascii_interaction(string cmd, string* response, uint16_t response_size)
+    std::string MockSerialHelper::ascii_interaction(std::string cmd, std::string* response, uint16_t response_size)
     {
         (void)response_size;
         if (cmd == NFC_READ_MC("02"))

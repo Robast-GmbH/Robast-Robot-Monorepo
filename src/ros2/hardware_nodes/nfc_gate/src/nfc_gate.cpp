@@ -4,7 +4,7 @@
 namespace robast
 {
 
-  NFCGate::NFCGate(string serial_port_path) :Node("nfc_gate")
+  NFCGate::NFCGate(std::string serial_port_path) :Node("nfc_gate")
   {
     this->serial_connector_ = new serial_helper::SerialHelper(serial_port_path);
     this->db_conncetor_= new db_helper::PostgreSqlHelper("robot", "123456789", "10.10.23.9", "robast");
@@ -12,9 +12,9 @@ namespace robast
     this->user_authenticate_server = rclcpp_action::create_server<AuthenticateUser>(
       this,
       "authenticate_user",
-      bind(&NFCGate::auth_goal_callback, this, std::placeholders::_1, std::placeholders::_2),
-      bind(&NFCGate::auth_cancel_callback, this, std::placeholders::_1),
-      bind(&NFCGate::auth_accepted_callback, this, std::placeholders::_1)
+      std::bind(&NFCGate::auth_goal_callback, this, std::placeholders::_1, std::placeholders::_2),
+      std::bind(&NFCGate::auth_cancel_callback, this, std::placeholders::_1),
+      std::bind(&NFCGate::auth_accepted_callback, this, std::placeholders::_1)
       );
 
     this->create_user_server = this->create_service<CreateUser>("create_user_tag", bind(&NFCGate::write_tag, this, std::placeholders::_1, std::placeholders::_2));
@@ -25,31 +25,31 @@ namespace robast
     delete serial_connector_;
   }
 
-  rclcpp_action::GoalResponse NFCGate::auth_goal_callback(const rclcpp_action::GoalUUID& uuid, shared_ptr<const AuthenticateUser::Goal> goal)
+  rclcpp_action::GoalResponse NFCGate::auth_goal_callback(const rclcpp_action::GoalUUID& uuid, std::shared_ptr<const AuthenticateUser::Goal> goal)
   {
     (void)uuid;
     return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
 
-  rclcpp_action::CancelResponse NFCGate::auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
+  rclcpp_action::CancelResponse NFCGate::auth_cancel_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle)
   {
     (void)goal_handle;
     return rclcpp_action::CancelResponse::ACCEPT;
   }
 
-  void NFCGate::auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle)
+  void NFCGate::auth_accepted_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle)
   {
 
     numReadings = 0;
     this->timer_handle = goal_handle;
-    timer = this->create_wall_timer(500ms, bind(&NFCGate::reader_procedure, this));
+    timer = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&NFCGate::reader_procedure, this));
     //std::thread{std::bind(&NFCGate::scanTag, this, placeholders::_1), goal_handle}.detach();
   }
 
   void NFCGate::start_up_scanner()
   {
     this->serial_connector_->open_serial();
-    string response;
+    std::string response;
     this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, 500);
     this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, 500);
 
@@ -66,10 +66,10 @@ namespace robast
     this->serial_connector_->ascii_interaction(TOP_LEDS_ON(LED_RED), &response, 500);
   }
 
-  string NFCGate::scan_tag(bool* found)
+  std::string NFCGate::scan_tag(bool* found)
   {
-    string response, scanned_key;
-    string replay = this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, 500);
+    std::string response, scanned_key;
+    std::string replay = this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, 500);
     if (replay == RESPONCE_ERROR)
     {
       *found = false;
@@ -90,7 +90,7 @@ namespace robast
 
   }
 
-  string NFCGate::validate_key(string scanned_key, std::vector<std::string> allValidUser, bool* found)
+  std::string NFCGate::validate_key(std::string scanned_key, std::vector<std::string> allValidUser, bool* found)
   {
     std::string name;
      *found = db_conncetor_->checkUserTag(scanned_key, allValidUser, &name);
@@ -115,16 +115,16 @@ namespace robast
     this->serial_connector_->close_serial();
   }
 
-  string NFCGate::execute_scan(std::vector<std::string> permission_users, bool* found)
+  std::string NFCGate::execute_scan(std::vector<std::string> permission_users, bool* found)
   {
 
     start_up_scanner();
 
-    string scanned_key = scan_tag(found);
+    std::string scanned_key = scan_tag(found);
     // abort this scan attempt if the reader could not detect a compatible card. 
     if (!found) return"";
 
-    string found_user = this->validate_key(scanned_key, permission_users, found);
+    std::string found_user = this->validate_key(scanned_key, permission_users, found);
     RCLCPP_INFO(this->get_logger(),"scanned tag: %s ",found_user.c_str() );
     return found_user;
   }
@@ -135,7 +135,7 @@ namespace robast
     reader_status->is_preparing = false;
     reader_status->is_reading = true;
     reader_status->is_completed = false;
-    string scanned_key;
+    std::string scanned_key;
     bool found = false;
 
     auto result = std::make_shared<AuthenticateUser::Result>();
@@ -173,7 +173,7 @@ namespace robast
     (void)request;
     start_up_scanner();
 
-    string tag;
+    std::string tag;
     //wait for the Tag and read TAG ID 
     do
     {

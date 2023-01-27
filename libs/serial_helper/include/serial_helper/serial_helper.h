@@ -13,28 +13,26 @@
 #include <unistd.h> // write(), read(), close()
 #include "i_serial_helper.h"
 
-using namespace std;
-
 namespace serial_helper
 {
     class SerialHelper:public ISerialHelper
     {
         private:
             /* data */
-            string serial_path_;
+            std::string serial_path_;
             int serial_port_;
 
         public:
-            SerialHelper(string serial_path);
+            SerialHelper(std::string serial_path);
             ~SerialHelper();
 
-            string open_serial();
+            std::string open_serial();
             void close_serial();
 
-            uint16_t read_serial(string* result, uint16_t max_num_bytes);
-            string write_serial(string msg);
-            string send_ascii_cmd(string cmd);            
-            string ascii_interaction(string cmd, string* responce, uint16_t responce_size);
+            uint16_t read_serial(std::string* result, uint16_t max_num_bytes);
+            std::string write_serial(std::string msg);
+            std::string send_ascii_cmd(std::string cmd);            
+            std::string ascii_interaction(std::string cmd, std::string* responce, uint16_t responce_size);
     };
 }
 

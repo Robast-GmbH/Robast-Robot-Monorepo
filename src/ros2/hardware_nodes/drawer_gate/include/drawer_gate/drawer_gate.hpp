@@ -67,7 +67,7 @@ namespace drawer_gate
     /**
      * @brief A constructor for drawer_gate::DrawerGate class
      */
-    DrawerGate(const string serial_path = "/dev/robast/robast_can");
+    DrawerGate(const std::string serial_path = "/dev/robast/robast_can");
     /**
      * @brief A destructor for drawer_gate::DrawerGate class
      */
@@ -93,7 +93,7 @@ namespace drawer_gate
 
     std::map<uint32_t, drawer_status> drawer_status_by_drawer_controller_id_;
 
-    queue<string> ascii_cmd_queue_; // queue that contains all ascii commands to be sent to the usb serial can adapter to make sure there is enough time between each ascii command, otherwise some commands might get lost
+    std::queue<std::string> ascii_cmd_queue_; // queue that contains all ascii commands to be sent to the usb serial can adapter to make sure there is enough time between each ascii command, otherwise some commands might get lost
 
     bool cleared_serial_buffer_from_old_can_msgs_; // flag, that is responsible for clearing the serial buffer from old CAN messages
 
