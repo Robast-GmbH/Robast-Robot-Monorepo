@@ -15,7 +15,6 @@
         <xacro:insert_block name="origin" />
     </joint>
 
-    <!-- BASE_LINK -->
     <link name="${prefix}alu_profile_link_${suffix}">
         <inertial>
             <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,

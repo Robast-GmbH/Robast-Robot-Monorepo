@@ -9,26 +9,66 @@
 
     <xacro:macro name="door_opening_mechanism" params="prefix parent *origin hq">
 
+    <xacro:property name="door_opening_mechanism_base_link" value="${prefix}door_opening_mechanism_base_link" />
+
     <joint name="${prefix}door_opening_mechanism_joint" type="fixed">
         <parent link="${parent}"/>
-        <child link="${prefix}door_opening_mechanism_base_link"/>
+        <child link="${door_opening_mechanism_base_link}"/>
         <xacro:insert_block name="origin" />
     </joint>
 
-    <!-- BASE_LINK -->
-    <link name="${prefix}door_opening_mechanism_base_link">
+    <!-- Base link -->
+    <link name="${door_opening_mechanism_base_link}">
+        <visual>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <box size="0.001 0.001 0.001" />
+          </geometry>
+        </visual>
+        <collision>
+          <origin xyz="0 0 0" rpy="0 0 0" />
+          <geometry>
+            <box size="0.001 0.001 0.001" />
+          </geometry>
+        </collision>
+    </link>
+
+    <!-- Aluprofile frame -->
+    <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/alu_profile.urdf.xacro" />
+    <xacro:alu_profile prefix="${prefix}" suffix="bottom" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.46" >
+		<origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
+	</xacro:alu_profile>
+	<xacro:alu_profile prefix="${prefix}" suffix="left" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="1.0" >
+		<origin xyz="0 -0.245 0.515" rpy="0 0 0"/>
+	</xacro:alu_profile>
+	<xacro:alu_profile prefix="${prefix}" suffix="right" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="1.0" >
+		<origin xyz="0 +0.245 0.515" rpy="0 0 0"/>
+	</xacro:alu_profile>
+    <xacro:alu_profile prefix="${prefix}" suffix="top" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.52" >
+		<origin xyz="0 0 1.03" rpy="1.57079632679 0 0"/>
+	</xacro:alu_profile>
+
+    <!-- Door opening mechanism -->
+    <joint name="${prefix}door_opening_mechanism_joint_y_axis_rail" type="fixed" >
+        <parent link="${door_opening_mechanism_base_link}" />
+        <child link="${prefix}door_opening_mechanism_link_y_axis_rail" />
+        <origin xyz="-0.015 0.2 0.55" rpy="0 0 0"/>
+    </joint>
+
+    <link name="${prefix}door_opening_mechanism_link_y_axis_rail">
         <inertial>
             <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
             it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
-            therefore steering of the rb_theron becomes impossible -->
-            <mass value="0.0" />
+            therefore steering of the rb_theron becomes impossible. 
+            The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
+            <mass value="5" />
             <origin xyz="0 0 0" />
-            <xacro:box_inertia_robot m="100" x="0.25" y="0.25" z="1.55"/>
+            <xacro:box_inertia_robot m="5" x="0.06" y="0.06" z="0.56"/>
         </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <box size="0.03 0.46 0.03"/>
+                <box size="0.06 0.06 0.56"/>
             </geometry>
             <material name="darkgrey">
                 <color rgba="0.1 0.1 0.1 1"/>
@@ -37,27 +77,90 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <box size="0.03 0.46 0.03"/>
+                <box size="0.06 0.06 0.56"/>
             </geometry>
         </collision>
     </link>
 
-    <!-- <joint name="${prefix}door_opening_mechanism_frame_joint_left" type="fixed">
-        <parent link="${prefix}door_opening_mechanism_base_link"/>
-        <child link="${prefix}door_opening_mechanism_frame_link_left"/>
-        <xacro:insert_block name="origin" />
-    </joint> -->
+    <joint name="${prefix}door_opening_mechanism_joint_y_axis_slide" type="prismatic" >
+        <axis xyz="0 1 0" />
+        <parent link="${prefix}alu_profile_link_right" />
+        <child link="${prefix}door_opening_mechanism_link_y_axis_slide" />
+        <origin xyz="-0.075 -0.225 -0.1" rpy="1.57079632679 0 0"/>
+        <limit lower="0.0" upper="0.25" effort="100" velocity="100" />
+    </joint>
 
-    <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/alu_profile.urdf.xacro" />
-	<xacro:alu_profile prefix="$(arg prefix)" suffix="left" parent="${prefix}door_opening_mechanism_base_link" x="0.03" y="0.03" z="1.0" >
-		<origin xyz="0 -0.245 0.515" rpy="0 0 0"/>
-	</xacro:alu_profile>
-	<xacro:alu_profile prefix="$(arg prefix)" suffix="right" parent="${prefix}door_opening_mechanism_base_link" x="0.03" y="0.03" z="1.0" >
-		<origin xyz="0 +0.245 0.515" rpy="0 0 0"/>
-	</xacro:alu_profile>
-    <xacro:alu_profile prefix="$(arg prefix)" suffix="top" parent="${prefix}door_opening_mechanism_base_link" x="0.03" y="0.03" z="0.52" >
-		<origin xyz="0 0 1.03" rpy="1.5705 0 0"/>
-	</xacro:alu_profile>
+    <link name="${prefix}door_opening_mechanism_link_y_axis_slide">
+        <inertial>
+            <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
+            it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
+            therefore steering of the rb_theron becomes impossible. 
+            The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
+            <mass value="5" />
+            <origin xyz="0 0 0" />
+            <xacro:box_inertia_robot m="5" x="0.06" y="0.06" z="0.55"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.06 0.06 0.56"/>
+            </geometry>
+            <material name="darkgrey">
+                <color rgba="0.1 0.1 0.1 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.06 0.06 0.56"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <joint name="${prefix}door_opening_mechanism_joint_x_axis_slide" type="prismatic" >
+        <axis xyz="1 0 0" />
+        <parent link="${prefix}door_opening_mechanism_link_y_axis_slide" />
+        <child link="${prefix}door_opening_mechanism_link_x_axis_slide" />
+        <origin xyz="-0.04 0 0" rpy="0 0 1.57079632679"/>
+        <limit lower="0.0" upper="0.25" effort="100" velocity="100" />
+    </joint>
+
+    <link name="${prefix}door_opening_mechanism_link_x_axis_slide">
+        <inertial>
+            <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
+            it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
+            therefore steering of the rb_theron becomes impossible. 
+            The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
+            <mass value="5" />
+            <origin xyz="0 0 0" />
+            <xacro:box_inertia_robot m="5" x="0.06" y="0.015" z="0.175"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.06 0.015 0.175"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.06 0.015 0.175"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <gazebo reference="${prefix}door_opening_mechanism_link_x_axis_slide">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>1 1 1 1</ambient>
+                <diffuse>1 1 1 1</diffuse>
+                <specular>1 1 1 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
+
 
     </xacro:macro>
 </robot>
