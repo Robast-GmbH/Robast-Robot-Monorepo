@@ -11,12 +11,12 @@
 
     <joint name="${prefix}door_opening_mechanism_joint" type="fixed">
         <parent link="${parent}"/>
-        <child link="${prefix}door_opening_mechanism_link"/>
+        <child link="${prefix}door_opening_mechanism_base_link"/>
         <xacro:insert_block name="origin" />
     </joint>
 
     <!-- BASE_LINK -->
-    <link name="${prefix}door_opening_mechanism_link">
+    <link name="${prefix}door_opening_mechanism_base_link">
         <inertial>
             <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
             it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
@@ -26,18 +26,10 @@
             <xacro:box_inertia_robot m="100" x="0.25" y="0.25" z="1.55"/>
         </inertial>
         <visual>
-            <xacro:if value="${hq}">
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                <box size="0.03 0.43 1.05"/>
-                </geometry>
-            </xacro:if>
-            <xacro:unless value="${hq}">
-                <origin xyz="0 0 0" rpy="0 0 0" />
-                <geometry>
-                <box size="0.03 0.43 1.05"/>
-                </geometry>
-            </xacro:unless>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.03 0.46 0.03"/>
+            </geometry>
             <material name="darkgrey">
                 <color rgba="0.1 0.1 0.1 1"/>
             </material>
@@ -45,10 +37,27 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <box size="0.03 0.43 1.05"/>
+                <box size="0.03 0.46 0.03"/>
             </geometry>
         </collision>
     </link>
+
+    <!-- <joint name="${prefix}door_opening_mechanism_frame_joint_left" type="fixed">
+        <parent link="${prefix}door_opening_mechanism_base_link"/>
+        <child link="${prefix}door_opening_mechanism_frame_link_left"/>
+        <xacro:insert_block name="origin" />
+    </joint> -->
+
+    <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/alu_profile.urdf.xacro" />
+	<xacro:alu_profile prefix="$(arg prefix)" suffix="left" parent="${prefix}door_opening_mechanism_base_link" x="0.03" y="0.03" z="1.0" >
+		<origin xyz="0 -0.245 0.515" rpy="0 0 0"/>
+	</xacro:alu_profile>
+	<xacro:alu_profile prefix="$(arg prefix)" suffix="right" parent="${prefix}door_opening_mechanism_base_link" x="0.03" y="0.03" z="1.0" >
+		<origin xyz="0 +0.245 0.515" rpy="0 0 0"/>
+	</xacro:alu_profile>
+    <xacro:alu_profile prefix="$(arg prefix)" suffix="top" parent="${prefix}door_opening_mechanism_base_link" x="0.03" y="0.03" z="0.52" >
+		<origin xyz="0 0 1.03" rpy="1.5705 0 0"/>
+	</xacro:alu_profile>
 
     </xacro:macro>
 </robot>
