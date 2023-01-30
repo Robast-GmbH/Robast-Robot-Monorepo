@@ -6,10 +6,20 @@ def generate_launch_description():
     ld = LaunchDescription()
     
     # joint parameter for rb_theron
-    joint_names_list = ["drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"]
+    joint_names_list = ["drawer_1_joint",
+                        "drawer_2_joint",
+                        "drawer_3_joint",
+                        "drawer_4_joint",
+                        "drawer_5_joint",
+                        "door_opening_mechanism_joint_y_axis_slide",
+                        "door_opening_mechanism_joint_x_axis_slide",
+                        "door_opening_mechanism_joint_tilting_hook"]
     gz_joint_topics_list = []
     for joint_name in joint_names_list:
         gz_joint_topics_list.append("/model/rb_theron/joint/%s/0/cmd_pos"%joint_name)
+    # In case you want to test this manually use this command:
+    # gz topic -t "/model/rb_theron/joint/door_opening_mechanism_joint_tilting_hook/0/cmd_pos" -m gz.msgs.Double -p "data: 0.1"
+
     
     #  ROS -> IGN,  joint position controller
     # We can either use the joint position controller or the joint trajectory controller.

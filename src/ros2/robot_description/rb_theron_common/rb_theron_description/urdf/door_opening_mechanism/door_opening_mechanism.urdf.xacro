@@ -70,9 +70,6 @@
             <geometry>
                 <box size="0.06 0.06 0.56"/>
             </geometry>
-            <material name="darkgrey">
-                <color rgba="0.1 0.1 0.1 1"/>
-            </material>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
@@ -81,6 +78,16 @@
             </geometry>
         </collision>
     </link>
+    <gazebo reference="${prefix}door_opening_mechanism_link_y_axis_rail">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>1 0 0 1</ambient>
+                <diffuse>1 0 0 1</diffuse>
+                <specular>1 0 0 1</specular>
+            </material>
+        </visual>
+    </gazebo>
 
     <joint name="${prefix}door_opening_mechanism_joint_y_axis_slide" type="prismatic" >
         <axis xyz="0 1 0" />
@@ -89,6 +96,16 @@
         <origin xyz="-0.075 -0.225 -0.1" rpy="1.57079632679 0 0"/>
         <limit lower="0.0" upper="0.25" effort="100" velocity="100" />
     </joint>
+    <gazebo>
+        <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
+            <joint_name>${prefix}door_opening_mechanism_joint_y_axis_slide</joint_name>
+            <p_gain>50000.0</p_gain>
+            <i_gain>100</i_gain>
+            <d_gain>1000</d_gain>
+            <i_max>200</i_max>
+            <i_min>-200</i_min>
+        </plugin>
+    </gazebo>
 
     <link name="${prefix}door_opening_mechanism_link_y_axis_slide">
         <inertial>
@@ -105,9 +122,6 @@
             <geometry>
                 <box size="0.06 0.06 0.56"/>
             </geometry>
-            <material name="darkgrey">
-                <color rgba="0.1 0.1 0.1 1"/>
-            </material>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -117,13 +131,34 @@
         </collision>
     </link>
 
+    <gazebo reference="${prefix}door_opening_mechanism_link_y_axis_slide">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>1 1 0 1</ambient>
+                <diffuse>1 1 0 1</diffuse>
+                <specular>1 1 0 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
     <joint name="${prefix}door_opening_mechanism_joint_x_axis_slide" type="prismatic" >
-        <axis xyz="1 0 0" />
+        <axis xyz="0 0 1" />
         <parent link="${prefix}door_opening_mechanism_link_y_axis_slide" />
         <child link="${prefix}door_opening_mechanism_link_x_axis_slide" />
         <origin xyz="-0.04 0 0" rpy="0 0 1.57079632679"/>
-        <limit lower="0.0" upper="0.25" effort="100" velocity="100" />
+        <limit lower="-0.25" upper="0.25" effort="100" velocity="100" />
     </joint>
+    <gazebo>
+        <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
+            <joint_name>${prefix}door_opening_mechanism_joint_x_axis_slide</joint_name>
+            <p_gain>50000.0</p_gain>
+            <i_gain>100</i_gain>
+            <d_gain>1000</d_gain>
+            <i_max>200</i_max>
+            <i_min>-200</i_min>
+        </plugin>
+    </gazebo>
 
     <link name="${prefix}door_opening_mechanism_link_x_axis_slide">
         <inertial>
@@ -133,18 +168,18 @@
             The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
             <mass value="5" />
             <origin xyz="0 0 0" />
-            <xacro:box_inertia_robot m="5" x="0.06" y="0.015" z="0.175"/>
+            <xacro:box_inertia_robot m="5" x="0.065" y="0.015" z="0.175"/>
         </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <box size="0.06 0.015 0.175"/>
+                <box size="0.065 0.015 0.175"/>
             </geometry>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <box size="0.06 0.015 0.175"/>
+                <box size="0.065 0.015 0.175"/>
             </geometry>
         </collision>
     </link>
@@ -156,6 +191,101 @@
                 <ambient>1 1 1 1</ambient>
                 <diffuse>1 1 1 1</diffuse>
                 <specular>1 1 1 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
+    <joint name="${prefix}door_opening_mechanism_joint_x_axis_slide_screwing" type="fixed" >
+        <axis xyz="1 0 0" />
+        <parent link="${prefix}door_opening_mechanism_link_x_axis_slide" />
+        <child link="${prefix}door_opening_mechanism_link_x_slide_screwing" />
+        <origin xyz="0.038 -0.032 0" rpy="0 0 1.57079632679"/>
+    </joint>
+
+    <link name="${prefix}door_opening_mechanism_link_x_slide_screwing">
+        <inertial>
+            <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
+            it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
+            therefore steering of the rb_theron becomes impossible. 
+            The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
+            <mass value="5" />
+            <origin xyz="0 0 0" />
+            <xacro:box_inertia_robot m="5" x="0.08" y="0.015" z="0.175"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.08 0.015 0.175"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.08 0.015 0.175"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <gazebo reference="${prefix}door_opening_mechanism_link_x_slide_screwing">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>1 1 1 1</ambient>
+                <diffuse>1 1 1 1</diffuse>
+                <specular>1 1 1 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
+    <joint name="${prefix}door_opening_mechanism_joint_tilting_hook" type="revolute" >
+        <axis xyz="1 0 0" />
+        <parent link="${prefix}door_opening_mechanism_link_x_slide_screwing" />
+        <child link="${prefix}door_opening_mechanism_link_tilting_hook" />
+        <origin xyz="0 -0.025 0" rpy="0 1.57079632679 0"/>
+        <limit lower="0" upper="1.6" effort="100" velocity="100" />
+    </joint>
+    <gazebo>
+        <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
+            <joint_name>${prefix}door_opening_mechanism_joint_tilting_hook</joint_name>
+            <p_gain>50000.0</p_gain>
+            <i_gain>100</i_gain>
+            <d_gain>1000</d_gain>
+            <i_max>200</i_max>
+            <i_min>-200</i_min>
+        </plugin>
+    </gazebo>
+
+    <link name="${prefix}door_opening_mechanism_link_tilting_hook">
+        <inertial>
+            <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
+            it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
+            therefore steering of the rb_theron becomes impossible. 
+            The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
+            <mass value="5" />
+            <origin xyz="0 0 0.1" />
+            <xacro:box_inertia_robot m="5" x="0.03" y="0.03" z="0.2"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0.1" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.03 0.03 0.2"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0.1" rpy="0 0 0"/>
+            <geometry>
+                <box size="0.03 0.03 0.2"/>
+            </geometry>
+        </collision>
+    </link>
+
+    <gazebo reference="${prefix}door_opening_mechanism_link_tilting_hook">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>1 0 1 1</ambient>
+                <diffuse>1 0 1 1</diffuse>
+                <specular>1 0 1 1</specular>
             </material>
         </visual>
     </gazebo>
