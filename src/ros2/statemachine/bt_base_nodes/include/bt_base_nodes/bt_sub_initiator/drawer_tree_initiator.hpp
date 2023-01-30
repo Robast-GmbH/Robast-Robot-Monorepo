@@ -14,10 +14,10 @@
 
 namespace bt_base_nodes
 {
-    class DrawerTreeInitiator : public bt_base_nodes::BTSubBase<communication_interfaces::msg::DrawerAddress> {
+    class DrawerTreeInitiator: public bt_base_nodes::BTSubBase<communication_interfaces::msg::DrawerAddress> {
 
     public:
-        DrawerTreeInitiator(const rclcpp::NodeOptions & options = rclcpp::NodeOptions()) : BTSubBase(options)
+        DrawerTreeInitiator(const rclcpp::NodeOptions& options = rclcpp::NodeOptions()): BTSubBase(options)
         {}
 
     protected:
