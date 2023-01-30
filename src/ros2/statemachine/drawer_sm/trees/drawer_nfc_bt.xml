@@ -13,7 +13,12 @@
                  green="0"
                  led_topic="drawer_leds"
                  mode="0"
-                 red="0"/>
+                 red="0"
+                 _description="steady_light = 0,
+                  fade_up = 1,
+                  running_led_from_mid_to_outside = 2,
+                  slow_fade_up_fade_down = 3,"
+                 />
       <DrawerStatusCondition target_value="false"
                              topic="/drawer_is_open"/>
       <ChangeLED blue="0"
@@ -22,7 +27,11 @@
                  green="0"
                  led_topic="drawer_leds"
                  mode="0"
-                 red="0"/>
+                 red="0"                 
+                 _description="steady_light = 0,
+                  fade_up = 1,
+                  running_led_from_mid_to_outside = 2,
+                  slow_fade_up_fade_down = 3,"/>
       <DrawerStatusCondition target_value="false"
                              topic="/drawer_is_open"/>
       <ChangeLED blue="0"
@@ -31,14 +40,22 @@
                  green="0"
                  led_topic="drawer_leds"
                  mode="0"
-                 red="0"/>
+                 red="0"
+                 _description="steady_light = 0,
+                  fade_up = 1,
+                  running_led_from_mid_to_outside = 2,
+                  slow_fade_up_fade_down = 3,"/>
       <ChangeLED blue="0"
                  brightness="0"
                  drawer_address="{drawer}"
                  green="0"
                  led_topic="drawer_leds"
                  mode="0"
-                 red="0"/>
+                 red="0"
+                 _description="steady_light = 0,
+                  fade_up = 1,
+                  running_led_from_mid_to_outside = 2,
+                  slow_fade_up_fade_down = 3,"/>
     </Sequence>
   </BehaviorTree>
 
