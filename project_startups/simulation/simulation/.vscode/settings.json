@@ -151,5 +151,11 @@
     "editor.formatOnType": true,
     "python.analysis.extraPaths": [
         "/opt/ros/galactic/lib/python3.8/site-packages/"
-    ]
+    ],
+    "[cpp]": {
+        "editor.tabSize": 2
+    },
+    "[python]": {
+        "editor.tabSize": 4
+    }
 }
