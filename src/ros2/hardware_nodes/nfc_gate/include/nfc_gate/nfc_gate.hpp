@@ -22,7 +22,7 @@
 #include "communication_interfaces/srv/create_user_nfc_tag.hpp"
 #include "nfc_gate/elatec_api.h"
 #include "serial_helper/serial_helper.h"
-#include "db_helper/postgresql_connector.h"
+#include "db_helper/postgresql_connector.hpp"
 
 namespace robast
 {
@@ -43,7 +43,7 @@ namespace robast
     int numReadings_;
 
     serial_helper::ISerialHelper* serial_connector_;
-    db_helper::IDBHelper* db_conncetor_;
+    db_helper::IDBHelper* db_connector_;
     rclcpp::TimerBase::SharedPtr timer_;
     std::shared_ptr<GoalHandleAuthenticateUser> timer_handle_;
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server_;
@@ -54,9 +54,9 @@ namespace robast
     void auth_accepted_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
     void auth_authenticate_user(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
 
-    std::string execute_scan(std::vector<std::string> permission_users, bool* found);
-    std::string validate_key(std::string scanned_key, std::vector<std::string> allValidUser, bool* found);
-    std::string scan_tag(bool* found);
+    bool execute_scan(std::vector<std::string> permission_users, std::shared_ptr<std::string> validated_user);
+    bool validate_key(std::string scanned_key, std::vector<std::string> allValidUser, std::shared_ptr< std::string> validated_user);
+    bool scan_tag(std::shared_ptr<std::string> tag_data);
 
     void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
     void start_up_scanner();

@@ -16,21 +16,14 @@ namespace db_helper
     class PostgreSqlHelper:public IDBHelper
     {
         private:
-            pqxx::connection* connection_handle_;
-            std::string connection_string_;
+            const std::string connection_parameter;
 
         public:
             PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname );
             ~PostgreSqlHelper();
-
-            std::string open_connection();
-            void close_connection();
-            bool perform_query(std::string sqlStatment, std::vector< std::vector<std::string> >* result_data, std::vector<std::string>* result_header);
+            bool perform_query(std::string sqlStatment, std::unique_ptr<std::vector< std::vector<std::string> >> result_data, std::unique_ptr< std::vector<std::string>> result_header);
             int perform_transaction(std::string SqlStatement);
-            bool checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::string* name);
-    
-
-
+            bool checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::shared_ptr< std::string> name);
     };
 }
 

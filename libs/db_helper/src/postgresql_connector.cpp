@@ -1,35 +1,26 @@
-#include "../include/db_helper/postgresql_connector.h"
+#include "db_helper/postgresql_connector.hpp"
 
 
 namespace db_helper
 {
-    PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname )
+    PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname ): connection_parameter("user=" + username + " password=" + password + " host=" + host + " port=5432 dbname=" + dbname + " target_session_attrs=read-write")
     {
-        connection_string_ = "user=" + username + " password=" + password + " host=" + host + " port=5432 dbname=" + dbname + " target_session_attrs=read-write";
     }
 
-    PostgreSqlHelper::~PostgreSqlHelper()
+     PostgreSqlHelper::~PostgreSqlHelper()
     {
-        close_connection();
     }
 
-    std::string PostgreSqlHelper::open_connection()
+    bool PostgreSqlHelper::perform_query(std::string sqlStatment, std::unique_ptr<std::vector< std::vector<std::string> >> result_data, std::unique_ptr<std::vector<std::string>> result_header)
     {
-        connection_handle_ =  new pqxx::connection(connection_string_);
-    }
-
-    void PostgreSqlHelper::close_connection()
-    {
-        connection_handle_->disconnect();
-    }
-
-    bool PostgreSqlHelper::perform_query(std::string sqlStatment, std::vector< std::vector<std::string> >*result_data, std::vector<std::string>* result_header )
-    {
+        
         // make the Query from the DB
-        pqxx::work session{ *connection_handle_ };
-        open_connection();
+        pqxx::connection connection_handle=   pqxx::connection("");
+        pqxx::work session{ connection_handle };
+        
         pqxx::result raw_db_feedback{ session.exec(sqlStatment) };
-        close_connection();
+        connection_handle.disconnect();
+
 
         // fill the colum name list
         for (int i = 0; i < raw_db_feedback.columns(); i++)
@@ -48,7 +39,7 @@ namespace db_helper
         }
     }
     
-   bool PostgreSqlHelper::checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::string* name)
+   bool PostgreSqlHelper::checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::shared_ptr<std::string> name)
     {
         std::vector<std::vector<std::string>> data = std::vector<std::vector<std::string>>();
         std::vector<std::string> header = std::vector<std::string>();
@@ -63,7 +54,7 @@ namespace db_helper
             target_users += lookup_scope[i];
         }
     
-        perform_query("SELECT concat(first_name, ' ', last_name) AS \"name\",FROM public.\"USER\" WHERE key =" + tag + " AND id in (" + target_users + ");", &data, &header);
+        perform_query("SELECT concat(first_name, ' ', last_name) AS \"name\",FROM public.\"USER\" WHERE key =" + tag + " AND id in (" + target_users + ");", std::make_unique< std::vector<std::vector<std::string>>>(data), std::make_unique<std::vector<std::string>>( header));
         if (data.size() == 1)
         {
             *name = data[0][0];
@@ -74,12 +65,12 @@ namespace db_helper
 
     int PostgreSqlHelper::perform_transaction(std::string SqlStatement)
     {
-        open_connection();
-        pqxx::work query_handle{ *connection_handle_ };
+        pqxx::connection connection_handle = pqxx::connection(connection_parameter);
+        pqxx::work query_handle= pqxx::work( connection_handle);
         pqxx::result result_handle{ query_handle.exec(SqlStatement)};
         int affected_Rows = result_handle.affected_rows();
         query_handle.commit();
-        close_connection();
+        connection_handle.disconnect();
         return affected_Rows;
     }
 }

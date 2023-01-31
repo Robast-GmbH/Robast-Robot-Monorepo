@@ -23,12 +23,12 @@ namespace db_helper
     }
 
     
-    bool MockPostgreSqlHelper::perform_query(std::string sqlStatment, std::vector< std::vector<std::string> >* result_data, std::vector<std::string>* result_header)
+    bool MockPostgreSqlHelper::perform_query(std::string sqlStatment, std::unique_ptr< std::vector< std::vector<std::string> >> result_data, std::unique_ptr<std::vector<std::string>> result_header)
     {
         return true;
     }
     
-    bool MockPostgreSqlHelper::checkUserTag(std::string tag, std::vector<std::string> Lookup_scope, std::string* result_data)
+    bool MockPostgreSqlHelper::checkUserTag(std::string tag, std::vector<std::string> Lookup_scope, std::shared_ptr<std::string> result_data)
     {
         if (user_list_.count(tag))
         {

@@ -50,6 +50,15 @@ add_library(${library_nfc_gate_test} SHARED
   test/src/mock_postgresql_helper.cpp
   test/src/test_nfc_gate.cpp
 )
+#ToDo: fix this that we can swap to the newer version
+# include(FetchContent)
+#   FetchContent_Declare(
+#     libpqxx
+#     GIT_REPOSITORY https://github.com/jtv/libpqxx.git
+#     GIT_TAG        17e5a6c8ac3abc05329891aaa378bd6004b9c8ee # should equal tag v7.7.4
+#   )
+#   FetchContent_MakeAvailable(libpqxx)
+#   file(REMOVE_RECURSE  CMAKE_BINARY_DIR/libpqxx-src/test/*)
 
 set(dependencies
   rclcpp

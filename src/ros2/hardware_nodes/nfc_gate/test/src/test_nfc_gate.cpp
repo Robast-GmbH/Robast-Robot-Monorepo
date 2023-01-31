@@ -5,7 +5,7 @@ namespace robast
     TestNFCGate::TestNFCGate(serial_helper::ISerialHelper* serial_connector, db_helper::IDBHelper* db_connector ):NFCGate()
     {
         NFCGate::serial_connector_ = serial_connector;
-        NFCGate::db_conncetor_ = db_connector;
+        NFCGate::db_connector_ = db_connector;
     }
 
     TestNFCGate::TestNFCGate() :NFCGate()
@@ -27,21 +27,6 @@ namespace robast
         
         NFCGate::serial_connector_ = new serial_helper::MockSerialHelper(serial_helper::MockSerialHelper(key));
       
-        NFCGate::db_conncetor_ = new db_helper::MockPostgreSqlHelper(validUserList);
-    }
-
-    std::string  TestNFCGate::execute_scan(std::vector<std::string> permission_keys, bool* found)
-    {
-        return  NFCGate::execute_scan(permission_keys, found);
-    }
-
-    std::string  TestNFCGate::validate_key(std::string scanned_key, std::vector<std::string> allValidKeys, bool* found)
-    {
-        return  NFCGate::validate_key(scanned_key, allValidKeys, found);
-    }
-
-    std::string  TestNFCGate::scan_tag(bool* found)
-    {
-        return  NFCGate::scan_tag(found);
+        NFCGate::db_connector_ = new db_helper::MockPostgreSqlHelper(validUserList);
     }
 }
