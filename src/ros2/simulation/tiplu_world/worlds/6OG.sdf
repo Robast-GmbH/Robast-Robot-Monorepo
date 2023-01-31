@@ -3,6 +3,8 @@
 <sdf version="1.8">
   <world name="6OG">
 
+    <gravity>0 0 -9.81</gravity>
+
     <light name="sun" type="directional">
       <cast_shadows>true</cast_shadows>
       <pose>0 0 10 0 0 0</pose>
