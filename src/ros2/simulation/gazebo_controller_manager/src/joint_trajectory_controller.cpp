@@ -77,7 +77,7 @@ namespace gazebo_controller_manager
         const rclcpp_action::GoalUUID& uuid,
         std::shared_ptr<const control_msgs::action::FollowJointTrajectory::Goal> goal)
     {
-        RCLCPP_INFO(this->get_logger(), "Received goal request with order");
+        RCLCPP_INFO(this->get_logger(), "Received goal request");
         (void)uuid;
 
         return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
