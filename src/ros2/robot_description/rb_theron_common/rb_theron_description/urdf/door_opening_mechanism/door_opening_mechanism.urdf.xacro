@@ -249,11 +249,11 @@
     <gazebo>
         <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
             <joint_name>${prefix}door_opening_mechanism_joint_tilting_hook</joint_name>
-            <p_gain>5000.0</p_gain>
-            <i_gain>10000</i_gain>
-            <d_gain></d_gain>
-            <i_max>2000</i_max>
-            <i_min>-2000</i_min>
+            <p_gain>500.0</p_gain>
+            <i_gain>1000</i_gain>
+            <d_gain>10</d_gain>
+            <i_max>200</i_max>
+            <i_min>-200</i_min>
         </plugin>
     </gazebo>
 
