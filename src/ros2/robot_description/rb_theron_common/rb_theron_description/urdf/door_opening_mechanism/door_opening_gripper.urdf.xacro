@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<robot name="door_opening_gripper" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="box_inertia_robot" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                izz="${m*(x*x+z*z)/12}" />
+    </xacro:macro>
+
+    <xacro:macro name="door_opening_gripper" params="prefix parent *origin">
+
+    <!-- <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/alu_profile.urdf.xacro" /> -->
+    <xacro:alu_profile prefix="${prefix}" suffix="gripper" parent="${parent}" x="0.03" y="0.03" z="0.3" >
+        <xacro:insert_block name="origin" />
+	</xacro:alu_profile>
+
+    </xacro:macro>
+</robot>

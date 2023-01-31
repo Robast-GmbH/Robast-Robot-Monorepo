@@ -292,7 +292,11 @@
         </visual>
     </gazebo>
 
-
+    <!-- Gripper -->
+    <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_gripper.urdf.xacro" />
+    <xacro:door_opening_gripper prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_tilting_hook" >
+		<origin xyz="0 0 0.215" rpy="0 1.57079632679 0"/>
+	</xacro:door_opening_gripper>
 
     </xacro:macro>
 </robot>
