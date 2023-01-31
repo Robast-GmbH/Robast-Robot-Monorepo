@@ -98,6 +98,7 @@ install(DIRECTORY include/
 
 install(DIRECTORY
   launch
+  config
   DESTINATION share/${PROJECT_NAME}/
 )
 
