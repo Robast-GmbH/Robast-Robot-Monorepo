@@ -9,7 +9,7 @@
 
     <xacro:macro name="alu_profile" params="prefix suffix parent *origin x y z">
 
-    <joint name="${prefix}alu_profile_joint${suffix}" type="fixed">
+    <joint name="${prefix}alu_profile_joint_${suffix}" type="fixed">
         <parent link="${parent}"/>
         <child link="${prefix}alu_profile_link_${suffix}"/>
         <xacro:insert_block name="origin" />
@@ -21,7 +21,7 @@
             it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
             therefore steering of the rb_theron becomes impossible. 
             The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
-            <mass value="${z} * 1.26" />
+            <mass value="${z * 1.26}" />
             <origin xyz="0 0 0" />
             <xacro:box_inertia_robot m="1" x="${x}" y="${y}" z="${z}"/>
         </inertial>
