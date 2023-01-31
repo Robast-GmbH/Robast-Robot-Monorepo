@@ -94,16 +94,19 @@
         <parent link="${prefix}alu_profile_link_right" />
         <child link="${prefix}door_opening_mechanism_link_y_axis_slide" />
         <origin xyz="-0.075 -0.225 -0.1" rpy="1.57079632679 0 0"/>
-        <limit lower="0.0" upper="0.25" effort="100" velocity="100" />
+        <limit lower="-0.25" upper="0.25" effort="100" velocity="100" />
+        <dynamics damping="0.1" friction="0.3"/>
     </joint>
     <gazebo>
         <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
             <joint_name>${prefix}door_opening_mechanism_joint_y_axis_slide</joint_name>
             <p_gain>50000.0</p_gain>
-            <i_gain>100</i_gain>
-            <d_gain>1000</d_gain>
+            <i_gain>1000</i_gain>
+            <d_gain>5000</d_gain>
             <i_max>200</i_max>
             <i_min>-200</i_min>
+            <cmd_max>1000</cmd_max>
+            <cmd_min>-1000</cmd_min>
         </plugin>
     </gazebo>
 
@@ -112,10 +115,10 @@
             <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
             it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
             therefore steering of the rb_theron becomes impossible. 
-            The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
-            <mass value="5" />
+            The mass of the 550mm norelem Zahnradantrieb is 2.34kg (rail) + 0.3kg (slide) -->
+            <mass value="2.64" />
             <origin xyz="0 0 0" />
-            <xacro:box_inertia_robot m="5" x="0.06" y="0.06" z="0.55"/>
+            <xacro:box_inertia_robot m="2.64" x="0.06" y="0.06" z="0.55"/>
         </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -130,7 +133,6 @@
             </geometry>
         </collision>
     </link>
-
     <gazebo reference="${prefix}door_opening_mechanism_link_y_axis_slide">
         <visual>
             <material>
@@ -148,13 +150,14 @@
         <child link="${prefix}door_opening_mechanism_link_x_axis_slide" />
         <origin xyz="-0.04 0 0" rpy="0 0 1.57079632679"/>
         <limit lower="-0.25" upper="0.25" effort="100" velocity="100" />
+        <dynamics damping="0.1" friction="0.3"/>
     </joint>
     <gazebo>
         <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
             <joint_name>${prefix}door_opening_mechanism_joint_x_axis_slide</joint_name>
             <p_gain>50000.0</p_gain>
             <i_gain>100</i_gain>
-            <d_gain>1000</d_gain>
+            <d_gain>5000</d_gain>
             <i_max>200</i_max>
             <i_min>-200</i_min>
         </plugin>
@@ -166,9 +169,9 @@
             it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
             therefore steering of the rb_theron becomes impossible. 
             The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
-            <mass value="5" />
+            <mass value="1" />
             <origin xyz="0 0 0" />
-            <xacro:box_inertia_robot m="5" x="0.065" y="0.015" z="0.175"/>
+            <xacro:box_inertia_robot m="1" x="0.065" y="0.015" z="0.175"/>
         </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -183,7 +186,6 @@
             </geometry>
         </collision>
     </link>
-
     <gazebo reference="${prefix}door_opening_mechanism_link_x_axis_slide">
         <visual>
             <material>
@@ -208,9 +210,9 @@
             it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
             therefore steering of the rb_theron becomes impossible. 
             The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
-            <mass value="5" />
+            <mass value="1" />
             <origin xyz="0 0 0" />
-            <xacro:box_inertia_robot m="5" x="0.08" y="0.015" z="0.175"/>
+            <xacro:box_inertia_robot m="1" x="0.08" y="0.015" z="0.175"/>
         </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
@@ -225,7 +227,6 @@
             </geometry>
         </collision>
     </link>
-
     <gazebo reference="${prefix}door_opening_mechanism_link_x_slide_screwing">
         <visual>
             <material>
@@ -243,15 +244,16 @@
         <child link="${prefix}door_opening_mechanism_link_tilting_hook" />
         <origin xyz="0 -0.025 0" rpy="0 1.57079632679 0"/>
         <limit lower="0" upper="1.6" effort="100" velocity="100" />
+        <dynamics damping="0.1" friction="0.3"/>
     </joint>
     <gazebo>
         <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
             <joint_name>${prefix}door_opening_mechanism_joint_tilting_hook</joint_name>
-            <p_gain>50000.0</p_gain>
-            <i_gain>100</i_gain>
-            <d_gain>1000</d_gain>
-            <i_max>200</i_max>
-            <i_min>-200</i_min>
+            <p_gain>5000.0</p_gain>
+            <i_gain>10000</i_gain>
+            <d_gain></d_gain>
+            <i_max>2000</i_max>
+            <i_min>-2000</i_min>
         </plugin>
     </gazebo>
 
@@ -261,9 +263,9 @@
             it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
             therefore steering of the rb_theron becomes impossible. 
             The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
-            <mass value="5" />
+            <mass value="0.2" />
             <origin xyz="0 0 0.1" />
-            <xacro:box_inertia_robot m="5" x="0.03" y="0.03" z="0.2"/>
+            <xacro:box_inertia_robot m="0.2" x="0.03" y="0.03" z="0.2"/>
         </inertial>
         <visual>
             <origin xyz="0 0 0.1" rpy="0 0 0"/>
