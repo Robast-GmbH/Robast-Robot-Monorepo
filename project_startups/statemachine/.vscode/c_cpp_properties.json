@@ -6,15 +6,13 @@
                 "limitSymbolsToIncludedHeaders": false
             },
             "includePath": [
-                "/workspace/install/**",
                 "/opt/ros/humble/include/**",
                 "/workspace/src/communication_interfaces/**",
                 "/workspace/src/statemachine**",
-                "/workspace/build/**",
+                "/workspace/src/statemachine/**",
                 "/workspace/install/behaviortree_cpp/**",
                 "${workspaceFolder}/src/statemachine/bt_plugins/include",
-                "${workspaceFolder}/src/statemachine/bt_plugins/tests",
-                "/opt/vcpkg/installed/**"
+                "${workspaceFolder}/src/statemachine/bt_plugins/tests"
             ],
             "name": "ROS2",
             "intelliSenseMode": "gcc-x64",
