@@ -19,29 +19,21 @@
         properly, because this makes some of the wheels lose contact to the ground and 
         therefore steering of the rb_theron becomes impossible. -->
 
-        <xacro:property name="door_opening_mechanism_base_link" value="${prefix}door_opening_mechanism_base_link" />
-
-        <joint name="${prefix}door_opening_mechanism_joint" type="fixed">
-            <parent link="${parent}"/>
-            <child link="${door_opening_mechanism_base_link}"/>
-            <xacro:insert_block name="origin" />
-        </joint>
-
         <!-- Base link -->
-        <link name="${door_opening_mechanism_base_link}">
-            <visual>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <box size="0.001 0.001 0.001" />
-            </geometry>
-            </visual>
-            <collision>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <box size="0.001 0.001 0.001" />
-            </geometry>
-            </collision>
-        </link>
+        <xacro:property name="door_opening_mechanism_base_link" value="${prefix}door_opening_mechanism_base_link" />
+        <xacro:basic_box 
+            parent="${parent}"
+            joint_name="${prefix}door_opening_mechanism_joint"
+            link_name="${door_opening_mechanism_base_link}"
+            m="0.001"
+            x="0.001"
+            y="0.001"
+            z="0.001"
+            r="0"
+            g="1"
+            b="1">
+            <xacro:insert_block name="origin" />
+        </xacro:basic_box>
 
         <!-- Aluprofile frame -->
         <xacro:alu_profile prefix="${prefix}" suffix="bottom" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.46" r="0.1" g="0.1" b="0.1" >
@@ -68,7 +60,7 @@
             z="0.56"
             r="0"
             g="1"
-            b="0">
+            b="1">
             <origin xyz="-0.015 0.2 0.55" rpy="0 0 0"/>
         </xacro:basic_box>
 
