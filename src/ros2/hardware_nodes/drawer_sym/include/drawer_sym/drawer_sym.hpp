@@ -7,7 +7,6 @@
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "communication_interfaces/action/drawer_interaction.hpp"
 #include <string.h>
-
 namespace robast
 { 
   

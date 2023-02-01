@@ -273,7 +273,7 @@ namespace drawer_gate
   {
     robast_can_msgs::CanMessage can_msg_drawer_led = this->can_db_.can_messages.at(CAN_MSG_DRAWER_LED);
 
-   auto can_signals_drawer_led = can_msg_drawer_led.get_can_signals();
+    std::vector<robast_can_msgs::CanSignal> can_signals_drawer_led = can_msg_drawer_led.get_can_signals();
 
     can_signals_drawer_led.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(drawer_controller_id);
 
