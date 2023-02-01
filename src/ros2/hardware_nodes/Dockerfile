@@ -17,6 +17,3 @@ RUN apt-get update && apt-get install -y \
 
 ENV ROS_DOMAIN_ID=0
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-
-
-

@@ -1,4 +1,4 @@
-#include "catch.hpp"
+#include <catch2/catch_all.hpp>
 
 #include "../include/can/can_db.hpp"
 #include "../include/can/can_frame.h"
@@ -24,7 +24,6 @@
 
 SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[robast_can_msgs]")
 {
-
     GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, LED_red, LED_green, LED_blue, LED_brightness, LED_mode")
     {
         uint32_t msg_id = CAN_ID_DRAWER_LED;
@@ -35,7 +34,7 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
         uint64_t data_LED_blue = 3;
         uint64_t data_LED_brightness = 7;
         uint64_t data_LED_mode = 1;
-        uint8_t u8_can_data[8] = { 0x01,0x02,0x03,(uint8_t)data_LED_red,(uint8_t)data_LED_green,(uint8_t)data_LED_blue,(uint8_t)data_LED_brightness,0b00100000 };
+        uint8_t u8_can_data[8] = { 0x01, 0x02, 0x03, (uint8_t)data_LED_red, (uint8_t)data_LED_green, (uint8_t)data_LED_blue, (uint8_t)data_LED_brightness, 0b00100000 };
 
         WHEN("Creating the CanSignal classes")
         {
@@ -190,7 +189,6 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
 
 SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
 {
-
     GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, LED_red, LED_green, LED_blue")
     {
         uint32_t msg_id_lock = CAN_ID_DRAWER_LOCK;
@@ -385,7 +383,6 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
 
         WHEN("Encoding a CAN message with an id, that does not exist in the can_db messages")
         {
-
             THEN("The resulting CanFrame should throw a invalid_argument exception")
             {
                 REQUIRE_THROWS_AS(robast_can_msgs::encode_can_message_into_can_frame(can_message_invalid_id, can_db.can_messages), std::invalid_argument);
@@ -461,8 +458,8 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
             }
         }
 
-        // TODO: Somehow this tests results in an undefined reference error although it worked at some point.
-        // TODO: Nevertheless the function is used in the "decode_ascii_command_into_can_message" function which is tested too. 
+        // TODO(anyone): Somehow this tests results in an undefined reference error although it worked at some point.
+        // TODO(anyone): Nevertheless the function is used in the "decode_ascii_command_into_can_message" function which is tested too.
         // WHEN("Converting a string containing hex numbers to an unsigned int") {
         //     std::string hex_string_1 = "00F";
         //     std::string hex_string_2 = "010";
@@ -547,6 +544,5 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
                 REQUIRE(decoded_can_message_drawer_feedback.value().get_can_signals()[CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED].get_data() == 1);
             }
         }
-
     }
 }

@@ -1,5 +1,5 @@
-#ifndef PINOUT_DEFINES_HPP_
-#define PINOUT_DEFINES_HPP_
+#ifndef DRAWER_CONTROLLER_PINOUT_DEFINES_HPP
+#define DRAWER_CONTROLLER_PINOUT_DEFINES_HPP
 
 /*********************************************************************************************************
   PINOUT DEFINES
@@ -29,4 +29,4 @@
 
 
 
-#endif /* PINOUT_DEFINES_HPP_ */
+#endif /* DRAWER_CONTROLLER_PINOUT_DEFINES_HPP */

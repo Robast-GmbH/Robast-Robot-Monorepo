@@ -6,8 +6,8 @@ namespace robast_can_msgs
     {
         this->data_ = data;
     }
-	
-	uint64_t CanSignal::get_data() const
+
+    uint64_t CanSignal::get_data() const
     {
         return this->data_;
     }
@@ -21,4 +21,5 @@ namespace robast_can_msgs
     {
         return this->bit_length_;
     }
-}
+}  // namespace robast_can_msgs
+

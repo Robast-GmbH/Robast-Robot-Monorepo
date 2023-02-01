@@ -1,0 +1,132 @@
+cmake_minimum_required(VERSION 3.8)
+project(bt_plugins)
+
+if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+add_compile_options(-Wall -Wextra -Wpedantic)
+endif()
+set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+
+find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rclcpp_action REQUIRED)
+find_package(std_msgs REQUIRED)
+find_package(communication_interfaces REQUIRED)
+find_package(behaviortree_cpp REQUIRED)
+
+set(dependencies
+  rclcpp
+  rclcpp_action
+  std_msgs
+  communication_interfaces
+  behaviortree_cpp
+)
+include_directories(
+  include
+)
+
+set(library_name ${PROJECT_NAME})
+
+add_library(${library_name} SHARED
+  src/behavior_tree_engine.cpp
+)
+
+ament_target_dependencies(${library_name}
+  ${dependencies}
+)
+
+add_library(change_led_action_bt_node SHARED src/action/change_led_action.cpp)
+list(APPEND plugin_libs change_led_action_bt_node)
+
+add_library(drawer_open_request_action_bt_node SHARED src/action/drawer_open_request_action.cpp)
+list(APPEND plugin_libs drawer_open_request_action_bt_node)
+
+add_library(open_drawer_action_bt_node SHARED src/action/open_drawer_action.cpp)
+list(APPEND plugin_libs open_drawer_action_bt_node)
+
+add_library(drawer_status_condition_bt_node SHARED src/condition/drawer_status_condition.cpp)
+list(APPEND plugin_libs drawer_status_condition_bt_node)
+
+foreach(bt_plugin ${plugin_libs})
+  ament_target_dependencies(${bt_plugin} ${dependencies})
+  target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)
+endforeach()
+
+install(TARGETS ${library_name}
+                ${plugin_libs}
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
+)
+
+install(DIRECTORY include/
+  DESTINATION include/
+)
+
+install(FILES xml/bt_nodes.xml DESTINATION share/${PROJECT_NAME})
+
+if(BUILD_TESTING)
+  include(FetchContent)
+
+  FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG        ab6c7375be9a8e71ee84c6f8537113f9f47daf99 # should equal tag v3.2.1
+  )
+  FetchContent_MakeAvailable(Catch2)
+
+
+  include_directories(tests/*)
+  add_library(test_helper SHARED tests/test_helper.cpp)
+  list(APPEND test_libs test_helper)
+
+  add_executable(led_test tests/actions/change_led_action_test.cpp)
+  list(APPEND test_executables led_test)
+  add_executable(open_drawer_test tests/actions/open_drawer_action_test.cpp)
+  list(APPEND test_executables open_drawer_test)
+  add_executable(drawer_status_condition_test tests/conditions/drawer_status_condition_test.cpp)
+  list(APPEND test_executables drawer_status_condition_test)
+
+  ament_target_dependencies(${test_libs}
+  ${dependencies})
+
+  foreach(test ${test_executables})
+    target_link_libraries(${test}
+    ${library_name}
+    ${plugin_libs}
+    ${test_libs}
+    Catch2::Catch2
+    Catch2::Catch2WithMain
+    )
+    ament_target_dependencies(${test}
+    ${dependencies})
+      include(Catch)
+    catch_discover_tests(${test})
+  endforeach()
+
+  include(CTest)
+
+  # find_package(ament_cmake_lint_cmake REQUIRED)
+  # ament_lint_cmake()
+  find_package(ament_cmake_flake8 REQUIRED)
+  ament_flake8()
+  find_package(ament_cmake_xmllint REQUIRED)
+  ament_xmllint()
+  find_package(ament_cmake_pep257 REQUIRED)
+  ament_pep257()
+  find_package(ament_cmake_cppcheck REQUIRED)
+  ament_cppcheck()
+endif()
+
+ament_export_include_directories(
+  include
+)
+
+ament_export_libraries(
+  ${library_name}
+  ${plugin_libs}
+)
+
+ament_export_dependencies(${dependencies})
+
+ament_package()

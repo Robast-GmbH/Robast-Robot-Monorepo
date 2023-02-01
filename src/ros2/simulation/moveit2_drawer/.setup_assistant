@@ -7,7 +7,7 @@ moveit_setup_assistant_config:
   package_settings:
     author_name: Jacob Ritterbach
     author_email: j.ritterbach@robast.de
-    generated_timestamp: 1669713527
+    generated_timestamp: 1674480000
   control_xacro:
     command:
       - position
