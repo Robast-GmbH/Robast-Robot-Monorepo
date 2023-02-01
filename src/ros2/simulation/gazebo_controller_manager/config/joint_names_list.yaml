@@ -1,2 +1,2 @@
 drawer_joints: ["drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"]
-door_opening_mechanism_joints: ["door_opening_mechanism_joint_y_axis_slide", "door_opening_mechanism_joint_x_axis_slide", "door_opening_mechanism_joint_tilting_hook"]
+door_opening_mechanism_joints: ["door_opening_mechanism_joint_tilting_hook", "door_opening_mechanism_joint_x_axis_slide", "door_opening_mechanism_joint_y_axis_slide"]

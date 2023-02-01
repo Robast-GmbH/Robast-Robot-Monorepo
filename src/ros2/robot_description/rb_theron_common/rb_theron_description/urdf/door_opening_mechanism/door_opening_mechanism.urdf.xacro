@@ -94,7 +94,7 @@
         <parent link="${prefix}alu_profile_link_right" />
         <child link="${prefix}door_opening_mechanism_link_y_axis_slide" />
         <origin xyz="-0.075 -0.225 -0.1" rpy="1.57079632679 0 0"/>
-        <limit lower="-0.25" upper="0.25" effort="100" velocity="100" />
+        <limit lower="-0.05" upper="0.25" effort="100" velocity="100" />
         <dynamics damping="0.1" friction="0.3"/>
     </joint>
     <gazebo>
@@ -149,7 +149,7 @@
         <parent link="${prefix}door_opening_mechanism_link_y_axis_slide" />
         <child link="${prefix}door_opening_mechanism_link_x_axis_slide" />
         <origin xyz="-0.04 0 0" rpy="0 0 1.57079632679"/>
-        <limit lower="-0.25" upper="0.25" effort="100" velocity="100" />
+        <limit lower="-0.175" upper="0.20" effort="100" velocity="100" />
         <dynamics damping="0.1" friction="0.3"/>
     </joint>
     <gazebo>
@@ -201,29 +201,26 @@
         <axis xyz="1 0 0" />
         <parent link="${prefix}door_opening_mechanism_link_x_axis_slide" />
         <child link="${prefix}door_opening_mechanism_link_x_slide_screwing" />
-        <origin xyz="0.038 -0.032 0" rpy="0 0 1.57079632679"/>
+        <origin xyz="0.038 -0.027 0" rpy="0 0 1.57079632679"/>
     </joint>
 
     <link name="${prefix}door_opening_mechanism_link_x_slide_screwing">
         <inertial>
-            <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
-            it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
-            therefore steering of the rb_theron becomes impossible. 
-            The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
+
             <mass value="1" />
             <origin xyz="0 0 0" />
-            <xacro:box_inertia_robot m="1" x="0.08" y="0.015" z="0.175"/>
+            <xacro:box_inertia_robot m="1" x="0.073" y="0.015" z="0.175"/>
         </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <box size="0.08 0.015 0.175"/>
+                <box size="0.073 0.015 0.175"/>
             </geometry>
         </visual>
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
-                <box size="0.08 0.015 0.175"/>
+                <box size="0.073 0.015 0.175"/>
             </geometry>
         </collision>
     </link>

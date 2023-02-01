@@ -41,7 +41,8 @@ def generate_launch_description():
         except yaml.YAMLError as exc:
             print(exc)
 
-    joint_names_list = joint_names_yaml[joint_names]
+    # joint_names_list = ["drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"]
+    joint_names_list = ["door_opening_mechanism_joint_tilting_hook", "door_opening_mechanism_joint_x_axis_slide", "door_opening_mechanism_joint_y_axis_slide"]
 
     gz_joint_topics_list = []
     for joint_name in joint_names_list:
