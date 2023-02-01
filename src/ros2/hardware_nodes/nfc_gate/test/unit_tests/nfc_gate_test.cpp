@@ -1,7 +1,6 @@
-#include <catch2/catch.hpp>
+#include "catch.hpp"
 #include "fakeit.hpp"
 #include "test/test_nfc_gate.hpp"
-
 
 
 namespace robast
@@ -22,7 +21,7 @@ namespace robast
       Method(db_helper_mock, close_connection);
       fakeit::When(Method(db_helper_mock, perform_query)).AlwaysDo([=](std::string sqlStatment, std::vector< std::vector<std::string> >*result_data, std::vector<std::string> *result_header) -> bool
         {
-          if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != std::string::npos)
+          if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != string::npos)
           {
             result_data->push_back(std::vector<std::string>{"Test User1"});
             result_header->push_back("name");
@@ -59,7 +58,7 @@ namespace robast
         THEN("The result of the validation should be the key entered as it was found.")
         {
           bool found;
-          std::string result = nfc_reader->validate_key(valid_key, list, std::make_unique<bool>(found));
+          std::string result = nfc_reader->validate_key(valid_key, list, &found);
           CHECK(found);
           REQUIRE(result == target_user);
         }
@@ -72,7 +71,7 @@ namespace robast
         THEN("The result of the validation should be an empty string as it is not a valid key")
         {
           bool found;
-          std::string result = nfc_reader->validate_key(invalid_key, list, std::make_unique<bool>(found));
+          std::string result = nfc_reader->validate_key(invalid_key, list, &found);
           CHECK_FALSE(found);
           REQUIRE(result == no_key_found);
           
@@ -86,7 +85,7 @@ namespace robast
         THEN("The result of the validation should be an empty string as it is not a valid key")
         {
           bool found;
-          std::string result = nfc_reader->validate_key(empty_key, list, std::make_unique<bool>(found));
+          std::string result = nfc_reader->validate_key(empty_key, list, &found);
           CHECK_FALSE(found);
           REQUIRE(result == no_key_found);
 
@@ -113,7 +112,7 @@ namespace robast
 
       WHEN("No card is detected")
       {
-        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> std::string
+        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
           {
             (void)responce_size;
             (void)cmd;
@@ -123,7 +122,7 @@ namespace robast
         THEN("The reader Returns a empty string and indicates that nothing was found")
         {
 
-          std::string key = nfc_reader->scan_tag(std::make_unique<bool>(found));
+          std::string key = nfc_reader->scan_tag(&found);
           CHECK(key == "");
           REQUIRE_FALSE(found);
         }
@@ -132,7 +131,7 @@ namespace robast
       WHEN("The key from the card is empty")
       {
         std::string key_from_card = "";
-        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> std::string
+        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
           {
             (void)responce_size;
             if (cmd == NFC_READ_MC("02"))
@@ -145,7 +144,7 @@ namespace robast
 
         THEN("The reader returns the scanned key which is empty and indicates that something was found.")
         {
-          std::string key = nfc_reader->scan_tag(std::make_unique<bool>(found));
+          std::string key = nfc_reader->scan_tag(&found);
           CHECK(key == key_from_card);
           REQUIRE(found);
         }
@@ -155,7 +154,7 @@ namespace robast
       {
 
         std::string key_from_card = "6df1933415dde9fa1f9f6998a26b40db";
-        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> std::string
+        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
           {
             (void)responce_size;
             if (cmd == NFC_READ_MC("02"))
@@ -169,7 +168,7 @@ namespace robast
         THEN("The reader returns the scanned key, indecates that a Key has been found and on the serial connection the a NFC login message followed by a Read Message was send in the reading process to get the data from the card")
         {
           bool found;
-          std::string key = nfc_reader->scan_tag(std::make_unique<bool>(found));
+          std::string key = nfc_reader->scan_tag(&found);
           CHECK(found);
           CHECK(key == key_from_card);
           REQUIRE(fakeit::Verify(Method(serial_helper_mock, ascii_interaction).Using(NFC_LOGIN_MC_STANDART("00"), fakeit::_, fakeit::_), Method(serial_helper_mock, ascii_interaction).Using(NFC_READ_MC("02"), fakeit::_, fakeit::_)));
@@ -194,7 +193,7 @@ namespace robast
      
       fakeit::When(Method(db_helper_mock, checkUserTag)).AlwaysDo([=](std::string sqlStatment, std::vector<std::string> Lookup_scope, std::string*result_data) -> bool
         {
-          if (sqlStatment.find("6df1933415dde9fa1f9f6998a26b40db") != std::string::npos)
+          if (sqlStatment.find("6df1933415dde9fa1f9f6998a26b40db") != string::npos)
           {
             *result_data ="Test User1";
             return true;
@@ -214,7 +213,7 @@ namespace robast
       WHEN("The key from the card is in the list of possible keys")
       {
         std::string key_from_card = "6df1933415dde9fa1f9f6998a26b40db";
-        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> std::string
+        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
           {
             (void)responce_size;
             if (cmd == NFC_READ_MC("02"))
@@ -231,7 +230,7 @@ namespace robast
         THEN("The reader returns the scanned key  and a NFC login message followed by a Read Message should have been performed to read data from the Card")
         {
           bool found;
-          std::string key = nfc_reader->execute_scan(list, std::make_unique<bool>(found));
+          std::string key = nfc_reader->execute_scan(list, &found);
           REQUIRE(key == target_user);
         }
       }
@@ -239,7 +238,7 @@ namespace robast
       WHEN("The key from the card is not in the list of possible keys")
       {
         std::string key_from_card = "";
-        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> std::string
+        fakeit::When(Method(serial_helper_mock, ascii_interaction)).AlwaysDo([=](auto cmd, auto& responce, auto responce_size)-> string
           {
             (void)responce_size;
             (void)cmd;
@@ -257,7 +256,7 @@ namespace robast
         THEN("The reader returns an empty sting")
         {
           bool found;
-          std::string key = nfc_reader->execute_scan(list, std::make_unique<bool>(found));
+          std::string key = nfc_reader->execute_scan(list, &found);
           REQUIRE(key == no_key_found);
         }
       }

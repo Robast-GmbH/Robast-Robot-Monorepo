@@ -3,6 +3,7 @@ import launch_ros.actions
 
 
 def generate_launch_description():
+    # Parameters
 
     # Nodes launching commands
     start_nfc_gate_cmd = launch_ros.actions.Node(

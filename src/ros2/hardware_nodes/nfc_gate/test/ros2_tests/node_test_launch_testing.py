@@ -1,16 +1,16 @@
-import os
-import unittest
 
+import unittest
+import yaml
+import os
 import ament_index_python
 import launch
+from launch_ros.actions import Node
 import launch_testing
 import launch_testing.actions
 import launch_testing.util
-import pytest
 import rclpy
-import yaml
-from launch_ros.actions import Node
 from rclpy.action import ActionClient
+import pytest
 
 from communication_interfaces.action import AuthenticateUser
 
@@ -36,12 +36,7 @@ def generate_test_description():
         parameters=[{
                         "key": input_data['nfc']['card_content'],
                         "User1_key": input_data['nfc']['card_content'],
-                        "User1_name": input_data['nfc']['authorised_user'],
-                        "User2_key": input_data['nfc']['card_content'],
-                        "User2_name": input_data['nfc']['authorised_user'],
-                        "User3_key": input_data['nfc']['card_content'],
-                        "User3_name": input_data['nfc']['authorised_user']
-
+                        "User1_name": input_data['nfc']['authorised_user']
                     }]
     )
     context = {'dut': dut}
@@ -74,7 +69,6 @@ class TestProcessOutput(unittest.TestCase):
 
     def goal_response_callback(self, future):
         result = future.result().result
-
         self.result_key = result.permission_key_used
         self.result_error = result.error_message
         self.is_action_done = True
@@ -83,11 +77,12 @@ class TestProcessOutput(unittest.TestCase):
         future.feedback
 
     def done_callback(self, future):
-        future.result().get_result_async().add_done_callback(self.goal_response_callback)
+        return future.result().get_result_async().add_done_callback(self.goal_response_callback)
 
     def test_dut_output(self, dut, proc_output):
-
+        # Get current functionname
         self.is_action_done = False
+
         # create action massage
         test_goal_msg = AuthenticateUser.Goal()
         test_goal_msg.permission_keys = [input_data['nfc']['authorised_user']]
@@ -95,9 +90,8 @@ class TestProcessOutput(unittest.TestCase):
         # call the Service to test
         self._action_client = ActionClient(self.node, AuthenticateUser, 'authenticate_user')
         self._action_client.wait_for_server()
-
-        action_future = self._action_client.send_goal_async(test_goal_msg, self.feedback_callback)
-        action_future.add_done_callback(self.done_callback)
+        feature = self._action_client.send_goal_async(test_goal_msg, self.feedback_callback)
+        feature.add_done_callback(self.done_callback)
 
         # Read data of expected result
         EXPECTED_DATA_PATH = os.path.join(
@@ -112,10 +106,8 @@ class TestProcessOutput(unittest.TestCase):
         expected_error = data['nfc']['authentification_error_message']
 
         try:
-
             while not self.is_action_done:
                 rclpy.spin_once(self.node, timeout_sec=10.1)
-
             self.assertEqual(self.result_key, expected_result)
             self.assertEqual(self.result_error, expected_error)
 

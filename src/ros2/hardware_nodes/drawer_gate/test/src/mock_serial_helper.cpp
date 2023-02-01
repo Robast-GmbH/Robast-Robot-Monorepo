@@ -1,6 +1,7 @@
 #include "test/mock_serial_helper.hpp"
 #include <iostream>
 #include <fstream>
+#include<optional>
 
 namespace serial_helper
 {

@@ -50,6 +50,15 @@ add_library(${library_nfc_gate_test} SHARED
   test/src/mock_postgresql_helper.cpp
   test/src/test_nfc_gate.cpp
 )
+#ToDo: fix this that we can swap to the newer version
+# include(FetchContent)
+#   FetchContent_Declare(
+#     libpqxx
+#     GIT_REPOSITORY https://github.com/jtv/libpqxx.git
+#     GIT_TAG        17e5a6c8ac3abc05329891aaa378bd6004b9c8ee # should equal tag v7.7.4
+#   )
+#   FetchContent_MakeAvailable(libpqxx)
+#   file(REMOVE_RECURSE  CMAKE_BINARY_DIR/libpqxx-src/test/*)
 
 set(dependencies
   rclcpp
@@ -90,10 +99,6 @@ if(BUILD_TESTING)
     GIT_TAG        v2.13.10 # should equal tag v3.2.1
   )
   FetchContent_MakeAvailable(Catch2)
-
-  file(GLOB_RECURSE unit_test_srcs "test/unit_tests/*.cpp")
-
-  file(GLOB_RECURSE test_srcs "test/src/*.cpp")
 
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
 

@@ -8,8 +8,8 @@ namespace serial_helper
     class MockSerialHelper : public ISerialHelper
     {
     public:
+        MockSerialHelper();// added
         MockSerialHelper(std::string key);
-        MockSerialHelper();
         ~MockSerialHelper();
 
         std::string open_serial();
