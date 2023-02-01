@@ -3,7 +3,8 @@
 
 namespace db_helper
 {
-    PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname ): connection_parameter("user=" + username + " password=" + password + " host=" + host + " port=5432 dbname=" + dbname + " target_session_attrs=read-write")
+    PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname):
+        connection_parameter("user=" + username + " password=" + password + " host=" + host + " port=5432 dbname=" + dbname + " target_session_attrs=read-write")
     {
     }
 
@@ -13,15 +14,21 @@ namespace db_helper
 
     bool PostgreSqlHelper::perform_query(std::string sqlStatment, std::unique_ptr<std::vector< std::vector<std::string> >> result_data, std::unique_ptr<std::vector<std::string>> result_header)
     {
+        pqxx::result raw_db_feedback;
+        try
+        {
+            // make the Query from the DB
+            pqxx::connection connection_handle = pqxx::connection("");
+            pqxx::work session{ connection_handle };
+       
+            raw_db_feedback= session.exec(sqlStatment);
+            connection_handle.disconnect();
+        }
+        catch (const pqxx::pqxx_exception& e)
+        {
+            return false;
+        }
         
-        // make the Query from the DB
-        pqxx::connection connection_handle=   pqxx::connection("");
-        pqxx::work session{ connection_handle };
-        
-        pqxx::result raw_db_feedback{ session.exec(sqlStatment) };
-        connection_handle.disconnect();
-
-
         // fill the colum name list
         for (int i = 0; i < raw_db_feedback.columns(); i++)
         {
@@ -37,6 +44,7 @@ namespace db_helper
             }
             result_data->push_back(temp_row);
         }
+        return true;
     }
     
    bool PostgreSqlHelper::checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::shared_ptr<std::string> name)
@@ -54,7 +62,9 @@ namespace db_helper
             target_users += lookup_scope[i];
         }
     
-        perform_query("SELECT concat(first_name, ' ', last_name) AS \"name\",FROM public.\"USER\" WHERE key =" + tag + " AND id in (" + target_users + ");", std::make_unique< std::vector<std::vector<std::string>>>(data), std::make_unique<std::vector<std::string>>( header));
+        perform_query(  "SELECT concat(first_name, ' ', last_name) AS \"name\",FROM public.\"USER\" WHERE key =" + tag + " AND id in (" + target_users + ");",
+                        std::make_unique< std::vector<std::vector<std::string>>>(data),
+                        std::make_unique<std::vector<std::string>>(header));
         if (data.size() == 1)
         {
             *name = data[0][0];

@@ -83,7 +83,7 @@ namespace serial_helper
     {
         char read_buf[256];
         memset(&read_buf, '\0', sizeof(read_buf));
-        int num_bytes;
+        uint16_t num_bytes;
         num_bytes = read(this->serial_port_, &read_buf, sizeof(read_buf));
         if (num_bytes > max_num_bytes)
         {

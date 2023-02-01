@@ -1,3 +1,6 @@
+#ifndef HARDWARE_NODES__TEST_DRAWER_GATE_HPP_
+#define HARDWARE_NODES__TEST_DRAWER_GATE_HPP_
+
 #include "drawer_gate/drawer_gate.hpp"
 #include "mock_serial_helper.hpp"
 
@@ -11,3 +14,5 @@ namespace drawer_gate
         TestDrawerGate();
     };
 }
+
+#endif //HARDWARE_NODES__TEST_DRAWER_GATE_HPP_

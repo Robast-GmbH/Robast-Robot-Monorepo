@@ -1,7 +1,5 @@
-#ifndef MOCK_POSTGRESQL_HELPER_HPP_
-#define MOCK_POSTGRESQL_HELPER_HPP_
-#include <iostream>
-#include <fstream>
+#ifndef HARDWARE_NODES__MOCK_POSTGRESQL_HELPER_HPP_
+#define HARDWARE_NODES__MOCK_POSTGRESQL_HELPER_HPP_
 #include <vector>
 #include <cstring>
 #include <string>
@@ -32,4 +30,4 @@ namespace db_helper
     };
 }
 
-#endif /* MOCK_POSTGRESQL_HELPER_HPP_ */
+#endif /* HARDWARE_NODES__MOCK_POSTGRESQL_HELPER_HPP_ */

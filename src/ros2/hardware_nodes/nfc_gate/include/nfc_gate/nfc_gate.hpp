@@ -1,5 +1,8 @@
-#ifndef NFC_GATE__NFC_GATE_HPP_
-#define NFC_GATE__NFC_GATE_HPP_
+#ifndef HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_
+#define HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_
+
+#define STANDART_REPLAY_MESSAGE_SIZE 500
+#define READER_INTEVALL 500
 
 #include <inttypes.h>
 #include <memory>
@@ -67,4 +70,4 @@ namespace robast
 
 
 }  // namespace robast
-#endif  // NFC_GATE__NFC_GATE_HPP_
+#endif  // HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_

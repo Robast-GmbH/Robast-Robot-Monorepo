@@ -1,3 +1,7 @@
+#ifndef HARDWARE_NODES__MOCK_SERIAL_HELPER_HELPER_HPP_
+#define HARDWARE_NODES__MOCK_SERIAL_HELPER_HELPER_HPP_
+
+
 #include "serial_helper/i_serial_helper.h"
 #include "can/can_db_defines.h"
 #include "can/can_message.h"
@@ -24,3 +28,4 @@ namespace serial_helper
         std::string key_code;
     };
 }
+#endif //HARDWARE_NODES__MOCK_SERIAL_HELPER_HELPER_HPP_

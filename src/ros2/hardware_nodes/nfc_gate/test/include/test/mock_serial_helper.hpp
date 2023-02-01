@@ -1,3 +1,5 @@
+#ifndef HARDWARE_NODES__MOCK_SERIAL_HELPER_HPP_
+#define HARDWARE_NODES__MOCK_SERIAL_HELPER_HPP_
 
 #include "serial_helper/i_serial_helper.h" 
 #include "nfc_gate/elatec_api.h"
@@ -23,3 +25,4 @@ namespace serial_helper
         std::string key_code_;
     };
 }
+#endif //HARDWARE_NODES__MOCK_SERIAL_HELPER_HPP_

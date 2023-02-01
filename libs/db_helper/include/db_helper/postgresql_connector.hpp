@@ -1,5 +1,5 @@
-#ifndef POSTGRESQL_CONNECTOR_HPP_
-#define POSTGRESQL_CONNECTOR_HPP_
+#ifndef HARDWARE_NODES__POSTGRESQL_CONNECTOR_HPP_
+#define HARDWARE_NODES__POSTGRESQL_CONNECTOR_HPP_
 
 #include <iostream>
 #include <fstream>
@@ -27,4 +27,4 @@ namespace db_helper
     };
 }
 
-#endif /* POSTGRESQL_CONNECTOR_HPP_ */
+#endif /* HARDWARE_NODES__POSTGRESQL_CONNECTOR_HPP_ */

@@ -1,5 +1,5 @@
-#ifndef DRAWER_SYM_HPP_
-#define DRAWER_SYM_HPP_
+#ifndef HARDWARE_NODES__DRAWER_SYM_HPP_
+#define HARDWARE_NODES__DRAWER_SYM_HPP_
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
@@ -22,11 +22,11 @@ namespace robast
       using GoalHandleDrawerInteraction = rclcpp_action::ClientGoalHandle<DrawerInteraction>;
       
       bool debug;
-      rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher;
-      rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription;
+      rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+      rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
       
-      rclcpp::Client<ShelfSetupInfo>::SharedPtr shelfInfoClient;
-      rclcpp_action::Client<DrawerInteraction>::SharedPtr drawerInteractionClients;
+      rclcpp::Client<ShelfSetupInfo>::SharedPtr shelfInfoClient_;
+      rclcpp_action::Client<DrawerInteraction>::SharedPtr drawerInteractionClients_;
 
       
       void startTask(const std_msgs::msg::String::SharedPtr msg);
@@ -48,4 +48,4 @@ namespace robast
     DrawerSym();
   };
 }  // namespace robast
-#endif  // DRAWER_SYM_HPP_
+#endif  //HARDWARE_NODES__DRAWER_SYM_HPP_

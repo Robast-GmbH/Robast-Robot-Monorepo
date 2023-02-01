@@ -1,5 +1,5 @@
-#ifndef I_DB_HELPER_HPP_
-#define I_DB_HELPER_HPP_
+#ifndef HARDWARE_NODES__I_DB_HELPER_H_
+#define HARDWARE_NODES__I_DB_HELPER_H_
 
 #include <cstring>
 #include <string>
@@ -19,4 +19,4 @@ namespace db_helper
     };
 }
 
-#endif /* I_DB_HELPER_HPP_ */
+#endif /* HARDWARE_NODES__I_DB_HELPER_H_ */

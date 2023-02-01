@@ -42,7 +42,7 @@ namespace robast
 
     numReadings_ = 0;
     this->timer_handle_ = goal_handle;
-    timer_ = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&NFCGate::reader_procedure, this));
+    timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL), std::bind(&NFCGate::reader_procedure, this));
     //std::thread{std::bind(&NFCGate::scanTag, this, placeholders::_1), goal_handle}.detach();
   }
 
@@ -50,8 +50,8 @@ namespace robast
   {
     this->serial_connector_->open_serial();
     std::string response;
-    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, 500);
-    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, 500);
+    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, STANDART_REPLAY_MESSAGE_SIZE);
+    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, STANDART_REPLAY_MESSAGE_SIZE);
 
     if (response != RESPONCE_DEVICE_STATE_CONFIGURED)
     {
@@ -60,24 +60,24 @@ namespace robast
       rclcpp::shutdown();
     }
 
-    this->serial_connector_->ascii_interaction(SET_SERIAL_TO_ASCII, &response, 500);
-    this->serial_connector_->ascii_interaction(BOTTOM_LED_ON, &response, 500);
-    this->serial_connector_->ascii_interaction(TOP_LEDS_INIT(LED_RED), &response, 500);
-    this->serial_connector_->ascii_interaction(TOP_LEDS_ON(LED_RED), &response, 500);
+    this->serial_connector_->ascii_interaction(SET_SERIAL_TO_ASCII, &response, STANDART_REPLAY_MESSAGE_SIZE);
+    this->serial_connector_->ascii_interaction(BOTTOM_LED_ON, &response, STANDART_REPLAY_MESSAGE_SIZE);
+    this->serial_connector_->ascii_interaction(TOP_LEDS_INIT(LED_RED), &response, STANDART_REPLAY_MESSAGE_SIZE);
+    this->serial_connector_->ascii_interaction(TOP_LEDS_ON(LED_RED), &response, STANDART_REPLAY_MESSAGE_SIZE);
   }
 
   bool NFCGate::scan_tag(std::shared_ptr< std::string> scanned_key )
   {
     std::string response;
-    std::string replay = this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, 500);
+    std::string replay = this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, STANDART_REPLAY_MESSAGE_SIZE);
     if (replay == RESPONCE_ERROR)
     {
       *scanned_key = "";
       return false;
     }
 
-    this->serial_connector_->ascii_interaction(NFC_LOGIN_MC_STANDART("00"), &response, 500);
-    replay = this->serial_connector_->ascii_interaction(NFC_READ_MC("02"), scanned_key.get(), 500);
+    this->serial_connector_->ascii_interaction(NFC_LOGIN_MC_STANDART("00"), &response, STANDART_REPLAY_MESSAGE_SIZE);
+    replay = this->serial_connector_->ascii_interaction(NFC_READ_MC("02"), scanned_key.get(), STANDART_REPLAY_MESSAGE_SIZE);
 
     if (replay == RESPONCE_ERROR)
     {

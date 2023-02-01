@@ -1,5 +1,5 @@
-#ifndef SERIAL_HELPER_HPP_
-#define SERIAL_HELPER_HPP_
+#ifndef HARDWARE_NODES__SERIAL_HELPER_H_
+#define HARDWARE_NODES__SERIAL_HELPER_H_
 
 #include <iostream>
 #include <fstream>
@@ -36,4 +36,4 @@ namespace serial_helper
     };
 }
 
-#endif /* SERIAL_HELPER_HPP_ */
+#endif /* HARDWARE_NODES__SERIAL_HELPER_H_ */
