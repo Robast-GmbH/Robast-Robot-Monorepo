@@ -53,42 +53,20 @@
 		<origin xyz="0 0 1.03" rpy="1.57079632679 0 0"/>
 	</xacro:alu_profile>
 
-    <!-- Door opening mechanism -->
-    <joint name="${prefix}door_opening_mechanism_joint_y_axis_rail" type="fixed" >
-        <parent link="${door_opening_mechanism_base_link}" />
-        <child link="${prefix}door_opening_mechanism_link_y_axis_rail" />
+    <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_box.urdf.xacro" />
+    <xacro:basic_box 
+        parent="${door_opening_mechanism_base_link}"
+        joint_name="${prefix}door_opening_mechanism_joint_y_axis_rail"
+        link_name="${prefix}door_opening_mechanism_link_y_axis_rail"
+        m="2.64"
+        x="0.06"
+        y="0.06"
+        z="0.56"
+        r="1"
+        g="0"
+        b="0">
         <origin xyz="-0.015 0.2 0.55" rpy="0 0 0"/>
-    </joint>
-
-    <link name="${prefix}door_opening_mechanism_link_y_axis_rail">
-        <inertial>
-            <mass value="2.64" />
-            <origin xyz="0 0 0" />
-            <xacro:box_inertia_robot m="2.64" x="0.06" y="0.06" z="0.56"/>
-        </inertial>
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <box size="0.06 0.06 0.56"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0" />
-            <geometry>
-                <box size="0.06 0.06 0.56"/>
-            </geometry>
-        </collision>
-    </link>
-    <gazebo reference="${prefix}door_opening_mechanism_link_y_axis_rail">
-        <visual>
-            <material>
-                <!-- RGBA -->
-                <ambient>1 0 0 1</ambient>
-                <diffuse>1 0 0 1</diffuse>
-                <specular>1 0 0 1</specular>
-            </material>
-        </visual>
-    </gazebo>
+    </xacro:basic_box>
 
     <joint name="${prefix}door_opening_mechanism_joint_y_axis_slide" type="prismatic" >
         <axis xyz="0 1 0" />
@@ -195,43 +173,19 @@
         </visual>
     </gazebo>
 
-    <joint name="${prefix}door_opening_mechanism_joint_x_axis_slide_screwing" type="fixed" >
-        <axis xyz="1 0 0" />
-        <parent link="${prefix}door_opening_mechanism_link_x_axis_slide" />
-        <child link="${prefix}door_opening_mechanism_link_x_slide_screwing" />
+    <xacro:basic_box
+        parent="${prefix}door_opening_mechanism_link_x_axis_slide"
+        joint_name="${prefix}door_opening_mechanism_joint_x_axis_slide_screwing"
+        link_name="${prefix}door_opening_mechanism_link_x_slide_screwing"
+        m="1"
+        x="0.073"
+        y="0.015"
+        z="0.175"
+        r="1"
+        g="1"
+        b="1">
         <origin xyz="0.038 -0.027 0" rpy="0 0 1.57079632679"/>
-    </joint>
-
-    <link name="${prefix}door_opening_mechanism_link_x_slide_screwing">
-        <inertial>
-
-            <mass value="1" />
-            <origin xyz="0 0 0" />
-            <xacro:box_inertia_robot m="1" x="0.073" y="0.015" z="0.175"/>
-        </inertial>
-        <visual>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-                <box size="0.073 0.015 0.175"/>
-            </geometry>
-        </visual>
-        <collision>
-            <origin xyz="0 0 0" rpy="0 0 0"/>
-            <geometry>
-                <box size="0.073 0.015 0.175"/>
-            </geometry>
-        </collision>
-    </link>
-    <gazebo reference="${prefix}door_opening_mechanism_link_x_slide_screwing">
-        <visual>
-            <material>
-                <!-- RGBA -->
-                <ambient>1 1 1 1</ambient>
-                <diffuse>1 1 1 1</diffuse>
-                <specular>1 1 1 1</specular>
-            </material>
-        </visual>
-    </gazebo>
+    </xacro:basic_box>
 
     <joint name="${prefix}door_opening_mechanism_joint_tilting_hook" type="revolute" >
         <axis xyz="1 0 0" />
