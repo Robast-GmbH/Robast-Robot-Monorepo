@@ -7,7 +7,7 @@
                 izz="${m*(x*x+z*z)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="basic_box" params="parent joint_name link_name *origin m x y z r g b">
+    <xacro:macro name="basic_box" params="parent joint_name link_name m x y z r g b *origin">
 
     <joint name="${joint_name}" type="fixed" >
         <parent link="${parent}" />

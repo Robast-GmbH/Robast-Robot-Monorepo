@@ -10,10 +10,31 @@
     <xacro:macro name="hook" params="prefix suffix parent *origin r g b">
 
     <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_box.urdf.xacro" />
-    <xacro:basic_box parent="${prefix}${parent}" joint_name="${prefix}hook_joint_${suffix}" link_name="${prefix}hook_base_link_${suffix}" m="0.1" x="0.06" y="0.01" z="0.04" r="0" g="0" b="1">
+    <xacro:basic_box
+        parent="${prefix}${parent}"
+        joint_name="${prefix}hook_joint_${suffix}"
+        link_name="${prefix}hook_base_link_${suffix}"
+        m="0.1"
+        x="0.06"
+        y="0.01"
+        z="0.04"
+        r="0"
+        g="0"
+        b="1">
         <xacro:insert_block name="origin" />
     </xacro:basic_box>
-    <xacro:basic_box parent="${prefix}hook_base_link_${suffix}" joint_name="${prefix}hook_joint_front_side_${suffix}" link_name="${prefix}hook_front_side_link_${suffix}" m="0.1" x="0.008" y="0.03" z="0.04" r="0" g="0" b="1">
+    
+    <xacro:basic_box
+        parent="${prefix}hook_base_link_${suffix}"
+        joint_name="${prefix}hook_joint_front_side_${suffix}"
+        link_name="${prefix}hook_front_side_link_${suffix}"
+        m="0.1"
+        x="0.008"
+        y="0.03"
+        z="0.04"
+        r="0"
+        g="0"
+        b="1">
         <origin xyz="-0.026 0.02 0" rpy="0 0 0"/>
     </xacro:basic_box>
 
