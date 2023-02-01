@@ -19,7 +19,7 @@
 #include "serial_helper/serial_helper.h"
 
 // Some tests show that a timer period of 3 ms is to fast and asci cmds get lost at this speed, with 4 ms it worked, so use 5ms with safety margin
-#define TIMER_PERIOD_SEND_ASCII_CMDS 5ms 
+#define TIMER_PERIOD_SEND_ASCII_CMDS std::chrono::milliseconds(5) 
 
 namespace door_manipulator_gate
 {
@@ -40,7 +40,7 @@ namespace door_manipulator_gate
         /**
          * @brief A constructor for door_manipulator_gate::DoorManipulatorGate class
          */
-        DoorManipulatorGate(const string serial_path = "/dev/robast/robast_can");
+        DoorManipulatorGate(const std::string serial_path = "/dev/robast/robast_can");
         /**
          * @brief A destructor for door_manipulator_gate::DoorManipulatorGate class
          */
@@ -55,7 +55,7 @@ namespace door_manipulator_gate
 
         robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
 
-        queue<string> ascii_cmd_queue_; // queue that contains all ascii commands to be sent to the usb serial can adapter to make sure there is enough time between each ascii command, otherwise some commands might get lost
+        std::queue<std::string> ascii_cmd_queue_; // queue that contains all ascii commands to be sent to the usb serial can adapter to make sure there is enough time between each ascii command, otherwise some commands might get lost
 
         bool cleared_serial_buffer_from_old_can_msgs_; // flag, that is responsible for clearing the serial buffer from old CAN messages
 

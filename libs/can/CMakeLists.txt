@@ -12,7 +12,6 @@ if(NOT CMAKE_CXX_STANDARD)
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_catch2 REQUIRED)
 
 add_library(library_can SHARED
     ${CMAKE_CURRENT_LIST_DIR}/src/can_frame.cpp
