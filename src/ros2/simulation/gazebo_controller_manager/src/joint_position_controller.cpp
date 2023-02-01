@@ -4,9 +4,10 @@ namespace gazebo_controller_manager
 {
     JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& nh,
         const std::vector<std::string>& joint_names,
-        const std::string& ros_cmd_topic,
-        const std::vector<std::string>& gz_cmd_topics)
+        const std::string& ros_cmd_topic)
     {
+        std::vector<std::string> gz_cmd_topics = this->get_gz_cmd_joint_topics(joint_names);
+        
         // ROS and gz node
         this->nh_ = nh;
         this->gz_node_ = std::make_shared<gz::transport::Node>();
@@ -32,6 +33,18 @@ namespace gazebo_controller_manager
                 gz_node_->Advertise<gz::msgs::Double>(gz_cmd_topics[i]));
             gz_cmd_joint_pubs_.push_back(pub);
         }
+    }
+
+    std::vector<std::string> JointPositionController::get_gz_cmd_joint_topics(std::vector<std::string> joint_names)
+    {
+        std::vector<std::string> gz_cmd_topics;
+        for (std::string& joint_name : joint_names)
+        {
+            std::stringstream ss;
+            ss << "/model/rb_theron/joint/" << joint_name << "/0/cmd_pos";
+            gz_cmd_topics.push_back(ss.str());
+        }
+        return gz_cmd_topics;
     }
 
     void JointPositionController::set_joint_position_cb(const sensor_msgs::msg::JointState::SharedPtr msg)

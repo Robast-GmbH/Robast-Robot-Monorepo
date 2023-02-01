@@ -7,10 +7,7 @@ namespace gazebo_controller_manager
         // variable
         std::vector<std::string> joint_names;
         const std::vector<std::string> default_joint_names = { "drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint" };
-
-        std::vector<std::string> gz_joint_topics;
-        const std::vector<std::string> default_gz_joint_topics = { "drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint" };
-
+        
         int update_rate;
         const int default_update_rate = 200;
 
@@ -19,17 +16,17 @@ namespace gazebo_controller_manager
 
         // Declare parameters
         this->declare_parameter("joint_names", default_joint_names);
-        this->declare_parameter("gz_joint_topics", default_gz_joint_topics);
         this->declare_parameter("rate", default_update_rate);
         this->declare_parameter("follow_joint_trajectory_action", default_follow_joint_trajectory_action);
 
         // Get Parameters
         joint_names = this->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
-        gz_joint_topics = this->get_parameter("gz_joint_topics").get_parameter_value().get<std::vector<std::string>>();
         update_rate = this->get_parameter("rate").as_int();
         follow_joint_trajectory_action = this->get_parameter("follow_joint_trajectory_action").as_string();
 
-        this->initialize_gz_transport_node(joint_names, gz_joint_topics);
+        std::vector<std::string> gz_cmd_topics = this->get_gz_cmd_joint_topics(joint_names);
+
+        this->initialize_gz_transport_node(joint_names, gz_cmd_topics);
 
         this->action_server_ = rclcpp_action::create_server<control_msgs::action::FollowJointTrajectory>(
             this->get_node_base_interface(),
@@ -45,20 +42,33 @@ namespace gazebo_controller_manager
         auto period = std::chrono::microseconds(1000000 / update_rate);
         this->update_position_timer_ = this->create_wall_timer(period, std::bind(&JointTrajectoryController::update_position_timer_cb, this));
         //create gz pub
-        for (size_t i = 0; i < gz_joint_topics.size(); i++)
+        for (size_t i = 0; i < gz_cmd_topics.size(); i++)
         {
             auto pub = std::make_shared<gz::transport::Node::Publisher>(
-                this->gz_transport_node_->Advertise<gz::msgs::Double>(gz_joint_topics[i]));
+                this->gz_transport_node_->Advertise<gz::msgs::Double>(gz_cmd_topics[i]));
             this->gz_cmd_joint_pubs_.push_back(pub);
         }
     }
 
-    void JointTrajectoryController::initialize_gz_transport_node(std::vector<std::string> joint_names, std::vector<std::string> gz_joint_topics)
+    std::vector<std::string> JointTrajectoryController::get_gz_cmd_joint_topics(std::vector<std::string> joint_names)
+    {
+        
+        std::vector<std::string> gz_cmd_topics;
+        for (std::string& joint_name : joint_names)
+        {
+            std::stringstream ss;
+            ss << "/model/rb_theron/joint/" << joint_name << "/0/cmd_pos";
+            gz_cmd_topics.push_back(ss.str());
+        }
+        return gz_cmd_topics;
+    }
+
+    void JointTrajectoryController::initialize_gz_transport_node(std::vector<std::string> joint_names, std::vector<std::string> gz_cmd_topics)
     {
         // ROS and gz node
         this->gz_transport_node_ = std::make_shared<gz::transport::Node>();
         //check
-        if (joint_names.size() != gz_joint_topics.size())
+        if (joint_names.size() != gz_cmd_topics.size())
         {
             RCLCPP_ERROR(this->get_logger(), "The size of the arrays joint_names and gz_cmd_topics are not matched!");
             return;
