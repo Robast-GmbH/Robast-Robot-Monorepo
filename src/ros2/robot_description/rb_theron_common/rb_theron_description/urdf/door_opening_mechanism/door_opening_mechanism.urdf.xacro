@@ -35,16 +35,16 @@
 
     <!-- Aluprofile frame -->
     <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/alu_profile.urdf.xacro" />
-    <xacro:alu_profile prefix="${prefix}" suffix="bottom" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.46" >
+    <xacro:alu_profile prefix="${prefix}" suffix="bottom" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.46" r="0.1" g="0.1" b="0.1" >
 		<origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
 	</xacro:alu_profile>
-	<xacro:alu_profile prefix="${prefix}" suffix="left" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="1.0" >
+	<xacro:alu_profile prefix="${prefix}" suffix="left" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="1.0" r="0.1" g="0.1" b="0.1" >
 		<origin xyz="0 -0.245 0.515" rpy="0 0 0"/>
 	</xacro:alu_profile>
-	<xacro:alu_profile prefix="${prefix}" suffix="right" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="1.0" >
+	<xacro:alu_profile prefix="${prefix}" suffix="right" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="1.0" r="0.1" g="0.1" b="0.1" >
 		<origin xyz="0 +0.245 0.515" rpy="0 0 0"/>
 	</xacro:alu_profile>
-    <xacro:alu_profile prefix="${prefix}" suffix="top" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.52" >
+    <xacro:alu_profile prefix="${prefix}" suffix="top" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.52" r="0.1" g="0.1" b="0.1" >
 		<origin xyz="0 0 1.03" rpy="1.57079632679 0 0"/>
 	</xacro:alu_profile>
 
@@ -282,9 +282,9 @@
         <visual>
             <material>
                 <!-- RGBA -->
-                <ambient>1 0 1 1</ambient>
-                <diffuse>1 0 1 1</diffuse>
-                <specular>1 0 1 1</specular>
+                <ambient>0 1 0 1</ambient>
+                <diffuse>0 1 0 1</diffuse>
+                <specular>0 1 0 1</specular>
             </material>
         </visual>
     </gazebo>

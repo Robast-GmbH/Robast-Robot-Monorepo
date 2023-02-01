@@ -7,7 +7,7 @@
                 izz="${m*(x*x+z*z)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="alu_profile" params="prefix suffix parent *origin x y z">
+    <xacro:macro name="alu_profile" params="prefix suffix parent *origin x y z r g b">
 
     <joint name="${prefix}alu_profile_joint_${suffix}" type="fixed">
         <parent link="${parent}"/>
@@ -41,6 +41,16 @@
             </geometry>
         </collision>
     </link>
+    <gazebo reference="${prefix}alu_profile_link_${suffix}">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>${r} ${g} ${b} 1</ambient>
+                <diffuse>${r} ${g} ${b} 1</diffuse>
+                <specular>${r} ${g} ${b} 1</specular>
+            </material>
+        </visual>
+    </gazebo>
 
     </xacro:macro>
 </robot>

@@ -10,7 +10,7 @@
     <xacro:macro name="door_opening_gripper" params="prefix parent *origin">
 
     <!-- <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/alu_profile.urdf.xacro" /> -->
-    <xacro:alu_profile prefix="${prefix}" suffix="gripper" parent="${parent}" x="0.03" y="0.03" z="0.3" >
+    <xacro:alu_profile prefix="${prefix}" suffix="gripper" parent="${parent}" x="0.03" y="0.03" z="0.3" r="0" g="1" b="0">
         <xacro:insert_block name="origin" />
 	</xacro:alu_profile>
 
