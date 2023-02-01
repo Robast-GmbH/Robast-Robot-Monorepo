@@ -9,6 +9,11 @@
 
     <xacro:macro name="door_opening_mechanism" params="prefix parent *origin hq">
 
+    <!-- Please mind: We might need to set the settings for the mass extremly low, because there
+    is an issue, that if there is too much load on the theron base, it would be able to drive
+    properly, because this makes some of the wheels lose contact to the ground and 
+    therefore steering of the rb_theron becomes impossible. -->
+
     <xacro:property name="door_opening_mechanism_base_link" value="${prefix}door_opening_mechanism_base_link" />
 
     <joint name="${prefix}door_opening_mechanism_joint" type="fixed">
@@ -57,13 +62,9 @@
 
     <link name="${prefix}door_opening_mechanism_link_y_axis_rail">
         <inertial>
-            <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
-            it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
-            therefore steering of the rb_theron becomes impossible. 
-            The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
-            <mass value="5" />
+            <mass value="2.64" />
             <origin xyz="0 0 0" />
-            <xacro:box_inertia_robot m="5" x="0.06" y="0.06" z="0.56"/>
+            <xacro:box_inertia_robot m="2.64" x="0.06" y="0.06" z="0.56"/>
         </inertial>
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
@@ -112,10 +113,7 @@
 
     <link name="${prefix}door_opening_mechanism_link_y_axis_slide">
         <inertial>
-            <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
-            it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
-            therefore steering of the rb_theron becomes impossible. 
-            The mass of the 550mm norelem Zahnradantrieb is 2.34kg (rail) + 0.3kg (slide) -->
+            <!-- The mass of the 550mm norelem Zahnradantrieb is 2.34kg (rail) + 0.3kg (slide) -->
             <mass value="2.64" />
             <origin xyz="0 0 0" />
             <xacro:box_inertia_robot m="2.64" x="0.06" y="0.06" z="0.55"/>

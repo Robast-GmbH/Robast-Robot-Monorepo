@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<robot name="hook" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="box_inertia_robot" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                izz="${m*(x*x+z*z)/12}" />
+    </xacro:macro>
+
+    <xacro:macro name="hook" params="prefix suffix parent *origin r g b">
+
+    <joint name="${prefix}hook_joint_${suffix}" type="fixed" >
+        <parent link="${parent}" />
+        <child link="${prefix}hook_base_link_${suffix}" />
+        <xacro:insert_block name="origin" />
+    </joint>
+
+    <link name="${prefix}hook_base_link_${suffix}">
+        <inertial>
+            <mass value="0.1" />
+            <origin xyz="0 0 0" />
+            <xacro:box_inertia_robot m="0.1" x="0.06" y="0.01" z="0.04"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.06 0.01 0.04"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.06 0.01 0.04"/>
+            </geometry>
+        </collision>
+    </link>
+    <gazebo reference="${prefix}hook_base_link_${suffix}">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>${r} ${g} ${b} 1</ambient>
+                <diffuse>${r} ${g} ${b} 1</diffuse>
+                <specular>${r} ${g} ${b} 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
+    <joint name="${prefix}hook_joint_front_side_${suffix}" type="fixed" >
+        <parent link="${prefix}hook_base_link_${suffix}" />
+        <child link="${prefix}hook_front_side_link_${suffix}" />
+        <origin xyz="-0.026 0.02 0" rpy="0 0 0"/>
+    </joint>
+
+    <link name="${prefix}hook_front_side_link_${suffix}">
+        <inertial>
+            <mass value="0.1" />
+            <origin xyz="0 0 0" />
+            <xacro:box_inertia_robot m="0.1" x="0.008" y="0.03" z="0.04"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.008 0.03 0.04"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="0.008 0.03 0.04"/>
+            </geometry>
+        </collision>
+    </link>
+    <gazebo reference="${prefix}hook_front_side_link_${suffix}">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>${r} ${g} ${b} 1</ambient>
+                <diffuse>${r} ${g} ${b} 1</diffuse>
+                <specular>${r} ${g} ${b} 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
+    </xacro:macro>
+</robot>
