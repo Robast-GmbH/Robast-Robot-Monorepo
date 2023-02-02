@@ -1,4 +1,4 @@
-FROM ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy  AS communication_interfaces
+FROM ghcr.io/robast-gmbh/monorepo/communication_interfaces  AS communication_interfaces
 
 FROM ghcr.io/robast-gmbh/monorepo/navigation_dev as build
 COPY "." "/workspace/src/navigation" 
