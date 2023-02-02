@@ -2,8 +2,8 @@ name: Navigation Deploy
 
 on:
   push:
-    # branches:
-    #   - "main"
+    branches:
+      - "main"
     paths:
     - "src/ros2/navigation/**"
     - "src/ros2/communication_interfaces/**"
