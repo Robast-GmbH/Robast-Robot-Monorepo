@@ -42,9 +42,9 @@ jobs:
     - name: Build and Publish Navigation dev docker  
       uses: docker/build-push-action@v2
       with:
-            context: src/ros2/communication_interfaces/
+            context:  src/ros2/navigation/
             push: true
-            file: src/ros2/communication_interfaces/Dockerfile
+            file:  src/ros2/navigation/Dockerfile
             tags: |
                   ghcr.io/robast-gmbh/monorepo/navigation_dev
             cache-from: type=gha
@@ -53,9 +53,9 @@ jobs:
     - name: Build and Publish Navigation deploy docker  
       uses: docker/build-push-action@v2
       with:
-            context: src/ros2/communication_interfaces/
+            context:  src/ros2/navigation/
             push: true
-            file: src/ros2/communication_interfaces/deploy.Dockerfile
+            file:  src/ros2/navigation/deploy.Dockerfile
             tags: |
                   ghcr.io/robast-gmbh/monorepo/navigation_deploy
             cache-from: type=gha
