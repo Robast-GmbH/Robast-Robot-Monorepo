@@ -9,7 +9,9 @@ RUN apt-get update && apt-get install -y \
   libboost-all-dev \
   ros-humble-ros-testing \
   ros-humble-ament-cmake-test \
-  ros-humble-launch-testing\
+  ros-humble-launch-testing \
+  libpqxx-dev \
+  git \
   && rosdep init || echo "rosdep already initialized"
 
 

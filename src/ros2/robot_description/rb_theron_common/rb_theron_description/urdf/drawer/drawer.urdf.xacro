@@ -1,69 +1,71 @@
 <?xml version="1.0"?>
 <robot name="drawer" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-<xacro:macro name="box_inertia_robot" params="m x y z">
-	<inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
-			iyy="${m*(x*x+z*z)/12}" iyz = "0"
-			izz="${m*(x*x+z*z)/12}" />
-</xacro:macro>
+    <xacro:macro name="box_inertia_robot" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                izz="${m*(x*x+z*z)/12}" />
+    </xacro:macro>
 
-<xacro:property name="drawer_size_x" value="0.45" />
-<xacro:property name="drawer_size_y" value="0.358" />
-<xacro:property name="drawer_size_z" value="0.08" />
-<xacro:property name="drawer_mass" value="1.5" />
+    <xacro:property name="drawer_size_x" value="0.45" />
+    <xacro:property name="drawer_size_y" value="0.358" />
+    <!-- Mass should actually not be that small, but there is an issue, that if there is too much load on the theron base,
+      it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
+      therefore steering of the rb_theron becomes impossible -->
+    <xacro:property name="drawer_mass" value="0.1" />
 
-<xacro:property name="drawer_offset_x" value="0.0" />
-<xacro:property name="drawer_offset_y" value="0.0" />
-<xacro:property name="drawer_offset_z" value="0.0" />
+    <xacro:property name="drawer_offset_x" value="0.0" />
+    <xacro:property name="drawer_offset_y" value="0.0" />
+    <xacro:property name="drawer_offset_z" value="0.0" />
 
 
-<xacro:macro name="drawer" params="prefix parent *origin">
-        <link name="${prefix}_drawer">
-                <inertial>
-                        <mass value="${drawer_mass}" />
-                        <origin xyz="${drawer_offset_x} ${drawer_offset_y} ${drawer_offset_z}" />
-                        <xacro:box_inertia_robot m="${drawer_mass}" x="${drawer_size_x}" y="${drawer_size_y}" z="${drawer_size_z}"/>
-                </inertial>
-                <visual>
-                        <!-- visual origin is defined w.r.t. link local coordinate system -->
-                        <origin xyz="${drawer_offset_x} ${drawer_offset_y} ${drawer_offset_z}" rpy="0 0 0" />
-                        <geometry>
+    <xacro:macro name="drawer" params="prefix suffix parent *origin drawer_size_z">
+        <link name="${prefix}drawer_${suffix}">
+            <inertial>
+                <mass value="${drawer_mass}" />
+                <origin xyz="${drawer_offset_x} ${drawer_offset_y} ${drawer_offset_z}" />
+                <xacro:box_inertia_robot m="${drawer_mass}" x="${drawer_size_x}" y="${drawer_size_y}" z="${drawer_size_z}"/>
+            </inertial>
+            <visual>
+                <!-- visual origin is defined w.r.t. link local coordinate system -->
+                <origin xyz="${drawer_offset_x} ${drawer_offset_y} ${drawer_offset_z}" rpy="0 0 0" />
+                <geometry>
+                    <box size="${drawer_size_x} ${drawer_size_y} ${drawer_size_z}" />
+                </geometry>
+            </visual>
+            <collision>
+                <!-- collision origin is defined w.r.t. link local coordinate system -->
+                <origin xyz="${drawer_offset_x} ${drawer_offset_y} ${drawer_offset_z}" rpy="0 0 0 " />
+                <geometry>
                         <box size="${drawer_size_x} ${drawer_size_y} ${drawer_size_z}" />
-                        </geometry>
-                </visual>
-                <collision>
-                        <!-- collision origin is defined w.r.t. link local coordinate system -->
-                        <origin xyz="${drawer_offset_x} ${drawer_offset_y} ${drawer_offset_z}" rpy="0 0 0 " />
-                        <geometry>
-                        <box size="${drawer_size_x} ${drawer_size_y} ${drawer_size_z}" />
-                        </geometry>
-                </collision>
+                </geometry>
+        </collision>
         </link>
 
-        <gazebo reference="${prefix}_drawer">
+        <gazebo reference="${prefix}drawer_${suffix}">
                 <material>Gazebo/White</material>
                 <turnGravityOff>false</turnGravityOff>
         </gazebo>
 
-        <joint name="top_drawer_joint" type="prismatic" >
-                <axis xyz="1 0 0" />
-                <parent link="${parent}" />
-                <child link="${prefix}_drawer" />
-                <xacro:insert_block name="origin" />
-                <limit lower="0.0" upper="${0.95*drawer_size_y}" effort="100" velocity="100" />
+        <joint name="${prefix}drawer_${suffix}_joint" type="prismatic" >
+            <axis xyz="1 0 0" />
+            <parent link="${parent}" />
+            <child link="${prefix}drawer_${suffix}" />
+            <xacro:insert_block name="origin" />
+            <limit lower="0.0" upper="${0.95*drawer_size_y}" effort="100" velocity="100" />
         </joint>
 
-        <transmission name="${prefix}_drawer_joint">
-                <type>transmission_interface/SimpleTransmission</type>
-                <joint name="top_drawer_joint">
-                        <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-                </joint>
-                <actuator name="${prefix}_drawer_joint_motor">
-                        <mechanicalReduction>1</mechanicalReduction>
-                        <motorTorqueConstant>1</motorTorqueConstant>
-                </actuator>
-        </transmission>
-</xacro:macro>
+        <gazebo>
+            <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
+                <joint_name>${prefix}drawer_${suffix}_joint</joint_name>
+                <p_gain>50000.0</p_gain>
+                <i_gain>100</i_gain>
+                <d_gain>1000</d_gain>
+                <i_max>200</i_max>
+                <i_min>-200</i_min>
+            </plugin>
+        </gazebo>
 
+    </xacro:macro>
 
 </robot>

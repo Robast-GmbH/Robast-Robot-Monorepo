@@ -1,5 +1,4 @@
 #include "../include/can/can_helper.h"
-#include <iostream> //DEBUGGING
 
 namespace robast_can_msgs
 {
@@ -228,4 +227,4 @@ namespace robast_can_msgs
         }
         return can_data;
     }
-}
+}  // namespace robast_can_msgs

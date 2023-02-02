@@ -1,11 +1,11 @@
-#ifndef CAN_FRAME_HPP_
-#define CAN_FRAME_HPP_
+#ifndef CAN__CAN_FRAME_H_
+#define CAN__CAN_FRAME_H_
 
 #include <cmath>
 #include <cstdint>
 #include <cstring>
 
-#include "can_db_defines.h"
+#include "can/can_db_defines.h"
 
 namespace robast_can_msgs
 {
@@ -15,7 +15,7 @@ namespace robast_can_msgs
             /**
              * @brief A constructor for robast_can_msgs::CanFrame class
              */
-            CanFrame(uint32_t id_in, uint8_t dlc_in, uint8_t data_in[]);
+            CanFrame(uint32_t id_in, uint8_t dlc_in, uint8_t data_in[ ]);
             /**
              * @brief A destructor for robast_can_msgs::CanFrame class
              */
@@ -29,24 +29,24 @@ namespace robast_can_msgs
             /**
              * @brief A getter function for the data of the CanFrame
              */
-			uint8_t* get_data() const;
+            uint8_t* get_data() const;
 
             /**
              * @brief A getter function for the id of the CanFrame
              */
-			uint32_t get_id() const;
+            uint32_t get_id() const;
 
             /**
              * @brief A getter function for the dlc of the CanFrame
              */
-			uint8_t get_dlc() const;
-            
+            uint8_t get_dlc() const;
+
         protected:
             uint8_t* data_;
             uint8_t dlc_;
             uint32_t id_;
     };
 
-}
+}  // namespace robast_can_msgs
 
-#endif /* CAN_FRAME_HPP_ */
+#endif  // CAN__CAN_FRAME_HPP_
