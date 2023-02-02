@@ -24,4 +24,5 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-navigation2\ 
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     python3-requests 
+    
 ENTRYPOINT ["/deploy-entrypoint.sh" ]
