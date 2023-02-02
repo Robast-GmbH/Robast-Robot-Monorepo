@@ -59,15 +59,16 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 if(BUILD_TESTING)
   find_package(ament_cmake_lint_cmake REQUIRED)
   ament_lint_cmake()
-  find_package(ament_cmake_flake8 REQUIRED)
-  ament_flake8()
   find_package(ament_cmake_xmllint REQUIRED)
   ament_xmllint()
-  find_package(ament_cmake_pep257 REQUIRED)
-  ament_pep257()
-  find_package(ament_cmake_cppcheck REQUIRED)
-  ament_cppcheck()
 endif()
+
+add_executable(talker src/simple_node.cpp)
+ament_target_dependencies(talker rclcpp std_msgs)
+
+install(TARGETS
+  talker
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_export_include_directories(include)
 
