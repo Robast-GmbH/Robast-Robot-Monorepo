@@ -72,39 +72,22 @@ namespace robast
     this->serial_connector_->close_serial();
   }
 
-  bool NFCGate::execute_scan( std::shared_ptr<std::string> raw_scan_data)
+  bool NFCGate::execute_scan( std::shared_ptr<std::string> resieved_raw_data)
   {
     start_up_scanner();
-    std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
-
-    // abort this scan attempt if the reader could not detect a compatible card. 
-    if (scan_tag(scanned_key))
-    {
-      validated_user
-      return true;
-    }
-    else
-    {
-      *validated_user = "";
-      return false;
-    }
+    return scan_tag(raw_scan_data);
   }
 
   void NFCGate::reader_procedure()
   {
-   
+    
     std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
     bool found = false;
 
     const auto goal = timer_handle_->get_goal();
-
     found = execute_scan( scanned_key );
 
-    if (found)
-    {
-     
-
-    }
+   
   }
 
   void NFCGate::write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)

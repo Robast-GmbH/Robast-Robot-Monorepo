@@ -57,7 +57,7 @@ namespace robast
     void auth_accepted_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
     void auth_authenticate_user(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
 
-    bool execute_scan(std::vector<std::string> permission_users, std::shared_ptr<std::string> validated_user);
+    bool execute_scan(std::shared_ptr<std::string> recived_raw_data);
     bool validate_key(std::string scanned_key, std::vector<std::string> allValidUser, std::shared_ptr< std::string> validated_user);
     bool scan_tag(std::shared_ptr<std::string> tag_data);
 
