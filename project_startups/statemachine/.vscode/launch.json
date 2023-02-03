@@ -26,13 +26,13 @@
                 "id": "package",
                 "type": "promptString",
                 "description": "Package name",
-                "default": "bt_base_nodes"
+                "default": "drawer_sm"
               },
               {
                 "id": "program",
                 "type": "promptString",
                 "description": "Program name",
-                "default": "drawer_tree_initiator"
+                "default": "drawer_sm_startup_debug"
               }
     ]
 }
