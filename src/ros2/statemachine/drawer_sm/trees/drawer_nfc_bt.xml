@@ -2,7 +2,7 @@
 <root BTCPP_format="4">
   <BehaviorTree ID="Drawer_NFC_BT">
     <Sequence>
-      <UserToDrawerMapping _description="Reads out the User Name of the person that used the nfc card and translates it to the corresponding drawer address which is written to the blackboard"/>
+      <NFCToDrawer _description="Reads out the User Name of the person that used the nfc card and translates it to the corresponding drawer address which is written to the blackboard"/>
       <OpenDrawer drawer_open_topic="/open_drawer"
                   drawer_address="{drawer}"
                   _description="The Open Drawer node reads out the drawer address from the blackboard and publishes the opned address to its output. 
@@ -92,7 +92,7 @@
       <output_port name="drawer_address"
                    default="{drawer}"/>
     </Action>
-    <Action ID="UserToDrawerMapping"
+    <Action ID="NFCToDrawer"
             editable="true"/>
   </TreeNodesModel>
 </root>
