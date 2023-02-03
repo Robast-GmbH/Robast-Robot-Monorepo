@@ -26,17 +26,19 @@ namespace bt_base_nodes
         ): BTSubBase(options) 
         {
             nfc_key_to_DrawerAddress_ = nfc_key_to_DrawerAddress;
-            _blackboard->set<std::map<std::string, communication_interfaces::msg::DrawerAddress>>(
-                "nfc_keys", nfc_key_to_DrawerAddress_
-                );
+            
         }
 
     protected:
-        void callbackRunBT(const std_msgs::msg::String::SharedPtr msg)
+        void callbackRunBT(const std_msgs::msg::String::SharedPtr msg) override
         {
+            _blackboard->set<std::map<std::string, communication_interfaces::msg::DrawerAddress>>(
+                "nfc_keys", nfc_key_to_DrawerAddress_
+                );
             _blackboard->set<std::string>("user_access_name", msg->data);
             _bt.tickWhileRunning(std::chrono::milliseconds(10));
         }
+        
     private:
         std::map<std::string, communication_interfaces::msg::DrawerAddress> nfc_key_to_DrawerAddress_;
     };

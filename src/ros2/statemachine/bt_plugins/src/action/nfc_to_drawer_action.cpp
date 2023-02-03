@@ -6,21 +6,22 @@ namespace drawer_statemachine
           const BT::NodeConfig& config)
           : BT::StatefulActionNode(name, config) //TODO @tobi evtl noch abstract base class?
   {
-    using DrawerAddress = communication_interfaces::msg::DrawerAddress;
     
     blackboard_ = config.blackboard;
-    nfc_key_to_DrawerAddress_ =
-      blackboard_->get<std::map<std::string, DrawerAddress>>("nfc_keys");
   }
 
   BT::NodeStatus NFCToDrawer::onStart()
   {
+    using DrawerAddress = communication_interfaces::msg::DrawerAddress;
+    
+    nfc_key_to_DrawerAddress_ =
+      blackboard_->get<std::map<std::string, DrawerAddress>>("nfc_keys");
+    
     std::string nfc_user = blackboard_->get<std::string>("user_access_name");
     if (nfc_user != "" && nfc_key_to_DrawerAddress_.find(nfc_user) != nfc_key_to_DrawerAddress_.end())
     {
-      communication_interfaces::msg::DrawerAddress drawer_address = nfc_key_to_DrawerAddress_[nfc_user];
-      blackboard_->set<communication_interfaces::msg::DrawerAddress>("drawer_address", drawer_address);
-      
+      DrawerAddress drawer_address = nfc_key_to_DrawerAddress_[nfc_user];
+      blackboard_->set<DrawerAddress>("drawer_address", drawer_address);      
       return BT::NodeStatus::SUCCESS;
     }
     else

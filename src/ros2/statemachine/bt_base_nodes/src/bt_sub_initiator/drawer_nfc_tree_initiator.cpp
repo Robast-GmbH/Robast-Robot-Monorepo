@@ -8,15 +8,15 @@ int main(int argc, char* argv[ ])
 {
   rclcpp::init(argc, argv);
   std::map<std::string, communication_interfaces::msg::DrawerAddress> nfc_dictionary{{}};
-  for (int i = 1; i <= 5; i++)
+  for (int i = 1; i <= 8; i++)
   {
     communication_interfaces::msg::DrawerAddress drawer_address;
-    drawer_address.drawer_controller_id = 0;
+    drawer_address.drawer_controller_id = i;
     drawer_address.drawer_id = i;
     nfc_dictionary[std::to_string(i)] = drawer_address;
   }
   auto node = std::make_shared<bt_base_nodes::DrawerNFCTreeInitiator>(nfc_dictionary);
-  node->configure();
+  node->configure("user_access");
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
