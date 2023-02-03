@@ -30,19 +30,19 @@ namespace bt_base_nodes
         "drawer_status_condition_bt_node",
         "nfc_to_drawer_action_bt_node"
       };
-
-    }
-
-    void configure()
-    {
-      
-      static BT::NodeConfig* config_;
-      config_ = new BT::NodeConfig();
       std::string path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml";      
       this->declare_parameter("plugins", _plugins);
       this->declare_parameter("bt_path", path);
       _plugins = this->get_parameter("plugins").get_parameter_value().get<std::vector<std::string>>();
       bt_path_ = this->get_parameter("bt_path").as_string();
+
+    }
+
+    void configure(std::string trigger_topic = "start_bt")
+    {
+      
+      static BT::NodeConfig* config_;
+      config_ = new BT::NodeConfig();
       // Create the blackboard that will be shared by all of the nodes in the tree
       _blackboard = BT::Blackboard::create();
       // Put items on the blackboard
@@ -54,7 +54,7 @@ namespace bt_base_nodes
         std::chrono::milliseconds(10));
       _bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(_plugins);
       _bt = _bt_engine->createTreeFromFile(bt_path_, _blackboard);
-      init_subscriber("open_request");
+      init_subscriber(trigger_topic);
     }
 
   protected:
@@ -71,7 +71,7 @@ namespace bt_base_nodes
       start_bt_sub_.reset();      
     }
 
-    void init_subscriber(std::string topic = "start_bt")
+    virtual void init_subscriber(std::string topic = "start_bt")
     {
       rclcpp::QoS qos(rclcpp::KeepLast(1));
       qos.transient_local().reliable();
