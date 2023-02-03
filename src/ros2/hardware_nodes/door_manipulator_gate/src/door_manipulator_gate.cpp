@@ -2,7 +2,7 @@
 
 namespace door_manipulator_gate
 {
-    DoorManipulatorGate::DoorManipulatorGate(const string serial_path): Node("door_manipulator_gate")
+    DoorManipulatorGate::DoorManipulatorGate(const std::string serial_path): Node("door_manipulator_gate")
     {
         this->serial_helper_ = new serial_helper::SerialHelper(serial_path);
 

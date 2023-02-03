@@ -6,19 +6,15 @@
   <description>TODO: Package description</description>
   <maintainer email="j.ritterbach@robast.de">ubuntu</maintainer>
   <license>TODO: License declaration</license>
-
   <buildtool_depend>ament_cmake</buildtool_depend>
-
   <depend>rclcpp</depend>
   <depend>rclcpp_action</depend>
   <depend>communication_interfaces</depend>
   <depend>std_msgs</depend>
   <depend>can</depend>
   <depend>serial_helper</depend>
-
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-
   <export>
     <build_type>ament_cmake</build_type>
   </export>

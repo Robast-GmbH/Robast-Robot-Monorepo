@@ -17,7 +17,6 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_catch2 REQUIRED)
 find_package(ament_cmake_uncrustify REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)

@@ -1,5 +1,5 @@
-#ifndef DRAWER_SYM_HPP_
-#define DRAWER_SYM_HPP_
+#ifndef HARDWARE_NODES__DRAWER_SYM_HPP_
+#define HARDWARE_NODES__DRAWER_SYM_HPP_
 
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
@@ -7,8 +7,6 @@
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "communication_interfaces/action/drawer_interaction.hpp"
 #include <string.h>
-using namespace std;
-   
 namespace robast
 { 
   
@@ -23,20 +21,20 @@ namespace robast
       using GoalHandleDrawerInteraction = rclcpp_action::ClientGoalHandle<DrawerInteraction>;
       
       bool debug;
-      rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher;
-      rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription;
+      rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+      rclcpp::Subscription<std_msgs::msg::String>::SharedPtr subscription_;
       
-      rclcpp::Client<ShelfSetupInfo>::SharedPtr shelfInfoClient;
-      rclcpp_action::Client<DrawerInteraction>::SharedPtr drawerInteractionClients;
+      rclcpp::Client<ShelfSetupInfo>::SharedPtr shelfInfoClient_;
+      rclcpp_action::Client<DrawerInteraction>::SharedPtr drawerInteractionClients_;
 
       
       void startTask(const std_msgs::msg::String::SharedPtr msg);
-      void split(string input, char deliminator,  vector<string> & output); 
+      void split(std::string input, char deliminator,  std::vector<std::string> & output); 
       
-      vector<communication_interfaces::msg::Drawer, allocator<communication_interfaces::msg::Drawer>> drawerList;
+      std::vector<communication_interfaces::msg::Drawer, std::allocator<communication_interfaces::msg::Drawer>> drawerList;
 
       void drawer_goal_response_callback(const GoalHandleDrawerInteraction::SharedPtr & goal_handle);
-      void drawer_feedback_callback( GoalHandleDrawerInteraction::SharedPtr, const shared_ptr<const DrawerInteraction::Feedback> feedback);
+      void drawer_feedback_callback( GoalHandleDrawerInteraction::SharedPtr, const std::shared_ptr<const DrawerInteraction::Feedback> feedback);
       void drawer_result_callback(const GoalHandleDrawerInteraction::WrappedResult & result);
 
 
@@ -49,4 +47,4 @@ namespace robast
     DrawerSym();
   };
 }  // namespace robast
-#endif  // DRAWER_SYM_HPP_
+#endif  //HARDWARE_NODES__DRAWER_SYM_HPP_

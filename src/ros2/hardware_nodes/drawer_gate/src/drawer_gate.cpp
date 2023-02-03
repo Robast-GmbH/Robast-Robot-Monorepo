@@ -5,7 +5,7 @@
 
 namespace drawer_gate
 {
-  DrawerGate::DrawerGate(const string serial_path): Node("drawer_gate")
+  DrawerGate::DrawerGate(const std::string serial_path) : Node("drawer_gate")
   {
     this->serial_helper_ = new serial_helper::SerialHelper(serial_path);
 
@@ -247,7 +247,7 @@ namespace drawer_gate
   {
     robast_can_msgs::CanMessage can_msg_drawer_lock = this->can_db_.can_messages.at(CAN_MSG_DRAWER_LOCK);
 
-    std::vector can_signals_drawer_lock = can_msg_drawer_lock.get_can_signals();
+    std::vector<robast_can_msgs::CanSignal> can_signals_drawer_lock = can_msg_drawer_lock.get_can_signals();
 
     can_signals_drawer_lock.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(drawer_controller_id);
 
@@ -273,7 +273,7 @@ namespace drawer_gate
   {
     robast_can_msgs::CanMessage can_msg_drawer_led = this->can_db_.can_messages.at(CAN_MSG_DRAWER_LED);
 
-    std::vector can_signals_drawer_led = can_msg_drawer_led.get_can_signals();
+    std::vector<robast_can_msgs::CanSignal> can_signals_drawer_led = can_msg_drawer_led.get_can_signals();
 
     can_signals_drawer_led.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(drawer_controller_id);
 
