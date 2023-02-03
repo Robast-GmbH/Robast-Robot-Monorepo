@@ -33,5 +33,3 @@ RUN apt-get update \
 
 ENV ROS_DOMAIN_ID=0
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-
-#lets test what happens if I change something.
