@@ -21,9 +21,7 @@ def generate_launch_description():
         name="drawer_tree_initiator",
         output="screen",
         parameters=[bt_config_params])
-
     ld = LaunchDescription()
-
     ld.add_action(declare_bt_config_params_cmd)
     ld.add_action(bt_node)
     return ld

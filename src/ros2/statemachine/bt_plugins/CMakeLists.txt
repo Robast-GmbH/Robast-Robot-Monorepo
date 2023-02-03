@@ -89,6 +89,8 @@ if(BUILD_TESTING)
   list(APPEND test_executables open_drawer_test)
   add_executable(drawer_status_condition_test tests/conditions/drawer_status_condition_test.cpp)
   list(APPEND test_executables drawer_status_condition_test)
+  add_executable(nfc_to_drawer_action_test tests/actions/nfc_to_drawer_action_test.cpp)
+  list(APPEND test_executables nfc_to_drawer_action_test)
 
   ament_target_dependencies(${test_libs}
   ${dependencies})

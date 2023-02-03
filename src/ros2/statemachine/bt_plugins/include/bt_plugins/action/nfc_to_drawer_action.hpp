@@ -30,7 +30,7 @@ namespace drawer_statemachine
   private:
     rclcpp::Node::SharedPtr node_;
     communication_interfaces::msg::DrawerAddress drawer_address_;
-    static std::map<std::string, communication_interfaces::msg::DrawerAddress> nfc_key_to_DrawerAddress_;
+    std::map<std::string, communication_interfaces::msg::DrawerAddress> nfc_key_to_DrawerAddress_;
     BT::Blackboard::Ptr blackboard_;
   };
 }

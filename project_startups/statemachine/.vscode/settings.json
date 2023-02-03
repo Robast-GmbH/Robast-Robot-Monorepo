@@ -112,10 +112,10 @@
     "testExplorer.useNativeTesting": true,
     "cmake.sourceDirectory": "${workspaceFolder}/src/statemachine/bt_plugins",
     "[cpp]": {
-        "editor.defaultFormatter": "zachflower.uncrustify",
+        "editor.defaultFormatter": "ms-vscode.cpptools",
         "editor.tabSize": 2
     },
     "[python]": {
         "editor.tabSize": 4
-    }
+    },
 }

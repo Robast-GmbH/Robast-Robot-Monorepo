@@ -63,12 +63,6 @@ if(BUILD_TESTING)
   ament_xmllint()
 endif()
 
-add_executable(talker src/simple_node.cpp)
-ament_target_dependencies(talker rclcpp std_msgs)
-
-install(TARGETS
-  talker
-  DESTINATION lib/${PROJECT_NAME})
 
 ament_export_include_directories(include)
 
