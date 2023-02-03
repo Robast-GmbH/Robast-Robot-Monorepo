@@ -58,6 +58,6 @@ jobs:
             push: true
             file: src/ros2/simple_fleetmanagement/deploy.Dockerfile
             tags: |
-                  src/ros2/simple_fleetmanagement/simple_fleetmanagement_deploy
+                  ghcr.io/robast-gmbh/monorepo/simple_fleetmanagement_deploy
             cache-from: type=gha
             cache-to: type=gha,mode=max
