@@ -26,7 +26,6 @@ namespace bt_base_nodes
         ): BTSubBase(options) 
         {
             nfc_key_to_DrawerAddress_ = nfc_key_to_DrawerAddress;
-            
         }
 
     protected:

@@ -9,7 +9,6 @@
                 "/opt/ros/humble/include/**",
                 "/workspace/src/communication_interfaces/**",
                 "/workspace/src/statemachine**",
-                "/workspace/src/statemachine/**",
                 "/workspace/install/behaviortree_cpp/**",
                 "${workspaceFolder}/src/statemachine/bt_plugins/include",
                 "${workspaceFolder}/src/statemachine/bt_plugins/tests"
