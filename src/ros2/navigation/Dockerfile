@@ -1,7 +1,5 @@
 FROM ros:humble as base
 
-
- 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
@@ -22,7 +20,6 @@ ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-
 
 RUN apt-get update && apt-get install -y \
   cmake \

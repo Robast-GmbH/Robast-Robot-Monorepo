@@ -22,6 +22,8 @@
             <input_port name="target_value" default="false"/>
             <input_port name="topic" default="/drawer_is_open"/>
         </Condition>
+        <Action ID="UserToDrawerMapping"
+            editable="true"/>
     </TreeNodesModel>
 </root>
 

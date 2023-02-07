@@ -7,7 +7,7 @@ int main(int argc, char* argv[ ])
 {
     rclcpp::init(argc, argv);
     auto node = std::make_shared<bt_base_nodes::DrawerTreeInitiator>();
-    node->configure();
+    node->configure("open_drawer");
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;

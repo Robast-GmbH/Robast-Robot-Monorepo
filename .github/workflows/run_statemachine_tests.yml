@@ -1,6 +1,6 @@
 name: Statemachine Test
 
-on:
+on: 
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
@@ -9,19 +9,27 @@ on:
       - .github/workflows/*
        
 jobs:
-  test:
+  test-run-statemachine:
 
     runs-on: ubuntu-latest
     env:
       Project: statemachine
 
     steps:
+    # - uses: actions/checkout@v3
+    # - uses: dorny/paths-filter@v2.11.1
+    #   id: filter
+    #   with:
+    #     filters: |
+    #       hardware_docker_changed:
+    #         - 'src/ros2/hardware_nodes/Dockerfile'
+    #       statemachine_docker_changed:
+    #         - 'src/ros2/statemachine/Dockerfile'
+
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
       with:
-          fetch-depth: 2
           submodules: recursive
-            
 
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2
@@ -30,12 +38,37 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-    - name: Build docker
-      working-directory: src/ros2/${{ env.Project }}
-      run: |
-            docker build . --tag ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
-            docker run ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
-            docker push ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
+    # - name: Build docker
+    #   if: steps.filter.outputs.statemachine_docker_changed == 'true'
+    #   working-directory: src/ros2/${{ env.Project }}
+    #   run: |
+    #         docker build . --tag ghcr.io/robast-gmbh/monorepo/${{ env.Project }}_test
+    #         docker push ghcr.io/robast-gmbh/monorepo/${{ env.Project }}_test
+
+    - name: configures Docker Buildx to create a builder instance for running the image build.
+      uses: docker/setup-buildx-action@v1 
+
+    - name: Build statemaschine dev docker
+      uses: docker/build-push-action@v2
+      with:
+            context: src/ros2/${{ env.Project }}/
+            push: true
+            file: src/ros2/${{ env.Project }}/Dockerfile
+            tags: |
+                  ghcr.io/robast-gmbh/monorepo/${{ env.Project }}_dev
+            cache-from: type=gha
+            cache-to: type=gha,mode=max
+           
     - name: Run docker and execute tests
       working-directory: src/ros2/${{ env.Project }}
-      run: docker run -v $(pwd):/workspace/src/${{ env.Project }} -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}  /bin/sh -c "cd /workspace/ && sudo apt-get update && sudo apt-get upgrade -y && rosdep update && rosdep install --from-paths src --ignore-src -r -y && colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic && colcon test --event-handler=console_direct+ && colcon test-result --all"
+      run: >
+          docker run -v $(pwd):/workspace/src/${{ env.Project }}
+          -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces
+          --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}_dev
+          /bin/sh -c "cd /workspace/ &&
+          sudo apt-get update &&
+          sudo apt-get upgrade -y &&
+          rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
+          colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic &&
+          colcon test --event-handler=console_direct+ &&
+          colcon test-result --all"

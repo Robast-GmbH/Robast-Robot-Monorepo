@@ -27,13 +27,14 @@
 	"extensions": [
 		"dotjoshjohnson.xml",
 		"laurenttreguier.uncrustify",
+		"althack.ament-task-provider",
 		"ms-python.python",
 		"ms-vscode.cpptools",
 		"streetsidesoftware.code-spell-checker",
 		"twxs.cmake",
 		"yzhang.markdown-all-in-one",
 		"jaehyunshim.vscode-ros2",
-		"tomoki1207.pdf",
-		"matepek.vscode-catch2-test-adapter"
+		"matepek.vscode-catch2-test-adapter",
+		"redhat.vscode-yaml"
 	]
 }
