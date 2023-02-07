@@ -92,7 +92,7 @@ class TestProcessOutput(unittest.TestCase):
         # Create a subscriber
         self.subscription = self.node.create_subscription(
             String,
-            '/authenticate_user',
+            '/authenticated_user',
             self.subscriber_callback,
             qos_profile=self.qos_profile
         )

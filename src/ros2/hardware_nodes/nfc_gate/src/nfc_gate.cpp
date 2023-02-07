@@ -13,7 +13,7 @@ namespace robast
     qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
     qos.avoid_ros_namespace_conventions(false);
     
-    publisher_ = this->create_publisher<std_msgs::msg::String>("/authenticate_user", qos);
+    publisher_ = this->create_publisher<std_msgs::msg::String>("/authenticated_user", qos);
     timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL), std::bind(&NFCGate::reader_procedure, this));
   }
 

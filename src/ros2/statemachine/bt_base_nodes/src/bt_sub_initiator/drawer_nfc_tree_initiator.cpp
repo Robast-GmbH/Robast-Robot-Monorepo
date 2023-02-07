@@ -16,7 +16,7 @@ int main(int argc, char* argv[ ])
     nfc_dictionary[std::to_string(i)] = drawer_address;
   }
   auto node = std::make_shared<bt_base_nodes::DrawerNFCTreeInitiator>(nfc_dictionary);
-  node->configure("user_access");
+  node->configure("authenticated_user");
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
