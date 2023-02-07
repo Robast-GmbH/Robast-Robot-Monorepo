@@ -12,15 +12,15 @@ def generate_launch_description():
     bt_config_params = LaunchConfiguration('bt_config_params')
     declare_bt_config_params_cmd = DeclareLaunchArgument(
         'bt_config_params',
-        default_value=os.path.join(bringup_dir, 'config', 'bt_params.yaml'),
+        default_value=os.path.join(bringup_dir, 'config', 'nfc_bt_params.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     bt_node = Node(
         package="bt_base_nodes",
-        executable="drawer_tree_initiator",
-        name="drawer_tree_initiator",
+        executable="drawer_nfc_tree_initiator",
+        name="drawer_nfc_tree_initiator",
         output="screen",
-        parameters=[bt_config_params])
+        parameters=[{"bt_path": "/workspace/install/drawer_sm/trees/trees/drawer_nfc_bt.xml"}])
     ld = LaunchDescription()
     ld.add_action(declare_bt_config_params_cmd)
     ld.add_action(bt_node)
