@@ -47,7 +47,7 @@ namespace db_helper
         return true;
     }
     
-   bool PostgreSqlHelper::checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::shared_ptr<std::string> name)
+   bool PostgreSqlHelper::checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::shared_ptr<std::string> user_name)
     {
         std::vector<std::vector<std::string>> data = std::vector<std::vector<std::string>>();
         std::vector<std::string> header = std::vector<std::string>();
@@ -67,7 +67,7 @@ namespace db_helper
                         std::make_unique<std::vector<std::string>>(header));
         if (data.size() == 1)
         {
-            *name = data[0][0];
+            *user_name = data[0][0];
             return true;
         }
         return false;

@@ -7,38 +7,22 @@ namespace db_helper
         user_list_ = validUserList;
     }
 
-    MockPostgreSqlHelper::~MockPostgreSqlHelper()
-    {
-        
-    }
-
-    std::string MockPostgreSqlHelper::open_connection()
-    {
-      
-    }
-
-    void MockPostgreSqlHelper::close_connection()
-    {
-       
-    }
-
-    
-    bool MockPostgreSqlHelper::perform_query(std::string sqlStatment, std::unique_ptr< std::vector< std::vector<std::string> >> result_data, std::unique_ptr<std::vector<std::string>> result_header)
+    bool MockPostgreSqlHelper::perform_query(std::string sqlStatment __attribute__((unused)), std::unique_ptr< std::vector< std::vector<std::string> >> result_data __attribute__((unused)), std::unique_ptr<std::vector<std::string>> result_header __attribute__((unused)))
     {
         return true;
     }
     
-    bool MockPostgreSqlHelper::checkUserTag(std::string tag, std::vector<std::string> Lookup_scope, std::shared_ptr<std::string> result_data)
+    bool MockPostgreSqlHelper::checkUserTag(std::string scanned_key, std::vector<std::string> lookup_scope __attribute__((unused)), std::shared_ptr<std::string> related_username )
     {
-        if (user_list_.count(tag))
+        if (user_list_.count(scanned_key))
         {
-            *result_data = user_list_[tag];
-                return true;
+            *related_username = user_list_[scanned_key];
+            return true;
         }
         return false;
     }
 
-    int MockPostgreSqlHelper::perform_transaction(std::string SqlStatement)
+    int MockPostgreSqlHelper::perform_transaction(std::string SqlStatement __attribute__((unused)))
     {
         return 0;
     }

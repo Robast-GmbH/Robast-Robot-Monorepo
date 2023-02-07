@@ -7,6 +7,7 @@
 #include <inttypes.h>
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/string.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
 // C library headers
@@ -48,23 +49,19 @@ namespace robast
     serial_helper::ISerialHelper* serial_connector_;
     db_helper::IDBHelper* db_connector_;
     rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
     std::shared_ptr<GoalHandleAuthenticateUser> timer_handle_;
     rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server_;
     rclcpp::Service<CreateUser>::SharedPtr create_user_server_;
 
-    rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID& uuid, std::shared_ptr<const AuthenticateUser::Goal> goal);
-    rclcpp_action::CancelResponse auth_cancel_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-    void auth_accepted_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-    void auth_authenticate_user(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-
     bool execute_scan(std::shared_ptr<std::string> recived_raw_data);
-    bool validate_key(std::string scanned_key, std::vector<std::string> allValidUser, std::shared_ptr< std::string> validated_user);
     bool scan_tag(std::shared_ptr<std::string> tag_data);
 
     void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
     void start_up_scanner();
     void reader_procedure();
     void turn_off_scanner();
+    bool checkUserTag(std::string scanned_key, std::shared_ptr<std::string> related_username);
   };
 
 

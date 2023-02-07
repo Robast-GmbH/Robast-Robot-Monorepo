@@ -8,7 +8,12 @@ namespace robast
   {
     this->serial_connector_ = new serial_helper::SerialHelper(serial_port_path);
     this->db_connector_= new db_helper::PostgreSqlHelper("robot", "123456789", "10.10.23.9", "robast");
-
+    auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
+    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+    qos.avoid_ros_namespace_conventions(false);
+    
+    publisher_ = this->create_publisher<std_msgs::msg::String>("/authenticate_user", qos);
     timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL), std::bind(&NFCGate::reader_procedure, this));
   }
 
@@ -16,7 +21,6 @@ namespace robast
   {
    
   }
-
 
   void NFCGate::start_up_scanner()
   {
@@ -55,39 +59,46 @@ namespace robast
     {
       return false;
     }
+    //this->serial_connector.send_ascii_cmd(BEEP_STANDART);
+    this->serial_connector_->send_ascii_cmd(TOP_LED_OFF(LED_GREEN));
     return true;
   }
 
-  bool NFCGate::validate_key(std::string scanned_key, std::vector<std::string> allValidUser, std::shared_ptr<std::string> validated_user )
-  {
-    std::string name;
-     return db_connector_->checkUserTag(scanned_key, allValidUser, validated_user);
-  }
-  
   void NFCGate::turn_off_scanner()
   {
-    //this->serial_connector.send_ascii_cmd(BEEP_STANDART);
     this->serial_connector_->send_ascii_cmd(TOP_LED_OFF(LED_RED));
     this->serial_connector_->send_ascii_cmd(BOTTOM_LED_OFF);
     this->serial_connector_->close_serial();
   }
 
-  bool NFCGate::execute_scan( std::shared_ptr<std::string> resieved_raw_data)
+  bool NFCGate::execute_scan( std::shared_ptr<std::string> received_raw_data)
   {
+    bool found_tag;
     start_up_scanner();
-    return scan_tag(raw_scan_data);
+    found_tag = scan_tag(received_raw_data);
+    
+    return found_tag;
   }
 
   void NFCGate::reader_procedure()
-  {
-    
+  {   
     std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
+    std::shared_ptr<std::string>  found_user = std::make_shared<std::string>();
     bool found = false;
 
-    const auto goal = timer_handle_->get_goal();
-    found = execute_scan( scanned_key );
-
-   
+    found = execute_scan(scanned_key);
+    
+    if (found)
+    {
+      if (this->db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user))
+      {
+        RCLCPP_INFO(this->get_logger(), "Found tag");
+        auto message = std_msgs::msg::String();
+        message.data = *found_user;
+        RCLCPP_INFO(this->get_logger(), "Publishing authenticated user %s", (*found_user).c_str());
+        publisher_->publish(message);
+       }
+    }
   }
 
   void NFCGate::write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)
