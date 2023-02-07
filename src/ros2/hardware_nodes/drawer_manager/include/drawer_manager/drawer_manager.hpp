@@ -15,7 +15,6 @@
 #include "communication_interfaces/action/drawer_interaction.hpp"
 #include "communication_interfaces/action/drawer_user_access.hpp"
 #include "communication_interfaces/action/authenticate_user.hpp"
- using namespace std;
 
 namespace robast
 {
@@ -60,11 +59,11 @@ namespace robast
     rclcpp_action::Client<DrawerUserAccess>::SharedPtr user_drawer_access_client;
 
 
-    void get_shelf_setup(const shared_ptr<ShelfSetupInfo::Request> request, shared_ptr<ShelfSetupInfo::Response> response);
+    void get_shelf_setup(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response);
 
-    rclcpp_action::GoalResponse drawer_interaction_goal_callback(const rclcpp_action::GoalUUID & uuid, shared_ptr<const DrawerInteraction::Goal> goal);
-    rclcpp_action::CancelResponse drawer_interaction_cancel_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle); 
-    void drawer_interaction_accepted_callback(const shared_ptr<GoalHandleDrawerInteraction> goal_handle);
+    rclcpp_action::GoalResponse drawer_interaction_goal_callback(const rclcpp_action::GoalUUID & uuid, std::shared_ptr<const DrawerInteraction::Goal> goal);
+    rclcpp_action::CancelResponse drawer_interaction_cancel_callback(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle); 
+    void drawer_interaction_accepted_callback(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
 
     void authentication_goal_response_callback( const GoalHandleAuthenticateUser::SharedPtr & goal_handle);
     void authentication_feedback_callback( GoalHandleAuthenticateUser::SharedPtr, const std::shared_ptr<const AuthenticateUser::Feedback> feedback);
@@ -75,8 +74,8 @@ namespace robast
     void handle_drawer_interaction(const std::shared_ptr<GoalHandleDrawerInteraction> goal_handle);
     void drawer_interaction_state_machine(const std::shared_ptr<const communication_interfaces::action::DrawerInteraction_Goal> goal, uint8_t state = 1);
 
-    AuthenticateUserResultHandle request_user_authentication(bool loading, std::vector<string> load_keys, std::vector<string> drop_of_keys);
-    string wait_for_user_authentication(AuthenticateUserResultHandle action_handle);
+    AuthenticateUserResultHandle request_user_authentication(bool loading, std::vector<std::string> load_keys, std::vector<std::string> drop_of_keys);
+    std::string wait_for_user_authentication(AuthenticateUserResultHandle action_handle);
     DrawerUserAccessResultHandle request_drawer_user_access(DrawerAddress drawer_address);
     void wait_for_finished_drawer_user_access(DrawerUserAccessResultHandle drawer_user_access_action_handle);
     void ask_user_for_reopening_drawer(const std::shared_ptr<const communication_interfaces::action::DrawerInteraction_Goal> goal);

@@ -5,14 +5,14 @@ namespace robast
 {
     DrawerSym::DrawerSym(): Node("drawer_sym")
     {
-        this->publisher = this->create_publisher<std_msgs::msg::String>("drawer_info", 10);
-        this->subscription = this->create_subscription<std_msgs::msg::String>( "drawer_command", 10, bind(&DrawerSym::startTask, this, placeholders::_1));
-        this->drawerInteractionClients = rclcpp_action::create_client<DrawerInteraction>(this, "drawer_interaction");
+        this->publisher_ = this->create_publisher<std_msgs::msg::String>("drawer_info", 10);
+        this->subscription_ = this->create_subscription<std_msgs::msg::String>( "drawer_command", 10, std::bind(&DrawerSym::startTask, this, std::placeholders::_1));
+        this->drawerInteractionClients_ = rclcpp_action::create_client<DrawerInteraction>(this, "drawer_interaction");
     }
 
     void DrawerSym::startTask(const std_msgs::msg::String::SharedPtr msg)
     {   
-        vector<string> msg_split;
+        std::vector<std::string> msg_split;
         this->split(msg->data.c_str(),' ', msg_split);
 
         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "request Command: |%s|",msg_split.at(0).c_str());
@@ -35,16 +35,16 @@ namespace robast
             RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "The recived Commad \"%s\" in unknown.", msg_split.at(0).c_str());
             auto responce = std_msgs::msg::String();
             responce.data = "Command unknown!!" ;
-            this->publisher->publish(responce);
+            this->publisher_->publish(responce);
         }        
     }
 
     void DrawerSym::drawer_info()
     {
-        shelfInfoClient = this->create_client<ShelfSetupInfo>("get_module_setup");
+        shelfInfoClient_ = this->create_client<ShelfSetupInfo>("get_module_setup");
         auto request = std::make_shared<ShelfSetupInfo::Request>();
         
-        while (!shelfInfoClient->wait_for_service(1s)) 
+        while (!shelfInfoClient_->wait_for_service(std::chrono::seconds(1))) 
         {
             if (!rclcpp::ok())
             {
@@ -62,12 +62,15 @@ namespace robast
             {
                 auto response = std_msgs::msg::String();
                 auto drawer = this->drawerList [i];
-                response.data= drawer.drawer_address.drawer_controller_id + " : " + to_string(drawer.number_of_drawers) + " ( " + to_string(drawer.drawer_size.x) +" * "+ to_string(drawer.drawer_size.y)+" * "+ to_string(drawer.drawer_size.z);
-                this->publisher->publish(response);
+                response.data = drawer.drawer_address.drawer_controller_id + " : " + std::to_string(drawer.number_of_drawers) +
+                                " ( " + std::to_string(drawer.drawer_size.x) + " * " + std::to_string(drawer.drawer_size.y) + " * " +
+                                std::to_string(drawer.drawer_size.z);
+                
+                this->publisher_->publish(response);
             }
         };
 
-        auto result = shelfInfoClient->async_send_request(request, response_received_load_callback );
+        auto result = shelfInfoClient_->async_send_request(request, response_received_load_callback );
 
         RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "get_module_setup request sent!");
     }
@@ -95,17 +98,17 @@ namespace robast
     void DrawerSym::send_drawer_interaction(communication_interfaces::action::DrawerInteraction::Goal goal_msg)
     { 
             auto send_goal_options = rclcpp_action::Client<DrawerInteraction>::SendGoalOptions();
-            send_goal_options.goal_response_callback = bind(&DrawerSym::drawer_goal_response_callback, this, placeholders::_1);
-            send_goal_options.feedback_callback = bind(&DrawerSym::drawer_feedback_callback, this, placeholders::_1, placeholders::_2);
-            send_goal_options.result_callback = bind(&DrawerSym::drawer_result_callback, this, placeholders::_1);
+            send_goal_options.goal_response_callback = std::bind(&DrawerSym::drawer_goal_response_callback, this, std::placeholders::_1);
+            send_goal_options.feedback_callback = std::bind(&DrawerSym::drawer_feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
+            send_goal_options.result_callback = std::bind(&DrawerSym::drawer_result_callback, this, std::placeholders::_1);
 
-            this->drawerInteractionClients->async_send_goal(goal_msg, send_goal_options);
+            this->drawerInteractionClients_->async_send_goal(goal_msg, send_goal_options);
     }
 
     void DrawerSym::open_drawer_test(std::vector<std::string> msg_split)
     {
         
-        if (!drawerInteractionClients->wait_for_action_server()) 
+        if (!drawerInteractionClients_->wait_for_action_server()) 
             {
                 RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
                 return;
@@ -147,8 +150,8 @@ namespace robast
         goal_msg.task.ticket.item_size.x = 0;
         goal_msg.task.ticket.item_size.y = 0;
         goal_msg.task.ticket.item_size.z = 0;
-        goal_msg.task.ticket.load_keys =     vector<string> {"000101000000000000000000000000010001"};
-        goal_msg.task.ticket.drop_of_keys =  vector<string> {"000101000000000000000000000000010001"};
+        goal_msg.task.ticket.load_keys =     std::vector<std::string> {"000101000000000000000000000000010001"};
+        goal_msg.task.ticket.drop_of_keys =  std::vector<std::string> {"000101000000000000000000000000010001"};
         return goal_msg;
     }
 
@@ -158,7 +161,7 @@ namespace robast
         {
             auto responce = std_msgs::msg::String();
             responce.data = "request was Rejected" ;
-            this->publisher->publish(responce);
+            this->publisher_->publish(responce);
         } 
         else 
         {
@@ -166,12 +169,12 @@ namespace robast
         }
     }
 
-    void DrawerSym::drawer_feedback_callback( GoalHandleDrawerInteraction::SharedPtr, const shared_ptr<const DrawerInteraction::Feedback> feedback)
+    void DrawerSym::drawer_feedback_callback( GoalHandleDrawerInteraction::SharedPtr, const std::shared_ptr<const DrawerInteraction::Feedback> feedback)
     {
         (void) feedback;
         auto responce = std_msgs::msg::String();
         responce.data = "feedback:" ;
-        this->publisher->publish(responce);
+        this->publisher_->publish(responce);
     }
 
     void DrawerSym::drawer_result_callback(const GoalHandleDrawerInteraction::WrappedResult & result)
@@ -194,10 +197,10 @@ namespace robast
 
         auto response = std_msgs::msg::String();
         response.data = "Door operation is done." ;
-        this->publisher->publish(response);
+        this->publisher_->publish(response);
     }
 
-    void DrawerSym::split(string input, char deliminator,  vector<string> &output) 
+    void DrawerSym::split(std::string input, char deliminator,  std::vector<std::string> &output) 
     {
        int start = 0;
        int end = input.find(deliminator);

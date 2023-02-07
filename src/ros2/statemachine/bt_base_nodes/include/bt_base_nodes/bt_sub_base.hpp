@@ -22,25 +22,27 @@ namespace bt_base_nodes
   class BTSubBase: public rclcpp::Node
   {
   public:
-    BTSubBase(const rclcpp::NodeOptions & options):Node("bt_tickers", options)
-    {   
+    BTSubBase(const rclcpp::NodeOptions& options): Node("bt_tickers", options)
+    {
+      _plugins = {
+        "change_led_action_bt_node",
+        "open_drawer_action_bt_node",
+        "drawer_status_condition_bt_node",
+        "nfc_to_drawer_action_bt_node"
+      };
+      std::string path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml";      
+      this->declare_parameter("plugins", _plugins);
+      this->declare_parameter("bt_path", path);
+      _plugins = this->get_parameter("plugins").get_parameter_value().get<std::vector<std::string>>();
+      bt_path_ = this->get_parameter("bt_path").as_string();
+
     }
 
-    void configure()
+    void configure(std::string trigger_topic = "start_bt")
     {
       
       static BT::NodeConfig* config_;
       config_ = new BT::NodeConfig();
-      std::string path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml";
-      const std::vector<std::string> default_plugins = {
-        "change_led_action_bt_node",
-        "open_drawer_action_bt_node",
-        "drawer_status_condition_bt_node"
-      };
-      this->declare_parameter("plugins", default_plugins);
-      this->declare_parameter("bt_path", path);
-      plugins_ = this->get_parameter("plugins").get_parameter_value().get<std::vector<std::string>>();
-      bt_path_ = this->get_parameter("bt_path").as_string();
       // Create the blackboard that will be shared by all of the nodes in the tree
       _blackboard = BT::Blackboard::create();
       // Put items on the blackboard
@@ -50,9 +52,9 @@ namespace bt_base_nodes
       _blackboard->set<std::chrono::milliseconds>(
         "bt_loop_duration",
         std::chrono::milliseconds(10));
-      _bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins_);
+      _bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(_plugins);
       _bt = _bt_engine->createTreeFromFile(bt_path_, _blackboard);
-      init_subscriber("open_request");
+      init_subscriber(trigger_topic);
     }
 
   protected:
@@ -69,7 +71,7 @@ namespace bt_base_nodes
       start_bt_sub_.reset();      
     }
 
-    void init_subscriber(std::string topic = "start_bt")
+    virtual void init_subscriber(std::string topic = "start_bt")
     {
       rclcpp::QoS qos(rclcpp::KeepLast(1));
       qos.transient_local().reliable();
@@ -82,11 +84,11 @@ namespace bt_base_nodes
     BT::Tree _bt;
     BT::Blackboard::Ptr _blackboard;
     std::unique_ptr<drawer_statemachine::BehaviorTreeEngine> _bt_engine;
+    std::vector<std::string> _plugins;
     
   private:
     
     std::string bt_path_;
-    std::vector<std::string> plugins_;
     typename rclcpp::Subscription<TopicT>::SharedPtr start_bt_sub_;
 
   };

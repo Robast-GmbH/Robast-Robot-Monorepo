@@ -2,15 +2,6 @@
     "version": "0.2.0",
     "configurations": [
             {
-                    "name": "C++ Debugger",
-                    "request": "launch",
-                    "type": "cppdbg",
-                    "miDebuggerServerAddress": "localhost:3000",
-                    "cwd": "${workspaceFolder}",
-                    "program": "/workspace/install/drawer_sm/lib/drawer_sm/drawer_sm2",
-                    "miDebuggerPath": "/usr/bin/gdb"
-            },
-            {
                 "name": "(gdb) Launch",
                 "type": "cppdbg",
                 "request": "launch",
@@ -35,13 +26,13 @@
                 "id": "package",
                 "type": "promptString",
                 "description": "Package name",
-                "default": "bt_base_nodes"
+                "default": "drawer_sm"
               },
               {
                 "id": "program",
                 "type": "promptString",
                 "description": "Program name",
-                "default": "drawer_tree_initiator"
+                "default": "drawer_sm_startup_debug"
               }
     ]
 }

@@ -1,5 +1,8 @@
-#ifndef NFC_GATE__NFC_GATE_HPP_
-#define NFC_GATE__NFC_GATE_HPP_
+#ifndef HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_
+#define HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_
+
+#define STANDART_REPLAY_MESSAGE_SIZE 500
+#define READER_INTEVALL 500
 
 #include <inttypes.h>
 #include <memory>
@@ -22,8 +25,8 @@
 #include "communication_interfaces/srv/create_user_nfc_tag.hpp"
 #include "nfc_gate/elatec_api.h"
 #include "serial_helper/serial_helper.h"
+#include "db_helper/postgresql_connector.hpp"
 
-using namespace std;
 namespace robast
 {
 
@@ -34,28 +37,29 @@ namespace robast
     using GoalHandleAuthenticateUser = rclcpp_action::ServerGoalHandle<AuthenticateUser>;
     using CreateUser = communication_interfaces::srv::CreateUserNfcTag;
 
-    NFCGate(string serial_port_path = "/dev/robast/robast_nfc");
+    NFCGate(std::string serial_port_path = "/dev/robast/robast_nfc");
     ~NFCGate();
 
     friend class TestNFCGate; // this class has full access to all private and protected parts of this class
 
   private:
-    int numReadings;
+    int numReadings_;
 
     serial_helper::ISerialHelper* serial_connector_;
-    rclcpp::TimerBase::SharedPtr timer;
-    shared_ptr<GoalHandleAuthenticateUser> timer_handle;
-    rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server;
-    rclcpp::Service<CreateUser>::SharedPtr create_user_server;
+    db_helper::IDBHelper* db_connector_;
+    rclcpp::TimerBase::SharedPtr timer_;
+    std::shared_ptr<GoalHandleAuthenticateUser> timer_handle_;
+    rclcpp_action::Server<AuthenticateUser>::SharedPtr user_authenticate_server_;
+    rclcpp::Service<CreateUser>::SharedPtr create_user_server_;
 
-    rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID& uuid, shared_ptr<const AuthenticateUser::Goal> goal);
-    rclcpp_action::CancelResponse auth_cancel_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-    void auth_accepted_callback(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
-    void auth_authenticate_user(const shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+    rclcpp_action::GoalResponse auth_goal_callback(const rclcpp_action::GoalUUID& uuid, std::shared_ptr<const AuthenticateUser::Goal> goal);
+    rclcpp_action::CancelResponse auth_cancel_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+    void auth_accepted_callback(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
+    void auth_authenticate_user(const std::shared_ptr<GoalHandleAuthenticateUser> goal_handle);
 
-    string execute_scan(std::vector<std::string> permission_keys, bool* found);
-    string validate_key(string scanned_key, std::vector<std::string> allValidKeys, bool* found);
-    string scan_tag(bool* found);
+    bool execute_scan(std::vector<std::string> permission_users, std::shared_ptr<std::string> validated_user);
+    bool validate_key(std::string scanned_key, std::vector<std::string> allValidUser, std::shared_ptr< std::string> validated_user);
+    bool scan_tag(std::shared_ptr<std::string> tag_data);
 
     void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
     void start_up_scanner();
@@ -66,4 +70,4 @@ namespace robast
 
 
 }  // namespace robast
-#endif  // NFC_GATE__NFC_GATE_HPP_
+#endif  // HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_

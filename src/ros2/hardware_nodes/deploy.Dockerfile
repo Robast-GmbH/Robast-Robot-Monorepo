@@ -1,20 +1,8 @@
-FROM ghcr.io/robast-gmbh/monorepo/communication_interfaces_deploy  AS communication_interfaces
-FROM ghcr.io/robast-gmbh/monorepo/hardware_libs_deploy AS libs
+FROM ghcr.io/robast-gmbh/monorepo/communication_interfaces AS communication_interfaces
+FROM ghcr.io/robast-gmbh/monorepo/hardware_libs AS libs
 
 
-FROM ros:humble-ros-core As build
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    python3-colcon-common-extensions \
-    python3-pip \
-    python3-rosdep \
-    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-    libboost-all-dev \
-    ros-humble-ros-testing \
-    ros-humble-ament-cmake-test \
-    ros-humble-launch-testing \
-    && rosdep init || echo "rosdep already initialized"
-
+FROM ghcr.io/robast-gmbh/monorepo/hardware_nodes_dev As build
 COPY "." "/workspace/src/hardware_nodes" 
 COPY --from=communication_interfaces /communication_interfaces workspace/src/communication_interfaces
 COPY --from=libs /libs workspace/libs
@@ -28,7 +16,6 @@ SHELL ["/bin/bash", "-c"]
 RUN cd /workspace; \
     source /opt/ros/humble/setup.bash; \
     colcon build --continue-on-error
-
 
 FROM ros:humble-ros-core As final
 RUN apt-get update && apt-get install -y \
