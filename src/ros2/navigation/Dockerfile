@@ -50,6 +50,16 @@ RUN apt-get update && apt-get install -y \
     python3-argcomplete \
   && rm -rf /var/lib/apt/lists/*
 
+#instal to use the nvidia gpu in the docker
+RUN apt-get update && apt-get install -y \
+    libglvnd0 \
+    libgl1 \
+    libglx0 \
+    libegl1 \
+    libxext6 \
+    libx11-6 \
+    && rm -rf /var/lib/apt/lists/*
+
 RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
   && tar -xvzf v8.2.0.tar.gz \
   && cd openvdb-8.2.0/ \
