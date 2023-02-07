@@ -20,6 +20,8 @@ ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
 
 RUN apt-get update && apt-get install -y \
   cmake \
@@ -76,8 +78,7 @@ RUN apt-get update && apt-get install -y \
   python3-autopep8 \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   ros-${ROS_DISTRO}-diagnostic-updater \
-  && rm -rf /var/lib/apt/lists/* \
-  && rosdep init || echo "rosdep already initialized"
+  && rm -rf /var/lib/apt/lists/*
   
 RUN apt-get update \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
