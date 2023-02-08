@@ -53,7 +53,7 @@
 
       <include>
         <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door</uri>
-        <pose> 5.1 1.8 0.1 0 0 1.570</pose>
+        <pose> 5.1 1.8 0.001 0 0 1.570</pose>
         <name>Hinged_door</name>
       </include>  
     
