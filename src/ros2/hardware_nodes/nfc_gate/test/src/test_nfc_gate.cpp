@@ -10,9 +10,9 @@ namespace robast
 
     TestNFCGate::TestNFCGate() :NFCGate()
     {
-        declare_parameter("key", "Test1");
+        declare_parameter("key", "000001000000100");
         declare_parameter("User1_name", "1");
-        declare_parameter("User1_key", "Test1");
+        declare_parameter("User1_key", "000001000000100");
         declare_parameter("User2_name", "");
         declare_parameter("User2_key", "");
         declare_parameter("User3_name", "");
