@@ -5,7 +5,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     ld = LaunchDescription()
-    
+
     drawer_gate_simulation_node = Node(
                 package='drawer_gate_simulation',
                 executable='drawer_gate_simulation',

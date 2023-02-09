@@ -95,7 +95,7 @@
     // Use the system installed version of autopep8
     "python.formatting.autopep8Path": "/usr/bin/autopep8",
     "python.formatting.autopep8Args": [
-        "--max-line-length=120"
+        "--max-line-length=100"
     ],
     "C_Cpp.default.intelliSenseMode": "clang-x64",
     "cSpell.words": [
@@ -117,10 +117,6 @@
         "uncrustify",
         "xmllint"
     ],
-    "python.formatting.autopep8Path": "/usr/bin/autopep8",
-    "python.formatting.autopep8Args": [
-        "--max-line-length=100"
-    ],
     "files.autoSave": "onFocusChange",
     "editor.tabSize": 4,
     "editor.rulers": [
@@ -133,7 +129,7 @@
     "editor.minimap.autohide": true,
     "c-cpp-flylint.clang.defines": [
     ],
-    "editor.formatOnSave": false, 
+    "editor.formatOnSave": true, 
     "C_Cpp.formatting": "clangFormat", 
     "C_Cpp.clang_format_style": "file", // formatting rules are defined in the .clang-format file
     "cSpell.allowCompoundWords": true,
