@@ -1,13 +1,12 @@
 #ifndef RB_THERON__DRAWER_GATE_SIMULATION_HPP_
 #define RB_THERON__DRAWER_GATE_SIMULATION_HPP_
 
-#include <memory>
-
 #include <moveit/move_group_interface/move_group_interface.h>
 
-#include <boost/asio.hpp> // Used for the async timer
+#include <boost/asio.hpp>   // Used for the async timer
 #include <boost/bind.hpp>
 #include <iostream>
+#include <memory>
 #include <rclcpp/rclcpp.hpp>
 
 #include "communication_interfaces/msg/drawer.hpp"
@@ -23,7 +22,6 @@ namespace drawer_gate_simulation
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
     using DrawerLeds = communication_interfaces::msg::DrawerLeds;
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
-    using MoveGroupInterface = moveit::planning_interface::MoveGroupInterface;
 
     DrawerSimulation();
     ~DrawerSimulation(){};
@@ -46,14 +44,19 @@ namespace drawer_gate_simulation
 
     void open_drawer_topic_callback(const DrawerAddress &msg);
 
-    void move_drawer_in_simulation_to_target_pose(MoveGroupInterface *move_group_interface,
-                                                  const DrawerAddress drawer_address, const float target_pose);
+    void move_drawer_in_simulation_to_target_pose(
+        std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group_interface,
+        const DrawerAddress drawer_address,
+        const float target_pose);
 
-    void async_wait_until_closing_drawer_in_simulation(const int time_until_drawer_closing,
-                                                       MoveGroupInterface *move_group_interface,
-                                                       const DrawerAddress drawer_address, const float target_pose);
+    void async_wait_until_closing_drawer_in_simulation(
+        const int time_until_drawer_closing,
+        std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group_interface,
+        const DrawerAddress drawer_address,
+        const float target_pose);
 
-    void open_drawer_in_simulation(MoveGroupInterface *move_group_interface, const DrawerAddress drawer_address,
+    void open_drawer_in_simulation(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group_interface,
+                                   const DrawerAddress drawer_address,
                                    const float target_pose);
 
     void drawer_leds_topic_callback(const DrawerLeds &msg);
