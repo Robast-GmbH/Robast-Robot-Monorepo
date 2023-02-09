@@ -7,6 +7,9 @@ ColumnLimit: 120
 UseTab: Never
 AllowShortIfStatementsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
+AllowShortLambdasOnASingleLine: None
+BinPackParameters: false # If false, a function call’s arguments will either be all on the same line or will have one line each.
+BinPackArguments: false # If false, a function call’s parameters will either be all on the same line or will have one line each.
 BreakBeforeBraces: Allman
 AlignTrailingComments: true
 SpacesBeforeTrailingComments: 3
