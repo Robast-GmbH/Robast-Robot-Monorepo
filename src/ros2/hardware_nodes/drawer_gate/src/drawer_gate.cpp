@@ -1,7 +1,8 @@
 #include "drawer_gate/drawer_gate.hpp"
 
 // For DEBUGGING purposes this is the action send_goal command:
-// ros2 action send_goal /control_drawer communication_interfaces/action/DrawerUserAccess "{drawer_address: {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
+// ros2 action send_goal /control_drawer communication_interfaces/action/DrawerUserAccess "{drawer_address:
+// {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
 
 namespace drawer_gate
 {
@@ -15,19 +16,21 @@ namespace drawer_gate
     qos.avoid_ros_namespace_conventions(false);
 
     this->open_drawer_subscription_ = this->create_subscription<DrawerAddress>(
-      "open_drawer", qos, std::bind(&DrawerGate::open_drawer_topic_callback, this, std::placeholders::_1));
+        "open_drawer", qos, std::bind(&DrawerGate::open_drawer_topic_callback, this, std::placeholders::_1));
 
     this->drawer_leds_subscription_ = this->create_subscription<DrawerLeds>(
-      "drawer_leds", qos, std::bind(&DrawerGate::drawer_leds_topic_callback, this, std::placeholders::_1));
+        "drawer_leds", qos, std::bind(&DrawerGate::drawer_leds_topic_callback, this, std::placeholders::_1));
 
     this->drawer_status_publisher_ = this->create_publisher<DrawerStatus>("drawer_is_open", qos);
 
     this->shelf_setup_info_service_ = this->create_service<ShelfSetupInfo>(
-      "shelf_setup_info",
-      std::bind(&DrawerGate::provide_shelf_setup_info_callback, this, std::placeholders::_1, std::placeholders::_2));
+        "shelf_setup_info",
+        std::bind(&DrawerGate::provide_shelf_setup_info_callback, this, std::placeholders::_1, std::placeholders::_2));
 
-    this->send_ascii_cmds_timer_ = this->create_wall_timer(TIMER_PERIOD_SEND_ASCII_CMDS, std::bind(&DrawerGate::send_ascii_cmds_timer_callback, this));
-    this->receive_can_msgs_timer_ = this->create_wall_timer(TIMER_PERIOD_RECEIVE_CAN_MSGS, std::bind(&DrawerGate::receive_can_msgs_callback, this));
+    this->send_ascii_cmds_timer_ = this->create_wall_timer(
+        TIMER_PERIOD_SEND_ASCII_CMDS, std::bind(&DrawerGate::send_ascii_cmds_timer_callback, this));
+    this->receive_can_msgs_timer_ =
+        this->create_wall_timer(TIMER_PERIOD_RECEIVE_CAN_MSGS, std::bind(&DrawerGate::receive_can_msgs_callback, this));
 
     this->serial_can_usb_converter_is_set_up_ = false;
     this->cleared_serial_buffer_from_old_can_msgs_ = false;
@@ -41,7 +44,8 @@ namespace drawer_gate
 
   void DrawerGate::open_drawer_topic_callback(const DrawerAddress& msg)
   {
-    RCLCPP_INFO(this->get_logger(), "I heard from open_drawer topic the drawer_controller_id: '%i'", msg.drawer_controller_id); // Debugging
+    RCLCPP_INFO(this->get_logger(), "I heard from open_drawer topic the drawer_controller_id: '%i'",
+                msg.drawer_controller_id);   // Debugging
 
     uint32_t drawer_controller_id = msg.drawer_controller_id;
     uint8_t drawer_id = msg.drawer_id;
@@ -50,17 +54,19 @@ namespace drawer_gate
     {
       return;
     }
-    robast_can_msgs::CanMessage can_msg_open_lock = this->create_can_msg_drawer_lock(drawer_controller_id, drawer_id, CAN_DATA_OPEN_LOCK);
+    robast_can_msgs::CanMessage can_msg_open_lock =
+        this->create_can_msg_drawer_lock(drawer_controller_id, drawer_id, CAN_DATA_OPEN_LOCK);
 
     // start timer to enable receiving feedback via the can bus
-    this->receive_can_msgs_timer_ = this->create_wall_timer(TIMER_PERIOD_RECEIVE_CAN_MSGS, std::bind(&DrawerGate::receive_can_msgs_callback, this));
+    this->receive_can_msgs_timer_ =
+        this->create_wall_timer(TIMER_PERIOD_RECEIVE_CAN_MSGS, std::bind(&DrawerGate::receive_can_msgs_callback, this));
 
     this->send_can_msg(can_msg_open_lock);
   }
 
   void DrawerGate::drawer_leds_topic_callback(const DrawerLeds& msg)
   {
-    RCLCPP_INFO(this->get_logger(), "I heard from drawer_leds topic the led mode: '%i'", msg.mode); // Debugging
+    RCLCPP_INFO(this->get_logger(), "I heard from drawer_leds topic the led mode: '%i'", msg.mode);   // Debugging
 
     led_parameters led_parameters = {};
     led_parameters.led_red = msg.red;
@@ -69,7 +75,8 @@ namespace drawer_gate
     led_parameters.brightness = msg.brightness;
     led_parameters.mode = msg.mode;
 
-    robast_can_msgs::CanMessage can_msg_drawer_led = this->create_can_msg_drawer_led(msg.drawer_address.drawer_controller_id, led_parameters);
+    robast_can_msgs::CanMessage can_msg_drawer_led =
+        this->create_can_msg_drawer_led(msg.drawer_address.drawer_controller_id, led_parameters);
 
     this->send_can_msg(can_msg_drawer_led);
   }
@@ -80,12 +87,17 @@ namespace drawer_gate
     {
       if (drawer_feedback_can_msgs.at(i).get_id() == CAN_ID_DRAWER_FEEDBACK)
       {
-        uint32_t drawer_controller_id = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data();
+        uint32_t drawer_controller_id =
+            drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data();
         drawer_status drawer_status = {};
-        drawer_status.is_endstop_switch_1_pushed = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).get_data() == 1;
-        drawer_status.is_lock_switch_1_pushed = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).get_data() == 1;
-        drawer_status.is_endstop_switch_2_pushed = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).get_data() == 1;
-        drawer_status.is_lock_switch_2_pushed = drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).get_data() == 1;
+        drawer_status.is_endstop_switch_1_pushed =
+            drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).get_data() == 1;
+        drawer_status.is_lock_switch_1_pushed =
+            drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED).get_data() == 1;
+        drawer_status.is_endstop_switch_2_pushed =
+            drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED).get_data() == 1;
+        drawer_status.is_lock_switch_2_pushed =
+            drawer_feedback_can_msgs.at(i).get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).get_data() == 1;
         this->drawer_status_by_drawer_controller_id_[drawer_controller_id] = drawer_status;
 
         communication_interfaces::msg::DrawerStatus drawer_status_msg = DrawerStatus();
@@ -99,34 +111,39 @@ namespace drawer_gate
           this->send_drawer_is_closed_feedback(drawer_status_msg, 1);
         }
 
-        //TODO: If lock 2 is used as well, add the if (drawer_status.is_endstop_switch_2_pushed) block
+        // TODO: If lock 2 is used as well, add the if (drawer_status.is_endstop_switch_2_pushed) block
       }
     }
   }
 
-  void DrawerGate::send_drawer_is_open_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, uint8_t drawer_id)
+  void DrawerGate::send_drawer_is_open_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg,
+                                                uint8_t drawer_id)
   {
-    RCLCPP_INFO(this->get_logger(), "Sending send_drawer_is_open_feedback with drawer_controller_id: '%i'", drawer_status_msg.drawer_address.drawer_controller_id); // Debugging
+    RCLCPP_INFO(this->get_logger(), "Sending send_drawer_is_open_feedback with drawer_controller_id: '%i'",
+                drawer_status_msg.drawer_address.drawer_controller_id);   // Debugging
     drawer_status_msg.drawer_address.drawer_id = drawer_id;
     drawer_status_msg.drawer_is_open = true;
     this->drawer_status_publisher_->publish(drawer_status_msg);
   }
 
-  void DrawerGate::send_drawer_is_closed_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, uint8_t drawer_id)
+  void DrawerGate::send_drawer_is_closed_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg,
+                                                  uint8_t drawer_id)
   {
-    RCLCPP_INFO(this->get_logger(), "Sending send_drawer_is_closed_feedback with drawer_controller_id: '%i'", drawer_status_msg.drawer_address.drawer_controller_id); // Debugging
+    RCLCPP_INFO(this->get_logger(), "Sending send_drawer_is_closed_feedback with drawer_controller_id: '%i'",
+                drawer_status_msg.drawer_address.drawer_controller_id);   // Debugging
     drawer_status_msg.drawer_address.drawer_id = drawer_id;
     drawer_status_msg.drawer_is_open = false;
     this->drawer_status_publisher_->publish(drawer_status_msg);
     this->receive_can_msgs_timer_->cancel();
   }
 
-  // This timer callback makes sure there is enough time between each ascii command, otherwise some commands might get lost
+  // This timer callback makes sure there is enough time between each ascii command, otherwise some commands might get
+  // lost
   void DrawerGate::send_ascii_cmds_timer_callback(void)
   {
     if (this->ascii_cmd_queue_.empty())
     {
-      this->send_ascii_cmds_timer_->cancel(); // cancel the timer when queue is empty
+      this->send_ascii_cmds_timer_->cancel();   // cancel the timer when queue is empty
       return;
     }
     else
@@ -136,7 +153,7 @@ namespace drawer_gate
       {
         RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
       }
-      this->ascii_cmd_queue_.pop(); //remove first element of the queue
+      this->ascii_cmd_queue_.pop();   // remove first element of the queue
     }
   }
 
@@ -149,7 +166,8 @@ namespace drawer_gate
   {
     if (!this->serial_can_usb_converter_is_set_up_)
     {
-      this->setup_serial_can_ubs_converter(); //mind that this should actually be done in the constructor, but due to testability we need to execute this here
+      this->setup_serial_can_ubs_converter();   // mind that this should actually be done in the constructor, but due to
+                                                // testability we need to execute this here
     }
 
     std::string serial_read_ascii_command;
@@ -157,8 +175,10 @@ namespace drawer_gate
 
     if (this->serial_can_usb_converter_is_set_up_ && num_of_received_bytes > 0)
     {
-      RCLCPP_INFO(this->get_logger(), "Serial read: %s", serial_read_ascii_command.c_str()); //DEBUGGING
-      std::vector<robast_can_msgs::CanMessage> received_can_msgs = robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, this->can_db_.can_messages);
+      RCLCPP_INFO(this->get_logger(), "Serial read: %s", serial_read_ascii_command.c_str());   // DEBUGGING
+      std::vector<robast_can_msgs::CanMessage> received_can_msgs =
+          robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(
+              serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, this->can_db_.can_messages);
       this->update_drawer_status(received_can_msgs);
     }
     else
@@ -166,7 +186,7 @@ namespace drawer_gate
       // Dump only the very first received can msgs because they might contain old data in the buffer
       if (!this->cleared_serial_buffer_from_old_can_msgs_)
       {
-        this->receive_can_msgs_timer_->cancel(); // cancel the timer after first message was cleared
+        this->receive_can_msgs_timer_->cancel();   // cancel the timer after first message was cleared
         this->cleared_serial_buffer_from_old_can_msgs_ = true;
       }
     }
@@ -174,7 +194,7 @@ namespace drawer_gate
 
   std::vector<communication_interfaces::msg::Drawer> DrawerGate::get_all_mounted_drawers()
   {
-    //TODO: This should actually be done automatically by polling all drawer_controller on the CAN bus
+    // TODO: This should actually be done automatically by polling all drawer_controller on the CAN bus
     communication_interfaces::msg::Box box_10x40x1;
     box_10x40x1.x = DRAWER_INSIDE_WIDTH_10x40x1;
     box_10x40x1.y = DRAWER_INSIDE_DEPTH_10x40x1;
@@ -220,10 +240,11 @@ namespace drawer_gate
     drawer_5.number_of_drawers = 1;
     drawer_5.drawer_size = box_30x40x1;
 
-    return { drawer_1, drawer_2, drawer_3, drawer_4, drawer_5 };
+    return {drawer_1, drawer_2, drawer_3, drawer_4, drawer_5};
   }
 
-  void DrawerGate::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request, std::shared_ptr<ShelfSetupInfo::Response> response)
+  void DrawerGate::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request,
+                                                     std::shared_ptr<ShelfSetupInfo::Response> response)
   {
     response->drawers = this->get_all_mounted_drawers();
   }
@@ -237,13 +258,14 @@ namespace drawer_gate
     }
     this->close_can_channel();
     this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
-    this->open_can_channel(); // the default state should be the open can channel to enable receiving CAN messages
+    this->open_can_channel();   // the default state should be the open can channel to enable receiving CAN messages
 
     this->serial_can_usb_converter_is_set_up_ = true;
-    RCLCPP_INFO(this->get_logger(), "Setting up serial can usb converter finished!"); //DEBUGGING
+    RCLCPP_INFO(this->get_logger(), "Setting up serial can usb converter finished!");   // DEBUGGING
   }
 
-  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id, uint8_t can_data_open_lock) const
+  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id,
+                                                                     uint8_t can_data_open_lock) const
   {
     robast_can_msgs::CanMessage can_msg_drawer_lock = this->can_db_.can_messages.at(CAN_MSG_DRAWER_LOCK);
 
@@ -269,7 +291,8 @@ namespace drawer_gate
     return can_msg_drawer_lock;
   }
 
-  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_led(uint32_t drawer_controller_id, led_parameters led_parameters) const
+  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_led(uint32_t drawer_controller_id,
+                                                                    led_parameters led_parameters) const
   {
     robast_can_msgs::CanMessage can_msg_drawer_led = this->can_db_.can_messages.at(CAN_MSG_DRAWER_LED);
 
@@ -290,11 +313,13 @@ namespace drawer_gate
 
   void DrawerGate::add_ascii_cmd_to_queue(std::string ascii_cmd)
   {
-    // if queue was empty, the timer has been canceled before, so start timer for timer callbacks which trigger sending the ascii cmds
+    // if queue was empty, the timer has been canceled before, so start timer for timer callbacks which trigger sending
+    // the ascii cmds
     if (this->ascii_cmd_queue_.empty())
     {
       this->ascii_cmd_queue_.push(ascii_cmd);
-      this->send_ascii_cmds_timer_ = this->create_wall_timer(TIMER_PERIOD_SEND_ASCII_CMDS, std::bind(&DrawerGate::send_ascii_cmds_timer_callback, this));
+      this->send_ascii_cmds_timer_ = this->create_wall_timer(
+          TIMER_PERIOD_SEND_ASCII_CMDS, std::bind(&DrawerGate::send_ascii_cmds_timer_callback, this));
     }
     else
     {
@@ -308,36 +333,36 @@ namespace drawer_gate
 
     switch (can_baudrate)
     {
-    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_10kbps:
-      msg = "S0";
-      break;
-    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_20kbps:
-      msg = "S1";
-      break;
-    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_50kbps:
-      msg = "S2";
-      break;
-    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_100kbps:
-      msg = "S3";
-      break;
-    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_125kbps:
-      msg = "S4";
-      break;
-    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps:
-      msg = "S5";
-      break;
-    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_500kbps:
-      msg = "S6";
-      break;
-    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_800kbps:
-      msg = "S7";
-      break;
-    case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_1000kbps:
-      msg = "S8";
-      break;
-    default:
-      msg = "S5";
-      break;
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_10kbps:
+        msg = "S0";
+        break;
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_20kbps:
+        msg = "S1";
+        break;
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_50kbps:
+        msg = "S2";
+        break;
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_100kbps:
+        msg = "S3";
+        break;
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_125kbps:
+        msg = "S4";
+        break;
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps:
+        msg = "S5";
+        break;
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_500kbps:
+        msg = "S6";
+        break;
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_800kbps:
+        msg = "S7";
+        break;
+      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_1000kbps:
+        msg = "S8";
+        break;
+      default:
+        msg = "S5";
+        break;
     }
 
     this->add_ascii_cmd_to_queue(msg);
@@ -362,10 +387,12 @@ namespace drawer_gate
   {
     if (!this->serial_can_usb_converter_is_set_up_)
     {
-      this->setup_serial_can_ubs_converter(); //mind that this should actually be done in the constructor, but due to testability we need to execute this here
+      this->setup_serial_can_ubs_converter();   // mind that this should actually be done in the constructor, but due to
+                                                // testability we need to execute this here
     }
 
-    std::optional<std::string> ascii_cmd = robast_can_msgs::encode_can_message_into_ascii_command(can_message, this->can_db_.can_messages);
+    std::optional<std::string> ascii_cmd =
+        robast_can_msgs::encode_can_message_into_ascii_command(can_message, this->can_db_.can_messages);
 
     if (ascii_cmd.has_value())
     {
@@ -373,8 +400,8 @@ namespace drawer_gate
     }
     else
     {
-      //TODO: Error handling
+      // TODO: Error handling
     }
   }
 
-}  // namespace drawer_gate
+}   // namespace drawer_gate

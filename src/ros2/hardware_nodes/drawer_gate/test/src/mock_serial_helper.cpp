@@ -1,57 +1,67 @@
 #include "test/mock_serial_helper.hpp"
-#include <iostream>
+
 #include <fstream>
-#include<optional>
+#include <iostream>
+#include <optional>
 
 namespace serial_helper
 {
 
-    MockSerialHelper::MockSerialHelper()
-    {}
+  MockSerialHelper::MockSerialHelper()
+  {
+  }
 
-    MockSerialHelper::~MockSerialHelper()
-    {}
+  MockSerialHelper::~MockSerialHelper()
+  {
+  }
 
-    std::string MockSerialHelper::open_serial()
-    {
-        return "";
-    }
+  std::string MockSerialHelper::open_serial()
+  {
+    return "";
+  }
 
-    void MockSerialHelper::close_serial()
-    {}
+  void MockSerialHelper::close_serial()
+  {
+  }
 
-    uint16_t MockSerialHelper::read_serial(std::string* result, uint16_t max_num_bytes)
-    {
-        robast_can_msgs::CanMessage can_message = robast_can_msgs::CanMessage(
-            CAN_ID_DRAWER_FEEDBACK,
-            CAN_DLC_DRAWER_FEEDBACK,
-            {
-                robast_can_msgs::CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 6),
-                robast_can_msgs::CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_LENGTH, 0),
-                robast_can_msgs::CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_LENGTH, 0),
-                robast_can_msgs::CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_LENGTH, 0),
-                robast_can_msgs::CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_LENGTH, 0),
-            });
-        robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
+  uint16_t MockSerialHelper::read_serial(std::string* result, uint16_t max_num_bytes)
+  {
+    robast_can_msgs::CanMessage can_message =
+        robast_can_msgs::CanMessage(CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK,
+                                    {
+                                        robast_can_msgs::CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START,
+                                                                   CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 6),
+                                        robast_can_msgs::CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_START,
+                                                                   CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_LENGTH, 0),
+                                        robast_can_msgs::CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_START,
+                                                                   CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_LENGTH, 0),
+                                        robast_can_msgs::CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_START,
+                                                                   CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_LENGTH, 0),
+                                        robast_can_msgs::CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_START,
+                                                                   CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_LENGTH, 0),
+                                    });
+    robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
 
-        std::optional<std::string> ascii_command = robast_can_msgs::encode_can_message_into_ascii_command(can_message, can_db.can_messages);
+    std::optional<std::string> ascii_command =
+        robast_can_msgs::encode_can_message_into_ascii_command(can_message, can_db.can_messages);
 
-        *result = ascii_command.value();
+    *result = ascii_command.value();
 
-        return 1;
-    }
+    return 1;
+  }
 
-    std::string MockSerialHelper::write_serial(std::string msg)
-    {
-        return "";
-    }
+  std::string MockSerialHelper::write_serial(std::string msg)
+  {
+    return "";
+  }
 
-    std::string MockSerialHelper::send_ascii_cmd(std::string cmd)
-    {
-        return "";
-    }
+  std::string MockSerialHelper::send_ascii_cmd(std::string cmd)
+  {
+    return "";
+  }
 
-    std::string MockSerialHelper::ascii_interaction(std::string cmd, std::string* response, uint16_t response_size)
-    {}
+  std::string MockSerialHelper::ascii_interaction(std::string cmd, std::string* response, uint16_t response_size)
+  {
+  }
 
-}
+}   // namespace serial_helper

@@ -16,7 +16,7 @@
 #include "communication_interfaces/action/drawer_user_access.hpp"
 #include "communication_interfaces/action/authenticate_user.hpp"
 
-namespace robast
+namespace nfc_gate
 {
 
 
@@ -31,11 +31,11 @@ namespace robast
       
       using AuthenticateUser              = communication_interfaces::action::AuthenticateUser;  //interaction with the 
       using GoalHandleAuthenticateUser    = rclcpp_action::ClientGoalHandle<AuthenticateUser>;
-      using AuthenticateUserResultHandle  = std::shared_future<std::shared_ptr<robast::DrawerManager::GoalHandleAuthenticateUser>>;
+      using AuthenticateUserResultHandle  = std::shared_future<std::shared_ptr<nfc_gate::DrawerManager::GoalHandleAuthenticateUser>>;
      
       using DrawerUserAccess              = communication_interfaces::action::DrawerUserAccess; // interaction with the drawermodules 
       using GoalHandleDrawerUserAccess    = rclcpp_action::ClientGoalHandle<DrawerUserAccess >;
-      using DrawerUserAccessResultHandle  = std::shared_future<std::shared_ptr<robast::DrawerManager::GoalHandleDrawerUserAccess>>;
+      using DrawerUserAccessResultHandle  = std::shared_future<std::shared_ptr<nfc_gate::DrawerManager::GoalHandleDrawerUserAccess>>;
 
 
       using DrawerAddress                 = communication_interfaces::msg::DrawerAddress;
