@@ -3,8 +3,8 @@
 
 namespace db_helper
 {
-    PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname):
-        connection_parameter("user=" + username + " password=" + password + " host=" + host + " port=5432 dbname=" + dbname + " target_session_attrs=read-write")
+    PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string db_name):
+        connection_parameter("user=" + username + " password=" + password + " host=" + host + " port=5432 dbname=" + db_name + " target_session_attrs=read-write")
     {
     }
 
@@ -12,7 +12,7 @@ namespace db_helper
     {
     }
 
-    bool PostgreSqlHelper::perform_query(std::string sqlStatment, std::unique_ptr<std::vector< std::vector<std::string> >> result_data, std::unique_ptr<std::vector<std::string>> result_header)
+    bool PostgreSqlHelper::perform_query(std::string sql_statment, std::unique_ptr<std::vector< std::vector<std::string> >> result_data, std::unique_ptr<std::vector<std::string>> result_header)
     {
         pqxx::result raw_db_feedback;
         try
@@ -21,7 +21,7 @@ namespace db_helper
             pqxx::connection connection_handle = pqxx::connection("");
             pqxx::work session{ connection_handle };
        
-            raw_db_feedback= session.exec(sqlStatment);
+            raw_db_feedback= session.exec(sql_statment);
             connection_handle.disconnect();
         }
         catch (const pqxx::pqxx_exception& e)
@@ -73,11 +73,11 @@ namespace db_helper
         return false;
     }
 
-    int PostgreSqlHelper::perform_transaction(std::string SqlStatement)
+    int PostgreSqlHelper::perform_transaction(std::string sql_statement)
     {
         pqxx::connection connection_handle = pqxx::connection(connection_parameter);
         pqxx::work query_handle= pqxx::work( connection_handle);
-        pqxx::result result_handle{ query_handle.exec(SqlStatement)};
+        pqxx::result result_handle{ query_handle.exec(sql_statement)};
         int affected_Rows = result_handle.affected_rows();
         query_handle.commit();
         connection_handle.disconnect();

@@ -2,12 +2,12 @@
 
 namespace db_helper
 {
-    MockPostgreSqlHelper::MockPostgreSqlHelper(std::map< std::string, std::string> validUserList)
+    MockPostgreSqlHelper::MockPostgreSqlHelper(std::map< std::string, std::string> valid_user_list)
     {
-        user_list_ = validUserList;
+        user_list_ = valid_user_list;
     }
 
-    bool MockPostgreSqlHelper::perform_query(std::string sqlStatment __attribute__((unused)), std::unique_ptr< std::vector< std::vector<std::string> >> result_data __attribute__((unused)), std::unique_ptr<std::vector<std::string>> result_header __attribute__((unused)))
+    bool MockPostgreSqlHelper::perform_query(std::string sql_statment __attribute__((unused)), std::unique_ptr< std::vector< std::vector<std::string> >> result_data __attribute__((unused)), std::unique_ptr<std::vector<std::string>> result_header __attribute__((unused)))
     {
         return true;
     }
@@ -22,7 +22,7 @@ namespace db_helper
         return false;
     }
 
-    int MockPostgreSqlHelper::perform_transaction(std::string SqlStatement __attribute__((unused)))
+    int MockPostgreSqlHelper::perform_transaction(std::string sql_statement __attribute__((unused)))
     {
         return 0;
     }

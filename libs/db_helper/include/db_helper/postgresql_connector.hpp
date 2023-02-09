@@ -19,10 +19,10 @@ namespace db_helper
             const std::string connection_parameter;
 
         public:
-            PostgreSqlHelper(std::string username, std::string password, std::string host, std::string dbname);
+            PostgreSqlHelper(std::string username, std::string password, std::string host, std::string db_name);
             ~PostgreSqlHelper();
-            bool perform_query(std::string sqlStatment, std::unique_ptr<std::vector< std::vector<std::string> >> result_data, std::unique_ptr< std::vector<std::string>> result_header);
-            int perform_transaction(std::string SqlStatement);
+            bool perform_query(std::string sql_statment, std::unique_ptr<std::vector< std::vector<std::string> >> result_data, std::unique_ptr< std::vector<std::string>> result_header);
+            int perform_transaction(std::string Sql_statement);
             bool checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::shared_ptr<std::string> user_name);
     };
 }
