@@ -1,10 +1,9 @@
 #include "nfc_gate/nfc_gate.hpp"
 
-
 namespace robast
 {
 
-  NFCGate::NFCGate(std::string serial_port_path):Node("nfc_gate")
+  NFCGate::NFCGate(std::string serial_port_path) : Node("nfc_gate")
   {
     this->serial_connector_ = new serial_helper::SerialHelper(serial_port_path);
     this->db_connector_ = new db_helper::PostgreSqlHelper("robot", "123456789", "10.10.23.9", "robast");
@@ -14,12 +13,12 @@ namespace robast
     qos.avoid_ros_namespace_conventions(false);
 
     publisher_ = this->create_publisher<std_msgs::msg::String>("/authenticated_user", qos);
-    timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL), std::bind(&NFCGate::reader_procedure, this));
+    timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL),
+                                     std::bind(&NFCGate::reader_procedure, this));
   }
 
   NFCGate::~NFCGate()
   {
-
   }
 
   void NFCGate::start_up_scanner()
@@ -31,8 +30,8 @@ namespace robast
 
     if (response != RESPONCE_DEVICE_STATE_CONFIGURED)
     {
-
-      RCLCPP_ERROR(this->get_logger(), "NFC Device is not setup properly. nfc Node shutting down(%s)", response.c_str());
+      RCLCPP_ERROR(this->get_logger(), "NFC Device is not setup properly. nfc Node shutting down(%s)",
+                   response.c_str());
       rclcpp::shutdown();
     }
 
@@ -42,10 +41,11 @@ namespace robast
     this->serial_connector_->ascii_interaction(TOP_LEDS_ON(LED_RED), &response, STANDART_REPLAY_MESSAGE_SIZE);
   }
 
-  bool NFCGate::scan_tag(std::shared_ptr< std::string> scanned_key)
+  bool NFCGate::scan_tag(std::shared_ptr<std::string> scanned_key)
   {
     std::string response;
-    std::string replay = this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, STANDART_REPLAY_MESSAGE_SIZE);
+    std::string replay =
+        this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, STANDART_REPLAY_MESSAGE_SIZE);
     if (replay == RESPONCE_ERROR)
     {
       *scanned_key = "";
@@ -53,13 +53,14 @@ namespace robast
     }
 
     this->serial_connector_->ascii_interaction(NFC_LOGIN_MC_STANDART("00"), &response, STANDART_REPLAY_MESSAGE_SIZE);
-    replay = this->serial_connector_->ascii_interaction(NFC_READ_MC("02"), scanned_key.get(), STANDART_REPLAY_MESSAGE_SIZE);
+    replay =
+        this->serial_connector_->ascii_interaction(NFC_READ_MC("02"), scanned_key.get(), STANDART_REPLAY_MESSAGE_SIZE);
 
     if (replay == RESPONCE_ERROR)
     {
       return false;
     }
-    //this->serial_connector.send_ascii_cmd(BEEP_STANDART);
+    // this->serial_connector.send_ascii_cmd(BEEP_STANDART);
     this->serial_connector_->send_ascii_cmd(TOP_LED_OFF(LED_GREEN));
     return true;
   }
@@ -83,7 +84,7 @@ namespace robast
   void NFCGate::reader_procedure()
   {
     std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
-    std::shared_ptr<std::string>  found_user = std::make_shared<std::string>();
+    std::shared_ptr<std::string> found_user = std::make_shared<std::string>();
     bool found = false;
 
     found = execute_scan(scanned_key);
@@ -101,25 +102,26 @@ namespace robast
     }
   }
 
-  void NFCGate::write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response)
+  void NFCGate::write_tag(const std::shared_ptr<CreateUser::Request> request,
+                          std::shared_ptr<CreateUser::Response> response)
   {
-    (void)request;
+    (void) request;
     start_up_scanner();
 
     std::string tag;
-    //wait for the Tag and read TAG ID 
+    // wait for the Tag and read TAG ID
     do
     {
-      this->serial_connector_->send_ascii_cmd(SEARCH_TAG);//search for a tag with the length of 10
+      this->serial_connector_->send_ascii_cmd(SEARCH_TAG);   // search for a tag with the length of 10
       if (this->serial_connector_->read_serial(&tag, 50) <= 0)
       {
         return;
       }
 
-      //RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
+      // RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
     } while (tag.length() < 10);
     this->serial_connector_->send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
-    this->serial_connector_->send_ascii_cmd(NFC_WRITE_MC("02", "000001000000100"));//ToDo dynamic key defination 
+    this->serial_connector_->send_ascii_cmd(NFC_WRITE_MC("02", "000001000000100"));   // ToDo dynamic key defination
 
     if (this->serial_connector_->read_serial(&tag, 50) <= 0)
     {
@@ -138,4 +140,4 @@ namespace robast
     response->error_message;
   }
 
-}  // namespace drawer_gate
+}   // namespace robast

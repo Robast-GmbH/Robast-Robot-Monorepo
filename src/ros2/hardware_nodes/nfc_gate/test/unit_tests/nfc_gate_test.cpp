@@ -20,8 +20,8 @@ namespace robast
       fakeit::Mock<db_helper::IDBHelper> db_helper_mock;
       fakeit::When(Method(db_helper_mock, perform_query))
           .AlwaysDo(
-              [=](std::string sqlStatment, std::unique_ptr<std::vector<std::string>> result_data,
-                  std::vector<std::string>* result_header) -> bool
+              [=](std::string sqlStatment, std::unique_ptr<std::vector<std::vector<std::string>>> result_data,
+                  std::unique_ptr<std::vector<std::string>> result_header) -> bool
               {
                 if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != std::string::npos)
                 {

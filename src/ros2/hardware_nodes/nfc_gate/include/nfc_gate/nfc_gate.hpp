@@ -2,33 +2,31 @@
 #define HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_
 
 #define STANDART_REPLAY_MESSAGE_SIZE 500
-#define READER_INTEVALL 500
-
-#include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
-#include "rclcpp_action/rclcpp_action.hpp"
+#define READER_INTEVALL              500
 
 #include <string.h>
 
 #include "communication_interfaces/srv/create_user_nfc_tag.hpp"
-#include "nfc_gate/elatec_api.h"
-#include "serial_helper/serial_helper.h"
 #include "db_helper/postgresql_connector.hpp"
+#include "nfc_gate/elatec_api.h"
+#include "rclcpp/rclcpp.hpp"
+#include "rclcpp_action/rclcpp_action.hpp"
+#include "serial_helper/serial_helper.h"
+#include "std_msgs/msg/string.hpp"
 
 namespace robast
 {
   class NFCGate : public rclcpp::Node
   {
-  public:
- 
+   public:
     using CreateUser = communication_interfaces::srv::CreateUserNfcTag;
 
     NFCGate(std::string serial_port_path = "/dev/robast/robast_nfc");
     ~NFCGate();
 
-    friend class TestNFCGate; // this class has full access to all private and protected parts of this class
+    friend class TestNFCGate;   // this class has full access to all private and protected parts of this class
 
-  private:
+   private:
     int numReadings_;
 
     serial_helper::ISerialHelper* serial_connector_;
@@ -47,7 +45,5 @@ namespace robast
     bool checkUserTag(std::string scanned_key, std::shared_ptr<std::string> related_username);
   };
 
-
-
-}  // namespace robast
-#endif  // HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_
+}   // namespace robast
+#endif   // HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_
