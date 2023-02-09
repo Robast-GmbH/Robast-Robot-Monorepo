@@ -30,10 +30,35 @@
         <joint name="door_opening_mechanism_joint_x_axis_slide"/>
         <joint name="door_opening_mechanism_joint_tilting_hook"/>
     </group>
+
+    <group name="position">
+        <joint name="position" />
+    </group>
+
+    <group name="mobile_base_arm">
+        <group name="door_opening_mechanism" />
+        <group name="position" />
+    </group>
+
+    <group_state name="home_base" group="mobile_base_arm">
+        <joint name="door_opening_mechanism_joint_y_axis_slide" value="0"/>
+        <joint name="door_opening_mechanism_joint_x_axis_slide" value="0"/>
+        <joint name="door_opening_mechanism_joint_tilting_hook" value="0"/>
+        <joint name="position" value="0 0 0"/>
+    </group_state>
+
+    <group_state name="forward_base" group="mobile_base_arm">
+        <joint name="door_opening_mechanism_joint_y_axis_slide" value="0"/>
+        <joint name="door_opening_mechanism_joint_x_axis_slide" value="0"/>
+        <joint name="door_opening_mechanism_joint_tilting_hook" value="0"/>
+        <joint name="position" value="1 0 0"/>
+    </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="door_opening_end_effector" parent_link="door_opening_mechanism_link_tilting_hook" group="door_opening_mechanism"/>
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
-    <virtual_joint name="virtual_joint" type="fixed" parent_frame="map" child_link="base_footprint"/>
+    <virtual_joint name="position" type="planar" parent_frame="odom" child_link="base_footprint"/>
+    <joint_property joint_name="position" property_name="motion_model" value="diff_drive" />
+    <joint_property joint_name="position" property_name="min_translational_distance" value="0.01" />
     <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
     <passive_joint name="drawer_1_joint"/>
     <passive_joint name="drawer_2_joint"/>
