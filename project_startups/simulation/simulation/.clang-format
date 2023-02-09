@@ -6,6 +6,7 @@ ColumnLimit: 120
 
 UseTab: Never
 AllowShortIfStatementsOnASingleLine: false
+AllowShortFunctionsOnASingleLine: None
 BreakBeforeBraces: Allman
 AlignTrailingComments: true
 SpacesBeforeTrailingComments: 3
