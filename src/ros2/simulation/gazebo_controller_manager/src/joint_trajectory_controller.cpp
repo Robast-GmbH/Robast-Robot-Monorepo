@@ -7,8 +7,8 @@ namespace gazebo_controller_manager
   {
     // variable
     std::vector<std::string> joint_names;
-    const std::vector<std::string> default_joint_names = {"drawer_1_joint", "drawer_2_joint", "drawer_3_joint",
-                                                          "drawer_4_joint", "drawer_5_joint"};
+    const std::vector<std::string> default_joint_names = {
+        "drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"};
 
     int update_rate;
     const int default_update_rate = 200;
@@ -31,8 +31,11 @@ namespace gazebo_controller_manager
     this->initialize_gz_transport_node(joint_names, gz_cmd_topics);
 
     this->action_server_ = rclcpp_action::create_server<control_msgs::action::FollowJointTrajectory>(
-        this->get_node_base_interface(), this->get_node_clock_interface(), this->get_node_logging_interface(),
-        this->get_node_waitables_interface(), follow_joint_trajectory_action,
+        this->get_node_base_interface(),
+        this->get_node_clock_interface(),
+        this->get_node_logging_interface(),
+        this->get_node_waitables_interface(),
+        follow_joint_trajectory_action,
         std::bind(&JointTrajectoryController::handle_goal, this, std::placeholders::_1, std::placeholders::_2),
         std::bind(&JointTrajectoryController::handle_cancel, this, std::placeholders::_1),
         std::bind(&JointTrajectoryController::handle_accepted, this, std::placeholders::_1));
@@ -126,7 +129,10 @@ namespace gazebo_controller_manager
     {
       std::unique_lock<std::mutex> lock_until_trajectory_motion_is_finished(this->cv_mutex_);
       this->cv_.wait(lock_until_trajectory_motion_is_finished,
-                     [this] { return this->is_trajectory_motion_finished(); });
+                     [this]
+                     {
+                       return this->is_trajectory_motion_finished();
+                     });
       goal_handle->succeed(result);
       RCLCPP_INFO(this->get_logger(), "Goal Succeeded");
     }
