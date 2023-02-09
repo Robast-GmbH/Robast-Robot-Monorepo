@@ -1,7 +1,7 @@
 from launch import LaunchDescription
-from launch_ros.actions import Node
-from launch.substitutions import LaunchConfiguration
 from launch.actions import DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import Node
 
 
 def generate_launch_description():
@@ -20,7 +20,11 @@ def generate_launch_description():
         executable='spawn_entity.py',
         name='urdf_spawner',
         output='screen',
-        arguments=["-topic", "/robot_description", "-entity", robot_name, "-x", init_x, "-y", init_y, "-Y", init_yaw])
+        arguments=["-topic", "/robot_description",
+                   "-entity", robot_name,
+                   "-x", init_x,
+                   "-y", init_y,
+                   "-Y", init_yaw])
 
     ld = LaunchDescription()
     # arguments

@@ -16,13 +16,13 @@ namespace gazebo_controller_manager
         public:
             JointPositionController(const rclcpp::Node::SharedPtr& nh,
                 const std::vector<std::string>& joint_names,
-                const std::string& ros_cmd_topic,
-                const std::vector<std::string>& gz_cmd_topics);
+                const std::string& ros_cmd_topic);
             ~JointPositionController() {};
 
         private:
             void set_joint_position_cb(const sensor_msgs::msg::JointState::SharedPtr msg);
-                        
+            std::vector<std::string> get_gz_cmd_joint_topics(std::vector<std::string> joint_names);            
+
             private:
             rclcpp::Node::SharedPtr nh_;
             std::shared_ptr<gz::transport::Node> gz_node_;

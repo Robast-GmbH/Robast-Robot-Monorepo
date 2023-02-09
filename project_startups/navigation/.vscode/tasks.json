@@ -54,9 +54,8 @@
                 },
                 {
                         "label": "default_startup",
-                        "detail": "Starts TipluWorld, Nav, slam",
+                        "detail": "Starts Nav, slam and rviz",
                         "dependsOn": [
-                                "start TipluWorld",
                                 "start slam_toolbox",
                                 "start nav_without_localization",
                                 "start rviz"
@@ -76,9 +75,8 @@
                 },
                 {
                         "label": "default_startup_amcl",
-                        "detail": "Starts TipluWorld, Nav, amcl",
+                        "detail": "Starts Nav, amcl and rviz_amcl",
                         "dependsOn": [
-                                "start TipluWorld",
                                 "start amcl",
                                 "start keepout_mask",
                                 "start nav_without_localization",
@@ -87,9 +85,8 @@
                 },
                 {
                         "label": "default_startup_amcl_with_mapping",
-                        "detail": "Starts TipluWorld, Nav, amcl",
+                        "detail": "Starts  Nav, amcl_with_slam_mapping and rviz_amcl",
                         "dependsOn": [
-                                "start TipluWorld",
                                 "start keepout_mask",
                                 "start nav_without_localization",
                                 "start rviz_amcl",
@@ -99,9 +96,8 @@
                 },
                 {
                         "label": "default_startup_amcl_door_bells",
-                        "detail": "Starts TipluWorld, Nav, amcl, rviz, door_bells",
+                        "detail": "Starts Nav, amcl, rviz, door_bells",
                         "dependsOn": [
-                                "start TipluWorld",
                                 "start amcl",
                                 "start keepout_mask",
                                 "start nav_without_localization_with_door_bells_launch",
@@ -110,9 +106,8 @@
                 },
                 {
                         "label": "default_startup_robot_localization",
-                        "detail": "Starts TipluWorld, Nav, slam, robot_localization",
+                        "detail": "Starts Nav, slam, robot_localization and rviz",
                         "dependsOn": [
-                                "start TipluWorld",
                                 "start slam_toolbox",
                                 "start nav_without_localization",
                                 "start robot_localization",
@@ -122,9 +117,8 @@
                 },
                 {
                         "label": "default_startup_amcl_robot_localization",
-                        "detail": "Starts TipluWorld, Nav, amcl, robot_localization",
+                        "detail": "Starts Nav, amcl, robot_localization",
                         "dependsOn": [
-                                "start TipluWorld",
                                 "start amcl",
                                 "start keepout_mask",
                                 "start nav_without_localization",
@@ -157,17 +151,6 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start tiplu_sim",
-                        "command": "source install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py run_gzclient:='False'",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
                         "label": "start heiligenhafen_sim",
                         "command": "source install/setup.bash; ros2 launch heiligenhafen heiligenhafen_world_launch.py run_gzclient:='True'",
                         "problemMatcher": [],
@@ -187,35 +170,6 @@
                                 "focus": false,
                                 "group": "default_start"
                         }
-                },
-                {
-                        "type": "shell",
-                        "label": "start tiplu_sim_high_rf",
-                        "command": "source install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py world_model:='/workspaces/Robast_RosTheron/install/tiplu_world/share/tiplu_world/worlds/5OG_high_rtf/5OG_high_rtf.model' run_gz_client:='False'",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "label": "start TipluWorld",
-                        "detail": "TipluWorld with rosboard on 8888",
-                        "dependsOn": [
-                                "start tiplu_sim",
-                                // "start rosboard"
-                        ],
-                        "problemMatcher": []
-                },
-                {
-                        "label": "start TipluWorld_high_rf",
-                        "detail": "TipluWorld with rosboard on 8888",
-                        "dependsOn": [
-                                "start tiplu_sim_high_rf",
-                                "start rosboard"
-                        ],
-                        "problemMatcher": []
                 },
                 {
                         "type": "shell",

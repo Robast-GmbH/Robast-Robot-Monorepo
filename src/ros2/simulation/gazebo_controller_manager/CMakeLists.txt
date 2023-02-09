@@ -86,6 +86,19 @@ target_include_directories(${executable_joint_trajectory_controller} PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
+if(BUILD_TESTING)
+  find_package(ament_cmake_lint_cmake REQUIRED)
+  ament_lint_cmake()
+  find_package(ament_cmake_flake8 REQUIRED)
+  ament_flake8()
+  find_package(ament_cmake_xmllint REQUIRED)
+  ament_xmllint()
+  find_package(ament_cmake_pep257 REQUIRED)
+  ament_pep257()
+  find_package(ament_cmake_cppcheck REQUIRED)
+  ament_cppcheck()
+endif()
+
 install(TARGETS
   ${executable_joint_position_controller}
   ${executable_joint_trajectory_controller}

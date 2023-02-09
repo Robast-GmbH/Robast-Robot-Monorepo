@@ -95,15 +95,9 @@
     // Use the system installed version of autopep8
     "python.formatting.autopep8Path": "/usr/bin/autopep8",
     "python.formatting.autopep8Args": [
-        "--max-line-length=120"
+        "--max-line-length=100"
     ],
     "C_Cpp.default.intelliSenseMode": "clang-x64",
-    "C_Cpp.formatting": "Disabled",
-    "uncrustify.useReplaceOption": true,
-    "uncrustify.configPath.linux": "/opt/ros/galactic/lib/python3.8/site-packages/ament_uncrustify/configuration/ament_code_style.cfg",
-    "[cpp]": {
-        "editor.defaultFormatter": "LaurentTreguier.uncrustify"
-    },
     "cSpell.words": [
         "athackst",
         "autopep",
@@ -123,14 +117,10 @@
         "uncrustify",
         "xmllint"
     ],
-    "python.formatting.autopep8Path": "/usr/bin/autopep8",
-    "python.formatting.autopep8Args": [
-        "--max-line-length=100"
-    ],
     "files.autoSave": "onFocusChange",
     "editor.tabSize": 4,
     "editor.rulers": [
-        100
+        120
     ],
     "editor.codeActionsOnSave": {
         "source.fixAll": true,
@@ -139,17 +129,20 @@
     "editor.minimap.autohide": true,
     "c-cpp-flylint.clang.defines": [
     ],
-    "editor.formatOnSave": false,
-    "C_Cpp.formatting": "vcFormat",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "newLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "newLine",
-    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
-    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
-    "C_Cpp.vcFormat.space.betweenEmptySquareBrackets": true,
+    "editor.formatOnSave": true, 
+    "C_Cpp.formatting": "clangFormat", 
+    "C_Cpp.clang_format_style": "file", // formatting rules are defined in the .clang-format file
     "cSpell.allowCompoundWords": true,
     "editor.formatOnType": true,
     "python.analysis.extraPaths": [
         "/opt/ros/galactic/lib/python3.8/site-packages/"
-    ]
+    ],
+    "[cpp]": {
+        "editor.tabSize": 2
+    },
+    "[python]": {
+        "editor.tabSize": 4,
+        "editor.defaultFormatter": "ms-python.python"
+    },
+    "python.formatting.provider": "black"
 }
