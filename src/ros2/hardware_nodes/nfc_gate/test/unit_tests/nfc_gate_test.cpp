@@ -2,7 +2,7 @@
 #include "fakeit.hpp"
 #include "test/test_nfc_gate.hpp"
 
-namespace robast
+namespace nfc_gate
 {
 
   SCENARIO("Key-validaten Test")
@@ -20,7 +20,8 @@ namespace robast
       fakeit::Mock<db_helper::IDBHelper> db_helper_mock;
       fakeit::When(Method(db_helper_mock, perform_query))
           .AlwaysDo(
-              [=](std::string sqlStatment, std::unique_ptr<std::vector<std::vector<std::string>>> result_data,
+              [=](std::string sqlStatment,
+                  std::unique_ptr<std::vector<std::vector<std::string>>> result_data,
                   std::unique_ptr<std::vector<std::string>> result_header) -> bool
               {
                 if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != std::string::npos)
@@ -37,7 +38,8 @@ namespace robast
               });
       fakeit::When(Method(db_helper_mock, checkUserTag))
           .AlwaysDo(
-              [=](std::string sqlStatment, std::vector<std::string> Lookup_scope,
+              [=](std::string sqlStatment,
+                  std::vector<std::string> Lookup_scope,
                   std::shared_ptr<std::string> result_data) -> bool
               {
                 if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != std::string::npos)
@@ -197,7 +199,8 @@ namespace robast
 
       fakeit::When(Method(db_helper_mock, checkUserTag))
           .AlwaysDo(
-              [=](std::string sqlStatment, std::vector<std::string> Lookup_scope,
+              [=](std::string sqlStatment,
+                  std::vector<std::string> Lookup_scope,
                   std::shared_ptr<std::string> result_data) -> bool
               {
                 if (sqlStatment.find("6df1933415dde9fa1f9f6998a26b40db") != std::string::npos)
@@ -277,4 +280,4 @@ namespace robast
       rclcpp::shutdown();
     }
   }
-}   // namespace robast
+}   // namespace nfc_gate

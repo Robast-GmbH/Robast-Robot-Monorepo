@@ -1,6 +1,6 @@
 #include "test/test_nfc_gate.hpp"
 
-namespace robast
+namespace nfc_gate
 {
   TestNFCGate::TestNFCGate(serial_helper::ISerialHelper* serial_connector, db_helper::IDBHelper* db_connector)
       : NFCGate()
@@ -33,4 +33,4 @@ namespace robast
 
     NFCGate::db_connector_ = new db_helper::MockPostgreSqlHelper(valid_user_list);
   }
-}   // namespace robast
+}   // namespace nfc_gate

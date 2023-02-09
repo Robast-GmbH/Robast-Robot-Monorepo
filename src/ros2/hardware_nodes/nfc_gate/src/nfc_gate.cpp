@@ -1,6 +1,6 @@
 #include "nfc_gate/nfc_gate.hpp"
 
-namespace robast
+namespace nfc_gate
 {
 
   NFCGate::NFCGate(std::string serial_port_path) : Node("nfc_gate")
@@ -30,8 +30,8 @@ namespace robast
 
     if (response != RESPONCE_DEVICE_STATE_CONFIGURED)
     {
-      RCLCPP_ERROR(this->get_logger(), "NFC Device is not setup properly. nfc Node shutting down(%s)",
-                   response.c_str());
+      RCLCPP_ERROR(
+          this->get_logger(), "NFC Device is not setup properly. nfc Node shutting down(%s)", response.c_str());
       rclcpp::shutdown();
     }
 
@@ -140,4 +140,4 @@ namespace robast
     response->error_message;
   }
 
-}   // namespace robast
+}   // namespace nfc_gate

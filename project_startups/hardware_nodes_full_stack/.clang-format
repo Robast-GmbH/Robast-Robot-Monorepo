@@ -8,8 +8,11 @@ UseTab: Never
 AllowShortIfStatementsOnASingleLine: false
 AllowShortFunctionsOnASingleLine: None
 BreakBeforeBraces: Allman
+BinPackParameters: false # If false, a function call’s arguments will either be all on the same line or will have one line each.
+BinPackArguments: false # If false, a function call’s parameters will either be all on the same line or will have one line each.
 AlignTrailingComments: true
 SpacesBeforeTrailingComments: 3
+AllowShortLambdasOnASingleLine: None
 NamespaceIndentation: All # enables the indenting for a namespace
 
 #  #define SHORT_NAME       42

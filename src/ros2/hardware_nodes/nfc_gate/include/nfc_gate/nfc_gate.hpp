@@ -14,7 +14,7 @@
 #include "serial_helper/serial_helper.h"
 #include "std_msgs/msg/string.hpp"
 
-namespace robast
+namespace nfc_gate
 {
   class NFCGate : public rclcpp::Node
   {

@@ -21,7 +21,7 @@ namespace db_helper
     ~PostgreSqlHelper();
     bool perform_query(std::string sql_statment, std::unique_ptr<std::vector<std::vector<std::string>>> result_data,
                        std::unique_ptr<std::vector<std::string>> result_header);
-    int perform_transaction(std::string Sql_statement);
+    int perform_transaction(std::string sql_statement);
     bool checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::shared_ptr<std::string> user_name);
   };
 }   // namespace db_helper
