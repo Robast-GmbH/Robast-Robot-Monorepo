@@ -12,6 +12,8 @@ def generate_launch_description():
         parameters=[
             {"time_until_drawer_closes_automatically_in_ms": 5000},
             {"moveit2_planning_group_name": "door_opening_mechanism"},
+            {"use_sim_time": True},
+            {"planning_plugin": "ompl_interface/OMPLPlanner"},
         ],
         output="screen",
     )
