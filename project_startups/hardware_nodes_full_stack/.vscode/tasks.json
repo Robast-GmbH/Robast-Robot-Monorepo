@@ -18,6 +18,13 @@
             "problemMatcher": []
         },
         {
+            "label": "Launch NFC Gate",
+            "detail": "Launch the NFC gate node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch nfc_gate nfc_gate_launch.py",
+            "problemMatcher": []
+        },
+        {
             "label": "Launch Door Maniplator Gate",
             "detail": "Launch the door manipulator gate node",
             "type": "shell",
@@ -28,7 +35,7 @@
             "label": "Launch Door Maniplator Sim",
             "detail": "Launch the door manipulator Sim node",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 run door_manipulator_sim door_manipulator_sim"j,
+            "command": "source install/setup.bash; ros2 run door_manipulator_sim door_manipulator_sim",
             "problemMatcher": []
         },
         {

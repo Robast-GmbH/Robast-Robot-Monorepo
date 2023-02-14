@@ -1,3 +1,2 @@
 nfc:
-   authentification_code: "000001000000100"
-   authentification_error_message: ""
+   authorised_user: "Max Müller"

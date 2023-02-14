@@ -39,6 +39,8 @@ namespace gazebo_controller_manager
 
             bool is_trajectory_motion_finished();
 
+            std::vector<std::string> get_gz_cmd_joint_topics(std::vector<std::string> joint_names);
+
         private:
             std::shared_ptr<gz::transport::Node> gz_transport_node_;
             rclcpp_action::Server<control_msgs::action::FollowJointTrajectory>::SharedPtr action_server_;

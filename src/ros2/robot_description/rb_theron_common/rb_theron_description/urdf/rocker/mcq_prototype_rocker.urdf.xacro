@@ -35,8 +35,14 @@
       <child link="${prefix}rsupport"/>
       <xacro:insert_block name="origin" />
       <axis xyz="0 1 0" rpy="0 0 ${M_PI}" />
-      <limit lower="-0.5" upper="0.5" effort="100" velocity="100"/>
-      <joint_properties damping="0.1" friction="0.1"/>
+      <!-- The upper limit should actually be something around 0.5.
+      Setting the upper limit to -0.01 makes the robot rocker wheels lose contact on one side,
+      so that only 4 robot wheels have contact to ground.
+      Otherwise the robot would not be able to drive properly, because the rocker wheels some times
+      make the driving wheels lose contact to the ground and therefore steering of the rb_theron
+      becomes impossible -->
+      <limit lower="-0.5" upper="-0.01" effort="100" velocity="100"/>
+      <dynamics damping="0.1" friction="0.1"/>
 	</joint>
 		
 	<link name="${prefix}rsupport">
@@ -123,7 +129,7 @@
 			</joint>
 		</ros2_control>
 	    
-    <xacro:property name="wheel_offset_x" value="-0.1175" />
+    <xacro:property name="wheel_offset_x" value="-0.175" />
     <xacro:if value="${reflect}">    
          <xacro:property name="wheel_offset_y" value="-0.079" />
     </xacro:if>

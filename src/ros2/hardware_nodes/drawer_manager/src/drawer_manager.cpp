@@ -1,6 +1,6 @@
 #include "drawer_manager/drawer_manager.hpp"
 
-namespace robast
+namespace nfc_gate
 {
   DrawerManager::DrawerManager(): Node("drawer_manager_Node")
   {
