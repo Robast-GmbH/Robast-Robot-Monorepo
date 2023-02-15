@@ -9,6 +9,14 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
+    # Start the actual move_group node/action server
+    move_group_node = Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        output="screen",
+        parameters=[moveit_config.to_dict()],
+    )
+
     door_opening_mechanism_simulation_node = Node(
         package="door_opening_mechanism_simulation",
         executable="door_opening_mechanism_simulation",
@@ -23,5 +31,6 @@ def generate_launch_description():
         output="screen",
     )
 
+    ld.add_action(move_group_node)
     ld.add_action(door_opening_mechanism_simulation_node)
     return ld
