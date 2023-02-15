@@ -10,25 +10,7 @@
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
     <group name="door_opening_mechanism">
-        <link name="alu_profile_link_bottom"/>
-        <link name="alu_profile_link_left"/>
-        <link name="alu_profile_link_right"/>
-        <link name="door_opening_mechanism_link_y_axis_slide"/>
-        <link name="door_opening_mechanism_link_x_axis_slide"/>
-        <link name="door_opening_mechanism_link_x_slide_screwing"/>
-        <link name="door_opening_mechanism_link_tilting_hook"/>
-        <link name="alu_profile_link_gripper"/>
-        <link name="hook_base_link_left_hook"/>
-        <link name="hook_link_back_side_left_hook"/>
-        <link name="hook_link_front_side_left_hook"/>
-        <link name="hook_base_link_right_hook"/>
-        <link name="hook_link_back_side_right_hook"/>
-        <link name="hook_link_front_side_right_hook"/>
-        <link name="alu_profile_link_top"/>
-        <link name="door_opening_mechanism_link_y_axis_rail"/>
-        <joint name="door_opening_mechanism_joint_y_axis_slide"/>
-        <joint name="door_opening_mechanism_joint_x_axis_slide"/>
-        <joint name="door_opening_mechanism_joint_tilting_hook"/>
+        <chain base_link="alu_profile_link_right" tip_link="alu_profile_link_gripper"/>
     </group>
 
     <group name="position">
