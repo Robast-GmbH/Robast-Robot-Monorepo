@@ -50,6 +50,12 @@
         <uri>file:///workspace/src/simulation/tiplu_world/models/6_OG_normale_tueren</uri>
         <name>6_OG_normale_tueren</name>
       </include>  
-      
+
+      <include>
+        <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door</uri>
+        <pose> 25.1 1.8 0.001 0 0 1.570</pose>
+        <name>Hinged_door</name>
+      </include>  
+    
   </world>
 </sdf>
