@@ -2,18 +2,17 @@
 #define RB_THERON__DOOR_OPENING_MECHANISM_SIMULATION_HPP_
 
 // #include <moveit/ompl_interface/ompl_interface.h>
-#include <moveit/kinematic_constraints/utils.h>
 #include <moveit/move_group_interface/move_group_interface.h>
-#include <moveit/planning_interface/planning_interface.h>
-#include <moveit/planning_scene/planning_scene.h>
-#include <moveit/robot_model_loader/robot_model_loader.h>
-#include <moveit_msgs/msg/planning_scene.h>
+#include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit_visual_tools/moveit_visual_tools.h>
 
 #include <boost/asio.hpp>   // Used for the async timer
 #include <boost/bind.hpp>
 #include <iostream>
 #include <memory>
+#include <moveit_msgs/msg/attached_collision_object.hpp>
+#include <moveit_msgs/msg/collision_object.hpp>
+#include <moveit_msgs/msg/display_robot_state.hpp>
 #include <moveit_msgs/msg/display_trajectory.hpp>
 #include <pluginlib/class_loader.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -48,11 +47,9 @@ namespace door_opening_mechanism_simulation
 
     void open_door_topic_callback(const DrawerAddress &msg);
 
-    void move_robot_in_simulation_to_target_pose(
-        std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group_interface, const float target_pose);
+    void move_robot_in_simulation_to_target_pose(const float target_pose);
 
-    void open_door_in_simulation(std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group_interface,
-                                 const float target_pose);
+    void open_door_in_simulation(const float target_pose);
   };
 }   // namespace door_opening_mechanism_simulation
 #endif   // RB_THERON__DOOR_OPENING_MECHANISM_SIMULATION_HPP_
