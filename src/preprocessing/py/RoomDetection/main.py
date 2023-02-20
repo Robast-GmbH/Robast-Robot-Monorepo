@@ -6,20 +6,14 @@
 import numpy as np
 
 import readPgm
-import readcoordinates
+import readMapSetup
 import rommDetection
 import roomDetection2
 import cv2 as cv
 
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Strg+F8 to toggle the breakpoint.
-
-
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
     f = open("C:/Robast/foxy_ws/src/map_server/maps/5OG.pgm", 'rb')
     im = readPgm.read_pgm(f)
     f.close()
@@ -30,5 +24,3 @@ if __name__ == '__main__':
     cv.waitKey()
     cv.destroyWindow('test')
     a = rommDetection.roomDetection(im)
-    # Claculate coordinates
-    values = readcoordinates.readCoordinates("rooms.txt")
