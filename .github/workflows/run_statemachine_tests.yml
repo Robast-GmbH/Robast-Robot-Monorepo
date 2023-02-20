@@ -25,7 +25,9 @@ jobs:
     #         - 'src/ros2/hardware_nodes/Dockerfile'
     #       statemachine_docker_changed:
     #         - 'src/ros2/statemachine/Dockerfile'
-
+    - name: Upload coverage reports to Codecov
+      uses: codecov/codecov-action@v3
+      
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
       with:
