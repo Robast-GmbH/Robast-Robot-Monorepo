@@ -5,6 +5,7 @@ import cv2 as cv
 import numpy as np
 import argparse
 import random as rng
+import yaml
 
 import findDoors
 
@@ -177,12 +178,26 @@ def calcMiddle(matArray):
     for i in matArray:
         tmpx = sum((i[0, 0][0], i[1, 1][0]))/2
         tmpy = sum((i[0, 0][1], i[1, 1][1])) / 2
-        res.append((tmpx, tmpy))
+        res.append((tmpy, tmpx))
     return res
 
 def printcoordinates(coordarray):
-    f = open("rooms.txt", "w")
+    roomNumber = 1
+    CenterCoordinatesByRoomNumber = {}
     for i in coordarray:
-        f.write(str(np.uint(i)))
-        f.write("\n")
-    f.close()
+        # nesting the data like this makes to easy to extend the rooms configuration later,
+        # in case we decide to not only store the center point but also the corners, etc.
+        data = {
+            roomNumber: {
+                "center point": {
+                    'x': float(i[0]),
+                    'y': float(i[1]),
+                }
+            }
+        }
+        CenterCoordinatesByRoomNumber.update(data)
+        roomNumber += 1
+
+    output = {'rooms': CenterCoordinatesByRoomNumber}
+    with open('map_setup.yaml', 'w') as outfile:
+        yaml.dump(output, outfile, default_flow_style=False)
