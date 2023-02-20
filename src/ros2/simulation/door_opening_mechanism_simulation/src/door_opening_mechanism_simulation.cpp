@@ -54,7 +54,7 @@ namespace door_opening_mechanism_simulation
     // ^^^^^^^^^^^^^
     namespace rvt = rviz_visual_tools;
     moveit_visual_tools::MoveItVisualTools visual_tools(
-        this->get_shared_pointer_of_node(), "odom", "move_group_tutorial", move_group.getRobotModel());
+        this->get_shared_pointer_of_node(), "base_footprint", "move_group_tutorial", move_group.getRobotModel());
 
     visual_tools.deleteAllMarkers();
 
@@ -90,11 +90,67 @@ namespace door_opening_mechanism_simulation
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
     // .. _move_group_interface-planning-to-pose-goal:
+    //
+    // Planning to a Pose goal
+    // ^^^^^^^^^^^^^^^^^^^^^^^
+    // We can plan a motion for this group to a desired pose for the
+    // end-effector.
+    // transform euler pose orientation to quaternion
+    // geometry_msgs::msg::Pose target_pose1;
+    // tf2::Quaternion q;
+    // q.setRPY(-1.57079632679, 0, 0);
+    // target_pose1.orientation = tf2::toMsg(q);
+    // target_pose1.position.x = -0.8;
+    // target_pose1.position.y = 0.0;
+    // target_pose1.position.z = 0.8;
+    // move_group.setRPYTarget(1.57079632679, 0, 0);
+
+    // move_group.setJointValueTarget("position/x", -0.8);
+
+    geometry_msgs::msg::PoseStamped target_pose1 = move_group.getCurrentPose();
+    target_pose1.pose.orientation.y = 0.000001;
+    target_pose1.pose.orientation.z = 0.000001;
+    RCLCPP_INFO(this->get_logger(),
+                "Current pose: x = %f, y = %f, z = %f, w = %f, orientation_x = %f, orientation_y = %f, orientation_z = "
+                "%f, frame_id = %s",
+                target_pose1.pose.position.x,
+                target_pose1.pose.position.y,
+                target_pose1.pose.position.z,
+                target_pose1.pose.orientation.w,
+                target_pose1.pose.orientation.x,
+                target_pose1.pose.orientation.y,
+                target_pose1.pose.orientation.z,
+                target_pose1.header.frame_id.c_str());
+    target_pose1.pose.position.y += 0.1;
+    target_pose1.pose.position.z += 0.1;
+
+    move_group.setPoseTarget(target_pose1, "alu_profile_link_gripper");
+    move_group.setGoalTolerance(0.05);
+    move_group.setPlannerId("RRTConnectkConfigDefault");
 
     // Now, we call the planner to compute the plan and visualize it.
     // Note that we are just planning, not asking move_group
     // to actually move the robot.
     moveit::planning_interface::MoveGroupInterface::Plan my_plan;
+
+    bool success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+
+    RCLCPP_INFO(this->get_logger(), "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
+
+    if (success)
+    {
+      move_group.execute(my_plan);
+    }
+
+    // Visualizing plans
+    // ^^^^^^^^^^^^^^^^^
+    // We can also visualize the plan as a line with markers in RViz.
+    RCLCPP_INFO(this->get_logger(), "Visualizing plan 1 as trajectory line");
+    visual_tools.publishAxisLabeled(target_pose1.pose, "pose1");
+    visual_tools.publishText(text_pose, "Pose_Goal", rvt::WHITE, rvt::XLARGE);
+    visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
+    visual_tools.trigger();
+    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to continue the demo");
 
     // Moving to a pose goal
     // ^^^^^^^^^^^^^^^^^^^^^
@@ -126,6 +182,7 @@ namespace door_opening_mechanism_simulation
 
     // Now, let's modify one of the joints, plan to the new joint space goal, and visualize the plan.
     joint_group_positions[0] = 0.2;   // radians
+    joint_group_positions[1] = 0.2;   // radians
     move_group.setJointValueTarget(joint_group_positions);
 
     // We lower the allowed maximum velocity and acceleration to 5% of their maximum.
@@ -135,7 +192,7 @@ namespace door_opening_mechanism_simulation
     move_group.setMaxVelocityScalingFactor(0.05);
     move_group.setMaxAccelerationScalingFactor(0.05);
 
-    bool success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+    success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
     RCLCPP_INFO(this->get_logger(), "Visualizing plan 2 (joint space goal) %s", success ? "" : "FAILED");
 
     // Visualize the plan in RViz:
@@ -449,7 +506,7 @@ namespace door_opening_mechanism_simulation
 
     // std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group_interface =
     //     std::make_shared<moveit::planning_interface::MoveGroupInterface>(moveit::planning_interface::MoveGroupInterface(
-    //         this->get_shared_pointer_of_node(), this->moveit2_planning_group_name_));
+    //         this->get_shared_pointer_of_node(), this->moveit2_planning_group_name_));#
 
     // Very important: We spin up the moveit interaction in new thread, otherwise
     // the current state monitor won't get any information about the robot's state.
