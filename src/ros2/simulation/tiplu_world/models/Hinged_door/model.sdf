@@ -12,38 +12,37 @@
         </geometry>
       </collision>
       <collision name="Door_frame_lockside_front_collision">
-         <pose>-0.005145 0.95631 1.0541 0 0 0</pose>
-         <geometry>
+        <pose>-0.05145 0.95631 1.0541 0 0 0</pose>
+        <geometry>
           <box>
-             <size>0.00005 0.06858 2.10820</size>
+            <size>0.00005 0.06858 2.10820</size>
           </box>
         </geometry>
       </collision>
       <collision name="Door_frame_lockside_back_collision">
-        <pose>-0.0445 0.95631 1.0541 0 0 0</pose>
+        <pose>0.0 0.95631 1.0541 0 0 0</pose>
         <geometry>
           <box>
-             <size>0.00005 0.06858 2.10820</size>
+            <size>0.00005 0.06858 2.10820</size>
           </box>
         </geometry>
       </collision>
       <collision name="Door_frame_top_collision">
-        <pose>-0.0251450 0.46482 2.07137 0 0 0</pose>
+        <pose>-0.05145 0.95631 1.0541 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.05029 0.92964 0.07366</size>
+            <size>0.00005 0.06858 2.10820</size>
           </box>
         </geometry>
       </collision>
-      <visual name="visual">
+      <visual name="visual front">
         <pose>0 -0.06858 0 0 0 0</pose>
-         <geometry>
+        <geometry>
           <mesh>
             <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door/meshes/frame.dae</uri>
           </mesh>
-        </geometry> 
+        </geometry>
       </visual>
-     
     </link>
     <link name="door">
       <pose>-0.0 0.000 2.040 3.14159 0 1.57</pose>
@@ -68,7 +67,7 @@
         </geometry>
       </collision>
       <collision name="door_leaf_side_b_collision">
-       <pose>0.4569 0.0549 1.016 0 0 0</pose>
+        <pose>0.4569 0.0549 1.016 0 0 0</pose>
         <geometry>
           <box>
             <size>0.9144 0.00004 2.032</size>
@@ -82,38 +81,56 @@
             <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door/meshes/door.dae</uri>
           </mesh>
         </geometry>
-      </visual> 
+      </visual>
     </link>
     <link name="handles">
       <pose>0.0 0.8 1.05 0 3.14 1.57</pose>
-        <collision name="handle1_part1_collision">
-          <pose>0.015 -0.015 0 -1.57 0 0</pose>
-          <geometry>
-           <cylinder>
-              <radius>0.01</radius>
-              <length>0.3</length>
-            </cylinder>
-          </geometry>
-        </collision> 
-        <visual name="handle1_part1_visual">
-          <pose>0.015 -0.015 0 -1.57 0 0</pose>
-          <geometry>
-            <cylinder>
-              <radius>0.01</radius>
-              <length>0.3</length>
-            </cylinder>
-          </geometry>
-        </visual>
-        <collision name="handle1_part2_collision">
-          <pose>0.12 -0.13 0 -1.57 0 -1.5</pose>
-          <geometry>
-           <cylinder>
-              <radius>0.02</radius>
-              <length>0.2</length>
-            </cylinder>
-          </geometry>
-        </collision> 
-       <visual name="handle1_part2_visual">
+      <collision name="handle_connecting_rood_collision">
+        <gravity>1</gravity>
+        <geometry>
+          <cylinder>
+            <radius>0.01</radius>
+            <length>0.29</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="handle_connecting_rood_visual">
+        <pose>0.015 -0.015 0 -1.6 0 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.01</radius>
+            <length>0.29</length>
+          </cylinder>
+        </geometry>
+      </visual>
+      <visual name="handle_bold_visual">
+        <pose>-0.054 -0.028 0.01 0 1.54 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.005</radius>
+            <length>0.14</length>
+          </cylinder>
+        </geometry>
+      </visual>
+      <collision name="handle_bold_collision">
+        <pose>-0.054 -0.028 0.01 0 1.54 0</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.005</radius>
+            <length>0.14</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <collision name="handle1_handpiece_side_b_collision">
+        <pose>0.12 -0.13 0 -1.57 0 -1.5</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.2</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="handle1_handpiece_side_b_visual">
         <pose>0.12 -0.13 0 -1.57 0 -1.5</pose>
         <geometry>
           <cylinder>
@@ -122,16 +139,16 @@
           </cylinder>
         </geometry>
       </visual>
-       <collision name="handle1_part3_collision">
-          <pose>0.12 0.13 0 -1.57 0 -1.5</pose>
-          <geometry>
-           <cylinder>
-              <radius>0.02</radius>
-              <length>0.2</length>
-            </cylinder>
-          </geometry>
-        </collision> 
-      <visual name="handle1_part3_visual">
+      <collision name="handle1_handpiece_side_a_collision">
+        <pose>0.12 0.13 0 -1.57 0 -1.5</pose>
+        <geometry>
+          <cylinder>
+            <radius>0.02</radius>
+            <length>0.2</length>
+          </cylinder>
+        </geometry>
+      </collision>
+      <visual name="handle1_handpiece_side_a_visual">
         <pose>0.12 0.13 0 -1.57 0 -1.5</pose>
         <geometry>
           <cylinder>
@@ -140,7 +157,7 @@
           </cylinder>
         </geometry>
       </visual>
-    
+
     </link>
     <joint name="handle" type="revolute">
       <parent>door</parent>
@@ -150,9 +167,12 @@
         <xyz>1 0 0</xyz>
         <limit>
           <lower>0</lower>
-          <upper>1.58</upper>
+          <upper>1</upper>
         </limit>
+
         <dynamics>
+          <spring_stiffness>50</spring_stiffness>
+          <spring_reference>0.0</spring_reference>
           <damping>1.0</damping>
           <friction>10</friction>
         </dynamics>
@@ -164,6 +184,18 @@
         </ode>
       </physics>
     </joint>
+    <gazebo>
+      <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
+        <joint_name>"handle"</joint_name>
+        <p_gain>500</p_gain>
+        <i_gain>1000</i_gain>
+        <d_gain>10</d_gain>
+        <i_max>200</i_max>
+        <i_min>-200</i_min>
+        <cmd_max>1000</cmd_max>
+        <cmd_min>-1000</cmd_min>
+      </plugin>
+    </gazebo>
     <joint name="hinge" type="revolute">
       <parent>frame</parent>
       <child>door</child>
@@ -171,6 +203,7 @@
         <xyz>0 0 1</xyz>
         <limit>
           <lower>0</lower>
+          <!-- <lower>-1.58</lower> -->
           <upper>1.58</upper>
         </limit>
         <dynamics>
@@ -185,6 +218,19 @@
         </ode>
       </physics>
     </joint>
+    <gazebo>
+      <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
+        <joint_name>"hinge"</joint_name>
+        <p_gain>500</p_gain>
+        <i_gain>1000</i_gain>
+        <d_gain>10</d_gain>
+        <i_max>200</i_max>
+        <i_min>-200</i_min>
+        <cmd_max>1000</cmd_max>
+        <cmd_min>-1000</cmd_min>
+      </plugin>
+    </gazebo>
+
     <joint name="world_joint" type="fixed">
       <child>frame</child>
       <parent>world</parent>
