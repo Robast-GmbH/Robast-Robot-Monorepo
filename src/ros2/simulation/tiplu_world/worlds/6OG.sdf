@@ -18,7 +18,7 @@
       </attenuation>
       <direction>-0.5 0.1 -0.9</direction>
     </light>
-    
+
     <model name="ground_plane">
       <static>true</static>
       <link name="link">
@@ -45,17 +45,17 @@
         </visual>
       </link>
     </model>
-    
-      <include>
-        <uri>file:///workspace/src/simulation/tiplu_world/models/6_OG_normale_tueren</uri>
-        <name>6_OG_normale_tueren</name>
-      </include>  
 
-      <include>
-        <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door</uri>
-        <pose> 25.1 1.8 0.001 0 0 1.570</pose>
-        <name>Hinged_door</name>
-      </include>  
-    
+    <include>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/6_OG_normale_tueren</uri>
+      <name>6_OG_normale_tueren</name>
+    </include>
+
+    <include>
+      <scale>5 1 1</scale>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door</uri>
+      <pose> -0.7336 -3.838 0.0 0 0 1.570</pose>
+      <name>Hinged_door</name>
+    </include>
   </world>
 </sdf>
