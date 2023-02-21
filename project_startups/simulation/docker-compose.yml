@@ -21,7 +21,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    network_mode: "host"
+    # network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
     
   #evtl mit profiles testen ob man sim nur im simulations modus startet
@@ -44,7 +44,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-    network_mode: "host"
+    # network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   # state_publisher:
