@@ -52,9 +52,8 @@
     </include>
 
     <include>
-      <scale>5 1 1</scale>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door</uri>
-      <pose> -0.7336 -3.838 0.0 0 0 1.570</pose>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_92.5</uri>
+      <pose> -0.825 -3.838 0.0 0 0 1.570</pose>
       <name>Hinged_door</name>
     </include>
   </world>
