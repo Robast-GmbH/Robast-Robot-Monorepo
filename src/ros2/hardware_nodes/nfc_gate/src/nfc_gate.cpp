@@ -13,6 +13,7 @@ namespace nfc_gate
     qos.avoid_ros_namespace_conventions(false);
 
     publisher_ = this->create_publisher<std_msgs::msg::String>("/authenticated_user", qos);
+    start_up_scanner();
     timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL),
                                      std::bind(&NFCGate::reader_procedure, this));
   }
@@ -25,9 +26,8 @@ namespace nfc_gate
   {
     this->serial_connector_->open_serial();
     std::string response;
-    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, STANDART_REPLAY_MESSAGE_SIZE);
-    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, STANDART_REPLAY_MESSAGE_SIZE);
 
+    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, STANDART_REPLAY_MESSAGE_SIZE);
     if (response != RESPONCE_DEVICE_STATE_CONFIGURED)
     {
       RCLCPP_ERROR(
@@ -36,6 +36,11 @@ namespace nfc_gate
     }
 
     this->serial_connector_->ascii_interaction(SET_SERIAL_TO_ASCII, &response, STANDART_REPLAY_MESSAGE_SIZE);
+    
+  }
+  void NFCGate::prepare_scanning()
+  {
+    std::string response;
     this->serial_connector_->ascii_interaction(BOTTOM_LED_ON, &response, STANDART_REPLAY_MESSAGE_SIZE);
     this->serial_connector_->ascii_interaction(TOP_LEDS_INIT(LED_RED), &response, STANDART_REPLAY_MESSAGE_SIZE);
     this->serial_connector_->ascii_interaction(TOP_LEDS_ON(LED_RED), &response, STANDART_REPLAY_MESSAGE_SIZE);
@@ -60,7 +65,7 @@ namespace nfc_gate
     {
       return false;
     }
-    // this->serial_connector.send_ascii_cmd(BEEP_STANDART);
+    // this->serial_connector_.send_ascii_cmd(BEEP_STANDART);
     this->serial_connector_->send_ascii_cmd(TOP_LED_OFF(LED_GREEN));
     return true;
   }
@@ -75,7 +80,7 @@ namespace nfc_gate
   bool NFCGate::execute_scan(std::shared_ptr<std::string> received_raw_data)
   {
     bool found_tag;
-    start_up_scanner();
+    prepare_scanning();
     found_tag = scan_tag(received_raw_data);
 
     return found_tag;
@@ -91,14 +96,27 @@ namespace nfc_gate
 
     if (found)
     {
-      if (this->db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user))
+      RCLCPP_INFO(this->get_logger(), "tag located");
+      if(!CHECK_ON_DB)
       {
-        RCLCPP_INFO(this->get_logger(), "Found tag");
-        auto message = std_msgs::msg::String();
-        message.data = *found_user;
-        RCLCPP_INFO(this->get_logger(), "Publishing authenticated user %s", (*found_user).c_str());
-        publisher_->publish(message);
+        if (this->db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user))
+        {
+          RCLCPP_INFO(this->get_logger(), "Found tag");
+          auto message = std_msgs::msg::String();
+          message.data = *found_user;
+          RCLCPP_INFO(this->get_logger(), "Publishing authenticated user %s", (*found_user).c_str());
+          publisher_->publish(message);
+        }
       }
+      else{
+          auto message = std_msgs::msg::String();
+
+          *found_user = nfc_code_to_drawer["000100000000000000000000000000000001"];
+          message.data = *found_user;
+          RCLCPP_INFO(this->get_logger(), "Publishing authenticated user %s", (*found_user).c_str());
+          publisher_->publish(message);
+      }
+
     }
   }
 

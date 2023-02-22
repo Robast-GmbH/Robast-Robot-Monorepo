@@ -129,17 +129,19 @@ namespace serial_helper
 
         return this->write_serial(cmd + "\r");
     }
-
-    std::string SerialHelper::ascii_interaction(std::string cmd, std::string* responce, uint16_t responce_size)
+    
+    std::string SerialHelper::ascii_interaction(std::string cmd, std::string* response, uint16_t response_size)
     {
         std::string request_result = this->send_ascii_cmd(cmd);
         if (request_result != "")
         {
+            
             return request_result;
         }
-
-        this->read_serial(responce, responce_size);
-        (*responce).pop_back(); // remove '/r'
-        return *responce;
+       
+        sleep(1);
+        this->read_serial(response, response_size);
+        *response = std::regex_replace(*response, std::regex("\r"), "");
+        return *response;
     }
 }
