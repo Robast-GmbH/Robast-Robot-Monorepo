@@ -47,14 +47,38 @@
     </model>
 
     <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/6_OG_normale_tueren</uri>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/6_OG_normal_doors</uri>
       <name>6_OG_normale_tueren</name>
     </include>
 
+     <include>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standart</uri>
+      <pose> 12.45 -3.838 0.0 0 0 1.570</pose>
+      <name>Robast_it</name>
+    </include>
+
+     <include>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standart</uri>
+      <pose> 5.343 -3.838 0.0 0 0 1.570</pose>
+      <name>Robast_tech</name>
+    </include>
+
     <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_92.5</uri>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standart</uri>
+      <pose> 2.25 -3.838 0.0 0 0 1.570</pose>
+      <name>Server</name>
+    </include>
+
+    <include>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standart</uri>
       <pose> -0.825 -3.838 0.0 0 0 1.570</pose>
-      <name>Hinged_door</name>
+      <name>drinks_storage</name>
+    </include>
+
+    <include>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standart</uri>
+      <pose> -5.42 -3.838 0.0 0 0 1.570</pose>
+      <name>3d_printer_door</name>
     </include>
   </world>
 </sdf>
