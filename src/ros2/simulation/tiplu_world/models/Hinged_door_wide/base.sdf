@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.5">
-  <model name="Hinged_door">
+  <model name="Hinged_door_wide">
     <link name="frame">
       <pose>0.06 -0.0005 0 0 0 0</pose>
       <collision name="Door_frame_hinge_side_collison">
