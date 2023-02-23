@@ -8,26 +8,26 @@
                   _description="The Open Drawer node reads out the drawer address from the blackboard and publishes the opned address to its output. 
                 It also publishes an open order to the topic given in the input"/>
       <ChangeLED blue="0"
-                 brightness="0"
+                 brightness="128"
                  drawer_address="{drawer}"
-                 green="0"
+                 green="255"
                  led_topic="drawer_leds"
-                 mode="0"
+                 mode="1"
                  red="0"
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
                   slow_fade_up_fade_down = 3,"
                  />
-      <DrawerStatusCondition target_value="false"
+      <DrawerStatusCondition target_value="true"
                              topic="/drawer_is_open"/>
-      <ChangeLED blue="0"
-                 brightness="0"
+      <ChangeLED blue="255"
+                 brightness="128"
                  drawer_address="{drawer}"
-                 green="0"
+                 green="255"
                  led_topic="drawer_leds"
-                 mode="0"
-                 red="0"                 
+                 mode="1"
+                 red="255"                 
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
@@ -35,22 +35,22 @@
       <DrawerStatusCondition target_value="false"
                              topic="/drawer_is_open"/>
       <ChangeLED blue="0"
-                 brightness="0"
+                 brightness="150"
                  drawer_address="{drawer}"
-                 green="0"
+                 green="128"
                  led_topic="drawer_leds"
-                 mode="0"
-                 red="0"
+                 mode="2"
+                 red="255"
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
                   slow_fade_up_fade_down = 3,"/>
-      <ChangeLED blue="0"
-                 brightness="0"
+      <ChangeLED blue="155"
+                 brightness="25"
                  drawer_address="{drawer}"
-                 green="0"
+                 green="155"
                  led_topic="drawer_leds"
-                 mode="0"
+                 mode="1"
                  red="0"
                  _description="steady_light = 0,
                   fade_up = 1,
