@@ -97,19 +97,12 @@ namespace door_opening_mechanism_simulation
     // end-effector.
     // transform euler pose orientation to quaternion
     // geometry_msgs::msg::Pose target_pose1;
-    // tf2::Quaternion q;
-    // q.setRPY(-1.57079632679, 0, 0);
-    // target_pose1.orientation = tf2::toMsg(q);
-    // target_pose1.position.x = -0.8;
-    // target_pose1.position.y = 0.0;
-    // target_pose1.position.z = 0.8;
-    // move_group.setRPYTarget(1.57079632679, 0, 0);
 
     // move_group.setJointValueTarget("position/x", -0.8);
 
     geometry_msgs::msg::PoseStamped target_pose1 = move_group.getCurrentPose();
-    target_pose1.pose.orientation.y = 0.000001;
-    target_pose1.pose.orientation.z = 0.000001;
+    // target_pose1.pose.orientation.y = 0.000001;
+    // target_pose1.pose.orientation.z = 0.000001;
     RCLCPP_INFO(this->get_logger(),
                 "Current pose: x = %f, y = %f, z = %f, w = %f, orientation_x = %f, orientation_y = %f, orientation_z = "
                 "%f, frame_id = %s",
@@ -121,12 +114,36 @@ namespace door_opening_mechanism_simulation
                 target_pose1.pose.orientation.y,
                 target_pose1.pose.orientation.z,
                 target_pose1.header.frame_id.c_str());
-    target_pose1.pose.position.y += 0.1;
-    target_pose1.pose.position.z += 0.1;
 
-    move_group.setPoseTarget(target_pose1, "alu_profile_link_gripper");
-    move_group.setGoalTolerance(0.05);
-    move_group.setPlannerId("RRTConnectkConfigDefault");
+    // target_pose1.pose.position.y += 0.1;
+    // target_pose1.pose.position.z += 0.1;
+    tf2::Quaternion q;
+    q.setRPY(0, +1.57079632679, 0);
+    target_pose1.pose.orientation = tf2::toMsg(q);
+    // target_pose1.position.x = -0.8;
+    // target_pose1.position.y = 0.0;
+    // target_pose1.position.z = 0.8;
+    // move_group.setRPYTarget(1.57079632679, 0, 0);
+
+    RCLCPP_INFO(this->get_logger(),
+                "Target pose: x = %f, y = %f, z = %f, w = %f, orientation_x = %f, orientation_y = %f, orientation_z = "
+                "%f, frame_id = %s",
+                target_pose1.pose.position.x,
+                target_pose1.pose.position.y,
+                target_pose1.pose.position.z,
+                target_pose1.pose.orientation.w,
+                target_pose1.pose.orientation.x,
+                target_pose1.pose.orientation.y,
+                target_pose1.pose.orientation.z,
+                target_pose1.header.frame_id.c_str());
+
+    move_group.setPoseTarget(target_pose1);
+    // move_group.setGoalTolerance(0.02);
+    // move_group.setPlannerId("TRRTkConfigDefault");
+    move_group.setPlanningTime(10);
+    // move_group.setNumPlanningAttempts(3);
+
+    RCLCPP_INFO(this->get_logger(), "move_group.getPlanningTime(): %f", move_group.getPlanningTime());
 
     // Now, we call the planner to compute the plan and visualize it.
     // Note that we are just planning, not asking move_group

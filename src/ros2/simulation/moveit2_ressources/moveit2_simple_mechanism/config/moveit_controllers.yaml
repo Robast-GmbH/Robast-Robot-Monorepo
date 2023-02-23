@@ -11,4 +11,4 @@ moveit_simple_controller_manager:
     action_ns: follow_joint_trajectory
     default: true
     joints:
-      - door_opening_mechanism_joint_y_axis_slide
+      - joint_1

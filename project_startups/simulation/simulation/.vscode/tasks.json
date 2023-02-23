@@ -76,6 +76,17 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start door_mechanism_world",
+                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world door_opening_mechanism_world_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start moveit_drawer",
                         "command": "source /workspace/install/setup.bash; ros2 launch moveit2_drawer moveit_launch.py",
                         "problemMatcher": [],
@@ -98,6 +109,17 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start moveit2_simple_mechanism",
+                        "command": "source /workspace/install/setup.bash; ros2 launch moveit2_simple_mechanism moveit_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start drawer_gazebo_controller_manager",
                         "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_controller_manager_launch.py follow_joint_trajectory_action:='/drawer_planning_group_controller/follow_joint_trajectory' joint_names_list:=['drawer_1_joint','drawer_2_joint','drawer_3_joint','drawer_4_joint','drawer_5_joint']",
                         "problemMatcher": [],
@@ -110,7 +132,7 @@
                 {
                         "type": "shell",
                         "label": "start gazebo_controller_manager",
-                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_controller_manager_launch.py follow_joint_trajectory_action:='/door_opening_mechanism_controller/follow_joint_trajectory' joint_names_list:=['door_opening_mechanism_joint_tilting_hook','door_opening_mechanism_joint_x_axis_slide','door_opening_mechanism_joint_y_axis_slide']",
+                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_controller_manager_launch.py follow_joint_trajectory_action:='/door_opening_mechanism_controller/follow_joint_trajectory' joint_names_list:=['joint_1']",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -156,6 +178,25 @@
                         "dependsOn": [
                                 "start tiplu_sim",
                                 "start moveit_door_opening_mechanism",
+                                "start gazebo_controller_manager"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "startup_simple_mechanism_with_door_opening_simulation",
+                        "detail": "Starts tiplu_sim, moveit_door_opening, gazebo_controller_manager",
+                        "dependsOn": [
+                                "start door_mechanism_world",
+                                "start moveit2_simple_mechanism",
+                                "start gazebo_controller_manager"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "startup_sim_with_gazebo_controller_manager",
+                        "detail": "Starts tiplu_sim, moveit_door_opening, gazebo_controller_manager",
+                        "dependsOn": [
+                                "start tiplu_sim",
                                 "start gazebo_controller_manager"
                         ],
                         "problemMatcher": []

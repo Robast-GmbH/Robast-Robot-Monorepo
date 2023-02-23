@@ -8,10 +8,10 @@
                 <!-- By default, set up controllers for simulation. This won't work on real hardware -->
                 <plugin>mock_components/GenericSystem</plugin>
             </hardware>
-            <joint name="door_opening_mechanism_joint_y_axis_slide">
+            <joint name="joint_1">
                 <command_interface name="position"/>
                 <state_interface name="position">
-                  <param name="initial_value">${initial_positions['door_opening_mechanism_joint_y_axis_slide']}</param>
+                  <param name="initial_value">${initial_positions['joint_1']}</param>
                 </state_interface>
                 <state_interface name="velocity"/>
             </joint>

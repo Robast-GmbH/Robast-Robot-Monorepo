@@ -17,8 +17,10 @@ find_package(moveit_visual_tools REQUIRED)
 include_directories(include)
 
 set(executable_door_opening_mechanism_simulation door_opening_mechanism_simulation)
+set(executable_door_opening_mechanism_simulation_tutorial door_opening_mechanism_simulation_tutorial)
 
 add_executable(${executable_door_opening_mechanism_simulation} src/door_opening_mechanism_simulation_main.cpp)
+add_executable(${executable_door_opening_mechanism_simulation_tutorial} src/door_opening_mechanism_simulation_tutorial.cpp)
 
 set(library_door_opening_mechanism_simulation ${executable_door_opening_mechanism_simulation}_core)
 
@@ -35,6 +37,9 @@ set(dependencies
   moveit_visual_tools
 )
 
+ament_target_dependencies(${executable_door_opening_mechanism_simulation_tutorial}
+  ${dependencies}
+)
 ament_target_dependencies(${executable_door_opening_mechanism_simulation}
   ${dependencies}
 )
@@ -59,6 +64,7 @@ endif()
 
 install(TARGETS
   ${executable_door_opening_mechanism_simulation}
+  ${executable_door_opening_mechanism_simulation_tutorial}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
