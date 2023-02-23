@@ -35,7 +35,7 @@ namespace nfc_gate
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
     rclcpp::Service<CreateUser>::SharedPtr create_user_server_;
-    std::map<std::string, std::string> nfc_code_to_drawer_= std::map<std::string,std::string>{
+    const std::map<std::string, std::string> nfc_code_to_drawer_= std::map<std::string,std::string>{
                                                    {"000100000000000000000000000000000001","1"},
                                                    {"000100000000000000000000000000000100","2"},
                                                    {"000100000000000000000000000000010000","3"},

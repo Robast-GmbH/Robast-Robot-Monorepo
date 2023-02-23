@@ -101,18 +101,17 @@ namespace nfc_gate
         if (this->db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user))
         {
           RCLCPP_INFO(this->get_logger(), "Found tag");
-          auto message = std_msgs::msg::String();
+          std_msgs::msg::String message = std_msgs::msg::String();
           message.data = *found_user;
           RCLCPP_INFO(this->get_logger(), "Publishing authenticated user %s", (*found_user).c_str());
           publisher_->publish(message);
         }
       }
       else{
-          auto message = std_msgs::msg::String();
-          if (nfc_code_to_drawer_.find(*scanned_key) != nfc_code_to_drawer_.end()) 
+          std_msgs::msg::String message = std_msgs::msg::String();
+          if (nfc_code_to_drawer_.count(*scanned_key) == 1) 
           {
-            RCLCPP_INFO(this->get_logger(), "found_key %s", (*scanned_key).c_str());
-            *found_user = nfc_code_to_drawer_[*scanned_key];
+            *found_user = nfc_code_to_drawer_.at(*scanned_key);
             message.data = *found_user;
             RCLCPP_INFO(this->get_logger(), "Publishing Authenticated user %s", (*found_user).c_str());
             publisher_->publish(message);
