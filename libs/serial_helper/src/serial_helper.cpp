@@ -139,7 +139,7 @@ namespace serial_helper
             return request_result;
         }
        
-        sleep(1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
         this->read_serial(response, response_size);
         *response = std::regex_replace(*response, std::regex("\r"), "");
         return *response;

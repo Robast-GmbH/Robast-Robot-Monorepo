@@ -6,6 +6,8 @@
 #include <regex>
 #include <cstring>
 #include <string>
+#include <chrono>
+#include <thread>
 // Linux headers for serial communication
 #include <fcntl.h> // Contains file controls like O_RDWR
 #include <errno.h> // Error integer and strerror() function

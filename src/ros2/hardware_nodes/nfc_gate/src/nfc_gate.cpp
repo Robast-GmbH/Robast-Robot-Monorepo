@@ -13,7 +13,7 @@ namespace nfc_gate
     qos.avoid_ros_namespace_conventions(false);
 
     publisher_ = this->create_publisher<std_msgs::msg::String>("/authenticated_user", qos);
-    start_up_scanner();
+   
     timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL),
                                      std::bind(&NFCGate::reader_procedure, this));
   }
@@ -48,9 +48,11 @@ namespace nfc_gate
 
   bool NFCGate::scan_tag(std::shared_ptr<std::string> scanned_key)
   {
+    start_up_scanner();
     std::string response;
     std::string replay =
         this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, STANDART_REPLAY_MESSAGE_SIZE);
+         
     if (replay == RESPONCE_ERROR)
     {
       *scanned_key = "";
