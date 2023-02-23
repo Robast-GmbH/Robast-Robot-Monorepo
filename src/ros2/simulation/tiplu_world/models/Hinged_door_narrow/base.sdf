@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <sdf version="1.5">
-  <model name="Hinged_door">
+  <model name="Hinged_door_narrow">
     <link name="frame">
       <pose>0.06 -0.0005 0 0 0 0</pose>
       <collision name="Door_frame_hinge_side_collison">
@@ -39,7 +39,7 @@
         <pose>0 -0.06858 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door/meshes/frame.dae</uri>
+            <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_narrow/meshes/frame.dae</uri>
             <scale>1 0.77 1</scale>
           </mesh>
         </geometry>
@@ -79,7 +79,7 @@
         <pose>0 -0.06858 0 0 0 0</pose>
         <geometry>
           <mesh>
-            <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door/meshes/door.dae</uri>
+            <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_narrow/meshes/door.dae</uri>
             <scale>0.77 1 1</scale>
           </mesh>
         </geometry>

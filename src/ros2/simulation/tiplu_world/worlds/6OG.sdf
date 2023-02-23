@@ -52,31 +52,31 @@
     </include>
 
      <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standart</uri>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
       <pose> 12.45 -3.838 0.0 0 0 1.570</pose>
       <name>Robast_it</name>
     </include>
 
      <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standart</uri>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
       <pose> 5.343 -3.838 0.0 0 0 1.570</pose>
       <name>Robast_tech</name>
     </include>
 
     <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standart</uri>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
       <pose> 2.25 -3.838 0.0 0 0 1.570</pose>
       <name>Server</name>
     </include>
 
     <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standart</uri>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
       <pose> -0.825 -3.838 0.0 0 0 1.570</pose>
       <name>drinks_storage</name>
     </include>
 
     <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standart</uri>
+      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
       <pose> -5.42 -3.838 0.0 0 0 1.570</pose>
       <name>3d_printer_door</name>
     </include>
