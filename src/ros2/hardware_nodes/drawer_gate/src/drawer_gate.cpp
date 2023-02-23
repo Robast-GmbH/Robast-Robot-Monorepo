@@ -10,18 +10,27 @@ namespace drawer_gate
   {
     this->serial_helper_ = new serial_helper::SerialHelper(serial_path);
 
-    auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
-    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-    qos.avoid_ros_namespace_conventions(false);
+    auto qos_open_drawer = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
+    qos_open_drawer.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    qos_open_drawer.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+    qos_open_drawer.avoid_ros_namespace_conventions(false);
+
+    auto qos_drawer_leds = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
+    qos_drawer_leds.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    qos_drawer_leds.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+    qos_drawer_leds.avoid_ros_namespace_conventions(false);
 
     this->open_drawer_subscription_ = this->create_subscription<DrawerAddress>(
-        "open_drawer", qos, std::bind(&DrawerGate::open_drawer_topic_callback, this, std::placeholders::_1));
+        "open_drawer",
+        qos_open_drawer,
+        std::bind(&DrawerGate::open_drawer_topic_callback, this, std::placeholders::_1));
 
     this->drawer_leds_subscription_ = this->create_subscription<DrawerLeds>(
-        "drawer_leds", qos, std::bind(&DrawerGate::drawer_leds_topic_callback, this, std::placeholders::_1));
+        "drawer_leds",
+        qos_drawer_leds,
+        std::bind(&DrawerGate::drawer_leds_topic_callback, this, std::placeholders::_1));
 
-    this->drawer_status_publisher_ = this->create_publisher<DrawerStatus>("drawer_is_open", qos);
+    this->drawer_status_publisher_ = this->create_publisher<DrawerStatus>("drawer_is_open", qos_open_drawer);
 
     this->shelf_setup_info_service_ = this->create_service<ShelfSetupInfo>(
         "shelf_setup_info",
@@ -44,7 +53,8 @@ namespace drawer_gate
 
   void DrawerGate::open_drawer_topic_callback(const DrawerAddress& msg)
   {
-    RCLCPP_INFO(this->get_logger(), "I heard from open_drawer topic the drawer_controller_id: '%i'",
+    RCLCPP_INFO(this->get_logger(),
+                "I heard from open_drawer topic the drawer_controller_id: '%i'",
                 msg.drawer_controller_id);   // Debugging
 
     uint32_t drawer_controller_id = msg.drawer_controller_id;
@@ -119,7 +129,8 @@ namespace drawer_gate
   void DrawerGate::send_drawer_is_open_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg,
                                                 uint8_t drawer_id)
   {
-    RCLCPP_INFO(this->get_logger(), "Sending send_drawer_is_open_feedback with drawer_controller_id: '%i'",
+    RCLCPP_INFO(this->get_logger(),
+                "Sending send_drawer_is_open_feedback with drawer_controller_id: '%i'",
                 drawer_status_msg.drawer_address.drawer_controller_id);   // Debugging
     drawer_status_msg.drawer_address.drawer_id = drawer_id;
     drawer_status_msg.drawer_is_open = true;
@@ -129,7 +140,8 @@ namespace drawer_gate
   void DrawerGate::send_drawer_is_closed_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg,
                                                   uint8_t drawer_id)
   {
-    RCLCPP_INFO(this->get_logger(), "Sending send_drawer_is_closed_feedback with drawer_controller_id: '%i'",
+    RCLCPP_INFO(this->get_logger(),
+                "Sending send_drawer_is_closed_feedback with drawer_controller_id: '%i'",
                 drawer_status_msg.drawer_address.drawer_controller_id);   // Debugging
     drawer_status_msg.drawer_address.drawer_id = drawer_id;
     drawer_status_msg.drawer_is_open = false;
@@ -264,7 +276,8 @@ namespace drawer_gate
     RCLCPP_INFO(this->get_logger(), "Setting up serial can usb converter finished!");   // DEBUGGING
   }
 
-  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id,
+  robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_lock(uint32_t drawer_controller_id,
+                                                                     uint8_t drawer_id,
                                                                      uint8_t can_data_open_lock) const
   {
     robast_can_msgs::CanMessage can_msg_drawer_lock = this->can_db_.can_messages.at(CAN_MSG_DRAWER_LOCK);

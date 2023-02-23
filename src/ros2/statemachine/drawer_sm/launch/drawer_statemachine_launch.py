@@ -20,7 +20,7 @@ def generate_launch_description():
         executable="drawer_tree_initiator",
         name="drawer_tree_initiator",
         output="screen",
-        parameters=[bt_config_params])
+        parameters=[{"bt_path": "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml"}])
     ld = LaunchDescription()
     ld.add_action(declare_bt_config_params_cmd)
     ld.add_action(bt_node)
