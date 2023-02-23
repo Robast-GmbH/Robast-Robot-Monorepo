@@ -186,9 +186,8 @@
         </ode>
       </physics>
     </joint>
-    <gazebo>
       <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
-        <joint_name>"handle"</joint_name>
+        <joint_name>handle</joint_name>
         <p_gain>500</p_gain>
         <i_gain>1000</i_gain>
         <d_gain>10</d_gain>
@@ -197,7 +196,7 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-    </gazebo>
+
     <joint name="hinge" type="revolute">
       <parent>frame</parent>
       <child>door</child>
@@ -220,9 +219,8 @@
         </ode>
       </physics>
     </joint>
-    <gazebo>
       <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
-        <joint_name>"hinge"</joint_name>
+        <joint_name>hinge</joint_name>
         <p_gain>500</p_gain>
         <i_gain>1000</i_gain>
         <d_gain>10</d_gain>
@@ -231,7 +229,6 @@
         <cmd_max>1000</cmd_max>
         <cmd_min>-1000</cmd_min>
       </plugin>
-    </gazebo>
 
     <joint name="world_joint" type="fixed">
       <child>frame</child>
