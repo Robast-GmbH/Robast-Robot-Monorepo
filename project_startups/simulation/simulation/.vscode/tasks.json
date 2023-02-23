@@ -132,7 +132,7 @@
                 {
                         "type": "shell",
                         "label": "start gazebo_controller_manager",
-                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_controller_manager_launch.py follow_joint_trajectory_action:='/door_opening_mechanism_controller/follow_joint_trajectory' joint_names_list:=['joint_1']",
+                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_controller_manager_launch.py follow_joint_trajectory_action:='/door_opening_mechanism_controller/follow_joint_trajectory' joint_names_list:=['door_opening_mechanism_joint_tilting_hook','door_opening_mechanism_joint_x_axis_slide','door_opening_mechanism_joint_y_axis_slide']",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
