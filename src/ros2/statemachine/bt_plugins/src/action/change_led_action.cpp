@@ -61,12 +61,12 @@ namespace drawer_statemachine
 
     BT::NodeStatus ChangeLED::tick()
     {
-        // getInput("drawer_address", drawer_leds_.drawer_address);
-        // getInput("blue", drawer_leds_.blue);
-        // getInput("red", drawer_leds_.red);
-        // getInput("green", drawer_leds_.green);
-        // getInput("brightness", drawer_leds_.brightness);
-        // getInput("mode", drawer_leds_.mode);
+        getInput("drawer_address", drawer_leds_.drawer_address);
+        getInput("blue", drawer_leds_.blue);
+        getInput("red", drawer_leds_.red);
+        getInput("green", drawer_leds_.green);
+        getInput("brightness", drawer_leds_.brightness);
+        getInput("mode", drawer_leds_.mode);
         ChangeLED::publish();
 
         return BT::NodeStatus::SUCCESS;
