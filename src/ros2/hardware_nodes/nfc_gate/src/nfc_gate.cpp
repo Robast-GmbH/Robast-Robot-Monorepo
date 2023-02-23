@@ -30,9 +30,7 @@ namespace nfc_gate
     this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, STANDART_REPLAY_MESSAGE_SIZE);
     if (response != RESPONCE_DEVICE_STATE_CONFIGURED)
     {
-      RCLCPP_ERROR(
-          this->get_logger(), "NFC Device is not setup properly. nfc Node shutting down(%s)", response.c_str());
-      rclcpp::shutdown();
+      return;
     }
 
     this->serial_connector_->ascii_interaction(SET_SERIAL_TO_ASCII, &response, STANDART_REPLAY_MESSAGE_SIZE);
@@ -48,7 +46,7 @@ namespace nfc_gate
 
   bool NFCGate::scan_tag(std::shared_ptr<std::string> scanned_key)
   {
-    start_up_scanner();
+   
     std::string response;
     std::string replay =
         this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, STANDART_REPLAY_MESSAGE_SIZE);
@@ -93,12 +91,11 @@ namespace nfc_gate
     std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
     std::shared_ptr<std::string> found_user = std::make_shared<std::string>();
     bool found = false;
-
+    start_up_scanner();
     found = execute_scan(scanned_key);
-
     if (found)
     {
-      RCLCPP_INFO(this->get_logger(), "tag located");
+      //RCLCPP_INFO(this->get_logger(), "tag located %s", (*scanned_key).c_str());
       if(!CHECK_ON_DB|| db_connector_->test_connection()=="Dummy")
       {
         if (this->db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user))
@@ -112,11 +109,14 @@ namespace nfc_gate
       }
       else{
           auto message = std_msgs::msg::String();
-
-          *found_user = nfc_code_to_drawer["000100000000000000000000000000000001"];
-          message.data = *found_user;
-          RCLCPP_INFO(this->get_logger(), "Publishing authenticated user %s", (*found_user).c_str());
-          publisher_->publish(message);
+          if (nfc_code_to_drawer_.find(*scanned_key) != nfc_code_to_drawer_.end()) 
+          {
+            RCLCPP_INFO(this->get_logger(), "found_key %s", (*scanned_key).c_str());
+            *found_user = nfc_code_to_drawer_[*scanned_key];
+            message.data = *found_user;
+            RCLCPP_INFO(this->get_logger(), "Publishing Authenticated user %s", (*found_user).c_str());
+            publisher_->publish(message);
+          }
       }
 
     }

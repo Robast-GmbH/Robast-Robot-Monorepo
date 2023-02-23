@@ -2,7 +2,7 @@
 #define HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_
 
 #define STANDART_REPLAY_MESSAGE_SIZE 500
-#define READER_INTEVALL              500
+#define READER_INTEVALL              100
 #define CHECK_ON_DB                  true
 
 #include <string.h>
@@ -35,7 +35,7 @@ namespace nfc_gate
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
     rclcpp::Service<CreateUser>::SharedPtr create_user_server_;
-    std::map<std::string, std::string> nfc_code_to_drawer= std::map<std::string,std::string>{
+    std::map<std::string, std::string> nfc_code_to_drawer_= std::map<std::string,std::string>{
                                                    {"000100000000000000000000000000000001","1"},
                                                    {"000100000000000000000000000000000100","2"},
                                                    {"000100000000000000000000000000010000","3"},

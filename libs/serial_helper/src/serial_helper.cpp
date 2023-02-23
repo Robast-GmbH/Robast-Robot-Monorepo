@@ -138,10 +138,19 @@ namespace serial_helper
             
             return request_result;
         }
-       
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        //sleep(1);
+        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+
+        
         this->read_serial(response, response_size);
-        *response = std::regex_replace(*response, std::regex("\r"), "");
+        // std::string responce_message = (*response);
+        // if (count(responce_message.begin(), responce_message.end(), '\r')>1)
+        // {
+        //     std::size_t found = responce_message.find_last_of("\r");
+        //     *response= responce_message.substr(found);
+
+        // }
+        *response =std::regex_replace(*response, std::regex("\r"), "");
         return *response;
     }
 }
