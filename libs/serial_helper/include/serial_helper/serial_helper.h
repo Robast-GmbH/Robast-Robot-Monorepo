@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-
+#include <regex>
 #include <cstring>
 #include <string>
 // Linux headers for serial communication
