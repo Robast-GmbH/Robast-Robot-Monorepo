@@ -1,0 +1,4 @@
+# Default initial positions for rb_theron's ros2_control fake system
+
+initial_positions:
+  door_opening_mechanism_joint_y_axis_slide: 0

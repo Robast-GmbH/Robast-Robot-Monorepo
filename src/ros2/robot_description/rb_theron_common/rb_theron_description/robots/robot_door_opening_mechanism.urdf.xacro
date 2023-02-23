@@ -44,5 +44,10 @@
 	<xacro:door_opening_mechanism prefix="" parent="base_link" hq="false" >
 		<origin xyz="0 0 0.1" rpy="0 0 0"/>
 	</xacro:door_opening_mechanism>
-	
+
+  <plugin
+    filename="libgz-sim-joint-state-publisher-system"
+    name="gz::sim::systems::JointStatePublisher">
+  </plugin>
+
 </robot>

@@ -9,7 +9,7 @@ from moveit_configs_utils.launch_utils import (DeclareBooleanLaunchArg,
 
 def generate_launch_description():
 
-        moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_door_opening_mechanism").to_moveit_configs()
+        moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_simple_mechanism").to_moveit_configs()
 
         ld = LaunchDescription()
         ld.add_action(
@@ -80,6 +80,7 @@ def generate_launch_description():
                 extra_debug_args=["--debug"],
                 # Set the display variable, in case OpenGL code is used internally
                 additional_env={"DISPLAY": ":0"},
+                # arguments=['--ros-args', '--log-level', 'debug']
         )
 
         # Run Rviz and load the default config to see the state of the move_group node

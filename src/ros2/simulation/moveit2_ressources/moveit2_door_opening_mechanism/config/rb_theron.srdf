@@ -10,7 +10,7 @@
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
     <group name="door_opening_mechanism">
-        <chain base_link="alu_profile_link_right" tip_link="alu_profile_link_gripper"/>
+        <chain base_link="alu_profile_link_right" tip_link="door_opening_mechanism_link_y_axis_slide"/>
     </group>
 
     <!-- <group name="position">
@@ -36,8 +36,9 @@
         <joint name="position" value="1 0 0"/>
     </group_state> -->
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="door_opening_end_effector" parent_link="alu_profile_link_gripper" group="door_opening_mechanism"/>
+    <end_effector name="door_opening_end_effector" parent_link="door_opening_mechanism_link_y_axis_slide" group="door_opening_mechanism"/>
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <virtual_joint name="FixedBase" type="fixed" parent_frame="world" child_link="base_footprint" />
     <!-- <virtual_joint name="position" type="planar" parent_frame="odom" child_link="base_footprint"/>
     <joint_property joint_name="position" property_name="motion_model" value="diff_drive" />
     <joint_property joint_name="position" property_name="min_translational_distance" value="0.01" /> -->
@@ -70,7 +71,6 @@
     <disable_collisions link1="alu_profile_link_bottom" link2="bottom_cover_link" reason="Default"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_base_link" reason="Adjacent"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_tilting_hook" reason="Never"/>
-    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_x_slide_screwing" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
@@ -111,7 +111,6 @@
     <disable_collisions link1="alu_profile_link_gripper" link2="bottom_cover_link" reason="Never"/>
     <disable_collisions link1="alu_profile_link_gripper" link2="door_opening_mechanism_base_link" reason="Never"/>
     <disable_collisions link1="alu_profile_link_gripper" link2="door_opening_mechanism_link_tilting_hook" reason="Adjacent"/>
-    <disable_collisions link1="alu_profile_link_gripper" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="alu_profile_link_gripper" link2="door_opening_mechanism_link_x_slide_screwing" reason="Never"/>
     <disable_collisions link1="alu_profile_link_gripper" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="alu_profile_link_gripper" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
@@ -151,7 +150,6 @@
     <disable_collisions link1="alu_profile_link_left" link2="bottom_cover_link" reason="Never"/>
     <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_base_link" reason="Adjacent"/>
     <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_tilting_hook" reason="Never"/>
-    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_x_slide_screwing" reason="Never"/>
     <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
@@ -190,7 +188,6 @@
     <disable_collisions link1="alu_profile_link_right" link2="bottom_cover_link" reason="Never"/>
     <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_base_link" reason="Adjacent"/>
     <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_tilting_hook" reason="Never"/>
-    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_x_slide_screwing" reason="Never"/>
     <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_y_axis_rail" reason="Default"/>
     <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_y_axis_slide" reason="Adjacent"/>
@@ -228,7 +225,6 @@
     <disable_collisions link1="alu_profile_link_top" link2="bottom_cover_link" reason="Never"/>
     <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_base_link" reason="Adjacent"/>
     <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_tilting_hook" reason="Never"/>
-    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_x_slide_screwing" reason="Never"/>
     <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
@@ -265,7 +261,6 @@
     <disable_collisions link1="back_realsense_camera_link" link2="bottom_cover_link" reason="Never"/>
     <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_base_link" reason="Never"/>
     <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_tilting_hook" reason="Never"/>
-    <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_x_slide_screwing" reason="Never"/>
     <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
@@ -301,7 +296,6 @@
     <disable_collisions link1="base_footprint" link2="bottom_cover_link" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="door_opening_mechanism_base_link" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_tilting_hook" reason="Never"/>
-    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_x_slide_screwing" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
@@ -336,7 +330,6 @@
     <disable_collisions link1="base_link" link2="bottom_cover_link" reason="Adjacent"/>
     <disable_collisions link1="base_link" link2="door_opening_mechanism_base_link" reason="Adjacent"/>
     <disable_collisions link1="base_link" link2="door_opening_mechanism_link_tilting_hook" reason="Never"/>
-    <disable_collisions link1="base_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="base_link" link2="door_opening_mechanism_link_x_slide_screwing" reason="Never"/>
     <disable_collisions link1="base_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="base_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
@@ -366,7 +359,6 @@
     <disable_collisions link1="base_link" link2="top_laser_base_link" reason="Adjacent"/>
     <disable_collisions link1="bottom_cover_link" link2="door_opening_mechanism_base_link" reason="Never"/>
     <disable_collisions link1="bottom_cover_link" link2="door_opening_mechanism_link_tilting_hook" reason="Never"/>
-    <disable_collisions link1="bottom_cover_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="bottom_cover_link" link2="door_opening_mechanism_link_x_slide_screwing" reason="Never"/>
     <disable_collisions link1="bottom_cover_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="bottom_cover_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
@@ -399,7 +391,6 @@
     <disable_collisions link1="bottom_cover_link" link2="rightwheel" reason="Never"/>
     <disable_collisions link1="bottom_cover_link" link2="top_laser_base_link" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_tilting_hook" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_x_slide_screwing" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Adjacent"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
@@ -431,7 +422,6 @@
     <disable_collisions link1="door_opening_mechanism_base_link" link2="rightsupport" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="rightwheel" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="top_laser_base_link" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_tilting_hook" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_tilting_hook" link2="door_opening_mechanism_link_x_slide_screwing" reason="Adjacent"/>
     <disable_collisions link1="door_opening_mechanism_link_tilting_hook" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_tilting_hook" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
@@ -463,37 +453,6 @@
     <disable_collisions link1="door_opening_mechanism_link_tilting_hook" link2="rightsupport" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_tilting_hook" link2="rightwheel" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_tilting_hook" link2="top_laser_base_link" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="door_opening_mechanism_link_x_slide_screwing" reason="Adjacent"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="door_opening_mechanism_link_y_axis_slide" reason="Adjacent"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="drawer_1" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="drawer_2" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="drawer_3" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="drawer_4" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="drawer_5" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="front_laser_base_link" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_base_link_left_hook" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_base_link_right_hook" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_link_back_side_left_hook" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_link_back_side_right_hook" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_link_front_side_left_hook" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_link_front_side_right_hook" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="imu_link" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="left_wheel_link" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="leftcastorsupport" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="leftcastorwheel" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="leftrsupport" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="leftsupport" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="leftwheel" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="module_cage_link" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="right_wheel_link" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="rightcastorsupport" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="rightcastorwheel" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="rightrsupport" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="rightsupport" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="rightwheel" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="top_laser_base_link" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_x_slide_screwing" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_x_slide_screwing" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_x_slide_screwing" link2="drawer_1" reason="Never"/>
