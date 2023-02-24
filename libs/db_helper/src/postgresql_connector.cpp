@@ -11,7 +11,23 @@ namespace db_helper
   PostgreSqlHelper::~PostgreSqlHelper()
   {
   }
+  std::string PostgreSqlHelper::test_connection()
+  {
+    try
+    {
+      // make the Query from the DB
+      pqxx::connection connection_handle = pqxx::connection("");
+      pqxx::work session{connection_handle};
 
+     
+      connection_handle.disconnect();
+    }
+    catch (const pqxx::pqxx_exception& e)
+    {
+      return "error";
+    }
+    return "";
+  }
   bool PostgreSqlHelper::perform_query(std::string sql_statment,
                                        std::unique_ptr<std::vector<std::vector<std::string>>> result_data,
                                        std::unique_ptr<std::vector<std::string>> result_header)

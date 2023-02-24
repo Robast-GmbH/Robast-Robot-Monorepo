@@ -32,5 +32,9 @@ namespace db_helper
   {
     return 0;
   }
+  std::string MockPostgreSqlHelper::test_connection()
+  {
+    return "Dummy";
+  }
 
 }   // namespace db_helper

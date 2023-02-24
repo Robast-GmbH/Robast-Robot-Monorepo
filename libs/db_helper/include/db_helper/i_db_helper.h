@@ -18,6 +18,7 @@ namespace db_helper
 
     virtual bool checkUserTag(std::string tag, std::vector<std::string> lookup_scope,
                               std::shared_ptr<std::string> user_name) = 0;
+    virtual std::string test_connection()=0;
   };
 }   // namespace db_helper
 

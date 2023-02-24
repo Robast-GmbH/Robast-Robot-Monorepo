@@ -19,7 +19,9 @@ namespace db_helper
    public:
     PostgreSqlHelper(std::string username, std::string password, std::string host, std::string db_name);
     ~PostgreSqlHelper();
-    bool perform_query(std::string sql_statment, std::unique_ptr<std::vector<std::vector<std::string>>> result_data,
+    std::string test_connection();
+    bool perform_query(std::string sql_statment,
+                       std::unique_ptr<std::vector<std::vector<std::string>>> result_data,
                        std::unique_ptr<std::vector<std::string>> result_header);
     int perform_transaction(std::string sql_statement);
     bool checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::shared_ptr<std::string> user_name);

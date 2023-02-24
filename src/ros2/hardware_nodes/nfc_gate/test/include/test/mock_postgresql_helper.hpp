@@ -18,6 +18,7 @@ namespace db_helper
             ~MockPostgreSqlHelper();
 
             std::string open_connection();
+            std::string test_connection();
             void close_connection();
             bool perform_query(std::string sqlStatment, std::unique_ptr<std::vector< std::vector<std::string> >>result_data, std::unique_ptr< std::vector<std::string>> result_header);
             int perform_transaction(std::string SqlStatement);

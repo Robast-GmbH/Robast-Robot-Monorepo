@@ -2,7 +2,8 @@
 #define HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_
 
 #define STANDART_REPLAY_MESSAGE_SIZE 500
-#define READER_INTEVALL              500
+#define READER_INTEVALL              10
+#define CHECK_ON_DB                  false
 
 #include <string.h>
 
@@ -34,8 +35,13 @@ namespace nfc_gate
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
     rclcpp::Service<CreateUser>::SharedPtr create_user_server_;
-
-    bool execute_scan(std::shared_ptr<std::string> recived_raw_data);
+    const std::map<std::string, std::string> nfc_code_to_drawer_= std::map<std::string,std::string>{
+                                                   {"000100000000000000000000000000000001","1"},
+                                                   {"000100000000000000000000000000000100","2"},
+                                                   {"000100000000000000000000000000010000","3"},
+                                                   {"000100000000000000000000000001000000","4"},
+                                                   {"000100000000000000000000000100000000","5"} }; 
+    bool execute_scan(std::shared_ptr<std::string> received_raw_data);
     bool scan_tag(std::shared_ptr<std::string> tag_data);
 
     void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response> response);
@@ -43,6 +49,8 @@ namespace nfc_gate
     void reader_procedure();
     void turn_off_scanner();
     bool checkUserTag(std::string scanned_key, std::shared_ptr<std::string> related_username);
+    void prepare_scanning();
+    
   };
 
 }   // namespace robast
