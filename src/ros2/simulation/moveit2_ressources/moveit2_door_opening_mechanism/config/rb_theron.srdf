@@ -10,7 +10,7 @@
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
     <group name="door_opening_mechanism">
-        <chain base_link="alu_profile_link_right" tip_link="door_opening_mechanism_link_y_axis_slide"/>
+        <chain base_link="alu_profile_link_right" tip_link="door_opening_mechanism_link_tilting_hook"/>
     </group>
 
     <!-- <group name="position">
@@ -36,9 +36,9 @@
         <joint name="position" value="1 0 0"/>
     </group_state> -->
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="door_opening_end_effector" parent_link="door_opening_mechanism_link_y_axis_slide" group="door_opening_mechanism"/>
+    <end_effector name="door_opening_end_effector" parent_link="door_opening_mechanism_link_tilting_hook" group="door_opening_mechanism"/>
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
-    <virtual_joint name="FixedBase" type="fixed" parent_frame="world" child_link="base_footprint" />
+    <!-- <virtual_joint name="FixedBase" type="fixed" parent_frame="world" child_link="base_footprint" /> -->
     <!-- <virtual_joint name="position" type="planar" parent_frame="odom" child_link="base_footprint"/>
     <joint_property joint_name="position" property_name="motion_model" value="diff_drive" />
     <joint_property joint_name="position" property_name="min_translational_distance" value="0.01" /> -->
