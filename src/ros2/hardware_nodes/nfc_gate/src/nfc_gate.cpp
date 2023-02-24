@@ -20,6 +20,7 @@ namespace nfc_gate
 
   NFCGate::~NFCGate()
   {
+    turn_off_scanner();
   }
 
   void NFCGate::start_up_scanner()
@@ -96,7 +97,7 @@ namespace nfc_gate
     if (found)
     {
       //RCLCPP_INFO(this->get_logger(), "tag located %s", (*scanned_key).c_str());
-      if(!CHECK_ON_DB|| db_connector_->test_connection()=="Dummy")
+      if(CHECK_ON_DB|| db_connector_->test_connection()=="Dummy")
       {
         if (this->db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user))
         {

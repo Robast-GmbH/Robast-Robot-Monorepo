@@ -2,8 +2,8 @@
 #define HARDWARE_NODES__NFC_GATE__NFC_GATE_HPP_
 
 #define STANDART_REPLAY_MESSAGE_SIZE 500
-#define READER_INTEVALL              100
-#define CHECK_ON_DB                  true
+#define READER_INTEVALL              10
+#define CHECK_ON_DB                  false
 
 #include <string.h>
 

@@ -132,13 +132,14 @@ namespace serial_helper
     
     std::string SerialHelper::ascii_interaction(std::string cmd, std::string* response, uint16_t response_size)
     {
+        this->read_serial(response, response_size);
         std::string request_result = this->send_ascii_cmd(cmd);
         if (request_result != "")
         {
             
             return request_result;
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(500));
+        std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
         this->read_serial(response, response_size);
         *response =std::regex_replace(*response, std::regex("\r"), "");
