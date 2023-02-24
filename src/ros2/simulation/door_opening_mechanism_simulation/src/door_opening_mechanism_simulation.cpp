@@ -116,10 +116,10 @@ namespace door_opening_mechanism_simulation
                 target_pose1.header.frame_id.c_str());
 
     // target_pose1.pose.position.y += 0.1;
-    // target_pose1.pose.position.z += 0.1;
-    tf2::Quaternion q;
-    q.setRPY(0, +1.57079632679, 0);
-    target_pose1.pose.orientation = tf2::toMsg(q);
+    target_pose1.pose.position.z += 0.1;
+    // tf2::Quaternion q;
+    // q.setRPY(0, +1.57079632679, 0);
+    // target_pose1.pose.orientation = tf2::toMsg(q);
     // target_pose1.position.x = -0.8;
     // target_pose1.position.y = 0.0;
     // target_pose1.position.z = 0.8;
