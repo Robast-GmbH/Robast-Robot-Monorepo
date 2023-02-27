@@ -1,4 +1,4 @@
-#include "dryve_d1_gate/D1.h"
+#include "dryve_d1_gate/D1.hpp"
 
 void D1::setDebugModeON()
 {
@@ -20,7 +20,7 @@ void D1::startConnection(std::string ipAddress, int port)
   }
   else
   {
-    cout << "Socket created!" << endl;
+    std::cout << "Socket created!" << std::endl;
   }
 
   // Fill in a hint structure
@@ -35,7 +35,7 @@ void D1::startConnection(std::string ipAddress, int port)
   }
   else
   {
-    cout << "inet_pton succeeded!" << endl;
+    std::cout << "inet_pton succeeded!" << std::endl;
   }
 
   // connect to server
@@ -46,212 +46,217 @@ void D1::startConnection(std::string ipAddress, int port)
   }
   else
   {
-    cout << "Connected to the D1!" << endl;
+    std::cout << "Connected to the D1!" << std::endl;
   }
 }
 
 void D1::sendCommand(unsigned char data[], unsigned int arraySize, long value)
 {
-  // unsigned char arrayOfByte[4];
-  // unsigned char recvbuffer[19];
-  // unsigned char handShake[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  // // Swap the object and subindex bytes of the handshake to the bytes of the send telegram
-  // handShake[12] = data[12];
-  // handShake[13] = data[13];
-  // handShake[14] = data[14];
-  // // Conversion of the entered integer value to 4 bytes
-  // memcpy(arrayOfByte, &value, sizeof value);
-  // data[19] = arrayOfByte[0];
-  // data[20] = arrayOfByte[1];
-  // data[21] = arrayOfByte[2];
-  // data[22] = arrayOfByte[3];
+  unsigned char arrayOfByte[4];
+  unsigned char recvbuffer[19];
+  unsigned char handShake[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  // Swap the object and subindex bytes of the handshake to the bytes of the send telegram
+  handShake[12] = data[12];
+  handShake[13] = data[13];
+  handShake[14] = data[14];
+  // Conversion of the entered integer value to 4 bytes
+  memcpy(arrayOfByte, &value, sizeof value);
+  data[19] = arrayOfByte[0];
+  data[20] = arrayOfByte[1];
+  data[21] = arrayOfByte[2];
+  data[22] = arrayOfByte[3];
 
-  // int sendResult = send(sock, (char*) data, arraySize / sizeof(data[0]), 0);
-  // if (sendResult != SOCKET_ERROR)
-  // {
-  //   // Wait for response
-  //   ZeroMemory(recvbuffer, 19);
-  //   int bytesReceived = recv(sock, (char*) recvbuffer, 19, 0);
-  //   if (bytesReceived > 0)
-  //   {
-  //     if (debug == true)
-  //     {
-  //       cout << "Bytes received: " << bytesReceived << endl;
-  //       for (int i = 0; i < bytesReceived; i++)
-  //       {
-  //         // Echo response to console
-  //         printf("%d ", recvbuffer[i]);
-  //       }
-  //       cout << endl;
-  //     }
-  //     while (std::equal(std::begin(recvbuffer), std::end(recvbuffer), std::begin(handShake)) != true)
-  //     {
-  //       cout << "Wait for Handshake" << endl;
-  //     }
-  //     if (debug == true)
-  //     {
-  //       cout << "Telegram send correctly!" << endl;
-  //     }
-  //   }
-  // }
-  // else
-  // {
-  //   cerr << "Can't send telegram to D1, Err #" << WSAGetLastError() << endl;
-  //   exit(1);
-  // }
+  int sendResult = send(sock, (char*) data, arraySize / sizeof(data[0]), 0);
+
+  if (sendResult == arraySize)
+  {
+    // Wait for response
+    std::memset(recvbuffer, 0, 19);
+    int bytesReceived = recv(sock, (char*) recvbuffer, 19, 0);
+    if (bytesReceived > 0)
+    {
+      if (debug == true)
+      {
+        std::cout << "Bytes received: " << bytesReceived << std::endl;
+        for (int i = 0; i < bytesReceived; i++)
+        {
+          // Echo response to console
+          printf("%d ", recvbuffer[i]);
+        }
+        std::cout << std::endl;
+      }
+      while (std::equal(std::begin(recvbuffer), std::end(recvbuffer), std::begin(handShake)) != true)
+      {
+        std::cout << "Wait for Handshake" << std::endl;
+      }
+      if (debug == true)
+      {
+        std::cout << "Telegram send correctly!" << std::endl;
+      }
+    }
+  }
+  else
+  {
+    perror("Can't send telegram to D1, Err: ");
+    exit(EXIT_FAILURE);
+  }
 }
 
 void D1::sendSetCommand(const unsigned char data[], unsigned int arraySize)
 {
-  // // Send of const telegrams
-  // unsigned char recvbuffer[19];
-  // unsigned char handShake[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-  // // Swap the object and subindex bytes of the handshake to the bytes of the send telegram
-  // handShake[12] = data[12];
-  // handShake[13] = data[13];
-  // handShake[14] = data[14];
+  // Send of const telegrams
+  unsigned char recvbuffer[19];
+  unsigned char handShake[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+  // Swap the object and subindex bytes of the handshake to the bytes of the send telegram
+  handShake[12] = data[12];
+  handShake[13] = data[13];
+  handShake[14] = data[14];
 
-  // int sendResult = send(sock, (char*) data, arraySize / sizeof(data[0]), 0);
-  // if (sendResult != SOCKET_ERROR)
-  // {
-  //   // Wait for response
-  //   ZeroMemory(recvbuffer, 19);
-  //   int bytesReceived = recv(sock, (char*) recvbuffer, 19, 0);
-  //   if (bytesReceived > 0)
-  //   {
-  //     if (debug == true)
-  //     {
-  //       cout << "Bytes received: " << bytesReceived << endl;
-  //       for (int i = 0; i < bytesReceived; i++)
-  //       {
-  //         // Print response to console for debugging
-  //         printf("%d ", recvbuffer[i]);
-  //       }
-  //       cout << endl;
-  //     }
-  //     while (std::equal(std::begin(recvbuffer), std::end(recvbuffer), std::begin(handShake)) != true)
-  //     {
-  //       cout << "Wait for Handshake" << endl;
-  //     }
+  int sendResult = send(sock, (char*) data, arraySize / sizeof(data[0]), 0);
 
-  //     if (debug == true)
-  //     {
-  //       cout << "Telegram send correctly!" << endl;
-  //     }
-  //   }
-  // }
-  // else
-  // {
-  //   cerr << "Can't send telegram to D1, Err #" << WSAGetLastError() << endl;
-  //   exit(1);
-  // }
+  if (sendResult == arraySize)
+  {
+    // Wait for response
+    std::memset(recvbuffer, 0, 19);
+    int bytesReceived = recv(sock, (char*) recvbuffer, 19, 0);
+    if (bytesReceived > 0)
+    {
+      if (debug == true)
+      {
+        std::cout << "Bytes received: " << bytesReceived << std::endl;
+        for (int i = 0; i < bytesReceived; i++)
+        {
+          // Print response to console for debugging
+          printf("%d ", recvbuffer[i]);
+        }
+        std::cout << std::endl;
+      }
+      while (std::equal(std::begin(recvbuffer), std::end(recvbuffer), std::begin(handShake)) != true)
+      {
+        std::cout << "Wait for Handshake" << std::endl;
+      }
+
+      if (debug == true)
+      {
+        std::cout << "Telegram send correctly!" << std::endl;
+      }
+    }
+  }
+  else
+  {
+    perror("Can't send telegram to D1, Err: ");
+    exit(EXIT_FAILURE);
+  }
 }
 
 void D1::readCommand(const unsigned char data[], unsigned int arraySize)
 {
-  // int sendResult = send(sock, (char*) data, arraySize / sizeof(data[0]), 0);
+  int sendResult = send(sock, (char*) data, arraySize / sizeof(data[0]), 0);
 
-  // if (sendResult != SOCKET_ERROR)
-  // {
-  //   // Wait for response
-  //   ZeroMemory(recvbuf, sizeof(recvbuf));
-  //   int bytesReceived = recv(sock, (char*) recvbuf, sizeof(recvbuf), 0);
-  //   if (bytesReceived > 0)
-  //   {
-  //     if (debug == true)
-  //     {
-  //       cout << "Bytes received: " << bytesReceived << endl;
-  //       for (int i = 0; i < bytesReceived; i++)
-  //       {
-  //         // Echo response to console
-  //         printf("%d ", recvbuf[i]);
-  //       }
-  //       cout << endl;
-  //     }
-  //   }
-  // }
-  // else
-  // {
-  //   cerr << "Can't send telegram to D1, Err #" << WSAGetLastError() << endl;
-  // }
+  if (sendResult == arraySize)
+  {
+    // Wait for response
+    std::memset(recvbuf, 0, sizeof(recvbuf));
+    int bytesReceived = recv(sock, (char*) recvbuf, sizeof(recvbuf), 0);
+    if (bytesReceived > 0)
+    {
+      if (debug == true)
+      {
+        std::cout << "Bytes received: " << bytesReceived << std::endl;
+        for (int i = 0; i < bytesReceived; i++)
+        {
+          // Echo response to console
+          printf("%d ", recvbuf[i]);
+        }
+        std::cout << std::endl;
+      }
+    }
+  }
+  else
+  {
+    perror("Can't send telegram to D1, Err: ");
+    exit(EXIT_FAILURE);
+  }
 }
 
 int D1::readObjectValue(char objectindex1, char objectindex2, int subindex)
 {
-  // readBuffer[12] = int(objectindex1);
-  // readBuffer[13] = int(objectindex2);
-  // readBuffer[14] = subindex;
+  readBuffer[12] = int(objectindex1);
+  readBuffer[13] = int(objectindex2);
+  readBuffer[14] = subindex;
 
-  // int sendResult = send(sock, (char*) readBuffer, 19 / sizeof(readBuffer[0]), 0);
+  int sendResult = send(sock, (char*) readBuffer, 19 / sizeof(readBuffer[0]), 0);
 
-  // if (sendResult != SOCKET_ERROR)
-  // {
-  //   // Wait for response
-  //   ZeroMemory(recvbuf, sizeof(recvbuf));
-  //   int bytesReceived = recv(sock, (char*) recvbuf, sizeof(recvbuf), 0);
-  //   if (bytesReceived > 0)
-  //   {
-  //     if (debug == true)
-  //     {
-  //       cout << "Bytes received: " << bytesReceived << endl;
-  //       for (int i = 0; i < bytesReceived; i++)
-  //       {
-  //         // Echo response to console
-  //         printf("%d ", recvbuf[i]);
-  //       }
-  //       cout << endl;
-  //     }
+  std::cout << "sendResult: " << sendResult << std::endl;
+  std::cout << "sizeof(readBuffer): " << sizeof(readBuffer) << std::endl;
 
-  //     int x = fourBytesToInt(recvbuf);
-  //     return x;
-  //   }
-  // }
-  // else
-  // {
-  //   cerr << "Can't send telegram to D1, Err #" << WSAGetLastError() << endl;
-  // }
+  if (sendResult == sizeof(readBuffer))
+  {
+    // Wait for response
+    std::memset(recvbuf, 0, sizeof(recvbuf));
+    int bytesReceived = recv(sock, (char*) recvbuf, sizeof(recvbuf), 0);
+    if (bytesReceived > 0)
+    {
+      if (debug == true)
+      {
+        std::cout << "Bytes received: " << bytesReceived << std::endl;
+        for (int i = 0; i < bytesReceived; i++)
+        {
+          // Echo response to console
+          printf("%d ", recvbuf[i]);
+        }
+        std::cout << std::endl;
+      }
+
+      int x = fourBytesToInt(recvbuf);
+      return x;
+    }
+  }
+  else
+  {
+    perror("Can't send telegram to D1, Err: ");
+    exit(EXIT_FAILURE);
+  }
 }
 
 float D1::getSIUnitFactor()
 {
-  // readCommand(readSIUnitFactor, sizeof(readSIUnitFactor));
-  // // Read the SI Unit Position calculation of the multiplication factor when linear movement(byte 2 == 01h) is set;
-  // for
-  // // further informations please see manual chapter "Detailed description Motion Control Object" Object 60A8h and
-  // Object
-  // // 6092h
-  // if (recvbuf[21] == 1)
-  // {
-  //   // Equation to calculate the multiplication factor from the recieved byte 3 of object 60A8h
-  //   if (recvbuf[22] < 5)
-  //   {
-  //     float siUnitFactor = (pow(10, -3) / pow(10, recvbuf[22]));
-  //     return siUnitFactor;
-  //   }
-  //   else
-  //   {
-  //     float siUnitFactor = (pow(10, -3) / pow(10, recvbuf[22] - 256));
-  //     return siUnitFactor;
-  //   }
-  // }
-  // // Read the SI Unit Positionand calculation of the multiplication factor when rotary movement(byte 2 == 41h) is
-  // set;
-  // // for further informations please see manual chapter "Detailed description Motion Control Object" Object 60A8h and
-  // // Object 6092h
-  // else if (recvbuf[21] == 65)
-  // {
-  //   // Equation to calculate the multiplication factor from the recieved byte 3 of object 60A8h
-  //   if (recvbuf[22] < 5)
-  //   {
-  //     float siUnitFactor = (1 / pow(10, recvbuf[22]));
-  //     return siUnitFactor;
-  //   }
-  //   else
-  //   {
-  //     float siUnitFactor = (1 / pow(10, recvbuf[22] - 256));
-  //     return siUnitFactor;
-  //   }
-  // }
+  readCommand(readSIUnitFactor, sizeof(readSIUnitFactor));
+  // Read the SI Unit Position calculation of the multiplication factor when linear movement(byte 2 == 01h) is set;
+
+  // for further informations please see manual chapter "Detailed description Motion Control Object" Object 60A8h and
+  // Object 6092h
+  if (recvbuf[21] == 1)
+  {
+    // Equation to calculate the multiplication factor from the recieved byte 3 of object 60A8h
+    if (recvbuf[22] < 5)
+    {
+      float siUnitFactor = (std::pow(10, -3) / std::pow(10, recvbuf[22]));
+      return siUnitFactor;
+    }
+    else
+    {
+      float siUnitFactor = (std::pow(10, -3) / std::pow(10, recvbuf[22] - 256));
+      return siUnitFactor;
+    }
+  }
+  // Read the SI Unit Positionand calculation of the multiplication factor when rotary movement(byte 2 == 41h) is set;
+  // for further informations please see manual chapter "Detailed description Motion Control Object" Object 60A8h and
+  // Object 6092h
+  else if (recvbuf[21] == 65)
+  {
+    // Equation to calculate the multiplication factor from the recieved byte 3 of object 60A8h
+    if (recvbuf[22] < 5)
+    {
+      float siUnitFactor = (1 / std::pow(10, recvbuf[22]));
+      return siUnitFactor;
+    }
+    else
+    {
+      float siUnitFactor = (1 / std::pow(10, recvbuf[22] - 256));
+      return siUnitFactor;
+    }
+  }
 }
 
 int D1::fourBytesToInt(unsigned char data[])
@@ -277,7 +282,7 @@ void D1::checkForDryveError()
   {
     // Read the Error Code and print it in the console
     int errorCode = readObjectValue(0x60, 0x3f);
-    string error;
+    std::string error;
     if (errorCode == 25376)
     {
       error = "E01 Error Configuration";
@@ -350,7 +355,7 @@ void D1::checkForDryveError()
     {
       error = "E21 Braking Resistor Overload";
     }
-    cerr << "ERROR: " << error << endl;
+    std::cerr << "ERROR: " << error << std::endl;
     exit(1);
   }
 }
@@ -363,7 +368,7 @@ void D1::waitForReady()
     checkForDryveError();
     if (debug == true)
     {
-      cout << "Waiting for the Movement to be finished!" << endl;
+      std::cout << "Waiting for the Movement to be finished!" << std::endl;
     }
 
   } while (std::equal(std::begin(statusReady), std::end(statusReady), std::begin(recvbuf)) != true &&
@@ -380,7 +385,7 @@ void D1::waitForHoming()
     checkForDryveError();
     if (debug == true)
     {
-      cout << "Waiting for the Homing to be finished!" << endl;
+      std::cout << "Waiting for the Homing to be finished!" << std::endl;
     }
 
   } while (std::equal(std::begin(statusReady), std::end(statusReady), std::begin(recvbuf)) != true &&
@@ -400,7 +405,7 @@ void D1::setShutdown()
     readCommand(readStatusWord, sizeof(readStatusWord));
     if (debug == true)
     {
-      cout << "Waiting for the Shutdown!" << endl;
+      std::cout << "Waiting for the Shutdown!" << std::endl;
     }
 
   } while (std::equal(std::begin(statusShutdown), std::end(statusShutdown), std::begin(recvbuf)) != true &&
@@ -416,7 +421,7 @@ void D1::setSwitchOn()
     readCommand(readStatusWord, sizeof(readStatusWord));
     if (debug == true)
     {
-      cout << "Waiting for Switch On!" << endl;
+      std::cout << "Waiting for Switch On!" << std::endl;
     }
 
   } while (std::equal(std::begin(statusSwitchOn), std::end(statusSwitchOn), std::begin(recvbuf)) != true &&
@@ -432,7 +437,7 @@ void D1::setOperationEnable()
     readCommand(readStatusWord, sizeof(readStatusWord));
     if (debug == true)
     {
-      cout << "Waiting for enable Operation!" << endl;
+      std::cout << "Waiting for enable Operation!" << std::endl;
     }
 
   } while (
@@ -468,7 +473,7 @@ void D1::setModeOfOperation(unsigned char mode)
     readCommand(readModesDisplay, sizeof(readModesDisplay));
     if (debug == true)
     {
-      cout << "Waiting for the Mode of Operation to be set!" << endl;
+      std::cout << "Waiting for the Mode of Operation to be set!" << std::endl;
     }
 
   } while (std::equal(std::begin(statusModeDisplay), std::end(statusModeDisplay), std::begin(recvbuf)) != true);

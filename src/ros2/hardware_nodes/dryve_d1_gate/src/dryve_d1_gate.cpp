@@ -10,10 +10,14 @@ namespace dryve_d1_gate
 
     // Set the Debug Mode to ON or OFF; Debug Mode displays all received telegrams from the D1 in the console
     xAxis.setDebugModeON();
-    xAxis.setDebugModeOFF();
+    // xAxis.setDebugModeOFF();
+
+    RCLCPP_INFO(this->get_logger(), "I am going to run through D1 state machine now ...");   // Debugging
 
     // Run through State Machine --> Current is applied to the motor
     xAxis.runStateMachine();
+
+    RCLCPP_INFO(this->get_logger(), "Reading object value 0x2014");   // Debugging
 
     // Read the value of the Object 2014.1 "Status Flags" and asigned it to a variable (First Objectindex in
     // hexadecimal, Second Objectindex in hexadecimal, Subindex)
@@ -32,7 +36,7 @@ namespace dryve_d1_gate
                              // Deceleration[°/s]) Moves the X axis to absolute position 90°
 
     // Read the value of the Object 6064.0 "Position Actual Value" and display it on the console
-    cout << "Position Actual Value: " << xAxis.readObjectValue(0x60, 0x64, 0) << endl;
+    std::cout << "Position Actual Value: " << xAxis.readObjectValue(0x60, 0x64, 0) << std::endl;
 
     // Several absolute and relative Movements
     xAxis.profilePositionAbs(
