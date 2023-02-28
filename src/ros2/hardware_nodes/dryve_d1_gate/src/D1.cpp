@@ -20,7 +20,7 @@ void D1::startConnection(std::string ipAddress, int port)
   }
   else
   {
-    std::cout << "Socket created!" << std::endl;
+    std::cout << "Socket created!\n";
   }
 
   // Fill in a hint structure
@@ -35,7 +35,7 @@ void D1::startConnection(std::string ipAddress, int port)
   }
   else
   {
-    std::cout << "inet_pton succeeded!" << std::endl;
+    std::cout << "inet_pton succeeded!\n";
   }
 
   // connect to server
@@ -46,13 +46,13 @@ void D1::startConnection(std::string ipAddress, int port)
   }
   else
   {
-    std::cout << "Connected to the D1!" << std::endl;
+    std::cout << "Connected to the D1!\n";
   }
 }
 
 void D1::sendCommand(unsigned char data[], unsigned int arraySize, long value)
 {
-  unsigned char arrayOfByte[4];
+  unsigned char arrayOfByte[8];
   unsigned char recvbuffer[19];
   unsigned char handShake[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   // Swap the object and subindex bytes of the handshake to the bytes of the send telegram
@@ -60,7 +60,7 @@ void D1::sendCommand(unsigned char data[], unsigned int arraySize, long value)
   handShake[13] = data[13];
   handShake[14] = data[14];
   // Conversion of the entered integer value to 4 bytes
-  memcpy(arrayOfByte, &value, sizeof value);
+  memcpy(arrayOfByte, &value, sizeof(value));
   data[19] = arrayOfByte[0];
   data[20] = arrayOfByte[1];
   data[21] = arrayOfByte[2];
@@ -87,11 +87,11 @@ void D1::sendCommand(unsigned char data[], unsigned int arraySize, long value)
       }
       while (std::equal(std::begin(recvbuffer), std::end(recvbuffer), std::begin(handShake)) != true)
       {
-        std::cout << "Wait for Handshake" << std::endl;
+        std::cout << "Wait for Handshake\n";
       }
       if (debug == true)
       {
-        std::cout << "Telegram send correctly!" << std::endl;
+        std::cout << "Telegram send correctly!\n";
       }
     }
   }
@@ -133,12 +133,12 @@ void D1::sendSetCommand(const unsigned char data[], unsigned int arraySize)
       }
       while (std::equal(std::begin(recvbuffer), std::end(recvbuffer), std::begin(handShake)) != true)
       {
-        std::cout << "Wait for Handshake" << std::endl;
+        std::cout << "Wait for Handshake\n";
       }
 
       if (debug == true)
       {
-        std::cout << "Telegram send correctly!" << std::endl;
+        std::cout << "Telegram send correctly!\n";
       }
     }
   }
@@ -152,7 +152,6 @@ void D1::sendSetCommand(const unsigned char data[], unsigned int arraySize)
 void D1::readCommand(const unsigned char data[], unsigned int arraySize)
 {
   int sendResult = send(sock, (char*) data, arraySize / sizeof(data[0]), 0);
-
   if (sendResult == arraySize)
   {
     // Wait for response
@@ -186,9 +185,6 @@ int D1::readObjectValue(char objectindex1, char objectindex2, int subindex)
   readBuffer[14] = subindex;
 
   int sendResult = send(sock, (char*) readBuffer, 19 / sizeof(readBuffer[0]), 0);
-
-  std::cout << "sendResult: " << sendResult << std::endl;
-  std::cout << "sizeof(readBuffer): " << sizeof(readBuffer) << std::endl;
 
   if (sendResult == sizeof(readBuffer))
   {
@@ -368,7 +364,7 @@ void D1::waitForReady()
     checkForDryveError();
     if (debug == true)
     {
-      std::cout << "Waiting for the Movement to be finished!" << std::endl;
+      std::cout << "Waiting for the Movement to be finished!\n";
     }
 
   } while (std::equal(std::begin(statusReady), std::end(statusReady), std::begin(recvbuf)) != true &&
@@ -385,7 +381,7 @@ void D1::waitForHoming()
     checkForDryveError();
     if (debug == true)
     {
-      std::cout << "Waiting for the Homing to be finished!" << std::endl;
+      std::cout << "Waiting for the Homing to be finished!\n";
     }
 
   } while (std::equal(std::begin(statusReady), std::end(statusReady), std::begin(recvbuf)) != true &&
@@ -405,7 +401,7 @@ void D1::setShutdown()
     readCommand(readStatusWord, sizeof(readStatusWord));
     if (debug == true)
     {
-      std::cout << "Waiting for the Shutdown!" << std::endl;
+      std::cout << "Waiting for the Shutdown!\n";
     }
 
   } while (std::equal(std::begin(statusShutdown), std::end(statusShutdown), std::begin(recvbuf)) != true &&
@@ -421,7 +417,7 @@ void D1::setSwitchOn()
     readCommand(readStatusWord, sizeof(readStatusWord));
     if (debug == true)
     {
-      std::cout << "Waiting for Switch On!" << std::endl;
+      std::cout << "Waiting for Switch On!\n";
     }
 
   } while (std::equal(std::begin(statusSwitchOn), std::end(statusSwitchOn), std::begin(recvbuf)) != true &&
@@ -437,7 +433,7 @@ void D1::setOperationEnable()
     readCommand(readStatusWord, sizeof(readStatusWord));
     if (debug == true)
     {
-      std::cout << "Waiting for enable Operation!" << std::endl;
+      std::cout << "Waiting for enable Operation!\n";
     }
 
   } while (
@@ -473,7 +469,7 @@ void D1::setModeOfOperation(unsigned char mode)
     readCommand(readModesDisplay, sizeof(readModesDisplay));
     if (debug == true)
     {
-      std::cout << "Waiting for the Mode of Operation to be set!" << std::endl;
+      std::cout << "Waiting for the Mode of Operation to be set! \n";
     }
 
   } while (std::equal(std::begin(statusModeDisplay), std::end(statusModeDisplay), std::begin(recvbuf)) != true);
@@ -522,7 +518,9 @@ void D1::profilePositionAbs(float position, float velo, float accel, float decel
   sendSetCommand(sendStartMovement, sizeof(sendStartMovement));
 
   // Wait for Movement to end
+  std::cout << "Wait for Movement to end! \n";
   waitForReady();
+  std::cout << "Movement ended! \n";
 }
 
 void D1::profilePositionRel(float position, float velo, float accel, float decel)

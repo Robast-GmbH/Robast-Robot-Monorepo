@@ -20,6 +20,7 @@ namespace dryve_d1_gate
     ~DryveD1Gate();
 
    private:
+    void execute();
   };
 
 }   // namespace dryve_d1_gate
