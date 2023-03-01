@@ -25,8 +25,8 @@ add_library(library_dryve_d1_gate SHARED
   src/dryve_d1_gate.cpp
 )
 
-add_library(library_D1 SHARED
-  src/D1.cpp
+add_library(library_d1 SHARED
+  src/d1.cpp
 )
 
 set(dependencies
@@ -38,7 +38,7 @@ ament_target_dependencies(${executable_dryve_d1_gate}
 )
 target_link_libraries(${executable_dryve_d1_gate} 
   library_dryve_d1_gate
-  library_D1
+  library_d1
   )
 
 ament_target_dependencies(library_dryve_d1_gate
@@ -51,7 +51,7 @@ target_include_directories(dryve_d1_gate PUBLIC
 
 install(TARGETS
   library_dryve_d1_gate
-  library_D1
+  library_d1
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin

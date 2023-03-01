@@ -3,7 +3,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-#include "D1.hpp"
+#include "d1.hpp"
 
 namespace dryve_d1_gate
 {

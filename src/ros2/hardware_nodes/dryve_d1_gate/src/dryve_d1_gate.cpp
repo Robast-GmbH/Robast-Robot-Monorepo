@@ -15,18 +15,18 @@ namespace dryve_d1_gate
 
     // Set the Debug Mode to ON or OFF; Debug Mode displays all received telegrams from the D1 in the console
     // xAxis.setDebugModeON();
-    xAxis.setDebugModeOFF();
+    xAxis.set_debug_mode_off();
 
     RCLCPP_INFO(this->get_logger(), "I am going to run through D1 state machine now ...");   // Debugging
 
     // Run through State Machine --> Current is applied to the motor
-    xAxis.runStateMachine();
+    xAxis.run_state_machine();
 
     RCLCPP_INFO(this->get_logger(), "Reading object value 0x2014");   // Debugging
 
     // Read the value of the Object 2014.1 "Status Flags" and asigned it to a variable (First Objectindex in
     // hexadecimal, Second Objectindex in hexadecimal, Subindex)
-    int ref = xAxis.readObjectValue(0x20, 0x14, 0);
+    int ref = xAxis.read_object_value(0x20, 0x14, 0);
 
     // Start Homing only if not yet referenced
     // if (ref == 0)
@@ -36,35 +36,35 @@ namespace dryve_d1_gate
     // //}
 
     // Profile Position Mode(Position[°], Velocity[°/s], Acceleration[°/s²],
-    xAxis.profilePositionRel(90, 500, 500, 500);
+    xAxis.profile_position_rel(90, 500, 500, 500);
     sleep(5);
-    xAxis.profilePositionRel(90, 500, 500, 500);
+    xAxis.profile_position_rel(90, 500, 500, 500);
     sleep(5);
-    xAxis.profilePositionRel(90, 500, 500, 500);
+    xAxis.profile_position_rel(90, 500, 500, 500);
     sleep(5);
 
     // Move the motor with a set target velocity
     // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/s²],
-    xAxis.profileVelocity(90, 100, 100);
+    xAxis.profile_velocity(90, 100, 100);
     sleep(2);   // Wait for 2 seconds before a new movement is started
 
     // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/ ²], Deceleration[°/s])
-    xAxis.profileVelocity(-90, 100, 100);
+    xAxis.profile_velocity(-90, 100, 100);
     sleep(2);   // Wait for 2 seconds before a new movement is started
 
-    xAxis.profileVelocity(90, 100, 100);
+    xAxis.profile_velocity(90, 100, 100);
     sleep(2);   // Wait for 2 seconds before a new movement is started
 
     // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/ ²], Deceleration[°/s])
-    xAxis.profileVelocity(-90, 100, 100);
+    xAxis.profile_velocity(-90, 100, 100);
     sleep(2);
 
-    xAxis.profileVelocity(0, 100, 100);   // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/s²],
-                                          // Deceleration[°/s]) Stops the movement
+    xAxis.profile_velocity(0, 100, 100);   // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/s²],
+                                           // Deceleration[°/s]) Stops the movement
 
     // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
-    xAxis.waitForReady();
-    xAxis.setShutdown();
+    xAxis.wait_for_ready();
+    xAxis.set_shutdown();
 
     // Gracefully close everything down
     close(xAxis.sock);
