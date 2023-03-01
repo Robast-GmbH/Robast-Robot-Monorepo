@@ -2,14 +2,10 @@
 #define DRYVE_D1_GATE__D1_HPP_
 
 #include <arpa/inet.h>
-#include <netinet/in.h>
 #include <sys/socket.h>
-#include <unistd.h>
 
 #include <algorithm>
 #include <cmath>
-#include <cstdio>
-#include <cstdlib>
 #include <cstring>
 #include <iostream>
 #include <iterator>
