@@ -49,6 +49,53 @@ target_include_directories(dryve_d1_gate PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
+
+if(BUILD_TESTING)
+  include(FetchContent)
+
+  FetchContent_Declare(
+    Catch2
+    GIT_REPOSITORY https://github.com/catchorg/Catch2.git
+    GIT_TAG        ab6c7375be9a8e71ee84c6f8537113f9f47daf99 # should equal tag v3.2.1
+  )
+  FetchContent_MakeAvailable(Catch2)
+
+  include_directories(test/*)
+
+  list(APPEND test_libs library_d1)
+
+  add_executable(test_d1 test/unit_tests/test_d1.cpp)
+  list(APPEND test_executables test_d1)
+
+  foreach(test ${test_executables})
+    target_link_libraries(${test}
+      ${library_name}
+      ${plugin_libs}
+      ${test_libs}
+      Catch2::Catch2
+      Catch2::Catch2WithMain
+    )
+    ament_target_dependencies(${test}
+      ${dependencies}
+    )
+    include(Catch)
+    catch_discover_tests(${test})
+  endforeach()
+
+  include(CTest)
+
+  # find_package(ament_cmake_lint_cmake REQUIRED)
+  # ament_lint_cmake()
+  find_package(ament_cmake_flake8 REQUIRED)
+  ament_flake8()
+  find_package(ament_cmake_xmllint REQUIRED)
+  ament_xmllint()
+  find_package(ament_cmake_pep257 REQUIRED)
+  ament_pep257()
+  find_package(ament_cmake_cppcheck REQUIRED)
+  ament_cppcheck()
+endif()
+
 install(TARGETS
   library_dryve_d1_gate
   library_d1

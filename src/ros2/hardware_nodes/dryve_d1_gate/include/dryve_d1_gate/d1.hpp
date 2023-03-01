@@ -22,46 +22,35 @@ namespace dryve_d1_gate
    public:
     int sock = 0;
 
-    D1(std::string ipAddress, int port);
+    D1(std::string ip_address, int port);
 
-    // Functions are defined in the D1.cpp file
-    void set_debug_mode_on();    // Function to activate the debug mode
-    void set_debug_mode_off();   // Function to deactivate the debug mode
-    void send_command(unsigned char data[],
-                      unsigned int arraySize,
-                      long value);   // Function to send an integer Value into a given object
-    void send_set_command(const unsigned char data[],
-                          unsigned int arraySize);   // Function to send constant telegrams (e.g. "Shutdown","Switch On"
-                                                     // and "Operation Enable")
-    void read_command(
-        const unsigned char data[],
-        unsigned int arraySize);    // Function to read an object and store the telegram it in the variable recvbuf[]
-    void check_for_dryve_error();   // Function that checks if the D1 is in an error state
-    void wait_for_ready();          // Function that waits as long as the dryve is not back to the "Ready" State
-    void wait_for_homing();         // Functions that waits for the referencing/homing to be done
-    void reset_status();            // Function that resets the dryve status
-    void set_shutdown();            // Functions that send the telegram to start the Shutdown
-    void set_switch_on();           // Functions that send the telegram to start the SwitchOn
-    void set_operation_enable();    // Functions that send the telegram to start the Operation Enable
-    void run_state_machine();       // Function that runs through the whole State machine
-    void set_mode_of_operation(unsigned char mode);   // Function that set the Mode of Operation
-    void homing(
-        float switchVelo,
-        float zeroVelo,
-        float homingAcc);   // Function "Homing"; executing a homing with given velocity for switch, velocity for zero
-                            // and homing acceleration; mode of homing and offset has to be set beforehand in the GUI
-    void profile_position_abs(float position,
-                              float velo,
-                              float accel,
-                              float decel = 0);   // Function "Profile Position Mode"; Move to an absolute position with
-                                                  // given velocity, acceleration and deceleration
-    void profile_position_rel(float position,
-                              float velo,
-                              float accel,
-                              float decel = 0);   // Function "Profile Position Mode"; Move to an relative position with
-                                                  // given velocity, acceleration and deceleration
+    void set_debug_mode_on();
+    void set_debug_mode_off();
+
+    void send_constant_set_command(const unsigned char data[], unsigned int array_size);
+
+    void read_command_to_recvbuf(const unsigned char data[], unsigned int array_size);
+    void check_for_dryve_error();
+    void wait_for_dryve_ready_state();
+    void wait_for_homing();
+    void reset_dryve_status();
+    void set_dryve_shutdown_state();
+    void set_dryve_switch_on_state();
+    void set_dryve_operation_enable_stat();
+    void run_dryve_state_machine();
+    void set_dryve_mode_of_operation(unsigned char mode);
+    void start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);
+
+    void move_profile_to_absolute_position(float position, float velocity, float accel, float decel = 0);
+
+    void move_profile_to_relative_position(
+        float position,
+        float velocity,
+        float accel,
+        float decel = 0);   // Function "Profile Position Mode"; Move to an relative position with
+                            // given velocity, acceleration and deceleration
     void profile_velocity(
-        float velo,
+        float velocity,
         float accel,
         float decel = 0);   // Function "Profile Position Mode"; Move with a set target velocity, acceleration and
                             // deceleration; Movement starts directly when the target velocity is not 0
@@ -72,14 +61,22 @@ namespace dryve_d1_gate
                                   // mm|� or mm/s|�/s or mm/s�|�/s�
 
    private:
-    void start_connection(std::string ipAddress, int port);   // Function to establish the connection with the D1
-    int four_bytes_to_int(unsigned char data[]);              // Function to convert 4 bytes to an integer value
+    void start_connection(std::string ip_address, int port);   // Function to establish the connection with the D1
+
+    /// @brief
+    /// @param data
+    /// @param array_size
+    /// @param value
+    void send_command(unsigned char data[],
+                      unsigned int array_size,
+                      float value);                // Function to send an integer Value into a given object
+    int four_bytes_to_int(unsigned char data[]);   // Function to convert 4 bytes to an integer value
 
     // Variable to activate and deactivate the debug mode
     bool _debug;
 
     // Buffer variable to store the received telegram from the D1
-    unsigned char _recvbuf[23];
+    unsigned char _recv_buf[23];
 
     // Define Telegrams for frequently used objects
     // State machine

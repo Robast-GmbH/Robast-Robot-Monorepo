@@ -20,7 +20,7 @@ namespace dryve_d1_gate
     RCLCPP_INFO(this->get_logger(), "I am going to run through D1 state machine now ...");   // Debugging
 
     // Run through State Machine --> Current is applied to the motor
-    xAxis.run_state_machine();
+    xAxis.run_dryve_state_machine();
 
     RCLCPP_INFO(this->get_logger(), "Reading object value 0x2014");   // Debugging
 
@@ -31,16 +31,16 @@ namespace dryve_d1_gate
     // Start Homing only if not yet referenced
     // if (ref == 0)
     //{
-    // xAxis.homing(
+    // xAxis.start_dryve_homing(
     //     10, 1, 100);   // Homing (Switch search speed[°/s], Zero search speed[°/s], Acceleration for Homing[°/s²])
     // //}
 
     // Profile Position Mode(Position[°], Velocity[°/s], Acceleration[°/s²],
-    xAxis.profile_position_rel(90, 500, 500, 500);
+    xAxis.move_profile_to_relative_position(90, 500, 500, 500);
     sleep(5);
-    xAxis.profile_position_rel(90, 500, 500, 500);
+    xAxis.move_profile_to_relative_position(90, 500, 500, 500);
     sleep(5);
-    xAxis.profile_position_rel(90, 500, 500, 500);
+    xAxis.move_profile_to_relative_position(90, 500, 500, 500);
     sleep(5);
 
     // Move the motor with a set target velocity
@@ -64,7 +64,7 @@ namespace dryve_d1_gate
 
     // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
     xAxis.wait_for_ready();
-    xAxis.set_shutdown();
+    xAxis.set_dryve_shutdown_state();
 
     // Gracefully close everything down
     close(xAxis.sock);
