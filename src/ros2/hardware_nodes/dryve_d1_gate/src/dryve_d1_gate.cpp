@@ -45,25 +45,25 @@ namespace dryve_d1_gate
 
     // Move the motor with a set target velocity
     // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/s²],
-    xAxis.profile_velocity(90, 100, 100);
+    xAxis.set_profile_velocity(90, 100, 100);
     sleep(2);   // Wait for 2 seconds before a new movement is started
 
     // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/ ²], Deceleration[°/s])
-    xAxis.profile_velocity(-90, 100, 100);
+    xAxis.set_profile_velocity(-90, 100, 100);
     sleep(2);   // Wait for 2 seconds before a new movement is started
 
-    xAxis.profile_velocity(90, 100, 100);
+    xAxis.set_profile_velocity(90, 100, 100);
     sleep(2);   // Wait for 2 seconds before a new movement is started
 
     // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/ ²], Deceleration[°/s])
-    xAxis.profile_velocity(-90, 100, 100);
+    xAxis.set_profile_velocity(-90, 100, 100);
     sleep(2);
 
-    xAxis.profile_velocity(0, 100, 100);   // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/s²],
-                                           // Deceleration[°/s]) Stops the movement
+    xAxis.set_profile_velocity(0, 100, 100);   // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/s²],
+                                               // Deceleration[°/s]) Stops the movement
 
     // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
-    xAxis.wait_for_ready();
+    xAxis.wait_for_dryve_ready_state();
     xAxis.set_dryve_shutdown_state();
 
     // Gracefully close everything down

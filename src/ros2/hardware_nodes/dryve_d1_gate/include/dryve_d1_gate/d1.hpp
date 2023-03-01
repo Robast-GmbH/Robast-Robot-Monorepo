@@ -27,56 +27,64 @@ namespace dryve_d1_gate
     void set_debug_mode_on();
     void set_debug_mode_off();
 
-    void send_constant_set_command(const unsigned char data[], unsigned int array_size);
+    /***********************************************/
+    /* Functions to receive information from the D1*/
+    /***********************************************/
 
-    void read_command_to_recvbuf(const unsigned char data[], unsigned int array_size);
+    void read_command_to_recv_buffer(const unsigned char telegram[], unsigned int array_size);
+
+    int read_object_value(char object_index_1, char object_index_2, int subindex = 0);
+
     void check_for_dryve_error();
+
     void wait_for_dryve_ready_state();
+
     void wait_for_homing();
-    void reset_dryve_status();
+
+    float get_si_unit_factor();
+
+    /****************************************/
+    /* Functions to send commands to the D1 */
+    /****************************************/
+
     void set_dryve_shutdown_state();
+
     void set_dryve_switch_on_state();
-    void set_dryve_operation_enable_stat();
+
+    void set_dryve_operation_enable_state();
+
+    void send_constant_set_command(const unsigned char telegram[], unsigned int array_size);
+
+    void reset_dryve_status();
+
     void run_dryve_state_machine();
+
     void set_dryve_mode_of_operation(unsigned char mode);
+
     void start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);
 
     void move_profile_to_absolute_position(float position, float velocity, float accel, float decel = 0);
 
-    void move_profile_to_relative_position(
-        float position,
-        float velocity,
-        float accel,
-        float decel = 0);   // Function "Profile Position Mode"; Move to an relative position with
-                            // given velocity, acceleration and deceleration
-    void profile_velocity(
-        float velocity,
-        float accel,
-        float decel = 0);   // Function "Profile Position Mode"; Move with a set target velocity, acceleration and
-                            // deceleration; Movement starts directly when the target velocity is not 0
-    int read_object_value(char objectindex1,
-                          char objectindex2,
-                          int subindex = 0);   // Function that reads the value of a given object and returns its value
-    float get_si_unit_factor();   // Function to get the SI Unit Factor, which is needed to convert object values to
-                                  // mm|� or mm/s|�/s or mm/s�|�/s�
+    void move_profile_to_relative_position(float position, float velocity, float accel, float decel = 0);
+
+    void set_profile_velocity(float velocity, float accel, float decel = 0);
 
    private:
-    void start_connection(std::string ip_address, int port);   // Function to establish the connection with the D1
+    void start_connection(std::string ip_address, int port);
 
-    /// @brief
-    /// @param data
-    /// @param array_size
-    /// @param value
-    void send_command(unsigned char data[],
-                      unsigned int array_size,
-                      float value);                // Function to send an integer Value into a given object
-    int four_bytes_to_int(unsigned char data[]);   // Function to convert 4 bytes to an integer value
+    int write_response_to_recv_buffer();
 
-    // Variable to activate and deactivate the debug mode
-    bool _debug;
+    int get_response_from_socket();
 
-    // Buffer variable to store the received telegram from the D1
-    unsigned char _recv_buf[23];
+    void wait_for_response_to_equal_handshake(std::vector<char> handshake);
+
+    void send_command_telegram(unsigned char telegram[], unsigned int array_size, float value);
+
+    int four_bytes_to_int(unsigned char data[]);
+
+    bool _debug;   // Variable to activate and deactivate the debug mode
+
+    unsigned char _recv_buffer[23];   // Buffer variable to store the received telegram from the D1
 
     // Define Telegrams for frequently used objects
     // State machine
