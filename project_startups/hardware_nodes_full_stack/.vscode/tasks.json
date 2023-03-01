@@ -324,6 +324,17 @@
             "problemMatcher": []
         },
         {
+            "label": "Test dryve d1 gate",
+            "detail": "Build and executes dryve d1 gate tests and shows the links to the testreport with Errors",
+            "type": "shell",
+            "dependsOn": [
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "command": "clear; source install/setup.bash; colcon test --packages-select dryve_d1_gate --event-handler=console_direct+; colcon test-result --all",
+            "problemMatcher": []
+        },
+        {
             "label": "Test can",
             "detail": "Build and executes can tests and shows the links to the testreport with Errors",
             "type": "shell",
