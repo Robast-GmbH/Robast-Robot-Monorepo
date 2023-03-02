@@ -7,7 +7,8 @@ namespace dryve_d1_gate
   {
    public:
     virtual ~ISocketWrapper() = default;
-    virtual int receive(int fd, void *buf, size_t n, int flags) = 0;
+    virtual int receiving(int fd, void *buf, size_t n, int flags) = 0;
+    virtual unsigned int sending(int fd, const void *buf, size_t n, int flags) = 0;
   };
 
 }   // namespace dryve_d1_gate

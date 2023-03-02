@@ -29,7 +29,7 @@ namespace dryve_d1_gate
     }
     else
     {
-      std::cout << "Socket created!\n";
+      std::cout << "Socket created: " << this->sock << "\n";
     }
 
     // Fill in a hint structure
@@ -75,13 +75,13 @@ namespace dryve_d1_gate
     telegram[21] = array_of_byte[2];
     telegram[22] = array_of_byte[3];
 
-    unsigned int send_result = send(sock, (char *) telegram, array_size / sizeof(telegram[0]), 0);
+    unsigned int send_result = _socket_wrapper->sending(sock, (char *) telegram, array_size / sizeof(telegram[0]), 0);
 
     if (send_result == array_size)
     {
       // Wait for response
       std::memset(recv_buffer, 0, 19);
-      int bytes_received = _socket_wrapper->receive(sock, (char *) recv_buffer, 19, 0);
+      int bytes_received = _socket_wrapper->receiving(sock, (char *) recv_buffer, 19, 0);
       if (bytes_received > 0)
       {
         if (_debug == true)
@@ -116,7 +116,7 @@ namespace dryve_d1_gate
     unsigned char recv_buffer[19];
     // Wait for response
     std::memset(recv_buffer, 0, 19);
-    int bytes_received = _socket_wrapper->receive(sock, (char *) recv_buffer, 19, 0);
+    int bytes_received = _socket_wrapper->receiving(sock, (char *) recv_buffer, 19, 0);
     if (bytes_received > 0)
     {
       if (_debug == true)
@@ -156,6 +156,7 @@ namespace dryve_d1_gate
     handshake[14] = telegram[14];
 
     unsigned int send_result = send(sock, (char *) telegram, array_size / sizeof(telegram[0]), 0);
+    unsigned int send_result = _socket_wrapper->sending(sock, (char *) telegram, array_size / sizeof(telegram[0]), 0);
 
     if (send_result == array_size)
     {
@@ -165,7 +166,7 @@ namespace dryve_d1_gate
 
   void D1::read_command_to_recv_buffer(const unsigned char telegram[], unsigned int array_size)
   {
-    unsigned int send_result = send(sock, (char *) telegram, array_size / sizeof(telegram[0]), 0);
+    unsigned int send_result = _socket_wrapper->sending(sock, (char *) telegram, array_size / sizeof(telegram[0]), 0);
     if (send_result == array_size)
     {
       write_response_to_recv_buffer();
@@ -181,7 +182,7 @@ namespace dryve_d1_gate
   {
     // Wait for response
     std::memset(_recv_buffer, 0, sizeof(_recv_buffer));
-    int bytes_received = _socket_wrapper->receive(sock, (char *) _recv_buffer, sizeof(_recv_buffer), 0);
+    int bytes_received = _socket_wrapper->receiving(sock, (char *) _recv_buffer, sizeof(_recv_buffer), 0);
     if (bytes_received > 0)
     {
       if (_debug == true)
@@ -223,7 +224,7 @@ namespace dryve_d1_gate
     _read_buffer[13] = int(object_index_2);
     _read_buffer[14] = subindex;
 
-    unsigned int send_result = send(sock, (char *) _read_buffer, 19 / sizeof(_read_buffer[0]), 0);
+    unsigned int send_result = _socket_wrapper->sending(sock, (char *) _read_buffer, 19 / sizeof(_read_buffer[0]), 0);
 
     if (send_result == sizeof(_read_buffer))
     {

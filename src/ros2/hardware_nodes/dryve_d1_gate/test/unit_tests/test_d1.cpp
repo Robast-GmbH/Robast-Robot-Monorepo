@@ -32,7 +32,7 @@ namespace unit_test
   {
     GIVEN("A test server")
     {
-      int port = 8080;
+      int port = 12345;
       start_test_server(port);
 
       std::string ip_address = "127.0.0.1";
@@ -51,24 +51,49 @@ namespace unit_test
 
     GIVEN("A test server and the D1 class")
     {
-      int port = 8080;
+      int port = 123456;
       start_test_server(port);
       std::string ip_address = "127.0.0.1";
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::make_unique<MockSocketWrapper>());
+      std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
-      WHEN("send_command is called with data for _send_target_position")
+      const unsigned char SEND_SHUTDOWN[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 6, 0};
+      unsigned char handshake[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      const unsigned char expected_recv_buffer[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      handshake[12] = SEND_SHUTDOWN[12];
+      handshake[13] = SEND_SHUTDOWN[13];
+      handshake[14] = SEND_SHUTDOWN[14];
+
+      EXPECT_CALL(*mock_socket_wrapper, sending(testing::_, testing::_, testing::_, testing::_))
+          .WillOnce(testing::Return(sizeof(SEND_SHUTDOWN)));
+      EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, testing::_, testing::_))
+          .WillOnce(testing::DoAll(testing::SetArgPointee<1>(expected_recv_buffer),
+                                   testing::Return(sizeof(expected_recv_buffer))));
+
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+
+      WHEN("set_dryve_shutdown_state is called")
       {
-        // d1.send_command();
+        // d1.set_debug_mode_on();
+        d1.set_dryve_shutdown_state();
 
         THEN("the _debug variable should be set to true")
         {
           REQUIRE(1 == 1);
         }
       }
+      // mock_socket_wrapper.reset();                                            // löscht das Mock-Objekt automatisch
+      // testing::Mock::VerifyAndClearExpectations(mock_socket_wrapper.get());   // löscht das Mock-Objekt automatisch
     }
   }
 
 }   // namespace unit_test
+
+// std::cout << "sizeof(SEND_SHUTDOWN): " << sizeof(SEND_SHUTDOWN) << "\n";
+// EXPECT_CALL(*mock_socket_wrapper,
+//         sending(testing::_, SEND_SHUTDOWN, sizeof(SEND_SHUTDOWN) / sizeof(SEND_SHUTDOWN[0]), 0))
+// .WillOnce(testing::Return(sizeof(SEND_SHUTDOWN)));
+
+// ON_CALL(*mock_socket_wrapper, sending()).WillByDefault(testing::Return(42));
 
 // int connect_to_server(const char *ip, int port)
 // {
