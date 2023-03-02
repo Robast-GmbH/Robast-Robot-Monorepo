@@ -11,7 +11,7 @@ namespace dryve_d1_gate
   {
     // Declare the first object of the class D1 with the name "xAxis" (IP Address of the D1 as String, Port Number as
     // Int)
-    D1 xAxis("10.10.13.6", 502);
+    D1 xAxis("10.10.13.6", 502, std::make_unique<SocketWrapper>());
 
     // Set the Debug Mode to ON or OFF; Debug Mode displays all received telegrams from the D1 in the console
     // xAxis.setDebugModeON();

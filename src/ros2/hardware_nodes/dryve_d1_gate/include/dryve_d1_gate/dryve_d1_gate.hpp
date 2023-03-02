@@ -4,6 +4,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include "d1.hpp"
+#include "dryve_d1_gate/socket_wrapper.hpp"
 
 namespace dryve_d1_gate
 {

@@ -19,7 +19,8 @@ include_directories(include)
 set(executable_dryve_d1_gate dryve_d1_gate)
 
 add_executable(${executable_dryve_d1_gate}
-  src/main.cpp)
+  src/main.cpp
+)
 
 add_library(library_dryve_d1_gate SHARED
   src/dryve_d1_gate.cpp
@@ -39,7 +40,7 @@ ament_target_dependencies(${executable_dryve_d1_gate}
 target_link_libraries(${executable_dryve_d1_gate} 
   library_dryve_d1_gate
   library_d1
-  )
+)
 
 ament_target_dependencies(library_dryve_d1_gate
   ${dependencies}
@@ -58,9 +59,14 @@ if(BUILD_TESTING)
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
     GIT_TAG        ab6c7375be9a8e71ee84c6f8537113f9f47daf99 # should equal tag v3.2.1
   )
-  FetchContent_MakeAvailable(Catch2)
-
-  include_directories(test/*)
+  FetchContent_Declare(
+    googletest 
+    GIT_REPOSITORY https://github.com/google/googletest.git
+    GIT_TAG        b796f7d44681514f58a683a3a71ff17c94edb0c1 # should equal tag v1.13.0
+  )
+  FetchContent_MakeAvailable(Catch2 googletest)
+  
+  include_directories(test/include)
 
   list(APPEND test_libs library_d1)
 
@@ -74,6 +80,7 @@ if(BUILD_TESTING)
       ${test_libs}
       Catch2::Catch2
       Catch2::Catch2WithMain
+      gmock_main
     )
     ament_target_dependencies(${test}
       ${dependencies}

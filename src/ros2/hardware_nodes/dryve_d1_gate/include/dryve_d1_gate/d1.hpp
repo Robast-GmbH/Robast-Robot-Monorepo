@@ -9,7 +9,10 @@
 #include <cstring>
 #include <iostream>
 #include <iterator>
+#include <memory>
 #include <string>
+
+#include "dryve_d1_gate/i_socket_wrapper.hpp"
 
 namespace dryve_d1_gate
 {
@@ -18,9 +21,10 @@ namespace dryve_d1_gate
    public:
     int sock = 0;
 
-    D1(std::string ip_address, int port);
+    D1(std::string ip_address, int port, std::unique_ptr<ISocketWrapper> socket_wrapper);
 
     void set_debug_mode_on();
+
     void set_debug_mode_off();
 
     /***********************************************/
@@ -77,6 +81,8 @@ namespace dryve_d1_gate
     void send_command_telegram(unsigned char telegram[], unsigned int array_size, float value);
 
     int four_bytes_to_int(unsigned char data[]);
+
+    std::unique_ptr<ISocketWrapper> _socket_wrapper;
 
     bool _debug;   // Variable to activate and deactivate the debug mode
 

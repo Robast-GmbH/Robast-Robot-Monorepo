@@ -2,8 +2,10 @@
 
 namespace dryve_d1_gate
 {
-  D1::D1(std::string ip_address, int port)
+  D1::D1(std::string ip_address, int port, std::unique_ptr<ISocketWrapper> socket_wrapper)
   {
+    _socket_wrapper = std::move(socket_wrapper);
+
     start_connection(ip_address, port);
   }
 
@@ -79,7 +81,7 @@ namespace dryve_d1_gate
     {
       // Wait for response
       std::memset(recv_buffer, 0, 19);
-      int bytes_received = recv(sock, (char *) recv_buffer, 19, 0);
+      int bytes_received = _socket_wrapper->receive(sock, (char *) recv_buffer, 19, 0);
       if (bytes_received > 0)
       {
         if (_debug == true)
@@ -114,7 +116,7 @@ namespace dryve_d1_gate
     unsigned char recv_buffer[19];
     // Wait for response
     std::memset(recv_buffer, 0, 19);
-    int bytes_received = recv(sock, (char *) recv_buffer, 19, 0);
+    int bytes_received = _socket_wrapper->receive(sock, (char *) recv_buffer, 19, 0);
     if (bytes_received > 0)
     {
       if (_debug == true)
@@ -179,7 +181,7 @@ namespace dryve_d1_gate
   {
     // Wait for response
     std::memset(_recv_buffer, 0, sizeof(_recv_buffer));
-    int bytes_received = recv(sock, (char *) _recv_buffer, sizeof(_recv_buffer), 0);
+    int bytes_received = _socket_wrapper->receive(sock, (char *) _recv_buffer, sizeof(_recv_buffer), 0);
     if (bytes_received > 0)
     {
       if (_debug == true)
