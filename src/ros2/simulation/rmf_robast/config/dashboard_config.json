@@ -1,0 +1,23 @@
+{
+  "world_name" : "6_og",  
+  "valid_task": ["Loop"],
+  "task": {
+    
+    "Loop": {
+      "places": [
+        "kitchen",
+        "robast Office",
+        "printer room",
+        "canteen"
+      ]
+    },
+    "Clean": {
+    },
+    "Station": {
+    },
+    "Patrol": {
+    },
+    "Charging": {
+    }
+  }
+}
