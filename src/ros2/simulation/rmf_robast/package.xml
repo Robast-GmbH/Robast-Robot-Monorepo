@@ -4,7 +4,8 @@
   <name>rmf_robast</name>
   <version>2.0.2</version>
   <description>Launch files for RMF demos using the Gazebo simulator</description>
-  <
+  
+  <maintainer email="t.zurhelle@robast.de">Robast</maintainer>
   <license>Apache License 2.0</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
