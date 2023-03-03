@@ -18,11 +18,12 @@ namespace db_helper
             ~MockPostgreSqlHelper();
 
             std::string open_connection();
+            std::string test_connection();
             void close_connection();
             bool perform_query(std::string sqlStatment, std::unique_ptr<std::vector< std::vector<std::string> >>result_data, std::unique_ptr< std::vector<std::string>> result_header);
             int perform_transaction(std::string SqlStatement);
 
-            bool checkUserTag(std::string tag, std::vector<std::string> Lookup_scope, std::shared_ptr<std::string> result_data);
+            bool checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::shared_ptr<std::string> user_name);
 
         private:
             std::map< std::string, std::string> user_list_;

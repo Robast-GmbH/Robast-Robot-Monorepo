@@ -15,7 +15,7 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
 
-    with open("environment_vars.yaml", "r") as stream:
+    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
         try:
             environment_yaml = yaml.safe_load(stream)
             print(environment_yaml)

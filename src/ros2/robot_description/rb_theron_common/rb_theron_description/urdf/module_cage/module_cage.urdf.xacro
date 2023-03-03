@@ -18,12 +18,9 @@
   <!-- BASE_LINK -->
   <link name="${prefix}module_cage_link">
     <inertial>
-      <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
-      it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
-      therefore steering of the rb_theron becomes impossible -->
-      <mass value="0.0" />
+      <mass value="8.0" />
       <origin xyz="0 0 0" />
-      <xacro:box_inertia_robot m="10" x="0.25" y="0.25" z="1.55"/>
+      <xacro:box_inertia_robot m="8" x="0.25" y="0.25" z="1.55"/>
     </inertial>
     <visual>
       <xacro:if value="${hq}">

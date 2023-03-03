@@ -6,7 +6,7 @@
 #include "mock_postgresql_helper.hpp"
 
 
-namespace robast
+namespace nfc_gate
 {
     class TestNFCGate : public NFCGate
     {

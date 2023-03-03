@@ -87,7 +87,18 @@
         "coroutine": "cpp",
         "source_location": "cpp",
         "cfenv": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "csetjmp": "cpp",
+        "barrier": "cpp",
+        "charconv": "cpp",
+        "cuchar": "cpp",
+        "forward_list": "cpp",
+        "latch": "cpp",
+        "ranges": "cpp",
+        "scoped_allocator": "cpp",
+        "span": "cpp",
+        "syncstream": "cpp",
+        "valarray": "cpp"
     },
     "files.autoSave": "onFocusChange",
     "editor.tabSize": 4,
@@ -97,13 +108,19 @@
     },
     "editor.minimap.autohide": true,
     "c-cpp-flylint.clang.defines": [],
-    "editor.formatOnSave": false,
-    "C_Cpp.formatting": "vcFormat",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "newLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "newLine",
-    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
-    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
     "C_Cpp.vcFormat.space.betweenEmptySquareBrackets": true,
-    "editor.formatOnType": true
+    "editor.formatOnType": true,
+    "editor.formatOnSave": true,
+    "editor.rulers": [
+        120
+    ],
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file", // formatting rules are defined in the .clang-format file
+    "[cpp]": {
+        "editor.tabSize": 2
+    },
+    "[python]": {
+        "editor.tabSize": 4,
+        "editor.defaultFormatter": "ms-python.python"
+    },
 }

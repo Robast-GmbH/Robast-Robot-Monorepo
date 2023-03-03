@@ -4,9 +4,9 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - src/ros2/statemachine/*
-      - src/ros2/communication_interfaces/*
-      - .github/workflows/*
+      - src/ros2/statemachine/**
+      - src/ros2/communication_interfaces/**
+      - .github/workflows/**
        
 jobs:
   test-run-statemachine:

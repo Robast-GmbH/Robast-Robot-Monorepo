@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<robot name="alu_profile" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="box_inertia_robot" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                izz="${m*(x*x+z*z)/12}" />
+    </xacro:macro>
+
+    <xacro:macro name="alu_profile" params="prefix suffix parent *origin x y z r g b">
+
+    <joint name="${prefix}alu_profile_joint_${suffix}" type="fixed">
+        <parent link="${parent}"/>
+        <child link="${prefix}alu_profile_link_${suffix}"/>
+        <xacro:insert_block name="origin" />
+    </joint>
+
+    <link name="${prefix}alu_profile_link_${suffix}">
+        <inertial>
+            <!-- Mass should actually not be zero, but there is an issue, that if there is too much load on the theron base,
+            it would be able to drive properly, because this makes some of the wheels lose contact to the ground and 
+            therefore steering of the rb_theron becomes impossible. 
+            The mass of a 30 mm x 30 mm Aluprofile from item is m = 1.26 kg/m -->
+            <mass value="${z * 1.26}" />
+            <origin xyz="0 0 0" />
+            <xacro:box_inertia_robot m="1" x="${x}" y="${y}" z="${z}"/>
+        </inertial>
+        <visual>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="${x} ${y} ${z}"/>
+            </geometry>
+            <material name="darkgrey">
+                <color rgba="0.1 0.1 0.1 1"/>
+            </material>
+        </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0" />
+            <geometry>
+                <box size="${x} ${y} ${z}"/>
+            </geometry>
+        </collision>
+    </link>
+    <gazebo reference="${prefix}alu_profile_link_${suffix}">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>${r} ${g} ${b} 1</ambient>
+                <diffuse>${r} ${g} ${b} 1</diffuse>
+                <specular>${r} ${g} ${b} 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
+    </xacro:macro>
+</robot>

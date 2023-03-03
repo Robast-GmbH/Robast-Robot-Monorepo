@@ -12,11 +12,11 @@ int main(int argc, char* argv[ ])
   {
     communication_interfaces::msg::DrawerAddress drawer_address;
     drawer_address.drawer_controller_id = i;
-    drawer_address.drawer_id = i;
+    drawer_address.drawer_id = 1;
     nfc_dictionary[std::to_string(i)] = drawer_address;
   }
   auto node = std::make_shared<bt_base_nodes::DrawerNFCTreeInitiator>(nfc_dictionary);
-  node->configure("user_access");
+  node->configure("authenticated_user");
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;

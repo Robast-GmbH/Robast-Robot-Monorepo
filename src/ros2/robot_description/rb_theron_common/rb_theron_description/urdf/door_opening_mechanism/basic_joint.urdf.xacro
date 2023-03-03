@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<robot name="basic_joint" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="box_inertia_robot" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                izz="${m*(x*x+z*z)/12}" />
+    </xacro:macro>
+
+    <xacro:macro name="basic_joint" params="parent joint_name joint_type axis_x axis_y axis_z lower_limit upper_limit damping friction p_gain i_gain d_gain link_name link_origin_x link_origin_y link_origin_z m x y z r g b *origin">
+
+    <joint name="${joint_name}" type="${joint_type}" >
+        <axis xyz="${axis_x} ${axis_y} ${axis_z}" />
+        <parent link="${parent}" />
+        <child link="${link_name}" />
+        <limit lower="${lower_limit}" upper="${upper_limit}" effort="100" velocity="100" />
+        <dynamics damping="${damping}" friction="${friction}"/>
+        <xacro:insert_block name="origin" />
+    </joint>
+    <gazebo>
+        <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
+            <joint_name>${joint_name}</joint_name>
+            <p_gain>${p_gain}</p_gain>
+            <i_gain>${i_gain}</i_gain>
+            <d_gain>${d_gain}</d_gain>
+            <i_max>200</i_max>
+            <i_min>-200</i_min>
+            <cmd_max>1000</cmd_max>
+            <cmd_min>-1000</cmd_min>
+        </plugin>
+    </gazebo>
+
+    <link name="${link_name}">
+        
+        <inertial>
+            <origin xyz="${link_origin_x} ${link_origin_y} ${link_origin_z}" />
+            <mass value="${m}" />
+            <xacro:box_inertia_robot m="${m}" x="${x}" y="${y}" z="${z}"/>
+        </inertial>
+        <visual>
+            <origin xyz="${link_origin_x} ${link_origin_y} ${link_origin_z}" />
+            <geometry>
+                <box size="${x} ${y} ${z}"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="${link_origin_x} ${link_origin_y} ${link_origin_z}" />
+            <geometry>
+                <box size="${x} ${y} ${z}"/>
+            </geometry>
+        </collision>
+    </link>
+    <gazebo reference="${link_name}">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>${r} ${g} ${b} 1</ambient>
+                <diffuse>${r} ${g} ${b} 1</diffuse>
+                <specular>${r} ${g} ${b} 1</specular>
+            </material>
+        </visual>
+    </gazebo>
+
+    </xacro:macro>
+</robot>
