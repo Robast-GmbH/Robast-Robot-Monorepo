@@ -16,17 +16,6 @@ set(dependencies
   moveit_visual_tools
 )
 
-add_executable(move_main src/move_main.cpp)
-target_include_directories(move_main PUBLIC
-  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
-target_compile_features(move_main PUBLIC c_std_99 cxx_std_17)
-ament_target_dependencies(
-  move_main
-  ${dependencies}
-)
-install(TARGETS move_main
-  DESTINATION lib/${PROJECT_NAME})
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}
   PATTERN "setup_assistant.launch" EXCLUDE)
 install(DIRECTORY config DESTINATION share/${PROJECT_NAME})

@@ -137,11 +137,11 @@ namespace door_opening_mechanism_simulation
                 target_pose1.pose.orientation.z,
                 target_pose1.header.frame_id.c_str());
 
-    move_group.setPoseTarget(target_pose1);
-    // move_group.setGoalTolerance(0.02);
+    move_group.setGoalTolerance(0.0001);
     // move_group.setPlannerId("TRRTkConfigDefault");
     move_group.setPlanningTime(10);
     // move_group.setNumPlanningAttempts(3);
+    move_group.setPoseTarget(target_pose1);
 
     RCLCPP_INFO(this->get_logger(), "move_group.getPlanningTime(): %f", move_group.getPlanningTime());
 
