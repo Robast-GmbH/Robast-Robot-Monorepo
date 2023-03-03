@@ -32,7 +32,14 @@
                         "label": "build",
                         "detail": "Symlink Build",
                         "type": "shell",
-                        "command": "colcon build --symlink-install --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+                        "command": "colcon build --symlink-install --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Release' -Wall -Wextra -Wpedantic",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "debug-build",
+                        "detail": "build used for debugging purposes",
+                        "type": "shell",
+                        "command": "colcon build --mixin debug --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic",
                         "problemMatcher": []
                 },
                 {
