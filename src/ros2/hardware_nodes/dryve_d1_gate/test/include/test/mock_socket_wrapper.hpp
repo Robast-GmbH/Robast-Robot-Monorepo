@@ -9,18 +9,6 @@ namespace unit_test
   class MockSocketWrapper : public dryve_d1_gate::ISocketWrapper
   {
    public:
-    // int receiving(int fd, void *buf, size_t n, int flags) override
-    // {
-    //   return mock_receive(fd, buf, n, flags);
-    // }
-    // unsigned int sending(int fd, const void *buf, size_t n, int flags) override
-    // {
-    //   return mock_send(fd, buf, n, flags);
-    // }
-
-    // MOCK_METHOD(int, mock_receive, (int fd, void *buf, size_t n, int flags), ());
-    // MOCK_METHOD(int, mock_send, (int fd, const void *buf, size_t n, int flags), ());
-
     MOCK_METHOD(int, receiving, (int fd, char *buf, size_t n, int flags), (override));
     MOCK_METHOD(unsigned int, sending, (int fd, const void *buf, size_t n, int flags), (override));
   };
