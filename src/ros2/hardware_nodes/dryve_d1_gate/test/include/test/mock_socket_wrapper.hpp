@@ -21,7 +21,7 @@ namespace unit_test
     // MOCK_METHOD(int, mock_receive, (int fd, void *buf, size_t n, int flags), ());
     // MOCK_METHOD(int, mock_send, (int fd, const void *buf, size_t n, int flags), ());
 
-    MOCK_METHOD(int, receiving, (int fd, void *buf, size_t n, int flags), (override));
+    MOCK_METHOD(int, receiving, (int fd, char *buf, size_t n, int flags), (override));
     MOCK_METHOD(unsigned int, sending, (int fd, const void *buf, size_t n, int flags), (override));
   };
 }   // namespace unit_test

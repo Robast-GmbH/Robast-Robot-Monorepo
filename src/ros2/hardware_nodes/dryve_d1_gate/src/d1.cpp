@@ -155,7 +155,6 @@ namespace dryve_d1_gate
     handshake[13] = telegram[13];
     handshake[14] = telegram[14];
 
-    unsigned int send_result = send(sock, (char *) telegram, array_size / sizeof(telegram[0]), 0);
     unsigned int send_result = _socket_wrapper->sending(sock, (char *) telegram, array_size / sizeof(telegram[0]), 0);
 
     if (send_result == array_size)

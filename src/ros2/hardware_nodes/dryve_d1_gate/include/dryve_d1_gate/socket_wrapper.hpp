@@ -10,7 +10,7 @@ namespace dryve_d1_gate
   class SocketWrapper : public ISocketWrapper
   {
    public:
-    int receiving(int fd, void *buf, size_t n, int flags) override
+    int receiving(int fd, char *buf, size_t n, int flags) override
     {
       return recv(fd, buf, n, flags);
     }
