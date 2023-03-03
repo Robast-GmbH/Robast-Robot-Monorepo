@@ -223,7 +223,8 @@ namespace dryve_d1_gate
     _read_buffer[13] = int(object_index_2);
     _read_buffer[14] = subindex;
 
-    unsigned int send_result = _socket_wrapper->sending(sock, (char *) _read_buffer, 19 / sizeof(_read_buffer[0]), 0);
+    unsigned int send_result =
+        _socket_wrapper->sending(sock, (char *) _read_buffer, sizeof(_read_buffer) / sizeof(_read_buffer[0]), 0);
 
     if (send_result == sizeof(_read_buffer))
     {
