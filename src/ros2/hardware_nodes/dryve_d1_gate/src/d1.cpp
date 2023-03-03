@@ -59,7 +59,7 @@ namespace dryve_d1_gate
     }
   }
 
-  void D1::send_command_telegram(unsigned char telegram[], unsigned int array_size, float value)
+  void D1::send_command_telegram(unsigned char telegram[], unsigned int array_size, int value)
   {
     unsigned char array_of_byte[4];
     unsigned char recv_buffer[19];

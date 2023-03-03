@@ -78,7 +78,7 @@ namespace dryve_d1_gate
 
     void wait_for_response_to_equal_handshake(std::vector<char> handshake);
 
-    void send_command_telegram(unsigned char telegram[], unsigned int array_size, float value);
+    void send_command_telegram(unsigned char telegram[], unsigned int array_size, int value);
 
     int four_bytes_to_int(unsigned char data[]);
 
