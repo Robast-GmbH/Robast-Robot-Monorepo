@@ -87,10 +87,7 @@ namespace dryve_d1_gate
 
     std::string move_profile_to_absolute_position(float position, float velocity, float accel, float decel = 0);
 
-    std::string move_profile_to_relative_position(float position,
-                                                  float velocity,
-                                                  float accel,
-                                                  float decel = 0);   // TODO: TEST THIS
+    std::string move_profile_to_relative_position(float position, float velocity, float accel, float decel = 0);
 
     std::string set_profile_velocity(float velocity, float accel, float decel = 0);   // TODO: TEST THIS
 
