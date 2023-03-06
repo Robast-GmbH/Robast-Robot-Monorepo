@@ -546,4 +546,96 @@ namespace unit_test
       }
     }
   }
+
+  SCENARIO("Testing the get_si_unit_factor function for a rotary movement of the D1 class")
+  {
+    GIVEN("A test server, the D1 class and the expected calls for a rotary movement")
+    {
+      int port = 12345;
+      start_test_server(port);
+      std::string ip_address = "127.0.0.1";
+      std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
+
+      const unsigned char READ_SI_UNIT_FACTOR[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 168, 0, 0, 0, 0, 4};
+
+      unsigned char expected_recv_buffer[23];
+      expected_recv_buffer[19] = 0;
+      expected_recv_buffer[20] = 0;
+      expected_recv_buffer[21] = MOVEMENT_TYPE_ROTARY;
+      expected_recv_buffer[22] = 0xFE;
+
+      // Mock for first and second call of "_socket_wrapper->sending"
+      EXPECT_CALL(*mock_socket_wrapper,
+                  sending(testing::_, testing::_, sizeof(READ_SI_UNIT_FACTOR) / sizeof(READ_SI_UNIT_FACTOR[0]), 0))
+          .WillOnce(testing::Return(sizeof(READ_SI_UNIT_FACTOR)));
+      // Mock for first and second call of "_socket_wrapper->receiving"
+      EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 23, 0))
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
+              testing::Return(sizeof(expected_recv_buffer))));
+
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+
+      WHEN("get_si_unit_factor is called")
+      {
+        float si_unit_factor = d1.get_si_unit_factor();
+
+        std::cout << "si_unit_factor: " << si_unit_factor << "\n";
+
+        THEN(
+            "the previously defined expected calls should run through, throw no error and we should get the expected "
+            "si unit factor")
+        {
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
+          REQUIRE(si_unit_factor == 100);
+        }
+      }
+    }
+  }
+
+  SCENARIO("Testing the get_si_unit_factor function for a linear movement of the D1 class")
+  {
+    GIVEN("A test server, the D1 class and the expected calls for a linear movement")
+    {
+      int port = 12345;
+      start_test_server(port);
+      std::string ip_address = "127.0.0.1";
+      std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
+
+      const unsigned char READ_SI_UNIT_FACTOR[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 168, 0, 0, 0, 0, 4};
+
+      unsigned char expected_recv_buffer[23];
+      expected_recv_buffer[19] = 0;
+      expected_recv_buffer[20] = 0;
+      expected_recv_buffer[21] = MOVEMENT_TYPE_LINEAR;
+      expected_recv_buffer[22] = 0xFB;
+
+      // Mock for first and second call of "_socket_wrapper->sending"
+      EXPECT_CALL(*mock_socket_wrapper,
+                  sending(testing::_, testing::_, sizeof(READ_SI_UNIT_FACTOR) / sizeof(READ_SI_UNIT_FACTOR[0]), 0))
+          .WillOnce(testing::Return(sizeof(READ_SI_UNIT_FACTOR)));
+      // Mock for first and second call of "_socket_wrapper->receiving"
+      EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 23, 0))
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
+              testing::Return(sizeof(expected_recv_buffer))));
+
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+
+      WHEN("get_si_unit_factor is called")
+      {
+        float si_unit_factor = d1.get_si_unit_factor();
+
+        std::cout << "si_unit_factor: " << si_unit_factor << "\n";
+
+        THEN(
+            "the previously defined expected calls should run through, throw no error and we should get the expected "
+            "si unit factor")
+        {
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
+          REQUIRE(si_unit_factor == 100);
+        }
+      }
+    }
+  }
 }   // namespace unit_test

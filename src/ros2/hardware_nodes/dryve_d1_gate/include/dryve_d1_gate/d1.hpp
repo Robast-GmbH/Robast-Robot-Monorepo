@@ -33,6 +33,9 @@
 #define ERROR_E17_ENCODER_CHANNEL_I          65283
 #define ERROR_E21_BREAKING_RESISTOR_OVERLOAD 28944
 
+#define MOVEMENT_TYPE_LINEAR 0x01
+#define MOVEMENT_TYPE_ROTARY 0x41
+
 namespace dryve_d1_gate
 {
   class D1
@@ -100,6 +103,10 @@ namespace dryve_d1_gate
     void send_command_telegram(unsigned char telegram[], unsigned int array_size, int value);
 
     int four_bytes_to_int(unsigned char data[]);
+
+    float get_si_unit_factor_for_linear_movement();
+
+    float get_si_unit_factor_for_rotary_movement();
 
     std::unique_ptr<ISocketWrapper> _socket_wrapper;
 

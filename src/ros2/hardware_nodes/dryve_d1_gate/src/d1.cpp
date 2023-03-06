@@ -241,40 +241,46 @@ namespace dryve_d1_gate
   float D1::get_si_unit_factor()
   {
     read_command_to_recv_buffer(_READ_SI_UNIT_FACTOR, sizeof(_READ_SI_UNIT_FACTOR));
-    // Read the SI Unit Position calculation of the multiplication factor when linear movement(byte 2 == 01h) is set;
-
     // for further informations please see manual chapter "Detailed description Motion Control Object" Object 60A8h
     // and Object 6092h
-    if (_recv_buffer[21] == 1)
+
+    if (_recv_buffer[21] == MOVEMENT_TYPE_LINEAR)
     {
-      // Equation to calculate the multiplication factor from the recieved byte 3 of object 60A8h
-      if (_recv_buffer[22] < 5)
-      {
-        float si_unit_factor = (std::pow(10, -3) / std::pow(10, _recv_buffer[22]));
-        return si_unit_factor;
-      }
-      else
-      {
-        float si_unit_factor = (std::pow(10, -3) / std::pow(10, _recv_buffer[22] - 256));
-        return si_unit_factor;
-      }
+      return get_si_unit_factor_for_linear_movement();
     }
-    // Read the SI Unit Positionand calculation of the multiplication factor when rotary movement(byte 2 == 41h) is
-    // set; for further informations please see manual chapter "Detailed description Motion Control Object" Object
-    // 60A8h and Object 6092h
-    else if (_recv_buffer[21] == 65)
+    else if (_recv_buffer[21] == MOVEMENT_TYPE_ROTARY)
     {
-      // Equation to calculate the multiplication factor from the recieved byte 3 of object 60A8h
-      if (_recv_buffer[22] < 5)
-      {
-        float si_unit_factor = (1 / std::pow(10, _recv_buffer[22]));
-        return si_unit_factor;
-      }
-      else
-      {
-        float si_unit_factor = (1 / std::pow(10, _recv_buffer[22] - 256));
-        return si_unit_factor;
-      }
+      return get_si_unit_factor_for_rotary_movement();
+    }
+  }
+
+  float D1::get_si_unit_factor_for_linear_movement()
+  {
+    // Equation to calculate the multiplication factor from the received byte 3 of object 60A8h
+    if (_recv_buffer[22] < 5)
+    {
+      float si_unit_factor = (std::pow(10, -3) / std::pow(10, _recv_buffer[22]));
+      return si_unit_factor;
+    }
+    else
+    {
+      float si_unit_factor = (std::pow(10, -3) / std::pow(10, _recv_buffer[22] - 256));
+      return si_unit_factor;
+    }
+  }
+
+  float D1::get_si_unit_factor_for_rotary_movement()
+  {
+    // Equation to calculate the multiplication factor from the received byte 3 of object 60A8h
+    if (_recv_buffer[22] < 5)
+    {
+      float si_unit_factor = (1 / std::pow(10, _recv_buffer[22]));
+      return si_unit_factor;
+    }
+    else
+    {
+      float si_unit_factor = (1 / std::pow(10, _recv_buffer[22] - 256));
+      return si_unit_factor;
     }
   }
 
