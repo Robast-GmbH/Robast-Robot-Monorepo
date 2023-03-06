@@ -14,6 +14,25 @@
 
 #include "dryve_d1_gate/i_socket_wrapper.hpp"
 
+#define ERROR_E01_CONFIGURATION              25376
+#define ERROR_E02_MOTOR_OVER_CURRENT         8992
+#define ERROR_E03_ENCODER_OVER_CURRENT       8977
+#define ERROR_E04_OUTPUT_OVER_CURRENT        8978
+#define ERROR_E05_IO_SUPPLY_LOW              20756
+#define ERROR_E06_LOGIC_SUPPLY_LOW           12834
+#define ERROR_E07_LOGIC_SUPPLY_HIGH          12562
+#define ERROR_E08_LOAD_SUPPLY_LOW            12833
+#define ERROR_E09_LOAD_SUPPLY_HIGH           12817
+#define ERROR_E10_TEMPERATURE_HIGH           17168
+#define ERROR_E11_FOLLOWING_ERROR            34321
+#define ERROR_E12_LIMIT_SWITCH               65280
+#define ERROR_E13_HALL_SENSOR                29446
+#define ERROR_E14_ENCODER                    29445
+#define ERROR_E15_ENCODER_CHANNEL_A          65281
+#define ERROR_E16_ENCODER_CHANNEL_B          65282
+#define ERROR_E17_ENCODER_CHANNEL_I          65283
+#define ERROR_E21_BREAKING_RESISTOR_OVERLOAD 28944
+
 namespace dryve_d1_gate
 {
   class D1
@@ -35,7 +54,7 @@ namespace dryve_d1_gate
 
     int read_object_value(char object_index_1, char object_index_2, int subindex = 0);
 
-    void check_for_dryve_error();
+    std::string check_for_dryve_error();
 
     void wait_for_dryve_ready_state();
 

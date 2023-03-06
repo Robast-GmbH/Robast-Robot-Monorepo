@@ -232,6 +232,7 @@ namespace dryve_d1_gate
     }
     else
     {
+      // TODO@All: Do we want to exit here like this?
       perror("Can't send telegram to D1, Err: ");
       exit(EXIT_FAILURE);
     }
@@ -286,11 +287,12 @@ namespace dryve_d1_gate
     buffer[1] = data[20];
     buffer[2] = data[21];
     buffer[3] = data[22];
+
     memcpy(&int_value, buffer, sizeof(int));
     return int_value;
   }
 
-  void D1::check_for_dryve_error()
+  std::string D1::check_for_dryve_error()
   {
     read_command_to_recv_buffer(_READ_STATUS_WORD, sizeof(_READ_STATUS_WORD));
     if (std::equal(std::begin(_STATUS_ERROR), std::end(_STATUS_ERROR), std::begin(_recv_buffer)) ||
@@ -300,82 +302,84 @@ namespace dryve_d1_gate
     {
       // Read the Error Code and print it in the console
       int error_code = read_object_value(0x60, 0x3f);
-      std::string error;
-      if (error_code == 25376)
+
+      std::cout << "error code: " << std::hex << error_code;
+
+      if (error_code == ERROR_E01_CONFIGURATION)
       {
-        error = "E01 Error Configuration";
+        return "E01 Error Configuration";
       }
-      if (error_code == 8992)
+      if (error_code == ERROR_E02_MOTOR_OVER_CURRENT)
       {
-        error = "E02 Motor Over-Current";
+        return "E02 Motor Over-Current";
       }
-      if (error_code == 8977)
+      if (error_code == ERROR_E03_ENCODER_OVER_CURRENT)
       {
-        error = "E03 Encoder Over-Current";
+        return "E03 Encoder Over-Current";
       }
-      if (error_code == 8978)
+      if (error_code == ERROR_E04_OUTPUT_OVER_CURRENT)
       {
-        error = "E04 10 V Output Over Current";
+        return "E04 10 V Output Over Current";
       }
-      if (error_code == 20756)
+      if (error_code == ERROR_E05_IO_SUPPLY_LOW)
       {
-        error = "E05 I/O Supply Low";
+        return "E05 I/O Supply Low";
       }
-      if (error_code == 12834)
+      if (error_code == ERROR_E06_LOGIC_SUPPLY_LOW)
       {
-        error = "E06 Logic Supply Low";
+        return "E06 Logic Supply Low";
       }
-      if (error_code == 12562)
+      if (error_code == ERROR_E07_LOGIC_SUPPLY_HIGH)
       {
-        error = "E07 Logic Supply High";
+        return "E07 Logic Supply High";
       }
-      if (error_code == 12833)
+      if (error_code == ERROR_E08_LOAD_SUPPLY_LOW)
       {
-        error = "E08 Load Supply Low";
+        return "E08 Load Supply Low";
       }
-      if (error_code == 12817)
+      if (error_code == ERROR_E09_LOAD_SUPPLY_HIGH)
       {
-        error = "E09 Load Supply High";
+        return "E09 Load Supply High";
       }
-      if (error_code == 17168)
+      if (error_code == ERROR_E10_TEMPERATURE_HIGH)
       {
-        error = "E10 Temperature High";
+        return "E10 Temperature High";
       }
-      if (error_code == 34321)
+      if (error_code == ERROR_E11_FOLLOWING_ERROR)
       {
-        error = "E11 Following Error";
+        return "E11 Following Error";
       }
-      if (error_code == 65280)
+      if (error_code == ERROR_E12_LIMIT_SWITCH)
       {
-        error = "E12 Limit Switch";
+        return "E12 Limit Switch";
       }
-      if (error_code == 29446)
+      if (error_code == ERROR_E13_HALL_SENSOR)
       {
-        error = "E13 Hall Sensor";
+        return "E13 Hall Sensor";
       }
-      if (error_code == 29445)
+      if (error_code == ERROR_E14_ENCODER)
       {
-        error = "E14 Encoder";
+        return "E14 Encoder";
       }
-      if (error_code == 65281)
+      if (error_code == ERROR_E15_ENCODER_CHANNEL_A)
       {
-        error = "E15 Encoder Channel A";
+        return "E15 Encoder Channel A";
       }
-      if (error_code == 65282)
+      if (error_code == ERROR_E16_ENCODER_CHANNEL_B)
       {
-        error = "E16 Encoder Channel B";
+        return "E16 Encoder Channel B";
       }
-      if (error_code == 65283)
+      if (error_code == ERROR_E17_ENCODER_CHANNEL_I)
       {
-        error = "E17 Encoder Channel I";
+        return "E17 Encoder Channel I";
       }
-      if (error_code == 28944)
+      if (error_code == ERROR_E21_BREAKING_RESISTOR_OVERLOAD)
       {
-        error = "E21 Braking Resistor Overload";
+        return "E21 Braking Resistor Overload";
       }
-      std::cerr << "ERROR: " << error << std::endl;
-      exit(1);
     }
+
+    return std::string();
   }
 
   void D1::wait_for_dryve_ready_state()
