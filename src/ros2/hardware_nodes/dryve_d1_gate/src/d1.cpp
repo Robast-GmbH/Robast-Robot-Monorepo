@@ -380,21 +380,26 @@ namespace dryve_d1_gate
     return std::string();
   }
 
-  void D1::wait_for_dryve_ready_state()
+  std::string D1::wait_for_dryve_ready_state()
   {
     do
     {
       read_command_to_recv_buffer(_READ_STATUS_WORD, sizeof(_READ_STATUS_WORD));
-      check_for_dryve_error();
+      std::string error_message = check_for_dryve_error();
       if (_debug == true)
       {
         std::cout << "Waiting for the Movement to be finished!\n";
+      }
+      if (!error_message.empty())
+      {
+        return error_message;
       }
 
     } while (std::equal(std::begin(_STATUS_READY), std::end(_STATUS_READY), std::begin(_recv_buffer)) != true &&
              std::equal(std::begin(_STATUS_READY_2), std::end(_STATUS_READY_2), std::begin(_recv_buffer)) != true &&
              std::equal(std::begin(_STATUS_READY_5), std::end(_STATUS_READY_5), std::begin(_recv_buffer)) != true &&
              std::equal(std::begin(_STATUS_READY_6), std::end(_STATUS_READY_6), std::begin(_recv_buffer)) != true);
+    return std::string();
   }
 
   void D1::wait_for_homing()

@@ -56,7 +56,7 @@ namespace dryve_d1_gate
 
     std::string check_for_dryve_error();
 
-    void wait_for_dryve_ready_state();
+    std::string wait_for_dryve_ready_state();
 
     void wait_for_homing();
 
