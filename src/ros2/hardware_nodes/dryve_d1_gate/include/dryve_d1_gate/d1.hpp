@@ -58,7 +58,7 @@ namespace dryve_d1_gate
 
     std::string wait_for_dryve_ready_state();
 
-    void wait_for_homing();
+    std::string wait_for_homing();
 
     float get_si_unit_factor();
 
@@ -80,7 +80,7 @@ namespace dryve_d1_gate
 
     void set_dryve_mode_of_operation(unsigned char mode);
 
-    void start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);
+    std::string start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);
 
     void move_profile_to_absolute_position(float position, float velocity, float accel, float decel = 0);
 

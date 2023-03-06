@@ -402,15 +402,19 @@ namespace dryve_d1_gate
     return std::string();
   }
 
-  void D1::wait_for_homing()
+  std::string D1::wait_for_homing()
   {
     do
     {
       read_command_to_recv_buffer(_READ_STATUS_WORD, sizeof(_READ_STATUS_WORD));
-      check_for_dryve_error();
+      std::string error_message = check_for_dryve_error();
       if (_debug == true)
       {
         std::cout << "Waiting for the Homing to be finished!\n";
+      }
+      if (!error_message.empty())
+      {
+        return error_message;
       }
 
     } while (std::equal(std::begin(_STATUS_READY), std::end(_STATUS_READY), std::begin(_recv_buffer)) != true &&
@@ -420,6 +424,7 @@ namespace dryve_d1_gate
              std::equal(std::begin(_STATUS_READY_5), std::end(_STATUS_READY_5), std::begin(_recv_buffer)) != true &&
              std::equal(std::begin(_STATUS_READY_6), std::end(_STATUS_READY_6), std::begin(_recv_buffer)) != true &&
              std::equal(std::begin(_STATUS_READY_7), std::end(_STATUS_READY_7), std::begin(_recv_buffer)) != true);
+    return std::string();
   }
 
   void D1::set_dryve_shutdown_state()
@@ -512,7 +517,7 @@ namespace dryve_d1_gate
              true);
   }
 
-  void D1::start_dryve_homing(float switch_velo, float zero_velo, float homing_acc)
+  std::string D1::start_dryve_homing(float switch_velo, float zero_velo, float homing_acc)
   {
     set_dryve_mode_of_operation(6);
     float si_factor = get_si_unit_factor();
@@ -524,14 +529,24 @@ namespace dryve_d1_gate
     send_command_telegram(_send_homing_acceleration, sizeof(_send_homing_acceleration), homing_accel);
 
     // Checks if the D1 is in an error state
-    check_for_dryve_error();
+    std::string error_msg = check_for_dryve_error();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
 
     // Start Movement and toggle back bit 4
     send_constant_set_command(_SEND_RESET_START, sizeof(_SEND_RESET_START));
     send_constant_set_command(_SEND_START_MOVEMENT, sizeof(_SEND_START_MOVEMENT));
 
     // Wait for homing to end
-    wait_for_homing();
+    error_msg = wait_for_homing();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
+    return std::string();
   }
 
   void D1::move_profile_to_absolute_position(float position, float velo, float accel, float decel)

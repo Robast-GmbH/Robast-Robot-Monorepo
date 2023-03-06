@@ -496,7 +496,49 @@ namespace unit_test
       {
         std::string error_msg = d1.wait_for_dryve_ready_state();
 
-        THEN("the previously defined expected calls should run through and throw no error")
+        THEN(
+            "the previously defined expected calls should run through, throw no error and the error msg should contain "
+            "an empty string.")
+        {
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
+          REQUIRE(error_msg.empty() == true);
+        }
+      }
+    }
+  }
+
+  SCENARIO("Testing the wait_for_homing function of the D1 class")
+  {
+    GIVEN("A test server, the D1 class and the expected calls")
+    {
+      int port = 12345;
+      start_test_server(port);
+      std::string ip_address = "127.0.0.1";
+      std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
+
+      const unsigned char READ_STATUS_WORD[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2};
+      const unsigned char STATUS_READY[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2, 39, 22};
+
+      // Mock for first and second call of "_socket_wrapper->sending"
+      EXPECT_CALL(*mock_socket_wrapper, sending(testing::_, testing::_, 19, 0))
+          .WillOnce(testing::Return(19))
+          .WillOnce(testing::Return(19));
+      // Mock for first and second call of "_socket_wrapper->receiving"
+      EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 23, 0))
+          .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
+                                   testing::Return(sizeof(STATUS_READY))))
+          .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
+                                   testing::Return(sizeof(STATUS_READY))));
+
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+
+      WHEN("wait_for_homing is called")
+      {
+        std::string error_msg = d1.wait_for_homing();
+
+        THEN(
+            "the previously defined expected calls should run through, throw no error and the error msg should contain "
+            "an empty string.")
         {
           REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
           REQUIRE(error_msg.empty() == true);
