@@ -303,8 +303,6 @@ namespace dryve_d1_gate
       // Read the Error Code and print it in the console
       int error_code = read_object_value(0x60, 0x3f);
 
-      std::cout << "error code: " << std::hex << error_code;
-
       if (error_code == ERROR_E01_CONFIGURATION)
       {
         return "E01 Error Configuration";

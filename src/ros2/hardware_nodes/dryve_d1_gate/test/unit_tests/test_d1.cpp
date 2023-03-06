@@ -93,9 +93,7 @@ namespace unit_test
 
         THEN("the previously defined expected calls should run through and throw no error")
         {
-          // There is no check we can do here as we only want the called function to run through with our
-          // predefined expected calls
-          REQUIRE(true);
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
         }
       }
     }
@@ -145,9 +143,7 @@ namespace unit_test
 
         THEN("the previously defined expected calls should run through and throw no error")
         {
-          // There is no check we can do here as we only want the called function to run through with our
-          // predefined expected calls
-          REQUIRE(true);
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
         }
       }
     }
@@ -199,9 +195,7 @@ namespace unit_test
 
         THEN("the previously defined expected calls should run through and throw no error")
         {
-          // There is no check we can do here as we only want the called function to run through with our
-          // predefined expected calls
-          REQUIRE(true);
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
         }
       }
     }
@@ -242,9 +236,7 @@ namespace unit_test
 
         THEN("the previously defined expected calls should run through and throw no error")
         {
-          // There is no check we can do here as we only want the called function to run through with our
-          // predefined expected calls
-          REQUIRE(true);
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
         }
       }
     }
@@ -284,9 +276,7 @@ namespace unit_test
 
         THEN("the previously defined expected calls should run through and throw no error")
         {
-          // There is no check we can do here as we only want the called function to run through with our
-          // predefined expected calls
-          REQUIRE(true);
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
         }
       }
     }
@@ -340,9 +330,7 @@ namespace unit_test
 
         THEN("the previously defined expected calls should run through and throw no error")
         {
-          // There is no check we can do here as we only want the called function to run through with our
-          // predefined expected calls
-          REQUIRE(true);
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
         }
       }
     }
@@ -375,9 +363,7 @@ namespace unit_test
 
         THEN("the previously defined expected calls should run through and throw no error")
         {
-          // There is no check we can do here as we only want the called function to run through with our
-          // predefined expected calls
-          REQUIRE(true);
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
         }
       }
     }
@@ -427,6 +413,7 @@ namespace unit_test
             "the previously defined expected calls should run through and throw no error and the function should "
             "return the read object value")
         {
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
           REQUIRE(object_value == expected_int_value);
         }
       }
