@@ -79,17 +79,20 @@ namespace dryve_d1_gate
 
     void reset_dryve_status();
 
-    void run_dryve_state_machine();
+    std::string run_dryve_state_machine();   // TODO: TEST THIS
 
     void set_dryve_mode_of_operation(unsigned char mode);
 
-    std::string start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);
+    std::string start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);   // TODO: TEST THIS
 
-    void move_profile_to_absolute_position(float position, float velocity, float accel, float decel = 0);
+    std::string move_profile_to_absolute_position(float position, float velocity, float accel, float decel = 0);
 
-    void move_profile_to_relative_position(float position, float velocity, float accel, float decel = 0);
+    std::string move_profile_to_relative_position(float position,
+                                                  float velocity,
+                                                  float accel,
+                                                  float decel = 0);   // TODO: TEST THIS
 
-    void set_profile_velocity(float velocity, float accel, float decel = 0);
+    std::string set_profile_velocity(float velocity, float accel, float decel = 0);   // TODO: TEST THIS
 
    private:
     void start_connection(std::string ip_address, int port);

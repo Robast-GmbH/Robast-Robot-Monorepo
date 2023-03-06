@@ -142,7 +142,7 @@ namespace dryve_d1_gate
     }
     else
     {
-      perror("Can't send telegram to D1, Err: ");
+      perror("In wait_for_response_to_equal_handshake, can't send telegram to D1, Err: ");
       exit(EXIT_FAILURE);
     }
   }
@@ -494,16 +494,23 @@ namespace dryve_d1_gate
     send_constant_set_command(_RESET_DRYVE_STATUS, sizeof(_RESET_DRYVE_STATUS));
   }
 
-  void D1::run_dryve_state_machine()
-
+  std::string D1::run_dryve_state_machine()
   {
     send_constant_set_command(_send_reset_error, sizeof(_send_reset_error));
     send_constant_set_command(_send_reset_array, sizeof(_send_reset_array));
-    check_for_dryve_error();
+
+    std::string error_msg = check_for_dryve_error();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
     reset_dryve_status();
     set_dryve_shutdown_state();
     set_dryve_switch_on_state();
     set_dryve_operation_enable_state();
+
+    return std::string();
   }
 
   void D1::set_dryve_mode_of_operation(unsigned char mode)
@@ -555,7 +562,7 @@ namespace dryve_d1_gate
     return std::string();
   }
 
-  void D1::move_profile_to_absolute_position(float position, float velo, float accel, float decel)
+  std::string D1::move_profile_to_absolute_position(float position, float velo, float accel, float decel)
   {
     set_dryve_mode_of_operation(1);
     float si_factor = get_si_unit_factor();
@@ -568,9 +575,11 @@ namespace dryve_d1_gate
     send_command_telegram(_send_profile_acceleration, sizeof(_send_profile_acceleration), acc);
     send_command_telegram(_send_profile_deceleration, sizeof(_send_profile_deceleration), dec);
 
-    // Checks if the D1 is in an error state
-    check_for_dryve_error();
-
+    std::string error_msg = check_for_dryve_error();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
     // Start Movement and toggle back bit 4
     send_constant_set_command(_SEND_RESET_START_ABS, sizeof(_SEND_RESET_START_ABS));
     send_constant_set_command(_SEND_START_MOVEMENT, sizeof(_SEND_START_MOVEMENT));
@@ -579,9 +588,11 @@ namespace dryve_d1_gate
     std::cout << "Wait for Movement to end! \n";
     wait_for_dryve_ready_state();
     std::cout << "Movement ended! \n";
+
+    return std::string();
   }
 
-  void D1::move_profile_to_relative_position(float position, float velo, float accel, float decel)
+  std::string D1::move_profile_to_relative_position(float position, float velo, float accel, float decel)
   {
     set_dryve_mode_of_operation(1);
     float si_factor = get_si_unit_factor();
@@ -594,8 +605,11 @@ namespace dryve_d1_gate
     send_command_telegram(_send_profile_acceleration, sizeof(_send_profile_acceleration), acc);
     send_command_telegram(_send_profile_deceleration, sizeof(_send_profile_deceleration), dec);
 
-    // Checks if the D1 is in an error state
-    check_for_dryve_error();
+    std::string error_msg = check_for_dryve_error();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
 
     // Start Movement and toggle back bit 4
     send_constant_set_command(_SEND_RESET_START_REL, sizeof(_SEND_RESET_START_REL));
@@ -603,9 +617,11 @@ namespace dryve_d1_gate
 
     // Wait for Movement to end
     wait_for_dryve_ready_state();
+
+    return std::string();
   }
 
-  void D1::set_profile_velocity(float velo, float accel, float decel)
+  std::string D1::set_profile_velocity(float velo, float accel, float decel)
   {
     set_dryve_mode_of_operation(3);
     float si_factor = get_si_unit_factor();
@@ -615,11 +631,16 @@ namespace dryve_d1_gate
     send_command_telegram(_send_profile_acceleration, sizeof(_send_profile_acceleration), acc);
     send_command_telegram(_send_profile_deceleration, sizeof(_send_profile_deceleration), dec);
 
-    // Checks if the D1 is in an error state
-    check_for_dryve_error();
+    std::string error_msg = check_for_dryve_error();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
 
     // Start movement by sending a target velocity value != 0 (0 for stop)
     send_command_telegram(_send_target_velocity, sizeof(_send_target_velocity), velocity);
+
+    return std::string();
   }
 
 }   // namespace dryve_d1_gate
