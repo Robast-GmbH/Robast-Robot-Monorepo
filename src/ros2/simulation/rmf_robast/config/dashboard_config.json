@@ -5,10 +5,10 @@
     
     "Loop": {
       "places": [
-        "kitchen",
-        "robast Office",
-        "printer room",
-        "canteen"
+        "Kitchen",
+        "Robast_office",
+        "Printer_room",
+        "Canteen"
       ]
     },
     "Clean": {
