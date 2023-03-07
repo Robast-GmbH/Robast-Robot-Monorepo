@@ -1267,4 +1267,136 @@ namespace unit_test
     }
   }
 
+  SCENARIO("Testing the run_dryve_state_machine function of the D1 class")
+  {
+    GIVEN("A test server, the D1 class and the expected calls")
+    {
+      int port = 12345;
+      start_test_server(port);
+      std::string ip_address = "127.0.0.1";
+      std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
+
+      // Preparation for send_constant_set_command(_SEND_RESET_ERROR,...) func call
+      const unsigned char SEND_RESET_ERROR[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 0, 1};
+      char handshake_send_reset_error[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      handshake_send_reset_error[12] = SEND_RESET_ERROR[12];
+      handshake_send_reset_error[13] = SEND_RESET_ERROR[13];
+      handshake_send_reset_error[14] = SEND_RESET_ERROR[14];
+
+      // Preparation for send_constant_set_command(_SEND_RESET_ARRAY,...) func call
+      const unsigned char SEND_RESET_ARRAY[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 143, 0};
+      char handshake_send_reset_array[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      handshake_send_reset_array[12] = SEND_RESET_ARRAY[12];
+      handshake_send_reset_array[13] = SEND_RESET_ARRAY[13];
+      handshake_send_reset_array[14] = SEND_RESET_ARRAY[14];
+
+      // Preparation for check_for_dryve_error() func call
+      const unsigned char STATUS_READY[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2, 39, 22};
+
+      // Preparation for reset_dryve_status() func call
+      const unsigned char RESET_DRYVE_STATUS[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 0, 1};
+      char handshake_reset_dryve_status[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      handshake_reset_dryve_status[12] = RESET_DRYVE_STATUS[12];
+      handshake_reset_dryve_status[13] = RESET_DRYVE_STATUS[13];
+      handshake_reset_dryve_status[14] = RESET_DRYVE_STATUS[14];
+      const unsigned char STATUS_OPERATION_ENABLE[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 0, 0,
+                                                         0, 96, 65, 0, 0, 0,  0, 2,  39, 6};
+      // Preparation for set_dryve_shutdown_state() func call
+      const unsigned char SEND_SHUTDOWN[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 6, 0};
+      char handshake_send_shutdown[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      handshake_send_shutdown[12] = SEND_SHUTDOWN[12];
+      handshake_send_shutdown[13] = SEND_SHUTDOWN[13];
+      handshake_send_shutdown[14] = SEND_SHUTDOWN[14];
+      const unsigned char STATUS_SHUTDOWN[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2, 33, 6};
+
+      // Preparation for set_dryve_switch_on_state() func call
+      const unsigned char SEND_SWITCH_ON[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 7, 0};
+      char handshake_send_switch_on[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      handshake_send_switch_on[12] = SEND_SWITCH_ON[12];
+      handshake_send_switch_on[13] = SEND_SWITCH_ON[13];
+      handshake_send_switch_on[14] = SEND_SWITCH_ON[14];
+      const unsigned char STATUS_SWITCH_ON[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2, 35, 6};
+
+      // Preparation for set_dryve_operation_enable_state() func call
+      const unsigned char SEND_OPERATION_ENABLE[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                       0, 96, 64, 0, 0, 0,  0, 2,  15, 0};
+      char handshake_send_operation_enable[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+      handshake_send_operation_enable[12] = SEND_OPERATION_ENABLE[12];
+      handshake_send_operation_enable[13] = SEND_OPERATION_ENABLE[13];
+      handshake_send_operation_enable[14] = SEND_OPERATION_ENABLE[14];
+
+      EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 19, 0))
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(handshake_send_reset_error,
+                                           handshake_send_reset_error + sizeof(handshake_send_reset_error)),
+              testing::Return(
+                  sizeof(handshake_send_reset_error))))   // mock for send_command_telegram(_SEND_RESET_ERROR,...)
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(handshake_send_reset_array,
+                                           handshake_send_reset_array + sizeof(handshake_send_reset_array)),
+              testing::Return(
+                  sizeof(handshake_send_reset_array))))   // mock for send_command_telegram(_SEND_RESET_ARRAY,...)
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(handshake_reset_dryve_status,
+                                           handshake_reset_dryve_status + sizeof(handshake_reset_dryve_status)),
+              testing::Return(sizeof(handshake_reset_dryve_status))))   // mock for reset_dryve_status()
+          .WillOnce(
+              testing::DoAll(testing::SetArrayArgument<1>(handshake_send_shutdown,
+                                                          handshake_send_shutdown + sizeof(handshake_send_shutdown)),
+                             testing::Return(sizeof(handshake_send_shutdown))))   // mock for set_dryve_shutdown_state()
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(handshake_send_switch_on,
+                                           handshake_send_switch_on + sizeof(handshake_send_switch_on)),
+              testing::Return(sizeof(handshake_send_switch_on))))   // mock for set_dryve_switch_on_state()
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(handshake_send_operation_enable,
+                                           handshake_send_operation_enable + sizeof(handshake_send_operation_enable)),
+              testing::Return(
+                  sizeof(handshake_send_operation_enable))));   // mock for set_dryve_operation_enable_state()
+
+      EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 23, 0))
+          .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
+                                   testing::Return(sizeof(STATUS_READY))))   // mock for check_for_dryve_error()
+          .WillOnce(
+              testing::DoAll(testing::SetArrayArgument<1>(STATUS_SHUTDOWN, STATUS_SHUTDOWN + sizeof(STATUS_SHUTDOWN)),
+                             testing::Return(21)))   // mock for set_dryve_shutdown_state()
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(STATUS_SWITCH_ON, STATUS_SWITCH_ON + sizeof(STATUS_SWITCH_ON)),
+              testing::Return(21)))   // mock for set_dryve_switch_on_state()
+          .WillOnce(
+              testing::DoAll(testing::SetArrayArgument<1>(STATUS_OPERATION_ENABLE,
+                                                          STATUS_OPERATION_ENABLE + sizeof(STATUS_OPERATION_ENABLE)),
+                             testing::Return(21)));   // mock for set_dryve_operation_enable_state()
+
+      EXPECT_CALL(*mock_socket_wrapper, sending(testing::_, testing::_, 19, 0))
+          .WillOnce(testing::Return(19))    // mock for check_for_dryve_error()
+          .WillOnce(testing::Return(19))    // mock for set_dryve_shutdown_state()
+          .WillOnce(testing::Return(19))    // mock for set_dryve_switch_on_state()
+          .WillOnce(testing::Return(19));   // mock for set_dryve_operation_enable_state()
+
+      EXPECT_CALL(*mock_socket_wrapper, sending(testing::_, testing::_, 21, 0))
+          .WillOnce(testing::Return(21))    // mock for send_command_telegram(_SEND_RESET_ERROR,...)
+          .WillOnce(testing::Return(21))    // mock for send_command_telegram(_SEND_RESET_ARRAY,...)
+          .WillOnce(testing::Return(21))    // mock for reset_dryve_status()
+          .WillOnce(testing::Return(21))    // mock for set_dryve_shutdown_state()
+          .WillOnce(testing::Return(21))    // mock for set_dryve_switch_on_state()
+          .WillOnce(testing::Return(21));   // mock for set_dryve_operation_enable_state()
+
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+
+      WHEN("run_dryve_state_machine is called")
+      {
+        std::string error_msg = d1.run_dryve_state_machine();
+
+        THEN(
+            "the previously defined expected calls should run through, throw no error and we should get an empty error "
+            "msg")
+        {
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(mock_socket_wrapper.get()) == true);
+          REQUIRE(error_msg.empty() == true);
+        }
+      }
+    }
+  }
+
 }   // namespace unit_test

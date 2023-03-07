@@ -496,8 +496,8 @@ namespace dryve_d1_gate
 
   std::string D1::run_dryve_state_machine()
   {
-    send_constant_set_command(_send_reset_error, sizeof(_send_reset_error));
-    send_constant_set_command(_send_reset_array, sizeof(_send_reset_array));
+    send_constant_set_command(_SEND_RESET_ERROR, sizeof(_SEND_RESET_ERROR));
+    send_constant_set_command(_SEND_RESET_ARRAY, sizeof(_SEND_RESET_ARRAY));
 
     std::string error_msg = check_for_dryve_error();
     if (!error_msg.empty())

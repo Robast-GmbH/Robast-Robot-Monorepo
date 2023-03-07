@@ -79,11 +79,11 @@ namespace dryve_d1_gate
 
     void reset_dryve_status();
 
-    std::string run_dryve_state_machine();   // TODO: TEST THIS
+    std::string run_dryve_state_machine();
 
     void set_dryve_mode_of_operation(unsigned char mode);
 
-    std::string start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);   // TODO: TEST THIS
+    std::string start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);
 
     std::string move_profile_to_absolute_position(float position, float velocity, float accel, float decel = 0);
 
@@ -123,8 +123,8 @@ namespace dryve_d1_gate
     const unsigned char _RESET_DRYVE_STATUS[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 0, 1};
 
     // Telegrams for resetting the dryve status
-    const unsigned char _send_reset_error[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 0, 1};
-    const unsigned char _send_reset_array[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 143, 0};
+    const unsigned char _SEND_RESET_ERROR[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 0, 1};
+    const unsigned char _SEND_RESET_ARRAY[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 143, 0};
 
     // Telegrams to read status and values of objects
     const unsigned char _READ_STATUS_WORD[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2};
