@@ -15,9 +15,9 @@
   </include>
 
   <!-- Simulation launch -->
-  <!-- <include file="$(find-pkg-share rmf_robast)/simulation.launch.xml">
+  <include file="$(find-pkg-share rmf_robast)/simulation.launch.xml">
     <arg name="map_name" value="6og" />
     <arg name="ignition_version" value="$(var ignition_version)" />
-  </include> -->
+  </include>
 
 </launch>

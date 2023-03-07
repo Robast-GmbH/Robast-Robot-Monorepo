@@ -22,7 +22,7 @@ install(DIRECTORY
   # generate Ignition simulation world
 
   set(output_world_name "6og")
-  set(ign_output_dir ${CMAKE_CURRENT_BINARY_DIR}/maps)
+  set(ign_output_dir ${CMAKE_CURRENT_BINARY_DIR}/6og_ign)
   set(ign_output_world_path ${ign_output_dir}/${output_world_name}.world)
   set(ign_output_model_dir ${ign_output_dir}/models)
   set(output_model_dir ${output_dir})

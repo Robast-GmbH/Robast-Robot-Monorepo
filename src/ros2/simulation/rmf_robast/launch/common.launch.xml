@@ -29,14 +29,14 @@
   </group>
 
   <!-- Visualizer -->
-  <group>
+  <!-- <group>
     <include file="$(find-pkg-share rmf_visualization)/visualization.launch.xml">
       <arg name="use_sim_time" value="$(var use_sim_time)"/>
       <arg name="map_name" value="$(var initial_map)"/>
       <arg name="viz_config_file" value ="$(var viz_config_file)"/>
       <arg name="headless" value="$(var headless)"/>
     </include>
-  </group>
+  </group> -->
 
   <!-- Door Supervisor -->
   <group>
@@ -46,11 +46,11 @@
   </group>
 
   <!-- Lift Supervisor -->
-  <group>
+  <!-- <group>
     <node pkg="rmf_fleet_adapter" exec="lift_supervisor">
       <param name="use_sim_time" value="$(var use_sim_time)"/>
     </node>
-  </group>
+  </group> -->
 
   <!-- Dispatcher Node -->
   <group>
@@ -65,6 +65,6 @@
       <arg name="use_sim_time" value="$(var use_sim_time)"/>
       <arg name="dashboard_config_file" value ="$(var dashboard_config_file)"/>
     </include>
-  </group>
+  </group> 
 
 </launch>
