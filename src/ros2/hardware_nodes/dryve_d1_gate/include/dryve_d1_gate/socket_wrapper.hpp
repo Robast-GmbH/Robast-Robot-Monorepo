@@ -1,4 +1,4 @@
-#if !defined(DRYVE_D1_GATE__SOCKET_WRAPPER_HPP_)
+#ifndef DRYVE_D1_GATE__SOCKET_WRAPPER_HPP_
 #define DRYVE_D1_GATE__SOCKET_WRAPPER_HPP_
 
 #include <sys/socket.h>

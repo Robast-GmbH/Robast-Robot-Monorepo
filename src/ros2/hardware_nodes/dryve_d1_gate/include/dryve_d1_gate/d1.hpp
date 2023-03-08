@@ -1,4 +1,4 @@
-#if !defined(DRYVE_D1_GATE__D1_HPP_)
+#ifndef DRYVE_D1_GATE__D1_HPP_
 #define DRYVE_D1_GATE__D1_HPP_
 
 #include <arpa/inet.h>
