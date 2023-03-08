@@ -1,45 +1,58 @@
 <?xml version="1.0"?>
 <robot name="sensor_imu" xmlns:xacro="http://wiki.ros.org/xacro">
 
-  <xacro:macro name="sensor_imu_hector" params="prefix topic:='imu/data' parent *origin">
+	<xacro:macro name="sensor_imu_hector" params="prefix topic:='imu/data' parent *origin">
 
-	  <joint name="${prefix}_joint" type="fixed">
-	      <axis xyz="1 0 0"/>
-	      <!--origin xyz="0 0 0.2825"/-->
-	      <xacro:insert_block name="origin"/>
-	      <parent link="${parent}"/>
-	      <child link="${prefix}_link"/>
-	  </joint>
+		<xacro:if value="${publish_bf}">
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}_link" />
+		</xacro:if>
+		<xacro:unless value="${publish_bf}">
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}_link" />
+		</xacro:unless>
 
-	  <link name="${prefix}_link">
-	      <inertial>
-			<origin xyz="0.0 0 0.01" rpy="0 0 0" />
-			<mass value="0.05" />
-			<xacro:solid_cuboid_inertia m="0.05" w="0.02" h="0.02" d="0.02" />
-		  </inertial>
-	      <visual>
-	        <origin rpy="0 0 0" xyz="0 0 0"/>
-	        <geometry>
-	          <box size="0.001 0.001 0.001"/>
-	        </geometry>
-	      </visual>
-	      <collision>
-	        <origin rpy="0 0 0" xyz="0 0 0"/>
-	        <geometry>
-	          <box size=".001 .001 .001"/>
-	        </geometry>
-	      </collision>
-	  </link>
+		<joint name="${prefix}_joint" type="fixed">
+			<axis xyz="1 0 0"/>
+			<!--origin xyz="0 0 0.2825"/-->
+			<xacro:insert_block name="origin"/>
+			<parent link="${parent}"/>
+			<child link="${sensor_link_name}"/>
+		</joint>
 
-	  <gazebo>
-		<plugin name="gz::sim::systems::Imu" filename="libgz-sim-imu-system.so">
-			<always_on>1</always_on>
-			<update_rate>50</update_rate>
-			<topic>${topic}</topic>
-			<visualize>true</visualize>
-		</plugin>
-	  </gazebo>
+		<link name="${sensor_link_name}">
+			<inertial>
+				<origin xyz="0.0 0 0.01" rpy="0 0 0" />
+				<mass value="0.05" />
+				<xacro:solid_cuboid_inertia m="0.05" w="0.02" h="0.02" d="0.02" />
+			</inertial>
+			<visual>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<box size="0.001 0.001 0.001"/>
+				</geometry>
+			</visual>
+			<collision>
+				<origin rpy="0 0 0" xyz="0 0 0"/>
+				<geometry>
+					<box size=".001 .001 .001"/>
+				</geometry>
+			</collision>
+		</link>
 
-  </xacro:macro>
+		<gazebo reference="${sensor_link_name}">
+			<sensor name="${prefix}_link" type="imu">
+				<always_on>1</always_on>
+				<update_rate>40</update_rate>
+				<visualize>true</visualize>
+				<topic>imu/data</topic>
+			</sensor>
+		</gazebo>
+
+		<gazebo>
+			<plugin
+				filename="libgz-sim-imu-system"
+				name="gz::sim::systems::Imu">
+			</plugin>
+		</gazebo>
+	</xacro:macro>
 
 </robot>
