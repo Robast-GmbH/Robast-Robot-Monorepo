@@ -15,7 +15,7 @@ def generate_launch_description():
         name="door_opening_mechanism_simulation",
         parameters=[
             {"time_until_drawer_closes_automatically_in_ms": 5000},
-            {"moveit2_planning_group_name": "door_opening_mechanism"}, # manipulator door_opening_mechanism
+            {"moveit2_planning_group_name": "mobile_base_arm"}, # manipulator door_opening_mechanism
             {"use_sim_time": True},
             moveit_config.to_dict()
         ],

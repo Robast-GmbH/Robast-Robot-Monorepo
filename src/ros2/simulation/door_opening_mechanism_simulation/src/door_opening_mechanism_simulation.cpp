@@ -101,8 +101,6 @@ namespace door_opening_mechanism_simulation
     // move_group.setJointValueTarget("position/x", -0.8);
 
     geometry_msgs::msg::PoseStamped target_pose1 = move_group.getCurrentPose();
-    // target_pose1.pose.orientation.y = 0.000001;
-    // target_pose1.pose.orientation.z = 0.000001;
     RCLCPP_INFO(this->get_logger(),
                 "Current pose: x = %f, y = %f, z = %f, w = %f, orientation_x = %f, orientation_y = %f, orientation_z = "
                 "%f, frame_id = %s",
@@ -115,6 +113,7 @@ namespace door_opening_mechanism_simulation
                 target_pose1.pose.orientation.z,
                 target_pose1.header.frame_id.c_str());
 
+    // target_pose1.pose.position.x -= 0.1;
     // target_pose1.pose.position.y += 0.1;
     target_pose1.pose.position.z += 0.1;
     // tf2::Quaternion q;
@@ -137,9 +136,9 @@ namespace door_opening_mechanism_simulation
                 target_pose1.pose.orientation.z,
                 target_pose1.header.frame_id.c_str());
 
-    move_group.setGoalTolerance(0.0001);
+    move_group.setGoalTolerance(0.000001);
     // move_group.setPlannerId("TRRTkConfigDefault");
-    move_group.setPlanningTime(10);
+    move_group.setPlanningTime(20);
     // move_group.setNumPlanningAttempts(3);
     move_group.setPoseTarget(target_pose1);
 
