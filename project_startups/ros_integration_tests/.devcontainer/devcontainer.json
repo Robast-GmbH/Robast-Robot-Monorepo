@@ -1,0 +1,39 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+
+	"dockerFile": "Dockerfile",
+	"name": "ros2 integration tests",
+	"build": {
+		"args": {
+			"WORKSPACE": "${containerWorkspaceFolder}"
+		}
+	},
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../src/ros2/,target=/workspace/src/,type=bind",
+	],
+	"workspaceFolder": "/workspace",
+	"runArgs": [
+		"--name=ros_integration_test",
+		"--gpus=all"
+	],
+	"remoteUser": "robast",
+	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
+	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"althack.ament-task-provider",
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one",
+		"jaehyunshim.vscode-ros2",
+		"matepek.vscode-catch2-test-adapter",
+		"redhat.vscode-yaml"
+	]
+}
