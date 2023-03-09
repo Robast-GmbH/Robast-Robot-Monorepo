@@ -85,6 +85,12 @@ RUN apt-get update \
   && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
   && echo 'export PS1="\[\e[31m\][\[\e[m\]\[\e[38;5;172m\]\u\[\e[m\]@\[\e[38;5;153m\]\h\[\e[m\]\[\e[38;5;214m\]\W\[\e[m\]\[\e[31m\]]\[\e[m\]\\$"' >> /home/$USER/.bashrc
 
+#update drivers to avoid a blackscreen #TODO @all regularly check if its fixed in base docker
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:kisak/kisak-mesa -y\
+    && apt upgrade -y
+
 RUN apt-get update && apt-get upgrade -y
 
 # COPY "/entrypoint.sh" "/entrypoint.sh"
