@@ -1,7 +1,7 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
 
-	"dockerFile": "Dockerfile",
+	"dockerFile": "../Dockerfile",
 	"name": "ros2 integration tests",
 	"build": {
 		"args": {
