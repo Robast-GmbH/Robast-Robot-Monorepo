@@ -248,6 +248,44 @@ namespace unit_test
         }
       }
     }
+
+    GIVEN("A test server, the D1 class and the expected calls with a wrong handshake")
+    {
+      int port = 1234567;
+      start_test_server(port);
+      std::string ip_address = "127.0.0.1";
+      std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
+
+      static const std::vector<unsigned char> SEND_OPERATION_ENABLE{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                    0, 96, 64, 0, 0, 0,  0, 2,  15, 0};
+      char wrong_handshake_send_operation_enable[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+
+      const unsigned char STATUS_OPERATION_ENABLE[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 0, 0,
+                                                         0, 96, 65, 0, 0, 0,  0, 2,  39, 6};
+      EXPECT_CALL(*mock_socket_wrapper,
+                  sending(testing::_, testing::_, SEND_OPERATION_ENABLE.size() / sizeof(SEND_OPERATION_ENABLE[0]), 0))
+          .WillOnce(testing::Return(SEND_OPERATION_ENABLE.size()));
+      EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 19, 0))
+          .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(wrong_handshake_send_operation_enable,
+                                                                wrong_handshake_send_operation_enable +
+                                                                    sizeof(wrong_handshake_send_operation_enable)),
+                                   testing::Return(sizeof(wrong_handshake_send_operation_enable))));
+
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+
+      WHEN("send_constant_set_command is called")
+      {
+        std::string_view error_msg = d1.send_constant_set_command(SEND_OPERATION_ENABLE);
+
+        THEN(
+            "the previously defined expected calls should run through and the error message should return a handshake "
+            "timeout")
+        {
+          REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
+          REQUIRE(error_msg == d1.ERROR_MSG_HANDSHAKE_TIMEOUT);
+        }
+      }
+    }
   }
 
   SCENARIO("Testing the reset_dryve_status function of the D1 class")

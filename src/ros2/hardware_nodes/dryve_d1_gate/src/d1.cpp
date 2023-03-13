@@ -123,12 +123,17 @@ namespace dryve_d1_gate
 
   bool D1::check_if_handshake_timeout_occurring(std::chrono::time_point<std::chrono::steady_clock> start_time)
   {
-    std::cout << "Wait for handshake\n";
     auto elapsed_time =
         std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
+
+    if (_debug)
+    {
+      std::cout << "Wait for handshake! ";
+      std::cout << "elapsed_time.count(): " << elapsed_time.count() << "\n";
+    }
     if (elapsed_time.count() >= WAIT_FOR_HANDSHAKE_DURATION_MS)
     {
-      std::cout << "Error: A Handshake timeout occurred!" << std::endl;
+      std::cout << "Error: A Handshake timeout occurred! Waited for " << elapsed_time.count() << "miliseconds\n";
       return true;
     }
     return false;
