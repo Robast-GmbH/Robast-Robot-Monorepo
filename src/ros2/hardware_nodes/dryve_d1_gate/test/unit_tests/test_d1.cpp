@@ -778,11 +778,11 @@ namespace unit_test
 
       EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 23, 0))
           .WillOnce(testing::DoAll(
-              testing::SetArrayArgument<1>(status_mode_display, status_mode_display + sizeof(status_mode_display)),
-              testing::Return(21)))   // mock for set_dryve_mode_of_operation(1)
-          .WillOnce(testing::DoAll(
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))))   // mock for get_si_unit_factor()
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(status_mode_display, status_mode_display + sizeof(status_mode_display)),
+              testing::Return(21)))   // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
                                    testing::Return(sizeof(STATUS_READY))))   // mock for check_for_dryve_error()
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
@@ -791,8 +791,8 @@ namespace unit_test
                                    testing::Return(sizeof(STATUS_READY))));   // mock for wait_for_dryve_ready_state()
 
       EXPECT_CALL(*mock_socket_wrapper, sending(testing::_, testing::_, 19, 0))
-          .WillOnce(testing::Return(19))    // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::Return(19))    // mock for get_si_unit_factor()
+          .WillOnce(testing::Return(19))    // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::Return(19))    // mock for check_for_dryve_error()
           .WillOnce(testing::Return(19))    // mock for wait_for_dryve_ready_state()
           .WillOnce(testing::Return(19));   // mock for wait_for_dryve_ready_state()
@@ -954,11 +954,11 @@ namespace unit_test
 
       EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 23, 0))
           .WillOnce(testing::DoAll(
-              testing::SetArrayArgument<1>(status_mode_display, status_mode_display + sizeof(status_mode_display)),
-              testing::Return(21)))   // mock for set_dryve_mode_of_operation(1)
-          .WillOnce(testing::DoAll(
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))))   // mock for get_si_unit_factor()
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(status_mode_display, status_mode_display + sizeof(status_mode_display)),
+              testing::Return(21)))   // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
                                    testing::Return(sizeof(STATUS_READY))))   // mock for check_for_dryve_error()
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
@@ -967,8 +967,8 @@ namespace unit_test
                                    testing::Return(sizeof(STATUS_READY))));   // mock for wait_for_dryve_ready_state()
 
       EXPECT_CALL(*mock_socket_wrapper, sending(testing::_, testing::_, 19, 0))
-          .WillOnce(testing::Return(19))    // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::Return(19))    // mock for get_si_unit_factor()
+          .WillOnce(testing::Return(19))    // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::Return(19))    // mock for check_for_dryve_error()
           .WillOnce(testing::Return(19))    // mock for wait_for_dryve_ready_state()
           .WillOnce(testing::Return(19));   // mock for wait_for_dryve_ready_state()
@@ -1090,17 +1090,17 @@ namespace unit_test
 
       EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 23, 0))
           .WillOnce(testing::DoAll(
-              testing::SetArrayArgument<1>(status_mode_display, status_mode_display + sizeof(status_mode_display)),
-              testing::Return(21)))   // mock for set_dryve_mode_of_operation(1)
-          .WillOnce(testing::DoAll(
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))))   // mock for get_si_unit_factor()
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(status_mode_display, status_mode_display + sizeof(status_mode_display)),
+              testing::Return(21)))   // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
                                    testing::Return(sizeof(STATUS_READY))));   // mock for check_for_dryve_error()
 
       EXPECT_CALL(*mock_socket_wrapper, sending(testing::_, testing::_, 19, 0))
-          .WillOnce(testing::Return(19))    // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::Return(19))    // mock for get_si_unit_factor()
+          .WillOnce(testing::Return(19))    // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::Return(19));   // mock for check_for_dryve_error()
 
       EXPECT_CALL(*mock_socket_wrapper, sending(testing::_, testing::_, 23, 0))
@@ -1237,11 +1237,12 @@ namespace unit_test
 
       EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 23, 0))
           .WillOnce(testing::DoAll(
-              testing::SetArrayArgument<1>(status_mode_display, status_mode_display + sizeof(status_mode_display)),
-              testing::Return(21)))   // mock for set_dryve_mode_of_operation(1)
-          .WillOnce(testing::DoAll(
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))))   // mock for get_si_unit_factor()
+          .WillOnce(testing::DoAll(
+              testing::SetArrayArgument<1>(status_mode_display, status_mode_display + sizeof(status_mode_display)),
+              testing::Return(21)))   // mock for set_dryve_mode_of_operation(1)
+
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
                                    testing::Return(sizeof(STATUS_READY))))   // mock for check_for_dryve_error()
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
@@ -1250,8 +1251,8 @@ namespace unit_test
                                    testing::Return(sizeof(STATUS_READY))));   // mock for wait_for_homing()
 
       EXPECT_CALL(*mock_socket_wrapper, sending(testing::_, testing::_, 19, 0))
-          .WillOnce(testing::Return(19))    // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::Return(19))    // mock for get_si_unit_factor()
+          .WillOnce(testing::Return(19))    // mock for set_dryve_mode_of_operation(1)
           .WillOnce(testing::Return(19))    // mock for check_for_dryve_error()
           .WillOnce(testing::Return(19))    // mock for wait_for_homing()
           .WillOnce(testing::Return(19));   // mock for wait_for_homing()

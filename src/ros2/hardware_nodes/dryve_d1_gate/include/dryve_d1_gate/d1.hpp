@@ -39,12 +39,6 @@
 
 namespace dryve_d1_gate
 {
-  struct CommandTelegram
-  {
-    std::vector<unsigned char> telegram;
-    int value;
-  };
-
   class D1
   {
    public:
