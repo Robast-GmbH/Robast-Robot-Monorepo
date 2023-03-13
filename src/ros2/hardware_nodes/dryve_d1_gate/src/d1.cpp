@@ -59,7 +59,7 @@ namespace dryve_d1_gate
     }
   }
 
-  std::string D1::send_command_telegram(std::vector<unsigned char> telegram, int value)
+  std::string_view D1::send_command_telegram(std::vector<unsigned char> telegram, int value)
   {
     unsigned char array_of_byte[4];
     unsigned char recv_buffer[19];
@@ -108,7 +108,11 @@ namespace dryve_d1_gate
         {
           std::cout << "Telegram send correctly!\n";
         }
-        return std::string();
+        return std::string_view();
+      }
+      else
+      {
+        return ERROR_MSG_ZERO_BYTES_RECEIVED;
       }
     }
     else
@@ -130,7 +134,7 @@ namespace dryve_d1_gate
     return false;
   }
 
-  std::string D1::wait_for_response_to_equal_handshake(std::vector<char> handshake)
+  std::string_view D1::wait_for_response_to_equal_handshake(std::vector<char> handshake)
   {
     unsigned char recv_buffer[19];
     // Wait for response
@@ -162,7 +166,7 @@ namespace dryve_d1_gate
       {
         std::cout << "Telegram send correctly!\n";
       }
-      return std::string();
+      return std::string_view();
     }
     else
     {
@@ -170,7 +174,7 @@ namespace dryve_d1_gate
     }
   }
 
-  std::string D1::send_constant_set_command(const std::vector<unsigned char> telegram)
+  std::string_view D1::send_constant_set_command(const std::vector<unsigned char> telegram)
   {
     std::vector<char> handshake = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     // Swap the object and subindex bytes of the handshake to the bytes of the send telegram
@@ -280,6 +284,10 @@ namespace dryve_d1_gate
     {
       return get_si_unit_factor_for_rotary_movement();
     }
+    else
+    {
+      return 0;
+    }
   }
 
   float D1::get_si_unit_factor_for_linear_movement()
@@ -326,7 +334,7 @@ namespace dryve_d1_gate
     return int_value;
   }
 
-  std::string D1::check_for_dryve_error()
+  std::string_view D1::check_for_dryve_error()
   {
     read_command_to_recv_buffer(_READ_STATUS_WORD, sizeof(_READ_STATUS_WORD));
     if (std::equal(std::begin(_STATUS_ERROR), std::end(_STATUS_ERROR), std::begin(_recv_buffer)) ||
@@ -411,15 +419,15 @@ namespace dryve_d1_gate
       }
     }
 
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::wait_for_dryve_ready_state()
+  std::string_view D1::wait_for_dryve_ready_state()
   {
     do
     {
       read_command_to_recv_buffer(_READ_STATUS_WORD, sizeof(_READ_STATUS_WORD));
-      std::string error_message = check_for_dryve_error();
+      std::string_view error_message = check_for_dryve_error();
       if (_debug == true)
       {
         std::cout << "Waiting for the Movement to be finished!\n";
@@ -433,15 +441,15 @@ namespace dryve_d1_gate
              std::equal(std::begin(_STATUS_READY_2), std::end(_STATUS_READY_2), std::begin(_recv_buffer)) != true &&
              std::equal(std::begin(_STATUS_READY_5), std::end(_STATUS_READY_5), std::begin(_recv_buffer)) != true &&
              std::equal(std::begin(_STATUS_READY_6), std::end(_STATUS_READY_6), std::begin(_recv_buffer)) != true);
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::wait_for_homing()
+  std::string_view D1::wait_for_homing()
   {
     do
     {
       read_command_to_recv_buffer(_READ_STATUS_WORD, sizeof(_READ_STATUS_WORD));
-      std::string error_message = check_for_dryve_error();
+      std::string_view error_message = check_for_dryve_error();
       if (_debug == true)
       {
         std::cout << "Waiting for the Homing to be finished!\n";
@@ -458,12 +466,12 @@ namespace dryve_d1_gate
              std::equal(std::begin(_STATUS_READY_5), std::end(_STATUS_READY_5), std::begin(_recv_buffer)) != true &&
              std::equal(std::begin(_STATUS_READY_6), std::end(_STATUS_READY_6), std::begin(_recv_buffer)) != true &&
              std::equal(std::begin(_STATUS_READY_7), std::end(_STATUS_READY_7), std::begin(_recv_buffer)) != true);
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::set_dryve_shutdown_state()
+  std::string_view D1::set_dryve_shutdown_state()
   {
-    std::string error_msg = send_constant_set_command(_SEND_SHUTDOWN);
+    std::string_view error_msg = send_constant_set_command(_SEND_SHUTDOWN);
     if (!error_msg.empty())
     {
       return error_msg;
@@ -481,12 +489,12 @@ namespace dryve_d1_gate
         std::equal(std::begin(_STATUS_SHUTDOWN), std::end(_STATUS_SHUTDOWN), std::begin(_recv_buffer)) != true &&
         std::equal(std::begin(_STATUS_SHUTDOWN_2), std::end(_STATUS_SHUTDOWN_2), std::begin(_recv_buffer)) != true &&
         std::equal(std::begin(_STATUS_SHUTDOWN_3), std::end(_STATUS_SHUTDOWN_3), std::begin(_recv_buffer)) != true);
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::set_dryve_switch_on_state()
+  std::string_view D1::set_dryve_switch_on_state()
   {
-    std::string error_msg = send_constant_set_command(_SEND_SWITCH_ON);
+    std::string_view error_msg = send_constant_set_command(_SEND_SWITCH_ON);
     if (!error_msg.empty())
     {
       return error_msg;
@@ -504,12 +512,12 @@ namespace dryve_d1_gate
         std::equal(std::begin(_STATUS_SWITCH_ON), std::end(_STATUS_SWITCH_ON), std::begin(_recv_buffer)) != true &&
         std::equal(std::begin(_STATUS_SWITCH_ON_2), std::end(_STATUS_SWITCH_ON_2), std::begin(_recv_buffer)) != true &&
         std::equal(std::begin(_STATUS_SWITCH_ON_3), std::end(_STATUS_SWITCH_ON_3), std::begin(_recv_buffer)) != true);
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::set_dryve_operation_enable_state()
+  std::string_view D1::set_dryve_operation_enable_state()
   {
-    std::string error_msg = send_constant_set_command(_SEND_OPERATION_ENABLE);
+    std::string_view error_msg = send_constant_set_command(_SEND_OPERATION_ENABLE);
     if (!error_msg.empty())
     {
       return error_msg;
@@ -532,63 +540,63 @@ namespace dryve_d1_gate
              std::equal(std::begin(_STATUS_OPERATION_ENABLE_3),
                         std::end(_STATUS_OPERATION_ENABLE_3),
                         std::begin(_recv_buffer)) != true);
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::reset_dryve_status()
+  std::string_view D1::reset_dryve_status()
   {
     return send_constant_set_command(_RESET_DRYVE_STATUS);
   }
 
-  std::string D1::run_dryve_state_machine()
+  std::string_view D1::run_dryve_state_machine()
   {
-    std::vector<std::function<std::string()>> commands = {[&]()
-                                                          {
-                                                            return send_constant_set_command(_SEND_RESET_ERROR);
-                                                          },
-                                                          [&]()
-                                                          {
-                                                            return send_constant_set_command(_SEND_RESET_ARRAY);
-                                                          },
-                                                          [&]()
-                                                          {
-                                                            return check_for_dryve_error();
-                                                          },
-                                                          [&]()
-                                                          {
-                                                            return reset_dryve_status();
-                                                          },
-                                                          [&]()
-                                                          {
-                                                            return set_dryve_shutdown_state();
-                                                          },
-                                                          [&]()
-                                                          {
-                                                            return set_dryve_switch_on_state();
-                                                          },
-                                                          [&]()
-                                                          {
-                                                            return set_dryve_operation_enable_state();
-                                                          }};
+    std::vector<std::function<std::string_view()>> commands = {[&]()
+                                                               {
+                                                                 return send_constant_set_command(_SEND_RESET_ERROR);
+                                                               },
+                                                               [&]()
+                                                               {
+                                                                 return send_constant_set_command(_SEND_RESET_ARRAY);
+                                                               },
+                                                               [&]()
+                                                               {
+                                                                 return check_for_dryve_error();
+                                                               },
+                                                               [&]()
+                                                               {
+                                                                 return reset_dryve_status();
+                                                               },
+                                                               [&]()
+                                                               {
+                                                                 return set_dryve_shutdown_state();
+                                                               },
+                                                               [&]()
+                                                               {
+                                                                 return set_dryve_switch_on_state();
+                                                               },
+                                                               [&]()
+                                                               {
+                                                                 return set_dryve_operation_enable_state();
+                                                               }};
 
     for (const auto &cmd : commands)
     {
-      std::string error_msg = cmd();
+      std::string_view error_msg = cmd();
       if (!error_msg.empty())
       {
         return error_msg;
       }
     }
 
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::set_dryve_mode_of_operation(unsigned char mode)
+  std::string_view D1::set_dryve_mode_of_operation(unsigned char mode)
   {
     unsigned char status_mode_display[] = {0, 0, 0, 0, 0, 14, 0, 43, 13, 0, 0, 0, 96, 97, 0, 0, 0, 0, 1, mode};
     _send_mode_of_operation[19] = mode;
 
-    std::string error_msg = send_constant_set_command(_send_mode_of_operation);
+    std::string_view error_msg = send_constant_set_command(_send_mode_of_operation);
     if (!error_msg.empty())
     {
       return error_msg;
@@ -605,14 +613,14 @@ namespace dryve_d1_gate
     } while (std::equal(std::begin(status_mode_display), std::end(status_mode_display), std::begin(_recv_buffer)) !=
              true);
 
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::start_dryve_homing(float switch_velo, float zero_velo, float homing_acc)
+  std::string_view D1::start_dryve_homing(float switch_velo, float zero_velo, float homing_acc)
   {
     float si_factor = get_si_unit_factor();
 
-    std::vector<std::function<std::string()>> commands = {
+    std::vector<std::function<std::string_view()>> commands = {
         [&]()
         {
           return set_dryve_mode_of_operation(6);
@@ -648,21 +656,21 @@ namespace dryve_d1_gate
 
     for (const auto &cmd : commands)
     {
-      std::string error_msg = cmd();
+      std::string_view error_msg = cmd();
       if (!error_msg.empty())
       {
         return error_msg;
       }
     }
 
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::move_profile_to_absolute_position(float position, float velo, float accel, float decel)
+  std::string_view D1::move_profile_to_absolute_position(float position, float velo, float accel, float decel)
   {
     float si_factor = get_si_unit_factor();
 
-    std::vector<std::function<std::string()>> commands = {
+    std::vector<std::function<std::string_view()>> commands = {
         [&]()
         {
           return set_dryve_mode_of_operation(1);
@@ -702,21 +710,21 @@ namespace dryve_d1_gate
 
     for (const auto &cmd : commands)
     {
-      std::string error_msg = cmd();
+      std::string_view error_msg = cmd();
       if (!error_msg.empty())
       {
         return error_msg;
       }
     }
 
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::move_profile_to_relative_position(float position, float velo, float accel, float decel)
+  std::string_view D1::move_profile_to_relative_position(float position, float velo, float accel, float decel)
   {
     float si_factor = get_si_unit_factor();
 
-    std::vector<std::function<std::string()>> commands = {
+    std::vector<std::function<std::string_view()>> commands = {
         [&]()
         {
           return set_dryve_mode_of_operation(1);
@@ -756,21 +764,21 @@ namespace dryve_d1_gate
 
     for (const auto &cmd : commands)
     {
-      std::string error_msg = cmd();
+      std::string_view error_msg = cmd();
       if (!error_msg.empty())
       {
         return error_msg;
       }
     }
 
-    return std::string();
+    return std::string_view();
   }
 
-  std::string D1::set_profile_velocity(float velo, float accel, float decel)
+  std::string_view D1::set_profile_velocity(float velo, float accel, float decel)
   {
     float si_factor = get_si_unit_factor();
 
-    std::vector<std::function<std::string()>> commands = {
+    std::vector<std::function<std::string_view()>> commands = {
         [&]()
         {
           return set_dryve_mode_of_operation(3);
@@ -794,14 +802,14 @@ namespace dryve_d1_gate
 
     for (const auto &cmd : commands)
     {
-      std::string error_msg = cmd();
+      std::string_view error_msg = cmd();
       if (!error_msg.empty())
       {
         return error_msg;
       }
     }
 
-    return std::string();
+    return std::string_view();
   }
 
 }   // namespace dryve_d1_gate

@@ -89,7 +89,7 @@ namespace unit_test
 
       WHEN("set_dryve_shutdown_state is called")
       {
-        std::string error_msg = d1.set_dryve_shutdown_state();
+        std::string_view error_msg = d1.set_dryve_shutdown_state();
 
         THEN(
             "the previously defined expected calls should run through and throw no error an the error msg should "
@@ -142,7 +142,7 @@ namespace unit_test
 
       WHEN("set_dryve_switch_on_state is called")
       {
-        std::string error_msg = d1.set_dryve_switch_on_state();
+        std::string_view error_msg = d1.set_dryve_switch_on_state();
 
         THEN(
             "the previously defined expected calls should run through and throw no error an the error msg should "
@@ -197,7 +197,7 @@ namespace unit_test
 
       WHEN("set_dryve_operation_enable_state is called")
       {
-        std::string error_msg = d1.set_dryve_operation_enable_state();
+        std::string_view error_msg = d1.set_dryve_operation_enable_state();
 
         THEN(
             "the previously defined expected calls should run through and throw no error an the error msg should "
@@ -226,9 +226,6 @@ namespace unit_test
       handshake_send_operation_enable[13] = SEND_OPERATION_ENABLE[13];
       handshake_send_operation_enable[14] = SEND_OPERATION_ENABLE[14];
 
-      const unsigned char STATUS_OPERATION_ENABLE[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 0, 0,
-                                                         0, 96, 65, 0, 0, 0,  0, 2,  39, 6};
-
       EXPECT_CALL(*mock_socket_wrapper,
                   sending(testing::_, testing::_, SEND_OPERATION_ENABLE.size() / sizeof(SEND_OPERATION_ENABLE[0]), 0))
           .WillOnce(testing::Return(SEND_OPERATION_ENABLE.size()));
@@ -242,7 +239,7 @@ namespace unit_test
 
       WHEN("send_constant_set_command is called")
       {
-        std::string error_msg = d1.send_constant_set_command(SEND_OPERATION_ENABLE);
+        std::string_view error_msg = d1.send_constant_set_command(SEND_OPERATION_ENABLE);
 
         THEN("the previously defined expected calls should run through and throw no error")
         {
@@ -268,8 +265,6 @@ namespace unit_test
       handshake_reset_dryve_status[13] = RESET_DRYVE_STATUS[13];
       handshake_reset_dryve_status[14] = RESET_DRYVE_STATUS[14];
 
-      const unsigned char STATUS_OPERATION_ENABLE[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 0, 0,
-                                                         0, 96, 65, 0, 0, 0,  0, 2,  39, 6};
       EXPECT_CALL(*mock_socket_wrapper,
                   sending(testing::_, testing::_, sizeof(RESET_DRYVE_STATUS) / sizeof(RESET_DRYVE_STATUS[0]), 0))
           .WillOnce(testing::Return(sizeof(RESET_DRYVE_STATUS)));
@@ -283,7 +278,7 @@ namespace unit_test
 
       WHEN("reset_dryve_status is called")
       {
-        std::string error_msg = d1.reset_dryve_status();
+        std::string_view error_msg = d1.reset_dryve_status();
 
         THEN(
             "the previously defined expected calls should run through and throw no error an the error msg should "
@@ -340,7 +335,7 @@ namespace unit_test
 
       WHEN("set_dryve_mode_of_operation is called")
       {
-        std::string error_msg = d1.set_dryve_mode_of_operation(mode);
+        std::string_view error_msg = d1.set_dryve_mode_of_operation(mode);
 
         THEN(
             "the previously defined expected calls should run through and throw no error an the error msg should "
@@ -446,7 +441,6 @@ namespace unit_test
       std::string ip_address = "127.0.0.1";
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
-      const unsigned char READ_STATUS_WORD[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2};
       const unsigned char STATUS_ERROR[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2, 8, 6};
 
       unsigned char expected_recv_buffer[23];
@@ -471,7 +465,7 @@ namespace unit_test
 
       WHEN("check_for_dryve_error is called")
       {
-        std::string error_msg = d1.check_for_dryve_error();
+        std::string_view error_msg = d1.check_for_dryve_error();
 
         THEN(
             "the previously defined expected calls should run through, throw no error and we should get the expected "
@@ -493,7 +487,6 @@ namespace unit_test
       std::string ip_address = "127.0.0.1";
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
-      const unsigned char READ_STATUS_WORD[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2};
       const unsigned char STATUS_READY[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2, 39, 22};
 
       // Mock for first and second call of "_socket_wrapper->sending"
@@ -511,7 +504,7 @@ namespace unit_test
 
       WHEN("wait_for_dryve_ready_state is called")
       {
-        std::string error_msg = d1.wait_for_dryve_ready_state();
+        std::string_view error_msg = d1.wait_for_dryve_ready_state();
 
         THEN(
             "the previously defined expected calls should run through, throw no error and the error msg should contain "
@@ -533,7 +526,6 @@ namespace unit_test
       std::string ip_address = "127.0.0.1";
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
-      const unsigned char READ_STATUS_WORD[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2};
       const unsigned char STATUS_READY[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2, 39, 22};
 
       // Mock for first and second call of "_socket_wrapper->sending"
@@ -551,7 +543,7 @@ namespace unit_test
 
       WHEN("wait_for_homing is called")
       {
-        std::string error_msg = d1.wait_for_homing();
+        std::string_view error_msg = d1.wait_for_homing();
 
         THEN(
             "the previously defined expected calls should run through, throw no error and the error msg should contain "
@@ -813,7 +805,7 @@ namespace unit_test
 
       WHEN("move_profile_to_absolute_position is called")
       {
-        std::string error_msg =
+        std::string_view error_msg =
             d1.move_profile_to_absolute_position(target_position, target_velocity, target_accel, target_decel);
 
         THEN(
@@ -989,7 +981,7 @@ namespace unit_test
 
       WHEN("move_profile_to_relative_position is called")
       {
-        std::string error_msg =
+        std::string_view error_msg =
             d1.move_profile_to_relative_position(target_position, target_velocity, target_accel, target_decel);
 
         THEN(
@@ -1114,7 +1106,7 @@ namespace unit_test
 
       WHEN("set_profile_velocity is called")
       {
-        std::string error_msg = d1.set_profile_velocity(target_velocity, target_accel, target_decel);
+        std::string_view error_msg = d1.set_profile_velocity(target_velocity, target_accel, target_decel);
 
         THEN(
             "the previously defined expected calls should run through, throw no error and we should get an empty error "
@@ -1272,7 +1264,7 @@ namespace unit_test
 
       WHEN("start_dryve_homing is called")
       {
-        std::string error_msg = d1.start_dryve_homing(target_switch_velo, target_zero_velo, target_homing_acc);
+        std::string_view error_msg = d1.start_dryve_homing(target_switch_velo, target_zero_velo, target_homing_acc);
 
         THEN(
             "the previously defined expected calls should run through, throw no error and we should get an empty error "
@@ -1404,7 +1396,7 @@ namespace unit_test
 
       WHEN("run_dryve_state_machine is called")
       {
-        std::string error_msg = d1.run_dryve_state_machine();
+        std::string_view error_msg = d1.run_dryve_state_machine();
 
         THEN(
             "the previously defined expected calls should run through, throw no error and we should get an empty error "

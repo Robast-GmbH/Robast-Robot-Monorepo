@@ -58,11 +58,11 @@ namespace dryve_d1_gate
 
     int read_object_value(char object_index_1, char object_index_2, int subindex = 0);
 
-    std::string check_for_dryve_error();
+    std::string_view check_for_dryve_error();
 
-    std::string wait_for_dryve_ready_state();
+    std::string_view wait_for_dryve_ready_state();
 
-    std::string wait_for_homing();
+    std::string_view wait_for_homing();
 
     float get_si_unit_factor();
 
@@ -70,34 +70,37 @@ namespace dryve_d1_gate
     /* Functions to send commands to the D1 */
     /****************************************/
 
-    std::string set_dryve_shutdown_state();
+    std::string_view set_dryve_shutdown_state();
 
-    std::string set_dryve_switch_on_state();
+    std::string_view set_dryve_switch_on_state();
 
-    std::string set_dryve_operation_enable_state();
+    std::string_view set_dryve_operation_enable_state();
 
-    std::string send_constant_set_command(const std::vector<unsigned char> telegram);
+    std::string_view send_constant_set_command(const std::vector<unsigned char> telegram);
 
-    std::string reset_dryve_status();
+    std::string_view reset_dryve_status();
 
-    std::string run_dryve_state_machine();
+    std::string_view run_dryve_state_machine();
 
-    std::string set_dryve_mode_of_operation(unsigned char mode);
+    std::string_view set_dryve_mode_of_operation(unsigned char mode);
 
-    std::string start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);
+    std::string_view start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);
 
-    std::string move_profile_to_absolute_position(float position, float velocity, float accel, float decel = 0);
+    std::string_view move_profile_to_absolute_position(float position, float velocity, float accel, float decel = 0);
 
-    std::string move_profile_to_relative_position(float position, float velocity, float accel, float decel = 0);
+    std::string_view move_profile_to_relative_position(float position, float velocity, float accel, float decel = 0);
 
-    std::string set_profile_velocity(float velocity, float accel, float decel = 0);
+    std::string_view set_profile_velocity(float velocity, float accel, float decel = 0);
 
-    static constexpr char* ERROR_MSG_HANDSHAKE_TIMEOUT = "Error: A Handshake timeout occurred!";
+    static constexpr std::string_view ERROR_MSG_HANDSHAKE_TIMEOUT = "Error: A Handshake timeout occurred!";
 
-    static constexpr char* ERROR_MSG_WRONG_SEND_RESULT = "Error: Trying to send command, but send_result != array_size";
+    static constexpr std::string_view ERROR_MSG_WRONG_SEND_RESULT =
+        "Error: Trying to send command, but send_result != array_size";
 
-    static constexpr char* ERROR_MSG_WAIT_FOR_RESPONSE_TO_EQUAL_HANDSHAKE =
+    static constexpr std::string_view ERROR_MSG_WAIT_FOR_RESPONSE_TO_EQUAL_HANDSHAKE =
         "Error: In wait_for_response_to_equal_handshake, can't send telegram to D1!";
+
+    static constexpr std::string_view ERROR_MSG_ZERO_BYTES_RECEIVED = "Error: Received zero bytes from socket!";
 
    private:
     void start_connection(std::string ip_address, int port);
@@ -106,9 +109,9 @@ namespace dryve_d1_gate
 
     int get_response_from_socket();
 
-    std::string wait_for_response_to_equal_handshake(std::vector<char> handshake);
+    std::string_view wait_for_response_to_equal_handshake(std::vector<char> handshake);
 
-    std::string send_command_telegram(std::vector<unsigned char> telegram, int value);
+    std::string_view send_command_telegram(std::vector<unsigned char> telegram, int value);
 
     int four_bytes_to_int(unsigned char data[]);
 
