@@ -96,6 +96,9 @@ namespace dryve_d1_gate
 
     static constexpr char* ERROR_MSG_WRONG_SEND_RESULT = "Error: Trying to send command, but send_result != array_size";
 
+    static constexpr char* ERROR_MSG_WAIT_FOR_RESPONSE_TO_EQUAL_HANDSHAKE =
+        "Error: In wait_for_response_to_equal_handshake, can't send telegram to D1!";
+
    private:
     void start_connection(std::string ip_address, int port);
 

@@ -166,7 +166,7 @@ namespace dryve_d1_gate
     }
     else
     {
-      return "Error: In wait_for_response_to_equal_handshake, can't send telegram to D1!";
+      return ERROR_MSG_WAIT_FOR_RESPONSE_TO_EQUAL_HANDSHAKE;
     }
   }
 

@@ -228,9 +228,10 @@ namespace unit_test
 
       const unsigned char STATUS_OPERATION_ENABLE[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 0, 0,
                                                          0, 96, 65, 0, 0, 0,  0, 2,  39, 6};
+
       EXPECT_CALL(*mock_socket_wrapper,
-                  sending(testing::_, testing::_, sizeof(SEND_OPERATION_ENABLE) / sizeof(SEND_OPERATION_ENABLE[0]), 0))
-          .WillOnce(testing::Return(sizeof(SEND_OPERATION_ENABLE)));
+                  sending(testing::_, testing::_, SEND_OPERATION_ENABLE.size() / sizeof(SEND_OPERATION_ENABLE[0]), 0))
+          .WillOnce(testing::Return(SEND_OPERATION_ENABLE.size()));
       EXPECT_CALL(*mock_socket_wrapper, receiving(testing::_, testing::_, 19, 0))
           .WillOnce(testing::DoAll(
               testing::SetArrayArgument<1>(handshake_send_operation_enable,
@@ -241,11 +242,12 @@ namespace unit_test
 
       WHEN("send_constant_set_command is called")
       {
-        d1.send_constant_set_command(SEND_OPERATION_ENABLE);
+        std::string error_msg = d1.send_constant_set_command(SEND_OPERATION_ENABLE);
 
         THEN("the previously defined expected calls should run through and throw no error")
         {
           REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
+          REQUIRE(error_msg.empty() == true);
         }
       }
     }
