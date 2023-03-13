@@ -34,11 +34,10 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
 
       WHEN("Creating the D1 class")
       {
-        dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::make_unique<MockSocketWrapper>());
+        dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::make_unique<MockSocketWrapper>());
 
         THEN("There should be no connection error while creating the class.")
         {
@@ -55,7 +54,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       const unsigned char SEND_SHUTDOWN[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 6, 0};
@@ -85,7 +84,7 @@ namespace unit_test
               testing::DoAll(testing::SetArrayArgument<1>(STATUS_SHUTDOWN, STATUS_SHUTDOWN + sizeof(STATUS_SHUTDOWN)),
                              testing::Return(21)));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("set_dryve_shutdown_state is called")
       {
@@ -108,7 +107,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       const unsigned char SEND_SWITCH_ON[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 7, 0};
@@ -138,7 +137,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(STATUS_SWITCH_ON, STATUS_SWITCH_ON + sizeof(STATUS_SWITCH_ON)),
               testing::Return(21)));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("set_dryve_switch_on_state is called")
       {
@@ -161,7 +160,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       const unsigned char SEND_OPERATION_ENABLE[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
@@ -193,7 +192,7 @@ namespace unit_test
                                                           STATUS_OPERATION_ENABLE + sizeof(STATUS_OPERATION_ENABLE)),
                              testing::Return(21)));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("set_dryve_operation_enable_state is called")
       {
@@ -216,7 +215,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       static const std::vector<unsigned char> SEND_OPERATION_ENABLE{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
@@ -235,7 +234,7 @@ namespace unit_test
                                            handshake_send_operation_enable + sizeof(handshake_send_operation_enable)),
               testing::Return(sizeof(handshake_send_operation_enable))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("send_constant_set_command is called")
       {
@@ -253,7 +252,7 @@ namespace unit_test
     {
       int port = 1234567;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       static const std::vector<unsigned char> SEND_OPERATION_ENABLE{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
@@ -271,7 +270,7 @@ namespace unit_test
                                                                     sizeof(wrong_handshake_send_operation_enable)),
                                    testing::Return(sizeof(wrong_handshake_send_operation_enable))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("send_constant_set_command is called")
       {
@@ -294,7 +293,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       const unsigned char RESET_DRYVE_STATUS[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 0, 1};
@@ -312,7 +311,7 @@ namespace unit_test
                                            handshake_reset_dryve_status + sizeof(handshake_reset_dryve_status)),
               testing::Return(sizeof(handshake_reset_dryve_status))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("reset_dryve_status is called")
       {
@@ -335,7 +334,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       unsigned char mode = 6;
@@ -369,7 +368,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(status_mode_display, status_mode_display + sizeof(status_mode_display)),
               testing::Return(21)));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("set_dryve_mode_of_operation is called")
       {
@@ -392,7 +391,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       const unsigned char SEND_SHUTDOWN[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 1, 0, 0, 96, 64, 0, 0, 0, 0, 2, 6, 0};
@@ -405,7 +404,7 @@ namespace unit_test
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(recv_buffer, recv_buffer + sizeof(recv_buffer)),
                                    testing::Return(sizeof(recv_buffer))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("read_command_to_recv_buffer is called")
       {
@@ -425,7 +424,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       char object_index_1 = 0x60;
@@ -452,7 +451,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("read_object_value is called")
       {
@@ -476,7 +475,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       const unsigned char STATUS_ERROR[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2, 8, 6};
@@ -499,7 +498,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("check_for_dryve_error is called")
       {
@@ -522,7 +521,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       const unsigned char STATUS_READY[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2, 39, 22};
@@ -538,7 +537,7 @@ namespace unit_test
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
                                    testing::Return(sizeof(STATUS_READY))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("wait_for_dryve_ready_state is called")
       {
@@ -561,7 +560,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       const unsigned char STATUS_READY[21] = {0, 0, 0, 0, 0, 15, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2, 39, 22};
@@ -577,7 +576,7 @@ namespace unit_test
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
                                    testing::Return(sizeof(STATUS_READY))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("wait_for_homing is called")
       {
@@ -600,7 +599,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       const unsigned char READ_SI_UNIT_FACTOR[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 168, 0, 0, 0, 0, 4};
@@ -621,7 +620,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("get_si_unit_factor is called")
       {
@@ -644,7 +643,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       const unsigned char READ_SI_UNIT_FACTOR[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 168, 0, 0, 0, 0, 4};
@@ -665,7 +664,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("get_si_unit_factor is called")
       {
@@ -688,7 +687,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       float target_position = 10.0;
@@ -839,7 +838,7 @@ namespace unit_test
           .WillOnce(testing::Return(23))    // mock for send_command_telegram(_send_profile_acceleration,...)
           .WillOnce(testing::Return(23));   // mock for send_command_telegram(_send_profile_deceleration,...)
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("move_profile_to_absolute_position is called")
       {
@@ -863,7 +862,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       float target_position = 10.0;
@@ -1015,7 +1014,7 @@ namespace unit_test
           .WillOnce(testing::Return(23))    // mock for send_command_telegram(_send_profile_acceleration,...)
           .WillOnce(testing::Return(23));   // mock for send_command_telegram(_send_profile_deceleration,...)
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("move_profile_to_relative_position is called")
       {
@@ -1039,7 +1038,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       float target_velocity = 5.0;
@@ -1140,7 +1139,7 @@ namespace unit_test
           .WillOnce(testing::Return(23))    // mock for send_command_telegram(_send_profile_deceleration,...)
           .WillOnce(testing::Return(23));   // mock for send_command_telegram(_send_target_velocity,...)
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("set_profile_velocity is called")
       {
@@ -1163,7 +1162,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       float target_switch_velo = 10.0;
@@ -1298,7 +1297,7 @@ namespace unit_test
           .WillOnce(testing::Return(23))    // mock for send_command_telegram(_send_zero_velocity,...)
           .WillOnce(testing::Return(23));   // mock for send_command_telegram(_send_homing_acceleration,...)
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("start_dryve_homing is called")
       {
@@ -1321,7 +1320,7 @@ namespace unit_test
     {
       int port = 12345;
       start_test_server(port);
-      std::string ip_address = "127.0.0.1";
+
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
       // Preparation for send_constant_set_command(_SEND_RESET_ERROR,...) func call
@@ -1430,7 +1429,7 @@ namespace unit_test
           .WillOnce(testing::Return(21))    // mock for set_dryve_switch_on_state()
           .WillOnce(testing::Return(21));   // mock for set_dryve_operation_enable_state()
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1(ip_address, port, std::move(mock_socket_wrapper));
+      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("run_dryve_state_machine is called")
       {

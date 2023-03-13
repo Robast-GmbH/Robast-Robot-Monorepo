@@ -235,7 +235,6 @@ namespace dryve_d1_gate
     }
     else
     {
-      // TODO@All: What do we do, if no byte was received?
       return bytes_received;
     }
   }
@@ -249,7 +248,6 @@ namespace dryve_d1_gate
     }
     else
     {
-      // TODO@All: What do we do, if no byte was received?
       return 0;
     }
   }
@@ -269,7 +267,6 @@ namespace dryve_d1_gate
     }
     else
     {
-      // TODO@All: Do we want to exit here like this?
       perror("Can't send telegram to D1, Err: ");
       exit(EXIT_FAILURE);
     }
@@ -350,77 +347,82 @@ namespace dryve_d1_gate
       // Read the Error Code and print it in the console
       int error_code = read_object_value(0x60, 0x3f);
 
-      if (error_code == ERROR_E01_CONFIGURATION)
+      switch (error_code)
       {
-        return "E01 Error Configuration";
-      }
-      if (error_code == ERROR_E02_MOTOR_OVER_CURRENT)
-      {
-        return "E02 Motor Over-Current";
-      }
-      if (error_code == ERROR_E03_ENCODER_OVER_CURRENT)
-      {
-        return "E03 Encoder Over-Current";
-      }
-      if (error_code == ERROR_E04_OUTPUT_OVER_CURRENT)
-      {
-        return "E04 10 V Output Over Current";
-      }
-      if (error_code == ERROR_E05_IO_SUPPLY_LOW)
-      {
-        return "E05 I/O Supply Low";
-      }
-      if (error_code == ERROR_E06_LOGIC_SUPPLY_LOW)
-      {
-        return "E06 Logic Supply Low";
-      }
-      if (error_code == ERROR_E07_LOGIC_SUPPLY_HIGH)
-      {
-        return "E07 Logic Supply High";
-      }
-      if (error_code == ERROR_E08_LOAD_SUPPLY_LOW)
-      {
-        return "E08 Load Supply Low";
-      }
-      if (error_code == ERROR_E09_LOAD_SUPPLY_HIGH)
-      {
-        return "E09 Load Supply High";
-      }
-      if (error_code == ERROR_E10_TEMPERATURE_HIGH)
-      {
-        return "E10 Temperature High";
-      }
-      if (error_code == ERROR_E11_FOLLOWING_ERROR)
-      {
-        return "E11 Following Error";
-      }
-      if (error_code == ERROR_E12_LIMIT_SWITCH)
-      {
-        return "E12 Limit Switch";
-      }
-      if (error_code == ERROR_E13_HALL_SENSOR)
-      {
-        return "E13 Hall Sensor";
-      }
-      if (error_code == ERROR_E14_ENCODER)
-      {
-        return "E14 Encoder";
-      }
-      if (error_code == ERROR_E15_ENCODER_CHANNEL_A)
-      {
-        return "E15 Encoder Channel A";
-      }
-      if (error_code == ERROR_E16_ENCODER_CHANNEL_B)
-      {
-        return "E16 Encoder Channel B";
-      }
-      if (error_code == ERROR_E17_ENCODER_CHANNEL_I)
-      {
-        return "E17 Encoder Channel I";
-      }
-      if (error_code == ERROR_E21_BREAKING_RESISTOR_OVERLOAD)
-      {
-        return "E21 Braking Resistor Overload";
+        case ERROR_E01_CONFIGURATION:
+          return "E01 Error Configuration";
+          break;
+
+        case ERROR_E02_MOTOR_OVER_CURRENT:
+          return "E02 Motor Over-Current";
+          break;
+
+        case ERROR_E03_ENCODER_OVER_CURRENT:
+          return "E03 Encoder Over-Current";
+          break;
+
+        case ERROR_E04_OUTPUT_OVER_CURRENT:
+          return "E04 10 V Output Over Current";
+          break;
+
+        case ERROR_E05_IO_SUPPLY_LOW:
+          return "E05 I/O Supply Low";
+          break;
+
+        case ERROR_E06_LOGIC_SUPPLY_LOW:
+          return "E06 Logic Supply Low";
+          break;
+
+        case ERROR_E07_LOGIC_SUPPLY_HIGH:
+          return "E07 Logic Supply High";
+          break;
+
+        case ERROR_E08_LOAD_SUPPLY_LOW:
+          return "E08 Load Supply Low";
+          break;
+
+        case ERROR_E09_LOAD_SUPPLY_HIGH:
+          return "E09 Load Supply High";
+          break;
+
+        case ERROR_E10_TEMPERATURE_HIGH:
+          return "E10 Temperature High";
+          break;
+
+        case ERROR_E11_FOLLOWING_ERROR:
+          return "E11 Following Error";
+          break;
+
+        case ERROR_E12_LIMIT_SWITCH:
+          return "E12 Limit Switch";
+          break;
+
+        case ERROR_E13_HALL_SENSOR:
+          return "E13 Hall Sensor";
+          break;
+
+        case ERROR_E14_ENCODER:
+          return "E14 Encoder";
+          break;
+
+        case ERROR_E15_ENCODER_CHANNEL_A:
+          return "E15 Encoder Channel A";
+          break;
+
+        case ERROR_E16_ENCODER_CHANNEL_B:
+          return "E16 Encoder Channel B";
+          break;
+
+        case ERROR_E17_ENCODER_CHANNEL_I:
+          return "E17 Encoder Channel I";
+          break;
+
+        case ERROR_E21_BREAKING_RESISTOR_OVERLOAD:
+          return "E21 Braking Resistor Overload";
+          break;
+
+        default:
+          break;
       }
     }
 
