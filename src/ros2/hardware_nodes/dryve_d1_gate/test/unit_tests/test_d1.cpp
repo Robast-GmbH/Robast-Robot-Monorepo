@@ -89,11 +89,14 @@ namespace unit_test
 
       WHEN("set_dryve_shutdown_state is called")
       {
-        d1.set_dryve_shutdown_state();
+        std::string error_msg = d1.set_dryve_shutdown_state();
 
-        THEN("the previously defined expected calls should run through and throw no error")
+        THEN(
+            "the previously defined expected calls should run through and throw no error an the error msg should "
+            "contain an empty string.")
         {
           REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
+          REQUIRE(error_msg.empty() == true);
         }
       }
     }
@@ -139,11 +142,14 @@ namespace unit_test
 
       WHEN("set_dryve_switch_on_state is called")
       {
-        d1.set_dryve_switch_on_state();
+        std::string error_msg = d1.set_dryve_switch_on_state();
 
-        THEN("the previously defined expected calls should run through and throw no error")
+        THEN(
+            "the previously defined expected calls should run through and throw no error an the error msg should "
+            "contain an empty string.")
         {
           REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
+          REQUIRE(error_msg.empty() == true);
         }
       }
     }
@@ -191,11 +197,14 @@ namespace unit_test
 
       WHEN("set_dryve_operation_enable_state is called")
       {
-        d1.set_dryve_operation_enable_state();
+        std::string error_msg = d1.set_dryve_operation_enable_state();
 
-        THEN("the previously defined expected calls should run through and throw no error")
+        THEN(
+            "the previously defined expected calls should run through and throw no error an the error msg should "
+            "contain an empty string.")
         {
           REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
+          REQUIRE(error_msg.empty() == true);
         }
       }
     }
@@ -210,8 +219,8 @@ namespace unit_test
       std::string ip_address = "127.0.0.1";
       std::unique_ptr<MockSocketWrapper> mock_socket_wrapper = std::make_unique<MockSocketWrapper>();
 
-      const unsigned char SEND_OPERATION_ENABLE[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                       0, 96, 64, 0, 0, 0,  0, 2,  15, 0};
+      static const std::vector<unsigned char> SEND_OPERATION_ENABLE{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                    0, 96, 64, 0, 0, 0,  0, 2,  15, 0};
       char handshake_send_operation_enable[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
       handshake_send_operation_enable[12] = SEND_OPERATION_ENABLE[12];
       handshake_send_operation_enable[13] = SEND_OPERATION_ENABLE[13];
@@ -232,7 +241,7 @@ namespace unit_test
 
       WHEN("send_constant_set_command is called")
       {
-        d1.send_constant_set_command(SEND_OPERATION_ENABLE, sizeof(SEND_OPERATION_ENABLE));
+        d1.send_constant_set_command(SEND_OPERATION_ENABLE);
 
         THEN("the previously defined expected calls should run through and throw no error")
         {
@@ -272,11 +281,14 @@ namespace unit_test
 
       WHEN("reset_dryve_status is called")
       {
-        d1.reset_dryve_status();
+        std::string error_msg = d1.reset_dryve_status();
 
-        THEN("the previously defined expected calls should run through and throw no error")
+        THEN(
+            "the previously defined expected calls should run through and throw no error an the error msg should "
+            "contain an empty string.")
         {
           REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
+          REQUIRE(error_msg.empty() == true);
         }
       }
     }
@@ -326,11 +338,14 @@ namespace unit_test
 
       WHEN("set_dryve_mode_of_operation is called")
       {
-        d1.set_dryve_mode_of_operation(mode);
+        std::string error_msg = d1.set_dryve_mode_of_operation(mode);
 
-        THEN("the previously defined expected calls should run through and throw no error")
+        THEN(
+            "the previously defined expected calls should run through and throw no error an the error msg should "
+            "contain an empty string.")
         {
           REQUIRE(testing::Mock::VerifyAndClearExpectations(&mock_socket_wrapper));
+          REQUIRE(error_msg.empty() == true);
         }
       }
     }

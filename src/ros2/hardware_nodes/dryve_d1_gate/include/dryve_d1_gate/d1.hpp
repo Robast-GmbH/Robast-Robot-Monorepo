@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 
 #include <algorithm>
+#include <chrono>
 #include <cmath>
 #include <cstring>
 #include <iostream>
@@ -38,6 +39,12 @@
 
 namespace dryve_d1_gate
 {
+  struct CommandTelegram
+  {
+    std::vector<unsigned char> telegram;
+    int value;
+  };
+
   class D1
   {
    public:
@@ -69,19 +76,19 @@ namespace dryve_d1_gate
     /* Functions to send commands to the D1 */
     /****************************************/
 
-    void set_dryve_shutdown_state();
+    std::string set_dryve_shutdown_state();
 
-    void set_dryve_switch_on_state();
+    std::string set_dryve_switch_on_state();
 
-    void set_dryve_operation_enable_state();
+    std::string set_dryve_operation_enable_state();
 
-    void send_constant_set_command(const unsigned char telegram[], unsigned int array_size);
+    std::string send_constant_set_command(const std::vector<unsigned char> telegram);
 
-    void reset_dryve_status();
+    std::string reset_dryve_status();
 
     std::string run_dryve_state_machine();
 
-    void set_dryve_mode_of_operation(unsigned char mode);
+    std::string set_dryve_mode_of_operation(unsigned char mode);
 
     std::string start_dryve_homing(float switch_velocity, float zero_velocity, float homing_acc);
 
@@ -91,6 +98,10 @@ namespace dryve_d1_gate
 
     std::string set_profile_velocity(float velocity, float accel, float decel = 0);
 
+    static constexpr char* ERROR_MSG_HANDSHAKE_TIMEOUT = "Error: A Handshake timeout occurred!";
+
+    static constexpr char* ERROR_MSG_WRONG_SEND_RESULT = "Error: Trying to send command, but send_result != array_size";
+
    private:
     void start_connection(std::string ip_address, int port);
 
@@ -98,9 +109,9 @@ namespace dryve_d1_gate
 
     int get_response_from_socket();
 
-    void wait_for_response_to_equal_handshake(std::vector<char> handshake);
+    std::string wait_for_response_to_equal_handshake(std::vector<char> handshake);
 
-    void send_command_telegram(unsigned char telegram[], unsigned int array_size, int value);
+    std::string send_command_telegram(std::vector<unsigned char> telegram, int value);
 
     int four_bytes_to_int(unsigned char data[]);
 
@@ -108,28 +119,32 @@ namespace dryve_d1_gate
 
     float get_si_unit_factor_for_rotary_movement();
 
+    bool check_if_handshake_timeout_occurring(std::chrono::time_point<std::chrono::steady_clock> start_time);
+
     std::unique_ptr<ISocketWrapper> _socket_wrapper;
 
     bool _debug;   // Variable to activate and deactivate the debug mode
+
+    static constexpr uint16_t WAIT_FOR_HANDSHAKE_DURATION_MS = 1000;
 
     unsigned char _recv_buffer[23];   // Buffer variable to store the received telegram from the D1
 
     // Define Telegrams for frequently used objects
     // State machine
-    static constexpr unsigned char _SEND_SHUTDOWN[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                         0, 96, 64, 0, 0, 0,  0, 2,  6,  0};
-    static constexpr unsigned char _SEND_SWITCH_ON[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                          0, 96, 64, 0, 0, 0,  0, 2,  7,  0};
-    static constexpr unsigned char _SEND_OPERATION_ENABLE[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                                 0, 96, 64, 0, 0, 0,  0, 2,  15, 0};
-    static constexpr unsigned char _RESET_DRYVE_STATUS[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                              0, 96, 64, 0, 0, 0,  0, 2,  0,  1};
+    const static inline std::vector<unsigned char> _SEND_SHUTDOWN{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                  0, 96, 64, 0, 0, 0,  0, 2,  6,  0};
+    const static inline std::vector<unsigned char> _SEND_SWITCH_ON{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                   0, 96, 64, 0, 0, 0,  0, 2,  7,  0};
+    const static inline std::vector<unsigned char> _SEND_OPERATION_ENABLE{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                          0, 96, 64, 0, 0, 0,  0, 2,  15, 0};
+    const static inline std::vector<unsigned char> _RESET_DRYVE_STATUS{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                       0, 96, 64, 0, 0, 0,  0, 2,  0,  1};
 
     // Telegrams for resetting the dryve status
-    static constexpr unsigned char _SEND_RESET_ERROR[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                            0, 96, 64, 0, 0, 0,  0, 2,  0,  1};
-    static constexpr unsigned char _SEND_RESET_ARRAY[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13,  1, 0,
-                                                            0, 96, 64, 0, 0, 0,  0, 2,  143, 0};
+    const static inline std::vector<unsigned char> _SEND_RESET_ERROR{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                     0, 96, 64, 0, 0, 0,  0, 2,  0,  1};
+    const static inline std::vector<unsigned char> _SEND_RESET_ARRAY{0, 0,  0,  0, 0, 15, 0, 43, 13,  1, 0,
+                                                                     0, 96, 64, 0, 0, 0,  0, 2,  143, 0};
 
     // Telegrams to read status and values of objects
     static constexpr unsigned char _READ_STATUS_WORD[19] = {
@@ -159,44 +174,47 @@ namespace dryve_d1_gate
                                               96, 168, 0, 0, 0, 0,  4, 0,  0,  0, 0};
 
     // Telegrams to set the mode of operation
-    unsigned char _send_mode_of_operation[20] = {0, 0, 0, 0, 0, 14, 0, 43, 13, 1, 0, 0, 96, 96, 0, 0, 0, 0, 1, 0};
+    std::vector<unsigned char> _send_mode_of_operation{0, 0, 0, 0, 0, 14, 0, 43, 13, 1, 0, 0, 96, 96, 0, 0, 0, 0, 1, 0};
 
     // Telegrams for homing/referencing
     static constexpr unsigned char _SEND_MODE_HOMING[20] = {0, 0, 0,  0,  0, 14, 0, 43, 13, 1,
                                                             0, 0, 96, 96, 0, 0,  0, 0,  1,  6};
-    unsigned char _send_switch_velocity[23] = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
-                                               96, 153, 1, 0, 0, 0,  4, 0,  0,  0, 0};
-    unsigned char _send_zero_velocity[23] = {0, 0, 0, 0, 0, 17, 0, 43, 13, 1, 0, 0, 96, 153, 2, 0, 0, 0, 4, 0, 0, 0, 0};
-    unsigned char _send_homing_acceleration[23] = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
-                                                   96, 154, 0, 0, 0, 0,  4, 0,  0,  0, 0};
+    std::vector<unsigned char> _send_switch_velocity{0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
+                                                     96, 153, 1, 0, 0, 0,  4, 0,  0,  0, 0};
+    std::vector<unsigned char> _send_zero_velocity{0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
+                                                   96, 153, 2, 0, 0, 0,  4, 0,  0,  0, 0};
+    std::vector<unsigned char> _send_homing_acceleration{0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
+                                                         96, 154, 0, 0, 0, 0,  4, 0,  0,  0, 0};
 
     // Telegrams for Profile Position Mode and Profile Velocity Mode
     static constexpr unsigned char _SEND_MODE_PROFILE_POSITION[20] = {0, 0, 0,  0,  0, 14, 0, 43, 13, 1,
                                                                       0, 0, 96, 96, 0, 0,  0, 0,  1,  1};
     static constexpr unsigned char _SEND_MODE_PROFILE_VELOCITY[20] = {0, 0, 0,  0,  0, 14, 0, 43, 13, 1,
                                                                       0, 0, 96, 96, 0, 0,  0, 0,  1,  3};
-    unsigned char _send_profile_velocity[23] = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
-                                                96, 129, 0, 0, 0, 0,  4, 0,  0,  0, 0};
-    unsigned char _send_profile_acceleration[23] = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
-                                                    96, 131, 0, 0, 0, 0,  4, 0,  0,  0, 0};
-    unsigned char _send_profile_deceleration[23] = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
-                                                    96, 132, 0, 0, 0, 0,  4, 0,  0,  0, 0};
-    unsigned char _send_target_velocity[23] = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
-                                               96, 255, 0, 0, 0, 0,  4, 0,  0,  0, 0};
-    unsigned char _send_target_position[23] = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
-                                               96, 122, 0, 0, 0, 0,  4, 0,  0,  0, 0};
+    std::vector<unsigned char> _send_profile_velocity = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
+                                                         96, 129, 0, 0, 0, 0,  4, 0,  0,  0, 0};
+    std::vector<unsigned char> _send_profile_acceleration = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
+                                                             96, 131, 0, 0, 0, 0,  4, 0,  0,  0, 0};
+    std::vector<unsigned char> _send_profile_deceleration = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
+                                                             96, 132, 0, 0, 0, 0,  4, 0,  0,  0, 0};
+    std::vector<unsigned char> _send_target_velocity = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
+                                                        96, 255, 0, 0, 0, 0,  4, 0,  0,  0, 0};
+    std::vector<unsigned char> _send_target_position = {0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
+                                                        96, 122, 0, 0, 0, 0,  4, 0,  0,  0, 0};
 
     // Telegrams to start a movement
-    static constexpr unsigned char _SEND_START_MOVEMENT[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                               0, 96, 64, 0, 0, 0,  0, 2,  31, 0};
-    static constexpr unsigned char _SEND_START_MOVEMENT_REL[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                                   0, 96, 64, 0, 0, 0,  0, 2,  95, 0};
-    static constexpr unsigned char _SEND_RESET_START[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                            0, 96, 64, 0, 0, 0,  0, 2,  15, 0};
-    static constexpr unsigned char _SEND_RESET_START_ABS[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                                0, 96, 64, 0, 0, 0,  0, 2,  15, 0};
-    static constexpr unsigned char _SEND_RESET_START_REL[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
-                                                                0, 96, 64, 0, 0, 0,  0, 2,  79, 0};
+    const static inline std::vector<unsigned char> _SEND_START_MOVEMENT{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                        0, 96, 64, 0, 0, 0,  0, 2,  31, 0};
+
+    const static inline std::vector<unsigned char> _SEND_START_MOVEMENT_REL{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                            0, 96, 64, 0, 0, 0,  0, 2,  95, 0};
+
+    const static inline std::vector<unsigned char> _SEND_RESET_START{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                     0, 96, 64, 0, 0, 0,  0, 2,  15, 0};
+    const static inline std::vector<unsigned char> _SEND_RESET_START_ABS{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                         0, 96, 64, 0, 0, 0,  0, 2,  15, 0};
+    const static inline std::vector<unsigned char> _SEND_RESET_START_REL{0, 0,  0,  0, 0, 15, 0, 43, 13, 1, 0,
+                                                                         0, 96, 64, 0, 0, 0,  0, 2,  79, 0};
 
     // Status Word to check if the homing or the movement was completet correctly
     static constexpr unsigned char _STATUS_READY[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 0, 0,

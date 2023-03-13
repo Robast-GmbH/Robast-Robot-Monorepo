@@ -46,9 +46,11 @@ ament_target_dependencies(library_dryve_d1_gate
   ${dependencies}
 )
 
-target_include_directories(dryve_d1_gate PUBLIC
+target_include_directories(${executable_dryve_d1_gate} 
+  PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-  $<INSTALL_INTERFACE:include>)
+  $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
 
 
 if(BUILD_TESTING)

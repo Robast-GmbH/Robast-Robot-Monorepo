@@ -59,7 +59,7 @@ namespace dryve_d1_gate
     }
   }
 
-  void D1::send_command_telegram(unsigned char telegram[], unsigned int array_size, int value)
+  std::string D1::send_command_telegram(std::vector<unsigned char> telegram, int value)
   {
     unsigned char array_of_byte[4];
     unsigned char recv_buffer[19];
@@ -75,9 +75,10 @@ namespace dryve_d1_gate
     telegram[21] = array_of_byte[2];
     telegram[22] = array_of_byte[3];
 
-    unsigned int send_result = _socket_wrapper->sending(sock, (char *) telegram, array_size / sizeof(telegram[0]), 0);
+    unsigned int send_result =
+        _socket_wrapper->sending(sock, (char *) telegram.data(), telegram.size() / sizeof(telegram[0]), 0);
 
-    if (send_result == array_size)
+    if (send_result == telegram.size())
     {
       // Wait for response
       std::memset(recv_buffer, 0, 19);
@@ -94,24 +95,42 @@ namespace dryve_d1_gate
           }
           std::cout << std::endl;
         }
+
+        std::chrono::time_point<std::chrono::steady_clock> start_time = std::chrono::steady_clock::now();
         while (std::equal(std::begin(recv_buffer), std::end(recv_buffer), std::begin(handshake)) != true)
         {
-          std::cout << "Wait for handshake\n";
+          if (check_if_handshake_timeout_occurring(start_time))
+          {
+            return ERROR_MSG_HANDSHAKE_TIMEOUT;
+          }
         }
         if (_debug == true)
         {
           std::cout << "Telegram send correctly!\n";
         }
+        return std::string();
       }
     }
     else
     {
-      perror("Can't send telegram to D1, Err: ");
-      exit(EXIT_FAILURE);
+      return ERROR_MSG_WRONG_SEND_RESULT;
     }
   }
 
-  void D1::wait_for_response_to_equal_handshake(std::vector<char> handshake)
+  bool D1::check_if_handshake_timeout_occurring(std::chrono::time_point<std::chrono::steady_clock> start_time)
+  {
+    std::cout << "Wait for handshake\n";
+    auto elapsed_time =
+        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
+    if (elapsed_time.count() >= WAIT_FOR_HANDSHAKE_DURATION_MS)
+    {
+      std::cout << "Error: A Handshake timeout occurred!" << std::endl;
+      return true;
+    }
+    return false;
+  }
+
+  std::string D1::wait_for_response_to_equal_handshake(std::vector<char> handshake)
   {
     unsigned char recv_buffer[19];
     // Wait for response
@@ -129,25 +148,29 @@ namespace dryve_d1_gate
         }
         std::cout << std::endl;
       }
+
+      std::chrono::time_point<std::chrono::steady_clock> start_time = std::chrono::steady_clock::now();
       while (std::equal(std::begin(recv_buffer), std::end(recv_buffer), std::begin(handshake)) != true)
       {
-        std::cout << "Wait for handshake\n";
-        // TODO@all: Is this really smart to infinitely wait for the handshake?
+        if (check_if_handshake_timeout_occurring(start_time))
+        {
+          return ERROR_MSG_HANDSHAKE_TIMEOUT;
+        }
       }
 
       if (_debug == true)
       {
         std::cout << "Telegram send correctly!\n";
       }
+      return std::string();
     }
     else
     {
-      perror("In wait_for_response_to_equal_handshake, can't send telegram to D1, Err: ");
-      exit(EXIT_FAILURE);
+      return "Error: In wait_for_response_to_equal_handshake, can't send telegram to D1!";
     }
   }
 
-  void D1::send_constant_set_command(const unsigned char telegram[], unsigned int array_size)
+  std::string D1::send_constant_set_command(const std::vector<unsigned char> telegram)
   {
     std::vector<char> handshake = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     // Swap the object and subindex bytes of the handshake to the bytes of the send telegram
@@ -155,11 +178,16 @@ namespace dryve_d1_gate
     handshake[13] = telegram[13];
     handshake[14] = telegram[14];
 
-    unsigned int send_result = _socket_wrapper->sending(sock, (char *) telegram, array_size / sizeof(telegram[0]), 0);
+    unsigned int send_result =
+        _socket_wrapper->sending(sock, (char *) telegram.data(), telegram.size() / sizeof(telegram[0]), 0);
 
-    if (send_result == array_size)
+    if (send_result == telegram.size())
     {
-      wait_for_response_to_equal_handshake(handshake);
+      return wait_for_response_to_equal_handshake(handshake);
+    }
+    else
+    {
+      return ERROR_MSG_WRONG_SEND_RESULT;
     }
   }
 
@@ -433,9 +461,14 @@ namespace dryve_d1_gate
     return std::string();
   }
 
-  void D1::set_dryve_shutdown_state()
+  std::string D1::set_dryve_shutdown_state()
   {
-    send_constant_set_command(_SEND_SHUTDOWN, sizeof(_SEND_SHUTDOWN));
+    std::string error_msg = send_constant_set_command(_SEND_SHUTDOWN);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
     do
     {
       read_command_to_recv_buffer(_READ_STATUS_WORD, sizeof(_READ_STATUS_WORD));
@@ -448,11 +481,17 @@ namespace dryve_d1_gate
         std::equal(std::begin(_STATUS_SHUTDOWN), std::end(_STATUS_SHUTDOWN), std::begin(_recv_buffer)) != true &&
         std::equal(std::begin(_STATUS_SHUTDOWN_2), std::end(_STATUS_SHUTDOWN_2), std::begin(_recv_buffer)) != true &&
         std::equal(std::begin(_STATUS_SHUTDOWN_3), std::end(_STATUS_SHUTDOWN_3), std::begin(_recv_buffer)) != true);
+    return std::string();
   }
 
-  void D1::set_dryve_switch_on_state()
+  std::string D1::set_dryve_switch_on_state()
   {
-    send_constant_set_command(_SEND_SWITCH_ON, sizeof(_SEND_SWITCH_ON));
+    std::string error_msg = send_constant_set_command(_SEND_SWITCH_ON);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
     do
     {
       read_command_to_recv_buffer(_READ_STATUS_WORD, sizeof(_READ_STATUS_WORD));
@@ -465,11 +504,17 @@ namespace dryve_d1_gate
         std::equal(std::begin(_STATUS_SWITCH_ON), std::end(_STATUS_SWITCH_ON), std::begin(_recv_buffer)) != true &&
         std::equal(std::begin(_STATUS_SWITCH_ON_2), std::end(_STATUS_SWITCH_ON_2), std::begin(_recv_buffer)) != true &&
         std::equal(std::begin(_STATUS_SWITCH_ON_3), std::end(_STATUS_SWITCH_ON_3), std::begin(_recv_buffer)) != true);
+    return std::string();
   }
 
-  void D1::set_dryve_operation_enable_state()
+  std::string D1::set_dryve_operation_enable_state()
   {
-    send_constant_set_command(_SEND_OPERATION_ENABLE, sizeof(_SEND_OPERATION_ENABLE));
+    std::string error_msg = send_constant_set_command(_SEND_OPERATION_ENABLE);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
     do
     {
       read_command_to_recv_buffer(_READ_STATUS_WORD, sizeof(_READ_STATUS_WORD));
@@ -487,37 +532,72 @@ namespace dryve_d1_gate
              std::equal(std::begin(_STATUS_OPERATION_ENABLE_3),
                         std::end(_STATUS_OPERATION_ENABLE_3),
                         std::begin(_recv_buffer)) != true);
+    return std::string();
   }
 
-  void D1::reset_dryve_status()
+  std::string D1::reset_dryve_status()
   {
-    send_constant_set_command(_RESET_DRYVE_STATUS, sizeof(_RESET_DRYVE_STATUS));
+    return send_constant_set_command(_RESET_DRYVE_STATUS);
   }
 
   std::string D1::run_dryve_state_machine()
   {
-    send_constant_set_command(_SEND_RESET_ERROR, sizeof(_SEND_RESET_ERROR));
-    send_constant_set_command(_SEND_RESET_ARRAY, sizeof(_SEND_RESET_ARRAY));
-
-    std::string error_msg = check_for_dryve_error();
+    std::string error_msg = send_constant_set_command(_SEND_RESET_ERROR);
     if (!error_msg.empty())
     {
       return error_msg;
     }
 
-    reset_dryve_status();
-    set_dryve_shutdown_state();
-    set_dryve_switch_on_state();
-    set_dryve_operation_enable_state();
+    error_msg = send_constant_set_command(_SEND_RESET_ARRAY);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
+    error_msg = check_for_dryve_error();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
+    error_msg = reset_dryve_status();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
+    error_msg = set_dryve_shutdown_state();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
+    error_msg = set_dryve_switch_on_state();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
+    error_msg = set_dryve_operation_enable_state();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
 
     return std::string();
   }
 
-  void D1::set_dryve_mode_of_operation(unsigned char mode)
+  std::string D1::set_dryve_mode_of_operation(unsigned char mode)
   {
     unsigned char status_mode_display[] = {0, 0, 0, 0, 0, 14, 0, 43, 13, 0, 0, 0, 96, 97, 0, 0, 0, 0, 1, mode};
     _send_mode_of_operation[19] = mode;
-    send_constant_set_command(_send_mode_of_operation, sizeof(_send_mode_of_operation));
+
+    std::string error_msg = send_constant_set_command(_send_mode_of_operation);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
     do
     {
       read_command_to_recv_buffer(_READ_MODES_DISPLAY, sizeof(_READ_MODES_DISPLAY));
@@ -528,29 +608,58 @@ namespace dryve_d1_gate
 
     } while (std::equal(std::begin(status_mode_display), std::end(status_mode_display), std::begin(_recv_buffer)) !=
              true);
+
+    return std::string();
   }
 
   std::string D1::start_dryve_homing(float switch_velo, float zero_velo, float homing_acc)
   {
-    set_dryve_mode_of_operation(6);
+    std::string error_msg = set_dryve_mode_of_operation(6);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
     float si_factor = get_si_unit_factor();
     long switch_velocity = switch_velo * si_factor;
     long zero_velocity = zero_velo * si_factor;
     long homing_accel = homing_acc * si_factor;
-    send_command_telegram(_send_switch_velocity, sizeof(_send_switch_velocity), switch_velocity);
-    send_command_telegram(_send_zero_velocity, sizeof(_send_zero_velocity), zero_velocity);
-    send_command_telegram(_send_homing_acceleration, sizeof(_send_homing_acceleration), homing_accel);
 
-    // Checks if the D1 is in an error state
-    std::string error_msg = check_for_dryve_error();
+    error_msg = send_command_telegram(_send_switch_velocity, switch_velocity);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
+    error_msg = send_command_telegram(_send_zero_velocity, zero_velocity);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
+    error_msg = send_command_telegram(_send_homing_acceleration, homing_accel);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
+    error_msg = check_for_dryve_error();
     if (!error_msg.empty())
     {
       return error_msg;
     }
 
     // Start Movement and toggle back bit 4
-    send_constant_set_command(_SEND_RESET_START, sizeof(_SEND_RESET_START));
-    send_constant_set_command(_SEND_START_MOVEMENT, sizeof(_SEND_START_MOVEMENT));
+    error_msg = send_constant_set_command(_SEND_RESET_START);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+    error_msg = send_constant_set_command(_SEND_START_MOVEMENT);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
 
     // Wait for homing to end
     error_msg = wait_for_homing();
@@ -564,29 +673,55 @@ namespace dryve_d1_gate
 
   std::string D1::move_profile_to_absolute_position(float position, float velo, float accel, float decel)
   {
-    set_dryve_mode_of_operation(1);
-    float si_factor = get_si_unit_factor();
-    long pos = position * si_factor;
-    long velocity = velo * si_factor;
-    long acc = accel * si_factor;
-    long dec = decel * si_factor;
-    send_command_telegram(_send_target_position, sizeof(_send_target_position), pos);
-    send_command_telegram(_send_profile_velocity, sizeof(_send_profile_velocity), velocity);
-    send_command_telegram(_send_profile_acceleration, sizeof(_send_profile_acceleration), acc);
-    send_command_telegram(_send_profile_deceleration, sizeof(_send_profile_deceleration), dec);
-
-    std::string error_msg = check_for_dryve_error();
+    std::string error_msg = set_dryve_mode_of_operation(1);
     if (!error_msg.empty())
     {
       return error_msg;
     }
+
+    float si_factor = get_si_unit_factor();
+
+    std::vector<CommandTelegram> commands = {
+        {_send_target_position, position * si_factor},
+        {_send_profile_velocity, velo * si_factor},
+        {_send_profile_acceleration, accel * si_factor},
+        {_send_profile_deceleration, decel * si_factor},
+    };
+
+    for (const auto &cmd : commands)
+    {
+      std::string error_msg = send_command_telegram(cmd.telegram, cmd.value);
+      if (!error_msg.empty())
+      {
+        return error_msg.c_str();
+      }
+    }
+
+    error_msg = check_for_dryve_error();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+
     // Start Movement and toggle back bit 4
-    send_constant_set_command(_SEND_RESET_START_ABS, sizeof(_SEND_RESET_START_ABS));
-    send_constant_set_command(_SEND_START_MOVEMENT, sizeof(_SEND_START_MOVEMENT));
+    error_msg = send_constant_set_command(_SEND_RESET_START_ABS);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
+    error_msg = send_constant_set_command(_SEND_START_MOVEMENT);
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
 
     // Wait for Movement to end
     std::cout << "Wait for Movement to end! \n";
-    wait_for_dryve_ready_state();
+    error_msg = wait_for_dryve_ready_state();
+    if (!error_msg.empty())
+    {
+      return error_msg;
+    }
     std::cout << "Movement ended! \n";
 
     return std::string();
@@ -600,10 +735,10 @@ namespace dryve_d1_gate
     long velocity = velo * si_factor;
     long acc = accel * si_factor;
     long dec = decel * si_factor;
-    send_command_telegram(_send_target_position, sizeof(_send_target_position), pos);
-    send_command_telegram(_send_profile_velocity, sizeof(_send_profile_velocity), velocity);
-    send_command_telegram(_send_profile_acceleration, sizeof(_send_profile_acceleration), acc);
-    send_command_telegram(_send_profile_deceleration, sizeof(_send_profile_deceleration), dec);
+    send_command_telegram(_send_target_position, pos);
+    send_command_telegram(_send_profile_velocity, velocity);
+    send_command_telegram(_send_profile_acceleration, acc);
+    send_command_telegram(_send_profile_deceleration, dec);
 
     std::string error_msg = check_for_dryve_error();
     if (!error_msg.empty())
@@ -612,8 +747,8 @@ namespace dryve_d1_gate
     }
 
     // Start Movement and toggle back bit 4
-    send_constant_set_command(_SEND_RESET_START_REL, sizeof(_SEND_RESET_START_REL));
-    send_constant_set_command(_SEND_START_MOVEMENT_REL, sizeof(_SEND_START_MOVEMENT_REL));
+    send_constant_set_command(_SEND_RESET_START_REL);
+    send_constant_set_command(_SEND_START_MOVEMENT_REL);
 
     // Wait for Movement to end
     wait_for_dryve_ready_state();
@@ -628,8 +763,8 @@ namespace dryve_d1_gate
     long velocity = velo * si_factor;
     long acc = accel * si_factor;
     long dec = decel * si_factor;
-    send_command_telegram(_send_profile_acceleration, sizeof(_send_profile_acceleration), acc);
-    send_command_telegram(_send_profile_deceleration, sizeof(_send_profile_deceleration), dec);
+    send_command_telegram(_send_profile_acceleration, acc);
+    send_command_telegram(_send_profile_deceleration, dec);
 
     std::string error_msg = check_for_dryve_error();
     if (!error_msg.empty())
@@ -638,7 +773,7 @@ namespace dryve_d1_gate
     }
 
     // Start movement by sending a target velocity value != 0 (0 for stop)
-    send_command_telegram(_send_target_velocity, sizeof(_send_target_velocity), velocity);
+    send_command_telegram(_send_target_velocity, velocity);
 
     return std::string();
   }
