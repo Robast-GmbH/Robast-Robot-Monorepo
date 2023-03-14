@@ -11,6 +11,13 @@
             "problemMatcher": []
         },
         {
+            "label": "Launch Dryve D1 Gate",
+            "detail": "Launch the drawer gate node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch dryve_d1_gate dryve_d1_gate_launch.py",
+            "problemMatcher": []
+        },
+        {
             "label": "Launch Drawer Gate",
             "detail": "Launch the drawer gate node",
             "type": "shell",
@@ -314,6 +321,17 @@
             ],
             "dependsOrder": "sequence",
             "command": "clear; source install/setup.bash; colcon test --packages-select drawer_gate --event-handler=console_direct+; colcon test-result --all",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test dryve d1 gate",
+            "detail": "Build and executes dryve d1 gate tests and shows the links to the testreport with Errors",
+            "type": "shell",
+            "dependsOn": [
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "command": "clear; source install/setup.bash; colcon test --packages-select dryve_d1_gate --event-handler=console_direct+; colcon test-result --all",
             "problemMatcher": []
         },
         {
