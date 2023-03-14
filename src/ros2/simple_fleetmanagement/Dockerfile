@@ -40,7 +40,7 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
 
-# RUN pip3 install connexion[swagger-ui]
+RUN pip3 install connexion[swagger-ui]
 
 RUN apt-get update && apt-get install -y \
   # Install ros distro testing packages

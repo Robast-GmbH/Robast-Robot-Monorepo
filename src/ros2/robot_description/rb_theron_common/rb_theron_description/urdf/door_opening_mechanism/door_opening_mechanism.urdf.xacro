@@ -159,6 +159,7 @@
             r="0"
             g="1"
             b="0">
+            <!-- TODO the default value for roll was changed from 0 to pi/2. Revert this change when the mechanism is working -->
             <origin xyz="0 -0.025 0" rpy="1.57079632679 1.57079632679 0"/>
         </xacro:basic_joint>
 
