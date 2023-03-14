@@ -159,6 +159,7 @@
             r="0"
             g="1"
             b="0">
+            <!--TODO the default value was changed from pi/2 to 0. Revert this change whe the mechanisim is working-->
             <origin xyz="0 -0.025 0" rpy="1.57079632679 1.57079632679 0"/>
         </xacro:basic_joint>
 
