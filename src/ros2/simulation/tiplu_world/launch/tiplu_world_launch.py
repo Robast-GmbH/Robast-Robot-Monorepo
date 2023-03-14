@@ -75,7 +75,9 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py"),
         ),
-        launch_arguments={"gz_args": world_model}.items(),
+                launch_arguments={"gz_args": ["-r ", world_model],
+                          "gz_version": "7",                          
+                          }.items(),
     )
 
     spawn_robot_cmd = Node(
