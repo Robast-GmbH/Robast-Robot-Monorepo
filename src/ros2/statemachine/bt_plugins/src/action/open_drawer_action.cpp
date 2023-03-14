@@ -27,10 +27,11 @@ namespace drawer_statemachine
         open_publisher_ = node_->create_publisher<communication_interfaces::msg::DrawerAddress>(topic_name_, qos);
     }
 
-    BT::NodeStatus OpenDrawer::onStart(){
+    BT::NodeStatus OpenDrawer::onStart()
+    {
         return BT::NodeStatus::RUNNING;
     }
-    
+
     BT::NodeStatus OpenDrawer::onRunning()
     {
         // std::scoped_lock l(_blackboard->entryMutex());
@@ -38,7 +39,7 @@ namespace drawer_statemachine
         setOutput("drawer_address", drawer_address_);
         RCLCPP_DEBUG(rclcpp::get_logger("OpenDrawer"), "open drawer ");
         open_publisher_->publish(drawer_address_);
-        
+
         return BT::NodeStatus::SUCCESS;
     }
 

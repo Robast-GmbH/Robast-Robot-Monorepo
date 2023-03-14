@@ -39,8 +39,6 @@ def generate_launch_description():
     transform_publish_period = LaunchConfiguration("transform_publish_period")
     slam_executable = LaunchConfiguration("slam_executable")
 
-    # setup launch arguments (ist tatsächlich übersichtlicher und relevant um die zu überschreiben, wenn du von wo anders aufrufst)
-
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
     )

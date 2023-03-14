@@ -18,9 +18,9 @@ namespace drawer_statemachine
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
      * updated on the blackboard and FAILURE otherwise
      */
-    class DrawerOpenReq : public BT::StatefulActionNode
+    class DrawerOpenReq: public BT::StatefulActionNode
     {
-    public:        
+    public:
         DrawerOpenReq(
             const std::string& name,
             const BT::NodeConfig& config);
