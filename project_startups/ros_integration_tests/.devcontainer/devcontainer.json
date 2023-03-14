@@ -15,7 +15,8 @@
 	"workspaceFolder": "/workspace",
 	"runArgs": [
 		"--name=ros_integration_test",
-		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
+		"--volume=/tmp/.X11-unix:/tmp/.X11-unix",
+		"--gpus=all"
 	],
 	"remoteUser": "robast",
 	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
