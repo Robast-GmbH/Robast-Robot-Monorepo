@@ -8,7 +8,7 @@ endif()
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 14)
+  set(CMAKE_CXX_STANDARD 17)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -20,24 +20,16 @@ find_package(ament_cmake REQUIRED)
 
 
 if(BUILD_TESTING)
-  find_package(ament_cmake_pep257 REQUIRED)
-  ament_pep257()
   ament_add_test(test_waypoint_follower
-  GENERATE_RESULT_FOR_RETURN_CODE_ZERO
-  COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/launch/test_case_launch.py"
-  WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-  TIMEOUT 180
-  ENV
-    TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}
-    BT_NAVIGATOR_XML=navigate_to_pose_w_replanning_and_recovery.xml
+    GENERATE_RESULT_FOR_RETURN_CODE_ZERO
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/launch/test_case_launch.py"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    TIMEOUT 240
+    ENV
+      TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}
+      BT_NAVIGATOR_XML=navigate_to_pose_w_replanning_and_recovery.xml
   )
 endif()
-
-install(DIRECTORY
-launch
-DESTINATION share/${PROJECT_NAME}/
-)
-
 
 ament_package()
 

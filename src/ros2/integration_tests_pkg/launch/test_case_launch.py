@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 import os
 import sys
 
@@ -44,7 +46,7 @@ def generate_launch_description():
         launch_arguments={
                             'use_sim_time': 'True',
                             'use_composition': 'False',
-                            'params_file': new_yaml,
+                            'params_file': configured_params,
                             'autostart': 'True'}.items())
     
     slam_launch = IncludeLaunchDescription(
@@ -83,5 +85,5 @@ def main(argv=sys.argv[1:]):
     return lts.run(ls)
 
 
-# if __name__ == '__main__':
-#     sys.exit(main())
+if __name__ == '__main__':
+    sys.exit(main())
