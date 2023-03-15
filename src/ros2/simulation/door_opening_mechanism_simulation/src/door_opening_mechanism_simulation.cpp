@@ -100,6 +100,8 @@ namespace door_opening_mechanism_simulation
 
     // move_group.setJointValueTarget("position/x", -0.8);
 
+    joint_model_group->printGroupInfo();
+
     geometry_msgs::msg::PoseStamped target_pose1 = move_group.getCurrentPose();
     RCLCPP_INFO(this->get_logger(),
                 "Current pose: x = %f, y = %f, z = %f, w = %f, orientation_x = %f, orientation_y = %f, orientation_z = "
