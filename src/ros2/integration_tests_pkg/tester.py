@@ -105,37 +105,9 @@ class WaypointFollowerTest(Node):
         self.action_client.destroy()
         self.info_msg('Destroyed follow_waypoints action client')
 
-        transition_service = 'lifecycle_manager_navigation/manage_nodes'
-        mgr_client = self.create_client(ManageLifecycleNodes, transition_service)
-        while not mgr_client.wait_for_service(timeout_sec=1.0):
-            self.info_msg(f'{transition_service} service not available, waiting...')
-
-        req = ManageLifecycleNodes.Request()
-        req.command = ManageLifecycleNodes.Request().SHUTDOWN
-        future = mgr_client.call_async(req)
-        try:
-            rclpy.spin_until_future_complete(self, future)
-            future.result()
-        except Exception as e:  # noqa: B902
-            self.error_msg(f'{transition_service} service call failed {e!r}')
-
-        self.info_msg(f'{transition_service} finished')
-
-        transition_service = 'lifecycle_manager_localization/manage_nodes'
-        mgr_client = self.create_client(ManageLifecycleNodes, transition_service)
-        while not mgr_client.wait_for_service(timeout_sec=1.0):
-            self.info_msg(f'{transition_service} service not available, waiting...')
-
-        req = ManageLifecycleNodes.Request()
-        req.command = ManageLifecycleNodes.Request().SHUTDOWN
-        future = mgr_client.call_async(req)
-        try:
-            rclpy.spin_until_future_complete(self, future)
-            future.result()
-        except Exception as e:  # noqa: B902
-            self.error_msg(f'{transition_service} service call failed {e!r}')
-
-        self.info_msg(f'{transition_service} finished')
+        self.shutdown_lifecycle_nodes("lifecycle_manager_navigation")
+        # self.shutdown_lifecycle_nodes("lifecycle_manager_localization")
+        # self.shutdown_lifecycle_nodes("lifecycle_manager_slam_toolbox")
 
     def cancel_goal(self):
         cancel_future = self.goal_handle.cancel_goal_async()
@@ -150,6 +122,23 @@ class WaypointFollowerTest(Node):
     def error_msg(self, msg: str):
         self.get_logger().error(msg)
 
+    def shutdown_lifecycle_nodes(self, name: str):
+        transition_service = name +'/manage_nodes'
+        self.info_msg(f'starting shutdown of {transition_service}')
+        mgr_client = self.create_client(ManageLifecycleNodes, transition_service)
+        while not mgr_client.wait_for_service(timeout_sec=1.0):
+            self.info_msg(f'{transition_service} service not available, waiting...')
+
+        req = ManageLifecycleNodes.Request()
+        req.command = ManageLifecycleNodes.Request().SHUTDOWN
+        future = mgr_client.call_async(req)
+        try:
+            rclpy.spin_until_future_complete(self, future)
+            future.result()
+        except Exception as e:  # noqa: B902
+            self.error_msg(f'{transition_service} service call failed {e!r}')
+
+        self.info_msg(f'{transition_service} finished')
 
 def main(argv=sys.argv[1:]):
     rclpy.init()
@@ -179,27 +168,6 @@ def main(argv=sys.argv[1:]):
         
     test.info_msg('Finished navigate through tight space test')
 
-    # # set waypoint outside of map
-    # time.sleep(2)
-    # test.setWaypoints([[100.0, 100.0]])
-    # result = test.run(True, False)
-    # assert not result
-    # result = not result
-    # assert test.action_result.missed_waypoints[0].error_code == \
-    #        ComputePathToPose.Goal().GOAL_OUTSIDE_MAP
-
-    # # stop on failure test with bogous waypoint
-    # test.setStopFailureParam(True)
-    # bwps = [[7.5, -1.0], [100.0, 100.0], [0.58, 0.52]]
-    # starting_pose = [0.0, 0.0]
-    # test.setWaypoints(bwps)
-    # result = test.run(True, False)
-    # assert not result
-    # result = not result
-    # mwps = test.action_result.missed_waypoints
-    # result = (len(mwps) == 1) & (mwps[0] == 1)
-    # test.setStopFailureParam(False)
-
     # Zero goal test
     test.info_msg('Starting zero goal test')
     test.setWaypoints([])
@@ -207,12 +175,12 @@ def main(argv=sys.argv[1:]):
     test.info_msg('Finished zero goal test')
 
     # Cancel test
-    test.info_msg('Starting cancle Test')
+    test.info_msg('Starting cancel Test')
     test.setWaypoints(wps)
     result = test.run(True, True)
     assert not result
     result = not result
-    test.info_msg('Finished cancle Test')
+    test.info_msg('Finished cancel Test')
     
     test.shutdown()
     test.info_msg('Done Shutting Down.')
