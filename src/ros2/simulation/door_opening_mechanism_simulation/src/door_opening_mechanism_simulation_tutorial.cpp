@@ -122,47 +122,9 @@ int main(int argc, char** argv)
             move_group.getJointModelGroupNames().end(),
             std::ostream_iterator<std::string>(std::cout, ", "));
 
-  // Start the demo
-  // ^^^^^^^^^^^^^^^^^^^^^^^^^
-
-  // .. _move_group_interface-planning-to-pose-goal:
-  //
-  // Planning to a Pose goal
-  // ^^^^^^^^^^^^^^^^^^^^^^^
-  // We can plan a motion for this group to a desired pose for the
-  // end-effector.
-  // transform euler pose orientation to quaternion
-  // geometry_msgs::msg::Pose target_pose1;
-
-  // move_group.setJointValueTarget("position/x", -0.8);
-
-  // Set the bounds for the joint
-  // double planar_min = -10.0;
-  // double planar_max = 10.0;
-  // auto bounds = std::make_shared<moveit::core::Bounds>(3);
-  // bounds->setLow(-std::numeric_limits<double>::max());
-  // bounds->setHigh(std::numeric_limits<double>::max());
-  // bounds->setLow(2, planar_min);
-  // bounds->setHigh(2, planar_max);
-
-  RCLCPP_INFO(LOGGER, "Before joint_model_group->printGroupInfo();");
-  joint_model_group->printGroupInfo();
-  RCLCPP_INFO(LOGGER, "After joint_model_group->printGroupInfo();");
-
   // RCLCPP_INFO(LOGGER, "joint_model_group->getTypeName(): %s", joint_model_group->getTypeName());
 
   geometry_msgs::msg::PoseStamped target_pose1 = move_group.getCurrentPose();
-  RCLCPP_INFO(LOGGER,
-              "Current pose: x = %f, y = %f, z = %f, w = %f, orientation_x = %f, orientation_y = %f, orientation_z = "
-              "%f, frame_id = %s",
-              target_pose1.pose.position.x,
-              target_pose1.pose.position.y,
-              target_pose1.pose.position.z,
-              target_pose1.pose.orientation.w,
-              target_pose1.pose.orientation.x,
-              target_pose1.pose.orientation.y,
-              target_pose1.pose.orientation.z,
-              target_pose1.header.frame_id.c_str());
 
   target_pose1.pose.position.x -= 0.1;    // hard target example: 0.4
   target_pose1.pose.position.y += 0.1;    // hard target example: 0.3
@@ -175,18 +137,6 @@ int main(int argc, char** argv)
   // target_pose1.position.z = 0.8;
   // move_group.setRPYTarget(1.57079632679, 0, 0);
 
-  RCLCPP_INFO(LOGGER,
-              "Target pose: x = %f, y = %f, z = %f, w = %f, orientation_x = %f, orientation_y = %f, orientation_z = "
-              "%f, frame_id = %s",
-              target_pose1.pose.position.x,
-              target_pose1.pose.position.y,
-              target_pose1.pose.position.z,
-              target_pose1.pose.orientation.w,
-              target_pose1.pose.orientation.x,
-              target_pose1.pose.orientation.y,
-              target_pose1.pose.orientation.z,
-              target_pose1.header.frame_id.c_str());
-
   // move_group.setGoalTolerance(0.000001);
 
   move_group.setGoalJointTolerance(0.000001);
@@ -197,8 +147,6 @@ int main(int argc, char** argv)
   move_group.setPlanningTime(20);
   // move_group.setNumPlanningAttempts(3);
   move_group.setPoseTarget(target_pose1);
-
-  RCLCPP_INFO(LOGGER, "move_group.getPlanningTime(): %f", move_group.getPlanningTime());
 
   // Now, we call the planner to compute the plan and visualize it.
   // Note that we are just planning, not asking move_group
@@ -211,27 +159,6 @@ int main(int argc, char** argv)
 
   if (success)
   {
-    for (auto joint_name : my_plan.trajectory_.joint_trajectory.joint_names)
-    {
-      RCLCPP_INFO(LOGGER, "my_plan->trajectory_->joint_trajectory->joint_names: %s", joint_name.c_str());
-    }
-
-    RCLCPP_INFO(LOGGER,
-                "my_plan.trajectory_.joint_trajectory.header.frame_id: %s",
-                my_plan.trajectory_.joint_trajectory.header.frame_id.c_str());
-
-    for (auto joint_name : my_plan.trajectory_.multi_dof_joint_trajectory.joint_names)
-    {
-      RCLCPP_INFO(LOGGER, "my_plan.trajectory_.multi_dof_joint_trajectory.joint_names: %s", joint_name.c_str());
-    }
-
-    RCLCPP_INFO(LOGGER,
-                "sizeof(my_plan.trajectory_.multi_dof_joint_trajectory[0].points: %i",
-                sizeof(my_plan.trajectory_.multi_dof_joint_trajectory.points));
-
-    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher =
-        move_group_node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
-
     move_group.execute(my_plan);
   }
 

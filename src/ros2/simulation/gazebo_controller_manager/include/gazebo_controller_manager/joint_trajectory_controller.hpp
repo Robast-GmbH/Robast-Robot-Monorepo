@@ -70,6 +70,8 @@ namespace gazebo_controller_manager
 
     void set_mobile_base_trajectory(trajectory_msgs::msg::MultiDOFJointTrajectory mobile_base_trajectory);
 
+    bool received_action_from_execute_trajectory();
+
    private:
     std::shared_ptr<gz::transport::Node> gz_transport_node_;
     rclcpp_action::Server<control_msgs::action::FollowJointTrajectory>::SharedPtr

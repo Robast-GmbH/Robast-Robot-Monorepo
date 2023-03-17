@@ -108,16 +108,7 @@ namespace gazebo_controller_manager
     RCLCPP_INFO(this->get_logger(), "Received goal request for follow_joint_trajectory_action_server_");
     (void) uuid;
 
-    if (received_execute_trajectory_)
-    {
-      RCLCPP_INFO(this->get_logger(),
-                  "Already received a trajectory execution request on the /execute_trajectory action");
-      return rclcpp_action::GoalResponse::REJECT;
-    }
-    else
-    {
-      return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
-    }
+    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
 
   rclcpp_action::CancelResponse JointTrajectoryController::handle_cancel(
@@ -134,18 +125,10 @@ namespace gazebo_controller_manager
   {
     RCLCPP_INFO(this->get_logger(), "handle_accepted and executing for follow_joint_trajectory_action_server_");
 
-    if (received_execute_trajectory_)
-    {
-      RCLCPP_INFO(this->get_logger(),
-                  "Already received a trajectory execution request on the /execute_trajectory action");
-    }
-    else
-    {
-      // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-      std::thread{std::bind(&JointTrajectoryController::execute_follow_joint_trajectory, this, std::placeholders::_1),
-                  goal_handle}
-          .detach();
-    }
+    // this needs to return quickly to avoid blocking the executor, so spin up a new thread
+    std::thread{std::bind(&JointTrajectoryController::execute_follow_joint_trajectory, this, std::placeholders::_1),
+                goal_handle}
+        .detach();
   }
 
   rclcpp_action::GoalResponse JointTrajectoryController::handle_execute_trajectory_goal(
@@ -171,7 +154,7 @@ namespace gazebo_controller_manager
   {
     RCLCPP_INFO(this->get_logger(), "handle and executing for /execute_trajectory");
 
-    bool received_execute_trajectory_ = true;
+    received_execute_trajectory_ = true;
 
     // this needs to return quickly to avoid blocking the executor, so spin up a new thread
     std::thread{std::bind(&JointTrajectoryController::execute_trajectory, this, std::placeholders::_1), goal_handle}
@@ -214,22 +197,35 @@ namespace gazebo_controller_manager
     }
   }
 
+  bool JointTrajectoryController::received_action_from_execute_trajectory()
+  {
+    // sleep for a small amount of time to give the callback fo the /execute_trajectory action time to be triggered
+    // before
+    std::this_thread::sleep_for(std::chrono::milliseconds(100));
+    if (received_execute_trajectory_)
+    {
+      RCLCPP_INFO(this->get_logger(),
+                  "Already received a trajectory execution request on the /execute_trajectory action so trajectory an "
+                  "the follow_joint_trajectory_action is ignored!");
+      return true;
+    }
+    return false;
+  }
+
   void JointTrajectoryController::execute_follow_joint_trajectory(
       const std::shared_ptr<rclcpp_action::ServerGoalHandle<control_msgs::action::FollowJointTrajectory>> goal_handle)
   {
+    if (received_action_from_execute_trajectory())
+    {
+      return;
+    }
+
     auto result = std::make_shared<control_msgs::action::FollowJointTrajectory::Result>();
 
     const auto goal = goal_handle->get_goal();
 
     trajectory_msgs::msg::JointTrajectory trajectory_msg;
     trajectory_msg = goal->trajectory;
-
-    for (auto joint_name : trajectory_msg.joint_names)
-    {
-      RCLCPP_INFO(this->get_logger(), "execute, trajectory_->joint_trajectory->joint_names: %s", joint_name.c_str());
-    }
-
-    RCLCPP_INFO(this->get_logger(), "execute, sizeof(trajectory_msg.points): %i", sizeof(trajectory_msg.points));
 
     this->set_joint_trajectory_cb(std::make_shared<trajectory_msgs::msg::JointTrajectory>(trajectory_msg));
 
@@ -274,7 +270,6 @@ namespace gazebo_controller_manager
   void JointTrajectoryController::update_joint_position_timer_cb()
   {
     std::lock_guard<std::mutex> lock(this->trajectory_mutex_);
-    // wait trajectory
     if (!this->has_trajectory_)
     {
       return;
@@ -282,8 +277,7 @@ namespace gazebo_controller_manager
     // check index of trajectory points
     if (trajectory_index_ >= joint_trajectory_points_.size())
     {
-      std::lock_guard<std::mutex> scoped_lock(
-          this->cv_mutex_);   // the lock will be released after the scope of this function
+      std::lock_guard<std::mutex> scoped_lock(this->cv_mutex_);
       this->has_trajectory_ = false;
       this->cv_.notify_one();
       return;
@@ -375,7 +369,7 @@ namespace gazebo_controller_manager
       std::lock_guard<std::mutex> lock(this->trajectory_mutex_);
       auto chain_size = static_cast<unsigned int>(joint_names_.size());
       auto points_size = static_cast<unsigned int>(msg->points.size());
-      std::cout << "get trajectory msg:" << points_size << std::endl;   // DEBUGGING
+      // std::cout << "get trajectory msg:" << points_size << std::endl;   // DEBUGGING
       joint_trajectory_points_.resize(points_size);
       for (unsigned int i = 0; i < points_size; ++i)
       {
