@@ -30,19 +30,35 @@ namespace gazebo_controller_manager
 
     this->initialize_gz_transport_node(joint_names, gz_cmd_topics);
 
-    this->action_server_ = rclcpp_action::create_server<control_msgs::action::FollowJointTrajectory>(
+    this->follow_joint_trajectory_action_server_ =
+        rclcpp_action::create_server<control_msgs::action::FollowJointTrajectory>(
+            this->get_node_base_interface(),
+            this->get_node_clock_interface(),
+            this->get_node_logging_interface(),
+            this->get_node_waitables_interface(),
+            follow_joint_trajectory_action,
+            std::bind(&JointTrajectoryController::handle_goal, this, std::placeholders::_1, std::placeholders::_2),
+            std::bind(&JointTrajectoryController::handle_cancel, this, std::placeholders::_1),
+            std::bind(&JointTrajectoryController::handle_accepted, this, std::placeholders::_1));
+
+    this->execute_trajectory_action_server_ = rclcpp_action::create_server<moveit_msgs::action::ExecuteTrajectory>(
         this->get_node_base_interface(),
         this->get_node_clock_interface(),
         this->get_node_logging_interface(),
         this->get_node_waitables_interface(),
-        follow_joint_trajectory_action,
-        std::bind(&JointTrajectoryController::handle_goal, this, std::placeholders::_1, std::placeholders::_2),
-        std::bind(&JointTrajectoryController::handle_cancel, this, std::placeholders::_1),
-        std::bind(&JointTrajectoryController::handle_accepted, this, std::placeholders::_1));
+        "/execute_trajectory",
+        std::bind(&JointTrajectoryController::handle_execute_trajectory_goal,
+                  this,
+                  std::placeholders::_1,
+                  std::placeholders::_2),
+        std::bind(&JointTrajectoryController::handle_execute_trajectory_cancel, this, std::placeholders::_1),
+        std::bind(&JointTrajectoryController::handle_execute_trajectory_accepted, this, std::placeholders::_1));
+
+    this->cmd_vel_publisher_ = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
 
     auto period = std::chrono::microseconds(1000000 / update_rate);
     this->update_position_timer_ =
-        this->create_wall_timer(period, std::bind(&JointTrajectoryController::update_position_timer_cb, this));
+        this->create_wall_timer(period, std::bind(&JointTrajectoryController::update_joint_position_timer_cb, this));
     // create gz pub
     for (size_t i = 0; i < gz_cmd_topics.size(); i++)
     {
@@ -81,7 +97,7 @@ namespace gazebo_controller_manager
     for (size_t i = 0; i < this->joint_num_; i++)
     {
       this->joint_names_map_[this->joint_names_[i]] = i;
-      this->target_positions_.push_back(0);
+      this->target_joint_positions_.push_back(0);
     }
   }
 
@@ -89,16 +105,25 @@ namespace gazebo_controller_manager
       const rclcpp_action::GoalUUID& uuid,
       std::shared_ptr<const control_msgs::action::FollowJointTrajectory::Goal> goal)
   {
-    RCLCPP_INFO(this->get_logger(), "Received goal request");
+    RCLCPP_INFO(this->get_logger(), "Received goal request for follow_joint_trajectory_action_server_");
     (void) uuid;
 
-    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+    if (received_execute_trajectory_)
+    {
+      RCLCPP_INFO(this->get_logger(),
+                  "Already received a trajectory execution request on the /execute_trajectory action");
+      return rclcpp_action::GoalResponse::REJECT;
+    }
+    else
+    {
+      return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+    }
   }
 
   rclcpp_action::CancelResponse JointTrajectoryController::handle_cancel(
       const std::shared_ptr<rclcpp_action::ServerGoalHandle<control_msgs::action::FollowJointTrajectory>> goal_handle)
   {
-    RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
+    RCLCPP_INFO(this->get_logger(), "Received request to cancel goal for follow_joint_trajectory_action_server_");
     (void) goal_handle;
 
     return rclcpp_action::CancelResponse::ACCEPT;
@@ -107,13 +132,89 @@ namespace gazebo_controller_manager
   void JointTrajectoryController::handle_accepted(
       const std::shared_ptr<rclcpp_action::ServerGoalHandle<control_msgs::action::FollowJointTrajectory>> goal_handle)
   {
-    RCLCPP_INFO(this->get_logger(), "handle_accepted and executing");
+    RCLCPP_INFO(this->get_logger(), "handle_accepted and executing for follow_joint_trajectory_action_server_");
 
-    // this needs to return quickly to avoid blocking the executor, so spin up a new thread
-    std::thread{std::bind(&JointTrajectoryController::execute, this, std::placeholders::_1), goal_handle}.detach();
+    if (received_execute_trajectory_)
+    {
+      RCLCPP_INFO(this->get_logger(),
+                  "Already received a trajectory execution request on the /execute_trajectory action");
+    }
+    else
+    {
+      // this needs to return quickly to avoid blocking the executor, so spin up a new thread
+      std::thread{std::bind(&JointTrajectoryController::execute_follow_joint_trajectory, this, std::placeholders::_1),
+                  goal_handle}
+          .detach();
+    }
   }
 
-  void JointTrajectoryController::execute(
+  rclcpp_action::GoalResponse JointTrajectoryController::handle_execute_trajectory_goal(
+      const rclcpp_action::GoalUUID& uuid, std::shared_ptr<const moveit_msgs::action::ExecuteTrajectory::Goal> goal)
+  {
+    RCLCPP_INFO(this->get_logger(), "Received goal request for /execute_trajectory");
+    (void) uuid;
+
+    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
+  }
+
+  rclcpp_action::CancelResponse JointTrajectoryController::handle_execute_trajectory_cancel(
+      const std::shared_ptr<rclcpp_action::ServerGoalHandle<moveit_msgs::action::ExecuteTrajectory>> goal_handle)
+  {
+    RCLCPP_INFO(this->get_logger(), "Received request to cancel goal for /execute_trajectory");
+    (void) goal_handle;
+
+    return rclcpp_action::CancelResponse::ACCEPT;
+  }
+
+  void JointTrajectoryController::handle_execute_trajectory_accepted(
+      const std::shared_ptr<rclcpp_action::ServerGoalHandle<moveit_msgs::action::ExecuteTrajectory>> goal_handle)
+  {
+    RCLCPP_INFO(this->get_logger(), "handle and executing for /execute_trajectory");
+
+    bool received_execute_trajectory_ = true;
+
+    // this needs to return quickly to avoid blocking the executor, so spin up a new thread
+    std::thread{std::bind(&JointTrajectoryController::execute_trajectory, this, std::placeholders::_1), goal_handle}
+        .detach();
+  }
+
+  void JointTrajectoryController::handle_finished_trajectory_execution()
+  {
+    received_execute_trajectory_ = false;
+    has_trajectory_for_mobile_base_ = false;
+    RCLCPP_INFO(this->get_logger(), "Goal Succeeded");
+  }
+
+  void JointTrajectoryController::execute_trajectory(
+      const std::shared_ptr<rclcpp_action::ServerGoalHandle<moveit_msgs::action::ExecuteTrajectory>> goal_handle)
+  {
+    auto result = std::make_shared<moveit_msgs::action::ExecuteTrajectory::Result>();
+
+    auto goal_trajectory = goal_handle->get_goal()->trajectory;
+
+    trajectory_msgs::msg::JointTrajectory arm_trajectory_msg = goal_trajectory.joint_trajectory;
+
+    trajectory_msgs::msg::MultiDOFJointTrajectory mobile_base_trajectory_msg =
+        goal_trajectory.multi_dof_joint_trajectory;
+
+    this->set_joint_trajectory_cb(std::make_shared<trajectory_msgs::msg::JointTrajectory>(arm_trajectory_msg));
+
+    this->set_mobile_base_trajectory(mobile_base_trajectory_msg);
+
+    if (rclcpp::ok())
+    {
+      std::unique_lock<std::mutex> lock_until_trajectory_motion_is_finished(this->cv_mutex_);
+      this->cv_.wait(lock_until_trajectory_motion_is_finished,
+                     [this]
+                     {
+                       return this->is_trajectory_motion_finished();
+                     });
+      goal_handle->succeed(result);
+      handle_finished_trajectory_execution();
+    }
+  }
+
+  void JointTrajectoryController::execute_follow_joint_trajectory(
       const std::shared_ptr<rclcpp_action::ServerGoalHandle<control_msgs::action::FollowJointTrajectory>> goal_handle)
   {
     auto result = std::make_shared<control_msgs::action::FollowJointTrajectory::Result>();
@@ -122,6 +223,13 @@ namespace gazebo_controller_manager
 
     trajectory_msgs::msg::JointTrajectory trajectory_msg;
     trajectory_msg = goal->trajectory;
+
+    for (auto joint_name : trajectory_msg.joint_names)
+    {
+      RCLCPP_INFO(this->get_logger(), "execute, trajectory_->joint_trajectory->joint_names: %s", joint_name.c_str());
+    }
+
+    RCLCPP_INFO(this->get_logger(), "execute, sizeof(trajectory_msg.points): %i", sizeof(trajectory_msg.points));
 
     this->set_joint_trajectory_cb(std::make_shared<trajectory_msgs::msg::JointTrajectory>(trajectory_msg));
 
@@ -134,7 +242,7 @@ namespace gazebo_controller_manager
                        return this->is_trajectory_motion_finished();
                      });
       goal_handle->succeed(result);
-      RCLCPP_INFO(this->get_logger(), "Goal Succeeded");
+      handle_finished_trajectory_execution();
     }
   }
 
@@ -143,7 +251,27 @@ namespace gazebo_controller_manager
     return !this->has_trajectory_;
   }
 
-  void JointTrajectoryController::update_position_timer_cb()
+  void JointTrajectoryController::update_cmd_vel_for_mobile_base(double c)
+  {
+    if (!has_trajectory_for_mobile_base_)
+    {
+      return;
+    }
+
+    auto current_velocity_target = mobile_base_trajectory_points_[trajectory_index_].velocities.front();
+    auto next_velocity_target = mobile_base_trajectory_points_[trajectory_index_ + 1].velocities.front();
+    auto msg = std::make_shared<geometry_msgs::msg::Twist>();
+    msg->linear.x = (1 - c) * current_velocity_target.linear.x + c * next_velocity_target.linear.x;
+    msg->linear.y = (1 - c) * current_velocity_target.linear.y + c * next_velocity_target.linear.y;
+    msg->linear.z = (1 - c) * current_velocity_target.linear.z + c * next_velocity_target.linear.z;
+    msg->angular.x = (1 - c) * current_velocity_target.angular.x + c * next_velocity_target.angular.x;
+    msg->angular.y = (1 - c) * current_velocity_target.angular.y + c * next_velocity_target.angular.y;
+    msg->angular.z = (1 - c) * current_velocity_target.angular.z + c * next_velocity_target.angular.z;
+
+    cmd_vel_publisher_->publish(*msg);
+  }
+
+  void JointTrajectoryController::update_joint_position_timer_cb()
   {
     std::lock_guard<std::mutex> lock(this->trajectory_mutex_);
     // wait trajectory
@@ -152,7 +280,7 @@ namespace gazebo_controller_manager
       return;
     }
     // check index of trajectory points
-    if (trajectory_index_ >= points_.size())
+    if (trajectory_index_ >= joint_trajectory_points_.size())
     {
       std::lock_guard<std::mutex> scoped_lock(
           this->cv_mutex_);   // the lock will be released after the scope of this function
@@ -162,19 +290,22 @@ namespace gazebo_controller_manager
     }
     // trajectory roll-out based on time, this is not the most efficient way to set things
     // joint position interpolation (simple linear interpolation)
-    if (trajectory_index_ < points_.size() - 1)
+    if (trajectory_index_ < joint_trajectory_points_.size() - 1)
     {
       rclcpp::Time current_time = rclcpp::Clock().now();
       rclcpp::Duration cur_time_from_start = current_time - trajectory_start_time_;
-      rclcpp::Duration time_from_start = points_[trajectory_index_].time_from_start;
-      rclcpp::Duration next_time_from_start = points_[trajectory_index_ + 1].time_from_start;
+      rclcpp::Duration time_from_start = joint_trajectory_points_[trajectory_index_].time_from_start;
+      rclcpp::Duration next_time_from_start = joint_trajectory_points_[trajectory_index_ + 1].time_from_start;
       double c = (cur_time_from_start - time_from_start).seconds() / (next_time_from_start - time_from_start).seconds();
       c = c > 1 ? 1 : c;
       for (size_t i = 0; i < joint_names_.size(); ++i)
       {
-        target_positions_[i] =
-            (1 - c) * points_[trajectory_index_].positions[i] + c * points_[trajectory_index_ + 1].positions[i];
+        target_joint_positions_[i] = (1 - c) * joint_trajectory_points_[trajectory_index_].positions[i] +
+                                     c * joint_trajectory_points_[trajectory_index_ + 1].positions[i];
       }
+
+      update_cmd_vel_for_mobile_base(c);
+
       // increment to next trajectory point
       if (cur_time_from_start >= next_time_from_start)
       {
@@ -185,54 +316,98 @@ namespace gazebo_controller_manager
     {
       for (size_t i = 0; i < joint_names_.size(); ++i)
       {
-        target_positions_[i] = points_[trajectory_index_].positions[i];
+        target_joint_positions_[i] = joint_trajectory_points_[trajectory_index_].positions[i];
       }
+      update_cmd_vel_for_mobile_base(0);
       trajectory_index_++;
     }
     // publish control msg to gz
     for (size_t i = 0; i < joint_names_.size(); ++i)
     {
-      gz::msgs::Double ign_msg;
-      ign_msg.set_data(target_positions_[i]);
-      gz_cmd_joint_pubs_[i]->Publish(ign_msg);
+      gz::msgs::Double gz_msg;
+      gz_msg.set_data(target_joint_positions_[i]);
+      gz_cmd_joint_pubs_[i]->Publish(gz_msg);
     }
   }
 
-  void JointTrajectoryController::set_joint_trajectory_cb(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
+  bool JointTrajectoryController::is_joint_order_correct(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
   {
-    // check
-    if (msg->joint_names.size() < joint_names_.size())
-    {
-      return;
-    }
     for (size_t k = 0; k < joint_names_.size(); k++)
     {
       if (joint_names_[k] != msg->joint_names[k])
       {
+        return false;
+      }
+    }
+    return true;
+  }
+
+  void JointTrajectoryController::reverse_joint_order()
+  {
+    std::reverse(joint_names_.begin(), joint_names_.end());
+    std::reverse(gz_cmd_joint_pubs_.begin(), gz_cmd_joint_pubs_.end());
+  }
+
+  void JointTrajectoryController::set_joint_trajectory_cb(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
+  {
+    if (msg->joint_names.size() < joint_names_.size())
+    {
+      RCLCPP_ERROR(this->get_logger(),
+                   "Size of the joint names of the trajectory message does not match the size of the joint names list "
+                   "that were given into the joint trajectory controller!");
+      return;
+    }
+    if (!is_joint_order_correct(msg))
+    {
+      reverse_joint_order();
+      if (!is_joint_order_correct(msg))
+      {
+        RCLCPP_ERROR(
+            this->get_logger(),
+            "The joint names of the trajectory message does not match joint names list that were given into the "
+            "joint trajectory controller!");
         return;
       }
     }
+
     // get points
     {
       std::lock_guard<std::mutex> lock(this->trajectory_mutex_);
-
       auto chain_size = static_cast<unsigned int>(joint_names_.size());
       auto points_size = static_cast<unsigned int>(msg->points.size());
       std::cout << "get trajectory msg:" << points_size << std::endl;   // DEBUGGING
-      points_.resize(points_size);
+      joint_trajectory_points_.resize(points_size);
       for (unsigned int i = 0; i < points_size; ++i)
       {
-        points_[i].positions.resize(chain_size);
-        points_[i].time_from_start = msg->points[i].time_from_start;
+        joint_trajectory_points_[i].positions.resize(chain_size);
+        joint_trajectory_points_[i].time_from_start = msg->points[i].time_from_start;
         for (unsigned int j = 0; j < chain_size; ++j)
         {
-          points_[i].positions[j] = msg->points[i].positions[j];
+          joint_trajectory_points_[i].positions[j] = msg->points[i].positions[j];
         }
       }
       // trajectory start time
       trajectory_start_time_ = rclcpp::Clock().now();
       this->has_trajectory_ = true;
       this->trajectory_index_ = 0;
+    }
+  }
+
+  void JointTrajectoryController::set_mobile_base_trajectory(
+      trajectory_msgs::msg::MultiDOFJointTrajectory mobile_base_trajectory)
+  {
+    uint32_t num_of_trajectory_points = mobile_base_trajectory.points.size();
+
+    if (num_of_trajectory_points > 0)
+    {
+      mobile_base_trajectory_points_.resize(num_of_trajectory_points);
+      mobile_base_trajectory_points_ = mobile_base_trajectory.points;
+
+      has_trajectory_for_mobile_base_ = true;
+    }
+    else
+    {
+      has_trajectory_for_mobile_base_ = false;
     }
   }
 }   // namespace gazebo_controller_manager

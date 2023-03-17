@@ -25,6 +25,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(control_msgs REQUIRED)
+find_package(moveit_msgs REQUIRED)
 find_package(${gz_transport_version} REQUIRED)
 find_package(${gz_msgs_version} REQUIRED)
 
@@ -34,6 +35,7 @@ set(dependencies
   std_msgs
   sensor_msgs
   control_msgs
+  moveit_msgs
   ${gz_transport_version}
   ${gz_msgs_version}
 )

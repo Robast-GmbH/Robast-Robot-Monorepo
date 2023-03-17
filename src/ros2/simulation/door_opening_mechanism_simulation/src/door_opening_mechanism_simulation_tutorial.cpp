@@ -164,9 +164,9 @@ int main(int argc, char** argv)
               target_pose1.pose.orientation.z,
               target_pose1.header.frame_id.c_str());
 
-  target_pose1.pose.position.x -= 0.1;
-  target_pose1.pose.position.y += 0.1;
-  target_pose1.pose.position.z += 0.1;
+  target_pose1.pose.position.x -= 0.1;    // hard target example: 0.4
+  target_pose1.pose.position.y += 0.1;    // hard target example: 0.3
+  target_pose1.pose.position.z += 0.25;   // hard target example: 0.2
   // tf2::Quaternion q;
   // q.setRPY(0, +1.57079632679, 0);
   // target_pose1.pose.orientation = tf2::toMsg(q);
@@ -187,7 +187,12 @@ int main(int argc, char** argv)
               target_pose1.pose.orientation.z,
               target_pose1.header.frame_id.c_str());
 
-  move_group.setGoalTolerance(0.000001);
+  // move_group.setGoalTolerance(0.000001);
+
+  move_group.setGoalJointTolerance(0.000001);
+  move_group.setGoalPositionTolerance(0.000001);
+  move_group.setGoalOrientationTolerance(0.000001);
+
   // move_group.setPlannerId("TRRTkConfigDefault");
   move_group.setPlanningTime(20);
   // move_group.setNumPlanningAttempts(3);
@@ -206,6 +211,27 @@ int main(int argc, char** argv)
 
   if (success)
   {
+    for (auto joint_name : my_plan.trajectory_.joint_trajectory.joint_names)
+    {
+      RCLCPP_INFO(LOGGER, "my_plan->trajectory_->joint_trajectory->joint_names: %s", joint_name.c_str());
+    }
+
+    RCLCPP_INFO(LOGGER,
+                "my_plan.trajectory_.joint_trajectory.header.frame_id: %s",
+                my_plan.trajectory_.joint_trajectory.header.frame_id.c_str());
+
+    for (auto joint_name : my_plan.trajectory_.multi_dof_joint_trajectory.joint_names)
+    {
+      RCLCPP_INFO(LOGGER, "my_plan.trajectory_.multi_dof_joint_trajectory.joint_names: %s", joint_name.c_str());
+    }
+
+    RCLCPP_INFO(LOGGER,
+                "sizeof(my_plan.trajectory_.multi_dof_joint_trajectory[0].points: %i",
+                sizeof(my_plan.trajectory_.multi_dof_joint_trajectory.points));
+
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr publisher =
+        move_group_node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
+
     move_group.execute(my_plan);
   }
 
