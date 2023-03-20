@@ -1,14 +1,21 @@
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
+from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.parameter_descriptions import ParameterValue
+from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 from moveit_configs_utils.launch_utils import (DeclareBooleanLaunchArg,
                                                add_debuggable_node)
+from launch.conditions import IfCondition
 
 
 def generate_launch_description():
 
+        use_rviz = LaunchConfiguration("use_rviz")
+        
+        declare_use_rviz_cmd = DeclareLaunchArgument('use_rviz', default_value='true', description='Whether to start RViz')
+        
+        
         moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer").to_moveit_configs()
 
         ld = LaunchDescription()
@@ -26,8 +33,6 @@ def generate_launch_description():
                 description="By default, we are not in debug mode",
                 )
         )
-        ld.add_action(DeclareBooleanLaunchArg("use_rviz", default_value=True))
-
         ld.add_action(DeclareBooleanLaunchArg("debug", default_value=False))
         ld.add_action(
                 DeclareBooleanLaunchArg("allow_trajectory_execution", default_value=True)
@@ -96,15 +101,20 @@ def generate_launch_description():
                 moveit_config.robot_description_kinematics,
                 {"use_sim_time": True},
         ]
-
-        add_debuggable_node(
-                ld,
+        rviz_node = Node(
                 package="rviz2",
                 executable="rviz2",
                 output="log",
                 respawn=False,
                 arguments=["-d", LaunchConfiguration("rviz_config")],
                 parameters=rviz_parameters,
+                condition=IfCondition(
+                        PythonExpression(
+                                [use_rviz]
+                        )
+                )
         )
-
+        ld.add_action(declare_use_rviz_cmd)
+        ld.add_action(rviz_node)
+        
         return ld
