@@ -30,7 +30,7 @@
 
   <!-- Visualizer -->
   <!-- <group>
-    <include file="$(find-pkg-share rmf_visualization)/visualization.launch.xml">
+    <include file="$(find-pkg-share rmf_visualization)/xml_launches/visualization.launch.xml">
       <arg name="use_sim_time" value="$(var use_sim_time)"/>
       <arg name="map_name" value="$(var initial_map)"/>
       <arg name="viz_config_file" value ="$(var viz_config_file)"/>
@@ -60,11 +60,11 @@
     </node>
   </group>
 
-  <group if="$(var use_rmf_panel)">
-    <include file="$(find-pkg-share rmf_demos)/dashboard.launch.xml">
+  <!-- <group if="$(var use_rmf_panel)">
+    <include file="$(find-pkg-share rmf_demos)/xml_launches/dashboard.launch.xml">
       <arg name="use_sim_time" value="$(var use_sim_time)"/>
       <arg name="dashboard_config_file" value ="$(var dashboard_config_file)"/>
     </include>
-  </group> 
+  </group>  -->
 
 </launch>

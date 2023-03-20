@@ -1,13 +1,13 @@
 cmake_minimum_required(VERSION 3.5)
 
-project(rmf_robast)
+project(rmf_robast_demo)
 
 find_package(ament_cmake REQUIRED)
 
 install(DIRECTORY
   launch/
   config/
-  models/
+  model/
   DESTINATION share/${PROJECT_NAME}
 )
  set(crowd_sim_config_resource ${output_dir}/config_resource/)
@@ -24,7 +24,7 @@ install(DIRECTORY
   set(output_world_name "6og")
   set(ign_output_dir ${CMAKE_CURRENT_BINARY_DIR}/6og_ign)
   set(ign_output_world_path ${ign_output_dir}/${output_world_name}.world)
-  set(ign_output_model_dir ${ign_output_dir}/models)
+  set(ign_output_model_dir ${ign_output_dir}/model)
   set(output_model_dir ${output_dir})
   
   add_custom_target(build-time-make-directory ALL
@@ -32,7 +32,7 @@ install(DIRECTORY
   
   add_custom_command(
     OUTPUT ${ign_output_world_path}
-    COMMAND ros2 run rmf_building_map_tools building_map_generator ignition "/workspace/src/simulation/rmf_robast/models/6og.building.yaml" ${map_path} ${ign_output_world_path} ${ign_output_model_dir} 
+    COMMAND ros2 run rmf_building_map_tools building_map_generator ignition "/workspace/src/rmf/rmf_robast_demo/model/6og.building.yaml" ${map_path} ${ign_output_world_path} ${ign_output_model_dir} 
     DEPENDS ${map_path}
   )
 

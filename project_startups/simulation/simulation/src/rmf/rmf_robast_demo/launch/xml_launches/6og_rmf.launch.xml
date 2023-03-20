@@ -1,0 +1,23 @@
+<?xml version='1.0' ?>
+
+<launch>
+  <arg name="use_sim_time" default="false"/>
+
+  <!-- Common launch -->
+  <include file="$(find-pkg-share rmf_robast_demo)/xml_launches/common.launch.xml">
+    <arg name="use_sim_time" value="$(var use_sim_time)"/>
+    <arg name="viz_config_file" value ="$(find-pkg-share rmf_robast_demo)/include/6og.rviz"/>
+    <arg name="config_file" value="$(find-pkg-share rmf_robast_demo)/6og.building.yaml"/>
+    <arg name="dashboard_config_file" value="$(find-pkg-share rmf_robast_demo)/dashboard_config.json"/>
+  </include>
+
+  <!-- theron fleet adapter -->
+  <group>
+    <include file="$(find-pkg-share rmf_robast_demo)/xml_launches/fleet_adapter.launch.xml">
+      <arg name="use_sim_time" value="$(var use_sim_time)"/>
+      <arg name="nav_graph_file" value="$(find-pkg-share rmf_robast_demo)/maps/office/nav_graphs/0.yaml" />
+      <arg name="config_file" value="$(find-pkg-share rmf_robast_demo)/theron_config.yaml"/>
+    </include>
+  </group>
+
+</launch>
