@@ -20,14 +20,21 @@ find_package(ament_cmake REQUIRED)
 
 
 if(BUILD_TESTING)
+  ament_add_test(test_nfc_drawer
+    GENERATE_RESULT_FOR_RETURN_CODE_ZERO
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/src/drawer_sys_test/test_case_launch.py"
+    WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
+    TIMEOUT 45
+    ENV
+      TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/src/drawer_sys_test
+  )
   ament_add_test(test_waypoint_follower
     GENERATE_RESULT_FOR_RETURN_CODE_ZERO
-    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/launch/test_case_launch.py"
+    COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/src/nav_tests/test_case_launch.py"
     WORKING_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}"
-    TIMEOUT 240
+    TIMEOUT 210
     ENV
-      TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}
-      BT_NAVIGATOR_XML=navigate_to_pose_w_replanning_and_recovery.xml
+      TEST_DIR=${CMAKE_CURRENT_SOURCE_DIR}/src/nav_tests
   )
 endif()
 
