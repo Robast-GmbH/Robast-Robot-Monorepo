@@ -1,6 +1,7 @@
 #include <stretch_kinematics_plugin/stretch_kinematics_plugin.h>
 #include <tf2/transform_datatypes.h>
-#include <tf2_eigen/tf2_eigen.h>
+
+#include <tf2_eigen/tf2_eigen.hpp>
 
 namespace stretch_kinematics_plugin
 {
