@@ -27,6 +27,7 @@ RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pk
     && apt-get install -y gz-${GZ_VERSION} \
     && apt-get update
 
+# Nav part of installs
 RUN apt-get update && apt-get install -y \
     cmake \
     gdb \
@@ -40,6 +41,17 @@ RUN apt-get update && apt-get install -y \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     && rm -rf /var/lib/apt/lists/* \
     && rosdep init || echo "rosdep already initialized"
+
+# additional installs for the statemachine 
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    libzmq3-dev \
+    libncurses5-dev \
+    libncursesw5-dev \
+    qtbase5-dev \
+    libqt5svg5-dev \
+    gdb \
+    && rm -rf /var/lib/apt/lists/*
     
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
