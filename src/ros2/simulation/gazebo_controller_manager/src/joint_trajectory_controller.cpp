@@ -254,15 +254,28 @@ namespace gazebo_controller_manager
       return;
     }
 
-    auto current_velocity_target = mobile_base_trajectory_points_[trajectory_index_].velocities.front();
-    auto next_velocity_target = mobile_base_trajectory_points_[trajectory_index_ + 1].velocities.front();
     auto msg = std::make_shared<geometry_msgs::msg::Twist>();
-    msg->linear.x = (1 - c) * current_velocity_target.linear.x + c * next_velocity_target.linear.x;
-    msg->linear.y = (1 - c) * current_velocity_target.linear.y + c * next_velocity_target.linear.y;
-    msg->linear.z = (1 - c) * current_velocity_target.linear.z + c * next_velocity_target.linear.z;
-    msg->angular.x = (1 - c) * current_velocity_target.angular.x + c * next_velocity_target.angular.x;
-    msg->angular.y = (1 - c) * current_velocity_target.angular.y + c * next_velocity_target.angular.y;
-    msg->angular.z = (1 - c) * current_velocity_target.angular.z + c * next_velocity_target.angular.z;
+    if (c == 0)
+    {
+      auto current_velocity_target = mobile_base_trajectory_points_[trajectory_index_].velocities.front();
+      msg->linear.x = current_velocity_target.linear.x;
+      msg->linear.y = current_velocity_target.linear.y;
+      msg->linear.z = current_velocity_target.linear.z;
+      msg->angular.x = current_velocity_target.angular.x;
+      msg->angular.y = current_velocity_target.angular.y;
+      msg->angular.z = current_velocity_target.angular.z;
+    }
+    else
+    {
+      auto current_velocity_target = mobile_base_trajectory_points_[trajectory_index_].velocities.front();
+      auto next_velocity_target = mobile_base_trajectory_points_[trajectory_index_ + 1].velocities.front();
+      msg->linear.x = (1 - c) * current_velocity_target.linear.x + c * next_velocity_target.linear.x;
+      msg->linear.y = (1 - c) * current_velocity_target.linear.y + c * next_velocity_target.linear.y;
+      msg->linear.z = (1 - c) * current_velocity_target.linear.z + c * next_velocity_target.linear.z;
+      msg->angular.x = (1 - c) * current_velocity_target.angular.x + c * next_velocity_target.angular.x;
+      msg->angular.y = (1 - c) * current_velocity_target.angular.y + c * next_velocity_target.angular.y;
+      msg->angular.z = (1 - c) * current_velocity_target.angular.z + c * next_velocity_target.angular.z;
+    }
 
     cmd_vel_publisher_->publish(*msg);
   }
