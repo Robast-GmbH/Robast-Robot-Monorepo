@@ -192,6 +192,7 @@ namespace gazebo_controller_manager
                      {
                        return this->is_trajectory_motion_finished();
                      });
+      result->error_code.val = moveit::core::MoveItErrorCode::SUCCESS;
       goal_handle->succeed(result);
       handle_finished_trajectory_execution();
     }

@@ -26,6 +26,7 @@ find_package(std_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 find_package(control_msgs REQUIRED)
 find_package(moveit_msgs REQUIRED)
+find_package(moveit_core REQUIRED)
 find_package(${gz_transport_version} REQUIRED)
 find_package(${gz_msgs_version} REQUIRED)
 
@@ -36,6 +37,7 @@ set(dependencies
   sensor_msgs
   control_msgs
   moveit_msgs
+  moveit_core
   ${gz_transport_version}
   ${gz_msgs_version}
 )

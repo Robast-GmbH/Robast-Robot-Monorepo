@@ -1,6 +1,8 @@
 #ifndef RB_THERON__JOINT_TRAJECTORY_CONTROLLER_HPP_
 #define RB_THERON__JOINT_TRAJECTORY_CONTROLLER_HPP_
 
+#include <moveit/utils/moveit_error_code.h>
+
 #include <condition_variable>
 #include <gz/msgs.hh>
 #include <gz/transport/Node.hh>
