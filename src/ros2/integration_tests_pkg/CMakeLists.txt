@@ -20,6 +20,8 @@ find_package(ament_cmake REQUIRED)
 
 
 if(BUILD_TESTING)
+  find_package(ament_cmake_pep257 REQUIRED)
+  ament_pep257()
   ament_add_test(test_nfc_drawer
     GENERATE_RESULT_FOR_RETURN_CODE_ZERO
     COMMAND "${CMAKE_CURRENT_SOURCE_DIR}/src/drawer_sys_test/test_case_launch.py"

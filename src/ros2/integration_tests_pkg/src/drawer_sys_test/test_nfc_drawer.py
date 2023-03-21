@@ -39,6 +39,7 @@ class NfcDrawerTest(Node):
         self.subscription = self.create_subscription(DrawerLeds, '/drawer_leds', self.led_callback, qos_profile=qos)
         self.__led_msg_count = 0
         self.__led_list = []
+        self.result = True
         
         time.sleep(5)
         
@@ -69,8 +70,10 @@ class NfcDrawerTest(Node):
     
     def led_callback(self, msg):
         if self.compareLED(self.__led_list[self.__led_msg_count], msg):
+            self.result = True
             self.info_msg('LED message correct')
         else:
+            self.result = False
             self.error_msg('LED message incorrect')
         self.__led_msg_count += 1
         
@@ -84,6 +87,7 @@ class NfcDrawerTest(Node):
         self.get_logger().error(msg)
         
     def run(self):
+        
         self.info_msg('Running test')
         self.__led_msg_count = 0
         self.info_msg('sending nfc tag 2 to start the tree')
@@ -93,34 +97,37 @@ class NfcDrawerTest(Node):
         self.info_msg('Waiting for LED messages')
         while self.__led_msg_count < len(self.__led_list):
             rclpy.spin_once(self, timeout_sec=0.1)
+            if self.result == False:
+                return self.result
         self.info_msg('All LED messages received')
-        return True
+        return self.result
 
 
 def main(argv=sys.argv[1:]):
     rclpy.init()
     time.sleep(5)
     
-    test = NfcDrawerTest()
+    nfc_drawer_test = NfcDrawerTest()
     statemachine_bringup_dir = get_package_share_directory('drawer_sm')
-    test.setTree(os.path.join(statemachine_bringup_dir, 'trees', 'drawer_nfc_bt.xml'))
+    nfc_drawer_test.setTree(os.path.join(statemachine_bringup_dir, 'trees', 'drawer_nfc_bt.xml'))
     
-    test.add_led_element(create_led_msg(0, 255, 0, 128, 1))
-    test.add_led_element(create_led_msg(255, 255, 255, 128, 1))
-    test.add_led_element(create_led_msg(255, 128, 0, 150, 2))
-    test.add_led_element(create_led_msg(0, 155, 155, 25, 1))
+    # content of the magic numbers could be found in the linked xml file above
+    nfc_drawer_test.add_led_element(create_led_msg(0, 255, 0, 128, 1))
+    nfc_drawer_test.add_led_element(create_led_msg(255, 255, 255, 128, 1))
+    nfc_drawer_test.add_led_element(create_led_msg(255, 128, 0, 150, 2))
+    nfc_drawer_test.add_led_element(create_led_msg(0, 155, 155, 25, 1))
     
     
-    result = test.run()
+    result = nfc_drawer_test.run()
     time.sleep(2)
     
-    test.info_msg('Done Shutting Down.')
+    nfc_drawer_test.info_msg('Done Shutting Down.')
 
     if not result:
-        test.info_msg('Exiting failed')
+        nfc_drawer_test.info_msg('Exiting failed')
         exit(1)
     else:
-        test.info_msg('Exiting passed')
+        nfc_drawer_test.info_msg('Exiting passed')
         exit(0)
 
 

@@ -61,7 +61,7 @@ def generate_launch_description():
     declare_headless_cmd = DeclareLaunchArgument(
         "headless",
         default_value="",
-        description="Weather to run n headless mode (-s) or with gui ''",
+        description="Weather to run in headless mode (-s) or with gui ''",
     )
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(

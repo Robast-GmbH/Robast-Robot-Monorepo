@@ -90,7 +90,8 @@ RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ros
   && rosdep update \
   && rosdep install --from-paths /workspace_ros_gz/src --ignore-src -r -y \
   && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install \
-  && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
+  && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc \
+  && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV IGN_FILE_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}

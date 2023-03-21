@@ -30,7 +30,14 @@
             "type": "shell",
             "command": "sudo apt-get update && rosdep update && rosdep install --from-paths src --ignore-src -y",
             "problemMatcher": []
-        }    
+        },
+        {
+            "label": "execute tests in the given project",
+            "detail": "use a colcon test on the given project",
+            "type": "shell",
+            "command": "source install/setup.bash; colcon test --packages-select ${input:package} --event-handlers console_cohesion+ --executor sequential",
+            "problemMatcher": []
+        }
     ],
     "inputs": [
         {

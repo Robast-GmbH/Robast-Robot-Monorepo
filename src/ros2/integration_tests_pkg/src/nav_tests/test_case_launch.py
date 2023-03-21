@@ -73,13 +73,13 @@ def generate_launch_description():
 def main(argv=sys.argv[1:]):
     ld = generate_launch_description()
 
-    test1_action = ExecuteProcess(
+    nav_test_action = ExecuteProcess(
         cmd=[os.path.join(os.getenv('TEST_DIR'), 'test_nav.py')],
         name='nav_tester_node',
         output='screen')
 
     lts = LaunchTestService()
-    lts.add_test_action(ld, test1_action)
+    lts.add_test_action(ld, nav_test_action)
     ls = LaunchService(argv=argv)
     ls.include_launch_description(ld)
     return lts.run(ls)
