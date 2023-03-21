@@ -13,8 +13,7 @@ def generate_launch_description():
 
         use_rviz = LaunchConfiguration("use_rviz")
         
-        declare_use_rviz_cmd = DeclareLaunchArgument('use_rviz', default_value='true', description='Whether to start RViz')
-        
+        declare_use_rviz_cmd = DeclareLaunchArgument('use_rviz', default_value='True', description='Whether to start RViz')
         
         moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer_config").to_moveit_configs()
 
@@ -43,7 +42,8 @@ def generate_launch_description():
         # load non-default MoveGroup capabilities (space separated)
         ld.add_action(DeclareLaunchArgument("capabilities", default_value=""))
         # inhibit these default MoveGroup capabilities (space separated)
-        ld.add_action(DeclareLaunchArgument("disable_capabilities", default_value=""))
+        ld.add_action(DeclareLaunchArgument("disable_capabilities", default_value="move_group/MoveGroupExecuteTrajectoryAction"))
+
 
         # do not copy dynamics information from /joint_states to internal robot monitoring
         # default to false, because almost nothing in move_group relies on this information
