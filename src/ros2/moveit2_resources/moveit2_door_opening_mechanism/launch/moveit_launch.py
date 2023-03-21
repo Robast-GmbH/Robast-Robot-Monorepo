@@ -38,7 +38,7 @@ def generate_launch_description():
         # load non-default MoveGroup capabilities (space separated)
         ld.add_action(DeclareLaunchArgument("capabilities", default_value=""))
         # inhibit these default MoveGroup capabilities (space separated)
-        ld.add_action(DeclareLaunchArgument("disable_capabilities", default_value=""))
+        ld.add_action(DeclareLaunchArgument("disable_capabilities", default_value="move_group/MoveGroupExecuteTrajectoryAction"))
 
         # do not copy dynamics information from /joint_states to internal robot monitoring
         # default to false, because almost nothing in move_group relies on this information
@@ -104,7 +104,13 @@ def generate_launch_description():
                 executable="rviz2",
                 output="log",
                 respawn=False,
-                arguments=["-d", LaunchConfiguration("rviz_config")],
+                arguments=[
+                        "-d",
+                        LaunchConfiguration("rviz_config"),
+                        # "--ros-args",
+                        # "--log-level",
+                        # "debug",
+                ],
                 parameters=rviz_parameters,
         )
 
