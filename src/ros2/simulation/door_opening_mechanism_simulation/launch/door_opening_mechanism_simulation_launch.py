@@ -5,7 +5,7 @@ from moveit_configs_utils import MoveItConfigsBuilder
 
 def generate_launch_description():
 
-    moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_door_opening_mechanism").to_moveit_configs()
+    moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_door_opening_mechanism_config").to_moveit_configs()
 
     ld = LaunchDescription()
 

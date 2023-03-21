@@ -37,7 +37,6 @@ set(dependencies
   sensor_msgs
   control_msgs
   moveit_msgs
-  moveit_core
   ${gz_transport_version}
   ${gz_msgs_version}
 )

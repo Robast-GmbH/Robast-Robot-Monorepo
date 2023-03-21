@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(moveit2_drawer)
+project(moveit2_door_opening_mechanism_config)
 
 find_package(ament_cmake REQUIRED)
 

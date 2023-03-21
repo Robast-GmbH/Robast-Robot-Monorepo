@@ -16,7 +16,7 @@ def generate_launch_description():
         declare_use_rviz_cmd = DeclareLaunchArgument('use_rviz', default_value='true', description='Whether to start RViz')
         
         
-        moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer").to_moveit_configs()
+        moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer_config").to_moveit_configs()
 
         ld = LaunchDescription()
         ld.add_action(
