@@ -25,11 +25,13 @@ joint_limits:
     max_acceleration: 0.0
   position/x:
     has_velocity_limits: true
-    max_velocity: 1.15
+    max_velocity: 2.15
     has_acceleration_limits: true
     max_acceleration: 1.0
+    # max_position: 8.0
+    # min_position: -8.0
   position/theta:
     has_velocity_limits: true
-    max_velocity: 1.15
+    max_velocity: 2.15
     has_acceleration_limits: true
     max_acceleration: 1.0

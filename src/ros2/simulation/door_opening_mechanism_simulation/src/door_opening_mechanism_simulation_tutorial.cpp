@@ -116,18 +116,10 @@ int main(int argc, char** argv)
   // We can also print the name of the end-effector link for this group.
   RCLCPP_INFO(LOGGER, "End effector link: %s", move_group.getEndEffectorLink().c_str());
 
-  // We can get a list of all the groups in the robot:
-  RCLCPP_INFO(LOGGER, "Available Planning Groups:");
-  std::copy(move_group.getJointModelGroupNames().begin(),
-            move_group.getJointModelGroupNames().end(),
-            std::ostream_iterator<std::string>(std::cout, ", "));
-
-  // RCLCPP_INFO(LOGGER, "joint_model_group->getTypeName(): %s", joint_model_group->getTypeName());
-
   geometry_msgs::msg::PoseStamped target_pose1 = move_group.getCurrentPose();
 
-  target_pose1.pose.position.x -= 0.1;    // hard target example: 0.4
-  target_pose1.pose.position.y += 0.1;    // hard target example: 0.3
+  target_pose1.pose.position.x -= 0.3;    // hard target example: 0.4
+  target_pose1.pose.position.y += 0.3;    // hard target example: 0.3
   target_pose1.pose.position.z += 0.25;   // hard target example: 0.2
   // tf2::Quaternion q;
   // q.setRPY(0, +1.57079632679, 0);
@@ -148,19 +140,16 @@ int main(int argc, char** argv)
   // move_group.setNumPlanningAttempts(3);
   move_group.setPoseTarget(target_pose1);
 
-  // Now, we call the planner to compute the plan and visualize it.
-  // Note that we are just planning, not asking move_group
-  // to actually move the robot.
   moveit::planning_interface::MoveGroupInterface::Plan my_plan;
 
-  bool success = (move_group.plan(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+  auto planning_result = move_group.plan(my_plan);
 
-  RCLCPP_INFO(LOGGER, "Visualizing plan 1 (pose goal) %s", success ? "" : "FAILED");
+  RCLCPP_INFO(LOGGER, "planning_result.val: %d", planning_result.val);
+  RCLCPP_INFO(LOGGER, "Planning result: %s", error_code_to_string(planning_result).c_str());
 
-  if (success)
-  {
-    move_group.execute(my_plan);
-  }
+  bool planning_success = (planning_result == moveit::core::MoveItErrorCode::SUCCESS);
+
+  RCLCPP_INFO(LOGGER, "Visualizing plan 1 (pose goal) %s", planning_success ? "" : "FAILED");
 
   // Visualizing plans
   // ^^^^^^^^^^^^^^^^^
@@ -170,6 +159,15 @@ int main(int argc, char** argv)
   visual_tools.publishText(text_pose, "Pose_Goal", rvt::WHITE, rvt::XLARGE);
   visual_tools.publishTrajectoryLine(my_plan.trajectory_, joint_model_group);
   visual_tools.trigger();
+
+  visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
+
+  if (planning_success)
+  {
+    bool executing_success = (move_group.execute(my_plan) == moveit::core::MoveItErrorCode::SUCCESS);
+
+    RCLCPP_INFO(LOGGER, "Executing %s", executing_success ? "SUCCESS" : "FAILED");
+  }
 
   rclcpp::shutdown();
   return 0;

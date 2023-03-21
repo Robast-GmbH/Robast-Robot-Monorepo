@@ -42,6 +42,7 @@
     <virtual_joint name="position" type="planar" parent_frame="odom" child_link="base_footprint"/>
     <joint_property joint_name="position" property_name="motion_model" value="diff_drive" />
     <joint_property joint_name="position" property_name="min_translational_distance" value="0.01" />
+    <joint_property joint_name="position" property_name="angular_distance_weight" value="0.5" />
     <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
     <passive_joint name="drawer_1_joint"/>
     <passive_joint name="drawer_2_joint"/>
