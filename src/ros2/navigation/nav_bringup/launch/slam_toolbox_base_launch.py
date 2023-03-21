@@ -39,8 +39,6 @@ def generate_launch_description():
     transform_publish_period = LaunchConfiguration("transform_publish_period")
     slam_executable = LaunchConfiguration("slam_executable")
 
-    # setup launch arguments (ist tatsächlich übersichtlicher und relevant um die zu überschreiben, wenn du von wo anders aufrufst)
-
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
     )
@@ -136,19 +134,6 @@ def generate_launch_description():
         remappings=remappings_map_server,
     )
 
-    start_lifecycle_manager_cmd = Node(
-        package="nav2_lifecycle_manager",
-        executable="lifecycle_manager",
-        name="lifecycle_manager_navigation",
-        namespace=namespace,
-        output="screen",
-        parameters=[
-            {"use_sim_time": use_sim_time},
-            {"autostart": autostart},
-            {"node_names": ["slam_toolbox"]},
-        ],
-    )
-
     ld = LaunchDescription()
     # Set env var to print messages to stdout immediately
     ld.add_action(SetEnvironmentVariable("RCUTILS_LOGGING_BUFFERED_STREAM", "1"))
@@ -166,6 +151,5 @@ def generate_launch_description():
     # ld.add_action(declare_robot_start_pose_cmd)
 
     # nodes
-    ld.add_action(start_lifecycle_manager_cmd)
     ld.add_action(start_slam_toolbox_cmd)
     return ld

@@ -55,6 +55,12 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && rosdep init || echo "rosdep already initialized"
 
+#update drivers to avoid a blackscreen #TODO @all regularly check if its fixed in base docker
+RUN apt-get update && apt-get install -y \
+    software-properties-common \
+    && add-apt-repository ppa:kisak/kisak-mesa -y\
+    && apt upgrade -y
+
 
 # Must compile ros_gz, gz-msgs and gz-transport from source because Humble + Garden is not an official combination
 RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ros2 https://github.com/gazebosim/ros_gz.git \

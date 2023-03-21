@@ -5,8 +5,8 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    init_x = LaunchConfiguration('init_x', default="8.59")
-    init_y = LaunchConfiguration('init_y', default="-13.45")
+    init_x = LaunchConfiguration('init_x', default="0")
+    init_y = LaunchConfiguration('init_y', default="0")
     init_yaw = LaunchConfiguration('init_yaw', default="3.14")
     robot_name = LaunchConfiguration('robot_name', default="rb_theron")
 

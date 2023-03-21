@@ -118,4 +118,5 @@
     "[python]": {
         "editor.tabSize": 4
     },
+    "editor.wordWrap": "on",
 }

@@ -127,3 +127,12 @@
   publisher_queue: 10       # Default 10
   lazy: true               # Default "false"
   direction: ROS_TO_GZ
+
+- ros_topic_name: "/imu/data"
+  gz_topic_name: "/imu/data"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS

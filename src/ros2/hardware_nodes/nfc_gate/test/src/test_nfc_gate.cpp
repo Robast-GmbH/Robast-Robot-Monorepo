@@ -27,7 +27,7 @@ namespace nfc_gate
     valid_user_list.insert(std::pair<std::string, std::string>(get_parameter("User2_key").as_string(),
                                                                get_parameter("User2_name").as_string()));
     valid_user_list.insert(std::pair<std::string, std::string>(get_parameter("User3_key").as_string(),
-                                                               get_parameter("User3_name").as_string()));
+                                                               get_parameter("User3_name").as_string()));                                                           
 
     NFCGate::serial_connector_ = new serial_helper::MockSerialHelper(serial_helper::MockSerialHelper(key));
 
