@@ -93,6 +93,17 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get update && apt-get upgrade -y
 
+RUN mkdir -p /workspace_nav2/src && cd /workspace_nav2/src && git clone -b humble https://github.com/ros-planning/navigation2.git \
+  && apt update \
+  && apt upgrade -y \
+  && rosdep update \
+  && rosdep install --from-paths /workspace_nav2/src --ignore-src -r -y \
+  && chown -R ${USER} /workspace_nav2
+  # && . /opt/ros/${ROS_DISTRO}/setup.sh \
+  # && colcon build --build-base /workspace_nav2/build --install-base /workspace_nav2/install --packages-select nav2_mppi_controller \
+  # && echo "if [ -f /workspace_nav2/install/setup.bash ]; then source /workspace_nav2/install/setup.bash; fi" >> /home/$USER/.bashrc
+
+
 # COPY "/entrypoint.sh" "/entrypoint.sh"
 #ENTRYPOINT ["/entrypoint.sh"]
 
