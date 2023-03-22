@@ -58,7 +58,7 @@
     <disable_collisions link1="back_realsense_camera_link" link2="drawer_5" reason="Never"/>
     <disable_collisions link1="back_realsense_camera_link" link2="front_laser_base_link" reason="Never"/>
     <disable_collisions link1="back_realsense_camera_link" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="back_realsense_camera_link" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="back_realsense_camera_link" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="back_realsense_camera_link" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="back_realsense_camera_link" link2="leftcastorwheel" reason="Never"/>
@@ -83,7 +83,7 @@
     <disable_collisions link1="base_footprint" link2="drawer_5" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="front_laser_base_link" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="base_footprint" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="leftcastorwheel" reason="Never"/>
@@ -107,7 +107,7 @@
     <disable_collisions link1="base_link" link2="drawer_5" reason="Adjacent"/>
     <disable_collisions link1="base_link" link2="front_laser_base_link" reason="Adjacent"/>
     <disable_collisions link1="base_link" link2="front_realsense_camera_link" reason="Adjacent"/>
-    <disable_collisions link1="base_link" link2="imu_link" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="rb_theron/base_footprint/imu_link" reason="Adjacent"/>
     <disable_collisions link1="base_link" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="base_link" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="base_link" link2="leftrsupport" reason="Adjacent"/>
@@ -126,7 +126,7 @@
     <disable_collisions link1="bottom_cover_link" link2="drawer_5" reason="Never"/>
     <disable_collisions link1="bottom_cover_link" link2="front_laser_base_link" reason="Default"/>
     <disable_collisions link1="bottom_cover_link" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="bottom_cover_link" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="bottom_cover_link" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="bottom_cover_link" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="bottom_cover_link" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="bottom_cover_link" link2="leftcastorwheel" reason="Never"/>
@@ -148,7 +148,7 @@
     <disable_collisions link1="door_opening_mechanismdoor_opening_mechanism_link" link2="drawer_5" reason="Never"/>
     <disable_collisions link1="door_opening_mechanismdoor_opening_mechanism_link" link2="front_laser_base_link" reason="Never"/>
     <disable_collisions link1="door_opening_mechanismdoor_opening_mechanism_link" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanismdoor_opening_mechanism_link" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanismdoor_opening_mechanism_link" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="door_opening_mechanismdoor_opening_mechanism_link" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="door_opening_mechanismdoor_opening_mechanism_link" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="door_opening_mechanismdoor_opening_mechanism_link" link2="leftcastorwheel" reason="Never"/>
@@ -169,7 +169,7 @@
     <disable_collisions link1="drawer_1" link2="drawer_5" reason="Never"/>
     <disable_collisions link1="drawer_1" link2="front_laser_base_link" reason="Never"/>
     <disable_collisions link1="drawer_1" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="drawer_1" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="drawer_1" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="drawer_1" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="drawer_1" link2="leftcastorwheel" reason="Never"/>
@@ -189,7 +189,7 @@
     <disable_collisions link1="drawer_2" link2="drawer_5" reason="Never"/>
     <disable_collisions link1="drawer_2" link2="front_laser_base_link" reason="Never"/>
     <disable_collisions link1="drawer_2" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="drawer_2" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="drawer_2" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="drawer_2" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="drawer_2" link2="leftcastorwheel" reason="Never"/>
@@ -208,7 +208,7 @@
     <disable_collisions link1="drawer_3" link2="drawer_5" reason="Never"/>
     <disable_collisions link1="drawer_3" link2="front_laser_base_link" reason="Never"/>
     <disable_collisions link1="drawer_3" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="drawer_3" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="drawer_3" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="drawer_3" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="drawer_3" link2="leftcastorwheel" reason="Never"/>
@@ -226,7 +226,7 @@
     <disable_collisions link1="drawer_4" link2="drawer_5" reason="Never"/>
     <disable_collisions link1="drawer_4" link2="front_laser_base_link" reason="Never"/>
     <disable_collisions link1="drawer_4" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="drawer_4" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="drawer_4" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="drawer_4" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="drawer_4" link2="leftcastorwheel" reason="Never"/>
@@ -243,7 +243,7 @@
     <disable_collisions link1="drawer_4" link2="top_laser_base_link" reason="Never"/>
     <disable_collisions link1="drawer_5" link2="front_laser_base_link" reason="Never"/>
     <disable_collisions link1="drawer_5" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="drawer_5" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="drawer_5" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="drawer_5" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="drawer_5" link2="leftcastorwheel" reason="Never"/>
@@ -259,7 +259,7 @@
     <disable_collisions link1="drawer_5" link2="rightwheel" reason="Never"/>
     <disable_collisions link1="drawer_5" link2="top_laser_base_link" reason="Never"/>
     <disable_collisions link1="front_laser_base_link" link2="front_realsense_camera_link" reason="Never"/>
-    <disable_collisions link1="front_laser_base_link" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="front_laser_base_link" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="front_laser_base_link" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="front_laser_base_link" link2="leftcastorwheel" reason="Never"/>
@@ -274,7 +274,7 @@
     <disable_collisions link1="front_laser_base_link" link2="rightsupport" reason="Never"/>
     <disable_collisions link1="front_laser_base_link" link2="rightwheel" reason="Never"/>
     <disable_collisions link1="front_laser_base_link" link2="top_laser_base_link" reason="Never"/>
-    <disable_collisions link1="front_realsense_camera_link" link2="imu_link" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="front_realsense_camera_link" link2="left_wheel_link" reason="Never"/>
     <disable_collisions link1="front_realsense_camera_link" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="front_realsense_camera_link" link2="leftcastorwheel" reason="Never"/>
@@ -289,20 +289,20 @@
     <disable_collisions link1="front_realsense_camera_link" link2="rightsupport" reason="Never"/>
     <disable_collisions link1="front_realsense_camera_link" link2="rightwheel" reason="Never"/>
     <disable_collisions link1="front_realsense_camera_link" link2="top_laser_base_link" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="left_wheel_link" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="leftcastorsupport" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="leftcastorwheel" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="leftrsupport" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="leftsupport" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="leftwheel" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="module_cage_link" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="right_wheel_link" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="rightcastorsupport" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="rightcastorwheel" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="rightrsupport" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="rightsupport" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="rightwheel" reason="Never"/>
-    <disable_collisions link1="imu_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="leftcastorsupport" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="leftcastorwheel" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="leftrsupport" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="leftsupport" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="leftwheel" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="rightcastorsupport" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="rightcastorwheel" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="rightrsupport" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="rightsupport" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="rightwheel" reason="Never"/>
+    <disable_collisions link1="rb_theron/base_footprint/imu_link" link2="top_laser_base_link" reason="Never"/>
     <disable_collisions link1="left_wheel_link" link2="leftcastorsupport" reason="Never"/>
     <disable_collisions link1="left_wheel_link" link2="leftcastorwheel" reason="Never"/>
     <disable_collisions link1="left_wheel_link" link2="leftrsupport" reason="Adjacent"/>

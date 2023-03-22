@@ -265,7 +265,7 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          imu_link:
+          rb_theron/base_footprint/imu_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -606,7 +606,7 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          imu_link:
+          rb_theron/base_footprint/imu_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
