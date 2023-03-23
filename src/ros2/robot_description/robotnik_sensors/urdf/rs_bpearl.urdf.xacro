@@ -88,25 +88,25 @@
       <sensor name='${prefix}_link' type='gpu_lidar'>
         <visualize>true</visualize>
         <topic>bpearl_laser/scan</topic>
-        <update_rate>10</update_rate>
+        <update_rate>${fps}</update_rate>
         <ray>
           <scan>
                   <horizontal>
-                          <samples>440</samples>
+                          <samples>${samples}</samples>
                           <resolution>1</resolution>
                           <min_angle>0</min_angle>
                           <max_angle>3.14159265359</max_angle>
                   </horizontal>
                   <vertical>
-                          <samples>32</samples>
+                          <samples>${lasers}</samples>
                           <resolution>1</resolution>
                           <min_angle>0</min_angle> <!-- -180° -->
                           <max_angle>3.14159265359</max_angle> <!-- +180° -->
                   </vertical>
           </scan>
           <range>
-                  <min>0.3</min>
-                  <max>131</max>
+                  <min>0.1</min>
+                  <max>90</max>
                   <resolution>0.001</resolution>
           </range>
           <noise>
