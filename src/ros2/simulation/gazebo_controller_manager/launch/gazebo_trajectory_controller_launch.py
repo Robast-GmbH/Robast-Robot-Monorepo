@@ -34,20 +34,7 @@ def generate_launch_description():
                     the joints is relevant and must match the order in the moveit_controller.",
     )
 
-    #  ROS -> IGN,  joint position controller
-    # We can either use the joint position controller or the joint trajectory controller.
-    # In case we want moveit to plan and execute the motion,
-    # we have to go with the trajectory controller
-    joint_position_controller = Node(
-        package="gazebo_controller_manager",
-        executable="joint_position_controller",
-        name="rb_theron_joint_position_controller",
-        parameters=[
-            {"joint_names": joint_names_list},
-        ],
-        output="screen",
-    )
-
+    #  ROS -> IGN,  joint trajectory controller
     joint_trajectory_controller = Node(
         package="gazebo_controller_manager",
         executable="joint_trajectory_controller",
@@ -62,6 +49,5 @@ def generate_launch_description():
 
     ld.add_action(follow_joint_trajectory_action_cmd)
     ld.add_action(joint_names_cmd)
-    ld.add_action(joint_position_controller)
     ld.add_action(joint_trajectory_controller)
     return ld
