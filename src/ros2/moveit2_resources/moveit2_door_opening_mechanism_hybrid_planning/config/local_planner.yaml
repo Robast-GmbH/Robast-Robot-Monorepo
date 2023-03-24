@@ -9,7 +9,7 @@ publish_joint_positions: true
 publish_joint_velocities: false
 group_name: "door_opening_mechanism" # mobile_base_arm or door_opening_mechanism
 # Subscribe to this topic
-monitored_planning_scene: "/planning_scene"
+monitored_planning_scene: "/monitored_planning_scene"
 collision_object_topic: "/collision_object"
 joint_states_topic: "/joint_states"
 

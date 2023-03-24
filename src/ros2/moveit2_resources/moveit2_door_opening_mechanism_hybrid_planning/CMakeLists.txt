@@ -9,7 +9,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(moveit_hybrid_planning REQUIRED)
-
+find_package(rviz_visual_tools REQUIRED)
+find_package(moveit_visual_tools REQUIRED)
 
 set(executable_hybrid_planning_demo_node hybrid_planning_demo_node)
 
@@ -18,6 +19,8 @@ add_executable(${executable_hybrid_planning_demo_node} src/hybrid_planning_demo_
 set(dependencies
   rclcpp
   moveit_hybrid_planning
+  rviz_visual_tools
+  moveit_visual_tools
 )
 
 ament_target_dependencies(${executable_hybrid_planning_demo_node}

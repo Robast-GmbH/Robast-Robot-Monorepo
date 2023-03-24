@@ -42,6 +42,7 @@
 #include <moveit/planning_scene_monitor/planning_scene_monitor.h>
 #include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit/robot_state/conversions.h>
+#include <moveit_visual_tools/moveit_visual_tools.h>
 
 #include <moveit_msgs/action/hybrid_planner.hpp>
 #include <moveit_msgs/msg/display_robot_state.hpp>
@@ -199,6 +200,16 @@ class HybridPlanningDemo
     robot_model_loader::RobotModelLoader robot_model_loader(node_, "robot_description");
     const moveit::core::RobotModelPtr& robot_model = robot_model_loader.getModel();
 
+    namespace rvt = rviz_visual_tools;
+    moveit_visual_tools::MoveItVisualTools visual_tools(
+        node_, "base_footprint", "hybrid_planning_demo_node", robot_model);
+    visual_tools.deleteAllMarkers();
+    /* Remote control is an introspection tool that allows users to step through a high level script */
+    /* via buttons and keyboard shortcuts in RViz */
+    visual_tools.loadRemoteControl();
+    visual_tools.trigger();
+    visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
+
     // Create a RobotState and JointModelGroup
     const auto robot_state = std::make_shared<moveit::core::RobotState>(robot_model);
     const moveit::core::JointModelGroup* joint_model_group = robot_state->getJointModelGroup(planning_group);
@@ -274,6 +285,7 @@ class HybridPlanningDemo
 
     RCLCPP_INFO(LOGGER, "Sending hybrid planning goal");
     // Ask server to achieve some goal and wait until it's accepted
+
     auto goal_handle_future = hp_action_client_->async_send_goal(goal_action_request, send_goal_options);
   }
 
