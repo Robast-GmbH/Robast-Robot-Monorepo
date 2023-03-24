@@ -4,7 +4,7 @@ namespace gazebo_controller_manager
 {
   JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& nh,
                                                    const std::vector<std::string>& joint_names,
-                                                   const std::string& ros_cmd_topic)
+                                                   const std::string& ros_joint_trajectory_topic)
   {
     std::vector<std::string> gz_cmd_topics = this->get_gz_cmd_joint_topics(joint_names);
 
@@ -24,8 +24,10 @@ namespace gazebo_controller_manager
       joint_names_map_[joint_names_[i]] = i;
     }
     // create ros pub and sub
-    ros_cmd_joint_state_sub_ = nh_->create_subscription<sensor_msgs::msg::JointState>(
-        ros_cmd_topic, 10, std::bind(&JointPositionController::set_joint_position_cb, this, std::placeholders::_1));
+    ros_joint_trajectory_sub_ = nh_->create_subscription<trajectory_msgs::msg::JointTrajectory>(
+        ros_joint_trajectory_topic,
+        10,
+        std::bind(&JointPositionController::set_joint_position_cb, this, std::placeholders::_1));
     // create gz pub
     for (size_t i = 0; i < gz_cmd_topics.size(); i++)
     {
@@ -47,16 +49,16 @@ namespace gazebo_controller_manager
     return gz_cmd_topics;
   }
 
-  void JointPositionController::set_joint_position_cb(const sensor_msgs::msg::JointState::SharedPtr msg)
+  void JointPositionController::set_joint_position_cb(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
   {
-    for (auto i = 0u; i < msg->position.size(); ++i)
+    for (auto i = 0u; i < msg->points[0].positions.size(); ++i)
     {
-      if (joint_names_map_.find(msg->name[i]) != joint_names_map_.end())
+      if (joint_names_map_.find(msg->joint_names[i]) != joint_names_map_.end())
       {
         // find joint name in `joint_names_` .
-        int idx = joint_names_map_[msg->name[i]];
+        int idx = joint_names_map_[msg->joint_names[i]];
         gz::msgs::Double ign_msg;
-        ign_msg.set_data(msg->position[i]);
+        ign_msg.set_data(msg->points[0].positions[i]);
         gz_cmd_joint_pubs_[idx]->Publish(ign_msg);
       }
     }

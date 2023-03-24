@@ -14,8 +14,8 @@ int main(int argc, char* argv[])
   ros_node->declare_parameter("joint_names", default_joint_names);
   joint_names = ros_node->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
   // create controller
-  auto joint_position_controller =
-      std::make_shared<gazebo_controller_manager::JointPositionController>(ros_node, joint_names, "set_joint_state");
+  auto joint_position_controller = std::make_shared<gazebo_controller_manager::JointPositionController>(
+      ros_node, joint_names, "/door_opening_mechanism_controller/follow_joint_trajectory");
   // run node until it's exited
   rclcpp::spin(ros_node);
   // clean up
