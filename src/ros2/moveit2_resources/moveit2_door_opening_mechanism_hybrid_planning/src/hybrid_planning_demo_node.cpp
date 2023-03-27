@@ -213,7 +213,8 @@ class HybridPlanningDemo
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
     // Setup motion planning goal taken from motion_planning_api tutorial
-    const std::string planning_group = "door_opening_mechanism";
+    // const std::string planning_group = "door_opening_mechanism";
+    const std::string planning_group = "mobile_base_arm";
 
     // moveit::planning_interface::MoveGroupInterface move_group(node_, planning_group);
 
@@ -231,6 +232,47 @@ class HybridPlanningDemo
     moveit_msgs::msg::MotionPlanRequest goal_motion_request;
 
     moveit::core::robotStateToRobotStateMsg(*current_state, goal_motion_request.start_state);
+
+    for (int i = 0; i <= goal_motion_request.start_state.joint_state.position.size() - 1; i++)
+    {
+      RCLCPP_INFO(LOGGER,
+                  "!!!!!!!!!!! goal_motion_request.start_state.joint_state.position[%s] = %f",
+                  goal_motion_request.start_state.joint_state.name[i].c_str(),
+                  goal_motion_request.start_state.joint_state.position[i]);
+    }
+
+    RCLCPP_INFO(
+        LOGGER,
+        "????????????????????????? goal_motion_request.start_state.multi_dof_joint_state.joint_names[0].c_str() = %s",
+        goal_motion_request.start_state.multi_dof_joint_state.joint_names[0].c_str());
+
+    for (int i = 0; i <= goal_motion_request.start_state.multi_dof_joint_state.joint_names.size() - 1; i++)
+    {
+      RCLCPP_INFO(LOGGER,
+                  "!!!!!!!!!!! goal_motion_request.start_state.multi_dof_joint_state.transforms.translation.x[%s] = %f",
+                  goal_motion_request.start_state.multi_dof_joint_state.joint_names[i].c_str(),
+                  goal_motion_request.start_state.multi_dof_joint_state.transforms[i].translation.x);
+    }
+
+    // Get the variable bounds message for the group
+    const std::vector<const moveit::core::JointModel::Bounds*> joint_limits =
+        joint_model_group->getActiveJointModelsBounds();
+
+    // Loop through the joint limits and print them
+    for (const auto& bounds : joint_limits)
+    {
+      std::cout << "Joint limits: [";
+      for (std::size_t i = 0; i < bounds->size(); ++i)
+      {
+        std::cout << "[" << bounds->at(i).min_position_ << ", " << bounds->at(i).max_position_ << "]";
+        if (i != bounds->size() - 1)
+        {
+          std::cout << ", ";
+        }
+      }
+      std::cout << "]" << std::endl;
+    }
+
     goal_motion_request.group_name = planning_group;
     goal_motion_request.num_planning_attempts = 10;
     goal_motion_request.max_velocity_scaling_factor = 0.1;
@@ -253,8 +295,8 @@ class HybridPlanningDemo
     target_pose.pose = tf2::toMsg(end_effector_pose);
     target_pose.header.frame_id = "odom";
 
-    // target_pose1.pose.position.x -= 0.3;    // hard target example: 0.4
-    // target_pose1.pose.position.y += 0.3;    // hard target example: 0.3
+    // target_pose.pose.position.x -= 0.3;   // hard target example: 0.4
+    // target_pose.pose.position.y += 0.3;   // hard target example: 0.3
     target_pose.pose.position.z += 0.1;   // hard target example: 0.2
 
     std::vector<double> tolerance_pose(3, 0.000001);
