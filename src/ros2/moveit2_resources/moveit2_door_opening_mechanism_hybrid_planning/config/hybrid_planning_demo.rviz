@@ -720,7 +720,7 @@ Visualization Manager:
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: move_group_tutorial
+        Value: hybrid_planning_demo_node
       Value: true
   Enabled: true
   Global Options:

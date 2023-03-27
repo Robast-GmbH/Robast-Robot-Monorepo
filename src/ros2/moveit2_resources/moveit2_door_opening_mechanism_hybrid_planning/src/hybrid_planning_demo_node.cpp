@@ -37,12 +37,15 @@
  */
 
 #include <moveit/kinematic_constraints/utils.h>
+#include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_interface/planning_interface.h>
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/planning_scene_monitor/planning_scene_monitor.h>
 #include <moveit/robot_model_loader/robot_model_loader.h>
 #include <moveit/robot_state/conversions.h>
 #include <moveit_visual_tools/moveit_visual_tools.h>
+#include <tf2_eigen/tf2_eigen.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
 #include <moveit_msgs/action/hybrid_planner.hpp>
 #include <moveit_msgs/msg/display_robot_state.hpp>
@@ -145,6 +148,17 @@ class HybridPlanningDemo
 
   void run()
   {
+    robot_model_loader::RobotModelLoader robot_model_loader(node_, "robot_description");
+    const moveit::core::RobotModelPtr& robot_model = robot_model_loader.getModel();
+
+    namespace rvt = rviz_visual_tools;
+    moveit_visual_tools::MoveItVisualTools visual_tools(
+        node_, "base_footprint", "hybrid_planning_demo_node", robot_model);
+    visual_tools.deleteAllMarkers();
+    /* Remote control is an introspection tool that allows users to step through a high level script */
+    /* via buttons and keyboard shortcuts in RViz */
+    visual_tools.loadRemoteControl();
+
     RCLCPP_INFO(LOGGER, "Initialize Planning Scene Monitor");
     tf_buffer_ = std::make_shared<tf2_ros::Buffer>(node_->get_clock());
 
@@ -195,38 +209,28 @@ class HybridPlanningDemo
     RCLCPP_INFO(LOGGER, "Wait 2s for the collision object");
     rclcpp::sleep_for(2s);
 
-    // Setup motion planning goal taken from motion_planning_api tutorial
-    const std::string planning_group = "door_opening_mechanism";
-    robot_model_loader::RobotModelLoader robot_model_loader(node_, "robot_description");
-    const moveit::core::RobotModelPtr& robot_model = robot_model_loader.getModel();
-
-    namespace rvt = rviz_visual_tools;
-    moveit_visual_tools::MoveItVisualTools visual_tools(
-        node_, "base_footprint", "hybrid_planning_demo_node", robot_model);
-    visual_tools.deleteAllMarkers();
-    /* Remote control is an introspection tool that allows users to step through a high level script */
-    /* via buttons and keyboard shortcuts in RViz */
-    visual_tools.loadRemoteControl();
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
+
+    // Setup motion planning goal taken from motion_planning_api tutorial
+    const std::string planning_group = "door_opening_mechanism";
+
+    // moveit::planning_interface::MoveGroupInterface move_group(node_, planning_group);
 
     // Create a RobotState and JointModelGroup
     const auto robot_state = std::make_shared<moveit::core::RobotState>(robot_model);
     const moveit::core::JointModelGroup* joint_model_group = robot_state->getJointModelGroup(planning_group);
 
-    // Configure a valid robot state
-    robot_state->setToDefaultValues(joint_model_group, "ready");
-    robot_state->update();
-    // Lock the planning scene as briefly as possible
+    moveit::core::RobotStatePtr current_state;
     {
       planning_scene_monitor::LockedPlanningSceneRW locked_planning_scene(planning_scene_monitor_);
-      locked_planning_scene->setCurrentState(*robot_state);
+      current_state = std::make_shared<moveit::core::RobotState>(locked_planning_scene->getCurrentState());
     }
 
     // Create desired motion goal
     moveit_msgs::msg::MotionPlanRequest goal_motion_request;
 
-    moveit::core::robotStateToRobotStateMsg(*robot_state, goal_motion_request.start_state);
+    moveit::core::robotStateToRobotStateMsg(*current_state, goal_motion_request.start_state);
     goal_motion_request.group_name = planning_group;
     goal_motion_request.num_planning_attempts = 10;
     goal_motion_request.max_velocity_scaling_factor = 0.1;
@@ -240,8 +244,23 @@ class HybridPlanningDemo
     goal_state.setJointGroupPositions(joint_model_group, joint_values);
 
     goal_motion_request.goal_constraints.resize(1);
-    goal_motion_request.goal_constraints[0] =
-        kinematic_constraints::constructGoalConstraints(goal_state, joint_model_group);
+    // goal_motion_request.goal_constraints[0] =
+    //     kinematic_constraints::constructGoalConstraints(goal_state, joint_model_group, 1.0);
+
+    const Eigen::Isometry3d& end_effector_pose = current_state->getGlobalLinkTransform("alu_profile_link_gripper");
+
+    geometry_msgs::msg::PoseStamped target_pose;
+    target_pose.pose = tf2::toMsg(end_effector_pose);
+    target_pose.header.frame_id = "odom";
+
+    // target_pose1.pose.position.x -= 0.3;    // hard target example: 0.4
+    // target_pose1.pose.position.y += 0.3;    // hard target example: 0.3
+    target_pose.pose.position.z += 0.1;   // hard target example: 0.2
+
+    std::vector<double> tolerance_pose(3, 0.000001);
+    std::vector<double> tolerance_angle(3, 0.000001);
+    goal_motion_request.goal_constraints[0] = kinematic_constraints::constructGoalConstraints(
+        "alu_profile_link_gripper", target_pose, tolerance_pose, tolerance_angle);
 
     // Create Hybrid Planning action request
     moveit_msgs::msg::MotionSequenceItem sequence_item;
