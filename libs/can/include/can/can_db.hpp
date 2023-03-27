@@ -66,7 +66,30 @@ namespace robast_can_msgs
                         CanSignal(CAN_SIGNAL_MOTOR_E3_BIT_START, CAN_SIGNAL_MOTOR_E3_BIT_LENGTH, 0),
                         CanSignal(CAN_SIGNAL_MOTOR_E4_BIT_START, CAN_SIGNAL_MOTOR_E4_BIT_LENGTH, 0),
                     }
-                )
+                ),
+                CanMessage(
+                    CAN_ID_ELECTRIC_DRAWER_TASK,
+                    CAN_DLC_ELECTRIC_DRAWER_TASK,
+                    {
+                        CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_GOTO_POSITION_BIT_START, CAN_SIGNAL_DRAWER_GOTO_POSITION_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_SPEED_MODE_BIT_START, CAN_SIGNAL_DRAWER_SPEED_MODE_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE_BIT_START, CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE_BIT_LENGTH, 0)
+                    }
+                ),
+                CanMessage(
+                    CAN_ID_ELECTRIC_DRAWER_FEEDBACK,
+                    CAN_DLC_ELECTRIC_DRAWER_FEEDBACK,
+                    {
+                        CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED_BIT_START, CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_POSITION_BIT_START, CAN_SIGNAL_DRAWER_POSITION_BIT_LENGTH, 0)
+                    }
+                ),
             };
     };
 }  // namespace robast_can_msgs
