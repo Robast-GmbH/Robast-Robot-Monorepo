@@ -5,7 +5,7 @@ namespace robast_can_msgs
 {
     #define CAN_STD_MSG_DLC_MAXIMUM 8
 
-    #define NUM_OF_CAN_MSGS 4
+    #define NUM_OF_CAN_MSGS 6
 
     /*********************************************************************************************************
      CAN IDs and DLCs for the CAN Bus
@@ -15,11 +15,16 @@ namespace robast_can_msgs
     #define CAN_ID_DRAWER_LED 0x002
     #define CAN_ID_DRAWER_FEEDBACK 0x003
     #define CAN_ID_DOOR_MANIPULATOR 0x004
+    #define CAN_ID_ELECTRIC_DRAWER_TASK 0x005
+    #define CAN_ID_ELECTRIC_DRAWER_FEEDBACK 0x006
 
     #define CAN_DLC_DRAWER_LOCK 4
     #define CAN_DLC_DRAWER_LED 8
     #define CAN_DLC_DRAWER_FEEDBACK 4
     #define CAN_DLC_DOOR_MANIPULATOR 4
+    #define CAN_DLC_ELECTRIC_DRAWER_TASK 5
+    #define CAN_DLC_ELECTRIC_DRAWER_FEEDBACK 5
+
 
 
     /*********************************************************************************************************
@@ -30,6 +35,7 @@ namespace robast_can_msgs
     #define CAN_MSG_DRAWER_LED 1
     #define CAN_MSG_DRAWER_FEEDBACK 2
     #define CAN_MSG_DOOR_MANIPULATOR 3
+    #define CAN_MSG_DRAWER_TASK 4
 
     #define CAN_SIGNAL_DRAWER_CONTROLLER_ID 0
     #define CAN_SIGNAL_OPEN_LOCK_1 1
@@ -54,6 +60,19 @@ namespace robast_can_msgs
     #define CAN_SIGNAL_MOTOR_E2 3
     #define CAN_SIGNAL_MOTOR_E3 4
     #define CAN_SIGNAL_MOTOR_E4 5
+
+    #define CAN_SIGNAL_DRAWER_CONTROLLER_ID 0
+    #define CAN_SIGNAL_DRAWER_GOTO_POSITION 1
+    #define CAN_SIGNAL_DRAWER_SPEED_MODE 2
+    #define CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE 3
+
+    #define CAN_SIGNAL_DRAWER_CONTROLLER_ID 0
+    #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED 1
+    #define CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED 2
+    #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED 3
+    #define CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED 4
+    #define CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED 5
+    #define CAN_SIGNAL_DRAWER_POSITION 6
 
     /*********************************************************************************************************
      CAN SIGNAL BIT START
@@ -90,6 +109,8 @@ namespace robast_can_msgs
     #define CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_START 27
     #define CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_LENGTH 1
 
+
+
     #define CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START 0
     #define CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH 24
     #define CAN_SIGNAL_MOTOR_ID_BIT_START 24
@@ -104,6 +125,33 @@ namespace robast_can_msgs
     #define CAN_SIGNAL_MOTOR_E4_BIT_LENGTH 1
 
 
+    #define CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START 0
+    #define CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH 24
+    #define CAN_SIGNAL_DRAWER_GOTO_POSITION_BIT_START 24
+    #define CAN_SIGNAL_DRAWER_GOTO_POSITION_BIT_LENGTH 8
+    #define CAN_SIGNAL_DRAWER_SPEED_MODE_BIT_START 32
+    #define CAN_SIGNAL_DRAWER_SPEED_MODE_BIT_LENGTH 3
+    #define CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE_BIT_START 35
+    #define CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE_BIT_LENGTH 1
+
+
+
+
+    #define CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START 0
+    #define CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH 24
+    #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_START 24
+    #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_LENGTH 1
+    #define CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_START 25
+    #define CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_LENGTH 1
+    #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_START 26
+    #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_LENGTH 1
+    #define CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_START 27
+    #define CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_LENGTH 1
+    #define CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED_BIT_START 28
+    #define CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED_BIT_LENGTH 1
+    #define CAN_SIGNAL_DRAWER_POSITION_BIT_START 29
+    #define CAN_SIGNAL_DRAWER_POSITION_BIT_LENGTH 8
+
     /*******************************************
      * Some defines for actual CAN data
     *******************************************/
@@ -113,6 +161,13 @@ namespace robast_can_msgs
 
     #define CAN_DATA_SWITCH_IS_NOT_PUSHED 0
     #define CAN_DATA_SWITCH_IS_PUSHED 1
+
+    #define CAN_DATA_DRAWER_STALL_GUARD_DISABLED 0
+    #define CAN_DATA_DRAWER_STALL_GUARD_ENABLED 1
+   
+    #define CAN_DATA_DRAWER_IS_STALL_GUARD_NOT_TRIGGERED 0
+    #define CAN_DATA_DRAWER_IS_STALL_GUARD_TRIGGERED 1
+    
 }  // namespace robast_can_msgs
 
 #endif  // CAN__CAN_DB_DEFINES_H_
