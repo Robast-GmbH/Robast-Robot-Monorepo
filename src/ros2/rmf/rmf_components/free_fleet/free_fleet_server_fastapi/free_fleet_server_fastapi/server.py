@@ -1,8 +1,9 @@
 
 from typing import List
 from fastapi import FastAPI
-from free_fleet import free_fleet_server
-import fastapi_classes
+import uvicorn
+from free_fleet_server_fastapi.freefleet import free_fleet_server
+import free_fleet_server_fastapi.fastapi_classes as fastapi_classes
 
 
 
@@ -30,3 +31,5 @@ def change_path(fleet_name: str, robot_name: str, path: List[fastapi_classes.Loc
 def change_destination(fleet_name: str, robot_name: str, destination: fastapi_classes.Location):
     free_fleet_server.handle_destination_request(fleet_name, robot_name, destination)
 
+if __name__ == "__main__":
+    uvicorn.run(app, host="0.0.0.0", port=8000)
