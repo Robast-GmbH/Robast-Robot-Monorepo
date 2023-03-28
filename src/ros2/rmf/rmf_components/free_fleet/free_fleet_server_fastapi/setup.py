@@ -20,7 +20,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'server = free_fleet_server_fastapi.server:main'
+            'server = free_fleet_server_fastapi.server',
+            'free_fleet= free_fleet_server_fastapi.freefleet'
         ],
     },
 )
