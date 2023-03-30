@@ -119,7 +119,7 @@
 	</xacro:sensor_rs_lidar_16>-->
 
 	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser"  parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
-            <origin xyz="0.28 -0.159 1.22" rpy="-1.570796326795 0 -1.570796326795"/>
+            <origin xyz="0.16 -0.159 1.22" rpy="-1.570796326795 0 -1.570796326795"/>
         </xacro:sensor_rs_bpearl>
 
 	<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="back_laser" min_angle="-1.8107619" max_angle="1.8107619">
@@ -134,14 +134,14 @@
 	<xacro:arg name="camera_name"   default="oak" />
 	<xacro:arg name="camera_model"  default="OAK-D-LITE" />
 	<xacro:arg name="base_frame"    default="oak-d_frame" />
-	<xacro:arg name="cam_pos_x"     default="0.347" />
+	<xacro:arg name="cam_pos_x"     default="0.287" />
 	<xacro:arg name="cam_pos_y"     default="-0.159" />
 	<xacro:arg name="cam_pos_z"     default="1.149" />
 	<xacro:arg name="cam_roll"      default="0.0" />
 	<xacro:arg name="cam_pitch"     default="0.0" />
 	<xacro:arg name="cam_yaw"       default="0.0" />
 
-	<!-- <xacro:depthai_camera camera_name = "$(arg camera_name)" parent = "$(arg prefix)base_link" camera_model = "$(arg camera_model)" base_frame = "$(arg base_frame)" cam_pos_x = "$(arg cam_pos_x)" cam_pos_y = "$(arg cam_pos_y)" cam_pos_z = "$(arg cam_pos_z)" cam_roll = "$(arg cam_roll)" cam_pitch = "$(arg cam_pitch)" cam_yaw = "$(arg cam_yaw)"/> -->
+	<xacro:depthai_camera camera_name = "$(arg camera_name)" parent = "$(arg prefix)base_link" camera_model = "$(arg camera_model)" base_frame = "$(arg base_frame)" cam_pos_x = "$(arg cam_pos_x)" cam_pos_y = "$(arg cam_pos_y)" cam_pos_z = "$(arg cam_pos_z)" cam_roll = "$(arg cam_roll)" cam_pitch = "$(arg cam_pitch)" cam_yaw = "$(arg cam_yaw)"/>
 
 	<!-- ROBAST Module Cage -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
