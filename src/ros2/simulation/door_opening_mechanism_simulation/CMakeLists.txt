@@ -18,9 +18,11 @@ include_directories(include)
 
 set(executable_door_opening_mechanism_simulation door_opening_mechanism_simulation)
 set(executable_door_opening_mechanism_simulation_tutorial door_opening_mechanism_simulation_tutorial)
+set(executable_door_opening_mechanism_simulation_motion_plan_request door_opening_mechanism_simulation_motion_plan_request)
 
 add_executable(${executable_door_opening_mechanism_simulation} src/door_opening_mechanism_simulation_main.cpp)
 add_executable(${executable_door_opening_mechanism_simulation_tutorial} src/door_opening_mechanism_simulation_tutorial.cpp)
+add_executable(${executable_door_opening_mechanism_simulation_motion_plan_request} src/door_opening_mechanism_simulation_motion_plan_request.cpp)
 
 set(library_door_opening_mechanism_simulation ${executable_door_opening_mechanism_simulation}_core)
 
@@ -38,6 +40,9 @@ set(dependencies
 )
 
 ament_target_dependencies(${executable_door_opening_mechanism_simulation_tutorial}
+  ${dependencies}
+)
+ament_target_dependencies(${executable_door_opening_mechanism_simulation_motion_plan_request}
   ${dependencies}
 )
 ament_target_dependencies(${executable_door_opening_mechanism_simulation}
@@ -65,6 +70,7 @@ endif()
 install(TARGETS
   ${executable_door_opening_mechanism_simulation}
   ${executable_door_opening_mechanism_simulation_tutorial}
+  ${executable_door_opening_mechanism_simulation_motion_plan_request}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
