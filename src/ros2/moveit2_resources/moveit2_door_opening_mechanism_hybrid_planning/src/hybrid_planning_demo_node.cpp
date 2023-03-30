@@ -37,6 +37,7 @@
  */
 
 #include <moveit/kinematic_constraints/utils.h>
+#include <moveit/kinematics_base/kinematics_base.h>
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_interface/planning_interface.h>
 #include <moveit/planning_scene/planning_scene.h>
@@ -114,40 +115,46 @@ class HybridPlanningDemo
         rclcpp::SystemDefaultsQoS(),
         [this](const moveit_msgs::msg::MotionPlanResponse::ConstSharedPtr& /* unused */)
         {
-          // Remove old collision objects
-          collision_object_1_.operation = collision_object_1_.REMOVE;
+          // // Remove old collision objects
+          // collision_object_1_.operation = collision_object_1_.REMOVE;
 
-          // Add new collision objects
-          geometry_msgs::msg::Pose box_pose_2;
-          box_pose_2.position.x = 0.2;
-          box_pose_2.position.y = 0.4;
-          box_pose_2.position.z = 0.95;
+          // // Add new collision objects
+          // geometry_msgs::msg::Pose box_pose_2;
+          // box_pose_2.position.x = 0.2;
+          // box_pose_2.position.y = 0.4;
+          // box_pose_2.position.z = 0.95;
 
-          collision_object_2_.primitives.push_back(box_2_);
-          collision_object_2_.primitive_poses.push_back(box_pose_2);
-          collision_object_2_.operation = collision_object_2_.ADD;
+          // collision_object_2_.primitives.push_back(box_2_);
+          // collision_object_2_.primitive_poses.push_back(box_pose_2);
+          // collision_object_2_.operation = collision_object_2_.ADD;
 
-          geometry_msgs::msg::Pose box_pose_3;
-          box_pose_3.position.x = 0.2;
-          box_pose_3.position.y = -0.4;
-          box_pose_3.position.z = 0.95;
+          // geometry_msgs::msg::Pose box_pose_3;
+          // box_pose_3.position.x = 0.2;
+          // box_pose_3.position.y = -0.4;
+          // box_pose_3.position.z = 0.95;
 
-          collision_object_3_.primitives.push_back(box_2_);
-          collision_object_3_.primitive_poses.push_back(box_pose_3);
-          collision_object_3_.operation = collision_object_3_.ADD;
+          // collision_object_3_.primitives.push_back(box_2_);
+          // collision_object_3_.primitive_poses.push_back(box_pose_3);
+          // collision_object_3_.operation = collision_object_3_.ADD;
 
-          // Add object to planning scene
-          {   // Lock PlanningScene
-            planning_scene_monitor::LockedPlanningSceneRW scene(planning_scene_monitor_);
-            scene->processCollisionObjectMsg(collision_object_2_);
-            scene->processCollisionObjectMsg(collision_object_3_);
-            scene->processCollisionObjectMsg(collision_object_1_);
-          }   // Unlock PlanningScene
+          // // Add object to planning scene
+          // {   // Lock PlanningScene
+          //   planning_scene_monitor::LockedPlanningSceneRW scene(planning_scene_monitor_);
+          //   scene->processCollisionObjectMsg(collision_object_2_);
+          //   scene->processCollisionObjectMsg(collision_object_3_);
+          //   scene->processCollisionObjectMsg(collision_object_1_);
+          // }   // Unlock PlanningScene
         });
   }
 
   void run()
   {
+    // RCLCPP_INFO(LOGGER, "Before move_group(move_group_node, PLANNING_GROUP);");
+
+    // moveit::planning_interface::MoveGroupInterface move_group(node_, "mobile_base_arm");
+
+    // RCLCPP_INFO(LOGGER, "Before Robot Model Loader!!");
+
     robot_model_loader::RobotModelLoader robot_model_loader(node_, "robot_description");
     const moveit::core::RobotModelPtr& robot_model = robot_model_loader.getModel();
 
@@ -191,14 +198,14 @@ class HybridPlanningDemo
       return;
     }
 
-    geometry_msgs::msg::Pose box_pose;
-    box_pose.position.x = 0.4;
-    box_pose.position.y = 0.0;
-    box_pose.position.z = 0.85;
+    // geometry_msgs::msg::Pose box_pose;
+    // box_pose.position.x = 0.4;
+    // box_pose.position.y = 0.0;
+    // box_pose.position.z = 0.85;
 
-    collision_object_1_.primitives.push_back(box_1_);
-    collision_object_1_.primitive_poses.push_back(box_pose);
-    collision_object_1_.operation = collision_object_1_.ADD;
+    // collision_object_1_.primitives.push_back(box_1_);
+    // collision_object_1_.primitive_poses.push_back(box_pose);
+    // collision_object_1_.operation = collision_object_1_.ADD;
 
     // Add object to planning scene
     {   // Lock PlanningScene
@@ -213,14 +220,29 @@ class HybridPlanningDemo
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
 
     // Setup motion planning goal taken from motion_planning_api tutorial
-    // const std::string planning_group = "door_opening_mechanism";
-    const std::string planning_group = "mobile_base_arm";
+    // const std::string planning_group = "door_opening_mechanism";   // CHANGE THIS IN THE LOCAL PLANNER CONFIG AS
+    // WELL!!
+    const std::string planning_group = "mobile_base_arm";   // CHANGE THIS IN THE LOCAL PLANNER CONFIG AS WELL!!
 
     // moveit::planning_interface::MoveGroupInterface move_group(node_, planning_group);
 
     // Create a RobotState and JointModelGroup
     const auto robot_state = std::make_shared<moveit::core::RobotState>(robot_model);
     const moveit::core::JointModelGroup* joint_model_group = robot_state->getJointModelGroup(planning_group);
+
+    RCLCPP_INFO(LOGGER, "Before joint_model_group->getSolverInstance()!");
+
+    const kinematics::KinematicsBaseConstPtr kinematics_solver = joint_model_group->getSolverInstance();
+
+    RCLCPP_INFO(LOGGER, "After joint_model_group->getSolverInstance()!");
+
+    for (auto joint_name : kinematics_solver->getJointNames())
+    {
+      RCLCPP_INFO(LOGGER, "The current kinematic solvers joints names are: %s", joint_name.c_str());
+    }
+
+    // RCLCPP_INFO(LOGGER, "The current kinematic solvers group name is: %s",
+    // kinematics_solver->getGroupName().c_str());
 
     moveit::core::RobotStatePtr current_state;
     {
@@ -245,14 +267,14 @@ class HybridPlanningDemo
         LOGGER,
         "????????????????????????? goal_motion_request.start_state.multi_dof_joint_state.joint_names[0].c_str() = %s",
         goal_motion_request.start_state.multi_dof_joint_state.joint_names[0].c_str());
-
-    for (int i = 0; i <= goal_motion_request.start_state.multi_dof_joint_state.joint_names.size() - 1; i++)
-    {
-      RCLCPP_INFO(LOGGER,
-                  "!!!!!!!!!!! goal_motion_request.start_state.multi_dof_joint_state.transforms.translation.x[%s] = %f",
-                  goal_motion_request.start_state.multi_dof_joint_state.joint_names[i].c_str(),
-                  goal_motion_request.start_state.multi_dof_joint_state.transforms[i].translation.x);
-    }
+    RCLCPP_INFO(LOGGER,
+                "????????????????????????? "
+                "goal_motion_request.start_state.multi_dof_joint_state.transforms[0].translation.x = %f",
+                goal_motion_request.start_state.multi_dof_joint_state.transforms[0].translation.x);
+    RCLCPP_INFO(LOGGER,
+                "????????????????????????? "
+                "goal_motion_request.start_state.multi_dof_joint_state.transforms[0].translation.y = %f",
+                goal_motion_request.start_state.multi_dof_joint_state.transforms[0].translation.y);
 
     // Get the variable bounds message for the group
     const std::vector<const moveit::core::JointModel::Bounds*> joint_limits =
@@ -281,9 +303,9 @@ class HybridPlanningDemo
     goal_motion_request.planner_id = "ompl";
     goal_motion_request.pipeline_id = "ompl";
 
-    moveit::core::RobotState goal_state(robot_model);
-    std::vector<double> joint_values = {0.1, 0.1, 0.1};
-    goal_state.setJointGroupPositions(joint_model_group, joint_values);
+    // moveit::core::RobotState goal_state(robot_model);
+    // std::vector<double> joint_values = {0.1, 0.1, 0.1};
+    // goal_state.setJointGroupPositions(joint_model_group, joint_values);
 
     goal_motion_request.goal_constraints.resize(1);
     // goal_motion_request.goal_constraints[0] =

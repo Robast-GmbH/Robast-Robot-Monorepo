@@ -36,6 +36,7 @@
 
 #include <moveit/move_group_interface/move_group_interface.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
+#include <moveit/robot_state/conversions.h>
 #include <moveit_visual_tools/moveit_visual_tools.h>
 
 #include <moveit_msgs/msg/attached_collision_object.hpp>
@@ -76,7 +77,11 @@ int main(int argc, char** argv)
   // are used interchangeably.
   static const std::string PLANNING_GROUP = "mobile_base_arm";   // mobile_base_arm  door_opening_mechanism
 
+  RCLCPP_INFO(LOGGER, "Before move_group(move_group_node, PLANNING_GROUP);");
+
   moveit::planning_interface::MoveGroupInterface move_group(move_group_node, PLANNING_GROUP);
+
+  RCLCPP_INFO(LOGGER, "After move_group(move_group_node, PLANNING_GROUP);");
 
   // We will use the
   // :moveit_codedir:`PlanningSceneInterface<moveit_ros/planning_interface/planning_scene_interface/include/moveit/planning_scene_interface/planning_scene_interface.h>`
@@ -86,6 +91,29 @@ int main(int argc, char** argv)
   // Raw pointers are frequently used to refer to the planning group for improved performance.
   const moveit::core::JointModelGroup* joint_model_group =
       move_group.getCurrentState()->getJointModelGroup(PLANNING_GROUP);
+
+  const kinematics::KinematicsBaseConstPtr kinematics_solver = joint_model_group->getSolverInstance();
+
+  RCLCPP_INFO(LOGGER, "The current kinematic solvers group name is: %s", kinematics_solver->getGroupName().c_str());
+
+  for (auto joint_name : kinematics_solver->getJointNames())
+  {
+    RCLCPP_INFO(LOGGER, "The current kinematic solvers joints names are: %s", joint_name.c_str());
+  }
+
+  moveit::core::RobotStatePtr current_state = move_group.getCurrentState();
+
+  moveit_msgs::msg::RobotState start_state;
+
+  moveit::core::robotStateToRobotStateMsg(*current_state, start_state);
+
+  for (int i = 0; i <= start_state.joint_state.position.size() - 1; i++)
+  {
+    RCLCPP_INFO(LOGGER,
+                "!!!!!!!!!!! start_state.joint_state.position[%s] = %f",
+                start_state.joint_state.name[i].c_str(),
+                start_state.joint_state.position[i]);
+  }
 
   // Visualization
   // ^^^^^^^^^^^^^
