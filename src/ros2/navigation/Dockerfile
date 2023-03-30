@@ -78,6 +78,7 @@ RUN apt-get update && apt-get install -y \
   python3-autopep8 \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   ros-${ROS_DISTRO}-diagnostic-updater \
+  ros-${ROS_DISTRO}-foxglove-bridge \
   && rm -rf /var/lib/apt/lists/*
   
 RUN apt-get update \
