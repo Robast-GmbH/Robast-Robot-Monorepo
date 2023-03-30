@@ -13,13 +13,13 @@
         <chain base_link="alu_profile_link_right" tip_link="alu_profile_link_gripper"/>
     </group>
 
-    <group name="position">
+    <group name="position_group">
         <joint name="position" />
     </group>
 
     <group name="mobile_base_arm">
         <group name="door_opening_mechanism" />
-        <group name="position" />
+        <group name="position_group" />
     </group>
 
     <group_state name="home_base" group="mobile_base_arm">
