@@ -6,49 +6,47 @@
 
 namespace drawer_gate
 {
-  DrawerGate::DrawerGate(const std::string serial_path) : Node("drawer_gate")
+  DrawerGate::DrawerGate() : Node("drawer_gate")
+  { 
+    setup_subscriptions();
+    setup_publishers();
+    setup_services();
+  }
+
+  void DrawerGate::setup_subscriptions()
   {
-    this->serial_helper_ = new serial_helper::SerialHelper(serial_path);
-
-    auto qos_open_drawer = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
-    qos_open_drawer.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos_open_drawer.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-    qos_open_drawer.avoid_ros_namespace_conventions(false);
-
-    auto qos_drawer_leds = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
-    qos_drawer_leds.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos_drawer_leds.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-    qos_drawer_leds.avoid_ros_namespace_conventions(false);
+    auto qos_subscriptions = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
 
     this->open_drawer_subscription_ = this->create_subscription<DrawerAddress>(
         "open_drawer",
-        qos_open_drawer,
+        qos_subscriptions,
         std::bind(&DrawerGate::open_drawer_topic_callback, this, std::placeholders::_1));
 
     this->drawer_leds_subscription_ = this->create_subscription<DrawerLeds>(
         "drawer_leds",
-        qos_drawer_leds,
-        std::bind(&DrawerGate::drawer_leds_topic_callback, this, std::placeholders::_1));
+        qos_subscriptions,
+      std::bind(&DrawerGate::drawer_leds_topic_callback, this, std::placeholders::_1));
 
-    this->drawer_status_publisher_ = this->create_publisher<DrawerStatus>("drawer_is_open", qos_open_drawer);
-
-    this->shelf_setup_info_service_ = this->create_service<ShelfSetupInfo>(
-        "shelf_setup_info",
-        std::bind(&DrawerGate::provide_shelf_setup_info_callback, this, std::placeholders::_1, std::placeholders::_2));
-
-    this->send_ascii_cmds_timer_ = this->create_wall_timer(
-        TIMER_PERIOD_SEND_ASCII_CMDS, std::bind(&DrawerGate::send_ascii_cmds_timer_callback, this));
-    this->receive_can_msgs_timer_ =
-        this->create_wall_timer(TIMER_PERIOD_RECEIVE_CAN_MSGS, std::bind(&DrawerGate::receive_can_msgs_callback, this));
-
-    this->serial_can_usb_converter_is_set_up_ = false;
-    this->cleared_serial_buffer_from_old_can_msgs_ = false;
+    this->can_message_subscription= this->create_subscription<CanMessage>(
+        "/from_can_bus",
+        qos_subscriptions,
+        std::bind(&DrawerGate::receive_can_msg_callback, this, std::placeholders::_1));
   }
 
-  DrawerGate::~DrawerGate()
+  void DrawerGate::setup_publishers()
   {
-    this->serial_helper_->close_serial();
-    delete this->serial_helper_;
+    auto qos_publishers = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
+
+    this->drawer_status_publisher_ = this->create_publisher<DrawerStatus>("drawer_is_open", qos_publishers);
+
+    this->can_message_publisher_ = this->create_publisher<CanMessage>("/to_can_bus", qos_publishers);
+  }
+
+  void DrawerGate::setup_services()
+  {
+    this->shelf_setup_info_service_ = this->create_service<ShelfSetupInfo>(
+    "shelf_setup_info",
+    std::bind(&DrawerGate::provide_shelf_setup_info_callback, this, std::placeholders::_1, std::placeholders::_2));
   }
 
   void DrawerGate::open_drawer_topic_callback(const DrawerAddress& msg)
@@ -67,11 +65,8 @@ namespace drawer_gate
     robast_can_msgs::CanMessage can_msg_open_lock =
         this->create_can_msg_drawer_lock(drawer_controller_id, drawer_id, CAN_DATA_OPEN_LOCK);
 
-    // start timer to enable receiving feedback via the can bus
-    this->receive_can_msgs_timer_ =
-        this->create_wall_timer(TIMER_PERIOD_RECEIVE_CAN_MSGS, std::bind(&DrawerGate::receive_can_msgs_callback, this));
 
-    this->send_can_msg(can_msg_open_lock);
+    this->send_can_msg(can_encoder_decoder_.encode_msg(can_msg_open_lock));
   }
 
   void DrawerGate::drawer_leds_topic_callback(const DrawerLeds& msg)
@@ -88,7 +83,7 @@ namespace drawer_gate
     robast_can_msgs::CanMessage can_msg_drawer_led =
         this->create_can_msg_drawer_led(msg.drawer_address.drawer_controller_id, led_parameters);
 
-    this->send_can_msg(can_msg_drawer_led);
+    this->send_can_msg(can_encoder_decoder_.encode_msg(can_msg_drawer_led));
   }
 
   void DrawerGate::update_drawer_status(std::vector<robast_can_msgs::CanMessage> drawer_feedback_can_msgs)
@@ -149,60 +144,9 @@ namespace drawer_gate
     this->receive_can_msgs_timer_->cancel();
   }
 
-  // This timer callback makes sure there is enough time between each ascii command, otherwise some commands might get
-  // lost
-  void DrawerGate::send_ascii_cmds_timer_callback(void)
-  {
-    if (this->ascii_cmd_queue_.empty())
-    {
-      this->send_ascii_cmds_timer_->cancel();   // cancel the timer when queue is empty
-      return;
-    }
-    else
-    {
-      std::string send_ascii_cmd_result = this->serial_helper_->send_ascii_cmd(this->ascii_cmd_queue_.front());
-      if (send_ascii_cmd_result.size() > 0)
-      {
-        RCLCPP_ERROR(this->get_logger(), "Error sending serial ascii cmd: %s", send_ascii_cmd_result.c_str());
-      }
-      this->ascii_cmd_queue_.pop();   // remove first element of the queue
-    }
-  }
 
-  void DrawerGate::receive_can_msgs_callback(void)
-  {
-    this->update_drawer_status_from_can();
-  }
 
-  void DrawerGate::update_drawer_status_from_can(void)
-  {
-    if (!this->serial_can_usb_converter_is_set_up_)
-    {
-      this->setup_serial_can_ubs_converter();   // mind that this should actually be done in the constructor, but due to
-                                                // testability we need to execute this here
-    }
 
-    std::string serial_read_ascii_command;
-    uint16_t num_of_received_bytes = this->serial_helper_->read_serial(&serial_read_ascii_command, 100);
-
-    if (this->serial_can_usb_converter_is_set_up_ && num_of_received_bytes > 0)
-    {
-      RCLCPP_INFO(this->get_logger(), "Serial read: %s", serial_read_ascii_command.c_str());   // DEBUGGING
-      std::vector<robast_can_msgs::CanMessage> received_can_msgs =
-          robast_can_msgs::decode_multiple_ascii_commands_into_can_messages(
-              serial_read_ascii_command, CAN_ID_DRAWER_FEEDBACK, CAN_DLC_DRAWER_FEEDBACK, this->can_db_.can_messages);
-      this->update_drawer_status(received_can_msgs);
-    }
-    else
-    {
-      // Dump only the very first received can msgs because they might contain old data in the buffer
-      if (!this->cleared_serial_buffer_from_old_can_msgs_)
-      {
-        this->receive_can_msgs_timer_->cancel();   // cancel the timer after first message was cleared
-        this->cleared_serial_buffer_from_old_can_msgs_ = true;
-      }
-    }
-  }
 
   std::vector<communication_interfaces::msg::Drawer> DrawerGate::get_all_mounted_drawers()
   {
@@ -261,21 +205,6 @@ namespace drawer_gate
     response->drawers = this->get_all_mounted_drawers();
   }
 
-  void DrawerGate::setup_serial_can_ubs_converter(void)
-  {
-    std::string setup_serial_port_result = this->serial_helper_->open_serial();
-    if (setup_serial_port_result.size() > 0)
-    {
-      RCLCPP_ERROR(this->get_logger(), "Error from opening serial Port: %s", setup_serial_port_result.c_str());
-    }
-    this->close_can_channel();
-    this->set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps);
-    this->open_can_channel();   // the default state should be the open can channel to enable receiving CAN messages
-
-    this->serial_can_usb_converter_is_set_up_ = true;
-    RCLCPP_INFO(this->get_logger(), "Setting up serial can usb converter finished!");   // DEBUGGING
-  }
-
   robast_can_msgs::CanMessage DrawerGate::create_can_msg_drawer_lock(uint32_t drawer_controller_id,
                                                                      uint8_t drawer_id,
                                                                      uint8_t can_data_open_lock) const
@@ -324,97 +253,19 @@ namespace drawer_gate
     return can_msg_drawer_led;
   }
 
-  void DrawerGate::add_ascii_cmd_to_queue(std::string ascii_cmd)
+
+
+  
+  void DrawerGate::receive_can_msg_callback(CanMessage can_message)
   {
-    // if queue was empty, the timer has been canceled before, so start timer for timer callbacks which trigger sending
-    // the ascii cmds
-    if (this->ascii_cmd_queue_.empty())
-    {
-      this->ascii_cmd_queue_.push(ascii_cmd);
-      this->send_ascii_cmds_timer_ = this->create_wall_timer(
-          TIMER_PERIOD_SEND_ASCII_CMDS, std::bind(&DrawerGate::send_ascii_cmds_timer_callback, this));
-    }
-    else
-    {
-      this->ascii_cmd_queue_.push(ascii_cmd);
-    }
+       RCLCPP_INFO(this->get_logger(), "Received: id:'%d' dlc:'%d' \n ", can_message.id,can_message.dlc);
   }
 
-  void DrawerGate::set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface can_baudrate)
+  void DrawerGate::send_can_msg(CanMessage can_message)
   {
-    std::string msg;
-
-    switch (can_baudrate)
-    {
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_10kbps:
-        msg = "S0";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_20kbps:
-        msg = "S1";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_50kbps:
-        msg = "S2";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_100kbps:
-        msg = "S3";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_125kbps:
-        msg = "S4";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_250kbps:
-        msg = "S5";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_500kbps:
-        msg = "S6";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_800kbps:
-        msg = "S7";
-        break;
-      case robast_can_msgs::can_baudrate_usb_to_can_interface::can_baud_1000kbps:
-        msg = "S8";
-        break;
-      default:
-        msg = "S5";
-        break;
-    }
-
-    this->add_ascii_cmd_to_queue(msg);
-  }
-
-  void DrawerGate::open_can_channel(void)
-  {
-    this->add_ascii_cmd_to_queue("O");
-  }
-
-  void DrawerGate::open_can_channel_listen_only_mode(void)
-  {
-    this->add_ascii_cmd_to_queue("L");
-  }
-
-  void DrawerGate::close_can_channel(void)
-  {
-    this->add_ascii_cmd_to_queue("C");
-  }
-
-  void DrawerGate::send_can_msg(robast_can_msgs::CanMessage can_message)
-  {
-    if (!this->serial_can_usb_converter_is_set_up_)
-    {
-      this->setup_serial_can_ubs_converter();   // mind that this should actually be done in the constructor, but due to
-                                                // testability we need to execute this here
-    }
-
-    std::optional<std::string> ascii_cmd =
-        robast_can_msgs::encode_can_message_into_ascii_command(can_message, this->can_db_.can_messages);
-
-    if (ascii_cmd.has_value())
-    {
-      this->add_ascii_cmd_to_queue(ascii_cmd.value());
-    }
-    else
-    {
-      // TODO: Error handling
-    }
+    RCLCPP_INFO(this->get_logger(), "Publishing: '%d'\n ", can_message.id);
+    
+    can_message_publisher_->publish(can_message);
   }
 
 }   // namespace drawer_gate

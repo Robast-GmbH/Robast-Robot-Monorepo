@@ -35,6 +35,8 @@
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "drawer_gate/drawer_defines.h"
 #include "serial_helper/serial_helper.h"
+#include "can_msgs/msg/frame.hpp"
+#include "drawer_gate/can_encoder_decoder.hpp"
 
 using namespace std::chrono_literals;
 
@@ -64,15 +66,12 @@ namespace drawer_gate
     using DrawerLeds = communication_interfaces::msg::DrawerLeds;
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
     using ShelfSetupInfo = communication_interfaces::srv::ShelfSetupInfo;
+    using CanMessage = can_msgs::msg::Frame;
 
     /**
      * @brief A constructor for drawer_gate::DrawerGate class
      */
-    DrawerGate(const std::string serial_path = "/dev/robast/robast_can");
-    /**
-     * @brief A destructor for drawer_gate::DrawerGate class
-     */
-    ~DrawerGate();
+    DrawerGate();
 
     friend class TestDrawerGate;   // this class has full access to all private and protected parts of this class
 
@@ -81,7 +80,10 @@ namespace drawer_gate
     rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service_;
     rclcpp::Subscription<DrawerAddress>::SharedPtr open_drawer_subscription_;
     rclcpp::Subscription<DrawerLeds>::SharedPtr drawer_leds_subscription_;
+    rclcpp::Subscription<CanMessage>::SharedPtr can_message_subscription;
     rclcpp::Publisher<DrawerStatus>::SharedPtr drawer_status_publisher_;
+    rclcpp::Publisher<CanMessage>::SharedPtr can_message_publisher_;
+
     rclcpp::TimerBase::SharedPtr receive_can_msgs_timer_;
     rclcpp::TimerBase::SharedPtr send_ascii_cmds_timer_;
 
@@ -94,15 +96,7 @@ namespace drawer_gate
 
     std::map<uint32_t, drawer_status> drawer_status_by_drawer_controller_id_;
 
-    std::queue<std::string> ascii_cmd_queue_;   // queue that contains all ascii commands to be sent to the usb serial
-                                                // can adapter to make sure there is enough time between each ascii
-                                                // command, otherwise some commands might get lost
-
-    bool cleared_serial_buffer_from_old_can_msgs_;   // flag, that is responsible for clearing the serial buffer from
-                                                     // old CAN messages
-
-    bool serial_can_usb_converter_is_set_up_;   // flag to prevent that setup routine for serial can usb converter is
-                                                // executed more than once and we need this for testability
+    CanEncoderDecoder can_encoder_decoder_ = CanEncoderDecoder();
 
     std::map<uint32_t, bool> drawer_to_be_refilled_by_drawer_controller_id_;
 
@@ -111,31 +105,21 @@ namespace drawer_gate
 
     void drawer_leds_topic_callback(const DrawerLeds& msg);
 
-    void setup_serial_can_ubs_converter(void);
+    void setup_publishers();
+
+    void setup_subscriptions();
+
+    void setup_services();
 
     robast_can_msgs::CanMessage create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id,
                                                            uint8_t can_data_open_lock) const;
 
     robast_can_msgs::CanMessage create_can_msg_drawer_led(uint32_t drawer_controller_id,
                                                           led_parameters led_parameters) const;
+    void send_can_msg(CanMessage can_message);
 
-    void send_can_msg(robast_can_msgs::CanMessage can_message);
 
-    void set_can_baudrate(robast_can_msgs::can_baudrate_usb_to_can_interface can_baudrate);
-
-    void open_can_channel(void);
-
-    void open_can_channel_listen_only_mode(void);
-
-    void close_can_channel(void);
-
-    void receive_can_msgs_callback(void);
-
-    void add_ascii_cmd_to_queue(std::string ascii_cmd);
-
-    void send_ascii_cmds_timer_callback(void);
-
-    void update_drawer_status_from_can(void);
+    void receive_can_msg_callback(CanMessage can_message);
 
     void update_drawer_status(std::vector<robast_can_msgs::CanMessage> drawer_feedback_can_msgs);
 
