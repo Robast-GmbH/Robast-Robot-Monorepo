@@ -25,6 +25,7 @@ find_package(communication_interfaces REQUIRED)
 find_package(can REQUIRED)
 find_package(serial_helper REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED) 
+find_package(can_msgs REQUIRED)
 
 include_directories(include)
 include_directories(test/include)
@@ -42,9 +43,11 @@ set(library_drawer_gate_test ${executable_drawer_gate_test}_core)
 
 add_library(${library_drawer_gate} SHARED
   src/drawer_gate.cpp
+  src/can_encoder_decoder.cpp
 )
 add_library(${library_drawer_gate_test} SHARED
   src/drawer_gate.cpp
+  src/can_encoder_decoder.cpp
   test/src/mock_serial_helper.cpp
   test/src/test_drawer_gate.cpp
 )
@@ -55,6 +58,7 @@ set(dependencies
   communication_interfaces
   can
   serial_helper
+  can_msgs
 )
 
 ament_target_dependencies(${executable_drawer_gate}
