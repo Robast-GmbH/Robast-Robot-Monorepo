@@ -1,5 +1,14 @@
 FROM ros:humble-ros-core
 
+RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
+    echo robast:robast | chpasswd && \
+    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV USER robast
+RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
+
+RUN echo "source install/setup.bash" >> /home/$USER/.bashrc
+
+
 RUN apt-get update && apt-get install -y \
   build-essential \
   python3-colcon-common-extensions \

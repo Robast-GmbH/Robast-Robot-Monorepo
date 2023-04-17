@@ -15,6 +15,7 @@
 		"source=${localWorkspaceFolder}/../../libs/,target=/workspace/libs,type=bind"
 	],
 	"workspaceFolder": "/workspace",
+	"remoteUser": "robast",
 	"runArgs": [
 		"--name=hardware_nodes_drawer",
 		"--network=host",
