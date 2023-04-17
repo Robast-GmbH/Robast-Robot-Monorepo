@@ -124,5 +124,7 @@
     "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
     "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
     "C_Cpp.vcFormat.space.betweenEmptySquareBrackets": true,
-    "editor.formatOnType": true
+    "editor.formatOnType": true,
+    "cmake.configureOnOpen": false,
+    "cmake.sourceDirectory": "${workspaceFolder}/libs/can"
 }
