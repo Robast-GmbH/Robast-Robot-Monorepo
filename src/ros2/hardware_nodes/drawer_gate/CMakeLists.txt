@@ -23,7 +23,6 @@ find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(can REQUIRED)
-find_package(serial_helper REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED) 
 find_package(can_msgs REQUIRED)
 
@@ -48,7 +47,6 @@ add_library(${library_drawer_gate} SHARED
 add_library(${library_drawer_gate_test} SHARED
   src/drawer_gate.cpp
   src/can_encoder_decoder.cpp
-  test/src/mock_serial_helper.cpp
   test/src/test_drawer_gate.cpp
 )
 
@@ -57,7 +55,6 @@ set(dependencies
   rclcpp_action
   communication_interfaces
   can
-  serial_helper
   can_msgs
 )
 
