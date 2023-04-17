@@ -65,8 +65,58 @@ namespace db_helper
     return true;
   }
 
+  int PostgreSqlHelper::perform_transaction(std::string sql_statement)
+  {
+    pqxx::connection connection_handle = pqxx::connection(connection_parameter);
+    pqxx::work query_handle = pqxx::work(connection_handle);
+    pqxx::result result_handle{query_handle.exec(sql_statement)};
+    int affected_Rows = result_handle.affected_rows();
+    if(affected_Rows>0)
+    {
+       query_handle.commit();
+    }
+   else 
+   {
+       query_handle.abort();
+   }
+    connection_handle.disconnect();
+    return affected_Rows;
+  }
+
+  int PostgreSqlHelper::perform_transaction_with_return(std::string sql_statement, std::unique_ptr<std::vector<std::vector<std::string>>> result_data)
+  {
+    pqxx::connection connection_handle = pqxx::connection(connection_parameter);
+    pqxx::work query_handle = pqxx::work(connection_handle);
+    pqxx::result result_handle{query_handle.exec(sql_statement)};
+
+    int affected_Rows = result_handle.affected_rows();
+    if(affected_Rows>0)
+    {
+       query_handle.commit();
+    }
+   else 
+   {
+       query_handle.abort();
+   }
+
+   // fill the tabel Body
+    for (pqxx::const_result_iterator::reference raw_row : result_handle)
+    {
+      std::vector<std::string> temp_row;
+      for (pqxx::const_row_iterator::reference raw_data : raw_row)
+      {
+        temp_row.push_back(raw_data.c_str());
+      }
+      result_data->push_back(temp_row);
+    }
+    
+    connection_handle.disconnect();
+    return affected_Rows;
+  }
+
+
   bool PostgreSqlHelper::checkUserTag(std::string tag, std::vector<std::string> lookup_scope,
-                                      std::shared_ptr<std::string> user_name)
+                                      std::shared_ptr<std::string> user_name, std::shared_ptr<int> id )
   {
     std::vector<std::vector<std::string>> data = std::vector<std::vector<std::string>>();
     std::vector<std::string> header = std::vector<std::string>();
@@ -81,26 +131,26 @@ namespace db_helper
       target_users += lookup_scope[i];
     }
 
-    perform_query("SELECT concat(first_name, ' ', last_name) AS \"name\",FROM public.\"USER\" WHERE key =" + tag +
+    perform_query("SELECT concat(first_name, ' ', last_name,) AS \"name\", id FROM public.\"USER\" WHERE key =" + tag +
                       " AND id in (" + target_users + ");",
                   std::make_unique<std::vector<std::vector<std::string>>>(data),
                   std::make_unique<std::vector<std::string>>(header));
     if (data.size() == 1)
     {
       *user_name = data[0][0];
+      *id = stoi(data[1][0]);
       return true;
     }
     return false;
   }
 
-  int PostgreSqlHelper::perform_transaction(std::string sql_statement)
+   bool PostgreSqlHelper::addUser(std::string first_name, std::string last_name)
   {
-    pqxx::connection connection_handle = pqxx::connection(connection_parameter);
-    pqxx::work query_handle = pqxx::work(connection_handle);
-    pqxx::result result_handle{query_handle.exec(sql_statement)};
-    int affected_Rows = result_handle.affected_rows();
-    query_handle.commit();
-    connection_handle.disconnect();
-    return affected_Rows;
+    std::string query = "";
+    return perform_transaction(query);
+   
+    return false;
   }
+
+
 }   // namespace db_helper

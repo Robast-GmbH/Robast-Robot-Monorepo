@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(nfc_gate)
+project(nfc_bridge)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -30,25 +30,25 @@ include_directories(include)
 include_directories(test/include)
 
 
-set(executable_nfc_gate nfc_gate)
-set(executable_nfc_gate_test nfc_gate_test)
+set(executable_nfc_bridge nfc_bridge)
+set(executable_nfc_bridge_test nfc_bridge_test)
 
-add_executable(${executable_nfc_gate}
+add_executable(${executable_nfc_bridge}
   src/main.cpp)
-add_executable(${executable_nfc_gate_test}
+add_executable(${executable_nfc_bridge_test}
   test/ros2_tests/main.cpp)
 
-set(library_nfc_gate ${executable_nfc_gate}_core)
-set(library_nfc_gate_test ${executable_nfc_gate_test}_core)
+set(library_nfc_bridge ${executable_nfc_bridge}_core)
+set(library_nfc_bridge_test ${executable_nfc_bridge_test}_core)
 
-add_library(${library_nfc_gate} SHARED
-src/nfc_gate.cpp
+add_library(${library_nfc_bridge} SHARED
+src/nfc_bridge.cpp
 )
-add_library(${library_nfc_gate_test} SHARED
-  src/nfc_gate.cpp
+add_library(${library_nfc_bridge_test} SHARED
+  src/nfc_bridge.cpp
   test/src/mock_serial_helper.cpp
   test/src/mock_postgresql_helper.cpp
-  test/src/test_nfc_gate.cpp
+  test/src/test_nfc_bridge.cpp
 )
 #ToDo: fix this that we can swap to the newer version
 # include(FetchContent)
@@ -68,24 +68,24 @@ set(dependencies
   db_helper
 )
 
-ament_target_dependencies(${executable_nfc_gate}
+ament_target_dependencies(${executable_nfc_bridge}
   ${dependencies}
 )
-target_link_libraries(${executable_nfc_gate} ${library_nfc_gate})
+target_link_libraries(${executable_nfc_bridge} ${library_nfc_bridge})
 
-ament_target_dependencies(${executable_nfc_gate_test}
+ament_target_dependencies(${executable_nfc_bridge_test}
   ${dependencies}
 )
-target_link_libraries(${executable_nfc_gate_test} ${library_nfc_gate_test})
+target_link_libraries(${executable_nfc_bridge_test} ${library_nfc_bridge_test})
 
-ament_target_dependencies(${library_nfc_gate}
+ament_target_dependencies(${library_nfc_bridge}
   ${dependencies}
 )
-ament_target_dependencies(${library_nfc_gate_test}
+ament_target_dependencies(${library_nfc_bridge_test}
   ${dependencies}
 )
 
-target_include_directories(nfc_gate PUBLIC
+target_include_directories(nfc_bridge PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
@@ -103,21 +103,21 @@ if(BUILD_TESTING)
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
 
   add_executable(
-    nfc_gate_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
+    nfc_bridge_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
   )
 
-  ament_target_dependencies(nfc_gate_unit_test
+  ament_target_dependencies(nfc_bridge_unit_test
     ${dependencies}
   )
 
-  target_link_libraries(nfc_gate_unit_test
-    ${library_nfc_gate}
+  target_link_libraries(nfc_bridge_unit_test
+    ${library_nfc_bridge}
     rclcpp::rclcpp
     rclcpp_action::rclcpp_action
     Catch2::Catch2
   )
   
-  target_include_directories(nfc_gate_unit_test
+  target_include_directories(nfc_bridge_unit_test
     PRIVATE
     $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
   )
@@ -132,16 +132,16 @@ if(BUILD_TESTING)
 endif()
 
 install(TARGETS
-${library_nfc_gate}
-${library_nfc_gate_test}
+${library_nfc_bridge}
+${library_nfc_bridge_test}
 ARCHIVE DESTINATION lib
 LIBRARY DESTINATION lib
 RUNTIME DESTINATION bin
 )
 
 install(TARGETS
-${executable_nfc_gate}
-${executable_nfc_gate_test}
+${executable_nfc_bridge}
+${executable_nfc_bridge_test}
 RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
