@@ -3,7 +3,7 @@
 
 #include <TMCStepper.h>
 #include <SpeedyStepper.h>
-#include "../../include/pinout_defines.h"
+#include "pinout_defines.h"
 
 #define SERIAL_PORT Serial2 // HardwareSerial port for Teensy 4.0
 #define DRIVER_ADDRESS 0b00 // TMC2209 Driver address according to MS1 and MS2
