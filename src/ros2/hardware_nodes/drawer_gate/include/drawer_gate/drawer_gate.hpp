@@ -5,7 +5,6 @@
 
 #include <chrono>
 #include <memory>
-#include <rclcpp/qos.hpp>
 #include <rclcpp/rclcpp.hpp>
 // C library headers
 #include <stdio.h>
@@ -22,9 +21,6 @@
 #include <termios.h>   // Contains POSIX terminal control definitions
 #include <unistd.h>    // write(), read(), close()
 
-// Used for the async timer
-#include <boost/asio.hpp>
-#include <boost/bind.hpp>
 #include <iostream>
 
 #include "can/can_db.hpp"
@@ -34,9 +30,10 @@
 #include "communication_interfaces/msg/drawer_status.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "drawer_gate/drawer_defines.h"
-#include "serial_helper/serial_helper.h"
 #include "can_msgs/msg/frame.hpp"
 #include "drawer_gate/can_encoder_decoder.hpp"
+#include "drawer_gate/qos_config.hpp"
+#include "shelf_setup.hpp"
 
 using namespace std::chrono_literals;
 
@@ -59,9 +56,9 @@ namespace drawer_gate
     bool is_lock_switch_2_pushed;
   };
 
-  class DrawerGate : public rclcpp::Node
+  class DrawerGate: public rclcpp::Node
   {
-   public:
+  public:
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
     using DrawerLeds = communication_interfaces::msg::DrawerLeds;
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
@@ -75,19 +72,14 @@ namespace drawer_gate
 
     friend class TestDrawerGate;   // this class has full access to all private and protected parts of this class
 
-   private:
+  private:
     /* VARIABLES */
     rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service_;
     rclcpp::Subscription<DrawerAddress>::SharedPtr open_drawer_subscription_;
     rclcpp::Subscription<DrawerLeds>::SharedPtr drawer_leds_subscription_;
-    rclcpp::Subscription<CanMessage>::SharedPtr can_message_subscription;
+    rclcpp::Subscription<CanMessage>::SharedPtr can_messages_subscription_;
     rclcpp::Publisher<DrawerStatus>::SharedPtr drawer_status_publisher_;
-    rclcpp::Publisher<CanMessage>::SharedPtr can_message_publisher_;
-
-    rclcpp::TimerBase::SharedPtr receive_can_msgs_timer_;
-    rclcpp::TimerBase::SharedPtr send_ascii_cmds_timer_;
-
-    serial_helper::ISerialHelper* serial_helper_;
+    rclcpp::Publisher<CanMessage>::SharedPtr can_messages_publisher_;
 
     robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
 
@@ -97,6 +89,8 @@ namespace drawer_gate
     std::map<uint32_t, drawer_status> drawer_status_by_drawer_controller_id_;
 
     CanEncoderDecoder can_encoder_decoder_ = CanEncoderDecoder();
+
+    QoSConfig qos_config = QoSConfig();
 
     std::map<uint32_t, bool> drawer_to_be_refilled_by_drawer_controller_id_;
 
@@ -111,22 +105,22 @@ namespace drawer_gate
 
     void setup_services();
 
-    robast_can_msgs::CanMessage create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id,
-                                                           uint8_t can_data_open_lock) const;
+    CanMessage create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id,
+      uint8_t can_data_open_lock) const;
 
-    robast_can_msgs::CanMessage create_can_msg_drawer_led(uint32_t drawer_controller_id,
-                                                          led_parameters led_parameters) const;
+    CanMessage create_can_msg_drawer_led(uint32_t drawer_controller_id,
+      led_parameters led_parameters) const;
     void send_can_msg(CanMessage can_message);
 
 
     void receive_can_msg_callback(CanMessage can_message);
 
-    void update_drawer_status(std::vector<robast_can_msgs::CanMessage> drawer_feedback_can_msgs);
+    void update_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg);
 
     void send_drawer_is_open_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, uint8_t drawer_id);
 
     void send_drawer_is_closed_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg,
-                                        uint8_t drawer_id);
+      uint8_t drawer_id);
 
     std::vector<communication_interfaces::msg::Drawer> get_all_mounted_drawers();
 
@@ -134,7 +128,7 @@ namespace drawer_gate
      * @brief Service server execution callback
      */
     void provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request,
-                                           std::shared_ptr<ShelfSetupInfo::Response> response);
+      std::shared_ptr<ShelfSetupInfo::Response> response);
   };
 }   // namespace drawer_gate
 #endif   // DRAWER_GATE__DRAWER_GATE_HPP_
