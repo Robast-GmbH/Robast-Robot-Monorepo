@@ -17,27 +17,27 @@ namespace drawer_gate
   {
     auto qos_subscriptions = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
 
-    this->open_drawer_subscription_ = this->create_subscription<DrawerAddress>(
+      qos_config.get_qos_open_drawer(),
         "open_drawer",
         qos_subscriptions,
         std::bind(&DrawerGate::open_drawer_topic_callback, this, std::placeholders::_1));
 
-    this->drawer_leds_subscription_ = this->create_subscription<DrawerLeds>(
+      qos_config.get_qos_drawer_leds(),
         "drawer_leds",
         qos_subscriptions,
       std::bind(&DrawerGate::drawer_leds_topic_callback, this, std::placeholders::_1));
 
     this->can_message_subscription= this->create_subscription<CanMessage>(
         "/from_can_bus",
-        qos_subscriptions,
+      qos_config.get_qos_can_messages(),
         std::bind(&DrawerGate::receive_can_msg_callback, this, std::placeholders::_1));
   }
 
   void DrawerGate::setup_publishers()
   {
-    auto qos_publishers = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
+    drawer_status_publisher_ = create_publisher<DrawerStatus>("drawer_is_open", qos_config.get_qos_open_drawer());
 
-    this->drawer_status_publisher_ = this->create_publisher<DrawerStatus>("drawer_is_open", qos_publishers);
+    can_messages_publisher_ = create_publisher<CanMessage>("/to_can_bus", qos_config.get_qos_can_messages());
 
     this->can_message_publisher_ = this->create_publisher<CanMessage>("/to_can_bus", qos_publishers);
   }
