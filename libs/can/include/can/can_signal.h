@@ -39,9 +39,9 @@ namespace robast_can_msgs
             uint8_t get_bit_length() const;
 
         protected:
-            uint64_t data_;
             uint8_t bit_start_;
             uint8_t bit_length_;  // number of bits for this can_signal
+            uint64_t data_;
     };
 }  // namespace robast_can_msgs
 
