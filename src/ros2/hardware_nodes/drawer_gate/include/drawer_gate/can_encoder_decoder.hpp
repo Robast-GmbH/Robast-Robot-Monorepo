@@ -5,9 +5,9 @@
 
 class CanEncoderDecoder {
 public:
-    can_msgs::msg::Frame encode_msg(robast_can_msgs::CanMessage msg);
+     can_msgs::msg::Frame encode_msg(robast_can_msgs::CanMessage msg)const;
 
-    std::optional<robast_can_msgs::CanMessage> decode_msg(can_msgs::msg::Frame msg);
+     std::optional<robast_can_msgs::CanMessage> decode_msg(can_msgs::msg::Frame msg)const;
 
 private:
     
