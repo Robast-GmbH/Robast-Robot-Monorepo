@@ -15,6 +15,15 @@ namespace stretch_kinematics_plugin
                                            double search_discretization)
   {
     RCLCPP_INFO(LOGGER, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! StretchKinematicsPlugin::initialize !!!!!!!!!!!!!!!!!!");
+    RCLCPP_INFO(LOGGER, "!!!!!!!!!! group_name = %s", group_name.c_str());
+    RCLCPP_INFO(LOGGER, "!!!!!!!!!! base_frame = %s", base_frame.c_str());
+
+    for (std::string tip_frame : tip_frames)
+    {
+      RCLCPP_INFO(LOGGER, "!!!!!!!!!! tip_frame = %s", tip_frame.c_str());
+    }
+
+    RCLCPP_INFO(LOGGER, "!!!!!!!!!! search_discretization = %f", search_discretization);
 
     node_ = node;
     storeValues(robot_model, group_name, base_frame, tip_frames, search_discretization);
@@ -109,7 +118,48 @@ namespace stretch_kinematics_plugin
     state_.reset(new moveit::core::RobotState(robot_model_));
 
     initialized_ = true;
-    RCLCPP_DEBUG(LOGGER, "KDL solver initialized");
+
+    RCLCPP_INFO(LOGGER, "Joint Model Group Info:");
+    RCLCPP_INFO(LOGGER, "Name: %s", arm_jmg_->getName().c_str());
+    const std::vector<std::string>& joint_names = arm_jmg_->getVariableNames();
+    RCLCPP_INFO(LOGGER, "Number of Joints: %zu", joint_names.size());
+    for (size_t i = 0; i < joint_names.size(); ++i)
+    {
+      RCLCPP_INFO(LOGGER, "Joint %zu Name: %s", i, joint_names[i].c_str());
+    }
+    const std::vector<std::string>& link_names = arm_jmg_->getLinkModelNames();
+    RCLCPP_INFO(LOGGER, "Number of Links: %zu", link_names.size());
+    for (size_t i = 0; i < link_names.size(); ++i)
+    {
+      RCLCPP_INFO(LOGGER, "Link %zu Name: %s", i, link_names[i].c_str());
+    }
+    RCLCPP_INFO(LOGGER, "End Effector Name: %s", arm_jmg_->getEndEffectorName().c_str());
+
+    RCLCPP_INFO(LOGGER, "Mobile base joint:");
+    RCLCPP_INFO(LOGGER, "  Name: %s", mobile_base_joint_->getName().c_str());
+    RCLCPP_INFO(LOGGER, "  Variable count: %d", mobile_base_joint_->getVariableCount());
+    RCLCPP_INFO(LOGGER, "  Type: %s", mobile_base_joint_->getTypeName().c_str());
+    // RCLCPP_INFO(LOGGER, "  Active: %s", mobile_base_joint_->isActive() ? "true" : "false");
+    // RCLCPP_INFO(LOGGER, "  Continuous: %s", mobile_base_joint_->isContinuous() ? "true" : "false");
+    // RCLCPP_INFO(LOGGER, "  Bounded: %s", mobile_base_joint_->isBounded() ? "true" : "false");
+    // RCLCPP_INFO(LOGGER, "  Multi-DOF: %s", mobile_base_joint_->getVariableCount() > 1 ? "true" : "false");
+
+    const std::vector<std::string>& joint_model_names = state_->getVariableNames();
+    for (const auto& joint_name : joint_model_names)
+    {
+      double pos = state_->getVariablePosition(joint_name);
+      double vel = state_->getVariableVelocity(joint_name);
+      double acc = state_->getVariableAcceleration(joint_name);
+      double eff = state_->getVariableEffort(joint_name);
+
+      RCLCPP_INFO(LOGGER, "Joint: %s", joint_name.c_str());
+      RCLCPP_INFO(LOGGER, "  Position: %f", pos);
+      // RCLCPP_INFO(LOGGER, "  Velocity: %f", vel);
+      // RCLCPP_INFO(LOGGER, "  Acceleration: %f", acc);
+      // RCLCPP_INFO(LOGGER, "  Effort: %f", eff);
+    }
+
+    RCLCPP_INFO(LOGGER, "KDL solver initialized");
     return true;
   }
 
@@ -178,8 +228,13 @@ namespace stretch_kinematics_plugin
                                                  moveit_msgs::msg::MoveItErrorCodes& error_code,
                                                  const kinematics::KinematicsQueryOptions& options) const
   {
-    RCLCPP_INFO(LOGGER,
-                "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! StretchKinematicsPlugin::searchPositionIK !!!!!!!!!!!!!!!!!!");
+    RCLCPP_INFO(LOGGER, "####### StretchKinematicsPlugin::searchPositionIK! #######");
+
+    RCLCPP_INFO(LOGGER, "ik_seed_state:");
+    for (double ik_seed_state_entry : ik_seed_state)
+    {
+      RCLCPP_INFO(LOGGER, "   ik_seed_state_entry = %f", ik_seed_state_entry);
+    }
 
     rclcpp::Time start_time = node_->now();
     if (!initialized_)
@@ -218,6 +273,17 @@ namespace stretch_kinematics_plugin
                             << ik_pose.orientation.x << " " << ik_pose.orientation.y << " " << ik_pose.orientation.z
                             << " " << ik_pose.orientation.w);
 
+    RCLCPP_INFO(LOGGER,
+                "searchPositionIK: Position request pose position is x = %f, y = %f, z = %f, orientation x = %f,       "
+                " y = %f, z = %f, w = %f",
+                ik_pose.position.x,
+                ik_pose.position.y,
+                ik_pose.position.z,
+                ik_pose.orientation.x,
+                ik_pose.orientation.y,
+                ik_pose.orientation.z,
+                ik_pose.orientation.w);
+
     // auto ik_seed_state_local = ik_seed_state;
     std::vector<double> arm_jmg_solution(solution.begin(), std::next(solution.begin(), mobile_base_index_));
     const auto arm_jmg_consistency_limits =
@@ -239,12 +305,88 @@ namespace stretch_kinematics_plugin
     do
     {
       ++attempt;
+
+      const std::vector<std::string>& joint_model_names = state_->getVariableNames();
+      // for (const auto& joint_name : joint_model_names)
+      // {
+      //   double pos = state_->getVariablePosition(joint_name);
+      //   double vel = state_->getVariableVelocity(joint_name);
+      //   double acc = state_->getVariableAcceleration(joint_name);
+      //   double eff = state_->getVariableEffort(joint_name);
+      //   if ((joint_name == "position/x") || (joint_name == "position/y") || (joint_name == "position/theta") ||
+      //       (joint_name == "door_opening_mechanism_joint_y_axis_slide") ||
+      //       (joint_name == "door_opening_mechanism_joint_x_axis_slide") ||
+      //       (joint_name == "door_opening_mechanism_joint_tilting_hook"))
+      //   {
+      //     RCLCPP_INFO(LOGGER, "Joint: %s", joint_name.c_str());
+      //     RCLCPP_INFO(LOGGER, "  Position: %f", pos);
+      //     // RCLCPP_INFO(LOGGER, "  Velocity: %f", vel);
+      //     // RCLCPP_INFO(LOGGER, "  Acceleration: %f", acc);
+      //     // RCLCPP_INFO(LOGGER, "  Effort: %f", eff);
+      //   }
+      // }
+
       // First we solve for the arm only by fixing the mobile base
       state_->setJointGroupPositions(mobile_base_jmg_, &solution[mobile_base_index_]);
       state_->updateLinkTransforms();
       // Convert the desired pose from the arm + mobile base solver base frame to the arm group base frame
       const auto arm_b_T_ik_pose = tf2::toMsg(state_->getFrameTransform(arm_ik_solver->getBaseFrame()).inverse() *
                                               state_->getFrameTransform(getBaseFrame()) * eigen_ik_pose);
+
+      // RCLCPP_INFO(LOGGER, "arm_ik_solver->getBaseFrame() = %s", arm_ik_solver->getBaseFrame().c_str());
+
+      // RCLCPP_INFO(LOGGER, "---------------------");
+      // RCLCPP_INFO(LOGGER, "eigen_ik_pose:");
+      // RCLCPP_INFO(LOGGER,
+      //             "   Translation: x=%f y=%f z=%f",
+      //             eigen_ik_pose.translation().x(),
+      //             eigen_ik_pose.translation().y(),
+      //             eigen_ik_pose.translation().z());
+      // RCLCPP_INFO(LOGGER,
+      //             "   Rotation (Euler): roll=%f pitch=%f yaw=%f",
+      //             eigen_ik_pose.rotation().eulerAngles(0, 1, 2).x(),
+      //             eigen_ik_pose.rotation().eulerAngles(0, 1, 2).y(),
+      //             eigen_ik_pose.rotation().eulerAngles(0, 1, 2).z());
+
+      // RCLCPP_INFO(LOGGER, "---------------------");
+      // RCLCPP_INFO(LOGGER, "state_->getFrameTransform(arm_ik_solver->getBaseFrame()):");
+      // RCLCPP_INFO(LOGGER,
+      //             "   Translation: x=%f y=%f z=%f",
+      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).translation().x(),
+      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).translation().y(),
+      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).translation().z());
+      // RCLCPP_INFO(LOGGER,
+      //             "   Rotation (Euler): roll=%f pitch=%f yaw=%f",
+      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).rotation().eulerAngles(0, 1, 2).x(),
+      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).rotation().eulerAngles(0, 1, 2).y(),
+      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).rotation().eulerAngles(0, 1, 2).z());
+
+      // RCLCPP_INFO(LOGGER, "---------------------");
+      // RCLCPP_INFO(LOGGER, "state_->getFrameTransform(getBaseFrame()):");
+      // RCLCPP_INFO(LOGGER,
+      //             "   Translation: x=%f y=%f z=%f",
+      //             state_->getFrameTransform(getBaseFrame()).translation().x(),
+      //             state_->getFrameTransform(getBaseFrame()).translation().y(),
+      //             state_->getFrameTransform(getBaseFrame()).translation().z());
+      // RCLCPP_INFO(LOGGER,
+      //             "   Rotation (Euler): roll=%f pitch=%f yaw=%f",
+      //             state_->getFrameTransform(getBaseFrame()).rotation().eulerAngles(0, 1, 2).x(),
+      //             state_->getFrameTransform(getBaseFrame()).rotation().eulerAngles(0, 1, 2).y(),
+      //             state_->getFrameTransform(getBaseFrame()).rotation().eulerAngles(0, 1, 2).z());
+
+      // RCLCPP_INFO(LOGGER, "---------------------");
+      // RCLCPP_INFO(LOGGER, "IK pose parameters:");
+      // RCLCPP_INFO(LOGGER,
+      //             "   Position: (%f, %f, %f)",
+      //             arm_b_T_ik_pose.position.x,
+      //             arm_b_T_ik_pose.position.y,
+      //             arm_b_T_ik_pose.position.z);
+      // RCLCPP_INFO(LOGGER,
+      //             "   Orientation: (%f, %f, %f, %f)",
+      //             arm_b_T_ik_pose.orientation.x,
+      //             arm_b_T_ik_pose.orientation.y,
+      //             arm_b_T_ik_pose.orientation.z,
+      //             arm_b_T_ik_pose.orientation.w);
 
       // We can't use the solution_callback directly with the IK solver for the arm since we'll only get the joint
       // values for the arm and solution_callback meant to be used with the joint model group that contains both the arm
@@ -253,6 +395,7 @@ namespace stretch_kinematics_plugin
       IKCallbackFn arm_solution_callback;
       if (bool(solution_callback))   // TODO: Check if this works. It was actually: (!(&solution_callback).empty())
       {
+        RCLCPP_INFO(LOGGER, "####### if (bool(solution_callback)) = true #######");
         arm_solution_callback =
             [&solution_callback, &solution = std::as_const(solution), mobile_base_index = this->mobile_base_index_](
                 const geometry_msgs::msg::Pose& ik_pose,
@@ -282,7 +425,12 @@ namespace stretch_kinematics_plugin
         RCLCPP_DEBUG_STREAM(LOGGER,
                             "Solved after " << (node_->now() - start_time).seconds() << " < " << timeout << "s and "
                                             << attempt << " attempts");
+        RCLCPP_INFO(LOGGER, "Solved after %f seconds and %i attempts", (node_->now() - start_time).seconds(), attempt);
         return true;
+      }
+      else
+      {
+        RCLCPP_INFO(LOGGER, "####### ik_valid = false #######");
       }
 
       // If we failed to find a solution for the arm JMG we solve only for the mobile base joint by fixing the arm JMG
@@ -337,6 +485,7 @@ namespace stretch_kinematics_plugin
 
   const std::vector<std::string>& StretchKinematicsPlugin::getJointNames() const
   {
+    RCLCPP_INFO(LOGGER, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! StretchKinematicsPlugin::getJointNames!");
     return solver_info_.joint_names;
   }
 
