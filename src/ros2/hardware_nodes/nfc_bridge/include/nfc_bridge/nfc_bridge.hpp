@@ -6,8 +6,10 @@
 #define CHECK_ON_DB                  false
 
 #include <string.h>
-#include <thread>
+
+#include <cmath>
 #include <memory>
+#include <thread>
 
 #include "communication_interfaces/action/create_user_nfc_tag.hpp"
 #include "db_helper/postgresql_connector.hpp"
@@ -16,8 +18,6 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "serial_helper/serial_helper.h"
 #include "std_msgs/msg/string.hpp"
-
-
 
 namespace nfc_bridge
 {
@@ -56,15 +56,15 @@ namespace nfc_bridge
     void reader_procedure();
     void turn_off_scanner();
     bool check_user_tag(std::string scanned_key, std::shared_ptr<std::string> related_username);
+
     void prepare_scanning();
-    
 
     rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID& uuid,
-                                                     std::shared_ptr<const CreateUser::Goal> goal);
+                                            std::shared_ptr<const CreateUser::Goal> goal);
     rclcpp_action::CancelResponse handle_cancel(const std::shared_ptr<GoalHandleCreateUser> goal_handle);
     void handle_accepted(const std::shared_ptr<GoalHandleCreateUser> goal_handle);
-    void createUser(const std::shared_ptr<GoalHandleCreateUser> goal_handle)
-    void write_tag( int card_data);
+    void createUser(const std::shared_ptr<GoalHandleCreateUser> goal_handle);
+    bool write_tag(int card_data);
   };
 
 }   // namespace nfc_bridge

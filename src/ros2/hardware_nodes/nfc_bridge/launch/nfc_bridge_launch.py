@@ -6,15 +6,22 @@ def generate_launch_description():
     # Parameters
 
     # Nodes launching commands
-    start_nfc_gate_cmd = launch_ros.actions.Node(
-            package='nfc_gate',
-            executable='nfc_gate',
-            output='screen',
-            emulate_tty=True,  # https://github.com/ros2/launch/issues/188
-            )
+    start_nfc_bridge_cmd = launch_ros.actions.Node(
+        package='nfc_bridge',
+        executable='nfc_bridge',
+        output='screen',
+        emulate_tty=True,  # https://github.com/ros2/launch/issues/188
+    )
+
+    start_bridge_web_nfc_cmd = launch_ros.actions.Node(
+        package='web_bridge_nfc',
+        executable='rest_interface',
+        output='screen',
+        emulate_tty=True,  # https://github.com/ros2/launch/issues/188
+    )
 
     ld = LaunchDescription()
 
-    ld.add_action(start_nfc_gate_cmd)
-
+    ld.add_action(start_nfc_bridge_cmd)
+    ld.add_action(start_bridge_web_nfc_cmd)
     return ld

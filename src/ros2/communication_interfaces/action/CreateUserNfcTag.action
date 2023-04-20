@@ -1,9 +1,11 @@
 # Request
+string user_id
 string first_name
 string last_name
 ---
 # Result
-string card_nummer 
+bool successful
+communication_interfaces/NfcWriteStatus task_status
 ---
 # Feedback
-# communication_interfaces/NfcWriterStatus writer_status
+communication_interfaces/NfcWriteStatus task_status
