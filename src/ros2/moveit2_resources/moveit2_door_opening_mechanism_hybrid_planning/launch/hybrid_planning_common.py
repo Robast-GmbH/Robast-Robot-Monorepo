@@ -10,6 +10,7 @@ from launch_ros.descriptions import ComposableNode
 from launch_ros.actions import ComposableNodeContainer
 from launch.substitutions import LaunchConfiguration
 from launch import LaunchDescription
+from moveit_configs_utils import MoveItConfigsBuilder
 
 
 def load_file(package_name, file_path):
@@ -57,6 +58,8 @@ def get_robot_description_semantic():
 
 
 def generate_common_hybrid_launch_description():
+
+    moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_door_opening_mechanism_config").to_moveit_configs()
     
     use_sim_time = LaunchConfiguration("use_sim_time")
 
@@ -74,6 +77,9 @@ def generate_common_hybrid_launch_description():
             "planning_plugin": "ompl_interface/OMPLPlanner",
             "request_adapters": """default_planner_request_adapters/AddTimeOptimalParameterization default_planner_request_adapters/FixWorkspaceBounds default_planner_request_adapters/FixStartStateBounds default_planner_request_adapters/FixStartStateCollision default_planner_request_adapters/FixStartStatePathConstraints""",
             "start_state_max_bounds_error": 0.1,
+        },
+        "chomp": {
+            "planning_plugin": "chomp_interface/CHOMPPlanner",
         }
     }
     ompl_planning_yaml = load_yaml(
@@ -123,11 +129,14 @@ def generate_common_hybrid_launch_description():
                 parameters=[
                     common_hybrid_planning_param,
                     global_planner_param,
-                    robot_description,
-                    robot_description_semantic,
-                    kinematics_yaml,
-                    planning_pipelines_config,
-                    moveit_controllers,
+                    # robot_description,
+                    # robot_description_semantic,
+                    # kinematics_yaml,
+                    # planning_pipelines_config,
+                    # moveit_controllers,
+                    moveit_config.to_dict(),
+                    # {"epsilon": 0.000010},
+                    # {"orientation_vs_position": 0.0}
                     # {"use_sim_time": use_sim_time}
                 ],
             ),
@@ -138,9 +147,7 @@ def generate_common_hybrid_launch_description():
                 parameters=[
                     common_hybrid_planning_param,
                     local_planner_param,
-                    robot_description,
-                    robot_description_semantic,
-                    kinematics_yaml,
+                    moveit_config.to_dict(),                    
                     # {"use_sim_time": use_sim_time}
                 ],
             ),
@@ -151,6 +158,7 @@ def generate_common_hybrid_launch_description():
                 parameters=[
                     common_hybrid_planning_param,
                     hybrid_planning_manager_param,
+                    moveit_config.to_dict(),
                     # {"use_sim_time": use_sim_time}
                 ],
             ),
@@ -171,6 +179,7 @@ def generate_common_hybrid_launch_description():
         arguments=["-d", rviz_config_file],
         parameters=[robot_description,
                     robot_description_semantic,
+                    kinematics_yaml,
                     {"use_sim_time": use_sim_time},
                     ],
     )
