@@ -2,6 +2,7 @@
 #define HARDWARE_NODES__NFC_GRIDGE__ELATEC_API_H_
 
 #define DEVICE_STATE "010A"
+#define BLOCK_SIZE   15
 
 #define SET_SERIAL_TO_ASCII "000515A7"
 #define SEARCH_TAG          "050010"

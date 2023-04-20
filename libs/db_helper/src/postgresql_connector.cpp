@@ -71,35 +71,36 @@ namespace db_helper
     pqxx::work query_handle = pqxx::work(connection_handle);
     pqxx::result result_handle{query_handle.exec(sql_statement)};
     int affected_Rows = result_handle.affected_rows();
-    if(affected_Rows>0)
+    if (affected_Rows > 0)
     {
-       query_handle.commit();
+      query_handle.commit();
     }
-   else 
-   {
-       query_handle.abort();
-   }
+    else
+    {
+      query_handle.abort();
+    }
     connection_handle.disconnect();
     return affected_Rows;
   }
 
-  int PostgreSqlHelper::perform_transaction_with_return(std::string sql_statement, std::unique_ptr<std::vector<std::vector<std::string>>> result_data)
+  int PostgreSqlHelper::perform_transaction_with_return(
+      std::string sql_statement, std::unique_ptr<std::vector<std::vector<std::string>>> result_data)
   {
     pqxx::connection connection_handle = pqxx::connection(connection_parameter);
     pqxx::work query_handle = pqxx::work(connection_handle);
     pqxx::result result_handle{query_handle.exec(sql_statement)};
 
     int affected_Rows = result_handle.affected_rows();
-    if(affected_Rows>0)
+    if (affected_Rows > 0)
     {
-       query_handle.commit();
+      query_handle.commit();
     }
-   else 
-   {
-       query_handle.abort();
-   }
+    else
+    {
+      query_handle.abort();
+    }
 
-   // fill the tabel Body
+    // fill the tabel Body
     for (pqxx::const_result_iterator::reference raw_row : result_handle)
     {
       std::vector<std::string> temp_row;
@@ -109,14 +110,15 @@ namespace db_helper
       }
       result_data->push_back(temp_row);
     }
-    
+
     connection_handle.disconnect();
     return affected_Rows;
   }
 
-
-  bool PostgreSqlHelper::checkUserTag(std::string tag, std::vector<std::string> lookup_scope,
-                                      std::shared_ptr<std::string> user_name, std::shared_ptr<int> id )
+  bool PostgreSqlHelper::checkUserTag(std::string tag,
+                                      std::vector<std::string> lookup_scope,
+                                      std::shared_ptr<std::string> user_name,
+                                      std::shared_ptr<int> id)
   {
     std::vector<std::vector<std::string>> data = std::vector<std::vector<std::string>>();
     std::vector<std::string> header = std::vector<std::string>();
@@ -131,10 +133,11 @@ namespace db_helper
       target_users += lookup_scope[i];
     }
 
-    perform_query("SELECT concat(first_name, ' ', last_name,) AS \"name\", id FROM public.\"USER\" WHERE key =" + tag +
-                      " AND id in (" + target_users + ");",
-                  std::make_unique<std::vector<std::vector<std::string>>>(data),
-                  std::make_unique<std::vector<std::string>>(header));
+    perform_query(
+        "SELECT concat(first_name, ' ', last_name,) AS \"name\", user_id FROM public.\"account\" WHERE key =" + tag +
+            " AND user_id in (" + target_users + ");",
+        std::make_unique<std::vector<std::vector<std::string>>>(data),
+        std::make_unique<std::vector<std::string>>(header));
     if (data.size() == 1)
     {
       *user_name = data[0][0];
@@ -144,13 +147,44 @@ namespace db_helper
     return false;
   }
 
-   bool PostgreSqlHelper::addUser(std::string first_name, std::string last_name)
+  bool PostgreSqlHelper::checkUser(std::string id, std::string first_name, std::string last_name)
   {
-    std::string query = "";
-    return perform_transaction(query);
-   
-    return false;
+    std::vector<std::vector<std::string>> data = std::vector<std::vector<std::string>>();
+    std::vector<std::string> header = std::vector<std::string>();
+    perform_query("SELECT first_name, last_name FROM public.account WHERE user_id =" + id + ";",
+                  std::make_unique<std::vector<std::vector<std::string>>>(data),
+                  std::make_unique<std::vector<std::string>>(header));
+    return (data[0][0] == first_name && data[0][0] == last_name);
   }
 
+  std::string PostgreSqlHelper::createUser(std::string first_name, std::string last_name)
+  {
+    std::vector<std::vector<std::string>> result;
+
+    std::string add_user_query = "INSERT INTO public.\"account\" (user_id, first_name, last_name) VALUES ( DEFAULT, '" +
+                                 first_name + "', '" + last_name + "') RETURNING user_id; ";
+    perform_transaction_with_return(add_user_query, std::make_unique<std::vector<std::vector<std::string>>>(result));
+    return result[0][0];
+  }
+
+  int PostgreSqlHelper::createNfcCode(std::string user_id, int max_id)
+  {
+    std::vector<std::vector<std::string>> result;
+    std::string create_nfc_query = "INSERT INTO public.\"USER_NFC_CODES\" (user_id, token) VALUES (" + user_id +
+                                   ", floor(random()* (" + std::to_string(max_id / 2) + " + 1))*2 RETURNING token; ";
+    try
+    {
+      perform_transaction_with_return(create_nfc_query,
+                                      std::make_unique<std::vector<std::vector<std::string>>>(result));
+    }
+    catch (...)
+    {
+      create_nfc_query = "INSERT INTO public.\"USER_NFC_CODES\" (user_id, token) VALUES (" + user_id +
+                         ", nextval(nfc_code_sequence)) RETURNING token; ";
+      perform_transaction_with_return(create_nfc_query,
+                                      std::make_unique<std::vector<std::vector<std::string>>>(result));
+    }
+    return std::stoi(result[0][0]);
+  }
 
 }   // namespace db_helper

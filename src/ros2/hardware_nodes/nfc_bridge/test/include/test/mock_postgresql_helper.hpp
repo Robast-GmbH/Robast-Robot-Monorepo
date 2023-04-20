@@ -1,34 +1,32 @@
 #ifndef HARDWARE_NODES__MOCK_POSTGRESQL_HELPER_HPP_
 #define HARDWARE_NODES__MOCK_POSTGRESQL_HELPER_HPP_
-#include <vector>
 #include <cstring>
-#include <string>
 #include <map>
-#include "db_helper/i_db_helper.h"
+#include <string>
+#include <vector>
 
+#include "db_helper/i_db_helper.h"
 
 namespace db_helper
 {
-    class MockPostgreSqlHelper:public IDBHelper
-    {
-  
+  class MockPostgreSqlHelper : public IDBHelper
+  {
+   public:
+    MockPostgreSqlHelper(std::map<std::string, std::string> validUserList);
+    ~MockPostgreSqlHelper();
 
-        public:
-            MockPostgreSqlHelper( std::map< std::string, std::string> validUserList);
-            ~MockPostgreSqlHelper();
+    std::string test_connection();
+    std::string createUser(std::string first_name, std::string last_name);
+    int createNfcCode(std::string user_id, int max_ID);
+    bool checkUser(std::string id, std::string first_name, std::string last_name);
+    bool checkUserTag(std::string tag,
+                      std::vector<std::string> lookup_scope,
+                      std::shared_ptr<std::string> user_name,
+                      std::shared_ptr<int> id);
 
-            std::string open_connection();
-            std::string test_connection();
-            void close_connection();
-            bool perform_query(std::string sqlStatment, std::unique_ptr<std::vector< std::vector<std::string> >>result_data, std::unique_ptr< std::vector<std::string>> result_header);
-            int perform_transaction(std::string SqlStatement);
-
-            bool checkUserTag(std::string tag, std::vector<std::string> lookup_scope, std::shared_ptr<std::string> user_name);
-
-        private:
-            std::map< std::string, std::string> user_list_;
-
-    };
-}
+   private:
+    std::map<std::string, std::string> user_list_;
+  };
+}   // namespace db_helper
 
 #endif /* HARDWARE_NODES__MOCK_POSTGRESQL_HELPER_HPP_ */
