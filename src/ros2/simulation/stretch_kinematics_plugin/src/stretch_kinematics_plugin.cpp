@@ -219,24 +219,10 @@ namespace stretch_kinematics_plugin
         ik_pose, ik_seed_state, timeout, consistency_limits, solution, solution_callback, error_code, options);
   }
 
-  bool StretchKinematicsPlugin::searchPositionIK(const geometry_msgs::msg::Pose& ik_pose,
-                                                 const std::vector<double>& ik_seed_state,
-                                                 double timeout,
-                                                 const std::vector<double>& consistency_limits,
-                                                 std::vector<double>& solution,
-                                                 const IKCallbackFn& solution_callback,
-                                                 moveit_msgs::msg::MoveItErrorCodes& error_code,
-                                                 const kinematics::KinematicsQueryOptions& options) const
+  bool StretchKinematicsPlugin::are_position_IK_arguments_valid(const std::vector<double>& ik_seed_state,
+                                                                const std::vector<double>& consistency_limits,
+                                                                moveit_msgs::msg::MoveItErrorCodes& error_code) const
   {
-    RCLCPP_INFO(LOGGER, "####### StretchKinematicsPlugin::searchPositionIK! #######");
-
-    RCLCPP_INFO(LOGGER, "ik_seed_state:");
-    for (double ik_seed_state_entry : ik_seed_state)
-    {
-      RCLCPP_INFO(LOGGER, "   ik_seed_state_entry = %f", ik_seed_state_entry);
-    }
-
-    rclcpp::Time start_time = node_->now();
     if (!initialized_)
     {
       RCLCPP_ERROR(LOGGER, "kinematics solver not initialized");
@@ -264,6 +250,26 @@ namespace stretch_kinematics_plugin
         return false;
       }
     }
+    return true;
+  }
+
+  bool StretchKinematicsPlugin::searchPositionIK(const geometry_msgs::msg::Pose& ik_pose,
+                                                 const std::vector<double>& ik_seed_state,
+                                                 double timeout,
+                                                 const std::vector<double>& consistency_limits,
+                                                 std::vector<double>& solution,
+                                                 const IKCallbackFn& solution_callback,
+                                                 moveit_msgs::msg::MoveItErrorCodes& error_code,
+                                                 const kinematics::KinematicsQueryOptions& options) const
+  {
+    RCLCPP_INFO(LOGGER, "####### StretchKinematicsPlugin::searchPositionIK! #######");
+
+    rclcpp::Time start_time = node_->now();
+
+    if (!are_position_IK_arguments_valid(ik_seed_state, consistency_limits, error_code))
+    {
+      return false;
+    }
 
     solution.resize(dimension_);
 
@@ -273,18 +279,14 @@ namespace stretch_kinematics_plugin
                             << ik_pose.orientation.x << " " << ik_pose.orientation.y << " " << ik_pose.orientation.z
                             << " " << ik_pose.orientation.w);
 
-    RCLCPP_INFO(LOGGER,
-                "searchPositionIK: Position request pose position is x = %f, y = %f, z = %f, orientation x = %f,       "
-                " y = %f, z = %f, w = %f",
-                ik_pose.position.x,
-                ik_pose.position.y,
-                ik_pose.position.z,
-                ik_pose.orientation.x,
-                ik_pose.orientation.y,
-                ik_pose.orientation.z,
-                ik_pose.orientation.w);
+    // RCLCPP_INFO(LOGGER,
+    //             "searchPositionIK: Position request pose position is x = %f, y = %f, z = %f, orientation x = %f, " "
+    //             y = %f, z = %f, w = %f", ik_pose.position.x, ik_pose.position.y, ik_pose.position.z,
+    //             ik_pose.orientation.x,
+    //             ik_pose.orientation.y,
+    //             ik_pose.orientation.z,
+    //             ik_pose.orientation.w);
 
-    // auto ik_seed_state_local = ik_seed_state;
     std::vector<double> arm_jmg_solution(solution.begin(), std::next(solution.begin(), mobile_base_index_));
     const auto arm_jmg_consistency_limits =
         consistency_limits.empty() ? std::vector<double>{}
@@ -306,25 +308,7 @@ namespace stretch_kinematics_plugin
     {
       ++attempt;
 
-      const std::vector<std::string>& joint_model_names = state_->getVariableNames();
-      // for (const auto& joint_name : joint_model_names)
-      // {
-      //   double pos = state_->getVariablePosition(joint_name);
-      //   double vel = state_->getVariableVelocity(joint_name);
-      //   double acc = state_->getVariableAcceleration(joint_name);
-      //   double eff = state_->getVariableEffort(joint_name);
-      //   if ((joint_name == "position/x") || (joint_name == "position/y") || (joint_name == "position/theta") ||
-      //       (joint_name == "door_opening_mechanism_joint_y_axis_slide") ||
-      //       (joint_name == "door_opening_mechanism_joint_x_axis_slide") ||
-      //       (joint_name == "door_opening_mechanism_joint_tilting_hook"))
-      //   {
-      //     RCLCPP_INFO(LOGGER, "Joint: %s", joint_name.c_str());
-      //     RCLCPP_INFO(LOGGER, "  Position: %f", pos);
-      //     // RCLCPP_INFO(LOGGER, "  Velocity: %f", vel);
-      //     // RCLCPP_INFO(LOGGER, "  Acceleration: %f", acc);
-      //     // RCLCPP_INFO(LOGGER, "  Effort: %f", eff);
-      //   }
-      // }
+      RCLCPP_INFO(LOGGER, "attempt: %zu", attempt);
 
       // First we solve for the arm only by fixing the mobile base
       state_->setJointGroupPositions(mobile_base_jmg_, &solution[mobile_base_index_]);
@@ -333,61 +317,6 @@ namespace stretch_kinematics_plugin
       const auto arm_b_T_ik_pose = tf2::toMsg(state_->getFrameTransform(arm_ik_solver->getBaseFrame()).inverse() *
                                               state_->getFrameTransform(getBaseFrame()) * eigen_ik_pose);
 
-      // RCLCPP_INFO(LOGGER, "arm_ik_solver->getBaseFrame() = %s", arm_ik_solver->getBaseFrame().c_str());
-
-      // RCLCPP_INFO(LOGGER, "---------------------");
-      // RCLCPP_INFO(LOGGER, "eigen_ik_pose:");
-      // RCLCPP_INFO(LOGGER,
-      //             "   Translation: x=%f y=%f z=%f",
-      //             eigen_ik_pose.translation().x(),
-      //             eigen_ik_pose.translation().y(),
-      //             eigen_ik_pose.translation().z());
-      // RCLCPP_INFO(LOGGER,
-      //             "   Rotation (Euler): roll=%f pitch=%f yaw=%f",
-      //             eigen_ik_pose.rotation().eulerAngles(0, 1, 2).x(),
-      //             eigen_ik_pose.rotation().eulerAngles(0, 1, 2).y(),
-      //             eigen_ik_pose.rotation().eulerAngles(0, 1, 2).z());
-
-      // RCLCPP_INFO(LOGGER, "---------------------");
-      // RCLCPP_INFO(LOGGER, "state_->getFrameTransform(arm_ik_solver->getBaseFrame()):");
-      // RCLCPP_INFO(LOGGER,
-      //             "   Translation: x=%f y=%f z=%f",
-      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).translation().x(),
-      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).translation().y(),
-      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).translation().z());
-      // RCLCPP_INFO(LOGGER,
-      //             "   Rotation (Euler): roll=%f pitch=%f yaw=%f",
-      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).rotation().eulerAngles(0, 1, 2).x(),
-      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).rotation().eulerAngles(0, 1, 2).y(),
-      //             state_->getFrameTransform(arm_ik_solver->getBaseFrame()).rotation().eulerAngles(0, 1, 2).z());
-
-      // RCLCPP_INFO(LOGGER, "---------------------");
-      // RCLCPP_INFO(LOGGER, "state_->getFrameTransform(getBaseFrame()):");
-      // RCLCPP_INFO(LOGGER,
-      //             "   Translation: x=%f y=%f z=%f",
-      //             state_->getFrameTransform(getBaseFrame()).translation().x(),
-      //             state_->getFrameTransform(getBaseFrame()).translation().y(),
-      //             state_->getFrameTransform(getBaseFrame()).translation().z());
-      // RCLCPP_INFO(LOGGER,
-      //             "   Rotation (Euler): roll=%f pitch=%f yaw=%f",
-      //             state_->getFrameTransform(getBaseFrame()).rotation().eulerAngles(0, 1, 2).x(),
-      //             state_->getFrameTransform(getBaseFrame()).rotation().eulerAngles(0, 1, 2).y(),
-      //             state_->getFrameTransform(getBaseFrame()).rotation().eulerAngles(0, 1, 2).z());
-
-      // RCLCPP_INFO(LOGGER, "---------------------");
-      // RCLCPP_INFO(LOGGER, "IK pose parameters:");
-      // RCLCPP_INFO(LOGGER,
-      //             "   Position: (%f, %f, %f)",
-      //             arm_b_T_ik_pose.position.x,
-      //             arm_b_T_ik_pose.position.y,
-      //             arm_b_T_ik_pose.position.z);
-      // RCLCPP_INFO(LOGGER,
-      //             "   Orientation: (%f, %f, %f, %f)",
-      //             arm_b_T_ik_pose.orientation.x,
-      //             arm_b_T_ik_pose.orientation.y,
-      //             arm_b_T_ik_pose.orientation.z,
-      //             arm_b_T_ik_pose.orientation.w);
-
       // We can't use the solution_callback directly with the IK solver for the arm since we'll only get the joint
       // values for the arm and solution_callback meant to be used with the joint model group that contains both the arm
       // & mobile base to fix this we create a callback that will append the solution for the mobile base to the arm's
@@ -395,7 +324,6 @@ namespace stretch_kinematics_plugin
       IKCallbackFn arm_solution_callback;
       if (bool(solution_callback))   // TODO: Check if this works. It was actually: (!(&solution_callback).empty())
       {
-        RCLCPP_INFO(LOGGER, "####### if (bool(solution_callback)) = true #######");
         arm_solution_callback =
             [&solution_callback, &solution = std::as_const(solution), mobile_base_index = this->mobile_base_index_](
                 const geometry_msgs::msg::Pose& ik_pose,
@@ -408,9 +336,17 @@ namespace stretch_kinematics_plugin
           solution_callback(ik_pose, jmg_solution, error_code);
         };
       }
+
+      // Please mind: the timeout parameter was originally passed into the searchPositionIK function with a factor 0.5
+      // Because the arm_ik_solver->searchPositionIK function needed the whole time without beeing able to find a
+      // solution, the while loop we are currently in can only run twice (attempt = 2) before the timeout condition
+      // of this while loop hits.
+      // Right know I don't yet fully understand why but: A solution is always found on attempt = 3, therefore we need
+      // to make sure the while loop runs long enough to get to attempt = 3, so we need to call the
+      // arm_ik_solver->searchPositionIK function with timeout*0.45
       const bool ik_valid = arm_ik_solver->searchPositionIK(arm_b_T_ik_pose,
                                                             arm_jmg_ik_seed_state,
-                                                            timeout * 0.5,
+                                                            timeout * 0.45,
                                                             arm_jmg_consistency_limits,
                                                             arm_jmg_solution,
                                                             arm_solution_callback,
@@ -421,23 +357,24 @@ namespace stretch_kinematics_plugin
       {
         std::copy(arm_jmg_solution.begin(), arm_jmg_solution.end(), solution.begin());
         if (error_code.val != moveit_msgs::msg::MoveItErrorCodes::SUCCESS)
+        {
           continue;
+        }
         RCLCPP_DEBUG_STREAM(LOGGER,
                             "Solved after " << (node_->now() - start_time).seconds() << " < " << timeout << "s and "
                                             << attempt << " attempts");
-        RCLCPP_INFO(LOGGER, "Solved after %f seconds and %i attempts", (node_->now() - start_time).seconds(), attempt);
         return true;
-      }
-      else
-      {
-        RCLCPP_INFO(LOGGER, "####### ik_valid = false #######");
       }
 
       // If we failed to find a solution for the arm JMG we solve only for the mobile base joint by fixing the arm JMG
       if (attempt == 1)
+      {
         state_->setJointGroupPositions(arm_jmg_, &arm_jmg_ik_seed_state[0]);
+      }
       else
+      {
         state_->setJointGroupPositions(arm_jmg_, &arm_jmg_solution[0]);
+      }
       state_->updateLinkTransforms();
       // The transformation for the tip frame w.r.t. the mobile base link given the arm's joint values
       const auto mobile_base_link_T_current =
@@ -452,8 +389,11 @@ namespace stretch_kinematics_plugin
       // Check if the rotation is a pure yaw
       const double angle = rotation.axis()(2) * rotation.angle();
       if (std::abs(rotation.angle()) - std::abs(angle) < 1e-2)
+      {
         solution.back() = angle;
+      }
     } while (!timedOut(start_time, timeout));
+
     error_code.val = moveit_msgs::msg::MoveItErrorCodes::TIMED_OUT;
     return false;
   }
@@ -485,7 +425,6 @@ namespace stretch_kinematics_plugin
 
   const std::vector<std::string>& StretchKinematicsPlugin::getJointNames() const
   {
-    RCLCPP_INFO(LOGGER, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! StretchKinematicsPlugin::getJointNames!");
     return solver_info_.joint_names;
   }
 
