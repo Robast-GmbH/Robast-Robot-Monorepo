@@ -333,21 +333,6 @@ class HybridPlanningDemo
     const std::vector<const moveit::core::JointModel::Bounds*> joint_limits =
         joint_model_group->getActiveJointModelsBounds();
 
-    // Loop through the joint limits and print them
-    for (const auto& bounds : joint_limits)
-    {
-      std::cout << "Joint limits: [";
-      for (std::size_t i = 0; i < bounds->size(); ++i)
-      {
-        std::cout << "[" << bounds->at(i).min_position_ << ", " << bounds->at(i).max_position_ << "]";
-        if (i != bounds->size() - 1)
-        {
-          std::cout << ", ";
-        }
-      }
-      std::cout << "]" << std::endl;
-    }
-
     goal_motion_request.group_name = planning_group;
     goal_motion_request.num_planning_attempts = 1;
     goal_motion_request.max_velocity_scaling_factor = 0.1;
@@ -378,8 +363,8 @@ class HybridPlanningDemo
 
     target_pose.header.frame_id = "odom";
 
-    // target_pose.pose.position.x -= 0.3;    // hard target example: 0.4
-    // target_pose.pose.position.y += 0.3;    // hard target example: 0.3
+    target_pose.pose.position.x -= 0.3;    // hard target example: 0.4
+    target_pose.pose.position.y += 0.3;    // hard target example: 0.3
     target_pose.pose.position.z += 0.25;   // hard target example: 0.2
 
     std::vector<double> tolerance_pose(3, 0.000001);
@@ -394,89 +379,6 @@ class HybridPlanningDemo
 
     goal_motion_request.goal_constraints[0].position_constraints[0].constraint_region.primitives[0] =
         solid_primitive_msg;
-
-    RCLCPP_INFO(LOGGER, "Goal Constraints:");
-    for (size_t i = 0; i < goal_motion_request.goal_constraints.size(); i++)
-    {
-      const auto& goal_constraint = goal_motion_request.goal_constraints[i];
-      RCLCPP_INFO(LOGGER, "  goal_constraints[%zu]:", i);
-      for (size_t j = 0; j < goal_constraint.joint_constraints.size(); j++)
-      {
-        const auto& joint_constraint = goal_constraint.joint_constraints[j];
-        RCLCPP_INFO(LOGGER, "    joint_constraints[%zu].joint_name = %s", j, joint_constraint.joint_name.c_str());
-        RCLCPP_INFO(LOGGER, "    joint_constraints[%zu].position = %f", j, joint_constraint.position);
-        RCLCPP_INFO(LOGGER, "    joint_constraints[%zu].tolerance_above = %f", j, joint_constraint.tolerance_above);
-      }
-      for (size_t j = 0; j < goal_constraint.position_constraints.size(); j++)
-      {
-        const auto& position_constraint = goal_constraint.position_constraints[j];
-        RCLCPP_INFO(LOGGER, "    position_constraints[%zu].link_name = %s", j, position_constraint.link_name.c_str());
-        RCLCPP_INFO(LOGGER, "    position_constraints[%zu].weight = %f", j, position_constraint.weight);
-        RCLCPP_INFO(LOGGER,
-                    "    position_constraints[%zu].target_point_offset.x = %f",
-                    j,
-                    position_constraint.target_point_offset.x);
-        RCLCPP_INFO(LOGGER,
-                    "    position_constraints[%zu].target_point_offset.y = %f",
-                    j,
-                    position_constraint.target_point_offset.y);
-        RCLCPP_INFO(LOGGER,
-                    "    position_constraints[%zu].target_point_offset.z = %f",
-                    j,
-                    position_constraint.target_point_offset.z);
-        RCLCPP_INFO(
-            rclcpp::get_logger("printMotionPlanRequest"), "    position_constraints[%zu].constraint_region:", j);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "      primitives.type = %d",
-                    position_constraint.constraint_region.primitives[0].type);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"), "      primitives.dimensions:");
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "        x = %f",
-                    position_constraint.constraint_region.primitives[0].dimensions[0]);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "        y = %f",
-                    position_constraint.constraint_region.primitives[0].dimensions[1]);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "        z = %f",
-                    position_constraint.constraint_region.primitives[0].dimensions[2]);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"), "      primitive_poses.position:");
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "        x = %f",
-                    position_constraint.constraint_region.primitive_poses[0].position.x);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "        y = %f",
-                    position_constraint.constraint_region.primitive_poses[0].position.y);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "        z = %f",
-                    position_constraint.constraint_region.primitive_poses[0].position.z);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"), "      primitive_poses.orientation:");
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "        x = %f",
-                    position_constraint.constraint_region.primitive_poses[0].orientation.x);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "        y = %f",
-                    position_constraint.constraint_region.primitive_poses[0].orientation.y);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "        z = %f",
-                    position_constraint.constraint_region.primitive_poses[0].orientation.z);
-        RCLCPP_INFO(rclcpp::get_logger("printMotionPlanRequest"),
-                    "        w = %f",
-                    position_constraint.constraint_region.primitive_poses[0].orientation.w);
-        RCLCPP_INFO(LOGGER,
-                    "    goal_constraints[%zu].position_constraint.constraint_region.primitive_poses.size(): %zu",
-                    i,
-                    position_constraint.constraint_region.primitive_poses.size());
-        RCLCPP_INFO(LOGGER,
-                    "    goal_constraints[%zu].position_constraint.constraint_region.meshes.size(): %zu",
-                    i,
-                    position_constraint.constraint_region.meshes.size());
-        RCLCPP_INFO(LOGGER,
-                    "    goal_constraints[%zu].position_constraint.constraint_region.mesh_poses.size(): %zu",
-                    i,
-                    position_constraint.constraint_region.mesh_poses.size());
-      }
-    }
-
     // Create Hybrid Planning action request
     moveit_msgs::msg::MotionSequenceItem sequence_item;
     sequence_item.req = goal_motion_request;
