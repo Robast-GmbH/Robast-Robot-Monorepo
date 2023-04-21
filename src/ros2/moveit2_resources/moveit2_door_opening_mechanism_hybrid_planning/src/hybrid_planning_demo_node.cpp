@@ -68,7 +68,6 @@
 #include <rclcpp_action/create_client.hpp>
 #include <thread>
 
-using namespace std::chrono_literals;
 namespace
 {
   const rclcpp::Logger LOGGER = rclcpp::get_logger("test_hybrid_planning_client");
@@ -192,7 +191,7 @@ class HybridPlanningDemo
       return;
     }
 
-    if (!hp_action_client_->wait_for_action_server(20s))
+    if (!hp_action_client_->wait_for_action_server(std::chrono::seconds(20)))
     {
       RCLCPP_ERROR(LOGGER, "Hybrid planning action server not available after waiting");
       return;
@@ -214,7 +213,7 @@ class HybridPlanningDemo
     }   // Unlock PlanningScene
 
     RCLCPP_INFO(LOGGER, "Wait 2s for the collision object");
-    rclcpp::sleep_for(2s);
+    rclcpp::sleep_for(std::chrono::seconds(2));
 
     visual_tools.trigger();
     visual_tools.prompt("Press 'next' in the RvizVisualToolsGui window to start the demo");
@@ -230,115 +229,21 @@ class HybridPlanningDemo
     const auto robot_state = std::make_shared<moveit::core::RobotState>(robot_model);
     const moveit::core::JointModelGroup* joint_model_group = robot_state->getJointModelGroup(planning_group);
 
-    RCLCPP_INFO(LOGGER, "Before joint_model_group->getSolverInstance()!");
-
-    const kinematics::KinematicsBaseConstPtr kinematics_solver = joint_model_group->getSolverInstance();
-
-    RCLCPP_INFO(LOGGER, "After joint_model_group->getSolverInstance()!");
-
-    for (auto joint_name : kinematics_solver->getJointNames())
-    {
-      RCLCPP_INFO(LOGGER, "The current kinematic solvers joints names are: %s", joint_name.c_str());
-    }
-
-    // RCLCPP_INFO(LOGGER, "The current kinematic solvers group name is: %s",
-    // kinematics_solver->getGroupName().c_str());
-
     moveit::core::RobotStatePtr current_state;
     {
       planning_scene_monitor::LockedPlanningSceneRW locked_planning_scene(planning_scene_monitor_);
       current_state = std::make_shared<moveit::core::RobotState>(locked_planning_scene->getCurrentState());
     }
 
-    /* Check whether any joint is outside its joint limits */
-    if (current_state->satisfiesBounds())
-    {
-      RCLCPP_INFO(LOGGER, "Current state is valid");
-    }
-    else
-    {
-      RCLCPP_INFO(LOGGER, "Current state is NOT valid");
-    }
-
-    /* Enforce the joint limits for this state and check again*/
-    current_state->enforceBounds();
-    if (current_state->satisfiesBounds())
-    {
-      RCLCPP_INFO(LOGGER, "After robot_state->enforceBounds(): Current state is valid");
-    }
-    else
-    {
-      RCLCPP_INFO(LOGGER, "After robot_state->enforceBounds(): Current state is NOT valid");
-    }
-
     // Create desired motion goal
     moveit_msgs::msg::MotionPlanRequest goal_motion_request;
-
-    // moveit::core::robotStateToRobotStateMsg(*current_state, goal_motion_request.start_state);
-
-    // geometry_msgs::msg::Quaternion q_msg;
-    // q_msg.x = goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.x;
-    // q_msg.y = goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.y;
-    // q_msg.z = goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.z;
-    // q_msg.w = goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.w;
-
-    // tf2::Quaternion q(q_msg.x, q_msg.y, q_msg.z, q_msg.w);
-    // q.normalize();
-
-    // goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.x = 0;
-    // goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.y = 0;
-    // goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.z = 0;
-    // goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.w = 1;
-    // goal_motion_request.start_state.multi_dof_joint_state.transforms[0].translation.x = 0.0;
-    // goal_motion_request.start_state.multi_dof_joint_state.transforms[0].translation.y = 0.0;
-
-    // for (int i = 0; i <= goal_motion_request.start_state.joint_state.position.size() - 1; i++)
-    // {
-    //   RCLCPP_INFO(LOGGER,
-    //               "!!!!!!!!!!! goal_motion_request.start_state.joint_state.position[%s] = %f",
-    //               goal_motion_request.start_state.joint_state.name[i].c_str(),
-    //               goal_motion_request.start_state.joint_state.position[i]);
-    // }
-
-    // RCLCPP_INFO(
-    //     LOGGER,
-    //     "????????????????????????? goal_motion_request.start_state.multi_dof_joint_state.joint_names[0].c_str() =
-    //     %s", goal_motion_request.start_state.multi_dof_joint_state.joint_names[0].c_str());
-    // RCLCPP_INFO(LOGGER,
-    //             "????????????????????????? "
-    //             "goal_motion_request.start_state.multi_dof_joint_state.transforms[0].translation.x = %f",
-    //             goal_motion_request.start_state.multi_dof_joint_state.transforms[0].translation.x);
-    // RCLCPP_INFO(LOGGER,
-    //             "????????????????????????? "
-    //             "goal_motion_request.start_state.multi_dof_joint_state.transforms[0].translation.y = %f",
-    //             goal_motion_request.start_state.multi_dof_joint_state.transforms[0].translation.y);
-    // RCLCPP_INFO(LOGGER,
-    //             "????????????????????????? "
-    //             "goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.x = %f",
-    //             goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.x);
-    // RCLCPP_INFO(LOGGER,
-    //             "????????????????????????? "
-    //             "goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.y = %f",
-    //             goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.y);
-    // RCLCPP_INFO(LOGGER,
-    //             "????????????????????????? "
-    //             "goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.z = %f",
-    //             goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.z);
-    // RCLCPP_INFO(LOGGER,
-    //             "????????????????????????? "
-    //             "goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.w = %f",
-    //             goal_motion_request.start_state.multi_dof_joint_state.transforms[0].rotation.w);
-
-    // Get the variable bounds message for the group
-    const std::vector<const moveit::core::JointModel::Bounds*> joint_limits =
-        joint_model_group->getActiveJointModelsBounds();
 
     goal_motion_request.group_name = planning_group;
     goal_motion_request.num_planning_attempts = 1;
     goal_motion_request.max_velocity_scaling_factor = 0.1;
     goal_motion_request.max_acceleration_scaling_factor = 0.1;
     goal_motion_request.allowed_planning_time = 5.0;
-    // goal_motion_request.planner_id = "ompl";    // The name of the planning algorithm to use
+    goal_motion_request.planner_id = "ompl";    // The name of the planning algorithm to use
     goal_motion_request.pipeline_id = "ompl";   // The name of the planning pipeline to use.
     goal_motion_request.workspace_parameters.min_corner.x = -5.0;
     goal_motion_request.workspace_parameters.min_corner.y = -5.0;
@@ -347,19 +252,10 @@ class HybridPlanningDemo
     goal_motion_request.workspace_parameters.max_corner.y = 5.0;
     goal_motion_request.workspace_parameters.max_corner.z = 5.0;
 
-    // moveit::core::RobotState goal_state(robot_model);
-    // std::vector<double> joint_values = {0.1, 0.1, 0.1};
-    // goal_state.setJointGroupPositions(joint_model_group, joint_values);
-
-    goal_motion_request.goal_constraints.resize(1);
-    // goal_motion_request.goal_constraints[0] =
-    //     kinematic_constraints::constructGoalConstraints(goal_state, joint_model_group, 1.0);
-
     const Eigen::Isometry3d& end_effector_pose = current_state->getGlobalLinkTransform("alu_profile_link_gripper");
 
     geometry_msgs::msg::PoseStamped target_pose;
     target_pose.pose = tf2::toMsg(end_effector_pose);
-    // geometry_msgs::msg::PoseStamped target_pose = move_group.getCurrentPose();
 
     target_pose.header.frame_id = "odom";
 
@@ -367,18 +263,12 @@ class HybridPlanningDemo
     target_pose.pose.position.y += 0.3;    // hard target example: 0.3
     target_pose.pose.position.z += 0.25;   // hard target example: 0.2
 
-    std::vector<double> tolerance_pose(3, 0.000001);
-    std::vector<double> tolerance_angle(3, 0.000001);
+    goal_motion_request.goal_constraints.resize(1);
+    std::vector<double> tolerance_pose(3, 0.00001);
+    std::vector<double> tolerance_angle(3, 0.00001);
     goal_motion_request.goal_constraints[0] = kinematic_constraints::constructGoalConstraints(
         "alu_profile_link_gripper", target_pose, tolerance_pose, tolerance_angle);
 
-    shape_msgs::msg::SolidPrimitive solid_primitive_msg;
-    solid_primitive_msg.type = 2;
-    solid_primitive_msg.dimensions = {
-        goal_motion_request.goal_constraints[0].position_constraints[0].constraint_region.primitives[0].dimensions[0]};
-
-    goal_motion_request.goal_constraints[0].position_constraints[0].constraint_region.primitives[0] =
-        solid_primitive_msg;
     // Create Hybrid Planning action request
     moveit_msgs::msg::MotionSequenceItem sequence_item;
     sequence_item.req = goal_motion_request;
@@ -458,7 +348,7 @@ int main(int argc, char** argv)
       [&demo]()
       {
         // This sleep isn't necessary but it gives humans time to process what's going on
-        rclcpp::sleep_for(5s);
+        rclcpp::sleep_for(std::chrono::seconds(5));
         demo.run();
       });
 
