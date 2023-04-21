@@ -23,8 +23,10 @@ namespace gazebo_controller_manager
     void set_joint_position_cb(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg);
     std::vector<std::string> get_gz_cmd_joint_topics(std::vector<std::string> joint_names);
 
+    void printJointTrajectory(const trajectory_msgs::msg::JointTrajectory::SharedPtr& msg);
+
    private:
-    rclcpp::Node::SharedPtr nh_;
+    rclcpp::Node::SharedPtr node_;
     std::shared_ptr<gz::transport::Node> gz_node_;
     // ros pub and sub
     rclcpp::Subscription<trajectory_msgs::msg::JointTrajectory>::SharedPtr ros_joint_trajectory_sub_;
