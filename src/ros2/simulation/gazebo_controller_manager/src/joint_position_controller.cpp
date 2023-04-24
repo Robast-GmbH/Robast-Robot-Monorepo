@@ -4,8 +4,10 @@ namespace gazebo_controller_manager
 {
   JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& node,
                                                    const std::vector<std::string>& joint_names,
-                                                   const std::string& ros_joint_trajectory_topic)
+                                                   const std::string& ros_robot_trajectory_topic)
   {
+    RCLCPP_INFO(this->node_->get_logger(), "Starting JointPositionController!");
+
     std::vector<std::string> gz_cmd_topics = this->get_gz_cmd_joint_topics(joint_names);
 
     // ROS and gz node
@@ -24,8 +26,8 @@ namespace gazebo_controller_manager
       joint_names_map_[joint_names_[i]] = i;
     }
     // create ros pub and sub
-    ros_joint_trajectory_sub_ = node_->create_subscription<trajectory_msgs::msg::JointTrajectory>(
-        ros_joint_trajectory_topic,
+    ros_robot_trajectory_sub_ = node_->create_subscription<moveit_msgs::msg::RobotTrajectory>(
+        ros_robot_trajectory_topic,
         10,
         std::bind(&JointPositionController::set_joint_position_cb, this, std::placeholders::_1));
     // create gz pub
@@ -49,24 +51,24 @@ namespace gazebo_controller_manager
     return gz_cmd_topics;
   }
 
-  void JointPositionController::set_joint_position_cb(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
+  void JointPositionController::set_joint_position_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg)
   {
     printJointTrajectory(msg);
 
-    for (auto i = 0u; i < msg->points[0].positions.size(); ++i)
+    for (auto i = 0u; i < msg->joint_trajectory.points[0].positions.size(); ++i)
     {
-      if (joint_names_map_.find(msg->joint_names[i]) != joint_names_map_.end())
+      if (joint_names_map_.find(msg->joint_trajectory.joint_names[i]) != joint_names_map_.end())
       {
         // find joint name in `joint_names_` .
-        int idx = joint_names_map_[msg->joint_names[i]];
+        int idx = joint_names_map_[msg->joint_trajectory.joint_names[i]];
         gz::msgs::Double ign_msg;
-        ign_msg.set_data(msg->points[0].positions[i]);
+        ign_msg.set_data(msg->joint_trajectory.points[0].positions[i]);
         gz_cmd_joint_pubs_[idx]->Publish(ign_msg);
       }
     }
   }
 
-  void JointPositionController::printJointTrajectory(const trajectory_msgs::msg::JointTrajectory::SharedPtr& msg)
+  void JointPositionController::printJointTrajectory(const moveit_msgs::msg::RobotTrajectory::SharedPtr& msg)
   {
     if (!msg)
     {
@@ -79,21 +81,24 @@ namespace gazebo_controller_manager
 
     // Print the header information
     RCLCPP_INFO(this->node_->get_logger(), "Header:");
-    RCLCPP_INFO(this->node_->get_logger(), "  stamp: %f", msg->header.stamp.sec + 1e-9 * msg->header.stamp.nanosec);
-    RCLCPP_INFO(this->node_->get_logger(), "  frame_id: %s", msg->header.frame_id.c_str());
+    RCLCPP_INFO(this->node_->get_logger(),
+                "  stamp: %f",
+                msg->joint_trajectory.header.stamp.sec + 1e-9 * msg->joint_trajectory.header.stamp.nanosec);
+    RCLCPP_INFO(this->node_->get_logger(), "  frame_id: %s", msg->joint_trajectory.header.frame_id.c_str());
 
     // Print the joint names
     RCLCPP_INFO(this->node_->get_logger(), "Joint Names:");
-    for (const auto& name : msg->joint_names)
+    for (const auto& name : msg->joint_trajectory.joint_names)
     {
       RCLCPP_INFO(this->node_->get_logger(), "  %s", name.c_str());
     }
 
     // Print the points in the trajectory
-    RCLCPP_INFO(this->node_->get_logger(), "Trajectory Points (number of points: %zu):", msg->points.size());
-    for (size_t i = 0; i < msg->points.size(); ++i)
+    RCLCPP_INFO(
+        this->node_->get_logger(), "Trajectory Points (number of points: %zu):", msg->joint_trajectory.points.size());
+    for (size_t i = 0; i < msg->joint_trajectory.points.size(); ++i)
     {
-      const auto& point = msg->points[i];
+      const auto& point = msg->joint_trajectory.points[i];
 
       RCLCPP_INFO(this->node_->get_logger(), "  Point %zu:", i);
       RCLCPP_INFO(this->node_->get_logger(),
