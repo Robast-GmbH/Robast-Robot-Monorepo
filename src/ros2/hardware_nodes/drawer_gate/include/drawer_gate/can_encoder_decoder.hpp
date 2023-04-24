@@ -1,3 +1,6 @@
+#ifndef DRAWER_GATE__CAN_ENCODER_DECODER_HPP_
+#define DRAWER_GATE__CAN_ENCODER_DECODER_HPP_
+
 #include "can_msgs/msg/frame.hpp"
 #include "can/can_message.h"
 #include "can/can_helper.h"
@@ -15,3 +18,5 @@ private:
 
 
 };
+
+#endif

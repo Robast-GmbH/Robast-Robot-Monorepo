@@ -19,8 +19,8 @@ void setup() {
   Serial.begin(115200);         // Init serial port and set baudrate
   while(!Serial);               // Wait for serial port to connect
   Serial.println("\nStart...");
-
-  motor.init();
+  //motor.init();
+  CAN.initialize_can_controller();
 }
 
 void loop() {
@@ -60,6 +60,9 @@ void loop() {
     motor.resetStallGuard();
   }
 
+
+      CAN.handle_receiving_can_msg();
+  
   if((ms-last_time) > 100 && motor.getSpeed() != 0) { // run every 0.1s
     last_time = ms;
     motor.printStatus();

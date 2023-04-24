@@ -43,10 +43,12 @@ set(library_drawer_gate_test ${executable_drawer_gate_test}_core)
 add_library(${library_drawer_gate} SHARED
   src/drawer_gate.cpp
   src/can_encoder_decoder.cpp
+  src/can_message_creator.cpp
 )
 add_library(${library_drawer_gate_test} SHARED
   src/drawer_gate.cpp
   src/can_encoder_decoder.cpp
+  src/can_message_creator.cpp
   test/src/test_drawer_gate.cpp
 )
 

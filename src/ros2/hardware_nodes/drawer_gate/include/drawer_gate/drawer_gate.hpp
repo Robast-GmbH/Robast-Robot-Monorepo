@@ -26,12 +26,14 @@
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
 #include "communication_interfaces/msg/drawer.hpp"
+#include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/drawer_leds.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "drawer_gate/drawer_defines.h"
 #include "can_msgs/msg/frame.hpp"
 #include "drawer_gate/can_encoder_decoder.hpp"
+#include "drawer_gate/can_message_creator.hpp"
 #include "drawer_gate/qos_config.hpp"
 #include "shelf_setup.hpp"
 
@@ -56,10 +58,16 @@ namespace drawer_gate
     bool is_lock_switch_2_pushed;
   };
 
+  struct electric_drawer_status: public drawer_status {
+    bool is_stall_guard_triggered;
+    int drawer_position;
+  };
+
   class DrawerGate: public rclcpp::Node
   {
   public:
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
+    using DrawerTask = communication_interfaces::msg::DrawerTask;
     using DrawerLeds = communication_interfaces::msg::DrawerLeds;
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
     using ShelfSetupInfo = communication_interfaces::srv::ShelfSetupInfo;
@@ -76,6 +84,7 @@ namespace drawer_gate
     /* VARIABLES */
     rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service_;
     rclcpp::Subscription<DrawerAddress>::SharedPtr open_drawer_subscription_;
+    rclcpp::Subscription<DrawerTask>::SharedPtr drawer_task_subscription_;
     rclcpp::Subscription<DrawerLeds>::SharedPtr drawer_leds_subscription_;
     rclcpp::Subscription<CanMessage>::SharedPtr can_messages_subscription_;
     rclcpp::Publisher<DrawerStatus>::SharedPtr drawer_status_publisher_;
@@ -89,6 +98,7 @@ namespace drawer_gate
     std::map<uint32_t, drawer_status> drawer_status_by_drawer_controller_id_;
 
     CanEncoderDecoder can_encoder_decoder_ = CanEncoderDecoder();
+    CanMessageCreator can_message_creator_ = CanMessageCreator();
 
     QoSConfig qos_config = QoSConfig();
 
@@ -96,6 +106,8 @@ namespace drawer_gate
 
     /* FUNCTIONS */
     void open_drawer_topic_callback(const DrawerAddress& msg);
+
+    void electrical_drawer_task_topic_callback(const DrawerTask& task);
 
     void drawer_leds_topic_callback(const DrawerLeds& msg);
 
@@ -105,22 +117,16 @@ namespace drawer_gate
 
     void setup_services();
 
-    CanMessage create_can_msg_drawer_lock(uint32_t drawer_controller_id, uint8_t drawer_id,
-      uint8_t can_data_open_lock) const;
-
-    CanMessage create_can_msg_drawer_led(uint32_t drawer_controller_id,
-      led_parameters led_parameters) const;
     void send_can_msg(CanMessage can_message);
-
 
     void receive_can_msg_callback(CanMessage can_message);
 
     void update_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg);
 
-    void send_drawer_is_open_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg, uint8_t drawer_id);
+    void update_electric_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg);
 
-    void send_drawer_is_closed_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg,
-      uint8_t drawer_id);
+    void send_drawer_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg,
+      uint8_t drawer_id,bool is_closed);
 
     std::vector<communication_interfaces::msg::Drawer> get_all_mounted_drawers();
 

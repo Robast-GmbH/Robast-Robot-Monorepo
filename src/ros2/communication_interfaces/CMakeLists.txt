@@ -50,6 +50,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DrawerAddress.msg"
   "msg/DrawerLeds.msg"
   "msg/DrawerStatus.msg"
+  "msg/DrawerTask.msg"
   "msg/NFCStatus.msg"
   "msg/Task.msg"
   "msg/TaskStatus.msg"
