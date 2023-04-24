@@ -6,7 +6,7 @@ namespace gazebo_controller_manager
                                                    const std::vector<std::string>& joint_names,
                                                    const std::string& ros_robot_trajectory_topic)
   {
-    RCLCPP_INFO(this->node_->get_logger(), "Starting JointPositionController!");
+    RCLCPP_INFO(node->get_logger(), "Starting JointPositionController!");
 
     std::vector<std::string> gz_cmd_topics = this->get_gz_cmd_joint_topics(joint_names);
 
