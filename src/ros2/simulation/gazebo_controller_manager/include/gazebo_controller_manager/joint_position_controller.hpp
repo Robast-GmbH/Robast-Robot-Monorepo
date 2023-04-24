@@ -35,6 +35,12 @@ namespace gazebo_controller_manager
     // joint names and map
     std::vector<std::string> joint_names_;
     std::unordered_map<std::string, int> joint_names_map_;
+
+    void create_gz_publisher(const std::vector<std::string>& joint_names);
+
+    void create_ros_subscriber(const std::string& ros_robot_trajectory_topic);
+
+    void init_joint_names_map(const std::vector<std::string>& joint_names);
   };
 }   // namespace gazebo_controller_manager
 #endif   // RB_THERON__JOINT_POSITION_CONTROLLER_HPP_

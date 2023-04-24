@@ -8,34 +8,51 @@ namespace gazebo_controller_manager
   {
     RCLCPP_INFO(node->get_logger(), "Starting JointPositionController!");
 
+    this->node_ = node;
+
+    init_joint_names_map(joint_names);
+
+    create_ros_subscriber(ros_robot_trajectory_topic);
+
+    create_gz_publisher(joint_names);
+  }
+
+  void JointPositionController::create_gz_publisher(const std::vector<std::string>& joint_names)
+  {
+    this->gz_node_ = std::make_shared<gz::transport::Node>();
+
     std::vector<std::string> gz_cmd_topics = this->get_gz_cmd_joint_topics(joint_names);
 
-    // ROS and gz node
-    this->node_ = node;
-    this->gz_node_ = std::make_shared<gz::transport::Node>();
-    // check
     if (joint_names.size() != gz_cmd_topics.size())
     {
       RCLCPP_ERROR(this->node_->get_logger(), "The size of the arrays joint_names and gz_cmd_topics are not matched!");
       return;
     }
-    joint_names_ = joint_names;
-    // init joint names map
-    for (size_t i = 0; i < joint_names_.size(); i++)
-    {
-      joint_names_map_[joint_names_[i]] = i;
-    }
-    // create ros pub and sub
-    ros_robot_trajectory_sub_ = node_->create_subscription<moveit_msgs::msg::RobotTrajectory>(
-        ros_robot_trajectory_topic,
-        10,
-        std::bind(&JointPositionController::set_joint_position_cb, this, std::placeholders::_1));
+
     // create gz pub
     for (size_t i = 0; i < gz_cmd_topics.size(); i++)
     {
       auto pub =
           std::make_shared<gz::transport::Node::Publisher>(gz_node_->Advertise<gz::msgs::Double>(gz_cmd_topics[i]));
       gz_cmd_joint_pubs_.push_back(pub);
+    }
+  }
+
+  void JointPositionController::create_ros_subscriber(const std::string& ros_robot_trajectory_topic)
+  {
+    ros_robot_trajectory_sub_ = node_->create_subscription<moveit_msgs::msg::RobotTrajectory>(
+        ros_robot_trajectory_topic,
+        10,
+        std::bind(&JointPositionController::set_joint_position_cb, this, std::placeholders::_1));
+  }
+
+  void JointPositionController::init_joint_names_map(const std::vector<std::string>& joint_names)
+  {
+    this->joint_names_ = joint_names;
+
+    for (size_t i = 0; i < joint_names_.size(); i++)
+    {
+      joint_names_map_[joint_names_[i]] = i;
     }
   }
 
