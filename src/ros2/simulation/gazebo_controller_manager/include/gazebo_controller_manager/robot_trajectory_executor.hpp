@@ -11,13 +11,13 @@
 namespace gazebo_controller_manager
 {
 
-  class JointPositionController
+  class RobotTrajectoryExecutor
   {
    public:
-    JointPositionController(const rclcpp::Node::SharedPtr& node,
+    RobotTrajectoryExecutor(const rclcpp::Node::SharedPtr& node,
                             const std::vector<std::string>& joint_names,
                             const std::string& ros_robot_trajectory_topic);
-    ~JointPositionController(){};
+    ~RobotTrajectoryExecutor(){};
 
    private:
     void set_joint_position_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg);

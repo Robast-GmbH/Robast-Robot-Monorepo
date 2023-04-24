@@ -1,12 +1,12 @@
-#include "gazebo_controller_manager/joint_position_controller.hpp"
+#include "gazebo_controller_manager/robot_trajectory_executor.hpp"
 
 namespace gazebo_controller_manager
 {
-  JointPositionController::JointPositionController(const rclcpp::Node::SharedPtr& node,
+  RobotTrajectoryExecutor::RobotTrajectoryExecutor(const rclcpp::Node::SharedPtr& node,
                                                    const std::vector<std::string>& joint_names,
                                                    const std::string& ros_robot_trajectory_topic)
   {
-    RCLCPP_INFO(node->get_logger(), "Starting JointPositionController!");
+    RCLCPP_INFO(node->get_logger(), "Starting RobotTrajectoryExecutor!");
 
     this->node_ = node;
 
@@ -17,7 +17,7 @@ namespace gazebo_controller_manager
     create_gz_publisher(joint_names);
   }
 
-  void JointPositionController::create_gz_publisher(const std::vector<std::string>& joint_names)
+  void RobotTrajectoryExecutor::create_gz_publisher(const std::vector<std::string>& joint_names)
   {
     this->gz_node_ = std::make_shared<gz::transport::Node>();
 
@@ -38,15 +38,15 @@ namespace gazebo_controller_manager
     }
   }
 
-  void JointPositionController::create_ros_subscriber(const std::string& ros_robot_trajectory_topic)
+  void RobotTrajectoryExecutor::create_ros_subscriber(const std::string& ros_robot_trajectory_topic)
   {
     ros_robot_trajectory_sub_ = node_->create_subscription<moveit_msgs::msg::RobotTrajectory>(
         ros_robot_trajectory_topic,
         10,
-        std::bind(&JointPositionController::set_joint_position_cb, this, std::placeholders::_1));
+        std::bind(&RobotTrajectoryExecutor::set_joint_position_cb, this, std::placeholders::_1));
   }
 
-  void JointPositionController::init_joint_names_map(const std::vector<std::string>& joint_names)
+  void RobotTrajectoryExecutor::init_joint_names_map(const std::vector<std::string>& joint_names)
   {
     this->joint_names_ = joint_names;
 
@@ -56,7 +56,7 @@ namespace gazebo_controller_manager
     }
   }
 
-  std::vector<std::string> JointPositionController::get_gz_cmd_joint_topics(std::vector<std::string> joint_names)
+  std::vector<std::string> RobotTrajectoryExecutor::get_gz_cmd_joint_topics(std::vector<std::string> joint_names)
   {
     std::vector<std::string> gz_cmd_topics;
     for (std::string& joint_name : joint_names)
@@ -68,7 +68,7 @@ namespace gazebo_controller_manager
     return gz_cmd_topics;
   }
 
-  void JointPositionController::set_joint_position_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg)
+  void RobotTrajectoryExecutor::set_joint_position_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg)
   {
     printJointTrajectory(msg);
 
@@ -85,7 +85,7 @@ namespace gazebo_controller_manager
     }
   }
 
-  void JointPositionController::printJointTrajectory(const moveit_msgs::msg::RobotTrajectory::SharedPtr& msg)
+  void RobotTrajectoryExecutor::printJointTrajectory(const moveit_msgs::msg::RobotTrajectory::SharedPtr& msg)
   {
     if (!msg)
     {

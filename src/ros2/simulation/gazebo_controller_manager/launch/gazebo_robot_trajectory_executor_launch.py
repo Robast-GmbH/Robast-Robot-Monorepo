@@ -26,10 +26,10 @@ def generate_launch_description():
     )
 
     #  ROS -> IGN,  joint position controller
-    joint_position_controller = Node(
+    robot_trajectory_executor_node = Node(
         package="gazebo_controller_manager",
-        executable="joint_position_controller",
-        name="rb_theron_joint_position_controller",
+        executable="robot_trajectory_executor",
+        name="rb_theron_robot_trajectory_executor",
         parameters=[
             {"joint_names": joint_names_list},
         ],
@@ -37,5 +37,5 @@ def generate_launch_description():
     )
 
     ld.add_action(joint_names_cmd)
-    ld.add_action(joint_position_controller)
+    ld.add_action(robot_trajectory_executor_node)
     return ld

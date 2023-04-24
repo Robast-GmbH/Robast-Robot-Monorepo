@@ -1,11 +1,11 @@
-#include <gazebo_controller_manager/joint_position_controller.hpp>
+#include <gazebo_controller_manager/robot_trajectory_executor.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 int main(int argc, char* argv[])
 {
   // creat ros2 node
   rclcpp::init(argc, argv);
-  auto ros_node = std::make_shared<rclcpp::Node>("joint_position_controller");
+  auto ros_node = std::make_shared<rclcpp::Node>("robot_trajectory_executor");
   // variable
   std::vector<std::string> joint_names;
   std::vector<std::string> default_joint_names = {
@@ -13,12 +13,11 @@ int main(int argc, char* argv[])
   // parameters
   ros_node->declare_parameter("joint_names", default_joint_names);
   joint_names = ros_node->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
-  // create controller
-  auto joint_position_controller = std::make_shared<gazebo_controller_manager::JointPositionController>(
+
+  auto robot_trajectory_executor = std::make_shared<gazebo_controller_manager::RobotTrajectoryExecutor>(
       ros_node, joint_names, "/door_opening_mechanism_controller/follow_joint_trajectory");
-  // run node until it's exited
+
   rclcpp::spin(ros_node);
-  // clean up
   rclcpp::shutdown();
   return 0;
 }
