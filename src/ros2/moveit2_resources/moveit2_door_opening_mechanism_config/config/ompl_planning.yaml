@@ -133,6 +133,7 @@ planner_configs:
     type: geometric::TrajOpt
 
 door_opening_mechanism:
+  default_planner_config: RRTstarkConfigDefault
   planner_configs:
     - SBLkConfigDefault
     - ESTkConfigDefault
@@ -159,7 +160,9 @@ door_opening_mechanism:
     - SPARStwokConfigDefault
     - TrajOptDefault
   projection_evaluator: joints(door_opening_mechanism_joint_y_axis_slide)
+  longest_valid_segment_fraction: 0.005
 position:
+  default_planner_config: RRTstarkConfigDefault
   planner_configs:
     - SBLkConfigDefault
     - ESTkConfigDefault
@@ -185,7 +188,9 @@ position:
     - SPARSkConfigDefault
     - SPARStwokConfigDefault
     - TrajOptDefault
+  longest_valid_segment_fraction: 0.005
 mobile_base_arm:
+  default_planner_config: RRTstarkConfigDefault
   planner_configs:
     - SBLkConfigDefault
     - ESTkConfigDefault
@@ -211,3 +216,4 @@ mobile_base_arm:
     - SPARSkConfigDefault
     - SPARStwokConfigDefault
     - TrajOptDefault
+  longest_valid_segment_fraction: 0.005
