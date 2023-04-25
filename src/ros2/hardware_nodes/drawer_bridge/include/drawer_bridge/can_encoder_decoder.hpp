@@ -1,5 +1,5 @@
-#ifndef DRAWER_GATE__CAN_ENCODER_DECODER_HPP_
-#define DRAWER_GATE__CAN_ENCODER_DECODER_HPP_
+#ifndef DRAWER_BRIDGE__CAN_ENCODER_DECODER_HPP_
+#define DRAWER_BRIDGE__CAN_ENCODER_DECODER_HPP_
 
 #include "can_msgs/msg/frame.hpp"
 #include "can/can_message.h"

@@ -1,56 +1,58 @@
-#include "drawer_gate/drawer_gate.hpp"
+#include "drawer_bridge/drawer_bridge.hpp"
 
 // For DEBUGGING purposes this is the action send_goal command:
 // ros2 action send_goal /control_drawer communication_interfaces/action/DrawerUserAccess "{drawer_address:
 // {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
 
-namespace drawer_gate
+namespace drawer_bridge
 {
-  DrawerGate::DrawerGate(): Node("drawer_gate")
+  DrawerBridge::DrawerBridge(): Node("drawer_bridge")
   {
     setup_subscriptions();
     setup_publishers();
     setup_services();
   }
 
-  void DrawerGate::setup_subscriptions()
+  void DrawerBridge::setup_subscriptions()
   {
     open_drawer_subscription_ = this->create_subscription<DrawerAddress>(
       "open_drawer",
       qos_config.get_qos_open_drawer(),
-      std::bind(&DrawerGate::open_drawer_topic_callback, this, std::placeholders::_1));
+      std::bind(&DrawerBridge::open_drawer_topic_callback, this, std::placeholders::_1));
 
     drawer_task_subscription_ = this->create_subscription<DrawerTask>(
       "electrical_drawer_task",
       qos_config.get_qos_open_drawer(),
-      std::bind(&DrawerGate::electrical_drawer_task_topic_callback, this, std::placeholders::_1));
+      std::bind(&DrawerBridge::electrical_drawer_task_topic_callback, this, std::placeholders::_1));
 
     drawer_leds_subscription_ = this->create_subscription<DrawerLeds>(
       "drawer_leds",
       qos_config.get_qos_drawer_leds(),
-      std::bind(&DrawerGate::drawer_leds_topic_callback, this, std::placeholders::_1));
+      std::bind(&DrawerBridge::drawer_leds_topic_callback, this, std::placeholders::_1));
 
     can_messages_subscription_ = this->create_subscription<CanMessage>(
       "/from_can_bus",
       qos_config.get_qos_can_messages(),
-      std::bind(&DrawerGate::receive_can_msg_callback, this, std::placeholders::_1));
+      std::bind(&DrawerBridge::receive_can_msg_callback, this, std::placeholders::_1));
   }
 
-  void DrawerGate::setup_publishers()
+  void DrawerBridge::setup_publishers()
   {
+    can_messages_publisher_ = create_publisher<CanMessage>("/to_can_bus", qos_config.get_qos_can_messages());
+
     drawer_status_publisher_ = create_publisher<DrawerStatus>("drawer_is_open", qos_config.get_qos_open_drawer());
 
-    can_messages_publisher_ = create_publisher<CanMessage>("/to_can_bus", qos_config.get_qos_can_messages());
+    electrical_drawer_status_publisher_ = create_publisher<ElectricalDrawerStatus>("electrical_drawer_status", qos_config.get_qos_open_drawer());
   }
 
-  void DrawerGate::setup_services()
+  void DrawerBridge::setup_services()
   {
     shelf_setup_info_service_ = create_service<ShelfSetupInfo>(
       "shelf_setup_info",
-      std::bind(&DrawerGate::provide_shelf_setup_info_callback, this, std::placeholders::_1, std::placeholders::_2));
+      std::bind(&DrawerBridge::provide_shelf_setup_info_callback, this, std::placeholders::_1, std::placeholders::_2));
   }
 
-  void DrawerGate::open_drawer_topic_callback(const DrawerAddress& msg)
+  void DrawerBridge::open_drawer_topic_callback(const DrawerAddress& msg)
   {
     uint32_t drawer_controller_id = msg.drawer_controller_id;
     uint8_t drawer_id = msg.drawer_id;
@@ -66,7 +68,7 @@ namespace drawer_gate
     }
   }
 
-  void DrawerGate::electrical_drawer_task_topic_callback(const DrawerTask& msg)
+  void DrawerBridge::electrical_drawer_task_topic_callback(const DrawerTask& msg)
   {
     RCLCPP_INFO(get_logger(), "I heard from drawer task topic");
 
@@ -74,7 +76,7 @@ namespace drawer_gate
     send_can_msg(can_msg);
   }
 
-  void DrawerGate::drawer_leds_topic_callback(const DrawerLeds& msg)
+  void DrawerBridge::drawer_leds_topic_callback(const DrawerLeds& msg)
   {
     RCLCPP_INFO(get_logger(), "I heard from drawer_leds topic the led mode: '%i'", msg.mode);   // Debugging
 
@@ -82,7 +84,7 @@ namespace drawer_gate
     send_can_msg(can_msg);
   }
 
-  void DrawerGate::update_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg)
+  void DrawerBridge::update_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg)
   {
     uint32_t drawer_controller_id =
       drawer_feedback_can_msg.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data();
@@ -93,35 +95,38 @@ namespace drawer_gate
       drawer_feedback_can_msg.get_can_signals().at(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED).get_data() == 1
     };
 
-    this->drawer_status_by_drawer_controller_id_[drawer_controller_id] = drawer_status;
-
-    communication_interfaces::msg::DrawerStatus drawer_status_msg = DrawerStatus();
-    drawer_status_msg.drawer_address.drawer_controller_id = drawer_controller_id;
-
-    if (!drawer_status.is_endstop_switch_1_pushed)
-    {
-      this->send_drawer_feedback(drawer_status_msg, 1 ,CAN_DATA_OPEN_LOCK);
-    }
-    if (!drawer_status.is_lock_switch_1_pushed && drawer_status.is_endstop_switch_1_pushed)
-    {
-      this->send_drawer_feedback(drawer_status_msg, 1,CAN_DATA_CLOSE_LOCK);
-    }
-
-    // TODO: If lock 2 is used as well, add the if (drawer_status.is_endstop_switch_2_pushed) block
+    drawer_status_by_drawer_controller_id_[drawer_controller_id] = drawer_status;
   }
 
-  void DrawerGate::update_electric_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg)
+  void DrawerBridge::update_electric_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg)
   {
-    
+
     electric_drawer_status drawer_status = {};
     drawer_status_by_drawer_controller_id_[2] = drawer_status;
+
+
   }
 
- 
 
-  void DrawerGate::send_drawer_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg,
-    uint8_t drawer_id, bool is_open)
+
+  void DrawerBridge::publish_drawer_status(uint32_t drawer_controller_id)
   {
+    drawer_status status = drawer_status_by_drawer_controller_id_[drawer_controller_id];
+    communication_interfaces::msg::DrawerStatus drawer_status_msg = DrawerStatus();
+    drawer_status_msg.drawer_address.drawer_controller_id = drawer_controller_id;
+    const uint8_t drawer_id = 1;
+
+    bool is_open = false;
+    if (!status.is_endstop_switch_1_pushed)
+    {
+      is_open = CAN_DATA_OPEN_LOCK;
+    }
+    if (!status.is_lock_switch_1_pushed && status.is_endstop_switch_1_pushed)
+    {
+      is_open = CAN_DATA_CLOSE_LOCK;
+    }
+    // TODO: If lock 2 is used as well, add the if (drawer_status.is_endstop_switch_2_pushed) block
+
     RCLCPP_INFO(this->get_logger(),
       "Sending send_drawer_is_closed_feedback with drawer_controller_id: '%i'",
       drawer_status_msg.drawer_address.drawer_controller_id);   // Debugging
@@ -130,7 +135,13 @@ namespace drawer_gate
     this->drawer_status_publisher_->publish(drawer_status_msg);
   }
 
-  void DrawerGate::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request,
+  void DrawerBridge::publish_electrical_drawer_status(const uint32_t drawer_controller_id)
+  {
+
+    //electrical_drawer_status_publisher_->publish(status);
+  }
+
+  void DrawerBridge::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request,
     std::shared_ptr<ShelfSetupInfo::Response> response)
   {
     (void)request;
@@ -138,36 +149,36 @@ namespace drawer_gate
   }
 
 
-  void DrawerGate::receive_can_msg_callback(CanMessage can_message)
+  void DrawerBridge::receive_can_msg_callback(CanMessage can_message)
   {
     RCLCPP_INFO(this->get_logger(), "Received: id:'%d' dlc:'%d' \n ", can_message.id, can_message.dlc);
 
     switch (can_message.id)
     {
     case CAN_ID_DRAWER_FEEDBACK:
-      {  const std::optional<robast_can_msgs::CanMessage> decoded_msg = can_encoder_decoder_.decode_msg(can_message);
-      if (decoded_msg.has_value())
-      {
-        update_drawer_status(decoded_msg.value());
-      }
-      }
-      break;
+    {  const std::optional<robast_can_msgs::CanMessage> decoded_msg = can_encoder_decoder_.decode_msg(can_message);
+    if (decoded_msg.has_value())
+    {
+      update_drawer_status(decoded_msg.value());
+    }
+    }
+    break;
     case CAN_ID_ELECTRIC_DRAWER_FEEDBACK:
-      {  const std::optional<robast_can_msgs::CanMessage> decoded_msg = can_encoder_decoder_.decode_msg(can_message);
-      if (decoded_msg.has_value())
-      {
-        update_drawer_status(decoded_msg.value());
-      }
-      }
-      break;  
+    {  const std::optional<robast_can_msgs::CanMessage> decoded_msg = can_encoder_decoder_.decode_msg(can_message);
+    if (decoded_msg.has_value())
+    {
+      update_drawer_status(decoded_msg.value());
+    }
+    }
+    break;
     }
   }
 
-  void DrawerGate::send_can_msg(CanMessage can_message)
+  void DrawerBridge::send_can_msg(CanMessage can_message)
   {
     RCLCPP_INFO(this->get_logger(), "Publishing: '%d'\n ", can_message.id);
 
     can_messages_publisher_->publish(can_message);
   }
 
-}   // namespace drawer_gate
+}   // namespace drawer_bridge

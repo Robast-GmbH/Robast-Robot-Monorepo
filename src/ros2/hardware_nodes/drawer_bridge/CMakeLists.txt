@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(drawer_gate)
+project(drawer_bridge)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -29,27 +29,27 @@ find_package(can_msgs REQUIRED)
 include_directories(include)
 include_directories(test/include)
 
-set(executable_drawer_gate drawer_gate)
-set(executable_drawer_gate_test drawer_gate_test)
+set(executable_drawer_bridge drawer_bridge)
+set(executable_drawer_bridge_test drawer_bridge_test)
 
-add_executable(${executable_drawer_gate}
+add_executable(${executable_drawer_bridge}
   src/main.cpp)
-add_executable(${executable_drawer_gate_test}
+add_executable(${executable_drawer_bridge_test}
   test/ros2_tests/main.cpp)
 
-set(library_drawer_gate ${executable_drawer_gate}_core)
-set(library_drawer_gate_test ${executable_drawer_gate_test}_core)
+set(library_drawer_bridge ${executable_drawer_bridge}_core)
+set(library_drawer_bridge_test ${executable_drawer_bridge_test}_core)
 
-add_library(${library_drawer_gate} SHARED
-  src/drawer_gate.cpp
+add_library(${library_drawer_bridge} SHARED
+  src/drawer_bridge.cpp
   src/can_encoder_decoder.cpp
   src/can_message_creator.cpp
 )
-add_library(${library_drawer_gate_test} SHARED
-  src/drawer_gate.cpp
+add_library(${library_drawer_bridge_test} SHARED
+  src/drawer_bridge.cpp
   src/can_encoder_decoder.cpp
   src/can_message_creator.cpp
-  test/src/test_drawer_gate.cpp
+  test/src/test_drawer_bridge.cpp
 )
 
 set(dependencies
@@ -60,24 +60,24 @@ set(dependencies
   can_msgs
 )
 
-ament_target_dependencies(${executable_drawer_gate}
+ament_target_dependencies(${executable_drawer_bridge}
   ${dependencies}
 )
-target_link_libraries(${executable_drawer_gate} ${library_drawer_gate})
+target_link_libraries(${executable_drawer_bridge} ${library_drawer_bridge})
 
-ament_target_dependencies(${executable_drawer_gate_test}
+ament_target_dependencies(${executable_drawer_bridge_test}
   ${dependencies}
 )
-target_link_libraries(${executable_drawer_gate_test} ${library_drawer_gate_test})
+target_link_libraries(${executable_drawer_bridge_test} ${library_drawer_bridge_test})
 
-ament_target_dependencies(${library_drawer_gate}
+ament_target_dependencies(${library_drawer_bridge}
   ${dependencies}
 )
-ament_target_dependencies(${library_drawer_gate_test}
+ament_target_dependencies(${library_drawer_bridge_test}
   ${dependencies}
 )
 
-target_include_directories(drawer_gate PUBLIC
+target_include_directories(drawer_bridge PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
@@ -88,16 +88,16 @@ if(BUILD_TESTING)
 endif()
 
 install(TARGETS
-  ${library_drawer_gate}
-  ${library_drawer_gate_test}
+  ${library_drawer_bridge}
+  ${library_drawer_bridge_test}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
 install(TARGETS
-  ${executable_drawer_gate}
-  ${executable_drawer_gate_test}
+  ${executable_drawer_bridge}
+  ${executable_drawer_bridge_test}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -23,15 +23,15 @@ def generate_test_description():
 
     # Read input data that is send to dut
     INPUT_DATA_PATH = os.path.join(
-    ament_index_python.get_package_prefix('drawer_gate'),
-        'lib/drawer_gate',
+    ament_index_python.get_package_prefix('drawer_bridge'),
+        'lib/drawer_bridge',
         'node_test_input_data.yaml'
     )
 
     dut = Node(
-        package='drawer_gate',
-        executable='drawer_gate_test',
-        name='drawer_gate',
+        package='drawer_bridge',
+        executable='drawer_bridge_test',
+        name='drawer_bridge',
     )
     context = {'dut': dut  }
 
@@ -57,7 +57,7 @@ class TestProcessOutput(unittest.TestCase):
      
     def setUp(self):
         # Create a ROS node for tests
-        self.node = rclpy.create_node('drawer_gate_tester')
+        self.node = rclpy.create_node('drawer_bridge_tester')
         self.received_drawer_status_topic = False
         self.qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,
@@ -74,8 +74,8 @@ class TestProcessOutput(unittest.TestCase):
     def publish_data(self):
         # Read input data that is send to dut
         INPUT_DATA_PATH = os.path.join(
-        ament_index_python.get_package_prefix('drawer_gate'),
-            'lib/drawer_gate',
+        ament_index_python.get_package_prefix('drawer_bridge'),
+            'lib/drawer_bridge',
             'node_test_input_data.yaml'
         )
 
@@ -115,8 +115,8 @@ class TestProcessOutput(unittest.TestCase):
     def get_expected_result(self):
         # Read data of expected result
         EXPECTED_DATA_PATH = os.path.join(
-        ament_index_python.get_package_prefix('drawer_gate'),
-            'lib/drawer_gate',
+        ament_index_python.get_package_prefix('drawer_bridge'),
+            'lib/drawer_bridge',
             'node_test_expected_data.yaml'
         )
 

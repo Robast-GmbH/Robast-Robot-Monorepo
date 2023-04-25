@@ -1,5 +1,5 @@
-#ifndef DRAWER_GATE__DRAWER_GATE_HPP_
-#define DRAWER_GATE__DRAWER_GATE_HPP_
+#ifndef DRAWER_BRIDGE__DRAWER_BRIDGE_HPP_
+#define DRAWER_BRIDGE__DRAWER_BRIDGE_HPP_
 
 #include <inttypes.h>
 
@@ -29,17 +29,18 @@
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/drawer_leds.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
+#include "communication_interfaces/msg/electrical_drawer_status.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
-#include "drawer_gate/drawer_defines.h"
+#include "drawer_bridge/drawer_defines.h"
 #include "can_msgs/msg/frame.hpp"
-#include "drawer_gate/can_encoder_decoder.hpp"
-#include "drawer_gate/can_message_creator.hpp"
-#include "drawer_gate/qos_config.hpp"
+#include "drawer_bridge/can_encoder_decoder.hpp"
+#include "drawer_bridge/can_message_creator.hpp"
+#include "drawer_bridge/qos_config.hpp"
 #include "shelf_setup.hpp"
 
 using namespace std::chrono_literals;
 
-namespace drawer_gate
+namespace drawer_bridge
 {
   struct led_parameters
   {
@@ -63,22 +64,23 @@ namespace drawer_gate
     int drawer_position;
   };
 
-  class DrawerGate: public rclcpp::Node
+  class DrawerBridge: public rclcpp::Node
   {
   public:
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
     using DrawerTask = communication_interfaces::msg::DrawerTask;
     using DrawerLeds = communication_interfaces::msg::DrawerLeds;
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
+    using ElectricalDrawerStatus = communication_interfaces::msg::ElectricalDrawerStatus;
     using ShelfSetupInfo = communication_interfaces::srv::ShelfSetupInfo;
     using CanMessage = can_msgs::msg::Frame;
 
     /**
-     * @brief A constructor for drawer_gate::DrawerGate class
+     * @brief A constructor for drawer_bridge::DrawerBridge class
      */
-    DrawerGate();
+    DrawerBridge();
 
-    friend class TestDrawerGate;   // this class has full access to all private and protected parts of this class
+    friend class TestDrawerBridge;   // this class has full access to all private and protected parts of this class
 
   private:
     /* VARIABLES */
@@ -89,6 +91,8 @@ namespace drawer_gate
     rclcpp::Subscription<CanMessage>::SharedPtr can_messages_subscription_;
     rclcpp::Publisher<DrawerStatus>::SharedPtr drawer_status_publisher_;
     rclcpp::Publisher<CanMessage>::SharedPtr can_messages_publisher_;
+    rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr electrical_drawer_status_publisher_;
+
 
     robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
 
@@ -125,8 +129,9 @@ namespace drawer_gate
 
     void update_electric_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg);
 
-    void send_drawer_feedback(communication_interfaces::msg::DrawerStatus drawer_status_msg,
-      uint8_t drawer_id,bool is_closed);
+    void publish_drawer_status(uint32_t drawer_controller_id);
+
+    void publish_electrical_drawer_status(uint32_t drawer_controller_id);
 
     std::vector<communication_interfaces::msg::Drawer> get_all_mounted_drawers();
 
@@ -136,5 +141,5 @@ namespace drawer_gate
     void provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request,
       std::shared_ptr<ShelfSetupInfo::Response> response);
   };
-}   // namespace drawer_gate
-#endif   // DRAWER_GATE__DRAWER_GATE_HPP_
+}   // namespace drawer_bridge
+#endif   // DRAWER_BRIDGE__DRAWER_BRIDGE_HPP_

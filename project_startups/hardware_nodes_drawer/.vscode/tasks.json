@@ -11,10 +11,10 @@
             "problemMatcher": []
         },
         {
-            "label": "Launch Drawer Gate",
-            "detail": "Launch the drawer gate node",
+            "label": "Launch Drawer Bridge",
+            "detail": "Launch the drawer bridge node",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 launch drawer_gate drawer_gate_launch.py",
+            "command": "source install/setup.bash; ros2 launch drawer_bridge drawer_bridge_launch.py",
             "problemMatcher": []
         },
         {
@@ -211,8 +211,8 @@
             "problemMatcher": []
         },
         {
-            "label": "Test nfc gate",
-            "detail": "Build and executes nfc gate tests and shows the links to the testreport with Errors",
+            "label": "Test nfc bridge",
+            "detail": "Build and executes nfc bridge tests and shows the links to the testreport with Errors",
             "type": "shell",
             "dependsOn": [
                 "build"
@@ -222,14 +222,14 @@
             "problemMatcher": []
         },
         {
-            "label": "Test drawer gate",
-            "detail": "Build and executes drawer gate tests and shows the links to the testreport with Errors",
+            "label": "Test drawer bridge",
+            "detail": "Build and executes drawer bridge tests and shows the links to the testreport with Errors",
             "type": "shell",
             "dependsOn": [
                 "build"
             ],
             "dependsOrder": "sequence",
-            "command": "clear; source install/setup.bash; colcon test --packages-select drawer_gate --event-handler=console_direct+; colcon test-result --all",
+            "command": "clear; source install/setup.bash; colcon test --packages-select drawer_bridge --event-handler=console_direct+; colcon test-result --all",
             "problemMatcher": []
         },
         {

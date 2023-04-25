@@ -1,7 +1,7 @@
 #ifndef DRAWER_DEFINES_HPP_
 #define DRAWER_DEFINES_HPP_
 
-namespace drawer_gate
+namespace drawer_bridge
 {
   // TODO: This enum should be shared with the ESP32 code as well
   enum LedMode
@@ -36,6 +36,6 @@ namespace drawer_gate
 #define DRAWER_INSIDE_WIDTH_30x40x1  310
 #define DRAWER_INSIDE_DEPTH_30x40x1  400
 #define DRAWER_INSIDE_HEIGHT_30x40x1 282
-}   // namespace drawer_gate
+}   // namespace drawer_bridge
 
 #endif /* DRAWER_DEFINES_HPP_ */
