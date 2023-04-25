@@ -158,8 +158,7 @@ class HybridPlanningDemo
     const moveit::core::RobotModelPtr& robot_model = robot_model_loader.getModel();
 
     namespace rvt = rviz_visual_tools;
-    moveit_visual_tools::MoveItVisualTools visual_tools(
-        node_, "base_footprint", "hybrid_planning_demo_node", robot_model);
+    moveit_visual_tools::MoveItVisualTools visual_tools(node_, "odom", "hybrid_planning_demo_node", robot_model);
     visual_tools.deleteAllMarkers();
     /* Remote control is an introspection tool that allows users to step through a high level script */
     /* via buttons and keyboard shortcuts in RViz */

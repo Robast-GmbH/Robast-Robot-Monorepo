@@ -1,13 +1,14 @@
 Panels:
   - Class: rviz_common/Displays
-    Help Height: 70
+    Help Height: 0
     Name: Displays
     Property Tree Widget:
       Expanded:
         - /MotionPlanning1
         - /MarkerArray1
+        - /TF1
       Splitter Ratio: 0.5
-    Tree Height: 159
+    Tree Height: 299
   - Class: rviz_common/Help
     Name: Help
   - Class: rviz_common/Views
@@ -265,11 +266,6 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          rb_theron/base_footprint/imu_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           left_wheel_link:
             Alpha: 1
             Show Axes: false
@@ -325,6 +321,11 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+          rb_theron/base_footprint/imu_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           rb_theron/base_footprint/top_laser_link:
             Alpha: 1
             Show Axes: false
@@ -606,11 +607,6 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          rb_theron/base_footprint/imu_link:
-            Alpha: 1
-            Show Axes: false
-            Show Trail: false
-            Value: true
           left_wheel_link:
             Alpha: 1
             Show Axes: false
@@ -666,6 +662,11 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
+          rb_theron/base_footprint/imu_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
           rb_theron/base_footprint/top_laser_link:
             Alpha: 1
             Show Axes: false
@@ -722,10 +723,249 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: hybrid_planning_demo_node
       Value: true
+    - Class: rviz_default_plugins/TF
+      Enabled: true
+      Frame Timeout: 15
+      Frames:
+        All Enabled: false
+        alu_profile_link_bottom:
+          Value: false
+        alu_profile_link_gripper:
+          Value: true
+        alu_profile_link_left:
+          Value: false
+        alu_profile_link_right:
+          Value: false
+        alu_profile_link_top:
+          Value: false
+        back_realsense_camera_camera_depth_frame:
+          Value: false
+        back_realsense_camera_camera_fisheye_frame:
+          Value: false
+        back_realsense_camera_camera_fisheye_optical_frame:
+          Value: false
+        back_realsense_camera_camera_left_ir_frame:
+          Value: false
+        back_realsense_camera_camera_left_ir_optical_frame:
+          Value: false
+        back_realsense_camera_camera_right_ir_frame:
+          Value: false
+        back_realsense_camera_camera_right_ir_optical_frame:
+          Value: false
+        back_realsense_camera_link:
+          Value: false
+        base_footprint:
+          Value: false
+        base_link:
+          Value: false
+        bottom_cover_link:
+          Value: false
+        door_opening_mechanism_base_link:
+          Value: false
+        door_opening_mechanism_link_tilting_hook:
+          Value: false
+        door_opening_mechanism_link_x_axis_slide:
+          Value: false
+        door_opening_mechanism_link_x_slide_screwing:
+          Value: false
+        door_opening_mechanism_link_y_axis_rail:
+          Value: false
+        door_opening_mechanism_link_y_axis_slide:
+          Value: false
+        drawer_1:
+          Value: false
+        drawer_2:
+          Value: false
+        drawer_3:
+          Value: false
+        drawer_4:
+          Value: false
+        drawer_5:
+          Value: false
+        front_laser_base_link:
+          Value: false
+        front_realsense_camera_camera_depth_frame:
+          Value: false
+        front_realsense_camera_camera_fisheye_frame:
+          Value: false
+        front_realsense_camera_camera_fisheye_optical_frame:
+          Value: false
+        front_realsense_camera_camera_left_ir_frame:
+          Value: false
+        front_realsense_camera_camera_left_ir_optical_frame:
+          Value: false
+        front_realsense_camera_camera_right_ir_frame:
+          Value: false
+        front_realsense_camera_camera_right_ir_optical_frame:
+          Value: false
+        front_realsense_camera_link:
+          Value: false
+        hook_base_link_left_hook:
+          Value: false
+        hook_base_link_right_hook:
+          Value: false
+        hook_link_back_side_left_hook:
+          Value: false
+        hook_link_back_side_right_hook:
+          Value: false
+        hook_link_front_side_left_hook:
+          Value: false
+        hook_link_front_side_right_hook:
+          Value: false
+        left_wheel_link:
+          Value: false
+        leftcastorsupport:
+          Value: false
+        leftcastorwheel:
+          Value: false
+        leftrsupport:
+          Value: false
+        leftsupport:
+          Value: false
+        leftwheel:
+          Value: false
+        module_cage_link:
+          Value: false
+        odom:
+          Value: true
+        rb_theron/base_footprint/back_realsense_camera_color_link:
+          Value: false
+        rb_theron/base_footprint/back_realsense_camera_depth_link:
+          Value: false
+        rb_theron/base_footprint/front_laser_link:
+          Value: false
+        rb_theron/base_footprint/front_realsense_camera_color_link:
+          Value: false
+        rb_theron/base_footprint/front_realsense_camera_depth_link:
+          Value: false
+        rb_theron/base_footprint/imu_link:
+          Value: false
+        rb_theron/base_footprint/top_laser_link:
+          Value: false
+        right_wheel_link:
+          Value: false
+        rightcastorsupport:
+          Value: false
+        rightcastorwheel:
+          Value: false
+        rightrsupport:
+          Value: false
+        rightsupport:
+          Value: false
+        rightwheel:
+          Value: false
+        top_laser_base_link:
+          Value: false
+      Marker Scale: 1
+      Name: TF
+      Show Arrows: true
+      Show Axes: true
+      Show Names: true
+      Tree:
+        odom:
+          base_footprint:
+            base_link:
+              back_realsense_camera_link:
+                back_realsense_camera_camera_depth_frame:
+                  back_realsense_camera_camera_fisheye_frame:
+                    back_realsense_camera_camera_fisheye_optical_frame:
+                      {}
+                  back_realsense_camera_camera_left_ir_frame:
+                    back_realsense_camera_camera_left_ir_optical_frame:
+                      {}
+                  back_realsense_camera_camera_right_ir_frame:
+                    back_realsense_camera_camera_right_ir_optical_frame:
+                      {}
+                  rb_theron/base_footprint/back_realsense_camera_color_link:
+                    {}
+                  rb_theron/base_footprint/back_realsense_camera_depth_link:
+                    {}
+              bottom_cover_link:
+                {}
+              door_opening_mechanism_base_link:
+                alu_profile_link_bottom:
+                  {}
+                alu_profile_link_left:
+                  {}
+                alu_profile_link_right:
+                  door_opening_mechanism_link_y_axis_slide:
+                    door_opening_mechanism_link_x_axis_slide:
+                      door_opening_mechanism_link_x_slide_screwing:
+                        door_opening_mechanism_link_tilting_hook:
+                          alu_profile_link_gripper:
+                            hook_base_link_left_hook:
+                              hook_link_back_side_left_hook:
+                                {}
+                              hook_link_front_side_left_hook:
+                                {}
+                            hook_base_link_right_hook:
+                              hook_link_back_side_right_hook:
+                                {}
+                              hook_link_front_side_right_hook:
+                                {}
+                alu_profile_link_top:
+                  {}
+                door_opening_mechanism_link_y_axis_rail:
+                  {}
+              drawer_1:
+                {}
+              drawer_2:
+                {}
+              drawer_3:
+                {}
+              drawer_4:
+                {}
+              drawer_5:
+                {}
+              front_laser_base_link:
+                rb_theron/base_footprint/front_laser_link:
+                  {}
+              front_realsense_camera_link:
+                front_realsense_camera_camera_depth_frame:
+                  front_realsense_camera_camera_fisheye_frame:
+                    front_realsense_camera_camera_fisheye_optical_frame:
+                      {}
+                  front_realsense_camera_camera_left_ir_frame:
+                    front_realsense_camera_camera_left_ir_optical_frame:
+                      {}
+                  front_realsense_camera_camera_right_ir_frame:
+                    front_realsense_camera_camera_right_ir_optical_frame:
+                      {}
+                  rb_theron/base_footprint/front_realsense_camera_color_link:
+                    {}
+                  rb_theron/base_footprint/front_realsense_camera_depth_link:
+                    {}
+              leftrsupport:
+                left_wheel_link:
+                  {}
+                leftcastorsupport:
+                  leftcastorwheel:
+                    {}
+              leftsupport:
+                leftwheel:
+                  {}
+              module_cage_link:
+                {}
+              rb_theron/base_footprint/imu_link:
+                {}
+              rightrsupport:
+                right_wheel_link:
+                  {}
+                rightcastorsupport:
+                  rightcastorwheel:
+                    {}
+              rightsupport:
+                rightwheel:
+                  {}
+              top_laser_base_link:
+                rb_theron/base_footprint/top_laser_link:
+                  {}
+      Update Interval: 0
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_footprint
+    Fixed Frame: odom
     Frame Rate: 30
   Name: root
   Tools:
@@ -740,7 +980,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.5246834754943848
+      Distance: 3.326004981994629
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -755,10 +995,10 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.5349999666213989
-      Target Frame: base_footprint
+      Pitch: 0.33500006794929504
+      Target Frame: odom
       Value: Orbit (rviz_default_plugins)
-      Yaw: 4.150152683258057
+      Yaw: 4.260149002075195
     Saved: ~
 Window Geometry:
   Displays:
@@ -772,7 +1012,7 @@ Window Geometry:
     collapsed: false
   MotionPlanning - Trajectory Slider:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000002b4000003bdfc0200000006fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb000000100044006900730070006c006100790073010000003b00000120000000c700fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e00670100000161000001920000016900fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a0056006900650077007301000002f9000000b3000000a000fffffffb00000024005200760069007a00560069007300750061006c0054006f006f006c007300470075006901000003b2000000460000003f00ffffff000004c6000003bd00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000002b4000003bdfc0200000006fb00000044004d006f00740069006f006e0050006c0061006e006e0069006e00670020002d0020005400720061006a006500630074006f0072007900200053006c00690064006500720000000000ffffffff0000003f00fffffffb000000100044006900730070006c006100790073010000003b00000166000000c700fffffffb0000001c004d006f00740069006f006e0050006c0061006e006e0069006e006701000001a7000001f40000017400fffffffb0000000800480065006c0070000000029a0000006e0000006e00fffffffb0000000a0056006900650077007300000002f9000000b3000000a000fffffffb00000024005200760069007a00560069007300750061006c0054006f006f006c007300470075006901000003a1000000570000003f00ffffff000004c6000003bd00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   RvizVisualToolsGui:
     collapsed: false
   Views:
