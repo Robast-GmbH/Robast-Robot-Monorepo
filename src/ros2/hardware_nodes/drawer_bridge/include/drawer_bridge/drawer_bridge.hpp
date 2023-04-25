@@ -25,7 +25,7 @@
 
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
-#include "communication_interfaces/msg/drawer.hpp"
+#include "communication_interfaces/msg/module.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/drawer_leds.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
@@ -53,10 +53,8 @@ namespace drawer_bridge
 
   struct drawer_status
   {
-    bool is_endstop_switch_1_pushed;
-    bool is_lock_switch_1_pushed;
-    bool is_endstop_switch_2_pushed;
-    bool is_lock_switch_2_pushed;
+    bool is_endstop_switch_pushed;
+    bool is_lock_switch_pushed;
   };
 
   struct electric_drawer_status: public drawer_status {
@@ -99,8 +97,6 @@ namespace drawer_bridge
     std::condition_variable cv_;
     std::mutex drawer_status_mutex_;
 
-    std::map<uint32_t, drawer_status> drawer_status_by_drawer_controller_id_;
-
     CanEncoderDecoder can_encoder_decoder_ = CanEncoderDecoder();
     CanMessageCreator can_message_creator_ = CanMessageCreator();
 
@@ -125,15 +121,11 @@ namespace drawer_bridge
 
     void receive_can_msg_callback(CanMessage can_message);
 
-    void update_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg);
+    void publish_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg);
 
-    void update_electric_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg);
+    void publish_electrical_drawer_status(robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg);
 
-    void publish_drawer_status(uint32_t drawer_controller_id);
-
-    void publish_electrical_drawer_status(uint32_t drawer_controller_id);
-
-    std::vector<communication_interfaces::msg::Drawer> get_all_mounted_drawers();
+    std::vector<communication_interfaces::msg::Module> get_all_mounted_modules();
 
     /**
      * @brief Service server execution callback

@@ -14,9 +14,9 @@ namespace can
     class Can
     {
         public:
-            Can(uint32_t drawer_controller_id, lock::Lock *lock_1, lock::Lock *lock_2)
+            Can(uint32_t module_id, lock::Lock *lock_1, lock::Lock *lock_2)
             {
-                this->drawer_controller_id_ = drawer_controller_id;
+                this->module_id_ = module_id;
                 this->lock_1_ = lock_1;
                 this->lock_2_ = lock_2;
             }
@@ -94,7 +94,7 @@ namespace can
 
             ACAN2515 CAN0_ = ACAN2515(MCP2515_CS_, SPI, MCP2515_INT);
 
-            uint32_t drawer_controller_id_;
+            uint32_t module_id_;
 
             lock::Lock *lock_1_;
             lock::Lock *lock_2_;
@@ -164,7 +164,7 @@ namespace can
                 robast_can_msgs::CanMessage can_msg_drawer_feedback = this->can_db_.can_messages.at(CAN_MSG_DRAWER_FEEDBACK);
                 std::vector can_signals_drawer_feedback = can_msg_drawer_feedback.get_can_signals();
 
-                can_signals_drawer_feedback.at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).set_data(this->drawer_controller_id_);
+                can_signals_drawer_feedback.at(CAN_SIGNAL_module_id).set_data(this->module_id_);
 
                 if (this->lock_1_->get_moving_average_drawer_closed_pin() > 0.9){
                     can_signals_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED).set_data(1);
@@ -232,7 +232,7 @@ namespace can
             {
                 if (can_message.get_id() == CAN_ID_DRAWER_LOCK)
                 {
-                    if (can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data() == this->drawer_controller_id_)
+                    if (can_message.get_can_signals().at(CAN_SIGNAL_module_id).get_data() == this->module_id_)
                     {
                         this->handle_lock_status(can_message);
                     }
@@ -242,7 +242,7 @@ namespace can
 
                 if (can_message.get_id() == CAN_ID_DRAWER_LED)
                 {
-                    if (can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data() == this->drawer_controller_id_)
+                    if (can_message.get_can_signals().at(CAN_SIGNAL_module_id).get_data() == this->module_id_)
                     {
                         led_strip::add_led_strip_mode_to_queue(can_message);
                     }
@@ -294,7 +294,7 @@ namespace can
                 Serial.print(" rx_dlc: ");
                 Serial.print(uint8_t(this->rx_msg_dlc_), DEC);
                 Serial.print(" DRAWER ID: ");
-                Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data(), HEX);
+                Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_module_id).get_data(), HEX);
                 Serial.print(" CAN_SIGNAL_OPEN_LOCK_1: ");
                 Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_OPEN_LOCK_1).get_data(), BIN);
                 Serial.print(" CAN_SIGNAL_OPEN_LOCK_2: ");
@@ -308,7 +308,7 @@ namespace can
                 Serial.print(" rx_dlc: ");
                 Serial.print(uint8_t(this->rx_msg_dlc_), DEC);
                 Serial.print(" DRAWER ID: ");
-                Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_CONTROLLER_ID).get_data(), HEX);
+                Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_module_id).get_data(), HEX);
                 Serial.print(" LED RED: ");
                 Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data(), DEC);
                 Serial.print(" LED GREEN: ");

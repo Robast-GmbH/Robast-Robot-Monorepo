@@ -46,7 +46,7 @@ namespace nfc_gate
       RCLCPP_ERROR(this->get_logger(), "get_shelf_setup service client: async_send_request failed"); // DEBUGGING
     }
 
-    response->drawers = result_handle.get()->drawers;
+    response->modules = result_handle.get()->modules;
 
     RCLCPP_INFO(this->get_logger(), "get_shelf_setup finished"); // DEBUGGING
   }

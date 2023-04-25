@@ -38,7 +38,7 @@ namespace test2
                 "bt_loop_duration",
                 std::chrono::milliseconds(10));
             communication_interfaces::msg::DrawerAddress used_drawer_address;
-            used_drawer_address.drawer_controller_id = 1;
+            used_drawer_address.module_id = 1;
             used_drawer_address.drawer_id = 1;
             blackboard->set<communication_interfaces::msg::DrawerAddress>(
                 "drawer_address",

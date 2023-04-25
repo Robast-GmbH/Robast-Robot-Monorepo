@@ -11,7 +11,7 @@ int main(int argc, char* argv[ ])
   for (int i = 1; i <= 8; i++)
   {
     communication_interfaces::msg::DrawerAddress drawer_address;
-    drawer_address.drawer_controller_id = i;
+    drawer_address.module_id = i;
     drawer_address.drawer_id = 1;
     nfc_dictionary[std::to_string(i)] = drawer_address;
   }
