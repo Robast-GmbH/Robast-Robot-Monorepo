@@ -29,18 +29,12 @@ namespace nfc_bridge
   rclcpp_action::GoalResponse NFCBridge::handle_goal(const rclcpp_action::GoalUUID& uuid,
                                                      std::shared_ptr<const CreateUser::Goal> goal)
   {
-    // first and last name longer then 1 char
-    if (goal->first_name.size() >= 2 && goal->last_name.size() >= 2)
-    {
-      return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
-    }
-    return rclcpp_action::GoalResponse::REJECT;
+    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
 
   rclcpp_action::CancelResponse NFCBridge::handle_cancel(const std::shared_ptr<GoalHandleCreateUser> goal_handle)
   {
     RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
-    // TODO delete user from DB
 
     (void) goal_handle;
     return rclcpp_action::CancelResponse::ACCEPT;
@@ -159,7 +153,9 @@ namespace nfc_bridge
   {
     std::string user_id;
     auto goal = goal_handle->get_goal();
+    auto result = std::make_shared<CreateUser::Result>();
     auto feedback = std::make_shared<CreateUser::Feedback>();
+    
     feedback->task_status.is_db_user_created = false;
     feedback->task_status.is_reader_ready_to_write = false;
     feedback->task_status.is_reader_completed = false;
@@ -175,9 +171,14 @@ namespace nfc_bridge
     }
     else
     {
-      RCLCPP_INFO(this->get_logger(), "user_id not found");
+      RCLCPP_ERROR(this->get_logger(), "user_id not found");
+      result->task_status = feedback->task_status;
+      result->successful = false;
+      result->error_message = "Der Benutzer konnte nicht gefunden werden.";
+      goal_handle->canceled(result);
       return;
     }
+
     feedback->task_status.is_db_user_created = true;
     goal_handle->publish_feedback(feedback);
 
@@ -187,9 +188,12 @@ namespace nfc_bridge
     goal_handle->publish_feedback(feedback);
 
     write_tag(nfc_code);
-
+    
     feedback->task_status.is_reader_completed = true;
     goal_handle->publish_feedback(feedback);
+    result->successful = true;
+    result->task_status = feedback->task_status;
+    goal_handle->succeed(result);
   }
 
   bool NFCBridge::write_tag(int card_data)
