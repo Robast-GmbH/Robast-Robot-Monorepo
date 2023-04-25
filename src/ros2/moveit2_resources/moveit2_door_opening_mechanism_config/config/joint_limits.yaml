@@ -10,35 +10,35 @@ default_acceleration_scaling_factor: 0.1
 joint_limits:
   door_opening_mechanism_joint_tilting_hook:
     has_velocity_limits: true
-    max_velocity: 100.0
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0.0
   door_opening_mechanism_joint_x_axis_slide:
     has_velocity_limits: true
-    max_velocity: 100.0
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0.0
   door_opening_mechanism_joint_y_axis_slide:
     has_velocity_limits: true
-    max_velocity: 100.0
+    max_velocity: 10.0
     has_acceleration_limits: false
     max_acceleration: 0.0
   position/x:
     has_velocity_limits: true
-    max_velocity: 2.15
+    max_velocity: 0.3
     has_acceleration_limits: true
     max_acceleration: 1.0
     max_position: 5.0
     min_position: -5.0
   position/y:
     has_velocity_limits: true
-    max_velocity: 2.15
+    max_velocity: 0.3
     has_acceleration_limits: true
     max_acceleration: 1.0
     max_position: 5.0
     min_position: -5.0
   position/theta:
     has_velocity_limits: true
-    max_velocity: 2.15
+    max_velocity: 0.3
     has_acceleration_limits: true
     max_acceleration: 1.0
