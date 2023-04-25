@@ -15,7 +15,6 @@ namespace db_helper
 
     virtual std::string createUser(std::string first_name, std::string last_name) = 0;
     virtual int createNfcCode(std::string user_id, int max_id) = 0;
-
     virtual bool checkUserTag(std::string tag,
                               std::vector<std::string> lookup_scope,
                               std::shared_ptr<std::string> user_name,

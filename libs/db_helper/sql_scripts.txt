@@ -6,7 +6,7 @@ CREATE TABLE ACCOUNT (
 
 CREATE TABLE USER_NFC_CODES (
 	user_id INT NOT NULL,
-    card_id VARCHAR (10) UNIQUE
-    token VARCHAR (10) PRIMARY KEY
+    card_id VARCHAR (10) UNIQUE,
+    card_token VARCHAR (10) PRIMARY KEY
 );
 

@@ -17,13 +17,10 @@ namespace db_helper
   {
    private:
     const std::string connection_parameter;
-    bool perform_query(std::string sql_statment,
-                       std::unique_ptr<std::vector<std::vector<std::string>>> result_data,
-                       std::unique_ptr<std::vector<std::string>> result_header);
+    std::vector<std::vector<std::string>> perform_query(std::string sql_statment);
 
     int perform_transaction(std::string sql_statement);
-    int perform_transaction_with_return(std::string sql_statement,
-                                        std::unique_ptr<std::vector<std::vector<std::string>>> result_data);
+    std::vector<std::vector<std::string>> perform_transaction_with_return(std::string sql_statement);
 
    public:
     PostgreSqlHelper(std::string username, std::string password, std::string host, std::string db_name);
@@ -37,7 +34,7 @@ namespace db_helper
                       std::vector<std::string> lookup_scope,
                       std::shared_ptr<std::string> user_name,
                       std::shared_ptr<int> id);
-    bool checkUser(std::string id,std::string first_name, std::string last_name);
+    bool checkUser(std::string id, std::string first_name, std::string last_name);
   };
 }   // namespace db_helper
 #endif /* HARDWARE_NODES__POSTGRESQL_CONNECTOR_HPP_ */
