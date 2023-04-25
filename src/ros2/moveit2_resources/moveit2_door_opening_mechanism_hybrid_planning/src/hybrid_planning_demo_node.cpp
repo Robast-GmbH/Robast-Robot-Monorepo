@@ -243,8 +243,8 @@ class HybridPlanningDemo
     goal_motion_request.max_velocity_scaling_factor = 0.1;
     goal_motion_request.max_acceleration_scaling_factor = 0.1;
     goal_motion_request.allowed_planning_time = 5.0;
-    goal_motion_request.planner_id = "ompl";    // The name of the planning algorithm to use
-    goal_motion_request.pipeline_id = "ompl";   // The name of the planning pipeline to use.
+    goal_motion_request.planner_id = planning_group;   // The name of the planning algorithm to use
+    goal_motion_request.pipeline_id = "ompl";          // The name of the planning pipeline to use.
     goal_motion_request.workspace_parameters.min_corner.x = -5.0;
     goal_motion_request.workspace_parameters.min_corner.y = -5.0;
     goal_motion_request.workspace_parameters.min_corner.z = -5.0;
