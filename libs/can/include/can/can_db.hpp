@@ -57,7 +57,7 @@ namespace robast_can_msgs
                 ),
            
                 CanMessage(
-                    CAN_ID_ELECTRIC_DRAWER_TASK,
+                    CAN_ID_ELECTRICAL_DRAWER_TASK,
                     CAN_DLC_ELECTRIC_DRAWER_TASK,
                     {
                         CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
@@ -68,7 +68,7 @@ namespace robast_can_msgs
                     }
                 ),
                 CanMessage(
-                    CAN_ID_ELECTRIC_DRAWER_FEEDBACK,
+                    CAN_ID_ELECTRICAL_DRAWER_FEEDBACK,
                     CAN_DLC_ELECTRIC_DRAWER_FEEDBACK,
                     {
                         CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
