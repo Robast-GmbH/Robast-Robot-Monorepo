@@ -366,7 +366,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
             std::optional<robast_can_msgs::CanMessage> decoded_can_message_drawer_lock = robast_can_msgs::decode_can_message(msg_id_lock, u8_can_data_lock, dlc_lock, can_db.can_messages);
             std::optional<robast_can_msgs::CanMessage> decoded_can_message_drawer_led = robast_can_msgs::decode_can_message(msg_id, u8_can_data, dlc, can_db.can_messages);
 
-            std::vector<CanSignal> can_signals = decoded_can_message_drawer_led.value().get_can_signals();
+            std::vector<robast_can_msgs::CanSignal> can_signals = decoded_can_message_drawer_led.value().get_can_signals();
 
             THEN("The resulting CanMessage class should contain all the data that was contained in the CanMessage class")
             {
