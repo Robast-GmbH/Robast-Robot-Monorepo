@@ -93,20 +93,17 @@ class HybridPlanningDemo
     hp_action_client_ =
         rclcpp_action::create_client<moveit_msgs::action::HybridPlanner>(node_, hybrid_planning_action_name);
 
-    collision_object_1_.header.frame_id = "base_footprint";
+    collision_object_1_.header.frame_id = "odom";
     collision_object_1_.id = "box1";
 
-    collision_object_2_.header.frame_id = "base_footprint";
+    collision_object_2_.header.frame_id = "odom";
     collision_object_2_.id = "box2";
 
-    collision_object_3_.header.frame_id = "base_footprint";
-    collision_object_3_.id = "box3";
-
     box_1_.type = box_1_.BOX;
-    box_1_.dimensions = {0.5, 0.8, 0.01};
+    box_1_.dimensions = {0.1, 0.1, 1};
 
     box_2_.type = box_2_.BOX;
-    box_2_.dimensions = {1.0, 0.4, 0.01};
+    box_2_.dimensions = {0.1, 0.1, 0.2};
 
     // Add new collision object as soon as global trajectory is available.
     global_solution_subscriber_ = node_->create_subscription<moveit_msgs::msg::MotionPlanResponse>(
@@ -114,35 +111,25 @@ class HybridPlanningDemo
         rclcpp::SystemDefaultsQoS(),
         [this](const moveit_msgs::msg::MotionPlanResponse::ConstSharedPtr& /* unused */)
         {
-          // // Remove old collision objects
+          // Remove old collision objects
           // collision_object_1_.operation = collision_object_1_.REMOVE;
 
-          // // Add new collision objects
-          // geometry_msgs::msg::Pose box_pose_2;
-          // box_pose_2.position.x = 0.2;
-          // box_pose_2.position.y = 0.4;
-          // box_pose_2.position.z = 0.95;
+          // Add new collision objects
+          geometry_msgs::msg::Pose box_pose_2;
+          box_pose_2.position.x = -0.9;
+          box_pose_2.position.y = 0.2;
+          box_pose_2.position.z = 0.75;
 
-          // collision_object_2_.primitives.push_back(box_2_);
-          // collision_object_2_.primitive_poses.push_back(box_pose_2);
-          // collision_object_2_.operation = collision_object_2_.ADD;
+          collision_object_2_.primitives.push_back(box_2_);
+          collision_object_2_.primitive_poses.push_back(box_pose_2);
+          collision_object_2_.operation = collision_object_2_.ADD;
 
-          // geometry_msgs::msg::Pose box_pose_3;
-          // box_pose_3.position.x = 0.2;
-          // box_pose_3.position.y = -0.4;
-          // box_pose_3.position.z = 0.95;
-
-          // collision_object_3_.primitives.push_back(box_2_);
-          // collision_object_3_.primitive_poses.push_back(box_pose_3);
-          // collision_object_3_.operation = collision_object_3_.ADD;
-
-          // // Add object to planning scene
-          // {   // Lock PlanningScene
-          //   planning_scene_monitor::LockedPlanningSceneRW scene(planning_scene_monitor_);
-          //   scene->processCollisionObjectMsg(collision_object_2_);
-          //   scene->processCollisionObjectMsg(collision_object_3_);
-          //   scene->processCollisionObjectMsg(collision_object_1_);
-          // }   // Unlock PlanningScene
+          // Add object to planning scene
+          {   // Lock PlanningScene
+            planning_scene_monitor::LockedPlanningSceneRW scene(planning_scene_monitor_);
+            // scene->processCollisionObjectMsg(collision_object_1_);
+            scene->processCollisionObjectMsg(collision_object_2_);
+          }   // Unlock PlanningScene
         });
   }
 
@@ -196,14 +183,14 @@ class HybridPlanningDemo
       return;
     }
 
-    // geometry_msgs::msg::Pose box_pose;
-    // box_pose.position.x = 0.4;
-    // box_pose.position.y = 0.0;
-    // box_pose.position.z = 0.85;
+    geometry_msgs::msg::Pose box_pose;
+    box_pose.position.x = -0.8;
+    box_pose.position.y = -0.2;
+    box_pose.position.z = 0.85;
 
-    // collision_object_1_.primitives.push_back(box_1_);
-    // collision_object_1_.primitive_poses.push_back(box_pose);
-    // collision_object_1_.operation = collision_object_1_.ADD;
+    collision_object_1_.primitives.push_back(box_1_);
+    collision_object_1_.primitive_poses.push_back(box_pose);
+    collision_object_1_.operation = collision_object_1_.ADD;
 
     // Add object to planning scene
     {   // Lock PlanningScene
@@ -221,8 +208,6 @@ class HybridPlanningDemo
     // const std::string planning_group = "door_opening_mechanism";   // CHANGE THIS IN THE LOCAL PLANNER CONFIG AS
     // WELL!!
     const std::string planning_group = "mobile_base_arm";   // CHANGE THIS IN THE LOCAL PLANNER CONFIG AS WELL!!
-
-    // moveit::planning_interface::MoveGroupInterface move_group(node_, planning_group);
 
     // Create a RobotState and JointModelGroup
     const auto robot_state = std::make_shared<moveit::core::RobotState>(robot_model);
@@ -258,7 +243,7 @@ class HybridPlanningDemo
 
     target_pose.header.frame_id = "odom";
 
-    target_pose.pose.position.x -= 0.3;    // hard target example: 0.4
+    target_pose.pose.position.x -= 0.4;    // hard target example: 0.4
     target_pose.pose.position.y += 0.3;    // hard target example: 0.3
     target_pose.pose.position.z += 0.25;   // hard target example: 0.2
 
