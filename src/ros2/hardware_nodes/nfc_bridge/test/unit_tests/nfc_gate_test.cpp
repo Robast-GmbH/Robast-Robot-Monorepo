@@ -1,14 +1,14 @@
 #include "catch.hpp"
 #include "fakeit.hpp"
-#include "test/test_nfc_gate.hpp"
+#include "test/test_nfc_bridge.hpp"
 
-namespace nfc_gate
+namespace nfc_bridge
 {
 
   SCENARIO("Key-validaten Test")
   {
     GIVEN(
-        "The Serial reader gets mocked and initiated in the NFC gate Node and there is a list with possible keys, "
+        "The Serial reader gets mocked and initiated in the NFC bridge Node and there is a list with possible keys, "
         "which could be the read key")
     {
       rclcpp::init(0, nullptr);
@@ -54,7 +54,7 @@ namespace nfc_gate
                 }
               });
       std::string no_key_found = "";
-      TestNFCGate* nfc_reader = new TestNFCGate(&Serial_helper_mock.get(), &db_helper_mock.get());
+      TestNFCBridge* nfc_reader = new TestNFCBridge(&Serial_helper_mock.get(), &db_helper_mock.get());
       std::vector<std::string> list{"Test User1", "Test User2", "Test User3", "Test User4", "Test User5"};
       std::string target_user = "Test User1";
       WHEN("Key is on the List")
@@ -99,7 +99,7 @@ namespace nfc_gate
 
   SCENARIO("Card Reading Test")
   {
-    GIVEN("The Serial reader gets mocked and initiated in the NFC gate Node.")
+    GIVEN("The Serial reader gets mocked and initiated in the NFC bridge Node.")
     {
       rclcpp::init(0, nullptr);
       fakeit::Mock<serial_helper::ISerialHelper> serial_helper_mock;
@@ -109,7 +109,7 @@ namespace nfc_gate
       Method(serial_helper_mock, send_ascii_cmd) = "";
       bool found;
       fakeit::Mock<db_helper::IDBHelper> db_helper_mock;
-      TestNFCGate* nfc_reader = new TestNFCGate(&serial_helper_mock.get(), &db_helper_mock.get());
+      TestNFCBridge* nfc_reader = new TestNFCBridge(&serial_helper_mock.get(), &db_helper_mock.get());
 
       WHEN("No card is detected")
       {
@@ -187,7 +187,7 @@ namespace nfc_gate
 
   SCENARIO("Full NFC reader process Test")
   {
-    GIVEN("the mocked reader gets used in the nfc gate with a list of possible keys")
+    GIVEN("the mocked reader gets used in the nfc bridge with a list of possible keys")
     {
       rclcpp::init(0, nullptr);
       fakeit::Mock<serial_helper::ISerialHelper> serial_helper_mock;
@@ -216,7 +216,7 @@ namespace nfc_gate
               });
 
       std::string target_user = "Test User1";
-      TestNFCGate* nfc_reader = new TestNFCGate(&serial_helper_mock.get(), &db_helper_mock.get());
+      TestNFCBridge* nfc_reader = new TestNFCBridge(&serial_helper_mock.get(), &db_helper_mock.get());
       std::vector<std::string> list{"Test User1", "Test User2", "Test User3", "Test User4", "Test User5"};
       std::string no_key_found = "";
 
@@ -280,4 +280,4 @@ namespace nfc_gate
       rclcpp::shutdown();
     }
   }
-}   // namespace nfc_gate
+}   // namespace nfc_bridge

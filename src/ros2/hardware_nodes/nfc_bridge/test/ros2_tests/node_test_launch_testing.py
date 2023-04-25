@@ -18,8 +18,8 @@ from rclpy.qos import (DurabilityPolicy, QoSHistoryPolicy, QoSProfile,
 def generate_test_description():
     # Read input data that is send to dut
     INPUT_DATA_PATH = os.path.join(
-        ament_index_python.get_package_prefix('nfc_gate'),
-        'lib/nfc_gate',
+        ament_index_python.get_package_prefix('nfc_bridge'),
+        'lib/nfc_bridge',
         'node_test_input_data.yaml'
     )
 
@@ -28,9 +28,9 @@ def generate_test_description():
         input_data = yaml.safe_load(f)
 
     dut = Node(
-        package='nfc_gate',
-        executable='nfc_gate_test',
-        name='nfc_gate_ros2_test',
+        package='nfc_bridge',
+        executable='nfc_bridge_test',
+        name='nfc_bridge_ros2_test',
         parameters=[{
                         "key": input_data['nfc']['card_content'],
                         "User1_key": input_data['nfc']['card_content'],
@@ -60,26 +60,26 @@ class TestProcessOutput(unittest.TestCase):
 
     def setUp(self):
         # Create a ROS node for tests
-        self.node = rclpy.create_node('nfc_gate_tester')
+        self.node = rclpy.create_node('nfc_bridge_tester')
         self.qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,
             history=QoSHistoryPolicy.KEEP_LAST,
             durability=DurabilityPolicy.TRANSIENT_LOCAL,
             depth=2
         )
-        self.start_subscriber()
 
     def tearDown(self):
         self.node.destroy_node()
 
-    def test_dut_output(self, dut, proc_output):
+    def test_read_nfc(self, dut, proc_output):
+        self.start_subscriber()
         while not self.received_nfc_status_topic:
             rclpy.spin_once(self.node, timeout_sec=99)
 
         # Read data of expected result
         EXPECTED_DATA_PATH = os.path.join(
-            ament_index_python.get_package_prefix('nfc_gate'),
-            'lib/nfc_gate',
+            ament_index_python.get_package_prefix('nfc_bridge'),
+            'lib/nfc_bridge',
             'node_test_expected_data.yaml'
         )
         with open(EXPECTED_DATA_PATH) as f:
