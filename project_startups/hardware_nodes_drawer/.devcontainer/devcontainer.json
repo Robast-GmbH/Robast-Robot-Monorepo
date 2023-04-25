@@ -11,6 +11,7 @@
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/drawer_gate/,target=/workspace/src/hardware_nodes/drawer_gate,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/drawer_sym/,target=/workspace/src/hardware_nodes/drawer_sym,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/drawer_manager/,target=/workspace/src/hardware_nodes/drawer_manager,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/ros2_socketcan/,target=/workspace/src/hardware_nodes/ros2_socketcan,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
 		"source=${localWorkspaceFolder}/../../libs/,target=/workspace/libs,type=bind"
 	],
