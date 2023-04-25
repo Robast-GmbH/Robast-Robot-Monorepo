@@ -1,9 +1,12 @@
 FROM ros:humble-ros-core
 
+ARG DEBIAN_FRONTEND=noninteractive
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d
 ENV USER robast
+ARG DEBIAN_FRONTEND=
+
 RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
 
 RUN echo "source install/setup.bash" >> /home/$USER/.bashrc
