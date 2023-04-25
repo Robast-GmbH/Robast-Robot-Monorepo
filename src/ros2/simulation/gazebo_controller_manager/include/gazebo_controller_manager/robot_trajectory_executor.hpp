@@ -20,17 +20,24 @@ namespace gazebo_controller_manager
     ~RobotTrajectoryExecutor(){};
 
    private:
-    void set_joint_position_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg);
+    void execute_robot_trajectory_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg);
+
+    void set_single_dof_joint_trajectory(const trajectory_msgs::msg::JointTrajectory& msg);
+    void set_multi_dof_joint_trajectory(const trajectory_msgs::msg::MultiDOFJointTrajectory& msg);
+
     std::vector<std::string> get_gz_cmd_joint_topics(std::vector<std::string> joint_names);
 
-    void printJointTrajectory(const moveit_msgs::msg::RobotTrajectory::SharedPtr& msg);
+    void print_robot_trajectory_msg(const moveit_msgs::msg::RobotTrajectory::SharedPtr& msg);
+    void print_joint_trajectory_msg(const trajectory_msgs::msg::JointTrajectory& msg);
+    void print_multi_dof_joint_trajectory(const trajectory_msgs::msg::MultiDOFJointTrajectory& msg);
 
    private:
     rclcpp::Node::SharedPtr node_;
     std::shared_ptr<gz::transport::Node> gz_node_;
-    // ros pub and sub
+
     rclcpp::Subscription<moveit_msgs::msg::RobotTrajectory>::SharedPtr ros_robot_trajectory_sub_;
-    // gz pub
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr cmd_vel_publisher_;
+
     std::vector<std::shared_ptr<gz::transport::Node::Publisher>> gz_cmd_joint_pubs_;
     // joint names and map
     std::vector<std::string> joint_names_;

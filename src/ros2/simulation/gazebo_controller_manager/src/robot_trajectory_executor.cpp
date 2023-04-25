@@ -10,6 +10,8 @@ namespace gazebo_controller_manager
 
     this->node_ = node;
 
+    this->cmd_vel_publisher_ = node->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
+
     init_joint_names_map(joint_names);
 
     create_ros_subscriber(ros_robot_trajectory_topic);
@@ -43,7 +45,7 @@ namespace gazebo_controller_manager
     ros_robot_trajectory_sub_ = node_->create_subscription<moveit_msgs::msg::RobotTrajectory>(
         ros_robot_trajectory_topic,
         10,
-        std::bind(&RobotTrajectoryExecutor::set_joint_position_cb, this, std::placeholders::_1));
+        std::bind(&RobotTrajectoryExecutor::execute_robot_trajectory_cb, this, std::placeholders::_1));
   }
 
   void RobotTrajectoryExecutor::init_joint_names_map(const std::vector<std::string>& joint_names)
@@ -68,24 +70,47 @@ namespace gazebo_controller_manager
     return gz_cmd_topics;
   }
 
-  void RobotTrajectoryExecutor::set_joint_position_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg)
+  void RobotTrajectoryExecutor::execute_robot_trajectory_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg)
   {
-    printJointTrajectory(msg);
+    print_robot_trajectory_msg(msg);
 
-    for (auto i = 0u; i < msg->joint_trajectory.points[0].positions.size(); ++i)
+    set_single_dof_joint_trajectory(msg->joint_trajectory);
+
+    set_multi_dof_joint_trajectory(msg->multi_dof_joint_trajectory);   // mobile base = planar joint
+  }
+
+  void RobotTrajectoryExecutor::set_single_dof_joint_trajectory(const trajectory_msgs::msg::JointTrajectory& msg)
+  {
+    for (auto i = 0u; i < msg.points[0].positions.size(); ++i)
     {
-      if (joint_names_map_.find(msg->joint_trajectory.joint_names[i]) != joint_names_map_.end())
+      if (joint_names_map_.find(msg.joint_names[i]) != joint_names_map_.end())
       {
         // find joint name in `joint_names_` .
-        int idx = joint_names_map_[msg->joint_trajectory.joint_names[i]];
+        int idx = joint_names_map_[msg.joint_names[i]];
         gz::msgs::Double ign_msg;
-        ign_msg.set_data(msg->joint_trajectory.points[0].positions[i]);
+        ign_msg.set_data(msg.points[0].positions[i]);
         gz_cmd_joint_pubs_[idx]->Publish(ign_msg);
+        RCLCPP_INFO(this->node_->get_logger(), "Published gz joint command to joint: %s", msg.joint_names[i].c_str());
+        RCLCPP_INFO(this->node_->get_logger(), "  ign_msg data: %f", msg.points[0].positions[i]);
       }
     }
   }
 
-  void RobotTrajectoryExecutor::printJointTrajectory(const moveit_msgs::msg::RobotTrajectory::SharedPtr& msg)
+  void RobotTrajectoryExecutor::set_multi_dof_joint_trajectory(const trajectory_msgs::msg::MultiDOFJointTrajectory& msg)
+  {
+    auto cmd_vel_msg = std::make_shared<geometry_msgs::msg::Twist>();
+
+    cmd_vel_msg->linear.x = msg.points[0].velocities[0].linear.x;
+    cmd_vel_msg->linear.y = msg.points[0].velocities[0].linear.y;
+    cmd_vel_msg->linear.z = msg.points[0].velocities[0].linear.z;
+    cmd_vel_msg->angular.x = msg.points[0].velocities[0].angular.x;
+    cmd_vel_msg->angular.y = msg.points[0].velocities[0].angular.y;
+    cmd_vel_msg->angular.z = msg.points[0].velocities[0].angular.z;
+
+    cmd_vel_publisher_->publish(*cmd_vel_msg);
+  }
+
+  void RobotTrajectoryExecutor::print_robot_trajectory_msg(const moveit_msgs::msg::RobotTrajectory::SharedPtr& msg)
   {
     if (!msg)
     {
@@ -93,61 +118,109 @@ namespace gazebo_controller_manager
       return;
     }
 
-    RCLCPP_INFO(this->node_->get_logger(), "Joint Trajectory:");
     RCLCPP_INFO(this->node_->get_logger(), "-----------------");
+
+    print_joint_trajectory_msg(msg->joint_trajectory);
+
+    // print_multi_dof_joint_trajectory(msg->multi_dof_joint_trajectory);
+  }
+
+  void RobotTrajectoryExecutor::print_joint_trajectory_msg(const trajectory_msgs::msg::JointTrajectory& msg)
+  {
+    RCLCPP_INFO(this->node_->get_logger(), "Joint Trajectory:");
 
     // Print the header information
     RCLCPP_INFO(this->node_->get_logger(), "Header:");
-    RCLCPP_INFO(this->node_->get_logger(),
-                "  stamp: %f",
-                msg->joint_trajectory.header.stamp.sec + 1e-9 * msg->joint_trajectory.header.stamp.nanosec);
-    RCLCPP_INFO(this->node_->get_logger(), "  frame_id: %s", msg->joint_trajectory.header.frame_id.c_str());
+    RCLCPP_INFO(this->node_->get_logger(), "  stamp: %f", msg.header.stamp.sec + 1e-9 * msg.header.stamp.nanosec);
+    RCLCPP_INFO(this->node_->get_logger(), "  frame_id: %s", msg.header.frame_id.c_str());
 
     // Print the joint names
     RCLCPP_INFO(this->node_->get_logger(), "Joint Names:");
-    for (const auto& name : msg->joint_trajectory.joint_names)
+    for (const auto& name : msg.joint_names)
     {
       RCLCPP_INFO(this->node_->get_logger(), "  %s", name.c_str());
     }
 
     // Print the points in the trajectory
-    RCLCPP_INFO(
-        this->node_->get_logger(), "Trajectory Points (number of points: %zu):", msg->joint_trajectory.points.size());
-    for (size_t i = 0; i < msg->joint_trajectory.points.size(); ++i)
+    RCLCPP_INFO(this->node_->get_logger(), "Trajectory Points (number of points: %zu):", msg.points.size());
+    for (size_t i = 0; i < msg.points.size(); ++i)
     {
-      const auto& point = msg->joint_trajectory.points[i];
+      const auto& point = msg.points[i];
 
       RCLCPP_INFO(this->node_->get_logger(), "  Point %zu:", i);
       RCLCPP_INFO(this->node_->get_logger(),
                   "    time_from_start: %f",
                   point.time_from_start.sec + 1e-9 * point.time_from_start.nanosec);
 
-      // Print the joint positions
       RCLCPP_INFO(this->node_->get_logger(), "    positions:");
       for (const auto& pos : point.positions)
       {
         RCLCPP_INFO(this->node_->get_logger(), "      %f", pos);
       }
 
-      // Print the joint velocities
       RCLCPP_INFO(this->node_->get_logger(), "    velocities:");
       for (const auto& vel : point.velocities)
       {
         RCLCPP_INFO(this->node_->get_logger(), "      %f", vel);
       }
 
-      // Print the joint accelerations
-      RCLCPP_INFO(this->node_->get_logger(), "    accelerations:");
-      for (const auto& accel : point.accelerations)
-      {
-        RCLCPP_INFO(this->node_->get_logger(), "      %f", accel);
-      }
+      // RCLCPP_INFO(this->node_->get_logger(), "    accelerations:");
+      // for (const auto& accel : point.accelerations)
+      // {
+      //   RCLCPP_INFO(this->node_->get_logger(), "      %f", accel);
+      // }
 
-      // Print the joint efforts
-      RCLCPP_INFO(this->node_->get_logger(), "    efforts:");
-      for (const auto& effort : point.effort)
+      // RCLCPP_INFO(this->node_->get_logger(), "    efforts:");
+      // for (const auto& effort : point.effort)
+      // {
+      //   RCLCPP_INFO(this->node_->get_logger(), "      %f", effort);
+      // }
+    }
+  }
+
+  void RobotTrajectoryExecutor::print_multi_dof_joint_trajectory(
+      const trajectory_msgs::msg::MultiDOFJointTrajectory& msg)
+  {
+    RCLCPP_INFO(this->node_->get_logger(), "Multi DOF Joint Trajectory:");
+
+    RCLCPP_INFO(this->node_->get_logger(), "Header: ");
+    RCLCPP_INFO(this->node_->get_logger(), "\tstamp: %f", msg.header.stamp.sec + 1e-9 * msg.header.stamp.nanosec);
+    RCLCPP_INFO(this->node_->get_logger(), "\tframe_id: %s", msg.header.frame_id.c_str());
+
+    RCLCPP_INFO(this->node_->get_logger(), "Joint names:");
+    for (const auto& joint_name : msg.joint_names)
+    {
+      RCLCPP_INFO(this->node_->get_logger(), "\t%s", joint_name.c_str());
+    }
+
+    RCLCPP_INFO(this->node_->get_logger(), "Points:");
+    for (const auto& point : msg.points)
+    {
+      RCLCPP_INFO(this->node_->get_logger(),
+                  "\tTime from start: %f",
+                  point.time_from_start.sec + 1e-9 * point.time_from_start.nanosec);
+      for (const auto& transform : point.transforms)
       {
-        RCLCPP_INFO(this->node_->get_logger(), "      %f", effort);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\tTranslation:");
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\tx: %f", transform.translation.x);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\ty: %f", transform.translation.y);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\tz: %f", transform.translation.z);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\tRotation:");
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\tw: %f", transform.rotation.w);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\tx: %f", transform.rotation.x);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\ty: %f", transform.rotation.y);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\tz: %f", transform.rotation.z);
+      }
+      for (const auto& velocity : point.velocities)
+      {
+        RCLCPP_INFO(this->node_->get_logger(), "\t\tVelocity linear:");
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\tx: %f", velocity.linear.x);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\ty: %f", velocity.linear.y);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\tz: %f", velocity.linear.z);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\tVelocity angular:");
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\tx: %f", velocity.angular.x);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\ty: %f", velocity.angular.y);
+        RCLCPP_INFO(this->node_->get_logger(), "\t\t\tz: %f", velocity.angular.z);
       }
     }
   }
