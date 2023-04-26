@@ -100,12 +100,24 @@ namespace gazebo_controller_manager
   {
     auto cmd_vel_msg = std::make_shared<geometry_msgs::msg::Twist>();
 
-    cmd_vel_msg->linear.x = msg.points[0].velocities[0].linear.x;
-    cmd_vel_msg->linear.y = msg.points[0].velocities[0].linear.y;
-    cmd_vel_msg->linear.z = msg.points[0].velocities[0].linear.z;
-    cmd_vel_msg->angular.x = msg.points[0].velocities[0].angular.x;
-    cmd_vel_msg->angular.y = msg.points[0].velocities[0].angular.y;
-    cmd_vel_msg->angular.z = msg.points[0].velocities[0].angular.z;
+    if (msg.points.size() > 0)
+    {
+      cmd_vel_msg->linear.x = msg.points[0].velocities[0].linear.x;
+      cmd_vel_msg->linear.y = msg.points[0].velocities[0].linear.y;
+      cmd_vel_msg->linear.z = msg.points[0].velocities[0].linear.z;
+      cmd_vel_msg->angular.x = msg.points[0].velocities[0].angular.x;
+      cmd_vel_msg->angular.y = msg.points[0].velocities[0].angular.y;
+      cmd_vel_msg->angular.z = msg.points[0].velocities[0].angular.z;
+    }
+    else
+    {
+      cmd_vel_msg->linear.x = 0;
+      cmd_vel_msg->linear.y = 0;
+      cmd_vel_msg->linear.z = 0;
+      cmd_vel_msg->angular.x = 0;
+      cmd_vel_msg->angular.y = 0;
+      cmd_vel_msg->angular.z = 0;
+    }
 
     cmd_vel_publisher_->publish(*cmd_vel_msg);
   }
