@@ -72,7 +72,7 @@ namespace gazebo_controller_manager
 
   void RobotTrajectoryExecutor::execute_robot_trajectory_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg)
   {
-    print_robot_trajectory_msg(msg);
+    // print_robot_trajectory_msg(msg);
 
     set_single_dof_joint_trajectory(msg->joint_trajectory);
 
@@ -81,17 +81,18 @@ namespace gazebo_controller_manager
 
   void RobotTrajectoryExecutor::set_single_dof_joint_trajectory(const trajectory_msgs::msg::JointTrajectory& msg)
   {
-    for (auto i = 0u; i < msg.points[0].positions.size(); ++i)
+    if (msg.points.size() > 0)
     {
-      if (joint_names_map_.find(msg.joint_names[i]) != joint_names_map_.end())
+      for (auto i = 0u; i < msg.points[0].positions.size(); ++i)
       {
-        // find joint name in `joint_names_` .
-        int idx = joint_names_map_[msg.joint_names[i]];
-        gz::msgs::Double ign_msg;
-        ign_msg.set_data(msg.points[0].positions[i]);
-        gz_cmd_joint_pubs_[idx]->Publish(ign_msg);
-        RCLCPP_INFO(this->node_->get_logger(), "Published gz joint command to joint: %s", msg.joint_names[i].c_str());
-        RCLCPP_INFO(this->node_->get_logger(), "  ign_msg data: %f", msg.points[0].positions[i]);
+        if (joint_names_map_.find(msg.joint_names[i]) != joint_names_map_.end())
+        {
+          // find joint name in `joint_names_` .
+          int idx = joint_names_map_[msg.joint_names[i]];
+          gz::msgs::Double ign_msg;
+          ign_msg.set_data(msg.points[0].positions[i]);
+          gz_cmd_joint_pubs_[idx]->Publish(ign_msg);
+        }
       }
     }
   }
@@ -100,7 +101,7 @@ namespace gazebo_controller_manager
   {
     auto cmd_vel_msg = std::make_shared<geometry_msgs::msg::Twist>();
 
-    if (msg.points.size() > 0)
+    if (msg.points.size() > 0 && msg.points[0].velocities.size() > 0)
     {
       cmd_vel_msg->linear.x = msg.points[0].velocities[0].linear.x;
       cmd_vel_msg->linear.y = msg.points[0].velocities[0].linear.y;
@@ -134,7 +135,7 @@ namespace gazebo_controller_manager
 
     print_joint_trajectory_msg(msg->joint_trajectory);
 
-    // print_multi_dof_joint_trajectory(msg->multi_dof_joint_trajectory);
+    print_multi_dof_joint_trajectory(msg->multi_dof_joint_trajectory);
   }
 
   void RobotTrajectoryExecutor::print_joint_trajectory_msg(const trajectory_msgs::msg::JointTrajectory& msg)
