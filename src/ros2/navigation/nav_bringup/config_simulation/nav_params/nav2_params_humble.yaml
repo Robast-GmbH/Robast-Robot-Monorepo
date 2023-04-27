@@ -216,7 +216,7 @@ local_costmap:
         voxel_size: 0.05
         track_unknown_space: true
         unknown_threshold: 15
-        mark_threshold: 0
+        mark_threshold: 2
         update_footprint_enabled: true
         combination_method: 1
         origin_z: 0.0
@@ -307,7 +307,7 @@ global_costmap:
         voxel_size: 0.1
         track_unknown_space: true
         unknown_threshold: 15
-        mark_threshold: 0
+        mark_threshold: 2
         update_footprint_enabled: true
         combination_method: 1
         origin_z: 0.0
@@ -316,26 +316,6 @@ global_costmap:
         mapping_mode: false
         map_save_duration: 60.0
         observation_sources: lidar
-        # pointcloud:
-        #   data_type: PointCloud2
-        #   topic: /front_realsense_camera/depth/points
-        #   marking: true
-        #   clearing: true
-        #   obstacle_range: 3.0
-        #   min_obstacle_height: 0.4
-        #   max_obstacle_height: 2.0
-        #   expected_update_rate: 0.0
-        #   observation_persistence: 0.0
-        #   inf_is_valid: false
-        #   filter: "voxel"
-        #   voxel_min_points: 0
-        #   clear_after_reading: true
-        #   max_z: 7.0
-        #   min_z: 0.1
-        #   vertical_fov_angle: 0.8745
-        #   horizontal_fov_angle: 1.048
-        #   decay_acceleration: 15.0
-        #   model_type: 0
         lidar:
           data_type: PointCloud2
           topic: /bpearl_laser/scan/points
