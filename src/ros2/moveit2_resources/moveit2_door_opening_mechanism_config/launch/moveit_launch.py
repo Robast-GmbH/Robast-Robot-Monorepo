@@ -67,6 +67,7 @@ def generate_launch_description():
                 "publish_transforms_updates": should_publish,
                 "monitor_dynamics": monitor_dynamics,
                 "use_sim_time": use_sim_time,
+                "octomap_resolution": 0.05,
         }
 
         move_group_node = Node(
