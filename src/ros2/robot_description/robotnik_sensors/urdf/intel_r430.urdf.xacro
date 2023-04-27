@@ -231,14 +231,14 @@
           <noise>
             <type>gaussian</type>
             <mean>0.0</mean>
-            <stddev>0.100</stddev>
+            <stddev>0.010</stddev>
           </noise>
         </camera>
         <always_on>1</always_on>
         <update_rate>15</update_rate>
         <visualize>1</visualize>
       </sensor>
-    </gazebo>
+    </gazebo>  
   </xacro:macro>
 
 

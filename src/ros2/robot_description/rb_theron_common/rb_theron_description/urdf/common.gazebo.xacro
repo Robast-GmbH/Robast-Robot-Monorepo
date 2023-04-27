@@ -27,6 +27,10 @@
 
 				<frame_id>$(arg prefix)odom</frame_id>
 
+				<!-- There is no possiblity (as far as I know) to disable tf publishing of odom->base, so if you
+				don't want the tf to be published, you can just dump it into a different topic -->
+				<tf_topic>tf_dump</tf_topic> 
+
 				<xacro:if value="${publish_bf}">
 					<child_frame_id>$(arg prefix)base_footprint</child_frame_id>
 				</xacro:if>
