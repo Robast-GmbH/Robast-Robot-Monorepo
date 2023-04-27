@@ -75,7 +75,7 @@
 				<topic>${prefix_topic}/scan</topic>
 				<always_on>1</always_on>
     				<visualize>false</visualize>
-				<update_rate>12.5</update_rate>
+				<update_rate>30.0</update_rate>
 				<ray>
 					<scan>
 						<horizontal>
