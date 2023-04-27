@@ -100,18 +100,18 @@ namespace db_helper
     }
 
     // fill the table Body
-    for (pqxx::const_result_iterator::reference raw_row : result_handle)
+    for (auto row = result_handle.begin(); row != result_handle.end(); row++)
     {
       std::vector<std::string> temp_row;
-      for (pqxx::const_row_iterator::reference raw_data : raw_row)
+      for (auto field = row.begin(); field != row.end(); field++)
       {
-        temp_row.push_back(raw_data.c_str());
+        temp_row.push_back(field->c_str() );
       }
       result_data.push_back(temp_row);
     }
-
+    
     connection_handle.disconnect();
-    return result_data;   // affected_Rows;
+    return result_data;
   }
 
   bool PostgreSqlHelper::checkUserTag(std::string tag,
@@ -148,7 +148,7 @@ namespace db_helper
     std::vector<std::vector<std::string>> data = std::vector<std::vector<std::string>>();
     data = perform_query("SELECT first_name, last_name FROM public.account WHERE user_id =" + id + ";");
 
-    return true;   //(data[1][0] == first_name && data[1][1] == last_name);
+    return (data[0][0] == first_name && data[0][1] == last_name);
   }
 
   std::string PostgreSqlHelper::createUser(std::string first_name, std::string last_name)
@@ -156,8 +156,9 @@ namespace db_helper
     std::vector<std::vector<std::string>> result;
     std::string add_user_query = "INSERT INTO public.\"account\" (user_id, first_name, last_name) VALUES ( DEFAULT, '" +
                                  first_name + "', '" + last_name + "') RETURNING user_id; ";
-    perform_transaction_with_return(add_user_query);
-    return "0";   // result[0][0];
+     result =perform_transaction_with_return(add_user_query);
+
+     return result[0][0];
   }
 
   int PostgreSqlHelper::createNfcCode(std::string user_id, int max_id)

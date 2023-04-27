@@ -55,9 +55,12 @@ class RestInterface(Node):
         self.get_logger().info(id)
         self.get_logger().info(first_name)
         goal_msg = CreateUserNfcTag.Goal()
-        goal_msg.user_id = id
-        goal_msg.first_name = first_name
-        goal_msg.last_name = last_name
+        if(id!=""):
+            goal_msg.user_id = id
+
+        if(first_name!="" and last_name!=""):
+            goal_msg.first_name = first_name
+            goal_msg.last_name = last_name
 
         self._action_client.wait_for_server()
 
