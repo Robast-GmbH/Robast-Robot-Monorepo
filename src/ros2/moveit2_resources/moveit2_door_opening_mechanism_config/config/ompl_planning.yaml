@@ -160,7 +160,8 @@ door_opening_mechanism:
     - SPARStwokConfigDefault
     - TrajOptDefault
   projection_evaluator: joints(door_opening_mechanism_joint_y_axis_slide)
-  longest_valid_segment_fraction: 0.005
+  longest_valid_segment_fraction: 0.006
+  maximum_waypoint_distance: 0.1
 position:
   default_planner_config: RRTstarkConfigDefault
   planner_configs:
@@ -188,7 +189,8 @@ position:
     - SPARSkConfigDefault
     - SPARStwokConfigDefault
     - TrajOptDefault
-  longest_valid_segment_fraction: 0.005
+  longest_valid_segment_fraction: 0.006
+  maximum_waypoint_distance: 0.1
 mobile_base_arm:
   default_planner_config: RRTstarkConfigDefault
   planner_configs:
@@ -216,4 +218,5 @@ mobile_base_arm:
     - SPARSkConfigDefault
     - SPARStwokConfigDefault
     - TrajOptDefault
-  longest_valid_segment_fraction: 0.005
+  longest_valid_segment_fraction: 0.006
+  maximum_waypoint_distance: 0.1
