@@ -94,5 +94,5 @@ RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ros
   && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/DDS_config.xml
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/src/DDS_config.xml
 ENV IGN_FILE_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}
