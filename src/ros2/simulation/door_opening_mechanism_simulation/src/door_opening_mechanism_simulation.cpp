@@ -27,13 +27,6 @@ namespace door_opening_mechanism_simulation
 
   void DoorMechanismSimulation::move_robot_in_simulation_to_target_pose(const float target_pose)
   {
-    // ompl_interface::OMPLInterface ompl_interface = ompl_interface::OMPLInterface(
-    //     move_group_interface->getRobotModel(), this->get_shared_pointer_of_node(), "ompl");
-
-    // move_group_interface->setJointValueTarget(drawer_joint, target_pose);
-
-    // move_group_interface->startStateMonitor();
-
     const std::string PLANNING_GROUP = this->moveit2_planning_group_name_;
 
     // The
@@ -98,8 +91,6 @@ namespace door_opening_mechanism_simulation
     // transform euler pose orientation to quaternion
     // geometry_msgs::msg::Pose target_pose1;
 
-    // move_group.setJointValueTarget("position/x", -0.8);
-
     joint_model_group->printGroupInfo();
 
     geometry_msgs::msg::PoseStamped target_pose1 = move_group.getCurrentPose();
@@ -141,7 +132,7 @@ namespace door_opening_mechanism_simulation
     move_group.setGoalTolerance(0.000001);
     // move_group.setPlannerId("TRRTkConfigDefault");
     move_group.setPlanningTime(20);
-    // move_group.setNumPlanningAttempts(3);
+    move_group.setNumPlanningAttempts(1);
     move_group.setPoseTarget(target_pose1);
 
     RCLCPP_INFO(this->get_logger(), "move_group.getPlanningTime(): %f", move_group.getPlanningTime());
