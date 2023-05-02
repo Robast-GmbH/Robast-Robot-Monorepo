@@ -103,27 +103,6 @@ int main(int argc, char** argv)
 
   moveit::core::RobotStatePtr current_state = move_group.getCurrentState();
 
-  /* Check whether any joint is outside its joint limits */
-  if (current_state->satisfiesBounds())
-  {
-    RCLCPP_INFO(LOGGER, "Current state is valid");
-  }
-  else
-  {
-    RCLCPP_INFO(LOGGER, "Current state is NOT valid");
-  }
-
-  /* Enforce the joint limits for this state and check again*/
-  // current_state->enforceBounds();
-  // if (current_state->satisfiesBounds())
-  // {
-  //   RCLCPP_INFO(LOGGER, "After robot_state->enforceBounds(): Current state is valid");
-  // }
-  // else
-  // {
-  //   RCLCPP_INFO(LOGGER, "After robot_state->enforceBounds(): Current state is NOT valid");
-  // }
-
   moveit_msgs::msg::RobotState start_state;
 
   moveit::core::robotStateToRobotStateMsg(*current_state, start_state);
@@ -196,9 +175,9 @@ int main(int argc, char** argv)
   geometry_msgs::msg::PoseStamped target_pose1 = move_group.getCurrentPose();
 
   target_pose1.header.frame_id = "odom";
-  // target_pose1.pose.position.x -= 0.3;    // hard target example: 0.4
-  // target_pose1.pose.position.y += 0.3;    // hard target example: 0.3
-  target_pose1.pose.position.z += 0.25;   // hard target example: 0.2
+  target_pose1.pose.position.x -= 0.3;   // hard target example: 0.4
+  target_pose1.pose.position.y += 0.3;   // hard target example: 0.3
+  target_pose1.pose.position.z += 0.2;   // hard target example: 0.2
   // tf2::Quaternion q;
   // q.setRPY(0, +1.57079632679, 0);
   // target_pose1.pose.orientation = tf2::toMsg(q);
