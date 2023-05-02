@@ -78,8 +78,6 @@ RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ros
 # Can be removed once there is enough moveit2 skill and knowledge archieved
 RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone https://github.com/ros-planning/moveit2_tutorials -b humble --depth 1 \
   && vcs import < moveit2_tutorials/moveit2_tutorials.repos \
-#   && rm -r moveit2 \
-#   && rm -r moveit_visual_tools \
   && apt update \
   && apt upgrade -y \
   && . /opt/ros/${ROS_DISTRO}/setup.sh \
