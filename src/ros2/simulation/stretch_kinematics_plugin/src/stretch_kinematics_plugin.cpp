@@ -14,17 +14,6 @@ namespace stretch_kinematics_plugin
                                            const std::vector<std::string>& tip_frames,
                                            double search_discretization)
   {
-    RCLCPP_INFO(LOGGER, "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! StretchKinematicsPlugin::initialize !!!!!!!!!!!!!!!!!!");
-    // RCLCPP_INFO(LOGGER, "!!!!!!!!!! group_name = %s", group_name.c_str());
-    // RCLCPP_INFO(LOGGER, "!!!!!!!!!! base_frame = %s", base_frame.c_str());
-
-    // for (std::string tip_frame : tip_frames)
-    // {
-    //   RCLCPP_INFO(LOGGER, "!!!!!!!!!! tip_frame = %s", tip_frame.c_str());
-    // }
-
-    // RCLCPP_INFO(LOGGER, "!!!!!!!!!! search_discretization = %f", search_discretization);
-
     node_ = node;
     storeValues(robot_model, group_name, base_frame, tip_frames, search_discretization);
     joint_model_group_ = robot_model_->getJointModelGroup(group_name);
@@ -118,46 +107,6 @@ namespace stretch_kinematics_plugin
     state_.reset(new moveit::core::RobotState(robot_model_));
 
     initialized_ = true;
-
-    // RCLCPP_INFO(LOGGER, "Joint Model Group Info:");
-    // RCLCPP_INFO(LOGGER, "Name: %s", arm_jmg_->getName().c_str());
-    // const std::vector<std::string>& joint_names = arm_jmg_->getVariableNames();
-    // RCLCPP_INFO(LOGGER, "Number of Joints: %zu", joint_names.size());
-    // for (size_t i = 0; i < joint_names.size(); ++i)
-    // {
-    //   RCLCPP_INFO(LOGGER, "Joint %zu Name: %s", i, joint_names[i].c_str());
-    // }
-    // const std::vector<std::string>& link_names = arm_jmg_->getLinkModelNames();
-    // RCLCPP_INFO(LOGGER, "Number of Links: %zu", link_names.size());
-    // for (size_t i = 0; i < link_names.size(); ++i)
-    // {
-    //   RCLCPP_INFO(LOGGER, "Link %zu Name: %s", i, link_names[i].c_str());
-    // }
-    // RCLCPP_INFO(LOGGER, "End Effector Name: %s", arm_jmg_->getEndEffectorName().c_str());
-
-    // RCLCPP_INFO(LOGGER, "Mobile base joint:");
-    // RCLCPP_INFO(LOGGER, "  Name: %s", mobile_base_joint_->getName().c_str());
-    // RCLCPP_INFO(LOGGER, "  Variable count: %d", mobile_base_joint_->getVariableCount());
-    // RCLCPP_INFO(LOGGER, "  Type: %s", mobile_base_joint_->getTypeName().c_str());
-    // RCLCPP_INFO(LOGGER, "  Active: %s", mobile_base_joint_->isActive() ? "true" : "false");
-    // RCLCPP_INFO(LOGGER, "  Continuous: %s", mobile_base_joint_->isContinuous() ? "true" : "false");
-    // RCLCPP_INFO(LOGGER, "  Bounded: %s", mobile_base_joint_->isBounded() ? "true" : "false");
-    // RCLCPP_INFO(LOGGER, "  Multi-DOF: %s", mobile_base_joint_->getVariableCount() > 1 ? "true" : "false");
-
-    // const std::vector<std::string>& joint_model_names = state_->getVariableNames();
-    // for (const auto& joint_name : joint_model_names)
-    // {
-    //   double pos = state_->getVariablePosition(joint_name);
-    //   double vel = state_->getVariableVelocity(joint_name);
-    //   double acc = state_->getVariableAcceleration(joint_name);
-    //   double eff = state_->getVariableEffort(joint_name);
-
-    //   RCLCPP_INFO(LOGGER, "Joint: %s", joint_name.c_str());
-    //   RCLCPP_INFO(LOGGER, "  Position: %f", pos);
-    // RCLCPP_INFO(LOGGER, "  Velocity: %f", vel);
-    // RCLCPP_INFO(LOGGER, "  Acceleration: %f", acc);
-    // RCLCPP_INFO(LOGGER, "  Effort: %f", eff);
-    // }
 
     RCLCPP_INFO(LOGGER, "KDL solver initialized");
     return true;
@@ -279,14 +228,6 @@ namespace stretch_kinematics_plugin
                             << ik_pose.orientation.x << " " << ik_pose.orientation.y << " " << ik_pose.orientation.z
                             << " " << ik_pose.orientation.w);
 
-    // RCLCPP_INFO(LOGGER,
-    //             "searchPositionIK: Position request pose position is x = %f, y = %f, z = %f, orientation x = %f, " "
-    //             y = %f, z = %f, w = %f", ik_pose.position.x, ik_pose.position.y, ik_pose.position.z,
-    //             ik_pose.orientation.x,
-    //             ik_pose.orientation.y,
-    //             ik_pose.orientation.z,
-    //             ik_pose.orientation.w);
-
     std::vector<double> arm_jmg_solution(solution.begin(), std::next(solution.begin(), mobile_base_index_));
     const auto arm_jmg_consistency_limits =
         consistency_limits.empty() ? std::vector<double>{}
@@ -307,8 +248,6 @@ namespace stretch_kinematics_plugin
     do
     {
       ++attempt;
-
-      // RCLCPP_INFO(LOGGER, "attempt: %zu", attempt);
 
       // First we solve for the arm only by fixing the mobile base
       state_->setJointGroupPositions(mobile_base_jmg_, &solution[mobile_base_index_]);
