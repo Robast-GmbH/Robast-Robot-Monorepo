@@ -5,8 +5,6 @@
 
 #include "pinout_defines.h"
 
-namespace lock
-{
     // the time in ms the lock mechanism needs to open resp. close the lock
     #define LOCK_MECHANISM_TIME 700 // according to the datasheet a minimum of 600ms is required
     #define LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED 10000 //milliseconds
@@ -16,7 +14,7 @@ namespace lock
         public:
             Lock() {}
 
-            void initialize_locks(uint8_t power_open_pin, uint8_t power_close_pin, uint8_t sensor_lock_pin, uint8_t sensor_drawer_closed_pin)
+            void initialize_lock(uint8_t power_open_pin, uint8_t power_close_pin, uint8_t sensor_lock_pin, uint8_t sensor_drawer_closed_pin)
             {
                 this->power_open_pin_ = power_open_pin;
                 this->power_close_pin_ = power_close_pin;
@@ -83,6 +81,14 @@ namespace lock
                 return this->drawer_opening_is_in_progress_;
             }
 
+            bool is_lock_switch_pushed(){
+                return this->get_moving_average_sensor_lock_pin() > 0.9;
+            }
+
+            bool is_endstop_switch_pushed() {
+                return this->get_moving_average_drawer_closed_pin() > 0.9;
+            }
+
             void handle_reading_sensors()
             {
                 // Tracking the moving average for the sensor pins helps to debounce them a little bit
@@ -136,6 +142,5 @@ namespace lock
                 digitalWrite(this->power_close_pin_, LOW);
             }
     };
-} // namespace lock
 
 #endif // DRAWER_CONTROLLER_LOCK_HPP
