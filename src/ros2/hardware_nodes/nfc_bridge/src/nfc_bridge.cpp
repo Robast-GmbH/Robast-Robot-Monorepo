@@ -155,7 +155,7 @@ namespace nfc_bridge
     auto goal = goal_handle->get_goal();
     auto result = std::make_shared<CreateUser::Result>();
     auto feedback = std::make_shared<CreateUser::Feedback>();
-    
+
     feedback->task_status.is_db_user_created = false;
     feedback->task_status.is_reader_ready_to_write = false;
     feedback->task_status.is_reader_completed = false;
@@ -164,10 +164,12 @@ namespace nfc_bridge
     if (goal->user_id == "")
     {
       user_id = db_connector_->createUser(goal->first_name, goal->last_name);
+      feedback->task_status.user_id = user_id;
     }
     else if (db_connector_->checkUser(goal->user_id, goal->first_name, goal->last_name))
     {
       user_id = goal->user_id;
+      feedback->task_status.user_id = user_id;
     }
     else
     {
@@ -178,7 +180,6 @@ namespace nfc_bridge
       goal_handle->canceled(result);
       return;
     }
-
     feedback->task_status.is_db_user_created = true;
     goal_handle->publish_feedback(feedback);
 
@@ -188,7 +189,7 @@ namespace nfc_bridge
     goal_handle->publish_feedback(feedback);
 
     write_tag(nfc_code);
-    
+
     feedback->task_status.is_reader_completed = true;
     goal_handle->publish_feedback(feedback);
     result->successful = true;
