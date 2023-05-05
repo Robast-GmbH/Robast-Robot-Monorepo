@@ -63,7 +63,8 @@ RUN apt-get update && apt-get install -y \
 
 
 # Must compile ros_gz, gz-msgs and gz-transport from source because Humble + Garden is not an official combination
-RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ros2 https://github.com/gazebosim/ros_gz.git \
+RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ros2 https://github.com/gazebosim/ros_gz.git\
+  && cd ros_gz && git checkout 7c62a1ce3cfb4eb3b54e1cfd092c9b63a9d5f255\
   && cd /workspace_ros_gz/src && git clone -b gz-msgs9 https://github.com/gazebosim/gz-msgs.git \
   && cd /workspace_ros_gz/src && git clone -b gz-transport12 https://github.com/gazebosim/gz-transport.git \
   && apt update \

@@ -13,7 +13,7 @@ from launch.launch_description_sources import AnyLaunchDescriptionSource
 
 
 def generate_launch_description():
-    with open("environment_vars.yaml", "r") as stream:
+    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
         try:
             environment_yaml = yaml.safe_load(stream)
             print(environment_yaml)
@@ -21,6 +21,10 @@ def generate_launch_description():
             print(exc)
 
     use_sim_time =True
+    robot_name = LaunchConfiguration("robot_name")
+    init_x = LaunchConfiguration("init_x", default="0")
+    init_y = LaunchConfiguration("init_y", default="0")
+    init_yaw = LaunchConfiguration("init_yaw", default="0")
     namespace="rb1"
     robot_xml = xacro.process_file(
         os.path.join(
@@ -48,25 +52,24 @@ def generate_launch_description():
     
 
     spawn_robot_cmd = Node(
-       
         package="ros_gz_sim",
         executable="create",
-        output="screen",
-        arguments=["-name",
-            "tb_1",
+        arguments=[
+            "-name",
+            robot_name,
             "-topic",
             "robot_description",
             "-z",
             "0.2",
             "-x",
-            "3",
+            "-3",
             "-y",
             "0",
             "-Y",
-            "0",
+            init_yaw,
         ],
-      
-    )    
+        output="screen",
+    )
     
     group = GroupAction([
         PushRosNamespace(namespace=namespace), 

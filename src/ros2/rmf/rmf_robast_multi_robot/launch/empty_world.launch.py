@@ -19,6 +19,7 @@ def generate_launch_description():
 
     use_sim_time = LaunchConfiguration("use_sim_time")
     world_model = LaunchConfiguration("world_model")
+    headless = LaunchConfiguration("headless")
  
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
@@ -32,6 +33,12 @@ def generate_launch_description():
         description="path to the world model",
     )
 
+    declare_headless_cmd = DeclareLaunchArgument(
+        "headless",
+        default_value="",
+        description="Weather to run in headless mode (-s) or with gui ''",
+    )
+
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         "use_sim_time",
         default_value="true",
@@ -42,7 +49,9 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py"),
         ),
-        launch_arguments={"gz_args": world_model}.items(),
+        launch_arguments={"gz_args": ["-r ", headless, " ", world_model],
+                          "gz_version": "7",                          
+                          }.items(),
     )
 
     gz_ros_bridge_cmd = Node(
@@ -60,6 +69,7 @@ def generate_launch_description():
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_world_model_cmd)
+    ld.add_action(declare_headless_cmd)
 
     # included launches
     ld.add_action(gz_sim_cmd)
