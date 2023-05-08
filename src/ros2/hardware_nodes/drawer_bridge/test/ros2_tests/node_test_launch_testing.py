@@ -17,6 +17,8 @@ from rclpy.qos import (DurabilityPolicy, QoSHistoryPolicy, QoSProfile,
 from communication_interfaces.msg import (DrawerAddress, DrawerLeds,
                                           DrawerStatus)
 
+from can_msgs.msg import Frame
+
 
 @pytest.mark.launch_test
 def generate_test_description():
@@ -92,15 +94,33 @@ class TestProcessOutput(unittest.TestCase):
         self.node.get_logger().info('Publishing to drawer_leds topic with led mode: "%i"' % drawer_leds_msg.mode)
 
         drawer_address_msg = DrawerAddress()
-        drawer_address_msg.drawer_controller_id = data['open_drawer']['drawer_controller_id']
+        drawer_address_msg.module_id = data['open_drawer']['module_id']
         drawer_address_msg.drawer_id = data['open_drawer']['drawer_id']
         self.open_drawer_publisher_.publish(drawer_address_msg)
-        self.node.get_logger().info('Publishing to open_drawer topic with drawer_controller_id: "%s"' % drawer_address_msg.drawer_controller_id)
+        self.node.get_logger().info('Publishing to open_drawer topic with module_id: "%s"' % drawer_address_msg.module_id)
+
+    def publish_drawer_feedback_can_msg(self):
+          # Read input data that is send to dut
+        INPUT_DATA_PATH = os.path.join(
+        ament_index_python.get_package_prefix('drawer_bridge'),
+            'lib/drawer_bridge',
+            'node_test_input_data.yaml'
+        )
+
+        with open(INPUT_DATA_PATH) as f:
+            data = yaml.safe_load(f)
+
+        drawer_is_open_can_msg=Frame()
+        drawer_is_open_can_msg.id = data['is_drawer_open_can_frame']['id']
+        drawer_is_open_can_msg.dlc = data['is_drawer_open_can_frame']['dlc']
+        drawer_is_open_can_msg.data = data['is_drawer_open_can_frame']['data']
+        self.can_in_publisher_.publish(drawer_is_open_can_msg)
+        self.node.get_logger().info('Publishing to from_can_bus topic with can_msg_id: "%s"' % drawer_is_open_can_msg.id)
 
 
     def drawer_status_subscriber_callback(self, drawer_is_open_msg):
-        self.node.get_logger().info('Received msg on drawer_is_open topic. Drawer_controller_id: "%s"' % drawer_is_open_msg.drawer_address.drawer_controller_id)
-        self.received_data_drawer_controller_id = drawer_is_open_msg.drawer_address.drawer_controller_id
+        self.node.get_logger().info('Received msg on drawer_is_open topic. module_id: "%s"' % drawer_is_open_msg.drawer_address.module_id)
+        self.received_data_module_id = drawer_is_open_msg.drawer_address.module_id
         self.received_data_drawer_id = drawer_is_open_msg.drawer_address.drawer_id
         self.received_data_drawer_is_open = drawer_is_open_msg.drawer_is_open
         self.received_drawer_status_topic = True
@@ -109,6 +129,7 @@ class TestProcessOutput(unittest.TestCase):
     def publish_data_to_dut(self):
         self.open_drawer_publisher_ = self.node.create_publisher(DrawerAddress, 'open_drawer', qos_profile = self.qos_profile)
         self.drawer_leds_publisher_ = self.node.create_publisher(DrawerLeds, 'drawer_leds', qos_profile = self.qos_profile)
+        self.can_in_publisher_ = self.node.create_publisher(Frame,'from_can_bus', qos_profile = self.qos_profile)
         self.publish_data()
 
     
@@ -122,7 +143,7 @@ class TestProcessOutput(unittest.TestCase):
 
         with open(EXPECTED_DATA_PATH) as f:
             data = yaml.safe_load(f)
-        self.expected_data_drawer_controller_id = data['drawer_status']['drawer_address']['drawer_controller_id']
+        self.expected_data_module_id = data['drawer_status']['drawer_address']['module_id']
         self.expected_data_drawer_id = data['drawer_status']['drawer_address']['drawer_id']
         self.expected_data_drawer_is_open = data['drawer_status']['drawer_is_open']
 
@@ -136,6 +157,7 @@ class TestProcessOutput(unittest.TestCase):
             qos_profile=self.qos_profile
         )
 
+   
 
     def test_dut_output(self):
         self.publish_data_to_dut()
@@ -144,13 +166,15 @@ class TestProcessOutput(unittest.TestCase):
 
         self.receive_data_from_dut()
 
+        self.publish_drawer_feedback_can_msg()
+
         try:
             while not self.received_drawer_status_topic:
                 rclpy.spin_once(self.node, timeout_sec=0.1)
 
             # test actual output for expected output
             # self.assertEqual(str(test_data), expected_data)
-            self.assertEqual(self.received_data_drawer_controller_id, self.expected_data_drawer_controller_id)
+            self.assertEqual(self.received_data_module_id, self.expected_data_module_id)
             self.assertEqual(self.received_data_drawer_id, self.expected_data_drawer_id)
             self.assertEqual(self.received_data_drawer_is_open, self.expected_data_drawer_is_open)
 
