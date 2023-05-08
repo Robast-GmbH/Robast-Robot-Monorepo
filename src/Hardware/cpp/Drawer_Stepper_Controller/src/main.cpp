@@ -1,70 +1,64 @@
 #include "can.hpp"
-#include "can/can_db.hpp"
-#include "can/can_helper.h"
-#include "pinout_defines.h"
-#include "motor.hpp"
+#include "led_strip.hpp"
+#include "drawer.hpp"
 
-#define DRAWER_CONTROLLER_ID 1
-TMC2209Stepper driver(&SERIAL_PORT, R_SENSE, 0);
+#define MODULE_ID 1
 
-Motor motor = Motor(&driver); 
+Drawer drawer0 = Drawer(MODULE_ID, 0);
+std::vector<IDrawer *> drawers = std::vector<IDrawer *>();
+Can CAN = Can(MODULE_ID);
 
-lock::Lock LOCK_1 = lock::Lock();
-lock::Lock LOCK_2 = lock::Lock();
+std::optional<robast_can_msgs::CanMessage> received_message;
+std::optional<robast_can_msgs::CanMessage> to_be_send_message;
 
-can::Can CAN = can::Can(DRAWER_CONTROLLER_ID, &LOCK_1, &LOCK_2,&motor);
-
-void setup() {
-  
-  Serial.begin(115200);         // Init serial port and set baudrate
-  while(!Serial);               // Wait for serial port to connect
+void setup()
+{
+  Serial.begin(115200); // Init serial port and set baudrate
+  while (!Serial)
+    ; // Wait for serial port to connect
   Serial.println("\nStart...");
-  //motor.init();
+  drawer0.init_lock(PWR_OPEN_LOCK1_PIN, PWR_CLOSE_LOCK1_PIN, SENSOR_LOCK1_PIN, SENSOR_DRAWER1_CLOSED_PIN);
+  drawers.push_back(&drawer0);
+  led_strip::initialize_led_strip();
   CAN.initialize_can_controller();
 }
 
-void loop() {
-  static uint32_t last_time = 0;
-  uint32_t ms = millis();
+void loop()
+{
+  if (CAN.is_message_available())
+  {
+    received_message = CAN.handle_receiving_can_msg();
 
-  while (Serial.available() > 0) {
-    int8_t read_byte = Serial.read();
-    int currentSpeed = motor.getSpeed();
-    if (read_byte == '+') {
-      
-      Serial.println("Increase speed.");
-      motor.setSpeed(currentSpeed+1000,0);
-
-    } else if (read_byte == '-') {
-    
-      if (currentSpeed-1000 <= 0) {
-        Serial.println("Hold motor.");
-        motor.setSpeed(0,0);
-      } else {
-        Serial.println("Decrease speed.");
-        motor.setSpeed(currentSpeed-1000,0);
+    if (received_message.has_value())
+    {
+      switch (received_message->get_id())
+      {
+      case CAN_ID_DRAWER_UNLOCK || CAN_ID_ELECTRICAL_DRAWER_TASK:
+      {
+        uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
+        drawers.at(drawer_id)->can_in(received_message.value());
       }
-  
-    } else if(read_byte =='0'){
-      Serial.println("Reset Error.");
-      motor.resetStallGuard();
-    }else if(read_byte =='1'){
-      Serial.println("Toggle direction.");
-      Direction currentDirection = motor.getDirection();
-      motor.setDirection(currentDirection==clockwise?counter_clockwise:clockwise);      
+      break;
+      case CAN_ID_DRAWER_LED:
+        led_strip::add_led_strip_mode_to_queue(*received_message);
+        led_strip::debug_prints_drawer_led(*received_message);
+        break;
+      default:
+        Serial.println("Received unsupported CAN message.");
+        break;
+      }
     }
   }
 
-  if(motor.getIsStalled()){
-    Serial.println("isStalled");
-    motor.resetStallGuard();
-  }
+  led_strip::handle_led_control();
 
-
-      CAN.handle_receiving_can_msg();
-  
-  if((ms-last_time) > 100 && motor.getSpeed() != 0) { // run every 0.1s
-    last_time = ms;
-    motor.printStatus();
+  for (IDrawer *drawer : drawers)
+  {
+    drawer->update_state();
+    to_be_send_message = drawer->can_out();
+    if (to_be_send_message.has_value())
+    {
+      CAN.send_can_message(to_be_send_message.value());
+    }
   }
 }

@@ -3,8 +3,6 @@
 
 #include <Arduino.h>
 
-#include "pinout_defines.h"
-
     // the time in ms the lock mechanism needs to open resp. close the lock
     #define LOCK_MECHANISM_TIME 700 // according to the datasheet a minimum of 600ms is required
     #define LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED 10000 //milliseconds
