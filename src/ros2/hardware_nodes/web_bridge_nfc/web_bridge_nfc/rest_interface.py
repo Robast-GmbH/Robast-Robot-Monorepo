@@ -53,7 +53,7 @@ class RestInterface(Node):
                 raise HTTPException(status_code=404)
             return {"Status": self.reader_status}
 
-    def make_nfc(self, first_name="", last_name ="", id =""):
+    def make_nfc(self, first_name="", last_name="", id=""):
         self.get_logger().info(id)
         self.get_logger().info(first_name)
         goal_msg = CreateUserNfcTag.Goal()
@@ -66,7 +66,7 @@ class RestInterface(Node):
 
         self._action_client.wait_for_server()
 
-        self._send_goal_future=self._action_client.send_goal_async(
+        self._send_goal_future = self._action_client.send_goal_async(
             goal_msg, feedback_callback=self.feedback_callback)
         self._send_goal_future.add_done_callback(self.get_action_responce_callback)
 

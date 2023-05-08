@@ -41,8 +41,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/ComputeInterimGoal.action"
   "action/ImportYamlPoses.action"
 
-
-  
   "srv/HandleDrawer.srv"
   "srv/ShelfSetupInfo.srv"
   "srv/ShowDrawerInterface.srv"
