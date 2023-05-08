@@ -2,7 +2,7 @@
 
 docker build "../../src/ros2/hardware_nodes/" -t hardware_nodes
 
-docker run --name=hardware_nodes_socket --network=host -it --detach -v $(pwd)/../../src/ros2/hardware_nodes/drawer_gate/:/workspace/src/hardware_nodes/drawer_gate \
+docker run --name=hardware_nodes_socket --network=host -it --detach -v $(pwd)/../../src/ros2/hardware_nodes/drawer_bridge/:/workspace/src/hardware_nodes/drawer_bridge \
  -v $(pwd)/../../src/ros2/hardware_nodes/drawer_sym/:/workspace/src/hardware_nodes/drawer_sym \
  -v $(pwd)/../../src/ros2/hardware_nodes/drawer_manager/:/workspace/src/hardware_nodes/drawer_manager \
  -v $(pwd)/../../src/ros2/communication_interfaces/:/workspace/src/communication_interfaces \
