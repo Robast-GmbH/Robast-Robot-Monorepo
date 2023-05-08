@@ -34,7 +34,7 @@ class RestInterface(Node):
                 raise HTTPException(
                     status_code=503, detail="Reader in Benutzung")
             else:
-                self.make_nfc(first_name = user.first_name, last_name = user.last_name)
+                self.make_nfc(first_name=user.first_name, last_name=user.last_name)
             while self.id == "":
                 time.wait(0.01)
             return {"user_id": self.id}
@@ -45,7 +45,7 @@ class RestInterface(Node):
                 raise HTTPException(
                     status_code=503, detail="Reader in Benutzung")
             else:
-                    self.make_nfc(id = id)
+                self.make_nfc(id=id)
 
         @app.get("/users/nfc/", response_model=str)
         async def get_nfc_status(user_id: int):
@@ -53,7 +53,7 @@ class RestInterface(Node):
                 raise HTTPException(status_code=404)
             return {"Status": self.reader_status}
 
-    def make_nfc(self, first_name = "", last_name = "", id = ""):
+    def make_nfc(self, first_name="", last_name ="", id =""):
         self.get_logger().info(id)
         self.get_logger().info(first_name)
         goal_msg = CreateUserNfcTag.Goal()
@@ -66,8 +66,8 @@ class RestInterface(Node):
 
         self._action_client.wait_for_server()
 
-        self._send_goal_future = self._action_client.send_goal_async(
-            goal_msg, feedback_callback = self.feedback_callback)
+        self._send_goal_future=self._action_client.send_goal_async(
+            goal_msg, feedback_callback=self.feedback_callback)
         self._send_goal_future.add_done_callback(self.get_action_responce_callback)
 
     def get_action_responce_callback(self, future):
@@ -94,14 +94,16 @@ class RestInterface(Node):
         elif (feedback.is_db_user_created):
             self.reader_status = "Setup"
 
+
 def main(args=None):
     rclpy.init()
     rest_interface = RestInterface()
     spin_thread = threading.Thread(
-        target = rclpy.spin, args=(rest_interface,))
+        target=rclpy.spin, args=(rest_interface,))
     spin_thread.start()
-    uvicorn.run(app, host = '0.0.0.0', port = 5001, log_level = 'warning')
+    uvicorn.run(app, host='0.0.0.0', port=5001, log_level='warning')
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
