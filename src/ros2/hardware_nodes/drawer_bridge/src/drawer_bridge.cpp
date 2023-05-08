@@ -54,14 +54,14 @@ namespace drawer_bridge
 
   void DrawerBridge::open_drawer_topic_callback(const DrawerAddress& msg)
   {
-    uint32_t drawer_controller_id = msg.module_id;
+    uint32_t module_id = msg.module_id;
     uint8_t drawer_id = msg.drawer_id;
 
     RCLCPP_INFO(get_logger(),
-      "I heard from open_drawer topic the drawer_controller_id: '%i' drawer_id: '%d ",
-      drawer_controller_id, drawer_id);   // Info
+      "I heard from open_drawer topic the module_id: '%i' drawer_id: '%d ",
+      module_id, drawer_id);   // Info
 
-    if (drawer_controller_id != 0 && drawer_id != 0)
+    if (module_id != 0)
     {
       const CanMessage can_msg = can_message_creator_.create_can_msg_drawer_unlock(msg);
       send_can_msg(can_msg);
@@ -96,26 +96,28 @@ namespace drawer_bridge
     const bool is_endstop_switch_pushed = can_signals.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED).get_data() == CAN_DATA_SWITCH_IS_PUSHED;
     const bool is_lock_switch_pushed = can_signals.at(CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED).get_data() == CAN_DATA_SWITCH_IS_PUSHED;
 
-    bool is_open = false;
+    DrawerStatus drawer_status_msg = DrawerStatus();
+    drawer_status_msg.drawer_address = drawer_address;
+    
+ 
     if (!is_endstop_switch_pushed)
     {
-      is_open = true;
+      drawer_status_msg.drawer_is_open = true;
+      this->drawer_status_publisher_->publish(drawer_status_msg);
+         // Debugging
+    RCLCPP_INFO(this->get_logger(),
+      "Sending send_drawer_is_open_feedback with module_id: '%i'",
+      drawer_status_msg.drawer_address.module_id);
     }
     if (!is_lock_switch_pushed && is_endstop_switch_pushed)
     {
-      is_open = false;
-    }
-
-    DrawerStatus drawer_status_msg = DrawerStatus();
-    drawer_status_msg.drawer_address = drawer_address;
-    drawer_status_msg.drawer_is_open = is_open;
-
-    // Debugging
+      drawer_status_msg.drawer_is_open = false;
+      this->drawer_status_publisher_->publish(drawer_status_msg);
+         // Debugging
     RCLCPP_INFO(this->get_logger(),
       "Sending send_drawer_is_closed_feedback with module_id: '%i'",
       drawer_status_msg.drawer_address.module_id);
-
-    this->drawer_status_publisher_->publish(drawer_status_msg);
+    }
   }
 
   void DrawerBridge::publish_electrical_drawer_status(robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg)
