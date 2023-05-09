@@ -2,7 +2,6 @@
 #define MOTOR
 
 #include <TMCStepper.h>
-#include <SpeedyStepper.h>
 #include "pinout_defines.h"
 
 #define SERIAL_PORT Serial2 // HardwareSerial port for Teensy 4.0
