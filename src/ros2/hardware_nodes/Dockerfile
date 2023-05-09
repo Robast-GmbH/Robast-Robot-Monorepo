@@ -1,9 +1,9 @@
-FROM ros:humble-ros-core
+FROM ros:humble-ros-base-jammy
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers.d
+    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV USER robast
 ARG DEBIAN_FRONTEND=
 
