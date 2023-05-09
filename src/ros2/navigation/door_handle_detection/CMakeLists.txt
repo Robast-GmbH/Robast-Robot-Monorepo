@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2)  # CMake version in Ubuntu 18.04 LTS
-project(depthai_examples VERSION 2.7.1 LANGUAGES CXX C)
+project(door_handle_detection VERSION 2.7.1 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -19,24 +19,7 @@ if(NOT OpenCV_FOUND)
 endif()
 
 # find_package(depthai CONFIG REQUIRED PATHS "/home/sachin/Desktop/luxonis/depthai-core/build/install/lib/cmake/depthai")
-set(tiny_yolo_v4_blob_name "yolov4_tiny_coco_416x416_openvino_2021.4_6shave_bgr.blob")
-set(deeplab_blob_name "deeplab_v3_plus_mnv2_decoder_256_openvino_2021.4.blob")
-set(yolov5_door_blob_name "yolov5_door_openvino_2021.4_6shave.blob")
-
-set(tiny_yolo_v4_blob "${PROJECT_SOURCE_DIR}/resources/${tiny_yolo_v4_blob_name}")
-file(DOWNLOAD "https://artifacts.luxonis.com/artifactory/luxonis-depthai-data-local/network/tiny-yolo-v4_openvino_2021.2_6shave.blob"
-  ${tiny_yolo_v4_blob}
-  TIMEOUT 60  # seconds
-  EXPECTED_HASH SHA1=219d949610a5760e62a8458941e1300b81c3fe4a
-  TLS_VERIFY ON)
-
-set(deeplab_blob "${PROJECT_SOURCE_DIR}/resources/${deeplab_blob_name}")
-file(DOWNLOAD
-"https://github.com/luxonis/depthai-experiments/blob/master/gen2-deeplabv3_multiclass/models/deeplab_v3_plus_mnv2_decoder_256_openvino_2021.4.blob?raw=true"
-  ${deeplab_blob}
-  TIMEOUT 60  # seconds
-  EXPECTED_HASH SHA1=bdc2529f765f34c4799b478690fb4e32f1ad5d89
-  TLS_VERIFY ON)
+set(yolov5_door_blob_name "yolov5.blob")
 
 find_package(ament_cmake REQUIRED)
 
@@ -87,14 +70,9 @@ macro(dai_add_node_ros2 node_name node_src)
 endmacro()
 
 
-dai_add_node_ros2(rgb_stereo_node src/rgb_stereo_node.cpp)
-dai_add_node_ros2(stereo_inertial_node src/stereo_inertial_publisher.cpp)
-dai_add_node_ros2(stereo_node src/stereo_publisher.cpp)
 dai_add_node_ros2(yolov5_door_spatial_node src/yolov5_door_publisher.cpp)
 
-target_compile_definitions(yolov4_spatial_node PRIVATE BLOB_NAME="${tiny_yolo_v4_blob_name}")
 target_compile_definitions(yolov5_door_spatial_node PRIVATE BLOB_NAME="${yolov5_door_blob_name}")
-target_compile_definitions(stereo_inertial_node PRIVATE BLOB_NAME="${tiny_yolo_v4_blob_name}")
 
 if($ENV{ROS_DISTRO} STREQUAL "galactic")
   target_compile_definitions(rgb_stereo_node PRIVATE IS_GALACTIC)
@@ -108,9 +86,6 @@ install(DIRECTORY launch/ DESTINATION share/${PROJECT_NAME}/launch
 FILES_MATCHING PATTERN "*.py")
 
 install(TARGETS
-        rgb_stereo_node
-        stereo_inertial_node
-        stereo_node
         yolov5_door_spatial_node 
         DESTINATION lib/${PROJECT_NAME})
 

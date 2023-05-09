@@ -21,7 +21,7 @@
 #include "depthai/pipeline/node/StereoDepth.hpp"
 #include "depthai/pipeline/node/XLinkOut.hpp"
 
-dai::Pipeline createPipeline(bool syncNN, bool subpixel, std::string nnPath,int confidence, int LRchecktresh, std::string resolution) {
+dai::Pipeline createPipeline(bool spatial_camera,bool syncNN, bool subpixel, std::string nnPath,int confidence, int LRchecktresh, std::string resolution) {
 
     dai::Pipeline pipeline;
     dai::node::MonoCamera::Properties::SensorResolution monoResolution;
@@ -44,9 +44,19 @@ dai::Pipeline createPipeline(bool syncNN, bool subpixel, std::string nnPath,int 
     colorCam->setResolution(dai::ColorCameraProperties::SensorResolution::THE_1080_P);
     colorCam->setInterleaved(false);
     colorCam->setColorOrder(dai::ColorCameraProperties::ColorOrder::BGR);
-
-    monoResolution = dai::node::MonoCamera::Properties::SensorResolution::THE_400_P;
-
+    
+    if(resolution == "720p") {
+            monoResolution = dai::node::MonoCamera::Properties::SensorResolution::THE_720_P;
+        } else if(resolution == "400p") {
+            monoResolution = dai::node::MonoCamera::Properties::SensorResolution::THE_400_P;
+        } else if(resolution == "800p") {
+            monoResolution = dai::node::MonoCamera::Properties::SensorResolution::THE_800_P;
+        } else if(resolution == "480p") {
+            monoResolution = dai::node::MonoCamera::Properties::SensorResolution::THE_480_P;
+        } else {
+            RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Invalid parameter. -> monoResolution: %s", resolution.c_str());
+            throw std::runtime_error("Invalid mono camera resolution.");
+        }
 
     monoLeft->setResolution(monoResolution);
     monoLeft->setBoardSocket(dai::CameraBoardSocket::LEFT);
@@ -65,19 +75,15 @@ dai::Pipeline createPipeline(bool syncNN, bool subpixel, std::string nnPath,int 
     spatialDetectionNetwork->setConfidenceThreshold(0.5f);
     spatialDetectionNetwork->input.setBlocking(false);
     spatialDetectionNetwork->setBoundingBoxScaleFactor(0.5);
-                spatialDetectionNetwork->setDepthLowerThreshold(100);
-                spatialDetectionNetwork->setDepthUpperThreshold(5000);
+    spatialDetectionNetwork->setDepthLowerThreshold(100);
+    spatialDetectionNetwork->setDepthUpperThreshold(5000);
 
-                // yolo specific parameters
-                spatialDetectionNetwork->setNumClasses(1);
-                spatialDetectionNetwork->setCoordinateSize(4);
-                spatialDetectionNetwork->setAnchors({10, 14, 23, 27, 37, 58, 81, 82, 135, 169, 344, 319});
-                spatialDetectionNetwork->setAnchorMasks({{"side80", {0, 1, 2}}, {"side40", {3, 4, 5}}, {"side20", {6, 7, 8}}});
-                spatialDetectionNetwork->setIouThreshold(0.5f);
-    
-        
-
-   
+    // yolo specific parameters
+    spatialDetectionNetwork->setNumClasses(1);
+    spatialDetectionNetwork->setCoordinateSize(4);
+    spatialDetectionNetwork->setAnchors({10, 14, 23, 27, 37, 58, 81, 82, 135, 169, 344, 319});
+    spatialDetectionNetwork->setAnchorMasks({{"side80", {0, 1, 2}}, {"side40", {3, 4, 5}}, {"side20", {6, 7, 8}}});
+    spatialDetectionNetwork->setIouThreshold(0.5f);   
 
     // Link plugins CAM -> STEREO -> XLINK
     monoLeft->out.link(stereo->left);
@@ -104,38 +110,19 @@ int main(int argc, char** argv) {
     std::string tfPrefix, resourceBaseFolder, nnPath, jsonPath;
     std::string camera_param_uri;
     std::string nnName(BLOB_NAME);  // Set your blob name for the model here
-    bool syncNN, subpixel;
+    bool syncNN, subpixel, spatial_camera;
     int confidence = 200, LRchecktresh = 5;
     std::string monoResolution = "400p";
     
-    std::ifstream file("depthai_examples/resources/best.json");
-     if (!file.is_open()) {
-        RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Failed to open JSON file");
-     }
-    rapidjson::IStreamWrapper isw(file);
-    rapidjson::Document document;
-    document.ParseStream(isw);
-
-    const char* member_name = "nn_config";
-    auto member = document.FindMember(member_name);
-
-    if (member->value.IsArray()){
-            for (auto& element : member->value.GetArray()){
-                int classes = element["classes"].GetInt();
-                RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "%d",classes);
-            }
-        }
-    
-
     node->declare_parameter("tf_prefix", "oak");
     node->declare_parameter("camera_param_uri", camera_param_uri);
     node->declare_parameter("sync_nn", true);
     node->declare_parameter("subpixel", true);
-    node->declare_parameter("nnName", "yolov5_door_openvino_2021.4_6shave.blob");
+    node->declare_parameter("nnName", "");
     node->declare_parameter("confidence", confidence);
     node->declare_parameter("LRchecktresh", LRchecktresh);
     node->declare_parameter("monoResolution", monoResolution);
-    node->declare_parameter("resourceBaseFolder", "/workspaces/src/depthai-ros/depthai_examples/resources");
+    node->declare_parameter("resourceBaseFolder", "");
 
     node->get_parameter("tf_prefix", tfPrefix);
     node->get_parameter("camera_param_uri", camera_param_uri);
@@ -145,6 +132,7 @@ int main(int argc, char** argv) {
     node->get_parameter("LRchecktresh", LRchecktresh);
     node->get_parameter("monoResolution", monoResolution);
     node->get_parameter("resourceBaseFolder", resourceBaseFolder);
+    node->get_parameter("spatial_camera", spatial_camera);
 
     if(resourceBaseFolder.empty()) {
         throw std::runtime_error("Send the path to the resouce folder containing NNBlob in \'resourceBaseFolder\' ");
@@ -156,7 +144,9 @@ int main(int argc, char** argv) {
         node->get_parameter("nnName", nnName);
     }
     nnPath = resourceBaseFolder + "/" + nnName;
-    dai::Pipeline pipeline = createPipeline(syncNN, subpixel, nnPath,confidence, LRchecktresh, monoResolution);
+    dai::Pipeline pipeline = createPipeline(spatial_camera,syncNN, subpixel, nnPath,confidence, LRchecktresh, monoResolution);
+
+    //auto deviceInfo = dai::DeviceInfo("10.10.23.8");
     dai::Device device(pipeline);
 
     auto colorQueue = device.getOutputQueue("preview", 30, false);
@@ -171,13 +161,7 @@ int main(int argc, char** argv) {
     } else if(monoResolution == "400p") {
         width = 640;
         height = 400;
-    } else if(monoResolution == "800p") {
-        width = 1280;
-        height = 800;
-    } else if(monoResolution == "480p") {
-        width = 640;
-        height = 480;
-    } else {
+    }else {
         RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Invalid parameter. -> monoResolution: %s", monoResolution.c_str());
         throw std::runtime_error("Invalid mono camera resolution.");
     }

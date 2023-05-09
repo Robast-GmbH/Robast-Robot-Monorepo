@@ -97,9 +97,14 @@
 		<origin xyz="0.3305 0.0 0.1468" rpy="0 0 0"/>
 	</xacro:sensor_r430>
 
+	<xacro:sensor_r430 prefix="$(arg prefix)back_upper_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="back_upper_realsense_camera" hq="${hq}">
+		<origin xyz="-0.3305 0.0 1.1468" rpy="0 0 3.1416"/>
+	</xacro:sensor_r430>
+
 	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="back_realsense_camera" hq="${hq}">
 		<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
+ 
 
   	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
 	<!--xacro:sensor_orbbec_astra prefix="$(arg prefix)front_rgbd_camera" parent="$(arg prefix)base_link" prefix_topic="front_rgbd_camera">
