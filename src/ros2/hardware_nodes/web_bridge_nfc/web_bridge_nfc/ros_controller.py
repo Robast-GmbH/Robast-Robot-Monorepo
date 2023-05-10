@@ -1,9 +1,10 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.action import ActionClient
-from communication_interfaces.action import CreateUserNfcTag   
+from communication_interfaces.action import CreateUserNfcTag
 import threading
-from . import rest_interface 
+from . import rest_interface
+
 
 class ros_controller(Node):
 
@@ -11,22 +12,21 @@ class ros_controller(Node):
         super().__init__('ros_controller')
         self._action_client = ActionClient(
             self, CreateUserNfcTag, 'create_user')
-        
-        self.reader_in_use= False
+        self.reader_in_use = False
         self.reader_status = ""
         self.id = ""
         self.feedback_event = threading.Event()
-        
-    def call_create_nfc_tag_action(self, first_name="", last_name="", id="", id_wait_timeout=10 ):
 
-        if(id=="" or (first_name=="" and last_name=="")):
+    def call_create_nfc_tag_action(self, first_name="", last_name="", id="", id_wait_timeout=10):
+
+        if(id == "" or (first_name == "" and last_name == "")):
             return ""
-               
+
         goal_msg = CreateUserNfcTag.Goal()
-       
+
         if(id != ""):
             goal_msg.user_id = id
-            self.id= id
+            self.id = id
 
         if(first_name != "" and last_name != ""):
             goal_msg.first_name = first_name
@@ -38,10 +38,9 @@ class ros_controller(Node):
             goal_msg, feedback_callback=self.feedback_callback)
         self._send_goal_future.add_done_callback(self.get_action_responce_callback)
 
-        if(id==""):
+        if(id == ""):
             self.feedback_event.wait(id_wait_timeout)
         return self.id
-        
 
     def get_action_responce_callback(self, future):
         goal_handle = future.result()
@@ -53,10 +52,9 @@ class ros_controller(Node):
     def get_result_callback(self, future):
         result = future.result().result
         if (result.task_status.is_db_user_created):
-            
             self.reader_status = ""
             self.id = ""
-            self.reader_in_use=False
+            self.reader_in_use = False
 
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback.task_status
@@ -67,17 +65,19 @@ class ros_controller(Node):
             self.reader_status = "Token_benötigt"
         elif (feedback.is_db_user_created):
             self.reader_status = "Setup"
-        self.feedback_event.set() 
+        self.feedback_event.set()
+
 
 def main(args=None):
     rclpy.init()
-    ros_node=ros_controller()
+    ros_node = ros_controller()
     web_interface = rest_interface.RestInterface(ros_node)
     spin_thread = threading.Thread(
         target=rclpy.spin, args=(ros_node,))
     spin_thread.start()
     web_interface.run()
     rclpy.shutdown()
+
 
 if __name__ == '__main__':
     main()
