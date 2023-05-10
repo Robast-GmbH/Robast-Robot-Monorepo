@@ -19,7 +19,7 @@ namespace db_helper
     std::string createUser(std::string first_name, std::string last_name);
     int createNfcCode(std::string user_id, int max_ID);
     bool checkUser(std::string id, std::string first_name, std::string last_name);
-    bool checkUserTag(std::string tag,
+    bool lookupUserTag(std::string tag,
                       std::vector<std::string> lookup_scope,
                       std::shared_ptr<std::string> user_name,
                       std::shared_ptr<int> id);

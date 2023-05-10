@@ -96,7 +96,7 @@ if(BUILD_TESTING)
   FetchContent_Declare(
     Catch2
     GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-    GIT_TAG        v2.13.10 # should equal tag v3.2.1
+    GIT_TAG        v2.13.10 
   )
   FetchContent_MakeAvailable(Catch2)
 

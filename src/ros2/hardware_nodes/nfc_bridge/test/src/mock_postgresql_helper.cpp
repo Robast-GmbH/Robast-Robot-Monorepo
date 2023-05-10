@@ -7,7 +7,7 @@ namespace db_helper
     user_list_ = valid_user_list;
   }
 
-  bool MockPostgreSqlHelper::checkUserTag(std::string scanned_key,
+  bool MockPostgreSqlHelper::lookupUserTag(std::string scanned_key,
                                           std::vector<std::string> lookup_scope __attribute__((unused)),
                                           std::shared_ptr<std::string> related_username,
                                           std::shared_ptr<int> id)

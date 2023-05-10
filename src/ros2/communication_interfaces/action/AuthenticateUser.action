@@ -6,4 +6,4 @@ string permission_key_used
 string error_message
 ---
 #feedback
-# communication_interfaces/NfcReadStatus reader_status
+communication_interfaces/NfcReadStatus reader_status

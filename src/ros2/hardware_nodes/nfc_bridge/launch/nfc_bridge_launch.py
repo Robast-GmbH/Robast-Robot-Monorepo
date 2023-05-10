@@ -15,7 +15,7 @@ def generate_launch_description():
 
     start_bridge_web_nfc_cmd = launch_ros.actions.Node(
         package='web_bridge_nfc',
-        executable='rest_interface',
+        executable='web_api',
         output='screen',
         emulate_tty=True,  # https://github.com/ros2/launch/issues/188
     )

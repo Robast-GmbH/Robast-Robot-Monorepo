@@ -6,8 +6,6 @@
 #define CHECK_ON_DB                  false
 
 #include <string.h>
-
-#include <cmath>
 #include <memory>
 #include <thread>
 

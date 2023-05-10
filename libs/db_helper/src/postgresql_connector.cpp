@@ -4,7 +4,7 @@ namespace db_helper
 {
   PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string db_name)
       : connection_parameter("user=" + username + " password=" + password + " host=" + host +
-                             " port=5432 dbname=" + db_name + " target_session_attrs=read-write")
+      " port=5432 dbname=" + db_name + " target_session_attrs=read-write")
   {
   }
 
@@ -42,15 +42,9 @@ namespace db_helper
     }
     catch (const pqxx::pqxx_exception& e)
     {
-      result_data = std::vector<std::vector<std::string>>();
-      return result_data;
+      return std::vector<std::vector<std::string>>();
     }
 
-    // // fill the colum name list
-    // for (int i = 0; i < raw_db_feedback.columns(); i++)
-    // {
-    //   result_header->push_back(raw_db_feedback.column_name(i));
-    // }
     // fill the tabel Body
     for (pqxx::const_result_iterator::reference raw_row : raw_db_feedback)
     {
@@ -100,10 +94,10 @@ namespace db_helper
     }
 
     // fill the table Body
-    for (auto row = result_handle.begin(); row != result_handle.end(); row++)
+    for (pqxx::result::const_iterator row = result_handle.begin(); row != result_handle.end(); ++row)
     {
       std::vector<std::string> temp_row;
-      for (auto field = row.begin(); field != row.end(); field++)
+      for (pqxx::row::const_iterator field = row.begin(); field != row.end(); ++field)
       {
         temp_row.push_back(field->c_str() );
       }
@@ -114,7 +108,7 @@ namespace db_helper
     return result_data;
   }
 
-  bool PostgreSqlHelper::checkUserTag(std::string tag,
+  bool PostgreSqlHelper::lookupUserTag(std::string tag,
                                       std::vector<std::string> lookup_scope,
                                       std::shared_ptr<std::string> user_name,
                                       std::shared_ptr<int> id)
@@ -136,14 +130,22 @@ namespace db_helper
         " AND user_id in (" + target_users + ");");
     if (data.size() == 1)
     {
-      *user_name = data[1][0];
-      *id = stoi(data[1][1]);
+      if(user_name.get()!=nullptr)
+      {
+        user_name.reset(new std::string(data[1][0]));
+      }
+
+      if(id.get()!=nullptr)
+      {
+        id.reset(new int(stoi(data[1][1])));
+      }
+
       return true;
     }
     return false;
   }
 
-  bool PostgreSqlHelper::checkUser(std::string id, std::string first_name, std::string last_name)
+  bool PostgreSqlHelper::checkUser(const std::string id, const std::string first_name, const std::string last_name)
   {
     std::vector<std::vector<std::string>> data = std::vector<std::vector<std::string>>();
     data = perform_query("SELECT first_name, last_name FROM public.account WHERE user_id =" + id + ";");
@@ -154,28 +156,19 @@ namespace db_helper
   std::string PostgreSqlHelper::createUser(std::string first_name, std::string last_name)
   {
     std::vector<std::vector<std::string>> result;
-    std::string add_user_query = "INSERT INTO public.\"account\" (user_id, first_name, last_name) VALUES ( DEFAULT, '" +
-                                 first_name + "', '" + last_name + "') RETURNING user_id; ";
-     result =perform_transaction_with_return(add_user_query);
-
-     return result[0][0];
+    std::string add_user_query = "INSERT INTO public.\"account\" (user_id, first_name, last_name) VALUES ( DEFAULT, '"+
+    first_name +"', '"+ last_name +"') RETURNING user_id;";
+    result =perform_transaction_with_return(add_user_query);
+    return result[0][0];
   }
 
   int PostgreSqlHelper::createNfcCode(std::string user_id, int max_id)
   {
     std::vector<std::vector<std::string>> result;
     std::string create_nfc_query = "INSERT INTO public.user_nfc_codes (user_id, card_token) VALUES(" + user_id +
-                                   ", floor(random()* (" + std::to_string(max_id / 2) + " + 1))*2) RETURNING card_token; ";
-    try
-    {
-       result = perform_transaction_with_return(create_nfc_query);
-    }
-    catch (...)
-    {
-      // create_nfc_query = "INSERT INTO public.user_nfc_codes(user_id, token) VALUES (" + user_id +
-      //                    ", ((SELECT (max(token)) FROM public.user_nfc_codes) )) RETURNING token; ";
-     result = perform_transaction_with_return(create_nfc_query);
-    }
+    ", floor(random()* (" + std::to_string(max_id / 2) + " + 1))*2) RETURNING card_token; ";
+    result = perform_transaction_with_return(create_nfc_query);
+  
     return std::stoi(result[0][0]);
   }
 
