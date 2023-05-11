@@ -14,8 +14,8 @@ namespace nav2_behavior_tree
 
 BT::NodeStatus CheckForDoor::tick()
 {
-        int door_detected = 0;
-        config().blackboard->get<bool>(_door_detected, door_detected);
+  int door_detected = 1;
+  config().blackboard->get<int>(_door_detected, door_detected);
 
         if (door_detected == 0)
         {
