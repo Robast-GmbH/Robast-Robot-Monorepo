@@ -18,178 +18,143 @@
             "problemMatcher": []
         },
         {
-            "label": "Launch Drawer Simulation",
-            "detail": "Launch the drawer simulation/testing",
-            "type": "shell",
-            "command": "source install/setup.bash; ros2 launch drawer_sym drawer_sym_launch.py",
-            "problemMatcher": []
-        },
-        {
             "label": "Open Drawer 1",
             "detail": "Send topic message to open the drawer with the controller id 1",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 1, drawer_id: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 1, drawer_id: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Open Drawer 2",
             "detail": "Send topic message to open the drawer with the controller id 2",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 2, drawer_id: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 2, drawer_id: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Open Drawer 3",
             "detail": "Send topic message to open the drawer with the controller id 3",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 3, drawer_id: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 3, drawer_id: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Open Drawer 4",
             "detail": "Send topic message to open the drawer with the controller id 4",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 4, drawer_id: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 4, drawer_id: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Open Drawer 5",
             "detail": "Send topic message to open the drawer with the controller id 5",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 5, drawer_id: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 5, drawer_id: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change Drawer 1 LED color to green",
             "detail": "Send topic message to change led color to green",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 1, drawer_id: 1}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 1, drawer_id: 0}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change Drawer 2 LED color to green",
             "detail": "Send topic message to change led color to green",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 2, drawer_id: 1}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 2, drawer_id: 0}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change Drawer 3 LED color to green",
             "detail": "Send topic message to change led color to green",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 3, drawer_id: 1}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 3, drawer_id: 0}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change Drawer 4 LED color to green",
             "detail": "Send topic message to change led color to green",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 4, drawer_id: 1}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 4, drawer_id: 0}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change Drawer 5 LED color to green",
             "detail": "Send topic message to change led color to green",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 5, drawer_id: 1}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 5, drawer_id: 0}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change Drawer 1 LED color to white",
             "detail": "Send topic message to change led color to white",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 1, drawer_id: 1}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 1, drawer_id: 0}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change Drawer 2 LED color to white",
             "detail": "Send topic message to change led color to white",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 2, drawer_id: 1}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 2, drawer_id: 0}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change Drawer 3 LED color to white",
             "detail": "Send topic message to change led color to white",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 3, drawer_id: 1}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 3, drawer_id: 0}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change Drawer 4 LED color to white",
             "detail": "Send topic message to change led color to white",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 4, drawer_id: 1}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 4, drawer_id: 0}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change Drawer 5 LED color to white",
             "detail": "Send topic message to change led color to white",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 5, drawer_id: 1}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 5, drawer_id: 0}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
             "problemMatcher": []
         },
         {
             "label": "Show Drawer 1 LED fade out animation in orange",
             "detail": "Send topic message to show LED fade out animation in orange",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 1, drawer_id: 1}, red: 255, blue: 0, green: 128, brightness: 150, mode: 2}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 1, drawer_id: 0}, red: 255, blue: 0, green: 128, brightness: 150, mode: 2}' --once",
             "problemMatcher": []
         },
         {
             "label": "Show Drawer 2 LED fade out animation in orange",
             "detail": "Send topic message to show LED fade out animation in orange",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 2, drawer_id: 1}, red: 255, blue: 0, green: 128, brightness: 150, mode: 2}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 2, drawer_id: 0}, red: 255, blue: 0, green: 128, brightness: 150, mode: 2}' --once",
             "problemMatcher": []
         },
         {
             "label": "Show Drawer 3 LED fade out animation in orange",
             "detail": "Send topic message to show LED fade out animation in orange",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 3, drawer_id: 1}, red: 255, blue: 0, green: 128, brightness: 150, mode: 2}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 3, drawer_id: 0}, red: 255, blue: 0, green: 128, brightness: 150, mode: 2}' --once",
             "problemMatcher": []
         },
         {
             "label": "Show Drawer 4 LED fade out animation in orange",
             "detail": "Send topic message to show LED fade out animation in orange",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 4, drawer_id: 1}, red: 255, blue: 0, green: 128, brightness: 150, mode: 2}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 4, drawer_id: 0}, red: 255, blue: 0, green: 128, brightness: 150, mode: 2}' --once",
             "problemMatcher": []
         },
         {
             "label": "Show Drawer 5 LED fade out animation in orange",
             "detail": "Send topic message to show LED fade out animation in orange",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 5, drawer_id: 1}, red: 255, blue: 0, green: 128, brightness: 150, mode: 2}' --once",
-            "problemMatcher": []
-        },
-        {
-            "label": "Drawer Sym Command 1",
-            "detail": "Send the open drawer 1 comand to the drawer simulation node",
-            "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_command std_msgs/String '{data: OPEN LOAD 1 1}' -1",
-            "problemMatcher": []
-        },
-        {
-            "label": "Drawer Sym Command 2",
-            "detail": "Send the open drawer 2 comand to the drawer simulation node",
-            "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_command std_msgs/String '{data: OPEN LOAD 2 1}' -1",
-            "problemMatcher": []
-        },
-        {
-            "label": "Drawer Sym Command 3",
-            "detail": "Send the open drawer 3 comand to the simulation node",
-            "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_command std_msgs/String '{data: OPEN LOAD 3 1}' -1",
-            "problemMatcher": []
-        },
-        {
-            "label": "Drawer Sym Info",
-            "detail": "Request the module setup from the simulation node",
-            "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_command std_msgs/String '{data: INFO}' -1",
+            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: 5, drawer_id: 0}, red: 255, blue: 0, green: 128, brightness: 150, mode: 2}' --once",
             "problemMatcher": []
         },
         {
