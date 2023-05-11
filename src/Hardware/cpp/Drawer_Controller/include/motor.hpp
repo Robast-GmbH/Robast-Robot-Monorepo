@@ -15,6 +15,8 @@ class Motor{
     private:
         TMC2209Stepper* driver;
 
+        uint8_t stepper_diag_pin_;
+        uint8_t stepper_enable_pin_;
         int32_t speed = 0;
 
         static bool isStalled;
@@ -24,9 +26,7 @@ class Motor{
         static void stallISR();
         bool directionToShaftBool();
     public:
-        Motor(TMC2209Stepper*);
-
-        void init();
+        void init(TMC2209Stepper*,uint8_t,uint8_t);
 
         void setSpeed(int speed, int accelarationTime);
         void setDirection(Direction direction);

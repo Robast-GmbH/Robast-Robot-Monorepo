@@ -1,7 +1,5 @@
 #include "motor.hpp"
 
-
-
 // higher value of STALL_VALUE increases stall sensitivity
 // diag pin pulsed HIGH when SG_RESULT falls below 2*STALL_VALUE
 // must be in StealthChop Mode for stallguard to work
@@ -11,16 +9,14 @@
 
 bool Motor::isStalled = false;
 
-Motor::Motor(TMC2209Stepper* driver){
+void Motor::init(TMC2209Stepper *driver, uint8_t stepper_diag_pin, uint8_t stepper_enable_pin)
+{
     this->driver = driver;
-}
-
-void Motor::init(){
-
-    pinMode(STEPPER_DIAG_PIN,INPUT);
+    stepper_diag_pin_ = stepper_diag_pin;
+    stepper_enable_pin_ = stepper_enable_pin;
+    pinMode(STEPPER_DIAG_PIN, INPUT);
     SERIAL_PORT.begin(115200);
-    
-    
+
     driver->begin();
 
     // Sets the slow decay time (off time) [1... 15]. This setting also limits
@@ -32,7 +28,7 @@ void Motor::init(){
     // VACTUAL allows moving the motor by UART control.
     // It gives the motor velocity in +-(2^23)-1 [μsteps / t]
     // 0: Normal operation. Driver reacts to STEP input.
-    // /=0: Motor moves with the velocity given by VACTUAL. 
+    // /=0: Motor moves with the velocity given by VACTUAL.
     // Step pulses can be monitored via INDEX output.
     // The motor direction is controlled by the sign of VACTUAL.
     driver->VACTUAL(speed);
@@ -48,7 +44,7 @@ void Motor::init(){
 
     // Lower threshold velocity for switching on smart energy CoolStep and StallGuard to DIAG output
     driver->TCOOLTHRS(0xFFFFF); // 20bit max
-    
+
     // CoolStep lower threshold [0... 15].
     // If SG_RESULT goes below this threshold, CoolStep increases the current to both coils.
     // 0: disable CoolStep
@@ -75,13 +71,19 @@ void Motor::init(){
     Serial.print("\nTesting connection...");
     uint8_t result = driver->test_connection();
 
-    if (result) {
+    if (result)
+    {
         Serial.println("failed!");
         Serial.print("Likely cause: ");
 
-        switch(result) {
-            case 1: Serial.println("loose connection"); break;
-            case 2: Serial.println("no power"); break;
+        switch (result)
+        {
+        case 1:
+            Serial.println("loose connection");
+            break;
+        case 2:
+            Serial.println("no power");
+            break;
         }
 
         Serial.println("Fix the problem and reset board.");
@@ -91,82 +93,97 @@ void Motor::init(){
         abort();
     }
 
-    pinMode(STEPPER_ENABLE_PIN, OUTPUT);
-    digitalWrite(STEPPER_ENABLE_PIN, LOW);
+
 
     setStallGuard(true);
 
-     Serial.println("Stepper initialized");
+    Serial.println("Stepper initialized");
 }
 
-void Motor::stallISR(){
-     isStalled=true;
+void Motor::stallISR()
+{
+    isStalled = true;
 }
 
-bool Motor::getIsStalled(){
+bool Motor::getIsStalled()
+{
     return isStalled;
 }
 
-void Motor::setStallGuard(bool enable){
-    if(isStallGuardEnabled&&!enable){
+void Motor::setStallGuard(bool enable)
+{
+    if (isStallGuardEnabled && !enable)
+    {
         detachInterrupt(STEPPER_DIAG_PIN);
         isStallGuardEnabled = false;
-    }else if(enable){
-        attachInterrupt(STEPPER_DIAG_PIN,Motor::stallISR,RISING);
+    }
+    else if (enable)
+    {
+        attachInterrupt(STEPPER_DIAG_PIN, Motor::stallISR, RISING);
     }
 }
 
-void Motor::resetStallGuard(){
-    setSpeed(0,0);
+void Motor::resetStallGuard()
+{
+    setSpeed(0, 0);
     driver->VACTUAL(speed);
-    detachInterrupt(STEPPER_DIAG_PIN); 
-    digitalWrite(STEPPER_ENABLE_PIN,HIGH);
+    detachInterrupt(STEPPER_DIAG_PIN);
+    digitalWrite(STEPPER_ENABLE_PIN, HIGH);
     delay(100);
-    digitalWrite(STEPPER_ENABLE_PIN,LOW);
+    digitalWrite(STEPPER_ENABLE_PIN, LOW);
     delay(500);
-    attachInterrupt(STEPPER_DIAG_PIN,stallISR,RISING);
-    isStalled=false;
+    attachInterrupt(STEPPER_DIAG_PIN, stallISR, RISING);
+    isStalled = false;
 }
 
-void Motor::setSpeed(int speed, int accelarationTime){
-    
-    this->speed=speed;
-    
+void Motor::setSpeed(int speed, int accelarationTime)
+{
+
+    this->speed = speed;
+
     driver->VACTUAL(this->speed);
 }
 
-int Motor::getSpeed(){
+int Motor::getSpeed()
+{
     return this->speed;
 }
 
-bool Motor::directionToShaftBool(){
-     // TODO(andreas): Check if it's correct.
-   if(shaftDirection==clockwise){
-       return true;
-    }else{
-       return false;
+bool Motor::directionToShaftBool()
+{
+    // TODO(andreas): Check if it's correct.
+    if (shaftDirection == clockwise)
+    {
+        return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
-void Motor::setDirection(Direction direction){
-         detachInterrupt(STEPPER_DIAG_PIN);
-    shaftDirection=direction;
+void Motor::setDirection(Direction direction)
+{
+    detachInterrupt(STEPPER_DIAG_PIN);
+    shaftDirection = direction;
     bool shaftDirectionAsBool = directionToShaftBool();
     driver->shaft(shaftDirectionAsBool);
-       delay(500);
-      attachInterrupt(STEPPER_DIAG_PIN,stallISR,RISING);
+    delay(500);
+    attachInterrupt(STEPPER_DIAG_PIN, stallISR, RISING);
 }
 
-Direction Motor::getDirection(){
+Direction Motor::getDirection()
+{
     return shaftDirection;
 }
 
-void Motor::printStatus(){
-     Serial.print("Status: ");
+void Motor::printStatus()
+{
+    Serial.print("Status: ");
     Serial.print(driver->SG_RESULT(), DEC);
     Serial.print(" ");
     Serial.print(driver->SG_RESULT() < STALL_VALUE, DEC);
-     Serial.print(" ");
+    Serial.print(" ");
     Serial.print(digitalRead(STEPPER_DIAG_PIN));
     Serial.print(" ");
     Serial.println(driver->cs2rms(driver->cs_actual()), DEC);
