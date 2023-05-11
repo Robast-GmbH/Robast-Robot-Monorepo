@@ -106,11 +106,8 @@ namespace nfc_bridge
 
   bool NFCBridge::execute_scan(std::shared_ptr<std::string> received_raw_data)
   {
-    bool found_tag;
     prepare_scanning();
-    found_tag = scan_tag(received_raw_data);
-
-    return found_tag;
+    return scan_tag(received_raw_data);
   }
 
   void NFCBridge::reader_procedure()
@@ -126,7 +123,7 @@ namespace nfc_bridge
       // RCLCPP_INFO(this->get_logger(), "tag located %s", (*scanned_key).c_str());
       if (CHECK_ON_DB || db_connector_->test_connection() == "Dummy")
       {
-        if (db_connector_->lookupUserTag(*scanned_key, std::vector<std::string>(), found_user, found_user_id))
+        if (db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user, found_user_id))
         {
           RCLCPP_INFO(this->get_logger(), "Found tag");
           std_msgs::msg::String message = std_msgs::msg::String();

@@ -53,8 +53,6 @@ namespace nfc_bridge
     void start_up_scanner();
     void reader_procedure();
     void turn_off_scanner();
-    bool check_user_tag(std::string scanned_key, std::shared_ptr<std::string> related_username);
-
     void prepare_scanning();
 
     rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID& uuid,

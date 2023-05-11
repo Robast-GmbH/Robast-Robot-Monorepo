@@ -4,7 +4,7 @@ namespace db_helper
 {
   PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string db_name)
       : connection_parameter("user=" + username + " password=" + password + " host=" + host +
-      " port=5432 dbname=" + db_name + " target_session_attrs=read-write")
+                             " port=5432 dbname=" + db_name + " target_session_attrs=read-write")
   {
   }
 
@@ -99,16 +99,16 @@ namespace db_helper
       std::vector<std::string> temp_row;
       for (pqxx::row::const_iterator field = row.begin(); field != row.end(); ++field)
       {
-        temp_row.push_back(field->c_str() );
+        temp_row.push_back(field->c_str());
       }
       result_data.push_back(temp_row);
     }
-    
+
     connection_handle.disconnect();
     return result_data;
   }
 
-  bool PostgreSqlHelper::lookupUserTag(std::string tag,
+  bool PostgreSqlHelper::checkUserTag(std::string tag,
                                       std::vector<std::string> lookup_scope,
                                       std::shared_ptr<std::string> user_name,
                                       std::shared_ptr<int> id)
@@ -130,12 +130,12 @@ namespace db_helper
         " AND user_id in (" + target_users + ");");
     if (data.size() == 1)
     {
-      if(user_name.get()!=nullptr)
+      if (user_name.get() != nullptr)
       {
         user_name.reset(new std::string(data[1][0]));
       }
 
-      if(id.get()!=nullptr)
+      if (id.get() != nullptr)
       {
         id.reset(new int(stoi(data[1][1])));
       }
@@ -156,9 +156,9 @@ namespace db_helper
   std::string PostgreSqlHelper::createUser(std::string first_name, std::string last_name)
   {
     std::vector<std::vector<std::string>> result;
-    std::string add_user_query = "INSERT INTO public.\"account\" (user_id, first_name, last_name) VALUES ( DEFAULT, '"+
-    first_name +"', '"+ last_name +"') RETURNING user_id;";
-    result =perform_transaction_with_return(add_user_query);
+    std::string add_user_query = "INSERT INTO public.\"account\" (user_id, first_name, last_name) VALUES ( DEFAULT, '" +
+                                 first_name + "', '" + last_name + "') RETURNING user_id;";
+    result = perform_transaction_with_return(add_user_query);
     return result[0][0];
   }
 
@@ -166,9 +166,10 @@ namespace db_helper
   {
     std::vector<std::vector<std::string>> result;
     std::string create_nfc_query = "INSERT INTO public.user_nfc_codes (user_id, card_token) VALUES(" + user_id +
-    ", floor(random()* (" + std::to_string(max_id / 2) + " + 1))*2) RETURNING card_token; ";
+                                   ", floor(random()* (" + std::to_string(max_id / 2) +
+                                   " + 1))*2) RETURNING card_token; ";
     result = perform_transaction_with_return(create_nfc_query);
-  
+
     return std::stoi(result[0][0]);
   }
 

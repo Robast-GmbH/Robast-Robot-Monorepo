@@ -33,4 +33,20 @@ namespace nfc_bridge
 
     NFCBridge::db_connector_ = new db_helper::MockPostgreSqlHelper(valid_user_list);
   }
+  
+  bool TestNFCBridge::execute_scan(std::shared_ptr<std::string> received_raw_data)
+  {
+    return NFCBridge::execute_scan(received_raw_data);
+  }
+  
+  bool TestNFCBridge::scan_tag(std::shared_ptr<std::string> tag_data)
+  {
+    return NFCBridge::scan_tag(tag_data);
+  }
+
+  bool TestNFCBridge::lookup_user_tag(std::string scanned_key, std::shared_ptr<std::string> related_username, std::shared_ptr<int> related_id)
+  {
+
+    return db_connector_->checkUserTag(scanned_key, std::vector<std::string>(), related_username, related_id);
+  }
 }   // namespace nfc_bridge

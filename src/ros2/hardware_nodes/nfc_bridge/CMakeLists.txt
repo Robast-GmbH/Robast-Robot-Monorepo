@@ -103,7 +103,7 @@ if(BUILD_TESTING)
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
 
   add_executable(
-    nfc_bridge_unit_test test/unit_tests/main.cpp ${test_srcs} ${unit_test_srcs}
+    nfc_bridge_unit_test test/unit_tests/main.cpp test/unit_tests/test_cases.cpp ${test_srcs} ${unit_test_srcs}
   )
 
   ament_target_dependencies(nfc_bridge_unit_test
@@ -112,6 +112,7 @@ if(BUILD_TESTING)
 
   target_link_libraries(nfc_bridge_unit_test
     ${library_nfc_bridge}
+    ${library_nfc_bridge_test}
     rclcpp::rclcpp
     rclcpp_action::rclcpp_action
     Catch2::Catch2

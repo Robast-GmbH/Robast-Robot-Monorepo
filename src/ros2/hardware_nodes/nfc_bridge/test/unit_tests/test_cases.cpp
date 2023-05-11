@@ -20,27 +20,27 @@ namespace nfc_bridge
       fakeit::Mock<db_helper::IDBHelper> db_helper_mock;
       fakeit::When(Method(db_helper_mock, perform_query))
           .AlwaysDo(
-              [=](std::string sqlStatment,
-                  std::unique_ptr<std::vector<std::vector<std::string>>> result_data,
-                  std::unique_ptr<std::vector<std::string>> result_header) -> bool
+              [=](std::string sqlStatment) -> std::vector<std::vector<std::string>>
               {
+                std::vector<std::vector<std::string>> result;
+                result.push_back(std::vector<std::string>({"name"}));
                 if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != std::string::npos)
                 {
-                  result_data->push_back(std::vector<std::string>{"Test User1"});
-                  result_header->push_back("name");
-                  return true;
+                  result.push_back(std::vector<std::string>({"Test User1"}));
                 }
                 else
                 {
-                  result_header->push_back("name");
-                  return false;
+                  result.push_back(std::vector<std::string>({""}));
                 }
+                return result;
               });
+
       fakeit::When(Method(db_helper_mock, checkUserTag))
           .AlwaysDo(
               [=](std::string sqlStatment,
                   std::vector<std::string> Lookup_scope,
-                  std::shared_ptr<std::string> result_data) -> bool
+                  std::shared_ptr<std::string> result_data,
+                  std::shared_ptr<int>) -> bool
               {
                 if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != std::string::npos)
                 {
@@ -55,7 +55,6 @@ namespace nfc_bridge
               });
       std::string no_key_found = "";
       TestNFCBridge* nfc_reader = new TestNFCBridge(&Serial_helper_mock.get(), &db_helper_mock.get());
-      std::vector<std::string> list{"Test User1", "Test User2", "Test User3", "Test User4", "Test User5"};
       std::string target_user = "Test User1";
       WHEN("Key is on the List")
       {
@@ -63,9 +62,11 @@ namespace nfc_bridge
 
         THEN("The result of the validation should be the key entered as it was found.")
         {
-          std::string result;
-          REQUIRE(nfc_reader->validate_key(valid_key, list, std::make_shared<std::string>(result)));
-          REQUIRE(result == target_user);
+          std::string result_name;
+          int result_id;
+          REQUIRE(nfc_reader->lookup_user_tag(
+              valid_key, std::make_shared<std::string>(result_name), std::make_shared<int>(result_id)));
+          REQUIRE(result_name == target_user);
         }
       }
 
@@ -75,9 +76,11 @@ namespace nfc_bridge
 
         THEN("The result of the validation should be an empty string as it is not a valid key")
         {
-          std::string result;
-          REQUIRE_FALSE(nfc_reader->validate_key(invalid_key, list, std::make_shared<std::string>(result)));
-          REQUIRE(result == no_key_found);
+          std::string result_name;
+          int result_id;
+          REQUIRE_FALSE(nfc_reader->lookup_user_tag(
+              invalid_key, std::make_shared<std::string>(result_name), std::make_shared<int>(result_id)));
+          REQUIRE(result_name == no_key_found);
         }
       }
 
@@ -87,10 +90,12 @@ namespace nfc_bridge
 
         THEN("The result of the validation should be an empty string as it is not a valid key")
         {
-          bool found;
-          std::string result;
-          REQUIRE_FALSE(nfc_reader->validate_key(empty_key, list, std::make_shared<std::string>(result)));
-          REQUIRE(result == no_key_found);
+          bool fo8und;
+          std::string result_name;
+          int result_id;
+          REQUIRE_FALSE(nfc_reader->lookup_user_tag(
+              empty_key, std::make_shared<std::string>(result_name), std::make_shared<int>(result_id)));
+          REQUIRE(result_name == no_key_found);
         }
       }
       rclcpp::shutdown();
@@ -201,7 +206,8 @@ namespace nfc_bridge
           .AlwaysDo(
               [=](std::string sqlStatment,
                   std::vector<std::string> Lookup_scope,
-                  std::shared_ptr<std::string> result_data) -> bool
+                  std::shared_ptr<std::string> result_data,
+                  std::shared_ptr<int>) -> bool
               {
                 if (sqlStatment.find("6df1933415dde9fa1f9f6998a26b40db") != std::string::npos)
                 {
@@ -244,7 +250,7 @@ namespace nfc_bridge
             "performed to read data from the Card")
         {
           std::string key;
-          REQUIRE(nfc_reader->execute_scan(list, std::make_shared<std::string>(key)));
+          REQUIRE(nfc_reader->execute_scan(std::make_shared<std::string>(key)));
           REQUIRE(key == target_user);
         }
       }
@@ -272,7 +278,7 @@ namespace nfc_bridge
         THEN("The reader returns an empty sting")
         {
           std::string key;
-          REQUIRE(nfc_reader->execute_scan(list, std::make_shared<std::string>(key)));
+          REQUIRE(nfc_reader->execute_scan(std::make_shared<std::string>(key)));
           REQUIRE(key == no_key_found);
         }
       }
