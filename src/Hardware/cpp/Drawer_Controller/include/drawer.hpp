@@ -50,8 +50,6 @@ namespace drawer_controller
 
     robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
 
-    robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
-
     std::optional<robast_can_msgs::CanMessage> feedback_msg_;
 
     Lock lock_ = Lock();
