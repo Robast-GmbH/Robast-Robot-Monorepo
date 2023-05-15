@@ -28,7 +28,7 @@
             "label": "Launch NFC Gate",
             "detail": "Launch the NFC gate node",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 launch nfc_gate nfc_gate_launch.py",
+            "command": "source install/setup.bash; ros2 launch nfc_bridge nfc_bridge_launch.py",
             "problemMatcher": []
         },
         {
@@ -190,14 +190,14 @@
             "problemMatcher": []
         },
         {
-            "label": "Test nfc gate",
-            "detail": "Build and executes nfc gate tests and shows the links to the testreport with Errors",
+            "label": "Test nfc",
+            "detail": "Build and executes nfc bridge tests and shows the links to the testreport with Errors",
             "type": "shell",
             "dependsOn": [
                 "build"
             ],
             "dependsOrder": "sequence",
-            "command": "clear; source install/setup.bash; colcon test --packages-select nfc_gate --event-handler=console_direct+; colcon test-result --all",
+            "command": "clear; source install/setup.bash; colcon test --packages-select nfc_bridge web_bridge_nfc --event-handler=console_direct+; colcon test-result --all",
             "problemMatcher": []
         },
         {

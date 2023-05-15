@@ -11,14 +11,16 @@ namespace db_helper
   class IDBHelper
   {
    public:
-    virtual bool perform_query(std::string sql_statment,
-                               std::unique_ptr<std::vector<std::vector<std::string>>> result_data,
-                               std::unique_ptr<std::vector<std::string>> result_header) = 0;
-    virtual int perform_transaction(std::string sql_statement) = 0;
+    virtual std::string test_connection() = 0;
 
-    virtual bool checkUserTag(std::string tag, std::vector<std::string> lookup_scope,
-                              std::shared_ptr<std::string> user_name) = 0;
-    virtual std::string test_connection()=0;
+    virtual std::string createUser(std::string first_name, std::string last_name) = 0;
+    virtual int createNfcCode(std::string user_id, int max_id) = 0;
+    virtual bool checkUser(const std::string id, const std::string first_name, const std::string last_name) = 0;
+    virtual std::vector<std::vector<std::string>> perform_query(std::string sql_statment) = 0;
+    virtual bool checkUserTag(std::string tag,
+                              std::vector<std::string> lookup_scope,
+                              std::shared_ptr<std::string> user_name,
+                              std::shared_ptr<int> id) = 0;
   };
 }   // namespace db_helper
 

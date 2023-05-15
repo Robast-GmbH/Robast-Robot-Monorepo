@@ -30,6 +30,32 @@ set(library_name ${PROJECT_NAME})
 add_library(${library_name} SHARED
   src/behavior_tree_engine.cpp
 )
+option(BTCPP_ENABLE_COROUTINES "Enable boost coroutines" ON)
+
+#---- Include boost to add coroutines ----
+if(BTCPP_ENABLE_COROUTINES)
+    find_package(Boost COMPONENTS coroutine QUIET)
+
+    if(Boost_FOUND)
+        string(REPLACE "." "0" Boost_VERSION_NODOT ${Boost_VERSION})
+        if(NOT Boost_VERSION_NODOT VERSION_LESS 105900)
+            message(STATUS "Found boost::coroutine2.")
+            add_definitions(-DBT_BOOST_COROUTINE2)
+            set(BT_COROUTINES_FOUND true)
+        elseif(NOT Boost_VERSION_NODOT VERSION_LESS 105300)
+            message(STATUS "Found boost::coroutine.")
+            add_definitions(-DBT_BOOST_COROUTINE)
+            set(BT_COROUTINES_FOUND true)
+        endif()
+        include_directories(${Boost_INCLUDE_DIRS})
+    endif()
+
+    if(NOT DEFINED BT_COROUTINES_FOUND)
+        message(STATUS "Boost coroutines disabled. Install Boost (version 1.59+ recommended).")
+    endif()
+else()
+    message(STATUS "Boost coroutines disabled by CMake option.")
+endif()
 
 ament_target_dependencies(${library_name}
   ${dependencies}
