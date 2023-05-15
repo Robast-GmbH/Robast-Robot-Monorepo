@@ -36,7 +36,7 @@ def test_create_new_user_only_first_name():
 
 def test_create_new_user_only_last_name():
     ROS_node_mock.reader_in_use = False
-    responce = client.post("/users/", json={"first_name": "Karl"})
+    responce = client.post("/users/", json={"last_name": "Toffel"})
     assert(responce.is_client_error)
 
 
