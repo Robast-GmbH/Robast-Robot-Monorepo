@@ -25,8 +25,8 @@
             "problemMatcher": []
         },
         {
-            "label": "Launch NFC Gate",
-            "detail": "Launch the NFC gate node",
+            "label": "Launch NFC bridge",
+            "detail": "Launch the NFC bridge node",
             "type": "shell",
             "command": "source install/setup.bash; ros2 launch nfc_bridge nfc_bridge_launch.py",
             "problemMatcher": []
@@ -201,14 +201,14 @@
             "problemMatcher": []
         },
         {
-            "label": "Test drawer gate",
-            "detail": "Build and executes drawer gate tests and shows the links to the testreport with Errors",
+            "label": "Test drawer bridge",
+            "detail": "Build and executes drawer bridge tests and shows the links to the testreport with Errors",
             "type": "shell",
             "dependsOn": [
                 "build"
             ],
             "dependsOrder": "sequence",
-            "command": "clear; source install/setup.bash; colcon test --packages-select drawer_gate --event-handler=console_direct+; colcon test-result --all",
+            "command": "clear; source install/setup.bash; colcon test --packages-select drawer_bridge --event-handler=console_direct+; colcon test-result --all",
             "problemMatcher": []
         },
         {

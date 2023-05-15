@@ -12,4 +12,4 @@ docker run --name=hardware_nodes_socket --network=host -it --detach -v $(pwd)/..
 bash setup_slcan.sh
 
 docker exec hardware_nodes_socket /bin/bash -c "cd /workspace && apt-get update && apt-get upgrade -y && rosdep update && rosdep install --from-paths src --ignore-src -r -y && source /opt/ros/humble/setup.bash && colcon build && source install/setup.bash && ros2 launch ros2_socketcan socket_can_bridge.launch.xml"
-docker exec -d hardware_nodes_socket /bin/bash -c "cd /workspace; source install/setup.bash; ros2 launch drawer_gate drawer_gate_launch.py" 
+docker exec -d hardware_nodes_socket /bin/bash -c "cd /workspace; source install/setup.bash; ros2 launch drawer_bridge drawer_bridge_launch.py" 

@@ -120,8 +120,8 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start drawer_gate_simulation",
-                        "command": "source /workspace/install/setup.bash; ros2 launch drawer_gate_simulation drawer_gate_simulation_launch.py",
+                        "label": "start drawer_bridge_simulation",
+                        "command": "source /workspace/install/setup.bash; ros2 launch drawer_bridge_simulation drawer_bridge_simulation_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -131,13 +131,13 @@
                 },
                 {
                         "label": "startup_sim_with_drawer_simulation",
-                        "detail": "Starts tiplu_sim, moveit_drawer, drawer_gazebo_controller_manager and drawer_gate_simulation",
+                        "detail": "Starts tiplu_sim, moveit_drawer, drawer_gazebo_controller_manager and drawer_bridge_simulation",
                         "dependsOn":
                         [
                                 "start tiplu_sim",
                                 "start moveit_drawer",
                                 "start drawer_gazebo_controller_manager",
-                                "start drawer_gate_simulation"
+                                "start drawer_bridge_simulation"
                         ]
                 },
                 {

@@ -1,10 +1,10 @@
-#include "drawer_gate_simulation/drawer_gate_simulation.hpp"
+#include "drawer_bridge_simulation/drawer_bridge_simulation.hpp"
 
-namespace drawer_gate_simulation
+namespace drawer_bridge_simulation
 {
-  DrawerSimulation::DrawerSimulation() : Node("drawer_gate_simulation")
+  DrawerSimulation::DrawerSimulation() : Node("drawer_bridge_simulation")
   {
-    RCLCPP_INFO(this->get_logger(), "Creating Drawer Gate Simulation Node!");
+    RCLCPP_INFO(this->get_logger(), "Creating Drawer Bridge Simulation Node!");
 
     this->declare_parameter("time_until_drawer_closes_automatically_in_ms",
                             this->default_time_until_drawer_closes_automatically_);
@@ -135,4 +135,4 @@ namespace drawer_gate_simulation
                                                         drawer_address,
                                                         this->target_pose_closed_drawer_);
   }
-}   // namespace drawer_gate_simulation
+}   // namespace drawer_bridge_simulation
