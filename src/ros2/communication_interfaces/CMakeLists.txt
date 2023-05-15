@@ -52,7 +52,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DrawerTask.msg"
   "msg/ElectricalDrawerStatus.msg"
   "msg/Module.msg"
-  "msg/NFCStatus.msg"
   "msg/NfcReadStatus.msg"
   "msg/NfcWriteStatus.msg"
   "msg/Task.msg"
