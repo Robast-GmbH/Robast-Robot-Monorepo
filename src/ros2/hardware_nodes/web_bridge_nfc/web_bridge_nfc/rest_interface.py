@@ -36,8 +36,6 @@ class RestInterface():
 
         @self.app.post("/users/nfc/")
         def create_nfc_card_for_user(id: User_id):
-            print(id)
-            print("test")
             if (self.ros_node.reader_in_use):
                 raise HTTPException(
                     status_code=503, detail="Reader in Benutzung")
