@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'web_api = web_bridge_nfc.ros_controller:main'
+            'web_api = web_bridge_nfc.main:main'
         ],
     },
 )

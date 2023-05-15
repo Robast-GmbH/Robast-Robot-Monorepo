@@ -1,9 +1,8 @@
-import rclpy
+
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from communication_interfaces.action import CreateUserNfcTag
 import threading
-from . import rest_interface
 
 
 class ros_controller(Node):
@@ -62,22 +61,10 @@ class ros_controller(Node):
         if (feedback.is_reader_completed):
             self.reader_status = "Idle"
         elif (feedback.is_reader_ready_to_write):
-            self.reader_status = "Token_benötigt"
+            self.reader_status = "Card_required"
         elif (feedback.is_db_user_created):
             self.reader_status = "Setup"
         self.feedback_event.set()
 
-
-def main(args=None):
-    rclpy.init()
-    ros_node = ros_controller()
-    web_interface = rest_interface.RestInterface(ros_node)
-    spin_thread = threading.Thread(
-        target=rclpy.spin, args=(ros_node,))
-    spin_thread.start()
-    web_interface.run()
-    rclpy.shutdown()
-
-
-if __name__ == '__main__':
-    main()
+    def test():
+        return ""
