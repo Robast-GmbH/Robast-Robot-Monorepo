@@ -18,10 +18,10 @@
             "problemMatcher": []
         },
         {
-            "label": "Launch Drawer Gate",
-            "detail": "Launch the drawer gate node",
+            "label": "Launch Drawer Bridge",
+            "detail": "Launch the drawer bridge node",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 launch drawer_gate drawer_gate_launch.py",
+            "command": "source install/setup.bash; ros2 launch drawer_bridge drawer_bridge_launch.py",
             "problemMatcher": []
         },
         {
