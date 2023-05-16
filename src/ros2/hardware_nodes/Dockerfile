@@ -26,6 +26,8 @@ RUN apt-get update && apt-get install -y \
   git \
   && rosdep init || echo "rosdep already initialized"
 
+RUN apt install ros-${ROS_DISTRO}-ros2-socketcan -y
+
 RUN pip3 install fastapi -U \
   httpx 
 
