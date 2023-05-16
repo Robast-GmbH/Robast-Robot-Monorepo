@@ -117,7 +117,7 @@
     <link name="${sensor_link_name}_right_camera_optical_frame"/>
     
     <joint name="${prefix}_right_camera_optical_joint" type="fixed">
-        <origin xyz="0 0 0" rpy="-${M_PI/2} 0.0 -${M_PI/2}"/>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
         <parent link="${prefix}_right_camera_frame"/>
         <child link="${sensor_link_name}_right_camera_optical_frame"/>
     </joint>
@@ -157,7 +157,7 @@
       <sensor name="${prefix}_right_camera_optical_frame" type="depth">
         <topic>${prefix_topic}/${prefix}/depth</topic>
         <camera name="r430">
-          <horizontal_fov>${91.2*M_PI/180.0}</horizontal_fov>
+          <horizontal_fov>${85.2*M_PI/180.0}</horizontal_fov>
           <image>
             <width>640</width>
             <height>480</height>
