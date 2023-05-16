@@ -9,7 +9,7 @@
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
 
-#include "communication_interfaces/msg/drawer.hpp"
+#include "communication_interfaces/msg/drawer_address.hpp"
 #include "communication_interfaces/msg/drawer_leds.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
 

@@ -31,8 +31,8 @@ namespace drawer_bridge_simulation
   void DrawerSimulation::send_drawer_feedback(DrawerStatus drawer_status_msg, bool drawer_is_open)
   {
     RCLCPP_INFO(this->get_logger(),
-                "Sending send_drawer_feedback with drawer_controller_id: '%i'",
-                drawer_status_msg.drawer_address.drawer_controller_id);
+                "Sending send_drawer_feedback with module_id: '%i'",
+                drawer_status_msg.drawer_address.module_id);
     drawer_status_msg.drawer_is_open = drawer_is_open;
     this->drawer_status_publisher_->publish(drawer_status_msg);
   }
@@ -52,7 +52,7 @@ namespace drawer_bridge_simulation
       const DrawerAddress drawer_address,
       const float target_pose)
   {
-    std::string drawer_joint = "drawer_" + std::to_string(drawer_address.drawer_controller_id) + "_joint";
+    std::string drawer_joint = "drawer_" + std::to_string(drawer_address.module_id) + "_joint";
 
     move_group_interface->setJointValueTarget(drawer_joint, target_pose);
 
@@ -112,16 +112,16 @@ namespace drawer_bridge_simulation
   void DrawerSimulation::open_drawer_topic_callback(const DrawerAddress &msg)
   {
     RCLCPP_INFO(
-        this->get_logger(), "I heard from open_drawer topic the drawer_controller_id: '%i'", msg.drawer_controller_id);
+        this->get_logger(), "I heard from open_drawer topic the module_id: '%i'", msg.module_id);
 
-    if (msg.drawer_controller_id == 0 || msg.drawer_id == 0)
+    if (msg.module_id == 0 || msg.drawer_id == 0)
     {
-      RCLCPP_ERROR(this->get_logger(), "Invalid drawer_controller_id or drawer_id");
+      RCLCPP_ERROR(this->get_logger(), "Invalid module_id or drawer_id");
       return;
     }
 
     DrawerAddress drawer_address = DrawerAddress();
-    drawer_address.drawer_controller_id = msg.drawer_controller_id;
+    drawer_address.module_id = msg.module_id;
     drawer_address.drawer_id = msg.drawer_id;
 
     std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group_interface =
