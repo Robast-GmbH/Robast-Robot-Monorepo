@@ -31,14 +31,14 @@ namespace drawer_bridge
         std::bind(&DrawerBridge::drawer_leds_topic_callback, this, std::placeholders::_1));
 
     can_messages_subscription_ = this->create_subscription<CanMessage>(
-        "/from_can_bus",
+        "from_can_bus",
         qos_config.get_qos_can_messages(),
         std::bind(&DrawerBridge::receive_can_msg_callback, this, std::placeholders::_1));
   }
 
   void DrawerBridge::setup_publishers()
   {
-    can_messages_publisher_ = create_publisher<CanMessage>("/to_can_bus", qos_config.get_qos_can_messages());
+    can_messages_publisher_ = create_publisher<CanMessage>("to_can_bus", qos_config.get_qos_can_messages());
 
     drawer_status_publisher_ = create_publisher<DrawerStatus>("drawer_is_open", qos_config.get_qos_open_drawer());
 
@@ -73,7 +73,15 @@ namespace drawer_bridge
 
   void DrawerBridge::electrical_drawer_task_topic_callback(const DrawerTask& msg)
   {
-    RCLCPP_INFO(get_logger(), "I heard from drawer task topic");
+    uint32_t module_id = msg.drawer_address.module_id;
+    uint8_t drawer_id = msg.drawer_address.drawer_id;
+    uint8_t target_pos = msg.target_position;
+
+    RCLCPP_INFO(get_logger(),
+                "I heard from electrical_drawer_task topic the module_id: '%i' drawer_id: '%d with target position: %d",
+                module_id,
+                drawer_id,
+                target_pos);
 
     const CanMessage can_msg = can_message_creator_.create_can_msg_drawer_task(msg);
     send_can_msg(can_msg);
