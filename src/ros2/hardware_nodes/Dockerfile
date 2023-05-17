@@ -14,6 +14,8 @@ RUN apt-get update && apt-get install -y \
   git \
   && rosdep init || echo "rosdep already initialized"
 
+RUN pip3 install fastapi -U \
+  httpx 
 
 ENV ROS_DOMAIN_ID=0
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
