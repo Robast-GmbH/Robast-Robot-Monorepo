@@ -44,6 +44,70 @@
 				<update_rate>40</update_rate>
 				<visualize>true</visualize>
 				<topic>imu/data</topic>
+
+				<imu>
+					<!-- <orientation>
+						<x>
+							<noise type="gaussian">
+							<mean>0.0</mean>
+							<stddev>2e-3</stddev>
+							</noise>
+						</x>
+						<y>
+							<noise type="gaussian">
+							<mean>0.0</mean>
+							<stddev>2e-3</stddev>
+							</noise>
+						</y>
+						<z>
+							<noise type="gaussian">
+							<mean>0.0</mean>
+							<stddev>2e-3</stddev>
+							</noise>
+						</z>
+					</orientation> -->
+					<angular_velocity>
+						<x>
+							<noise type="gaussian">
+							<mean>-6.891833422462714e-06</mean>
+							<stddev>8e-4</stddev>
+							</noise>
+						</x>
+						<y>
+							<noise type="gaussian">
+							<mean>5.573454556580949e-06</mean>
+							<stddev>8e-4</stddev>
+							</noise>
+						</y>
+						<z>
+							<noise type="gaussian">
+							<mean>2.2874845472251395e-05</mean>
+							<stddev>8e-4</stddev>
+							</noise>
+						</z>
+					</angular_velocity>
+					<linear_acceleration>
+						<x>
+							<noise type="gaussian">
+							<mean>-0.04043025669594404</mean>
+							<stddev>1.7e-2</stddev>
+							</noise>
+						</x>
+						<y>
+							<noise type="gaussian">
+							<mean>-0.06055433811655909</mean>
+							<stddev>1.7e-2</stddev>
+							</noise>
+						</y>
+						<z>
+							<noise type="gaussian">
+							<mean>0.126181450210968</mean>
+							<stddev>1.9e-2</stddev>
+							</noise>
+						</z>
+					</linear_acceleration>
+				</imu>
+
 			</sensor>
 		</gazebo>
 
