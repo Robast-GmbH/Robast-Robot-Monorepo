@@ -24,49 +24,60 @@ namespace robast_can_msgs
             // Vector that contains all the CAN messages stored in the CanDb
             const std::vector<CanMessage> can_messages = {
                 CanMessage(
-                    CAN_ID_DRAWER_LOCK,
-                    CAN_DLC_DRAWER_LOCK,
+                    CAN_ID_DRAWER_UNLOCK,
+                    CAN_DLC_DRAWER_UNLOCK,
                     {
-                        CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_OPEN_LOCK_1_BIT_START, CAN_SIGNAL_OPEN_LOCK_1_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_OPEN_LOCK_2_BIT_START, CAN_SIGNAL_OPEN_LOCK_2_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0)
+                    }
+                ), 
+                CanMessage(
+                    CAN_ID_DRAWER_FEEDBACK,
+                    CAN_DLC_DRAWER_FEEDBACK,
+                    {
+                        CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED_BIT_LENGTH, 0)
+               
                     }
                 ),
                 CanMessage(
                     CAN_ID_DRAWER_LED,
                     CAN_DLC_DRAWER_LED,
                     {
-                        CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0),
                         CanSignal(CAN_SIGNAL_LED_RED_BIT_START, CAN_SIGNAL_LED_RED_BIT_LENGTH, 0),
                         CanSignal(CAN_SIGNAL_LED_GREEN_BIT_START, CAN_SIGNAL_LED_GREEN_BIT_LENGTH, 0),
                         CanSignal(CAN_SIGNAL_LED_BLUE_BIT_START, CAN_SIGNAL_LED_BLUE_BIT_LENGTH, 0),
                         CanSignal(CAN_SIGNAL_LED_BRIGHTNESS_BIT_START, CAN_SIGNAL_LED_BRIGHTNESS_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_LED_MODE_BIT_START, CAN_SIGNAL_LED_MODE_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_LED_MODE_BIT_START, CAN_SIGNAL_LED_MODE_BIT_LENGTH, 0)
                     }
                 ),
                 CanMessage(
-                    CAN_ID_DRAWER_FEEDBACK,
-                    CAN_DLC_DRAWER_FEEDBACK,
+                    CAN_ID_ELECTRICAL_DRAWER_TASK,
+                    CAN_DLC_ELECTRIC_DRAWER_TASK,
                     {
-                        CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_1_PUSHED_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_1_PUSHED_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_2_PUSHED_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_2_PUSHED_BIT_LENGTH, 0)
+                        CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_TARGET_POSITION_BIT_START, CAN_SIGNAL_DRAWER_TARGET_POSITION_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_SPEED_MODE_BIT_START, CAN_SIGNAL_DRAWER_SPEED_MODE_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE_BIT_START, CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE_BIT_LENGTH, 0)
                     }
                 ),
                 CanMessage(
-                    CAN_ID_DOOR_MANIPULATOR,
-                    CAN_DLC_DOOR_MANIPULATOR,
+                    CAN_ID_ELECTRICAL_DRAWER_FEEDBACK,
+                    CAN_DLC_ELECTRIC_DRAWER_FEEDBACK,
                     {
-                        CanSignal(CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_START, CAN_SIGNAL_DRAWER_CONTROLLER_ID_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_MOTOR_ID_BIT_START, CAN_SIGNAL_MOTOR_ID_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_MOTOR_E1_BIT_START, CAN_SIGNAL_MOTOR_E1_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_MOTOR_E2_BIT_START, CAN_SIGNAL_MOTOR_E2_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_MOTOR_E3_BIT_START, CAN_SIGNAL_MOTOR_E3_BIT_LENGTH, 0),
-                        CanSignal(CAN_SIGNAL_MOTOR_E4_BIT_START, CAN_SIGNAL_MOTOR_E4_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED_BIT_START, CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED_BIT_START, CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED_BIT_START, CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED_BIT_LENGTH, 0),
+                        CanSignal(CAN_SIGNAL_DRAWER_POSITION_BIT_START, CAN_SIGNAL_DRAWER_POSITION_BIT_LENGTH, 0)
                     }
-                )
+                ),
             };
     };
 }  // namespace robast_can_msgs
