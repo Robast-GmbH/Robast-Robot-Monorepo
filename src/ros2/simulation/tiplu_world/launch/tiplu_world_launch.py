@@ -11,7 +11,7 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    with open("environment_vars.yaml", "r") as stream:
+    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
         try:
             environment_yaml = yaml.safe_load(stream)
             print(environment_yaml)
@@ -34,6 +34,7 @@ def generate_launch_description():
 
     use_sim_time = LaunchConfiguration("use_sim_time")
     world_model = LaunchConfiguration("world_model")
+    headless = LaunchConfiguration("headless")
     robot_name = LaunchConfiguration("robot_name")
     init_x = LaunchConfiguration("init_x", default="-2")
     init_y = LaunchConfiguration("init_y", default="0")
@@ -56,6 +57,12 @@ def generate_launch_description():
         ),
         description="path to the world model",
     )
+    
+    declare_headless_cmd = DeclareLaunchArgument(
+        "headless",
+        default_value="",
+        description="Weather to run in headless mode (-s) or with gui ''",
+    )
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         "use_sim_time",
@@ -75,7 +82,9 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py"),
         ),
-        launch_arguments={"gz_args": world_model}.items(),
+        launch_arguments={"gz_args": ["-r ", headless, " ", world_model],
+                          "gz_version": "7",                          
+                          }.items(),
     )
 
     spawn_robot_cmd = Node(
@@ -114,6 +123,7 @@ def generate_launch_description():
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_world_model_cmd)
     ld.add_action(declare_robot_model_cmd)
+    ld.add_action(declare_headless_cmd)
 
     # included launches
     ld.add_action(gz_sim_cmd)
