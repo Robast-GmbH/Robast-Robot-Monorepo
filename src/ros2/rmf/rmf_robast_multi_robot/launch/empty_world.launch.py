@@ -14,7 +14,7 @@ def generate_launch_description():
 
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
     gz_ros_bridge_yaml = os.path.join(
-        get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml"
+        get_package_share_directory("rmf_robast_multi_robot"), "config", "gz_ros_bridge.yaml"
     )
 
     use_sim_time = LaunchConfiguration("use_sim_time")
