@@ -43,7 +43,7 @@
 				<always_on>1</always_on>
 				<update_rate>40</update_rate>
 				<visualize>true</visualize>
-				<topic>${prefix}/imu/data</topic>
+				<topic>${prefix_topic}/imu/data</topic>
 			</sensor>
 		</gazebo>
 

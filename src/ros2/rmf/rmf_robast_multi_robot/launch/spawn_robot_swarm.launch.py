@@ -32,7 +32,7 @@ def generate_launch_description():
                 "robots",
                 environment_yaml["robot"]+".urdf.xacro",
             ),
-            mappings={"prefix": environment_yaml["prefix"]},
+            mappings={"prefix": environment_yaml["prefix"], "topic_namespace":namespace},
         ).toxml()
     
         declare_robot_model_cmd = DeclareLaunchArgument(
@@ -65,7 +65,7 @@ def generate_launch_description():
             output="screen",
             namespace=namespace,
             arguments=["-name",
-                "rb_"+str(n),
+                "rb"+str(n),
                 "-topic",
                 "robot_description",
                 "-z",
