@@ -1,4 +1,4 @@
-FROM ros:humble as base
+FROM ros:iron as base
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
@@ -19,8 +19,6 @@ ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
 ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/DDS_config.xml
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
 
@@ -95,15 +93,11 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get update && apt-get upgrade -y
 
-RUN mkdir -p /workspace_nav2/src && cd /workspace_nav2/src && git clone -b humble https://github.com/ros-planning/navigation2.git \
-  && apt update \
-  && apt upgrade -y \
-  && rosdep update \
-  && rosdep install --from-paths /workspace_nav2/src --ignore-src -r -y \
-  && chown -R ${USER} /workspace_nav2
-  # && . /opt/ros/${ROS_DISTRO}/setup.sh \
-  # && colcon build --build-base /workspace_nav2/build --install-base /workspace_nav2/install --packages-select nav2_mppi_controller \
-  # && echo "if [ -f /workspace_nav2/install/setup.bash ]; then source /workspace_nav2/install/setup.bash; fi" >> /home/$USER/.bashrc
+# dds setup / configuration
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
+# rmw_cyclonedds_cpp #rmw_fastrtps_cpp
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/fast_DDS_config.xml
+#ENV CYCLONEDDS_URI=/workspace/cyclone_DDS_config.xml
 
 
 # COPY "/entrypoint.sh" "/entrypoint.sh"
