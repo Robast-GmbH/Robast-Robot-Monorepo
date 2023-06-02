@@ -16,6 +16,7 @@ services:
       - ../../src/ros2/navigation/environment_vars.yaml:/workspace/src/navigation/environment_vars.yaml:cached
       - ../../src/ros2/moveit2_resources:/workspace/src/moveit2_resources:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
+      - ../../src/ros2/DDS_config.xml/:/workspace/DDS_config.xml:cached
     deploy:
       resources:
         reservations:
@@ -23,6 +24,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+
         limits:
           memory: 20gb
 #    network_mode: "host"
@@ -41,16 +43,15 @@ services:
       - ../../src/ros2/navigation:/workspace/src/navigation:cached
       - ../../src/ros2/communication_interfaces:/workspace/src/communication_interfaces:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-        limits:
-          memory: 20gb
-#    network_mode: "host"
+      - ../../src/ros2/DDS_config.xml/:/workspace/DDS_config.xml:cached
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: 1
+    #           capabilities: [gpu]
+    # network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   # state_publisher:
@@ -58,7 +59,7 @@ services:
   #     context: .
   #     dockerfile: ../../src/ros2/simulation/Dockerfile
 
-networks:
-  host:
-    name: host
-    external: true
+#networks:
+#  host:
+#    name: host
+#    external: true

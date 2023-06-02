@@ -7,7 +7,7 @@
             "label": "build tests",
             "detail": "Symlink Build of the project",
             "type": "shell",
-            "command": "clear; colcon build --symlink-install --packages-select communication_interfaces nav_bringup spatio_temporal_voxel_layer bt_base_nodes bt_conversions bt_plugins drawer_sm behaviortree_cpp rb_theron_description robotnik_sensors tiplu_world moveit2_drawer_config drawer_gate_simulation gazebo_controller_manager integration_tests_pkg --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "command": "clear; colcon build --symlink-install --packages-select communication_interfaces nav_bringup spatio_temporal_voxel_layer bt_base_nodes bt_conversions bt_plugins drawer_sm behaviortree_cpp rb_theron_description robotnik_sensors tiplu_world oveit2_drawer_config drawer_bridge_simulation gazebo_controller_manager integration_tests_pkg --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
             "problemMatcher": []
         },
         {
@@ -32,10 +32,16 @@
             "problemMatcher": []
         },
         {
+            "type": "shell",
+            "label": "temporary task to build mppi",
+            "command": "cd /workspace_nav2; colcon build --packages-select nav2_mppi_controller",
+            "problemMatcher": []
+        },
+        {
             "label": "execute tests in the given project",
             "detail": "use a colcon test on the given project",
             "type": "shell",
-            "command": "source install/setup.bash; colcon test --packages-select ${input:package} --event-handlers console_cohesion+ --executor sequential",
+            "command": "source /workspace_nav2/install/setup.bash; source install/setup.bash; colcon test --packages-select ${input:package} --event-handlers console_cohesion+ --executor sequential",
             "problemMatcher": []
         }
     ],

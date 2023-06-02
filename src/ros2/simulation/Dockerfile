@@ -63,16 +63,16 @@ RUN apt-get update && apt-get install -y \
 
 
 # Must compile ros_gz, gz-msgs and gz-transport from source because Humble + Garden is not an official combination
-RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ros2 https://github.com/gazebosim/ros_gz.git && cd ros_gz && git checkout 7c62a1ce3cfb4eb3b54e1cfd092c9b63a9d5f255 && cd .. \
-  && cd /workspace_ros_gz/src && git clone -b gz-msgs9 https://github.com/gazebosim/gz-msgs.git \
-  && cd /workspace_ros_gz/src && git clone -b gz-transport12 https://github.com/gazebosim/gz-transport.git \
-  && apt update \
-  && apt upgrade -y \
-  && . /opt/ros/${ROS_DISTRO}/setup.sh \
-  && rosdep update \
-  && rosdep install --from-paths /workspace_ros_gz/src --ignore-src -r -y \
-  && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install \
-  && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
+RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b humble https://github.com/gazebosim/ros_gz.git \
+    && cd /workspace_ros_gz/src && git clone -b gz-msgs9 https://github.com/gazebosim/gz-msgs.git \
+    && cd /workspace_ros_gz/src && git clone -b gz-transport12 https://github.com/gazebosim/gz-transport.git \
+    && apt update \
+    && apt upgrade -y \
+    && . /opt/ros/${ROS_DISTRO}/setup.sh \
+    && rosdep update \
+    && rosdep install --from-paths /workspace_ros_gz/src --ignore-src -r -y \
+    && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install \
+    && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 # Adding moveit2_tutorials as separate workspace which can be used for learning and testing purposed.
 # Can be removed once there is enough moveit2 skill and knowledge archieved

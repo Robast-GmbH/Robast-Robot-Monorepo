@@ -17,7 +17,7 @@ def generate_launch_description():
 
     statemachine_bringup_dir = get_package_share_directory('drawer_sm')
     sim_bringup_dir = get_package_share_directory('tiplu_world')
-    drawer_sim_dir = get_package_share_directory('drawer_gate_simulation')
+    drawer_sim_dir = get_package_share_directory('drawer_bridge_simulation')
     contoller_manager_sim_dir = get_package_share_directory('gazebo_controller_manager')
     drawer_moveit_sim_dir = get_package_share_directory('moveit2_drawer_config')
     
@@ -44,7 +44,7 @@ def generate_launch_description():
     
     drawer_sim_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(drawer_sim_dir, 'launch', 'drawer_gate_simulation_launch.py')))
+            os.path.join(drawer_sim_dir, 'launch', 'drawer_bridge_simulation_launch.py')))
     
     contoller_manager_sim_launch = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(

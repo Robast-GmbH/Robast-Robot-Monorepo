@@ -35,22 +35,25 @@ endif()
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/AuthenticateUser.action"
+  "action/CreateUserNfcTag.action"
   "action/DrawerInteraction.action"
   "action/DrawerUserAccess.action"
   "action/ComputeInterimGoal.action"
   "action/ImportYamlPoses.action"
 
-  "srv/CreateUserNfcTag.srv"
   "srv/HandleDrawer.srv"
   "srv/ShelfSetupInfo.srv"
   "srv/ShowDrawerInterface.srv"
 
   "msg/Box.msg"
-  "msg/Drawer.msg"
   "msg/DrawerAddress.msg"
   "msg/DrawerLeds.msg"
   "msg/DrawerStatus.msg"
-  "msg/NFCStatus.msg"
+  "msg/DrawerTask.msg"
+  "msg/ElectricalDrawerStatus.msg"
+  "msg/Module.msg"
+  "msg/NfcReadStatus.msg"
+  "msg/NfcWriteStatus.msg"
   "msg/Task.msg"
   "msg/TaskStatus.msg"
   "msg/Ticket.msg"
