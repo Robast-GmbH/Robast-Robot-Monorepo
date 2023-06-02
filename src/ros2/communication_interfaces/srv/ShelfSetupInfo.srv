@@ -1,4 +1,4 @@
 # request
 ---
 # response
-communication_interfaces/Drawer[] drawers
+communication_interfaces/Module[] modules
