@@ -57,7 +57,7 @@ namespace drawer_statemachine
         DrawerOpenReq::callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
     {
         RCLCPP_DEBUG(rclcpp::get_logger("DrawerOpenReq"), "received request");
-        drawer_address_.drawer_controller_id = msg->drawer_controller_id;
+        drawer_address_.module_id = msg->module_id;
         drawer_address_.drawer_id = msg->drawer_id;
         new_message_ = true;
     }
