@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <robot name="sensor_imu" xmlns:xacro="http://wiki.ros.org/xacro">
 
-	<xacro:macro name="sensor_imu_hector" params="prefix topic:='imu/data' parent *origin">
+	<xacro:macro name="sensor_imu_hector" params="prefix prefix_topic topic:='imu/data' parent *origin">
 
 		<xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}_link" />
+			<xacro:property name="sensor_link_name" value="base_footprint/${prefix}_link" /><!-- value="${robot_name}/base_footprint/${prefix}_link" /> -->
 		</xacro:if>
 		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}_link" />
+			<xacro:property name="sensor_link_name" value="base_link/${prefix}_link" /><!-- value="${robot_name}/base_link/${prefix}_link" /> -->
 		</xacro:unless>
 
 		<joint name="${prefix}_joint" type="fixed">
