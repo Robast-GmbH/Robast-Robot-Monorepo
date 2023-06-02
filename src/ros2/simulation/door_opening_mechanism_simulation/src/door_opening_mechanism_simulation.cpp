@@ -510,8 +510,7 @@ namespace door_opening_mechanism_simulation
 
   void DoorMechanismSimulation::open_door_topic_callback(const DrawerAddress& msg)
   {
-    RCLCPP_INFO(
-        this->get_logger(), "I heard from open_drawer topic the drawer_controller_id: '%i'", msg.drawer_controller_id);
+    RCLCPP_INFO(this->get_logger(), "I heard from open_drawer topic the module_id: '%i'", msg.module_id);
 
     // std::shared_ptr<moveit::planning_interface::MoveGroupInterface> move_group_interface =
     //     std::make_shared<moveit::planning_interface::MoveGroupInterface>(moveit::planning_interface::MoveGroupInterface(

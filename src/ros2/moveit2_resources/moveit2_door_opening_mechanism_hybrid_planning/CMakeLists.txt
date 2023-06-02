@@ -46,10 +46,6 @@ install(TARGETS
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
-install(DIRECTORY include/
-  DESTINATION include/
-)
-
 install(DIRECTORY
   launch
   config
