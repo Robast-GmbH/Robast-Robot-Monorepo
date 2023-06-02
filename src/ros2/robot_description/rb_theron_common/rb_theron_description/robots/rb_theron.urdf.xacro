@@ -176,6 +176,6 @@
 	</xacro:door_opening_mechanism>
 
 	<!-- Gazebo ros control pluggins -->
-	<xacro:ros_control prefix="$(arg prefix)" publish_bf="${publish_bf}"/>
+	<xacro:ros_control prefix="$(arg prefix)" publish_bf="${publish_bf}" namespace= "$(arg topic_namespace)" />
 	
 </robot>

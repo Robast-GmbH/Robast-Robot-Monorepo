@@ -116,6 +116,17 @@
                         "problemMatcher": []
                 },
                 {
+                        "label": "multi_startup_robot_localization",
+                        "detail": "Starts Nav, slam, robot_localization for odom->base, rviz",
+                        "dependsOn": [
+                                "start slam_toolbox",
+                                "start nav_without_localization",
+                                "start multi_robot_localization",
+                                "start rviz"
+                        ],
+                        "problemMatcher": []
+                },
+                {
                         "label": "default_startup_amcl_robot_localization",
                         "detail": "Starts Nav, amcl, robot_localization for odom->base, keepout_mask, rviz",
                         "dependsOn": [
@@ -279,6 +290,16 @@
                         "type": "shell",
                         "label": "start robot_localization",
                         "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py;",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start multi_robot_localization",
+                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup multi_robot_localization_odom_to_base_launch.py;",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

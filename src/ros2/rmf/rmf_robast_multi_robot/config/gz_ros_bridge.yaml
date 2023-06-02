@@ -1,114 +1,116 @@
 # # Full set of configurations
-# - ros_topic_name: "tf"
-#   gz_topic_name: "/model/rb_theron/tf"
-#   ros_type_name: "tf2_msgs/msg/TFMessage"
-#   gz_type_name: "gz.msgs.Pose_V"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: BIDIRECTIONAL      # Default "BIDIRECTIONAL" - Bridge both directions
-#                             # "GZ_TO_ROS" - Bridge Ignition topic to ROS
-#                             # "ROS_TO_GZ" - Bridge ROS topic to Ignition
+- ros_topic_name: "tf"
+  gz_topic_name: "/model/rb_theron/tf"
+  ros_type_name: "tf2_msgs/msg/TFMessage"
+  gz_type_name: "gz.msgs.Pose_V"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: BIDIRECTIONAL      # Default "BIDIRECTIONAL" - Bridge both directions
+                            # "GZ_TO_ROS" - Bridge Ignition topic to ROS
+                            # "ROS_TO_GZ" - Bridge ROS topic to Ignition
 
-# - ros_topic_name: "/joint_states"
-#   gz_topic_name: "/world/6OG/model/rb_theron/joint_state"
-#   ros_type_name: "sensor_msgs/msg/JointState"
-#   gz_type_name: "gz.msgs.Model"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: BIDIRECTIONAL                      
+- ros_topic_name: "/clock"
+  gz_topic_name: "/clock"
+  ros_type_name: "rosgraph_msgs/msg/Clock"
+  gz_type_name: "gz.msgs.Clock"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/joint_states"
+  gz_topic_name: "/world/6OG/model/rb_theron/joint_state"
+  ros_type_name: "sensor_msgs/msg/JointState"
+  gz_type_name: "gz.msgs.Model"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: BIDIRECTIONAL                      
 
 
-# - ros_topic_name: "/front_laser/scan"
-#   gz_topic_name: "/front_laser/scan"
-#   ros_type_name: "sensor_msgs/msg/LaserScan"
-#   gz_type_name: "gz.msgs.LaserScan"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: GZ_TO_ROS
+- ros_topic_name: "/rb0/front_laser/scan"
+  gz_topic_name: "/rb0/front_laser/scan"
+  ros_type_name: "sensor_msgs/msg/LaserScan"
+  gz_type_name: "gz.msgs.LaserScan"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
 
-# - ros_topic_name: "/bpearl_laser/scan/points"
-#   gz_topic_name: "/bpearl_laser/scan/points"
-#   ros_type_name: "sensor_msgs/msg/PointCloud2"
-#   gz_type_name: "gz.msgs.PointCloudPacked"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: GZ_TO_ROS
+- ros_topic_name: "/rb0/bpearl_laser/scan/points"
+  gz_topic_name: "/rb0/bpearl_laser/scan/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
 
-# - ros_topic_name: "/front_realsense_camera/color"
-#   gz_topic_name: "/front_realsense_camera/color"
-#   ros_type_name: "sensor_msgs/msg/Image"
-#   gz_type_name: "gz.msgs.Image"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: GZ_TO_ROS
+- ros_topic_name: "/rb0/front_realsense_camera/color"
+  gz_topic_name: "/rb0/front_realsense_camera/color"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
 
-# - ros_topic_name: "/front_realsense_camera/depth"
-#   gz_topic_name: "/front_realsense_camera/front_realsense_camera/depth"
-#   ros_type_name: "sensor_msgs/msg/Image"
-#   gz_type_name: "gz.msgs.Image"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: GZ_TO_ROS
+- ros_topic_name: "/rb0/front_realsense_camera/depth"
+  gz_topic_name: "/rb0/front_realsense_camera/front_realsense_camera/depth"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
 
-# - ros_topic_name: "/front_realsense_camera/depth/points"
-#   gz_topic_name: "/front_realsense_camera/front_realsense_camera/depth/points"
-#   ros_type_name: "sensor_msgs/msg/PointCloud2"
-#   gz_type_name: "gz.msgs.PointCloudPacked"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: GZ_TO_ROS
+- ros_topic_name: "/rb0/front_realsense_camera/depth/points"
+  gz_topic_name: "/rb0/front_realsense_camera/front_realsense_camera/depth/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
 
-# - ros_topic_name: "/back_realsense_camera/color"
-#   gz_topic_name: "/back_realsense_camera/color"
-#   ros_type_name: "sensor_msgs/msg/Image"
-#   gz_type_name: "gz.msgs.Image"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: GZ_TO_ROS
+- ros_topic_name: "/rb0/back_realsense_camera/color"
+  gz_topic_name: "/rb0/back_realsense_camera/color"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
 
-# - ros_topic_name: "/back_realsense_camera/depth"
-#   gz_topic_name: "/back_realsense_camera/back_realsense_camera/depth"
-#   ros_type_name: "sensor_msgs/msg/Image"
-#   gz_type_name: "gz.msgs.Image"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: GZ_TO_ROS
+- ros_topic_name: "/rb0/back_realsense_camera/depth"
+  gz_topic_name: "rb0/back_realsense_camera/back_realsense_camera/depth"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
 
-# - ros_topic_name: "/back_realsense_camera/depth/points"
-#   gz_topic_name: "/back_realsense_camera/back_realsense_camera/depth/points"
-#   ros_type_name: "sensor_msgs/msg/PointCloud2"
-#   gz_type_name: "gz.msgs.PointCloudPacked"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: GZ_TO_ROS
+- ros_topic_name: "/rb0/back_realsense_camera/depth/points"
+  gz_topic_name: "rb0/back_realsense_camera/back_realsense_camera/depth/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
 
-# - ros_topic_name: "/clock"
-#   gz_topic_name: "/clock"
-#   ros_type_name: "rosgraph_msgs/msg/Clock"
-#   gz_type_name: "gz.msgs.Clock"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: GZ_TO_ROS
 
-# - ros_topic_name: "/odom"
-#   gz_topic_name: "/model/rb_theron/odometry"
-#   ros_type_name: "nav_msgs/msg/Odometry"
-#   gz_type_name: "gz.msgs.Odometry"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: false               # Default "false"
-#   direction: GZ_TO_ROS
+
+- ros_topic_name: "/rb0/odom"
+  gz_topic_name: "/model/rb0/odometry"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.Odometry"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
 
 # - ros_topic_name: "/cmd_vel"
 #   gz_topic_name: "/cmd_vel"
@@ -119,11 +121,101 @@
 #   lazy: false               # Default "false"
 #   direction: ROS_TO_GZ
 
-# - ros_topic_name: "/imu/data"
-#   gz_topic_name: "/imu/data"
-#   ros_type_name: "sensor_msgs/msg/Imu"
-#   gz_type_name: "gz.msgs.IMU"
-#   subscriber_queue: 10      # Default 10
-#   publisher_queue: 10       # Default 10
-#   lazy: true               # Default "false"
-#   direction: GZ_TO_ROS
+- ros_topic_name: "rb0/imu/data"
+  gz_topic_name: "rb0/imu/imu/data"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/rb1/odom"
+  gz_topic_name: "/model/rb1/odometry"
+  ros_type_name: "nav_msgs/msg/Odometry"
+  gz_type_name: "gz.msgs.Odometry"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "rb1/imu/data"
+  gz_topic_name: "rb1/imu/imu/data"
+  ros_type_name: "sensor_msgs/msg/Imu"
+  gz_type_name: "gz.msgs.IMU"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/rb1/front_laser/scan"
+  gz_topic_name: "/rb1/front_laser/scan"
+  ros_type_name: "sensor_msgs/msg/LaserScan"
+  gz_type_name: "gz.msgs.LaserScan"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/rb1/bpearl_laser/scan/points"
+  gz_topic_name: "/rb1/bpearl_laser/scan/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/rb1/front_realsense_camera/color"
+  gz_topic_name: "/rb1/front_realsense_camera/color"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/rb1/front_realsense_camera/depth"
+  gz_topic_name: "/rb1/front_realsense_camera/front_realsense_camera/depth"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/rb1/front_realsense_camera/depth/points"
+  gz_topic_name: "/rb1/front_realsense_camera/front_realsense_camera/depth/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/rb1/back_realsense_camera/color"
+  gz_topic_name: "/rb1/back_realsense_camera/color"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/rb1/back_realsense_camera/depth"
+  gz_topic_name: "rb1/back_realsense_camera/back_realsense_camera/depth"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/rb1/back_realsense_camera/depth/points"
+  gz_topic_name: "rb1/back_realsense_camera/back_realsense_camera/depth/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: GZ_TO_ROS

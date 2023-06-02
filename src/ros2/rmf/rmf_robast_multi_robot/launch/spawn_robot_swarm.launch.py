@@ -22,17 +22,15 @@ def generate_launch_description():
 
     ld = LaunchDescription()
     use_sim_time =True
-    for n in range(2):
-
-        namespace="rb"+str(n)
-       
+    for n in range(len(environment_yaml["robot_namspaces"])):
+        robot_namespace = environment_yaml["robot_namspaces"][n]
         robot_xml = xacro.process_file(
             os.path.join(
                 get_package_share_directory("rb_theron_description"),
                 "robots",
                 environment_yaml["robot"]+".urdf.xacro",
             ),
-            mappings={"prefix": environment_yaml["prefix"], "topic_namespace":namespace},
+            mappings={"prefix": environment_yaml["prefix"], "topic_namespace":robot_namespace},
         ).toxml()
     
         declare_robot_model_cmd = DeclareLaunchArgument(
@@ -45,8 +43,8 @@ def generate_launch_description():
                 package="robot_state_publisher",
                 executable="robot_state_publisher",
                 name="robot_state_publisher",
-                namespace=namespace,
-            parameters=[{'frame_prefix': namespace+'/',"use_sim_time": use_sim_time}, {"robot_description": robot_xml}],
+                namespace=robot_namespace,
+            parameters=[{'frame_prefix': robot_namespace+'/',"use_sim_time": use_sim_time}, {"robot_description": robot_xml}],
             output="screen",  
         )
     
@@ -54,8 +52,8 @@ def generate_launch_description():
             package='joint_state_publisher',
             executable='joint_state_publisher',
             name='joint_state_publisher',
-            namespace=namespace,
-        parameters=[{'frame_prefix': namespace+'/', 'use_sim_time': True}, {"robot_description": robot_xml}],
+            namespace=robot_namespace,
+        parameters=[{'frame_prefix': robot_namespace+'/', 'use_sim_time': True}, {"robot_description": robot_xml}],
         output="screen"
     )
 
@@ -63,9 +61,9 @@ def generate_launch_description():
             package="ros_gz_sim",
             executable="create",
             output="screen",
-            namespace=namespace,
+            namespace=robot_namespace,
             arguments=["-name",
-                "rb"+str(n),
+                robot_namespace,
                 "-topic",
                 "robot_description",
                 "-z",
@@ -79,7 +77,7 @@ def generate_launch_description():
             ],
       
         )    
-    
+
         group = GroupAction([
             declare_robot_model_cmd, 
             start_robot_state_publisher_cmd,

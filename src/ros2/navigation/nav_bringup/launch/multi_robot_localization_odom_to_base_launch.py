@@ -47,24 +47,18 @@ def generate_launch_description():
     
         #TODo fix the Realtime multi robot issue
         # if environment_yaml["is_simulation"]:
+    robot_locatisation_Nodes= []
     use_sim_time_default = "true"
-    robot_namespace="rb0"
-    param_substitutions = {
+    for robot_namespace in  environment_yaml["robot_namspaces"]:
+        param_substitutions = {
             'use_sim_time': use_sim_time_default,
-            "odom_frame": "rb0/odom",
-            "base_link_frame": "rb0/base_footprint",
-            "world_frame": "rb0/odom",
-            "odom0": "/rb0/odom",
-            "imu0": "/rb0/imu/data"        
+            "odom_frame": robot_namespace+"/odom",
+            "base_link_frame": robot_namespace+"/base_footprint",
+            "world_frame": robot_namespace+"/odom",
+            "odom0": "/"+robot_namespace+"/odom",
+            "imu0": "/"+robot_namespace+"/imu/data"        
             }
-    # param_substitutions2 = {
-    #         'use_sim_time': use_sim_time_default,
-    #         "odom_frame": "rb1/odom",
-    #         "base_link_frame": "rb0/base_footprint",
-    #         "world_frame": "rb1/odom",
-    #         "odom0": "/rb0/odom",
-    #         "imu0": "/rb0/imu/data"        
-    #         }
+  
         # else:
         #     param_substitutions = {
         #         'use_sim_time': use_sim_time,
@@ -75,19 +69,13 @@ def generate_launch_description():
         #         "imu0": "/robot/imu/data"        
         #     }
 
-    configured_params = RewrittenYaml(
+        configured_params = RewrittenYaml(
             source_file=params_file,
             root_key=namespace,
             param_rewrites=param_substitutions,
             convert_types=True)
     
-    # configured_params2 = RewrittenYaml(
-    #         source_file=params_file,
-    #         root_key=namespace2,
-    #         param_rewrites=param_substitutions2,
-    #         convert_types=True)
-
-    robot_localization_node = Node(
+        robot_localization_node = Node(
             namespace=namespace,
             package="robot_localization",
             executable="ekf_node",
@@ -95,16 +83,8 @@ def generate_launch_description():
             output="screen",
             parameters=[configured_params],
         )
+        robot_locatisation_Nodes.append(robot_localization_node)
     
-    # robot_localization_node2 = Node(
-    #         namespace=namespace2,
-    #         package="robot_localization",
-    #         executable="ekf_node",
-    #         name="ekf_filter_node",
-    #         output="screen",
-    #         parameters=[configured_params2],
-    #     )
-
 
     ld = LaunchDescription()
 
@@ -116,7 +96,8 @@ def generate_launch_description():
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_params_file_cmd)
         # Add the actions to launch all of the navigation nodes
-    ld.add_action(robot_localization_node)
-    # ld.add_action(robot_localization_node2)
-
+    
+    for robot_locatisation_Node in robot_locatisation_Nodes:
+        ld.add_action(robot_locatisation_Node)
+   
     return ld
