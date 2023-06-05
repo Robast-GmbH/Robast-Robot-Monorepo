@@ -38,10 +38,10 @@ jobs:
     - name: Build statemaschine dev docker
       uses: docker/build-push-action@v2
       with:
-        context: src/ros2/${{ env.Project }}/
+        context: src/ros2/${{ env.Project-Name }}/
         push: true
-        file: src/ros2/${{ env.Project }}/Dockerfile
+        file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: |
-              ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
+              ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}
         cache-from: type=gha
         cache-to: type=gha,mode=max
