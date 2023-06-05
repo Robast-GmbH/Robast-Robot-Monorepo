@@ -16,7 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       Ros-Distro: humble
-      Project-Name: fleetmanagement
+      Project-Name: simple_fleetmanagement
 
     steps:
       - name: Checkout repository and submodules
