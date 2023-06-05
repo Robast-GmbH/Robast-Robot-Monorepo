@@ -2,10 +2,7 @@ version: '3.9'
 
 services:
   simulation:
-    build:
-      context: .
-      dockerfile: ../../src/ros2/simulation/Dockerfile
-    image: robast1
+    image: "ghcr.io/robast-gmbh/monorepo/simulation:latest"
     environment:
       - ROS_DOMAIN_ID=1
     volumes:
@@ -28,10 +25,7 @@ services:
     
   #evtl mit profiles testen ob man sim nur im simulations modus startet
   navigation:
-    build:
-      context: .
-      dockerfile: ../../src/ros2/navigation/Dockerfile
-    image: robast2
+    image: "ghcr.io/robast-gmbh/monorepo/navigation:latest"
     environment:
       - ROS_DOMAIN_ID=1
     volumes:

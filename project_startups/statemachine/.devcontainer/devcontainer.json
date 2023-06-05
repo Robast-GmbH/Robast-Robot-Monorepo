@@ -1,13 +1,8 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
 
-	"dockerFile": "../../../src/ros2/statemachine/Dockerfile",
+	"image": "ghcr.io/robast-gmbh/monorepo/statemachine:latest",
 	"name": "Robast Drawer Statemachine",
-	"build": {
-		"args": {
-			"WORKSPACE": "${containerWorkspaceFolder}"
-		}
-	},
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/statemachine/,target=/workspace/src/statemachine,type=bind",
