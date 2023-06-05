@@ -9,6 +9,8 @@ on:
         - main
     paths:
         - src/ros2/simulation/Dockerfile
+  workflow_dispatch:
+
 jobs:
   build:
     runs-on: ubuntu-latest

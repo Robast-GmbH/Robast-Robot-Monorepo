@@ -5,10 +5,12 @@ on:
   schedule:
     - cron: '0 0 * * 1,5'
   push:
-      branches:
-          - main
-      paths:
-          - src/ros2/navigation/Dockerfile
+    branches:
+        - main
+    paths:
+        - src/ros2/navigation/Dockerfile
+  workflow_dispatch:
+
 jobs:
   deploy:
     runs-on: ubuntu-latest

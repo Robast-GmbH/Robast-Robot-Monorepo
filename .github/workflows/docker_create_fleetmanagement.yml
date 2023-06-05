@@ -9,6 +9,7 @@ on:
         - main
     paths:
         - src/ros2/fleetmanagement/Dockerfile
+  workflow_dispatch:
 
 jobs:
   build:
