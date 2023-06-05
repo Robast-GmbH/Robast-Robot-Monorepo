@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   simulation:
-    image: "ghcr.io/robast-gmbh/monorepo/simulation:latest"
+    image: ghcr.io/robast-gmbh/monorepo/simulation:latest
     environment:
       - ROS_DOMAIN_ID=1
     volumes:
@@ -24,9 +24,8 @@ services:
 
     command: /bin/sh -c "while sleep 1000; do :; done"
     
-  #evtl mit profiles testen ob man sim nur im simulations modus startet
   navigation:
-    image: "ghcr.io/robast-gmbh/monorepo/navigation:latest"
+    image: ghcr.io/robast-gmbh/monorepo/navigation:latest
     environment:
       - ROS_DOMAIN_ID=1
     volumes:
