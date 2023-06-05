@@ -193,8 +193,8 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start door_opening_mechanism_simulation_tutorial",
-                        "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_simulation door_opening_mechanism_simulation_tutorial_launch.py",
+                        "label": "start door_opening_mechanism_simulation_send_fake_pose",
+                        "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_simulation door_opening_mechanism_simulation_send_fake_pose_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -226,10 +226,11 @@
                 },
                 {
                         "label": "startup_sim_with_door_opening_simulation",
-                        "detail": "Starts tiplu_sim, moveit_door_opening, door_opening_mechanism_gazebo_trajectory_controller_manager",
+                        "detail": "Starts tiplu_sim, moveit_door_opening_mechanism, door_opening_mechanism_simulation, door_opening_mechanism_gazebo_trajectory_controller_manager",
                         "dependsOn": [
                                 "start tiplu_sim",
                                 "start moveit_door_opening_mechanism",
+                                "start door_opening_mechanism_simulation",
                                 "start door_opening_mechanism_gazebo_trajectory_controller_manager"
                         ],
                         "problemMatcher": []

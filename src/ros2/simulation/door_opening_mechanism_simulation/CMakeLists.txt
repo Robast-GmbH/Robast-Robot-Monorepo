@@ -9,6 +9,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(communication_interfaces REQUIRED)
+find_package(depthai_ros_msgs REQUIRED)
 find_package(graph_msgs REQUIRED)
 find_package(moveit_ros_planning_interface REQUIRED)
 find_package(rviz_visual_tools REQUIRED)
@@ -17,11 +18,11 @@ find_package(moveit_visual_tools REQUIRED)
 include_directories(include)
 
 set(executable_door_opening_mechanism_simulation door_opening_mechanism_simulation)
-set(executable_door_opening_mechanism_simulation_tutorial door_opening_mechanism_simulation_tutorial)
+set(executable_door_opening_mechanism_simulation_send_fake_pose door_opening_mechanism_simulation_send_fake_pose)
 set(executable_door_opening_mechanism_simulation_motion_plan_request door_opening_mechanism_simulation_motion_plan_request)
 
 add_executable(${executable_door_opening_mechanism_simulation} src/door_opening_mechanism_simulation_main.cpp)
-add_executable(${executable_door_opening_mechanism_simulation_tutorial} src/door_opening_mechanism_simulation_tutorial.cpp)
+add_executable(${executable_door_opening_mechanism_simulation_send_fake_pose} src/door_opening_mechanism_simulation_send_fake_pose.cpp)
 add_executable(${executable_door_opening_mechanism_simulation_motion_plan_request} src/door_opening_mechanism_simulation_motion_plan_request.cpp)
 
 set(library_door_opening_mechanism_simulation ${executable_door_opening_mechanism_simulation}_core)
@@ -33,13 +34,14 @@ add_library(${library_door_opening_mechanism_simulation} SHARED
 set(dependencies
   rclcpp
   communication_interfaces
+  depthai_ros_msgs
   moveit_ros_planning_interface
   graph_msgs
   rviz_visual_tools
   moveit_visual_tools
 )
 
-ament_target_dependencies(${executable_door_opening_mechanism_simulation_tutorial}
+ament_target_dependencies(${executable_door_opening_mechanism_simulation_send_fake_pose}
   ${dependencies}
 )
 ament_target_dependencies(${executable_door_opening_mechanism_simulation_motion_plan_request}
@@ -69,7 +71,7 @@ endif()
 
 install(TARGETS
   ${executable_door_opening_mechanism_simulation}
-  ${executable_door_opening_mechanism_simulation_tutorial}
+  ${executable_door_opening_mechanism_simulation_send_fake_pose}
   ${executable_door_opening_mechanism_simulation_motion_plan_request}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )

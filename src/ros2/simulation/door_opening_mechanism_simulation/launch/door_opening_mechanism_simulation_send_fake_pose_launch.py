@@ -11,8 +11,8 @@ def generate_launch_description():
 
     door_opening_mechanism_simulation_node = Node(
         package="door_opening_mechanism_simulation",
-        executable="door_opening_mechanism_simulation_tutorial",
-        name="door_opening_mechanism_simulation",
+        executable="door_opening_mechanism_simulation_send_fake_pose",
+        name="door_opening_mechanism_simulation_send_fake_pose",
         parameters=[
             {"moveit2_planning_group_name": "door_opening_mechanism"},
             {"use_sim_time": True},
