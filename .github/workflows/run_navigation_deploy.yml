@@ -26,29 +26,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: configures Docker Buildx to create a builder instance for running the image build.
-      uses: docker/setup-buildx-action@v1  
-    
-    - name: Build and Publish Communication Interfaces
-      uses: docker/build-push-action@v2
-      with:
-            context: src/ros2/communication_interfaces/
-            push: true
-            file: src/ros2/communication_interfaces/Dockerfile
-            tags: |
-                  ghcr.io/robast-gmbh/monorepo/communication_interfaces
-            cache-from: type=gha
-            cache-to: type=gha,mode=max
-
-    - name: Build and Publish Navigation dev docker  
-      uses: docker/build-push-action@v2
-      with:
-            context:  src/ros2/navigation/
-            push: true
-            file:  src/ros2/navigation/Dockerfile
-            tags: |
-                  ghcr.io/robast-gmbh/monorepo/navigation_dev
-            cache-from: type=gha
-            cache-to: type=gha,mode=max
+      uses: docker/setup-buildx-action@v1      
 
     - name: Build and Publish Navigation deploy docker  
       uses: docker/build-push-action@v2
