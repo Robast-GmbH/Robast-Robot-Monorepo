@@ -48,7 +48,7 @@ jobs:
               docker run -v $(pwd):/workspace/src/${{ env.Project }} 
               -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces 
               -v $(pwd)/../../../libs:/workspace/libs 
-              --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}
+              --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:latest
               /bin/sh -c "cd /workspace/ &&
               sudo apt-get update && 
               sudo apt-get upgrade -y &&
