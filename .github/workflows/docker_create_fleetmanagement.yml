@@ -2,13 +2,13 @@ name: Create Docker Image fleetmanagement
 
 #trigger workflow every day at 00:00
 on:
-    schedule:
-      - cron: '0 0 * * 1,5'
-    push:
-      branches:
-          - main
-      paths:
-          - src/ros2/fleetmanagement/Dockerfile
+  schedule:
+    - cron: '0 0 * * 1,5'
+  push:
+    branches:
+        - main
+    paths:
+        - src/ros2/fleetmanagement/Dockerfile
 
 jobs:
   build:

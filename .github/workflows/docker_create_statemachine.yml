@@ -2,13 +2,13 @@ name: Create Docker Image Statemachine
 
 #trigger workflow every day at 00:00
 on:
-    schedule:
-      - cron: '0 0 * * 1,5'
-    push:
-      branches:
-          - main
-      paths:
-          - src/ros2/statemachine/Dockerfile
+  schedule:
+    - cron: '0 0 * * 1,5'
+  push:
+    branches:
+        - main
+    paths:
+        - src/ros2/statemachine/Dockerfile
 
 jobs:
   build:

@@ -2,13 +2,13 @@ name: Create Docker Image Hardware Nodes
 
 #trigger workflow every day at 00:00
 on:
-    schedule:
-      - cron: '0 0 * * 1,5'
-    push:
-      branches:
-          - main
-      paths:
-          - src/ros2/hardware_nodes/Dockerfile
+  schedule:
+    - cron: '0 0 * * 1,5'
+  push:
+    branches:
+        - main
+    paths:
+        - src/ros2/hardware_nodes/Dockerfile
 
 jobs:
   build:

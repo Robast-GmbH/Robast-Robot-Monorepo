@@ -2,13 +2,13 @@ name: Create Docker Image Simulation
 
 #trigger workflow every day at 00:00
 on:
-    schedule:
-      - cron: '0 0 * * 1,5'
-    push:
-      branches:
-          - main
-      paths:
-          - src/ros2/simulation/Dockerfile
+  schedule:
+    - cron: '0 0 * * 1,5'
+  push:
+    branches:
+        - main
+    paths:
+        - src/ros2/simulation/Dockerfile
 jobs:
   build:
     runs-on: ubuntu-latest
