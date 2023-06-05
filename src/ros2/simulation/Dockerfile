@@ -74,5 +74,8 @@ RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b hum
     && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install \
     && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
 
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
+# rmw_cyclonedds_cpp #rmw_fastrtps_cpp
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/workspace/cyclone_DDS_config.xml
 ENV IGN_FILE_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}

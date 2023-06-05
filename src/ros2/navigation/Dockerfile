@@ -19,8 +19,6 @@ ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
 ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/DDS_config.xml
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
 
@@ -112,3 +110,9 @@ RUN mkdir -p /workspace_nav2/src && cd /workspace_nav2/src && git clone -b humbl
 
 
 #watch -d -n 0.5 nvidia-smi
+
+# dds setup / configuration
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
+# rmw_cyclonedds_cpp #rmw_fastrtps_cpp
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/workspace/cyclone_DDS_config.xml
