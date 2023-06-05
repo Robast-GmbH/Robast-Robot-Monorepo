@@ -63,7 +63,7 @@ class SimpleFleetmanagement(Node):
         self.start_statemachine()
 
     def setup_drawer_interaction(self):
-        self.drawer_gate_action_client = ActionClient(self, DrawerUserAccess, "control_drawer")
+        self.drawer_bridge_action_client = ActionClient(self, DrawerUserAccess, "control_drawer")
 
     def initialize_ros_robot_refill_status_subscription(self):
         self.drawer_refill_status_publisher = self.create_publisher(
@@ -254,8 +254,8 @@ class SimpleFleetmanagement(Node):
         return self.target_pose_by_waypoint_id
 
     def trigger_open_drawer_ros_function(self, goal_msg):
-        self.drawer_gate_action_client.wait_for_server()
-        self.drawer_gate_action_client.send_goal_async(goal_msg).add_done_callback(
+        self.drawer_bridge_action_client.wait_for_server()
+        self.drawer_bridge_action_client.send_goal_async(goal_msg).add_done_callback(
             lambda future: future.result().get_result_async().add_done_callback(self.drawer_closed_callback))
 
     def drawer_closed_callback(self, future: asyncio.Future):

@@ -41,9 +41,9 @@ namespace robast_can_msgs
             uint8_t get_dlc() const;
 
         protected:
-            std::vector<CanSignal> can_signals_;
-            uint8_t dlc_;
             uint32_t id_;
+            uint8_t dlc_;            
+            std::vector<CanSignal> can_signals_;
     };
 }  // namespace robast_can_msgs
 

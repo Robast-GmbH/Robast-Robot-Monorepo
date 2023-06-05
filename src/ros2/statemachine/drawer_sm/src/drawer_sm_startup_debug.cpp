@@ -59,7 +59,7 @@ class BTTest: public rclcpp::Node
         for (int i = 1; i <= 5; i++)
         {
           DrawerAddress drawer_address;
-          drawer_address.drawer_controller_id = 0;
+          drawer_address.module_id= 0;
           drawer_address.drawer_id = i;
           nfc_dictionary[std::to_string(i)] = drawer_address;
         }
