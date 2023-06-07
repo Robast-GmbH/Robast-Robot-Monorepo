@@ -77,7 +77,7 @@ namespace drawer_statemachine
         virtual void initializePublisher();
 
     private:
-        rclcpp::Node::SharedPtr node_;
+        rclcpp::Node::SharedPtr _node;
         rclcpp::Publisher<communication_interfaces::msg::DrawerLeds>::SharedPtr led_publisher_;
         communication_interfaces::msg::DrawerLeds drawer_leds_;
 

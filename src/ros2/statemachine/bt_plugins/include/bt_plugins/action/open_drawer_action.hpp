@@ -60,7 +60,7 @@ namespace drawer_statemachine
         BT::Blackboard::Ptr _blackboard;
 
     private:
-        rclcpp::Node::SharedPtr node_;
+        rclcpp::Node::SharedPtr _node;
         communication_interfaces::msg::DrawerAddress drawer_address_;
 
         // rclcpp::CallbackGroup::SharedPtr callback_group_;

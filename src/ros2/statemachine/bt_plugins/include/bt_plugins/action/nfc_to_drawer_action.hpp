@@ -28,7 +28,7 @@ namespace drawer_statemachine
         return{};
     }
   private:
-    rclcpp::Node::SharedPtr node_;
+    rclcpp::Node::SharedPtr _node;
     communication_interfaces::msg::DrawerAddress drawer_address_;
     std::map<std::string, communication_interfaces::msg::DrawerAddress> nfc_key_to_DrawerAddress_;
     BT::Blackboard::Ptr blackboard_;

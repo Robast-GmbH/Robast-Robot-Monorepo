@@ -12,11 +12,11 @@ namespace drawer_statemachine
         const BT::NodeConfig& config)
         : BT::StatefulActionNode(name, config)
     {
-        node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
-        callback_group_ = node_->create_callback_group(
+        _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
+        callback_group_ = _node->create_callback_group(
             rclcpp::CallbackGroupType::MutuallyExclusive,
             false);
-        callback_group_executor_.add_callback_group(callback_group_, node_->get_node_base_interface());
+        callback_group_executor_.add_callback_group(callback_group_, _node->get_node_base_interface());
 
         getInput("drawer_address_topic", topic_name_);
 
@@ -25,7 +25,7 @@ namespace drawer_statemachine
 
         rclcpp::SubscriptionOptions sub_option;
         sub_option.callback_group = callback_group_;
-        drawer_open_sub_ = node_->create_subscription<communication_interfaces::msg::DrawerAddress>(
+        drawer_open_sub_ = _node->create_subscription<communication_interfaces::msg::DrawerAddress>(
             topic_name_,
             qos,
             std::bind(&DrawerOpenReq::callbackDrawerOpenReq, this, _1),

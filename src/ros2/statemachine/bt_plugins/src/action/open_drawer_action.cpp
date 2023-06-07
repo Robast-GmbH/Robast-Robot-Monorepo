@@ -17,14 +17,14 @@ namespace drawer_statemachine
 
         getInput("drawer_open_topic", topic_name_);
         // std::scoped_lock l(_blackboard->entryMutex());
-        node_ = _blackboard->get<rclcpp::Node::SharedPtr>("node");
+        _node = _blackboard->get<rclcpp::Node::SharedPtr>("node");
         // drawer_address_ = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
 
         rclcpp::SubscriptionOptions sub_option;
         // sub_option.callback_group = callback_group_;
-        open_publisher_ = node_->create_publisher<communication_interfaces::msg::DrawerAddress>(topic_name_, qos);
+        open_publisher_ = _node->create_publisher<communication_interfaces::msg::DrawerAddress>(topic_name_, qos);
     }
 
     BT::NodeStatus OpenDrawer::onStart()

@@ -33,7 +33,7 @@ namespace drawer_statemachine
         const BT::NodeConfig& config)
         : BT::SyncActionNode(name, config)
     {
-        node_ = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
+        _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
 
         getInput("led_topic", topic_name_);
         getInput("drawer_address", drawer_leds_.drawer_address);
@@ -50,7 +50,7 @@ namespace drawer_statemachine
     {
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
-        led_publisher_ = node_->create_publisher<communication_interfaces::msg::DrawerLeds>(topic_name_, qos);
+        led_publisher_ = _node->create_publisher<communication_interfaces::msg::DrawerLeds>(topic_name_, qos);
     }
 
     const communication_interfaces::msg::DrawerLeds ChangeLED::getDrawerLED()

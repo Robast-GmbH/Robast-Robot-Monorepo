@@ -54,7 +54,7 @@ namespace drawer_statemachine
         void callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg);
 
     private:
-        rclcpp::Node::SharedPtr node_;
+        rclcpp::Node::SharedPtr _node;
 
         rclcpp::CallbackGroup::SharedPtr callback_group_;
         rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
