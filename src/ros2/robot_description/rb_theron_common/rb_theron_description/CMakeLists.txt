@@ -37,6 +37,7 @@ install(
     robots
     urdf
     meshes
+    ros2_control
   DESTINATION
     share/${PROJECT_NAME}/
 )
