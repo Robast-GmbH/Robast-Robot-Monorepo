@@ -38,6 +38,7 @@
             "dependsOrder": "sequence",
             "command": "clear; source install/setup.bash; colcon test --packages-select dryve_d1_gate --event-handler=console_direct+; colcon test-result --all",
             "problemMatcher": []
+        },
         {
             "label": "clean-build",
             "detail": "Purges and symlink colcon build",
