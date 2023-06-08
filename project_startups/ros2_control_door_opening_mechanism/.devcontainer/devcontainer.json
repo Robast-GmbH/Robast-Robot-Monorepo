@@ -10,7 +10,8 @@
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/dryve_d1_gate,target=/workspace/src/hardware_nodes/dryve_d1_gate,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/robot_description,target=/workspace/src/robot_description,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/ros2_control,target=/workspace/src/ros2_control,type=bind"
+		"source=${localWorkspaceFolder}/../../src/ros2/ros2_control,target=/workspace/src/ros2_control,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/navigation/environment_vars.yaml,target=/workspace/environment_vars.yaml,type=bind",
 	],
 	"workspaceFolder": "/workspace",
 	"remoteUser": "robast",

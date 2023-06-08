@@ -18,6 +18,13 @@
             "problemMatcher": []
         },
         {
+            "label": "Launch ros2_control_door_opening_mechanism_bringup",
+            "detail": "Launch the drawer gate node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch ros2_control_door_opening_mechanism_bringup ros2_control_door_opening_mechanism_bringup_launch.py",
+            "problemMatcher": []
+        },
+        {
             "label": "Test",
             "detail": "Build and executes all tests and shows the links to the testreport with Errors",
             "type": "shell",

@@ -1,6 +1,6 @@
 controller_manager:
   ros__parameters:
-    update_rate: 10  # Hz
+    update_rate: 10 # Hz
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -11,20 +11,20 @@ controller_manager:
     joint_trajectory_position_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-
 forward_position_controller:
   ros__parameters:
     joints:
-      - joint1
-      - joint2
+      - door_opening_mechanism_joint_y_axis_slide
+      - door_opening_mechanism_joint_x_axis_slide
+      - door_opening_mechanism_joint_tilting_hook
     interface_name: position
-
 
 joint_trajectory_position_controller:
   ros__parameters:
     joints:
-      - joint1
-      - joint2
+      - door_opening_mechanism_joint_y_axis_slide
+      - door_opening_mechanism_joint_x_axis_slide
+      - door_opening_mechanism_joint_tilting_hook
 
     command_interfaces:
       - position

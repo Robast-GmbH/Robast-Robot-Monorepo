@@ -14,7 +14,7 @@ from launch_ros.substitutions import FindPackageShare
 
 
 def generate_launch_description():
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
+    with open("/workspace/environment_vars.yaml", "r") as stream:
         try:
             environment_yaml = yaml.safe_load(stream)
             print(environment_yaml)
