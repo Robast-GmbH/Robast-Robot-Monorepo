@@ -20,6 +20,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    network_mode: "host" 
 
     command: /bin/sh -c "while sleep 1000; do :; done"
     
@@ -40,7 +41,7 @@ services:
   #     context: .
   #     dockerfile: ../../src/ros2/simulation/Dockerfile
 
-#networks:
-#  host:
-#    name: host
-#    external: true
+networks:
+  host:
+    name: host
+    external: true

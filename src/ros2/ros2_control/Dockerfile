@@ -45,5 +45,5 @@ RUN apt-get update && apt-get install -y \
   && add-apt-repository ppa:kisak/kisak-mesa -y\
   && apt upgrade -y
 
-ENV ROS_DOMAIN_ID=0
+ENV ROS_DOMAIN_ID=1
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
