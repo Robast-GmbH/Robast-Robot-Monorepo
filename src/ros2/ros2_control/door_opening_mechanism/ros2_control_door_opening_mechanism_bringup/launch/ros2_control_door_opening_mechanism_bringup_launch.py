@@ -5,9 +5,9 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import RegisterEventHandler
+from launch.actions import RegisterEventHandler, DeclareLaunchArgument
 from launch.event_handlers import OnProcessExit
-from launch.substitutions import PathJoinSubstitution
+from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
@@ -31,6 +31,14 @@ def generate_launch_description():
         mappings={"prefix": environment_yaml["prefix"]},
     ).toxml()
 
+    use_sim_time = LaunchConfiguration("use_sim_time")
+
+    declare_use_sim_time_cmd = DeclareLaunchArgument(
+        "use_sim_time",
+        default_value="true",
+        description="whether to use sim time or not",
+    )
+
     robot_description = {"robot_description": robot_xml}
 
     robot_controllers = PathJoinSubstitution(
@@ -52,12 +60,14 @@ def generate_launch_description():
         package="controller_manager",
         executable="spawner",
         arguments=["joint_state_broadcaster", "--controller-manager", "/controller_manager"],
+        parameters=[{"use_sim_time": use_sim_time}],
     )
 
     robot_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
         arguments=["forward_position_controller", "--controller-manager", "/controller_manager"],
+        parameters=[{"use_sim_time": use_sim_time}],
     )
     # Delay start of robot_controller after `joint_state_broadcaster`
     delay_robot_controller_spawner_after_joint_state_broadcaster_spawner = RegisterEventHandler(
@@ -73,4 +83,12 @@ def generate_launch_description():
         delay_robot_controller_spawner_after_joint_state_broadcaster_spawner,
     ]
 
-    return LaunchDescription(nodes)
+    ld = LaunchDescription()
+
+    ld.add_action(declare_use_sim_time_cmd)
+
+    ld.add_action(control_node)
+    ld.add_action(joint_state_broadcaster_spawner)
+    ld.add_action(delay_robot_controller_spawner_after_joint_state_broadcaster_spawner)
+
+    return ld

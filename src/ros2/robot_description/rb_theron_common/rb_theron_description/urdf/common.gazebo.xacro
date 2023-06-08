@@ -7,21 +7,34 @@
 			<!-- <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
 				<parameters>$(find rb_theron_description)/config/rb_theron_controller.yaml</parameters>
 			</plugin> -->
-			
-			<plugin
-				filename="libgz-sim-joint-state-publisher-system"
-				name="gz::sim::systems::JointStatePublisher">
+
+			<plugin filename="libgz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+				<joint_name>rightjoint_rsupport</joint_name>
+				<joint_name>leftjoint_rsupport</joint_name>
+
+				<joint_name>right_wheel_joint</joint_name>
+				<joint_name>left_wheel_joint</joint_name>
+
+				<joint_name>rightcastorjoint_support</joint_name>
+				<joint_name>leftcastorjoint_support</joint_name>
+
+				<joint_name>rightjoint_wheel</joint_name>
+				<joint_name>leftjoint_wheel</joint_name>
+
+				<joint_name>rightcastorjoint_wheel</joint_name>
+				<joint_name>leftcastorjoint_wheel</joint_name>
+
+				<joint_name>rightjoint_support</joint_name>
+				<joint_name>leftjoint_support</joint_name>
 			</plugin>
 
-			<plugin
-				filename="libgz-sim-diff-drive-system.so"
-				name="gz::sim::systems::DiffDrive">
+			<plugin filename="libgz-sim-diff-drive-system.so" name="gz::sim::systems::DiffDrive">
 				<left_joint>$(arg prefix)left_wheel_joint</left_joint>
 				<right_joint>$(arg prefix)right_wheel_joint</right_joint>
 
 				<wheel_separation>0.5032</wheel_separation>
 				<wheel_radius>0.0762</wheel_radius>
-				
+
 				<odom_publish_frequency>30</odom_publish_frequency>
 				<topic>cmd_vel</topic>
 
@@ -29,7 +42,7 @@
 
 				<!-- There is no possiblity (as far as I know) to disable tf publishing of odom->base, so if you
 				don't want the tf to be published, you can just dump it into a different topic -->
-				<tf_topic>tf_dump</tf_topic> 
+				<tf_topic>tf_dump</tf_topic>
 
 				<xacro:if value="${publish_bf}">
 					<child_frame_id>$(arg prefix)base_footprint</child_frame_id>
