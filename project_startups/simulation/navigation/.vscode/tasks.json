@@ -119,8 +119,8 @@
                         "label": "multi_startup_robot_localization",
                         "detail": "Starts Nav, slam, robot_localization for odom->base, rviz",
                         "dependsOn": [
-                                "start slam_toolbox",
-                                "start nav_without_localization",
+                                "start multi_robot_slam_toolbox",
+                                "start multi_robot_nav_without_localization",
                                 "start multi_robot_localization",
                                 "start rviz"
                         ],
@@ -238,6 +238,16 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start multi_robot_nav_without_localization",
+                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup multi_robot_nav_without_localization_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start nav_without_localization_with_door_bells_launch",
                         "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py use_interim_goal:=true",
                         "problemMatcher": [],
@@ -250,6 +260,16 @@
                         "type": "shell",
                         "label": "start slam_toolbox",
                         "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start multi_robot_slam_toolbox",
+                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup multi_robot_slam_toolbox_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

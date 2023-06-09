@@ -35,7 +35,7 @@ def generate_launch_description():
     
         declare_robot_model_cmd = DeclareLaunchArgument(
             "robot_name",
-            default_value="rb_theron",
+            default_value=robot_namespace,
             description="name of the robot in the simulation",
         )
    
@@ -49,13 +49,13 @@ def generate_launch_description():
         )
     
         joint_state_publisher_node = Node(
-            package='joint_state_publisher',
-            executable='joint_state_publisher',
-            name='joint_state_publisher',
-            namespace=robot_namespace,
-        parameters=[{'frame_prefix': robot_namespace+'/', 'use_sim_time': True}, {"robot_description": robot_xml}],
-        output="screen"
-    )
+                package='joint_state_publisher',
+                executable='joint_state_publisher',
+                name='joint_state_publisher',
+                namespace=robot_namespace,
+            parameters=[{'frame_prefix': robot_namespace+'/', 'use_sim_time': True}, {"robot_description": robot_xml}],
+            output="screen"
+        )
 
         spawn_robot_cmd = Node(
             package="ros_gz_sim",
@@ -81,7 +81,7 @@ def generate_launch_description():
         group = GroupAction([
             declare_robot_model_cmd, 
             start_robot_state_publisher_cmd,
-            joint_state_publisher_node,
+            #joint_state_publisher_node,
             spawn_robot_cmd,
         ])
         ld.add_action(group)

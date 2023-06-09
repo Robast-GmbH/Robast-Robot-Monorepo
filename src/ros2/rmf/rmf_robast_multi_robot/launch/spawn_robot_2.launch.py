@@ -59,14 +59,12 @@ def generate_launch_description():
              "-z",
             "0.2",
             "-x",
-            "7",
+            "-3",
             "-y",
-            "0",
+            "1",
             "-Y",
-            "0",
-           
+            "0", 
         ],
-       
     )    
     
     group = GroupAction([
