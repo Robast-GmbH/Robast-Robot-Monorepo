@@ -2,6 +2,7 @@
 
 #include "can.hpp"
 #include "drawer.hpp"
+#include "gpio.hpp"
 #include "led_strip.hpp"
 
 #define MODULE_ID 1
@@ -22,7 +23,11 @@ void setup()
   {
   }
   Serial.println("\nStart...");
-  drawer_0.init_lock(PWR_OPEN_LOCK1_PIN, PWR_CLOSE_LOCK1_PIN, SENSOR_LOCK1_PIN, SENSOR_DRAWER1_CLOSED_PIN);
+  drawer_0.init_lock(LOCK_1_OPEN_CONROL_ID,
+                     LOCK_1_CLOSE_CONROL_ID,
+                     SENSE_INPUT_LOCK_1_ID,
+                     SENSE_INPUT_DRAWER_1_CLOSED_ID,
+                     std::make_unique<drawer_controller::GPIO>());
   drawers.push_back(std::make_shared<drawer_controller::Drawer>(drawer_0));
   led_strip::initialize_led_strip();
   CAN.initialize_can_controller();
