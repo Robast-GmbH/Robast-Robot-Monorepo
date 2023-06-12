@@ -39,6 +39,20 @@
             "problemMatcher": []
         },
         {
+            "label": "launch nfc statemachine",
+            "detail": "Install all dependencies specified in the workspaces package.xml files.",
+            "type": "shell",
+            "command": "ros2 launch drawer_sm nfc_drawer_statemachine_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "launch drawer statemachine",
+            "detail": "Install all dependencies specified in the workspaces package.xml files.",
+            "type": "shell",
+            "command": "ros2 launch drawer_sm drawer_statemachine_launch.py",
+            "problemMatcher": []
+        },
+        {
             "label": "Test",
             "detail": "Build and executes all tests and shows the links to the testreport with Errors",
             "type": "shell",

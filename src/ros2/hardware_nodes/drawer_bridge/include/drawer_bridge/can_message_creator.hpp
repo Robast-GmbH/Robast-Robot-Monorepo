@@ -1,25 +1,28 @@
 
-#include "can_msgs/msg/frame.hpp"
-#include "communication_interfaces/msg/drawer_task.hpp"
-#include "communication_interfaces/msg/drawer_leds.hpp"
-#include "can_encoder_decoder.hpp"
 #include "can/can_db.hpp"
+#include "can_encoder_decoder.hpp"
+#include "can_msgs/msg/frame.hpp"
+#include "communication_interfaces/msg/drawer_leds.hpp"
+#include "communication_interfaces/msg/drawer_task.hpp"
 
-class CanMessageCreator {
-public:
+namespace drawer_bridge
+{
+  class CanMessageCreator
+  {
+   public:
     using CanMessage = can_msgs::msg::Frame;
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
     using DrawerTask = communication_interfaces::msg::DrawerTask;
     using DrawerLeds = communication_interfaces::msg::DrawerLeds;
-    
 
     CanMessage create_can_msg_drawer_unlock(const DrawerAddress& msg) const;
 
     CanMessage create_can_msg_drawer_led(const DrawerLeds& msg) const;
 
-    CanMessage create_can_msg_drawer_task(const DrawerTask& msg)const;
+    CanMessage create_can_msg_drawer_task(const DrawerTask& msg) const;
 
-private:
+   private:
     CanEncoderDecoder can_encoder_decoder_ = CanEncoderDecoder();
     robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
-};
+  };
+}   // namespace drawer_bridge

@@ -1,3 +1,3 @@
 DrawerAddress drawer_address
 bool is_stall_guard_triggered
-uint8 percentage_of_completion
+uint8 position
