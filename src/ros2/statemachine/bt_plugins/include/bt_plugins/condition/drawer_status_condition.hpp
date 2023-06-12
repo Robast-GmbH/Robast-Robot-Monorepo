@@ -32,8 +32,8 @@ namespace drawer_statemachine
     private:
             rclcpp::Node::SharedPtr _node;
 
-            rclcpp::CallbackGroup::SharedPtr callback_group_;
-            rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
+            rclcpp::CallbackGroup::SharedPtr _callback_group;
+            rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
             rclcpp::Subscription<communication_interfaces::msg::DrawerStatus>::SharedPtr drawer_status_sub_;
             bool last_message_;
             bool target_value_;

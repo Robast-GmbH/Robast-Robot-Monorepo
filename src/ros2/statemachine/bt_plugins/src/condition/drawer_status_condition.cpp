@@ -8,10 +8,10 @@ namespace drawer_statemachine
         const BT::NodeConfig& config) : BT::ConditionNode(name, config)
     {
         _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
-        callback_group_ = _node->create_callback_group(
+        _callback_group = _node->create_callback_group(
             rclcpp::CallbackGroupType::MutuallyExclusive,
             false);
-        callback_group_executor_.add_callback_group(callback_group_, _node->get_node_base_interface());
+        _callback_group_executor.add_callback_group(_callback_group, _node->get_node_base_interface());
 
         getInput("topic", topic_name_);
 
@@ -26,7 +26,7 @@ namespace drawer_statemachine
         qos.transient_local().reliable();
 
         rclcpp::SubscriptionOptions sub_option;
-        sub_option.callback_group = callback_group_;
+        sub_option.callback_group = _callback_group;
         drawer_status_sub_ = _node->create_subscription<communication_interfaces::msg::DrawerStatus>(
             topic_name_,
             qos,
@@ -39,7 +39,7 @@ namespace drawer_statemachine
 
     BT::NodeStatus DrawerStatusCondition::tick()
     {
-        callback_group_executor_.spin_some();
+        _callback_group_executor.spin_some();
 
         if (last_message_ == target_value_)
         {

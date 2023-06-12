@@ -52,15 +52,15 @@ namespace drawer_statemachine
     protected:
         std::string topic_name_;
         void callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg);
+        communication_interfaces::msg::DrawerAddress drawer_address_;
 
     private:
         rclcpp::Node::SharedPtr _node;
 
-        rclcpp::CallbackGroup::SharedPtr callback_group_;
-        rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
-        rclcpp::Subscription<communication_interfaces::msg::DrawerAddress>::SharedPtr drawer_open_sub_;
-        communication_interfaces::msg::DrawerAddress drawer_address_;
-        bool new_message_;
+        rclcpp::CallbackGroup::SharedPtr _callback_group;
+        rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
+        rclcpp::Subscription<communication_interfaces::msg::DrawerAddress>::SharedPtr _drawer_open_sub;
+        bool _new_message;
     };
 }
 #endif 

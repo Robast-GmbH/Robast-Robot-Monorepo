@@ -63,8 +63,8 @@ namespace drawer_statemachine
         rclcpp::Node::SharedPtr _node;
         communication_interfaces::msg::DrawerAddress drawer_address_;
 
-        // rclcpp::CallbackGroup::SharedPtr callback_group_;
-        // rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
+        // rclcpp::CallbackGroup::SharedPtr _callback_group;
+        // rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
         rclcpp::Publisher<communication_interfaces::msg::DrawerAddress>::SharedPtr open_publisher_;
     };
 }

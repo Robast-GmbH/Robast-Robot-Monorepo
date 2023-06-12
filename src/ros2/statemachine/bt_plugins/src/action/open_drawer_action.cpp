@@ -23,7 +23,7 @@ namespace drawer_statemachine
         qos.transient_local().reliable();
 
         rclcpp::SubscriptionOptions sub_option;
-        // sub_option.callback_group = callback_group_;
+        // sub_option.callback_group = _callback_group;
         open_publisher_ = _node->create_publisher<communication_interfaces::msg::DrawerAddress>(topic_name_, qos);
     }
 
