@@ -14,7 +14,25 @@
             "label": "Launch Drawer Bridge",
             "detail": "Launch the drawer bridge node",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 launch drawer_bridge drawer_bridge_launch.py",
+            "command": "source install/setup.bash; ros2 launch drawer_bridge drawer_bridge_launch.py;",
+            "problemMatcher": []
+        },
+        {
+            "label": "Drawer Bridge Startup",
+            "detail": "Launch the drawer bridge node and the ros2 socket can node",
+            "type": "shell",
+            "dependsOn": [
+                "Launch ros2 socket can",
+                "Launch Drawer Bridge"
+            ],
+            "command": "source install/setup.bash; ros2 launch drawer_bridge drawer_bridge_launch.py;",
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch ros2 socket can",
+            "detail": "Launch ros2 socket can node",
+            "type": "shell",
+            "command": "source install/setup.bash;ros2 launch ros2_socketcan socket_can_bridge.launch.xml",
             "problemMatcher": []
         },
         {
