@@ -1,3 +1,5 @@
+#include <memory>
+
 #include "can.hpp"
 #include "drawer.hpp"
 #include "electrical_drawer.hpp"
@@ -6,28 +8,25 @@
 #define MODULE_ID 1
 #define R_SENSE   0.11f
 
-// drawer_controller::Drawer drawer0 = drawer_controller::Drawer(MODULE_ID, 0);
-drawer_controller::ElectricalDrawer e_drawer_0 =
-    drawer_controller::ElectricalDrawer(MODULE_ID, 0, ENCODER_A_PIN, ENCODER_B_PIN);
-TMC2209Stepper stepper_driver(&Serial2, R_SENSE, 0);
-std::vector<drawer_controller::IDrawer *> drawers = std::vector<drawer_controller::IDrawer *>();
+using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
+
+drawer_controller::Drawer drawer_0 = drawer_controller::Drawer(MODULE_ID, 0);
+std::vector<drawer_ptr> drawers = std::vector<drawer_ptr>();
 drawer_controller::Can CAN = drawer_controller::Can(MODULE_ID);
 
 std::optional<robast_can_msgs::CanMessage> received_message;
-std::optional<robast_can_msgs::CanMessage> to_be_send_message;
+std::optional<robast_can_msgs::CanMessage> to_be_sent_message;
 
 void setup()
 {
   Serial.begin(115200);   // Init serial port and set baudrate
   while (!Serial)
-    ;                     // Wait for serial port to connect
+  {
+  }
   Serial.println("\nStart...");
-  // drawer0.init_lock(PWR_OPEN_LOCK1_PIN, PWR_CLOSE_LOCK1_PIN, SENSOR_LOCK1_PIN, SENSOR_DRAWER1_CLOSED_PIN);
-  // drawers.push_back(&drawer0);
-  // led_strip::initialize_led_strip();
-  e_drawer_0.init_lock(PWR_OPEN_LOCK1_PIN, PWR_CLOSE_LOCK1_PIN, SENSOR_LOCK1_PIN, SENSOR_DRAWER1_CLOSED_PIN);
-  e_drawer_0.init_motor(&stepper_driver);
-  drawers.push_back(&e_drawer_0);
+  drawer_0.init_lock(PWR_OPEN_LOCK1_PIN, PWR_CLOSE_LOCK1_PIN, SENSOR_LOCK1_PIN, SENSOR_DRAWER1_CLOSED_PIN);
+  drawers.push_back(std::make_shared<drawer_controller::Drawer>(drawer_0));
+  led_strip::initialize_led_strip();
   CAN.initialize_can_controller();
 }
 
@@ -75,13 +74,13 @@ void loop()
 
   // led_strip::handle_led_control();
 
-  for (drawer_controller::IDrawer *drawer : drawers)
+  for (drawer_ptr drawer : drawers)
   {
     drawer->update_state();
-    to_be_send_message = drawer->can_out();
-    if (to_be_send_message.has_value())
+    to_be_sent_message = drawer->can_out();
+    if (to_be_sent_message.has_value())
     {
-      CAN.send_can_message(to_be_send_message.value());
+      CAN.send_can_message(to_be_sent_message.value());
     }
   }
 }

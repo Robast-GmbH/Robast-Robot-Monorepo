@@ -27,7 +27,7 @@ def generate_launch_description():
     if is_simulation:
         world_model = os.path.join(nav_bringup_dir, "maps", "6OG", "6OG_new")
     else:
-        world_model = (os.path.join(nav_bringup_dir, "maps", "new6OG", "tiplu_new"),)
+        world_model = (os.path.join(nav_bringup_dir, "maps", "new6OG", "6th_floor"),)
 
     declare_world_model_cmd = DeclareLaunchArgument(
         "world_posegraph",
@@ -51,7 +51,7 @@ def generate_launch_description():
         "slam_executable": "sync_slam_toolbox_node",
         "slam_params_file": slam_toolbox_params_yaml,
         "slam_posegraph": world_posegraph,
-        "slam_mode": "mapping",
+        "slam_mode": "localization",
         "slam_map_topic": "/map",
         "namespace": namespace,
     }.items()

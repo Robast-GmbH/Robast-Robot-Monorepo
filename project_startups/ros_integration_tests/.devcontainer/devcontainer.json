@@ -10,7 +10,7 @@
 	},
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
-		"source=${localWorkspaceFolder}/../../src/ros2/,target=/workspace/src/,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/,target=/workspace/src/,type=bind"
 	],
 	"workspaceFolder": "/workspace",
 	"runArgs": [

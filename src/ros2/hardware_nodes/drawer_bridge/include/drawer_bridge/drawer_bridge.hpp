@@ -25,16 +25,16 @@
 
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
-#include "communication_interfaces/msg/module.hpp"
-#include "communication_interfaces/msg/drawer_task.hpp"
+#include "can_msgs/msg/frame.hpp"
 #include "communication_interfaces/msg/drawer_leds.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
+#include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/electrical_drawer_status.hpp"
+#include "communication_interfaces/msg/module.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
-#include "drawer_bridge/drawer_defines.h"
-#include "can_msgs/msg/frame.hpp"
 #include "drawer_bridge/can_encoder_decoder.hpp"
 #include "drawer_bridge/can_message_creator.hpp"
+#include "drawer_bridge/drawer_defines.h"
 #include "drawer_bridge/qos_config.hpp"
 #include "shelf_setup.hpp"
 
@@ -57,14 +57,15 @@ namespace drawer_bridge
     bool is_lock_switch_pushed;
   };
 
-  struct electric_drawer_status: public drawer_status {
+  struct electric_drawer_status : public drawer_status
+  {
     bool is_stall_guard_triggered;
     int drawer_position;
   };
 
-  class DrawerBridge: public rclcpp::Node
+  class DrawerBridge : public rclcpp::Node
   {
-  public:
+   public:
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
     using DrawerTask = communication_interfaces::msg::DrawerTask;
     using DrawerLeds = communication_interfaces::msg::DrawerLeds;
@@ -80,7 +81,7 @@ namespace drawer_bridge
 
     friend class TestDrawerBridge;   // this class has full access to all private and protected parts of this class
 
-  private:
+   private:
     /* VARIABLES */
     rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service_;
     rclcpp::Subscription<DrawerAddress>::SharedPtr open_drawer_subscription_;
@@ -90,7 +91,6 @@ namespace drawer_bridge
     rclcpp::Publisher<DrawerStatus>::SharedPtr drawer_status_publisher_;
     rclcpp::Publisher<CanMessage>::SharedPtr can_messages_publisher_;
     rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr electrical_drawer_status_publisher_;
-
 
     robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
 
@@ -131,7 +131,7 @@ namespace drawer_bridge
      * @brief Service server execution callback
      */
     void provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request,
-      std::shared_ptr<ShelfSetupInfo::Response> response);
+                                           std::shared_ptr<ShelfSetupInfo::Response> response);
   };
 }   // namespace drawer_bridge
 #endif   // DRAWER_BRIDGE__DRAWER_BRIDGE_HPP_
