@@ -25,7 +25,7 @@
 #include "behaviortree_cpp/behavior_tree.h"
 #include "behaviortree_cpp/bt_factory.h"
 #include "behaviortree_cpp/xml_parsing.h"
-#include "behaviortree_cpp/loggers/bt_zmq_publisher.h"
+// #include "behaviortree_cpp/loggers/bt_zmq_publisher.h"
 
 
 namespace drawer_statemachine
@@ -112,7 +112,6 @@ public:
 protected:
   // The factory that will be used to dynamically construct the behavior tree
   BT::BehaviorTreeFactory factory_;
-  std::unique_ptr<BT::PublisherZMQ> groot_monitor_;
 };
 
 }  // namespace drawer_behavior_tree
