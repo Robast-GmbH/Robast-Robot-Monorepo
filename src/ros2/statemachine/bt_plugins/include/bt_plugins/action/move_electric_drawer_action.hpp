@@ -5,14 +5,12 @@
 #include <vector>
 #include <memory>
 
-
 #include "rclcpp/rclcpp.hpp"
 
 #include "behaviortree_cpp/action_node.h"
 #include "std_msgs/msg/string.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
-
 
 namespace drawer_statemachine
 {
@@ -24,8 +22,8 @@ namespace drawer_statemachine
     {
     public:
         MoveElectricDrawer(
-            const std::string& name,
-            const BT::NodeConfig& config);
+            const std::string &name,
+            const BT::NodeConfig &config);
 
         MoveElectricDrawer() = delete;
 
@@ -43,28 +41,21 @@ namespace drawer_statemachine
          */
         static BT::PortsList providedPorts()
         {
-            return
-            {
+            return {
                 BT::OutputPort<communication_interfaces::msg::DrawerAddress>(
-                    "drawer_address","address of the drawer thats used to execute the action"
-                ),
+                    "drawer_address", "address of the drawer thats used to execute the action"),
 
                 BT::InputPort<uint8_t>(
-                    "goto_position",0,"goal position between 0-255"
-                ),
+                    "target_position", 0, "goal position between 0-255"),
                 BT::InputPort<uint8_t>(
-                    "speed_mode",0,"speed between 0-255"
-                ),
+                    "speed_mode", 0, "speed between 0-255"),
                 BT::InputPort<bool>(
-                    "stall_guard_enable", true, "stall_guard_enable"
-                ),
-                
+                    "stall_guard_enable", true, "stall_guard_enable"),
+
                 BT::InputPort<std::string>(
                     "move_electric_drawer_topic",
                     "/move_drawer",
-                    "topic thats used to execute the action"
-                )
-            };
+                    "topic thats used to execute the action")};
         }
 
     protected:
@@ -78,4 +69,4 @@ namespace drawer_statemachine
         rclcpp::Publisher<communication_interfaces::msg::DrawerTask>::SharedPtr _move_electric_drawer_publisher;
     };
 }
-#endif 
+#endif

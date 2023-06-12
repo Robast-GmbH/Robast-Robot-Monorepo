@@ -45,22 +45,22 @@ namespace drawer_statemachine
             return
             {
                 BT::InputPort<uint8_t>(
-                    "blue",0,"blue"
+                    "blue", 0, "blue"
                 ),
                 BT::InputPort<uint8_t>(
-                    "red",0,"red"
+                    "red", 0, "red"
                 ),
                 BT::InputPort<uint8_t>(
-                    "green",0,"green"
+                    "green", 0, "green"
                 ),
                 BT::InputPort<uint8_t>(
-                    "brightness",0,"brightness"
+                    "brightness", 0, "brightness"
                 ),
                 BT::InputPort<uint8_t>(
-                    "mode",0,"mode of the led animation"
+                    "mode", 0, "mode of the led animation"
                 ),
                 BT::InputPort<communication_interfaces::msg::DrawerAddress>(
-                    "drawer_address","address of the drawer that should execute the action"
+                    "drawer_address", "address of the drawer that should execute the action"
                 ),
                 BT::InputPort<std::string>(
                     "led_topic",
@@ -81,6 +81,6 @@ namespace drawer_statemachine
         rclcpp::Publisher<communication_interfaces::msg::DrawerLeds>::SharedPtr led_publisher_;
         communication_interfaces::msg::DrawerLeds drawer_leds_;
 
-    };
-}
+    };    
+} // namespace drawer_statemachine
 #endif 

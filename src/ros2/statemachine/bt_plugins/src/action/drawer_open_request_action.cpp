@@ -52,7 +52,6 @@ namespace drawer_statemachine
         _drawer_open_sub.reset();
     }
 
-    
     void
         DrawerOpenReq::callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
     {

@@ -43,8 +43,8 @@ namespace drawer_statemachine
         {
             return
             {
-              BT::InputPort<std::string>("drawer_address_topic", "topic", "empty"),
-              BT::OutputPort<communication_interfaces::msg::DrawerAddress>("drawer_address", "topic")
+                BT::InputPort<std::string>("drawer_address_topic", "topic", "empty"),
+                BT::OutputPort<communication_interfaces::msg::DrawerAddress>("drawer_address", "topic")
             };
         }
 
@@ -62,5 +62,5 @@ namespace drawer_statemachine
         rclcpp::Subscription<communication_interfaces::msg::DrawerAddress>::SharedPtr _drawer_open_sub;
         bool _new_message;
     };
-}
+} // namespace drawer_statemachine
 #endif 

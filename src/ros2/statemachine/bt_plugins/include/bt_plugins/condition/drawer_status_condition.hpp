@@ -41,6 +41,6 @@ namespace drawer_statemachine
             // communication_interfaces::msg::DrawerAddress drawer_address_;
 
     };
-}
+} // namespace drawer_statemachine
 
 #endif

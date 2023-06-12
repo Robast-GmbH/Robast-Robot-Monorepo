@@ -5,7 +5,6 @@
 #include <vector>
 #include <memory>
 
-
 #include "rclcpp/rclcpp.hpp"
 
 #include "behaviortree_cpp/action_node.h"
@@ -22,8 +21,8 @@ namespace drawer_statemachine
     {
     public:
         OpenDrawer(
-            const std::string& name,
-            const BT::NodeConfig& config);
+            const std::string &name,
+            const BT::NodeConfig &config);
 
         OpenDrawer() = delete;
 
@@ -41,19 +40,14 @@ namespace drawer_statemachine
          */
         static BT::PortsList providedPorts()
         {
-            return
-            {
+            return {
                 BT::OutputPort<communication_interfaces::msg::DrawerAddress>(
-                    "drawer_address","address of the drawer thats used to execute the action"
-                ),
+                    "drawer_address", "address of the drawer thats used to execute the action"),
                 BT::InputPort<std::string>(
                     "drawer_open_topic",
                     "/open_drawer",
-                    "topic thats used to execute the action"
-                )
-            };
+                    "topic thats used to execute the action")};
         }
-
 
     protected:
         std::string topic_name_;
@@ -67,5 +61,5 @@ namespace drawer_statemachine
         // rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
         rclcpp::Publisher<communication_interfaces::msg::DrawerAddress>::SharedPtr open_publisher_;
     };
-}
-#endif 
+} // namespace drawer_statemachine
+#endif
