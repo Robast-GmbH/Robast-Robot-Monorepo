@@ -51,7 +51,7 @@ namespace test2
                             <MoveElectricDrawer drawer_address="{drawer}"
                             move_electric_drawer_topic="move_electric_drawer" 
                             speed_mode="200" 
-                            goto_position="200" 
+                            target_position="200" 
                             stall_guard_enable="0"/>
                         </BehaviorTree>
                     </root>)";
