@@ -18,6 +18,13 @@
             <input_port name="drawer_address" default="{drawer}"/>
             <input_port name="drawer_open_topic" default="/open_drawer"/>
         </Action>
+        <Action ID="MoveElectricDrawer">
+            <input_port name="drawer_address" default="{drawer}"/>
+            <input_port name="move_electric_drawer_topic" default="/move_electric_drawer"/>
+            <input_port name="speed_mode" default="0">uint8</input_port>
+            <input_port name="stall_guard_enable" default="0">uint8</input_port>
+            <input_port name="goto_position" default="0">uint8</input_port>
+        </Action>
         <Condition ID="DrawerStatusCondition">
             <input_port name="target_value" default="false"/>
             <input_port name="topic" default="/drawer_is_open"/>

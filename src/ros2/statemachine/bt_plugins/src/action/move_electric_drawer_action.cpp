@@ -1,4 +1,4 @@
-#include "bt_plugins/action/open_drawer_action.hpp"
+#include "bt_plugins/action/move_electric_drawer_action.hpp"
 
 
 
@@ -7,53 +7,55 @@ namespace drawer_statemachine
 
     using std::placeholders::_1;
 
-    OpenElectricDrawer::OpenElectricDrawer(
+    MoveElectricDrawer::MoveElectricDrawer(
         const std::string& name,
         const BT::NodeConfig& config)
-        : OpenDrawer(name, config)
+        : BT::StatefulActionNode(name, config)
     {
-        _blackboard = config.blackboard;
+        blackboard_ = config.blackboard;
 
 
         // std::scoped_lock l(_blackboard->entryMutex());
-        _node = _blackboard->get<rclcpp::Node::SharedPtr>("node");
+        _node = blackboard_->get<rclcpp::Node::SharedPtr>("node");
         // drawer_address_ = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
 
         getInput("move_electric_drawer_topic", topic_name_);
-        getInput("goto_position", drawer_task_.drawer_address);
-        getInput("speed_mode", drawer_task_.blue);
-        getInput("stall_guard_enable", drawer_task_.red);        
+        getInput("goto_position", drawer_task_.goto_position);
+        getInput("speed_mode", drawer_task_.speed_mode);
+        getInput("stall_guard_enable", drawer_task_.stall_guard_enable);
+
+        initializePublisher();
     }
 
-    void ChangeLED::initializePublisher()
+    void MoveElectricDrawer::initializePublisher()
     {
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
         _move_electric_drawer_publisher = _node->create_publisher<communication_interfaces::msg::DrawerTask>(topic_name_, qos);
     }
     
-    BT::NodeStatus OpenElectricDrawer::onStart()
+    BT::NodeStatus MoveElectricDrawer::onStart()
     {
         return BT::NodeStatus::RUNNING;
     }
 
-    BT::NodeStatus OpenElectricDrawer::onRunning()
+    BT::NodeStatus MoveElectricDrawer::onRunning()
     {
         // std::scoped_lock l(_blackboard->entryMutex());
-        drawer_task_.drawer_address = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
-        setOutput("drawer_address", drawer_task_drawer_address);
-        RCLCPP_DEBUG(rclcpp::get_logger("OpenElectricDrawer"), "open drawer ");
-        _move_electric_drawer_publisher->publish(drawer_address_);
+        drawer_task_.drawer_address = blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
+        setOutput("drawer_address", drawer_task_.drawer_address);
+        RCLCPP_DEBUG(rclcpp::get_logger("MoveElectricDrawer"), "move drawer ");
+        _move_electric_drawer_publisher->publish(drawer_task_);
 
         return BT::NodeStatus::SUCCESS;
     }
 
-    void OpenElectricDrawer::onHalted()
+    void MoveElectricDrawer::onHalted()
     {
-        open_publisher_.reset();
-        RCLCPP_DEBUG(rclcpp::get_logger("OpenElectricDrawer"), "publisher resetted");
+        _move_electric_drawer_publisher.reset();
+        RCLCPP_DEBUG(rclcpp::get_logger("MoveElectricDrawer"), "publisher resetted");
     }
 
 }  // namespace drawer_statemachine
@@ -61,5 +63,5 @@ namespace drawer_statemachine
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-    factory.registerNodeType<drawer_statemachine::OpenDrawer>("OpenDrawer");
+    factory.registerNodeType<drawer_statemachine::MoveElectricDrawer>("MoveElectricDrawer");
 }

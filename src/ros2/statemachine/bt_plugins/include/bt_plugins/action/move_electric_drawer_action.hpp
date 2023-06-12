@@ -1,5 +1,5 @@
-#ifndef DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__OPENDRAWER_BT_NODES_H
-#define DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__OPENDRAWER_BT_NODES_H
+#ifndef DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__MOVE_ELECTRIC_DRAWER_BT_NODES_H
+#define DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__MOVE_ELECTRIC_DRAWER_BT_NODES_H
 
 #include <string>
 #include <vector>
@@ -11,8 +11,8 @@
 #include "behaviortree_cpp/action_node.h"
 #include "std_msgs/msg/string.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
+#include "communication_interfaces/msg/drawer_task.hpp"
 
-#include "open_drawer.hpp"
 
 namespace drawer_statemachine
 {
@@ -20,14 +20,14 @@ namespace drawer_statemachine
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
      * updated on the blackboard and FAILURE otherwise
      */
-    class OpenElectricDrawer : public OpenDrawer
+    class MoveElectricDrawer : public BT::StatefulActionNode
     {
     public:
-        OpenElectricDrawer(
+        MoveElectricDrawer(
             const std::string& name,
             const BT::NodeConfig& config);
 
-        OpenElectricDrawer() = delete;
+        MoveElectricDrawer() = delete;
 
         /**
          * @brief The main override required by a BT action
@@ -56,7 +56,7 @@ namespace drawer_statemachine
                     "speed_mode",0,"speed between 0-255"
                 ),
                 BT::InputPort<bool>(
-                    "stall_guard_enable",false,"stall_guard_enable"
+                    "stall_guard_enable", true, "stall_guard_enable"
                 ),
                 
                 BT::InputPort<std::string>(
@@ -67,16 +67,14 @@ namespace drawer_statemachine
             };
         }
 
-
     protected:
         std::string topic_name_;
-        BT::Blackboard::Ptr _blackboard;
+        BT::Blackboard::Ptr blackboard_;
         communication_interfaces::msg::DrawerTask drawer_task_;
+        void initializePublisher();
 
     private:
         rclcpp::Node::SharedPtr _node;
-        // rclcpp::CallbackGroup::SharedPtr callback_group_;
-        // rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
         rclcpp::Publisher<communication_interfaces::msg::DrawerTask>::SharedPtr _move_electric_drawer_publisher;
     };
 }
