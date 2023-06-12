@@ -14,41 +14,41 @@ namespace drawer_controller
 /*********************************************************************************************************
  These defines are only mapping ID's used within this class
 *********************************************************************************************************/
-#define DRAWER_1_EN_TMC2209_ID    0
-#define DRAWER_2_EN_TMC2209_ID    1
-#define DRAWER_1_STDBY_TMC2209_ID 2
-#define DRAWER_2_STDBY_TMC2209_ID 3
-#define DRAWER_1_SPREAD_ID        4
-#define DRAWER_2_SPREAD_ID        5
-#define DRAWER_1_DIR_ID           6
-#define DRAWER_2_DIR_ID           7
-#define DRAWER_1_DIAG_ID          8
-#define DRAWER_2_DIAG_ID          9
-#define DRAWER_1_INDEX_ID         10
-#define DRAWER_2_INDEX_ID         11
-#define DRAWER_1_STEP_ID          12
-#define DRAWER_2_STEP_ID          13
-#define DRAWER_1_ENCODER_A_ID     14
-#define DRAWER_1_ENCODER_B_ID     15
-#define DRAWER_1_ENCODER_N_ID     16
-#define DRAWER_2_ENCODER_A_ID     17
-#define DRAWER_2_ENCODER_B_ID     18
-#define DRAWER_2_ENCODER_N_ID     19
+#define DRAWER_1_EN_TMC2209_PIN_ID    0
+#define DRAWER_2_EN_TMC2209_PIN_ID    1
+#define DRAWER_1_STDBY_TMC2209_PIN_ID 2
+#define DRAWER_2_STDBY_TMC2209_PIN_ID 3
+#define DRAWER_1_SPREAD_PIN_ID        4
+#define DRAWER_2_SPREAD_PIN_ID        5
+#define DRAWER_1_DIR_PIN_ID           6
+#define DRAWER_2_DIR_PIN_ID           7
+#define DRAWER_1_DIAG_PIN_ID          8
+#define DRAWER_2_DIAG_PIN_ID          9
+#define DRAWER_1_INDEX_PIN_ID         10
+#define DRAWER_2_INDEX_PIN_ID         11
+#define DRAWER_1_STEP_PIN_ID          12
+#define DRAWER_2_STEP_PIN_ID          13
+#define DRAWER_1_ENCODER_A_PIN_ID     14
+#define DRAWER_1_ENCODER_B_PIN_ID     15
+#define DRAWER_1_ENCODER_N_PIN_ID     16
+#define DRAWER_2_ENCODER_A_PIN_ID     17
+#define DRAWER_2_ENCODER_B_PIN_ID     18
+#define DRAWER_2_ENCODER_N_PIN_ID     19
 
-#define LOCK_1_OPEN_CONROL_ID  30
-#define LOCK_2_OPEN_CONROL_ID  31
-#define LOCK_1_CLOSE_CONROL_ID 32
-#define LOCK_2_CLOSE_CONROL_ID 33
+#define LOCK_1_OPEN_CONROL_PIN_ID  30
+#define LOCK_2_OPEN_CONROL_PIN_ID  31
+#define LOCK_1_CLOSE_CONROL_PIN_ID 32
+#define LOCK_2_CLOSE_CONROL_PIN_ID 33
 
-#define SENSE_INPUT_DRAWER_1_CLOSED_ID 40
-#define SENSE_INPUT_DRAWER_2_CLOSED_ID 41
-#define SENSE_INPUT_LOCK_1_ID          42
-#define SENSE_INPUT_LOCK_2_ID          43
+#define SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID 40
+#define SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID 41
+#define SENSE_INPUT_LOCK_1_PIN_ID          42
+#define SENSE_INPUT_LOCK_2_PIN_ID          43
 
-#define MCP2515_RX0BF_ID 50
-#define MCP2515_RX1BF_ID 51
+#define MCP2515_RX0BF_PIN_ID 50
+#define MCP2515_RX1BF_PIN_ID 51
 
-#define OE_TXB0104_ID 60
+#define OE_TXB0104_PIN_ID 60
 
   class GPIO : public IGpioWrapper
   {
@@ -99,87 +99,87 @@ namespace drawer_controller
     {
       switch (pin_mapping_id)
       {
-        case DRAWER_2_EN_TMC2209_ID:
+        case DRAWER_2_EN_TMC2209_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_0, state);
           break;
 
-        case DRAWER_2_STDBY_TMC2209_ID:
+        case DRAWER_2_STDBY_TMC2209_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_1, state);
           break;
 
-        case DRAWER_1_EN_TMC2209_ID:
+        case DRAWER_1_EN_TMC2209_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_2, state);
           break;
 
-        case DRAWER_1_STDBY_TMC2209_ID:
+        case DRAWER_1_STDBY_TMC2209_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_3, state);
           break;
 
-        case DRAWER_1_SPREAD_ID:
+        case DRAWER_1_SPREAD_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_4, state);
           break;
 
-        case DRAWER_2_DIR_ID:
+        case DRAWER_2_DIR_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_5, state);
           break;
 
-        case DRAWER_2_SPREAD_ID:
+        case DRAWER_2_SPREAD_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_6, state);
           break;
 
-        case OE_TXB0104_ID:
+        case OE_TXB0104_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_7, state);
           break;
 
-        case LOCK_2_OPEN_CONROL_ID:
+        case LOCK_2_OPEN_CONROL_PIN_ID:
           return port_expander_1_.set_pin_mode(PCA9554_REGISTER_0, state);
           break;
 
-        case LOCK_2_CLOSE_CONROL_ID:
+        case LOCK_2_CLOSE_CONROL_PIN_ID:
           return port_expander_1_.set_pin_mode(PCA9554_REGISTER_1, state);
           break;
 
-        case LOCK_1_OPEN_CONROL_ID:
+        case LOCK_1_OPEN_CONROL_PIN_ID:
           return port_expander_1_.set_pin_mode(PCA9554_REGISTER_2, state);
           break;
 
-        case LOCK_1_CLOSE_CONROL_ID:
+        case LOCK_1_CLOSE_CONROL_PIN_ID:
           return port_expander_1_.set_pin_mode(PCA9554_REGISTER_3, state);
           break;
 
-        case DRAWER_1_DIR_ID:
+        case DRAWER_1_DIR_PIN_ID:
           return port_expander_1_.set_pin_mode(PCA9554_REGISTER_7, state);
           break;
 
-        case SENSE_INPUT_LOCK_2_ID:
+        case SENSE_INPUT_LOCK_2_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_0, state);
           break;
 
-        case SENSE_INPUT_DRAWER_1_CLOSED_ID:
+        case SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_1, state);
           break;
 
-        case SENSE_INPUT_DRAWER_2_CLOSED_ID:
+        case SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_2, state);
           break;
 
-        case SENSE_INPUT_LOCK_1_ID:
+        case SENSE_INPUT_LOCK_1_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_3, state);
           break;
 
-        case DRAWER_1_DIAG_ID:
+        case DRAWER_1_DIAG_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_4, state);
           break;
 
-        case DRAWER_2_DIAG_ID:
+        case DRAWER_2_DIAG_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_5, state);
           break;
 
-        case MCP2515_RX0BF_ID:
+        case MCP2515_RX0BF_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_6, state);
           break;
 
-        case MCP2515_RX1BF_ID:
+        case MCP2515_RX1BF_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_7, state);
           break;
 
@@ -201,42 +201,42 @@ namespace drawer_controller
     {
       switch (pin_mapping_id)
       {
-        case SENSE_INPUT_LOCK_1_ID:
+        case SENSE_INPUT_LOCK_1_PIN_ID:
           value = 3;
           return port_expander_2_.digital_read(value);
           break;
 
-        case SENSE_INPUT_LOCK_2_ID:
+        case SENSE_INPUT_LOCK_2_PIN_ID:
           value = 0;
           return port_expander_2_.digital_read(value);
           break;
 
-        case SENSE_INPUT_DRAWER_1_CLOSED_ID:
+        case SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID:
           value = 1;
           return port_expander_2_.digital_read(value);
           break;
 
-        case SENSE_INPUT_DRAWER_2_CLOSED_ID:
+        case SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID:
           value = 2;
           return port_expander_2_.digital_read(value);
           break;
 
-        case DRAWER_1_DIAG_ID:
+        case DRAWER_1_DIAG_PIN_ID:
           value = 4;
           return port_expander_2_.digital_read(value);
           break;
 
-        case DRAWER_2_DIAG_ID:
+        case DRAWER_2_DIAG_PIN_ID:
           value = 5;
           return port_expander_2_.digital_read(value);
           break;
 
-        case MCP2515_RX0BF_ID:
+        case MCP2515_RX0BF_PIN_ID:
           value = 6;
           return port_expander_2_.digital_read(value);
           break;
 
-        case MCP2515_RX1BF_ID:
+        case MCP2515_RX1BF_PIN_ID:
           value = 7;
           return port_expander_2_.digital_read(value);
           break;
@@ -258,55 +258,55 @@ namespace drawer_controller
     {
       switch (pin_mapping_id)
       {
-        case DRAWER_1_EN_TMC2209_ID:
+        case DRAWER_1_EN_TMC2209_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_2, state);
           break;
 
-        case DRAWER_2_EN_TMC2209_ID:
+        case DRAWER_2_EN_TMC2209_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_0, state);
           break;
 
-        case DRAWER_1_STDBY_TMC2209_ID:
+        case DRAWER_1_STDBY_TMC2209_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_3, state);
           break;
 
-        case DRAWER_2_STDBY_TMC2209_ID:
+        case DRAWER_2_STDBY_TMC2209_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_1, state);
           break;
 
-        case DRAWER_1_SPREAD_ID:
+        case DRAWER_1_SPREAD_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_4, state);
           break;
 
-        case DRAWER_2_SPREAD_ID:
+        case DRAWER_2_SPREAD_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_6, state);
           break;
 
-        case DRAWER_1_DIR_ID:
+        case DRAWER_1_DIR_PIN_ID:
           return port_expander_1_.digital_write(PCA9554_REGISTER_7, state);
           break;
 
-        case DRAWER_2_DIR_ID:
+        case DRAWER_2_DIR_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_5, state);
           break;
 
-        case OE_TXB0104_ID:
+        case OE_TXB0104_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_7, state);
           break;
 
-        case LOCK_1_OPEN_CONROL_ID:
+        case LOCK_1_OPEN_CONROL_PIN_ID:
           return port_expander_1_.digital_write(PCA9554_REGISTER_2, state);
           break;
 
-        case LOCK_2_OPEN_CONROL_ID:
+        case LOCK_2_OPEN_CONROL_PIN_ID:
           return port_expander_1_.digital_write(PCA9554_REGISTER_0, state);
           break;
 
-        case LOCK_1_CLOSE_CONROL_ID:
+        case LOCK_1_CLOSE_CONROL_PIN_ID:
           return port_expander_1_.digital_write(PCA9554_REGISTER_3, state);
           break;
 
-        case LOCK_2_CLOSE_CONROL_ID:
+        case LOCK_2_CLOSE_CONROL_PIN_ID:
           return port_expander_1_.digital_write(PCA9554_REGISTER_1, state);
           break;
 

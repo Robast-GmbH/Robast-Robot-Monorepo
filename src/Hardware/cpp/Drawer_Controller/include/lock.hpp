@@ -21,23 +21,20 @@ namespace drawer_controller
     void initialize_lock(uint8_t power_open_pin_id,
                          uint8_t power_close_pin_id,
                          uint8_t sensor_lock_pin_id,
-                         uint8_t sensor_drawer_closed_pin_id,
-                         std::unique_ptr<IGpioWrapper> gpio_wrapper)
+                         uint8_t sensor_drawer_closed_pin_id)
     {
-      power_open_pin_id_ = power_open_pin_id;
-      power_close_pin_id_ = power_close_pin_id;
-      sensor_lock_pin_id_ = sensor_lock_pin_id;
-      sensor_drawer_closed_pin_ = sensor_drawer_closed_pin_id;
+      _power_open_pin_id = power_open_pin_id;
+      _power_close_pin_id = power_close_pin_id;
+      _sensor_lock_pin_id = sensor_lock_pin_id;
+      _sensor_drawer_closed_pin = sensor_drawer_closed_pin_id;
 
-      gpio_wrapper_ = std::move(gpio_wrapper);
+      _gpio_wrapper->set_pin_mode(_power_open_pin_id, OUTPUT);
+      _gpio_wrapper->set_pin_mode(_power_close_pin_id, OUTPUT);
+      _gpio_wrapper->set_pin_mode(_sensor_lock_pin_id, INPUT);
+      _gpio_wrapper->set_pin_mode(_sensor_drawer_closed_pin, INPUT);
 
-      gpio_wrapper_->set_pin_mode(power_open_pin_id_, OUTPUT);
-      gpio_wrapper_->set_pin_mode(power_close_pin_id_, OUTPUT);
-      gpio_wrapper_->set_pin_mode(sensor_lock_pin_id_, INPUT);
-      gpio_wrapper_->set_pin_mode(sensor_drawer_closed_pin_, INPUT);
-
-      gpio_wrapper_->digital_write(power_open_pin_id_, LOW);
-      gpio_wrapper_->digital_write(power_close_pin_id_, LOW);
+      _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
+      _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
     }
 
     void handle_lock_control()
@@ -107,11 +104,11 @@ namespace drawer_controller
     {
       // Tracking the moving average for the sensor pins helps to debounce them a little bit
       byte digital_read_sensor_lock_pin;
-      gpio_wrapper_->digital_read(sensor_lock_pin_id_, digital_read_sensor_lock_pin);
+      _gpio_wrapper->digital_read(_sensor_lock_pin_id, digital_read_sensor_lock_pin);
       moving_average_sensor_lock_pin_ = 0.2 * digital_read_sensor_lock_pin + 0.8 * moving_average_sensor_lock_pin_;
 
       byte digital_drawer_closed_pin;
-      gpio_wrapper_->digital_read(sensor_drawer_closed_pin_, digital_drawer_closed_pin);
+      _gpio_wrapper->digital_read(_sensor_drawer_closed_pin, digital_drawer_closed_pin);
       moving_average_drawer_closed_pin_ = 0.2 * digital_drawer_closed_pin + 0.8 * moving_average_drawer_closed_pin_;
     }
 
@@ -126,12 +123,12 @@ namespace drawer_controller
     }
 
    private:
-    uint8_t power_open_pin_id_;
-    uint8_t power_close_pin_id_;
-    uint8_t sensor_lock_pin_id_;
-    uint8_t sensor_drawer_closed_pin_;
+    uint8_t _power_open_pin_id;
+    uint8_t _power_close_pin_id;
+    uint8_t _sensor_lock_pin_id;
+    uint8_t _sensor_drawer_closed_pin;
 
-    std::unique_ptr<IGpioWrapper> gpio_wrapper_;
+    std::shared_ptr<IGpioWrapper> _gpio_wrapper;
 
     bool open_lock_current_step_ = false;    // flag to store which state the locks should have
     bool open_lock_previous_step_ = false;   // flag to store state of the lock of the previous step
@@ -146,20 +143,20 @@ namespace drawer_controller
 
     void open_lock()
     {
-      gpio_wrapper_->digital_write(power_close_pin_id_, LOW);
-      gpio_wrapper_->digital_write(power_open_pin_id_, HIGH);
+      _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
+      _gpio_wrapper->digital_write(_power_open_pin_id, HIGH);
     }
 
     void close_lock()
     {
-      gpio_wrapper_->digital_write(power_open_pin_id_, LOW);
-      gpio_wrapper_->digital_write(power_close_pin_id_, HIGH);
+      _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
+      _gpio_wrapper->digital_write(_power_close_pin_id, HIGH);
     }
 
     void set_lock_output_low()
     {
-      gpio_wrapper_->digital_write(power_open_pin_id_, LOW);
-      gpio_wrapper_->digital_write(power_close_pin_id_, LOW);
+      _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
+      _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
     }
   };
 }   // namespace drawer_controller
