@@ -27,18 +27,18 @@ namespace port_expander
    public:
     PortExpanderPCA9554(byte slave_address)
     {
-      slave_address_ = slave_address;
+      _slave_address = slave_address;
     }
 
     bool twi_read(byte &register_address)
     {
-      Wire.beginTransmission(slave_address_);
+      Wire.beginTransmission(_slave_address);
       Wire.write(register_address);
 
       if (Wire.endTransmission() == 0)
       {
         delay(15);
-        Wire.requestFrom(slave_address_, 1, true);
+        Wire.requestFrom(_slave_address, 1, true);
         while (Wire.available() < 1)
         {
         }
@@ -50,7 +50,7 @@ namespace port_expander
 
     bool twi_write(byte register_address, byte data_write)
     {
-      Wire.beginTransmission(slave_address_);
+      Wire.beginTransmission(_slave_address);
       Wire.write(register_address);
       Wire.write(data_write);
 
@@ -143,7 +143,7 @@ namespace port_expander
     }
 
    private:
-    uint8_t slave_address_;
+    uint8_t _slave_address;
   };
 
 }   // namespace port_expander

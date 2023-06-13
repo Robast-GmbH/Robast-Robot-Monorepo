@@ -41,17 +41,17 @@ namespace drawer_controller
     {
       // Mind that the state for open_lock_current_step_ is changed in the handle_lock_status function when a CAN msg is
       // received
-      bool change_lock_state = open_lock_current_step_ == open_lock_previous_step_ ? false : true;
+      bool change_lock_state = _open_lock_current_step == _open_lock_previous_step ? false : true;
 
       unsigned long current_timestamp = millis();
-      unsigned long time_since_lock_state_was_changed = current_timestamp - timestamp_last_lock_change_;
-      unsigned long time_since_lock_was_opened = current_timestamp - timestamp_last_lock_opening_;
+      unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
+      unsigned long time_since_lock_was_opened = current_timestamp - _timestamp_last_lock_opening;
 
       if (change_lock_state && (time_since_lock_state_was_changed >= LOCK_MECHANISM_TIME))
       {
-        open_lock_previous_step_ = open_lock_current_step_;
-        timestamp_last_lock_change_ = current_timestamp;
-        open_lock_current_step_ ? open_lock() : close_lock();
+        _open_lock_previous_step = _open_lock_current_step;
+        _timestamp_last_lock_change = current_timestamp;
+        _open_lock_current_step ? open_lock() : close_lock();
       }
       else if (!change_lock_state && (time_since_lock_state_was_changed >= LOCK_MECHANISM_TIME))
       {
@@ -60,7 +60,7 @@ namespace drawer_controller
         set_lock_output_low();
       }
 
-      if (open_lock_current_step_ && (time_since_lock_was_opened > LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED))
+      if (_open_lock_current_step && (time_since_lock_was_opened > LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED))
       {
         // Close the lock automatically after some seconds when drawer wasn't opened for safety reasons
         set_open_lock_current_step(false);
@@ -72,22 +72,22 @@ namespace drawer_controller
 
     void set_open_lock_current_step(bool open_lock_current_step)
     {
-      open_lock_current_step_ = open_lock_current_step;
+      _open_lock_current_step = open_lock_current_step;
     }
 
     void set_timestamp_last_lock_change()
     {
-      timestamp_last_lock_opening_ = millis();
+      _timestamp_last_lock_opening = millis();
     }
 
     void set_drawer_opening_is_in_progress(bool drawer_opening_is_in_progress)
     {
-      drawer_opening_is_in_progress_ = drawer_opening_is_in_progress;
+      _drawer_opening_is_in_progress = drawer_opening_is_in_progress;
     }
 
     bool is_drawer_opening_in_progress()
     {
-      return drawer_opening_is_in_progress_;
+      return _drawer_opening_is_in_progress;
     }
 
     bool is_lock_switch_pushed()
@@ -105,21 +105,21 @@ namespace drawer_controller
       // Tracking the moving average for the sensor pins helps to debounce them a little bit
       byte digital_read_sensor_lock_pin;
       _gpio_wrapper->digital_read(_sensor_lock_pin_id, digital_read_sensor_lock_pin);
-      moving_average_sensor_lock_pin_ = 0.2 * digital_read_sensor_lock_pin + 0.8 * moving_average_sensor_lock_pin_;
+      _moving_average_sensor_lock_pin = 0.2 * digital_read_sensor_lock_pin + 0.8 * _moving_average_sensor_lock_pin;
 
       byte digital_drawer_closed_pin;
       _gpio_wrapper->digital_read(_sensor_drawer_closed_pin, digital_drawer_closed_pin);
-      moving_average_drawer_closed_pin_ = 0.2 * digital_drawer_closed_pin + 0.8 * moving_average_drawer_closed_pin_;
+      _moving_average_drawer_closed_pin = 0.2 * digital_drawer_closed_pin + 0.8 * _moving_average_drawer_closed_pin;
     }
 
     float get_moving_average_sensor_lock_pin()
     {
-      return moving_average_sensor_lock_pin_;
+      return _moving_average_sensor_lock_pin;
     }
 
     float get_moving_average_drawer_closed_pin()
     {
-      return moving_average_drawer_closed_pin_;
+      return _moving_average_drawer_closed_pin;
     }
 
    private:
@@ -130,16 +130,16 @@ namespace drawer_controller
 
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
 
-    bool open_lock_current_step_ = false;    // flag to store which state the locks should have
-    bool open_lock_previous_step_ = false;   // flag to store state of the lock of the previous step
+    bool _open_lock_current_step = false;    // flag to store which state the locks should have
+    bool _open_lock_previous_step = false;   // flag to store state of the lock of the previous step
 
-    bool drawer_opening_is_in_progress_ = false;
+    bool _drawer_opening_is_in_progress = false;
 
-    unsigned long timestamp_last_lock_change_ = 0;
-    unsigned long timestamp_last_lock_opening_ = 0;
+    unsigned long _timestamp_last_lock_change = 0;
+    unsigned long _timestamp_last_lock_opening = 0;
 
-    float moving_average_sensor_lock_pin_ = 0;
-    float moving_average_drawer_closed_pin_ = 0;
+    float _moving_average_sensor_lock_pin = 0;
+    float _moving_average_drawer_closed_pin = 0;
 
     void open_lock()
     {

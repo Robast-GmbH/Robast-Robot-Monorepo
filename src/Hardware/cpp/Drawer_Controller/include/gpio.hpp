@@ -66,36 +66,6 @@ namespace drawer_controller
       Wire.begin(I2C_SDA, I2C_SCL);
     }
 
-    // void initialize_pins()
-    // {
-    //   port_expander_0_.set_pin_mode(PCA9554_REGISTER_0, OUTPUT);   // Drawer_2_~EN_TMC2209
-    //   port_expander_0_.set_pin_mode(PCA9554_REGISTER_1, OUTPUT);   // Drawer_2_STDBY_TMC2209
-    //   port_expander_0_.set_pin_mode(PCA9554_REGISTER_2, OUTPUT);   // Drawer_1_~EN_TMC2209
-    //   port_expander_0_.set_pin_mode(PCA9554_REGISTER_3, OUTPUT);   // Drawer_1_STDBY_TMC2209
-    //   port_expander_0_.set_pin_mode(PCA9554_REGISTER_4, OUTPUT);   // Drawer_1_SPREAD
-    //   port_expander_0_.set_pin_mode(PCA9554_REGISTER_5, OUTPUT);   // Drawer_2_DIR
-    //   port_expander_0_.set_pin_mode(PCA9554_REGISTER_6, OUTPUT);   // Drawer_2_SPREAD
-    //   port_expander_0_.set_pin_mode(PCA9554_REGISTER_7, OUTPUT);   // OE_TXB0104
-
-    //   port_expander_1_.set_pin_mode(PCA9554_REGISTER_0, OUTPUT);   // Lock_2_Open_Control
-    //   port_expander_1_.set_pin_mode(PCA9554_REGISTER_1, OUTPUT);   // Lock_2_Close_Control
-    //   port_expander_1_.set_pin_mode(PCA9554_REGISTER_2, OUTPUT);   // Lock_1_Open_Control
-    //   port_expander_1_.set_pin_mode(PCA9554_REGISTER_3, OUTPUT);   // Lock_1_Close_Control
-    //   // port_expander_1_.pin_mode(PCA9554_REGISTER_4, OUTPUT);   // Not in use
-    //   // port_expander_1_.pin_mode(PCA9554_REGISTER_5, OUTPUT);   // Not in use
-    //   // port_expander_1_.pin_mode(PCA9554_REGISTER_6, OUTPUT);   // Not in use
-    //   port_expander_1_.set_pin_mode(PCA9554_REGISTER_7, OUTPUT);   // Drawer_1_DIR
-
-    //   port_expander_2_.set_pin_mode(PCA9554_REGISTER_0, INPUT);    // Sense_Input_Lock_2
-    //   port_expander_2_.set_pin_mode(PCA9554_REGISTER_1, INPUT);    // Sense_Input_Drawer_Closed_1
-    //   port_expander_2_.set_pin_mode(PCA9554_REGISTER_2, INPUT);    // Sense_Input_Drawer_Closed_2
-    //   port_expander_2_.set_pin_mode(PCA9554_REGISTER_3, INPUT);    // Sense_Input_Lock_1
-    //   port_expander_2_.set_pin_mode(PCA9554_REGISTER_4, INPUT);    // Drawer_1_DIAG
-    //   port_expander_2_.set_pin_mode(PCA9554_REGISTER_5, INPUT);    // Drawer_2_DIAG
-    //   port_expander_2_.set_pin_mode(PCA9554_REGISTER_6, INPUT);    // MCP2515_RX0BF
-    //   port_expander_2_.set_pin_mode(PCA9554_REGISTER_7, INPUT);    // MCP2515_RX1BF
-    // }
-
     /**
      * Set the pin mode for the pin mapped to the given pin_mapping_id
      *
