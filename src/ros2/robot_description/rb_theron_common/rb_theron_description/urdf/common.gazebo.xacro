@@ -26,6 +26,12 @@
 
 				<joint_name>rightjoint_support</joint_name>
 				<joint_name>leftjoint_support</joint_name>
+
+				<joint_name>drawer_1_joint</joint_name>
+				<joint_name>drawer_2_joint</joint_name>
+				<joint_name>drawer_3_joint</joint_name>
+				<joint_name>drawer_4_joint</joint_name>
+				<joint_name>drawer_5_joint</joint_name>
 			</plugin>
 
 			<plugin filename="libgz-sim-diff-drive-system.so" name="gz::sim::systems::DiffDrive">
