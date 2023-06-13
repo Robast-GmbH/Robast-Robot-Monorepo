@@ -35,6 +35,7 @@ namespace drawer_statemachine
     {
         return BT::NodeStatus::RUNNING;
     }
+
     BT::NodeStatus DrawerChangeStateReq::onRunning()
     {
         _callback_group_executor.spin_some();
