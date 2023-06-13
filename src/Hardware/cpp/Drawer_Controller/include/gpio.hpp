@@ -180,42 +180,42 @@ namespace drawer_controller
       switch (pin_mapping_id)
       {
         case SENSE_INPUT_LOCK_1_PIN_ID:
-          value = 3;
+          value = PCA9554_REGISTER_3;
           return port_expander_2_.digital_read(value);
           break;
 
         case SENSE_INPUT_LOCK_2_PIN_ID:
-          value = 0;
+          value = PCA9554_REGISTER_0;
           return port_expander_2_.digital_read(value);
           break;
 
         case SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID:
-          value = 1;
+          value = PCA9554_REGISTER_1;
           return port_expander_2_.digital_read(value);
           break;
 
         case SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID:
-          value = 2;
+          value = PCA9554_REGISTER_2;
           return port_expander_2_.digital_read(value);
           break;
 
         case DRAWER_1_DIAG_PIN_ID:
-          value = 4;
+          value = PCA9554_REGISTER_4;
           return port_expander_2_.digital_read(value);
           break;
 
         case DRAWER_2_DIAG_PIN_ID:
-          value = 5;
+          value = PCA9554_REGISTER_5;
           return port_expander_2_.digital_read(value);
           break;
 
         case MCP2515_RX0BF_PIN_ID:
-          value = 6;
+          value = PCA9554_REGISTER_6;
           return port_expander_2_.digital_read(value);
           break;
 
         case MCP2515_RX1BF_PIN_ID:
-          value = 7;
+          value = PCA9554_REGISTER_7;
           return port_expander_2_.digital_read(value);
           break;
 
