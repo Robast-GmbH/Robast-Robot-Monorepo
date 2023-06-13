@@ -56,7 +56,7 @@ namespace drawer_controller
 
     std::optional<robast_can_msgs::CanMessage> _feedback_msg;
 
-    Lock _lock = Lock();
+    Lock _lock = Lock(_gpio_wrapper);
 
     bool _drawer_open_feedback_can_msg_sent = false;
 

@@ -14,7 +14,7 @@ namespace drawer_controller
   class Lock
   {
    public:
-    Lock()
+    Lock(std::shared_ptr<IGpioWrapper> gpio_wrapper) : _gpio_wrapper{gpio_wrapper}
     {
     }
 

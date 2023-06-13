@@ -5,7 +5,7 @@
   PINOUT DEFINES
 *********************************************************************************************************/
 
-#define MCP2515_INT GPIO_NUM_25
+#define MCP2515_INT GPIO_NUM_4
 
 #define SPI_MOSI GPIO_NUM_23
 #define SPI_MISO GPIO_NUM_19

@@ -11,6 +11,14 @@
 namespace drawer_controller
 {
 
+  /*********************************************************************************************************
+   Slave address defines
+  *********************************************************************************************************/
+
+#define SLAVE_ADDRESS_PORT_EXPANDER_1 0x20
+#define SLAVE_ADDRESS_PORT_EXPANDER_2 0x21
+#define SLAVE_ADDRESS_PORT_EXPANDER_3 0x22
+
 /*********************************************************************************************************
  These defines are only mapping ID's used within this class
 *********************************************************************************************************/
@@ -317,9 +325,12 @@ namespace drawer_controller
     }
 
    private:
-    port_expander::PortExpanderPCA9554 port_expander_0_ = port_expander::PortExpanderPCA9554(0);
-    port_expander::PortExpanderPCA9554 port_expander_1_ = port_expander::PortExpanderPCA9554(1);
-    port_expander::PortExpanderPCA9554 port_expander_2_ = port_expander::PortExpanderPCA9554(2);
+    port_expander::PortExpanderPCA9554 port_expander_0_ =
+        port_expander::PortExpanderPCA9554(SLAVE_ADDRESS_PORT_EXPANDER_1);
+    port_expander::PortExpanderPCA9554 port_expander_1_ =
+        port_expander::PortExpanderPCA9554(SLAVE_ADDRESS_PORT_EXPANDER_2);
+    port_expander::PortExpanderPCA9554 port_expander_2_ =
+        port_expander::PortExpanderPCA9554(SLAVE_ADDRESS_PORT_EXPANDER_3);
   };
 
 }   // namespace drawer_controller
