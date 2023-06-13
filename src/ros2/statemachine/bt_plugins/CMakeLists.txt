@@ -64,8 +64,8 @@ ament_target_dependencies(${library_name}
 add_library(change_led_action_bt_node SHARED src/action/change_led_action.cpp)
 list(APPEND plugin_libs change_led_action_bt_node)
 
-add_library(drawer_open_request_action_bt_node SHARED src/action/drawer_open_request_action.cpp)
-list(APPEND plugin_libs drawer_open_request_action_bt_node)
+add_library(drawer_change_state_request_action_bt_node SHARED src/action/drawer_change_state_request_action.cpp)
+list(APPEND plugin_libs drawer_change_state_request_action_bt_node)
 
 add_library(open_drawer_action_bt_node SHARED src/action/open_drawer_action.cpp)
 list(APPEND plugin_libs open_drawer_action_bt_node)

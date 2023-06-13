@@ -58,7 +58,7 @@
       <input_port name="red"
                   default="0">uint8</input_port>
     </Action>
-    <Action ID="DrawerOpenReq"
+    <Action ID="DrawerChangeStateReq"
             editable="false">
       <input_port name="drawer_address_topic"
                   default="topic"/>

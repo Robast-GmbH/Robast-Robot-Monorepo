@@ -1,5 +1,5 @@
 plugins:
-  - drawer_open_request_action_bt_node
+  - drawer_change_state_request_action_bt_node
   - change_led_action_bt_node
   - open_drawer_action_bt_node
   - drawer_status_condition_bt_node

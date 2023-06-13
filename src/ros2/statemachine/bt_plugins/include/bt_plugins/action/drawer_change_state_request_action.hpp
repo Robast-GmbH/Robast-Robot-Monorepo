@@ -1,10 +1,9 @@
-#ifndef DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__DRAWEROPENREQ_BT_NODES_H
-#define DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__DRAWEROPENREQ_BT_NODES_H
+#ifndef DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__DrawerChangeStateReq_BT_NODES_H
+#define DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__DrawerChangeStateReq_BT_NODES_H
 
 #include <string>
 #include <vector>
 #include <memory>
-
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -18,14 +17,14 @@ namespace drawer_statemachine
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
      * updated on the blackboard and FAILURE otherwise
      */
-    class DrawerOpenReq: public BT::StatefulActionNode
+    class DrawerChangeStateReq : public BT::StatefulActionNode
     {
     public:
-        DrawerOpenReq(
-            const std::string& name,
-            const BT::NodeConfig& config);
+        DrawerChangeStateReq(
+            const std::string &name,
+            const BT::NodeConfig &config);
 
-        DrawerOpenReq() = delete;
+        DrawerChangeStateReq() = delete;
 
         /**
          * @brief The main override required by a BT action
@@ -41,17 +40,14 @@ namespace drawer_statemachine
          */
         static BT::PortsList providedPorts()
         {
-            return
-            {
+            return {
                 BT::InputPort<std::string>("drawer_address_topic", "topic", "empty"),
-                BT::OutputPort<communication_interfaces::msg::DrawerAddress>("drawer_address", "topic")
-            };
+                BT::OutputPort<communication_interfaces::msg::DrawerAddress>("drawer_address", "topic")};
         }
-
 
     protected:
         std::string topic_name_;
-        void callbackDrawerOpenReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg);
+        void callbackDrawerChangeStateReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg);
         communication_interfaces::msg::DrawerAddress drawer_address_;
 
     private:
@@ -63,4 +59,4 @@ namespace drawer_statemachine
         bool _new_message;
     };
 } // namespace drawer_statemachine
-#endif 
+#endif
