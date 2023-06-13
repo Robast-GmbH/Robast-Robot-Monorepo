@@ -89,17 +89,10 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_configure(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Configuring ...please wait...");
-
-    for (int i = 0; i < hw_start_sec_; i++)
-    {
-      rclcpp::sleep_for(std::chrono::seconds(1));
-      RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                  "%.1f seconds left...",
-                  hw_start_sec_ - i);
-    }
-    // END: This part here is for exemplary purposes - Please do not copy to your production code
+    // TODO@Jacob: Add configuration for dryve d1
+    std::string dryve_d1_ip_address = "10.10.13.6";
+    int port = 502;
+    dryve_d1_gate::D1 xAxis(dryve_d1_ip_address, port, std::make_unique<dryve_d1_gate::SocketWrapper>());
 
     // reset values always when configuring hardware
     for (uint i = 0; i < hw_states_.size(); i++)

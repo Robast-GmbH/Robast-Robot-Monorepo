@@ -19,6 +19,8 @@
 #include <string>
 #include <vector>
 
+#include "dryve_d1_gate/d1.hpp"
+#include "dryve_d1_gate/socket_wrapper.hpp"
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
