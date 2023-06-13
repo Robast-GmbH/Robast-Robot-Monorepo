@@ -131,7 +131,7 @@ namespace drawer_controller
       Serial.print(" MODULE ID: ");
       Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data(), HEX);
       Serial.print(" DRAWER ID: ");
-      Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
+      Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
     }
   };
 }   // namespace drawer_controller
