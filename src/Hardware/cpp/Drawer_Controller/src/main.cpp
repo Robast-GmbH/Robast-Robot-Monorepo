@@ -15,7 +15,7 @@ std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper = std::make_shared
 
 drawer_controller::Drawer drawer_0 = drawer_controller::Drawer(MODULE_ID, LOCK_ID, gpio_wrapper);
 std::vector<drawer_ptr> drawers = std::vector<drawer_ptr>();
-drawer_controller::Can CAN = drawer_controller::Can(MODULE_ID, gpio_wrapper, OE_TXB0104_PIN_ID);
+drawer_controller::Can CAN = drawer_controller::Can(MODULE_ID, gpio_wrapper, OE_TXB0104_PIN_ID, PCA9554_OUTPUT);
 
 std::optional<robast_can_msgs::CanMessage> received_message;
 std::optional<robast_can_msgs::CanMessage> to_be_sent_message;
@@ -30,7 +30,9 @@ void setup()
   drawer_0.init_lock(LOCK_1_OPEN_CONROL_PIN_ID,
                      LOCK_1_CLOSE_CONROL_PIN_ID,
                      SENSE_INPUT_LOCK_1_PIN_ID,
-                     SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
+                     SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
+                     PCA9554_INPUT,
+                     PCA9554_OUTPUT);
   drawers.push_back(std::make_shared<drawer_controller::Drawer>(drawer_0));
   led_strip::initialize_led_strip();
   CAN.initialize_can_controller();

@@ -16,8 +16,14 @@ namespace drawer_controller
   class Can
   {
    public:
-    Can(uint32_t module_id, std::shared_ptr<IGpioWrapper> gpio_wrapper, uint8_t oe_txb0104_pin_id)
-        : _module_id{module_id}, _gpio_wrapper{gpio_wrapper}, _oe_txb0104_pin_id{oe_txb0104_pin_id} {};
+    Can(uint32_t module_id,
+        std::shared_ptr<IGpioWrapper> gpio_wrapper,
+        uint8_t oe_txb0104_pin_id,
+        bool gpio_output_state)
+        : _module_id{module_id},
+          _gpio_wrapper{gpio_wrapper},
+          _oe_txb0104_pin_id{oe_txb0104_pin_id},
+          _gpio_output_state{gpio_output_state} {};
 
     void initialize_can_controller(void)
     {
@@ -125,6 +131,7 @@ namespace drawer_controller
     uint32_t _module_id;
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
     uint8_t _oe_txb0104_pin_id;
+    bool _gpio_output_state;
 
     static const uint32_t _CAN_BIT_RATE = 250 * 1000;
 
@@ -138,7 +145,7 @@ namespace drawer_controller
 
     void initialize_voltage_translator(void)
     {
-      _gpio_wrapper->set_pin_mode(_oe_txb0104_pin_id, OUTPUT);
+      _gpio_wrapper->set_pin_mode(_oe_txb0104_pin_id, _gpio_output_state);
       _gpio_wrapper->digital_write(_oe_txb0104_pin_id, HIGH);
     }
   };

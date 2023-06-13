@@ -19,6 +19,9 @@
 #define PCA9554_REGISTER_6 6
 #define PCA9554_REGISTER_7 7
 
+#define PCA9554_INPUT  0
+#define PCA9554_OUTPUT 1
+
 namespace port_expander
 {
 
