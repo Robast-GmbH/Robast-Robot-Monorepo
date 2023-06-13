@@ -12,14 +12,14 @@
         },
         {
             "label": "Launch Dryve D1 Gate",
-            "detail": "Launch the drawer gate node",
+            "detail": "Launch the dryve d1 gate node",
             "type": "shell",
             "command": "source install/setup.bash; ros2 launch dryve_d1_gate dryve_d1_gate_launch.py",
             "problemMatcher": []
         },
         {
             "label": "Launch ros2_control_door_opening_mechanism_bringup",
-            "detail": "Launch the drawer gate node",
+            "detail": "Launch the ros2 control manager",
             "type": "shell",
             "command": "source install/setup.bash; ros2 launch ros2_control_door_opening_mechanism_bringup ros2_control_door_opening_mechanism_bringup_launch.py",
             "problemMatcher": []
