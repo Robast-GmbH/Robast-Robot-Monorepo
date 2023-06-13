@@ -133,12 +133,14 @@ namespace drawer_controller
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_0, state);
           break;
 
+        // TODO: The pins for SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID and SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID will probably
+        // TODO: will be remapped again in the next interation probably
         case SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID:
-          return port_expander_2_.set_pin_mode(PCA9554_REGISTER_1, state);
+          return port_expander_2_.set_pin_mode(PCA9554_REGISTER_2, state);
           break;
 
         case SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID:
-          return port_expander_2_.set_pin_mode(PCA9554_REGISTER_2, state);
+          return port_expander_2_.set_pin_mode(PCA9554_REGISTER_1, state);
           break;
 
         case SENSE_INPUT_LOCK_1_PIN_ID:
@@ -189,13 +191,15 @@ namespace drawer_controller
           return port_expander_2_.digital_read(value);
           break;
 
+        // TODO: The pins for SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID and SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID will probably
+        // TODO: will be remapped again in the next interation probably
         case SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID:
-          value = PCA9554_REGISTER_1;
+          value = PCA9554_REGISTER_2;
           return port_expander_2_.digital_read(value);
           break;
 
         case SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID:
-          value = PCA9554_REGISTER_2;
+          value = PCA9554_REGISTER_1;
           return port_expander_2_.digital_read(value);
           break;
 
