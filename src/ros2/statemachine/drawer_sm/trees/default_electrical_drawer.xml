@@ -11,16 +11,16 @@
                  red="28"/>
       <MoveElectricDrawer drawer_address="{drawer}"
                           move_electric_drawer_topic="/move_electric_drawer"
-                          speed_mode="128"
+                          speed_mode="200"
                           stall_guard_enable="0"
                           target_position="200"/>
-      <DrawerStatusCondition target_value="true"
-                             topic="/electric_drawer_is_open"/>
+      <ElectricDrawerStatusCondition target_value="true"
+                                     topic="/drawer_feedback_status"/>
       <DrawerChangeStateReq drawer_address_topic="/close_drawer"
                             drawer_address="{drawer}"/>
       <MoveElectricDrawer drawer_address="{drawer}"
                           move_electric_drawer_topic="/move_electric_drawer"
-                          speed_mode="128"
+                          speed_mode="200"
                           stall_guard_enable="0"
                           target_position="0"/>
       <ChangeLED blue="123"
@@ -30,6 +30,8 @@
                  led_topic="drawer_leds"
                  mode="1"
                  red="123"/>
+      <ElectricDrawerStatusCondition target_value="false"
+                                     topic="/drawer_feedback_status"/>
       <SubTree ID="drawer_close_animation_tree"
                _autoremap="true"/>
     </Sequence>
@@ -61,12 +63,12 @@
       <output_port name="drawer_address"
                    default="{drawer}"/>
     </Action>
-    <Condition ID="DrawerStatusCondition"
+    <Condition ID="ElectricDrawerStatusCondition"
                editable="false">
       <input_port name="target_value"
-                  default="false"/>
+                  default="false">bool. wether the value should be true or false</input_port>
       <input_port name="topic"
-                  default="/drawer_is_open"/>
+                  default="/drawer_feedback_status"/>
     </Condition>
     <Action ID="MoveElectricDrawer"
             editable="false">

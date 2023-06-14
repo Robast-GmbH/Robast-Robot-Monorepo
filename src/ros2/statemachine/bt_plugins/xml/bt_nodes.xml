@@ -29,8 +29,11 @@
             <input_port name="target_value" default="false"/>
             <input_port name="topic" default="/drawer_is_open"/>
         </Condition>
-        <Action ID="UserToDrawerMapping"
-            editable="true"/>
+        <Condition ID="ElectricDrawerStatusCondition">
+            <input_port name="target_value" default="false">bool. wether the value should be true or false</input_port>
+            <input_port name="topic" default="/drawer_feedback_status"/>
+        </Condition>
+        <Action ID="UserToDrawerMapping" editable="true"/>
     </TreeNodesModel>
 </root>
 

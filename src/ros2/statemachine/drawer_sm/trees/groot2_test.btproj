@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4" project_name="Project">
+    <include path="default_electrical_drawer.xml"/>
     <include path="drawer_nfc_bt.xml"/>
     <include path="drawer_sequence.xml"/>
+    <include path="subtrees/drawer_close_animation.xml"/>
     <!-- Description of Node Models (used by Groot) -->
     <TreeNodesModel>
         <Action ID="ChangeLED" editable="false">
@@ -21,6 +23,15 @@
             <input_port name="target_value" default="false"/>
             <input_port name="topic" default="/drawer_is_open"/>
         </Condition>
+        <Action ID="Hans" editable="false"/>
+        <Action ID="MoveElectricDrawer" editable="false">
+            <input_port name="drawer_address" default="{drawer}"/>
+            <input_port name="move_electric_drawer_topic" default="/move_electric_drawer"/>
+            <input_port name="speed_mode" default="0">uint8</input_port>
+            <input_port name="stall_guard_enable" default="0">uint8</input_port>
+            <input_port name="target_position" default="0">uint8</input_port>
+        </Action>
+        <Action ID="NFCToDrawer" editable="true"/>
         <Action ID="OpenDrawer" editable="false">
             <input_port name="drawer_open_topic" default="/open_drawer"/>
             <output_port name="drawer_address" default="{drawer}"/>
