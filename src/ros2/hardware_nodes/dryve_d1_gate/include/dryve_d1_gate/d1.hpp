@@ -58,6 +58,10 @@ namespace dryve_d1_gate
 
     int read_object_value(char object_index_1, char object_index_2, int subindex = 0);
 
+    // Object indexes for the reading data from the dryve d1
+    static constexpr unsigned char OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE = 96;
+    static constexpr unsigned char OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE = 100;
+
     std::string_view check_for_dryve_error();
 
     std::string_view wait_for_dryve_ready_state();
