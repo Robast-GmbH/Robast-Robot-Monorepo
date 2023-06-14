@@ -37,13 +37,13 @@ rmf_fleet:
     clean: False
     finishing_request: "park" # [park, charge, nothing]
 
-# TinyRobot CONFIG =================================================================
+
 
 robots:
   # Here the user is expected to append the configuration for each robot in the
   # fleet.
-  # Configuration for tinyRobot1
-  theron1:
+ 
+  rb0:
     robot_config:
       max_delay: 15.0 # allowed seconds of delay of the current itinerary before it gets interrupted and replanned
     rmf_config:
@@ -54,8 +54,8 @@ robots:
         orientation: 0.0 # radians
       charger:
         waypoint: "theron_charger"
-  # Configuration for tinyRobot2
-  theron2:
+
+  rb1:
     robot_config:
       max_delay: 15.0 # allowed seconds of delay of the current itinerary before it gets interrupted and replanned
     rmf_config:

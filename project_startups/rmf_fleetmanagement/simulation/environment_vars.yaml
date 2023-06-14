@@ -1,0 +1,9 @@
+prefix: ''
+robot: 'rb_theron'
+init_x: 0.0 #8.59
+init_y: 0.0 #-13.45
+init_z: 0.0 #0.35
+init_yaw: 0.0 #3.14
+robot_name: "rb_theron"
+config_directory: "config_simulation" #config_simulation
+is_simulation: true

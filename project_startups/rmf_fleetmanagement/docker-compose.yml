@@ -4,13 +4,14 @@ services:
   simulation:
     build:
       context: .
-      dockerfile: ../../src/ros2/simulation/Dockerfile
-    image: robast1
+      dockerfile: ../../src/ros2/rmf/Dockerfile
+    image: rmf_robast1
     environment:
-      - ROS_DOMAIN_ID=1
+      - ROS_DOMAIN_ID=88
     volumes:
       - ./simulation/:/workspace/:cached
       - ../../src/ros2/simulation:/workspace/src/simulation:cached
+      - ../../src/ros2/rmf:/workspace/src/rmf:cached
       - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
       - ../../src/ros2/communication_interfaces:/workspace/src/communication_interfaces:cached
       - ../../src/ros2/navigation/environment_vars.yaml:/workspace/src/navigation/environment_vars.yaml:cached
@@ -30,9 +31,9 @@ services:
     build:
       context: .
       dockerfile: ../../src/ros2/navigation/Dockerfile
-    image: robast2
+    image: rmf_robast2
     environment:
-      - ROS_DOMAIN_ID=1 
+      - ROS_DOMAIN_ID=88
     volumes:
       - ./navigation/:/workspace/:cached
       - ../../src/ros2/navigation:/workspace/src/navigation:cached
@@ -48,10 +49,6 @@ services:
     # network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
 
-  # state_publisher:
-  #   build:
-  #     context: .
-  #     dockerfile: ../../src/ros2/simulation/Dockerfile
 
 networks:
   host:
