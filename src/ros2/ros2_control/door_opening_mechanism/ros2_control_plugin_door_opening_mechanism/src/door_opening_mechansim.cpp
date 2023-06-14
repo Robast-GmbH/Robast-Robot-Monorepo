@@ -178,6 +178,9 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_deactivate(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
+    // TODO@Jacob/TOBI: We need on_shutdown, on_cleanup or on_deactivate to be triggered somehow to properly set the
+    // dryve D1 to shudown state
+
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Deactivating ...please wait...");
 
@@ -200,6 +203,42 @@ namespace ros2_control_plugin_door_opening_mechanism
     // END: This part here is for exemplary purposes - Please do not copy to your production code
 
     return hardware_interface::CallbackReturn::SUCCESS;
+  }
+
+  hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_shutdown(
+      const rclcpp_lifecycle::State& /*previous_state*/)
+  {
+    // TODO@Jacob/TOBI: We need on_shutdown, on_cleanup or on_deactivate to be triggered somehow to properly set the
+    // dryve D1 to shudown state
+
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+                "Shutting down ...please wait...");
+
+    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
+    _x_axis.wait_for_dryve_ready_state();
+    _x_axis.set_dryve_shutdown_state();
+
+    // Gracefully close everything down
+    close(_x_axis.sock);
+
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successfull shutdown!");
+  }
+
+  hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_cleanup(
+      const rclcpp_lifecycle::State& /*previous_state*/)
+  {
+    // TODO@Jacob/TOBI: We need on_shutdown, on_cleanup or on_deactivate to be triggered somehow to properly set the
+    // dryve D1 to shudown state
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Cleaning up ...please wait...");
+
+    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
+    _x_axis.wait_for_dryve_ready_state();
+    _x_axis.set_dryve_shutdown_state();
+
+    // Gracefully close everything down
+    close(_x_axis.sock);
+
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Cleaned up successfully!");
   }
 
   hardware_interface::return_type DoorOpeningMechanismSystemPositionOnlyHardware::read(

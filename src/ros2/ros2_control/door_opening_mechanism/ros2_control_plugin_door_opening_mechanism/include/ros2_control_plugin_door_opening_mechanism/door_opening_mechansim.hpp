@@ -52,7 +52,13 @@ namespace ros2_control_plugin_door_opening_mechanism
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_activate(
         const rclcpp_lifecycle::State& previous_state) override;
 
+    ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_cleanup(
+        const rclcpp_lifecycle::State& previous_state) override;
+
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_deactivate(
+        const rclcpp_lifecycle::State& previous_state) override;
+
+    ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_shutdown(
         const rclcpp_lifecycle::State& previous_state) override;
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::return_type read(
