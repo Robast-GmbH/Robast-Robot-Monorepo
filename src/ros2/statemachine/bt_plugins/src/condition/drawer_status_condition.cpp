@@ -1,11 +1,10 @@
 #include "bt_plugins/condition/drawer_status_condition.hpp"
 
-
 namespace drawer_statemachine
 {
     DrawerStatusCondition::DrawerStatusCondition(
-        const std::string& name,
-        const BT::NodeConfig& config) : BT::ConditionNode(name, config)
+        const std::string &name,
+        const BT::NodeConfig &config) : BT::ConditionNode(name, config)
     {
         _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
         _callback_group = _node->create_callback_group(
@@ -52,7 +51,7 @@ namespace drawer_statemachine
     {
         last_message_ = msg->drawer_is_open;
     }
-}
+} // namespace drawer_statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
