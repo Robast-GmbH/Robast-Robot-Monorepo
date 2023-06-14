@@ -129,4 +129,6 @@ install(DIRECTORY
 
 ament_export_include_directories(include)
 
+ament_export_libraries(library_d1)
+
 ament_package()
