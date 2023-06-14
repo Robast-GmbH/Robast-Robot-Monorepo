@@ -89,8 +89,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     const std::string _DRYVE_D1_IP_ADDRESS = "10.10.13.6";
     const int _PORT = 502;
 
-    dryve_d1_gate::D1 _x_axis =
-        dryve_d1_gate::D1(_DRYVE_D1_IP_ADDRESS, _PORT, std::make_unique<dryve_d1_gate::SocketWrapper>());
+    // dryve_d1_gate::D1 _x_axis =
+    //     dryve_d1_gate::D1(_DRYVE_D1_IP_ADDRESS, _PORT, std::make_unique<dryve_d1_gate::SocketWrapper>());
   };
 
 }   // namespace ros2_control_plugin_door_opening_mechanism

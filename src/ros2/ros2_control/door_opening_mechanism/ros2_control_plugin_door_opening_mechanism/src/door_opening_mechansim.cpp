@@ -96,7 +96,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_configure(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    _x_axis.run_dryve_state_machine();
+    // _x_axis.run_dryve_state_machine();
 
     // reset values always when configuring hardware
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -184,12 +184,12 @@ namespace ros2_control_plugin_door_opening_mechanism
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Deactivating ...please wait...");
 
-    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
-    _x_axis.wait_for_dryve_ready_state();
-    _x_axis.set_dryve_shutdown_state();
+    // // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
+    // _x_axis.wait_for_dryve_ready_state();
+    // _x_axis.set_dryve_shutdown_state();
 
-    // Gracefully close everything down
-    close(_x_axis.sock);
+    // // Gracefully close everything down
+    // close(_x_axis.sock);
 
     for (int i = 0; i < hw_stop_sec_; i++)
     {
@@ -214,12 +214,12 @@ namespace ros2_control_plugin_door_opening_mechanism
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
                 "Shutting down ...please wait...");
 
-    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
-    _x_axis.wait_for_dryve_ready_state();
-    _x_axis.set_dryve_shutdown_state();
+    // // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
+    // _x_axis.wait_for_dryve_ready_state();
+    // _x_axis.set_dryve_shutdown_state();
 
-    // Gracefully close everything down
-    close(_x_axis.sock);
+    // // Gracefully close everything down
+    // close(_x_axis.sock);
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successfull shutdown!");
   }
@@ -231,12 +231,12 @@ namespace ros2_control_plugin_door_opening_mechanism
     // dryve D1 to shudown state
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Cleaning up ...please wait...");
 
-    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
-    _x_axis.wait_for_dryve_ready_state();
-    _x_axis.set_dryve_shutdown_state();
+    // // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
+    // _x_axis.wait_for_dryve_ready_state();
+    // _x_axis.set_dryve_shutdown_state();
 
-    // Gracefully close everything down
-    close(_x_axis.sock);
+    // // Gracefully close everything down
+    // close(_x_axis.sock);
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Cleaned up successfully!");
   }
@@ -247,14 +247,14 @@ namespace ros2_control_plugin_door_opening_mechanism
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Reading...");
 
-    _hw_position_states[0] =
-        static_cast<double>(_x_axis.read_object_value(_x_axis.OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
-                                                      _x_axis.OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
-        _X_AXIS_SI_UNIT_FACTOR;
-    _hw_velocity_states[0] =
-        static_cast<double>(_x_axis.read_object_value(_x_axis.OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
-                                                      _x_axis.OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
-        _X_AXIS_SI_UNIT_FACTOR;
+    // _hw_position_states[0] =
+    //     static_cast<double>(_x_axis.read_object_value(_x_axis.OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
+    //                                                   _x_axis.OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
+    //     _X_AXIS_SI_UNIT_FACTOR;
+    // _hw_velocity_states[0] =
+    //     static_cast<double>(_x_axis.read_object_value(_x_axis.OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
+    //                                                   _x_axis.OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
+    //     _X_AXIS_SI_UNIT_FACTOR;
 
     for (uint i = 0; i < _hw_position_states.size(); i++)
     {
@@ -282,7 +282,7 @@ namespace ros2_control_plugin_door_opening_mechanism
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Writing...");
 
-    _x_axis.set_profile_velocity(_hw_velocity_commands[0], _X_AXIS_ACCELERATION, _X_AXIS_DECELERATION);
+    // _x_axis.set_profile_velocity(_hw_velocity_commands[0], _X_AXIS_ACCELERATION, _X_AXIS_DECELERATION);
 
     for (uint i = 0; i < _hw_position_commands.size(); i++)
     {
