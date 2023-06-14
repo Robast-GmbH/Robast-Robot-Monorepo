@@ -89,10 +89,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_configure(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    // TODO@Jacob: Add configuration for dryve d1
-    std::string dryve_d1_ip_address = "10.10.13.6";
-    int port = 502;
-    dryve_d1_gate::D1 xAxis(dryve_d1_ip_address, port, std::make_unique<dryve_d1_gate::SocketWrapper>());
+    _x_axis.run_dryve_state_machine();
 
     // reset values always when configuring hardware
     for (uint i = 0; i < hw_states_.size(); i++)
@@ -184,14 +181,16 @@ namespace ros2_control_plugin_door_opening_mechanism
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Reading...");
 
+    hw_states_[0] = static_cast<double>(_x_axis.read_object_value(_x_axis.OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
+                                                                  _x_axis.OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
+                    _X_AXIS_SI_UNIT_FACTOR;
+
     for (uint i = 0; i < hw_states_.size(); i++)
     {
-      // Simulate RRBot's movement
-      hw_states_[i] = hw_states_[i] + (hw_commands_[i] - hw_states_[i]) / hw_slowdown_;
       RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
                   "Got state %.5f for joint %d!",
                   hw_states_[i],
-                  i);
+                  i);   // DEBUGGING
     }
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Joints successfully read!");
     // END: This part here is for exemplary purposes - Please do not copy to your production code
