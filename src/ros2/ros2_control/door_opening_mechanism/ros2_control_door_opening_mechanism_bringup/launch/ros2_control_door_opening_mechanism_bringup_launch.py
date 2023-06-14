@@ -66,7 +66,7 @@ def generate_launch_description():
     robot_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
-        arguments=["forward_position_controller", "--controller-manager", "/controller_manager"],
+        arguments=["forward_velocity_controller", "--controller-manager", "/controller_manager"],
         parameters=[{"use_sim_time": use_sim_time}],
     )
     # Delay start of robot_controller after `joint_state_broadcaster`

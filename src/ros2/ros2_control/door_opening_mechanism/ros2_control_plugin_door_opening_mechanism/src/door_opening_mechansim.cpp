@@ -243,14 +243,22 @@ namespace ros2_control_plugin_door_opening_mechanism
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Writing...");
 
-    _x_axis.set_profile_velocity(_hw_position_commands[0], _X_AXIS_ACCELERATION, _X_AXIS_DECELERATION);
+    _x_axis.set_profile_velocity(_hw_velocity_commands[0], _X_AXIS_ACCELERATION, _X_AXIS_DECELERATION);
 
     for (uint i = 0; i < _hw_position_commands.size(); i++)
     {
       // Simulate sending commands to the hardware
       RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                  "Got command %.5f for joint %d!",
+                  "Got position command %.5f for joint %d!",
                   _hw_position_commands[i],
+                  i);
+    }
+    for (uint i = 0; i < _hw_velocity_commands.size(); i++)
+    {
+      // Simulate sending commands to the hardware
+      RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+                  "Got velocity command %.5f for joint %d!",
+                  _hw_velocity_commands[i],
                   i);
     }
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Joints successfully written!");
