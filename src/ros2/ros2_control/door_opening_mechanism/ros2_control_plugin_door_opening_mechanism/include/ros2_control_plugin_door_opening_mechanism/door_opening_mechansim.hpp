@@ -67,13 +67,18 @@ namespace ros2_control_plugin_door_opening_mechanism
     double hw_stop_sec_;
     double hw_slowdown_;
 
-    // Store the command for the simulated robot
-    std::vector<double> hw_commands_;
-    std::vector<double> hw_states_;
+    std::vector<double> _hw_position_commands;
+    std::vector<double> _hw_position_states;
+
+    std::vector<double> _hw_velocity_commands;
+    std::vector<double> _hw_velocity_states;
 
     // Please mind: Actually you could get this value from the d1_dryve via get_si_unit_factor(), but I get stupid
     // values from it
     const double _X_AXIS_SI_UNIT_FACTOR = 100;
+    const double _X_AXIS_VELOCITY = 500;
+    const double _X_AXIS_ACCELERATION = 500;
+    const double _X_AXIS_DECELERATION = 500;
 
     const std::string _DRYVE_D1_IP_ADDRESS = "10.10.13.6";
     const int _PORT = 502;

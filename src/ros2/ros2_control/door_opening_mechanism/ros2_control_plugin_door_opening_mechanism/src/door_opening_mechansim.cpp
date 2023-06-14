@@ -38,47 +38,54 @@ namespace ros2_control_plugin_door_opening_mechanism
     hw_stop_sec_ = stod(info_.hardware_parameters["example_param_hw_stop_duration_sec"]);
     hw_slowdown_ = stod(info_.hardware_parameters["example_param_hw_slowdown"]);
     // END: This part here is for exemplary purposes - Please do not copy to your production code
-    hw_states_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
-    hw_commands_.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+    _hw_position_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+    _hw_position_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+    _hw_velocity_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+    _hw_velocity_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
     for (const hardware_interface::ComponentInfo& joint : info_.joints)
     {
-      // DoorOpeningMechanismSystemPositionOnlyHardware has exactly one state and command interface on each joint
-      if (joint.command_interfaces.size() != 1)
+      // DoorOpeningMechanismSystemPositionOnlyHardware has position and velocity state and command interface on each
+      // joint
+      if (joint.command_interfaces.size() > 2)
       {
         RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                     "Joint '%s' has %zu command interfaces found. 1 expected.",
+                     "Joint '%s' has %zu command interfaces found. 2 or less expected.",
                      joint.name.c_str(),
                      joint.command_interfaces.size());
         return hardware_interface::CallbackReturn::ERROR;
       }
 
-      if (joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION)
+      if ((joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
+          (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
       {
         RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                     "Joint '%s' have %s command interfaces found. '%s' expected.",
+                     "Joint '%s' have %s command interfaces found. '%s' or '%s' expected.",
                      joint.name.c_str(),
                      joint.command_interfaces[0].name.c_str(),
-                     hardware_interface::HW_IF_POSITION);
+                     hardware_interface::HW_IF_POSITION,
+                     hardware_interface::HW_IF_VELOCITY);
         return hardware_interface::CallbackReturn::ERROR;
       }
 
-      if (joint.state_interfaces.size() != 1)
+      if (joint.state_interfaces.size() > 2)
       {
         RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                     "Joint '%s' has %zu state interface. 1 expected.",
+                     "Joint '%s' has %zu state interface. 2 or less expected.",
                      joint.name.c_str(),
                      joint.state_interfaces.size());
         return hardware_interface::CallbackReturn::ERROR;
       }
 
-      if (joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION)
+      if ((joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
+          (joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
       {
         RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                     "Joint '%s' have %s state interface. '%s' expected.",
+                     "Joint '%s' have %s state interface. '%s' or '%s' expected.",
                      joint.name.c_str(),
                      joint.state_interfaces[0].name.c_str(),
-                     hardware_interface::HW_IF_POSITION);
+                     hardware_interface::HW_IF_POSITION,
+                     hardware_interface::HW_IF_VELOCITY);
         return hardware_interface::CallbackReturn::ERROR;
       }
     }
@@ -92,10 +99,15 @@ namespace ros2_control_plugin_door_opening_mechanism
     _x_axis.run_dryve_state_machine();
 
     // reset values always when configuring hardware
-    for (uint i = 0; i < hw_states_.size(); i++)
+    for (uint i = 0; i < _hw_position_states.size(); i++)
     {
-      hw_states_[i] = 0;
-      hw_commands_[i] = 0;
+      _hw_position_states[i] = 0;
+      _hw_position_commands[i] = 0;
+    }
+    for (uint i = 0; i < _hw_velocity_states.size(); i++)
+    {
+      _hw_velocity_states[i] = 0;
+      _hw_velocity_commands[i] = 0;
     }
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successfully configured!");
@@ -109,8 +121,10 @@ namespace ros2_control_plugin_door_opening_mechanism
     std::vector<hardware_interface::StateInterface> state_interfaces;
     for (uint i = 0; i < info_.joints.size(); i++)
     {
-      state_interfaces.emplace_back(
-          hardware_interface::StateInterface(info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_states_[i]));
+      state_interfaces.emplace_back(hardware_interface::StateInterface(
+          info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_states[i]));
+      state_interfaces.emplace_back(hardware_interface::StateInterface(
+          info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_states[i]));
     }
 
     return state_interfaces;
@@ -123,7 +137,9 @@ namespace ros2_control_plugin_door_opening_mechanism
     for (uint i = 0; i < info_.joints.size(); i++)
     {
       command_interfaces.emplace_back(hardware_interface::CommandInterface(
-          info_.joints[i].name, hardware_interface::HW_IF_POSITION, &hw_commands_[i]));
+          info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_commands[i]));
+      command_interfaces.emplace_back(hardware_interface::CommandInterface(
+          info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_commands[i]));
     }
 
     return command_interfaces;
@@ -145,9 +161,13 @@ namespace ros2_control_plugin_door_opening_mechanism
     // END: This part here is for exemplary purposes - Please do not copy to your production code
 
     // command and state should be equal when starting
-    for (uint i = 0; i < hw_states_.size(); i++)
+    for (uint i = 0; i < _hw_position_states.size(); i++)
     {
-      hw_commands_[i] = hw_states_[i];
+      _hw_position_commands[i] = _hw_position_states[i];
+    }
+    for (uint i = 0; i < _hw_velocity_states.size(); i++)
+    {
+      _hw_velocity_commands[i] = _hw_velocity_states[i];
     }
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successfully activated!");
@@ -160,6 +180,13 @@ namespace ros2_control_plugin_door_opening_mechanism
   {
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Deactivating ...please wait...");
+
+    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
+    _x_axis.wait_for_dryve_ready_state();
+    _x_axis.set_dryve_shutdown_state();
+
+    // Gracefully close everything down
+    close(_x_axis.sock);
 
     for (int i = 0; i < hw_stop_sec_; i++)
     {
@@ -181,15 +208,27 @@ namespace ros2_control_plugin_door_opening_mechanism
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Reading...");
 
-    hw_states_[0] = static_cast<double>(_x_axis.read_object_value(_x_axis.OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
-                                                                  _x_axis.OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
-                    _X_AXIS_SI_UNIT_FACTOR;
+    _hw_position_states[0] =
+        static_cast<double>(_x_axis.read_object_value(_x_axis.OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
+                                                      _x_axis.OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
+        _X_AXIS_SI_UNIT_FACTOR;
+    _hw_velocity_states[0] =
+        static_cast<double>(_x_axis.read_object_value(_x_axis.OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
+                                                      _x_axis.OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
+        _X_AXIS_SI_UNIT_FACTOR;
 
-    for (uint i = 0; i < hw_states_.size(); i++)
+    for (uint i = 0; i < _hw_position_states.size(); i++)
     {
       RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                  "Got state %.5f for joint %d!",
-                  hw_states_[i],
+                  "Got position state %.5f for joint %d!",
+                  _hw_position_states[i],
+                  i);   // DEBUGGING
+    }
+    for (uint i = 0; i < _hw_velocity_states.size(); i++)
+    {
+      RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+                  "Got velocity state %.5f for joint %d!",
+                  _hw_velocity_states[i],
                   i);   // DEBUGGING
     }
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Joints successfully read!");
@@ -204,12 +243,14 @@ namespace ros2_control_plugin_door_opening_mechanism
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Writing...");
 
-    for (uint i = 0; i < hw_commands_.size(); i++)
+    _x_axis.set_profile_velocity(_hw_position_commands[0], _X_AXIS_ACCELERATION, _X_AXIS_DECELERATION);
+
+    for (uint i = 0; i < _hw_position_commands.size(); i++)
     {
       // Simulate sending commands to the hardware
       RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
                   "Got command %.5f for joint %d!",
-                  hw_commands_[i],
+                  _hw_position_commands[i],
                   i);
     }
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Joints successfully written!");
