@@ -23,6 +23,10 @@
             <input_port name="target_value" default="false"/>
             <input_port name="topic" default="/drawer_is_open"/>
         </Condition>
+        <Condition ID="ElectricDrawerStatusCondition" editable="false">
+            <input_port name="target_value" default="false">bool. wether the value should be true or false</input_port>
+            <input_port name="topic" default="/drawer_feedback_status"/>
+        </Condition>
         <Action ID="Hans" editable="false"/>
         <Action ID="MoveElectricDrawer" editable="false">
             <input_port name="drawer_address" default="{drawer}"/>
