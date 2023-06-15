@@ -55,6 +55,9 @@ namespace ros2_control_plugin_door_opening_mechanism
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_cleanup(
         const rclcpp_lifecycle::State& previous_state) override;
 
+    ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_error(
+        const rclcpp_lifecycle::State& previous_state) override;
+
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_deactivate(
         const rclcpp_lifecycle::State& previous_state) override;
 
@@ -82,15 +85,12 @@ namespace ros2_control_plugin_door_opening_mechanism
     // Please mind: Actually you could get this value from the d1_dryve via get_si_unit_factor(), but I get stupid
     // values from it
     const double _X_AXIS_SI_UNIT_FACTOR = 100;
+
     const double _X_AXIS_VELOCITY = 500;
     const double _X_AXIS_ACCELERATION = 500;
     const double _X_AXIS_DECELERATION = 500;
 
-    const std::string _DRYVE_D1_IP_ADDRESS = "10.10.13.6";
-    const int _PORT = 502;
-
-    // dryve_d1_gate::D1 _x_axis =
-    //     dryve_d1_gate::D1(_DRYVE_D1_IP_ADDRESS, _PORT, std::make_unique<dryve_d1_gate::SocketWrapper>());
+    std::unique_ptr<dryve_d1_gate::D1> _x_axis;
   };
 
 }   // namespace ros2_control_plugin_door_opening_mechanism
