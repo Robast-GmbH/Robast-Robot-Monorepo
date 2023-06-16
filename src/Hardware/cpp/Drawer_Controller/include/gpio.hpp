@@ -22,26 +22,26 @@ namespace drawer_controller
 /*********************************************************************************************************
  These defines are only mapping ID's used within this class
 *********************************************************************************************************/
-#define DRAWER_1_EN_TMC2209_PIN_ID    0
-#define DRAWER_2_EN_TMC2209_PIN_ID    1
-#define DRAWER_1_STDBY_TMC2209_PIN_ID 2
-#define DRAWER_2_STDBY_TMC2209_PIN_ID 3
-#define DRAWER_1_SPREAD_PIN_ID        4
-#define DRAWER_2_SPREAD_PIN_ID        5
-#define DRAWER_1_DIR_PIN_ID           6
-#define DRAWER_2_DIR_PIN_ID           7
-#define DRAWER_1_DIAG_PIN_ID          8
-#define DRAWER_2_DIAG_PIN_ID          9
-#define DRAWER_1_INDEX_PIN_ID         10
-#define DRAWER_2_INDEX_PIN_ID         11
-#define DRAWER_1_STEP_PIN_ID          12
-#define DRAWER_2_STEP_PIN_ID          13
-#define DRAWER_1_ENCODER_A_PIN_ID     14
-#define DRAWER_1_ENCODER_B_PIN_ID     15
-#define DRAWER_1_ENCODER_N_PIN_ID     16
-#define DRAWER_2_ENCODER_A_PIN_ID     17
-#define DRAWER_2_ENCODER_B_PIN_ID     18
-#define DRAWER_2_ENCODER_N_PIN_ID     19
+#define STEPPER_1_EN_TMC2209_PIN_ID    0
+#define STEPPER_2_EN_TMC2209_PIN_ID    1
+#define STEPPER_1_STDBY_TMC2209_PIN_ID 2
+#define STEPPER_2_STDBY_TMC2209_PIN_ID 3
+#define STEPPER_1_SPREAD_PIN_ID        4
+#define STEPPER_2_SPREAD_PIN_ID        5
+#define STEPPER_1_DIR_PIN_ID           6
+#define STEPPER_2_DIR_PIN_ID           7
+#define STEPPER_1_DIAG_PIN_ID          8
+#define STEPPER_2_DIAG_PIN_ID          9
+#define STEPPER_1_INDEX_PIN_ID         10
+#define STEPPER_2_INDEX_PIN_ID         11
+#define STEPPER_1_STEP_PIN_ID          12
+#define STEPPER_2_STEP_PIN_ID          13
+#define STEPPER_1_ENCODER_A_PIN_ID     14
+#define STEPPER_1_ENCODER_B_PIN_ID     15
+#define STEPPER_1_ENCODER_N_PIN_ID     16
+#define STEPPER_2_ENCODER_A_PIN_ID     17
+#define STEPPER_2_ENCODER_B_PIN_ID     18
+#define STEPPER_2_ENCODER_N_PIN_ID     19
 
 #define LOCK_1_OPEN_CONROL_PIN_ID  30
 #define LOCK_2_OPEN_CONROL_PIN_ID  31
@@ -77,31 +77,31 @@ namespace drawer_controller
     {
       switch (pin_mapping_id)
       {
-        case DRAWER_2_EN_TMC2209_PIN_ID:
+        case STEPPER_2_EN_TMC2209_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_0, state);
           break;
 
-        case DRAWER_2_STDBY_TMC2209_PIN_ID:
+        case STEPPER_2_STDBY_TMC2209_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_1, state);
           break;
 
-        case DRAWER_1_EN_TMC2209_PIN_ID:
+        case STEPPER_1_EN_TMC2209_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_2, state);
           break;
 
-        case DRAWER_1_STDBY_TMC2209_PIN_ID:
+        case STEPPER_1_STDBY_TMC2209_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_3, state);
           break;
 
-        case DRAWER_1_SPREAD_PIN_ID:
+        case STEPPER_1_SPREAD_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_4, state);
           break;
 
-        case DRAWER_2_DIR_PIN_ID:
+        case STEPPER_2_DIR_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_5, state);
           break;
 
-        case DRAWER_2_SPREAD_PIN_ID:
+        case STEPPER_2_SPREAD_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_6, state);
           break;
 
@@ -125,7 +125,7 @@ namespace drawer_controller
           return port_expander_1_.set_pin_mode(PCA9554_REGISTER_3, state);
           break;
 
-        case DRAWER_1_DIR_PIN_ID:
+        case STEPPER_1_DIR_PIN_ID:
           return port_expander_1_.set_pin_mode(PCA9554_REGISTER_7, state);
           break;
 
@@ -147,11 +147,11 @@ namespace drawer_controller
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_3, state);
           break;
 
-        case DRAWER_1_DIAG_PIN_ID:
+        case STEPPER_1_DIAG_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_4, state);
           break;
 
-        case DRAWER_2_DIAG_PIN_ID:
+        case STEPPER_2_DIAG_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_5, state);
           break;
 
@@ -203,12 +203,12 @@ namespace drawer_controller
           return port_expander_2_.digital_read(value);
           break;
 
-        case DRAWER_1_DIAG_PIN_ID:
+        case STEPPER_1_DIAG_PIN_ID:
           value = PCA9554_REGISTER_4;
           return port_expander_2_.digital_read(value);
           break;
 
-        case DRAWER_2_DIAG_PIN_ID:
+        case STEPPER_2_DIAG_PIN_ID:
           value = PCA9554_REGISTER_5;
           return port_expander_2_.digital_read(value);
           break;
@@ -240,35 +240,35 @@ namespace drawer_controller
     {
       switch (pin_mapping_id)
       {
-        case DRAWER_1_EN_TMC2209_PIN_ID:
+        case STEPPER_1_EN_TMC2209_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_2, state);
           break;
 
-        case DRAWER_2_EN_TMC2209_PIN_ID:
+        case STEPPER_2_EN_TMC2209_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_0, state);
           break;
 
-        case DRAWER_1_STDBY_TMC2209_PIN_ID:
+        case STEPPER_1_STDBY_TMC2209_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_3, state);
           break;
 
-        case DRAWER_2_STDBY_TMC2209_PIN_ID:
+        case STEPPER_2_STDBY_TMC2209_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_1, state);
           break;
 
-        case DRAWER_1_SPREAD_PIN_ID:
+        case STEPPER_1_SPREAD_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_4, state);
           break;
 
-        case DRAWER_2_SPREAD_PIN_ID:
+        case STEPPER_2_SPREAD_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_6, state);
           break;
 
-        case DRAWER_1_DIR_PIN_ID:
+        case STEPPER_1_DIR_PIN_ID:
           return port_expander_1_.digital_write(PCA9554_REGISTER_7, state);
           break;
 
-        case DRAWER_2_DIR_PIN_ID:
+        case STEPPER_2_DIR_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_5, state);
           break;
 

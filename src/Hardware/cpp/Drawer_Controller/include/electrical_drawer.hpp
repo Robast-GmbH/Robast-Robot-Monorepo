@@ -5,6 +5,7 @@
 
 #include "can/can_db.hpp"
 #include "i_drawer.hpp"
+#include "i_gpio_wrapper.hpp"
 #include "lock.hpp"
 #include "motor.hpp"
 
@@ -14,37 +15,49 @@ namespace drawer_controller
   class ElectricalDrawer : public IDrawer
   {
    public:
-    ElectricalDrawer(uint32_t module_id, uint8_t id, uint8_t encoder_pin_a, uint8_t encoder_pin_b)
-        : module_id_{module_id}, id_{id}
+    ElectricalDrawer(uint32_t module_id,
+                     uint8_t id,
+                     std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                     const StepperPinIdConfig& stepper_pin_id_config,
+                     uint8_t encoder_pin_a,
+                     uint8_t encoder_pin_b)
+        : _module_id{module_id}, _id{id}, _gpio_wrapper{gpio_wrapper}, _stepper_pin_id_config{stepper_pin_id_config}
     {
-      encoder_ = new ESP32Encoder(true);
+      _encoder = new ESP32Encoder(true);
       ESP32Encoder::useInternalWeakPullResistors = UP;
-      encoder_->attachFullQuad(encoder_pin_a, encoder_pin_b);
-      encoder_->setCount(0);
+      _encoder->attachFullQuad(encoder_pin_a, encoder_pin_b);
+      _encoder->setCount(0);
     }
 
-    void init_lock(uint8_t pwr_open_lock_pin,
-                   uint8_t pwr_close_lock_pin,
-                   uint8_t sensor_lock_pin,
-                   uint8_t sensor_drawer_closed_pin)
+    void init_lock(uint8_t pwr_open_lock_pin_id,
+                   uint8_t pwr_close_lock_pin_id,
+                   uint8_t sensor_lock_pin_id,
+                   uint8_t sensor_drawer_closed_pin_id,
+                   bool gpio_input_state,
+                   bool gpio_output_state)
     {
-      lock_.initialize_lock(pwr_open_lock_pin, pwr_close_lock_pin, sensor_lock_pin, sensor_drawer_closed_pin);
+      _lock.initialize_lock(pwr_open_lock_pin_id,
+                            pwr_close_lock_pin_id,
+                            sensor_lock_pin_id,
+                            sensor_drawer_closed_pin_id,
+                            gpio_input_state,
+                            gpio_output_state);
     }
 
     void stop_motor()
     {
-      motor_->setSpeed(0, 0);
+      _motor->setSpeed(0, 0);
     }
 
     void start_motor()
     {
-      motor_->setSpeed(1000, 0);
+      _motor->setSpeed(1000, 0);
     }
 
     void init_motor(TMC2209Stepper* driver)
     {
-      motor_ = new Motor(driver);
-      motor_->init();
+      _motor = new Motor(driver, _gpio_wrapper, _stepper_pin_id_config);
+      _motor->init();
     }
 
     void can_in(robast_can_msgs::CanMessage msg) override
@@ -64,115 +77,119 @@ namespace drawer_controller
     void update_state() override
     {
       feedback_msg_.reset();
-      bool is_moving = motor_->getSpeed() != 0;
-      Direction direction = motor_->getDirection();
+      bool is_moving = _motor->getSpeed() != 0;
+      Direction direction = _motor->getDirection();
       if (is_moving)
       {
-        pos_ = encoder_->getCount();
+        _pos = _encoder->getCount();
       }
-      if (is_moving && direction == counter_clockwise && pos_ >= (target_position_ / 255.0) * DRAWER_MAX_EXTENT)
+      if (is_moving && direction == counter_clockwise && _pos >= (_target_position / 255.0) * DRAWER_MAX_EXTENT)
       {
-        Serial.printf("p: %d  tp: %d address: %d \n", pos_, target_position_, &target_position_);
-        motor_->setSpeed(0, 0);
+        Serial.printf("p: %d  tp: %d address: %d \n", _pos, _target_position, &_target_position);
+        _motor->setSpeed(0, 0);
         create_electrical_drawer_feedback_msg();
       }
-      else if (is_moving && direction == clockwise && pos_ <= (target_position_ / 255.0) * DRAWER_MAX_EXTENT)
+      else if (is_moving && direction == clockwise && _pos <= (_target_position / 255.0) * DRAWER_MAX_EXTENT)
       {
-        Serial.printf("p: %d  tp: %d \n", pos_, target_position_);
+        Serial.printf("p: %d  tp: %d \n", _pos, _target_position);
 
-        motor_->setSpeed(0, 0);
-        encoder_->setCount(0);
-        pos_ = 0;
+        _motor->setSpeed(0, 0);
+        _encoder->setCount(0);
+        _pos = 0;
         create_electrical_drawer_feedback_msg();
       }
     }
 
    private:
-    uint32_t module_id_;
-    uint8_t id_;
+    uint32_t _module_id;
+    uint8_t _id;
 
-    int pos_ = 0;
-    uint8_t target_position_ = 0;
+    std::shared_ptr<IGpioWrapper> _gpio_wrapper;
 
-    bool stall_guard_enabled_ = false;
+    StepperPinIdConfig _stepper_pin_id_config;
 
-    robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
+    int _pos = 0;
+    uint8_t _target_position = 0;
+
+    bool _stall_guard_enabled = false;
+
+    robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();
 
     std::optional<robast_can_msgs::CanMessage> feedback_msg_;
 
-    Lock lock_ = Lock();
+    Lock _lock = Lock(_gpio_wrapper);
 
-    Motor* motor_;
+    Motor* _motor;            // TODO@Jacob: use unique_ptr or shared_ptr
 
-    ESP32Encoder* encoder_;
+    ESP32Encoder* _encoder;   // TODO@Jacob: use unique_ptr or shared_ptr
 
     void unlock()
     {
       return;
-      if (lock_.is_drawer_opening_in_progress())
+      if (_lock.is_drawer_opening_in_progress())
       {
-        Serial.printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", id_);
+        Serial.printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", _id);
       }
       else
       {
-        lock_.set_open_lock_current_step(true);
-        lock_.set_timestamp_last_lock_change();
-        lock_.set_drawer_opening_is_in_progress(true);
+        _lock.set_open_lock_current_step(true);
+        _lock.set_timestamp_last_lock_change();
+        _lock.set_drawer_opening_is_in_progress(true);
       }
     }
 
     void handle_electrical_drawer_task_msg(robast_can_msgs::CanMessage can_message)
     {
-      target_position_ = can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_GOTO_POSITION).get_data();
+      _target_position = can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_TARGET_POSITION).get_data();
       uint64_t speed_mode = can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_SPEED_MODE).get_data();
-      stall_guard_enabled_ = can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).get_data() ==
+      _stall_guard_enabled = can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).get_data() ==
                                      CAN_DATA_ELECTRICAL_DRAWER_STALL_GUARD_ENABLED
                                  ? true
                                  : false;
 
       // motor_->setStallGuard(stall_guard_enabled_);
 
-      if (target_position_ == pos_)
+      if (_target_position == _pos)
       {
         create_electrical_drawer_feedback_msg();
         return;
       }
-      if (pos_ == 0)
+      if (_pos == 0)
       {
         unlock();
       }
-      if (target_position_ < pos_)
+      if (_target_position < _pos)
       {
-        motor_->setDirection(clockwise);
-        motor_->setSpeed(2000, 0);
+        _motor->setDirection(clockwise);
+        _motor->setSpeed(2000, 0);
       }
       else
       {
-        motor_->setDirection(counter_clockwise);
-        motor_->setSpeed(2000, 0);
+        _motor->setDirection(counter_clockwise);
+        _motor->setSpeed(2000, 0);
       }
     }
 
     void create_electrical_drawer_feedback_msg()
     {
       robast_can_msgs::CanMessage can_msg_electrical_drawer_feedback =
-          can_db_.can_messages.at(CAN_MSG_ELECTRICAL_DRAWER_FEEDBACK);
+          _can_db.can_messages.at(CAN_MSG_ELECTRICAL_DRAWER_FEEDBACK);
       std::vector can_signals_electrical_drawer_feedback = can_msg_electrical_drawer_feedback.get_can_signals();
 
-      can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_MODULE_ID).set_data(module_id_);
-      can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_ID).set_data(id_);
+      can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_MODULE_ID).set_data(_module_id);
+      can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_ID).set_data(_id);
 
-      const bool is_endstop_switch_pushed = lock_.is_endstop_switch_pushed();
+      const bool is_endstop_switch_pushed = _lock.is_endstop_switch_pushed();
       can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED).set_data(is_endstop_switch_pushed);
 
-      const bool is_lock_switch_pushed = lock_.is_lock_switch_pushed();
+      const bool is_lock_switch_pushed = _lock.is_lock_switch_pushed();
       can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED).set_data(is_lock_switch_pushed);
 
-      const bool is_drawer_stall_guard_triggered = motor_->getIsStalled();
+      const bool is_drawer_stall_guard_triggered = _motor->getIsStalled();
       can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED)
           .set_data(is_lock_switch_pushed);
 
-      can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_POSITION).set_data(pos_);
+      can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_POSITION).set_data(_pos);
 
       can_msg_electrical_drawer_feedback.set_can_signals(can_signals_electrical_drawer_feedback);
 
@@ -190,7 +207,7 @@ namespace drawer_controller
       Serial.print(" DRAWER ID: ");
       Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
       Serial.print(" GOTO POSITION: ");
-      Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_GOTO_POSITION).get_data(), DEC);
+      Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_TARGET_POSITION).get_data(), DEC);
       Serial.print(" SPEED MODE: ");
       Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_SPEED_MODE).get_data(), DEC);
       Serial.print(" STALL GUARD ENABLE: ");
