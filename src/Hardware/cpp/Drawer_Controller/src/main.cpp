@@ -5,9 +5,11 @@
 #include "gpio.hpp"
 #include "i_gpio_wrapper.hpp"
 #include "led_strip.hpp"
+#include "electrical_drawer.hpp"
 
 #define MODULE_ID 1
 #define LOCK_ID   0
+#define R_SENSE   0.11f
 
 using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
 
@@ -48,7 +50,13 @@ void loop()
     {
       switch (received_message->get_id())
       {
-        case CAN_ID_DRAWER_UNLOCK || CAN_ID_ELECTRICAL_DRAWER_TASK:
+        case CAN_ID_DRAWER_UNLOCK:
+        {
+          uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
+          drawers.at(drawer_id)->can_in(received_message.value());
+        }
+        break;
+        case CAN_ID_ELECTRICAL_DRAWER_TASK:
         {
           uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
           drawers.at(drawer_id)->can_in(received_message.value());
@@ -62,6 +70,15 @@ void loop()
           Serial.println("Received unsupported CAN message.");
           break;
       }
+    }
+  }
+  if (Serial.available())
+  {
+    char input = Serial.read();
+    if (input == '-')
+    {
+      Serial.println("stop motor");
+      e_drawer_0.stop_motor();
     }
   }
 
