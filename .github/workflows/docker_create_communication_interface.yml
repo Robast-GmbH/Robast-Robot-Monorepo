@@ -3,7 +3,7 @@ name: Create Docker Image Communication Interface
 #trigger workflow every day at 00:00
 on:
   schedule:
-    - cron: '0 0 * * 1,5'
+    - cron: '0 0 * * 1'
   push:
     branches:
         - main
