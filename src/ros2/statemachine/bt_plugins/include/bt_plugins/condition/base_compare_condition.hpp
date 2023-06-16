@@ -32,8 +32,6 @@ namespace drawer_statemachine
           qos,
           std::bind(&BaseCompareCondition::callbackDrawerFeedback, this, std::placeholders::_1),
           sub_option);
-
-      initialize_target_value();
     }
 
     virtual BT::NodeStatus tick()
