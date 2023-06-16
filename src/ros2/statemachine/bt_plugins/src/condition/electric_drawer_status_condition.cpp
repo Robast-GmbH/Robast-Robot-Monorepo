@@ -7,6 +7,7 @@ namespace drawer_statemachine
         const BT::NodeConfig &config) : BaseCompareCondition(name, config)
     {
         // Nothing special in the default constructor
+        initialize_target_value();
     }
 
     bool ElectricDrawerStatusCondition::comparator(
@@ -37,7 +38,7 @@ namespace drawer_statemachine
 
     void ElectricDrawerStatusCondition::initialize_target_value()
     {
-        getInput("drawer_is_open", target_value_.drawer_is_open);
+        getInput("target_value", target_value_.drawer_is_open);
     }
 } // namespace drawer_statemachine
 

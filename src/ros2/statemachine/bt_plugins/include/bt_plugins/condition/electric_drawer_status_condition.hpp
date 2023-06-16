@@ -2,6 +2,7 @@
 #define DRAWER_STATEMACHINE_ELECTRIC_DRAWER_STATUS_CONDITION_HPP_
 
 #include "bt_plugins/condition/base_compare_condition.hpp" // Base class include
+#include "communication_interfaces/msg/drawer_address.hpp" // Include für communication_interfaces::msg::DrawerAddress
 #include "communication_interfaces/msg/drawer_status.hpp"  // Include für communication_interfaces::msg::DrawerStatus
 
 namespace drawer_statemachine
@@ -13,7 +14,7 @@ namespace drawer_statemachine
         static BT::PortsList providedPorts()
         {
             return {
-                BT::InputPort<bool>("drawer_is_open", "false"),
+                BT::InputPort<bool>("target_value", "false"),
                 BT::InputPort<std::string>("topic", "/drawer_feedback_status")};
         }
 
