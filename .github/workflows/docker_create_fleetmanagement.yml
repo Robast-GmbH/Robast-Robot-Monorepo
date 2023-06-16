@@ -3,7 +3,7 @@ name: Create Docker Image fleetmanagement
 #trigger workflow every day at 00:00
 on:
   schedule:
-    - cron: '0 0 * * 1,5'
+    - cron: '0 0 * * 1'
   push:
     branches:
         - main
@@ -43,4 +43,4 @@ jobs:
           tags: |
                 ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}
           cache-from: type=gha
-          cache-to: type=gha,mode=max
+          cache-to: type=gha,mode=min
