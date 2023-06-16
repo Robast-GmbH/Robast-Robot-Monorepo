@@ -184,10 +184,11 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_deactivate(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    // TODO@Jacob/TOBI: We need on_shutdown, on_cleanup or on_deactivate to be triggered somehow to properly set the
-    // dryve D1 to shudown state
+    // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
+    // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
 
-    // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
+    // dryve D1 to shutdown state
+
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Deactivating ...please wait...");
 
     // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
@@ -197,16 +198,7 @@ namespace ros2_control_plugin_door_opening_mechanism
     // Gracefully close everything down
     close(_x_axis->sock);
 
-    for (int i = 0; i < hw_stop_sec_; i++)
-    {
-      rclcpp::sleep_for(std::chrono::seconds(1));
-      RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                  "%.1f seconds left...",
-                  hw_stop_sec_ - i);
-    }
-
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successfully deactivated!");
-    // END: This part here is for exemplary purposes - Please do not copy to your production code
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -214,8 +206,10 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_shutdown(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    // TODO@Jacob/TOBI: We need on_shutdown, on_cleanup or on_deactivate to be triggered somehow to properly set the
-    // dryve D1 to shudown state
+    // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
+    // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
+
+    // dryve D1 to shutdown state
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
                 "Shutting down ...please wait...");
@@ -227,7 +221,7 @@ namespace ros2_control_plugin_door_opening_mechanism
     // Gracefully close everything down
     close(_x_axis->sock);
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successfull shutdown!");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successful shutdown!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -235,8 +229,11 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_cleanup(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    // TODO@Jacob/TOBI: We need on_shutdown, on_cleanup or on_deactivate to be triggered somehow to properly set the
-    // dryve D1 to shudown state
+    // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
+    // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
+
+    // dryve D1 to shutdown state
+
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Cleaning up ...please wait...");
 
     // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
@@ -254,8 +251,11 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_error(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    // TODO@Jacob/TOBI: We need on_shutdown, on_cleanup or on_deactivate to be triggered somehow to properly set the
-    // dryve D1 to shudown state
+    // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
+    // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
+
+    // dryve D1 to shutdown state
+
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
                 "On Error: Cleaning up ...please wait...");
 

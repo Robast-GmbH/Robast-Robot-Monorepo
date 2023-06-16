@@ -17,9 +17,13 @@ find_package(rclcpp REQUIRED)
 include_directories(include)
 
 set(executable_dryve_d1_gate dryve_d1_gate)
+set(executable_shutdown_dryve_d1 shutdown_dryve_d1)
 
 add_executable(${executable_dryve_d1_gate}
   src/main.cpp
+)
+add_executable(${executable_shutdown_dryve_d1}
+  src/shutdown_dryve_d1.cpp
 )
 
 add_library(library_dryve_d1_gate SHARED
@@ -41,12 +45,23 @@ target_link_libraries(${executable_dryve_d1_gate}
   library_dryve_d1_gate
   library_d1
 )
+ament_target_dependencies(${executable_shutdown_dryve_d1}
+  ${dependencies}
+)
+target_link_libraries(${executable_shutdown_dryve_d1} 
+  library_d1
+)
 
 ament_target_dependencies(library_dryve_d1_gate
   ${dependencies}
 )
 
 target_include_directories(${executable_dryve_d1_gate} 
+  PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
+target_include_directories(${executable_shutdown_dryve_d1} 
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -115,6 +130,7 @@ install(TARGETS
 
 install(TARGETS
   ${executable_dryve_d1_gate}
+  ${executable_shutdown_dryve_d1} 
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 

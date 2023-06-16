@@ -1,6 +1,7 @@
 import os
 import xacro
 import yaml
+import atexit
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -11,6 +12,11 @@ from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 
 from launch_ros.actions import Node
 from launch_ros.substitutions import FindPackageShare
+
+
+def shutdown_dryve_d1():
+    print("Shutting down dryve d1 motor controller now!")
+    os.system('ros2 run dryve_d1_gate shutdown_dryve_d1')
 
 
 def generate_launch_description():
@@ -90,5 +96,9 @@ def generate_launch_description():
     ld.add_action(control_node)
     ld.add_action(joint_state_broadcaster_spawner)
     ld.add_action(delay_robot_controller_spawner_after_joint_state_broadcaster_spawner)
+
+    # This would be probably much nice to use RegisterEventHandler to trigger the shutdown, but unfortunately we
+    # did not get this running. Therefore we shutdown the dryve d1 with the "atexit" library.
+    atexit.register(shutdown_dryve_d1)
 
     return ld
