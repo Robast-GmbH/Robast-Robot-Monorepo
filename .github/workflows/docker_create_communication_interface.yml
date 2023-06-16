@@ -43,4 +43,4 @@ jobs:
         tags: |
               ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}
         cache-from: type=gha
-        cache-to: type=gha,mode=max
+        cache-to: type=gha,mode=min
