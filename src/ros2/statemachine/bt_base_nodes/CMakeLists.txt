@@ -62,6 +62,7 @@ endif()
 
 add_executable(drawer_tree_initiator src/bt_sub_initiator/drawer_tree_initiator.cpp)
 add_executable(drawer_nfc_tree_initiator src/bt_sub_initiator/drawer_nfc_tree_initiator.cpp)
+add_executable(electrical_drawer_tree_initiator src/bt_sub_initiator/electrical_drawer_tree_initiator.cpp)
 
 
 ament_target_dependencies(drawer_tree_initiator
@@ -84,9 +85,20 @@ target_include_directories(drawer_nfc_tree_initiator
     $<INSTALL_INTERFACE:include>
 )
 
+ament_target_dependencies(electrical_drawer_tree_initiator
+  ${dependencies}
+)
+
+target_include_directories(electrical_drawer_tree_initiator
+    PUBLIC
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+    $<INSTALL_INTERFACE:include>
+)
+
 install(TARGETS
 drawer_tree_initiator
 drawer_nfc_tree_initiator
+electrical_drawer_tree_initiator
 DESTINATION lib/${PROJECT_NAME})
 
 

@@ -38,7 +38,8 @@ namespace drawer_statemachine
   {
     SUCCEEDED,
     FAILED,
-    CANCELED
+    CANCELED,
+    RUNNING
   };
 
   /**
