@@ -14,7 +14,7 @@
             "label": "start",
             "detail": "starts the server on port 8000",
             "type": "shell",
-            "command": "python /workspaces/src/main.py",
+            "command": "python /workspace/src/main.py",
             "problemMatcher": []
         },
         // Linting and static code analysis tasks
