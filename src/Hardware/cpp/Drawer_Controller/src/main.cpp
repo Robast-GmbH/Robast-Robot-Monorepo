@@ -13,9 +13,9 @@
 
 using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
 
-std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper = std::make_shared<drawer_controller::GPIO>();
+std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper;
 
-std::unique_ptr<drawer_controller::ElectricalDrawer> e_drawer_0;
+std::shared_ptr<drawer_controller::ElectricalDrawer> e_drawer_0;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
     .stepper_enn_tmc2209_pin_id = STEPPER_1_ENN_TMC2209_PIN_ID,
@@ -43,19 +43,20 @@ void setup()
   }
   Serial.println("\nStart...");
 
+  gpio_wrapper = std::make_shared<drawer_controller::GPIO>();
+
   drawer_0 = std::make_shared<drawer_controller::Drawer>(MODULE_ID, LOCK_ID, gpio_wrapper);
   drawer_0->init_lock(LOCK_1_OPEN_CONROL_PIN_ID,
                       LOCK_1_CLOSE_CONROL_PIN_ID,
                       SENSE_INPUT_LOCK_1_PIN_ID,
                       SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
-  drawers.push_back(drawer_0);
 
   led_strip::initialize_led_strip();
 
   can = std::make_unique<drawer_controller::Can>(MODULE_ID, gpio_wrapper, OE_TXB0104_PIN_ID, PCA9554_OUTPUT);
   can->initialize_can_controller();
 
-  e_drawer_0 = std::make_unique<drawer_controller::ElectricalDrawer>(MODULE_ID,
+  e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(MODULE_ID,
                                                                      LOCK_ID,
                                                                      gpio_wrapper,
                                                                      stepper_1_pin_id_config,
@@ -63,6 +64,8 @@ void setup()
                                                                      DRAWER_1_ENCODER_B_PIN,
                                                                      STEPPER_MOTOR_1_ADDRESS);
   e_drawer_0->init_motor();
+
+  drawers.push_back(e_drawer_0);
 }
 
 void loop()
