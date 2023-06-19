@@ -22,7 +22,7 @@ namespace drawer_controller
 /*********************************************************************************************************
  These defines are only mapping ID's used within this class
 *********************************************************************************************************/
-#define STEPPER_1_EN_TMC2209_PIN_ID    0
+#define STEPPER_1_ENN_TMC2209_PIN_ID   0
 #define STEPPER_2_EN_TMC2209_PIN_ID    1
 #define STEPPER_1_STDBY_TMC2209_PIN_ID 2
 #define STEPPER_2_STDBY_TMC2209_PIN_ID 3
@@ -85,7 +85,7 @@ namespace drawer_controller
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_1, state);
           break;
 
-        case STEPPER_1_EN_TMC2209_PIN_ID:
+        case STEPPER_1_ENN_TMC2209_PIN_ID:
           return port_expander_0_.set_pin_mode(PCA9554_REGISTER_2, state);
           break;
 
@@ -240,7 +240,7 @@ namespace drawer_controller
     {
       switch (pin_mapping_id)
       {
-        case STEPPER_1_EN_TMC2209_PIN_ID:
+        case STEPPER_1_ENN_TMC2209_PIN_ID:
           return port_expander_0_.digital_write(PCA9554_REGISTER_2, state);
           break;
 
@@ -296,6 +296,16 @@ namespace drawer_controller
           break;
       }
       return false;
+    }
+
+    bool get_gpio_output_pin_mode()
+    {
+      return PCA9554_OUTPUT;
+    }
+
+    bool get_gpio_input_pin_mode()
+    {
+      return PCA9554_INPUT;
     }
 
    private:

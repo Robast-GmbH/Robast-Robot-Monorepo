@@ -22,7 +22,7 @@ namespace stepper_motor
 
   struct StepperPinIdConfig
   {
-    uint8_t stepper_en_tmc2209_pin_id;
+    uint8_t stepper_enn_tmc2209_pin_id;
     uint8_t stepper_stdby_tmc2209_pin_id;
     uint8_t stepper_spread_pin_id;
     uint8_t stepper_dir_pin_id;
@@ -53,7 +53,7 @@ namespace stepper_motor
 
     std::shared_ptr<drawer_controller::IGpioWrapper> _gpio_wrapper;
 
-    uint8_t _stepper_en_tmc2209_pin_id;
+    uint8_t _stepper_enn_tmc2209_pin_id;
     uint8_t _stepper_stdby_tmc2209_pin_id;
     uint8_t _stepper_spread_pin_id;
     uint8_t _stepper_dir_pin_id;

@@ -17,19 +17,30 @@ namespace stepper_motor
                const StepperPinIdConfig& stepper_pin_id_config)
   {
     _driver = std::make_unique<TMC2209Stepper>(&SERIAL_PORT, R_SENSE, driver_address);
+
     _gpio_wrapper = gpio_wrapper;
 
-    _stepper_en_tmc2209_pin_id = stepper_pin_id_config.stepper_en_tmc2209_pin_id;
+    _stepper_enn_tmc2209_pin_id = stepper_pin_id_config.stepper_enn_tmc2209_pin_id;
     _stepper_stdby_tmc2209_pin_id = stepper_pin_id_config.stepper_stdby_tmc2209_pin_id;
     _stepper_spread_pin_id = stepper_pin_id_config.stepper_spread_pin_id;
     _stepper_dir_pin_id = stepper_pin_id_config.stepper_dir_pin_id;
     _stepper_diag_pin_id = stepper_pin_id_config.stepper_diag_pin_id;
     _stepper_index_pin_id = stepper_pin_id_config.stepper_index_pin_id;
     _stepper_step_pin_id = stepper_pin_id_config.stepper_step_pin_id;
+
+    _gpio_wrapper->set_pin_mode(_stepper_enn_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
+    _gpio_wrapper->set_pin_mode(_stepper_stdby_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
   }
 
   void Motor::init()
   {
+    Serial.print("Starting Motor init!\n");
+
+    _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
+    _gpio_wrapper->digital_write(_stepper_stdby_tmc2209_pin_id, LOW);
+
+    delay(100);
+
     SERIAL_PORT.begin(115200);
 
     _driver->begin();
@@ -141,9 +152,9 @@ namespace stepper_motor
   //   setSpeed(0, 0);
   //   _driver->VACTUAL(_speed);
   //   detachInterrupt(STEPPER_DIAG_PIN);   // TODO@Jacob: Use interrup from port expander
-  //   _gpio_wrapper->digital_write(_stepper_en_tmc2209_pin_id, HIGH);
+  //   _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, HIGH);
   //   delay(100);
-  //   _gpio_wrapper->digital_write(_stepper_en_tmc2209_pin_id, LOW);
+  //   _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
   //   delay(500);
   //   attachInterrupt(STEPPER_DIAG_PIN, stallISR, RISING);
   //   _is_stalled = false;

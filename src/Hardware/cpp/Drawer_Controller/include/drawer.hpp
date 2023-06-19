@@ -16,16 +16,10 @@ namespace drawer_controller
     void init_lock(uint8_t pwr_open_lock_pin_id,
                    uint8_t pwr_close_lock_pin_id,
                    uint8_t sensor_lock_pin_id,
-                   uint8_t sensor_drawer_closed_pin_id,
-                   bool gpio_input_state,
-                   bool gpio_output_state)
+                   uint8_t sensor_drawer_closed_pin_id)
     {
-      _lock.initialize_lock(pwr_open_lock_pin_id,
-                            pwr_close_lock_pin_id,
-                            sensor_lock_pin_id,
-                            sensor_drawer_closed_pin_id,
-                            gpio_input_state,
-                            gpio_output_state);
+      _lock.initialize_lock(
+          pwr_open_lock_pin_id, pwr_close_lock_pin_id, sensor_lock_pin_id, sensor_drawer_closed_pin_id);
     }
 
     void can_in(robast_can_msgs::CanMessage msg) override

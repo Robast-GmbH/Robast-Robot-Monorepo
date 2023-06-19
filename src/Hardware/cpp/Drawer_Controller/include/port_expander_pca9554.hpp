@@ -24,7 +24,6 @@
 
 namespace port_expander
 {
-
   class PortExpanderPCA9554
   {
    public:

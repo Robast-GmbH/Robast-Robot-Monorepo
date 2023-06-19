@@ -36,6 +36,20 @@ namespace drawer_controller
      * @return if the digital_write was successfull
      */
     virtual bool digital_write(byte pin_mapping_id, bool state) = 0;
+
+    /**
+     * If you want to set the pin mode of a GPIO, this function returns the OUTPUT pin mode value for it
+     *
+     * @return OUTPUT pin mode value
+     */
+    virtual bool get_gpio_output_pin_mode() = 0;
+
+    /**
+     * If you want to set the pin mode of a GPIO, this function returns the INPUT pin mode value for it
+     *
+     * @return INPUT pin mode value
+     */
+    virtual bool get_gpio_input_pin_mode() = 0;
   };
 
 }   // namespace drawer_controller

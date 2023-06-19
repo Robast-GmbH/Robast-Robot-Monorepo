@@ -21,19 +21,17 @@ namespace drawer_controller
     void initialize_lock(uint8_t power_open_pin_id,
                          uint8_t power_close_pin_id,
                          uint8_t sensor_lock_pin_id,
-                         uint8_t sensor_drawer_closed_pin_id,
-                         bool gpio_input_state,
-                         bool gpio_output_state)
+                         uint8_t sensor_drawer_closed_pin_id)
     {
       _power_open_pin_id = power_open_pin_id;
       _power_close_pin_id = power_close_pin_id;
       _sensor_lock_pin_id = sensor_lock_pin_id;
       _sensor_drawer_closed_pin = sensor_drawer_closed_pin_id;
 
-      _gpio_wrapper->set_pin_mode(_power_open_pin_id, gpio_output_state);
-      _gpio_wrapper->set_pin_mode(_power_close_pin_id, gpio_output_state);
-      _gpio_wrapper->set_pin_mode(_sensor_lock_pin_id, gpio_input_state);
-      _gpio_wrapper->set_pin_mode(_sensor_drawer_closed_pin, gpio_input_state);
+      _gpio_wrapper->set_pin_mode(_power_open_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
+      _gpio_wrapper->set_pin_mode(_power_close_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
+      _gpio_wrapper->set_pin_mode(_sensor_lock_pin_id, _gpio_wrapper->get_gpio_input_pin_mode());
+      _gpio_wrapper->set_pin_mode(_sensor_drawer_closed_pin, _gpio_wrapper->get_gpio_input_pin_mode());
 
       _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
       _gpio_wrapper->digital_write(_power_close_pin_id, LOW);

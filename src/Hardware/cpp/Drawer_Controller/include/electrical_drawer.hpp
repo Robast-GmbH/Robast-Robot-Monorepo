@@ -15,33 +15,31 @@ namespace drawer_controller
   class ElectricalDrawer : public IDrawer
   {
    public:
+    // TODO: Reduce number of arguments
     ElectricalDrawer(uint32_t module_id,
                      uint8_t id,
                      std::shared_ptr<IGpioWrapper> gpio_wrapper,
                      const stepper_motor::StepperPinIdConfig& stepper_pin_id_config,
                      uint8_t encoder_pin_a,
-                     uint8_t encoder_pin_b)
+                     uint8_t encoder_pin_b,
+                     uint8_t driver_address)
         : _module_id{module_id}, _id{id}, _gpio_wrapper{gpio_wrapper}, _stepper_pin_id_config{stepper_pin_id_config}
     {
       _encoder = std::make_unique<ESP32Encoder>(true);
       ESP32Encoder::useInternalWeakPullResistors = UP;
       _encoder->attachFullQuad(encoder_pin_a, encoder_pin_b);
       _encoder->setCount(0);
+
+      _motor = std::make_unique<stepper_motor::Motor>(driver_address, _gpio_wrapper, _stepper_pin_id_config);
     }
 
     void init_lock(uint8_t pwr_open_lock_pin_id,
                    uint8_t pwr_close_lock_pin_id,
                    uint8_t sensor_lock_pin_id,
-                   uint8_t sensor_drawer_closed_pin_id,
-                   bool gpio_input_state,
-                   bool gpio_output_state)
+                   uint8_t sensor_drawer_closed_pin_id)
     {
-      _lock.initialize_lock(pwr_open_lock_pin_id,
-                            pwr_close_lock_pin_id,
-                            sensor_lock_pin_id,
-                            sensor_drawer_closed_pin_id,
-                            gpio_input_state,
-                            gpio_output_state);
+      _lock.initialize_lock(
+          pwr_open_lock_pin_id, pwr_close_lock_pin_id, sensor_lock_pin_id, sensor_drawer_closed_pin_id);
     }
 
     void stop_motor()
@@ -54,9 +52,8 @@ namespace drawer_controller
       _motor->setSpeed(1000, 0);
     }
 
-    void init_motor(uint8_t driver_address)
+    void init_motor()
     {
-      _motor = std::make_unique<stepper_motor::Motor>(driver_address, _gpio_wrapper, _stepper_pin_id_config);
       _motor->init();
     }
 
