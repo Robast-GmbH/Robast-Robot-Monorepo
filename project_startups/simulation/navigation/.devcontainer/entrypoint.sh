@@ -7,5 +7,7 @@
 sudo apt-get update && sudo apt-get upgrade -y
 rosdep update
 rosdep install --from-paths /workspace/src --ignore-src -r -y
+rosdep install --from-paths /workspace_nav2/src --ignore-src -r -y # TODO remove this line
+cd /workspace_nav2; colcon build --packages-select nav2_mppi_controller # TODO remove this line
 #sudo dos2unix shell_setup.sh
 #sudo /startup.sh

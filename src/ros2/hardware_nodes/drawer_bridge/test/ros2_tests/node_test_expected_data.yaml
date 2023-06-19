@@ -1,0 +1,5 @@
+drawer_status:
+  drawer_address:
+    module_id: 0x010203
+    drawer_id: 2
+  drawer_is_open: true

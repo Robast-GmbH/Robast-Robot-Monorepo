@@ -1,25 +1,20 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"dockerFile": "../../../src/ros2/hardware_nodes/Dockerfile",
-	"build": {
-		"args": {
-			"WORKSPACE": "${containerWorkspaceFolder}"
-		}
-	},
+	"image": "ghcr.io/robast-gmbh/monorepo/hardeware_nodes:latest",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
-		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/drawer_gate/,target=/workspace/src/hardware_nodes/drawer_gate,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/drawer_sym/,target=/workspace/src/hardware_nodes/drawer_sym,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/drawer_bridge/,target=/workspace/src/hardware_nodes/drawer_bridge,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/drawer_manager/,target=/workspace/src/hardware_nodes/drawer_manager,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
 		"source=${localWorkspaceFolder}/../../libs/,target=/workspace/libs,type=bind"
 	],
 	"workspaceFolder": "/workspace",
+	"remoteUser": "robast",
 	"runArgs": [
 		"--name=hardware_nodes_drawer",
 		"--network=host",
+		"--volume=/dev/shm:/dev/shm", //needed if you use the fast dds on the host network with multiple docker containers running on the same host
 		//"--device=/dev/robast/robast_nfc", //Robo module: usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04_B-if00  // Demo module:  usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04-if00 
-		//"--device=/dev/robast/robast_can" //Robo module: /dev/serial/by-id/usb-Microchip_Technology__Inc._USBtin_A0211324-if00" ,Demo module: /dev/serial/by-id/usb-Microchip_Technology__Inc._USBtin_A0214B02-if00"
 	],
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.

@@ -13,11 +13,12 @@
 		"source=${localWorkspaceFolder}/../../libs/,target=/workspace/libs,type=bind"
 	],
 	"workspaceFolder": "/workspace",
+	"remoteUser": "robast",
 	"runArgs": [
 		"--name=hardware_nodes_full_stack",
 		"--network=host",
+		"--volume=/dev/shm:/dev/shm", //needed if you use the fast dds on the host network with multiple docker containers running on the same host
 		//"--device=/dev/robast/robast_nfc", //Robo module: usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04_B-if00  // Demo module:  usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04-if00 
-		"--device=/dev/robast/robast_can" //Robo module: /dev/serial/by-id/usb-Microchip_Technology__Inc._USBtin_A0211324-if00" ,Demo module: /dev/serial/by-id/usb-Microchip_Technology__Inc._USBtin_A0214B02-if00"
 	],
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.

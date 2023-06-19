@@ -47,36 +47,6 @@ namespace robast_can_msgs
     CanFrame encode_can_message_into_can_frame(CanMessage can_message, std::vector<CanMessage> can_db_messages);
 
     /**
-     * @brief Encodes CAN message into a ASCII command, which is needed for the USB-CAN adapter
-     *
-     * @param can_message The can_message to be encoded
-     * @param can_db_messages CAN messages from CAN database to encode the message with
-     * @return std::optional<std::string>. Only contains a value if the can_message id exists in the can_db.
-     */
-    std::optional<std::string> encode_can_message_into_ascii_command(CanMessage can_message, std::vector<CanMessage> can_db_messages);
-
-    /**
-     * @brief Decodes an ASCII command sent from the USB-CAN adapter into a CAN message
-     *
-     * @param ascii_commands_as_string The ASCII command to be encoded
-     * @param ascii_commands_length The number of chars the ASCII command contains
-     * @param can_db_messages CAN messages from CAN database to encode the message with
-     * @return std::optional<CanMessage>. Only contains a value if the can_message id exists in the can_db and the ascii command has the proper format.
-     */
-    std::optional<CanMessage> decode_single_ascii_command_into_can_message(std::string ascii_commands_as_string, uint8_t ascii_commands_length, std::vector<CanMessage> can_db_messages);
-
-    /**
-     * @brief Decodes string that may contain more than one ASCII commant sent from the USB-CAN adapter into a CAN message
-     *
-     * @param ascii_command The string with ASCII commands to be encoded
-     * @param can_msgs_id The CAN message ID of the expected can message
-     * @param dlc The dlc of the expected can message
-     * @param can_db_messages CAN messages from CAN database to encode the message with
-     * @return std::optional<CanMessage>. Only contains a value if the can_message id exists in the can_db and the ascii command has the proper format.
-     */
-    std::vector<CanMessage> decode_multiple_ascii_commands_into_can_messages(std::string ascii_commands, uint32_t can_msgs_id, uint8_t dlc, std::vector<CanMessage> can_db_messages);
-
-    /**
      * @brief Joins together the data bytes from the CAN bus
      *
      * @param data The received CAN data
@@ -138,23 +108,7 @@ namespace robast_can_msgs
         std::reverse_copy(src.raw.begin(), src.raw.end(), dst.raw.begin());
         val = dst.val;
     }
-
-    /**
-     * @brief Converts a uint32 into a string where the numbers are represented in hex format in uppercase
-     *
-     * @param input The uint64 to be converted
-     * @param num_of_digits The number of digits the converted hex number should have. This enables leading zeros.
-     */
-    std::string uint_to_hex_string(uint32_t input, int num_of_digits);
-
-    /**
-     * @brief Converts a uint64 into a string where the numbers are represented in hex format in uppercase
-     *
-     * @param input The uint64 to be converted
-     * @param num_of_digits The number of digits the converted hex number should have. This enables leading zeros.
-     */
-    std::string uint_to_hex_string(uint64_t input, int num_of_digits);
-
+    
     /**
      * @brief Assigns the data that is contained in the uint64_t parameter to the can signals
      *

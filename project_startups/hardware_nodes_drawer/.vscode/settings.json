@@ -115,14 +115,13 @@
         "source.organizeImports": true
     },
     "editor.minimap.autohide": true,
-    "c-cpp-flylint.clang.defines": [],
     "editor.formatOnSave": true,
-    "C_Cpp.formatting": "vcFormat",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "newLine",
-    "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "newLine",
-    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyFunction": true,
-    "C_Cpp.vcFormat.newLine.closeBraceSameLine.emptyType": true,
-    "C_Cpp.vcFormat.space.betweenEmptySquareBrackets": true,
-    "editor.formatOnType": true
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file", // formatting rules are defined in the .clang-format file
+    "[cpp]": {
+        "editor.tabSize": 2
+    },
+    "editor.formatOnType": true,
+    "cmake.configureOnOpen": false,
+    "cmake.sourceDirectory": "${workspaceFolder}/libs/can"
 }

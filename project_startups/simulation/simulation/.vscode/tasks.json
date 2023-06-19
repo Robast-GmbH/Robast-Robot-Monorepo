@@ -120,8 +120,8 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start drawer_gate_simulation",
-                        "command": "source /workspace/install/setup.bash; ros2 launch drawer_gate_simulation drawer_gate_simulation_launch.py",
+                        "label": "start drawer_bridge_simulation",
+                        "command": "source /workspace/install/setup.bash; ros2 launch drawer_bridge_simulation drawer_bridge_simulation_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -131,13 +131,13 @@
                 },
                 {
                         "label": "startup_sim_with_drawer_simulation",
-                        "detail": "Starts tiplu_sim, moveit_drawer, drawer_gazebo_controller_manager and drawer_gate_simulation",
+                        "detail": "Starts tiplu_sim, moveit_drawer, drawer_gazebo_controller_manager and drawer_bridge_simulation",
                         "dependsOn":
                         [
                                 "start tiplu_sim",
                                 "start moveit_drawer",
                                 "start drawer_gazebo_controller_manager",
-                                "start drawer_gate_simulation"
+                                "start drawer_bridge_simulation"
                         ]
                 },
                 {
@@ -164,35 +164,35 @@
                         "label": "Open drawer 1 in simulation",
                         "detail": "Send topic message to open drawer 1 in simulation. The drawer will automatically be closed after a predetermined time period.",
                         "type": "shell",
-                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{drawer_controller_id: 1, drawer_id: 1}' --once",
+                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 1, drawer_id: 1}' --once",
                         "problemMatcher": []
                 },
                 {
                         "label": "Open drawer 2 in simulation",
                         "detail": "Send topic message to open drawer 2 in simulation. The drawer will automatically be closed after a predetermined time period.",
                         "type": "shell",
-                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{drawer_controller_id: 2, drawer_id: 1}' --once",
+                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 2, drawer_id: 1}' --once",
                         "problemMatcher": []
                 },
                 {
                         "label": "Open drawer 3 in simulation",
                         "detail": "Send topic message to open drawer 3 in simulation. The drawer will automatically be closed after a predetermined time period.",
                         "type": "shell",
-                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{drawer_controller_id: 3, drawer_id: 1}' --once",
+                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 3, drawer_id: 1}' --once",
                         "problemMatcher": []
                 },
                 {
                         "label": "Open drawer 4 in simulation",
                         "detail": "Send topic message to open drawer 4 in simulation. The drawer will automatically be closed after a predetermined time period.",
                         "type": "shell",
-                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{drawer_controller_id: 4, drawer_id: 1}' --once",
+                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 4, drawer_id: 1}' --once",
                         "problemMatcher": []
                 },
                 {
                         "label": "Open drawer 5 in simulation",
                         "detail": "Send topic message to open drawer 5 in simulation. The drawer will automatically be closed after a predetermined time period.",
                         "type": "shell",
-                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{drawer_controller_id: 5, drawer_id: 1}' --once",
+                        "command": "source install/setup.bash; ros2 topic pub /open_drawer communication_interfaces/msg/DrawerAddress '{module_id: 5, drawer_id: 1}' --once",
                         "problemMatcher": []
                 },
                 {
