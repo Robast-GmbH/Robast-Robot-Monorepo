@@ -18,12 +18,12 @@ namespace drawer_controller
     ElectricalDrawer(uint32_t module_id,
                      uint8_t id,
                      std::shared_ptr<IGpioWrapper> gpio_wrapper,
-                     const StepperPinIdConfig& stepper_pin_id_config,
+                     const stepper_motor::StepperPinIdConfig& stepper_pin_id_config,
                      uint8_t encoder_pin_a,
                      uint8_t encoder_pin_b)
         : _module_id{module_id}, _id{id}, _gpio_wrapper{gpio_wrapper}, _stepper_pin_id_config{stepper_pin_id_config}
     {
-      _encoder = new ESP32Encoder(true);
+      _encoder = std::make_unique<ESP32Encoder>(true);
       ESP32Encoder::useInternalWeakPullResistors = UP;
       _encoder->attachFullQuad(encoder_pin_a, encoder_pin_b);
       _encoder->setCount(0);
@@ -54,9 +54,9 @@ namespace drawer_controller
       _motor->setSpeed(1000, 0);
     }
 
-    void init_motor(TMC2209Stepper* driver)
+    void init_motor(uint8_t driver_address)
     {
-      _motor = new Motor(driver, _gpio_wrapper, _stepper_pin_id_config);
+      _motor = std::make_unique<stepper_motor::Motor>(driver_address, _gpio_wrapper, _stepper_pin_id_config);
       _motor->init();
     }
 
@@ -78,18 +78,20 @@ namespace drawer_controller
     {
       feedback_msg_.reset();
       bool is_moving = _motor->getSpeed() != 0;
-      Direction direction = _motor->getDirection();
+      stepper_motor::Direction direction = _motor->getDirection();
       if (is_moving)
       {
         _pos = _encoder->getCount();
       }
-      if (is_moving && direction == counter_clockwise && _pos >= (_target_position / 255.0) * DRAWER_MAX_EXTENT)
+      if (is_moving && direction == stepper_motor::counter_clockwise &&
+          _pos >= (_target_position / 255.0) * DRAWER_MAX_EXTENT)
       {
         Serial.printf("p: %d  tp: %d address: %d \n", _pos, _target_position, &_target_position);
         _motor->setSpeed(0, 0);
         create_electrical_drawer_feedback_msg();
       }
-      else if (is_moving && direction == clockwise && _pos <= (_target_position / 255.0) * DRAWER_MAX_EXTENT)
+      else if (is_moving && direction == stepper_motor::clockwise &&
+               _pos <= (_target_position / 255.0) * DRAWER_MAX_EXTENT)
       {
         Serial.printf("p: %d  tp: %d \n", _pos, _target_position);
 
@@ -106,7 +108,7 @@ namespace drawer_controller
 
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
 
-    StepperPinIdConfig _stepper_pin_id_config;
+    stepper_motor::StepperPinIdConfig _stepper_pin_id_config;
 
     int _pos = 0;
     uint8_t _target_position = 0;
@@ -119,9 +121,9 @@ namespace drawer_controller
 
     Lock _lock = Lock(_gpio_wrapper);
 
-    Motor* _motor;            // TODO@Jacob: use unique_ptr or shared_ptr
+    std::unique_ptr<stepper_motor::Motor> _motor;
 
-    ESP32Encoder* _encoder;   // TODO@Jacob: use unique_ptr or shared_ptr
+    std::unique_ptr<ESP32Encoder> _encoder;
 
     void unlock()
     {
@@ -160,12 +162,12 @@ namespace drawer_controller
       }
       if (_target_position < _pos)
       {
-        _motor->setDirection(clockwise);
+        _motor->setDirection(stepper_motor::clockwise);
         _motor->setSpeed(2000, 0);
       }
       else
       {
-        _motor->setDirection(counter_clockwise);
+        _motor->setDirection(stepper_motor::counter_clockwise);
         _motor->setSpeed(2000, 0);
       }
     }

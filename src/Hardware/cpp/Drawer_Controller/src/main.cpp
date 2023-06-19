@@ -7,21 +7,22 @@
 #include "i_gpio_wrapper.hpp"
 #include "led_strip.hpp"
 
-#define MODULE_ID 1
-#define LOCK_ID   0
-#define R_SENSE   0.11f
+#define MODULE_ID               1
+#define LOCK_ID                 0
+#define STEPPER_MOTOR_1_ADDRESS 0
 
 using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
 
 std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper = std::make_shared<drawer_controller::GPIO>();
 
-StepperPinIdConfig stepper_1_pin_id_config = {.stepper_en_tmc2209_pin_id = STEPPER_1_EN_TMC2209_PIN_ID,
-                                              .stepper_stdby_tmc2209_pin_id = STEPPER_1_STDBY_TMC2209_PIN_ID,
-                                              .stepper_spread_pin_id = STEPPER_1_SPREAD_PIN_ID,
-                                              .stepper_dir_pin_id = STEPPER_1_DIR_PIN_ID,
-                                              .stepper_diag_pin_id = STEPPER_1_DIAG_PIN_ID,
-                                              .stepper_index_pin_id = STEPPER_1_INDEX_PIN_ID,
-                                              .stepper_step_pin_id = STEPPER_1_STEP_PIN_ID};
+stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
+    .stepper_en_tmc2209_pin_id = STEPPER_1_EN_TMC2209_PIN_ID,
+    .stepper_stdby_tmc2209_pin_id = STEPPER_1_STDBY_TMC2209_PIN_ID,
+    .stepper_spread_pin_id = STEPPER_1_SPREAD_PIN_ID,
+    .stepper_dir_pin_id = STEPPER_1_DIR_PIN_ID,
+    .stepper_diag_pin_id = STEPPER_1_DIAG_PIN_ID,
+    .stepper_index_pin_id = STEPPER_1_INDEX_PIN_ID,
+    .stepper_step_pin_id = STEPPER_1_STEP_PIN_ID};
 
 drawer_controller::ElectricalDrawer e_drawer_0 = drawer_controller::ElectricalDrawer(
     MODULE_ID, LOCK_ID, gpio_wrapper, stepper_1_pin_id_config, DRAWER_1_ENCODER_A_PIN, DRAWER_1_ENCODER_B_PIN);
@@ -49,6 +50,8 @@ void setup()
   drawers.push_back(std::make_shared<drawer_controller::Drawer>(drawer_0));
   led_strip::initialize_led_strip();
   CAN.initialize_can_controller();
+
+  e_drawer_0.init_motor(STEPPER_MOTOR_1_ADDRESS);
 }
 
 void loop()

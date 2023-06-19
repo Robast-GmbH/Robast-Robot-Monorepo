@@ -1,5 +1,5 @@
-#ifndef MOTOR
-#define MOTOR
+#if !defined(DRAWER_CONTROLLER_MOTOR_HPP)
+#define DRAWER_CONTROLLER_MOTOR_HPP
 
 #include <TMCStepper.h>
 
@@ -8,65 +8,68 @@
 #include "i_gpio_wrapper.hpp"
 #include "pinout_defines.h"
 
-#define SERIAL_PORT    Serial2   // HardwareSerial port for Teensy 4.0
-#define DRIVER_ADDRESS 0b00      // TMC2209 Driver address according to MS1 and MS2
-#define R_SENSE        0.11f     // Match to your driver
+#define SERIAL_PORT Serial2
+#define R_SENSE     0.33f   // Match to your driver
 
-enum Direction
+namespace stepper_motor
 {
-  clockwise,
-  counter_clockwise
-};
 
-struct StepperPinIdConfig
-{
-  uint8_t stepper_en_tmc2209_pin_id;
-  uint8_t stepper_stdby_tmc2209_pin_id;
-  uint8_t stepper_spread_pin_id;
-  uint8_t stepper_dir_pin_id;
-  uint8_t stepper_diag_pin_id;
-  uint8_t stepper_index_pin_id;
-  uint8_t stepper_step_pin_id;
-};
+  enum Direction
+  {
+    clockwise,
+    counter_clockwise
+  };
 
-class Motor
-{
- private:
-  TMC2209Stepper* _driver;
+  struct StepperPinIdConfig
+  {
+    uint8_t stepper_en_tmc2209_pin_id;
+    uint8_t stepper_stdby_tmc2209_pin_id;
+    uint8_t stepper_spread_pin_id;
+    uint8_t stepper_dir_pin_id;
+    uint8_t stepper_diag_pin_id;
+    uint8_t stepper_index_pin_id;
+    uint8_t stepper_step_pin_id;
+  };
 
-  std::shared_ptr<drawer_controller::IGpioWrapper> _gpio_wrapper;
+  class Motor
+  {
+   public:
+    Motor(uint8_t driver_address,
+          std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+          const StepperPinIdConfig& stepper_pin_id_config);
+    void init();
+    void setSpeed(int speed, int accelarationTime);
+    void setDirection(Direction direction);
+    void setStallGuard(bool enable);
+    void resetStallGuard();
 
-  uint8_t _stepper_en_tmc2209_pin_id;
-  uint8_t _stepper_stdby_tmc2209_pin_id;
-  uint8_t _stepper_spread_pin_id;
-  uint8_t _stepper_dir_pin_id;
-  uint8_t _stepper_diag_pin_id;
-  uint8_t _stepper_index_pin_id;
-  uint8_t _stepper_step_pin_id;
+    int getSpeed();
+    bool getIsStalled();
+    Direction getDirection();
+    void printStatus();
 
-  int32_t _speed = 0;
+   private:
+    std::unique_ptr<TMC2209Stepper> _driver;
 
-  static bool _is_stalled;
-  bool _is_stall_guard_enabled = false;
-  Direction _shaft_direction = clockwise;
+    std::shared_ptr<drawer_controller::IGpioWrapper> _gpio_wrapper;
 
-  static void stallISR();
-  bool directionToShaftBool();
+    uint8_t _stepper_en_tmc2209_pin_id;
+    uint8_t _stepper_stdby_tmc2209_pin_id;
+    uint8_t _stepper_spread_pin_id;
+    uint8_t _stepper_dir_pin_id;
+    uint8_t _stepper_diag_pin_id;
+    uint8_t _stepper_index_pin_id;
+    uint8_t _stepper_step_pin_id;
 
- public:
-  Motor(TMC2209Stepper* driver,
-        std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
-        const StepperPinIdConfig& stepper_pin_id_config);
-  void init();
-  void setSpeed(int speed, int accelarationTime);
-  void setDirection(Direction direction);
-  void setStallGuard(bool enable);
-  void resetStallGuard();
+    int32_t _speed = 0;
 
-  int getSpeed();
-  bool getIsStalled();
-  Direction getDirection();
-  void printStatus();
-};
+    static bool _is_stalled;
+    bool _is_stall_guard_enabled = false;
+    Direction _shaft_direction = clockwise;
 
-#endif
+    static void stallISR();
+    bool directionToShaftBool();
+  };
+}   // namespace stepper_motor
+
+#endif   // DRAWER_CONTROLLER_MOTOR_HPP
