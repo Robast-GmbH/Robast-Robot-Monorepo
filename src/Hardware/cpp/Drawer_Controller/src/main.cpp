@@ -10,6 +10,7 @@
 #define MODULE_ID               1
 #define LOCK_ID                 0
 #define STEPPER_MOTOR_1_ADDRESS 0
+#define USE_ENCODER             0
 
 using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
 
@@ -62,7 +63,8 @@ void setup()
                                                                      stepper_1_pin_id_config,
                                                                      DRAWER_1_ENCODER_A_PIN,
                                                                      DRAWER_1_ENCODER_B_PIN,
-                                                                     STEPPER_MOTOR_1_ADDRESS);
+                                                                     STEPPER_MOTOR_1_ADDRESS,
+                                                                     USE_ENCODER);
   e_drawer_0->init_motor();
 
   drawers.push_back(e_drawer_0);

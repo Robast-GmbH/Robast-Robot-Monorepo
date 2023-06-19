@@ -160,14 +160,14 @@ namespace stepper_motor
   //   _is_stalled = false;
   // }
 
-  void Motor::setSpeed(int speed, int accelarationTime)
+  void Motor::set_speed(int speed, int accelarationTime)
   {
     this->_speed = speed;
 
     _driver->VACTUAL(this->_speed);
   }
 
-  int Motor::getSpeed()
+  int Motor::get_speed()
   {
     return this->_speed;
   }
@@ -195,7 +195,7 @@ namespace stepper_motor
     // attachInterrupt(STEPPER_DIAG_PIN, stallISR, RISING);
   }
 
-  Direction Motor::getDirection()
+  Direction Motor::get_direction()
   {
     return _shaft_direction;
   }

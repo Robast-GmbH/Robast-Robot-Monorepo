@@ -38,14 +38,14 @@ namespace stepper_motor
           std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
           const StepperPinIdConfig& stepper_pin_id_config);
     void init();
-    void setSpeed(int speed, int accelarationTime);
+    void set_speed(int speed, int accelarationTime);
     void setDirection(Direction direction);
     void setStallGuard(bool enable);
     void resetStallGuard();
 
-    int getSpeed();
+    int get_speed();
     bool getIsStalled();
-    Direction getDirection();
+    Direction get_direction();
     void printStatus();
 
    private:
