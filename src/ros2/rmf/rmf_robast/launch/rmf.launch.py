@@ -19,25 +19,25 @@ def generate_launch_description():
         description="Enable failover mode for the fleet adapter",
     )
 
-    # common = launch.actions.IncludeLaunchDescription(
-    #     AnyLaunchDescriptionSource([ThisLaunchFileDir(), "/common.launch.py"]),
-    #     launch_arguments={
-    #         "use_sim_time": launch.substitutions.LaunchConfiguration("use_sim_time"),
-    #         "viz_config_file": [FindPackageShare("rmf_robast"), "/include/6og.rviz"],
-    #         "config_file": [FindPackageShare("rmf_robast"), "/6og.building.yaml"],
-    #         "dashboard_config_file": [
-    #             FindPackageShare("rmf_robast"),
-    #             "/dashboard_config.json",
-    #         ],
-    #     }.items(),
-    # )
+    common = launch.actions.IncludeLaunchDescription(
+        AnyLaunchDescriptionSource([ThisLaunchFileDir(), "/common.launch.py"]),
+        launch_arguments={
+            "use_sim_time": launch.substitutions.LaunchConfiguration("use_sim_time"),
+            "viz_config_file": [FindPackageShare("rmf_robast"), "/include/6og.rviz"],
+            "config_file": [FindPackageShare("rmf_robast"), "/6og.building.yaml"],
+            "dashboard_config_file": [
+                FindPackageShare("rmf_robast"),
+                "/dashboard_config.json",
+            ],
+        }.items(),
+    )
 
    
     simulation= launch.actions.IncludeLaunchDescription(
-        AnyLaunchDescriptionSource([ThisLaunchFileDir(),"/old_simulation.launch.py"]),
+        AnyLaunchDescriptionSource([ThisLaunchFileDir(),"/new_simulation.launch.py"]),
     )
 
-    # fleet_name = "rb_theron"
+    fleet_name = "ROBAST_1"
     # rb_theron_fleet = launch.actions.IncludeLaunchDescription(
     #     AnyLaunchDescriptionSource(
     #         [FindPackageShare("rmf_robast"), "/rb_theron_adapter.launch.py"]
@@ -52,29 +52,50 @@ def generate_launch_description():
     #     }.items(),
     # )
 
-    # state_aggregator = launch.actions.IncludeLaunchDescription(
-    #     AnyLaunchDescriptionSource(
-    #         [
-    #             # FindPackageShare('rmf_fleet_adapter'),
-    #             ThisLaunchFileDir(),
-    #             "/robot_state_aggregator.launch.py",
-    #         ]
-    #     ),
-    #     launch_arguments={
-    #         "robot_prefix": fleet_name,
-    #         "fleet_name": fleet_name,
-    #         "use_sim_time": launch.substitutions.LaunchConfiguration("use_sim_time"),
-    #         "failover_mode": launch.substitutions.LaunchConfiguration("failover_mode"),
-    #     }.items(),
-    # )
+    free_fleet_rb_theron = launch.actions.IncludeLaunchDescription(
+         AnyLaunchDescriptionSource(
+            [FindPackageShare("rmf_robast"), "/free_fleet.launch.py"]
+        ),
+    )
+
+    fleet_adapter_rb_theron = launch.actions.IncludeLaunchDescription(
+        AnyLaunchDescriptionSource(
+            [FindPackageShare("rmf_robast"), "/rb_theron_adapter.launch.py"]
+        ),
+        launch_arguments={
+            "fleet_name": fleet_name,
+            "use_sim_time": launch.substitutions.LaunchConfiguration("use_sim_time"),
+            "nav_graph_file": [
+                FindPackageShare("rmf_robast"),
+                "/nav_graphs/0.yaml",
+            ],
+        }.items(),
+    )
+
+    state_aggregator = launch.actions.IncludeLaunchDescription(
+        AnyLaunchDescriptionSource(
+            [
+                # FindPackageShare('rmf_fleet_adapter'),
+                ThisLaunchFileDir(),
+                "/robot_state_aggregator.launch.py",
+            ]
+        ),
+        launch_arguments={
+            "robot_prefix": fleet_name,
+            "fleet_name": fleet_name,
+            "use_sim_time": launch.substitutions.LaunchConfiguration("use_sim_time"),
+            "failover_mode": launch.substitutions.LaunchConfiguration("failover_mode"),
+        }.items(),
+    )
 
     return launch.LaunchDescription(
         [
             use_sim_time,
-            #failover_mode,
-            #common,
+            failover_mode,
+            common,
             simulation,
-            # rb_theron_fleet,
-            # state_aggregator,
+            free_fleet_rb_theron,
+            fleet_adapter_rb_theron,
+            state_aggregator,
         ]
     )

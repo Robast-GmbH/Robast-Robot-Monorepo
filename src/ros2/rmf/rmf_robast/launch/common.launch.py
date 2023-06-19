@@ -62,35 +62,26 @@ def generate_launch_description():
         arguments=[launch.substitutions.LaunchConfiguration('config_file')],
         )
 
-    # Visualiser
-    visualizer = launch.actions.IncludeLaunchDescription(
-        launch.launch_description_sources.AnyLaunchDescriptionSource(
-             #[launch_ros.substitutions.FindPackageShare('rmf_visualization'),
-            [ThisLaunchFileDir(),
-            '/visualization.launch.py']
-        ),
-        launch_arguments=[
-            ('use_time_time',
-                launch.substitutions.LaunchConfiguration('use_sim_time')),
-            ('map_name',
-                launch.substitutions.LaunchConfiguration('initial_map')),
-            ('viz_config_file',
-                launch.substitutions.LaunchConfiguration('viz_config_file')),
-            ('headless',
-                launch.substitutions.LaunchConfiguration('headless')),
-        ]
-    )
+    # # Visualiser TODO:needs to be implemented is not a core feature but would be nice to have  
+    # visualizer = launch.actions.IncludeLaunchDescription(
+    #     launch.launch_description_sources.AnyLaunchDescriptionSource(
+    #          #[launch_ros.substitutions.FindPackageShare('rmf_visualization'),
+    #         [ThisLaunchFileDir(),
+    #         '/visualization.launch.py']
+    #     ),
+    #     launch_arguments=[
+    #         ('use_time_time',
+    #             launch.substitutions.LaunchConfiguration('use_sim_time')),
+    #         ('map_name',
+    #             launch.substitutions.LaunchConfiguration('initial_map')),
+    #         ('viz_config_file',
+    #             launch.substitutions.LaunchConfiguration('viz_config_file')),
+    #         ('headless',
+    #             launch.substitutions.LaunchConfiguration('headless')),
+    #     ]
+    # )
 
-    # Door supervisor
-    door_supervisor = launch_ros.actions.Node(
-        package='rmf_fleet_adapter',
-        executable='door_supervisor')
-
-    # # Lift supervisor
-    # lift_supervisor = launch_ros.actions.Node(
-    #     package='rmf_fleet_adapter',
-    #     executable='lift_supervisor')
-
+  
     # Dispatcher
     dispatcher = launch_ros.actions.Node(
         package='rmf_task_ros2',
@@ -114,8 +105,6 @@ def generate_launch_description():
         schedule_node,
         blockade_moderator,
         building_map,
-        #visualizer,
-        #door_supervisor,
-        # lift_supervisor,
+        # visualizer,TODO: needs to be implemented is not a core feature but would be nice to have  
         dispatcher,
         ])

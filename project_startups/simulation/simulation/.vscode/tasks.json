@@ -197,28 +197,6 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start empty World",
-                        "command": "source /workspace/install/setup.bash;  ros2 launch rmf_robast_multi_robot empty_world.launch.py ",
-                        "problemMatcher": []
-                },
-                {
-                        "type": "shell",
-                        "label": "spawn multiple robots",
-                        "command": "source /workspace/install/setup.bash; ros2 launch rmf_robast_multi_robot spawn_robot_swarm.launch.py  ",
-                        "problemMatcher": []
-                },
-                {
-                        "label": "startup multirobot simulation",
-                        "detail": "Starts an empty_world of the 6 OG and spawns multiple rb_theron in it",
-                        "dependsOn":
-                        [
-                                "start empty World",
-                                "spawn multiple robots"
-                              
-                        ]
-                },
-                {
-                        "type": "shell",
                         "label": "build tests",
                         "command": "source /workspace/install/setup.bash; colcon build --symlink-install --packages-select testing_tools",
                         "problemMatcher": [],

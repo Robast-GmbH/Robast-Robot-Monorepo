@@ -6,7 +6,7 @@ from launch.substitutions import ThisLaunchFileDir
 def generate_launch_description():
     fleet_name = launch.actions.DeclareLaunchArgument(
         'fleet_name',
-        default_value=['rb_theron'],
+        default_value=['rb_theron_fleet'],
         description='The name that will be published in the outgoing fleet state')
     use_sim_time = launch.actions.DeclareLaunchArgument(
         'use_sim_time',
