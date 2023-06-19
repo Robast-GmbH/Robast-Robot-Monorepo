@@ -175,7 +175,7 @@ namespace stepper_motor
   bool Motor::directionToShaftBool()
   {
     // TODO(andreas): Check if it's correct.
-    if (_shaft_direction == clockwise)
+    if (_shaft_direction == counter_clockwise)
     {
       return true;
     }

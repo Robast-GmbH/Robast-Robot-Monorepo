@@ -9,7 +9,7 @@
 #include "motor.hpp"
 
 #define DRAWER_MAX_EXTENT                       50000
-#define DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN 10000
+#define DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN 1000
 
 namespace drawer_controller
 {
@@ -95,17 +95,9 @@ namespace drawer_controller
       }
       else
       {
-        uint32_t current_timestemp = millis();
-
-        if (direction == stepper_motor::counter_clockwise)
-        {
-          _pos += (current_timestemp - _last_timestemp) * _motor->get_speed() / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
-        }
-        else
-        {
-          _pos -= (current_timestemp - _last_timestemp) * _motor->get_speed() / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
-        }
+        integrate_drawer_position(direction);
       }
+      Serial.printf("Current position: % d, Target Position: %d\n", _pos, normed_target_position);
 
       if ((direction == stepper_motor::counter_clockwise) && (_pos >= normed_target_position))
       {
@@ -149,6 +141,22 @@ namespace drawer_controller
     std::unique_ptr<stepper_motor::Motor> _motor;
 
     std::unique_ptr<ESP32Encoder> _encoder;
+
+    void integrate_drawer_position(stepper_motor::Direction direction)
+    {
+      uint32_t current_timestemp = millis();
+
+      if (direction == stepper_motor::counter_clockwise)
+      {
+        _pos += (current_timestemp - _last_timestemp) * _motor->get_speed() / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
+      }
+      else
+      {
+        _pos -= (current_timestemp - _last_timestemp) * _motor->get_speed() / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
+      }
+
+      _last_timestemp = current_timestemp;
+    }
 
     void unlock()
     {
