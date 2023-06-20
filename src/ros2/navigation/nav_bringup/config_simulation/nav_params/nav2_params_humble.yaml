@@ -110,7 +110,7 @@ controller_server:
       simulate_ahead_time: 2.0
       # Primary controller params:
       time_steps: 56
-      model_dt: 0.05
+      model_dt: 0.04
       batch_size: 2000
       vx_std: 0.5
       vy_std: 0.0
@@ -165,7 +165,7 @@ controller_server:
       PathAlignCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 200.0
+        cost_weight: 2.0
         max_path_occupancy_ratio: 0.05
         trajectory_point_step: 8
         threshold_to_consider: 0.40
@@ -173,7 +173,7 @@ controller_server:
       PathFollowCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 500.0
+        cost_weight: 5.0
         offset_from_furthest: 8 # When in doubt, prediction_horizon_s * max_speed / path_resolution / 3.0 is a good baseline
         threshold_to_consider: 0.4
       PathAngleCritic:
