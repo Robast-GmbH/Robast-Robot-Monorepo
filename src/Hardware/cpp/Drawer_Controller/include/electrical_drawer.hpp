@@ -9,7 +9,7 @@
 #include "motor.hpp"
 
 #define DRAWER_MAX_EXTENT                       50000
-#define DRAWER_MAX_SPEED                        8000
+#define DRAWER_MAX_SPEED                        35000
 #define DRAWER_ACCELERATION_TIME_IN_US          1000
 #define DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN 1000
 
