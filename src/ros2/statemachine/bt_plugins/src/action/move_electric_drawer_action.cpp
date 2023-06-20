@@ -20,7 +20,7 @@ namespace drawer_statemachine
 
         getInput("move_electric_drawer_topic", topic_name_);
         getInput("target_position", drawer_task_.target_position);
-        getInput("speed_mode", drawer_task_.speed_mode);
+        getInput("speed", drawer_task_.speed);
         getInput("stall_guard_enable", drawer_task_.stall_guard_enable);
 
         initializePublisher();

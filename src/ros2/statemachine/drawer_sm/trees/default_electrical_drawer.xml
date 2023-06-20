@@ -3,10 +3,10 @@
   <BehaviorTree ID="default_electrical_drawer_tree">
     <Sequence>
       <ChangeLED blue="28" brightness="128" drawer_address="{drawer}" green="128" led_topic="drawer_leds" mode="1" red="28"/>
-      <MoveElectricDrawer drawer_address="{drawer}" move_electric_drawer_topic="/move_electric_drawer" speed_mode="200" stall_guard_enable="0" target_position="200"/>
+      <MoveElectricDrawer drawer_address="{drawer}" move_electric_drawer_topic="/move_electric_drawer" speed="100" stall_guard_enable="0" target_position="200"/>
       <ElectricDrawerStatusCondition target_value="true" topic="/drawer_feedback_status"/>
       <DrawerChangeStateReq drawer_address_topic="/close_drawer" drawer_address="{drawer}"/>
-      <MoveElectricDrawer drawer_address="{drawer}" move_electric_drawer_topic="/move_electric_drawer" speed_mode="200" stall_guard_enable="0" target_position="0"/>
+      <MoveElectricDrawer drawer_address="{drawer}" move_electric_drawer_topic="/move_electric_drawer" speed="100" stall_guard_enable="0" target_position="0"/>
       <ChangeLED blue="123" brightness="128" drawer_address="{drawer}" green="5" led_topic="drawer_leds" mode="1" red="123"/>
       <ElectricDrawerStatusCondition target_value="false" topic="/drawer_feedback_status"/>
       <!-- <SubTree ID="drawer_close_animation_tree" _autoremap="true"/> -->
@@ -40,7 +40,7 @@
     <Action ID="MoveElectricDrawer" editable="false">
       <input_port name="drawer_address" default="{drawer}"/>
       <input_port name="move_electric_drawer_topic" default="/move_electric_drawer"/>
-      <input_port name="speed_mode" default="0">uint8</input_port>
+      <input_port name="speed" default="0">uint8</input_port>
       <input_port name="stall_guard_enable" default="0">uint8</input_port>
       <input_port name="target_position" default="0">uint8</input_port>
     </Action>

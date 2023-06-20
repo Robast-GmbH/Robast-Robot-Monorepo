@@ -48,7 +48,7 @@ namespace drawer_statemachine
                 BT::InputPort<uint8_t>(
                     "target_position", 0, "goal position between 0-255"),
                 BT::InputPort<uint8_t>(
-                    "speed_mode", 0, "speed between 0-255"),
+                    "speed", 0, "speed between 0-255"),
                 BT::InputPort<bool>(
                     "stall_guard_enable", true, "stall_guard_enable"),
 

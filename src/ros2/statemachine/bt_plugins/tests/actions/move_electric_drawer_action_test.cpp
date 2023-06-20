@@ -7,17 +7,14 @@
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "bt_plugins/action/move_electric_drawer_action.hpp"
 
-
-
-
 /*
-* HOW TO RUN THIS TEST ON WINDOWS:
-* - Go to directory libs/can/tests
-* - Run the following commands:
-* g++ -std=c++17 -c .\tests_main.cpp
-* g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\src\* -o test_executable -I .. -Wall -Wextra -Wuseless-cast -Wdouble-promotion -Wnull-dereference -Wpedantic -Wshadow -Wnon-virtual-dtor -Wlogical-op
-* .\test_executable.exe
-*/
+ * HOW TO RUN THIS TEST ON WINDOWS:
+ * - Go to directory libs/can/tests
+ * - Run the following commands:
+ * g++ -std=c++17 -c .\tests_main.cpp
+ * g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\src\* -o test_executable -I .. -Wall -Wextra -Wuseless-cast -Wdouble-promotion -Wnull-dereference -Wpedantic -Wshadow -Wnon-virtual-dtor -Wlogical-op
+ * .\test_executable.exe
+ */
 
 namespace test2
 {
@@ -27,12 +24,12 @@ namespace test2
         {
             std::string nodename = "MoveElectricDrawer";
             rclcpp::init(0, nullptr);
-            
+
             const std::vector<std::string> plugins = {
                 "move_electric_drawer_action_bt_node",
             };
             static rclcpp::Node::SharedPtr node_electric_drawer = std::make_shared<rclcpp::Node>("test_move_drawer");
-            static BT::NodeConfig* config_;
+            static BT::NodeConfig *config_;
             config_ = new BT::NodeConfig();
             auto blackboard = BT::Blackboard::create();
             blackboard->set<std::chrono::milliseconds>(
@@ -45,17 +42,17 @@ namespace test2
                 "drawer_address",
                 used_drawer_address);
             std::string electric_tree_xml =
-                    R"(
+                R"(
                     <root BTCPP_format="4" >
                         <BehaviorTree ID="MainTree">
                             <MoveElectricDrawer drawer_address="{drawer}"
                             move_electric_drawer_topic="move_electric_drawer" 
-                            speed_mode="200" 
+                            speed="200" 
                             target_position="200" 
                             stall_guard_enable="0"/>
                         </BehaviorTree>
                     </root>)";
-            
+
             WHEN("The bt engine including the open drawer plugin is created")
             {
                 auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
@@ -84,7 +81,7 @@ namespace test2
                             REQUIRE(found);
                         }
                     }
-                    //TODO add more tests for the tree with ros2 
+                    // TODO add more tests for the tree with ros2
                 }
             }
         }
