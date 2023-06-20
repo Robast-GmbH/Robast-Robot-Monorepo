@@ -96,13 +96,17 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_configure(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    const std::string DRYVE_D1_IP_ADDRESS = "10.10.13.5";
-    const int PORT = 502;
-
-    _x_axis = std::make_unique<dryve_d1_gate::D1>(
-        DRYVE_D1_IP_ADDRESS, PORT, std::make_unique<dryve_d1_gate::SocketWrapper>());
+    _x_axis = std::make_unique<dryve_d1_gate::D1>(dryve_d1_gate::DRYVE_D1_IP_ADDRESS_X_AXIS,
+                                                  dryve_d1_gate::PORT,
+                                                  std::make_unique<dryve_d1_gate::SocketWrapper>());
+    _y_axis = std::make_unique<dryve_d1_gate::D1>(dryve_d1_gate::DRYVE_D1_IP_ADDRESS_Y_AXIS,
+                                                  dryve_d1_gate::PORT,
+                                                  std::make_unique<dryve_d1_gate::SocketWrapper>());
 
     _x_axis->run_dryve_state_machine();
+    _y_axis->run_dryve_state_machine();
+    _x_axis->set_debug_mode_off();
+    _y_axis->set_debug_mode_off();
 
     // reset values always when configuring hardware
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -191,12 +195,8 @@ namespace ros2_control_plugin_door_opening_mechanism
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Deactivating ...please wait...");
 
-    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
-    _x_axis->wait_for_dryve_ready_state();
-    _x_axis->set_dryve_shutdown_state();
-
-    // Gracefully close everything down
-    close(_x_axis->sock);
+    _x_axis->close_connection();
+    _y_axis->close_connection();
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successfully deactivated!");
 
@@ -214,12 +214,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
                 "Shutting down ...please wait...");
 
-    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
-    _x_axis->wait_for_dryve_ready_state();
-    _x_axis->set_dryve_shutdown_state();
-
-    // Gracefully close everything down
-    close(_x_axis->sock);
+    _x_axis->close_connection();
+    _y_axis->close_connection();
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successful shutdown!");
 
@@ -236,12 +232,8 @@ namespace ros2_control_plugin_door_opening_mechanism
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Cleaning up ...please wait...");
 
-    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
-    _x_axis->wait_for_dryve_ready_state();
-    _x_axis->set_dryve_shutdown_state();
-
-    // Gracefully close everything down
-    close(_x_axis->sock);
+    _x_axis->close_connection();
+    _y_axis->close_connection();
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Cleaned up successfully!");
 
@@ -259,12 +251,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
                 "On Error: Cleaning up ...please wait...");
 
-    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
-    _x_axis->wait_for_dryve_ready_state();
-    _x_axis->set_dryve_shutdown_state();
-
-    // Gracefully close everything down
-    close(_x_axis->sock);
+    _x_axis->close_connection();
+    _y_axis->close_connection();
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
                 "On Error: Cleaned up successfully!");
@@ -278,14 +266,23 @@ namespace ros2_control_plugin_door_opening_mechanism
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Reading...");
 
-    _hw_position_states[0] =
+    _hw_position_states[1] =
         static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
                                                        _x_axis->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
         _X_AXIS_SI_UNIT_FACTOR;
-    _hw_velocity_states[0] =
+    _hw_velocity_states[1] =
         static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
                                                        _x_axis->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
         _X_AXIS_SI_UNIT_FACTOR;
+
+    _hw_position_states[0] =
+        static_cast<double>(_y_axis->read_object_value(_y_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
+                                                       _y_axis->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
+        _Y_AXIS_SI_UNIT_FACTOR;
+    _hw_velocity_states[0] =
+        static_cast<double>(_y_axis->read_object_value(_y_axis->OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
+                                                       _y_axis->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
+        _Y_AXIS_SI_UNIT_FACTOR;
 
     for (uint i = 0; i < _hw_position_states.size(); i++)
     {
@@ -313,7 +310,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Writing...");
 
-    _x_axis->set_profile_velocity(_hw_velocity_commands[0], _X_AXIS_ACCELERATION, _X_AXIS_DECELERATION);
+    _x_axis->set_profile_velocity(_hw_velocity_commands[1], _X_AXIS_ACCELERATION, _X_AXIS_DECELERATION);
+    _y_axis->set_profile_velocity(_hw_velocity_commands[0], _Y_AXIS_ACCELERATION, _Y_AXIS_DECELERATION);
 
     for (uint i = 0; i < _hw_position_commands.size(); i++)
     {

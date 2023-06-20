@@ -46,6 +46,8 @@ namespace dryve_d1_gate
 
     D1(std::string ip_address, int port, std::unique_ptr<ISocketWrapper> socket_wrapper);
 
+    void close_connection();
+
     void set_debug_mode_on();
 
     void set_debug_mode_off();

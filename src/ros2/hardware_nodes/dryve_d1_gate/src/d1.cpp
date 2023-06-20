@@ -59,6 +59,14 @@ namespace dryve_d1_gate
     }
   }
 
+  void D1::close_connection()
+  {
+    wait_for_dryve_ready_state();
+    set_dryve_shutdown_state();
+
+    close(this->sock);
+  }
+
   std::string_view D1::send_command_telegram(std::vector<unsigned char> telegram, int value)
   {
     unsigned char array_of_byte[4];
