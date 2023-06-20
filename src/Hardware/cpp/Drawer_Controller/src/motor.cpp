@@ -57,7 +57,7 @@ namespace stepper_motor
     // /=0: Motor moves with the velocity given by VACTUAL.
     // Step pulses can be monitored via INDEX output.
     // The motor direction is controlled by the sign of VACTUAL.
-    _driver->VACTUAL(_speed);
+    _driver->VACTUAL(_active_speed);
 
     // Comparator blank time. This time needs to safely cover the switching
     // event and the duration of the ringing on the sense resistor. For most
@@ -92,7 +92,7 @@ namespace stepper_motor
     // The stall output becomes active if SG_RESULT fall below this value.
     _driver->SGTHRS(STALL_VALUE);
 
-    _driver->shaft(directionToShaftBool());
+    _driver->shaft(direction_to_shaft_bool());
 
     Serial.print("\nTesting connection...");
     uint8_t result = _driver->test_connection();
@@ -119,22 +119,22 @@ namespace stepper_motor
       abort();
     }
 
-    // setStallGuard(true);
+    // set_stall_guard(true);
 
     Serial.println("Stepper initialized");
   }
 
-  void Motor::stallISR()
+  void Motor::stall_ISR()
   {
     _is_stalled = true;
   }
 
-  bool Motor::getIsStalled()
+  bool Motor::get_is_stalled()
   {
     return _is_stalled;
   }
 
-  // void Motor::setStallGuard(bool enable)
+  // void Motor::set_stall_guard(bool enable)
   // {
   //   if (_is_stall_guard_enabled && !enable)
   //   {
@@ -143,11 +143,11 @@ namespace stepper_motor
   //   }
   //   else if (enable)
   //   {
-  //     attachInterrupt(STEPPER_DIAG_PIN, Motor::stallISR, RISING);   // TODO@Jacob: Use interrup from port expander
+  //     attachInterrupt(STEPPER_DIAG_PIN, Motor::stall_ISR, RISING);   // TODO@Jacob: Use interrup from port expander
   //   }
   // }
 
-  // void Motor::resetStallGuard()
+  // void Motor::reset_stall_guard()
   // {
   //   setSpeed(0, 0);
   //   _driver->VACTUAL(_speed);
@@ -156,23 +156,33 @@ namespace stepper_motor
   //   delay(100);
   //   _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
   //   delay(500);
-  //   attachInterrupt(STEPPER_DIAG_PIN, stallISR, RISING);
+  //   attachInterrupt(STEPPER_DIAG_PIN, stall_ISR, RISING);
   //   _is_stalled = false;
   // }
 
-  void Motor::set_speed(int speed, int accelarationTime)
+  void Motor::set_active_speed(uint32_t active_speed)
   {
-    this->_speed = speed;
+    _active_speed = active_speed;
 
-    _driver->VACTUAL(this->_speed);
+    _driver->VACTUAL(_active_speed);
   }
 
-  int Motor::get_speed()
+  uint32_t Motor::get_active_speed()
   {
-    return this->_speed;
+    return _active_speed;
   }
 
-  bool Motor::directionToShaftBool()
+  void Motor::set_target_speed(uint32_t target_speed)
+  {
+    _target_speed = target_speed;
+  }
+
+  uint32_t Motor::get_target_speed()
+  {
+    return _target_speed;
+  }
+
+  bool Motor::direction_to_shaft_bool()
   {
     // TODO(andreas): Check if it's correct.
     if (_shaft_direction == counter_clockwise)
@@ -185,14 +195,14 @@ namespace stepper_motor
     }
   }
 
-  void Motor::setDirection(Direction direction)
+  void Motor::set_direction(Direction direction)
   {
     // detachInterrupt(STEPPER_DIAG_PIN);
     _shaft_direction = direction;
-    bool shaftDirectionAsBool = directionToShaftBool();
-    _driver->shaft(shaftDirectionAsBool);
+    bool shaft_direction_as_bool = direction_to_shaft_bool();
+    _driver->shaft(shaft_direction_as_bool);
     // delay(500);
-    // attachInterrupt(STEPPER_DIAG_PIN, stallISR, RISING);
+    // attachInterrupt(STEPPER_DIAG_PIN, stall_ISR, RISING);
   }
 
   Direction Motor::get_direction()
@@ -200,7 +210,7 @@ namespace stepper_motor
     return _shaft_direction;
   }
 
-  void Motor::printStatus()
+  void Motor::print_status()
   {
     Serial.print("Status: ");
     Serial.print(_driver->SG_RESULT(), DEC);

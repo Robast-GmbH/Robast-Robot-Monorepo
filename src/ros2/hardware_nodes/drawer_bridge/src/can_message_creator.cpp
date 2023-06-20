@@ -47,7 +47,7 @@ drawer_bridge::CanMessageCreator::CanMessage drawer_bridge::CanMessageCreator::c
   can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_ID).set_data(msg.drawer_address.drawer_id);
 
   can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_TARGET_POSITION).set_data(msg.target_position);
-  can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_SPEED_MODE).set_data(msg.speed_mode);
+  can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_SPEED).set_data(msg.speed_mode);
   can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).set_data(msg.stall_guard_enable);
 
   can_msg_drawer_task.set_can_signals(can_signals_drawer_task);

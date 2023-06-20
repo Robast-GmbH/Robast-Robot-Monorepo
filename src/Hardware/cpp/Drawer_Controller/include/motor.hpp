@@ -38,15 +38,17 @@ namespace stepper_motor
           std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
           const StepperPinIdConfig& stepper_pin_id_config);
     void init();
-    void set_speed(int speed, int accelarationTime);
-    void setDirection(Direction direction);
-    void setStallGuard(bool enable);
-    void resetStallGuard();
+    void set_active_speed(uint32_t speed);
+    void set_target_speed(uint32_t target_speed);
+    void set_direction(Direction direction);
+    void set_stall_guard(bool enable);
+    void reset_stall_guard();
 
-    int get_speed();
-    bool getIsStalled();
+    uint32_t get_active_speed();
+    uint32_t get_target_speed();
+    bool get_is_stalled();
     Direction get_direction();
-    void printStatus();
+    void print_status();
 
    private:
     std::unique_ptr<TMC2209Stepper> _driver;
@@ -61,14 +63,15 @@ namespace stepper_motor
     uint8_t _stepper_index_pin_id;
     uint8_t _stepper_step_pin_id;
 
-    int32_t _speed = 0;
+    uint32_t _active_speed = 0;
+    uint32_t _target_speed = 0;
 
     static bool _is_stalled;
     bool _is_stall_guard_enabled = false;
     Direction _shaft_direction = clockwise;
 
-    static void stallISR();
-    bool directionToShaftBool();
+    static void stall_ISR();
+    bool direction_to_shaft_bool();
   };
 }   // namespace stepper_motor
 
