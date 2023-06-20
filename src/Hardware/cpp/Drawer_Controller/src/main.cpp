@@ -61,10 +61,10 @@ void setup()
                                                                      LOCK_ID,
                                                                      gpio_wrapper,
                                                                      stepper_1_pin_id_config,
+                                                                     USE_ENCODER,
                                                                      DRAWER_1_ENCODER_A_PIN,
                                                                      DRAWER_1_ENCODER_B_PIN,
-                                                                     STEPPER_MOTOR_1_ADDRESS,
-                                                                     USE_ENCODER);
+                                                                     STEPPER_MOTOR_1_ADDRESS);
   e_drawer_0->init_motor();
 
   drawers.push_back(e_drawer_0);
@@ -104,21 +104,15 @@ void loop()
   }
 
   // TODO@Jacob: Remove when finally working
-  //  if (Serial.available())
-  //  {
-  //    char input = Serial.read();
-  //    if (input == '-')
-  //    {
-  //      Serial.println("stop motor");
-  //      e_drawer_0->stop_motor();
-  //    }
-  //    if (input == '+')
-  //    {
-  //      Serial.println("Start motor");
-
-  //     e_drawer_0->start_motor();
-  //   }
-  // }
+  if (Serial.available())
+  {
+    char input = Serial.read();
+    if (input == '-')
+    {
+      Serial.println("stop motor");
+      e_drawer_0->stop_motor();
+    }
+  }
 
   led_strip::handle_led_control();
 

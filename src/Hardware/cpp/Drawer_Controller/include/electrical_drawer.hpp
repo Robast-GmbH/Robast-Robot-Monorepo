@@ -19,27 +19,29 @@ namespace drawer_controller
   class ElectricalDrawer : public IDrawer
   {
    public:
-    // TODO: Reduce number of arguments
     ElectricalDrawer(uint32_t module_id,
                      uint8_t id,
                      std::shared_ptr<IGpioWrapper> gpio_wrapper,
                      const stepper_motor::StepperPinIdConfig& stepper_pin_id_config,
+                     bool use_encoder,
                      uint8_t encoder_pin_a,
                      uint8_t encoder_pin_b,
-                     uint8_t driver_address,
-                     bool use_encoder)
+                     uint8_t motor_driver_address)
         : _module_id{module_id},
           _id{id},
           _gpio_wrapper{gpio_wrapper},
           _stepper_pin_id_config{stepper_pin_id_config},
           _use_encoder{use_encoder}
     {
-      _encoder = std::make_unique<ESP32Encoder>(true);
-      ESP32Encoder::useInternalWeakPullResistors = UP;
-      _encoder->attachFullQuad(encoder_pin_a, encoder_pin_b);
-      _encoder->set_count(0);
+      if (use_encoder)
+      {
+        _encoder = std::make_unique<ESP32Encoder>(true);
+        ESP32Encoder::useInternalWeakPullResistors = UP;
+        _encoder->attachFullQuad(encoder_pin_a, encoder_pin_b);
+        _encoder->set_count(0);
+      }
 
-      _motor = std::make_unique<stepper_motor::Motor>(driver_address, _gpio_wrapper, _stepper_pin_id_config);
+      _motor = std::make_unique<stepper_motor::Motor>(motor_driver_address, _gpio_wrapper, _stepper_pin_id_config);
     }
 
     void init_lock(uint8_t pwr_open_lock_pin_id,
@@ -184,7 +186,7 @@ namespace drawer_controller
         // The ramp-up time has elapsed, set the motor speed to the target speed directly
         _motor->set_active_speed(target_speed);
         _speed_ramp_in_progress = false;
-        Serial.printf(" The ramp-up time has elapsed, set the motor speed to the target speed directly!");
+        Serial.printf(" The ramp-up time has elapsed, set the motor speed to the target speed directly!\n");
       }
     }
 
@@ -293,7 +295,10 @@ namespace drawer_controller
 
         _motor->set_target_speed(0);
         _motor->set_active_speed(0);
-        _encoder->set_count(0);
+        if (_use_encoder)
+        {
+          _encoder->set_count(0);
+        }
         _pos = 0;
         create_electrical_drawer_feedback_msg();
       }
