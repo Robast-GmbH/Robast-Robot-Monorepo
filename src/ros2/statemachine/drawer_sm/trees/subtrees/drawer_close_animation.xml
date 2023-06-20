@@ -1,25 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4">
-  <BehaviorTree ID="BehaviorTree">
+  <BehaviorTree ID="drawer_close_animation_tree">
     <Sequence>
-      <OpenDrawer drawer_address="{drawer}"
-                  drawer_open_topic="/open_drawer"/>
-      <ChangeLED blue="0"
-                 brightness="128"
-                 drawer_address="{drawer}"
-                 green="255"
-                 led_topic="drawer_leds"
-                 mode="1"
-                 red="0"/>
-      <DrawerStatusCondition target_value="true"
-                             topic="/drawer_is_open"/>
-      <ChangeLED blue="255"
-                 brightness="128"
-                 drawer_address="{drawer}"
-                 green="255"
-                 led_topic="drawer_leds"
-                 mode="1"
-                 red="255"/>
       <DrawerStatusCondition target_value="false"
                              topic="/drawer_is_open"/>
       <ChangeLED blue="0"
@@ -58,13 +40,6 @@
       <input_port name="red"
                   default="0">uint8</input_port>
     </Action>
-    <Action ID="DrawerChangeStateReq"
-            editable="false">
-      <input_port name="drawer_address_topic"
-                  default="topic"/>
-      <output_port name="drawer_address"
-                   default="{drawer}"/>
-    </Action>
     <Condition ID="DrawerStatusCondition"
                editable="false">
       <input_port name="target_value"
@@ -72,13 +47,6 @@
       <input_port name="topic"
                   default="/drawer_is_open"/>
     </Condition>
-    <Action ID="OpenDrawer"
-            editable="false">
-      <output_port name="drawer_address"
-                  default="{drawer}"/>
-      <input_port name="drawer_open_topic"
-                  default="/open_drawer"/>
-    </Action>
   </TreeNodesModel>
 
 </root>

@@ -12,35 +12,33 @@ namespace drawer_statemachine
 {
     class DrawerStatusCondition : public BT::ConditionNode
     {
-        public:
-            DrawerStatusCondition(const std::string& name, const BT::NodeConfig& config);
-            DrawerStatusCondition() = delete;
+    public:
+        DrawerStatusCondition(const std::string &name, const BT::NodeConfig &config);
+        DrawerStatusCondition() = delete;
 
-            BT::NodeStatus tick() override;
+        BT::NodeStatus tick() override;
 
-            static BT::PortsList providedPorts()
-            {
-                return
-                {
-                    BT::InputPort<bool>("target_value", "false"),
-                    BT::InputPort<std::string>("topic", "/drawer_is_open")
-                };
-            }
+        static BT::PortsList providedPorts()
+        {
+            return {
+                BT::InputPort<bool>("target_value", "false"),
+                BT::InputPort<std::string>("topic", "/drawer_is_open")};
+        }
+
     protected:
         void callbackDrawerFeedback(const communication_interfaces::msg::DrawerStatus::SharedPtr msg);
 
     private:
-            rclcpp::Node::SharedPtr node_;
+        rclcpp::Node::SharedPtr _node;
 
-            rclcpp::CallbackGroup::SharedPtr callback_group_;
-            rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
-            rclcpp::Subscription<communication_interfaces::msg::DrawerStatus>::SharedPtr drawer_status_sub_;
-            bool last_message_;
-            bool target_value_;
-            std::string topic_name_;
-            // communication_interfaces::msg::DrawerAddress drawer_address_;
-
+        rclcpp::CallbackGroup::SharedPtr _callback_group;
+        rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
+        rclcpp::Subscription<communication_interfaces::msg::DrawerStatus>::SharedPtr drawer_status_sub_;
+        bool last_message_;
+        bool target_value_;
+        std::string topic_name_;
+        // communication_interfaces::msg::DrawerAddress drawer_address_;
     };
-}
+} // namespace drawer_statemachine
 
 #endif

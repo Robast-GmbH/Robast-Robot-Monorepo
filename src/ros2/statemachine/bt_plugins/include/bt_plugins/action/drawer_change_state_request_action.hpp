@@ -1,5 +1,5 @@
-#ifndef DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__OPENDRAWER_BT_NODES_H
-#define DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__OPENDRAWER_BT_NODES_H
+#ifndef DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__DrawerChangeStateReq_BT_NODES_H
+#define DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__DrawerChangeStateReq_BT_NODES_H
 
 #include <string>
 #include <vector>
@@ -17,14 +17,14 @@ namespace drawer_statemachine
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
      * updated on the blackboard and FAILURE otherwise
      */
-    class OpenDrawer : public BT::StatefulActionNode
+    class DrawerChangeStateReq : public BT::StatefulActionNode
     {
     public:
-        OpenDrawer(
+        DrawerChangeStateReq(
             const std::string &name,
             const BT::NodeConfig &config);
 
-        OpenDrawer() = delete;
+        DrawerChangeStateReq() = delete;
 
         /**
          * @brief The main override required by a BT action
@@ -41,25 +41,22 @@ namespace drawer_statemachine
         static BT::PortsList providedPorts()
         {
             return {
-                BT::OutputPort<communication_interfaces::msg::DrawerAddress>(
-                    "drawer_address", "address of the drawer thats used to execute the action"),
-                BT::InputPort<std::string>(
-                    "drawer_open_topic",
-                    "/open_drawer",
-                    "topic thats used to execute the action")};
+                BT::InputPort<std::string>("drawer_address_topic", "topic", "empty"),
+                BT::OutputPort<communication_interfaces::msg::DrawerAddress>("drawer_address", "topic")};
         }
 
     protected:
         std::string topic_name_;
-        BT::Blackboard::Ptr _blackboard;
+        void callbackDrawerChangeStateReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg);
+        communication_interfaces::msg::DrawerAddress drawer_address_;
 
     private:
         rclcpp::Node::SharedPtr _node;
-        communication_interfaces::msg::DrawerAddress drawer_address_;
 
-        // rclcpp::CallbackGroup::SharedPtr _callback_group;
-        // rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
-        rclcpp::Publisher<communication_interfaces::msg::DrawerAddress>::SharedPtr open_publisher_;
+        rclcpp::CallbackGroup::SharedPtr _callback_group;
+        rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
+        rclcpp::Subscription<communication_interfaces::msg::DrawerAddress>::SharedPtr _drawer_open_sub;
+        bool _new_message;
     };
 } // namespace drawer_statemachine
 #endif

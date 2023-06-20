@@ -13,26 +13,27 @@
 
 namespace drawer_statemachine
 {
-  class NFCToDrawer: public BT::StatefulActionNode {
+  class NFCToDrawer : public BT::StatefulActionNode
+  {
   public:
     NFCToDrawer(
-      const std::string& name,
-      const BT::NodeConfig& config
-    );
+        const std::string &name,
+        const BT::NodeConfig &config);
     BT::NodeStatus onStart() override;
     BT::NodeStatus onRunning() override;
     void onHalted() override;
 
     static BT::PortsList providedPorts()
     {
-        return{};
+      return {};
     }
+
   private:
-    rclcpp::Node::SharedPtr node_;
+    rclcpp::Node::SharedPtr _node;
     communication_interfaces::msg::DrawerAddress drawer_address_;
     std::map<std::string, communication_interfaces::msg::DrawerAddress> nfc_key_to_DrawerAddress_;
     BT::Blackboard::Ptr blackboard_;
   };
-}
+} // namespace drawer_statemachine
 
-#endif //DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__NFC_TO_DRAWER_ACTION_HPP
+#endif // DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__NFC_TO_DRAWER_ACTION_HPP

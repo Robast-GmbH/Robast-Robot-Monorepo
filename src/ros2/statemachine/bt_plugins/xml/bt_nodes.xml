@@ -10,7 +10,7 @@
             <input_port name="mode" default="0">uint8. describes the kind of animation thats used</input_port>
             <input_port name="red" default="0">uint8</input_port>
         </Action>
-        <Action ID="DrawerOpenReq">
+        <Action ID="DrawerChangeStateReq">
             <output_port name="drawer_address" default="{drawer}"/>
             <input_port name="topic_name" default="/open_request"/>
         </Action>
@@ -18,12 +18,22 @@
             <input_port name="drawer_address" default="{drawer}"/>
             <input_port name="drawer_open_topic" default="/open_drawer"/>
         </Action>
+        <Action ID="MoveElectricDrawer">
+            <input_port name="drawer_address" default="{drawer}"/>
+            <input_port name="move_electric_drawer_topic" default="/move_electric_drawer"/>
+            <input_port name="speed_mode" default="0">uint8</input_port>
+            <input_port name="stall_guard_enable" default="0">uint8</input_port>
+            <input_port name="target_position" default="0">uint8</input_port>
+        </Action>
         <Condition ID="DrawerStatusCondition">
             <input_port name="target_value" default="false"/>
             <input_port name="topic" default="/drawer_is_open"/>
         </Condition>
-        <Action ID="UserToDrawerMapping"
-            editable="true"/>
+        <Condition ID="ElectricDrawerStatusCondition">
+            <input_port name="target_value" default="false">bool. wether the value should be true or false</input_port>
+            <input_port name="topic" default="/drawer_feedback_status"/>
+        </Condition>
+        <Action ID="UserToDrawerMapping" editable="true"/>
     </TreeNodesModel>
 </root>
 

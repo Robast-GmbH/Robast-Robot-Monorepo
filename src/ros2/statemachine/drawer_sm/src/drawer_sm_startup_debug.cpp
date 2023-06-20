@@ -10,7 +10,7 @@
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 
 #include "bt_plugins/action/change_led_action.hpp"
-#include "bt_plugins/action/drawer_open_request_action.hpp"
+#include "bt_plugins/action/drawer_change_state_request_action.hpp"
 #include "bt_plugins/action/open_drawer_action.hpp"
 #include "bt_plugins/action/nfc_to_drawer_action.hpp"
 #include "bt_plugins/condition/drawer_status_condition.hpp"
@@ -19,7 +19,6 @@
 
 #include "behaviortree_cpp/behavior_tree.h"
 #include "behaviortree_cpp/xml_parsing.h"
-#include "behaviortree_cpp/loggers/bt_zmq_publisher.h"
 
 #include "std_msgs/msg/empty.hpp"
 
@@ -142,7 +141,7 @@ class BTTicker: public rclcpp::Node
       void configure()
       {
         const std::vector<std::string> plugins = {
-          "drawer_open_request_action_bt_node",
+          "drawer_change_state_request_action_bt_node",
         };
         static BT::NodeConfig* config_;
         config_ = new BT::NodeConfig();
@@ -168,9 +167,9 @@ class BTTicker: public rclcpp::Node
             auto iter = bt_.subtrees[0]->nodes.begin();
             for (; iter != bt_.subtrees[0]->nodes.end(); iter++)
             {
-              if ((*iter)->registrationName() == "DrawerOpenReq")
+              if ((*iter)->registrationName() == "DrawerChangeStateReq")
               {
-                drawer_statemachine::DrawerOpenReq* node = dynamic_cast<drawer_statemachine::DrawerOpenReq*> ((*iter).get());
+                drawer_statemachine::DrawerChangeStateReq* node = dynamic_cast<drawer_statemachine::DrawerChangeStateReq*> ((*iter).get());
                 std::cout << "found: " << *plugin_name << "\n";
                 found = true;
                 
