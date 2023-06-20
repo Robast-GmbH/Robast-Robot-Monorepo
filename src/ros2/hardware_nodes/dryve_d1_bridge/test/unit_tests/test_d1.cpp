@@ -7,7 +7,7 @@
 #include <catch2/catch_all.hpp>
 #include <iostream>
 
-#include "dryve_d1_gate/d1.hpp"
+#include "dryve_d1_bridge/d1.hpp"
 #include "test/mock_socket_wrapper.hpp"
 
 namespace unit_test
@@ -37,7 +37,7 @@ namespace unit_test
 
       WHEN("Creating the D1 class")
       {
-        dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::make_unique<MockSocketWrapper>());
+        dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::make_unique<MockSocketWrapper>());
 
         THEN("There should be no connection error while creating the class.")
         {
@@ -84,7 +84,7 @@ namespace unit_test
               testing::DoAll(testing::SetArrayArgument<1>(STATUS_SHUTDOWN, STATUS_SHUTDOWN + sizeof(STATUS_SHUTDOWN)),
                              testing::Return(21)));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("set_dryve_shutdown_state is called")
       {
@@ -137,7 +137,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(STATUS_SWITCH_ON, STATUS_SWITCH_ON + sizeof(STATUS_SWITCH_ON)),
               testing::Return(21)));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("set_dryve_switch_on_state is called")
       {
@@ -192,7 +192,7 @@ namespace unit_test
                                                           STATUS_OPERATION_ENABLE + sizeof(STATUS_OPERATION_ENABLE)),
                              testing::Return(21)));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("set_dryve_operation_enable_state is called")
       {
@@ -234,7 +234,7 @@ namespace unit_test
                                            handshake_send_operation_enable + sizeof(handshake_send_operation_enable)),
               testing::Return(sizeof(handshake_send_operation_enable))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("send_constant_set_command is called")
       {
@@ -270,7 +270,7 @@ namespace unit_test
                                                                     sizeof(wrong_handshake_send_operation_enable)),
                                    testing::Return(sizeof(wrong_handshake_send_operation_enable))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("send_constant_set_command is called")
       {
@@ -311,7 +311,7 @@ namespace unit_test
                                            handshake_reset_dryve_status + sizeof(handshake_reset_dryve_status)),
               testing::Return(sizeof(handshake_reset_dryve_status))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("reset_dryve_status is called")
       {
@@ -368,7 +368,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(status_mode_display, status_mode_display + sizeof(status_mode_display)),
               testing::Return(21)));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("set_dryve_mode_of_operation is called")
       {
@@ -404,7 +404,7 @@ namespace unit_test
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(recv_buffer, recv_buffer + sizeof(recv_buffer)),
                                    testing::Return(sizeof(recv_buffer))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("read_command_to_recv_buffer is called")
       {
@@ -451,7 +451,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("read_object_value is called")
       {
@@ -498,7 +498,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("check_for_dryve_error is called")
       {
@@ -537,7 +537,7 @@ namespace unit_test
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
                                    testing::Return(sizeof(STATUS_READY))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("wait_for_dryve_ready_state is called")
       {
@@ -576,7 +576,7 @@ namespace unit_test
           .WillOnce(testing::DoAll(testing::SetArrayArgument<1>(STATUS_READY, STATUS_READY + sizeof(STATUS_READY)),
                                    testing::Return(sizeof(STATUS_READY))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("wait_for_homing is called")
       {
@@ -620,7 +620,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("get_si_unit_factor is called")
       {
@@ -664,7 +664,7 @@ namespace unit_test
               testing::SetArrayArgument<1>(expected_recv_buffer, expected_recv_buffer + sizeof(expected_recv_buffer)),
               testing::Return(sizeof(expected_recv_buffer))));
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("get_si_unit_factor is called")
       {
@@ -838,7 +838,7 @@ namespace unit_test
           .WillOnce(testing::Return(23))    // mock for send_command_telegram(_send_profile_acceleration,...)
           .WillOnce(testing::Return(23));   // mock for send_command_telegram(_send_profile_deceleration,...)
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("move_profile_to_absolute_position is called")
       {
@@ -1014,7 +1014,7 @@ namespace unit_test
           .WillOnce(testing::Return(23))    // mock for send_command_telegram(_send_profile_acceleration,...)
           .WillOnce(testing::Return(23));   // mock for send_command_telegram(_send_profile_deceleration,...)
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("move_profile_to_relative_position is called")
       {
@@ -1139,7 +1139,7 @@ namespace unit_test
           .WillOnce(testing::Return(23))    // mock for send_command_telegram(_send_profile_deceleration,...)
           .WillOnce(testing::Return(23));   // mock for send_command_telegram(_send_target_velocity,...)
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("set_profile_velocity is called")
       {
@@ -1297,7 +1297,7 @@ namespace unit_test
           .WillOnce(testing::Return(23))    // mock for send_command_telegram(_send_zero_velocity,...)
           .WillOnce(testing::Return(23));   // mock for send_command_telegram(_send_homing_acceleration,...)
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("start_dryve_homing is called")
       {
@@ -1429,7 +1429,7 @@ namespace unit_test
           .WillOnce(testing::Return(21))    // mock for set_dryve_switch_on_state()
           .WillOnce(testing::Return(21));   // mock for set_dryve_operation_enable_state()
 
-      dryve_d1_gate::D1 d1 = dryve_d1_gate::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
+      dryve_d1_bridge::D1 d1 = dryve_d1_bridge::D1("127.0.0.1", port, std::move(mock_socket_wrapper));
 
       WHEN("run_dryve_state_machine is called")
       {

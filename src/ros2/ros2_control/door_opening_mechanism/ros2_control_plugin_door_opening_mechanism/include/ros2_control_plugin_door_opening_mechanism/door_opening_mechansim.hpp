@@ -19,9 +19,9 @@
 #include <string>
 #include <vector>
 
-#include "dryve_d1_gate/d1.hpp"
-#include "dryve_d1_gate/d1_configs.hpp"
-#include "dryve_d1_gate/socket_wrapper.hpp"
+#include "dryve_d1_bridge/d1.hpp"
+#include "dryve_d1_bridge/d1_configs.hpp"
+#include "dryve_d1_bridge/socket_wrapper.hpp"
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
@@ -97,8 +97,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     const double _Y_AXIS_ACCELERATION = 500;
     const double _Y_AXIS_DECELERATION = 500;
 
-    std::unique_ptr<dryve_d1_gate::D1> _x_axis;
-    std::unique_ptr<dryve_d1_gate::D1> _y_axis;
+    std::unique_ptr<dryve_d1_bridge::D1> _x_axis;
+    std::unique_ptr<dryve_d1_bridge::D1> _y_axis;
   };
 
 }   // namespace ros2_control_plugin_door_opening_mechanism

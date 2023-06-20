@@ -1,11 +1,11 @@
-#ifndef DRYVE_D1_GATE__SOCKET_WRAPPER_HPP_
-#define DRYVE_D1_GATE__SOCKET_WRAPPER_HPP_
+#ifndef DRYVE_D1_BRIDGE__SOCKET_WRAPPER_HPP_
+#define DRYVE_D1_BRIDGE__SOCKET_WRAPPER_HPP_
 
 #include <sys/socket.h>
 
-#include "dryve_d1_gate/i_socket_wrapper.hpp"
+#include "dryve_d1_bridge/i_socket_wrapper.hpp"
 
-namespace dryve_d1_gate
+namespace dryve_d1_bridge
 {
   class SocketWrapper : public ISocketWrapper
   {
@@ -20,6 +20,6 @@ namespace dryve_d1_gate
       return send(fd, buf, n, flags);
     }
   };
-}   // namespace dryve_d1_gate
+}   // namespace dryve_d1_bridge
 
-#endif   // DRYVE_D1_GATE__I_SOCKET_WRAPPER_HPP_
+#endif   // DRYVE_D1_BRIDGE__I_SOCKET_WRAPPER_HPP_

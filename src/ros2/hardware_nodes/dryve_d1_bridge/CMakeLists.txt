@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(dryve_d1_gate)
+project(dryve_d1_bridge)
 
 # Default to C++20
 if(NOT CMAKE_CXX_STANDARD)
@@ -16,18 +16,18 @@ find_package(rclcpp REQUIRED)
 
 include_directories(include)
 
-set(executable_dryve_d1_gate dryve_d1_gate)
+set(executable_dryve_d1_bridge dryve_d1_bridge)
 set(executable_shutdown_dryve_d1 shutdown_dryve_d1)
 
-add_executable(${executable_dryve_d1_gate}
+add_executable(${executable_dryve_d1_bridge}
   src/main.cpp
 )
 add_executable(${executable_shutdown_dryve_d1}
   src/shutdown_dryve_d1.cpp
 )
 
-add_library(library_dryve_d1_gate SHARED
-  src/dryve_d1_gate.cpp
+add_library(library_dryve_d1_bridge SHARED
+  src/dryve_d1_bridge.cpp
 )
 
 add_library(library_d1 SHARED
@@ -38,11 +38,11 @@ set(dependencies
   rclcpp
 )
 
-ament_target_dependencies(${executable_dryve_d1_gate}
+ament_target_dependencies(${executable_dryve_d1_bridge}
   ${dependencies}
 )
-target_link_libraries(${executable_dryve_d1_gate} 
-  library_dryve_d1_gate
+target_link_libraries(${executable_dryve_d1_bridge} 
+  library_dryve_d1_bridge
   library_d1
 )
 ament_target_dependencies(${executable_shutdown_dryve_d1}
@@ -52,11 +52,11 @@ target_link_libraries(${executable_shutdown_dryve_d1}
   library_d1
 )
 
-ament_target_dependencies(library_dryve_d1_gate
+ament_target_dependencies(library_dryve_d1_bridge
   ${dependencies}
 )
 
-target_include_directories(${executable_dryve_d1_gate} 
+target_include_directories(${executable_dryve_d1_bridge} 
   PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -121,7 +121,7 @@ if(BUILD_TESTING)
 endif()
 
 install(TARGETS
-  library_dryve_d1_gate
+  library_dryve_d1_bridge
   library_d1
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
@@ -129,7 +129,7 @@ install(TARGETS
 )
 
 install(TARGETS
-  ${executable_dryve_d1_gate}
+  ${executable_dryve_d1_bridge}
   ${executable_shutdown_dryve_d1} 
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )

@@ -96,12 +96,12 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_configure(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    _x_axis = std::make_unique<dryve_d1_gate::D1>(dryve_d1_gate::DRYVE_D1_IP_ADDRESS_X_AXIS,
-                                                  dryve_d1_gate::PORT,
-                                                  std::make_unique<dryve_d1_gate::SocketWrapper>());
-    _y_axis = std::make_unique<dryve_d1_gate::D1>(dryve_d1_gate::DRYVE_D1_IP_ADDRESS_Y_AXIS,
-                                                  dryve_d1_gate::PORT,
-                                                  std::make_unique<dryve_d1_gate::SocketWrapper>());
+    _x_axis = std::make_unique<dryve_d1_bridge::D1>(dryve_d1_bridge::DRYVE_D1_IP_ADDRESS_X_AXIS,
+                                                    dryve_d1_bridge::PORT,
+                                                    std::make_unique<dryve_d1_bridge::SocketWrapper>());
+    _y_axis = std::make_unique<dryve_d1_bridge::D1>(dryve_d1_bridge::DRYVE_D1_IP_ADDRESS_Y_AXIS,
+                                                    dryve_d1_bridge::PORT,
+                                                    std::make_unique<dryve_d1_bridge::SocketWrapper>());
 
     _x_axis->run_dryve_state_machine();
     _y_axis->run_dryve_state_machine();

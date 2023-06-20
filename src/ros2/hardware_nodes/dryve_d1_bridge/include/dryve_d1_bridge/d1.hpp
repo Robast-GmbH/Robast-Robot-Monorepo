@@ -1,5 +1,5 @@
-#ifndef DRYVE_D1_GATE__D1_HPP_
-#define DRYVE_D1_GATE__D1_HPP_
+#ifndef DRYVE_D1_BRIDGE__D1_HPP_
+#define DRYVE_D1_BRIDGE__D1_HPP_
 
 #include <arpa/inet.h>
 #include <sys/socket.h>
@@ -13,7 +13,7 @@
 #include <memory>
 #include <string>
 
-#include "dryve_d1_gate/i_socket_wrapper.hpp"
+#include "dryve_d1_bridge/i_socket_wrapper.hpp"
 
 #define ERROR_E01_CONFIGURATION              25376
 #define ERROR_E02_MOTOR_OVER_CURRENT         8992
@@ -37,7 +37,7 @@
 #define MOVEMENT_TYPE_LINEAR 0x01
 #define MOVEMENT_TYPE_ROTARY 0x41
 
-namespace dryve_d1_gate
+namespace dryve_d1_bridge
 {
   class D1
   {
@@ -274,6 +274,6 @@ namespace dryve_d1_gate
     static constexpr unsigned char _STATUS_OPERATION_ENABLE_3[21] = {0, 0,  0,  0, 0, 15, 0, 43, 13, 0, 0,
                                                                      0, 96, 65, 0, 0, 0,  0, 2,  39, 2};
   };
-}   // namespace dryve_d1_gate
+}   // namespace dryve_d1_bridge
 
-#endif   // DRYVE_D1_GATE__D1_HPP_
+#endif   // DRYVE_D1_BRIDGE__D1_HPP_

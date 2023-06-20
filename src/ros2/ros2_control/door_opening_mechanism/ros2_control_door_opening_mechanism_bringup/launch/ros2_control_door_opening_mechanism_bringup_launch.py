@@ -16,7 +16,7 @@ from launch_ros.substitutions import FindPackageShare
 
 def shutdown_dryve_d1():
     print("Shutting down dryve d1 motor controller now!")
-    os.system('ros2 run dryve_d1_gate shutdown_dryve_d1')
+    os.system('ros2 run dryve_d1_bridge shutdown_dryve_d1')
 
 
 def generate_launch_description():

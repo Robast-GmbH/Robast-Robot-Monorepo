@@ -1,8 +1,8 @@
-#include "dryve_d1_gate/dryve_d1_gate.hpp"
+#include "dryve_d1_bridge/dryve_d1_bridge.hpp"
 
-namespace dryve_d1_gate
+namespace dryve_d1_bridge
 {
-  DryveD1Gate::DryveD1Gate() : Node("dryve_d1_gate")
+  DryveD1Gate::DryveD1Gate() : Node("dryve_d1_bridge")
   {
     this->execute();
 
@@ -75,4 +75,4 @@ namespace dryve_d1_gate
   DryveD1Gate::~DryveD1Gate()
   {
   }
-}   // namespace dryve_d1_gate
+}   // namespace dryve_d1_bridge

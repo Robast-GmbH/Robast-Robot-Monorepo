@@ -13,7 +13,7 @@
   <depend>pluginlib</depend>
   <depend>rclcpp</depend>
   <depend>rclcpp_lifecycle</depend>
-  <depend>dryve_d1_gate</depend>
+  <depend>dryve_d1_bridge</depend>
 
   <exec_depend>xacro</exec_depend>
   <exec_depend>joint_state_broadcaster</exec_depend>

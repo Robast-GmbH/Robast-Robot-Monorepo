@@ -1,6 +1,6 @@
-#include "dryve_d1_gate/d1.hpp"
+#include "dryve_d1_bridge/d1.hpp"
 
-namespace dryve_d1_gate
+namespace dryve_d1_bridge
 {
   D1::D1(std::string ip_address, int port, std::unique_ptr<ISocketWrapper> socket_wrapper)
   {
@@ -827,4 +827,4 @@ namespace dryve_d1_gate
     return std::string_view();
   }
 
-}   // namespace dryve_d1_gate
+}   // namespace dryve_d1_bridge
