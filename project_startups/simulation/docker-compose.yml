@@ -12,8 +12,8 @@ services:
       - ../../src/ros2/communication_interfaces:/workspace/src/communication_interfaces:cached
       - ../../src/ros2/navigation/environment_vars.yaml:/workspace/src/navigation/environment_vars.yaml:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ../../src/ros2/cyclone_DDS_config.xml/:/workspace/cyclone_DDS_config.xml:cached
-      - ../../src/ros2/fast_DDS_config.xml/:/workspace/fast_DDS_config.xml:cached
+      - ../../src/ros2/cyclone_DDS_config.xml:/workspace/cyclone_DDS_config.xml:cached
+      - ../../src/ros2/fast_DDS_config.xml:/workspace/fast_DDS_config.xml:cached
     deploy:
       resources:
         reservations:
@@ -33,8 +33,8 @@ services:
       - ../../src/ros2/navigation:/workspace/src/navigation:cached
       - ../../src/ros2/communication_interfaces:/workspace/src/communication_interfaces:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
-      - ../../src/ros2/cyclone_DDS_config.xml/:/workspace/cyclone_DDS_config.xml:cached
-      - ../../src/ros2/fast_DDS_config.xml/:/workspace/fast_DDS_config.xml:cached
+      - ../../src/ros2/cyclone_DDS_config.xml:/workspace/cyclone_DDS_config.xml:cached
+      - ../../src/ros2/fast_DDS_config.xml:/workspace/fast_DDS_config.xml:cached
     deploy:
       resources:
         reservations:
