@@ -41,7 +41,7 @@ def generate_launch_description():
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         "use_sim_time",
-        default_value="true",
+        default_value="false",
         description="whether to use sim time or not",
     )
 
@@ -75,6 +75,15 @@ def generate_launch_description():
         arguments=["forward_velocity_controller", "--controller-manager", "/controller_manager"],
         parameters=[{"use_sim_time": use_sim_time}],
     )
+
+    robot_state_publisher_spawner = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        name="robot_state_publisher",
+        parameters=[{"use_sim_time": use_sim_time}, {"robot_description": robot_xml}],
+        output="screen",
+    )
+
     # Delay start of robot_controller after `joint_state_broadcaster`
     delay_robot_controller_spawner_after_joint_state_broadcaster_spawner = RegisterEventHandler(
         event_handler=OnProcessExit(
@@ -95,6 +104,7 @@ def generate_launch_description():
 
     ld.add_action(control_node)
     ld.add_action(joint_state_broadcaster_spawner)
+    ld.add_action(robot_state_publisher_spawner)
     ld.add_action(delay_robot_controller_spawner_after_joint_state_broadcaster_spawner)
 
     # This would be probably much nice to use RegisterEventHandler to trigger the shutdown, but unfortunately we

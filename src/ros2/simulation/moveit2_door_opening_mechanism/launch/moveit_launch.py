@@ -62,7 +62,7 @@ def generate_launch_description():
                 "publish_state_updates": should_publish,
                 "publish_transforms_updates": should_publish,
                 "monitor_dynamics": False,
-                "use_sim_time": True,
+                "use_sim_time": False,
         }
 
         move_group_params = [
