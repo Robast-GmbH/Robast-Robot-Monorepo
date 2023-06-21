@@ -122,6 +122,20 @@ namespace drawer_controller
       return _moving_average_drawer_closed_pin;
     }
 
+    void unlock(uint8_t id)
+    {
+      if (is_drawer_opening_in_progress())
+      {
+        Serial.printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", id);
+      }
+      else
+      {
+        set_open_lock_current_step(true);
+        set_timestamp_last_lock_change();
+        set_drawer_opening_is_in_progress(true);
+      }
+    }
+
    private:
     uint8_t _power_open_pin_id;
     uint8_t _power_close_pin_id;

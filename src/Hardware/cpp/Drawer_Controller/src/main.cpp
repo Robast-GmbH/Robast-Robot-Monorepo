@@ -46,11 +46,11 @@ void setup()
 
   gpio_wrapper = std::make_shared<drawer_controller::GPIO>();
 
-  drawer_0 = std::make_shared<drawer_controller::Drawer>(MODULE_ID, LOCK_ID, gpio_wrapper);
-  drawer_0->init_lock(LOCK_1_OPEN_CONROL_PIN_ID,
-                      LOCK_1_CLOSE_CONROL_PIN_ID,
-                      SENSE_INPUT_LOCK_1_PIN_ID,
-                      SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
+  // drawer_0 = std::make_shared<drawer_controller::Drawer>(MODULE_ID, LOCK_ID, gpio_wrapper);
+  // drawer_0->init_lock(LOCK_1_OPEN_CONROL_PIN_ID,
+  //                     LOCK_1_CLOSE_CONROL_PIN_ID,
+  //                     SENSE_INPUT_LOCK_1_PIN_ID,
+  //                     SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
 
   led_strip::initialize_led_strip();
 
@@ -65,6 +65,10 @@ void setup()
                                                                      DRAWER_1_ENCODER_A_PIN,
                                                                      DRAWER_1_ENCODER_B_PIN,
                                                                      STEPPER_MOTOR_1_ADDRESS);
+  e_drawer_0->init_lock(LOCK_1_OPEN_CONROL_PIN_ID,
+                        LOCK_1_CLOSE_CONROL_PIN_ID,
+                        SENSE_INPUT_LOCK_1_PIN_ID,
+                        SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
   e_drawer_0->init_motor();
 
   drawers.push_back(e_drawer_0);
