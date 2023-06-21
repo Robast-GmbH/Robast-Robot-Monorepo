@@ -83,20 +83,6 @@ namespace ros2_control_plugin_door_opening_mechanism
     std::vector<double> _hw_velocity_commands;
     std::vector<double> _hw_velocity_states;
 
-    // Please mind: Actually you could get this value from the d1_dryve via get_si_unit_factor(), but I get stupid
-    // values from it
-    const double _X_AXIS_SI_UNIT_FACTOR = -100000;
-
-    const double _X_AXIS_VELOCITY = 10;
-    const double _X_AXIS_ACCELERATION = 10;
-    const double _X_AXIS_DECELERATION = 10;
-
-    const double _Y_AXIS_SI_UNIT_FACTOR = 100000;
-
-    const double _Y_AXIS_VELOCITY = 10;
-    const double _Y_AXIS_ACCELERATION = 10;
-    const double _Y_AXIS_DECELERATION = 10;
-
     std::unique_ptr<dryve_d1_bridge::D1> _x_axis;
     std::unique_ptr<dryve_d1_bridge::D1> _y_axis;
   };

@@ -61,6 +61,7 @@ namespace dryve_d1_bridge
 
   void D1::close_connection()
   {
+    set_profile_velocity(0, D1_DEFAULT_VELOCITY, D1_DEFAULT_ACCELERATION);
     wait_for_dryve_ready_state();
     set_dryve_shutdown_state();
 

@@ -97,10 +97,10 @@ namespace ros2_control_plugin_door_opening_mechanism
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
     _x_axis = std::make_unique<dryve_d1_bridge::D1>(dryve_d1_bridge::DRYVE_D1_IP_ADDRESS_X_AXIS,
-                                                    dryve_d1_bridge::PORT,
+                                                    dryve_d1_bridge::PORT_X_AXIS,
                                                     std::make_unique<dryve_d1_bridge::SocketWrapper>());
     _y_axis = std::make_unique<dryve_d1_bridge::D1>(dryve_d1_bridge::DRYVE_D1_IP_ADDRESS_Y_AXIS,
-                                                    dryve_d1_bridge::PORT,
+                                                    dryve_d1_bridge::PORT_Y_AXIS,
                                                     std::make_unique<dryve_d1_bridge::SocketWrapper>());
 
     _x_axis->run_dryve_state_machine();
@@ -266,20 +266,20 @@ namespace ros2_control_plugin_door_opening_mechanism
     _hw_position_states[1] =
         static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
                                                        _x_axis->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
-        _X_AXIS_SI_UNIT_FACTOR;
+        dryve_d1_bridge::X_AXIS_SI_UNIT_FACTOR;
     _hw_velocity_states[1] =
         static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
                                                        _x_axis->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
-        _X_AXIS_SI_UNIT_FACTOR;
+        dryve_d1_bridge::X_AXIS_SI_UNIT_FACTOR;
 
     _hw_position_states[0] =
         static_cast<double>(_y_axis->read_object_value(_y_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
                                                        _y_axis->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
-        _Y_AXIS_SI_UNIT_FACTOR;
+        dryve_d1_bridge::Y_AXIS_SI_UNIT_FACTOR;
     _hw_velocity_states[0] =
         static_cast<double>(_y_axis->read_object_value(_y_axis->OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
                                                        _y_axis->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
-        _Y_AXIS_SI_UNIT_FACTOR;
+        dryve_d1_bridge::Y_AXIS_SI_UNIT_FACTOR;
 
     return hardware_interface::return_type::OK;
   }
@@ -287,8 +287,10 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemPositionOnlyHardware::write(
       const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
   {
-    _x_axis->set_profile_velocity(_hw_velocity_commands[1], _X_AXIS_ACCELERATION, _X_AXIS_DECELERATION);
-    _y_axis->set_profile_velocity(_hw_velocity_commands[0], _Y_AXIS_ACCELERATION, _Y_AXIS_DECELERATION);
+    _x_axis->set_profile_velocity(
+        _hw_velocity_commands[1], dryve_d1_bridge::X_AXIS_ACCELERATION, dryve_d1_bridge::X_AXIS_DECELERATION);
+    _y_axis->set_profile_velocity(
+        _hw_velocity_commands[0], dryve_d1_bridge::Y_AXIS_ACCELERATION, dryve_d1_bridge::Y_AXIS_DECELERATION);
 
     return hardware_interface::return_type::OK;
   }

@@ -13,6 +13,7 @@
 #include <memory>
 #include <string>
 
+#include "dryve_d1_bridge/d1_configs.hpp"
 #include "dryve_d1_bridge/i_socket_wrapper.hpp"
 
 #define ERROR_E01_CONFIGURATION              25376
