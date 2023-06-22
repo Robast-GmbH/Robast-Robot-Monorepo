@@ -27,7 +27,7 @@ namespace drawer_controller
       debug_prints_drawer_lock(msg);
       if (msg.get_id() == CAN_ID_DRAWER_UNLOCK)
       {
-        unlock();
+        _lock.unlock(_id);
 
         debug_prints_drawer_lock(msg);
       }
@@ -59,20 +59,6 @@ namespace drawer_controller
     Lock _lock = Lock(_gpio_wrapper);
 
     bool _drawer_open_feedback_can_msg_sent = false;
-
-    void unlock()
-    {
-      if (_lock.is_drawer_opening_in_progress())
-      {
-        Serial.printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", _id);
-      }
-      else
-      {
-        _lock.set_open_lock_current_step(true);
-        _lock.set_timestamp_last_lock_change();
-        _lock.set_drawer_opening_is_in_progress(true);
-      }
-    }
 
     void create_drawer_feedback_can_msg()
     {

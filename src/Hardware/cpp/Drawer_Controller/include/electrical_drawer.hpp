@@ -38,7 +38,7 @@ namespace drawer_controller
         _encoder = std::make_unique<ESP32Encoder>(true);
         ESP32Encoder::useInternalWeakPullResistors = UP;
         _encoder->attachFullQuad(encoder_pin_a, encoder_pin_b);
-        _encoder->set_count(0);
+        _encoder->setCount(0);
       }
 
       _motor = std::make_unique<stepper_motor::Motor>(motor_driver_address, _gpio_wrapper, _stepper_pin_id_config);
@@ -75,6 +75,13 @@ namespace drawer_controller
         handle_electrical_drawer_task_msg(msg);
         debug_prints_electric_drawer_task(msg);
       }
+      if (msg.get_id() == CAN_ID_DRAWER_UNLOCK)
+      {
+        Serial.print("Received request to unlock the lock!");
+        _lock.unlock(_id);
+        debug_prints_drawer_lock(msg);
+      }
+      // TODO: React on open Lock
     }
 
     std::optional<robast_can_msgs::CanMessage> can_out() override
@@ -86,6 +93,9 @@ namespace drawer_controller
     {
       feedback_msg_.reset();
 
+      _lock.handle_lock_control();
+      _lock.handle_reading_sensors();
+
       update_motor_speed();
 
       if (_motor->get_active_speed() == 0)
@@ -94,13 +104,13 @@ namespace drawer_controller
       }
 
       stepper_motor::Direction direction = _motor->get_direction();
-      int normed_target_position = (_target_position / 255.0) * DRAWER_MAX_EXTENT;
 
       update_position(direction);
 
-      debug_prints_moving_electrical_drawer(normed_target_position);
+      debug_prints_moving_electrical_drawer();
 
-      check_if_motion_is_finished(direction, normed_target_position);
+      check_if_drawer_is_opened_to_close_lock();
+      check_if_motion_is_finished(direction);
     }
 
    private:
@@ -131,6 +141,21 @@ namespace drawer_controller
     std::unique_ptr<stepper_motor::Motor> _motor;
 
     std::unique_ptr<ESP32Encoder> _encoder;
+
+    bool _triggered_closing_lock_after_opening = false;
+
+    void check_if_drawer_is_opened_to_close_lock()
+    {
+      bool is_drawer_retracted = _lock.is_endstop_switch_pushed();
+      if (_lock.is_drawer_opening_in_progress() && !is_drawer_retracted && !_triggered_closing_lock_after_opening)
+      {
+        _lock.set_open_lock_current_step(
+            false);   // this makes sure the lock automatically closes as soon as the drawer is opened
+        _triggered_closing_lock_after_opening =
+            true;     // this makes sure, closing the lock is only triggered once and not permanently
+        Serial.println("Triggered closing the lock because drawer is not retracted anymore!");
+      }
+    }
 
     int get_integrated_drawer_position(stepper_motor::Direction direction)
     {
@@ -192,7 +217,6 @@ namespace drawer_controller
 
     void unlock()
     {
-      return;
       if (_lock.is_drawer_opening_in_progress())
       {
         Serial.printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", _id);
@@ -202,6 +226,14 @@ namespace drawer_controller
         _lock.set_open_lock_current_step(true);
         _lock.set_timestamp_last_lock_change();
         _lock.set_drawer_opening_is_in_progress(true);
+      }
+    }
+
+    void drawer_homing()
+    {
+      if (_lock.is_endstop_switch_pushed())
+      {
+        _pos = 0;
       }
     }
 
@@ -218,28 +250,38 @@ namespace drawer_controller
 
       // motor_->setStallGuard(stall_guard_enabled_);
 
+      drawer_homing();
+
       if (_target_position == _pos)
       {
         create_electrical_drawer_feedback_msg();
         return;
       }
-      if (_pos == 0)
+
+      bool is_drawer_retracted = _lock.is_endstop_switch_pushed();
+      bool is_lock_open = _lock.is_lock_switch_pushed();
+
+      if ((is_drawer_retracted && is_lock_open) || (!is_drawer_retracted))
       {
-        unlock();
-      }
-      if (_target_position < _pos)
-      {
-        _motor->set_direction(stepper_motor::clockwise);
+        _motor->set_target_speed(normed_target_speed);
+        if (_target_position < _pos)
+        {
+          _motor->set_direction(stepper_motor::clockwise);
+        }
+        else
+        {
+          _motor->set_direction(stepper_motor::counter_clockwise);
+        }
+        if (!_use_encoder)
+        {
+          _last_timestemp = millis();
+        }
       }
       else
       {
-        _motor->set_direction(stepper_motor::counter_clockwise);
+        Serial.println(
+            "The electrical drawer can't be moved because the lock is not opened or the drawer is already retracted!");
       }
-      if (!_use_encoder)
-      {
-        _last_timestemp = millis();
-      }
-      _motor->set_target_speed(normed_target_speed);
     }
 
     void create_electrical_drawer_feedback_msg()
@@ -261,9 +303,15 @@ namespace drawer_controller
       can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED)
           .set_data(is_lock_switch_pushed);
 
-      can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_POSITION).set_data(_pos);
+      uint8_t normed_current_position = (_pos * 255) / DRAWER_MAX_EXTENT;
+      can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_POSITION).set_data(normed_current_position);
 
       can_msg_electrical_drawer_feedback.set_can_signals(can_signals_electrical_drawer_feedback);
+
+      Serial.printf("Creating feedback_msg for module_id %d, drawer_id %d and position: %d\n",
+                    _module_id,
+                    _id,
+                    normed_current_position);
 
       feedback_msg_ = can_msg_electrical_drawer_feedback;
     }
@@ -280,8 +328,9 @@ namespace drawer_controller
       }
     }
 
-    void check_if_motion_is_finished(stepper_motor::Direction direction, int normed_target_position)
+    void check_if_motion_is_finished(stepper_motor::Direction direction)
     {
+      int normed_target_position = (_target_position / 255.0) * DRAWER_MAX_EXTENT;
       if ((direction == stepper_motor::counter_clockwise) && (_pos >= normed_target_position))
       {
         Serial.printf("Current position: %d, Target position: %d\n", _pos, normed_target_position);
@@ -297,15 +346,19 @@ namespace drawer_controller
         _motor->set_active_speed(0);
         if (_use_encoder)
         {
-          _encoder->set_count(0);
+          _encoder->setCount(0);
         }
         _pos = 0;
+        _triggered_closing_lock_after_opening =
+            false;   // reset this flag to enable triggering the lock closing for the next drawer opening process
+        _lock.set_drawer_opening_is_in_progress(false);
         create_electrical_drawer_feedback_msg();
       }
     }
 
-    void debug_prints_moving_electrical_drawer(int normed_target_position)
+    void debug_prints_moving_electrical_drawer()
     {
+      int normed_target_position = (_target_position / 255.0) * DRAWER_MAX_EXTENT;
       Serial.printf(
           "Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: %d, _last_timestemp: %d, "
           "millis(): %d\n",
@@ -333,6 +386,18 @@ namespace drawer_controller
       Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_SPEED).get_data(), DEC);
       Serial.print(" STALL GUARD ENABLE: ");
       Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).get_data(), DEC);
+    }
+
+    void debug_prints_drawer_lock(robast_can_msgs::CanMessage& can_message)
+    {
+      Serial.print("Standard ID: ");
+      Serial.print(can_message.get_id(), HEX);
+      Serial.print(" rx_dlc: ");
+      Serial.print(can_message.get_dlc(), DEC);
+      Serial.print(" MODULE ID: ");
+      Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data(), HEX);
+      Serial.print(" DRAWER ID: ");
+      Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
     }
   };
 }   // namespace drawer_controller

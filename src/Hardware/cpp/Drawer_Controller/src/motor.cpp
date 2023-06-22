@@ -65,7 +65,7 @@ namespace stepper_motor
     // loads, a setting of 32 or 40 will be required.
     _driver->blank_time(24);
 
-    _driver->rms_current(400);   // mA
+    _driver->rms_current(670);   // mA
     _driver->microsteps(16);
 
     // Lower threshold velocity for switching on smart energy CoolStep and StallGuard to DIAG output
