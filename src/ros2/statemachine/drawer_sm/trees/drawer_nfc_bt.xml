@@ -3,31 +3,32 @@
   <BehaviorTree ID="Drawer_NFC_BT">
     <Sequence>
       <NFCToDrawer _description="Reads out the User Name of the person that used the nfc card and translates it to the corresponding drawer address which is written to the blackboard"/>
-      <OpenDrawer drawer_open_topic="/open_drawer"
-                  drawer_address="{drawer}"
+      <OpenDrawer drawer_address="{drawer}"
+                  drawer_open_topic="/open_drawer"
                   _description="The Open Drawer node reads out the drawer address from the blackboard and publishes the opned address to its output. 
                 It also publishes an open order to the topic given in the input"/>
       <ChangeLED blue="0"
                  brightness="128"
                  drawer_address="{drawer}"
                  green="255"
-                 led_topic="drawer_leds"
+                 led_topic=""
                  mode="1"
                  red="0"
+                 use_blackboard_address=""
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
-                  slow_fade_up_fade_down = 3,"
-                 />
+                  slow_fade_up_fade_down = 3,"/>
       <DrawerStatusCondition target_value="true"
                              topic="/drawer_is_open"/>
       <ChangeLED blue="255"
                  brightness="128"
                  drawer_address="{drawer}"
                  green="255"
-                 led_topic="drawer_leds"
+                 led_topic=""
                  mode="1"
-                 red="255"                 
+                 red="255"
+                 use_blackboard_address=""
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
@@ -38,9 +39,10 @@
                  brightness="150"
                  drawer_address="{drawer}"
                  green="128"
-                 led_topic="drawer_leds"
+                 led_topic=""
                  mode="2"
                  red="255"
+                 use_blackboard_address=""
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
@@ -49,9 +51,10 @@
                  brightness="25"
                  drawer_address="{drawer}"
                  green="155"
-                 led_topic="drawer_leds"
+                 led_topic=""
                  mode="1"
                  red="0"
+                 use_blackboard_address=""
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
@@ -72,11 +75,13 @@
       <input_port name="green"
                   default="0">uint8</input_port>
       <input_port name="led_topic"
-                  default="drawer_leds"/>
+                  default="/drawer_leds"/>
       <input_port name="mode"
                   default="0">uint8. describes the kind of animation thats used</input_port>
       <input_port name="red"
                   default="0">uint8</input_port>
+      <input_port name="use_blackboard_address"
+                  default="false">bool. wether to use the address that's passed around by I/O or blackboard</input_port>
     </Action>
     <Condition ID="DrawerStatusCondition"
                editable="false">
@@ -85,14 +90,15 @@
       <input_port name="topic"
                   default="/drawer_is_open"/>
     </Condition>
-    <Action ID="OpenDrawer"
-            editable="false">
-      <input_port name="drawer_open_topic"
-                  default="/open_drawer"/>
-      <output_port name="drawer_address"
-                   default="{drawer}"/>
-    </Action>
     <Action ID="NFCToDrawer"
             editable="true"/>
+    <Action ID="OpenDrawer"
+            editable="false">
+      <input_port name="drawer_address"
+                  default="{drawer}"/>
+      <input_port name="drawer_open_topic"
+                  default="/open_drawer"/>
+    </Action>
   </TreeNodesModel>
+
 </root>
