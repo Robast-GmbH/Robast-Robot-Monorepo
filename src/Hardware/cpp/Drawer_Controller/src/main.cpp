@@ -14,6 +14,8 @@
 
 using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
 
+std::shared_ptr<robast_can_msgs::CanDb> can_db;
+
 std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper;
 
 std::shared_ptr<drawer_controller::ElectricalDrawer> e_drawer_0;
@@ -44,9 +46,11 @@ void setup()
   }
   Serial.println("\nStart...");
 
+  can_db = std::make_shared<robast_can_msgs::CanDb>();
   gpio_wrapper = std::make_shared<drawer_controller::GPIO>();
 
-  // drawer_0 = std::make_shared<drawer_controller::Drawer>(MODULE_ID, LOCK_ID, gpio_wrapper);
+  // TODO: If you want to use a "normal" drawer uncomment this and comment out the e_drawer
+  // drawer_0 = std::make_shared<drawer_controller::Drawer>(MODULE_ID, LOCK_ID, can_db, gpio_wrapper);
   // drawer_0->init_lock(LOCK_1_OPEN_CONROL_PIN_ID,
   //                     LOCK_1_CLOSE_CONROL_PIN_ID,
   //                     SENSE_INPUT_LOCK_1_PIN_ID,
@@ -54,11 +58,12 @@ void setup()
 
   led_strip::initialize_led_strip();
 
-  can = std::make_unique<drawer_controller::Can>(MODULE_ID, gpio_wrapper, OE_TXB0104_PIN_ID, PCA9554_OUTPUT);
+  can = std::make_unique<drawer_controller::Can>(MODULE_ID, can_db, gpio_wrapper, OE_TXB0104_PIN_ID, PCA9554_OUTPUT);
   can->initialize_can_controller();
 
   e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(MODULE_ID,
                                                                      LOCK_ID,
+                                                                     can_db,
                                                                      gpio_wrapper,
                                                                      stepper_1_pin_id_config,
                                                                      USE_ENCODER,
@@ -124,8 +129,12 @@ void loop()
   {
     drawer->update_state();
     to_be_sent_message = drawer->can_out();
+    Serial.println("After to_be_sent_message = drawer->can_out()");
+
     if (to_be_sent_message.has_value())
     {
+      Serial.println("to_be_sent_message.has_value()!");
+
       can->send_can_message(to_be_sent_message.value());
     }
   }

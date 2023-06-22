@@ -17,10 +17,12 @@ namespace drawer_controller
   {
    public:
     Can(uint32_t module_id,
+        std::shared_ptr<robast_can_msgs::CanDb> can_db,
         std::shared_ptr<IGpioWrapper> gpio_wrapper,
         uint8_t oe_txb0104_pin_id,
         bool gpio_output_state)
         : _module_id{module_id},
+          _can_db{can_db},
           _gpio_wrapper{gpio_wrapper},
           _oe_txb0104_pin_id{oe_txb0104_pin_id},
           _gpio_output_state{gpio_output_state} {};
@@ -66,7 +68,7 @@ namespace drawer_controller
         this->_rx_msg_dlc = frame.len;
 
         can_message = robast_can_msgs::decode_can_message(
-            this->_rx_msg_id, frame.data, this->_rx_msg_dlc, this->_can_db.can_messages);
+            this->_rx_msg_id, frame.data, this->_rx_msg_dlc, this->_can_db->can_messages);
 
         if (can_message.has_value() &&
             can_message.value().get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data() == _module_id)
@@ -95,7 +97,7 @@ namespace drawer_controller
       try
       {
         robast_can_msgs::CanFrame can_frame =
-            robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db.can_messages);
+            robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
 
         CANMessage mcp2515_frame;
         mcp2515_frame.id = can_frame.get_id();
@@ -129,6 +131,7 @@ namespace drawer_controller
 
    private:
     uint32_t _module_id;
+    std::shared_ptr<robast_can_msgs::CanDb> _can_db;
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
     uint8_t _oe_txb0104_pin_id;
     bool _gpio_output_state;
@@ -140,8 +143,6 @@ namespace drawer_controller
     long unsigned int _rx_msg_id;
     uint8_t _rx_msg_dlc = 0;
     uint8_t _rx_data_buf[8];
-
-    robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();
 
     void initialize_voltage_translator(void)
     {
