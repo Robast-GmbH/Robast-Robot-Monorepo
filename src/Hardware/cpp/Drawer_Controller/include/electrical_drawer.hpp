@@ -232,24 +232,31 @@ namespace drawer_controller
         create_electrical_drawer_feedback_msg();
         return;
       }
-      // TODO: Remove
-      // if (_pos == 0)
-      // {
-      //   unlock();
-      // }
-      if (_target_position < _pos)
+
+      bool is_drawer_retracted = _lock.is_endstop_switch_pushed();
+      bool is_lock_open = _lock.is_lock_switch_pushed();
+
+      if ((is_drawer_retracted && is_lock_open) || (!is_drawer_retracted))
       {
-        _motor->set_direction(stepper_motor::clockwise);
+        _motor->set_target_speed(normed_target_speed);
+        if (_target_position < _pos)
+        {
+          _motor->set_direction(stepper_motor::clockwise);
+        }
+        else
+        {
+          _motor->set_direction(stepper_motor::counter_clockwise);
+        }
+        if (!_use_encoder)
+        {
+          _last_timestemp = millis();
+        }
       }
       else
       {
-        _motor->set_direction(stepper_motor::counter_clockwise);
+        Serial.println(
+            "The electrical drawer can't be moved because the lock is not opened or the drawer is already retracted!");
       }
-      if (!_use_encoder)
-      {
-        _last_timestemp = millis();
-      }
-      _motor->set_target_speed(normed_target_speed);
     }
 
     void create_electrical_drawer_feedback_msg()
