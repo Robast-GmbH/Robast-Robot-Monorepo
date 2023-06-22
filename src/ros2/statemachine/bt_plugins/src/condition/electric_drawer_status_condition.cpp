@@ -11,10 +11,10 @@ namespace drawer_statemachine
     }
 
     bool ElectricDrawerStatusCondition::comparator(
-        communication_interfaces::msg::DrawerStatus last_message_,
-        communication_interfaces::msg::DrawerStatus target_value_)
+        communication_interfaces::msg::ElectricalDrawerStatus last_message_,
+        uint8_t target_value_)
     {
-        if (last_message_.drawer_is_open == target_value_.drawer_is_open && new_value_received_)
+        if ((last_message_.position > 250 || last_message_.position <= target_value_ + 5) && (last_message_.position < 5 || last_message_.position >= target_value_ - 5) && new_value_received_)
         {
             new_value_received_ = false;
             return true;
@@ -30,7 +30,7 @@ namespace drawer_statemachine
         }
     }
 
-    void ElectricDrawerStatusCondition::callbackDrawerFeedback(const communication_interfaces::msg::DrawerStatus::SharedPtr msg)
+    void ElectricDrawerStatusCondition::callbackDrawerFeedback(const communication_interfaces::msg::ElectricalDrawerStatus::SharedPtr msg)
     {
         last_message_ = *msg;
         new_value_received_ = true;
@@ -38,7 +38,7 @@ namespace drawer_statemachine
 
     void ElectricDrawerStatusCondition::initialize_target_value()
     {
-        getInput("target_value", target_value_.drawer_is_open);
+        getInput("target_value", target_value_);
     }
 } // namespace drawer_statemachine
 
