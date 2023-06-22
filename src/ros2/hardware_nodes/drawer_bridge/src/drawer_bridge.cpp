@@ -134,11 +134,16 @@ namespace drawer_bridge
 
   void DrawerBridge::publish_electrical_drawer_status(robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg)
   {
-    (void) electrical_drawer_feedback_can_msg;
-    // ElectricalDrawerStatus status = ElectricalDrawerStatus();
-    // DrawerAddress address = DrawerAddress();
+    std::vector<robast_can_msgs::CanSignal> can_signals = electrical_drawer_feedback_can_msg.get_can_signals();
 
-    // electrical_drawer_status_publisher_->publish(status);
+    ElectricalDrawerStatus status = ElectricalDrawerStatus();
+
+    status.drawer_address.module_id = can_signals.at(CAN_SIGNAL_MODULE_ID).get_data();
+    status.drawer_address.drawer_id = can_signals.at(CAN_SIGNAL_DRAWER_ID).get_data();
+
+    status.position = can_signals.at(CAN_SIGNAL_DRAWER_POSITION).get_data();
+
+    electrical_drawer_status_publisher_->publish(status);
   }
 
   void DrawerBridge::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request,
