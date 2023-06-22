@@ -33,9 +33,8 @@ namespace drawer_statemachine
         : BT::SyncActionNode(name, config)
     {
         _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
-
+        blackboard_ = config.blackboard;
         getInput("led_topic", topic_name_);
-        getInput("drawer_address", drawer_leds_.drawer_address);
         getInput("blue", drawer_leds_.blue);
         getInput("red", drawer_leds_.red);
         getInput("green", drawer_leds_.green);
@@ -58,7 +57,17 @@ namespace drawer_statemachine
 
     BT::NodeStatus ChangeLED::tick()
     {
-        getInput("drawer_address", drawer_leds_.drawer_address);
+        bool use_blackboard_address = false;
+        getInput("use_blackboard_address", use_blackboard_address);
+        std::cout << "blackboard_address" << use_blackboard_address;
+        if (!use_blackboard_address)
+        {
+            getInput("drawer_address", drawer_leds_.drawer_address);
+        }
+        else
+        {
+            drawer_leds_.drawer_address = blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
+        }
         getInput("blue", drawer_leds_.blue);
         getInput("red", drawer_leds_.red);
         getInput("green", drawer_leds_.green);
