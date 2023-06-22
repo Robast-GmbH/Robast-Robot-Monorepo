@@ -7,7 +7,7 @@
 
 namespace drawer_statemachine
 {
-  template <typename T>
+  template <typename T, typename V>
   class BaseCompareCondition : public BT::ConditionNode
   {
 
@@ -33,6 +33,7 @@ namespace drawer_statemachine
           std::bind(&BaseCompareCondition::callbackDrawerFeedback, this, std::placeholders::_1),
           sub_option);
     }
+    // virtual static BT::PortsList providedPorts() = 0;
 
     virtual BT::NodeStatus tick()
     {
@@ -48,10 +49,10 @@ namespace drawer_statemachine
     virtual void initialize_target_value() = 0;
 
   protected:
-    T target_value_;
+    V target_value_;
     T last_message_;
 
-    virtual bool comparator(T last_message_, T target_value_) = 0;
+    virtual bool comparator(T last_message_, V target_value_) = 0;
     virtual void callbackDrawerFeedback(const typename T::SharedPtr msg) = 0;
     typename rclcpp::Subscription<T>::SharedPtr drawer_status_sub_;
     std::string topic_name_;
