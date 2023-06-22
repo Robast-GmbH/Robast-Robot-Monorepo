@@ -104,13 +104,13 @@ namespace drawer_controller
       }
 
       stepper_motor::Direction direction = _motor->get_direction();
-      int normed_target_position = (_target_position / 255.0) * DRAWER_MAX_EXTENT;
 
       update_position(direction);
 
-      debug_prints_moving_electrical_drawer(normed_target_position);
+      debug_prints_moving_electrical_drawer();
 
-      check_if_motion_is_finished(direction, normed_target_position);
+      check_if_drawer_is_opened_to_close_lock();
+      check_if_motion_is_finished(direction);
     }
 
    private:
@@ -141,6 +141,21 @@ namespace drawer_controller
     std::unique_ptr<stepper_motor::Motor> _motor;
 
     std::unique_ptr<ESP32Encoder> _encoder;
+
+    bool _triggered_closing_lock_after_opening = false;
+
+    void check_if_drawer_is_opened_to_close_lock()
+    {
+      bool is_drawer_retracted = _lock.is_endstop_switch_pushed();
+      if (_lock.is_drawer_opening_in_progress() && !is_drawer_retracted && !_triggered_closing_lock_after_opening)
+      {
+        _lock.set_open_lock_current_step(
+            false);   // this makes sure the lock automatically closes as soon as the drawer is opened
+        _triggered_closing_lock_after_opening =
+            true;     // this makes sure, closing the lock is only triggered once and not permanently
+        Serial.println("Triggered closing the lock because drawer is not retracted anymore!");
+      }
+    }
 
     int get_integrated_drawer_position(stepper_motor::Direction direction)
     {
@@ -214,6 +229,14 @@ namespace drawer_controller
       }
     }
 
+    void drawer_homing()
+    {
+      if (_lock.is_endstop_switch_pushed())
+      {
+        _pos = 0;
+      }
+    }
+
     void handle_electrical_drawer_task_msg(robast_can_msgs::CanMessage can_message)
     {
       _target_position = can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_TARGET_POSITION).get_data();
@@ -226,6 +249,8 @@ namespace drawer_controller
       uint32_t normed_target_speed = (speed * DRAWER_MAX_SPEED) / UINT8_MAX;
 
       // motor_->setStallGuard(stall_guard_enabled_);
+
+      drawer_homing();
 
       if (_target_position == _pos)
       {
@@ -278,9 +303,15 @@ namespace drawer_controller
       can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED)
           .set_data(is_lock_switch_pushed);
 
-      can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_POSITION).set_data(_pos);
+      uint8_t normed_current_position = (_pos * 255) / DRAWER_MAX_EXTENT;
+      can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_POSITION).set_data(normed_current_position);
 
       can_msg_electrical_drawer_feedback.set_can_signals(can_signals_electrical_drawer_feedback);
+
+      Serial.printf("Creating feedback_msg for module_id %d, drawer_id %d and position: %d\n",
+                    _module_id,
+                    _id,
+                    normed_current_position);
 
       feedback_msg_ = can_msg_electrical_drawer_feedback;
     }
@@ -297,8 +328,9 @@ namespace drawer_controller
       }
     }
 
-    void check_if_motion_is_finished(stepper_motor::Direction direction, int normed_target_position)
+    void check_if_motion_is_finished(stepper_motor::Direction direction)
     {
+      int normed_target_position = (_target_position / 255.0) * DRAWER_MAX_EXTENT;
       if ((direction == stepper_motor::counter_clockwise) && (_pos >= normed_target_position))
       {
         Serial.printf("Current position: %d, Target position: %d\n", _pos, normed_target_position);
@@ -317,12 +349,16 @@ namespace drawer_controller
           _encoder->setCount(0);
         }
         _pos = 0;
+        _triggered_closing_lock_after_opening =
+            false;   // reset this flag to enable triggering the lock closing for the next drawer opening process
+        _lock.set_drawer_opening_is_in_progress(false);
         create_electrical_drawer_feedback_msg();
       }
     }
 
-    void debug_prints_moving_electrical_drawer(int normed_target_position)
+    void debug_prints_moving_electrical_drawer()
     {
+      int normed_target_position = (_target_position / 255.0) * DRAWER_MAX_EXTENT;
       Serial.printf(
           "Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: %d, _last_timestemp: %d, "
           "millis(): %d\n",
