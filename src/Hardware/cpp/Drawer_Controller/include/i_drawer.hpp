@@ -1,6 +1,8 @@
 #ifndef DRAWER_CONTROLLER_IDRAWER_HPP
 #define DRAWER_CONTROLLER_IDRAWER_HPP
 
+#include <optional>
+
 #include "can/can_message.h"
 
 namespace drawer_controller

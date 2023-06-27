@@ -40,7 +40,7 @@ namespace port_expander
       if (Wire.endTransmission() == 0)
       {
         delay(15);
-        Wire.requestFrom(_slave_address, 1, true);
+        Wire.requestFrom(_slave_address, 1);
         while (Wire.available() < 1)
         {
         }

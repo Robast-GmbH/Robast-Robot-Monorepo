@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+#include <memory>
+
 #include "i_gpio_wrapper.hpp"
 
 // the time in ms the lock mechanism needs to open resp. close the lock
