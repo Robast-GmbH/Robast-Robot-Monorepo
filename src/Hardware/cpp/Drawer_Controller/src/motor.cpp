@@ -1,12 +1,5 @@
 #include "motor.hpp"
 
-// higher value of STALL_VALUE increases stall sensitivity
-// diag pin pulsed HIGH when SG_RESULT falls below 2*STALL_VALUE
-// must be in StealthChop Mode for stallguard to work
-// Value of TCOOLTHRS must be greater than TSTEP & TPWMTHRS
-#define STALL_VALUE 50   // [0..255]
-#define TOFF_VALUE  2
-
 namespace stepper_motor
 {
 
@@ -160,6 +153,40 @@ namespace stepper_motor
   //   _is_stalled = false;
   // }
 
+  void Motor::handle_motor_control()
+  {
+    uint32_t current_timestemp = millis();
+    uint32_t dt_since_start = current_timestemp - _start_ramp_timestamp;
+
+    if (dt_since_start < _ramp_time_in_us)
+    {
+      if (_speed_ramp_in_progress)
+      {
+        uint32_t new_active_speed =
+            _starting_speed_before_ramp +
+            ((dt_since_start * (_target_speed - _starting_speed_before_ramp)) / _ramp_time_in_us);
+        set_active_speed(new_active_speed);
+        Serial.printf(
+            "electrical_drawer.cpp, set_new_active_speed(): Ramp up new_active_speed = %d, dt_since_start = %d,"
+            "_target_speed = %d, _starting_speed_before_ramp = %d, _ramp_time_in_us = %d\n",
+            new_active_speed,
+            dt_since_start,
+            _target_speed,
+            _starting_speed_before_ramp,
+            _ramp_time_in_us);
+      }
+    }
+    else
+    {
+      if (_speed_ramp_in_progress)
+      {
+        set_active_speed(_target_speed);
+        Serial.println("The ramp-up/ramp-down time has elapsed, set the motor speed to the target speed directly!");
+        _speed_ramp_in_progress = false;
+      }
+    }
+  }
+
   void Motor::set_active_speed(uint32_t active_speed)
   {
     _active_speed = active_speed;
@@ -172,9 +199,23 @@ namespace stepper_motor
     return _active_speed;
   }
 
-  void Motor::set_target_speed(uint32_t target_speed)
+  void Motor::set_target_speed(uint32_t target_speed, uint16_t ramp_time_in_us)
   {
-    _target_speed = target_speed;
+    if (ramp_time_in_us == 0)
+    {
+      set_active_speed(target_speed);
+      _target_speed = target_speed;
+      return;
+    }
+
+    if (target_speed != _target_speed)
+    {
+      _target_speed = target_speed;
+      _starting_speed_before_ramp = _active_speed;
+      _ramp_time_in_us = ramp_time_in_us;
+      _start_ramp_timestamp = millis();   // TODO@Jacob: How to handle overflow?
+      _speed_ramp_in_progress = true;
+    }
   }
 
   uint32_t Motor::get_target_speed()

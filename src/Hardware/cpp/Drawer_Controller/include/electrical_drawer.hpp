@@ -10,6 +10,7 @@
 
 #define DRAWER_MAX_EXTENT                       50000
 #define DRAWER_MAX_SPEED                        35000
+#define DRAWER_HOMING_SPEED                     700
 #define DRAWER_ACCELERATION_TIME_IN_US          1000
 #define DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN 1000
 
@@ -59,9 +60,9 @@ namespace drawer_controller
     std::unique_ptr<Lock> _lock;
 
     uint32_t _last_timestemp;
-    uint32_t _start_ramp_up_timestamp;
-    uint32_t _starting_speed_before_ramp;
-    bool _speed_ramp_in_progress = false;
+
+    bool _is_drawer_moving_out;
+    bool _electrical_drawer_opening_in_progress = false;
 
     int _pos = 0;
     uint8_t _target_position = 0;
@@ -91,9 +92,9 @@ namespace drawer_controller
 
     void handle_drawer_just_closed() override;
 
-    int get_integrated_drawer_position(stepper_motor::Direction direction);
+    int get_integrated_drawer_position();
 
-    void update_motor_speed();
+    void set_target_speed_and_direction(uint8_t target_speed);
 
     void unlock();
 
@@ -103,9 +104,9 @@ namespace drawer_controller
 
     void create_electrical_drawer_feedback_msg();
 
-    void update_position(stepper_motor::Direction direction);
+    void update_position();
 
-    void check_if_motion_is_finished(stepper_motor::Direction direction);
+    void check_if_motion_is_finished();
 
     void create_drawer_feedback_can_msg();
 

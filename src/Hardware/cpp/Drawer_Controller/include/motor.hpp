@@ -8,8 +8,15 @@
 #include "i_gpio_wrapper.hpp"
 #include "pinout_defines.h"
 
-#define SERIAL_PORT Serial2
-#define R_SENSE     0.33f   // Match to your driver
+// higher value of STALL_VALUE increases stall sensitivity
+// diag pin pulsed HIGH when SG_RESULT falls below 2*STALL_VALUE
+// must be in StealthChop Mode for stallguard to work
+// Value of TCOOLTHRS must be greater than TSTEP & TPWMTHRS
+#define STALL_VALUE                   50   // [0..255]
+#define TOFF_VALUE                    2
+#define SERIAL_PORT                   Serial2
+#define R_SENSE                       0.33f   // Match to your driver
+#define DEFAULT_SPEED_RAMP_TIME_IN_US 3000
 
 namespace stepper_motor
 {
@@ -38,12 +45,12 @@ namespace stepper_motor
           std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
           const StepperPinIdConfig& stepper_pin_id_config);
     void init();
-    void set_active_speed(uint32_t speed);
-    void set_target_speed(uint32_t target_speed);
+    void set_target_speed(uint32_t target_speed, uint16_t ramp_time_in_us = DEFAULT_SPEED_RAMP_TIME_IN_US);
     void set_direction(Direction direction);
     void set_stall_guard(bool enable);
     void reset_stall_guard();
 
+    void handle_motor_control();
     uint32_t get_active_speed();
     uint32_t get_target_speed();
     bool get_is_stalled();
@@ -65,6 +72,11 @@ namespace stepper_motor
 
     uint32_t _active_speed = 0;
     uint32_t _target_speed = 0;
+    uint32_t _starting_speed_before_ramp;
+    uint16_t _ramp_time_in_us = DEFAULT_SPEED_RAMP_TIME_IN_US;
+    bool _speed_ramp_in_progress = false;
+
+    uint32_t _start_ramp_timestamp;
 
     static bool _is_stalled;
     bool _is_stall_guard_enabled = false;
@@ -72,6 +84,7 @@ namespace stepper_motor
 
     static void stall_ISR();
     bool direction_to_shaft_bool();
+    void set_active_speed(uint32_t speed);
   };
 }   // namespace stepper_motor
 
