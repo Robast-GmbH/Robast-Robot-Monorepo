@@ -13,8 +13,8 @@ namespace led_strip
 /*********************************************************************************************************
  GLOBAL VARIABLES AND CONSTANTS
 *********************************************************************************************************/
-#define NUM_OF_LEDS                   25
-#define MIDDLE_LED                    12
+#define NUM_OF_LEDS                   18
+#define MIDDLE_LED                    9
 #define NUM_OF_LED_SHADOWS            3
 #define MAX_NUM_OF_LED_MODES_IN_QUEUE 2
 
@@ -128,8 +128,7 @@ namespace led_strip
     led_target_settings.led_target_brightness = can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data();
     led_target_settings.led_target_mode = can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
 
-    Serial.print("Writing led strip mode to queue: ");          // DEBUGGING
-    Serial.println(led_target_settings.led_target_mode, DEC);   // DEBUGGING
+    Serial.printf("Writing led strip mode %d to queue!\n", led_target_settings.led_target_mode);   // DEBUGGING
 
     // Adding led mode to queue
     xQueueSend(
@@ -139,8 +138,7 @@ namespace led_strip
 
     uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip.led_target_settings_queue);
 
-    Serial.print("Led modes in queue: ");      // DEBUGGING
-    Serial.println(led_modes_in_queue, DEC);   // DEBUGGING
+    Serial.printf("Led modes in queue: %d\n", led_modes_in_queue);   // DEBUGGING
 
     if (led_modes_in_queue == 1)
     {
@@ -163,13 +161,19 @@ namespace led_strip
 
   void get_new_target_led_settings_from_queue()
   {
+    uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip.led_target_settings_queue);
+
+    if (led_modes_in_queue == 0)
+    {
+      return;
+    }
+
     xQueueReceive(led_strip.led_target_settings_queue,
                   &led_strip_target_settings,
                   0);   // Remove the last target led settings from queue
-    uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip.led_target_settings_queue);
 
     // In case there is another target led setting waiting in the queue, get it and start it
-    if (led_modes_in_queue >= 1)
+    if (led_modes_in_queue > 1)
     {
       xQueuePeek(led_strip.led_target_settings_queue,
                  &led_strip_target_settings,
@@ -323,6 +327,8 @@ namespace led_strip
     {
       led_strip_target_settings.led_target_brightness = 0;
     }
+
+    get_new_target_led_settings_from_queue();   // always check if there is a new mode waiting in the queue
   }
 
   static void IRAM_ATTR on_timer_for_fading()

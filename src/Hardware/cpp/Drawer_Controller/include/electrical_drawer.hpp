@@ -454,7 +454,7 @@ namespace drawer_controller
       Serial.print(" SPEED MODE: ");
       Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_SPEED).get_data(), DEC);
       Serial.print(" STALL GUARD ENABLE: ");
-      Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).get_data(), DEC);
+      Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).get_data(), DEC);
     }
 
     void debug_prints_drawer_lock(robast_can_msgs::CanMessage& can_message)
