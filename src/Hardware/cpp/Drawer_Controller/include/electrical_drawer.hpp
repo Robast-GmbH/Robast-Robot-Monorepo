@@ -45,7 +45,8 @@ namespace drawer_controller
       }
 
       _motor = std::make_unique<stepper_motor::Motor>(motor_driver_address, _gpio_wrapper, _stepper_pin_id_config);
-      _feedback_msg_queue = xQueueCreate(MAX_NUM_OF_CAN_FEEDBACK_MSGS_IN_QUEUE, sizeof(robast_can_msgs::CanMessage));
+      _feedback_msg_queue.clear();
+      _head_of_feedback_msg_queue = 0;
     }
 
     void init_lock(uint8_t pwr_open_lock_pin_id,
@@ -85,31 +86,11 @@ namespace drawer_controller
         _lock->unlock(_id);
         debug_prints_drawer_lock(msg);
       }
-      // TODO: React on open Lock
     }
 
     std::optional<robast_can_msgs::CanMessage> can_out() override
     {
-      robast_can_msgs::CanMessage can_feedback_msg;
-
-      if (_feedback_msg_queue != NULL)
-      {
-        if (xQueueReceive(_feedback_msg_queue, &can_feedback_msg, 0))
-        {
-          Serial.println("Removed can_feedback_msg successfully from queue!");
-          return std::optional<robast_can_msgs::CanMessage>{can_feedback_msg};
-        }
-        else
-        {
-          Serial.println("There was no can_feedback_msg in the queue!");
-          return {};
-        }
-      }
-      else
-      {
-        Serial.println("ERROR: _feedback_msg_queue was not initialized corretly!!!");
-        return {};
-      }
+      return get_element_from_feedback_msg_queue();
     }
 
     void update_state() override
@@ -118,6 +99,8 @@ namespace drawer_controller
       _lock->handle_reading_sensors();
 
       update_motor_speed();
+
+      handle_drawer_just_closed();
 
       if (_motor->get_active_speed() == 0)
       {
@@ -133,8 +116,6 @@ namespace drawer_controller
       handle_drawer_just_opened();
 
       check_if_motion_is_finished(direction);
-
-      handle_drawer_just_closed();
     }
 
    private:
@@ -159,7 +140,16 @@ namespace drawer_controller
 
     bool _stall_guard_enabled = false;
 
-    QueueHandle_t _feedback_msg_queue;
+    // Please mind: Normaly you would not built a queue yourself and use xQueue from FreeRTOS or std::queue
+    // But: std:queue did not work and just permanently threw expections that made the ESP32 reboot
+    // To use xQueue you need to use xQueueCreate to create a queue and you need to specify the size, in bytes, required
+    // to hold each item in the queue, which is not possible for the CanMessage class because it contains a vector of
+    // CanSignals which has a different length depending on the CanMessage.
+    // Therefor we built a queue with a vector, which should be fine in this case as the queue usually only contains one
+    // or two feedback messages and is rarely used. Furthermore we try to keep it as efficient as possible and try to
+    // to follow what is explained here: https://youtu.be/fHNmRkzxHWs?t=2541
+    std::vector<robast_can_msgs::CanMessage> _feedback_msg_queue;
+    uint8_t _head_of_feedback_msg_queue;
 
     std::unique_ptr<stepper_motor::Motor> _motor;
 
@@ -323,11 +313,7 @@ namespace drawer_controller
                     _id,
                     normed_current_position);
 
-      // Adding can feedback msg to queue
-      xQueueSend(_feedback_msg_queue,
-                 &can_msg_electrical_drawer_feedback,
-                 0);   // setting the third argument to 0 makes sure, filling the queue wont block, if the queue is
-                       // already full
+      add_element_to_feedback_msg_queue(can_msg_electrical_drawer_feedback);
     }
 
     void update_position(stepper_motor::Direction direction)
@@ -384,6 +370,7 @@ namespace drawer_controller
     void handle_drawer_just_closed() override
     {
       bool is_drawer_closed = _lock->is_endstop_switch_pushed() && !_lock->is_lock_switch_pushed();
+
       if (_lock->is_drawer_opening_in_progress() && is_drawer_closed && _triggered_closing_lock_after_opening)
       {
         _lock->set_drawer_opening_is_in_progress(false);
@@ -409,11 +396,33 @@ namespace drawer_controller
 
       can_msg_drawer_feedback.set_can_signals(can_signals_drawer_feedback);
 
-      // Adding can feedback msg to queue
-      xQueueSend(_feedback_msg_queue,
-                 &can_msg_drawer_feedback,
-                 0);   // setting the third argument to 0 makes sure, filling the queue wont block, if the queue is
-                       // already full
+      add_element_to_feedback_msg_queue(can_msg_drawer_feedback);
+    }
+
+    void add_element_to_feedback_msg_queue(robast_can_msgs::CanMessage feedback_msg)
+    {
+      _feedback_msg_queue.push_back(feedback_msg);
+    }
+
+    std::optional<robast_can_msgs::CanMessage> get_element_from_feedback_msg_queue()
+    {
+      uint8_t num_of_msgs_in_queue = _feedback_msg_queue.size();
+      if (num_of_msgs_in_queue == 0)
+      {
+        return {};
+      }
+
+      if (_head_of_feedback_msg_queue == (num_of_msgs_in_queue - 1))
+      {
+        robast_can_msgs::CanMessage feedback_can_msg = _feedback_msg_queue[_head_of_feedback_msg_queue];
+        _feedback_msg_queue.clear();
+        _head_of_feedback_msg_queue = 0;
+        return feedback_can_msg;
+      }
+      else
+      {
+        return _feedback_msg_queue[_head_of_feedback_msg_queue++];
+      }
     }
 
     void debug_prints_moving_electrical_drawer()

@@ -35,9 +35,6 @@ std::vector<drawer_ptr> drawers = std::vector<drawer_ptr>();
 
 std::unique_ptr<drawer_controller::Can> can;
 
-std::optional<robast_can_msgs::CanMessage> received_message;
-std::optional<robast_can_msgs::CanMessage> to_be_sent_message;
-
 void setup()
 {
   Serial.begin(115200);   // Init serial port and set baudrate
@@ -77,13 +74,15 @@ void setup()
   e_drawer_0->init_motor();
 
   drawers.push_back(e_drawer_0);
+
+  Serial.println("Finished setup()!");
 }
 
 void loop()
 {
   if (can->is_message_available())
   {
-    received_message = can->handle_receiving_can_msg();
+    std::optional<robast_can_msgs::CanMessage> received_message = can->handle_receiving_can_msg();
 
     if (received_message.has_value())
     {
@@ -128,8 +127,8 @@ void loop()
   for (drawer_ptr drawer : drawers)
   {
     drawer->update_state();
-    to_be_sent_message = drawer->can_out();
-    Serial.println("After to_be_sent_message = drawer->can_out()");
+
+    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = drawer->can_out();
 
     if (to_be_sent_message.has_value())
     {

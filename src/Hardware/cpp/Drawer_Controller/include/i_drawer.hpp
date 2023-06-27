@@ -5,8 +5,6 @@
 
 namespace drawer_controller
 {
-#define MAX_NUM_OF_CAN_FEEDBACK_MSGS_IN_QUEUE 2
-
   class IDrawer
   {
    public:
