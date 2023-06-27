@@ -87,6 +87,10 @@ namespace drawer_controller
 
     /* FUNCTIONS */
 
+    void handle_drawer_just_opened() override;
+
+    void handle_drawer_just_closed() override;
+
     int get_integrated_drawer_position(stepper_motor::Direction direction);
 
     void update_motor_speed();
@@ -102,10 +106,6 @@ namespace drawer_controller
     void update_position(stepper_motor::Direction direction);
 
     void check_if_motion_is_finished(stepper_motor::Direction direction);
-
-    void handle_drawer_just_opened() override;
-
-    void handle_drawer_just_closed() override;
 
     void create_drawer_feedback_can_msg();
 
