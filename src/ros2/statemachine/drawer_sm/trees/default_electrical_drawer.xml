@@ -2,13 +2,13 @@
 <root BTCPP_format="4">
   <BehaviorTree ID="default_electrical_drawer_tree">
     <Sequence>
-      <ChangeLED blue="20"
+      <ChangeLED blue="0"
                  brightness="100"
                  drawer_address="{drawer}"
-                 green="200"
+                 green="255"
                  led_topic="/drawer_leds"
                  mode="1"
-                 red="200"
+                 red="0"
                  use_blackboard_address="true"/>
       <Delay delay_msec="2000">
         <OpenDrawer drawer_address="{drawer}"
@@ -51,7 +51,7 @@
                  drawer_address="{drawer}"
                  green="5"
                  led_topic="/drawer_leds"
-                 mode="1"
+                 mode="3"
                  red="123"
                  use_blackboard_address=""/>
       <ElectricDrawerStatusCondition target_value="0"
