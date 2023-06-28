@@ -21,6 +21,8 @@
 #include "depthai/pipeline/node/StereoDepth.hpp"
 #include "depthai/pipeline/node/XLinkOut.hpp"
 
+
+
 dai::Pipeline createPipeline(bool spatial_camera,bool syncNN, bool subpixel, std::string nnPath,int confidence, int LRchecktresh, std::string resolution) {
 
     dai::Pipeline pipeline;
@@ -110,7 +112,7 @@ int main(int argc, char** argv) {
     std::string tfPrefix, resourceBaseFolder, nnPath, jsonPath;
     std::string camera_param_uri;
     std::string nnName(BLOB_NAME);  // Set your blob name for the model here
-    bool syncNN, subpixel, spatial_camera;
+    bool syncNN, subpixel, spatial_camera, simulation = false;
     int confidence = 200, LRchecktresh = 5;
     std::string monoResolution = "400p";
     
@@ -133,6 +135,7 @@ int main(int argc, char** argv) {
     node->get_parameter("monoResolution", monoResolution);
     node->get_parameter("resourceBaseFolder", resourceBaseFolder);
     node->get_parameter("spatial_camera", spatial_camera);
+    node->get_parameter("simulation",simulation);
 
     if(resourceBaseFolder.empty()) {
         throw std::runtime_error("Send the path to the resouce folder containing NNBlob in \'resourceBaseFolder\' ");
@@ -148,6 +151,7 @@ int main(int argc, char** argv) {
 
     //auto deviceInfo = dai::DeviceInfo("10.10.23.8");
     dai::Device device(pipeline);
+    
 
     auto colorQueue = device.getOutputQueue("preview", 30, false);
     auto detectionQueue = device.getOutputQueue("detections", 30, false);
@@ -173,7 +177,15 @@ int main(int argc, char** argv) {
     }
 
     dai::rosBridge::ImageConverter rgbConverter(tfPrefix + "_rgb_camera_optical_frame", false);
-    auto rgbCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::RGB, -1, -1);
+
+    if (simulation == true){
+        rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr rgbCameraInfo = node->create_subscription<sensor_msgs::msg::CameraInfo>("camera_rgb_info", 5, &rgbCallback);
+    }else{
+        auto rgbCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::RGB, -1, -1);
+    }
+
+
+    
     RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Invalid parameter");
     dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rgbPublish(colorQueue,
                                                                                      node,
