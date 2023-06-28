@@ -160,28 +160,6 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start hybrid_planning_demo",
-                        "command": "source /workspace/install/setup.bash; ros2 launch moveit2_door_opening_mechanism_hybrid_planning hybrid_planning_demo_launch.py",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
-                        "label": "start hybrid_planning",
-                        "command": "source /workspace/install/setup.bash; ros2 launch moveit2_door_opening_mechanism_hybrid_planning hybrid_planning_launch.py",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
                         "label": "start door_opening_mechanism_simulation",
                         "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_simulation door_opening_mechanism_simulation_launch.py",
                         "problemMatcher": [],
@@ -232,17 +210,6 @@
                                 "start moveit_door_opening_mechanism",
                                 "start door_opening_mechanism_simulation",
                                 "start door_opening_mechanism_gazebo_trajectory_controller_manager"
-                        ],
-                        "problemMatcher": []
-                },
-                {
-                        "label": "startup_sim_with_hybrid_door_opening_simulation",
-                        "detail": "Starts tiplu_sim, door_opening_mechanism_gazebo_robot_trajectory_executor_launch, hybrid_planning, hybrid_planning_demo",
-                        "dependsOn": [
-                                "start tiplu_sim",
-                                "start door_opening_mechanism_gazebo_robot_trajectory_executor_launch",
-                                "start hybrid_planning",
-                                "start hybrid_planning_demo"
                         ],
                         "problemMatcher": []
                 },
