@@ -24,6 +24,16 @@ namespace gazebo_controller_manager
     ~JointTrajectoryController(){};
 
    private:
+    void declare_node_parameter();
+
+    void create_ros_action_server(std::string follow_joint_trajectory_action);
+
+    void create_ros_publisher();
+
+    void create_joint_position_update_timer(int update_rate);
+
+    void create_gz_publisher(std::vector<std::string>& gz_cmd_topics);
+
     void initialize_gz_transport_node(std::vector<std::string> joint_names, std::vector<std::string> gz_joint_topics);
 
     void set_joint_trajectory_cb(const trajectory_msgs::msg::JointTrajectory::SharedPtr);

@@ -5,21 +5,12 @@ namespace gazebo_controller_manager
   JointTrajectoryController::JointTrajectoryController(const rclcpp::NodeOptions& options)
       : Node("joint_trajectory_controller", options)
   {
+    declare_node_parameter();
+
     // variable
     std::vector<std::string> joint_names;
-    const std::vector<std::string> default_joint_names = {
-        "drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"};
-
     int update_rate;
-    const int default_update_rate = 200;
-
     std::string follow_joint_trajectory_action;
-    const std::string default_follow_joint_trajectory_action = "/planning_group_controller/follow_joint_trajectory";
-
-    // Declare parameters
-    this->declare_parameter("joint_names", default_joint_names);
-    this->declare_parameter("rate", default_update_rate);
-    this->declare_parameter("follow_joint_trajectory_action", default_follow_joint_trajectory_action);
 
     // Get Parameters
     joint_names = this->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
@@ -28,8 +19,34 @@ namespace gazebo_controller_manager
 
     std::vector<std::string> gz_cmd_topics = this->get_gz_cmd_joint_topics(joint_names);
 
-    this->initialize_gz_transport_node(joint_names, gz_cmd_topics);
+    initialize_gz_transport_node(joint_names, gz_cmd_topics);
 
+    create_ros_action_server(follow_joint_trajectory_action);
+
+    create_ros_publisher();
+
+    create_joint_position_update_timer(update_rate);
+
+    create_gz_publisher(gz_cmd_topics);
+  }
+
+  void JointTrajectoryController::declare_node_parameter()
+  {
+    const std::vector<std::string> default_joint_names = {
+        "drawer_1_joint", "drawer_2_joint", "drawer_3_joint", "drawer_4_joint", "drawer_5_joint"};
+
+    const int default_update_rate = 200;
+
+    const std::string default_follow_joint_trajectory_action = "/planning_group_controller/follow_joint_trajectory";
+
+    // Declare parameters
+    this->declare_parameter("joint_names", default_joint_names);
+    this->declare_parameter("rate", default_update_rate);
+    this->declare_parameter("follow_joint_trajectory_action", default_follow_joint_trajectory_action);
+  }
+
+  void JointTrajectoryController::create_ros_action_server(std::string follow_joint_trajectory_action)
+  {
     this->follow_joint_trajectory_action_server_ =
         rclcpp_action::create_server<control_msgs::action::FollowJointTrajectory>(
             this->get_node_base_interface(),
@@ -53,19 +70,18 @@ namespace gazebo_controller_manager
                   std::placeholders::_2),
         std::bind(&JointTrajectoryController::handle_execute_trajectory_cancel, this, std::placeholders::_1),
         std::bind(&JointTrajectoryController::handle_execute_trajectory_accepted, this, std::placeholders::_1));
+  }
 
+  void JointTrajectoryController::create_ros_publisher()
+  {
     this->cmd_vel_publisher_ = this->create_publisher<geometry_msgs::msg::Twist>("cmd_vel", 10);
+  }
 
+  void JointTrajectoryController::create_joint_position_update_timer(int update_rate)
+  {
     auto period = std::chrono::microseconds(1000000 / update_rate);
     this->update_position_timer_ =
         this->create_wall_timer(period, std::bind(&JointTrajectoryController::update_joint_position_timer_cb, this));
-    // create gz pub
-    for (size_t i = 0; i < gz_cmd_topics.size(); i++)
-    {
-      auto pub = std::make_shared<gz::transport::Node::Publisher>(
-          this->gz_transport_node_->Advertise<gz::msgs::Double>(gz_cmd_topics[i]));
-      this->gz_cmd_joint_pubs_.push_back(pub);
-    }
   }
 
   std::vector<std::string> JointTrajectoryController::get_gz_cmd_joint_topics(std::vector<std::string> joint_names)
@@ -78,6 +94,16 @@ namespace gazebo_controller_manager
       gz_cmd_topics.push_back(ss.str());
     }
     return gz_cmd_topics;
+  }
+
+  void JointTrajectoryController::create_gz_publisher(std::vector<std::string>& gz_cmd_topics)
+  {
+    for (size_t i = 0; i < gz_cmd_topics.size(); i++)
+    {
+      auto pub = std::make_shared<gz::transport::Node::Publisher>(
+          this->gz_transport_node_->Advertise<gz::msgs::Double>(gz_cmd_topics[i]));
+      this->gz_cmd_joint_pubs_.push_back(pub);
+    }
   }
 
   void JointTrajectoryController::initialize_gz_transport_node(std::vector<std::string> joint_names,
