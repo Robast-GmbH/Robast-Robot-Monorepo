@@ -60,6 +60,20 @@
             "problemMatcher": []
         },
         {
+            "label": "Trigger e-drawer 1",
+            "detail": "Triggers the e-drawer statemachine to start opening.",
+            "type": "shell",
+            "command": "ros2 topic pub /trigger_electric_drawer_tree communication_interfaces/msg/DrawerAddress '{module_id: 1, drawer_id: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Trigger closing e-drawer 1",
+            "detail": "Triggers the e-drawer statemachine to start closing.",
+            "type": "shell",
+            "command": "ros2 topic pub /close_drawer communication_interfaces/msg/DrawerAddress '{module_id: 1, drawer_id: 0}' --once",
+            "problemMatcher": []
+        },
+        {
             "label": "Test",
             "detail": "Build and executes all tests and shows the links to the testreport with Errors",
             "type": "shell",
@@ -186,7 +200,7 @@
             "type": "ament",
             "task": "xmllint",
             "path": "src/",
-            "problemMatcher": [ 
+            "problemMatcher": [
                 "$ament_xmllint",
             ],
             "presentation": {
@@ -197,7 +211,7 @@
         },
         {
             "label": "lint all",
-            "key":"crtl+shift+l",
+            "key": "crtl+shift+l",
             "detail": "Run all linters.",
             "dependsOn": [
                 "cppcheck",
@@ -213,10 +227,9 @@
     ],
     "inputs": [
         {
-          "id": "package",
-          "type": "promptString",
-          "description": "Package name"
+            "id": "package",
+            "type": "promptString",
+            "description": "Package name"
         }
-      ],
-      
+    ],
 }
