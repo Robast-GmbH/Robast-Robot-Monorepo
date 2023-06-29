@@ -186,28 +186,28 @@
             "label": "Open electrical drawer 2",
             "detail": "Send topic message to open electrical drawer 2",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: 2, drawer_id: 0}, target_position: 150, speed: 200, stall_guard_enable: false}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: 2, drawer_id: 0}, target_position: 255, speed: 200, stall_guard_enable: false}' --once",
             "problemMatcher": []
         },
         {
             "label": "Open electrical drawer 3",
             "detail": "Send topic message to open electrical drawer 3",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: 3, drawer_id: 0}, target_position: 150, speed: 200, stall_guard_enable: false}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: 3, drawer_id: 0}, target_position: 255, speed: 200, stall_guard_enable: false}' --once",
             "problemMatcher": []
         },
         {
             "label": "Open electrical drawer 4",
             "detail": "Send topic message to open electrical drawer 4",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: 4, drawer_id: 0}, target_position: 150, speed: 200, stall_guard_enable: false}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: 4, drawer_id: 0}, target_position: 255, speed: 200, stall_guard_enable: false}' --once",
             "problemMatcher": []
         },
         {
             "label": "Open electrical drawer 5",
             "detail": "Send topic message to open electrical drawer 5",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: 5, drawer_id: 0}, target_position: 150, speed: 200, stall_guard_enable: false}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: 5, drawer_id: 0}, target_position: 255, speed: 200, stall_guard_enable: false}' --once",
             "problemMatcher": []
         },
         {
@@ -249,7 +249,7 @@
             "label": "Open electrical drawer 1",
             "detail": "Send topic message to open electrical drawer 1",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: 1, drawer_id: 0}, target_position: 150, speed: 200, stall_guard_enable: false}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /electrical_drawer_task communication_interfaces/msg/DrawerTask '{drawer_address: {module_id: 1, drawer_id: 0}, target_position: 255, speed: 200, stall_guard_enable: false}' --once",
             "problemMatcher": []
         },
         {
