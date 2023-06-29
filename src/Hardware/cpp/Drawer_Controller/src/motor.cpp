@@ -162,26 +162,19 @@ namespace stepper_motor
     {
       if (_speed_ramp_in_progress)
       {
-        uint32_t new_active_speed =
-            _starting_speed_before_ramp +
-            ((dt_since_start * (_target_speed - _starting_speed_before_ramp)) / _ramp_time_in_us);
+        int32_t delta_speed =
+            ((int32_t) (dt_since_start * (_target_speed - _starting_speed_before_ramp))) / _ramp_time_in_us;
+
+        uint32_t new_active_speed = _starting_speed_before_ramp + delta_speed;
         set_active_speed(new_active_speed);
-        Serial.printf(
-            "electrical_drawer.cpp, set_new_active_speed(): Ramp up new_active_speed = %d, dt_since_start = %d,"
-            "_target_speed = %d, _starting_speed_before_ramp = %d, _ramp_time_in_us = %d\n",
-            new_active_speed,
-            dt_since_start,
-            _target_speed,
-            _starting_speed_before_ramp,
-            _ramp_time_in_us);
       }
     }
     else
     {
       if (_speed_ramp_in_progress)
       {
-        set_active_speed(_target_speed);
         Serial.println("The ramp-up/ramp-down time has elapsed, set the motor speed to the target speed directly!");
+        set_active_speed(_target_speed);
         _speed_ramp_in_progress = false;
       }
     }

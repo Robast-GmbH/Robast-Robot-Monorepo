@@ -16,7 +16,7 @@ namespace led_strip
 #define NUM_OF_LEDS                   18
 #define MIDDLE_LED                    9
 #define NUM_OF_LED_SHADOWS            3
-#define MAX_NUM_OF_LED_MODES_IN_QUEUE 2
+#define MAX_NUM_OF_LED_MODES_IN_QUEUE 3
 
   enum LedMode
   {

@@ -72,7 +72,7 @@ namespace stepper_motor
 
     uint32_t _active_speed = 0;
     uint32_t _target_speed = 0;
-    uint32_t _starting_speed_before_ramp;
+    int32_t _starting_speed_before_ramp;   // Although this cannot be negativ, we need int32t for calculations
     uint16_t _ramp_time_in_us = DEFAULT_SPEED_RAMP_TIME_IN_US;
     bool _speed_ramp_in_progress = false;
 
