@@ -17,7 +17,6 @@ namespace drawer_statemachine
         if (topic_name_ == "")
         {
             auto var = getInput<std::string>("topic");
-            std::cout << var.value() << std::endl;
             topic_name_ = "/drawer_is_open";
         }
 

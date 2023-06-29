@@ -59,7 +59,6 @@ namespace drawer_statemachine
     {
         bool use_blackboard_address = false;
         getInput("use_blackboard_address", use_blackboard_address);
-        std::cout << "blackboard_address" << use_blackboard_address;
         if (!use_blackboard_address)
         {
             getInput("drawer_address", drawer_leds_.drawer_address);
