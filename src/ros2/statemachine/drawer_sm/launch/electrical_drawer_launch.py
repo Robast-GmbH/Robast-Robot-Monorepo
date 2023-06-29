@@ -12,7 +12,7 @@ def generate_launch_description():
     bt_config_params = LaunchConfiguration('bt_config_params')
     declare_bt_config_params_cmd = DeclareLaunchArgument(
         'bt_config_params',
-        default_value=os.path.join(bringup_dir, 'config', 'nfc_bt_params.yaml'),
+        default_value=os.path.join(bringup_dir, 'config', 'electrical_bt_params.yaml'),
         description='Full path to the ROS2 parameters file to use for all launched nodes')
 
     bt_node = Node(
