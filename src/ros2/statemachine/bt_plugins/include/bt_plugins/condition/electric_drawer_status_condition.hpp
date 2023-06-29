@@ -17,13 +17,14 @@ namespace drawer_statemachine
                 BT::InputPort<uint8_t>("target_value", "0"),
                 BT::InputPort<std::string>("topic", "/drawer_feedback_status")};
         }
+        BT::NodeStatus tick() override;
 
     protected:
         bool new_value_received_ = false;
         bool comparator(communication_interfaces::msg::ElectricalDrawerStatus last_message_, uint8_t target_value_) override;
         void callbackDrawerFeedback(const communication_interfaces::msg::ElectricalDrawerStatus::SharedPtr msg) override;
         void initialize_target_value() override;
-        };
+    };
 } // namespace drawer_statemachine
 
 #endif // DRAWER_STATEMACHINE_ELECTRIC_DRAWER_STATUS_CONDITION_HPP_

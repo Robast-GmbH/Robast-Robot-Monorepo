@@ -74,7 +74,9 @@ namespace drawer_statemachine
         getInput("brightness", drawer_leds_.brightness);
         getInput("mode", drawer_leds_.mode);
         ChangeLED::publish();
-
+        blackboard_->set<std::chrono::steady_clock::time_point>(
+            "transition_time",
+            std::chrono::steady_clock::now());
         return BT::NodeStatus::SUCCESS;
     }
 

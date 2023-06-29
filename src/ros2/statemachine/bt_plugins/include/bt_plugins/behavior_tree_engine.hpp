@@ -74,21 +74,25 @@ namespace drawer_statemachine
      * @brief Function to create a BT from a XML string
      * @param xml_string XML string representing BT
      * @param blackboard Blackboard for BT
+     * @param tree_name name of the main tree
      * @return BT::Tree Created behavior tree
      */
     BT::Tree createTreeFromText(
         const std::string &xml_string,
-        BT::Blackboard::Ptr blackboard);
+        BT::Blackboard::Ptr blackboard,
+        std::string tree_name);
 
     /**
      * @brief Function to create a BT from an XML file
      * @param file_path Path to BT XML file
      * @param blackboard Blackboard for BT
+     * @param tree_name name of the main tree
      * @return BT::Tree Created behavior tree
      */
     BT::Tree createTreeFromFile(
         const std::string &file_path,
-        BT::Blackboard::Ptr blackboard);
+        BT::Blackboard::Ptr blackboard,
+        std::string tree_name);
 
     /**
      * @brief Function to explicitly reset all BT nodes to initial state

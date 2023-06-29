@@ -59,7 +59,7 @@ namespace test2
                 blackboard->set<rclcpp::Node::SharedPtr>(
                     "node",
                     node_electric_drawer);
-                auto bt = bt_engine->createTreeFromText(electric_tree_xml, blackboard);
+                auto bt = bt_engine->createTreeFromText(electric_tree_xml, blackboard, "MainTree");
                 THEN("A Subtree should exist")
                 {
                     REQUIRE(bt.subtrees[0]);

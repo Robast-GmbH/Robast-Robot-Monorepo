@@ -45,7 +45,9 @@ namespace drawer_statemachine
         setOutput("drawer_address", drawer_task_.drawer_address);
         RCLCPP_DEBUG(rclcpp::get_logger("MoveElectricDrawer"), "move drawer ");
         _move_electric_drawer_publisher->publish(drawer_task_);
-
+        blackboard_->set<std::chrono::steady_clock::time_point>(
+            "transition_time",
+            std::chrono::steady_clock::now());
         return BT::NodeStatus::SUCCESS;
     }
 

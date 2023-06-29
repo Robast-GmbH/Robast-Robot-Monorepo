@@ -37,7 +37,7 @@ namespace bt_base_nodes
       bt_path_ = this->get_parameter("bt_path").as_string();
     }
 
-    void configure(std::string trigger_topic = "start_bt")
+    void configure(std::string trigger_topic = "start_bt", std::string maintree_name = "MainTree")
     {
       static BT::NodeConfig *config_;
       config_ = new BT::NodeConfig();
@@ -51,7 +51,7 @@ namespace bt_base_nodes
           "bt_loop_duration",
           std::chrono::milliseconds(10));
       _bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(_plugins);
-      _bt = _bt_engine->createTreeFromFile(bt_path_, _blackboard);
+      _bt = _bt_engine->createTreeFromFile(bt_path_, _blackboard, maintree_name);
       init_subscriber(trigger_topic);
     }
 

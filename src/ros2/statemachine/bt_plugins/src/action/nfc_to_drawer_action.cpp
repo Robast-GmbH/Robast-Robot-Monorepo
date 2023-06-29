@@ -1,27 +1,30 @@
 #include "bt_plugins/action/nfc_to_drawer_action.hpp"
 
 namespace drawer_statemachine
-{  
-  NFCToDrawer::NFCToDrawer(const std::string& name,
-          const BT::NodeConfig& config)
-          : BT::StatefulActionNode(name, config) //TODO @tobi evtl noch abstract base class?
+{
+  NFCToDrawer::NFCToDrawer(const std::string &name,
+                           const BT::NodeConfig &config)
+      : BT::StatefulActionNode(name, config) // TODO @tobi evtl noch abstract base class?
   {
-    
+
     blackboard_ = config.blackboard;
   }
 
   BT::NodeStatus NFCToDrawer::onStart()
   {
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
-    
+
     nfc_key_to_DrawerAddress_ =
-      blackboard_->get<std::map<std::string, DrawerAddress>>("nfc_keys");
-    
+        blackboard_->get<std::map<std::string, DrawerAddress>>("nfc_keys");
+
     std::string nfc_user = blackboard_->get<std::string>("user_access_name");
     if (nfc_user != "" && nfc_key_to_DrawerAddress_.find(nfc_user) != nfc_key_to_DrawerAddress_.end())
     {
       DrawerAddress drawer_address = nfc_key_to_DrawerAddress_[nfc_user];
-      blackboard_->set<DrawerAddress>("drawer_address", drawer_address);      
+      blackboard_->set<DrawerAddress>("drawer_address", drawer_address);
+      blackboard_->set<std::chrono::steady_clock::time_point>(
+          "transition_time",
+          std::chrono::steady_clock::now());
       return BT::NodeStatus::SUCCESS;
     }
     else
@@ -29,12 +32,15 @@ namespace drawer_statemachine
       return BT::NodeStatus::FAILURE;
     }
   }
-  
+
   BT::NodeStatus NFCToDrawer::onRunning()
   {
+    blackboard_->set<std::chrono::steady_clock::time_point>(
+        "transition_time",
+        std::chrono::steady_clock::now());
     return BT::NodeStatus::SUCCESS;
   }
-  
+
   void NFCToDrawer::onHalted()
   {
     blackboard_->set<std::string>("user_access_name", "");
@@ -44,5 +50,5 @@ namespace drawer_statemachine
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-    factory.registerNodeType<drawer_statemachine::NFCToDrawer>("NFCToDrawer");
+  factory.registerNodeType<drawer_statemachine::NFCToDrawer>("NFCToDrawer");
 }
