@@ -40,16 +40,23 @@
         },
         {
             "label": "launch nfc statemachine",
-            "detail": "Install all dependencies specified in the workspaces package.xml files.",
+            "detail": "launch the nfc drawer state machine.",
             "type": "shell",
             "command": "ros2 launch drawer_sm nfc_drawer_statemachine_launch.py",
             "problemMatcher": []
         },
         {
             "label": "launch drawer statemachine",
-            "detail": "Install all dependencies specified in the workspaces package.xml files.",
+            "detail": "launch the 'normal' drawer state machine.",
             "type": "shell",
             "command": "ros2 launch drawer_sm drawer_statemachine_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "launch electrical drawer statemachine",
+            "detail": "launch the electrical drawer state machine.",
+            "type": "shell",
+            "command": "ros2 launch drawer_sm electrical_drawer_launch.py",
             "problemMatcher": []
         },
         {
