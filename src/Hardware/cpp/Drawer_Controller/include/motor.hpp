@@ -6,7 +6,7 @@
 #include <memory>
 
 #include "i_gpio_wrapper.hpp"
-#include "pinout_defines.h"
+#include "pinout_defines.hpp"
 
 // higher value of STALL_VALUE increases stall sensitivity
 // diag pin pulsed HIGH when SG_RESULT falls below 2*STALL_VALUE

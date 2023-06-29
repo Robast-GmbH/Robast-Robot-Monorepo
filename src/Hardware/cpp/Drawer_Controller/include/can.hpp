@@ -9,7 +9,7 @@
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
 #include "i_gpio_wrapper.hpp"
-#include "pinout_defines.h"
+#include "pinout_defines.hpp"
 
 namespace drawer_controller
 {

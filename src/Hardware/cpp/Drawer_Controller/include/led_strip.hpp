@@ -6,7 +6,7 @@
 
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
-#include "pinout_defines.h"
+#include "pinout_defines.hpp"
 
 namespace led_strip
 {
