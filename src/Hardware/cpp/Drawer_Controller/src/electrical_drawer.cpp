@@ -326,6 +326,7 @@ namespace drawer_controller
   {
     if (_lock->is_drawer_opening_in_progress())
     {
+      Serial.println("Drawer is closed! Setting speed to 0 and creating feedback messages!");
       _motor->set_target_speed(0, 0);
       if (_use_encoder)
       {
@@ -333,10 +334,8 @@ namespace drawer_controller
       }
       _current_position_int32 = 0;
 
-      Serial.println("Drawer is closed! Setting speed to 0 and creating feedback messages!");
-      _motor->set_target_speed(0, 0);
-      _lock->set_drawer_opening_is_in_progress(false);
       // reset these flags for the next opening of the drawer
+      _lock->set_drawer_opening_is_in_progress(false);
       _electrical_drawer_opening_in_progress = false;
       _triggered_closing_lock_after_opening = false;
       _homing_initialized = false;

@@ -16,7 +16,7 @@
 #define TOFF_VALUE                    2
 #define SERIAL_PORT                   Serial2
 #define R_SENSE                       0.33f   // Match to your driver
-#define DEFAULT_SPEED_RAMP_TIME_IN_US 3000
+#define DEFAULT_SPEED_RAMP_TIME_IN_US 1500
 
 namespace stepper_motor
 {
