@@ -132,8 +132,6 @@ void loop()
 
     if (to_be_sent_message.has_value())
     {
-      Serial.println("to_be_sent_message.has_value()!");
-
       can->send_can_message(to_be_sent_message.value());
     }
   }

@@ -8,9 +8,10 @@
 #include "lock.hpp"
 #include "motor.hpp"
 
-#define DRAWER_MAX_EXTENT                       50000
+#define DRAWER_MAX_EXTENT                       85000
 #define DRAWER_MAX_SPEED                        35000
-#define DRAWER_HOMING_SPEED                     700
+#define DRAWER_HOMING_SPEED                     150
+#define DRAWER_HOMING_EXTENT                    40   // this value determines the extent of the homing area
 #define DRAWER_ACCELERATION_TIME_IN_US          1000
 #define DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN 1000
 
@@ -63,9 +64,10 @@ namespace drawer_controller
 
     bool _is_drawer_moving_out;
     bool _electrical_drawer_opening_in_progress = false;
+    bool _homing_initialized = false;
 
-    int _pos = 0;
-    uint8_t _target_position = 0;
+    int32_t _current_position_int32 = 0;
+    uint8_t _target_position_uint8 = 0;
 
     bool _stall_guard_enabled = false;
 
@@ -92,13 +94,17 @@ namespace drawer_controller
 
     void handle_drawer_just_closed() override;
 
-    int get_integrated_drawer_position();
+    int32_t get_integrated_drawer_position();
+
+    void handle_drawer_moving_in(uint8_t normed_current_position_uint8);
+
+    void initialize_homing();
 
     void set_target_speed_and_direction(uint8_t target_speed);
 
     void unlock();
 
-    void drawer_homing();
+    void check_if_drawer_is_homed();
 
     void handle_electrical_drawer_task_msg(robast_can_msgs::CanMessage can_message);
 
@@ -108,7 +114,9 @@ namespace drawer_controller
 
     void check_if_motion_is_finished();
 
-    void create_drawer_feedback_can_msg();
+    uint8_t get_normed_current_position();
+
+    void create_drawer_closed_feedback_can_msg();
 
     void add_element_to_feedback_msg_queue(robast_can_msgs::CanMessage feedback_msg);
 
