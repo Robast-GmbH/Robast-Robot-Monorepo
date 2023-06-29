@@ -1,8 +1,10 @@
-plugins:
-  - drawer_change_state_request_action_bt_node
-  - change_led_action_bt_node
-  - open_drawer_action_bt_node
-  - drawer_status_condition_bt_node
-  - electric_drawer_status_condition_bt_node
-  - move_electric_drawer_action_bt_node
-bt_path: "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml"
+drawer_tree_initiator:
+  ros__parameters:
+    plugins:
+      - drawer_change_state_request_action_bt_node
+      - change_led_action_bt_node
+      - open_drawer_action_bt_node
+      - drawer_status_condition_bt_node
+      - electric_drawer_status_condition_bt_node
+      - move_electric_drawer_action_bt_node
+    bt_path: "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml"

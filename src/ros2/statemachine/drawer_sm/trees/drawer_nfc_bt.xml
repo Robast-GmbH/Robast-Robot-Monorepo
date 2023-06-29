@@ -11,10 +11,10 @@
                  brightness="128"
                  drawer_address="{drawer}"
                  green="255"
-                 led_topic=""
+                 led_topic="/drawer_leds"
                  mode="1"
                  red="0"
-                 use_blackboard_address=""
+                 use_blackboard_address="false"
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
@@ -25,10 +25,10 @@
                  brightness="128"
                  drawer_address="{drawer}"
                  green="255"
-                 led_topic=""
+                 led_topic="/drawer_leds"
                  mode="1"
                  red="255"
-                 use_blackboard_address=""
+                 use_blackboard_address="false"
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
@@ -39,10 +39,10 @@
                  brightness="150"
                  drawer_address="{drawer}"
                  green="128"
-                 led_topic=""
+                 led_topic="/drawer_leds"
                  mode="2"
                  red="255"
-                 use_blackboard_address=""
+                 use_blackboard_address="false"
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
@@ -51,10 +51,10 @@
                  brightness="25"
                  drawer_address="{drawer}"
                  green="155"
-                 led_topic=""
+                 led_topic="/drawer_leds"
                  mode="1"
                  red="0"
-                 use_blackboard_address=""
+                 use_blackboard_address="false"
                  _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,

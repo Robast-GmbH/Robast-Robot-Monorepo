@@ -13,14 +13,14 @@ def generate_launch_description():
     declare_bt_config_params_cmd = DeclareLaunchArgument(
         'bt_config_params',
         default_value=os.path.join(bringup_dir, 'config', 'electrical_bt_params.yaml'),
-        description='Full path to the ROS2 parameters file to use for all launched nodes')
+        description='path to the bt_params.yaml file')
 
     bt_node = Node(
         package="bt_base_nodes",
         executable="electrical_drawer_tree_initiator",
         name="electrical_drawer_tree_initiator",
         output="screen",
-        parameters=[{"bt_path": "/workspace/install/drawer_sm/trees/trees/default_electrical_drawer.xml"}])
+        parameters=[bt_config_params])
     ld = LaunchDescription()
     ld.add_action(declare_bt_config_params_cmd)
     ld.add_action(bt_node)
