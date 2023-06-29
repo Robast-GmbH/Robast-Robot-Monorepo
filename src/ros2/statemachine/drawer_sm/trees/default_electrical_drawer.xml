@@ -11,8 +11,8 @@
                  red="200"
                  use_blackboard_address="true"/>
       <Delay delay_msec="2000">
-        <OpenDrawer drawer_address="{drawer}"
-                    drawer_open_topic="/open_drawer"/>
+        <OpenDrawer drawer_open_topic="/open_drawer"
+                    drawer_address="{drawer}"/>
       </Delay>
       <ChangeLED blue="28"
                  brightness="128"
@@ -25,7 +25,7 @@
       <Delay delay_msec="1000">
         <MoveElectricDrawer drawer_address="{drawer}"
                             move_electric_drawer_topic="/electrical_drawer_task"
-                            speed="100"
+                            speed="255"
                             stall_guard_enable="0"
                             target_position="251"/>
       </Delay>
@@ -43,7 +43,7 @@
                             drawer_address="{drawer}"/>
       <MoveElectricDrawer drawer_address="{drawer}"
                           move_electric_drawer_topic="/electrical_drawer_task"
-                          speed="100"
+                          speed="150"
                           stall_guard_enable="0"
                           target_position="0"/>
       <ChangeLED blue="123"
@@ -136,10 +136,10 @@
     </Action>
     <Action ID="OpenDrawer"
             editable="false">
-      <input_port name="drawer_address"
-                  default="{drawer}"/>
       <input_port name="drawer_open_topic"
                   default="/open_drawer"/>
+      <output_port name="drawer_address"
+                   default="{drawer}"/>
     </Action>
   </TreeNodesModel>
 
