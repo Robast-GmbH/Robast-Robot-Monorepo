@@ -17,8 +17,8 @@ def generate_launch_description():
 
     bt_node = Node(
         package="bt_base_nodes",
-        executable="electric_drawer_tree_initiator",
-        name="electric_drawer_tree_initiator",
+        executable="electrical_drawer_tree_initiator",
+        name="electrical_drawer_tree_initiator",
         output="screen",
         parameters=[{"bt_path": "/workspace/install/drawer_sm/trees/trees/default_electrical_drawer.xml"}])
     ld = LaunchDescription()
