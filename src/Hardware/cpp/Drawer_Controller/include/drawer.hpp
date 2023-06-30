@@ -5,9 +5,9 @@
 #include <optional>
 
 #include "can/can_db.hpp"
+#include "electrical_lock.hpp"
 #include "i_drawer.hpp"
 #include "i_gpio_wrapper.hpp"
-#include "lock.hpp"
 
 namespace drawer_controller
 {
@@ -35,7 +35,7 @@ namespace drawer_controller
     uint8_t _id;
     std::shared_ptr<robast_can_msgs::CanDb> _can_db;
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
-    std::unique_ptr<Lock> _lock;
+    std::unique_ptr<ElectricalLock> _electrical_lock;
 
     std::optional<robast_can_msgs::CanMessage> _feedback_msg;
 
