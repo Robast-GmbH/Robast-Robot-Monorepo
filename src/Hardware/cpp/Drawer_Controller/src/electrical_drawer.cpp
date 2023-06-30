@@ -107,15 +107,11 @@ namespace drawer_controller
     int integrated_position = 0;
     uint32_t current_timestemp = millis();
 
-    if (_is_drawer_moving_out)
+    integrated_position =
+      (current_timestemp - _last_timestemp) * _motor->get_active_speed() / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
+
+    if (!_is_drawer_moving_out)
     {
-      integrated_position =
-        (current_timestemp - _last_timestemp) * _motor->get_active_speed() / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
-    }
-    else
-    {
-      integrated_position =
-        (current_timestemp - _last_timestemp) * _motor->get_active_speed() / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
       integrated_position *= -1;
     }
     _last_timestemp = current_timestemp;
