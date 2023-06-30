@@ -2,7 +2,6 @@
 
 namespace stepper_motor
 {
-
   bool Motor::_is_stalled = false;
 
   Motor::Motor(uint8_t driver_address,
@@ -32,6 +31,7 @@ namespace stepper_motor
     _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
     _gpio_wrapper->digital_write(_stepper_stdby_tmc2209_pin_id, LOW);
 
+    // After enabling the stepper driver, give it a small amount of time to get running before sending commands
     delay(100);
 
     SERIAL_PORT.begin(115200);
