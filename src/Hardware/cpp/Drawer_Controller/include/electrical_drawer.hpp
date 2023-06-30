@@ -34,10 +34,10 @@ namespace drawer_controller
                      uint8_t encoder_pin_b,
                      uint8_t motor_driver_address);
 
-    void init_lock(uint8_t pwr_open_lock_pin_id,
-                   uint8_t pwr_close_lock_pin_id,
-                   uint8_t sensor_lock_pin_id,
-                   uint8_t sensor_drawer_closed_pin_id);
+    void init_electrical_lock(uint8_t pwr_open_lock_pin_id,
+                              uint8_t pwr_close_lock_pin_id,
+                              uint8_t sensor_lock_pin_id,
+                              uint8_t sensor_drawer_closed_pin_id);
 
     void stop_motor();
 

@@ -19,10 +19,10 @@ namespace drawer_controller
            std::shared_ptr<robast_can_msgs::CanDb> can_db,
            std::shared_ptr<IGpioWrapper> gpio_wrapper);
 
-    void init_lock(uint8_t pwr_open_lock_pin_id,
-                   uint8_t pwr_close_lock_pin_id,
-                   uint8_t sensor_lock_pin_id,
-                   uint8_t sensor_drawer_closed_pin_id);
+    void init_electrical_lock(uint8_t pwr_open_lock_pin_id,
+                              uint8_t pwr_close_lock_pin_id,
+                              uint8_t sensor_lock_pin_id,
+                              uint8_t sensor_drawer_closed_pin_id);
 
     void can_in(robast_can_msgs::CanMessage msg) override;
 

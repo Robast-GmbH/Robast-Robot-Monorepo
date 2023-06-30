@@ -13,10 +13,10 @@ namespace drawer_controller
         _gpio_wrapper{gpio_wrapper},
         _electrical_lock{std::make_unique<ElectricalLock>(gpio_wrapper)} {};
 
-  void Drawer::init_lock(uint8_t pwr_open_lock_pin_id,
-                         uint8_t pwr_close_lock_pin_id,
-                         uint8_t sensor_lock_pin_id,
-                         uint8_t sensor_drawer_closed_pin_id)
+  void Drawer::init_electrical_lock(uint8_t pwr_open_lock_pin_id,
+                                    uint8_t pwr_close_lock_pin_id,
+                                    uint8_t sensor_lock_pin_id,
+                                    uint8_t sensor_drawer_closed_pin_id)
   {
     _electrical_lock->initialize_lock(
       pwr_open_lock_pin_id, pwr_close_lock_pin_id, sensor_lock_pin_id, sensor_drawer_closed_pin_id);
