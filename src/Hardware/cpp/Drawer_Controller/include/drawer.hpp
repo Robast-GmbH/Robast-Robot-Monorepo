@@ -1,5 +1,9 @@
 #ifndef DRAWER_CONTROLLER_DRAWER_HPP
 #define DRAWER_CONTROLLER_DRAWER_HPP
+
+#include <memory>
+#include <optional>
+
 #include "can/can_db.hpp"
 #include "i_drawer.hpp"
 #include "i_gpio_wrapper.hpp"

@@ -231,6 +231,7 @@ namespace stepper_motor
 
   void Motor::set_direction(Direction direction)
   {
+    // When the direction is changing, the stall guard could be accidentally triggered therefore detach interrupt
     // detachInterrupt(STEPPER_DIAG_PIN);
     _shaft_direction = direction;
     bool shaft_direction_as_bool = direction_to_shaft_bool();

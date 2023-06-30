@@ -29,7 +29,8 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
     .stepper_index_pin_id = STEPPER_1_INDEX_PIN_ID,
     .stepper_step_pin_id = STEPPER_1_STEP_PIN_ID};
 
-std::shared_ptr<drawer_controller::Drawer> drawer_0;
+// TODO@all: If you want to use a "normal" drawer uncomment this and comment out the e_drawer
+// std::shared_ptr<drawer_controller::Drawer> drawer_0;
 
 std::vector<drawer_ptr> drawers = std::vector<drawer_ptr>();
 
@@ -46,7 +47,7 @@ void setup()
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   gpio_wrapper = std::make_shared<drawer_controller::GPIO>();
 
-  // TODO: If you want to use a "normal" drawer uncomment this and comment out the e_drawer
+  // TODO@all: If you want to use a "normal" drawer uncomment this and comment out the e_drawer
   // drawer_0 = std::make_shared<drawer_controller::Drawer>(MODULE_ID, LOCK_ID, can_db, gpio_wrapper);
   // drawer_0->init_lock(LOCK_1_OPEN_CONROL_PIN_ID,
   //                     LOCK_1_CLOSE_CONROL_PIN_ID,
@@ -108,17 +109,6 @@ void loop()
           Serial.println("Received unsupported CAN message.");
           break;
       }
-    }
-  }
-
-  // TODO@Jacob: Remove when finally working
-  if (Serial.available())
-  {
-    char input = Serial.read();
-    if (input == '-')
-    {
-      Serial.println("stop motor");
-      e_drawer_0->stop_motor();
     }
   }
 

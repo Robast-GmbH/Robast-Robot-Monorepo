@@ -1,6 +1,9 @@
 #ifndef ELECTRICAL_DRAWER_HPP
 #define ELECTRICAL_DRAWER_HPP
+
 #include <ESP32Encoder.h>
+
+#include <memory>
 
 #include "can/can_db.hpp"
 #include "i_drawer.hpp"

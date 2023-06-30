@@ -5,6 +5,7 @@
 #include <Arduino.h>
 
 #include <memory>
+#include <optional>
 
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
