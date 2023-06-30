@@ -104,7 +104,7 @@ namespace drawer_controller
   int32_t ElectricalDrawer::get_integrated_drawer_position()
   {
     stepper_motor::Direction direction = _motor->get_direction();
-    int integrated_position = 0;
+    int32_t integrated_position = 0;
     uint32_t current_timestemp = millis();
 
     integrated_position =
