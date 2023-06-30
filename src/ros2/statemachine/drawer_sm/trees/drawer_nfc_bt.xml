@@ -3,14 +3,14 @@
   <BehaviorTree ID="Drawer_NFC_BT">
     <Sequence>
       <NFCToDrawer _description="Reads out the User Name of the person that used the nfc card and translates it to the corresponding drawer address which is written to the blackboard"/>
-      <OpenDrawer drawer_address="{drawer}"
-                  drawer_open_topic="/open_drawer"
+      <OpenDrawer drawer_open_topic="/open_drawer"
+                  drawer_address="{drawer}"
                   _description="The Open Drawer node reads out the drawer address from the blackboard and publishes the opned address to its output. 
                 It also publishes an open order to the topic given in the input"/>
-      <ChangeLED blue="0"
-                 brightness="128"
+      <ChangeLED blue="105"
+                 brightness="150"
                  drawer_address="{drawer}"
-                 green="255"
+                 green="205"
                  led_topic="/drawer_leds"
                  mode="1"
                  red="0"
@@ -21,13 +21,13 @@
                   slow_fade_up_fade_down = 3,"/>
       <DrawerStatusCondition target_value="true"
                              topic="/drawer_is_open"/>
-      <ChangeLED blue="255"
-                 brightness="128"
+      <ChangeLED blue="128"
+                 brightness="184"
                  drawer_address="{drawer}"
-                 green="255"
+                 green="128"
                  led_topic="/drawer_leds"
                  mode="1"
-                 red="255"
+                 red="128"
                  use_blackboard_address="false"
                  _description="steady_light = 0,
                   fade_up = 1,
@@ -35,13 +35,13 @@
                   slow_fade_up_fade_down = 3,"/>
       <DrawerStatusCondition target_value="false"
                              topic="/drawer_is_open"/>
-      <ChangeLED blue="0"
-                 brightness="150"
+      <ChangeLED blue="155"
+                 brightness="184"
                  drawer_address="{drawer}"
-                 green="128"
+                 green="155"
                  led_topic="/drawer_leds"
-                 mode="2"
-                 red="255"
+                 mode="1"
+                 red="0"
                  use_blackboard_address="false"
                  _description="steady_light = 0,
                   fade_up = 1,
@@ -94,10 +94,10 @@
             editable="true"/>
     <Action ID="OpenDrawer"
             editable="false">
-      <input_port name="drawer_address"
-                  default="{drawer}"/>
       <input_port name="drawer_open_topic"
                   default="/open_drawer"/>
+      <output_port name="drawer_address"
+                   default="{drawer}"/>
     </Action>
   </TreeNodesModel>
 

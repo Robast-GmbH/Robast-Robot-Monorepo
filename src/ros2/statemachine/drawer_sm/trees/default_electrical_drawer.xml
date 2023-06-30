@@ -2,26 +2,18 @@
 <root BTCPP_format="4">
   <BehaviorTree ID="default_electrical_drawer_tree">
     <Sequence>
-      <ChangeLED blue="20"
-                 brightness="100"
+      <ChangeLED blue="105"
+                 brightness="150"
                  drawer_address="{drawer}"
-                 green="200"
+                 green="205"
                  led_topic="/drawer_leds"
                  mode="1"
-                 red="200"
+                 red="0"
                  use_blackboard_address="true"/>
-      <Delay delay_msec="2000">
+      <Delay delay_msec="1000">
         <OpenDrawer drawer_open_topic="/open_drawer"
                     drawer_address="{drawer}"/>
       </Delay>
-      <ChangeLED blue="28"
-                 brightness="128"
-                 drawer_address="{drawer}"
-                 green="10"
-                 led_topic="/drawer_leds"
-                 mode="3"
-                 red="150"
-                 use_blackboard_address=""/>
       <Delay delay_msec="1000">
         <MoveElectricDrawer drawer_address="{drawer}"
                             move_electric_drawer_topic="/electrical_drawer_task"
@@ -29,6 +21,14 @@
                             stall_guard_enable="0"
                             target_position="251"/>
       </Delay>
+      <ChangeLED blue="105"
+                 brightness="150"
+                 drawer_address="{drawer}"
+                 green="205"
+                 led_topic="/drawer_leds"
+                 mode="1"
+                 red="0"
+                 use_blackboard_address="false"/>
       <ElectricDrawerStatusCondition target_value="251"
                                      topic="/electrical_drawer_status"/>
       <ChangeLED blue="128"
@@ -46,35 +46,29 @@
                           speed="150"
                           stall_guard_enable="0"
                           target_position="0"/>
-      <ChangeLED blue="123"
-                 brightness="128"
+      <ChangeLED blue="155"
+                 brightness="80"
                  drawer_address="{drawer}"
-                 green="5"
+                 green="155"
                  led_topic="/drawer_leds"
-                 mode="3"
-                 red="123"
+                 mode="1"
+                 red="0"
                  use_blackboard_address=""/>
       <ElectricDrawerStatusCondition target_value="0"
                                      topic="/electrical_drawer_status"/>
       <Sequence>
         <DrawerStatusCondition target_value="false"
                                topic="/drawer_is_open"/>
-        <ChangeLED blue="0"
-                   brightness="150"
-                   drawer_address="{drawer}"
-                   green="128"
-                   led_topic="/drawer_leds"
-                   mode="2"
-                   red="255"
-                   use_blackboard_address=""/>
-        <ChangeLED blue="155"
-                   brightness="25"
-                   drawer_address="{drawer}"
-                   green="155"
-                   led_topic="/drawer_leds"
-                   mode="1"
-                   red="0"
-                   use_blackboard_address=""/>
+        <Delay delay_msec="500">
+          <ChangeLED blue="155"
+                     brightness="25"
+                     drawer_address="{drawer}"
+                     green="155"
+                     led_topic="/drawer_leds"
+                     mode="1"
+                     red="0"
+                     use_blackboard_address=""/>
+        </Delay>
       </Sequence>
     </Sequence>
   </BehaviorTree>
