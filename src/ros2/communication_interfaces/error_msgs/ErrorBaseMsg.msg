@@ -1,0 +1,3 @@
+uint16 error_code
+string error_topic
+string error_description
