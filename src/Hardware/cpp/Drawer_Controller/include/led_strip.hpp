@@ -55,8 +55,8 @@ namespace led_strip
 
     QueueHandle_t led_target_settings_queue;
 
-    volatile uint8_t running_led_offset_from_middle =
-        0;   // this variable controls which LED is currently shining for the running LED mode
+    // this variable controls which LED is currently shining for the running LED mode
+    volatile uint8_t running_led_offset_from_middle = 0;
 
     LedStrip(const uint8_t num_leds_input, const uint8_t middle_led_input, const uint8_t num_of_led_shadows_input)
         : num_leds(num_leds_input), middle_led(middle_led_input), num_of_led_shadows(num_of_led_shadows_input)
@@ -90,7 +90,7 @@ namespace led_strip
         // fade up mode
         led_strip.led_current_mode = LedMode::fade_up;
         timerAlarmWrite(
-            fading_up_timer, 3000, true);   // With the alarm_value of 3000 the interrupt will be triggert 333/s
+          fading_up_timer, 3000, true);   // With the alarm_value of 3000 the interrupt will be triggert 333/s
         break;
 
       case LedMode::running_led_from_mid_to_outside:
@@ -129,9 +129,9 @@ namespace led_strip
 
     // Adding led mode to queue
     xQueueSend(
-        led_strip.led_target_settings_queue,
-        &led_target_settings,
-        0);   // setting the third argument to 0 makes sure, filling the queue wont block, if the queue is already full
+      led_strip.led_target_settings_queue,
+      &led_target_settings,
+      0);   // setting the third argument to 0 makes sure, filling the queue wont block, if the queue is already full
 
     uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip.led_target_settings_queue);
 
@@ -358,15 +358,15 @@ namespace led_strip
   void initialize_timer()
   {
     fading_up_timer_mux = portMUX_INITIALIZER_UNLOCKED;
-    fading_up_timer = timerBegin(
-        0, 80, true);   // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
+    fading_up_timer =
+      timerBegin(0, 80, true);   // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
     timerAttachInterrupt(fading_up_timer, &on_timer_for_fading, true);
     timerAlarmWrite(fading_up_timer, 3000, true);   // With the alarm_value of 3000 the interrupt will be triggert 333/s
     timerAlarmEnable(fading_up_timer);
 
     running_led_timer_mux = portMUX_INITIALIZER_UNLOCKED;
-    running_led_timer = timerBegin(
-        1, 80, true);   // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
+    running_led_timer =
+      timerBegin(1, 80, true);   // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
     timerAttachInterrupt(running_led_timer, &on_timer_for_running_led, true);
     timerAlarmWrite(running_led_timer, 50000, true);   // 50000 is a good value. This defines how fast the LED will
                                                        // "run". Higher values will decrease the running speed.

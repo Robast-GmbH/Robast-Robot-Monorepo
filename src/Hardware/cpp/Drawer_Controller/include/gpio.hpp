@@ -19,9 +19,9 @@ namespace drawer_controller
 #define SLAVE_ADDRESS_PORT_EXPANDER_2 0x21
 #define SLAVE_ADDRESS_PORT_EXPANDER_3 0x22
 
-/*********************************************************************************************************
- These defines are only mapping ID's used within this class
-*********************************************************************************************************/
+  /*********************************************************************************************************
+  These defines are only mapping ID's used within this class
+  *********************************************************************************************************/
 #define STEPPER_1_ENN_TMC2209_PIN_ID   0
 #define STEPPER_2_EN_TMC2209_PIN_ID    1
 #define STEPPER_1_STDBY_TMC2209_PIN_ID 2
@@ -133,8 +133,8 @@ namespace drawer_controller
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_0, state);
           break;
 
-        // TODO: The pins for SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID and SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID will probably
-        // TODO: will be remapped again in the next interation probably
+        // TODO@Jacob: The pins for SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID and SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID
+        // TODO@Jacob: will be remapped again in the next interation probably
         case SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID:
           return port_expander_2_.set_pin_mode(PCA9554_REGISTER_2, state);
           break;
@@ -191,8 +191,8 @@ namespace drawer_controller
           return port_expander_2_.digital_read(value);
           break;
 
-        // TODO: The pins for SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID and SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID will probably
-        // TODO: will be remapped again in the next interation probably
+        // TODO@Jacob: The pins for SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID and SENSE_INPUT_DRAWER_2_CLOSED_PIN_ID
+        // TODO@Jacob: will be remapped again in the next interation probably
         case SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID:
           value = PCA9554_REGISTER_2;
           return port_expander_2_.digital_read(value);
@@ -310,11 +310,11 @@ namespace drawer_controller
 
    private:
     port_expander::PortExpanderPCA9554 port_expander_0_ =
-        port_expander::PortExpanderPCA9554(SLAVE_ADDRESS_PORT_EXPANDER_1);
+      port_expander::PortExpanderPCA9554(SLAVE_ADDRESS_PORT_EXPANDER_1);
     port_expander::PortExpanderPCA9554 port_expander_1_ =
-        port_expander::PortExpanderPCA9554(SLAVE_ADDRESS_PORT_EXPANDER_2);
+      port_expander::PortExpanderPCA9554(SLAVE_ADDRESS_PORT_EXPANDER_2);
     port_expander::PortExpanderPCA9554 port_expander_2_ =
-        port_expander::PortExpanderPCA9554(SLAVE_ADDRESS_PORT_EXPANDER_3);
+      port_expander::PortExpanderPCA9554(SLAVE_ADDRESS_PORT_EXPANDER_3);
   };
 
 }   // namespace drawer_controller
