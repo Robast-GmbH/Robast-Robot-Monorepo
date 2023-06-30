@@ -99,7 +99,6 @@
 
     "[cpp]": {
         "editor.tabSize": 2,
-        "editor.defaultFormatter": "ms-vscode.cpptools"
     },
     "cmake.configureOnOpen": false
 }
