@@ -6,8 +6,8 @@
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/statemachine/,target=/workspace/src/statemachine,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/DDS_config.xml/,target=/workspace/DDS_config.xml,type=bind"
+		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind"
+		// "source=${localWorkspaceFolder}/../../src/ros2/DDS_config.xml/,target=/workspace/DDS_config.xml,type=bind"
 	],
 	"workspaceFolder": "/workspace",
 	"runArgs": [

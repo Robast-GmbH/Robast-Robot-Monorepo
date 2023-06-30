@@ -4,7 +4,7 @@ namespace bt_base_nodes
 {
 }
 
-int main(int argc, char* argv[ ])
+int main(int argc, char *argv[])
 {
   rclcpp::init(argc, argv);
   std::map<std::string, communication_interfaces::msg::DrawerAddress> nfc_dictionary{{}};
@@ -16,7 +16,7 @@ int main(int argc, char* argv[ ])
     nfc_dictionary[std::to_string(i)] = drawer_address;
   }
   auto node = std::make_shared<bt_base_nodes::DrawerNFCTreeInitiator>(nfc_dictionary);
-  node->configure("authenticated_user");
+  node->configure("authenticated_user", "Drawer_NFC_BT");
   rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
