@@ -34,10 +34,9 @@ namespace drawer_statemachine
         rclcpp::CallbackGroup::SharedPtr _callback_group;
         rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
         rclcpp::Subscription<communication_interfaces::msg::DrawerStatus>::SharedPtr _drawer_status_sub;
-        bool last_message_;
-        bool target_value_;
-        std::string topic_name_;
-        // communication_interfaces::msg::DrawerAddress drawer_address_;
+        bool _last_message;
+        bool _target_value;
+        std::string _topic_name;
     };
 } // namespace drawer_statemachine
 

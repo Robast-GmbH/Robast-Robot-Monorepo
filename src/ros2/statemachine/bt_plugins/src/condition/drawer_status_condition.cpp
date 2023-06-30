@@ -12,12 +12,12 @@ namespace drawer_statemachine
             false);
         _callback_group_executor.add_callback_group(_callback_group, _node->get_node_base_interface());
 
-        getInput("topic", topic_name_);
+        getInput("topic", _topic_name);
 
-        if (topic_name_ == "")
+        if (_topic_name == "")
         {
             auto var = getInput<std::string>("topic");
-            topic_name_ = "/drawer_is_open";
+            _topic_name = "/drawer_is_open";
         }
 
         rclcpp::QoS qos(rclcpp::KeepLast(1));
@@ -26,20 +26,20 @@ namespace drawer_statemachine
         rclcpp::SubscriptionOptions sub_option;
         sub_option.callback_group = _callback_group;
         _drawer_status_sub = _node->create_subscription<communication_interfaces::msg::DrawerStatus>(
-            topic_name_,
+            _topic_name,
             qos,
             std::bind(&DrawerStatusCondition::callbackDrawerFeedback, this, std::placeholders::_1),
             sub_option);
 
-        getInput("target_value", target_value_);
-        last_message_ = !target_value_;
+        getInput("target_value", _target_value);
+        _last_message = !_target_value;
     }
 
     BT::NodeStatus DrawerStatusCondition::tick()
     {
         _callback_group_executor.spin_some();
 
-        if (last_message_ == target_value_)
+        if (_last_message == _target_value)
         {
             return BT::NodeStatus::SUCCESS;
         }
@@ -48,7 +48,7 @@ namespace drawer_statemachine
 
     void DrawerStatusCondition::callbackDrawerFeedback(const communication_interfaces::msg::DrawerStatus::SharedPtr msg)
     {
-        last_message_ = msg->drawer_is_open;
+        _last_message = msg->drawer_is_open;
     }
 } // namespace drawer_statemachine
 
