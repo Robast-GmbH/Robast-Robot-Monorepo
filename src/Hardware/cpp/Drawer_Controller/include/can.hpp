@@ -41,7 +41,7 @@ namespace drawer_controller
 
     static const uint32_t _QUARTZ_FREQUENCY = 8 * 1000 * 1000;   // 8 MHz
 
-    long unsigned int _rx_msg_id;
+    uint64_t _rx_msg_id;
     uint8_t _rx_msg_dlc = 0;
     uint8_t _rx_data_buf[8];
 
