@@ -59,6 +59,14 @@
       <Sequence>
         <DrawerStatusCondition target_value="false"
                                topic="/drawer_is_open"/>
+        <ChangeLED blue="155"
+                   brightness="184"
+                   drawer_address="{drawer}"
+                   green="155"
+                   led_topic="/drawer_leds"
+                   mode="1"
+                   red="0"
+                   use_blackboard_address="false"/>
         <Delay delay_msec="500">
           <ChangeLED blue="155"
                      brightness="25"
