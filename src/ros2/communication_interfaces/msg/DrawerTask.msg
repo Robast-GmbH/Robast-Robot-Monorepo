@@ -1,4 +1,4 @@
 communication_interfaces/DrawerAddress drawer_address
 uint8 target_position
-uint8 speed_mode
+uint8 speed
 bool stall_guard_enable

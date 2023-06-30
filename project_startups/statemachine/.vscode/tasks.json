@@ -40,16 +40,37 @@
         },
         {
             "label": "launch nfc statemachine",
-            "detail": "Install all dependencies specified in the workspaces package.xml files.",
+            "detail": "launch the nfc drawer state machine.",
             "type": "shell",
             "command": "ros2 launch drawer_sm nfc_drawer_statemachine_launch.py",
             "problemMatcher": []
         },
         {
             "label": "launch drawer statemachine",
-            "detail": "Install all dependencies specified in the workspaces package.xml files.",
+            "detail": "launch the 'normal' drawer state machine.",
             "type": "shell",
             "command": "ros2 launch drawer_sm drawer_statemachine_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "launch electrical drawer statemachine",
+            "detail": "launch the electrical drawer state machine.",
+            "type": "shell",
+            "command": "ros2 launch drawer_sm electrical_drawer_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Trigger e-drawer 1",
+            "detail": "Triggers the e-drawer statemachine to start opening.",
+            "type": "shell",
+            "command": "ros2 topic pub /trigger_electric_drawer_tree communication_interfaces/msg/DrawerAddress '{module_id: 1, drawer_id: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Trigger closing e-drawer 1",
+            "detail": "Triggers the e-drawer statemachine to start closing.",
+            "type": "shell",
+            "command": "ros2 topic pub /close_drawer communication_interfaces/msg/DrawerAddress '{module_id: 1, drawer_id: 0}' --once",
             "problemMatcher": []
         },
         {
@@ -179,7 +200,7 @@
             "type": "ament",
             "task": "xmllint",
             "path": "src/",
-            "problemMatcher": [ 
+            "problemMatcher": [
                 "$ament_xmllint",
             ],
             "presentation": {
@@ -190,7 +211,7 @@
         },
         {
             "label": "lint all",
-            "key":"crtl+shift+l",
+            "key": "crtl+shift+l",
             "detail": "Run all linters.",
             "dependsOn": [
                 "cppcheck",
@@ -206,10 +227,9 @@
     ],
     "inputs": [
         {
-          "id": "package",
-          "type": "promptString",
-          "description": "Package name"
+            "id": "package",
+            "type": "promptString",
+            "description": "Package name"
         }
-      ],
-      
+    ],
 }

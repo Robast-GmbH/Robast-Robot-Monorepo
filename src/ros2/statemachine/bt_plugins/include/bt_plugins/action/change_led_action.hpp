@@ -5,7 +5,6 @@
 #include <vector>
 #include <memory>
 
-
 #include "rclcpp/rclcpp.hpp"
 
 #include "behaviortree_cpp/action_node.h"
@@ -23,8 +22,8 @@ namespace drawer_statemachine
     {
     public:
         ChangeLED(
-            const std::string& name,
-            const BT::NodeConfig& config);
+            const std::string &name,
+            const BT::NodeConfig &config);
 
         ChangeLED() = delete;
 
@@ -42,45 +41,37 @@ namespace drawer_statemachine
          */
         static BT::PortsList providedPorts()
         {
-            return
-            {
+            return {
                 BT::InputPort<uint8_t>(
-                    "blue",0,"blue"
-                ),
+                    "blue", 0, "blue"),
                 BT::InputPort<uint8_t>(
-                    "red",0,"red"
-                ),
+                    "red", 0, "red"),
                 BT::InputPort<uint8_t>(
-                    "green",0,"green"
-                ),
+                    "green", 0, "green"),
                 BT::InputPort<uint8_t>(
-                    "brightness",0,"brightness"
-                ),
+                    "brightness", 0, "brightness"),
                 BT::InputPort<uint8_t>(
-                    "mode",0,"mode of the led animation"
-                ),
+                    "mode", 0, "mode of the led animation"),
+                BT::InputPort<bool>(
+                    "use_blackboard_address", false, "wether to use the address that's passed around by I/O or blackboard"),
                 BT::InputPort<communication_interfaces::msg::DrawerAddress>(
-                    "drawer_address","address of the drawer that should execute the action"
-                ),
+                    "drawer_address", "address of the drawer that should execute the action"),
                 BT::InputPort<std::string>(
                     "led_topic",
                     "/drawer_leds",
-                    "topic thats used to execute the action"
-                )
-            };
+                    "topic thats used to execute the action")};
         }
-
 
     protected:
         std::string topic_name_;
         virtual void publish();
         virtual void initializePublisher();
-
-    private:
-        rclcpp::Node::SharedPtr node_;
+        BT::Blackboard::Ptr blackboard_;
         rclcpp::Publisher<communication_interfaces::msg::DrawerLeds>::SharedPtr led_publisher_;
         communication_interfaces::msg::DrawerLeds drawer_leds_;
 
+    private:
+        rclcpp::Node::SharedPtr _node;
     };
-}
-#endif 
+} // namespace drawer_statemachine
+#endif
