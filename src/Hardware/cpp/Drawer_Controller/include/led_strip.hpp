@@ -91,9 +91,6 @@ namespace led_strip
         led_strip.led_current_mode = LedMode::fade_up;
         timerAlarmWrite(
             fading_up_timer, 3000, true);   // With the alarm_value of 3000 the interrupt will be triggert 333/s
-        portENTER_CRITICAL(&fading_up_timer_mux);
-        led_strip.led_current_brightness = 0;
-        portEXIT_CRITICAL(&fading_up_timer_mux);
         break;
 
       case LedMode::running_led_from_mid_to_outside:
