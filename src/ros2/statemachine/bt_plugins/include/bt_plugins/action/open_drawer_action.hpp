@@ -51,15 +51,15 @@ namespace drawer_statemachine
 
     protected:
         std::string topic_name_;
-        BT::Blackboard::Ptr _blackboard;
+        BT::Blackboard::Ptr blackboard_;
+        communication_interfaces::msg::DrawerAddress drawer_address_;
+        rclcpp::Publisher<communication_interfaces::msg::DrawerAddress>::SharedPtr open_publisher_;
 
     private:
         rclcpp::Node::SharedPtr _node;
-        communication_interfaces::msg::DrawerAddress drawer_address_;
 
         // rclcpp::CallbackGroup::SharedPtr _callback_group;
         // rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
-        rclcpp::Publisher<communication_interfaces::msg::DrawerAddress>::SharedPtr open_publisher_;
     };
 } // namespace drawer_statemachine
 #endif

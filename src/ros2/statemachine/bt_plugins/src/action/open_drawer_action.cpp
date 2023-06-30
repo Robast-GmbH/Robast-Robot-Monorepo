@@ -10,11 +10,11 @@ namespace drawer_statemachine
         const BT::NodeConfig &config)
         : BT::StatefulActionNode(name, config)
     {
-        _blackboard = config.blackboard;
+        blackboard_ = config.blackboard;
 
         getInput("drawer_open_topic", topic_name_);
-        // std::scoped_lock l(_blackboard->entryMutex());
-        _node = _blackboard->get<rclcpp::Node::SharedPtr>("node");
+        // std::scoped_lock l(blackboard_->entryMutex());
+        _node = blackboard_->get<rclcpp::Node::SharedPtr>("node");
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
 
@@ -30,8 +30,8 @@ namespace drawer_statemachine
 
     BT::NodeStatus OpenDrawer::onRunning()
     {
-        // std::scoped_lock l(_blackboard->entryMutex());
-        drawer_address_ = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
+        // std::scoped_lock l(blackboard_->entryMutex());
+        drawer_address_ = blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
         setOutput("drawer_address", drawer_address_);
         RCLCPP_DEBUG(rclcpp::get_logger("OpenDrawer"), "open drawer ");
         open_publisher_->publish(drawer_address_);

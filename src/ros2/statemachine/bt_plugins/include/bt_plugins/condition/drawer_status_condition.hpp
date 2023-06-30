@@ -33,7 +33,7 @@ namespace drawer_statemachine
 
         rclcpp::CallbackGroup::SharedPtr _callback_group;
         rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
-        rclcpp::Subscription<communication_interfaces::msg::DrawerStatus>::SharedPtr drawer_status_sub_;
+        rclcpp::Subscription<communication_interfaces::msg::DrawerStatus>::SharedPtr _drawer_status_sub;
         bool last_message_;
         bool target_value_;
         std::string topic_name_;

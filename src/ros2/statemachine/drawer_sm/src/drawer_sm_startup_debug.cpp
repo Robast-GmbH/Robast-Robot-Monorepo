@@ -102,7 +102,7 @@ public:
     rclcpp::QoS qos(rclcpp::KeepLast(1));
     qos.transient_local().reliable();
 
-    start_bt_sub_ = this->create_subscription<std_msgs::msg::Empty>(
+    _start_bt_sub = this->create_subscription<std_msgs::msg::Empty>(
         "start_bt",
         qos,
         std::bind(&BTTest::callbackRunBT, this, std::placeholders::_1));
@@ -126,7 +126,7 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
   // drawer_statemachine::BehaviorTreeEngine bt_engine_;
   BT::Tree bt_;
-  rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr start_bt_sub_;
+  rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _start_bt_sub;
 };
 
 class BTTicker : public rclcpp::Node
@@ -184,7 +184,7 @@ public:
     rclcpp::QoS qos(rclcpp::KeepLast(1));
     qos.transient_local().reliable();
 
-    start_bt_sub_ = this->create_subscription<std_msgs::msg::Empty>(
+    _start_bt_sub = this->create_subscription<std_msgs::msg::Empty>(
         "start_bt",
         qos,
         std::bind(&BTTicker::callbackRunBT, this, std::placeholders::_1));
@@ -208,7 +208,7 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
   // drawer_statemachine::BehaviorTreeEngine bt_engine_;
   BT::Tree bt_;
-  rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr start_bt_sub_;
+  rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _start_bt_sub;
 };
 
 int main(int argc, char *argv[])

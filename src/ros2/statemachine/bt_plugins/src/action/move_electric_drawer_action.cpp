@@ -12,9 +12,9 @@ namespace drawer_statemachine
     {
         blackboard_ = config.blackboard;
 
-        // std::scoped_lock l(_blackboard->entryMutex());
+        // std::scoped_lock l(blackboard_->entryMutex());
         _node = blackboard_->get<rclcpp::Node::SharedPtr>("node");
-        // drawer_address_ = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
+        // drawer_address_ = blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
 
@@ -40,7 +40,7 @@ namespace drawer_statemachine
 
     BT::NodeStatus MoveElectricDrawer::onRunning()
     {
-        // std::scoped_lock l(_blackboard->entryMutex());
+        // std::scoped_lock l(blackboard_->entryMutex());
         drawer_task_.drawer_address = blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
         setOutput("drawer_address", drawer_task_.drawer_address);
         RCLCPP_DEBUG(rclcpp::get_logger("MoveElectricDrawer"), "move drawer ");

@@ -25,7 +25,7 @@ namespace drawer_statemachine
 
         rclcpp::SubscriptionOptions sub_option;
         sub_option.callback_group = _callback_group;
-        drawer_status_sub_ = _node->create_subscription<communication_interfaces::msg::DrawerStatus>(
+        _drawer_status_sub = _node->create_subscription<communication_interfaces::msg::DrawerStatus>(
             topic_name_,
             qos,
             std::bind(&DrawerStatusCondition::callbackDrawerFeedback, this, std::placeholders::_1),
