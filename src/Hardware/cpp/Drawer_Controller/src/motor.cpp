@@ -127,18 +127,19 @@ namespace stepper_motor
     return _is_stalled;
   }
 
-  // void Motor::set_stall_guard(bool enable)
-  // {
-  //   if (_is_stall_guard_enabled && !enable)
-  //   {
-  //     detachInterrupt(STEPPER_DIAG_PIN);   // TODO@Jacob: Use interrup from port expander
-  //     _is_stall_guard_enabled = false;
-  //   }
-  //   else if (enable)
-  //   {
-  //     attachInterrupt(STEPPER_DIAG_PIN, Motor::stall_ISR, RISING);   // TODO@Jacob: Use interrup from port expander
-  //   }
-  // }
+  // TODO@Jacob: implement Stall guard with ticket: https://robast.atlassian.net/browse/RE-1446
+  //  void Motor::set_stall_guard(bool enable)
+  //  {
+  //    if (_is_stall_guard_enabled && !enable)
+  //    {
+  //      detachInterrupt(STEPPER_DIAG_PIN);   // TODO@Jacob: Use interrup from port expander
+  //      _is_stall_guard_enabled = false;
+  //    }
+  //    else if (enable)
+  //    {
+  //      attachInterrupt(STEPPER_DIAG_PIN, Motor::stall_ISR, RISING);   // TODO@Jacob: Use interrup from port expander
+  //    }
+  //  }
 
   // void Motor::reset_stall_guard()
   // {
@@ -163,7 +164,7 @@ namespace stepper_motor
       if (_speed_ramp_in_progress)
       {
         int32_t delta_speed =
-            ((int32_t) (dt_since_start * (_target_speed - _starting_speed_before_ramp))) / _ramp_time_in_us;
+          ((int32_t) (dt_since_start * (_target_speed - _starting_speed_before_ramp))) / _ramp_time_in_us;
 
         uint32_t new_active_speed = _starting_speed_before_ramp + delta_speed;
         set_active_speed(new_active_speed);
