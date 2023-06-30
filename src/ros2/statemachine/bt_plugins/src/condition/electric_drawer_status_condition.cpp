@@ -13,10 +13,10 @@ namespace drawer_statemachine
     BT::NodeStatus ElectricDrawerStatusCondition::tick()
     {
         callback_group_executor_.spin_some();
-        // RCLCPP_INFO(rclcpp::get_logger("BaseCompareCondition"), "ticked");
+        RCLCPP_DEBUG(rclcpp::get_logger("BaseCompareCondition"), "ticked");
         if (comparator(last_message_, target_value_))
         {
-            RCLCPP_INFO(rclcpp::get_logger("BaseCompareCondition"), "BT::NodeStatus::SUCCESS");
+            RCLCPP_DEBUG(rclcpp::get_logger("BaseCompareCondition"), "BT::NodeStatus::SUCCESS");
             return BT::NodeStatus::SUCCESS;
         }
         else if (std::chrono::steady_clock::now() -

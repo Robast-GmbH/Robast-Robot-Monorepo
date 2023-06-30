@@ -6,15 +6,6 @@
 #include "communication_interfaces/msg/drawer_address.hpp"
 #include "bt_plugins/action/open_drawer_action.hpp"
 
-/*
- * HOW TO RUN THIS TEST ON WINDOWS:
- * - Go to directory libs/can/tests
- * - Run the following commands:
- * g++ -std=c++17 -c .\tests_main.cpp
- * g++ -std=c++17 tests_main.o tests_robast_can_msgs.cpp ..\src\* -o test_executable -I .. -Wall -Wextra -Wuseless-cast -Wdouble-promotion -Wnull-dereference -Wpedantic -Wshadow -Wnon-virtual-dtor -Wlogical-op
- * .\test_executable.exe
- */
-
 namespace test2
 {
     SCENARIO("A minimal tree gets created with just the OpenDrawer plugin")

@@ -42,7 +42,7 @@
       <input_port name="red"
                   default="0">uint8</input_port>
       <input_port name="use_blackboard_address"
-                  default="false">bool. wether to use the address that's passed around by I/O or blackboard</input_port>
+                  default="false">bool. whether to use the address that's passed around by I/O or blackboard</input_port>
     </Action>
     <Condition ID="DrawerStatusCondition"
                editable="false">

@@ -3,6 +3,8 @@
 namespace drawer_statemachine
 {
 
+    // TODO @Tobi: checkout thread safety in the future again. outcommented for now.
+
     using std::placeholders::_1;
 
     OpenDrawer::OpenDrawer(
