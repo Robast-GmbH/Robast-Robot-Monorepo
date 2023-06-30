@@ -81,7 +81,7 @@ RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/o
   && make && make install
 
 # Must compile ros_gz, gz-msgs and gz-transport from source because Humble + Garden is not an official combination
-RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ros2 https://github.com/gazebosim/ros_gz.git \
+RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ros2 https://github.com/gazebosim/ros_gz.git && cd ros_gz && git checkout 7c62a1ce3cfb4eb3b54e1cfd092c9b63a9d5f255 && cd ..\
   && cd /workspace_ros_gz/src && git clone -b gz-msgs9 https://github.com/gazebosim/gz-msgs.git \
   && cd /workspace_ros_gz/src && git clone -b gz-transport12 https://github.com/gazebosim/gz-transport.git \
   && apt update \
@@ -93,5 +93,16 @@ RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ros
   && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc \
   && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/$USER/.bashrc
 
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+RUN mkdir -p /workspace_nav2/src && cd /workspace_nav2/src && git clone -b humble https://github.com/ros-planning/navigation2.git \
+  && apt update \
+  && apt upgrade -y
+  
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
+    && cd /workspace_nav2 \
+    && rosdep update \
+#     && rosdep install --from-paths src --ignore-src -r -y 
+    && chown -R ${USER} /workspace_nav2
+
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/src/DDS_config.xml
 ENV IGN_FILE_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}

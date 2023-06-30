@@ -23,8 +23,8 @@ namespace bt_base_nodes
     protected:
         void callbackRunBT(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
         {
-            _blackboard->set<communication_interfaces::msg::DrawerAddress>("drawer_address", *msg);
-            _bt.tickWhileRunning(std::chrono::milliseconds(10));
+            blackboard_->set<communication_interfaces::msg::DrawerAddress>("drawer_address", *msg);
+            bt_.tickWhileRunning(std::chrono::milliseconds(10));
         }
     };
 }

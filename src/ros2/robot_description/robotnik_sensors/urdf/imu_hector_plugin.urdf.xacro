@@ -1,13 +1,13 @@
 <?xml version="1.0"?>
 <robot name="sensor_imu" xmlns:xacro="http://wiki.ros.org/xacro">
 
-	<xacro:macro name="sensor_imu_hector" params="prefix prefix_topic topic:='imu/data' parent *origin">
+	<xacro:macro name="sensor_imu_hector" params="prefix topic:='imu/data' parent *origin">
 
 		<xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="base_footprint/${prefix}_link" /><!-- value="${robot_name}/base_footprint/${prefix}_link" /> -->
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}_link" />
 		</xacro:if>
 		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="base_link/${prefix}_link" /><!-- value="${robot_name}/base_link/${prefix}_link" /> -->
+			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}_link" />
 		</xacro:unless>
 
 		<joint name="${prefix}_joint" type="fixed">
@@ -43,7 +43,71 @@
 				<always_on>1</always_on>
 				<update_rate>40</update_rate>
 				<visualize>true</visualize>
-				<topic>${prefix_topic}/imu/data</topic>
+				<topic>imu/data</topic>
+
+				<imu>
+					<!-- <orientation>
+						<x>
+							<noise type="gaussian">
+							<mean>0.0</mean>
+							<stddev>2e-3</stddev>
+							</noise>
+						</x>
+						<y>
+							<noise type="gaussian">
+							<mean>0.0</mean>
+							<stddev>2e-3</stddev>
+							</noise>
+						</y>
+						<z>
+							<noise type="gaussian">
+							<mean>0.0</mean>
+							<stddev>2e-3</stddev>
+							</noise>
+						</z>
+					</orientation> -->
+					<angular_velocity>
+						<x>
+							<noise type="gaussian">
+							<mean>0.0</mean>
+							<stddev>2e-4</stddev>
+							</noise>
+						</x>
+						<y>
+							<noise type="gaussian">
+							<mean>0.0</mean>
+							<stddev>2e-4</stddev>
+							</noise>
+						</y>
+						<z>
+							<noise type="gaussian">
+							<mean>0.0</mean>
+							<stddev>2e-4</stddev>
+							</noise>
+						</z>
+					</angular_velocity>
+					<linear_acceleration>
+						<x>
+							<noise type="gaussian">
+							<mean>-0.3</mean>
+							<stddev>5e-2</stddev>
+							</noise>
+						</x>
+						<y>
+							<noise type="gaussian">
+							<mean>0.0</mean>
+							<stddev>5e-2</stddev>
+							</noise>
+						</y>
+						<z>
+							<noise type="gaussian">
+							<mean>-0.16</mean>
+							<stddev>5e-2</stddev>
+							</noise>
+						</z>
+					</linear_acceleration>
+				</imu>
+
 			</sensor>
 		</gazebo>
 

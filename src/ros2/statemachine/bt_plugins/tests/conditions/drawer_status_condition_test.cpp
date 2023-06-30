@@ -5,7 +5,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "bt_plugins/condition/drawer_status_condition.hpp"
 
-
 namespace test2
 {
     SCENARIO("A minimal tree gets created with just the DrawerStatusCondition plugin.")
@@ -14,33 +13,33 @@ namespace test2
         {
             std::string nodename = "DrawerStatusCondition";
             rclcpp::init(0, nullptr);
-            
+
             const std::vector<std::string> plugins = {
                 "drawer_status_condition_bt_node",
             };
             static rclcpp::Node::SharedPtr node_drawer_test = std::make_shared<rclcpp::Node>("test_condition");
-            static BT::NodeConfig* config;
+            static BT::NodeConfig *config;
             config = new BT::NodeConfig();
             auto blackboard = BT::Blackboard::create();
             blackboard->set<std::chrono::milliseconds>(
                 "bt_loop_duration",
                 std::chrono::milliseconds(10));
             std::string led_tree_xml =
-                    R"(
+                R"(
                     <root BTCPP_format="4" >
                         <BehaviorTree ID="MainTree">
                             <DrawerStatusCondition topic="/drawer_is_open"
                             target_value="false"/>
                         </BehaviorTree>
                     </root>)";
-            
+
             WHEN("The bt engine including the drawer status condition plugin is created")
             {
                 blackboard->set<rclcpp::Node::SharedPtr>(
                     "node",
                     node_drawer_test);
                 auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
-                auto bt = bt_engine->createTreeFromText(led_tree_xml, blackboard);
+                auto bt = bt_engine->createTreeFromText(led_tree_xml, blackboard, "MainTree");
                 THEN("A Subtree should exist")
                 {
                     REQUIRE(bt.subtrees[0]);
