@@ -38,19 +38,19 @@ def generate_launch_description():
     )
 
     fleet_name = "ROBAST_1"
-    # rb_theron_fleet = launch.actions.IncludeLaunchDescription(
-    #     AnyLaunchDescriptionSource(
-    #         [FindPackageShare("rmf_robast"), "/rb_theron_adapter.launch.py"]
-    #     ),
-    #     launch_arguments={
-    #         "fleet_name": fleet_name,
-    #         "use_sim_time": launch.substitutions.LaunchConfiguration("use_sim_time"),
-    #         "nav_graph_file": [
-    #             FindPackageShare("rmf_robast"),
-    #             "/nav_graphs/0.yaml",
-    #         ],
-    #     }.items(),
-    # )
+    rb_theron_fleet = launch.actions.IncludeLaunchDescription(
+        AnyLaunchDescriptionSource(
+            [FindPackageShare("fleet_adapter_ff"), "/rb_theron_adapter.launch.py"]
+        ),
+        launch_arguments={
+            "fleet_name": fleet_name,
+            "use_sim_time": launch.substitutions.LaunchConfiguration("use_sim_time"),
+            "nav_graph": [
+                FindPackageShare("rmf_robast"),
+                "/nav_graphs/0.yaml",
+            ],
+        }.items(),
+    )
 
     free_fleet_rb_theron = launch.actions.IncludeLaunchDescription(
          AnyLaunchDescriptionSource(
@@ -65,10 +65,12 @@ def generate_launch_description():
         launch_arguments={
             "fleet_name": fleet_name,
             "use_sim_time": launch.substitutions.LaunchConfiguration("use_sim_time"),
-            "nav_graph_file": [
+            "nav_graph": [
                 FindPackageShare("rmf_robast"),
-                "/nav_graphs/0.yaml",
-            ],
+                "/maps/6og/nav_graphs/0.yaml"],
+            "config_file": [
+                FindPackageShare("rmf_robast"),
+                "/config/config.yaml"],
         }.items(),
     )
 

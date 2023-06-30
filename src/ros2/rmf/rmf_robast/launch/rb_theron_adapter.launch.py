@@ -12,8 +12,8 @@ def generate_launch_description():
         'use_sim_time',
         default_value=['True'],
         description='Use the /clock topic for time to sync with simulation')
-    nav_graph_file = launch.actions.DeclareLaunchArgument(
-        'nav_graph_file',
+    nav_graph = launch.actions.DeclareLaunchArgument(
+        'nav_graph',
         description='Nav graph required by fleet adapter')
 
     fleet_adapter = launch.actions.IncludeLaunchDescription(
@@ -23,8 +23,8 @@ def generate_launch_description():
             'fleet_name':
                 launch.substitutions.LaunchConfiguration('fleet_name'),
             'control_type': 'full_control',
-            'nav_graph_file':
-                launch.substitutions.LaunchConfiguration('nav_graph_file'),
+            'nav_graph':
+                launch.substitutions.LaunchConfiguration('nav_graph'),
             'linear_velocity': '0.5',
             'angular_velocity': '0.6',
             'linear_acceleration': '0.75',
@@ -54,6 +54,6 @@ def generate_launch_description():
     return launch.LaunchDescription([
         fleet_name,
         use_sim_time,
-        nav_graph_file,
+        nav_graph,
         fleet_adapter,
         ])

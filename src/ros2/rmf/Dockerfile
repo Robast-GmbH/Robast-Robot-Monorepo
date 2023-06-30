@@ -103,9 +103,10 @@ RUN apt-get update && apt-get install -y\
     ros-${ROS_DISTRO}-rmf-visualization-fleet-states\
     ros-${ROS_DISTRO}-rmf-visualization-floorplans\
     ros-${ROS_DISTRO}-rmf-visualization-rviz2-plugins\
-    ros-${ROS_DISTRO}-rmf-websocket
+    ros-${ROS_DISTRO}-rmf-websocket\
+    ros-${ROS_DISTRO}-navigation2
 
-RUN python3 -m pip install -U  cyclonedds
+RUN python3 -m pip install -U  cyclonedds nudged
 
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 ENV IGN_FILE_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}
