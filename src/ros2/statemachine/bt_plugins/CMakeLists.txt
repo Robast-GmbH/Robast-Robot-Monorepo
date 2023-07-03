@@ -13,6 +13,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
+find_package(error_utils REQUIRED)
 
 set(dependencies
   rclcpp
@@ -20,6 +21,7 @@ set(dependencies
   std_msgs
   communication_interfaces
   behaviortree_cpp
+  error_utils
 )
 include_directories(
   include
