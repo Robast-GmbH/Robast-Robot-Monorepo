@@ -45,6 +45,10 @@ namespace drawer_controller
 
     void unlock(uint8_t id);
 
+    void set_drawer_auto_close_timeout_triggered(bool state);
+
+    bool is_drawer_auto_close_timeout_triggered();
+
    private:
     uint8_t _power_open_pin_id;
     uint8_t _power_close_pin_id;
@@ -57,6 +61,8 @@ namespace drawer_controller
     bool _open_lock_previous_step = false;   // flag to store state of the lock of the previous step
 
     bool _drawer_opening_is_in_progress = false;
+
+    bool _is_drawer_auto_close_timeout_triggered = false;
 
     unsigned long _timestamp_last_lock_change = 0;
     unsigned long _timestamp_last_lock_opening = 0;
