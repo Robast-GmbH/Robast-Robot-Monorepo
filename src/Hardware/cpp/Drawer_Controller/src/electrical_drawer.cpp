@@ -84,8 +84,7 @@ namespace drawer_controller
       return;
     }
 
-    _electrical_lock->handle_lock_control();
-    _electrical_lock->handle_reading_sensors();
+    handle_electrical_lock_control();
 
     _motor->handle_motor_control();
 
@@ -99,6 +98,18 @@ namespace drawer_controller
     handle_drawer_just_opened();
 
     check_if_motion_is_finished();
+  }
+
+  void ElectricalDrawer::handle_electrical_lock_control()
+  {
+    _electrical_lock->handle_lock_control();
+
+    if (_electrical_lock->is_drawer_auto_close_timeout_triggered())
+    {
+      // TODO@Jacob: Create error message
+    }
+
+    _electrical_lock->handle_reading_sensors();
   }
 
   int32_t ElectricalDrawer::get_integrated_drawer_position()

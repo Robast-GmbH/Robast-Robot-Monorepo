@@ -24,7 +24,6 @@ namespace drawer_controller
 
   void Drawer::can_in(robast_can_msgs::CanMessage msg)
   {
-    debug_prints_drawer_lock(msg);
     if (msg.get_id() == CAN_ID_DRAWER_UNLOCK)
     {
       _electrical_lock->unlock(_id);
@@ -40,11 +39,22 @@ namespace drawer_controller
 
   void Drawer::update_state()
   {
-    _electrical_lock->handle_lock_control();
-    _electrical_lock->handle_reading_sensors();
-    _feedback_msg.reset();
+    _feedback_msg.reset();   // TODO@Jacob: Remove?
+    handle_electrical_lock_control();
     handle_drawer_just_opened();
     handle_drawer_just_closed();
+  }
+
+  void Drawer::handle_electrical_lock_control()
+  {
+    _electrical_lock->handle_lock_control();
+
+    if (_electrical_lock->is_drawer_auto_close_timeout_triggered())
+    {
+      // TODO@Jacob: Create error message
+    }
+
+    _electrical_lock->handle_reading_sensors();
   }
 
   void Drawer::create_drawer_feedback_can_msg()
@@ -91,7 +101,7 @@ namespace drawer_controller
 
   void Drawer::debug_prints_drawer_lock(robast_can_msgs::CanMessage &can_message)
   {
-    Serial.print("Standard ID: ");
+    Serial.print("Received open lock CAN message with standard ID: ");
     Serial.print(can_message.get_id(), HEX);
     Serial.print(" rx_dlc: ");
     Serial.print(can_message.get_dlc(), DEC);

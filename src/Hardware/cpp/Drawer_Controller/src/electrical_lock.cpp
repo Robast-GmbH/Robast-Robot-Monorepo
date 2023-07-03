@@ -23,6 +23,10 @@ namespace drawer_controller
 
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
+
+    set_open_lock_current_step(false);
+    set_drawer_opening_is_in_progress(false);
+    set_drawer_auto_close_timeout_triggered(false);
   }
 
   void ElectricalLock::handle_lock_control()
@@ -53,9 +57,20 @@ namespace drawer_controller
       // Close the lock automatically after some seconds when drawer wasn't opened for safety reasons
       set_open_lock_current_step(false);
       set_drawer_opening_is_in_progress(false);
-      Serial.print(" time_since_lock_was_opened: ");
+      set_drawer_auto_close_timeout_triggered(true);
+      Serial.print("Lock was automatically closed due to timeout! time_since_lock_was_opened: ");
       Serial.println(time_since_lock_was_opened, DEC);
     }
+  }
+
+  void ElectricalLock::set_drawer_auto_close_timeout_triggered(bool state)
+  {
+    _is_drawer_auto_close_timeout_triggered = state;
+  }
+
+  bool ElectricalLock::is_drawer_auto_close_timeout_triggered()
+  {
+    return _is_drawer_auto_close_timeout_triggered;
   }
 
   void ElectricalLock::set_open_lock_current_step(bool open_lock_current_step)

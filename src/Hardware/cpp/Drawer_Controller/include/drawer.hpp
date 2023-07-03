@@ -22,7 +22,9 @@ namespace drawer_controller
     void init_electrical_lock(uint8_t pwr_open_lock_pin_id,
                               uint8_t pwr_close_lock_pin_id,
                               uint8_t sensor_lock_pin_id,
-                              uint8_t sensor_drawer_closed_pin_id);
+                              uint8_t sensor_drawer_closed_pin_id) override;
+
+    void handle_electrical_lock_control() override;
 
     void can_in(robast_can_msgs::CanMessage msg) override;
 

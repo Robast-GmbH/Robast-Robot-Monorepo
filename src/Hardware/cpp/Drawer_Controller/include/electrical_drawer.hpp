@@ -37,19 +37,21 @@ namespace drawer_controller
     void init_electrical_lock(uint8_t pwr_open_lock_pin_id,
                               uint8_t pwr_close_lock_pin_id,
                               uint8_t sensor_lock_pin_id,
-                              uint8_t sensor_drawer_closed_pin_id);
+                              uint8_t sensor_drawer_closed_pin_id) override;
 
-    void stop_motor();
-
-    void start_motor();
-
-    void init_motor();
+    void handle_electrical_lock_control() override;
 
     void can_in(robast_can_msgs::CanMessage msg) override;
 
     std::optional<robast_can_msgs::CanMessage> can_out() override;
 
     void update_state() override;
+
+    void stop_motor();
+
+    void start_motor();
+
+    void init_motor();
 
    private:
     uint32_t _module_id;

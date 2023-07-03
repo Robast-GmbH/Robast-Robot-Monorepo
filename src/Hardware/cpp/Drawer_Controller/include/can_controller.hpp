@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_CAN_HPP
-#define DRAWER_CONTROLLER_CAN_HPP
+#ifndef DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
+#define DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
 
 #include <ACAN2515.h>
 #include <Arduino.h>
@@ -14,14 +14,14 @@
 
 namespace drawer_controller
 {
-  class Can
+  class CanController
   {
    public:
-    Can(uint32_t module_id,
-        std::shared_ptr<robast_can_msgs::CanDb> can_db,
-        std::shared_ptr<IGpioWrapper> gpio_wrapper,
-        uint8_t oe_txb0104_pin_id,
-        bool gpio_output_state);
+    CanController(uint32_t module_id,
+                  std::shared_ptr<robast_can_msgs::CanDb> can_db,
+                  std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                  uint8_t oe_txb0104_pin_id,
+                  bool gpio_output_state);
 
     void initialize_can_controller(void);
 
@@ -49,4 +49,4 @@ namespace drawer_controller
     void initialize_voltage_translator(void);
   };
 }   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_CAN_HPP
+#endif   // DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
