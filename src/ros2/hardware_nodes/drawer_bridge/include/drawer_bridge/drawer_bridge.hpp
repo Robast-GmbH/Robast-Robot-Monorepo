@@ -83,26 +83,24 @@ namespace drawer_bridge
 
    private:
     /* VARIABLES */
-    rclcpp::Service<ShelfSetupInfo>::SharedPtr shelf_setup_info_service_;
-    rclcpp::Subscription<DrawerAddress>::SharedPtr open_drawer_subscription_;
-    rclcpp::Subscription<DrawerTask>::SharedPtr drawer_task_subscription_;
-    rclcpp::Subscription<DrawerLeds>::SharedPtr drawer_leds_subscription_;
-    rclcpp::Subscription<CanMessage>::SharedPtr can_messages_subscription_;
-    rclcpp::Publisher<DrawerStatus>::SharedPtr drawer_status_publisher_;
-    rclcpp::Publisher<CanMessage>::SharedPtr can_messages_publisher_;
-    rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr electrical_drawer_status_publisher_;
+    rclcpp::Service<ShelfSetupInfo>::SharedPtr _shelf_setup_info_service;
+    rclcpp::Subscription<DrawerAddress>::SharedPtr _open_drawer_subscription;
+    rclcpp::Subscription<DrawerTask>::SharedPtr _drawer_task_subscription;
+    rclcpp::Subscription<DrawerLeds>::SharedPtr _drawer_leds_subscription;
+    rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
+    rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
+    rclcpp::Publisher<CanMessage>::SharedPtr _can_messages_publisher;
+    rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr _electrical_drawer_status_publisher;
 
-    robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
+    robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();
 
     std::condition_variable cv_;
-    std::mutex drawer_status_mutex_;
+    std::mutex _drawer_status_mutex;
 
-    CanEncoderDecoder can_encoder_decoder_ = CanEncoderDecoder();
-    CanMessageCreator can_message_creator_ = CanMessageCreator();
+    CanEncoderDecoder _can_encoder_decoder = CanEncoderDecoder();
+    CanMessageCreator _can_message_creator = CanMessageCreator();
 
-    QoSConfig qos_config = QoSConfig();
-
-    std::map<uint32_t, bool> drawer_to_be_refilled_by_drawer_controller_id_;
+    QoSConfig _qos_config = QoSConfig();
 
     /* FUNCTIONS */
     void open_drawer_topic_callback(const DrawerAddress& msg);

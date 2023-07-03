@@ -45,8 +45,6 @@ namespace drawer_controller
 
     bool _drawer_open_feedback_can_msg_sent = false;
 
-    void handle_drawer_feedback_can_msg();
-
     void handle_drawer_just_opened() override;
 
     void handle_drawer_just_closed() override;

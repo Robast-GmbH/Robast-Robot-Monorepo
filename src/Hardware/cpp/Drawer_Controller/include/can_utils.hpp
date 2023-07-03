@@ -18,19 +18,23 @@ namespace drawer_controller
 
     std::optional<robast_can_msgs::CanMessage> get_element_from_feedback_msg_queue();
 
-    robast_can_msgs::CanMessage create_drawer_feedback_msg(const uint32_t module_id,
+    robast_can_msgs::CanMessage handle_error_feedback_msg(const uint32_t module_id,
+                                                          const uint8_t id,
+                                                          uint8_t error_code);
+
+    robast_can_msgs::CanMessage handle_drawer_feedback_msg(const uint32_t module_id,
                                                            const uint8_t id,
                                                            const bool is_endstop_switch_pushed,
                                                            const bool is_lock_switch_pushed);
 
-    robast_can_msgs::CanMessage create_electrical_drawer_feedback_msg(const uint32_t module_id,
+    robast_can_msgs::CanMessage handle_electrical_drawer_feedback_msg(const uint32_t module_id,
                                                                       const uint8_t id,
                                                                       const bool is_endstop_switch_pushed,
                                                                       const bool is_lock_switch_pushed,
                                                                       const bool is_drawer_stall_guard_triggered,
                                                                       uint8_t normed_current_position);
 
-   private:
+      private:
     // Please mind: Normaly you would not built a queue yourself and use xQueue from FreeRTOS or std::queue
     // But: std:queue did not work and just permanently threw expections that made the ESP32 reboot
     // To use xQueue you need to use xQueueCreate to create a queue and you need to specify the size, in bytes, required
@@ -43,6 +47,22 @@ namespace drawer_controller
     uint8_t _head_of_feedback_msg_queue;
 
     std::shared_ptr<robast_can_msgs::CanDb> _can_db;
+
+    robast_can_msgs::CanMessage create_error_feedback_msg(const uint32_t module_id,
+                                                          const uint8_t id,
+                                                          uint8_t error_code);
+
+    robast_can_msgs::CanMessage create_drawer_feedback_msg(const uint32_t module_id,
+                                                           const uint8_t id,
+                                                           const bool is_endstop_switch_pushed,
+                                                           const bool is_lock_switch_pushed);
+
+    robast_can_msgs::CanMessage create_electrical_drawer_feedback_msg(const uint32_t module_id,
+                                                                      const uint8_t id,
+                                                                      const bool is_endstop_switch_pushed,
+                                                                      const bool is_lock_switch_pushed,
+                                                                      const bool is_drawer_stall_guard_triggered,
+                                                                      uint8_t normed_current_position);
   };
 }   // namespace drawer_controller
 #endif   // DRAWER_CONTROLLER_CAN_UTILS_HPP

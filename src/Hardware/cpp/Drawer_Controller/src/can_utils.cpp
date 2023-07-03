@@ -34,6 +34,58 @@ namespace drawer_controller
     }
   }
 
+  robast_can_msgs::CanMessage CanUtils::handle_error_feedback_msg(const uint32_t module_id,
+                                                                  const uint8_t id,
+                                                                  uint8_t error_code)
+  {
+    robast_can_msgs::CanMessage drawer_closed_feedback_msg = create_error_feedback_msg(module_id, id, error_code);
+    add_element_to_feedback_msg_queue(drawer_closed_feedback_msg);
+  }
+
+  robast_can_msgs::CanMessage CanUtils::handle_drawer_feedback_msg(const uint32_t module_id,
+                                                                   const uint8_t id,
+                                                                   const bool is_endstop_switch_pushed,
+                                                                   const bool is_lock_switch_pushed)
+  {
+    robast_can_msgs::CanMessage drawer_closed_feedback_msg =
+      create_drawer_feedback_msg(module_id, id, is_endstop_switch_pushed, is_lock_switch_pushed);
+    add_element_to_feedback_msg_queue(drawer_closed_feedback_msg);
+  }
+
+  robast_can_msgs::CanMessage CanUtils::handle_electrical_drawer_feedback_msg(
+    const uint32_t module_id,
+    const uint8_t id,
+    const bool is_endstop_switch_pushed,
+    const bool is_lock_switch_pushed,
+    const bool is_drawer_stall_guard_triggered,
+    uint8_t normed_current_position)
+  {
+    robast_can_msgs::CanMessage electrical_drawer_feedback_msg =
+      create_electrical_drawer_feedback_msg(module_id,
+                                            id,
+                                            is_endstop_switch_pushed,
+                                            is_lock_switch_pushed,
+                                            is_drawer_stall_guard_triggered,
+                                            normed_current_position);
+    add_element_to_feedback_msg_queue(electrical_drawer_feedback_msg);
+  }
+
+  robast_can_msgs::CanMessage CanUtils::create_error_feedback_msg(const uint32_t module_id,
+                                                                  const uint8_t id,
+                                                                  uint8_t error_code)
+  {
+    robast_can_msgs::CanMessage can_msg_error_feedback = _can_db->can_messages.at(CAN_MSG_ERROR_FEEDBACK);
+    std::vector can_signals_error_feedback = can_msg_error_feedback.get_can_signals();
+
+    can_signals_error_feedback.at(CAN_SIGNAL_MODULE_ID).set_data(module_id);
+    can_signals_error_feedback.at(CAN_SIGNAL_DRAWER_ID).set_data(id);
+    can_signals_error_feedback.at(CAN_SIGNAL_ERROR_CODE).set_data(error_code);
+
+    can_msg_error_feedback.set_can_signals(can_signals_error_feedback);
+
+    return can_msg_error_feedback;
+  }
+
   robast_can_msgs::CanMessage CanUtils::create_drawer_feedback_msg(const uint32_t module_id,
                                                                    const uint8_t id,
                                                                    const bool is_endstop_switch_pushed,

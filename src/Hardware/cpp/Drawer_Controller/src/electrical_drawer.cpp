@@ -104,7 +104,7 @@ namespace drawer_controller
 
     if (_electrical_lock->is_drawer_auto_close_timeout_triggered())
     {
-      // TODO@Jacob: Create error message
+      _can_utils->handle_error_feedback_msg(_module_id, _id, CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
     }
 
     _electrical_lock->handle_reading_sensors();
@@ -165,7 +165,12 @@ namespace drawer_controller
 
     if (_target_position_uint8 == _current_position_int32)
     {
-      handle_electrical_drawer_feeback_msg();
+      _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
+                                                        _id,
+                                                        _electrical_lock->is_endstop_switch_pushed(),
+                                                        _electrical_lock->is_lock_switch_pushed(),
+                                                        _motor->get_is_stalled(),
+                                                        get_normed_current_position());
       return;
     }
 
@@ -224,7 +229,12 @@ namespace drawer_controller
                     normed_current_position_uint8,
                     _target_position_uint8);
       _motor->set_target_speed(0, 0);   // TODO@Jacob: Do not set the target_speed in dt = 0
-      handle_electrical_drawer_feeback_msg();
+      _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
+                                                        _id,
+                                                        _electrical_lock->is_endstop_switch_pushed(),
+                                                        _electrical_lock->is_lock_switch_pushed(),
+                                                        _motor->get_is_stalled(),
+                                                        get_normed_current_position());
       return;
     }
 
@@ -315,29 +325,17 @@ namespace drawer_controller
       _triggered_closing_lock_after_opening = false;
       _homing_initialized = false;
 
-      handle_electrical_drawer_feeback_msg();
-      handle_drawer_closed_feedback_msg();
-    }
-  }
-
-  void ElectricalDrawer::handle_electrical_drawer_feeback_msg()
-  {
-    robast_can_msgs::CanMessage electrical_drawer_feedback_msg =
-      _can_utils->create_electrical_drawer_feedback_msg(_module_id,
+      _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
                                                         _id,
                                                         _electrical_lock->is_endstop_switch_pushed(),
                                                         _electrical_lock->is_lock_switch_pushed(),
                                                         _motor->get_is_stalled(),
                                                         get_normed_current_position());
-    _can_utils->add_element_to_feedback_msg_queue(electrical_drawer_feedback_msg);
+      _can_utils->handle_drawer_feedback_msg(
+        _module_id, _id, _electrical_lock->is_endstop_switch_pushed(), _electrical_lock->is_lock_switch_pushed());
+    }
   }
 
-  void ElectricalDrawer::handle_drawer_closed_feedback_msg()
-  {
-    robast_can_msgs::CanMessage drawer_closed_feedback_msg = _can_utils->create_drawer_feedback_msg(
-      _module_id, _id, _electrical_lock->is_endstop_switch_pushed(), _electrical_lock->is_lock_switch_pushed());
-    _can_utils->add_element_to_feedback_msg_queue(drawer_closed_feedback_msg);
-  }
   void ElectricalDrawer::debug_prints_moving_electrical_drawer()
   {
     int normed_target_position = (_target_position_uint8 / 255.0) * DRAWER_MAX_EXTENT;
