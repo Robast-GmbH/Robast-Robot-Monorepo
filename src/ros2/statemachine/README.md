@@ -18,3 +18,10 @@ Overview for the included libraries, the corresponding license and a link to the
 | Library          | Licence     | Description                           | Website                       |
 | ---------------- | ----------- | ------------------------------------- | ----------------------------- |
 | BehaviorTree CPP | MIT license | Behaviortree base nodes and factories | https://www.behaviortree.dev/ |
+
+
+Error handle: 30
+    bt_base_nodes: 31
+    bt_conversions: 32
+    bt_plugins: 33
+    drawer_sm: 34
