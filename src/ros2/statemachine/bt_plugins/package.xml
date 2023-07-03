@@ -17,6 +17,7 @@
   <depend>std_msgs</depend>
   <depend>behaviortree_cpp</depend>
   <depend>communication_interfaces</depend>
+  <depend>error_utils</depend>
 
 
   <export>
