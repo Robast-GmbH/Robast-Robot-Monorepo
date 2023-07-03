@@ -91,7 +91,7 @@ class SimpleFleetmanagement(Node):
             "set_waypoint_goal": self.set_waypoint_goal,
             "set_pose_goal": self.set_pose_goal
         }
-        self._webInterface = web_interface.WebInterface("http://localhost:8000", functions_for_web)
+        self._webInterface = web_interface.WebInterface("http://localhost:3001", functions_for_web)
 
     def start_web_interface(self):
         self._backend_polling_UI_timer = self.create_timer(
