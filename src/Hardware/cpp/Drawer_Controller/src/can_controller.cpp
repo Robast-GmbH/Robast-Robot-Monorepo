@@ -1,21 +1,21 @@
-#include "can.hpp"
+#include "can_controller.hpp"
 
 namespace drawer_controller
 {
   ACAN2515 acan_2515(SPI_CS, SPI, MCP2515_INT);
 
-  Can::Can(uint32_t module_id,
-           std::shared_ptr<robast_can_msgs::CanDb> can_db,
-           std::shared_ptr<IGpioWrapper> gpio_wrapper,
-           uint8_t oe_txb0104_pin_id,
-           bool gpio_output_state)
+  CanController::CanController(uint32_t module_id,
+                               std::shared_ptr<robast_can_msgs::CanDb> can_db,
+                               std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                               uint8_t oe_txb0104_pin_id,
+                               bool gpio_output_state)
       : _module_id{module_id},
         _can_db{can_db},
         _gpio_wrapper{gpio_wrapper},
         _oe_txb0104_pin_id{oe_txb0104_pin_id},
         _gpio_output_state{gpio_output_state} {};
 
-  void Can::initialize_can_controller(void)
+  void CanController::initialize_can_controller(void)
   {
     this->initialize_voltage_translator();
 
@@ -42,7 +42,7 @@ namespace drawer_controller
     pinMode(MCP2515_INT, INPUT);   // Configuring pin for /INT input
   }
 
-  std::optional<robast_can_msgs::CanMessage> Can::handle_receiving_can_msg()
+  std::optional<robast_can_msgs::CanMessage> CanController::handle_receiving_can_msg()
   {
     std::optional<robast_can_msgs::CanMessage> can_message;
     if (acan_2515.available())
@@ -56,7 +56,7 @@ namespace drawer_controller
       this->_rx_msg_dlc = frame.len;
 
       can_message = robast_can_msgs::decode_can_message(
-          this->_rx_msg_id, frame.data, this->_rx_msg_dlc, this->_can_db->can_messages);
+        this->_rx_msg_id, frame.data, this->_rx_msg_dlc, this->_can_db->can_messages);
 
       if (can_message.has_value() &&
           can_message.value().get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data() == _module_id)
@@ -80,12 +80,12 @@ namespace drawer_controller
     return can_message;
   }
 
-  void Can::send_can_message(robast_can_msgs::CanMessage can_msg)
+  void CanController::send_can_message(robast_can_msgs::CanMessage can_msg)
   {
     try
     {
       robast_can_msgs::CanFrame can_frame =
-          robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
+        robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
 
       CANMessage mcp2515_frame;
       mcp2515_frame.id = can_frame.get_id();
@@ -112,12 +112,12 @@ namespace drawer_controller
     }
   }
 
-  bool Can::is_message_available()
+  bool CanController::is_message_available()
   {
     return acan_2515.available();
   }
 
-  void Can::initialize_voltage_translator(void)
+  void CanController::initialize_voltage_translator(void)
   {
     _gpio_wrapper->set_pin_mode(_oe_txb0104_pin_id, _gpio_output_state);
     _gpio_wrapper->digital_write(_oe_txb0104_pin_id, HIGH);

@@ -14,14 +14,14 @@
 
 namespace drawer_controller
 {
-  class Can
+  class CanController
   {
    public:
-    Can(uint32_t module_id,
-        std::shared_ptr<robast_can_msgs::CanDb> can_db,
-        std::shared_ptr<IGpioWrapper> gpio_wrapper,
-        uint8_t oe_txb0104_pin_id,
-        bool gpio_output_state);
+    CanController(uint32_t module_id,
+                  std::shared_ptr<robast_can_msgs::CanDb> can_db,
+                  std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                  uint8_t oe_txb0104_pin_id,
+                  bool gpio_output_state);
 
     void initialize_can_controller(void);
 
