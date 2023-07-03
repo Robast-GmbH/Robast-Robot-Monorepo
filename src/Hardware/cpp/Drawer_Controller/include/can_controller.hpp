@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_CAN_HPP
-#define DRAWER_CONTROLLER_CAN_HPP
+#ifndef DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
+#define DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
 
 #include <ACAN2515.h>
 #include <Arduino.h>
@@ -49,4 +49,4 @@ namespace drawer_controller
     void initialize_voltage_translator(void);
   };
 }   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_CAN_HPP
+#endif   // DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
