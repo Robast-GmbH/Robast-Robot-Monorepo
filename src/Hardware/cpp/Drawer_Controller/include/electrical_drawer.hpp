@@ -6,6 +6,7 @@
 #include <memory>
 
 #include "can/can_db.hpp"
+#include "can_utils.hpp"
 #include "electrical_lock.hpp"
 #include "i_drawer.hpp"
 #include "i_gpio_wrapper.hpp"
@@ -56,7 +57,6 @@ namespace drawer_controller
    private:
     uint32_t _module_id;
     uint8_t _id;
-    std::shared_ptr<robast_can_msgs::CanDb> _can_db;
 
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
 
@@ -64,6 +64,8 @@ namespace drawer_controller
 
     bool _use_encoder;
     std::unique_ptr<ElectricalLock> _electrical_lock;
+
+    std::unique_ptr<CanUtils> _can_utils;
 
     uint32_t _last_timestemp;
 
@@ -75,17 +77,6 @@ namespace drawer_controller
     uint8_t _target_position_uint8 = 0;
 
     bool _stall_guard_enabled = false;
-
-    // Please mind: Normaly you would not built a queue yourself and use xQueue from FreeRTOS or std::queue
-    // But: std:queue did not work and just permanently threw expections that made the ESP32 reboot
-    // To use xQueue you need to use xQueueCreate to create a queue and you need to specify the size, in bytes, required
-    // to hold each item in the queue, which is not possible for the CanMessage class because it contains a vector of
-    // CanSignals which has a different length depending on the CanMessage.
-    // Therefor we built a queue with a vector, which should be fine in this case as the queue usually only contains one
-    // or two feedback messages and is rarely used. Furthermore we try to keep it as efficient as possible and try to
-    // to follow what is explained here: https://youtu.be/fHNmRkzxHWs?t=2541
-    std::vector<robast_can_msgs::CanMessage> _feedback_msg_queue;
-    uint8_t _head_of_feedback_msg_queue;
 
     std::unique_ptr<stepper_motor::Motor> _motor;
 
@@ -113,19 +104,15 @@ namespace drawer_controller
 
     void handle_electrical_drawer_task_msg(robast_can_msgs::CanMessage can_message);
 
-    void create_electrical_drawer_feedback_msg();
-
     void update_position();
 
     void check_if_motion_is_finished();
 
     uint8_t get_normed_current_position();
 
-    void create_drawer_closed_feedback_can_msg();
+    void handle_electrical_drawer_feeback_msg();
 
-    void add_element_to_feedback_msg_queue(robast_can_msgs::CanMessage feedback_msg);
-
-    std::optional<robast_can_msgs::CanMessage> get_element_from_feedback_msg_queue();
+    void handle_drawer_closed_feedback_msg();
 
     void debug_prints_moving_electrical_drawer();
 

@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "can/can_db.hpp"
+#include "can_utils.hpp"
 #include "electrical_lock.hpp"
 #include "i_drawer.hpp"
 #include "i_gpio_wrapper.hpp"
@@ -38,12 +39,13 @@ namespace drawer_controller
     std::shared_ptr<robast_can_msgs::CanDb> _can_db;
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
     std::unique_ptr<ElectricalLock> _electrical_lock;
+    std::unique_ptr<CanUtils> _can_utils;
 
     std::optional<robast_can_msgs::CanMessage> _feedback_msg;
 
     bool _drawer_open_feedback_can_msg_sent = false;
 
-    void create_drawer_feedback_can_msg();
+    void handle_drawer_feedback_can_msg();
 
     void handle_drawer_just_opened() override;
 
