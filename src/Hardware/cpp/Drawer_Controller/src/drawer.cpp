@@ -52,7 +52,7 @@ namespace drawer_controller
 
     if (_electrical_lock->is_drawer_auto_close_timeout_triggered())
     {
-      // TODO@Jacob: Create error message
+      _can_utils->handle_error_feedback_msg(_module_id, _id, CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
     }
 
     _electrical_lock->handle_reading_sensors();
@@ -66,7 +66,8 @@ namespace drawer_controller
       _electrical_lock->set_open_lock_current_step(
         false);   // this makes sure the lock automatically closes as soon as the drawer is opened
       _drawer_open_feedback_can_msg_sent = true;   // makes sure the feedback msg is only sent once
-      handle_drawer_feedback_can_msg();
+      _can_utils->handle_drawer_feedback_msg(
+        _module_id, _id, _electrical_lock->is_endstop_switch_pushed(), _electrical_lock->is_lock_switch_pushed());
     }
   }
 
@@ -77,15 +78,9 @@ namespace drawer_controller
     {
       _electrical_lock->set_drawer_opening_is_in_progress(false);
       _drawer_open_feedback_can_msg_sent = false;   // reset this flag for the next opening of the drawer
-      handle_drawer_feedback_can_msg();
+      _can_utils->handle_drawer_feedback_msg(
+        _module_id, _id, _electrical_lock->is_endstop_switch_pushed(), _electrical_lock->is_lock_switch_pushed());
     }
-  }
-
-  void Drawer::handle_drawer_feedback_can_msg()
-  {
-    robast_can_msgs::CanMessage drawer_closed_feedback_msg = _can_utils->create_drawer_feedback_msg(
-      _module_id, _id, _electrical_lock->is_endstop_switch_pushed(), _electrical_lock->is_lock_switch_pushed());
-    _can_utils->add_element_to_feedback_msg_queue(drawer_closed_feedback_msg);
   }
 
   void Drawer::debug_prints_drawer_lock(robast_can_msgs::CanMessage &can_message)

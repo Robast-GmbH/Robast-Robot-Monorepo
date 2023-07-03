@@ -110,10 +110,6 @@ namespace drawer_controller
 
     uint8_t get_normed_current_position();
 
-    void handle_electrical_drawer_feeback_msg();
-
-    void handle_drawer_closed_feedback_msg();
-
     void debug_prints_moving_electrical_drawer();
 
     void debug_prints_electric_drawer_task(robast_can_msgs::CanMessage can_message);
