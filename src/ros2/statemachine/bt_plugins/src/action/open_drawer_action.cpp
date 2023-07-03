@@ -1,30 +1,28 @@
 #include "bt_plugins/action/open_drawer_action.hpp"
 
-
-
 namespace drawer_statemachine
 {
+
+    // TODO @Tobi: checkout thread safety in the future again. outcommented for now.
 
     using std::placeholders::_1;
 
     OpenDrawer::OpenDrawer(
-        const std::string& name,
-        const BT::NodeConfig& config)
+        const std::string &name,
+        const BT::NodeConfig &config)
         : BT::StatefulActionNode(name, config)
     {
-        _blackboard = config.blackboard;
-
+        blackboard_ = config.blackboard;
 
         getInput("drawer_open_topic", topic_name_);
-        // std::scoped_lock l(_blackboard->entryMutex());
-        node_ = _blackboard->get<rclcpp::Node::SharedPtr>("node");
-        // drawer_address_ = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
+        // std::scoped_lock l(blackboard_->entryMutex());
+        _node = blackboard_->get<rclcpp::Node::SharedPtr>("node");
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
 
         rclcpp::SubscriptionOptions sub_option;
-        // sub_option.callback_group = callback_group_;
-        open_publisher_ = node_->create_publisher<communication_interfaces::msg::DrawerAddress>(topic_name_, qos);
+        // sub_option.callback_group = _callback_group;
+        open_publisher_ = _node->create_publisher<communication_interfaces::msg::DrawerAddress>(topic_name_, qos);
     }
 
     BT::NodeStatus OpenDrawer::onStart()
@@ -34,8 +32,8 @@ namespace drawer_statemachine
 
     BT::NodeStatus OpenDrawer::onRunning()
     {
-        // std::scoped_lock l(_blackboard->entryMutex());
-        drawer_address_ = _blackboard->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
+        // std::scoped_lock l(blackboard_->entryMutex());
+        drawer_address_ = blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
         setOutput("drawer_address", drawer_address_);
         RCLCPP_DEBUG(rclcpp::get_logger("OpenDrawer"), "open drawer ");
         open_publisher_->publish(drawer_address_);
@@ -49,7 +47,7 @@ namespace drawer_statemachine
         RCLCPP_DEBUG(rclcpp::get_logger("OpenDrawer"), "publisher resetted");
     }
 
-}  // namespace drawer_statemachine
+} // namespace drawer_statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)

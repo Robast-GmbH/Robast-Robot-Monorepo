@@ -2,7 +2,7 @@
      <BehaviorTree ID="MainTree">
         <Sequence name="root_sequence">
             <Action ID="Hans" name="approach_object"/>
-            <Action ID="DrawerOpenReq" drawer_address="{drawer}" drawer_address_topic="topic"/>
+            <Action ID="DrawerChangeStateReq" drawer_address="{drawer}" drawer_address_topic="topic"/>
         </Sequence>
      </BehaviorTree>
      <TreeNodesModel>
@@ -16,7 +16,7 @@
             <input_port default="0" name="mode">uint8. describes the kind of animation thats used</input_port>
             <input_port default="0" name="red">uint8</input_port>
         </Action>
-        <Action ID="DrawerOpenReq">
+        <Action ID="DrawerChangeStateReq">
             <output_port default="{drawer}" name="drawer_address"/>
             <input_port default="topic" name="drawer_address_topic"/>
         </Action>

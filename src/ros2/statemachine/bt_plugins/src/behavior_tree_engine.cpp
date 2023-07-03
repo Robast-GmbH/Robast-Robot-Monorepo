@@ -25,21 +25,21 @@
 
 namespace drawer_statemachine
 {
-    BehaviorTreeEngine::BehaviorTreeEngine(const std::vector<std::string>& plugin_libraries)
+    BehaviorTreeEngine::BehaviorTreeEngine(const std::vector<std::string> &plugin_libraries)
     {
         BT::SharedLibrary loader;
-        for (const auto& p : plugin_libraries)
+        for (const auto &p : plugin_libraries)
         {
             factory_.registerFromPlugin(loader.getOSName(p));
         }
     }
 
     BtStatus
-        BehaviorTreeEngine::run(
-            BT::Tree* tree,
-            std::function<void()> onLoop,
-            std::function<bool()> cancelRequested,
-            std::chrono::milliseconds loopTimeout)
+    BehaviorTreeEngine::run(
+        BT::Tree *tree,
+        std::function<void()> onLoop,
+        std::function<bool()> cancelRequested,
+        std::chrono::milliseconds loopTimeout)
     {
         rclcpp::WallRate loopRate(loopTimeout);
         BT::NodeStatus result = BT::NodeStatus::RUNNING;
@@ -61,7 +61,7 @@ namespace drawer_statemachine
                 loopRate.sleep();
             }
         }
-        catch (const std::exception& ex)
+        catch (const std::exception &ex)
         {
             RCLCPP_ERROR(
                 rclcpp::get_logger("BehaviorTreeEngine"),
@@ -73,24 +73,28 @@ namespace drawer_statemachine
     }
 
     BT::Tree
-        BehaviorTreeEngine::createTreeFromText(
-            const std::string& xml_string,
-            BT::Blackboard::Ptr blackboard)
+    BehaviorTreeEngine::createTreeFromText(
+        const std::string &xml_string,
+        BT::Blackboard::Ptr blackboard,
+        std::string tree_name = "MainTree")
     {
-        return factory_.createTreeFromText(xml_string, blackboard);
+        factory_.registerBehaviorTreeFromText(xml_string);
+        return factory_.createTree(tree_name, blackboard);
     }
 
     BT::Tree
-        BehaviorTreeEngine::createTreeFromFile(
-            const std::string& file_path,
-            BT::Blackboard::Ptr blackboard)
+    BehaviorTreeEngine::createTreeFromFile(
+        const std::string &file_path,
+        BT::Blackboard::Ptr blackboard,
+        std::string tree_name = "MainTree")
     {
-        return factory_.createTreeFromFile(file_path, blackboard);
+        factory_.registerBehaviorTreeFromFile(file_path);
+        return factory_.createTree(tree_name, blackboard);
     }
 
     // In order to re-run a Behavior Tree, we must be able to reset all nodes to the initial state
     void
-        BehaviorTreeEngine::haltAllActions(BT::TreeNode* root_node)
+    BehaviorTreeEngine::haltAllActions(BT::TreeNode *root_node)
     {
         if (!root_node)
         {
@@ -101,7 +105,8 @@ namespace drawer_statemachine
         root_node->haltNode();
 
         // but, just in case...
-        auto visitor = [](BT::TreeNode* node) {
+        auto visitor = [](BT::TreeNode *node)
+        {
             if (node->status() == BT::NodeStatus::RUNNING)
             {
                 node->haltNode();
