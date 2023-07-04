@@ -105,6 +105,7 @@ namespace drawer_controller
     if (_electrical_lock->is_drawer_auto_close_timeout_triggered())
     {
       _can_utils->handle_error_feedback_msg(_module_id, _id, CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
+      _electrical_lock->set_drawer_auto_close_timeout_triggered(false);
     }
 
     _electrical_lock->handle_reading_sensors();
