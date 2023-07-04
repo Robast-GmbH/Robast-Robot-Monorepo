@@ -1,5 +1,5 @@
-#if !defined(DRAWER_CONTROLLER_LOCK_HPP)
-#define DRAWER_CONTROLLER_LOCK_HPP
+#ifndef DRAWER_CONTROLLER_ELECTRICAL_LOCK_HPP
+#define DRAWER_CONTROLLER_ELECTRICAL_LOCK_HPP
 
 #include <Arduino.h>
 
@@ -77,4 +77,4 @@ namespace drawer_controller
     void set_lock_output_low();
   };
 }   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_LOCK_HPP
+#endif   // DRAWER_CONTROLLER_ELECTRICAL_LOCK_HPP

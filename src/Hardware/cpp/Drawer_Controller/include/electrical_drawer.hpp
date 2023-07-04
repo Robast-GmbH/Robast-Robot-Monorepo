@@ -1,5 +1,5 @@
-#ifndef ELECTRICAL_DRAWER_HPP
-#define ELECTRICAL_DRAWER_HPP
+#ifndef DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP
+#define DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP
 
 #include <ESP32Encoder.h>
 
@@ -118,4 +118,4 @@ namespace drawer_controller
   };
 }   // namespace drawer_controller
 
-#endif
+#endif   // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP
