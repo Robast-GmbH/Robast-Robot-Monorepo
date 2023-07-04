@@ -1,6 +1,8 @@
 #ifndef DRAWER_CONTROLLER_CAN_UTILS_HPP
 #define DRAWER_CONTROLLER_CAN_UTILS_HPP
 
+#include <Arduino.h>
+
 #include <memory>
 #include <optional>
 
@@ -18,23 +20,21 @@ namespace drawer_controller
 
     std::optional<robast_can_msgs::CanMessage> get_element_from_feedback_msg_queue();
 
-    robast_can_msgs::CanMessage handle_error_feedback_msg(const uint32_t module_id,
-                                                          const uint8_t id,
-                                                          uint8_t error_code);
+    void handle_error_feedback_msg(const uint32_t module_id, const uint8_t id, uint8_t error_code);
 
-    robast_can_msgs::CanMessage handle_drawer_feedback_msg(const uint32_t module_id,
-                                                           const uint8_t id,
-                                                           const bool is_endstop_switch_pushed,
-                                                           const bool is_lock_switch_pushed);
+    void handle_drawer_feedback_msg(const uint32_t module_id,
+                                    const uint8_t id,
+                                    const bool is_endstop_switch_pushed,
+                                    const bool is_lock_switch_pushed);
 
-    robast_can_msgs::CanMessage handle_electrical_drawer_feedback_msg(const uint32_t module_id,
-                                                                      const uint8_t id,
-                                                                      const bool is_endstop_switch_pushed,
-                                                                      const bool is_lock_switch_pushed,
-                                                                      const bool is_drawer_stall_guard_triggered,
-                                                                      uint8_t normed_current_position);
+    void handle_electrical_drawer_feedback_msg(const uint32_t module_id,
+                                               const uint8_t id,
+                                               const bool is_endstop_switch_pushed,
+                                               const bool is_lock_switch_pushed,
+                                               const bool is_drawer_stall_guard_triggered,
+                                               uint8_t normed_current_position);
 
-      private:
+   private:
     // Please mind: Normaly you would not built a queue yourself and use xQueue from FreeRTOS or std::queue
     // But: std:queue did not work and just permanently threw expections that made the ESP32 reboot
     // To use xQueue you need to use xQueueCreate to create a queue and you need to specify the size, in bytes, required

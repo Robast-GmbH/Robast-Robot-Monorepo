@@ -36,12 +36,9 @@ namespace drawer_controller
    private:
     uint32_t _module_id;
     uint8_t _id;
-    std::shared_ptr<robast_can_msgs::CanDb> _can_db;
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
     std::unique_ptr<ElectricalLock> _electrical_lock;
     std::unique_ptr<CanUtils> _can_utils;
-
-    std::optional<robast_can_msgs::CanMessage> _feedback_msg;
 
     bool _drawer_open_feedback_can_msg_sent = false;
 

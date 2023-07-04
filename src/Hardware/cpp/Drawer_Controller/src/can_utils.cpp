@@ -20,6 +20,11 @@ namespace drawer_controller
     {
       return {};
     }
+    // TODO@Jacob: This can probably be removed once we are 100% sure that the queue is not infinetly growing
+    Serial.printf(
+      "get_element_from_feedback_msg_queue! num_of_msgs_in_queue = %d, _feedback_msg_queue.capacity() = %d\n",
+      num_of_msgs_in_queue,
+      _feedback_msg_queue.capacity());
 
     if (_head_of_feedback_msg_queue == (num_of_msgs_in_queue - 1))
     {
@@ -34,31 +39,28 @@ namespace drawer_controller
     }
   }
 
-  robast_can_msgs::CanMessage CanUtils::handle_error_feedback_msg(const uint32_t module_id,
-                                                                  const uint8_t id,
-                                                                  uint8_t error_code)
+  void CanUtils::handle_error_feedback_msg(const uint32_t module_id, const uint8_t id, uint8_t error_code)
   {
     robast_can_msgs::CanMessage drawer_closed_feedback_msg = create_error_feedback_msg(module_id, id, error_code);
     add_element_to_feedback_msg_queue(drawer_closed_feedback_msg);
   }
 
-  robast_can_msgs::CanMessage CanUtils::handle_drawer_feedback_msg(const uint32_t module_id,
-                                                                   const uint8_t id,
-                                                                   const bool is_endstop_switch_pushed,
-                                                                   const bool is_lock_switch_pushed)
+  void CanUtils::handle_drawer_feedback_msg(const uint32_t module_id,
+                                            const uint8_t id,
+                                            const bool is_endstop_switch_pushed,
+                                            const bool is_lock_switch_pushed)
   {
     robast_can_msgs::CanMessage drawer_closed_feedback_msg =
       create_drawer_feedback_msg(module_id, id, is_endstop_switch_pushed, is_lock_switch_pushed);
     add_element_to_feedback_msg_queue(drawer_closed_feedback_msg);
   }
 
-  robast_can_msgs::CanMessage CanUtils::handle_electrical_drawer_feedback_msg(
-    const uint32_t module_id,
-    const uint8_t id,
-    const bool is_endstop_switch_pushed,
-    const bool is_lock_switch_pushed,
-    const bool is_drawer_stall_guard_triggered,
-    uint8_t normed_current_position)
+  void CanUtils::handle_electrical_drawer_feedback_msg(const uint32_t module_id,
+                                                       const uint8_t id,
+                                                       const bool is_endstop_switch_pushed,
+                                                       const bool is_lock_switch_pushed,
+                                                       const bool is_drawer_stall_guard_triggered,
+                                                       uint8_t normed_current_position)
   {
     robast_can_msgs::CanMessage electrical_drawer_feedback_msg =
       create_electrical_drawer_feedback_msg(module_id,

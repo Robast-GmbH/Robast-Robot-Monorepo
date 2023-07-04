@@ -9,7 +9,6 @@ namespace drawer_controller
                  std::shared_ptr<IGpioWrapper> gpio_wrapper)
       : _module_id{module_id},
         _id{id},
-        _can_db{can_db},
         _gpio_wrapper{gpio_wrapper},
         _electrical_lock{std::make_unique<ElectricalLock>(gpio_wrapper)},
         _can_utils{std::make_unique<CanUtils>(can_db)} {};
@@ -35,12 +34,11 @@ namespace drawer_controller
 
   std::optional<robast_can_msgs::CanMessage> Drawer::can_out()
   {
-    return _feedback_msg;
+    return _can_utils->get_element_from_feedback_msg_queue();
   };
 
   void Drawer::update_state()
   {
-    _feedback_msg.reset();   // TODO@Jacob: Remove?
     handle_electrical_lock_control();
     handle_drawer_just_opened();
     handle_drawer_just_closed();
@@ -53,6 +51,7 @@ namespace drawer_controller
     if (_electrical_lock->is_drawer_auto_close_timeout_triggered())
     {
       _can_utils->handle_error_feedback_msg(_module_id, _id, CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
+      _electrical_lock->set_drawer_auto_close_timeout_triggered(false);
     }
 
     _electrical_lock->handle_reading_sensors();
