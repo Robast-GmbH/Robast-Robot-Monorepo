@@ -47,7 +47,7 @@ Project error handles:
 // first digit is a 3
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
-}
+// }
 
 // namespace warning_codes
 // {
