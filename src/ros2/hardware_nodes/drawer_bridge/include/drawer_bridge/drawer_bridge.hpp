@@ -30,12 +30,15 @@
 #include "communication_interfaces/msg/drawer_status.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/electrical_drawer_status.hpp"
+#include "communication_interfaces/msg/error_base_msg.hpp"
 #include "communication_interfaces/msg/module.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "drawer_bridge/can_encoder_decoder.hpp"
 #include "drawer_bridge/can_message_creator.hpp"
 #include "drawer_bridge/drawer_defines.h"
 #include "drawer_bridge/qos_config.hpp"
+#include "error_utils/error_definitions.hpp"
+#include "error_utils/generic_error_converter.hpp"
 #include "shelf_setup.hpp"
 
 using namespace std::chrono_literals;
@@ -71,6 +74,7 @@ namespace drawer_bridge
     using DrawerLeds = communication_interfaces::msg::DrawerLeds;
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
     using ElectricalDrawerStatus = communication_interfaces::msg::ElectricalDrawerStatus;
+    using ErrorBaseMsg = communication_interfaces::msg::ErrorBaseMsg;
     using ShelfSetupInfo = communication_interfaces::srv::ShelfSetupInfo;
     using CanMessage = can_msgs::msg::Frame;
 
@@ -91,6 +95,7 @@ namespace drawer_bridge
     rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
     rclcpp::Publisher<CanMessage>::SharedPtr _can_messages_publisher;
     rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr _electrical_drawer_status_publisher;
+    rclcpp::Publisher<ErrorBaseMsg>::SharedPtr _error_msg_publisher;
 
     robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();
 
@@ -122,6 +127,8 @@ namespace drawer_bridge
     void publish_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg);
 
     void publish_electrical_drawer_status(robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg);
+
+    void publish_drawer_error_msg(robast_can_msgs::CanMessage drawer_error_feedback_can_msg);
 
     std::vector<communication_interfaces::msg::Module> get_all_mounted_modules();
 

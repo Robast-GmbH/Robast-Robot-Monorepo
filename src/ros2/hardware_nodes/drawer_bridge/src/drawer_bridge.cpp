@@ -44,6 +44,9 @@ namespace drawer_bridge
 
     _electrical_drawer_status_publisher =
       create_publisher<ElectricalDrawerStatus>("electrical_drawer_status", _qos_config.get_qos_open_drawer());
+
+    _error_msg_publisher =
+      create_publisher<ErrorBaseMsg>("error_msgs", _qos_config.get_qos_error_msgs());   // TODO@Jacob: Adjust topic name
   }
 
   void DrawerBridge::setup_services()
@@ -145,6 +148,33 @@ namespace drawer_bridge
     _electrical_drawer_status_publisher->publish(status);
   }
 
+  void DrawerBridge::publish_drawer_error_msg(robast_can_msgs::CanMessage drawer_error_feedback_can_msg)
+  {
+    std::vector<robast_can_msgs::CanSignal> can_signals = drawer_error_feedback_can_msg.get_can_signals();
+
+    ErrorBaseMsg error_msg = ErrorBaseMsg();
+
+    auto message_converter = MessageConverter<ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED_INTERFACE>();
+
+    DrawerAddress drawer_address = DrawerAddress();
+    drawer_address.module_id = can_signals.at(CAN_SIGNAL_MODULE_ID).get_data();
+    drawer_address.drawer_id = can_signals.at(CAN_SIGNAL_DRAWER_ID).get_data();
+
+    switch (can_signals.at(CAN_SIGNAL_ERROR_CODE).get_data())
+    {
+      case CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED:
+        error_msg.error_code = ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED;
+        error_msg.error_description =
+          "The drawer was not opened and therefore a timeout occurred. Drawer is now locked again.";
+        error_msg.error_data = message_converter.messageToString(drawer_address);
+        _error_msg_publisher->publish(error_msg);
+        break;
+
+      default:
+        break;
+    }
+  }
+
   void DrawerBridge::provide_shelf_setup_info_callback(const std::shared_ptr<ShelfSetupInfo::Request> request,
                                                        std::shared_ptr<ShelfSetupInfo::Response> response)
   {
@@ -154,28 +184,29 @@ namespace drawer_bridge
 
   void DrawerBridge::receive_can_msg_callback(CanMessage can_message)
   {
-    RCLCPP_INFO(this->get_logger(), "Received: id:'%d' dlc:'%d' \n ", can_message.id, can_message.dlc);
+    RCLCPP_INFO(this->get_logger(), "Received CAN message: id:'%d' dlc:'%d' \n ", can_message.id, can_message.dlc);
 
-    switch (can_message.id)
+    const std::optional<robast_can_msgs::CanMessage> decoded_msg = _can_encoder_decoder.decode_msg(can_message);
+
+    if (decoded_msg.has_value())
     {
-      case CAN_ID_DRAWER_FEEDBACK:
+      switch (can_message.id)
       {
-        const std::optional<robast_can_msgs::CanMessage> decoded_msg = _can_encoder_decoder.decode_msg(can_message);
-        if (decoded_msg.has_value())
+        case CAN_ID_DRAWER_FEEDBACK:
         {
           publish_drawer_status(decoded_msg.value());
         }
-      }
-      break;
-      case CAN_ID_ELECTRICAL_DRAWER_FEEDBACK:
-      {
-        const std::optional<robast_can_msgs::CanMessage> decoded_msg = _can_encoder_decoder.decode_msg(can_message);
-        if (decoded_msg.has_value())
+        break;
+        case CAN_ID_ELECTRICAL_DRAWER_FEEDBACK:
         {
           publish_electrical_drawer_status(decoded_msg.value());
         }
+        case CAN_ID_ERROR_FEEDBACK:
+        {
+          publish_drawer_error_msg(decoded_msg.value());
+        }
+        break;
       }
-      break;
     }
   }
 
