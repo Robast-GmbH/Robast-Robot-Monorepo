@@ -13,7 +13,7 @@
 	"workspaceFolder": "/workspace",
 	"runArgs": [
 		"--name=statemachine",
-		"--network=host",
+		// "--network=host",
 		"--volume=/dev/shm:/dev/shm" //needed if you use the fast dds on the host network with multiple docker containers running on the same host
 		//needed if you use the fast dds on the host network with multiple docker containers running on the same host
 	],
