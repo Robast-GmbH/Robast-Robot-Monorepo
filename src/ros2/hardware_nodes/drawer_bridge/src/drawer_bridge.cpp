@@ -45,8 +45,7 @@ namespace drawer_bridge
     _electrical_drawer_status_publisher =
       create_publisher<ElectricalDrawerStatus>("electrical_drawer_status", _qos_config.get_qos_open_drawer());
 
-    _error_msg_publisher =
-      create_publisher<ErrorBaseMsg>("error_msgs", _qos_config.get_qos_error_msgs());   // TODO@Jacob: Adjust topic name
+    _error_msg_publisher = create_publisher<ErrorBaseMsg>("robast_error", _qos_config.get_qos_error_msgs());
   }
 
   void DrawerBridge::setup_services()
