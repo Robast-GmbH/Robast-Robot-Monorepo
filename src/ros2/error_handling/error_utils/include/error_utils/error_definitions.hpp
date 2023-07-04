@@ -27,46 +27,46 @@ Project error handles:
 
 */
 
-namespace debug_codes
-{
-  // first digit is a 1
-  // 2nd and 3rd digits indicates the project
-  // 4th and 5th digits indicates the specific error
+// namespace debug_codes
+// {
+// first digit is a 1
+// 2nd and 3rd digits indicates the project
+// 4th and 5th digits indicates the specific error
+// }
+
+// namespace trace_codes
+// {
+// first digit is a 2
+// 2nd and 3rd digits indicates the project
+// 4th and 5th digits indicates the specific error
+
+// }
+
+// namespace info_codes
+// {
+// first digit is a 3
+// 2nd and 3rd digits indicates the project
+// 4th and 5th digits indicates the specific error
 }
 
-namespace trace_codes
-{
-  // first digit is a 2
-  // 2nd and 3rd digits indicates the project
-  // 4th and 5th digits indicates the specific error
+// namespace warning_codes
+// {
+// first digit is a 4
+// 2nd and 3rd digits indicates the project
+// 4th and 5th digits indicates the specific error
+// }
 
-}
-
-namespace info_codes
-{
-  // first digit is a 3
-  // 2nd and 3rd digits indicates the project
-  // 4th and 5th digits indicates the specific error
-}
-
-namespace warning_codes
-{
-  // first digit is a 4
-  // 2nd and 3rd digits indicates the project
-  // 4th and 5th digits indicates the specific error
-}
-
-namespace error_codes
-{
+// namespace error_codes
+// {
 // first digit is a 5
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
-#define TIMEOUT_DRAWER_NOT_OPENED 50301
-}   // namespace error_codes
+#define ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED 50301
+// }   // namespace error_codes
 
-namespace fatal_codes
-{
-  // first digit is a 6
-  // 2nd and 3rd digits indicates the project
-  // 4th and 5th digits indicates the specific error
-}
+// namespace fatal_codes
+// {
+// first digit is a 6
+// 2nd and 3rd digits indicates the project
+// 4th and 5th digits indicates the specific error
+// }
