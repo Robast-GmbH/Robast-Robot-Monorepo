@@ -3,6 +3,7 @@ from urllib import response
 from fastapi.encoders import jsonable_encoder
 from sqlalchemy.sql.functions import user
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
@@ -132,10 +133,13 @@ def delete_order(order_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Order not found")
     return
 
-
 @app.get("/drawers/", response_model=List[schemas.Drawer])
 def drawer(db: Session = Depends(get_db)):
     return crud.get_drawers(db)
+
+@app.get("flowa/drawers/", response_class=JSONResponse)
+def drawer(db: Session = Depends(get_db)):
+    return {"Drawers": crud.get_drawers(db)}
 
 @app.get("/drawers/{position}", response_model=schemas.Drawer)
 def get_drawer( position:int, db: Session = Depends(get_db)):
@@ -150,7 +154,7 @@ def create_drawer( drawer: schemas.DrawerCreate, db: Session = Depends(get_db)
     
     drawer = crud.create_drawer(db=db, drawer=drawer)
     if(drawer == None):
-        raise HTTPException(status_code=404, detail="Drawer could not be Craeted as it already exists.")
+        raise HTTPException(status_code=404, detail="Drawer could not be Created as it already exists.")
     return drawer
 
 
@@ -159,6 +163,11 @@ def get_open_drawer():
      return helper.open_drawer
 
 @app.put("/drawer/{drawer_controller_id}/open/", response_model=schemas.Drawer)
+def set_open_drawer(drawer_controller_id:int, db: Session = Depends(get_db)):
+    helper.open_drawer =drawer_controller_id
+    return crud.get_drawer(db=db, drawer_controller_id=drawer_controller_id)
+
+@app.put("/flowa/drawer/open/", response_model=schemas.Drawer)
 def set_open_drawer(drawer_controller_id:int, db: Session = Depends(get_db)):
     helper.open_drawer =drawer_controller_id
     return crud.get_drawer(db=db, drawer_controller_id=drawer_controller_id)
@@ -206,7 +215,7 @@ def create_map_position( map_position: schemas.MapPositionCreate, db: Session = 
 ):
     map_position = crud.create_map_position(db=db, map_position=map_position)
     if(map_position == None):
-        raise HTTPException(status_code=404, detail="Map position could not be craeted as it already exists.")
+        raise HTTPException(status_code=404, detail="Map position could not be created as it already exists.")
     return map_position
 
 
@@ -247,5 +256,5 @@ def delete_next_goal():
     return 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run(app, host="0.0.0.0", port=3001)
     
