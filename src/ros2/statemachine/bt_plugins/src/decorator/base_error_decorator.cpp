@@ -44,6 +44,7 @@ namespace drawer_statemachine
     if (_is_error_received)
     {
       logError();
+      _is_error_received = false;
       return BT::NodeStatus::FAILURE;
     }
     const BT::NodeStatus child_status = child_node_->executeTick();

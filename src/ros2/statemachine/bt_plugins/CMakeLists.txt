@@ -130,6 +130,8 @@ if(BUILD_TESTING)
   list(APPEND test_executables nfc_to_drawer_action_test)
   add_executable(move_electric_drawer_action_test tests/actions/move_electric_drawer_action_test.cpp)
   list(APPEND test_executables move_electric_drawer_action_test)
+  add_executable(error_decorator_test tests/decorators/error_decorator_test.cpp)
+  list(APPEND test_executables error_decorator_test)
   
 
   ament_target_dependencies(${test_libs}

@@ -51,6 +51,9 @@ namespace bt_base_nodes
       blackboard_->set<std::chrono::milliseconds>(
           "bt_loop_duration",
           std::chrono::milliseconds(10));
+      blackboard_->set<std::chrono::steady_clock::time_point>(
+          "transition_time",
+          std::chrono::steady_clock::now());
       bt_engine_ = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins_);
       bt_ = bt_engine_->createTreeFromFile(_bt_path, blackboard_, maintree_name);
       init_subscriber(trigger_topic);

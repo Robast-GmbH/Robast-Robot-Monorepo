@@ -1,3 +1,5 @@
+#ifndef BT_PLUGINS__BT_BASE_ERROR_DECORATOR_HPP
+#define BT_PLUGINS__BT_BASE_ERROR_DECORATOR_HPP
 
 #include <string>
 #include <memory>
@@ -39,3 +41,4 @@ namespace drawer_statemachine
     bool _is_error_received = false;
   };
 } // namespace drawer_statemachine
+#endif // BT_PLUGINS__BT_BASE_ERROR_DECORATOR_HPP

@@ -6,4 +6,5 @@ drawer_nfc_tree_initiator:
       - open_drawer_action_bt_node
       - drawer_status_condition_bt_node
       - nfc_to_drawer_action_bt_node
+      - base_error_decorator_node
     bt_path: "/workspace/install/drawer_sm/trees/trees/drawer_nfc_bt.xml"
