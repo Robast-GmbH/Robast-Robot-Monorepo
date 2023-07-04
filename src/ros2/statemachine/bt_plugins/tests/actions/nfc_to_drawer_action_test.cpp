@@ -6,7 +6,6 @@
 #include "communication_interfaces/msg/drawer_address.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-
 namespace test
 {
   SCENARIO("A minimal tree gets created with just the NFCToDrawer plugin which has a given NFCToDrawer config, that should be used")
@@ -19,14 +18,14 @@ namespace test
           "nfc_to_drawer_action_bt_node",
       };
       static rclcpp::Node::SharedPtr node = std::make_shared<rclcpp::Node>("test");
-      static BT::NodeConfig* config_;
+      static BT::NodeConfig *config_;
       config_ = new BT::NodeConfig();
       auto blackboard = BT::Blackboard::create();
       blackboard->set<std::chrono::milliseconds>(
-        "bt_loop_duration",
-        std::chrono::milliseconds(10));
+          "bt_loop_duration",
+          std::chrono::milliseconds(10));
       std::string nfc_tree_xml =
-        R"(
+          R"(
                   <root BTCPP_format="4" >
                       <BehaviorTree ID="MainTree">
                           <NFCToDrawer/>
@@ -37,22 +36,21 @@ namespace test
       {
         using DrawerAddress = communication_interfaces::msg::DrawerAddress;
         blackboard->set<rclcpp::Node::SharedPtr>(
-          "node",
-          node);
-        std::map<std::string, DrawerAddress> nfc_dictionary{ {} };
+            "node",
+            node);
+        std::map<std::string, DrawerAddress> nfc_dictionary{{}};
         for (int i = 1; i <= 5; i++)
         {
           DrawerAddress drawer_address;
-          drawer_address.drawer_controller_id = 0;
+          drawer_address.module_id = 0;
           drawer_address.drawer_id = i;
           nfc_dictionary[std::to_string(i)] = drawer_address;
         }
 
         blackboard->set<std::map<std::string, DrawerAddress>>(
-          "nfc_keys", nfc_dictionary
-          );
+            "nfc_keys", nfc_dictionary);
         auto bt_engine1 = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
-        auto bt = bt_engine1->createTreeFromText(nfc_tree_xml, blackboard);
+        auto bt = bt_engine1->createTreeFromText(nfc_tree_xml, blackboard, "MainTree");
 
         THEN("A Subtree should exist")
         {
@@ -80,10 +78,10 @@ namespace test
             }
           }
 
-          // geht hier nicht, weil das scenario geklont wird für parallele whens und damit 2 mal 
-          // versucht wird zwei mal rclcpp::init zu machen. //TODO Wenn ne andere lösung einfällt, 
+          // geht hier nicht, weil das scenario geklont wird für parallele whens und damit 2 mal
+          // versucht wird zwei mal rclcpp::init zu machen. //TODO Wenn ne andere lösung einfällt,
           // dann wieder zunzufügen
-            // WHEN("the tree gets ticked with a key")
+          // WHEN("the tree gets ticked with a key")
           // {
           //   blackboard->set<std::string>("user_access_name", "1");
           //   bt.tickOnce();

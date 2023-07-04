@@ -2,10 +2,7 @@ version: '3.9'
 
 services:
   simulation:
-    build:
-      context: .
-      dockerfile: ../../src/ros2/simulation/Dockerfile
-    image: robast1
+    image: ghcr.io/robast-gmbh/monorepo/simulation:latest
     environment:
       - ROS_DOMAIN_ID=1
     volumes:
@@ -26,12 +23,8 @@ services:
 
     command: /bin/sh -c "while sleep 1000; do :; done"
     
-  #evtl mit profiles testen ob man sim nur im simulations modus startet
   navigation:
-    build:
-      context: .
-      dockerfile: ../../src/ros2/navigation/Dockerfile
-    image: robast2
+    image: ghcr.io/robast-gmbh/monorepo/navigation:latest
     environment:
       - ROS_DOMAIN_ID=1
     volumes:
@@ -40,14 +33,6 @@ services:
       - ../../src/ros2/communication_interfaces:/workspace/src/communication_interfaces:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/DDS_config.xml/:/workspace/DDS_config.xml:cached
-    # deploy:
-    #   resources:
-    #     reservations:
-    #       devices:
-    #         - driver: nvidia
-    #           count: 1
-    #           capabilities: [gpu]
-    # network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   # state_publisher:
