@@ -10,7 +10,6 @@ class MessageConverter
 {
 public:
   MessageConverter()
-      : node_(rclcpp::NodeOptions())
   {
   }
 
@@ -36,7 +35,4 @@ public:
 
     return deserialized_msg;
   }
-
-private:
-  rclcpp::Node node_;
 };
