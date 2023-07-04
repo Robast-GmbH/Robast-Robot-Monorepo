@@ -62,6 +62,9 @@ namespace bt_base_nodes
   protected:
     virtual void callbackRunBT(const typename TopicT::SharedPtr msg)
     {
+      blackboard_->set<std::chrono::steady_clock::time_point>(
+          "transition_time",
+          std::chrono::steady_clock::now());
       RCLCPP_DEBUG(rclcpp::get_logger("BTSubBase"), "Tree starts");
       bt_.tickWhileRunning();
       RCLCPP_DEBUG(rclcpp::get_logger("BTSubBase"), "Tree ends");
