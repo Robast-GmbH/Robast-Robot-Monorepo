@@ -84,6 +84,9 @@ list(APPEND plugin_libs nfc_to_drawer_action_bt_node)
 add_library(electric_drawer_status_condition_bt_node SHARED src/condition/electric_drawer_status_condition.cpp)
 list(APPEND plugin_libs electric_drawer_status_condition_bt_node)
 
+add_library(base_error_decorator_node SHARED src/decorator/base_error_decorator.cpp)
+list(APPEND plugin_libs base_error_decorator_node)
+
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
   target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)

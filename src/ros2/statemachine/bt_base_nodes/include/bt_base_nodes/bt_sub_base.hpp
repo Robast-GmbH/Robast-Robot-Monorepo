@@ -29,7 +29,8 @@ namespace bt_base_nodes
           "drawer_change_state_request_action_bt_node",
           "nfc_to_drawer_action_bt_node",
           "electric_drawer_status_condition_bt_node",
-          "move_electric_drawer_action_bt_node"};
+          "move_electric_drawer_action_bt_node",
+          "base_error_decorator_node"};
       std::string path = "/workspace/install/drawer_sm/trees/trees/default_electrical_drawer.xml";
       this->declare_parameter("plugins", plugins_);
       this->declare_parameter("bt_path", path);
