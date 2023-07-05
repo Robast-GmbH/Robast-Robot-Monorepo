@@ -6,7 +6,7 @@ sudo slcan_attach -f -s5 -o /dev/robast/robast_can
 sudo slcand robast/robast_can can0
 sudo ifconfig can0 up
 
-DOCKERPID=$(docker inspect -f '{{ .State.Pid }}' hardware_nodes_socket)
+DOCKERPID=$(docker inspect -f '{{ .State.Pid }}' hardware_nodes_drawer)
 
 sudo ip link add vxcan0 type vxcan peer name vxcan1 netns $DOCKERPID
 

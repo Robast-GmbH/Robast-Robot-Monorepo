@@ -87,7 +87,7 @@
     ],    
     
     "files.autoSave": "onFocusChange",
-    "editor.tabSize": 4,
+    "editor.tabSize": 2,
     "editor.rulers": [
         100
     ],
@@ -99,8 +99,8 @@
     "c-cpp-flylint.clang.defines": [
     
     ],
-    "editor.formatOnSave": false,
-    "C_Cpp.formatting": "vcFormat",
+    // "editor.formatOnSave": false,
+    // "C_Cpp.formatting": "vcFormat",
     "C_Cpp.vcFormat.newLine.beforeOpenBrace.block": "newLine",
     "C_Cpp.vcFormat.newLine.beforeOpenBrace.function": "newLine",
     "C_Cpp.vcFormat.newLine.beforeOpenBrace.namespace": "newLine",
@@ -111,12 +111,15 @@
     "editor.formatOnType": true,
     "testExplorer.useNativeTesting": true,
     "cmake.sourceDirectory": "${workspaceFolder}/src/statemachine/bt_plugins",
-    "[cpp]": {
-        "editor.defaultFormatter": "ms-vscode.cpptools",
-        "editor.tabSize": 2
-    },
+    // "[cpp]": {
+    //     "editor.defaultFormatter": "ms-vscode.cpptools",
+    //     "editor.tabSize": 2
+    // },
     "[python]": {
         "editor.tabSize": 4
     },
     "editor.wordWrap": "on",
+    "editor.formatOnSave": true,
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file", // formatting rules are defined in the .clang-format file
 }

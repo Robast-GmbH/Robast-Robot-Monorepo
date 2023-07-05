@@ -178,26 +178,9 @@ int main(int argc, char** argv) {
 
     dai::rosBridge::ImageConverter rgbConverter(tfPrefix + "_rgb_camera_optical_frame", false);
 
-    if (simulation == true){
-        rclcpp::Subscription<sensor_msgs::msg::CameraInfo>::SharedPtr rgbCameraInfo = node->create_subscription<sensor_msgs::msg::CameraInfo>("camera_rgb_info", 5, &rgbCallback);
-    }else{
-        auto rgbCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::RGB, -1, -1);
-    }
-
 
     
     RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Invalid parameter");
-    dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rgbPublish(colorQueue,
-                                                                                     node,
-                                                                                     std::string("color/image"),
-                                                                                    std::bind(&dai::rosBridge::ImageConverter::toRosMsg,
-                                                                                               &rgbConverter,  // since the converter has the same frame name
-                                                                                                               // and image type is also same we can reuse it
-                                                                                               std::placeholders::_1,
-                                                                                                std::placeholders::_2),
-                                                                                      30,
-                                                                                      rgbCameraInfo,
-                                                                                      "color");
 
     dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 400, 400, false);
     dai::rosBridge::BridgePublisher<depthai_ros_msgs::msg::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(
@@ -212,7 +195,7 @@ int main(int argc, char** argv) {
     dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> depthPublish(
         depthQueue,
         node,
-        std::string("stereo/yolov5_depth"),
+        std::string("stereo/door_handle_position"),
         std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &depthConverter, std::placeholders::_1, std::placeholders::_2),
         30,
         rightCameraInfo,
@@ -221,7 +204,7 @@ int main(int argc, char** argv) {
     depthPublish.addPublisherCallback();
 
     detectionPublish.addPublisherCallback();
-    rgbPublish.addPublisherCallback();  // addPublisherCallback works only when the dataqueue is non blocking.
+    //rgbPublish.addPublisherCallback();  // addPublisherCallback works only when the dataqueue is non blocking.
 
     rclcpp::spin(node);
 

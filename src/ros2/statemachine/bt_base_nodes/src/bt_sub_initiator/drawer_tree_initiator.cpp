@@ -3,11 +3,11 @@
 namespace bt_base_nodes
 {
 }
-int main(int argc, char* argv[ ])
+int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
     auto node = std::make_shared<bt_base_nodes::DrawerTreeInitiator>();
-    node->configure("trigger_drawer_tree");
+    node->configure("trigger_drawer_tree", "BehaviorTree");
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
