@@ -1,0 +1,25 @@
+moveit_setup_assistant_config:
+  urdf:
+    package: rb_theron_description
+    relative_path: robots/rb_theron.urdf.xacro
+  srdf:
+    relative_path: config/rb_theron.srdf
+  package_settings:
+    author_name: Jacob Ritterbach
+    author_email: j.ritterbach@robast.de
+    generated_timestamp: 1675169275
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
+  modified_urdf:
+    xacros:
+      - control_xacro
+  control_xacro:
+    command:
+      - position
+    state:
+      - position
+      - velocity
