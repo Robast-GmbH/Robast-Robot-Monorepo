@@ -18,9 +18,9 @@
         x="0.06"
         y="0.01"
         z="0.04"
-        r="0"
-        g="0"
-        b="1">
+        r="${r}"
+        g="${g}"
+        b="${b}">
         <xacro:insert_block name="origin" />
     </xacro:basic_box>
 
@@ -32,9 +32,9 @@
         x="0.008"
         y="0.03"
         z="0.04"
-        r="0"
-        g="0"
-        b="1">
+        r="${r}"
+        g="${g}"
+        b="${b}">
         <origin xyz="-0.026 0.02 0" rpy="0 0 0"/>
     </xacro:basic_box>
 
@@ -46,9 +46,9 @@
         x="0.008"
         y="0.03"
         z="0.04"
-        r="0"
-        g="0"
-        b="1">
+        r="${r}"
+        g="${g}"
+        b="${b}">
         <origin xyz="+0.026 0.02 0" rpy="0 0 0"/>
     </xacro:basic_box>
 
