@@ -34,6 +34,9 @@
 #include <rmf_fleet_msgs/msg/path_request.hpp>
 #include <rmf_fleet_msgs/msg/destination_request.hpp>
 
+#include "communication_interfaces/msg/ff_open_drawer.hpp"
+
+
 #include <free_fleet/Server.hpp>
 #include <free_fleet/messages/Location.hpp>
 #include <free_fleet/messages/RobotState.hpp>
@@ -71,79 +74,67 @@ public:
   void print_config();
 
 private:
+ bool is_request_valid(const std::string& fleet_name, const std::string& robot_name);
 
-  bool is_request_valid(
-      const std::string& fleet_name, const std::string& robot_name);
+ void transform_fleet_to_rmf(const rmf_fleet_msgs::msg::Location& fleet_frame_location,
+                             rmf_fleet_msgs::msg::Location& rmf_frame_location) const;
 
-  void transform_fleet_to_rmf(
-      const rmf_fleet_msgs::msg::Location& fleet_frame_location,
-      rmf_fleet_msgs::msg::Location& rmf_frame_location) const;
+ void transform_rmf_to_fleet(const rmf_fleet_msgs::msg::Location& rmf_frame_location,
+                             rmf_fleet_msgs::msg::Location& fleet_frame_location) const;
 
-  void transform_rmf_to_fleet(
-      const rmf_fleet_msgs::msg::Location& rmf_frame_location,
-      rmf_fleet_msgs::msg::Location& fleet_frame_location) const;
+ // --------------------------------------------------------------------------
 
-  // --------------------------------------------------------------------------
+ rclcpp::Subscription<rmf_fleet_msgs::msg::ModeRequest>::SharedPtr mode_request_sub;
 
-  rclcpp::Subscription<rmf_fleet_msgs::msg::ModeRequest>::SharedPtr
-      mode_request_sub;
+ void handle_mode_request(rmf_fleet_msgs::msg::ModeRequest::UniquePtr msg);
 
-  void handle_mode_request(rmf_fleet_msgs::msg::ModeRequest::UniquePtr msg);
+ // --------------------------------------------------------------------------
 
-  // --------------------------------------------------------------------------
+ rclcpp::Subscription<rmf_fleet_msgs::msg::PathRequest>::SharedPtr path_request_sub;
 
-  rclcpp::Subscription<rmf_fleet_msgs::msg::PathRequest>::SharedPtr
-      path_request_sub;
+ void handle_path_request(rmf_fleet_msgs::msg::PathRequest::UniquePtr msg);
 
-  void handle_path_request(rmf_fleet_msgs::msg::PathRequest::UniquePtr msg);
+ // --------------------------------------------------------------------------
 
-  // --------------------------------------------------------------------------
+ rclcpp::Subscription<rmf_fleet_msgs::msg::DestinationRequest>::SharedPtr destination_request_sub;
 
-  rclcpp::Subscription<rmf_fleet_msgs::msg::DestinationRequest>::SharedPtr
-      destination_request_sub;
+ void handle_destination_request(rmf_fleet_msgs::msg::DestinationRequest::UniquePtr msg);
 
-  void handle_destination_request(
-      rmf_fleet_msgs::msg::DestinationRequest::UniquePtr msg);
+ // --------------------------------------------------------------------------
 
-  // --------------------------------------------------------------------------
+ rclcpp::CallbackGroup::SharedPtr update_state_callback_group;
 
-  rclcpp::CallbackGroup::SharedPtr update_state_callback_group;
+ rclcpp::TimerBase::SharedPtr update_state_timer;
 
-  rclcpp::TimerBase::SharedPtr update_state_timer;
+ std::mutex robot_states_mutex;
 
-  std::mutex robot_states_mutex;
+ std::unordered_map<std::string, rmf_fleet_msgs::msg::RobotState> robot_states;
 
-  std::unordered_map<std::string, rmf_fleet_msgs::msg::RobotState>
-      robot_states;
+ void update_state_callback();
 
-  void update_state_callback();
+ // --------------------------------------------------------------------------
 
-  // --------------------------------------------------------------------------
+ rclcpp::CallbackGroup::SharedPtr fleet_state_pub_callback_group;
 
-  rclcpp::CallbackGroup::SharedPtr
-      fleet_state_pub_callback_group;
+ rclcpp::TimerBase::SharedPtr fleet_state_pub_timer;
 
-  rclcpp::TimerBase::SharedPtr fleet_state_pub_timer;
+ rclcpp::Publisher<rmf_fleet_msgs::msg::FleetState>::SharedPtr fleet_state_pub;
 
-  rclcpp::Publisher<rmf_fleet_msgs::msg::FleetState>::SharedPtr
-      fleet_state_pub;
+ void publish_fleet_state();
 
-  void publish_fleet_state();
+ // --------------------------------------------------------------------------
 
-  // --------------------------------------------------------------------------
+ ServerNodeConfig server_node_config;
 
-  ServerNodeConfig server_node_config;
+ void setup_config();
 
-  void setup_config();
+ bool is_ready();
 
-  bool is_ready();
+ Fields fields;
 
-  Fields fields;
+ ServerNode(const ServerNodeConfig& config, const rclcpp::NodeOptions& options);
 
-  ServerNode(
-      const ServerNodeConfig& config, const rclcpp::NodeOptions& options);
-
-  void start(Fields fields);
+ void start(Fields fields);
 
 };
 

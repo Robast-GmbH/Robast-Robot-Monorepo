@@ -48,6 +48,15 @@ module FreeFleetData
     string task_id;
     sequence<ModeParameter> parameters;
   };
+
+  struct DrawerOpenRequest
+  {
+    string fleet_name;
+    string robot_name;
+    string controller_id;
+    string drawer_id;
+  };
+
   struct PathRequest
   {
     string fleet_name;

@@ -30,10 +30,10 @@ struct ServerNodeConfig
   
   std::string fleet_name = "fleet_name";
 
-  std::string fleet_state_topic = "fleet_state";
-  std::string mode_request_topic = "mode_request";
-  std::string path_request_topic = "path_request";
-  std::string destination_request_topic = "destination_request";
+  std::string rmf_fleet_state_topic = "fleet_state";
+  std::string rmf_mode_request_topic = "mode_request";
+  std::string rmf_path_request_topic = "path_request";
+  std::string rmf_destination_request_topic = "destination_request";
 
   int dds_domain = 42;
   std::string dds_robot_state_topic = "robot_state";

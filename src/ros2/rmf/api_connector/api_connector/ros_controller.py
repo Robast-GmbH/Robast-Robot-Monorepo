@@ -6,19 +6,17 @@ from logging import error
 from multiprocessing import get_logger
 import threading
 import requests
+from communication_interfaces.msg import FFOpenDrawer
 
 
 class ros_controller(Node):
 
-    def __init__(self, api_url, polling_interval):
+    def __init__(self, api_url):
         super().__init__('ros_controller')
         self.base_url = api_url
-        self.polling_timer = self.create_timer(polling_interval, self.api_polling_callback)
-
-    def api_polling_callback(self):
-        self.get_robot_status()
-        self.get_drawer_open_status()
+        self.open_drawer_to_ff = self.create_publisher(FFOpenDrawer, 'ff_open_drawer', 10)
     
+  
     def get_robot_status(self):
         response = web_module.getDataFromServer(self.base_url + "/robot/status")
         if(response != None):
@@ -31,7 +29,8 @@ class ros_controller(Node):
         if (response != None):
             drawer_controller_id = response.json()
             if (drawer_controller_id > 0):
-                #request for opening the drawer
+                #ToDO Torben: get all Values from the Frontend / restapi
+                self.openDrawer(drawer_controller_id, 1, "ROBAST_1", "rb0")
                 self.delete_request(api_url)
             elif(drawer_controller_id != -1):
                 get_logger().warning(
@@ -45,3 +44,14 @@ class ros_controller(Node):
         else:
             get_logger().warning(
                 "Deleting request for {0} was NOT successfull!".format(api_url))
+
+    def openDrawer(self, drawer_id:int, module_id:int, fleet_name:str, robot_name:str):
+        msg= FFOpenDrawer()
+        msg.fleet_name = fleet_name
+        msg.robot_name = robot_name
+        msg.drawer_address.module_id = module_id
+        msg.drawer_address.drawer_id = drawer_id
+        self.open_drawer_to_ff.publish(msg)
+       
+      
+        

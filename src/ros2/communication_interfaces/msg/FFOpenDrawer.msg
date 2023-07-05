@@ -1,0 +1,3 @@
+communication_interfaces/DrawerAddress drawer_address
+string fleet_name
+string robot_name

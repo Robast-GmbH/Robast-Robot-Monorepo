@@ -199,3 +199,25 @@ const dds_topic_descriptor_t FreeFleetData_DestinationRequest_desc =
   FreeFleetData_DestinationRequest_ops,
   "<MetaData version=\"1.0.0\"><Module name=\"FreeFleetData\"><Struct name=\"Location\"><Member name=\"sec\"><Long/></Member><Member name=\"nanosec\"><ULong/></Member><Member name=\"x\"><Float/></Member><Member name=\"y\"><Float/></Member><Member name=\"yaw\"><Float/></Member><Member name=\"level_name\"><String/></Member></Struct><Struct name=\"DestinationRequest\"><Member name=\"fleet_name\"><String/></Member><Member name=\"robot_name\"><String/></Member><Member name=\"destination\"><Type name=\"Location\"/></Member><Member name=\"task_id\"><String/></Member></Struct></Module></MetaData>"
 };
+
+static const uint32_t FreeFleetData_OpenDrawerRequest_ops [] =
+{
+  DDS_OP_ADR | DDS_OP_TYPE_STR, offsetof (FreeFleetData_OpenDrawerRequest, fleet_name),
+  DDS_OP_ADR | DDS_OP_TYPE_STR, offsetof (FreeFleetData_OpenDrawerRequest, robot_name),
+  DDS_OP_ADR | DDS_OP_TYPE_4BY, offsetof (FreeFleetData_OpenDrawerRequest, module_id),
+  DDS_OP_ADR | DDS_OP_TYPE_4BY, offsetof (FreeFleetData_OpenDrawerRequest, drawer_id),
+  DDS_OP_RTS
+};
+
+const dds_topic_descriptor_t FreeFleetData_OpenDrawerRequest_desc =
+{
+  sizeof (FreeFleetData_OpenDrawerRequest),
+  sizeof (char *),
+  DDS_TOPIC_NO_OPTIMIZE,
+  0u,
+  "FreeFleetData::OpenDrawerRequest",
+  NULL,
+  10,
+  FreeFleetData_OpenDrawerRequest_ops,
+  "<MetaData version=\"1.0.0\"><Module name=\"FreeFleetData\"><Struct name=\"ModeRequest\"><Member name=\"fleet_name\"><String/></Member><Member name=\"robot_name\"><String/></Member><Member name=\"module_id\"><Long/></Member><Member name=\"drawer_id\"><Long/></Member></Struct></Module></MetaData>"
+};

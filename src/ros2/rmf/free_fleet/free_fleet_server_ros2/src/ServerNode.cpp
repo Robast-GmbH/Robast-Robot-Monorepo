@@ -98,12 +98,12 @@ void ServerNode::print_config()
 void ServerNode::setup_config()
 {
   get_parameter("fleet_name", server_node_config.fleet_name);
-  get_parameter("fleet_state_topic", server_node_config.fleet_state_topic);
-  get_parameter("mode_request_topic", server_node_config.mode_request_topic);
-  get_parameter("path_request_topic", server_node_config.path_request_topic);
+  get_parameter("fleet_state_topic", server_node_config.rmf_fleet_state_topic);
+  get_parameter("mode_request_topic", server_node_config.rmf_mode_request_topic);
+  get_parameter("path_request_topic", server_node_config.rmf_path_request_topic);
   get_parameter(
       "destination_request_topic",
-      server_node_config.destination_request_topic);
+      server_node_config.rmf_destination_request_topic);
   get_parameter("dds_domain", server_node_config.dds_domain);
   get_parameter("dds_robot_state_topic",
       server_node_config.dds_robot_state_topic);
@@ -156,14 +156,14 @@ void ServerNode::start(Fields _fields)
 
   // --------------------------------------------------------------------------
   // Second callback group that handles publishing fleet states to RMF, and
-  // handling requests from RMF to be sent down to the clients
+  // handling requests from RMF or directly from the restapi to be sent down to the clients
 
   fleet_state_pub_callback_group = create_callback_group(
       rclcpp::CallbackGroupType::MutuallyExclusive);
 
   fleet_state_pub =
       create_publisher<rmf_fleet_msgs::msg::FleetState>(
-          server_node_config.fleet_state_topic, 10);
+          server_node_config.rmf_fleet_state_topic, 10);
 
   fleet_state_pub_timer = create_wall_timer(
       std::chrono::seconds(1) / server_node_config.publish_state_frequency,
@@ -178,7 +178,7 @@ void ServerNode::start(Fields _fields)
   mode_request_sub_opt.callback_group = fleet_state_pub_callback_group;
 
   mode_request_sub = create_subscription<rmf_fleet_msgs::msg::ModeRequest>(
-      server_node_config.mode_request_topic, rclcpp::QoS(10),
+      server_node_config.rmf_mode_request_topic, rclcpp::QoS(10),
       [&](rmf_fleet_msgs::msg::ModeRequest::UniquePtr msg)
       {
         handle_mode_request(std::move(msg));
@@ -193,7 +193,7 @@ void ServerNode::start(Fields _fields)
   path_request_sub_opt.callback_group = fleet_state_pub_callback_group;
 
   path_request_sub = create_subscription<rmf_fleet_msgs::msg::PathRequest>(
-      server_node_config.path_request_topic, rclcpp::QoS(10),
+      server_node_config.rmf_path_request_topic, rclcpp::QoS(10),
       [&](rmf_fleet_msgs::msg::PathRequest::UniquePtr msg)
       {
         handle_path_request(std::move(msg));
@@ -209,7 +209,7 @@ void ServerNode::start(Fields _fields)
 
   destination_request_sub =
       create_subscription<rmf_fleet_msgs::msg::DestinationRequest>(
-          server_node_config.destination_request_topic, rclcpp::QoS(10),
+          server_node_config.rmf_destination_request_topic, rclcpp::QoS(10),
           [&](rmf_fleet_msgs::msg::DestinationRequest::UniquePtr msg)
           {
             handle_destination_request(std::move(msg));
