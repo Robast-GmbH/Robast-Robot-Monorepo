@@ -135,10 +135,16 @@
         </xacro:basic_box>
 
         <!-- Tilting arm -->
-        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/arm_variations/tilting_arm.urdf.xacro" />
+        <!-- <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/arm_variations/tilting_arm.urdf.xacro" />
         <xacro:tilting_arm prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_x_slide_screwing" >
             <origin xyz="0 -0.025 0" rpy="0 1.57079632679 0"/>
-        </xacro:tilting_arm>
+        </xacro:tilting_arm> -->
+
+        <!-- Rotating arm -->
+        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/arm_variations/rotating_arm.urdf.xacro" />
+        <xacro:rotating_arm prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_x_slide_screwing" arm_length="0.3" >
+            <origin xyz="0.05 -0.025 0" rpy="0 0 1.57079632679"/>
+        </xacro:rotating_arm>
 
     </xacro:macro>
 </robot>
