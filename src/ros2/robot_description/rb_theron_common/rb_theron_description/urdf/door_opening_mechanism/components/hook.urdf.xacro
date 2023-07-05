@@ -9,7 +9,7 @@
 
     <xacro:macro name="hook" params="prefix suffix parent *origin r g b">
 
-    <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_box.urdf.xacro" />
+    <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_elements/basic_box.urdf.xacro" />
     <xacro:basic_box
         parent="${prefix}${parent}"
         joint_name="${prefix}hook_joint_${suffix}"

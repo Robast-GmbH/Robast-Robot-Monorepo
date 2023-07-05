@@ -10,9 +10,9 @@
     <xacro:macro name="door_opening_mechanism" params="prefix parent *origin hq">
 
         <!-- Element imports -->
-        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/alu_profile.urdf.xacro" />
-        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_box.urdf.xacro" />
-        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_joint.urdf.xacro" />
+        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/alu_profile.urdf.xacro" />
+        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_elements/basic_box.urdf.xacro" />
+        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_elements/basic_joint.urdf.xacro" />
 
         <!-- Please mind: We might need to set the settings for the mass extremly low, because there
         is an issue, that if there is too much load on the theron base, it would be able to drive
@@ -134,40 +134,11 @@
             <origin xyz="0.038 -0.027 0" rpy="0 0 1.57079632679"/>
         </xacro:basic_box>
 
-        <xacro:basic_joint 
-            parent="${prefix}door_opening_mechanism_link_x_slide_screwing"
-            joint_name="${prefix}door_opening_mechanism_joint_tilting_hook"
-            joint_type="revolute"
-            axis_x="1"
-            axis_y="0"
-            axis_z="0"
-            lower_limit="-0.02"
-            upper_limit="1.6"
-            damping="0.1"
-            friction="0.3"
-            p_gain="500"
-            i_gain="1000"
-            d_gain="10"
-            link_name="${prefix}door_opening_mechanism_link_tilting_hook"
-            link_origin_x="0.0"
-            link_origin_y="0.0"
-            link_origin_z="0.1"
-            m="0.2"
-            x="0.03"
-            y="0.03"
-            z="0.2"
-            r="0"
-            g="1"
-            b="0">
-            <!-- The default value for roll can be changed from 0 to pi/2 to position the arm upwards to get it out of the way -->
+        <!-- Tilting arm -->
+        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/arm_variations/tilting_arm.urdf.xacro" />
+        <xacro:tilting_arm prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_x_slide_screwing" >
             <origin xyz="0 -0.025 0" rpy="0 1.57079632679 0"/>
-        </xacro:basic_joint>
-
-        <!-- Gripper -->
-        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_gripper.urdf.xacro" />
-        <xacro:door_opening_gripper prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_tilting_hook" >
-            <origin xyz="0 0 0.215" rpy="0 1.57079632679 0"/>
-        </xacro:door_opening_gripper>
+        </xacro:tilting_arm>
 
     </xacro:macro>
 </robot>
