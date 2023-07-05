@@ -27,47 +27,36 @@ Project error handles:
 
 */
 
-// namespace debug_codes
-// {
+// debug_codes
 // first digit is a 1
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
-// }
 
-// namespace trace_codes
-// {
+
+// trace_codes
 // first digit is a 2
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
 
-// }
 
-// namespace info_codes
-// {
+// info_codes
 // first digit is a 3
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
-// }
 
-// namespace warning_codes
-// {
+// warning_codes
 // first digit is a 4
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
-// }
 
-// namespace error_codes
-// {
+// error_codes
 // first digit is a 5
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
 #define ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED           50301
 #define ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED_INTERFACE communication_interfaces::msg::DrawerAddress
-// }   // namespace error_codes
 
-// namespace fatal_codes
-// {
+// fatal_codes
 // first digit is a 6
 // 2nd and 3rd digits indicates the project
 // 4th and 5th digits indicates the specific error
-// }

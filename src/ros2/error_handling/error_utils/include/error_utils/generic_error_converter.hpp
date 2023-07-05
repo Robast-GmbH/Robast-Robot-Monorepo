@@ -15,7 +15,7 @@ public:
   {
     std::shared_ptr<MsgT> serialized_msg = std::make_shared<MsgT>(msg);
     std::string serialized_str(reinterpret_cast<const char *>(serialized_msg.get()), sizeof(MsgT));
-    serialized_msg.reset();  // Freigabe des std::shared_ptr-Objekts
+    serialized_msg.reset();
     return serialized_str;
   }
 
