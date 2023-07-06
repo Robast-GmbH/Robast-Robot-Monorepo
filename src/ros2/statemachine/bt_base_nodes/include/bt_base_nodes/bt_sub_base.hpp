@@ -29,7 +29,8 @@ namespace bt_base_nodes
           "drawer_change_state_request_action_bt_node",
           "nfc_to_drawer_action_bt_node",
           "electric_drawer_status_condition_bt_node",
-          "move_electric_drawer_action_bt_node"};
+          "move_electric_drawer_action_bt_node",
+          "base_error_decorator_node"};
       std::string path = "/workspace/install/drawer_sm/trees/trees/default_electrical_drawer.xml";
       this->declare_parameter("plugins", plugins_);
       this->declare_parameter("bt_path", path);
@@ -50,6 +51,9 @@ namespace bt_base_nodes
       blackboard_->set<std::chrono::milliseconds>(
           "bt_loop_duration",
           std::chrono::milliseconds(10));
+      blackboard_->set<std::chrono::steady_clock::time_point>(
+          "transition_time",
+          std::chrono::steady_clock::now());
       bt_engine_ = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins_);
       bt_ = bt_engine_->createTreeFromFile(_bt_path, blackboard_, maintree_name);
       init_subscriber(trigger_topic);
@@ -58,6 +62,9 @@ namespace bt_base_nodes
   protected:
     virtual void callbackRunBT(const typename TopicT::SharedPtr msg)
     {
+      blackboard_->set<std::chrono::steady_clock::time_point>(
+          "transition_time",
+          std::chrono::steady_clock::now());
       RCLCPP_DEBUG(rclcpp::get_logger("BTSubBase"), "Tree starts");
       bt_.tickWhileRunning();
       RCLCPP_DEBUG(rclcpp::get_logger("BTSubBase"), "Tree ends");

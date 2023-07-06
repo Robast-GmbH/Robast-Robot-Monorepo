@@ -1,4 +1,4 @@
-#if !defined(DRAWER_CONTROLLER_LED_STRIP_HPP)
+#ifndef DRAWER_CONTROLLER_LED_STRIP_HPP
 #define DRAWER_CONTROLLER_LED_STRIP_HPP
 
 #include <Arduino.h>
@@ -420,7 +420,7 @@ namespace led_strip
 
   void debug_prints_drawer_led(robast_can_msgs::CanMessage can_message)
   {
-    Serial.print("Standard ID: ");
+    Serial.print("Received LED CAN message with standard ID: ");
     Serial.print(can_message.get_id(), HEX);
     Serial.print(" rx_dlc: ");
     Serial.print(can_message.get_dlc(), DEC);
