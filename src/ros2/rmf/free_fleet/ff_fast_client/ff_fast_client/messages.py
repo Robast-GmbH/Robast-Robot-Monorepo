@@ -4,7 +4,7 @@ from cyclonedds.idl import IdlStruct
 import cyclonedds.idl as idl
 from cyclonedds.idl.types import   uint32, sequence
 
-#ToDo Torben:  should be moved in its own project
+# should be moved in its own project
 
 @dataclass
 class FreeFleetData_RobotMode(IdlStruct):

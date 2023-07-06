@@ -34,7 +34,6 @@ class free_fleet_controller:
     #handle Mode request
     def handle_mode_request(self, fleet_name, robot_name, mode):
         state=  self.get_robot_state(robot_name) 
-
         mode_request= messages.FreeFleetData_ModeRequest()
         mode_request.robot_name= robot_name
         mode_request.fleet_name= fleet_name
@@ -46,13 +45,13 @@ class free_fleet_controller:
     #handle path request 
     def handle_path_request(self, fleet_name, robot_name, path):
         state=  self.get_robot_state(robot_name) 
-
         path_request= messages.FreeFleetData_PathRequest()
         path_request.robot_name= robot_name
         path_request.fleet_name= fleet_name
         path_request.task_id= state.task_id
         path_request.path= path
         self.publish_dds(path_request, "/path_request", messages.FreeFleetData_PathRequest)
+
     #handle destination request 
     def handle_destination_request(self, fleet_name, robot_name, destination):
         state =  self.get_robot_state(fleet_name,robot_name) 
@@ -62,18 +61,17 @@ class free_fleet_controller:
         destination_request.fleet_name= fleet_name
         destination_request.task_id= state.task_id
         destination_request.destination= destination
-        
         self.publish_dds(destination,"/destination_request", messages.FreeFleetData_DestinationRequest)
+
     #handle_open_drawer_request
     def handle_open_drawer_request(self, fleet_name, robot_name, module_id, drawer_id):
         open_drawer_request= messages.FreeFleetData_OpenDrawerRequest(fleet_name, robot_name, module_id, drawer_id)
-        self.publish_dds(open_drawer_request,"/open_drawer_request", messages.FreeFleetData_OpenDrawerRequest)
+        print(fleet_name)
+        self.publish_dds(open_drawer_request,"OpenDrawerequest", messages.FreeFleetData_OpenDrawerRequest)
         print("done")
 
     def publish_dds(self, message, topicPath,topicType ):
-        
         topic = Topic(self.participant , topicPath, topicType)
-
         listener = Listener()
         writer = DataWriter(self.participant , topic, listener=listener)
         writer.write( message)

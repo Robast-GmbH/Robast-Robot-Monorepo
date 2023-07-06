@@ -34,8 +34,6 @@
 #include <rmf_fleet_msgs/msg/path_request.hpp>
 #include <rmf_fleet_msgs/msg/destination_request.hpp>
 
-#include "communication_interfaces/msg/ff_open_drawer.hpp"
-
 
 #include <free_fleet/Server.hpp>
 #include <free_fleet/messages/Location.hpp>
