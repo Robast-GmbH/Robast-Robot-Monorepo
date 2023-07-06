@@ -24,7 +24,11 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
     
   navigation:
-    image: ghcr.io/robast-gmbh/monorepo/navigation:latest
+    build:
+      context: .
+      dockerfile: ../../src/ros2/navigation/Dockerfile
+    image: robast_navigation
+    # image: ghcr.io/robast-gmbh/monorepo/navigation:latest
     environment:
       - ROS_DOMAIN_ID=1
     volumes:
