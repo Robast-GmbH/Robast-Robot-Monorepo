@@ -1,3 +1,6 @@
+#ifndef DRAWER_BRIDGE__QOS_CONFIG_HPP_
+#define DRAWER_BRIDGE__QOS_CONFIG_HPP_
+
 #include <rclcpp/qos.hpp>
 
 namespace drawer_bridge
@@ -41,3 +44,5 @@ namespace drawer_bridge
     };
   };
 }   // namespace drawer_bridge
+
+#endif   // DRAWER_BRIDGE__QOS_CONFIG_HPP_
