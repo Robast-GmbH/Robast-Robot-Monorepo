@@ -13,10 +13,9 @@
 #include "i_gpio_wrapper.hpp"
 #include "motor.hpp"
 
-#define DRAWER_MAX_SPEED               35000
-#define DRAWER_HOMING_SPEED            150
-#define DRAWER_HOMING_EXTENT           40   // this value determines the extent of the homing area (max 255)
-#define DRAWER_ACCELERATION_TIME_IN_US 1000
+#define DRAWER_MAX_SPEED     35000
+#define DRAWER_HOMING_SPEED  150
+#define DRAWER_HOMING_EXTENT 40   // this value determines the extent of the homing area (max 255)
 
 namespace drawer_controller
 {

@@ -88,6 +88,8 @@ namespace drawer_controller
     handle_drawer_just_opened();
 
     check_if_motion_is_finished();
+
+    debug_prints_moving_electrical_drawer();
   }
 
   void ElectricalDrawer::handle_electrical_lock_control()
@@ -221,6 +223,13 @@ namespace drawer_controller
   void ElectricalDrawer::initialize_homing()
   {
     _homing_initialized = true;
+
+    uint32_t delta_speed = _motor->get_active_speed() - DRAWER_HOMING_SPEED;
+
+    uint32_t drawer_homing_extend_normed = (DRAWER_HOMING_EXTENT * DRAWER_MAX_EXTENT) / UINT8_MAX;
+
+    uint32_t acceleration = ((delta_speed * delta_speed) / drawer_homing_extend_normed) / 1000;
+
     float active_speed = _motor->get_active_speed();
     float percentage_of_max_speed = active_speed / DRAWER_MAX_SPEED;
     float homing_percentage_of_max_extent = ((float) DRAWER_HOMING_EXTENT) / 255.0;
@@ -228,11 +237,13 @@ namespace drawer_controller
     Serial.printf(
       "electrical_drawer.cpp, handle_drawer_moving_in(): Starting homing with time_to_slow_down_in_us = %d, "
       "percentage_of_max_speed = %f, "
-      "homing_percentage_of_max_extent = %f\n",
+      "homing_percentage_of_max_extent = %f, "
+      "acceleration = %d\n",
       time_to_slow_down_in_us,
       percentage_of_max_speed,
-      homing_percentage_of_max_extent);
-    _motor->set_target_speed(DRAWER_HOMING_SPEED, time_to_slow_down_in_us);
+      homing_percentage_of_max_extent,
+      acceleration);
+    _motor->set_target_speed(DRAWER_HOMING_SPEED, acceleration);
   }
 
   void ElectricalDrawer::handle_drawer_just_opened()
@@ -277,13 +288,11 @@ namespace drawer_controller
   void ElectricalDrawer::debug_prints_moving_electrical_drawer()
   {
     int normed_target_position = (_target_position_uint8 / 255.0) * DRAWER_MAX_EXTENT;
-    Serial.printf(
-      "Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: %d"
-      "millis(): %d\n",
-      _encoder->get_current_position(),
-      normed_target_position,
-      _motor->get_active_speed(),
-      _motor->get_target_speed());
+    Serial.printf("Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: %d\n",
+                  _encoder->get_current_position(),
+                  normed_target_position,
+                  _motor->get_active_speed(),
+                  _motor->get_target_speed());
   }
 
   void ElectricalDrawer::debug_prints_electric_drawer_task(robast_can_msgs::CanMessage can_message)
