@@ -1,5 +1,5 @@
-#pragma once
-// TODO discuss if we want to use pragma once
+#ifndef ERROR_UTILS__GENERIC_ERROR_CONVERTER_HPP_
+#define ERROR_UTILS__GENERIC_ERROR_CONVERTER_HPP_
 
 #include <string>
 #include <memory>
@@ -26,3 +26,4 @@ public:
     return deserialized_msg;
   }
 };
+#endif // ERROR_UTILS__GENERIC_ERROR_CONVERTER_HPP_
