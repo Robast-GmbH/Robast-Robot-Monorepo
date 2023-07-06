@@ -1,4 +1,4 @@
-#if !defined(DRAWER_CONTROLLER_MOTOR_HPP)
+#ifndef DRAWER_CONTROLLER_MOTOR_HPP
 #define DRAWER_CONTROLLER_MOTOR_HPP
 
 #include <TMCStepper.h>
