@@ -47,7 +47,11 @@ namespace stepper_motor
 
     void init();
 
-    void set_target_speed_with_ramp(uint32_t target_speed, uint8_t ramp_distance, uint8_t starting_normed_position);
+    void set_target_speed_with_decelerating_ramp(uint32_t target_speed,
+                                                 int32_t ramp_distance_int32,
+                                                 int32_t starting_position_int32);
+
+    void set_target_speed_with_accelerating_ramp(uint32_t target_speed, int16_t acceleration);
 
     void set_target_speed_instantly(uint32_t target_speed);
 
@@ -57,7 +61,7 @@ namespace stepper_motor
 
     void reset_stall_guard();
 
-    void handle_motor_control(uint8_t normed_current_position);
+    void handle_motor_control(int32_t current_position_int32);
 
     uint32_t get_active_speed() const;
 
@@ -84,9 +88,10 @@ namespace stepper_motor
 
     uint32_t _active_speed = 0;
     uint32_t _target_speed = 0;
-    int32_t _starting_speed_before_ramp;   // Although this cannot be negativ, we need int32t for calculations
-    uint8_t _ramp_distance;
-    uint8_t _starting_normed_position;
+    uint16_t _acceleration;
+    uint32_t _starting_speed_before_ramp_uint32;
+    uint32_t _ramp_distance_uint32;
+    int32_t _starting_position_int32;
     bool _speed_ramp_in_progress = false;
 
     uint32_t _start_ramp_timestamp;
@@ -101,13 +106,17 @@ namespace stepper_motor
 
     void set_active_speed(uint32_t speed);
 
-    void handle_acceleration(int32_t total_delta_speed, uint8_t distance_travelled);
+    void handle_time_dependend_acceleration();
 
-    void handle_deceleration(int32_t total_delta_speed, uint8_t distance_travelled);
+    void handle_position_dependend_deceleration(int32_t current_position_int32);
 
     void finish_speed_ramp(uint32_t final_speed);
 
-    uint32_t get_dt_since_start_in_ms();
+    uint32_t get_delta_speed(int32_t current_position_int32) const;
+
+    uint32_t get_distance_travelled(int32_t current_position_int32) const;
+
+    uint32_t get_dt_since_start_in_ms() const;
   };
 }   // namespace stepper_motor
 

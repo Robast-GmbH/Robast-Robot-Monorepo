@@ -76,7 +76,7 @@ namespace drawer_controller
 
     handle_electrical_lock_control();
 
-    _motor->handle_motor_control(_encoder->get_normed_current_position());
+    _motor->handle_motor_control(_encoder->get_current_position());
 
     if (_motor->get_active_speed() == 0)
     {
@@ -161,13 +161,12 @@ namespace drawer_controller
 
     if ((is_drawer_retracted && is_lock_open) || (!is_drawer_retracted))
     {
-      uint32_t normed_target_speed = (target_speed * DRAWER_MAX_SPEED) / UINT8_MAX;
-      _is_drawer_moving_out = _target_position_uint8 > _encoder->get_current_position();
+      uint32_t normed_target_speed_uint32 = (target_speed * DRAWER_MAX_SPEED) / UINT8_MAX;
+      _is_drawer_moving_out = _target_position_uint8 > _encoder->get_normed_current_position();
       _is_drawer_moving_out ? _motor->set_direction(stepper_motor::counter_clockwise)
                             : _motor->set_direction(stepper_motor::clockwise);
 
-      _motor->set_target_speed_with_ramp(
-        normed_target_speed, DRAWER_ACCELERATION_DISTANCE, _encoder->get_normed_current_position());
+      _motor->set_target_speed_with_accelerating_ramp(normed_target_speed_uint32, DEFAULT_DRAWER_ACCELERATION);
 
       _encoder->init_encoder_before_next_movement(_is_drawer_moving_out);
     }
@@ -182,14 +181,33 @@ namespace drawer_controller
   {
     if (_is_drawer_moving_out)
     {
-      handle_decelerating_for_moving_out_drawer();
-
-      handle_finished_moving_out_drawer();
+      handle_drawer_moving_out();
     }
 
     if (!_is_drawer_moving_out)
     {
       handle_drawer_moving_in();
+    }
+  }
+
+  void ElectricalDrawer::handle_decelerating_for_moving_in_drawer()
+  {
+    if (_encoder->get_normed_current_position() < DRAWER_MOVING_IN_DECELERATION_DISTANCE)
+    {
+      if (!_triggered_deceleration_for_drawer_moving_in)
+      {
+        _triggered_deceleration_for_drawer_moving_in = true;
+
+        _motor->set_target_speed_with_decelerating_ramp(
+          DRAWER_HOMING_SPEED,
+          _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_IN_DECELERATION_DISTANCE),
+          _encoder->get_current_position());
+      }
+    }
+
+    if (_encoder->get_normed_current_position() < DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE)
+    {
+      _motor->set_target_speed_instantly(DRAWER_HOMING_SPEED);
     }
   }
 
@@ -204,9 +222,20 @@ namespace drawer_controller
         "= %d\n",
         _encoder->get_normed_current_position(),
         _target_position_uint8);
-      _motor->set_target_speed_with_ramp(
-        0, DRAWER_MOVING_OUT_DECELERATION_DISTANCE, _encoder->get_normed_current_position());
       _triggered_deceleration_for_drawer_moving_out = true;
+      _motor->set_target_speed_with_decelerating_ramp(
+        0,
+        _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_OUT_DECELERATION_DISTANCE),
+        _encoder->get_current_position());
+    }
+  }
+
+  void ElectricalDrawer::handle_finished_moving_in_drawer()
+  {
+    bool is_drawer_closed = _electrical_lock->is_endstop_switch_pushed() && !_electrical_lock->is_lock_switch_pushed();
+    if (is_drawer_closed)
+    {
+      handle_drawer_just_closed();
     }
   }
 
@@ -231,47 +260,16 @@ namespace drawer_controller
 
   void ElectricalDrawer::handle_drawer_moving_in()
   {
-    if (_encoder->get_normed_current_position() < DRAWER_HOMING_EXTENT)
-    {
-      if (!_homing_initialized)
-      {
-        initialize_homing();
-      }
+    handle_decelerating_for_moving_in_drawer();
 
-      bool is_drawer_closed =
-        _electrical_lock->is_endstop_switch_pushed() && !_electrical_lock->is_lock_switch_pushed();
-      if (is_drawer_closed)
-      {
-        handle_drawer_just_closed();
-      }
-    }
+        handle_finished_moving_in_drawer();
   }
 
-  void ElectricalDrawer::initialize_homing()
+  void ElectricalDrawer::handle_drawer_moving_out()
   {
-    _homing_initialized = true;
+    handle_decelerating_for_moving_out_drawer();
 
-    // uint32_t delta_speed = _motor->get_active_speed() - DRAWER_HOMING_SPEED;
-
-    // uint32_t drawer_homing_extend_normed = (DRAWER_HOMING_EXTENT * DRAWER_MAX_EXTENT) / UINT8_MAX;
-
-    // uint32_t acceleration = ((delta_speed * delta_speed) / drawer_homing_extend_normed) / 1000;
-
-    // float active_speed = _motor->get_active_speed();
-    // float percentage_of_max_speed = active_speed / DRAWER_MAX_SPEED;
-    // float homing_percentage_of_max_extent = ((float) DRAWER_HOMING_EXTENT) / 255.0;
-    // uint16_t time_to_slow_down_in_us = (100 / percentage_of_max_speed) / homing_percentage_of_max_extent;
-    // Serial.printf(
-    //   "electrical_drawer.cpp, handle_drawer_moving_in(): Starting homing with time_to_slow_down_in_us = %d, "
-    //   "percentage_of_max_speed = %f, "
-    //   "homing_percentage_of_max_extent = %f, "
-    //   "acceleration = %d\n",
-    //   time_to_slow_down_in_us,
-    //   percentage_of_max_speed,
-    //   homing_percentage_of_max_extent,
-    //   acceleration);
-    _motor->set_target_speed_with_ramp(
-      DRAWER_HOMING_SPEED, DRAWER_HOMING_EXTENT, _encoder->get_normed_current_position());
+    handle_finished_moving_out_drawer();
   }
 
   void ElectricalDrawer::handle_drawer_just_opened()
@@ -300,7 +298,7 @@ namespace drawer_controller
       _electrical_lock->set_drawer_opening_is_in_progress(false);
       _electrical_drawer_opening_in_progress = false;
       _triggered_closing_lock_after_opening = false;
-      _homing_initialized = false;
+      _triggered_deceleration_for_drawer_moving_in = false;
 
       _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
                                                         _id,

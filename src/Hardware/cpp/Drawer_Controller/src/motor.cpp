@@ -154,92 +154,95 @@ namespace stepper_motor
   //   _is_stalled = false;
   // }
 
-  void Motor::handle_motor_control(uint8_t normed_current_position)
+  void Motor::handle_motor_control(int32_t current_position_int32)
   {
     if (!_speed_ramp_in_progress)
     {
       return;
     }
 
-    int32_t total_delta_speed = (int32_t) get_target_speed() - _starting_speed_before_ramp;
-    uint8_t distance_travelled = abs(normed_current_position - _starting_normed_position);
-    if (distance_travelled == 0)
-    {
-      distance_travelled = 1;
-    }
     // uint8_t total_delta_position = _target_normed_position - _starting_normed_position;
 
     if (get_active_speed() < get_target_speed())
     {
-      handle_acceleration(total_delta_speed, distance_travelled);
+      handle_time_dependend_acceleration();
     }
     if (get_active_speed() > get_target_speed())
     {
-      handle_deceleration(total_delta_speed, distance_travelled);
+      handle_position_dependend_deceleration(current_position_int32);
     }
   }
 
-  void Motor::handle_acceleration(int32_t total_delta_speed, uint8_t distance_travelled)
+  void Motor::handle_time_dependend_acceleration()
   {
-    int32_t delta_speed = (total_delta_speed * distance_travelled) / (int32_t) _ramp_distance;
+    uint32_t delta_speed_uint32 = get_dt_since_start_in_ms() * _acceleration;
 
-    uint32_t new_active_speed = _starting_speed_before_ramp + delta_speed;
+    uint32_t new_active_speed_uint32 = _starting_speed_before_ramp_uint32 + delta_speed_uint32;
 
     Serial.printf(
-      "Motor::handle_acceleration: active_speed = %d, target_speed = %d, delta_speed = %d, new_active_speed = %d, "
-      "_starting_speed_before_ramp = %d, distance_travelled = %d, _ramp_distance = %d, total_delta_speed = %d \n",
+      "Motor::handle_time_dependend_acceleration. active_speed = %d, target_speed = %d, delta_speed_uint32 = %d, "
+      "new_active_speed_uint32 = %d\n",
       get_active_speed(),
       get_target_speed(),
-      delta_speed,
-      new_active_speed,
-      _starting_speed_before_ramp,
-      distance_travelled,
-      _ramp_distance,
-      total_delta_speed);   // DEBUGGING
+      delta_speed_uint32,
+      new_active_speed_uint32);   // DEBUGGING
 
-    if (new_active_speed > get_target_speed())
+    if (new_active_speed_uint32 > get_target_speed())
     {
       finish_speed_ramp(get_target_speed());
     }
     else
     {
-      set_active_speed(new_active_speed);
+      set_active_speed(new_active_speed_uint32);
     }
   }
 
-  void Motor::handle_deceleration(int32_t total_delta_speed, uint8_t distance_travelled)
+  void Motor::handle_position_dependend_deceleration(int32_t current_position_int32)
   {
-    int32_t delta_speed = (total_delta_speed * distance_travelled) / (int32_t) _ramp_distance;
+    uint32_t distance_travelled_uint32 = get_distance_travelled(current_position_int32);
 
-    uint32_t new_active_speed = _starting_speed_before_ramp + delta_speed;
+    uint32_t total_delta_speed_uint32 =
+      abs((int32_t) get_target_speed() - (int32_t) _starting_speed_before_ramp_uint32);
 
-    if (new_active_speed < 0)
-    {
-      new_active_speed = 0;
-    }
+    uint32_t delta_speed_uint32 = (total_delta_speed_uint32 * distance_travelled_uint32) / _ramp_distance_uint32;
+
+    int32_t new_active_speed_int32 = (int32_t) _starting_speed_before_ramp_uint32 - (int32_t) delta_speed_uint32;
+
     Serial.printf(
-      "Motor::handle_deceleration: active_speed = %d, target_speed = %d, delta_speed = %d, new_active_speed = %d, "
-      "_starting_speed_before_ramp = %d, distance_travelled = %d, _ramp_distance = %d, total_delta_speed = %d \n",
+      "Motor::handle_position_dependend_deceleration: active_speed = %d, target_speed = %d, delta_speed_uint32 = %d, "
+      "new_active_speed_int32 = %d, _starting_speed_before_ramp = %d,  _ramp_distance = %d, distance_travelled_uint32 "
+      "= %d, total_delta_speed_uint32 = %d, _starting_position_int32 = %d\n",
       get_active_speed(),
       get_target_speed(),
-      delta_speed,
-      new_active_speed,
-      _starting_speed_before_ramp,
-      distance_travelled,
-      _ramp_distance,
-      total_delta_speed);   // DEBUGGING
+      delta_speed_uint32,
+      new_active_speed_int32,
+      _starting_speed_before_ramp_uint32,
+      _ramp_distance_uint32,
+      distance_travelled_uint32,
+      total_delta_speed_uint32,
+      _starting_position_int32);   // DEBUGGING
 
-    if (new_active_speed < get_target_speed())
+    if (new_active_speed_int32 < get_target_speed())
     {
       finish_speed_ramp(get_target_speed());
     }
     else
     {
-      set_active_speed(new_active_speed);
+      set_active_speed(new_active_speed_int32);
     }
   }
 
-  uint32_t Motor::get_dt_since_start_in_ms()
+  uint32_t Motor::get_distance_travelled(int32_t current_position_int32) const
+  {
+    uint32_t distance_travelled_uint32 = abs(current_position_int32 - _starting_position_int32);
+    if (distance_travelled_uint32 == 0)
+    {
+      distance_travelled_uint32 = 1;
+    }
+    return distance_travelled_uint32;
+  }
+
+  uint32_t Motor::get_dt_since_start_in_ms() const
   {
     uint32_t current_timestemp = millis();
     return current_timestemp - _start_ramp_timestamp;
@@ -264,14 +267,35 @@ namespace stepper_motor
     return _active_speed;
   }
 
-  void Motor::set_target_speed_with_ramp(uint32_t target_speed, uint8_t ramp_distance, uint8_t starting_normed_position)
+  void Motor::set_target_speed_with_decelerating_ramp(uint32_t target_speed,
+                                                      int32_t ramp_distance_int32,
+                                                      int32_t starting_position_int32)
   {
     if (target_speed != _target_speed)
     {
       _target_speed = target_speed;
-      _starting_speed_before_ramp = _active_speed;
-      _ramp_distance = ramp_distance;
-      _starting_normed_position = starting_normed_position;
+      _starting_speed_before_ramp_uint32 = _active_speed;
+      _ramp_distance_uint32 = ramp_distance_int32;
+      _starting_position_int32 = starting_position_int32;
+      _speed_ramp_in_progress = true;
+    }
+  }
+
+  void Motor::set_target_speed_with_accelerating_ramp(uint32_t target_speed, int16_t acceleration)
+  {
+    if (acceleration == 0)
+    {
+      set_active_speed(target_speed);
+      _target_speed = target_speed;
+      return;
+    }
+
+    if (target_speed != _target_speed)
+    {
+      _target_speed = target_speed;
+      _starting_speed_before_ramp_uint32 = _active_speed;
+      _acceleration = acceleration;
+      _start_ramp_timestamp = millis();   // TODO@Jacob: How to handle overflow?
       _speed_ramp_in_progress = true;
     }
   }
