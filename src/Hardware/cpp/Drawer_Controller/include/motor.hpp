@@ -114,8 +114,6 @@ namespace stepper_motor
 
     uint32_t get_delta_speed(int32_t current_position_int32) const;
 
-    uint32_t get_distance_travelled(int32_t current_position_int32) const;
-
     uint32_t get_dt_since_start_in_ms() const;
   };
 }   // namespace stepper_motor

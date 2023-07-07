@@ -161,8 +161,6 @@ namespace stepper_motor
       return;
     }
 
-    // uint8_t total_delta_position = _target_normed_position - _starting_normed_position;
-
     if (get_active_speed() < get_target_speed())
     {
       handle_time_dependend_acceleration();
@@ -179,14 +177,6 @@ namespace stepper_motor
 
     uint32_t new_active_speed_uint32 = _starting_speed_before_ramp_uint32 + delta_speed_uint32;
 
-    Serial.printf(
-      "Motor::handle_time_dependend_acceleration. active_speed = %d, target_speed = %d, delta_speed_uint32 = %d, "
-      "new_active_speed_uint32 = %d\n",
-      get_active_speed(),
-      get_target_speed(),
-      delta_speed_uint32,
-      new_active_speed_uint32);   // DEBUGGING
-
     if (new_active_speed_uint32 > get_target_speed())
     {
       finish_speed_ramp(get_target_speed());
@@ -199,7 +189,7 @@ namespace stepper_motor
 
   void Motor::handle_position_dependend_deceleration(int32_t current_position_int32)
   {
-    uint32_t distance_travelled_uint32 = get_distance_travelled(current_position_int32);
+    uint32_t distance_travelled_uint32 = abs(current_position_int32 - _starting_position_int32);
 
     uint32_t total_delta_speed_uint32 =
       abs((int32_t) get_target_speed() - (int32_t) _starting_speed_before_ramp_uint32);
@@ -207,20 +197,6 @@ namespace stepper_motor
     uint32_t delta_speed_uint32 = (total_delta_speed_uint32 * distance_travelled_uint32) / _ramp_distance_uint32;
 
     int32_t new_active_speed_int32 = (int32_t) _starting_speed_before_ramp_uint32 - (int32_t) delta_speed_uint32;
-
-    Serial.printf(
-      "Motor::handle_position_dependend_deceleration: active_speed = %d, target_speed = %d, delta_speed_uint32 = %d, "
-      "new_active_speed_int32 = %d, _starting_speed_before_ramp = %d,  _ramp_distance = %d, distance_travelled_uint32 "
-      "= %d, total_delta_speed_uint32 = %d, _starting_position_int32 = %d\n",
-      get_active_speed(),
-      get_target_speed(),
-      delta_speed_uint32,
-      new_active_speed_int32,
-      _starting_speed_before_ramp_uint32,
-      _ramp_distance_uint32,
-      distance_travelled_uint32,
-      total_delta_speed_uint32,
-      _starting_position_int32);   // DEBUGGING
 
     if (new_active_speed_int32 < get_target_speed())
     {
@@ -230,16 +206,6 @@ namespace stepper_motor
     {
       set_active_speed(new_active_speed_int32);
     }
-  }
-
-  uint32_t Motor::get_distance_travelled(int32_t current_position_int32) const
-  {
-    uint32_t distance_travelled_uint32 = abs(current_position_int32 - _starting_position_int32);
-    if (distance_travelled_uint32 == 0)
-    {
-      distance_travelled_uint32 = 1;
-    }
-    return distance_travelled_uint32;
   }
 
   uint32_t Motor::get_dt_since_start_in_ms() const

@@ -79,15 +79,6 @@ namespace drawer_controller
     integrated_position =
       ((current_timestemp - _last_timestemp) * active_speed) / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
 
-    Serial.printf(
-      "Encoder::get_integrated_drawer_position. current_timestemp = %d, _last_timestemp = %d, active_speed = %d, "
-      "integrated_position = %d, _current_position_int32 = %d\n",
-      current_timestemp,
-      _last_timestemp,
-      active_speed,
-      integrated_position,
-      _current_position_int32);   // DEBUGGING
-
     if (!_is_drawer_moving_out)
     {
       integrated_position *= -1;

@@ -218,8 +218,7 @@ namespace drawer_controller
     {
       Serial.printf(
         "E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = %d, "
-        "_target_position_uint8 "
-        "= %d\n",
+        "_target_position_uint8 = %d\n",
         _encoder->get_normed_current_position(),
         _target_position_uint8);
       _triggered_deceleration_for_drawer_moving_out = true;
@@ -262,7 +261,7 @@ namespace drawer_controller
   {
     handle_decelerating_for_moving_in_drawer();
 
-        handle_finished_moving_in_drawer();
+    handle_finished_moving_in_drawer();
   }
 
   void ElectricalDrawer::handle_drawer_moving_out()
