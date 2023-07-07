@@ -1,4 +1,4 @@
-FROM moveit/moveit2:humble-release
+FROM ros:humble as base
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
@@ -41,19 +41,19 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && rosdep init || echo "rosdep already initialized"
     
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
+# ENV NVIDIA_VISIBLE_DEVICES all
+# ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
 
-#instal to use the nvidia gpu in the docker
-RUN apt-get update && apt-get install -y \
-    libglvnd0 \
-    libgl1 \
-    libglx0 \
-    libegl1 \
-    libxext6 \
-    libx11-6 \
-    && rm -rf /var/lib/apt/lists/* \
-    && rosdep init || echo "rosdep already initialized"
+# #instal to use the nvidia gpu in the docker
+# RUN apt-get update && apt-get install -y \
+#     libglvnd0 \
+#     libgl1 \
+#     libglx0 \
+#     libegl1 \
+#     libxext6 \
+#     libx11-6 \
+#     && rm -rf /var/lib/apt/lists/* \
+#     && rosdep init || echo "rosdep already initialized"
 
 #update drivers to avoid a blackscreen #TODO @all regularly check if its fixed in base docker
 RUN apt-get update && apt-get install -y \
@@ -105,6 +105,9 @@ RUN apt-get update && apt-get install -y\
     ros-${ROS_DISTRO}-rmf-visualization-rviz2-plugins\
     ros-${ROS_DISTRO}-rmf-websocket\
     ros-${ROS_DISTRO}-navigation2
+
+RUN pip3 install uvicorn \
+    fastapi
 
 RUN python3 -m pip install -U  cyclonedds nudged
 

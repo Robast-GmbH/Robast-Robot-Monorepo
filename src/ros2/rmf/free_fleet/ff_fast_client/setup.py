@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'ff_fast_client = ff_fast_client.ff_fast_client:main'
+                    'client = ff_fast_client.ff_fast_client:main'
         ],
     },
 )

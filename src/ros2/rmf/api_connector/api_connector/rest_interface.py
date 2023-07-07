@@ -22,17 +22,12 @@ class RestInterface():
         self.polling_timer = ros_node.create_timer(polling_interval, self.api_polling_callback)
 
         
-        @self.app.post("/opendrawer")
+        @self.app.post("/drawer/open")
         def open_drawer(drawer: Drawer, robot:Robot):
             free_fleet_node.handle_open_drawer_request(robot.fleet_name, robot.name, drawer.module_id, drawer.id)
             return 
-        
-        @app.get("/items/", status_code=200)
-        async def read_item():
-            return {"item_id"}
-
-
-    def run(self, host='0.0.0.0', port=7777, log_level='warning'):
+      
+    def run(self, host='0.0.0.0', port=777, log_level='warning'):
         uvicorn.run(self.app, host=host, port=port, log_level=log_level)
 
     def get_fastapi(self):
