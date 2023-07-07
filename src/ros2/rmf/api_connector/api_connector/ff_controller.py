@@ -12,20 +12,27 @@ class free_fleet_controller:
 
     def __init__(self): 
         
-        self.declare_parameter('dds_domain', 42)
-        self.declare_parameter('dds_robot_state_topic', "/robot_state")
-        self.declare_parameter('dds_mode_request_topic', "/mode_request")
-        self.declare_parameter('dds_path_request_topic', "/path_request")
-        self.declare_parameter('dds_destination_request_topic', "/destination_request")
-        self.declare_parameter('dds_open_drawer_topic', "/OpenDrawerequest")
+   # self.declare_parameter('dds_domain', 42)
+        # self.declare_parameter('dds_robot_state_topic', "/robot_state")
+        # self.declare_parameter('dds_mode_request_topic', "/mode_request")
+        # self.declare_parameter('dds_path_request_topic', "/path_request")
+        # self.declare_parameter('dds_destination_request_topic', "/destination_request")
+        # self.declare_parameter('dds_open_drawer_topic', "/OpenDrawerequest")
 
 
-        self.dds_domain = self.get_parameter('dds_domain').get_parameter_value().integer_value
-        self.dds_robot_state_topic = self.get_parameter('dds_robot_state_topic').get_parameter_value().string_value
-        self.dds_mode_request_topic = self.get_parameter('dds_mode_request_topic').get_parameter_value().string_value
-        self.dds_dds_path_request_topic = self.get_parameter('dds_path_request_topic').get_parameter_value().string_value
-        self.dds_destination_request_topic = self.get_parameter('dds_destination_request_topic').get_parameter_value().string_value
-        self.dds_open_drawer_topic = self.get_parameter('dds_open_drawer_topic').get_parameter_value().string_value
+        # self.dds_domain = self.get_parameter('dds_domain').get_parameter_value().integer_value
+        # self.dds_robot_state_topic = self.get_parameter('dds_robot_state_topic').get_parameter_value().string_value
+        # self.dds_mode_request_topic = self.get_parameter('dds_mode_request_topic').get_parameter_value().string_value
+        # self.dds_dds_path_request_topic = self.get_parameter('dds_path_request_topic').get_parameter_value().string_value
+        # self.dds_destination_request_topic = self.get_parameter('dds_destination_request_topic').get_parameter_value().string_value
+        # self.dds_open_drawer_topic = self.get_parameter('dds_open_drawer_topic').get_parameter_value().string_value
+        
+        self.dds_domain = 42
+        self.dds_robot_state_topic = "/robot_state"
+        self.dds_mode_request_topic = "/mode_request"
+        self.dds_dds_path_request_topic = "/path_request"
+        self.dds_destination_request_topic = "/destination_request"
+        self.dds_open_drawer_topic = "/OpenDrawerequest"
         
         self.robot_states=[] #:list[messages.FreeFleetData_RobotState] =[]
         self.start_reciving_robot_states()
