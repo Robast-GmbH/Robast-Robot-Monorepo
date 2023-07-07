@@ -47,7 +47,9 @@ namespace stepper_motor
 
     void init();
 
-    void set_target_speed(uint32_t target_speed, uint16_t acceleration = DEFAULT_MOTOR_ACCELERATION);
+    void set_target_speed_with_ramp(uint32_t target_speed, uint8_t ramp_distance, uint8_t starting_normed_position);
+
+    void set_target_speed_instantly(uint32_t target_speed);
 
     void set_direction(Direction direction);
 
@@ -55,7 +57,7 @@ namespace stepper_motor
 
     void reset_stall_guard();
 
-    void handle_motor_control();
+    void handle_motor_control(uint8_t normed_current_position);
 
     uint32_t get_active_speed() const;
 
@@ -83,7 +85,8 @@ namespace stepper_motor
     uint32_t _active_speed = 0;
     uint32_t _target_speed = 0;
     int32_t _starting_speed_before_ramp;   // Although this cannot be negativ, we need int32t for calculations
-    uint16_t _acceleration = DEFAULT_MOTOR_ACCELERATION;
+    uint8_t _ramp_distance;
+    uint8_t _starting_normed_position;
     bool _speed_ramp_in_progress = false;
 
     uint32_t _start_ramp_timestamp;
@@ -98,9 +101,9 @@ namespace stepper_motor
 
     void set_active_speed(uint32_t speed);
 
-    void handle_acceleration(uint32_t delta_speed);
+    void handle_acceleration(int32_t total_delta_speed, uint8_t distance_travelled);
 
-    void handle_deceleration(uint32_t delta_speed);
+    void handle_deceleration(int32_t total_delta_speed, uint8_t distance_travelled);
 
     void finish_speed_ramp(uint32_t final_speed);
 

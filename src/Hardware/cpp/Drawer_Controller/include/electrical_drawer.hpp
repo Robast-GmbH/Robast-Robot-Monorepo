@@ -13,9 +13,11 @@
 #include "i_gpio_wrapper.hpp"
 #include "motor.hpp"
 
-#define DRAWER_MAX_SPEED     35000
-#define DRAWER_HOMING_SPEED  150
-#define DRAWER_HOMING_EXTENT 40   // this value determines the extent of the homing area (max 255)
+#define DRAWER_MAX_SPEED                        35000
+#define DRAWER_HOMING_SPEED                     150
+#define DRAWER_HOMING_EXTENT                    40   // this value determines the extent of the homing area (max 255)
+#define DRAWER_MOVING_OUT_DECELERATION_DISTANCE 50   // distance for the deceleration
+#define DRAWER_ACCELERATION_DISTANCE            20   // distance for the acceleration
 
 namespace drawer_controller
 {
@@ -67,6 +69,7 @@ namespace drawer_controller
     std::unique_ptr<CanUtils> _can_utils;
 
     bool _is_drawer_moving_out;
+    bool _triggered_deceleration_for_drawer_moving_out = false;
     bool _electrical_drawer_opening_in_progress = false;
     bool _homing_initialized = false;
 
@@ -84,7 +87,11 @@ namespace drawer_controller
 
     void handle_drawer_just_closed() override;
 
-    void handle_drawer_moving_in(uint8_t normed_current_position_uint8);
+    void handle_drawer_moving_in();
+
+    void handle_decelerating_for_moving_out_drawer();
+
+    void handle_finished_moving_out_drawer();
 
     void initialize_homing();
 

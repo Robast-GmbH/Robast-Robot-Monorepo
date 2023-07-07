@@ -154,34 +154,48 @@ namespace stepper_motor
   //   _is_stalled = false;
   // }
 
-  void Motor::handle_motor_control()
+  void Motor::handle_motor_control(uint8_t normed_current_position)
   {
     if (!_speed_ramp_in_progress)
     {
       return;
     }
 
-    uint32_t delta_speed = get_dt_since_start_in_ms() * _acceleration;
+    int32_t total_delta_speed = (int32_t) get_target_speed() - _starting_speed_before_ramp;
+    uint8_t distance_travelled = abs(normed_current_position - _starting_normed_position);
+    if (distance_travelled == 0)
+    {
+      distance_travelled = 1;
+    }
+    // uint8_t total_delta_position = _target_normed_position - _starting_normed_position;
 
     if (get_active_speed() < get_target_speed())
     {
-      handle_acceleration(delta_speed);
+      handle_acceleration(total_delta_speed, distance_travelled);
     }
     if (get_active_speed() > get_target_speed())
     {
-      handle_deceleration(delta_speed);
+      handle_deceleration(total_delta_speed, distance_travelled);
     }
   }
 
-  void Motor::handle_acceleration(uint32_t delta_speed)
+  void Motor::handle_acceleration(int32_t total_delta_speed, uint8_t distance_travelled)
   {
+    int32_t delta_speed = (total_delta_speed * distance_travelled) / (int32_t) _ramp_distance;
+
     uint32_t new_active_speed = _starting_speed_before_ramp + delta_speed;
+
     Serial.printf(
-      "Motor::handle_acceleration. active_speed = %d, target_speed = %d, delta_speed = %d, new_active_speed = %d\n",
+      "Motor::handle_acceleration: active_speed = %d, target_speed = %d, delta_speed = %d, new_active_speed = %d, "
+      "_starting_speed_before_ramp = %d, distance_travelled = %d, _ramp_distance = %d, total_delta_speed = %d \n",
       get_active_speed(),
       get_target_speed(),
       delta_speed,
-      new_active_speed);   // DEBUGGING
+      new_active_speed,
+      _starting_speed_before_ramp,
+      distance_travelled,
+      _ramp_distance,
+      total_delta_speed);   // DEBUGGING
 
     if (new_active_speed > get_target_speed())
     {
@@ -193,21 +207,27 @@ namespace stepper_motor
     }
   }
 
-  void Motor::handle_deceleration(uint32_t delta_speed)
+  void Motor::handle_deceleration(int32_t total_delta_speed, uint8_t distance_travelled)
   {
-    int32_t new_active_speed = _starting_speed_before_ramp - (int32_t) delta_speed;
+    int32_t delta_speed = (total_delta_speed * distance_travelled) / (int32_t) _ramp_distance;
+
+    uint32_t new_active_speed = _starting_speed_before_ramp + delta_speed;
+
     if (new_active_speed < 0)
     {
       new_active_speed = 0;
     }
     Serial.printf(
-      "Motor::handle_deceleration. active_speed = %d, target_speed = %d, delta_speed = %d, new_active_speed = %d, "
-      "_starting_speed_before_ramp = %d, \n",
+      "Motor::handle_deceleration: active_speed = %d, target_speed = %d, delta_speed = %d, new_active_speed = %d, "
+      "_starting_speed_before_ramp = %d, distance_travelled = %d, _ramp_distance = %d, total_delta_speed = %d \n",
       get_active_speed(),
       get_target_speed(),
       delta_speed,
       new_active_speed,
-      _starting_speed_before_ramp);   // DEBUGGING
+      _starting_speed_before_ramp,
+      distance_travelled,
+      _ramp_distance,
+      total_delta_speed);   // DEBUGGING
 
     if (new_active_speed < get_target_speed())
     {
@@ -244,23 +264,22 @@ namespace stepper_motor
     return _active_speed;
   }
 
-  void Motor::set_target_speed(uint32_t target_speed, uint16_t acceleration)
+  void Motor::set_target_speed_with_ramp(uint32_t target_speed, uint8_t ramp_distance, uint8_t starting_normed_position)
   {
-    if (acceleration == 0)
-    {
-      set_active_speed(target_speed);
-      _target_speed = target_speed;
-      return;
-    }
-
     if (target_speed != _target_speed)
     {
       _target_speed = target_speed;
       _starting_speed_before_ramp = _active_speed;
-      _acceleration = acceleration;
-      _start_ramp_timestamp = millis();   // TODO@Jacob: How to handle overflow?
+      _ramp_distance = ramp_distance;
+      _starting_normed_position = starting_normed_position;
       _speed_ramp_in_progress = true;
     }
+  }
+
+  void Motor::set_target_speed_instantly(uint32_t target_speed)
+  {
+    set_active_speed(target_speed);
+    _target_speed = target_speed;
   }
 
   uint32_t Motor::get_target_speed() const
