@@ -35,6 +35,9 @@
             <input_port name="topic" default="/drawer_feedback_status"/>
         </Condition>
         <Action ID="UserToDrawerMapping" editable="true"/>
+        <Decorator ID="BaseErrorDecorator">
+            <input_port name="topic" default="/robast_error"/>
+        </Decorator>
     </TreeNodesModel>
 </root>
 

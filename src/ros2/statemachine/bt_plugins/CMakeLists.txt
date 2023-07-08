@@ -13,6 +13,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
+find_package(error_utils REQUIRED)
 
 set(dependencies
   rclcpp
@@ -20,6 +21,7 @@ set(dependencies
   std_msgs
   communication_interfaces
   behaviortree_cpp
+  error_utils
 )
 include_directories(
   include
@@ -82,6 +84,9 @@ list(APPEND plugin_libs nfc_to_drawer_action_bt_node)
 add_library(electric_drawer_status_condition_bt_node SHARED src/condition/electric_drawer_status_condition.cpp)
 list(APPEND plugin_libs electric_drawer_status_condition_bt_node)
 
+add_library(base_error_decorator_node SHARED src/decorator/base_error_decorator.cpp)
+list(APPEND plugin_libs base_error_decorator_node)
+
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
   target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)
@@ -125,6 +130,8 @@ if(BUILD_TESTING)
   list(APPEND test_executables nfc_to_drawer_action_test)
   add_executable(move_electric_drawer_action_test tests/actions/move_electric_drawer_action_test.cpp)
   list(APPEND test_executables move_electric_drawer_action_test)
+  add_executable(error_decorator_test tests/decorators/error_decorator_test.cpp)
+  list(APPEND test_executables error_decorator_test)
   
 
   ament_target_dependencies(${test_libs}

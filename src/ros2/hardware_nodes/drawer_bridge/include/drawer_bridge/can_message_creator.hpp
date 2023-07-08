@@ -22,7 +22,7 @@ namespace drawer_bridge
     CanMessage create_can_msg_drawer_task(const DrawerTask& msg) const;
 
    private:
-    CanEncoderDecoder can_encoder_decoder_ = CanEncoderDecoder();
-    robast_can_msgs::CanDb can_db_ = robast_can_msgs::CanDb();
+    CanEncoderDecoder _can_encoder_decoder = CanEncoderDecoder();
+    robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();
   };
 }   // namespace drawer_bridge

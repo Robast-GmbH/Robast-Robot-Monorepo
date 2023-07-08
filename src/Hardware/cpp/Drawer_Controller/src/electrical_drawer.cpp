@@ -13,23 +13,13 @@ namespace drawer_controller
                                      uint8_t motor_driver_address)
       : _module_id{module_id},
         _id{id},
-        _can_db{can_db},
         _gpio_wrapper{gpio_wrapper},
         _stepper_pin_id_config{stepper_pin_id_config},
-        _use_encoder{use_encoder},
-        _electrical_lock{std::make_unique<ElectricalLock>(gpio_wrapper)}
+        _encoder{std::make_unique<drawer_controller::Encoder>(use_encoder, encoder_pin_a, encoder_pin_b)},
+        _electrical_lock{std::make_unique<ElectricalLock>(gpio_wrapper)},
+        _can_utils{std::make_unique<CanUtils>(can_db)},
+        _motor{std::make_unique<stepper_motor::Motor>(motor_driver_address, _gpio_wrapper, _stepper_pin_id_config)}
   {
-    if (use_encoder)
-    {
-      _encoder = std::make_unique<ESP32Encoder>(true);
-      ESP32Encoder::useInternalWeakPullResistors = UP;
-      _encoder->attachFullQuad(encoder_pin_a, encoder_pin_b);
-      _encoder->setCount(0);
-    }
-
-    _motor = std::make_unique<stepper_motor::Motor>(motor_driver_address, _gpio_wrapper, _stepper_pin_id_config);
-    _feedback_msg_queue.clear();
-    _head_of_feedback_msg_queue = 0;
   }
 
   void ElectricalDrawer::init_electrical_lock(uint8_t pwr_open_lock_pin_id,
@@ -74,7 +64,7 @@ namespace drawer_controller
 
   std::optional<robast_can_msgs::CanMessage> ElectricalDrawer::can_out()
   {
-    return get_element_from_feedback_msg_queue();
+    return _can_utils->get_element_from_feedback_msg_queue();
   }
 
   void ElectricalDrawer::update_state()
@@ -84,8 +74,7 @@ namespace drawer_controller
       return;
     }
 
-    _electrical_lock->handle_lock_control();
-    _electrical_lock->handle_reading_sensors();
+    handle_electrical_lock_control();
 
     _motor->handle_motor_control();
 
@@ -94,29 +83,24 @@ namespace drawer_controller
       return;
     }
 
-    update_position();
+    _encoder->update_position(_motor->get_active_speed());
 
     handle_drawer_just_opened();
 
     check_if_motion_is_finished();
   }
 
-  int32_t ElectricalDrawer::get_integrated_drawer_position()
+  void ElectricalDrawer::handle_electrical_lock_control()
   {
-    stepper_motor::Direction direction = _motor->get_direction();
-    int32_t integrated_position = 0;
-    uint32_t current_timestemp = millis();
+    _electrical_lock->handle_lock_control();
 
-    integrated_position =
-      (current_timestemp - _last_timestemp) * _motor->get_active_speed() / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
-
-    if (!_is_drawer_moving_out)
+    if (_electrical_lock->is_drawer_auto_close_timeout_triggered())
     {
-      integrated_position *= -1;
+      _can_utils->handle_error_feedback_msg(_module_id, _id, CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
+      _electrical_lock->set_drawer_auto_close_timeout_triggered(false);
     }
-    _last_timestemp = current_timestemp;
 
-    return integrated_position;
+    _electrical_lock->handle_reading_sensors();
   }
 
   void ElectricalDrawer::unlock()
@@ -137,7 +121,7 @@ namespace drawer_controller
   {
     if (_electrical_lock->is_endstop_switch_pushed())
     {
-      _current_position_int32 = 0;
+      _encoder->set_current_position(0);
     }
   }
 
@@ -154,9 +138,14 @@ namespace drawer_controller
 
     check_if_drawer_is_homed();
 
-    if (_target_position_uint8 == _current_position_int32)
+    if (_target_position_uint8 == _encoder->get_current_position())
     {
-      create_electrical_drawer_feedback_msg();
+      _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
+                                                        _id,
+                                                        _electrical_lock->is_endstop_switch_pushed(),
+                                                        _electrical_lock->is_lock_switch_pushed(),
+                                                        _motor->get_is_stalled(),
+                                                        _encoder->get_normed_current_position());
       return;
     }
 
@@ -171,16 +160,13 @@ namespace drawer_controller
     if ((is_drawer_retracted && is_lock_open) || (!is_drawer_retracted))
     {
       uint32_t normed_target_speed = (target_speed * DRAWER_MAX_SPEED) / UINT8_MAX;
-      _is_drawer_moving_out = _target_position_uint8 > _current_position_int32;
+      _is_drawer_moving_out = _target_position_uint8 > _encoder->get_current_position();
       _is_drawer_moving_out ? _motor->set_direction(stepper_motor::counter_clockwise)
                             : _motor->set_direction(stepper_motor::clockwise);
 
       _motor->set_target_speed(normed_target_speed);
 
-      if (!_use_encoder)
-      {
-        _last_timestemp = millis();
-      }
+      _encoder->init_encoder_before_next_movement(_is_drawer_moving_out);
     }
     else
     {
@@ -189,57 +175,9 @@ namespace drawer_controller
     }
   }
 
-  void ElectricalDrawer::create_electrical_drawer_feedback_msg()
-  {
-    robast_can_msgs::CanMessage can_msg_electrical_drawer_feedback =
-      _can_db->can_messages.at(CAN_MSG_ELECTRICAL_DRAWER_FEEDBACK);
-    std::vector can_signals_electrical_drawer_feedback = can_msg_electrical_drawer_feedback.get_can_signals();
-
-    can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_MODULE_ID).set_data(_module_id);
-    can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_ID).set_data(_id);
-
-    const bool is_endstop_switch_pushed = _electrical_lock->is_endstop_switch_pushed();
-    can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED).set_data(is_endstop_switch_pushed);
-
-    const bool is_lock_switch_pushed = _electrical_lock->is_lock_switch_pushed();
-    can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED).set_data(is_lock_switch_pushed);
-
-    const bool is_drawer_stall_guard_triggered = _motor->get_is_stalled();
-    can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED)
-      .set_data(is_lock_switch_pushed);
-
-    uint8_t normed_current_position = get_normed_current_position();
-    can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_POSITION).set_data(normed_current_position);
-
-    can_msg_electrical_drawer_feedback.set_can_signals(can_signals_electrical_drawer_feedback);
-
-    Serial.printf("Creating feedback_msg for module_id %d, drawer_id %d and position: %d\n",
-                  _module_id,
-                  _id,
-                  normed_current_position);
-
-    add_element_to_feedback_msg_queue(can_msg_electrical_drawer_feedback);
-  }
-
-  void ElectricalDrawer::update_position()
-  {
-    if (_use_encoder)
-    {
-      _current_position_int32 = _encoder->getCount();
-    }
-    else
-    {
-      _current_position_int32 += get_integrated_drawer_position();
-      if (_current_position_int32 < 0)
-      {
-        _current_position_int32 = 0;
-      }
-    }
-  }
-
   void ElectricalDrawer::check_if_motion_is_finished()
   {
-    uint8_t normed_current_position_uint8 = get_normed_current_position();
+    uint8_t normed_current_position_uint8 = _encoder->get_normed_current_position();
 
     if (_is_drawer_moving_out && (normed_current_position_uint8 >= _target_position_uint8))
     {
@@ -247,7 +185,12 @@ namespace drawer_controller
                     normed_current_position_uint8,
                     _target_position_uint8);
       _motor->set_target_speed(0, 0);   // TODO@Jacob: Do not set the target_speed in dt = 0
-      create_electrical_drawer_feedback_msg();
+      _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
+                                                        _id,
+                                                        _electrical_lock->is_endstop_switch_pushed(),
+                                                        _electrical_lock->is_lock_switch_pushed(),
+                                                        _motor->get_is_stalled(),
+                                                        _encoder->get_normed_current_position());
       return;
     }
 
@@ -292,20 +235,6 @@ namespace drawer_controller
     _motor->set_target_speed(DRAWER_HOMING_SPEED, time_to_slow_down_in_us);
   }
 
-  uint8_t ElectricalDrawer::get_normed_current_position()
-  {
-    uint32_t normed_current_position_uint32 = (_current_position_int32 * 255) / DRAWER_MAX_EXTENT;
-
-    if (normed_current_position_uint32 > 255)
-    {
-      return 255;
-    }
-    else
-    {
-      return normed_current_position_uint32;
-    }
-  }
-
   void ElectricalDrawer::handle_drawer_just_opened()
   {
     bool is_drawer_retracted = _electrical_lock->is_endstop_switch_pushed();
@@ -326,64 +255,22 @@ namespace drawer_controller
     {
       Serial.println("Drawer is closed! Setting speed to 0 and creating feedback messages!");
       _motor->set_target_speed(0, 0);
-      if (_use_encoder)
-      {
-        _encoder->setCount(0);
-      }
-      _current_position_int32 = 0;
+      _encoder->set_current_position(0);
 
       // reset these flags for the next opening of the drawer
       _electrical_lock->set_drawer_opening_is_in_progress(false);
       _electrical_drawer_opening_in_progress = false;
       _triggered_closing_lock_after_opening = false;
       _homing_initialized = false;
-      create_electrical_drawer_feedback_msg();
-      create_drawer_closed_feedback_can_msg();
-    }
-  }
 
-  void ElectricalDrawer::create_drawer_closed_feedback_can_msg()
-  {
-    robast_can_msgs::CanMessage can_msg_drawer_feedback = this->_can_db->can_messages.at(CAN_MSG_DRAWER_FEEDBACK);
-    std::vector can_signals_drawer_feedback = can_msg_drawer_feedback.get_can_signals();
-
-    can_signals_drawer_feedback.at(CAN_SIGNAL_MODULE_ID).set_data(_module_id);
-    can_signals_drawer_feedback.at(CAN_SIGNAL_DRAWER_ID).set_data(_id);
-
-    const bool is_endstop_switch_pushed = _electrical_lock->is_endstop_switch_pushed();
-    can_signals_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED).set_data(is_endstop_switch_pushed);
-
-    const bool is_lock_switch_pushed = _electrical_lock->is_lock_switch_pushed();
-    can_signals_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED).set_data(is_lock_switch_pushed);
-
-    can_msg_drawer_feedback.set_can_signals(can_signals_drawer_feedback);
-
-    add_element_to_feedback_msg_queue(can_msg_drawer_feedback);
-  }
-
-  void ElectricalDrawer::add_element_to_feedback_msg_queue(robast_can_msgs::CanMessage feedback_msg)
-  {
-    _feedback_msg_queue.push_back(feedback_msg);
-  }
-
-  std::optional<robast_can_msgs::CanMessage> ElectricalDrawer::get_element_from_feedback_msg_queue()
-  {
-    uint8_t num_of_msgs_in_queue = _feedback_msg_queue.size();
-    if (num_of_msgs_in_queue == 0)
-    {
-      return {};
-    }
-
-    if (_head_of_feedback_msg_queue == (num_of_msgs_in_queue - 1))
-    {
-      robast_can_msgs::CanMessage feedback_can_msg = _feedback_msg_queue[_head_of_feedback_msg_queue];
-      _feedback_msg_queue.clear();
-      _head_of_feedback_msg_queue = 0;
-      return feedback_can_msg;
-    }
-    else
-    {
-      return _feedback_msg_queue[_head_of_feedback_msg_queue++];
+      _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
+                                                        _id,
+                                                        _electrical_lock->is_endstop_switch_pushed(),
+                                                        _electrical_lock->is_lock_switch_pushed(),
+                                                        _motor->get_is_stalled(),
+                                                        _encoder->get_normed_current_position());
+      _can_utils->handle_drawer_feedback_msg(
+        _module_id, _id, _electrical_lock->is_endstop_switch_pushed(), _electrical_lock->is_lock_switch_pushed());
     }
   }
 
@@ -391,14 +278,12 @@ namespace drawer_controller
   {
     int normed_target_position = (_target_position_uint8 / 255.0) * DRAWER_MAX_EXTENT;
     Serial.printf(
-      "Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: %d, _last_timestemp: %d, "
+      "Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: %d"
       "millis(): %d\n",
-      _current_position_int32,
+      _encoder->get_current_position(),
       normed_target_position,
       _motor->get_active_speed(),
-      _motor->get_target_speed(),
-      _last_timestemp,
-      millis());
+      _motor->get_target_speed());
   }
 
   void ElectricalDrawer::debug_prints_electric_drawer_task(robast_can_msgs::CanMessage can_message)

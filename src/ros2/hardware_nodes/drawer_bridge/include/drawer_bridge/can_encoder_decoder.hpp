@@ -16,7 +16,7 @@ namespace drawer_bridge
     std::optional<robast_can_msgs::CanMessage> decode_msg(can_msgs::msg::Frame msg) const;
 
    private:
-    robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
+    robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();
   };
 }   // namespace drawer_bridge
 

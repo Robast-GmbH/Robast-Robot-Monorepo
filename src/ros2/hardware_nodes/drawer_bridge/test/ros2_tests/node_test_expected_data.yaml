@@ -3,3 +3,7 @@ drawer_status:
     module_id: 0x010203
     drawer_id: 2
   drawer_is_open: true
+
+error_feedback:
+  error_code: 50301
+  error_data: "\x03\x02\x01"
