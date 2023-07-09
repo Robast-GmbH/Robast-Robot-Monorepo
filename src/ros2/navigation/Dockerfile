@@ -99,10 +99,10 @@ RUN apt-get update && apt-get upgrade -y
 # COPY "/entrypoint.sh" "/entrypoint.sh"
 #ENTRYPOINT ["/entrypoint.sh"]
 # dds setup / configuration
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/fast_DDS_config.xml
-ENV CYCLONEDDS_URI=/workspace/cyclone_DDS_config.xml
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
 
 #watch -d -n 0.5 nvidia-smi
