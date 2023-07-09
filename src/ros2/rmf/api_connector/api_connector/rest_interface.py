@@ -27,7 +27,7 @@ class RestInterface():
             free_fleet_node.handle_open_drawer_request(robot.fleet_name, robot.name, drawer.module_id, drawer.id)
             return 
       
-    def run(self, host='0.0.0.0', port=777, log_level='warning'):
+    def run(self, host='0.0.0.0', port=3001, log_level='warning'):
         uvicorn.run(self.app, host=host, port=port, log_level=log_level)
 
     def get_fastapi(self):
