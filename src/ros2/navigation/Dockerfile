@@ -96,8 +96,8 @@ RUN apt-get update && apt-get upgrade -y
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/fast_DDS_config.xml
-#ENV CYCLONEDDS_URI=/workspace/cyclone_DDS_config.xml
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
 
 # COPY "/entrypoint.sh" "/entrypoint.sh"

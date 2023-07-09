@@ -32,7 +32,7 @@
                         "label": "build-ros-theron",
                         "detail": "Symlink Build for Ros-Theron.",
                         "type": "shell",
-                        "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip robast_map_update_module",
+                        "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip robast_map_update_module robast_nav_recoveries",
                         "problemMatcher": []
                 },
                 {
@@ -154,7 +154,7 @@
                 {
                         "type": "shell",
                         "label": "start rviz",
-                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup rviz_launch.py",
+                        "command": "export RMW_IMPLEMENTATION='${input:DDS}'; source /workspace/install/setup.bash; ros2 launch nav_bringup rviz_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -174,7 +174,7 @@
                 {
                         "type": "shell",
                         "label": "start nav_without_localization",
-                        "command": "source /workspace/install/setup.bash; source /workspace_nav2/install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
+                        "command": "export RMW_IMPLEMENTATION='${input:DDS}'; source /workspace/install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -200,7 +200,7 @@
                 {
                         "type": "shell",
                         "label": "start slam_toolbox",
-                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
+                        "command": "export RMW_IMPLEMENTATION='${input:DDS}'; source /workspace/install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -230,7 +230,7 @@
                 {
                         "type": "shell",
                         "label": "start robot_localization",
-                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py;",
+                        "command": "export RMW_IMPLEMENTATION='${input:DDS}'; source /workspace/install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py;",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -341,6 +341,11 @@
                         "id": "package",
                         "type": "promptString",
                         "description": "Package name"
+                },
+                {
+                        "id": "DDS",
+                        "type": "promptString",
+                        "description": "rmw_fastrtps_cpp"
                 }
         ]
 }

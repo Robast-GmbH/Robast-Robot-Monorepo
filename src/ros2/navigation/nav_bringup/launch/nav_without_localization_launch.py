@@ -92,7 +92,7 @@ def generate_launch_description():
             get_package_share_directory("nav_bringup"),
             config_directory,
             "nav_params",
-            "nav2_params_" + os.environ["ROS_DISTRO"] + ".yaml",
+            "nav2_params"+ ".yaml",
         ),
         description="Navigation params file",
     )
