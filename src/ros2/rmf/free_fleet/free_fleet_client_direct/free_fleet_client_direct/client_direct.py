@@ -8,10 +8,10 @@ from . import messages
 from threading import Thread
 from communication_interfaces.msg import DrawerAddress
 
-class ff_fast_client(Node):
+class free_fleet_client_direct(Node):
 
     def __init__(self):
-        super().__init__('ff_fast_client')
+        super().__init__('free_fleet_direct_client')
         
         self.declare_parameter('fleet_name', 'ROBAST_1')
         self.declare_parameter('robot_name', 'RB0')
@@ -49,14 +49,16 @@ class ff_fast_client(Node):
         ros_msg.drawer_id = dds_msg.drawer_id
         self.publisher_.publish(ros_msg)
   
+
+
 def main(args=None):
     rclpy.init(args=args)
-    ff_client = ff_fast_client()
+    ff_client = free_fleet_client_direct()
     rclpy.spin(ff_client)   
-    ff_fast_client.destroy_node()
+    free_fleet_client_direct.destroy_node()
     rclpy.shutdown()
 
 
-    
+
 if __name__ == '__main__':
     main()
