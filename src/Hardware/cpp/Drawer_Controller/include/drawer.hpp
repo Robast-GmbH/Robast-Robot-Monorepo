@@ -5,6 +5,7 @@
 #include <optional>
 
 #include "can/can_db.hpp"
+#include "can_utils.hpp"
 #include "electrical_lock.hpp"
 #include "i_drawer.hpp"
 #include "i_gpio_wrapper.hpp"
@@ -22,7 +23,9 @@ namespace drawer_controller
     void init_electrical_lock(uint8_t pwr_open_lock_pin_id,
                               uint8_t pwr_close_lock_pin_id,
                               uint8_t sensor_lock_pin_id,
-                              uint8_t sensor_drawer_closed_pin_id);
+                              uint8_t sensor_drawer_closed_pin_id) override;
+
+    void handle_electrical_lock_control() override;
 
     void can_in(robast_can_msgs::CanMessage msg) override;
 
@@ -33,15 +36,11 @@ namespace drawer_controller
    private:
     uint32_t _module_id;
     uint8_t _id;
-    std::shared_ptr<robast_can_msgs::CanDb> _can_db;
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
     std::unique_ptr<ElectricalLock> _electrical_lock;
-
-    std::optional<robast_can_msgs::CanMessage> _feedback_msg;
+    std::unique_ptr<CanUtils> _can_utils;
 
     bool _drawer_open_feedback_can_msg_sent = false;
-
-    void create_drawer_feedback_can_msg();
 
     void handle_drawer_just_opened() override;
 

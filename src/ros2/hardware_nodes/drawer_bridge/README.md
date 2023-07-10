@@ -10,3 +10,5 @@ Launch commands:
     ros2 launch ros2_socketcan socket_can_bridge.launch.xml interface:='vxcan1'
 
 (socketcan interface may differ)
+
+Error handle: 03

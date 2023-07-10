@@ -1,69 +1,78 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root BTCPP_format="4">
+<root BTCPP_format="4"
+      main_tree_to_execute="Drawer_NFC_BT">
   <BehaviorTree ID="Drawer_NFC_BT">
-    <Sequence>
-      <NFCToDrawer _description="Reads out the User Name of the person that used the nfc card and translates it to the corresponding drawer address which is written to the blackboard"/>
-      <OpenDrawer drawer_open_topic="/open_drawer"
-                  drawer_address="{drawer}"
-                  _description="The Open Drawer node reads out the drawer address from the blackboard and publishes the opned address to its output. 
+    <BaseErrorDecorator topic="/robast_error">
+      <Sequence>
+        <NFCToDrawer _description="Reads out the User Name of the person that used the nfc card and translates it to the corresponding drawer address which is written to the blackboard"/>
+        <OpenDrawer drawer_address="{drawer}"
+                    drawer_open_topic="/open_drawer"
+                    _description="The Open Drawer node reads out the drawer address from the blackboard and publishes the opned address to its output. 
                 It also publishes an open order to the topic given in the input"/>
-      <ChangeLED blue="105"
-                 brightness="150"
-                 drawer_address="{drawer}"
-                 green="205"
-                 led_topic="/drawer_leds"
-                 mode="1"
-                 red="0"
-                 use_blackboard_address="false"
-                 _description="steady_light = 0,
+        <ChangeLED blue="105"
+                   brightness="150"
+                   drawer_address="{drawer}"
+                   green="205"
+                   led_topic="/drawer_leds"
+                   mode="1"
+                   red="0"
+                   use_blackboard_address="false"
+                   _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
                   slow_fade_up_fade_down = 3,"/>
-      <DrawerStatusCondition target_value="true"
-                             topic="/drawer_is_open"/>
-      <ChangeLED blue="128"
-                 brightness="184"
-                 drawer_address="{drawer}"
-                 green="128"
-                 led_topic="/drawer_leds"
-                 mode="1"
-                 red="128"
-                 use_blackboard_address="false"
-                 _description="steady_light = 0,
+        <DrawerStatusCondition target_value="true"
+                               topic="/drawer_is_open"/>
+        <ChangeLED blue="128"
+                   brightness="184"
+                   drawer_address="{drawer}"
+                   green="128"
+                   led_topic="/drawer_leds"
+                   mode="1"
+                   red="128"
+                   use_blackboard_address="false"
+                   _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
                   slow_fade_up_fade_down = 3,"/>
-      <DrawerStatusCondition target_value="false"
-                             topic="/drawer_is_open"/>
-      <ChangeLED blue="155"
-                 brightness="184"
-                 drawer_address="{drawer}"
-                 green="155"
-                 led_topic="/drawer_leds"
-                 mode="1"
-                 red="0"
-                 use_blackboard_address="false"
-                 _description="steady_light = 0,
+        <DrawerStatusCondition target_value="false"
+                               topic="/drawer_is_open"/>
+        <ChangeLED blue="155"
+                   brightness="184"
+                   drawer_address="{drawer}"
+                   green="155"
+                   led_topic="/drawer_leds"
+                   mode="1"
+                   red="0"
+                   use_blackboard_address="false"
+                   _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
                   slow_fade_up_fade_down = 3,"/>
-      <ChangeLED blue="155"
-                 brightness="25"
-                 drawer_address="{drawer}"
-                 green="155"
-                 led_topic="/drawer_leds"
-                 mode="1"
-                 red="0"
-                 use_blackboard_address="false"
-                 _description="steady_light = 0,
+        <ChangeLED blue="155"
+                   brightness="25"
+                   drawer_address="{drawer}"
+                   green="155"
+                   led_topic="/drawer_leds"
+                   mode="1"
+                   red="0"
+                   use_blackboard_address="false"
+                   _description="steady_light = 0,
                   fade_up = 1,
                   running_led_from_mid_to_outside = 2,
                   slow_fade_up_fade_down = 3,"/>
-    </Sequence>
+        <AlwaysSuccess/>
+      </Sequence>
+    </BaseErrorDecorator>
   </BehaviorTree>
 
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
+    <Decorator ID="BaseErrorDecorator"
+               editable="false">
+      <input_port name="topic"
+                  default="/robast_error"/>
+    </Decorator>
     <Action ID="ChangeLED"
             editable="false">
       <input_port name="blue"
@@ -94,10 +103,10 @@
             editable="true"/>
     <Action ID="OpenDrawer"
             editable="false">
+      <input_port name="drawer_address"
+                  default="{drawer}"/>
       <input_port name="drawer_open_topic"
                   default="/open_drawer"/>
-      <output_port name="drawer_address"
-                   default="{drawer}"/>
     </Action>
   </TreeNodesModel>
 

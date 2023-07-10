@@ -32,7 +32,7 @@ class free_fleet_controller:
         self.dds_mode_request_topic = "/mode_request"
         self.dds_dds_path_request_topic = "/path_request"
         self.dds_destination_request_topic = "/destination_request"
-        self.dds_open_drawer_topic = "/OpenDrawerequest"
+        self.dds_open_drawer_topic = "/OpenDraweRequest"
         
         self.robot_states=[] #:list[messages.FreeFleetData_RobotState] =[]
         self.start_reciving_robot_states()

@@ -1,4 +1,4 @@
-#if !defined(DRAWER_CONTROLLER_GPIO_HPP)
+#ifndef DRAWER_CONTROLLER_GPIO_HPP
 #define DRAWER_CONTROLLER_GPIO_HPP
 
 #include <Arduino.h>

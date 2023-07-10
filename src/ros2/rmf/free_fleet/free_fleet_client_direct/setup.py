@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'ff_fast_client'
+package_name = 'free_fleet_client_direct'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-                    'client = ff_fast_client.ff_fast_client:main'
+            'client_direct = free_fleet_client_direct.client_direct:main'
         ],
     },
 )

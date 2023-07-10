@@ -1,3 +1,6 @@
+#ifndef DRAWER_BRIDGE__QOS_CONFIG_HPP_
+#define DRAWER_BRIDGE__QOS_CONFIG_HPP_
+
 #include <rclcpp/qos.hpp>
 
 namespace drawer_bridge
@@ -25,9 +28,21 @@ namespace drawer_bridge
       return qos_drawer_leds;
     };
 
+    rclcpp::QoS get_qos_error_msgs()
+    {
+      rclcpp::QoS qos_error_msgs = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
+      qos_error_msgs.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+      qos_error_msgs.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+      qos_error_msgs.avoid_ros_namespace_conventions(false);
+
+      return qos_error_msgs;
+    };
+
     rclcpp::QoS get_qos_can_messages()
     {
       return rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
     };
   };
 }   // namespace drawer_bridge
+
+#endif   // DRAWER_BRIDGE__QOS_CONFIG_HPP_
