@@ -200,6 +200,7 @@ namespace drawer_bridge
         {
           publish_electrical_drawer_status(decoded_msg.value());
         }
+        break;
         case CAN_ID_ERROR_FEEDBACK:
         {
           publish_drawer_error_msg(decoded_msg.value());
