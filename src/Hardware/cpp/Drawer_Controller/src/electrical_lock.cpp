@@ -23,6 +23,10 @@ namespace drawer_controller
 
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
+
+    set_open_lock_current_step(false);
+    set_drawer_opening_is_in_progress(false);
+    set_drawer_auto_close_timeout_triggered(false);
   }
 
   void ElectricalLock::handle_lock_control()
@@ -35,27 +39,39 @@ namespace drawer_controller
     unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
     unsigned long time_since_lock_was_opened = current_timestamp - _timestamp_last_lock_opening;
 
-    if (change_lock_state && (time_since_lock_state_was_changed >= LOCK_MECHANISM_TIME))
+    if (change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME))
     {
       _open_lock_previous_step = _open_lock_current_step;
       _timestamp_last_lock_change = current_timestamp;
       _open_lock_current_step ? open_lock() : close_lock();
     }
-    else if (!change_lock_state && (time_since_lock_state_was_changed >= LOCK_MECHANISM_TIME))
+    else if (!change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME))
     {
-      // this makes sure, there is only a 5V pulse with the duration of LOCK_MECHANISM_TIME on the respective input of
-      // the lock
+      // this makes sure, there is only a 5V pulse with the duration of ELECTRICAL_LOCK_MECHANISM_TIME on the respective
+      // input of the lock
       set_lock_output_low();
     }
 
-    if (_open_lock_current_step && (time_since_lock_was_opened > LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED))
+    if (_open_lock_current_step &&
+        (time_since_lock_was_opened > ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED))
     {
       // Close the lock automatically after some seconds when drawer wasn't opened for safety reasons
       set_open_lock_current_step(false);
       set_drawer_opening_is_in_progress(false);
-      Serial.print(" time_since_lock_was_opened: ");
+      set_drawer_auto_close_timeout_triggered(true);
+      Serial.print("Lock was automatically closed due to timeout! time_since_lock_was_opened: ");
       Serial.println(time_since_lock_was_opened, DEC);
     }
+  }
+
+  void ElectricalLock::set_drawer_auto_close_timeout_triggered(bool state)
+  {
+    _is_drawer_auto_close_timeout_triggered = state;
+  }
+
+  bool ElectricalLock::is_drawer_auto_close_timeout_triggered()
+  {
+    return _is_drawer_auto_close_timeout_triggered;
   }
 
   void ElectricalLock::set_open_lock_current_step(bool open_lock_current_step)

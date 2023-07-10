@@ -1,50 +1,58 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root BTCPP_format="4">
+<root BTCPP_format="4"
+      main_tree_to_execute="BehaviorTree">
   <BehaviorTree ID="BehaviorTree">
-    <Sequence>
-      <OpenDrawer drawer_open_topic="/open_drawer"
-                  drawer_address="{drawer}"/>
-      <ChangeLED blue="105"
-                 brightness="150"
-                 drawer_address="{drawer}"
-                 green="205"
-                 led_topic="drawer_leds"
-                 mode="1"
-                 red="0"
-                 use_blackboard_address="false"/>
-      <DrawerStatusCondition target_value="true"
-                             topic="/drawer_is_open"/>
-      <ChangeLED blue="128"
-                 brightness="184"
-                 drawer_address="{drawer}"
-                 green="128"
-                 led_topic="drawer_leds"
-                 mode="1"
-                 red="128"
-                 use_blackboard_address="false"/>
-      <DrawerStatusCondition target_value="false"
-                             topic="/drawer_is_open"/>
-      <ChangeLED blue="155"
-                 brightness="184"
-                 drawer_address="{drawer}"
-                 green="155"
-                 led_topic="drawer_leds"
-                 mode="1"
-                 red="0"
-                 use_blackboard_address="false"/>
-      <ChangeLED blue="155"
-                 brightness="25"
-                 drawer_address="{drawer}"
-                 green="155"
-                 led_topic="drawer_leds"
-                 mode="1"
-                 red="0"
-                 use_blackboard_address="false"/>
-    </Sequence>
+    <BaseErrorDecorator topic="/robast_error">
+      <Sequence>
+        <OpenDrawer drawer_address="{drawer}"
+                    drawer_open_topic="/open_drawer"/>
+        <ChangeLED blue="105"
+                   brightness="150"
+                   drawer_address="{drawer}"
+                   green="205"
+                   led_topic="drawer_leds"
+                   mode="1"
+                   red="0"
+                   use_blackboard_address="false"/>
+        <DrawerStatusCondition target_value="true"
+                               topic="/drawer_is_open"/>
+        <ChangeLED blue="128"
+                   brightness="184"
+                   drawer_address="{drawer}"
+                   green="128"
+                   led_topic="drawer_leds"
+                   mode="1"
+                   red="128"
+                   use_blackboard_address="false"/>
+        <DrawerStatusCondition target_value="false"
+                               topic="/drawer_is_open"/>
+        <ChangeLED blue="155"
+                   brightness="184"
+                   drawer_address="{drawer}"
+                   green="155"
+                   led_topic="drawer_leds"
+                   mode="1"
+                   red="0"
+                   use_blackboard_address="false"/>
+        <ChangeLED blue="155"
+                   brightness="25"
+                   drawer_address="{drawer}"
+                   green="155"
+                   led_topic="drawer_leds"
+                   mode="1"
+                   red="0"
+                   use_blackboard_address="false"/>
+      </Sequence>
+    </BaseErrorDecorator>
   </BehaviorTree>
 
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
+    <Decorator ID="BaseErrorDecorator"
+               editable="false">
+      <input_port name="topic"
+                  default="/robast_error"/>
+    </Decorator>
     <Action ID="ChangeLED"
             editable="false">
       <input_port name="blue"
@@ -73,10 +81,10 @@
     </Condition>
     <Action ID="OpenDrawer"
             editable="false">
+      <input_port name="drawer_address"
+                  default="{drawer}"/>
       <input_port name="drawer_open_topic"
                   default="/open_drawer"/>
-      <output_port name="drawer_address"
-                   default="{drawer}"/>
     </Action>
   </TreeNodesModel>
 

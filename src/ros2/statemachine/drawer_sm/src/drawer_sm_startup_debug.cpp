@@ -21,6 +21,7 @@
 #include "behaviortree_cpp/xml_parsing.h"
 
 #include "std_msgs/msg/empty.hpp"
+#include "error_utils/generic_error_converter.hpp"
 
 class BTTest : public rclcpp::Node
 {
@@ -34,6 +35,14 @@ public:
     const std::vector<std::string> plugins = {
         "nfc_to_drawer_action_bt_node",
     };
+    MessageConverter<communication_interfaces::msg::DrawerAddress> converter;
+    communication_interfaces::msg::DrawerAddress drawer_address;
+    drawer_address.drawer_id = 1;
+    drawer_address.module_id = 2;
+    std::string stringer = converter.messageToString(drawer_address);
+    std::cout << stringer << std::endl;
+    communication_interfaces::msg::DrawerAddress drawer_address2;
+    drawer_address2 = converter.stringToMessage(stringer);
     static BT::NodeConfig *config_;
     config_ = new BT::NodeConfig();
     auto blackboard = BT::Blackboard::create();
