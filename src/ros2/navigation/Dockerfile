@@ -114,9 +114,3 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
 
 #watch -d -n 0.5 nvidia-smi
-
-# dds setup / configuration
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
-# rmw_cyclonedds_cpp #rmw_fastrtps_cpp
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/fast_DDS_config.xml
-ENV CYCLONEDDS_URI=/workspace/cyclone_DDS_config.xml
