@@ -7,7 +7,7 @@
   <maintainer email="t.zurhelle@robast.de">robast</maintainer>
   <license>TODO: License declaration</license>
 
-  <depend>communication_interfaces<depend>
+  <depend>communication_interfaces</depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
