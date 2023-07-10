@@ -5,25 +5,39 @@
             <input_port name="blue" default="0">uint8</input_port>
             <input_port name="brightness" default="0">uint8 to determine the brightness</input_port>
             <input_port name="drawer_address" default="{drawer}"/>
-            <input_port name="drawer_led_topic" default="/drawer_leds"/>
+            <input_port name="led_topic" default="/drawer_leds"/>
             <input_port name="green" default="0">uint8</input_port>
             <input_port name="mode" default="0">uint8. describes the kind of animation thats used</input_port>
             <input_port name="red" default="0">uint8</input_port>
+            <input_port name="use_blackboard_address" default="false">bool. wether to use the address that's passed around by I/O or blackboard</input_port>
         </Action>
-        <Action ID="DrawerOpenReq">
+        <Action ID="DrawerChangeStateReq">
             <output_port name="drawer_address" default="{drawer}"/>
-            <input_port name="topic_name" default="/open_request"/>
+            <input_port name="drawer_address_topic" default="/open_request"/>
         </Action>
         <Action ID="OpenDrawer">
             <input_port name="drawer_address" default="{drawer}"/>
             <input_port name="drawer_open_topic" default="/open_drawer"/>
         </Action>
+        <Action ID="MoveElectricDrawer">
+            <input_port name="drawer_address" default="{drawer}"/>
+            <input_port name="move_electric_drawer_topic" default="/move_electric_drawer"/>
+            <input_port name="speed" default="0">uint8</input_port>
+            <input_port name="stall_guard_enable" default="0">uint8</input_port>
+            <input_port name="target_position" default="0">uint8</input_port>
+        </Action>
         <Condition ID="DrawerStatusCondition">
             <input_port name="target_value" default="false"/>
             <input_port name="topic" default="/drawer_is_open"/>
         </Condition>
-        <Action ID="UserToDrawerMapping"
-            editable="true"/>
+        <Condition ID="ElectricDrawerStatusCondition">
+            <input_port name="target_value" default="0">uint8. wether the value should be true or false</input_port>
+            <input_port name="topic" default="/drawer_feedback_status"/>
+        </Condition>
+        <Action ID="UserToDrawerMapping" editable="true"/>
+        <Decorator ID="BaseErrorDecorator">
+            <input_port name="topic" default="/robast_error"/>
+        </Decorator>
     </TreeNodesModel>
 </root>
 

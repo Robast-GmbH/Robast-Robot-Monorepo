@@ -1,10 +1,10 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"image": "ghcr.io/robast-gmbh/monorepo/hardeware_nodes:latest",
+	"image": "ghcr.io/robast-gmbh/monorepo/hardware_nodes:latest",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/drawer_bridge/,target=/workspace/src/hardware_nodes/drawer_bridge,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/drawer_manager/,target=/workspace/src/hardware_nodes/drawer_manager,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/error_handling/error_utils/,target=/workspace/src/error_utils/,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
 		"source=${localWorkspaceFolder}/../../libs/,target=/workspace/libs,type=bind"
 	],

@@ -7,3 +7,7 @@ Overview for the included libraries, the corresponding license and a link to the
 | Library | Licence     | Description                     | Repository                     |
 | ------- | ----------- | ------------------------------- | ------------------------------ |
 | pqxx    | BSD license | interaction to the postgress DB | https://github.com/jtv/libpqxx |
+
+
+
+Error handle: 05

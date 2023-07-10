@@ -25,6 +25,7 @@ find_package(communication_interfaces REQUIRED)
 find_package(can REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED) 
 find_package(can_msgs REQUIRED)
+find_package(error_utils REQUIRED)
 
 include_directories(include)
 include_directories(test/include)
@@ -58,6 +59,7 @@ set(dependencies
   communication_interfaces
   can
   can_msgs
+  error_utils
 )
 
 ament_target_dependencies(${executable_drawer_bridge}
