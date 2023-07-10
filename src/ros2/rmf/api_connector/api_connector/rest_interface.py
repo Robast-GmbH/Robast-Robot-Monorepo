@@ -24,6 +24,7 @@ class RestInterface():
         
         @self.app.post("/drawer/open")
         def open_drawer(drawer: Drawer, robot:Robot):
+            print("/drawer/open was called ")
             free_fleet_node.handle_open_drawer_request(robot.fleet_name, robot.name, drawer.module_id, drawer.id)
             return 
       
