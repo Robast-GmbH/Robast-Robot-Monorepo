@@ -9,7 +9,7 @@ from launch.substitutions import LaunchConfiguration
 def generate_launch_description():
     bt_node = ExecuteProcess(
         #     cmd=['ros2', 'bag', 'record', '-o', '/workspace/bags/robot_imu.db3', 'imu/data', 'tf', 'tf_static', 'odom', 'clock'],
-                cmd=['ros2', 'bag', 'record', '-o', '/workspace/bags/robot_imu.db3', 
+                cmd=['ros2', 'bag', 'record', '-o', '/workspace/bags/robot_imu_2.db3', 
                      'tf', 
                      'tf_static', 
                      'robot/robotnik_base_control/odom', 
