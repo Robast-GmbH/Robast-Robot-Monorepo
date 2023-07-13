@@ -1,6 +1,6 @@
 from setuptools import setup
 
-package_name = 'oak_d_camera_info_pub'
+package_name = 'oak_d_camera_info_publisher'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'oak_d_camera_info = oak_d_camera_info_pub.oak_d_camera_info_node:main'
+            'oak_d_camera_info = oak_d_camera_info_publisher.oak_d_camera_info_node:main'
         ],
     },
 )

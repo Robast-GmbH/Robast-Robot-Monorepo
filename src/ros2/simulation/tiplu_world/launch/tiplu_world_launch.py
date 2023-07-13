@@ -117,7 +117,7 @@ def generate_launch_description():
     )
 
     start_oak_d_camera_info_node = Node(
-        package ='oak_d_camera_info_pub',
+        package ='oak_d_camera_info_publisher',
         executable = 'oak_d_camera_info',
         name='camera_rgb_info_publisher'
     )
