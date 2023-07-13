@@ -949,7 +949,7 @@
             <init_from>../materials/textures/Metal_Aluminum_Anodized.png</init_from>
         </image>
         <image id="ID132">
-            <init_from>../materials/textures/Metal_Rough.png</init_from>
+            <init_from>../materials/textures/wooden_door.png</init_from>
         </image>
     </library_images>
     <scene>
