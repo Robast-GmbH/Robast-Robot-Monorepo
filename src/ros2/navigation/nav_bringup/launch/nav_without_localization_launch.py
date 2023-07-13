@@ -62,9 +62,11 @@ def generate_launch_description():
                        'velocity_smoother']
 
     # Create our own temporary YAML files that include substitutions
+    nav_to_pose_bt = os.path.join(get_package_share_directory("nav2_bt_navigator"), "nav_to_pose_with_consistent_replanning_and_if_path_becomes_invalid", ".xml")
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
+        "default_nav_to_pose_bt_xml": nav_to_pose_bt,
         "map_topic": "/map"}
 
     configured_params = RewrittenYaml(
@@ -116,6 +118,7 @@ def generate_launch_description():
     declare_log_level_cmd = DeclareLaunchArgument(
         'log_level', default_value='info',
         description='log level')
+    
 
     load_nodes = GroupAction(
         condition=IfCondition(PythonExpression(['not ', use_composition])),
