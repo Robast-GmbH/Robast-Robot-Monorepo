@@ -116,6 +116,13 @@ def generate_launch_description():
         output="screen",
     )
 
+    start_oak_d_camera_info_node = Node(
+        package ='oak_d_camera_info_pub',
+        executable = 'oak_d_camera_info',
+        name='camera_rgb_info_publisher'
+    )
+
+
     ld = LaunchDescription()
 
     # arguments
@@ -132,5 +139,6 @@ def generate_launch_description():
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(spawn_robot_cmd)
     ld.add_action(gz_ros_bridge_cmd)
+    ld.add_action(start_oak_d_camera_info_node)
 
     return ld
