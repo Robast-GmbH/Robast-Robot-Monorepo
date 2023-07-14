@@ -7,6 +7,7 @@ class CameraRgbInfoNode(Node):
     def __init__(self):
         super().__init__("camera_rgb_info_publisher")
        
+       # Calibration parameters
         self.image_height = 1280
         self.image_width = 720
         self.distortion_model = "plumb_bob"
@@ -16,6 +17,7 @@ class CameraRgbInfoNode(Node):
         self.rectification_matrix = [1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0]
         self.header_stamp = self.get_clock().now().to_msg()
 
+        # Create publishers
         self.back_camera_rgb_info_publisher_= self.create_publisher(CameraInfo, 'back_top_oak_d_camera/color_camera_info',10)
         self.front_camera_rgb_info_publisher_= self.create_publisher(CameraInfo, "front_top_oak_d_camera/color_camera_info",10)
         self.camera_rgb_info_timer = self.create_timer(0.09, self.publish_rgb_camera_info)
@@ -35,8 +37,8 @@ class CameraRgbInfoNode(Node):
         front_camera_rgb_info.d = back_camera_rgb_info.d = self.distortion_parameters
         front_camera_rgb_info.k = back_camera_rgb_info.k = self.camera_matrix
         front_camera_rgb_info.p = back_camera_rgb_info.p = self.projection_matrix
-        self. back_camera_rgb_info_publisher_.publish( back_camera_rgb_info)
-        self. front_camera_rgb_info_publisher_.publish( back_camera_rgb_info)
+        self. back_camera_rgb_info_publisher_.publish(back_camera_rgb_info)
+        self. front_camera_rgb_info_publisher_.publish(front_camera_rgb_info)
         
 
 
