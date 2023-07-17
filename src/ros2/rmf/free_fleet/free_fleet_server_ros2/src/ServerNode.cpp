@@ -370,7 +370,7 @@ void ServerNode::publish_fleet_state()
   fleet_state.robots.clear();
 
   ReadLock robot_states_lock(robot_states_mutex);
-  for (const auto it : robot_states)
+  for (const auto &it : robot_states)
   {
     const auto fleet_frame_rs = it.second;
     rmf_fleet_msgs::msg::RobotState rmf_frame_rs;
