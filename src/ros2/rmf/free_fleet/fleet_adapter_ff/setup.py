@@ -12,7 +12,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
-        ('share/' + package_name,['config.yaml']),
+        ('share/' + package_name, ['config.yaml']),
         (os.path.join('share', package_name), glob('launch/*.launch.py')),
 
     ],
@@ -26,6 +26,5 @@ setup(
         'console_scripts': [
             'fleet_adapter=fleet_adapter_ff.fleet_adapter_ff:main'
         ],
-    
     },
 )

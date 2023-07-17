@@ -1,6 +1,6 @@
 import launch
 import launch_ros.actions
-import os.path
+
 
 def generate_launch_description():
     failover_mode = launch.actions.DeclareLaunchArgument(

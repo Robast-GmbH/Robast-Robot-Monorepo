@@ -1,12 +1,13 @@
 import sys
-from rclpy.parameter import Parameter
 import argparse
 from task_requester import TaskRequester
 from task_builder import fill_compose, fill_go_to_place
 import rclpy
 
+
 def main(argv=sys.argv):
     rclpy.init(args=sys.argv)
+    task_requester = TaskRequester(task, "compose", args)
     args_without_ros = rclpy.utilities.remove_ros_args(sys.argv)
     parser = argparse.ArgumentParser()
     parser.add_argument('-s', '--start_coord', required=False,
@@ -28,11 +29,11 @@ def main(argv=sys.argv):
 
     args = parser.parse_args(args_without_ros[1:])
     # check user delivery arg inputs
-    if (len(args.start_coord)>=7 ):
+    if (len(args.start_coord) >= 7):
         task_requester.get_logger().error("Invalid start_coord")
         parser.print_help()
         sys.exit(1)
-    if (len(args.end_coord)>=7 ):
+    if (len(args.end_coord) >= 7):
         task_requester.get_logger().error("Invalid end_coord")
         parser.print_help()
         sys.exit(1)
@@ -40,8 +41,8 @@ def main(argv=sys.argv):
     sub_tasks = []
     sub_tasks.append(fill_go_to_place(args))
 
-    task= fill_compose(sub_tasks,"let the robot go to a place and let it perform user action")
-    task_requester = TaskRequester( task, "compose", args)
+    task = fill_compose(sub_tasks, "let the robot go to a place and let it perform user action")
+
     rclpy.spin_until_future_complete(
         task_requester, task_requester.response, timeout_sec=5.0)
     if task_requester.response.done():

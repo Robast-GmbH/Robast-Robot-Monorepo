@@ -19,6 +19,7 @@
 #define FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__OPENDRAWERREQUEST_HPP
 
 #include <vector>
+#include <string>
 
 namespace free_fleet {
 namespace messages {
@@ -31,7 +32,7 @@ struct OpenDrawerRequest
   int module_id;
 };
 
-} // namespace messages
-} // namespace free_fleet
+}  // namespace messages
+}  // namespace free_fleet
 
-#endif // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__OPENDRAWERREQUEST_HPP
+#endif  // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__OPENDRAWERREQUEST_HPP

@@ -1,6 +1,4 @@
 import os
-import xacro
-import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
@@ -10,17 +8,15 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-  
-
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
     gz_ros_bridge_yaml = os.path.join(
         get_package_share_directory("rmf_robast_multi_robot"), "config", "gz_ros_bridge.yaml"
     )
 
-    use_sim_time = LaunchConfiguration("use_sim_time")
+    # use_sim_time = LaunchConfiguration("use_sim_time")
     world_model = LaunchConfiguration("world_model")
     headless = LaunchConfiguration("headless")
- 
+
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
     )
@@ -50,7 +46,7 @@ def generate_launch_description():
             os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py"),
         ),
         launch_arguments={"gz_args": ["-r ", headless, " ", world_model, " --render-engine ogre2"],
-                          "gz_version": "7",                          
+                          "gz_version": "7",
                           }.items(),
     )
 

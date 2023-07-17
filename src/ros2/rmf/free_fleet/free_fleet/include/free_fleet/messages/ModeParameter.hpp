@@ -29,7 +29,7 @@ struct ModeParameter
   std::string value;
 };
 
-} // namespace messages
-} // namespace free_fleet
+}  // namespace messages
+}  // namespace free_fleet
 
-#endif // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__MODEPARAMETER_HPP
+#endif  // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__MODEPARAMETER_HPP

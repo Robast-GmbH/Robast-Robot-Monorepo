@@ -33,7 +33,6 @@ namespace free_fleet {
 class Server
 {
 public:
-
   using SharedPtr = std::shared_ptr<Server>;
 
   /// Factory function that creates an instance of the Free Fleet Server.
@@ -56,7 +55,7 @@ public:
 
   /// Attempts to send a new mode request to all the clients. Clients are in
   /// charge to identify if requests are targetted towards them.
-  /// 
+  ///
   /// \param[in] mode_request
   ///   New mode request to be sent out to the clients.
   /// \return
@@ -72,7 +71,7 @@ public:
   ///   True if the path request was successfully sent, false otherwise.
   bool send_path_request(const messages::PathRequest& path_request);
 
-  /// Attempts to send a new destination request to all the clients. Clients 
+  /// Attempts to send a new destination request to all the clients. Clients
   /// are in charge to identify if requests are targetted towards them.
   ///
   /// \param[in] destination_request
@@ -86,7 +85,6 @@ public:
   ~Server();
 
 private:
-
   /// Forward declaration and unique implementation
   class ServerImpl;
 
@@ -95,7 +93,6 @@ private:
   Server(const ServerConfig& config);
 
 };
-
-} // namespace free_fleet
+}  // namespace free_fleet
 
 #endif // FREE_FLEET__INCLUDE__FREE_FLEET__SERVER_HPP

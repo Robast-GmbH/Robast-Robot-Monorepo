@@ -19,7 +19,7 @@
 #define FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__PATHREQUEST_HPP
 
 #include <vector>
-
+#include <string>
 #include "Location.hpp"
 
 namespace free_fleet {
@@ -33,7 +33,7 @@ struct PathRequest
   std::string task_id;
 };
 
-} // namespace messages
-} // namespace free_fleet
+}  // namespace messages
+}  // namespace free_fleet
 
 #endif // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__PATHREQUEST_HPP

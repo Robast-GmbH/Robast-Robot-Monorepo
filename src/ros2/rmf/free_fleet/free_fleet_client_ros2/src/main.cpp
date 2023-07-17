@@ -26,7 +26,7 @@ int main(int argc, char** argv)
   rclcpp::init(argc, argv);
   auto node = std::make_shared<free_fleet::ros2::ClientNode>();
   rclcpp::spin(node);
-  
+
   // Cleanup and exit
   rclcpp::shutdown();
   return 0;

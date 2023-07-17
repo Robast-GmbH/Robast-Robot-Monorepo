@@ -12,7 +12,7 @@ def generate_launch_description():
         'nav_graph',
         default_value=[''],
         description='Nav graph required by fleet adapter')
-    
+
     config_file = launch.actions.DeclareLaunchArgument(
         'config_file',
         default_value=[''],
@@ -20,7 +20,7 @@ def generate_launch_description():
 
     fleet_adapter_node = launch_ros.actions.Node(
         package='fleet_adapter_ff',
-        executable= 'fleet_adapter',
+        executable='fleet_adapter',
         name=[
             launch.substitutions.LaunchConfiguration('fleet_name'),
             '_fleet_adapter'

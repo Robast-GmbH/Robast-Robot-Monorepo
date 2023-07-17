@@ -34,7 +34,7 @@ void ClientNodeConfig::print_config() const
   printf("  wait timeout: %.1f\n", wait_timeout);
   printf("  update request frequency: %.1f\n", update_frequency);
   printf("  publish state frequency: %.1f\n", publish_frequency);
-  printf("  maximum distance to first waypoint: %.1f\n", 
+  printf("  maximum distance to first waypoint: %.1f\n",
       max_dist_to_first_waypoint);
   printf("  TOPICS\n");
   printf("    battery state: %s\n", battery_state_topic.c_str());
@@ -49,11 +49,11 @@ void ClientNodeConfig::print_config() const
   printf("    robot state: %s\n", dds_state_topic.c_str());
   printf("    mode request: %s\n", dds_mode_request_topic.c_str());
   printf("    path request: %s\n", dds_path_request_topic.c_str());
-  printf("    destination request: %s\n", 
+  printf("    destination request: %s\n",
       dds_destination_request_topic.c_str());
   fflush(stdout);
 }
-  
+
 ClientConfig ClientNodeConfig::get_client_config() const
 {
   ClientConfig client_config;
@@ -65,5 +65,5 @@ ClientConfig ClientNodeConfig::get_client_config() const
   return client_config;
 }
 
-} // namespace ros2
-} // namespace free_fleet
+}  // namespace ros2
+}  // namespace free_fleet

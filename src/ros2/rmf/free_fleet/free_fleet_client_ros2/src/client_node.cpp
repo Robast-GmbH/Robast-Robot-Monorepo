@@ -96,7 +96,8 @@ ClientNode::ClientNode(const rclcpp::NodeOptions & options)
     client_node_config.move_base_server_name.c_str());
   rclcpp_action::Client<NavigateToPose>::SharedPtr move_base_client =
     rclcpp_action::create_client<NavigateToPose>(this, client_node_config.move_base_server_name);
-  while (!move_base_client->wait_for_action_server(std::chrono::duration<double>(client_node_config.wait_timeout))) {
+  while (!move_base_client->wait_for_action_server( \
+    std::chrono::duration<double>(client_node_config.wait_timeout))) {
     RCLCPP_ERROR(
       get_logger(), "timed out waiting for action server: %s",
       client_node_config.move_base_server_name.c_str());
@@ -288,9 +289,9 @@ void ClientNode::publish_robot_state()
           messages::Location{
               (int32_t)goal_path[i].goal.pose.header.stamp.sec,
               goal_path[i].goal.pose.header.stamp.nanosec,
-              (float)goal_path[i].goal.pose.pose.position.x,
-              (float)goal_path[i].goal.pose.pose.position.y,
-              (float)get_yaw_from_pose(goal_path[i].goal.pose),
+              static_cast<float>(goal_path[i].goal.pose.pose.position.x),
+              static_cast<float>(goal_path[i].goal.pose.pose.position.y),
+              static_cast<float>(get_yaw_from_pose(goal_path[i].goal.pose)),
               goal_path[i].level_name
           });
     }
@@ -328,7 +329,7 @@ nav2_msgs::action::NavigateToPose::Goal ClientNode::location_to_nav_goal(
   goal.pose.header.stamp.nanosec = _location.nanosec;
   goal.pose.pose.position.x = _location.x;
   goal.pose.pose.position.y = _location.y;
-  goal.pose.pose.position.z = 0.0; // TODO: handle Z height with level
+  goal.pose.pose.position.z = 0.0; 
   goal.pose.pose.orientation = get_quat_from_yaw(_location.yaw);
   return goal;
 }
@@ -353,25 +354,19 @@ bool ClientNode::read_mode_request()
       paused = true;
       emergency = false;
       request_error = false;
-    }
-    else if (mode_request.mode.mode == messages::RobotMode::MODE_MOVING)
-    {
+    } else if (mode_request.mode.mode == messages::RobotMode::MODE_MOVING) {
       RCLCPP_INFO(get_logger(), "received an explicit RESUME command.");
       paused = false;
       emergency = false;
       request_error = false;
-    }
-    else if (mode_request.mode.mode == messages::RobotMode::MODE_EMERGENCY)
-    {
+    } else if (mode_request.mode.mode == messages::RobotMode::MODE_EMERGENCY) {
       RCLCPP_INFO(get_logger(), "received an EMERGENCY command.");
       paused = false;
       emergency = true;
       request_error = false;
-    }
-    else if (mode_request.mode.mode == messages::RobotMode::MODE_DOCKING)
-    {
+    } else if (mode_request.mode.mode == messages::RobotMode::MODE_DOCKING) {
       RCLCPP_INFO(get_logger(), "received a DOCKING command.");
-      if (fields.docking_trigger_client &&
+      if (fields.docking_trigger_client && \
         fields.docking_trigger_client->service_is_ready())
       {
         using ServiceResponseFuture =
@@ -391,8 +386,7 @@ bool ClientNode::read_mode_request()
         // sync call would block indefinelty as we are in a spinning node
         fields.docking_trigger_client->async_send_request(trigger_srv, response_received_callback);
       }
-    }
-    else {
+    } else {
       RCLCPP_ERROR(get_logger(), "received an INVALID/UNSUPPORTED command: %d.",
               mode_request.mode.mode);
       request_error = true;
@@ -476,7 +470,8 @@ bool ClientNode::read_path_request()
                 rclcpp::Time(
                     path_request.path[i].sec,
                     path_request.path[i].nanosec,
-                    RCL_ROS_TIME)}); // messages use RCL_ROS_TIME instead of default RCL_SYSTEM_TIME
+                    RCL_ROS_TIME)});  // messages use RCL_ROS_TIME
+                                      // instead of default RCL_SYSTEM_TIME
       }
     }
 
@@ -514,7 +509,7 @@ bool ClientNode::read_destination_request()
               rclcpp::Time(
                   destination_request.destination.sec,
                   destination_request.destination.nanosec,
-                  RCL_ROS_TIME)}); // messages use RCL_ROS_TIME instead of default RCL_SYSTEM_TIME
+                  RCL_ROS_TIME)});  // messages use RCL_ROS_TIME instead of default RCL_SYSTEM_TIME
     }
 
     {
@@ -552,17 +547,25 @@ void ClientNode::handle_requests()
   if (!goal_path.empty())
   {
     auto send_goal_options = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
-    send_goal_options.goal_response_callback = [&](const GoalHandleNavigateToPose::SharedPtr & goal) {
+    send_goal_options.goal_response_callback = \
+      [&](const GoalHandleNavigateToPose::SharedPtr & goal) {
       if (!goal) {
         RCLCPP_ERROR(get_logger(), "Goal was rejected by server");
       } else {
         RCLCPP_INFO(get_logger(), "Goal accepted by server, waiting for result");
       }
     };
-    send_goal_options.feedback_callback = [&](GoalHandleNavigateToPose::SharedPtr, const std::shared_ptr<const NavigateToPose::Feedback> feedback) {
-      RCLCPP_INFO_THROTTLE(this->get_logger(), *get_clock(), 5000, "Distance remaining: %f", feedback->distance_remaining);
+    send_goal_options.feedback_callback = \
+      [&](GoalHandleNavigateToPose::SharedPtr,
+          const std::shared_ptr<const NavigateToPose::Feedback> feedback) {
+      RCLCPP_INFO_THROTTLE(this->get_logger(),
+                           *get_clock(),
+                           5000,
+                           "Distance remaining: %f",
+                           feedback->distance_remaining);
     };
-    send_goal_options.result_callback = [&](const GoalHandleNavigateToPose::WrappedResult & result) {
+    send_goal_options.result_callback = \
+    [&](const GoalHandleNavigateToPose::WrappedResult & result) {
       WriteLock goal_path_lock(goal_path_mutex);
       switch (result.code) {
         case rclcpp_action::ResultCode::SUCCEEDED:
@@ -572,11 +575,9 @@ void ClientNode::handle_requests()
           // we need to wait here until it's time to proceed.
           if (now() >= goal_path.front().goal_end_time)
           {
-            if (!goal_path.empty()) // TODO: fix race condition instead
+            if (!goal_path.empty())  // TODO(torben): fix race condition instead
               goal_path.pop_front();
-          }
-          else
-          {
+          } else{
             std::thread{
               [&]()
               {
@@ -622,7 +623,7 @@ void ClientNode::handle_requests()
           RCLCPP_ERROR(this->get_logger(), "Goal was aborted");
           goal_path.front().aborted_count++;
 
-          // TODO: parameterize the maximum number of retries.
+          // TODO(Torben): parameterize the maximum number of retries.
           if (goal_path.front().aborted_count < 5)
           {
             RCLCPP_INFO(get_logger(), "robot's navigation stack has aborted the current goal %d "
@@ -630,9 +631,7 @@ void ClientNode::handle_requests()
                 goal_path.front().aborted_count);
             goal_path.front().sent = false;
             return;
-          }
-          else
-          {
+          }else{
             RCLCPP_INFO(get_logger(), "robot's navigation stack has aborted the current goal %d "
                 "times, please check that there is nothing in the way of the "
                 "robot, client will abort the current path request, and await "
@@ -642,7 +641,7 @@ void ClientNode::handle_requests()
             return;
           }
           return;
-        case rclcpp_action::ResultCode::CANCELED: // for example when paused.
+        case rclcpp_action::ResultCode::CANCELED:  //  for example when paused.
           RCLCPP_ERROR(this->get_logger(), "Goal was canceled");
           // do not clear goal_path as we want to reuse it on resume
           goal_path.front().sent = false;
@@ -681,5 +680,5 @@ void ClientNode::publish_fn()
   publish_robot_state();
 }
 
-} // namespace ros2
-} // namespace free_fleet
+}  //  namespace ros2
+}  //  namespace free_fleet

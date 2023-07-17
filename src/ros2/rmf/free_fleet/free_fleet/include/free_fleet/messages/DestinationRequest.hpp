@@ -17,7 +17,7 @@
 
 #ifndef FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__DESTINATIONREQUEST_HPP
 #define FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__DESTINATIONREQUEST_HPP
-
+#include <string>
 #include "Location.hpp"
 
 namespace free_fleet {
@@ -31,7 +31,7 @@ struct DestinationRequest
   std::string task_id;
 };
 
-} // namespace messages
-} // namespace free_fleet
+}  // namespace messages
+}  // namespace free_fleet
 
-#endif // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__DESTINATIONREQUEST_HPP
+#endif  // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__DESTINATIONREQUEST_HPP

@@ -14,7 +14,7 @@ endif()
 
 find_package(ament_cmake QUIET)
 
-if (ament_cmake_FOUND)
+if(ament_cmake_FOUND)
 
   set(dependencies
     rclcpp

@@ -71,5 +71,5 @@ bool is_pose_close(
   return true;
 }
 
-} // namespace ros2
-} // namespace free_fleet
+}  // namespace ros2
+}  // namespace free_fleet

@@ -1,12 +1,11 @@
 import launch
 import os
-from launch_ros.substitutions import FindPackagePrefix
-from launch_ros.substitutions import FindPackageShare
-from launch.actions import IncludeLaunchDescription
+from launch_ros.substitutions import FindPackagePrefix, FindPackageShare
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 from launch.substitutions import LaunchConfiguration
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+
 
 def generate_launch_description():
     map_package = launch.actions.DeclareLaunchArgument(
@@ -17,7 +16,7 @@ def generate_launch_description():
     map_name = launch.actions.DeclareLaunchArgument(
         "map_name", description="Name of the rmf_demos map to simulate"
     )
-    
+
     use_crowdsim = launch.actions.DeclareLaunchArgument(
         "use_crowdsim",
         default_value=["false"],
@@ -69,17 +68,14 @@ def generate_launch_description():
     )
 
     pkg_ros_gz_sim = get_package_share_directory('ros_gz_sim')
-    ignition =  IncludeLaunchDescription(
+    ignition = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
             os.path.join(pkg_ros_gz_sim, 'launch', 'gz_sim.launch.py')
         ),
-        launch_arguments={"gz_args": ["-r ", world_model,],
+        launch_arguments={"gz_args": ["-r ", world_model, ],
                           "gz_version": "7",
                           }.items(),
-        
     )
-
-
     return launch.LaunchDescription(
         [
             map_package,

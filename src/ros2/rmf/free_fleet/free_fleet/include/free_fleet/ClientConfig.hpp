@@ -33,6 +33,6 @@ struct ClientConfig
   void print_config() const;
 };
 
-} // namespace free_fleet
+}  // namespace free_fleet
 
 #endif // FREE_FLEET__INCLUDE__FREE_FLEET__CLIENTCONFIG_HPP

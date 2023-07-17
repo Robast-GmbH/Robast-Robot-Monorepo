@@ -80,7 +80,7 @@ install(
   DESTINATION lib
 )
 install(
-  EXPORT free_fleet-targets 
+  EXPORT free_fleet-targets
   DESTINATION lib/cmake/free_fleet
 )
 
@@ -92,7 +92,7 @@ install(
   PATTERN ".svn" EXCLUDE
 )
 install(
-  FILES package.xml 
+  FILES package.xml
   DESTINATION share/free_fleet
 )
 

@@ -32,7 +32,6 @@ namespace free_fleet {
 class Client
 {
 public:
-
   using SharedPtr = std::shared_ptr<Client>;
 
   /// Factory function that creates an instance of the Free Fleet DDS Client.
@@ -43,7 +42,7 @@ public:
   ///   Shared pointer to a free fleet client.
   static SharedPtr make(const ClientConfig& config);
 
-  /// Attempts to send a new robot state to the free fleet server, to be 
+  /// Attempts to send a new robot state to the free fleet server, to be
   /// registered by the fleet management system.
   ///
   /// \param[in] new_robot_state
@@ -75,7 +74,7 @@ public:
 
   /// Attempts to read and receive a new destination request from the free
   /// fleet server, for commanding the robot client.
-  /// 
+  ///
   /// \param[out] destination_request
   ///   Newly received robot destination request from the free fleet server,
   ///   to be handled by the robot client.
@@ -88,16 +87,14 @@ public:
   ~Client();
 
 private:
-
   /// Forward declaration and unique implementation
   class ClientImpl;
 
   std::unique_ptr<ClientImpl> impl;
 
   Client(const ClientConfig& config);
-
 };
 
-} // namespace free_fleet
+}  // namespace free_fleet
 
-#endif // FREE_FLEET__INCLUDE__FREE_FLEET__CLIENT_HPP
+#endif  // FREE_FLEET__INCLUDE__FREE_FLEET__CLIENT_HPP

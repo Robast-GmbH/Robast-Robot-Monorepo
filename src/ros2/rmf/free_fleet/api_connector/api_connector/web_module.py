@@ -1,7 +1,6 @@
 import requests
 import time
 from multiprocessing import get_logger
-from urllib import request
 
 
 def checkConnection(url):
@@ -27,7 +26,9 @@ def getDataFromServer(url):
     checkConnection(url)
     response = requests.get(url)
     if(response.status_code != 200):
-        get_logger().warning('Response code from api_url ' + str(url) + ' is ' + str(response.status_code))
+        get_logger().warning(
+            'Response code from api_url ' + str(url) +
+            ' is ' + str(response.status_code))
         return None
     else:
         return response
@@ -37,19 +38,22 @@ def setDataOnServer(url, data):
     checkConnection(url)
     response = requests.put(url, json=data)
     if(response.status_code != 200):
-        get_logger().warning('Response code from api_url ' + str(url) + ' is ' + str(response.status_code))
+        get_logger().warning('Response code from api_url ' + str(url) +
+                             ' is ' + str(response.status_code))
         return None
     else:
         return response
 
+
 def deleteDataOnServer(url, data):
     checkConnection(url)
-    if(data== None):
+    if data is not None:
         response = requests.delete(url)
     else:
         response = requests.delete(url, json=data)
     if(response.status_code != 200):
-        get_logger().warning('Response code from api_url ' + str(url) + ' is ' + str(response.status_code))
+        get_logger().warning('Response code from api_url ' + str(url) +
+                             ' is ' + str(response.status_code))
         return None
     else:
         return response

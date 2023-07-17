@@ -36,7 +36,7 @@ struct ModeRequest
   std::vector<ModeParameter> parameters;
 };
 
-} // namespace messages
-} // namespace free_fleet
+}  // namespace messages
+}  // namespace free_fleet
 
-#endif // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__MODEREQUEST_HPP
+#endif  // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__MODEREQUEST_HPP

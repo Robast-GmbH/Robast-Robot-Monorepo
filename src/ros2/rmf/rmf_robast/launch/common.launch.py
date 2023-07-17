@@ -1,8 +1,6 @@
 import launch
 import launch_ros.actions
-import os.path
-from launch.launch_description_sources import AnyLaunchDescriptionSource
-from launch.substitutions import ThisLaunchFileDir
+
 
 def generate_launch_description():
     use_sim_time = launch.actions.DeclareLaunchArgument(
@@ -62,7 +60,7 @@ def generate_launch_description():
         arguments=[launch.substitutions.LaunchConfiguration('config_file')],
         )
 
-    # # Visualiser TODO:needs to be implemented is not a core feature but would be nice to have  
+    # # Visualiser TODO:needs to be implemented is not a core feature but would be nice to have
     # visualizer = launch.actions.IncludeLaunchDescription(
     #     launch.launch_description_sources.AnyLaunchDescriptionSource(
     #          #[launch_ros.substitutions.FindPackageShare('rmf_visualization'),
@@ -80,8 +78,6 @@ def generate_launch_description():
     #             launch.substitutions.LaunchConfiguration('headless')),
     #     ]
     # )
-
-  
     # Dispatcher
     dispatcher = launch_ros.actions.Node(
         package='rmf_task_ros2',
@@ -105,6 +101,6 @@ def generate_launch_description():
         schedule_node,
         blockade_moderator,
         building_map,
-        # visualizer,TODO: needs to be implemented is not a core feature but would be nice to have  
+        # visualizer,TODO Torben: needs to be implemented is not a core feature forus but would be nice to have
         dispatcher,
         ])

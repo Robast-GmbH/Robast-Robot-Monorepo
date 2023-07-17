@@ -34,7 +34,7 @@ struct Location
   std::string level_name;
 };
 
-} // namespace messages
-} // namespace free_fleet
+}  // namespace messages
+}  // namespace free_fleet
 
-#endif // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__LOCATION_HPP
+#endif  // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__LOCATION_HPP

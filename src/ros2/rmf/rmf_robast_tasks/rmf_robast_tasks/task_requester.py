@@ -14,13 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
+
 import uuid
-import argparse
 import json
 import asyncio
 
-import rclpy
 from rclpy.node import Node
 from rclpy.parameter import Parameter
 from rclpy.qos import QoSProfile
@@ -34,8 +32,8 @@ from rmf_task_msgs.msg import ApiRequest, ApiResponse
 ###############################################################################
 
 class TaskRequester(Node):
-       
-    def __init__(self, task:str, request_category:str , args):
+
+    def __init__(self, task: str, request_category: str, args):
         super().__init__('task_requester')
         self.args = args
         self.response = asyncio.Future()
@@ -74,7 +72,7 @@ class TaskRequester(Node):
         start_time = now.sec * 1000 + round(now.nanosec/10**6)
         request["unix_millis_earliest_start_time"] = start_time
         request["category"] = request_category
-        request["description"] = task 
+        request["description"] = task
         payload["request"] = request
         msg.json_msg = json.dumps(payload)
 

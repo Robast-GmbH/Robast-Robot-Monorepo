@@ -38,7 +38,7 @@ struct RobotState
   std::vector<Location> path;
 };
 
-} // namespace messages
-} // namespace free_fleet
+}  //  namespace messages
+}  //  namespace free_fleet
 
-#endif // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__ROBOTSTATE_HPP
+#endif  // FREE_FLEET__INCLUDE__FREE_FLEET__MESSAGES__ROBOTSTATE_HPP

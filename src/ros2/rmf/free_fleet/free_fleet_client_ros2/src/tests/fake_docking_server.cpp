@@ -34,7 +34,7 @@ int main(int argc, char** argv)
   using namespace std::placeholders;  // for _1, _2, _3...
   auto service = node->create_service<std_srvs::srv::Trigger>("dock_fake", std::bind(trigger, _1, _2));
   rclcpp::spin(node);
-  
+
   // Cleanup and exit
   rclcpp::shutdown();
   return 0;
