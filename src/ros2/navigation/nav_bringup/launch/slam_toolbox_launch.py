@@ -41,17 +41,17 @@ def generate_launch_description():
         nav_bringup_dir,
         config_directory,
         "slam",
-        "slam_toolbox_params_offline.yaml",
+        "slam_toolbox_params_lifelong.yaml",
     )
     slam_launch_file = os.path.join(
         nav_bringup_dir, "launch", "slam_toolbox_base_launch.py"
     )
 
     slam_arguments = {
-        "slam_executable": "sync_slam_toolbox_node",
+        "slam_executable": "map_and_localization_slam_toolbox_node",
         "slam_params_file": slam_toolbox_params_yaml,
         "slam_posegraph": world_posegraph,
-        "slam_mode": "localization",
+        "slam_mode": "mapping",
         "slam_map_topic": "/map",
         "namespace": namespace,
     }.items()
