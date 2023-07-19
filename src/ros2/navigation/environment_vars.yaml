@@ -7,3 +7,4 @@ init_yaw: 0.0 #3.14
 robot_name: "rb_theron"
 config_directory: "config" #config_simulation
 is_simulation: false
+robot_namspaces: [rb0, rb1]
