@@ -22,14 +22,14 @@ def generate_launch_description():
     use_sim_time = True
     for n in range(len(sim_config["robot_namspaces"])):
         robot_namespace = sim_config["robot_namspaces"][n]
-        # robot_xml = xacro.process_file(
-        #     os.path.join(
-        #         get_package_share_directory("rb_theron_description"),
-        #         "robots",
-        #         sim_config["robot"]+".urdf.xacro",
-        #     ),
-        #     mappings={"prefix": sim_config["prefix"], "topic_namespace": robot_namespace},
-        # ).toxml()
+        robot_xml = xacro.process_file(
+            os.path.join(
+                get_package_share_directory("rb_theron_description"),
+                "robots",
+                sim_config["robot"]+".urdf.xacro",
+            ),
+            mappings={"prefix": sim_config["prefix"], "topic_namespace": robot_namespace},
+        ).toxml()
 
         declare_robot_model_cmd = DeclareLaunchArgument(
             "robot_name",
@@ -37,16 +37,16 @@ def generate_launch_description():
             description="name of the robot in the simulation",
         )
 
-        # start_robot_state_publisher_cmd = Node(
-        #         package="robot_state_publisher",
-        #         executable="robot_state_publisher",
-        #         name="robot_state_publisher",
-        #         namespace=robot_namespace,
-        #         parameters=[{'frame_prefix': robot_namespace+'/',
-        #                      "use_sim_time": use_sim_time},
-        #                     {"robot_description": robot_xml}],
-        #         output="screen",
-        # )
+        start_robot_state_publisher_cmd = Node(
+                package="robot_state_publisher",
+                executable="robot_state_publisher",
+                name="robot_state_publisher",
+                namespace=robot_namespace,
+                parameters=[{'frame_prefix': robot_namespace+'/',
+                             "use_sim_time": use_sim_time},
+                            {"robot_description": robot_xml}],
+                output="screen",
+        )
 
         spawn_robot_cmd = Node(
             package="ros_gz_sim",
@@ -70,7 +70,7 @@ def generate_launch_description():
 
         group = GroupAction([
             declare_robot_model_cmd,
-            # start_robot_state_publisher_cmd,
+            start_robot_state_publisher_cmd,
             spawn_robot_cmd,
         ])
         ld.add_action(group)
