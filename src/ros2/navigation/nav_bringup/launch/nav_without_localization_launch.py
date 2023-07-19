@@ -62,7 +62,8 @@ def generate_launch_description():
                        'velocity_smoother']
 
     # Create our own temporary YAML files that include substitutions
-    nav_to_pose_bt = os.path.join(get_package_share_directory("nav2_bt_navigator"), "nav_to_pose_with_consistent_replanning_and_if_path_becomes_invalid", ".xml")
+    # nav_to_pose_bt = os.path.join(get_package_share_directory("nav2_bt_navigator"), "nav_to_pose_with_consistent_replanning_and_if_path_becomes_invalid", ".xml")
+    nav_to_pose_bt = os.path.join(get_package_share_directory("nav2_bt_navigator"), "navigate_to_pose_w_replanning_goal_patience_and_recovery", ".xml")
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
