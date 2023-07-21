@@ -17,6 +17,7 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('fleet_name', 'ROBAST_1')
         self.declare_parameter('robot_name', 'RB0')
         self.declare_parameter('statemaschine_open_drawer_topic','/trigger_drawer_tree')
+        self.declare_parameter('statemaschine_open_e_drawer_topic','/trigger_electric_drawer_tree')
         
         self.declare_parameter('dds_domain', 42)
         self.declare_parameter('dds_open_drawer_topic', '/OpenDrawerRequest')
@@ -24,6 +25,7 @@ class free_fleet_client_direct(Node):
         self.fleet_name = self.get_parameter('fleet_name').get_parameter_value().string_value
         self.name = self.get_parameter('robot_name').get_parameter_value().string_value
         self.ros_opendrawer_topic = self.get_parameter('statemaschine_open_drawer_topic').get_parameter_value().string_value
+        self.ros_open_e_drawer_topic = self.get_parameter('statemaschine_open_e_drawer_topic').get_parameter_value().string_value
 
         self.dds_domain = self.get_parameter('dds_domain').get_parameter_value().integer_value
         self.dds_open_drawer_topic=self.get_parameter('dds_open_drawer_topic').get_parameter_value().string_value
@@ -34,7 +36,8 @@ class free_fleet_client_direct(Node):
             history=QoSHistoryPolicy.KEEP_LAST,
             depth=1
         )
-        self.publisher_ = self.create_publisher(DrawerAddress, self.ros_opendrawer_topic, qos_profile=qos_profile)
+        self.drawer_publisher_ = self.create_publisher(DrawerAddress, self.ros_opendrawer_topic, qos_profile=qos_profile)
+        self.e_drawer_publisher_ = self.create_publisher(DrawerAddress, self.ros_open_e_drawer_topic, qos_profile=qos_profile)
         self.start_receiving_from_dds()
        
     def start_receiving_from_dds(self):
@@ -60,8 +63,11 @@ class free_fleet_client_direct(Node):
         ros_msg = DrawerAddress()
         ros_msg.module_id = dds_msg.module_id
         ros_msg.drawer_id = dds_msg.drawer_id
-       
-        self.publisher_.publish(ros_msg)
+        if(dds_msg.e_drawer):
+             self.e_drawer_publisher_(ros_msg)
+        else:
+             self.drawer_publisher_(ros_msg)
+
   
 
 def main(args=None):

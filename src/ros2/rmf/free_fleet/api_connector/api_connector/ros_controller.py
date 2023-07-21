@@ -9,12 +9,28 @@ from communication_interfaces.msg import FFOpenDrawer
 class ros_controller(Node):
 
     def __init__(self, api_url):
+        
         super().__init__('ros_controller')
         self.base_url = api_url
         self.open_drawer_to_ff = self.create_publisher(
             FFOpenDrawer,
             'ff_open_drawer',
             10)
+        self.declare_parameter('dds_domain', 42)
+        self.declare_parameter('dds_robot_state_topic', "/robot_state")
+        self.declare_parameter('dds_mode_request_topic', "/mode_request")
+        self.declare_parameter('dds_path_request_topic', "/path_request")
+        self.declare_parameter('dds_destination_request_topic', "/destination_request")
+        self.declare_parameter('dds_open_drawer_topic', "/OpenDrawerequest")
+        self.dds_config={
+                "domain" : self.get_parameter('dds_domain').get_parameter_value().integer_value,
+                "robot_state_topic" : self.get_parameter('dds_robot_state_topic').get_parameter_value().string_value, 
+                "mode_request_topic": self.get_parameter('dds_mode_request_topic').get_parameter_value().string_value,
+                "path_request_topic" : self.get_parameter('dds_path_request_topic').get_parameter_value().string_value,
+                "destination_request_topic" : self.get_parameter('dds_destination_request_topic').get_parameter_value().string_value,
+                "open_drawer_topic" :self.get_parameter('dds_open_drawer_topic').get_parameter_value().string_value
+            }
+        
 
     def get_robot_status(self):
         response = web_module.getDataFromServer(self.base_url + "/robot/status")
@@ -44,10 +60,13 @@ class ros_controller(Node):
             get_logger().warning(
                 "Deleting request for {0} was NOT successfull!".format(api_url))
 
-    def openDrawer(self, drawer_id: int, module_id: int, fleet_name: str, robot_name: str):
+    def open_drawer(self, drawer_id: int, module_id: int, fleet_name: str, robot_name: str):
         msg = FFOpenDrawer()
         msg.fleet_name = fleet_name
         msg.robot_name = robot_name
         msg.drawer_address.module_id = module_id
         msg.drawer_address.drawer_id = drawer_id
         self.open_drawer_to_ff.publish(msg)
+
+    def get_dds_config(self):
+        return self.dds_config

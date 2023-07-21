@@ -10,28 +10,8 @@ from threading import Thread
 
 class free_fleet_controller:
 
-    def __init__(self):
-        # self.declare_parameter('dds_domain', 42)
-        # self.declare_parameter('dds_robot_state_topic', "/robot_state")
-        # self.declare_parameter('dds_mode_request_topic', "/mode_request")
-        # self.declare_parameter('dds_path_request_topic', "/path_request")
-        # self.declare_parameter('dds_destination_request_topic', "/destination_request")
-        # self.declare_parameter('dds_open_drawer_topic', "/OpenDrawerequest")
-
-        # self.dds_domain = self.get_parameter('dds_domain').get_parameter_value().integer_value
-        # self.dds_robot_state_topic = self.get_parameter('dds_robot_state_topic').get_parameter_value().string_value
-        # self.dds_mode_request_topic = self.get_parameter('dds_mode_request_topic').get_parameter_value().string_value
-        # self.dds_dds_path_request_topic = self.get_parameter('dds_path_request_topic').get_parameter_value().string_value
-        # self.dds_destination_request_topic = self.get_parameter('dds_destination_request_topic').get_parameter_value().string_value
-        # self.dds_open_drawer_topic = self.get_parameter('dds_open_drawer_topic').get_parameter_value().string_value
-
-        self.dds_domain = 42
-        self.dds_robot_state_topic = "/robot_state"
-        self.dds_mode_request_topic = "/mode_request"
-        self.dds_dds_path_request_topic = "/path_request"
-        self.dds_destination_request_topic = "/destination_request"
-        self.dds_open_drawer_topic = "/OpenDraweRequest"
-
+    def __init__(self, dds_config: dict):
+        self.config = dds_config
         self.robot_states = []  # :list[messages.FreeFleetData_RobotState] =[]
         self.start_reciving_robot_states()
 
@@ -40,10 +20,10 @@ class free_fleet_controller:
         x.start()
 
     def get_status(self):
-        self.participant = DomainParticipant(domain_id=self.dds_domain)
+        self.participant = DomainParticipant(domain_id=self.config["dds_domain"])
         topic = Topic(
             self.participant,
-            self.dds_robot_state_topic,
+            self.config["robot_state_topic"],
             messages.FreeFleetData_RobotState)
 
         self.reader = DataReader(self.participant, topic)
@@ -66,7 +46,7 @@ class free_fleet_controller:
         mode_request.parameters = []
         self.publish_dds(
             mode_request,
-            self.dds_mode_request_topic,
+            self.config["mode_request_topic"],
             messages.FreeFleetData_ModeRequest)
 
     # handle path request
@@ -79,7 +59,7 @@ class free_fleet_controller:
         path_request.path = path
         self.publish_dds(
             path_request,
-            self.dds_dds_path_request_topic,
+            self.config["path_request_topic"],
             messages.FreeFleetData_PathRequest)
 
     # handle destination request
@@ -92,20 +72,21 @@ class free_fleet_controller:
         destination_request.destination = destination
         self.publish_dds(
             destination_request,
-            self.dds_destination_request_topic,
+            self.config["destination_request_topic"],
             messages.FreeFleetData_DestinationRequest)
 
     # handle_open_drawer_request
-    def handle_open_drawer_request(self, fleet_name, robot_name, module_id, drawer_id):
+    def handle_open_drawer_request(self, fleet_name, robot_name, module_id, drawer_id, e_drawer):
         open_drawer_request = messages.FreeFleetData_OpenDrawerRequest(
             fleet_name,
             robot_name,
             module_id,
-            drawer_id)
+            drawer_id,
+            e_drawer)
 
         self.publish_dds(
             open_drawer_request,
-            self.dds_open_drawer_topic,
+            self.config["open_drawer_topic"],
             messages.FreeFleetData_OpenDrawerRequest)
 
     def publish_dds(self, message, topicPath, topicType):

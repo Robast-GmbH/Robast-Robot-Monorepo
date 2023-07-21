@@ -8,7 +8,7 @@ import threading
 def main(args=None):
     rclpy.init()
     ros_node = ros_controller.ros_controller("")
-    free_fleet = ff_controller.free_fleet_controller()
+    free_fleet = ff_controller.free_fleet_controller(ros_node.dds_config)
     web_interface = rest_interface.RestInterface(ros_node, free_fleet, 0.5)
     spin_thread = threading.Thread(
         target=rclpy.spin, args=(ros_node,))

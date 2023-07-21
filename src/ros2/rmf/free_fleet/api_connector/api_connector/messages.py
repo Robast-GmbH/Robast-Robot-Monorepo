@@ -69,3 +69,4 @@ class FreeFleetData_OpenDrawerRequest(IdlStruct):
     robot_name: str
     module_id: int
     drawer_id: int
+    e_drawer: bool
