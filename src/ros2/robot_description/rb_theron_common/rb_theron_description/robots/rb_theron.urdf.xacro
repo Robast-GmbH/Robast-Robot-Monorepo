@@ -94,12 +94,14 @@
 	<!-- TODO: Should be sensor_intel_d435, but this one isn't migrated to ros2 yet -->
 	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
 	<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="front_realsense_camera" hq="${hq}">
-		<origin xyz="0.3305 0.0 0.1468" rpy="0 0 0"/>
+		<origin xyz="0.3305 0.0 1.1468" rpy="0 0 0"/>
 	</xacro:sensor_r430>
 
 	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="back_realsense_camera" hq="${hq}">
 		<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
+
+	
   	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
 	<!--xacro:sensor_orbbec_astra prefix="$(arg prefix)front_rgbd_camera" parent="$(arg prefix)base_link" prefix_topic="front_rgbd_camera">
 		<origin xyz="0.3305 0.0 0.1898" rpy="0 0 0"/>
@@ -130,25 +132,6 @@
 		</plugin>
 	</gazebo>
 	
-    <xacro:arg name="back_oak_d_camera_model"  default="OAK-D-POE" />
-    <xacro:arg name="back_oak_d_base_frame"    default="oak-d-s2-poe-base-frame" />
-    <xacro:arg name="back_oak_d_pos_x"     	   default="-0.3305" />
-    <xacro:arg name="back_oak_d_pos_y"         default="0.0" />
-    <xacro:arg name="back_oak_d_pos_z"         default="1.1468" />
-    <xacro:arg name="back_oak_d_roll"          default="0.0" />
-    <xacro:arg name="back_oak_d_pitch"         default="0.0" />
-    <xacro:arg name="back_oak_d_yaw"           default="3.1416" />
-    <xacro:depthai_camera prefix="$(arg prefix)back_top_oak_d_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="back_top_oak_d_camera" camera_model = "$(arg back_oak_d_camera_model)" base_frame = "$(arg back_oak_d_base_frame)" cam_pos_x = "$(arg back_oak_d_pos_x)" cam_pos_y = "$(arg back_oak_d_pos_y)" cam_pos_z = "$(arg back_oak_d_pos_z)" cam_roll = "$(arg back_oak_d_roll)" cam_pitch = "$(arg back_oak_d_pitch)" cam_yaw = "$(arg back_oak_d_yaw)"/>
-	
-	<xacro:arg name="front_oak_d_camera_model"  default="OAK-D-S2" />
-    <xacro:arg name="front_oak_d_base_frame"    default="oak-d-s2-usb-base--frame" />
-    <xacro:arg name="front_oak_d_pos_x"         default="0.3305" />
-    <xacro:arg name="front_oak_d_pos_y"         default="0.0" />
-    <xacro:arg name="front_oak_d_pos_z"         default="1.1468" />
-    <xacro:arg name="front_oak_d_roll"          default="0.0" />
-    <xacro:arg name="front_oak_d_pitch"         default="0.0" />
-    <xacro:arg name="front_oak_d_yaw"           default="0.0" />
-	<xacro:depthai_camera prefix="$(arg prefix)front_top_oak_d_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="front_top_oak_d_camera" camera_model = "$(arg front_oak_d_camera_model)" base_frame = "$(arg front_oak_d_base_frame)" cam_pos_x = "$(arg front_oak_d_pos_x)" cam_pos_y = "$(arg front_oak_d_pos_y)" cam_pos_z = "$(arg front_oak_d_pos_z)" cam_roll = "$(arg front_oak_d_roll)" cam_pitch = "$(arg front_oak_d_pitch)" cam_yaw = "$(arg front_oak_d_yaw)"/>
 
 	<!-- ROBAST Module Cage -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
