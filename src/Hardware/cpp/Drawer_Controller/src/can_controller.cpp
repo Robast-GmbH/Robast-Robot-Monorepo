@@ -31,12 +31,12 @@ namespace drawer_controller
                                                    });
     if (errorCode2515 == 0)
     {
-      Serial.println("ACAN2515 configuration: ok");
+      debug_println("ACAN2515 configuration: ok");
     }
     else
     {
-      Serial.print("ACAN2515 configuration error 0x");
-      Serial.println(errorCode2515, HEX);
+      debug_print("ACAN2515 configuration error 0x");
+      debug_println_with_base(errorCode2515, HEX);
     }
 
     pinMode(MCP2515_INT, INPUT);   // Configuring pin for /INT input
@@ -47,7 +47,7 @@ namespace drawer_controller
     std::optional<robast_can_msgs::CanMessage> can_message;
     if (acan_2515.available())
     {
-      Serial.println("Received CAN message!");
+      debug_println("Received CAN message!");
 
       CANMessage frame;
       acan_2515.receive(frame);
@@ -66,8 +66,8 @@ namespace drawer_controller
 
       if (!can_message.has_value())
       {
-        Serial.println("There is no CAN Message available in the CAN Database that corresponds to the msg id: ");
-        Serial.print(this->_rx_msg_id, HEX);
+        debug_println("There is no CAN Message available in the CAN Database that corresponds to the msg id: ");
+        debug_print_with_base(this->_rx_msg_id, HEX);
         return can_message;
       }
       else
@@ -98,17 +98,17 @@ namespace drawer_controller
       const bool ok = acan_2515.tryToSend(mcp2515_frame);
       if (ok)
       {
-        Serial.println("Message Sent Successfully!");
+        debug_println("Message Sent Successfully!");
       }
       else
       {
-        Serial.println("Error accured while sending CAn message!");
+        debug_println("Error accured while sending CAn message!");
       }
     }
     catch (const std::invalid_argument &exception)
     {
-      Serial.print("Exception accurred while encoding CAN message into can frame. Exception message: ");
-      Serial.println(exception.what());
+      debug_print("Exception accurred while encoding CAN message into can frame. Exception message: ");
+      debug_println(exception.what());
     }
   }
 

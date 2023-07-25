@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "debug.hpp"
 #include "i_gpio_wrapper.hpp"
 
 // the time in ms the lock mechanism needs to open resp. close the lock
@@ -37,7 +38,7 @@ namespace drawer_controller
 
     bool is_endstop_switch_pushed();
 
-    void handle_reading_sensors();
+    void update_sensor_values();
 
     float get_moving_average_sensor_lock_pin();
 
