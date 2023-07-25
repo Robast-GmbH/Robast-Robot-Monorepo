@@ -75,7 +75,7 @@ namespace drawer_controller
 
     bool _is_drawer_moving_out;
     bool _triggered_deceleration_for_drawer_moving_out = false;
-    bool _electrical_drawer_opening_in_progress = false;
+    bool _is_idling = true;
     bool _triggered_deceleration_for_drawer_moving_in = false;
 
     uint8_t _target_position_uint8 = 0;
@@ -111,8 +111,6 @@ namespace drawer_controller
     void check_if_drawer_is_homed();
 
     void handle_electrical_drawer_task_msg(robast_can_msgs::CanMessage can_message);
-
-    void check_if_motion_is_finished();
 
     void debug_prints_moving_electrical_drawer();
 

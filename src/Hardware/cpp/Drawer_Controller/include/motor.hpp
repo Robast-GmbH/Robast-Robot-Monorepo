@@ -5,6 +5,7 @@
 
 #include <memory>
 
+#include "debug.hpp"
 #include "i_gpio_wrapper.hpp"
 #include "pinout_defines.hpp"
 
@@ -17,6 +18,7 @@
 #define SERIAL_PORT                Serial2
 #define R_SENSE                    0.33f   // Match to your driver
 #define DEFAULT_MOTOR_ACCELERATION 10
+#define INSTANT_ACCELERATION       0
 
 namespace stepper_motor
 {
@@ -106,15 +108,17 @@ namespace stepper_motor
 
     void set_active_speed(uint32_t speed);
 
-    void handle_time_dependend_acceleration();
+    void handle_time_dependent_acceleration();
 
-    void handle_position_dependend_deceleration(int32_t current_position_int32);
+    void handle_position_dependent_deceleration(int32_t current_position_int32);
 
     void finish_speed_ramp(uint32_t final_speed);
 
     uint32_t get_delta_speed(int32_t current_position_int32) const;
 
     uint32_t get_dt_since_start_in_ms() const;
+
+    int32_t calculate_new_active_speed(int32_t current_position_int32) const;
   };
 }   // namespace stepper_motor
 

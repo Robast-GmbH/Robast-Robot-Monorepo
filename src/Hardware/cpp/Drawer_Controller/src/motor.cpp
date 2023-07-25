@@ -26,7 +26,7 @@ namespace stepper_motor
 
   void Motor::init()
   {
-    Serial.print("Starting Motor init!\n");
+    debug_println("Starting Motor init!");
 
     _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
     _gpio_wrapper->digital_write(_stepper_stdby_tmc2209_pin_id, LOW);
@@ -87,25 +87,25 @@ namespace stepper_motor
 
     _driver->shaft(direction_to_shaft_bool());
 
-    Serial.print("\nTesting connection...");
+    debug_println("\nTesting connection...");
     uint8_t result = _driver->test_connection();
 
     if (result)
     {
-      Serial.println("failed!");
-      Serial.print("Likely cause: ");
+      debug_println("failed!");
+      debug_println("Likely cause: ");
 
       switch (result)
       {
         case 1:
-          Serial.println("loose connection");
+          debug_println("loose connection");
           break;
         case 2:
-          Serial.println("no power");
+          debug_println("no power");
           break;
       }
 
-      Serial.println("Fix the problem and reset board.");
+      debug_println("Fix the problem and reset board.");
 
       // We need this delay or messages above don't get fully printed out
       delay(100);
@@ -114,7 +114,7 @@ namespace stepper_motor
 
     // set_stall_guard(true);
 
-    Serial.println("Stepper initialized");
+    debug_println("Stepper initialized");
   }
 
   void Motor::stall_ISR()
@@ -163,15 +163,15 @@ namespace stepper_motor
 
     if (get_active_speed() < get_target_speed())
     {
-      handle_time_dependend_acceleration();
+      handle_time_dependent_acceleration();
     }
     if (get_active_speed() > get_target_speed())
     {
-      handle_position_dependend_deceleration(current_position_int32);
+      handle_position_dependent_deceleration(current_position_int32);
     }
   }
 
-  void Motor::handle_time_dependend_acceleration()
+  void Motor::handle_time_dependent_acceleration()
   {
     uint32_t delta_speed_uint32 = get_dt_since_start_in_ms() * _acceleration;
 
@@ -187,7 +187,15 @@ namespace stepper_motor
     }
   }
 
-  void Motor::handle_position_dependend_deceleration(int32_t current_position_int32)
+  void Motor::handle_position_dependent_deceleration(int32_t current_position_int32)
+  {
+    int32_t new_active_speed_int32 = calculate_new_active_speed(current_position_int32);
+    _speed_ramp_in_progress = !(new_active_speed_int32 < get_target_speed());
+    new_active_speed_int32 = _speed_ramp_in_progress ? new_active_speed_int32 : get_target_speed();
+    set_active_speed(new_active_speed_int32);
+  }
+
+  int32_t Motor::calculate_new_active_speed(int32_t current_position_int32) const
   {
     uint32_t distance_travelled_uint32 = abs(current_position_int32 - _starting_position_int32);
 
@@ -198,14 +206,7 @@ namespace stepper_motor
 
     int32_t new_active_speed_int32 = (int32_t) _starting_speed_before_ramp_uint32 - (int32_t) delta_speed_uint32;
 
-    if (new_active_speed_int32 < get_target_speed())
-    {
-      finish_speed_ramp(get_target_speed());
-    }
-    else
-    {
-      set_active_speed(new_active_speed_int32);
-    }
+    return new_active_speed_int32;
   }
 
   uint32_t Motor::get_dt_since_start_in_ms() const
@@ -216,7 +217,7 @@ namespace stepper_motor
 
   void Motor::finish_speed_ramp(uint32_t final_speed)
   {
-    Serial.println("The speed ramp-up/ramp-down is finished, setting the motor speed to the target speed directly!");
+    debug_println("The speed ramp-up/ramp-down is finished, setting the motor speed to the target speed directly!");
     set_active_speed(final_speed);
     _speed_ramp_in_progress = false;
   }
@@ -249,7 +250,7 @@ namespace stepper_motor
 
   void Motor::set_target_speed_with_accelerating_ramp(uint32_t target_speed, int16_t acceleration)
   {
-    if (acceleration == 0)
+    if (acceleration == INSTANT_ACCELERATION)
     {
       set_active_speed(target_speed);
       _target_speed = target_speed;
@@ -308,16 +309,16 @@ namespace stepper_motor
 
   void Motor::print_status()
   {
-    Serial.print("Status: ");
-    Serial.print(_driver->SG_RESULT(), DEC);
-    Serial.print(" ");
-    Serial.print(_driver->SG_RESULT() < STALL_VALUE, DEC);
-    Serial.print(" ");
+    debug_print("Status: ");
+    debug_print_with_base(_driver->SG_RESULT(), DEC);
+    debug_print(" ");
+    debug_print_with_base(_driver->SG_RESULT() < STALL_VALUE, DEC);
+    debug_print(" ");
     byte drawer_diag_state;
     _gpio_wrapper->digital_read(_stepper_diag_pin_id, drawer_diag_state);
-    Serial.print(drawer_diag_state);
-    Serial.print(" ");
-    Serial.println(_driver->cs2rms(_driver->cs_actual()), DEC);
+    debug_print(drawer_diag_state);
+    debug_print(" ");
+    debug_println_with_base(_driver->cs2rms(_driver->cs_actual()), DEC);
   }
 
 }   // namespace stepper_motor
