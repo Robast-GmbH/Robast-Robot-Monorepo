@@ -71,10 +71,22 @@ namespace drawer_controller
   {
     if (_is_idling)
     {
-      _electrical_lock->handle_reading_sensors();   // reading the sensor values needs to be done
-      return;
+      handle_drawer_idle_state();
     }
+    else
+    {
+      handle_drawer_active_state();
+    }
+  }
 
+  void ElectricalDrawer::handle_drawer_idle_state()
+  {
+    // updating the sensor values needs to be done all the time because of the moving average calculation
+    _electrical_lock->update_sensor_values();
+  }
+
+  void ElectricalDrawer::handle_drawer_active_state()
+  {
     handle_electrical_lock_control();
 
     _motor->handle_motor_control(_encoder->get_current_position());
@@ -93,6 +105,8 @@ namespace drawer_controller
 
   void ElectricalDrawer::handle_electrical_lock_control()
   {
+    _electrical_lock->update_sensor_values();
+
     _electrical_lock->handle_lock_control();
 
     if (_electrical_lock->is_drawer_auto_close_timeout_triggered())
@@ -100,8 +114,6 @@ namespace drawer_controller
       _can_utils->handle_error_feedback_msg(_module_id, _id, CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
       _electrical_lock->set_drawer_auto_close_timeout_triggered(false);
     }
-
-    _electrical_lock->handle_reading_sensors();
 
     handle_drawer_just_opened();
   }

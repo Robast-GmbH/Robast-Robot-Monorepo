@@ -38,7 +38,7 @@ namespace drawer_controller
 
     bool is_endstop_switch_pushed();
 
-    void handle_reading_sensors();
+    void update_sensor_values();
 
     float get_moving_average_sensor_lock_pin();
 
