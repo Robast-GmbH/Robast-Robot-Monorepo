@@ -101,6 +101,7 @@
 		<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
 
+	<!--Added back top realsense camera because running YOLO network on depthai camera in simulation reduces RTF-->
 	<xacro:sensor_r430 prefix="$(arg prefix)back_top_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="back_top_realsense_camera" hq="${hq}">
 		<origin xyz="-0.3305 0.0 1.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
