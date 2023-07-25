@@ -53,7 +53,7 @@ def generate_launch_description():
         convert_types=True)
         
         slam_launch_file = os.path.join(
-            nav_bringup_dir, "launch", "multi_robot_slam_toolbox_base_launch.py"
+            nav_bringup_dir, "launch", "slam_toolbox_base_launch.py"
         )
 
         slam_arguments = {
@@ -72,7 +72,7 @@ def generate_launch_description():
 
     ld = LaunchDescription()
     ld.add_action(declare_world_model_cmd)
-    for n in slam_nodes:
-        ld.add_action(n)
+    for slam_node in slam_nodes:
+        ld.add_action(slam_node)
 
     return ld

@@ -26,7 +26,7 @@ services:
   navigation:
     image: ghcr.io/robast-gmbh/monorepo/navigation:latest
     environment:
-      - ROS_DOMAIN_ID=1 
+      - ROS_DOMAIN_ID=1
     volumes:
       - ./navigation/:/workspace/:cached
       - ../../src/ros2/navigation:/workspace/src/navigation:cached
