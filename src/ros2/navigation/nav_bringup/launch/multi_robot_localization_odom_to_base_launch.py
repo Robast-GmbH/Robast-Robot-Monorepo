@@ -55,7 +55,7 @@ def generate_launch_description():
             "odom0": "/"+robot_namespace+"/odom",
             "imu0": "/"+robot_namespace+"/imu/data"
             }
-
+        # TODo Torben part of the Todo above
         # else:
         #     param_substitutions = {
         #         'use_sim_time': use_sim_time,

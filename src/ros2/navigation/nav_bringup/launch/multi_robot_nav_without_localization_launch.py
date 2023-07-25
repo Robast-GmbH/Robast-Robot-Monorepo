@@ -118,16 +118,16 @@ def generate_launch_description():
             'local_costmap.local_costmap.ros__parameters.global_frame': namespace+'/odom',
             'local_costmap.local_costmap.ros__parameters.robot_base_frame': namespace+'/base_link',
             'local_costmap.local_costmap.ros__parameters.stvl_layer.lidar3d.topic':
-            'bpearl_laser/scan/points',
+            namespace+'/bpearl_laser/scan/points',
             'local_costmap.local_costmap.ros__parameters.stvl_layer.lidar2d.topic':
-            'front_laser/scan',
+            namespace+'/front_laser/scan',
 
             'global_costmap.global_costmap.ros__parameters.robot_base_frame':
             namespace+'/base_link',
             'global_costmap.global_costmap.ros__parameters.obstacle_layer.scan.topic':
-            'front_laser/scan',
+            namespace+'/front_laser/scan',
             'global_costmap.global_costmap.ros__parameters.stvl_layer.lidar.topic':
-            'bpearl_laser/scan/points',
+            namespace+'/bpearl_laser/scan/points',
             'behavior_server.ros__parameters.global_frame': namespace+'/odom',
             'behavior_server.ros__parameters.robot_base_frame': namespace+'/base_link',
         }
