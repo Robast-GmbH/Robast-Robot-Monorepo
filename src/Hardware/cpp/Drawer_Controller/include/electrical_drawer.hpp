@@ -88,6 +88,10 @@ namespace drawer_controller
 
     /* FUNCTIONS */
 
+    void handle_drawer_idle_state();
+
+    void handle_drawer_active_state();
+
     void handle_drawer_just_opened() override;
 
     void handle_drawer_just_closed() override;

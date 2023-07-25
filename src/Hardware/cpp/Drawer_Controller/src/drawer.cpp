@@ -54,7 +54,7 @@ namespace drawer_controller
       _electrical_lock->set_drawer_auto_close_timeout_triggered(false);
     }
 
-    _electrical_lock->handle_reading_sensors();
+    _electrical_lock->update_sensor_values();
   }
 
   void Drawer::handle_drawer_just_opened()

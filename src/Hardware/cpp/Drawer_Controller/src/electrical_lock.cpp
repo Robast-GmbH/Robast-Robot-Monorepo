@@ -104,7 +104,7 @@ namespace drawer_controller
     return get_moving_average_drawer_closed_pin() > 0.9;
   }
 
-  void ElectricalLock::handle_reading_sensors()
+  void ElectricalLock::update_sensor_values()
   {
     // Tracking the moving average for the sensor pins helps to debounce them a little bit
     byte digital_read_sensor_lock_pin;
