@@ -8,6 +8,7 @@
 
 #include "can/can_db.hpp"
 #include "can/can_message.h"
+#include "debug.hpp"
 
 namespace drawer_controller
 {

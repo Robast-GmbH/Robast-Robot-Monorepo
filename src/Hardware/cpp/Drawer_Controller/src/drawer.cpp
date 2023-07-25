@@ -54,7 +54,7 @@ namespace drawer_controller
       _electrical_lock->set_drawer_auto_close_timeout_triggered(false);
     }
 
-    _electrical_lock->handle_reading_sensors();
+    _electrical_lock->update_sensor_values();
   }
 
   void Drawer::handle_drawer_just_opened()
@@ -84,14 +84,14 @@ namespace drawer_controller
 
   void Drawer::debug_prints_drawer_lock(robast_can_msgs::CanMessage &can_message)
   {
-    Serial.print("Received open lock CAN message with standard ID: ");
-    Serial.print(can_message.get_id(), HEX);
-    Serial.print(" rx_dlc: ");
-    Serial.print(can_message.get_dlc(), DEC);
-    Serial.print(" MODULE ID: ");
-    Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data(), HEX);
-    Serial.print(" DRAWER ID: ");
-    Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
+    debug_print("Received open lock CAN message with standard ID: ");
+    debug_print_with_base(can_message.get_id(), HEX);
+    debug_print(" rx_dlc: ");
+    debug_print_with_base(can_message.get_dlc(), DEC);
+    debug_print(" MODULE ID: ");
+    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data(), HEX);
+    debug_print(" DRAWER ID: ");
+    debug_println_with_base(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
   }
 
 }   // namespace drawer_controller

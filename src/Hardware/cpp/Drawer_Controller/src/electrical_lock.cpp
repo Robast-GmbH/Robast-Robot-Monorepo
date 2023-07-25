@@ -59,8 +59,8 @@ namespace drawer_controller
       set_open_lock_current_step(false);
       set_drawer_opening_is_in_progress(false);
       set_drawer_auto_close_timeout_triggered(true);
-      Serial.print("Lock was automatically closed due to timeout! time_since_lock_was_opened: ");
-      Serial.println(time_since_lock_was_opened, DEC);
+      debug_println("Lock was automatically closed due to timeout! time_since_lock_was_opened: ");
+      debug_println_with_base(time_since_lock_was_opened, DEC);
     }
   }
 
@@ -104,7 +104,7 @@ namespace drawer_controller
     return get_moving_average_drawer_closed_pin() > 0.9;
   }
 
-  void ElectricalLock::handle_reading_sensors()
+  void ElectricalLock::update_sensor_values()
   {
     // Tracking the moving average for the sensor pins helps to debounce them a little bit
     byte digital_read_sensor_lock_pin;
@@ -130,7 +130,7 @@ namespace drawer_controller
   {
     if (is_drawer_opening_in_progress())
     {
-      Serial.printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", id);
+      debug_printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", id);
     }
     else
     {

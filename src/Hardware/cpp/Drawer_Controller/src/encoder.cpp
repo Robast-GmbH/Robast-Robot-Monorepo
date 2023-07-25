@@ -34,6 +34,25 @@ namespace drawer_controller
     return _current_position_int32;
   }
 
+  uint8_t Encoder::get_normed_current_position() const
+  {
+    uint32_t normed_current_position_uint32 = (_current_position_int32 * UINT8_MAX) / DRAWER_MAX_EXTENT;
+
+    if (normed_current_position_uint32 > UINT8_MAX)
+    {
+      return UINT8_MAX;
+    }
+    else
+    {
+      return normed_current_position_uint32;
+    }
+  }
+
+  uint32_t Encoder::convert_uint8_position_to_drawer_position_scale(uint8_t position) const
+  {
+    return (position * DRAWER_MAX_EXTENT) / UINT8_MAX;
+  }
+
   void Encoder::set_current_position(int32_t position)
   {
     if (_use_encoder)
@@ -58,7 +77,7 @@ namespace drawer_controller
     uint32_t current_timestemp = millis();
 
     integrated_position =
-      (current_timestemp - _last_timestemp) * active_speed / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
+      ((current_timestemp - _last_timestemp) * active_speed) / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
 
     if (!_is_drawer_moving_out)
     {
@@ -67,20 +86,6 @@ namespace drawer_controller
     _last_timestemp = current_timestemp;
 
     return integrated_position;
-  }
-
-  uint8_t Encoder::get_normed_current_position() const
-  {
-    uint32_t normed_current_position_uint32 = (_current_position_int32 * 255) / DRAWER_MAX_EXTENT;
-
-    if (normed_current_position_uint32 > 255)
-    {
-      return 255;
-    }
-    else
-    {
-      return normed_current_position_uint32;
-    }
   }
 
 }   // namespace drawer_controller
