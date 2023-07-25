@@ -43,7 +43,7 @@ namespace drawer_controller
     // CanSignals which has a different length depending on the CanMessage.
     // Therefore we built a queue with a vector, which should be fine in this case as the queue usually only contains
     // one or two feedback messages and is rarely used. Furthermore we try to keep it as efficient as possible and try
-    // to to follow what is explained here: https://youtu.be/fHNmRkzxHWs?t=2541
+    // to follow what is explained here: https://youtu.be/fHNmRkzxHWs?t=2541
     std::vector<robast_can_msgs::CanMessage> _feedback_msg_queue;
     uint8_t _head_of_feedback_msg_queue;
 
