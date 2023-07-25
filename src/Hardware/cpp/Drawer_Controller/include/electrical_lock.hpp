@@ -76,6 +76,8 @@ namespace drawer_controller
     void close_lock();
 
     void set_lock_output_low();
+
+    void close_lock_on_setup();
   };
 }   // namespace drawer_controller
 #endif   // DRAWER_CONTROLLER_ELECTRICAL_LOCK_HPP

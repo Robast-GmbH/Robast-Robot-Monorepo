@@ -28,6 +28,15 @@ namespace drawer_controller
     set_open_lock_current_step(false);
     set_drawer_opening_is_in_progress(false);
     set_drawer_auto_close_timeout_triggered(false);
+
+    close_lock_on_setup();
+  }
+
+  void ElectricalLock::close_lock_on_setup()
+  {
+    close_lock();
+    delay(ELECTRICAL_LOCK_MECHANISM_TIME);
+    set_lock_output_low();
   }
 
   void ElectricalLock::handle_lock_control()
