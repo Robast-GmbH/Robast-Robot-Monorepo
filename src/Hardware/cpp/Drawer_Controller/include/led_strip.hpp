@@ -125,7 +125,7 @@ namespace led_strip
     led_target_settings.led_target_brightness = can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data();
     led_target_settings.led_target_mode = can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
 
-    Serial.printf("Writing led strip mode %d to queue!\n", led_target_settings.led_target_mode);   // DEBUGGING
+    debug_printf("Writing led strip mode %d to queue!\n", led_target_settings.led_target_mode);   // DEBUGGING
 
     // Adding led mode to queue
     xQueueSend(
@@ -135,7 +135,7 @@ namespace led_strip
 
     uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip.led_target_settings_queue);
 
-    Serial.printf("Led modes in queue: %d\n", led_modes_in_queue);   // DEBUGGING
+    debug_printf("Led modes in queue: %d\n", led_modes_in_queue);   // DEBUGGING
 
     if (led_modes_in_queue == 1)
     {
@@ -153,7 +153,7 @@ namespace led_strip
     led_strip_target_settings.led_target_blue = 155;
     led_strip_target_settings.led_target_brightness = 25;
     led_strip.running_led_offset_from_middle = 0;
-    led_strip.led_current_mode = 1;
+    led_strip.led_current_mode = LedMode::steady_light;
   }
 
   void get_new_target_led_settings_from_queue()
@@ -404,7 +404,7 @@ namespace led_strip
     led_strip.led_target_settings_queue = xQueueCreate(MAX_NUM_OF_LED_MODES_IN_QUEUE, sizeof(LedTargetSettings));
     if (led_strip.led_target_settings_queue == NULL)
     {
-      Serial.println("Error creating the led mode queue");
+      debug_println("Error creating the led mode queue");
     }
   }
 
@@ -420,24 +420,24 @@ namespace led_strip
 
   void debug_prints_drawer_led(robast_can_msgs::CanMessage can_message)
   {
-    Serial.print("Received LED CAN message with standard ID: ");
-    Serial.print(can_message.get_id(), HEX);
-    Serial.print(" rx_dlc: ");
-    Serial.print(can_message.get_dlc(), DEC);
-    Serial.print(" MODULE ID: ");
-    Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data(), HEX);
-    Serial.print(" DRAWER ID: ");
-    Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
-    Serial.print(" LED RED: ");
-    Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data(), DEC);
-    Serial.print(" LED GREEN: ");
-    Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data(), DEC);
-    Serial.print(" LED BLUE: ");
-    Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data(), DEC);
-    Serial.print(" LED BRIGHTNESS: ");
-    Serial.print(can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data(), DEC);
-    Serial.print(" LED MODE: ");
-    Serial.println(can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data(), DEC);
+    debug_print("Received LED CAN message with standard ID: ");
+    debug_print_with_base(can_message.get_id(), HEX);
+    debug_print(" rx_dlc: ");
+    debug_print_with_base(can_message.get_dlc(), DEC);
+    debug_print(" MODULE ID: ");
+    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data(), HEX);
+    debug_print(" DRAWER ID: ");
+    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
+    debug_print(" LED RED: ");
+    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data(), DEC);
+    debug_print(" LED GREEN: ");
+    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data(), DEC);
+    debug_print(" LED BLUE: ");
+    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data(), DEC);
+    debug_print(" LED BRIGHTNESS: ");
+    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data(), DEC);
+    debug_print(" LED MODE: ");
+    debug_println_with_base(can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data(), DEC);
   }
 
 }   // namespace led_strip

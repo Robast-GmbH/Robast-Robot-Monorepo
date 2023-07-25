@@ -13,10 +13,16 @@
 #include "i_gpio_wrapper.hpp"
 #include "motor.hpp"
 
-#define DRAWER_MAX_SPEED               35000
-#define DRAWER_HOMING_SPEED            150
-#define DRAWER_HOMING_EXTENT           40   // this value determines the extent of the homing area (max 255)
-#define DRAWER_ACCELERATION_TIME_IN_US 1000
+#define DRAWER_MAX_SPEED    35000
+#define DRAWER_HOMING_SPEED 300
+
+// The drawer starts to decelerate in dependency of the traveled distance
+#define DRAWER_MOVING_IN_DECELERATION_DISTANCE  50   // distance to the target position to start deceleration (max 255)
+#define DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE  1    // the end of the distance when moving in where speed is super slow
+#define DRAWER_MOVING_OUT_DECELERATION_DISTANCE 70   // distance to the target position to start deceleration (max 255)
+
+// The drawer accelerates in dependency of the time
+#define DEFAULT_DRAWER_ACCELERATION 10
 
 namespace drawer_controller
 {
@@ -68,8 +74,9 @@ namespace drawer_controller
     std::unique_ptr<CanUtils> _can_utils;
 
     bool _is_drawer_moving_out;
-    bool _electrical_drawer_opening_in_progress = false;
-    bool _homing_initialized = false;
+    bool _triggered_deceleration_for_drawer_moving_out = false;
+    bool _is_idling = true;
+    bool _triggered_deceleration_for_drawer_moving_in = false;
 
     uint8_t _target_position_uint8 = 0;
 
@@ -81,13 +88,25 @@ namespace drawer_controller
 
     /* FUNCTIONS */
 
+    void handle_drawer_idle_state();
+
+    void handle_drawer_active_state();
+
     void handle_drawer_just_opened() override;
 
     void handle_drawer_just_closed() override;
 
-    void handle_drawer_moving_in(uint8_t normed_current_position_uint8);
+    void handle_drawer_moving_in();
 
-    void initialize_homing();
+    void handle_drawer_moving_out();
+
+    void handle_decelerating_for_moving_in_drawer();
+
+    void handle_decelerating_for_moving_out_drawer();
+
+    void handle_finished_moving_in_drawer();
+
+    void handle_finished_moving_out_drawer();
 
     void set_target_speed_and_direction(uint8_t target_speed);
 
@@ -96,8 +115,6 @@ namespace drawer_controller
     void check_if_drawer_is_homed();
 
     void handle_electrical_drawer_task_msg(robast_can_msgs::CanMessage can_message);
-
-    void check_if_motion_is_finished();
 
     void debug_prints_moving_electrical_drawer();
 

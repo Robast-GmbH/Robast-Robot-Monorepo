@@ -9,6 +9,7 @@
 
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
+#include "debug.hpp"
 #include "i_gpio_wrapper.hpp"
 #include "pinout_defines.hpp"
 
