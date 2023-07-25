@@ -49,6 +49,10 @@
 #define debug_println_with_base(num, base)
 #endif
 
+#ifndef debug_printf
+#define debug_printf(format, ...)
+#endif
+
 #ifndef debug_begin
 #define debug_begin(baudrate)
 #endif
