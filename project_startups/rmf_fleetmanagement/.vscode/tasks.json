@@ -52,18 +52,6 @@
                         "command": "rm -fr build install log; py3clean .",
                         "problemMatcher": []
                 },
-               
-                {
-                        "type": "shell",
-                        "label": "build tests",
-                        "command": "source /workspace/install/setup.bash; colcon build --symlink-install --packages-select testing_tools",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "testing"
-                        }
-                },
                 {
                         "label": "fix",
                         "detail": "Reformat files with uncrustify.",
@@ -280,20 +268,6 @@
                         "detail": "Create a new ROS python package from a template.",
                         "type": "shell",
                         "command": "ros2 pkg create --destination-directory src --build-type ament_python ${input:package}",
-                        "problemMatcher": []
-                },
-                {
-                        "label": "import from workspace file",
-                        "detail": "Use vcs to import modules specified by a workspace/rosinstall file.",
-                        "type": "shell",
-                        "command": "vcs import < src/ros2.repos src",
-                        "problemMatcher": []
-                },
-                {
-                        "label": "update workspace file",
-                        "detail": "Use vcs to update repositories in src to workspace file.",
-                        "type": "shell",
-                        "command": "vcs export src > src/ros2.repos",
                         "problemMatcher": []
                 },
                 {
