@@ -25,14 +25,14 @@
 				<odom_publish_frequency>30</odom_publish_frequency>
 				<topic>${namespace}/cmd_vel</topic>
 
-				<frame_id>${namespace}/$(arg prefix)odom</frame_id>
+				<frame_id>$(arg prefix)odom</frame_id>
 
 				<!-- There is no possiblity (as far as I know) to disable tf publishing of odom->base, so if you
 				don't want the tf to be published, you can just dump it into a different topic -->
 				<tf_topic>tf_dump</tf_topic> 
 
 				<xacro:if value="${publish_bf}">
-					<child_frame_id>${namespace}/$(arg prefix)base_footprint</child_frame_id>
+					<child_frame_id>$(arg prefix)base_footprint</child_frame_id>
 				</xacro:if>
 				<xacro:unless value="${publish_bf}">
 					<child_frame_id>$(arg prefix)base_link</child_frame_id>
