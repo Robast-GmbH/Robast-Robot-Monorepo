@@ -24,6 +24,7 @@ namespace drawer_controller
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
 
+    _open_lock_previous_step = false;
     set_open_lock_current_step(false);
     set_drawer_opening_is_in_progress(false);
     set_drawer_auto_close_timeout_triggered(false);
@@ -33,7 +34,7 @@ namespace drawer_controller
   {
     // Mind that the state for open_lock_current_step_ is changed in the handle_lock_status function when a CAN msg is
     // received
-    bool change_lock_state = _open_lock_current_step == _open_lock_previous_step ? false : true;
+    bool change_lock_state = !(_open_lock_current_step == _open_lock_previous_step);
 
     unsigned long current_timestamp = millis();
     unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;

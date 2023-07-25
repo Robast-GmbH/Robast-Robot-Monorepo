@@ -58,8 +58,8 @@ namespace drawer_controller
 
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
 
-    bool _open_lock_current_step = false;    // flag to store which state the locks should have
-    bool _open_lock_previous_step = false;   // flag to store state of the lock of the previous step
+    bool _open_lock_current_step;    // flag to store which state the locks should have
+    bool _open_lock_previous_step;   // flag to store state of the lock of the previous step
 
     bool _drawer_opening_is_in_progress = false;
 
