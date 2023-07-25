@@ -101,6 +101,7 @@ def generate_launch_description():
         schedule_node,
         blockade_moderator,
         building_map,
-        # visualizer,TODO Torben: needs to be implemented is not a core feature forus but would be nice to have
+        # visualizer,TODO Torben: needs to be implemented is not a core feature
+        # focus but would be nice to have
         dispatcher,
         ])

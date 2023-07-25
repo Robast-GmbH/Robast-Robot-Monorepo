@@ -62,7 +62,7 @@ struct ClientNodeConfig
   ClientConfig get_client_config() const;
 };
 
-} // namespace ros2
-} // namespace free_fleet
+}  // namespace ros2
+}  // namespace free_fleet
 
-#endif // FREE_FLEET__ROS2__CLIENTNODECONFIG_HPP
+#endif  // FREE_FLEET__ROS2__CLIENTNODECONFIG_HPP

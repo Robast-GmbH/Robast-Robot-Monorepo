@@ -1,5 +1,5 @@
 
-import yaml
+
 import launch
 from launch import LaunchDescription
 from launch_ros.substitutions import FindPackageShare
@@ -13,7 +13,7 @@ def generate_launch_description():
                                     "/launch",
                                     "/empty_world.launch.py"]),
     )
-    
+
     fleet = launch.actions.IncludeLaunchDescription(
         AnyLaunchDescriptionSource([FindPackageShare("rmf_robast_multi_robot"),
                                     "/launch",

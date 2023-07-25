@@ -10,7 +10,7 @@ from launch.actions import GroupAction
 
 
 def generate_launch_description():
-   
+
     with open("/workspace/src/rmf/rmf_robast/config/sim_config.yaml", "r") as stream:
         try:
             sim_config = yaml.safe_load(stream)

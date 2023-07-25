@@ -8,4 +8,3 @@ class Location(BaseModel):
     y: float
     yaw: float
     level_name: str
-    

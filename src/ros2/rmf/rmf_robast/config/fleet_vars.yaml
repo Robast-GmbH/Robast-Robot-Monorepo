@@ -10,6 +10,7 @@ ros2_rmf_fleet_states_topic:  "fleet_states"
 ros2_rmf_mode_request_topic:  "robot_mode_requests"
 ros2_rmf_path_request_topic:  "robot_path_requests"
 ros2_rmf_destination_request_topic:  "robot_destination_requests"
+ros2_nav_move_base_topic: "goal_pose"
 
 max_dist_to_first_waypoint : 10.0
                             

@@ -329,7 +329,7 @@ nav2_msgs::action::NavigateToPose::Goal ClientNode::location_to_nav_goal(
   goal.pose.header.stamp.nanosec = _location.nanosec;
   goal.pose.pose.position.x = _location.x;
   goal.pose.pose.position.y = _location.y;
-  goal.pose.pose.position.z = 0.0; 
+  goal.pose.pose.position.z = 0.0;
   goal.pose.pose.orientation = get_quat_from_yaw(_location.yaw);
   return goal;
 }

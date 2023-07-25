@@ -24,6 +24,7 @@
 #include <memory>
 #include <thread>
 #include <vector>
+#include <string>
 
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp_action/rclcpp_action.hpp>
@@ -109,9 +110,9 @@ private:
   // --------------------------------------------------------------------------
   // Mode handling
 
-  // TODO: conditions to trigger emergency, however this is most likely for
+  // TODO RMF: conditions to trigger emergency, however this is most likely for
   // indicating emergency within the fleet and not in RMF
-  // TODO: figure out a better way to handle multiple triggered modes
+  // TODO RMF: figure out a better way to handle multiple triggered modes
   std::atomic<bool> request_error;
   std::atomic<bool> emergency;
   std::atomic<bool> paused;
@@ -175,7 +176,7 @@ private:
   void start(Fields fields);
 };
 
-} // namespace ros2
-} // namespace free_fleet
+}  // namespace ros2
+}  // namespace free_fleet
 
-#endif // FREE_FLEET__ROS2__CLIENTNODE_HPP
+#endif  // FREE_FLEET__ROS2__CLIENTNODE_HPP

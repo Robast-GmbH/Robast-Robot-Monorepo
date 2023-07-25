@@ -1,8 +1,8 @@
 
 from pydantic import BaseModel
 import uvicorn
-import geometry_msgs.msg
 from fastapi import FastAPI
+
 
 class Drawer(BaseModel):
     id: int
@@ -13,14 +13,17 @@ class Robot(BaseModel):
     fleet_name: str
     name: str
 
+
 class Pose(BaseModel):
     x:  float
     y:  float
     z:  float
 
+
 class Waypoint(BaseModel):
     pose: Pose
     orientation: float
+
 
 class RestInterface():
 
@@ -39,11 +42,14 @@ class RestInterface():
                 drawer.module_id,
                 drawer.id)
             return
-        
+
         @self.app.post("/robot/move")
-        def force_move_to_waypoint(waypoint: Waypoint,robot :Robot):
-            free_fleet_node.handle_destination_request(robot.fleet_name, robot.robot_name, waypoint )           
+        def force_move_to_waypoint(waypoint: Waypoint, robot: Robot):
+            free_fleet_node.handle_destination_request(robot.fleet_name,
+                                                       robot.robot_name,
+                                                       waypoint)
             return
+        
 
     def run(self, host='0.0.0.0', port=3001, log_level='warning'):
         uvicorn.run(self.app, host=host, port=port, log_level=log_level)

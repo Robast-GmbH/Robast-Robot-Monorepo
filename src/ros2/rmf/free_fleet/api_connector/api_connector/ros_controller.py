@@ -9,7 +9,7 @@ from communication_interfaces.msg import FFOpenDrawer
 class ros_controller(Node):
 
     def __init__(self, api_url):
-        
+
         super().__init__('ros_controller')
         self.base_url = api_url
         self.open_drawer_to_ff = self.create_publisher(
@@ -22,15 +22,19 @@ class ros_controller(Node):
         self.declare_parameter('dds_path_request_topic', "/path_request")
         self.declare_parameter('dds_destination_request_topic', "/destination_request")
         self.declare_parameter('dds_open_drawer_topic', "/OpenDrawerequest")
-        self.dds_config={
-                "domain" : self.get_parameter('dds_domain').get_parameter_value().integer_value,
-                "robot_state_topic" : self.get_parameter('dds_robot_state_topic').get_parameter_value().string_value, 
-                "mode_request_topic": self.get_parameter('dds_mode_request_topic').get_parameter_value().string_value,
-                "path_request_topic" : self.get_parameter('dds_path_request_topic').get_parameter_value().string_value,
-                "destination_request_topic" : self.get_parameter('dds_destination_request_topic').get_parameter_value().string_value,
-                "open_drawer_topic" :self.get_parameter('dds_open_drawer_topic').get_parameter_value().string_value
+        self.dds_config = {
+                "domain": self.get_parameter('dds_domain').get_parameter_value().integer_value,
+                "robot_state_topic": self.get_parameter('dds_robot_state_topic')
+                                         .get_parameter_value().string_value,
+                "mode_request_topic": self.get_parameter('dds_mode_request_topic')
+                                          .get_parameter_value().string_value,
+                "path_request_topic": self.get_parameter('dds_path_request_topic')
+                                          .get_parameter_value().string_value,
+                "destination_request_topic": self.get_parameter('dds_destination_request_topic')
+                                          .get_parameter_value().string_value,
+                "open_drawer_topic": self.get_parameter('dds_open_drawer_topic')
+                                          .get_parameter_value().string_value
             }
-        
 
     def get_robot_status(self):
         response = web_module.getDataFromServer(self.base_url + "/robot/status")

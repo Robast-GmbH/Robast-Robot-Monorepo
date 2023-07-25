@@ -79,4 +79,3 @@ class free_fleet_controller:
 
     def get_robot_state(self, fleet_name, name):
         return [x for x in self.robot_states if x.name == name].first()
-    

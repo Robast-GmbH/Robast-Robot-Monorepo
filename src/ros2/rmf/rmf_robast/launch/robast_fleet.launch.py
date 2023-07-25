@@ -18,15 +18,14 @@ def generate_launch_description():
         description="Enable failover mode for the fleet adapter",
     )
 
-    ## loading configs
+    # loading configs
     with open("/workspace/src/rmf/rmf_robast/config/fleet_vars.yaml", "r") as stream:
         try:
             fleet_yaml = yaml.safe_load(stream)
         except yaml.YAMLError as exc:
             print(exc)
 
-
-    ##rmf core
+    # rmf core
     common = launch.actions.IncludeLaunchDescription(
         AnyLaunchDescriptionSource([ThisLaunchFileDir(), "/common.launch.py"]),
         launch_arguments={
@@ -59,7 +58,7 @@ def generate_launch_description():
         }.items(),
     )
 
-    ### fleet Adapter
+    # fleet Adapter
     fleet_adapter_rb_theron = launch.actions.IncludeLaunchDescription(
         AnyLaunchDescriptionSource(
             [FindPackageShare("rmf_robast"), "/rb_theron_adapter.launch.py"]
@@ -76,8 +75,7 @@ def generate_launch_description():
         }.items(),
     )
 
-
-    ### Free Fleet
+    # Free Fleet
     free_fleet_server = launch.actions.IncludeLaunchDescription(
          AnyLaunchDescriptionSource(
             [FindPackageShare("rmf_robast"), "/free_fleet_server.launch.py"]
@@ -90,8 +88,8 @@ def generate_launch_description():
             failover_mode,
             common,
             simulation,
-            # free_fleet_server,
-            # fleet_adapter_rb_theron,
-            # state_aggregator,
+            free_fleet_server,
+            fleet_adapter_rb_theron,
+            state_aggregator,
         ]
     )
