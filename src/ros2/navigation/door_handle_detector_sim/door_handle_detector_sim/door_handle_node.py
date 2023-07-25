@@ -18,7 +18,6 @@ class Door_Handle_Detection(Node):
 
         weights='src/navigation/door_handle_detector_sim/weights/door_4.pt'  # model.pt path(s)
         self.bridge = CvBridge()
-        self.cv_depth_image = np.zeros((640, 480), np.uint8)
 
         # Load model
         self.model = yolov5.models.common.DetectMultiBackend(weights, dnn=False, fp16=False)
@@ -52,9 +51,9 @@ class Door_Handle_Detection(Node):
         rgb_img = rgb_img[..., ::-1].transpose((0, 3, 1, 2))            # BGR to RGB
         rgb_img = np.ascontiguousarray(rgb_img)
 
-        rgb_img = torch.from_numpy(rgb_img).to(self.model.device)
+        rgb_img = torch.from_numpy(rgb_img)
         rgb_img = rgb_img.float()
-        rgb_img /= 255                            
+        rgb_img /= 255                                                   # Normalize
 
         # Inference
         pred = self.model(rgb_img)
@@ -65,6 +64,8 @@ class Door_Handle_Detection(Node):
         detection_array = SpatialDetectionArray()
         detection = SpatialDetection()
         hypo = ObjectHypothesis()
+        detection_array.header.stamp = self.get_clock().now().to_msg()
+        detection_array.header.frame_id = 'rb_theron/base_footprint/back_top_realsense_camera_color_link'
 
         for i, det in enumerate(pred): 
             # Extract bounding box coordinates, class_id and confidence of each detection
@@ -82,8 +83,6 @@ class Door_Handle_Detection(Node):
                 detection.position.y = dist*(xywh[1] - cy)/fy
                 detection.position.z = dist
                 detection.is_tracking = False
-                detection_array.header.stamp = self.get_clock().now().to_msg()
-                detection_array.header.frame_id = 'rb_theron/base_footprint/back_top_realsense_camera_color_link'
                 detection_array.detections.append(detection)
         
         self.door_handle_detection_publisher_.publish(detection_array)
