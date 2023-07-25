@@ -17,12 +17,10 @@ def generate_launch_description():
             print(environment_yaml)
         except yaml.YAMLError as exc:
             print(exc)
-            
+
     namespace = LaunchConfiguration('namespace')
-    use_sim_time = LaunchConfiguration('use_sim_time')
     params_file = LaunchConfiguration('params_file')
-    
-    
+
     declare_namespace_cmd = DeclareLaunchArgument(
         'namespace',
         default_value='rb0',
@@ -32,8 +30,7 @@ def generate_launch_description():
         'use_sim_time',
         default_value="false",
         description='Use simulation (Gazebo) clock if true')
- 
-    
+
     declare_params_file_cmd = DeclareLaunchArgument(
         "params_file",
         default_value=os.path.join(
@@ -44,21 +41,21 @@ def generate_launch_description():
         ),
         description="Path to the localization config file",
     )
-    
-        #TODo fix the Realtime multi robot issue
-        # if environment_yaml["is_simulation"]:
-    robot_locatisation_Nodes= []
+
+    # TODo Torben fix the Realtime multi robot issue
+    # if environment_yaml["is_simulation"]:
+    robot_locatisation_Nodes = []
     use_sim_time_default = "true"
-    for robot_namespace in  environment_yaml["robot_namspaces"]:
+    for robot_namespace in environment_yaml["robot_namspaces"]:
         param_substitutions = {
             'use_sim_time': use_sim_time_default,
             "odom_frame": robot_namespace+"/odom",
             "base_link_frame": robot_namespace+"/base_footprint",
             "world_frame": robot_namespace+"/odom",
             "odom0": "/"+robot_namespace+"/odom",
-            "imu0": "/"+robot_namespace+"/imu/data"        
+            "imu0": "/"+robot_namespace+"/imu/data"
             }
-  
+
         # else:
         #     param_substitutions = {
         #         'use_sim_time': use_sim_time,
@@ -66,7 +63,7 @@ def generate_launch_description():
         #         "base_link_frame":"robot_base_footprint",
         #         "world_frame":"robot_odom",
         #         "odom0": "/robot/robotnik_base_control/odom",
-        #         "imu0": "/robot/imu/data"        
+        #         "imu0": "/robot/imu/data"
         #     }
 
         configured_params = RewrittenYaml(
@@ -74,7 +71,7 @@ def generate_launch_description():
             root_key=namespace,
             param_rewrites=param_substitutions,
             convert_types=True)
-    
+
         robot_localization_node = Node(
             namespace=namespace,
             package="robot_localization",
@@ -84,20 +81,19 @@ def generate_launch_description():
             parameters=[configured_params],
         )
         robot_locatisation_Nodes.append(robot_localization_node)
-    
 
     ld = LaunchDescription()
 
-        # Set env var to print messages to stdout immediately
+    #  Set env var to print messages to stdout immediately
     ld.add_action(SetEnvironmentVariable("RCUTILS_LOGGING_BUFFERED_STREAM", "1"))
 
-        # Declare the launch options
+    #  Declare the launch options
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_params_file_cmd)
-        # Add the actions to launch all of the navigation nodes
-    
+
+    #  Add the actions to launch all of the navigation nodes
     for robot_locatisation_Node in robot_locatisation_Nodes:
         ld.add_action(robot_locatisation_Node)
-   
+
     return ld
