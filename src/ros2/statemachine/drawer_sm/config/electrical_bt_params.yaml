@@ -8,4 +8,5 @@ electrical_drawer_tree_initiator:
       - nfc_to_drawer_action_bt_node
       - electric_drawer_status_condition_bt_node
       - move_electric_drawer_action_bt_node
+      - base_error_decorator_node
     bt_path: "/workspace/install/drawer_sm/trees/trees/default_electrical_drawer.xml"

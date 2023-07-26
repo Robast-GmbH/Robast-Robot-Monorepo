@@ -65,6 +65,11 @@ namespace robast_can_msgs
                    CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED_BIT_LENGTH,
                    0),
          CanSignal(CAN_SIGNAL_DRAWER_POSITION_BIT_START, CAN_SIGNAL_DRAWER_POSITION_BIT_LENGTH, 0)}),
+      CanMessage(CAN_ID_ERROR_FEEDBACK,
+                 CAN_DLC_ERROR_FEEDBACK,
+                 {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
+                  CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0),
+                  CanSignal(CAN_SIGNAL_ERROR_CODE_BIT_START, CAN_SIGNAL_ERROR_CODE_BIT_LENGTH, 0)}),
     };
   };
 }   // namespace robast_can_msgs

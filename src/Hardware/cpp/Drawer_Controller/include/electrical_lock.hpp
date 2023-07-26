@@ -1,15 +1,16 @@
-#if !defined(DRAWER_CONTROLLER_LOCK_HPP)
-#define DRAWER_CONTROLLER_LOCK_HPP
+#ifndef DRAWER_CONTROLLER_ELECTRICAL_LOCK_HPP
+#define DRAWER_CONTROLLER_ELECTRICAL_LOCK_HPP
 
 #include <Arduino.h>
 
 #include <memory>
 
+#include "debug.hpp"
 #include "i_gpio_wrapper.hpp"
 
 // the time in ms the lock mechanism needs to open resp. close the lock
-#define LOCK_MECHANISM_TIME                         700     // according to the datasheet a minimum of 600ms is required
-#define LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED 10000   // milliseconds
+#define ELECTRICAL_LOCK_MECHANISM_TIME                         700   // according to the datasheet a minimum of 600ms is required
+#define ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED 10000   // milliseconds
 
 namespace drawer_controller
 {
@@ -37,13 +38,17 @@ namespace drawer_controller
 
     bool is_endstop_switch_pushed();
 
-    void handle_reading_sensors();
+    void update_sensor_values();
 
     float get_moving_average_sensor_lock_pin();
 
     float get_moving_average_drawer_closed_pin();
 
     void unlock(uint8_t id);
+
+    void set_drawer_auto_close_timeout_triggered(bool state);
+
+    bool is_drawer_auto_close_timeout_triggered();
 
    private:
     uint8_t _power_open_pin_id;
@@ -53,10 +58,12 @@ namespace drawer_controller
 
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
 
-    bool _open_lock_current_step = false;    // flag to store which state the locks should have
-    bool _open_lock_previous_step = false;   // flag to store state of the lock of the previous step
+    bool _open_lock_current_step;    // flag to store which state the locks should have
+    bool _open_lock_previous_step;   // flag to store state of the lock of the previous step
 
     bool _drawer_opening_is_in_progress = false;
+
+    bool _is_drawer_auto_close_timeout_triggered = false;
 
     unsigned long _timestamp_last_lock_change = 0;
     unsigned long _timestamp_last_lock_opening = 0;
@@ -69,6 +76,8 @@ namespace drawer_controller
     void close_lock();
 
     void set_lock_output_low();
+
+    void close_lock_on_setup();
   };
 }   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_LOCK_HPP
+#endif   // DRAWER_CONTROLLER_ELECTRICAL_LOCK_HPP

@@ -87,5 +87,9 @@ RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone http
   && colcon build --parallel-workers 3 --build-base /workspace_moveit2/build --install-base /workspace_moveit2/install \
   && echo "if [ -f /workspace_moveit2/install/setup.bash ]; then source /workspace_moveit2/install/setup.bash; fi" >> /home/$USER/.bashrc
 
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+# dds setup / configuration
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
+# rmw_cyclonedds_cpp #rmw_fastrtps_cpp
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 ENV IGN_FILE_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}

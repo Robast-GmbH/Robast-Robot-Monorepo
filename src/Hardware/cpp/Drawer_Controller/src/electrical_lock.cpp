@@ -21,41 +21,80 @@ namespace drawer_controller
     _gpio_wrapper->set_pin_mode(_sensor_lock_pin_id, _gpio_wrapper->get_gpio_input_pin_mode());
     _gpio_wrapper->set_pin_mode(_sensor_drawer_closed_pin, _gpio_wrapper->get_gpio_input_pin_mode());
 
-    _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
-    _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
+    set_lock_output_low();
+
+    _open_lock_previous_step = false;
+    set_open_lock_current_step(false);
+    set_drawer_opening_is_in_progress(false);
+    set_drawer_auto_close_timeout_triggered(false);
+
+    close_lock_on_setup();
+  }
+
+  void ElectricalLock::close_lock_on_setup()
+  {
+    // delay by a random time up to 2 seconds to better distribute the power consumption of the lock setup process
+    delay(random(1, 2000));
+    // Please note:
+    // When turning on the power for the drawer controller pcbs (v3.0), the port expander will have high outputs as soon
+    // as the port expander has power. This unfortunately results in the lock being opened a very tiny bit each time the
+    // power turns on.
+    // This could only be solved by a hardware fix by exchaning the port expander or adding a enable mechanism for the
+    // port expander.
+    // Additionally the electrical lock can only be closed, once it is completely open.
+    // Therefore on startup we need to first open the lock and only then we can close it again.
+    // TODO@Jacob: Fix that with the new hardware version of the drawer controller pcb
+    open_lock();
+    delay(ELECTRICAL_LOCK_MECHANISM_TIME);
+    set_lock_output_low();
+    close_lock();
+    delay(ELECTRICAL_LOCK_MECHANISM_TIME);
+    set_lock_output_low();
   }
 
   void ElectricalLock::handle_lock_control()
   {
     // Mind that the state for open_lock_current_step_ is changed in the handle_lock_status function when a CAN msg is
     // received
-    bool change_lock_state = _open_lock_current_step == _open_lock_previous_step ? false : true;
+    bool change_lock_state = !(_open_lock_current_step == _open_lock_previous_step);
 
     unsigned long current_timestamp = millis();
     unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
     unsigned long time_since_lock_was_opened = current_timestamp - _timestamp_last_lock_opening;
 
-    if (change_lock_state && (time_since_lock_state_was_changed >= LOCK_MECHANISM_TIME))
+    if (change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME))
     {
       _open_lock_previous_step = _open_lock_current_step;
       _timestamp_last_lock_change = current_timestamp;
       _open_lock_current_step ? open_lock() : close_lock();
     }
-    else if (!change_lock_state && (time_since_lock_state_was_changed >= LOCK_MECHANISM_TIME))
+    else if (!change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME))
     {
-      // this makes sure, there is only a 5V pulse with the duration of LOCK_MECHANISM_TIME on the respective input of
-      // the lock
+      // this makes sure, there is only a 5V pulse with the duration of ELECTRICAL_LOCK_MECHANISM_TIME on the respective
+      // input of the lock
       set_lock_output_low();
     }
 
-    if (_open_lock_current_step && (time_since_lock_was_opened > LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED))
+    if (_open_lock_current_step &&
+        (time_since_lock_was_opened > ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED))
     {
       // Close the lock automatically after some seconds when drawer wasn't opened for safety reasons
       set_open_lock_current_step(false);
       set_drawer_opening_is_in_progress(false);
-      Serial.print(" time_since_lock_was_opened: ");
-      Serial.println(time_since_lock_was_opened, DEC);
+      set_drawer_auto_close_timeout_triggered(true);
+      debug_println("Lock was automatically closed due to timeout! time_since_lock_was_opened: ");
+      debug_println_with_base(time_since_lock_was_opened, DEC);
     }
+  }
+
+  void ElectricalLock::set_drawer_auto_close_timeout_triggered(bool state)
+  {
+    _is_drawer_auto_close_timeout_triggered = state;
+  }
+
+  bool ElectricalLock::is_drawer_auto_close_timeout_triggered()
+  {
+    return _is_drawer_auto_close_timeout_triggered;
   }
 
   void ElectricalLock::set_open_lock_current_step(bool open_lock_current_step)
@@ -88,7 +127,7 @@ namespace drawer_controller
     return get_moving_average_drawer_closed_pin() > 0.9;
   }
 
-  void ElectricalLock::handle_reading_sensors()
+  void ElectricalLock::update_sensor_values()
   {
     // Tracking the moving average for the sensor pins helps to debounce them a little bit
     byte digital_read_sensor_lock_pin;
@@ -114,7 +153,7 @@ namespace drawer_controller
   {
     if (is_drawer_opening_in_progress())
     {
-      Serial.printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", id);
+      debug_printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", id);
     }
     else
     {
