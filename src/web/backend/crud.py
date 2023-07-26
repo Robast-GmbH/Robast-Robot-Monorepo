@@ -8,7 +8,7 @@ import helper
 
 import models
 import schemas
-import coords_setup
+
 
 def init(db: Session):
     helper.init(db)
