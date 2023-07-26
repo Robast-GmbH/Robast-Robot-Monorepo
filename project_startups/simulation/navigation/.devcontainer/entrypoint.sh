@@ -5,6 +5,7 @@
 #cp -r ./resource_retriever ~/rviz2_ws/src/rviz/rviz_rendering/include/
 #colcon build --merge-instal
 sudo apt-get update && sudo apt-get upgrade -y
+pip install yolov5 # TODO remove before merging to main
 rosdep update
 rosdep install --from-paths /workspace/src --ignore-src -r -y
 rosdep install --from-paths /workspace_nav2/src --ignore-src -r -y # TODO remove this line
