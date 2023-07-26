@@ -138,5 +138,11 @@
     },
     "C_Cpp.default.cppStandard": "c++20",
     "cmake.configureOnOpen": false,
-    "python.formatting.provider": "black"
+    "python.formatting.provider": "black",
+    "editor.formatOnSave": true,
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file", // formatting rules are defined in the .clang-format file
+    "[cpp]": {
+            "editor.tabSize": 2
+    },
 }

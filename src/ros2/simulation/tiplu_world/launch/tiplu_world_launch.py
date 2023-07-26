@@ -38,7 +38,7 @@ def generate_launch_description():
     robot_name = LaunchConfiguration("robot_name")
     init_x = LaunchConfiguration("init_x", default="-2")
     init_y = LaunchConfiguration("init_y", default="0")
-    init_yaw = LaunchConfiguration("init_yaw", default="0")
+    init_yaw = LaunchConfiguration("init_yaw", default="3.14")
 
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
@@ -60,7 +60,7 @@ def generate_launch_description():
     
     declare_headless_cmd = DeclareLaunchArgument(
         "headless",
-        default_value="",
+        default_value=" ",
         description="Weather to run in headless mode (-s) or with gui ''",
     )
 

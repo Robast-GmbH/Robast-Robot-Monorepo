@@ -5,7 +5,7 @@
   gz_type_name: "gz.msgs.Pose_V"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: BIDIRECTIONAL      # Default "BIDIRECTIONAL" - Bridge both directions
                             # "GZ_TO_ROS" - Bridge Ignition topic to ROS
                             # "ROS_TO_GZ" - Bridge ROS topic to Ignition
@@ -16,8 +16,17 @@
   gz_type_name: "gz.msgs.Model"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
-  direction: BIDIRECTIONAL                      
+  lazy: true               # Default "false"
+  direction: BIDIRECTIONAL
+
+- ros_topic_name: "/joint_states"
+  gz_topic_name: "/world/6OG/model/door_opening_mechanism/joint_state"
+  ros_type_name: "sensor_msgs/msg/JointState"
+  gz_type_name: "gz.msgs.Model"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: BIDIRECTIONAL                          
 
 
 - ros_topic_name: "/front_laser/scan"
@@ -26,7 +35,7 @@
   gz_type_name: "gz.msgs.LaserScan"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/bpearl_laser/scan/points"
@@ -35,7 +44,7 @@
   gz_type_name: "gz.msgs.PointCloudPacked"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/front_realsense_camera/color"
@@ -179,7 +188,7 @@
   gz_type_name: "gz.msgs.Clock"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/odom"
@@ -188,7 +197,7 @@
   gz_type_name: "gz.msgs.Odometry"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/cmd_vel"
@@ -197,7 +206,7 @@
   gz_type_name: "gz.msgs.Twist"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: ROS_TO_GZ
 
 - ros_topic_name: "/imu/data"
