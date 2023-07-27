@@ -44,16 +44,16 @@ class Task(TaskCreate):
 
 
 #Drawer
-class DrawerBase(BaseModel):
-    robot_drawer_id:int
+class ModuleBase(BaseModel):
+    id:int
+    drawer_id:int
     type:str
     
-class DrawerCreate(DrawerBase):
+class ModuleCreate(ModuleBase):
     pass
 
-
-class Drawer(DrawerBase):
-    id: int
+class Module(ModuleBase):
+    pass
 
     class Config:
         orm_mode = True

@@ -38,11 +38,11 @@ class Task(Base):
     owner = relationship("User", cascade="save-update")
 
 
-class Drawer(Base):
-    __tablename__ = "drawer"
-    id = Column(Integer, primary_key=True, index=True)
-    robot_drawer_id= Column(Integer)
+class Module(Base):
+    __tablename__ = "module"
+    id = Column(Integer)
+    drawer_id= Column(Integer)
     type= Column(Enum(DrawerTypes), index=True)
     robot= Column(String)
-    fleet=Column(String)
+    fleet= Column(String)
     
