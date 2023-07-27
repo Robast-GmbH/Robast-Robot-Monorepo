@@ -40,7 +40,7 @@ class Task(Base):
 
 class Module(Base):
     __tablename__ = "module"
-    id = Column(Integer)
+    id = Column(Integer, primary_key=True)
     drawer_id= Column(Integer)
     type= Column(Enum(DrawerTypes), index=True)
     robot= Column(String)
