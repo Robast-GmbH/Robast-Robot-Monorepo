@@ -4,7 +4,7 @@ from fastapi.encoders import jsonable_encoder
 from sqlalchemy.sql.functions import user
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
-
+import yaml
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
@@ -21,12 +21,14 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
+config = yaml.safe_load(open("config.yml"))
 
 
 origins = [
-    "http://localhost:3001",
-    "http://127.0.0.1:3001",
-    "http://172.18.0.2:3001"
+    "http://localhost:"+str(config['restapi_port']),
+    "http://127.0.0.1:"+str(config['restapi_port']),
+    "http://172.18.0.2:"+str(config['restapi_port'])
+    
 ]
 
 app.add_middleware(
@@ -93,11 +95,11 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
     
 #task
-
 @app.get("/tasks/", response_model=List[schemas.Task])
 def get_task_queue( db: Session = Depends(get_db)):
     db_tasks = crud.get_tasks(db)
     return db_tasks
+
 @app.get("/tasks/{task_id}", response_model=schemas.Task)
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
@@ -120,8 +122,6 @@ def abort_task(task_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
        
 #robot
-
-
 @app.put("/robots/{robot_name}/halt")
 def pause_robot(robot_name: str, halt: bool , db: Session = Depends(get_db)):
     #todo
@@ -153,21 +153,23 @@ def get_log(robot_name: str, db: Session = Depends(get_db)):
     return None
 
 #Module
-@app.get("robots/{robot_name}/modules/", response_model = List[schemas.Drawer])
+@app.get("robots/{robot_name}/modules/", response_model = List[schemas.Module])
 def get_drawers( db: Session = Depends(get_db)):
-    db_drawers = crud.get_drawers(db)
-    return db_drawers
+    #todo
+    return None
 
 # get_module_info
+@app.get("robots/{robot_name}/modules/{module_id}", response_model = schemas.Module)
+def get_drawer_info( robot_name: str, module_id:int, db: Session = Depends(get_db)):
+    #todo
+    return None
 
 # open_drawer
-
-#close_drawer
-
-# status_status
-
-# get_unlocked_drawers
+@app.get("robots/{robot_name}/modules/{module_id}/open")
+def get_toogle_drawer_state( robot_name: str, module_id:int, open :bool, db: Session = Depends(get_db)):
+    #todo
+    return 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=3002)
+    uvicorn.run(app, host="0.0.0.0", port= config['restapi_port'])
    
