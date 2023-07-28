@@ -20,40 +20,50 @@ class DrawerTypes(str, Enum):
 class TaskBase(BaseModel):
    pass
    
-
-class TaskCreate(TaskBase):
-    robot: str
-    fleet: str
-    task_type: str    
+class TaskDelivery(TaskBase):
+   
     owner_id: int
+    target_id: int
+    module_id: int
     drawer_id: int
     x_pose:float
     y_pose: float
     yaw_pose: float
 
+class TaskDrawer(TaskBase):
+   
+    owner_id: int
+    target_id: int
+    module_id: int
+    drawer_id: int
 
-class TaskUpdate(TaskBase):
+
+class TaskMove(TaskBase):
+    x_pose:float
+    y_pose: float
+    yaw_pose: float
+
+class TaskUpdate(BaseModel):
+    id: int 
+    fleet: str
+    robot: str
     status:str
     finished: bool
 
-
-class Task(TaskCreate):
-    id: int
+class Task(TaskDelivery):
+    id: int 
+    fleet: str
+    robot: str
     status:str
     finished: bool
-
 
 #Drawer
 class ModuleBase(BaseModel):
     id:int
     drawer_id:int
-    type:str
-    
-class ModuleCreate(ModuleBase):
-    pass
-
-class Module(ModuleBase):
-    pass
+    type: DrawerTypes
+    fleet_name: str
+    robot_name: str
 
     class Config:
         orm_mode = True
@@ -81,7 +91,8 @@ class User(UserBase):
     class Config:
         orm_mode = True
 
-#
+
+#Robot
 class Robot(BaseModel):
     robot_name: str
     fleet_name: str  
@@ -89,4 +100,3 @@ class Robot(BaseModel):
     x_pose:float
     y_pose: float
     yaw_pose: float
-  

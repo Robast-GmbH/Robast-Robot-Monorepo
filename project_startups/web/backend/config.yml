@@ -1,3 +1,4 @@
 
   restapi_port: 3001
-  
+  fleetmangement_address: "" 
+  fleet_name: ""

@@ -37,7 +37,9 @@ def get_users_login(db: Session, userCredentials: schemas.UserLogin):
 
 def create_user(db: Session, user: schemas.UserCreate):
     fake_hashed_password = user.password
-    db_user = models.User(email=user.email, hashed_password=fake_hashed_password, name=user.name)
+    db_user = models.User(email=user.email,
+                            hashed_password=fake_hashed_password,
+                            name=user.name)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -50,93 +52,111 @@ def delete_user(db: Session, user_id: int):
     db.delete(user)
     db.commit()
     return True
-    
+#task management
+def get_tasks(db: Session):
+    return db.query(models.Task).filter(models.Task.finished==False).all()
 
-# def get_orders(db: Session) -> object:
-#     return db.query(models.Order).all()
+def get_task(db:Session, task_id:int):
+    return db.query(models.Task).filter(models.Task.id==task_id).first()
 
+def create_delivery_task(db:Session, task: schemas.TaskDelivery):
+    db_task = models.Task(task_type= "Delivery",
+                            x_pose=task.x_pose,
+                            y_pose=task.y_pose,
+                            yaw_pose=task.yaw_pose,
+                            owner_id=task.owner_id,
+                            target_id=task.target_id,
+                            module_id=task.module_id,
+                            drawer_id=task.drawer_id)
+    db.add(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return db_task
 
-# def create_user_order(db: Session, order: schemas.OrderCreate, user_id: int):
-#     if(get_user(db=db, user_id=user_id) != None):
-#         order.goal = coords_setup.convertclientCoords(order.goal)
-#         db_order = models.Order(**order.dict(), owner_id=user_id)
+def create_move_task(db:Session, task: schemas.TaskMove):
+    db_task = models.Task(task_type="Move",
+                            x_pose=task.x_pose,
+                            y_pose=task.y_pose,
+                            yaw_pose=task.yaw_pose)
+    db.add(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return db_task
 
-#         db.add(db_order)
-#         db.commit()
-#         db.refresh(db_order)
-#         return db_order
-#     else:
-#         return None
+def create_drawer_task(db:Session, task: schemas.TaskDrawer):
+    db_task = models.Task(task_type="Drawer",
+                            owner_id=task.owner_id,
+                            target_id=task.target_id,
+                            module_id=task.module_id,
+                            drawer_id=task.drawer_id)
+    db.add(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return db_task
 
-# @event.listens_for(models.Order, 'init')
-# @event.listens_for(models.Goal, 'init')
-# def received_init(target, args, kwargs):
+def update_task(db:Session, task_changes: schemas.TaskUpdate):
+    db_task = get_task(db=db, id = task_changes.id )
+    db_task.fleet_name = task_changes.fleet
+    db_task.robot_name = task_changes.robot
+    db_task.status = task_changes.status
+    db_task.finished = task_changes.finished
 
-#     for rel in inspect(target.__class__).relationships:
+    db.update(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return db_task
 
-#         rel_cls = rel.mapper.class_
+def abort_task(db:Session, task_id:int):
+    db_task = get_task(db=db, id = task_id )
+    db_task.finished= True
+    db.update(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return True
+#robot
+def get_robots(db:Session, skip: int = 0, limit: int = 100):
+     return db.query(models.Robot).offset(skip).limit(limit).all()
 
-#         if rel.key in kwargs:
-#             kwargs[rel.key] = rel_cls(**kwargs[rel.key])
+def get_robot(db:Session, fleet_name:str, robot_name:str):
+     return db.query(models.Robot).filter(models.Robot.fleet==fleet_name, models.Robot.robot==robot_name).first()
 
+def set_robot(db:Session, robot:schemas.Robot):
+    db_robot= get_robot(robot.robot_name,robot.fleet_name)
+    if (db_robot is None):
+        db_robot = models.Robot(name = robot.robot_name,
+                                fleet = robot.fleet_name,
+                                x_pose = robot.x_pose,
+                                y_pose = robot.y_pose,
+                                yaw_pose = robot.yaw_pose,
+                                task_id = robot.task_id
+                                )
+        db.add(db_robot)
+        db.commit()
+        db.refresh(db_robot)
+    else:
+        db_robot.name = robot.robot_name
+        db_robot.fleet = robot.fleet_name
+        db_robot.x_pose = robot.x_pose
+        db_robot.y_pose = robot.y_pose
+        db_robot.yaw_pose = robot.yaw_pose
+        db_robot.task_id =robot.task_id
 
-
-
-# #drawer
-
-
-# def get_drawers(db: Session) -> object:
-#     return db.query(models.Drawer).all() 
-
-# def get_drawer(db: Session,drawer_controller_id: int):
-
-#     drawer = db.query(models.Drawer).filter( models.Drawer.drawer_controller_id==drawer_controller_id).first()
-#     if(drawer == None):
-#         return None
-#     return drawer
-
-
-# def create_drawer(db: Session, drawer: schemas.DrawerCreate):
-#     db_drawer= get_drawer(db = db,drawer_controller_id = drawer.drawer_controller_id) 
-#     if(db_drawer != None):
-#         return None
+        db.update(db_robot)
+        db.commit()
+        db.refresh(db_robot)
         
-#     db_drawer = models.Drawer(drawer_controller_id=drawer.drawer_controller_id, content=drawer.content, empty= drawer.empty)
-#     db.add(db_drawer)
-#     db.commit()
-#     db.refresh(db_drawer)
-#     return db_drawer
+#Modules 
 
 
-# def update_drawer(db: Session,drawer_controller_id: int, content: str ):
-#     drawer_old = get_drawer(db = db,drawer_controller_id =drawer_controller_id) 
-#     if(drawer_old== None):
-#         return None
+def get_modules(db: Session, robot_name: str, fleet_name:str) -> object:
+    return db.query(models.Drawer).filter(models.Module.robot== robot_name, models.Module.fleet==fleet_name).all()
 
-#     drawer_old.content = content
-#     db.merge(drawer_old)
-#     db.commit()
-#     db.refresh(drawer_old)
-#     return drawer_old
-
-
-# def delete_drawer(db: Session, drawer_controller_id: int):
-#     drawer = get_drawer(db = db, drawer_controller_id = drawer_controller_id) 
-#     if(drawer != None):
-
-#         db.delete(drawer)
-#         db.commit()
-#         return True
-#     else:
-#         return False  
-
-# def get_empty_drawer(db: Session):
-#     return db.query(models.Drawer).filter(models.Drawer.empty== True).all()
-
-# def change_drawer_empty_state(db: Session, drawer_controller_id:int, empty:bool):
-#     drawer_old= get_drawer(db=db,drawer_controller_id= drawer_controller_id)
-#     drawer_old.empty=  empty
-#     db.merge(drawer_old)
-#     db.commit()
-#     db.refresh(drawer_old)
-#     return 
+def set_module(db:Session, module: schemas.Module):
+    db_module = models.Task(  id = module.module_id,
+                            drawer_id = module.drawer_id,
+                            type = module.type,
+                            robot_name = module., )
+    db.add(db_module)
+    db.commit()
+    db.refresh(db_module)
+    return db_module

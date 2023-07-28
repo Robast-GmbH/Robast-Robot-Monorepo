@@ -1,13 +1,15 @@
 from typing import List
-from urllib import response
-from fastapi.encoders import jsonable_encoder
-from sqlalchemy.sql.functions import user
+
+# from fastapi.encoders import jsonable_encoder
+# from sqlalchemy.sql.functions import user
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse
+# from fastapi.responses import JSONResponse
 import yaml
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
+import requests
+
 
 
 import crud
@@ -101,17 +103,17 @@ def get_task_queue( db: Session = Depends(get_db)):
     return db_tasks
 
 @app.get("/tasks/{task_id}", response_model=schemas.Task)
-def read_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
-    if db_user is None:
-        raise HTTPException(status_code=404, detail="User not found")
-    return db_user
+def read_task(task_id: int, db: Session = Depends(get_db)):
+    db_task = crud.get_task(db, task_id=task_id)
+    if db_task is None:
+        raise HTTPException(status_code=404, detail="task not found")
+    return db_task
 
 @app.post("/tasks/", response_model=schemas.TaskCreate)
 def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
     return crud.create_task(db=db, task=task)
 
-@app.put("/task/{task_id}", response_model=schemas.Task)
+@app.put("/tasks/{task_id}", response_model=schemas.Task)
 def update_task( task_id:int, task: schemas.TaskUpdate, db: Session = Depends(get_db)):
     return crud.update_task(db=db, task_id = task_id, content=task)
     
@@ -132,18 +134,22 @@ def set_rosbag(robot_name: str, halt: bool , db: Session = Depends(get_db)):
     #todo
     return
 
+@app.get("/robots/status", response_model =List[schemas.Robot])
+def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
+    db_robots = crud.get_robots(db=db)
+    return db_robots
+
 @app.get("/robots/{robot_name}/status", response_model = schemas.Robot)
 def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
-    db_tasks = crud.get_tasks(db)
-    return db_tasks
+    db_robot = crud.get_robot(db=db, robot_name=robot_name)
+    return db_robot
 
 @app.put("/robots/{robot_name}/status")
-def set_robot(robot_name: str, db: Session = Depends(get_db)):
-    #todo
-    return
+def set_robot(robot_name: str, robot: schemas.Robot, db: Session = Depends(get_db)):
+    return crud.set_robot(db=db, robot=robot)
 
 @app.put("/robots/{robot_name}/move")
-def move_robot(robot_name: str, x: float, y: float, yaw: float, db: Session = Depends(get_db)):
+def move_robot( robot_name: str, x: float, y: float, yaw: float, db: Session = Depends(get_db)):
     #todo
     return
 
@@ -154,21 +160,27 @@ def get_log(robot_name: str, db: Session = Depends(get_db)):
 
 #Module
 @app.get("robots/{robot_name}/modules/", response_model = List[schemas.Module])
-def get_drawers( db: Session = Depends(get_db)):
-    #todo
-    return None
+def get_modules(robot_name :str, db: Session = Depends(get_db)):
+    return crud.get_drawers(robot_name)
 
 # get_module_info
 @app.get("robots/{robot_name}/modules/{module_id}", response_model = schemas.Module)
-def get_drawer_info( robot_name: str, module_id:int, db: Session = Depends(get_db)):
-    #todo
-    return None
+def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
+    return crud.get_drawer(robot_name, module_id)
 
-# open_drawer
-@app.get("robots/{robot_name}/modules/{module_id}/open")
-def get_toogle_drawer_state( robot_name: str, module_id:int, open :bool, db: Session = Depends(get_db)):
-    #todo
-    return 
+# # open_drawer
+# @app.get("robots/{robot_name}/modules/open")
+# def _drawer_state( robot_name: str, db: Session = Depends(get_db)):
+   
+#     return 
+
+# # open_drawer
+# @app.get("robots/{robot_name}/modules/close")
+# def _drawer_state( robot_name: str, db: Session = Depends(get_db)):
+   
+#     return 
+
+
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port= config['restapi_port'])

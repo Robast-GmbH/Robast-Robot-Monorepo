@@ -30,10 +30,10 @@ class Task(Base):
     y_pose = Column(Float)
     yaw_pose= Column(Float)
     finished = Column(Boolean, default=False)
-    target_user_id =Column(Integer, default=0)
+    target_id =Column(Integer, default=0)
     drawer_id= Column(Integer, default= 0)
     robot_name= Column(String, default="rb0")
-    Fleet_name= Column(String, default="ROBAST_1")
+    fleet_name= Column(String, default="ROBAST_1")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", cascade="save-update")
 
@@ -43,6 +43,16 @@ class Module(Base):
     id = Column(Integer, primary_key=True)
     drawer_id= Column(Integer)
     type= Column(Enum(DrawerTypes), index=True)
-    robot= Column(String)
+    robot_name= Column(String)
+    fleet_name= Column(String)
+
+class Robot(Base):
+    __tablename__ = "robot"
+    name= Column(String)
     fleet= Column(String)
+    x_pose = Column(Float)
+    y_pose = Column(Float)
+    yaw_pose = Column(Float)
+    task_id = Column(Integer)
+
     
