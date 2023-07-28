@@ -11,5 +11,5 @@ services:
     volumes:
       - ./backend/:/workspace/:cached
       - ../../src/web/backend:/workspace/src/:cached
-    # command: /bin/sh -c "while sleep 1000; do :; done"
-    command: /bin/sh -c "python /workspace/src/main.py"
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    # command: /bin/sh -c "python /workspace/src/main.py"

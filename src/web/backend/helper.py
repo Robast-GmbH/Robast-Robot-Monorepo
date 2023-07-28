@@ -1,5 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
+from sqlalchemy import func
+
 import models
 
 next_point = 1
@@ -8,16 +10,18 @@ open_drawer = -1
 
 
 def init(db: Session):
-        addUser( "Werner","Werner Tester", "Robast", False, db )
-        addUser( "Torben", "Torben Zurhelle", "Robast2022HH", True, db )
-        addUser( "Tobias", "Tobias Alscher", "Robast2022HH", True, db )
-        addUser( "Jacob", "Jacob Ritterbach", "Robast2022HH", True, db )
+        
+        if(not hasUser(db)):
+                addUser( "Werner","Werner Tester", "Robast", False, db )
+                addUser( "Torben", "Torben Zurhelle", "Robast2022HH", True, db )
+                addUser( "Tobias", "Tobias Alscher", "Robast2022HH", True, db )
+                addUser( "Jacob", "Jacob Ritterbach", "Robast2022HH", True, db )
 
-        addDrawer( "Schublade 1", 1, True , db)
-        addDrawer( "Schublade 2", 2, True , db)
-        addDrawer( "Schublade 3", 3, True , db)
-        addDrawer( "Schublade 4", 4, True , db)
-        addDrawer( "Schublade 5", 5, True , db)
+        # addDrawer( "Schublade 1", 1, True , db)
+        # addDrawer( "Schublade 2", 2, True , db)
+        # addDrawer( "Schublade 3", 3, True , db)
+        # addDrawer( "Schublade 4", 4, True , db)
+        # addDrawer( "Schublade 5", 5, True , db)
 
        #addMapPosition( "home", 0.0, 0.0, 0.0, db)
 
@@ -29,6 +33,9 @@ def addUser( name: str, full_name:str, password:str, admin:bool, db:Session):
         db.commit()
         db.refresh(db_user)
         return
+
+def hasUser (db:Session):
+      return db.query(func.count(models.User.id)).scalar() > 0
 
 def addDrawer( content: str, drawer_controller_id:int, empty:bool, db:Session):
         db_drawer = models.Drawer( drawer_controller_id=drawer_controller_id, content=content, empty=empty)
