@@ -109,8 +109,8 @@ def read_task(task_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="task not found")
     return db_task
 
-@app.post("/tasks/", response_model=schemas.TaskCreate)
-def create_task(task: schemas.TaskCreate, db: Session = Depends(get_db)):
+@app.post("/tasks/", response_model=schemas.TaskDelivery)
+def create_task(task: schemas.TaskDelivery, db: Session = Depends(get_db)):
     return crud.create_task(db=db, task=task)
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
@@ -159,12 +159,12 @@ def get_log(robot_name: str, db: Session = Depends(get_db)):
     return None
 
 #Module
-@app.get("robots/{robot_name}/modules/", response_model = List[schemas.Module])
+@app.get("robots/{robot_name}/modules/", response_model = List[schemas.BaseModel])
 def get_modules(robot_name :str, db: Session = Depends(get_db)):
     return crud.get_drawers(robot_name)
 
 # get_module_info
-@app.get("robots/{robot_name}/modules/{module_id}", response_model = schemas.Module)
+@app.get("robots/{robot_name}/modules/{module_id}", response_model = schemas.BaseModel)
 def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
     return crud.get_drawer(robot_name, module_id)
 

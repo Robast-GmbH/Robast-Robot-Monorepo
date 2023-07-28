@@ -96,7 +96,6 @@ def create_drawer_task(db:Session, task: schemas.TaskDrawer):
 
 def update_task(db:Session, task_changes: schemas.TaskUpdate):
     db_task = get_task(db=db, id = task_changes.id )
-    db_task.fleet_name = task_changes.fleet
     db_task.robot_name = task_changes.robot
     db_task.status = task_changes.status
     db_task.finished = task_changes.finished
@@ -151,11 +150,12 @@ def set_robot(db:Session, robot:schemas.Robot):
 def get_modules(db: Session, robot_name: str, fleet_name:str) -> object:
     return db.query(models.Drawer).filter(models.Module.robot== robot_name, models.Module.fleet==fleet_name).all()
 
-def set_module(db:Session, module: schemas.Module):
+def set_module(db:Session, module: schemas.ModuleBase):
     db_module = models.Task(  id = module.module_id,
                             drawer_id = module.drawer_id,
                             type = module.type,
-                            robot_name = module., )
+                            robot_name = module.robot_name,
+                             )
     db.add(db_module)
     db.commit()
     db.refresh(db_module)

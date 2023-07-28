@@ -48,7 +48,7 @@ class Module(Base):
 
 class Robot(Base):
     __tablename__ = "robot"
-    name= Column(String)
+    name= Column(String, primary_key=True)
     fleet= Column(String)
     x_pose = Column(Float)
     y_pose = Column(Float)

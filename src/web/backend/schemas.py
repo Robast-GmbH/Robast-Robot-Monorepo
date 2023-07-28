@@ -14,8 +14,6 @@ class DrawerTypes(str, Enum):
     Manual = "Manual"
     Electrical = "Electrical"
 
-
-
 #Task
 class TaskBase(BaseModel):
    pass
@@ -45,15 +43,13 @@ class TaskMove(TaskBase):
 
 class TaskUpdate(BaseModel):
     id: int 
-    fleet: str
-    robot: str
+    robot_name: str
     status:str
     finished: bool
 
 class Task(TaskDelivery):
     id: int 
-    fleet: str
-    robot: str
+    robot_name: str
     status:str
     finished: bool
 
@@ -62,7 +58,6 @@ class ModuleBase(BaseModel):
     id:int
     drawer_id:int
     type: DrawerTypes
-    fleet_name: str
     robot_name: str
 
     class Config:
