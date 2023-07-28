@@ -76,18 +76,20 @@ class free_fleet_controller:
             messages.FreeFleetData_DestinationRequest)
 
     # handle_open_drawer_request
-    def handle_open_drawer_request(self, fleet_name, robot_name, module_id, drawer_id, e_drawer):
-        open_drawer_request = messages.FreeFleetData_OpenDrawerRequest(
+    def handle_slide_drawer_request(self, fleet_name:str, robot_name: str, module_id: int, drawer_id: int , e_drawer: bool, open: bool):
+        slide_drawer_request = messages.FreeFleetData_SlideDrawerRequest(
             fleet_name,
             robot_name,
             module_id,
             drawer_id,
-            e_drawer)
+            e_drawer,
+            open)
 
         self.publish_dds(
-            open_drawer_request,
-            self.config["open_drawer_topic"],
-            messages.FreeFleetData_OpenDrawerRequest)
+            slide_drawer_request,
+            self.config["slide_drawer_topic"],
+            messages.FreeFleetData_SlideDrawerRequest)
+        
 
     def publish_dds(self, message, topicPath, topicType):
         topic = Topic(self.participant, topicPath, topicType)

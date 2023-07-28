@@ -127,7 +127,7 @@ def abort_task(task_id: int, db: Session = Depends(get_db)):
        
 #robot
 @app.get("/robots", response_model =List[schemas.Robot])
-def get_robot_status(db: Session = Depends(get_db)):
+def get_robots_status(db: Session = Depends(get_db)):
     db_robots = crud.get_robots(db=db)
     return db_robots
 
@@ -190,7 +190,18 @@ def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depe
 # close_drawer
 @app.get("robots/{robot_name}/modules/close")
 def _drawer_state( robot_name: str, db: Session = Depends(get_db)):
-    return 
+    db_module= crud.get_drawer(module_id=module.id,drawer_id= module.drawer_id )
+    if db_module
+    robot= templates.json_robot()
+    robot["name"]=robot_name
+    robot["fleet_name"]=""
+    drawer= templates.json_drawer()
+    drawer["id"]=db_module
+    drawer["fleet_name"]= drawer.drawer_id
+    message={"robot":robot, "drawer":drawer}
+    headers =  {"Content-Type":"application/json"}
+    answer  =requests.post(url= "",json= json.dumps(message),headers= headers)
+    return answer.status_code
 
 
 

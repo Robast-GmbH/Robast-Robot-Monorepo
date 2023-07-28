@@ -7,6 +7,7 @@ from fastapi import FastAPI
 class Drawer(BaseModel):
     id: int
     module_id: int
+    
 
 
 class Robot(BaseModel):
@@ -31,19 +32,32 @@ class RestInterface():
         self.ros_node = ros_node
         self.free_fleet_node = free_fleet_node
         self.app = app
-        self.polling_timer = ros_node.create_timer(polling_interval, self.api_polling_callback)
+        self.polling_timer = self.ros_node.create_timer(polling_interval, self.api_polling_callback)
 
-        @self.app.post("/robot/drawer/open")
+        @self.app.post("/drawer/open")
         def open_drawer(drawer: Drawer, robot: Robot):
             print("/drawer/open was called")
-            free_fleet_node.handle_open_drawer_request(
+            free_fleet_node.handle_slide_drawer_request(
                 robot.fleet_name,
                 robot.name,
                 drawer.module_id,
-                drawer.id)
+                drawer.id,
+                True
+                )
             return
-
-        @self.app.post("/robot/move")
+        @self.app.post("/drawer/close")
+        def close_drawer(drawer: Drawer, robot: Robot):
+            print("/drawer/open was called")
+            free_fleet_node.handle_slide_drawer_request(
+                robot.fleet_name,
+                robot.name,
+                drawer.module_id,
+                drawer.id,
+                False
+                )
+            return
+        
+        @self.app.post("/move")
         def force_move_to_waypoint(waypoint: Waypoint, robot: Robot):
             free_fleet_node.handle_destination_request(robot.fleet_name,
                                                        robot.robot_name,
@@ -51,7 +65,7 @@ class RestInterface():
             return
         
 
-    def run(self, host='0.0.0.0', port=3001, log_level='warning'):
+    def run(self, host='0.0.0.0', port=3002, log_level='warning'):
         uvicorn.run(self.app, host=host, port=port, log_level=log_level)
 
     def get_fastapi(self):

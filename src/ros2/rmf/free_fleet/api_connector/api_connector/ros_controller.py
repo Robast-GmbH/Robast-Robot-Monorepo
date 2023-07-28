@@ -3,7 +3,7 @@ from rclpy.node import Node
 from . import web_module
 from multiprocessing import get_logger
 import requests
-from communication_interfaces.msg import FFOpenDrawer
+from communication_interfaces.msg import FFSlideDrawer
 
 
 class ros_controller(Node):
@@ -12,8 +12,8 @@ class ros_controller(Node):
 
         super().__init__('ros_controller')
         self.base_url = api_url
-        self.open_drawer_to_ff = self.create_publisher(
-            FFOpenDrawer,
+        self.slide_drawer_to_ff = self.create_publisher(
+            FFSlideDrawer,
             'ff_open_drawer',
             10)
         self.declare_parameter('dds_domain', 42)
@@ -21,9 +21,9 @@ class ros_controller(Node):
         self.declare_parameter('dds_mode_request_topic', "/mode_request")
         self.declare_parameter('dds_path_request_topic', "/path_request")
         self.declare_parameter('dds_destination_request_topic', "/destination_request")
-        self.declare_parameter('dds_open_drawer_topic', "/OpenDrawerequest")
+        self.declare_parameter('dds_slide_drawer_request_topic', "/slide_drawer_request")
         self.dds_config = {
-                "domain": self.get_parameter('dds_domain').get_parameter_value().integer_value,
+                "dds_domain": self.get_parameter('dds_domain').get_parameter_value().integer_value,
                 "robot_state_topic": self.get_parameter('dds_robot_state_topic')
                                          .get_parameter_value().string_value,
                 "mode_request_topic": self.get_parameter('dds_mode_request_topic')
@@ -32,7 +32,7 @@ class ros_controller(Node):
                                           .get_parameter_value().string_value,
                 "destination_request_topic": self.get_parameter('dds_destination_request_topic')
                                           .get_parameter_value().string_value,
-                "open_drawer_topic": self.get_parameter('dds_open_drawer_topic')
+                "slide_drawer_request_topic": self.get_parameter('dds_slide_drawer_request_topic')
                                           .get_parameter_value().string_value
             }
 
@@ -65,12 +65,13 @@ class ros_controller(Node):
                 "Deleting request for {0} was NOT successfull!".format(api_url))
 
     def open_drawer(self, drawer_id: int, module_id: int, fleet_name: str, robot_name: str):
-        msg = FFOpenDrawer()
+        msg = FFSlideDrawer()
         msg.fleet_name = fleet_name
         msg.robot_name = robot_name
         msg.drawer_address.module_id = module_id
         msg.drawer_address.drawer_id = drawer_id
-        self.open_drawer_to_ff.publish(msg)
+        msg.drawer_
+        self.slide_drawer_to_ff.publish(msg)
 
     def get_dds_config(self):
         return self.dds_config

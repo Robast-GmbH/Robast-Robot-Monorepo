@@ -23,7 +23,7 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('move_base_server_name', 'goal_pose ')
 
         self.declare_parameter('dds_domain', 42)
-        self.declare_parameter('dds_open_drawer_topic', '/OpenDrawerRequest')
+        self.declare_parameter('dds_slide_drawer_topic', '/SlideDrawerRequest')
         self.declare_parameter('dds_nav_goal_topic', '/MoveToRequest')
 
         self.fleet_name = self.get_parameter('fleet_name').get_parameter_value().string_value
@@ -32,10 +32,12 @@ class free_fleet_client_direct(Node):
         .get_parameter_value().string_value
         self.ros_open_e_drawer_topic = self.get_parameter('statemaschine_open_e_drawer_topic')
         .get_parameter_value().string_value
+        self.ros_close_e_drawer_topic = self.get_parameter('statemaschine_close_e_drawer_topic')
+        .get_parameter_value().string_value
         self.ros_move_base_server_name=self.get_parameter('move_base_server_name')
         .get_parameter_value().string_value
         self.dds_domain = self.get_parameter('dds_domain').get_parameter_value().integer_value
-        self.dds_open_drawer_topic=self.get_parameter('dds_open_drawer_topic').get_parameter_value().string_value
+        self.dds_slide_drawer_topic=self.get_parameter('dds_slide_drawer_topic').get_parameter_value().string_value
         self.dds_move_to_topic=self.get_parameter('dds_nav_goal_topic').get_parameter_value().string_value 
 
         qos_profile = QoSProfile(
@@ -46,13 +48,14 @@ class free_fleet_client_direct(Node):
         )
         # ToDo Torben:fix for real multirobot support by placing them into there namespaces
         self.drawer_publisher_ = self.create_publisher(DrawerAddress, self.ros_opendrawer_topic, qos_profile=qos_profile)
-        self.e_drawer_publisher_ = self.create_publisher(DrawerAddress, self.ros_open_e_drawer_topic, qos_profile=qos_profile)
+        self.e_drawer_open_publisher_ = self.create_publisher(DrawerAddress, self.ros_open_e_drawer_topic, qos_profile=qos_profile)
+        self.e_drawer_close_publisher_ = self.create_publisher(DrawerAddress, self.ros_close_e_drawer_topic, qos_profile=qos_profile)
         self.move_publisher_ = self.create_publisher(PoseStamped, self.ros_move_base_server_name)
         self.start_receiving_from_dds()
 
     def start_receiving_from_dds(self):
-        open_drawer = Thread(target=self.dds_subscriber, args=(self.dds_domain, self.dds_open_drawer_topic, messages.FreeFleetData_OpenDrawerRequest, self.ros_publish_drawer_open), daemon=True)
-        open_drawer.start()
+        slide_drawer = Thread(target=self.dds_subscriber, args=(self.dds_domain, self.dds_slide_drawer_topic, messages.FreeFleetData_SlideDrawerRequest, self.ros_publish_drawer_open), daemon=True)
+        slide_drawer.start()
         move_to = Thread(target=self.dds_subscriber, args=(self.dds_domain, self.dds_move_to_topic, messages.FreeFleetData_DestinationRequest, self.ros_publish_robot_move_to), daemon=True)
         move_to.start()
 
@@ -70,7 +73,10 @@ class free_fleet_client_direct(Node):
         ros_msg.drawer_id = dds_msg.drawer_id
 
         if(dds_msg.e_drawer):
-            self.e_drawer_publisher_(ros_msg)
+            if(dds_msg.open):
+                self.e_drawer_open_publisher_(ros_msg)
+            else:
+                self.e_drawer_close_publisher_(ros_msg)
         else:
             self.drawer_publisher_(ros_msg)
 

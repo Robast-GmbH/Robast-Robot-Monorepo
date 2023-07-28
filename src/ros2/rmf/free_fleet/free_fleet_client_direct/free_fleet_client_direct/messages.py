@@ -64,8 +64,9 @@ class FreeFleetData_DestinationRequest(IdlStruct):
 
 
 @dataclass
-class FreeFleetData_OpenDrawerRequest(IdlStruct):
+class FreeFleetData_SlideDrawerRequest(IdlStruct):
     fleet_name: str
     robot_name: str
     module_id: int
     drawer_id: int
+    open: bool
