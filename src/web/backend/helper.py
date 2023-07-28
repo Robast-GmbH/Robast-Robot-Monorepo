@@ -17,14 +17,6 @@ def init(db: Session):
                 addUser( "Tobias", "Tobias Alscher", "Robast2022HH", True, db )
                 addUser( "Jacob", "Jacob Ritterbach", "Robast2022HH", True, db )
 
-        # addDrawer( "Schublade 1", 1, True , db)
-        # addDrawer( "Schublade 2", 2, True , db)
-        # addDrawer( "Schublade 3", 3, True , db)
-        # addDrawer( "Schublade 4", 4, True , db)
-        # addDrawer( "Schublade 5", 5, True , db)
-
-       #addMapPosition( "home", 0.0, 0.0, 0.0, db)
-
         return
 
 def addUser( name: str, full_name:str, password:str, admin:bool, db:Session):
@@ -50,3 +42,9 @@ def addMapPosition( name: str, x: float, y: float, t:float, db:Session):
         db.commit()
         db.refresh(db_map_position)
         return
+
+def json_drawer():
+        return { "id":0, "module_id":0}
+
+def json_robot():
+              return { "fleet_name":"", "name":""}

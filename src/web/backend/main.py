@@ -4,11 +4,13 @@ from typing import List
 # from sqlalchemy.sql.functions import user
 from fastapi.middleware.cors import CORSMiddleware
 # from fastapi.responses import JSONResponse
+import json
 import yaml
 import uvicorn
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 import requests
+import helper as templates
 
 
 
@@ -124,6 +126,16 @@ def abort_task(task_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
        
 #robot
+@app.get("/robots", response_model =List[schemas.Robot])
+def get_robot_status(db: Session = Depends(get_db)):
+    db_robots = crud.get_robots(db=db)
+    return db_robots
+
+@app.get("/robots/{robot_name}", response_model = schemas.Robot)
+def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
+    db_robot = crud.get_robot(db=db, robot_name=robot_name)
+    return db_robot
+
 @app.put("/robots/{robot_name}/halt")
 def pause_robot(robot_name: str, halt: bool , db: Session = Depends(get_db)):
     #todo
@@ -134,15 +146,7 @@ def set_rosbag(robot_name: str, halt: bool , db: Session = Depends(get_db)):
     #todo
     return
 
-@app.get("/robots/status", response_model =List[schemas.Robot])
-def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
-    db_robots = crud.get_robots(db=db)
-    return db_robots
 
-@app.get("/robots/{robot_name}/status", response_model = schemas.Robot)
-def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
-    db_robot = crud.get_robot(db=db, robot_name=robot_name)
-    return db_robot
 
 @app.put("/robots/{robot_name}/status")
 def set_robot(robot_name: str, robot: schemas.Robot, db: Session = Depends(get_db)):
@@ -159,26 +163,34 @@ def get_log(robot_name: str, db: Session = Depends(get_db)):
     return None
 
 #Module
-@app.get("robots/{robot_name}/modules/", response_model = List[schemas.BaseModel])
+@app.get("robots/{robot_name}/modules/", response_model = List[schemas.ModuleBase])
 def get_modules(robot_name :str, db: Session = Depends(get_db)):
     return crud.get_drawers(robot_name)
 
 # get_module_info
-@app.get("robots/{robot_name}/modules/{module_id}", response_model = schemas.BaseModel)
+@app.get("robots/{robot_name}/modules/{module_id}", response_model = schemas.ModuleBase)
 def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
     return crud.get_drawer(robot_name, module_id)
 
-# # open_drawer
-# @app.get("robots/{robot_name}/modules/open")
-# def _drawer_state( robot_name: str, db: Session = Depends(get_db)):
-   
-#     return 
+# open_drawer
+@app.get("robots/{robot_name}/modules/open")
+def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depends(get_db)):
+   db_module= crud.get_drawer(module_id=module.id,drawer_id= module.drawer_id )
+   robot= templates.json_robot()
+   robot["name"]=robot_name
+   robot["fleet_name"]=""
+   drawer= templates.json_drawer()
+   drawer["id"]=db_module
+   drawer["fleet_name"]= drawer.drawer_id
+   message={"robot":robot, "drawer":drawer}
+   headers =  {"Content-Type":"application/json"}
+   answer  =requests.post(url= "",json= json.dumps(message),headers= headers)
+   return answer.status_code
 
-# # open_drawer
-# @app.get("robots/{robot_name}/modules/close")
-# def _drawer_state( robot_name: str, db: Session = Depends(get_db)):
-   
-#     return 
+# close_drawer
+@app.get("robots/{robot_name}/modules/close")
+def _drawer_state( robot_name: str, db: Session = Depends(get_db)):
+    return 
 
 
 

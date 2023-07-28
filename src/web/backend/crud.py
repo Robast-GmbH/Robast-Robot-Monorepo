@@ -116,8 +116,8 @@ def abort_task(db:Session, task_id:int):
 def get_robots(db:Session, skip: int = 0, limit: int = 100):
      return db.query(models.Robot).offset(skip).limit(limit).all()
 
-def get_robot(db:Session, fleet_name:str, robot_name:str):
-     return db.query(models.Robot).filter(models.Robot.fleet==fleet_name, models.Robot.robot==robot_name).first()
+def get_robot(db:Session, robot_name:str):
+     return db.query(models.Robot).filter( models.Robot.robot==robot_name).first()
 
 def set_robot(db:Session, robot:schemas.Robot):
     db_robot= get_robot(robot.robot_name,robot.fleet_name)
@@ -147,8 +147,14 @@ def set_robot(db:Session, robot:schemas.Robot):
 #Modules 
 
 
-def get_modules(db: Session, robot_name: str, fleet_name:str) -> object:
-    return db.query(models.Drawer).filter(models.Module.robot== robot_name, models.Module.fleet==fleet_name).all()
+def get_modules(db: Session, robot_name: str, fleet_name:str):
+    return db.query(models.Module).filter(models.Module.robot== robot_name, models.Module.fleet==fleet_name).all()
+
+def get_module(db: Session, module_id: int):
+    return db.query(models.Module).filter(models.Module.id == module_id).all()
+
+def get_drawer(db: Session, module_id: int, drawer_id: int):
+    return db.query(models.Module).filter(models.Module.id == module_id, models.Module.drawer_id== drawer_id).all()
 
 def set_module(db:Session, module: schemas.ModuleBase):
     db_module = models.Task(  id = module.module_id,

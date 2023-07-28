@@ -57,9 +57,12 @@ class Task(TaskDelivery):
 class ModuleBase(BaseModel):
     id:int
     drawer_id:int
+  
+
+class Module(ModuleBase):
     type: DrawerTypes
     robot_name: str
-
+    
     class Config:
         orm_mode = True
 
