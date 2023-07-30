@@ -79,7 +79,7 @@ controller_server:
       vy_std: 0.0
       wz_std: 0.4
       vx_max: 0.4
-      vx_min: -0.0
+      vx_min: 0.07
       vy_max: 0.0
       wz_max: 1.9
       iteration_count: 1
@@ -87,14 +87,14 @@ controller_server:
       transform_tolerance: 0.1
       temperature: 0.3
       gamma: 0.015
-      motion_model: "DiffDrive"
+      motion_model: "Ackermann"
       visualize: false
       reset_period: 1.0 # (only in Humble)
       TrajectoryVisualizer:
         trajectory_step: 5
         time_step: 3
       AckermannConstrains:
-        min_turning_r: 0.2
+        min_turning_r: 0.1
       critics: ["ConstraintCritic", "ObstaclesCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic"]
       ConstraintCritic:
         enabled: true
@@ -168,7 +168,7 @@ local_costmap:
       rolling_window: true
       width: 5
       height: 5
-      footprint: "[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
+      footprint: "[ [0.4, 0.35], [0.4, -0.35], [-0.4, -0.35], [-0.4, 0.35] ]" # rb_theron footprint
       footprint_padding: 0.05
       resolution: 0.025
       plugins: ["stvl_layer", "inflation_layer"]
@@ -222,13 +222,13 @@ local_costmap:
         update_footprint_enabled: true
         combination_method: 1 # 1=max, 0=override
         origin_z: 0.0
-        publish_voxel_map: true
+        publish_voxel_map: false
         transform_tolerance: 0.2
         mapping_mode: false
         map_save_duration: 60.0
-        observation_sources: lidar2d_marking lidar2d_clearing 
+        observation_sources: lidar3d_marking lidar2d_marking 
         lidar3d_marking:
-          enabled: false
+          enabled: true
           data_type: PointCloud2
           topic: /robot/bpearl_laser/scan
           marking: true
@@ -276,27 +276,6 @@ local_costmap:
           data_type: LaserScan
           topic: /robot/front_laser/scan
           marking: true
-          clearing: false
-          obstacle_range: 5.0
-          min_obstacle_height: 0.1
-          max_obstacle_height: 1.0
-          expected_update_rate: 0.0
-          observation_persistence: 0.0
-          inf_is_valid: false
-          filter: "voxel"
-          voxel_min_points: 0
-          clear_after_reading: true # default false, clear the buffer after the layer gets readings from it
-          max_z: 1.0
-          min_z: 0.1
-          vertical_fov_angle: 0.01
-          horizontal_fov_angle: 3.14
-          decay_acceleration: 0.0
-          model_type: 1
-        lidar2d_clearing:
-          enabled: true
-          data_type: LaserScan
-          topic: /robot/front_laser/scan
-          marking: false
           clearing: true
           obstacle_range: 5.0
           min_obstacle_height: 0.1
@@ -361,7 +340,7 @@ global_costmap:
       robot_base_frame: robot_base_footprint
       map_topic: /map
       use_sim_time: False
-      footprint: "[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
+      footprint: "[ [0.4, 0.35], [0.4, -0.35], [-0.4, -0.35], [-0.4, 0.35] ]" # rb_theron footprint
       footprint_padding: 0.05
       resolution: 0.05
       track_unknown_space: true
@@ -403,11 +382,11 @@ global_costmap:
         update_footprint_enabled: true
         combination_method: 1 # 1=max, 0=override
         origin_z: 0.0
-        publish_voxel_map: true
+        publish_voxel_map: false
         transform_tolerance: 0.1
         mapping_mode: false
         map_save_duration: 60.0
-        observation_sources: lidar2d_marking lidar2d_clearing lidar3d_marking
+        observation_sources: lidar2d lidar3d_marking
         lidar3d_marking:
           enabled: true
           data_type: PointCloud2
@@ -452,32 +431,11 @@ global_costmap:
           horizontal_fov_angle: 3.14 # 3D lidar scanners like the VLP16 have 360 deg horizontal FOV.
           decay_acceleration: 0.0 # default 0, 1/s^2. If laser scanner MUST be 0
           model_type: 1 # default 0, model type for frustum. 0=depth camera, 1=3d lidar like VLP16 or similar
-        lidar2d_marking:
+        lidar2d:
           enabled: true
           data_type: LaserScan
           topic: /robot/front_laser/scan
           marking: true
-          clearing: false
-          obstacle_range: 5.0
-          min_obstacle_height: 0.1
-          max_obstacle_height: 1.0
-          expected_update_rate: 0.0
-          observation_persistence: 0.0
-          inf_is_valid: false
-          filter: "voxel"
-          voxel_min_points: 0
-          clear_after_reading: true # default false, clear the buffer after the layer gets readings from it
-          max_z: 1.0
-          min_z: 0.1
-          vertical_fov_angle: 0.01
-          horizontal_fov_angle: 3.14
-          decay_acceleration: 0.0
-          model_type: 1
-        lidar2d_clearing:
-          enabled: true
-          data_type: LaserScan
-          topic: /robot/front_laser/scan
-          marking: false
           clearing: true
           obstacle_range: 5.0
           min_obstacle_height: 0.1
@@ -553,7 +511,7 @@ planner_server:
     #   angle_quantization_bins: 64         # For Hybrid nodes: Number of angle bins for search, must be 1 for 2D node (no angle search)
     #   analytic_expansion_ratio: 3.5       # For Hybrid/Lattice nodes: The ratio to attempt analytic expansions during search for final approach.
     #   analytic_expansion_max_length: 0.6    # For Hybrid/Lattice nodes: The maximum length of the analytic expansion to be considered valid to prevent unsafe shortcutting (in meters). This should be scaled with minimum turning radius and be no less than 4-5x the minimum radius
-    #   minimum_turning_radius: 0.10        # For Hybrid/Lattice nodes: minimum turning radius in m of path / vehicle
+    #   minimum_turning_radius: 0.20        # For Hybrid/Lattice nodes: minimum turning radius in m of path / vehicle
     #   reverse_penalty: 3.1                # For Reeds-Shepp model: penalty to apply if motion is reversing, must be => 1
     #   change_penalty: 0.2                 # For Hybrid nodes: penalty to apply if motion is changing directions, must be >= 0
     #   non_straight_penalty: 1.20          # For Hybrid nodes: penalty to apply if motion is non-straight, must be => 1
