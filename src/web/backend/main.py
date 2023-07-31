@@ -25,7 +25,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-config = yaml.safe_load(open("config.yml"))
+config = yaml.safe_load(open("../config.yml"))
 
 
 origins = [
@@ -191,17 +191,17 @@ def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depe
 @app.get("robots/{robot_name}/modules/close")
 def _drawer_state( robot_name: str, db: Session = Depends(get_db)):
     db_module= crud.get_drawer(module_id=module.id,drawer_id= module.drawer_id )
-    if db_module
-    robot= templates.json_robot()
-    robot["name"]=robot_name
-    robot["fleet_name"]=""
-    drawer= templates.json_drawer()
-    drawer["id"]=db_module
-    drawer["fleet_name"]= drawer.drawer_id
-    message={"robot":robot, "drawer":drawer}
-    headers =  {"Content-Type":"application/json"}
-    answer  =requests.post(url= "",json= json.dumps(message),headers= headers)
-    return answer.status_code
+    if db_module:
+        robot= templates.json_robot()
+        robot["name"]=robot_name
+        robot["fleet_name"]=""
+        drawer= templates.json_drawer()
+        drawer["id"]=db_module
+        drawer["fleet_name"]= drawer.drawer_id
+        message={"robot":robot, "drawer":drawer}
+        headers =  {"Content-Type":"application/json"}
+        answer  =requests.post(url= "",json= json.dumps(message),headers= headers)
+        return answer.status_code
 
 
 
