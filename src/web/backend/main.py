@@ -189,9 +189,9 @@ def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depe
 
 # close_drawer
 @app.get("robots/{robot_name}/modules/close")
-def _drawer_state( robot_name: str, db: Session = Depends(get_db)):
+def _drawer_state( robot_name: str, module: schemas.ModuleBase , db: Session = Depends(get_db)):
     db_module= crud.get_drawer(module_id=module.id,drawer_id= module.drawer_id )
-    if db_module:
+    if db_module is not None:
         robot= templates.json_robot()
         robot["name"]=robot_name
         robot["fleet_name"]=""
