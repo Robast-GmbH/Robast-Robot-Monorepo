@@ -1,0 +1,67 @@
+import 'package:flutter/material.dart';
+import 'package:web_interface_flutter/models/task.dart';
+
+class TasksOverview extends StatefulWidget {
+  const TasksOverview({super.key});
+
+  @override
+  State<TasksOverview> createState() => _TasksOverviewState();
+}
+
+class _TasksOverviewState extends State<TasksOverview> {
+  final tasks = [
+    Task(
+      drawerID: 1,
+      id: 2,
+      xPose: 50,
+      yPose: 100,
+      yawPose: 2,
+      finished: false,
+      targetID: 3000,
+      ownerID: 2999,
+      robotName: "Robi",
+      moduleID: 2,
+    )
+  ];
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 8,
+        vertical: 2,
+      ),
+      child: ListView(
+        children: List.generate(
+          tasks.length,
+          (index) => Card(
+              child: Row(
+            children: [
+              const SizedBox(width: 8),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("ID: ${tasks[index].id}"),
+                      Text("Robot: ${tasks[index].robotName}"),
+                      Text("Owner ID: ${tasks[index].ownerID}"),
+                      Text("Target ID: ${tasks[index].targetID}"),
+                      Text("Target x: ${tasks[index].xPose}"),
+                      Text("Target y: ${tasks[index].yPose}"),
+                      Text("Target yaw: ${tasks[index].yawPose}"),
+                      Text("Module ID: ${tasks[index].moduleID}"),
+                      Text("Drawer ID: ${tasks[index].drawerID}"),
+                      Text("Finished: ${tasks[index].finished}"),
+                    ],
+                  ),
+                ),
+              ),
+              IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
+            ],
+          )),
+        ),
+      ),
+    );
+  }
+}
