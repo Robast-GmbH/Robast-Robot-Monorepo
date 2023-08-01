@@ -7,7 +7,7 @@ from fastapi import FastAPI
 class Drawer(BaseModel):
     id: int
     module_id: int
-    
+    is_edrawer: bool
 
 
 class Robot(BaseModel):
@@ -42,8 +42,7 @@ class RestInterface():
                 robot.name,
                 drawer.module_id,
                 drawer.id,
-                True
-                )
+                drawer.is_edrawer)
             return
         @self.app.post("/drawer/close")
         def close_drawer(drawer: Drawer, robot: Robot):
