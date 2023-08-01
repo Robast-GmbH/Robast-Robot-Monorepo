@@ -6,7 +6,7 @@
 
   <!-- Import casters -->
   <xacro:include filename="$(find rb_theron_description)/urdf/wheels/castor.urdf.xacro" />
-	
+
   <xacro:property name="M_PI" value="3.1415926535897931" />
 
   <!-- Caster support parameters -->
@@ -15,37 +15,31 @@
   <xacro:macro name="cylinder_inertia" params="m r h">
     <inertia  ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0"
               iyy="${m*(3*r*r+h*h)/12}" iyz = "0"
-              izz="${m*r*r/2}" /> 
+              izz="${m*r*r/2}" />
   </xacro:macro>
- 
+
   <xacro:macro name="rocker" params="prefix parent *origin reflect hq">
-	 
-	<!--ROCKER BOGIE SUPPORT -->
-	<!--joint name="${prefix}joint_support" type="continuous">
+
+  <!--ROCKER BOGIE SUPPORT -->
+  <!--joint name="${prefix}joint_support" type="continuous">
       <parent link="${parent}"/>
       <child link="${prefix}support"/>
       <xacro:insert_block name="origin" />
       <axis xyz="0 1 0" rpy="0 0 ${M_PI}" />
       <limit effort="100" velocity="100"/>
       <joint_properties damping="0.1" friction="0.1"/>
-	</joint -->
+  </joint -->
 
-	<joint name="${prefix}joint_rsupport" type="revolute">
+  <joint name="${prefix}joint_rsupport" type="revolute">
       <parent link="${parent}"/>
       <child link="${prefix}rsupport"/>
       <xacro:insert_block name="origin" />
       <axis xyz="0 1 0" rpy="0 0 ${M_PI}" />
-      <!-- The upper limit should actually be something around 0.5.
-      Setting the upper limit to -0.01 makes the robot rocker wheels lose contact on one side,
-      so that only 4 robot wheels have contact to ground.
-      Otherwise the robot would not be able to drive properly, because the rocker wheels some times
-      make the driving wheels lose contact to the ground and therefore steering of the rb_theron
-      becomes impossible -->
-      <limit lower="-0.5" upper="-0.01" effort="100" velocity="100"/>
-      <dynamics damping="0.1" friction="0.1"/>
-	</joint>
-		
-	<link name="${prefix}rsupport">
+      <limit lower="-0.5" upper="0.5" effort="100" velocity="100"/>
+      <joint_properties damping="0.1" friction="0.1"/>
+  </joint>
+
+  <link name="${prefix}rsupport">
       <visual>
         <origin xyz="0 0 0" rpy="0 0 0" />
           <xacro:if value="${reflect}">
@@ -93,72 +87,67 @@
         <origin xyz="0 0 0" />
         <xacro:cylinder_inertia  m="${rocker_support_mass}" r="0.010" h="0.010" />  <!--Check these values -->
       </inertial>
-	</link> 
-  
-	<!-- Transmission is important to link the joints and the controller -->
-	<transmission name="${prefix}rsupport_joint_trans">
-	  <type>transmission_interface/SimpleTransmission</type>
-	  <joint name="${prefix}joint_rsupport">
-		  <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
-	  </joint>
-	  <actuator name="${prefix}rsupport_joint_motor">
-		<mechanicalReduction>1</mechanicalReduction>
-		<motorTorqueConstant>1</motorTorqueConstant>
-	  </actuator>
-	</transmission>
+  </link>
 
-  <ros2_control name="${prefix}rsupport_joint_ros2_control" type="system">
-			<!-- <hardware>
-				<xacro:if value="${use_fake_hardware}">
-				<plugin>fake_components/GenericSystem</plugin>
-				<param name="fake_sensor_commands">${fake_sensor_commands}</param>
-				<param name="state_following_offset">0.0</param>
-				</xacro:if>
-				<xacro:unless value="${use_fake_hardware}">
-				<plugin>ros2_control_demo_hardware/DiffBotSystemHardware</plugin>
-				<param name="example_param_hw_start_duration_sec">2.0</param>
-				<param name="example_param_hw_stop_duration_sec">3.0</param>
-				</xacro:unless>
-			</hardware> -->
-			<hardware>
-				<plugin>fake_components/GenericSystem</plugin>
-			</hardware>    
-			<joint name="${prefix}joint_rsupport">
-				<state_interface name="position"/>
-				<state_interface name="velocity"/>
-			</joint>
-		</ros2_control>
-	    
-    <xacro:property name="wheel_offset_x" value="-0.175" />
-    <xacro:if value="${reflect}">    
-         <xacro:property name="wheel_offset_y" value="-0.079" />
-    </xacro:if>
-    <xacro:unless value="${reflect}">
-		 <xacro:property name="wheel_offset_y" value="0.079" />
-    </xacro:unless>
-        
-    <xacro:property name="wheel_offset_z" value="-0.0428" />
+  <!-- Transmission is important to link the joints and the controller -->
+  <transmission name="${prefix}rsupport_joint_trans">
+    <type>transmission_interface/SimpleTransmission</type>
+    <joint name="${prefix}joint_rsupport">
+      <hardwareInterface>hardware_interface/EffortJointInterface</hardwareInterface>
+    </joint>
+    <actuator name="${prefix}rsupport_joint_motor">
+    <mechanicalReduction>1</mechanicalReduction>
+    <motorTorqueConstant>1</motorTorqueConstant>
+    </actuator>
+  </transmission>
 
-	<!-- xacro:rubber_wheel prefix="$(arg prefix)wheel" parent="$(arg prefix)support" reflect="true" hq="${hq}">
-		<origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
-	</xacro:rubber_wheel -->
-		
-	<xacro:rubber_wheel prefix="${prefix}" parent="${prefix}rsupport" reflect="true" hq="${hq}">
-		<origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
-	</xacro:rubber_wheel>
+  <xacro:property name="wheel_offset_x" value="-0.1175" />
+  <xacro:if value="${reflect}">
+        <xacro:property name="wheel_offset_y" value="-0.079" />
+  </xacro:if>
+  <xacro:unless value="${reflect}">
+    <xacro:property name="wheel_offset_y" value="0.079" />
+  </xacro:unless>
+
+  <xacro:property name="wheel_offset_z" value="-0.0428" />
+
+  <!-- xacro:rubber_wheel prefix="$(arg prefix)wheel" parent="$(arg prefix)support" reflect="true" hq="${hq}">
+    <origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+  </xacro:rubber_wheel -->
+
+  <xacro:rubber_wheel prefix="${prefix}" parent="${prefix}rsupport" reflect="true" hq="${hq}">
+    <origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+  </xacro:rubber_wheel>
 
     <xacro:property name="caster_offset_x" value="0.1175" />
     <xacro:property name="caster_offset_y" value="0.010" />
     <xacro:property name="caster_offset_z" value="0.002" />
-														
-	<!-- xacro:caster prefix="$(arg prefix)left" parent="$(arg prefix)support" hq="${hq}">
-		<origin xyz="${caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
-	</xacro:caster -->
-	
-	<xacro:caster prefix="${prefix}castor" parent="${prefix}rsupport" hq="${hq}">
-		<origin xyz="${caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
-	</xacro:caster>
 
- </xacro:macro> 
+  <!-- xacro:caster prefix="$(arg prefix)left" parent="$(arg prefix)support" hq="${hq}">
+    <origin xyz="${caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
+  </xacro:caster -->
+
+  <xacro:caster prefix="${prefix}castor" parent="${prefix}rsupport" hq="${hq}">
+    <origin xyz="${caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
+  </xacro:caster>
+
+    <!-- gazebo reference="${prefix}support">
+      <mu1 value="5.0"/>
+      <mu2 value="0.5"/>
+      <kp value="10000000.0" />
+      <kd value="1.0" />
+      <fdir1 value="1 0 0"/>
+      <turnGravityOff>false</turnGravityOff>
+    </gazebo>
+
+     <gazebo reference="${prefix}_wheel">
+      <mu1 value="5.0"/>
+      <mu2 value="0.5"/>
+      <kp value="10000000.0" />
+      <kd value="1.0" />
+      <fdir1 value="1 0 0"/>
+      <turnGravityOff>false</turnGravityOff>
+    </gazebo -->
+ </xacro:macro>
 
 </robot>
