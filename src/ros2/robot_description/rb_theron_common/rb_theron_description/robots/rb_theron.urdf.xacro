@@ -118,7 +118,7 @@
 	</xacro:sensor_rs_lidar_16>-->
 
 	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
-		<origin xyz="0.3 -0.175 1.165" rpy="-1.570796326795 0 -1.570796326795"/>
+		<origin xyz="0.17 -0.175 1.165" rpy="-1.570796326795 0 -1.570796326795"/>
 		<!-- positions of the b-pearl based on solid: xyz="0.333 -0.180 1.194" rpy="-1.570796326795 0 -1.570796326795" -->
 	</xacro:sensor_rs_bpearl>
 
