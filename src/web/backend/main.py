@@ -163,17 +163,17 @@ def get_log(robot_name: str, db: Session = Depends(get_db)):
     return None
 
 #Module
-@app.get("robots/{robot_name}/modules/", response_model = List[schemas.ModuleBase])
+@app.get("/robots/{robot_name}/modules/", response_model = List[schemas.ModuleBase])
 def get_modules(robot_name :str, db: Session = Depends(get_db)):
     return crud.get_drawers(robot_name)
 
 # get_module_info
-@app.get("robots/{robot_name}/modules/{module_id}", response_model = schemas.ModuleBase)
+@app.get("/robots/{robot_name}/modules/{module_id}", response_model = schemas.ModuleBase)
 def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
     return crud.get_drawer(robot_name, module_id)
 
 # open_drawer
-@app.get("robots/{robot_name}/modules/open")
+@app.post("/robots/{robot_name}/modules/open")
 def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depends(get_db)):
    db_module= crud.get_drawer(module_id=module.id,drawer_id= module.drawer_id )
    robot= templates.json_robot()
@@ -188,8 +188,8 @@ def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depe
    return answer.status_code
 
 # close_drawer
-@app.get("robots/{robot_name}/modules/close")
-def _drawer_state( robot_name: str, module: schemas.ModuleBase , db: Session = Depends(get_db)):
+@app.post("/robots/{robot_name}/modules/close")
+def close_drawer( robot_name: str, module: schemas.ModuleBase , db: Session = Depends(get_db)):
     db_module= crud.get_drawer(module_id=module.id,drawer_id= module.drawer_id )
     if db_module is not None:
         robot= templates.json_robot()
