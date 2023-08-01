@@ -17,7 +17,7 @@
 	"workspaceFolder": "/workspace",
 	"runArgs": [
 		"--name=rmf",
-		"--network=host"
+		//"--network=host"
 	],
 	"remoteUser": "robast",
 	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
