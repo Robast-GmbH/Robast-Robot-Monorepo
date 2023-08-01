@@ -10,10 +10,12 @@
 	],
 	"workspaceFolder": "/workspace",
 	"runArgs": [
-		"--name=navigation",
-		"--network=host",
-		"--volume=/dev/shm:/dev/shm" //needed if you use the fast dds on the host network with multiple docker containers running on the same host
-	],
+                "--name=navigation",
+                "--network=host",
+                "--privileged",
+                "--volume=/dev/bus/usb:/dev/bus/usb",
+                "--device-cgroup-rule=c 189:* rmw",
+        ],
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
