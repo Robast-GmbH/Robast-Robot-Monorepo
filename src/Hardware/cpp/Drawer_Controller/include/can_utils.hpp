@@ -41,8 +41,8 @@ namespace drawer_controller
     // To use xQueue you need to use xQueueCreate to create a queue and you need to specify the size, in bytes, required
     // to hold each item in the queue, which is not possible for the CanMessage class because it contains a vector of
     // CanSignals which has a different length depending on the CanMessage.
-    // Therefor we built a queue with a vector, which should be fine in this case as the queue usually only contains one
-    // or two feedback messages and is rarely used. Furthermore we try to keep it as efficient as possible and try to
+    // Therefore we built a queue with a vector, which should be fine in this case as the queue usually only contains
+    // one or two feedback messages and is rarely used. Furthermore we try to keep it as efficient as possible and try
     // to follow what is explained here: https://youtu.be/fHNmRkzxHWs?t=2541
     std::vector<robast_can_msgs::CanMessage> _feedback_msg_queue;
     uint8_t _head_of_feedback_msg_queue;

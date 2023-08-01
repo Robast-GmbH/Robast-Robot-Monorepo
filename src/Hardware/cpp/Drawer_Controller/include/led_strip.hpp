@@ -153,7 +153,7 @@ namespace led_strip
     led_strip_target_settings.led_target_blue = 155;
     led_strip_target_settings.led_target_brightness = 25;
     led_strip.running_led_offset_from_middle = 0;
-    led_strip.led_current_mode = 1;
+    led_strip.led_current_mode = LedMode::steady_light;
   }
 
   void get_new_target_led_settings_from_queue()
