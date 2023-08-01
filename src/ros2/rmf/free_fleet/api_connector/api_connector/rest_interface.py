@@ -7,6 +7,7 @@ from fastapi import FastAPI
 class Drawer(BaseModel):
     id: int
     module_id: int
+    is_edrawer: bool
 
 
 class Robot(BaseModel):
@@ -40,7 +41,8 @@ class RestInterface():
                 robot.fleet_name,
                 robot.name,
                 drawer.module_id,
-                drawer.id)
+                drawer.id,
+                drawer.is_edrawer)
             return
 
         @self.app.post("/robot/move")

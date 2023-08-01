@@ -1,32 +1,20 @@
 
 from . import messages
-
-from threading import Thread
+from . import dds_helper
 
 
 class free_fleet_controller:
+  
 
     def __init__(self, dds_config: dict):
         self.config = dds_config
         self.robot_states = []  # :list[messages.FreeFleetData_RobotState] =[]
-        self.start_reciving_robot_states()
-
-    def start_reciving_robot_states(self):
-        x = Thread(target=self.get_status, daemon=True)
-        x.start()
-
-    def get_status(self):
-        participant = DomainParticipant(domain_id=self.config["dds_domain"])
-        topic = Topic(
-            participant,
-            self.config["robot_state_topic"],
-            messages.FreeFleetData_RobotState)
-
-        self.reader = DataReader(participant, topic)
-
-        for msg in self.reader.take_iter():
-            self.robot_states = [x for x in self.robot_states if x.name != msg.name]
-            self.robot_states.append(msg)
+        dds_helper.dds_subscriber( self.config["dds"], self.config["domain_id"], self.config["robot_state_topic"], messages.FreeFleetData_RobotState, self.store_robot_states)
+       
+    def store_robot_states(self,msg):
+        self.robot_states = [x for x in self.robot_states if x.name != msg.name]
+        self.robot_states.append(msg)
+                
 
     def get_robot_status(self, robot_name):
         return list(filter(lambda robot: robot.name == robot_name, self.robot_states))
@@ -40,10 +28,12 @@ class free_fleet_controller:
         mode_request.mode = mode
         mode_request.task_id = state.task_id
         mode_request.parameters = []
-        self.publish_dds(
-            mode_request,
+        dds_helper.dds_publish(
+            self.config["dds"],
+            self.config["domain_id"],
             self.config["mode_request_topic"],
-            messages.FreeFleetData_ModeRequest)
+            messages.FreeFleetData_PathRequest,
+            mode_request)
 
     # handle path request
     def handle_path_request(self, fleet_name, robot_name, path):
@@ -53,10 +43,12 @@ class free_fleet_controller:
         path_request.fleet_name = fleet_name
         path_request.task_id = state.task_id
         path_request.path = path
-        self.publish_dds(
-            path_request,
+        dds_helper.dds_publish(
+            self.config["dds"],
+            self.config["domain_id"],
             self.config["path_request_topic"],
-            messages.FreeFleetData_PathRequest)
+            messages.FreeFleetData_PathRequest,
+            path_request)
 
     # handle destination request
     def handle_destination_request(self, fleet_name, robot_name, destination):
@@ -66,10 +58,12 @@ class free_fleet_controller:
         destination_request.fleet_name = fleet_name
         destination_request.task_id = state.task_id
         destination_request.destination = destination
-        self.publish_dds(
-            destination_request,
+        dds_helper.dds_publish(
+            self.config["dds"],
+            self.config["domain_id"],
             self.config["destination_request_topic"],
-            messages.FreeFleetData_DestinationRequest)
+            messages.FreeFleetData_DestinationRequest,
+            destination_request)
 
     # handle_open_drawer_request
     def handle_open_drawer_request(self, fleet_name, robot_name, module_id, drawer_id, e_drawer):
@@ -80,12 +74,12 @@ class free_fleet_controller:
             drawer_id,
             e_drawer)
 
-        self.publish_dds(
-            open_drawer_request,
+        dds_helper.dds_publish(
+            self.config["dds"],
+            self.config["domain_id"],
             self.config["open_drawer_topic"],
-            messages.FreeFleetData_OpenDrawerRequest)
-
-    
+            messages.FreeFleetData_OpenDrawerRequest,
+            open_drawer_request)
 
     def get_robot_states(self):
         return self.robot_states
