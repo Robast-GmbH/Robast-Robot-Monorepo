@@ -7,17 +7,16 @@ from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 import launch_ros.actions
 import launch_ros.descriptions
-
+from launch_ros.parameter_descriptions import ParameterValue 
 
 def generate_launch_description():
-    depthai_path = get_package_share_directory('door_handle_detection')
-
-    default_rviz = os.path.join(depthai_path,
-                               'rviz', 'pointCloud.rviz')
+    depthai_examples_path = get_package_share_directory('door_handle_detection')
+    
+    default_resources_path = os.path.join(depthai_examples_path,
+                                'resources')
+                                
     urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
-    default_resources_path = os.path.join(depthai_path,'resources')
-    print('Default resources path..............')
-    print(default_resources_path)
+    
     camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D')
     tf_prefix    = LaunchConfiguration('tf_prefix',     default = '')
     base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d_frame')
@@ -28,23 +27,19 @@ def generate_launch_description():
     cam_roll  = LaunchConfiguration('cam_roll',      default = '0.0')
     cam_pitch = LaunchConfiguration('cam_pitch',     default = '0.0')
     cam_yaw   = LaunchConfiguration('cam_yaw',       default = '0.0')
-    spatial_camera = LaunchConfiguration('spatial_camera',  default = True)
 
-    camera_param_uri   = LaunchConfiguration('camera_param_uri',  default = os.path.join(depthai_path,'params','camera'))
-    sync_nn            = LaunchConfiguration('sync_nn',           default = True)
-    subpixel           = LaunchConfiguration('subpixel',          default = True)
-    nnName             = LaunchConfiguration('nnName', default = "x")
+    camera_param_uri   = LaunchConfiguration('camera_param_uri', default = os.path.join(depthai_path,'params','camera'))
+    sync_nn            = LaunchConfiguration('sync_nn', default = True)
+    nnName            = LaunchConfiguration('nnName', default = "x")
     resourceBaseFolder = LaunchConfiguration('resourceBaseFolder', default = default_resources_path)
-    confidence         = LaunchConfiguration('confidence',        default = 200)
-    lrCheckTresh       = LaunchConfiguration('lrCheckTresh',      default = 5)
-    monoResolution     = LaunchConfiguration('monoResolution',  default = '400p')
+
 
     declare_camera_model_cmd = DeclareLaunchArgument(
         'camera_model',
         default_value=camera_model,
         description='The model of the camera. Using a wrong camera model can disable camera features. Valid models: `OAK-D, OAK-D-LITE`.')
 
-    declare_tf_prefix_cmd = DeclareLaunchArgument(
+    declare_tf_prefix_cmd= DeclareLaunchArgument(
         'tf_prefix',
         default_value=tf_prefix,
         description='The name of the camera. It can be different from the camera model and it will be used in naming TF.')
@@ -99,11 +94,6 @@ def generate_launch_description():
         default_value=sync_nn,
         description='Syncs the image output with the Detection.')
 
-    declare_subpixel_cmd = DeclareLaunchArgument(
-        'subpixel',
-        default_value=subpixel,
-        description='Enables subpixel stereo detection.')
-
     declare_nnName_cmd = DeclareLaunchArgument(
         'nnName',
         default_value=nnName,
@@ -113,22 +103,7 @@ def generate_launch_description():
         'resourceBaseFolder',
         default_value=resourceBaseFolder,
         description='Path to the resources folder which contains the default blobs for the network')
-    
-    declare_confidence_cmd = DeclareLaunchArgument(
-        'confidence',
-        default_value=confidence,
-        description='Confidence that the disparity from the feature matching was good. 0-255. 255 being the lowest confidence.')
-    
-    declare_lrCheckTresh_cmd = DeclareLaunchArgument(
-        'lrCheckTresh',
-        default_value=lrCheckTresh,
-        description='LR Threshold is the threshod of how much off the disparity on the l->r and r->l  ')
 
-    declare_monoResolution_cmd = DeclareLaunchArgument(
-        'monoResolution',
-        default_value=monoResolution,
-        description='Contains the resolution of the Mono Cameras. Available resolutions are 800p, 720p & 400p for OAK-D & 480p for OAK-D-Lite.')
-  
     urdf_launch = IncludeLaunchDescription(
                             launch_description_sources.PythonLaunchDescriptionSource(
                                     os.path.join(urdf_launch_dir, 'urdf_launch.py')),
@@ -150,9 +125,7 @@ def generate_launch_description():
                         {'camera_param_uri': camera_param_uri},
                         {'sync_nn': sync_nn},
                         {'nnName': nnName},
-                        {'resourceBaseFolder': resourceBaseFolder},
-                        {'monoResolution': monoResolution},
-                        {'spatial_camera': spatial_camera}])
+                        {'resourceBaseFolder': resourceBaseFolder}])
 
     ld = LaunchDescription()
     ld.add_action(declare_tf_prefix_cmd)
@@ -167,21 +140,16 @@ def generate_launch_description():
     ld.add_action(declare_roll_cmd)
     ld.add_action(declare_pitch_cmd)
     ld.add_action(declare_yaw_cmd)
-    
+
     ld.add_action(declare_camera_param_uri_cmd)
     ld.add_action(declare_sync_nn_cmd)
-    ld.add_action(declare_subpixel_cmd)
     ld.add_action(declare_nnName_cmd)
     ld.add_action(declare_resourceBaseFolder_cmd)
-    ld.add_action(declare_confidence_cmd)
-    ld.add_action(declare_lrCheckTresh_cmd)
-    ld.add_action(declare_monoResolution_cmd)
+    
+    ld.add_action(mobilenet_node)
     ld.add_action(urdf_launch)
-    if spatial_camera == True:
-        ld.add_action(declare_subpixel_cmd)
-        ld.add_action(declare_lrCheckTresh_cmd)
-        ld.add_action(declare_monoResolution_cmd)
 
-    ld.add_action(yolov5_door_spatial_node)
-
+    # ld.add_action(metric_converter_node)
+    # ld.add_action(point_cloud_node)
+    # ld.add_action(rviz_node)
     return ld
