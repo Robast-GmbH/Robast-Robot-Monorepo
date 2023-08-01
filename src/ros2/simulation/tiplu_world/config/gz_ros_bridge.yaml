@@ -44,7 +44,7 @@
   gz_type_name: "gz.msgs.Image"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/front_realsense_camera/depth"
@@ -53,7 +53,7 @@
   gz_type_name: "gz.msgs.Image"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/front_realsense_camera/depth/points"
@@ -62,7 +62,61 @@
   gz_type_name: "gz.msgs.PointCloudPacked"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/back_top_oak_d_camera/color"
+  gz_topic_name: "/back_top_oak_d_camera/color"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/back_top_oak_d_camera/depth"
+  gz_topic_name: "/back_top_oak_d_camera/back_top_oak_d_camera/depth"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/back_top_oak_d_camera/depth/points"
+  gz_topic_name: "/back_top_oak_d_camera/back_top_oak_d_camera/depth/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/front_top_oak_d_camera/color"
+  gz_topic_name: "/front_top_oak_d_camera/color"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/front_top_oak_d_camera/depth"
+  gz_topic_name: "/front_top_oak_d_camera/front_top_oak_d_camera/depth"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/front_top_oak_d_camera/depth/points"
+  gz_topic_name: "/front_top_oak_d_camera/front_top_oak_d_camera/depth/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/back_top_oak_d_camera/color"
@@ -125,7 +179,7 @@
   gz_type_name: "gz.msgs.Image"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/back_realsense_camera/depth"
@@ -134,7 +188,7 @@
   gz_type_name: "gz.msgs.Image"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/back_realsense_camera/depth/points"
@@ -143,7 +197,7 @@
   gz_type_name: "gz.msgs.PointCloudPacked"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/clock"

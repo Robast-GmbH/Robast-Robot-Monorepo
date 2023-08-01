@@ -26,7 +26,7 @@ namespace stepper_motor
 
   void Motor::init()
   {
-    Serial.print("Starting Motor init!\n");
+    debug_println("Starting Motor init!");
 
     _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
     _gpio_wrapper->digital_write(_stepper_stdby_tmc2209_pin_id, LOW);
@@ -87,25 +87,25 @@ namespace stepper_motor
 
     _driver->shaft(direction_to_shaft_bool());
 
-    Serial.print("\nTesting connection...");
+    debug_println("\nTesting connection...");
     uint8_t result = _driver->test_connection();
 
     if (result)
     {
-      Serial.println("failed!");
-      Serial.print("Likely cause: ");
+      debug_println("failed!");
+      debug_println("Likely cause: ");
 
       switch (result)
       {
         case 1:
-          Serial.println("loose connection");
+          debug_println("loose connection");
           break;
         case 2:
-          Serial.println("no power");
+          debug_println("no power");
           break;
       }
 
-      Serial.println("Fix the problem and reset board.");
+      debug_println("Fix the problem and reset board.");
 
       // We need this delay or messages above don't get fully printed out
       delay(100);
@@ -114,7 +114,7 @@ namespace stepper_motor
 
     // set_stall_guard(true);
 
-    Serial.println("Stepper initialized");
+    debug_println("Stepper initialized");
   }
 
   void Motor::stall_ISR()
@@ -122,7 +122,7 @@ namespace stepper_motor
     _is_stalled = true;
   }
 
-  bool Motor::get_is_stalled()
+  bool Motor::get_is_stalled() const
   {
     return _is_stalled;
   }
@@ -154,31 +154,72 @@ namespace stepper_motor
   //   _is_stalled = false;
   // }
 
-  void Motor::handle_motor_control()
+  void Motor::handle_motor_control(int32_t current_position_int32)
   {
-    uint32_t current_timestemp = millis();
-    uint32_t dt_since_start = current_timestemp - _start_ramp_timestamp;
-
-    if (dt_since_start < _ramp_time_in_us)
+    if (!_speed_ramp_in_progress)
     {
-      if (_speed_ramp_in_progress)
-      {
-        int32_t delta_speed =
-          ((int32_t) (dt_since_start * (_target_speed - _starting_speed_before_ramp))) / _ramp_time_in_us;
+      return;
+    }
 
-        uint32_t new_active_speed = _starting_speed_before_ramp + delta_speed;
-        set_active_speed(new_active_speed);
-      }
+    if (get_active_speed() < get_target_speed())
+    {
+      handle_time_dependent_acceleration();
+    }
+    if (get_active_speed() > get_target_speed())
+    {
+      handle_position_dependent_deceleration(current_position_int32);
+    }
+  }
+
+  void Motor::handle_time_dependent_acceleration()
+  {
+    uint32_t delta_speed_uint32 = get_dt_since_start_in_ms() * _acceleration;
+
+    uint32_t new_active_speed_uint32 = _starting_speed_before_ramp_uint32 + delta_speed_uint32;
+
+    if (new_active_speed_uint32 > get_target_speed())
+    {
+      finish_speed_ramp(get_target_speed());
     }
     else
     {
-      if (_speed_ramp_in_progress)
-      {
-        Serial.println("The ramp-up/ramp-down time has elapsed, set the motor speed to the target speed directly!");
-        set_active_speed(_target_speed);
-        _speed_ramp_in_progress = false;
-      }
+      set_active_speed(new_active_speed_uint32);
     }
+  }
+
+  void Motor::handle_position_dependent_deceleration(int32_t current_position_int32)
+  {
+    int32_t new_active_speed_int32 = calculate_new_active_speed(current_position_int32);
+    _speed_ramp_in_progress = !(new_active_speed_int32 < get_target_speed());
+    new_active_speed_int32 = _speed_ramp_in_progress ? new_active_speed_int32 : get_target_speed();
+    set_active_speed(new_active_speed_int32);
+  }
+
+  int32_t Motor::calculate_new_active_speed(int32_t current_position_int32) const
+  {
+    uint32_t distance_travelled_uint32 = abs(current_position_int32 - _starting_position_int32);
+
+    uint32_t total_delta_speed_uint32 =
+      abs((int32_t) get_target_speed() - (int32_t) _starting_speed_before_ramp_uint32);
+
+    uint32_t delta_speed_uint32 = (total_delta_speed_uint32 * distance_travelled_uint32) / _ramp_distance_uint32;
+
+    int32_t new_active_speed_int32 = (int32_t) _starting_speed_before_ramp_uint32 - (int32_t) delta_speed_uint32;
+
+    return new_active_speed_int32;
+  }
+
+  uint32_t Motor::get_dt_since_start_in_ms() const
+  {
+    uint32_t current_timestemp = millis();
+    return current_timestemp - _start_ramp_timestamp;
+  }
+
+  void Motor::finish_speed_ramp(uint32_t final_speed)
+  {
+    debug_println("The speed ramp-up/ramp-down is finished, setting the motor speed to the target speed directly!");
+    set_active_speed(final_speed);
+    _speed_ramp_in_progress = false;
   }
 
   void Motor::set_active_speed(uint32_t active_speed)
@@ -188,14 +229,28 @@ namespace stepper_motor
     _driver->VACTUAL(_active_speed);
   }
 
-  uint32_t Motor::get_active_speed()
+  uint32_t Motor::get_active_speed() const
   {
     return _active_speed;
   }
 
-  void Motor::set_target_speed(uint32_t target_speed, uint16_t ramp_time_in_us)
+  void Motor::set_target_speed_with_decelerating_ramp(uint32_t target_speed,
+                                                      int32_t ramp_distance_int32,
+                                                      int32_t starting_position_int32)
   {
-    if (ramp_time_in_us == 0)
+    if (target_speed != _target_speed)
+    {
+      _target_speed = target_speed;
+      _starting_speed_before_ramp_uint32 = _active_speed;
+      _ramp_distance_uint32 = ramp_distance_int32;
+      _starting_position_int32 = starting_position_int32;
+      _speed_ramp_in_progress = true;
+    }
+  }
+
+  void Motor::set_target_speed_with_accelerating_ramp(uint32_t target_speed, int16_t acceleration)
+  {
+    if (acceleration == INSTANT_ACCELERATION)
     {
       set_active_speed(target_speed);
       _target_speed = target_speed;
@@ -205,14 +260,20 @@ namespace stepper_motor
     if (target_speed != _target_speed)
     {
       _target_speed = target_speed;
-      _starting_speed_before_ramp = _active_speed;
-      _ramp_time_in_us = ramp_time_in_us;
+      _starting_speed_before_ramp_uint32 = _active_speed;
+      _acceleration = acceleration;
       _start_ramp_timestamp = millis();   // TODO@Jacob: How to handle overflow?
       _speed_ramp_in_progress = true;
     }
   }
 
-  uint32_t Motor::get_target_speed()
+  void Motor::set_target_speed_instantly(uint32_t target_speed)
+  {
+    set_active_speed(target_speed);
+    _target_speed = target_speed;
+  }
+
+  uint32_t Motor::get_target_speed() const
   {
     return _target_speed;
   }
@@ -241,23 +302,23 @@ namespace stepper_motor
     // attachInterrupt(STEPPER_DIAG_PIN, stall_ISR, RISING);
   }
 
-  Direction Motor::get_direction()
+  Direction Motor::get_direction() const
   {
     return _shaft_direction;
   }
 
   void Motor::print_status()
   {
-    Serial.print("Status: ");
-    Serial.print(_driver->SG_RESULT(), DEC);
-    Serial.print(" ");
-    Serial.print(_driver->SG_RESULT() < STALL_VALUE, DEC);
-    Serial.print(" ");
+    debug_print("Status: ");
+    debug_print_with_base(_driver->SG_RESULT(), DEC);
+    debug_print(" ");
+    debug_print_with_base(_driver->SG_RESULT() < STALL_VALUE, DEC);
+    debug_print(" ");
     byte drawer_diag_state;
     _gpio_wrapper->digital_read(_stepper_diag_pin_id, drawer_diag_state);
-    Serial.print(drawer_diag_state);
-    Serial.print(" ");
-    Serial.println(_driver->cs2rms(_driver->cs_actual()), DEC);
+    debug_print(drawer_diag_state);
+    debug_print(" ");
+    debug_println_with_base(_driver->cs2rms(_driver->cs_actual()), DEC);
   }
 
 }   // namespace stepper_motor

@@ -131,7 +131,7 @@
     <gazebo reference="${base_frame}">
       <sensor name="${prefix}_rgb_camera_optical_frame" type="camera">
 				<topic>${prefix_topic}/color</topic>
-        <camera name="r430">
+        <camera name="oak-d">
             <horizontal_fov>1.2112585008840648</horizontal_fov>
             <image>
                 <width>1280</width>
@@ -152,7 +152,7 @@
 
       <sensor name="${prefix}_right_camera_optical_frame" type="depth">
         <topic>${prefix_topic}/${prefix}/depth</topic>
-        <camera name="r430">
+        <camera name="oak-d">
           <horizontal_fov>${85.2*M_PI/180.0}</horizontal_fov>
           <image>
             <width>640</width>
