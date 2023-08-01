@@ -21,19 +21,12 @@
   <depend>depthai_ros_msgs</depend>
   <depend>depthai_bridge</depend>
   <depend>depthai_descriptions</depend>
-  <depend>image_transport</depend>
   <depend>libopencv-dev</depend>
   <depend>ros_environment</depend>
   <depend>sensor_msgs</depend>
   <depend>std_msgs</depend>
   <depend>stereo_msgs</depend>
   <depend>vision_msgs</depend>
-  <depend>foxglove_msgs</depend>
-  <depend>rviz_imu_plugin</depend>
-
-  <exec_depend>robot_state_publisher</exec_depend>
-  <exec_depend>depth_image_proc</exec_depend>
-  <exec_depend>xacro</exec_depend>
 
   <export>
     <build_type>ament_cmake</build_type>

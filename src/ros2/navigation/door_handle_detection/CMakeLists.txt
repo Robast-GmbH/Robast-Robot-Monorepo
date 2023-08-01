@@ -19,7 +19,7 @@ if(NOT OpenCV_FOUND)
 endif()
 
 # find_package(depthai CONFIG REQUIRED PATHS "/home/sachin/Desktop/luxonis/depthai-core/build/install/lib/cmake/depthai")
-set(yolov5_door_blob_name "yolov5.blob")
+set(yolov5_door_blob_name "door.blob")
 
 find_package(ament_cmake REQUIRED)
 
@@ -80,7 +80,6 @@ endif()
 
 
 install(DIRECTORY params DESTINATION share/${PROJECT_NAME})
-install(DIRECTORY rviz DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY resources DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY launch/ DESTINATION share/${PROJECT_NAME}/launch
 FILES_MATCHING PATTERN "*.py")

@@ -19,7 +19,7 @@ def generate_launch_description():
     print('Default resources path..............')
     print(default_resources_path)
     camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D')
-    tf_prefix    = LaunchConfiguration('tf_prefix',     default = 'oak')
+    tf_prefix    = LaunchConfiguration('tf_prefix',     default = '')
     base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d_frame')
     parent_frame = LaunchConfiguration('parent_frame',  default = 'oak-d-base-frame')
     cam_pos_x = LaunchConfiguration('cam_pos_x',     default = '0.0')
@@ -153,10 +153,6 @@ def generate_launch_description():
                         {'resourceBaseFolder': resourceBaseFolder},
                         {'monoResolution': monoResolution},
                         {'spatial_camera': spatial_camera}])
-
-    rviz_node = launch_ros.actions.Node(
-            package='rviz2', executable='rviz2', output='screen',
-            arguments=['--display-config', default_rviz])
 
     ld = LaunchDescription()
     ld.add_action(declare_tf_prefix_cmd)
