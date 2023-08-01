@@ -165,7 +165,6 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                       );
                       return;
                     }
-                    ;
                     final ownerID = robotProvider.users.firstWhere((element) => element.fullName == sender).id;
                     final targetID = robotProvider.users.firstWhere((element) => element.fullName == receiver).id;
                     final moduleID = int.tryParse(moduleIDController.text);

@@ -48,8 +48,6 @@ class _LoginPageState extends State<LoginPage> {
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton.icon(
                   onPressed: () {
-                    print(nameController.text);
-                    print(passwordController.text);
                     Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MapPage()));
                   },
                   icon: const Icon(Icons.login),
