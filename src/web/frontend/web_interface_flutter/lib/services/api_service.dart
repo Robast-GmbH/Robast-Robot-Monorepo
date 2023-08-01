@@ -37,49 +37,73 @@ class APIService {
 
   static Future<List<User>> getUsers() async {
     final users = <User>[];
-    final response = await http.get(Uri.parse("$baseURL:$port/users/?skip=0&limit=100"));
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = jsonDecode(response.body);
-      for (final user in jsonData) {
-        users.add(User.fromJson(user));
+    try {
+      final response = await http.get(Uri.parse("$baseURL:$port/users/?skip=0&limit=100"));
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+        for (final user in jsonData) {
+          users.add(User.fromJson(user));
+        }
       }
+    } catch (e) {
+      print("Failed get Users");
+      print(e);
     }
+
     return users;
   }
 
   static Future<List<Robot>> getRobots() async {
     final robots = <Robot>[];
-    final response = await http.get(Uri.parse("$baseURL:$port/robots"));
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = jsonDecode(response.body);
-      for (final robot in jsonData) {
-        robots.add(Robot.fromJson(robot));
+    try {
+      final response = await http.get(Uri.parse("$baseURL:$port/robots"));
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+        for (final robot in jsonData) {
+          robots.add(Robot.fromJson(robot));
+        }
       }
+    } catch (e) {
+      print("Failed get Robots");
+      print(e);
     }
+
     return robots;
   }
 
   static Future<List<Task>> getTasks() async {
     final tasks = <Task>[];
-    final response = await http.get(Uri.parse("$baseURL:$port/tasks"));
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = jsonDecode(response.body);
-      for (final task in jsonData) {
-        tasks.add(Task.fromJson(task));
+    try {
+      final response = await http.get(Uri.parse("$baseURL:$port/tasks"));
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+        for (final task in jsonData) {
+          tasks.add(Task.fromJson(task));
+        }
       }
+    } catch (e) {
+      print("Failed get Tasks");
+      print(e);
     }
+
     return tasks;
   }
 
   static Future<List<DrawerModule>> getModules(String robotName) async {
     final modules = <DrawerModule>[];
-    final response = await http.get(Uri.parse("$baseURL:$port/robots/$robotName/modules/"));
-    if (response.statusCode == 200) {
-      final List<dynamic> jsonData = jsonDecode(response.body);
-      for (final moduleID in jsonData) {
-        modules.add(DrawerModule(moduleID: moduleID));
+    try {
+      final response = await http.get(Uri.parse("$baseURL:$port/robots/$robotName/modules/"));
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+        for (final moduleID in jsonData) {
+          modules.add(DrawerModule(moduleID: moduleID));
+        }
       }
+    } catch (e) {
+      print("Failed get Modules");
+      print(e);
     }
+
     return modules;
   }
 
