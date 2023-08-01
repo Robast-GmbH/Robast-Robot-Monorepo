@@ -25,7 +25,6 @@
                 "Launch ros2 socket can",
                 "Launch Drawer Bridge"
             ],
-            "command": "source install/setup.bash; ros2 launch drawer_bridge drawer_bridge_launch.py;",
             "problemMatcher": []
         },
         {
