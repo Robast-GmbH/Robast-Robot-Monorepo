@@ -1,0 +1,70 @@
+//only chang his file, the otherfiles are generated from this file
+// ToDo Torben:  should be moved in its own project for fastdds mesages 
+
+
+
+struct RobotMode
+{
+  unsigned long mode;
+};
+
+struct Poi//location is already defined
+{
+  unsigned long sec;
+  unsigned long nanosec;
+  float x;
+  float y;
+  float yaw;
+  string level_name;
+};
+
+struct RobotState
+{
+  string name;
+  string model;
+  string task_id;
+  RobotMode mode;
+  float battery_percent;
+  Poi location;
+  sequence<Poi>path;
+};
+
+struct ModeParameter
+{
+  string name;
+  string value;
+};
+
+struct ModeRequest
+{
+  string fleet_name;
+  string robot_name;
+  RobotMode mode;
+  string task_id;
+  ModeParameter parameters;
+};
+
+struct PathRequest
+{
+  string fleet_name;
+  string robot_name;
+  sequence<Poi> path;
+  string task_id;
+};
+
+struct DestinationRequest
+{
+  string fleet_name;
+  string robot_name;
+  Poi destination;
+  string task_id;
+};
+
+struct OpenDrawerRequest
+{
+  string fleet_name;
+  string robot_name;
+  short module_id;
+  short drawer_id;
+  boolean e_drawer;
+};
