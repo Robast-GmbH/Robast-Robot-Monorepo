@@ -4,11 +4,13 @@ import 'package:web_interface_flutter/services/api_service.dart';
 class DrawerTile extends StatelessWidget {
   const DrawerTile({
     super.key,
-    required this.moduleID,
     required this.robotName,
+    required this.moduleID,
+    required this.drawerID,
   });
   final String robotName;
   final int moduleID;
+  final int drawerID;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,7 @@ class DrawerTile extends StatelessWidget {
                 children: [
                   ElevatedButton(
                       onPressed: () async {
-                        await APIService.openDrawer(robotName, moduleID);
+                        await APIService.openDrawer(robotName, moduleID, drawerID);
                       },
                       child: const Text("Öffnen")),
                   const SizedBox(
@@ -49,7 +51,7 @@ class DrawerTile extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () async {
-                      await APIService.closeDrawer(robotName, moduleID);
+                      await APIService.closeDrawer(robotName, moduleID, drawerID);
                     },
                     child: const Text("Schließen"),
                   ),

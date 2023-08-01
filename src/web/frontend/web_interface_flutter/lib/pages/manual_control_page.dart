@@ -65,6 +65,7 @@ class _ManualControlPageState extends State<ManualControlPage> {
                           children: robotProvider.modules[robots[selectedRobotIndex]]
                                   ?.map((e) => DrawerTile(
                                         moduleID: e.moduleID,
+                                        drawerID: e.drawerID,
                                         robotName: robots[selectedRobotIndex].name,
                                       ))
                                   .toList() ??

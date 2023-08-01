@@ -95,8 +95,13 @@ class APIService {
       final response = await http.get(Uri.parse("$baseURL:$port/robots/$robotName/modules/"));
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = jsonDecode(response.body);
-        for (final moduleID in jsonData) {
-          modules.add(DrawerModule(moduleID: moduleID));
+        for (final module in jsonData) {
+          modules.add(
+            DrawerModule(
+              moduleID: module["id"],
+              drawerID: module["drawer_id"],
+            ),
+          );
         }
       }
     } catch (e) {
@@ -107,7 +112,45 @@ class APIService {
     return modules;
   }
 
-  static Future<void> openDrawer(String robotName, int moduleID) async {}
+  static Future<void> openDrawer(String robotName, int moduleID, int drawerID) async {
+    final data = <String, dynamic>{
+      "id": moduleID,
+      "drawer_id": drawerID,
+    };
+    final headers = {
+      'accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    try {
+      http.post(
+        Uri.parse("$baseURL:$port/robots/$robotName/modules/open"),
+        headers: headers,
+        body: data,
+      );
+    } catch (e) {
+      print("Failed open drawer");
+      print(e);
+    }
+  }
 
-  static Future<void> closeDrawer(String robotName, int moduleID) async {}
+  static Future<void> closeDrawer(String robotName, int moduleID, int drawerID) async {
+    final data = <String, dynamic>{
+      "id": moduleID,
+      "drawer_id": drawerID,
+    };
+    final headers = {
+      'accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    try {
+      http.post(
+        Uri.parse("$baseURL:$port/robots/$robotName/modules/close"),
+        headers: headers,
+        body: data,
+      );
+    } catch (e) {
+      print("Failed close drawer");
+      print(e);
+    }
+  }
 }
