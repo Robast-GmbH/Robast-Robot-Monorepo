@@ -172,7 +172,11 @@ local_costmap:
       footprint_padding: 0.05
       resolution: 0.025
       plugins: ["stvl_layer", "inflation_layer"]
-      # filters: ["keepout_filter"]
+      filters: ["keepout_filter"]
+      keepout_filter:
+        plugin: "nav2_costmap_2d::KeepoutFilter"
+        enabled: True
+        filter_info_topic: "/costmap_filter_info"
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: True
@@ -345,6 +349,11 @@ global_costmap:
       resolution: 0.05
       track_unknown_space: true
       plugins: ["static_layer", "stvl_layer", "inflation_layer"]
+      filters: ["keepout_filter"]
+      keepout_filter:
+        plugin: "nav2_costmap_2d::KeepoutFilter"
+        enabled: True
+        filter_info_topic: "/costmap_filter_info"
       obstacle_layer:
         plugin: "nav2_costmap_2d::ObstacleLayer"
         enabled: false
@@ -360,10 +369,6 @@ global_costmap:
           obstacle_max_range: 2.5
           obstacle_min_range: 0.0
           inf_is_valid: false
-      keepout_filter:
-        plugin: "nav2_costmap_2d::KeepoutFilter"
-        enabled: True
-        filter_info_topic: "/costmap_filter_info"
       static_layer:
         #enabled: True
         plugin: "nav2_costmap_2d::StaticLayer"
