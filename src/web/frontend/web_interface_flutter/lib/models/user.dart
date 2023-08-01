@@ -6,10 +6,10 @@ class User {
   final String fullName;
   final bool isActive;
   final bool isAdmin;
-  final List<Task> orders;
+  final List<Task> tasks;
 
   User({
-    required this.orders,
+    required this.tasks,
     required this.id,
     required this.name,
     required this.fullName,
@@ -17,15 +17,13 @@ class User {
     required this.isAdmin,
   });
 
-  //TODO: add orders from json
   static User fromJson(Map<String, dynamic> data) {
     return User(
-      fullName: data["full_name"],
-      name: data["name"],
-      id: data["id"],
-      isActive: data["is_active"],
-      isAdmin: data["admin"],
-      orders: [],
-    );
+        fullName: data["full_name"],
+        name: data["name"],
+        id: data["id"],
+        isActive: data["is_active"],
+        isAdmin: data["admin"],
+        tasks: (data["orders"] as List<dynamic>).map((e) => Task.fromJson(e)).toList());
   }
 }
