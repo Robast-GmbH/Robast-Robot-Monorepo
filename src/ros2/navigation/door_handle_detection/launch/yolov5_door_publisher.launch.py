@@ -18,7 +18,7 @@ def generate_launch_description():
     urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
     
     camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D')
-    tf_prefix    = LaunchConfiguration('tf_prefix',     default = '')
+    tf_prefix    = LaunchConfiguration('tf_prefix',     default = 'oak')
     base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d_frame')
     parent_frame = LaunchConfiguration('parent_frame',  default = 'oak-d-base-frame')
     cam_pos_x = LaunchConfiguration('cam_pos_x',     default = '0.0')
@@ -28,7 +28,7 @@ def generate_launch_description():
     cam_pitch = LaunchConfiguration('cam_pitch',     default = '0.0')
     cam_yaw   = LaunchConfiguration('cam_yaw',       default = '0.0')
 
-    camera_param_uri   = LaunchConfiguration('camera_param_uri', default = os.path.join(depthai_path,'params','camera'))
+    camera_param_uri   = LaunchConfiguration('camera_param_uri', default = os.path.join(depthai_examples_path,'params','camera'))
     sync_nn            = LaunchConfiguration('sync_nn', default = True)
     nnName            = LaunchConfiguration('nnName', default = "x")
     resourceBaseFolder = LaunchConfiguration('resourceBaseFolder', default = default_resources_path)
@@ -110,7 +110,7 @@ def generate_launch_description():
                             launch_arguments={'tf_prefix'   : tf_prefix,
                                               'camera_model': camera_model,
                                               'base_frame'  : base_frame,
-                                              'parent_frame': parent_frame,
+                                              'parent_frame': 'robot_base_link',
                                               'cam_pos_x'   : cam_pos_x,
                                               'cam_pos_y'   : cam_pos_y,
                                               'cam_pos_z'   : cam_pos_z,
@@ -146,7 +146,7 @@ def generate_launch_description():
     ld.add_action(declare_nnName_cmd)
     ld.add_action(declare_resourceBaseFolder_cmd)
     
-    ld.add_action(mobilenet_node)
+    ld.add_action(yolov5_door_spatial_node)
     ld.add_action(urdf_launch)
 
     # ld.add_action(metric_converter_node)
