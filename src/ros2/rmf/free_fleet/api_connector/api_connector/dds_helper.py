@@ -1,0 +1,59 @@
+from cyclonedds.domain import DomainParticipant
+from cyclonedds.topic import Topic
+from cyclonedds.sub import DataReader
+from cyclonedds.core import Listener
+from cyclonedds.pub import DataWriter
+
+import fastdds
+
+
+def dds_publish():
+
+    pass
+
+       
+
+def cyclonedds_publish(message, message_path, message_typ, dds_domain_id):
+    participant = DomainParticipant(domain_id=dds_domain_id)
+    topic = Topic(participant, message_path, message_typ)
+    listener = Listener()
+    writer = DataWriter(participant, topic, listener=listener)
+    writer.write(message)
+
+
+def fastdds_publish(message, topic_name, topic_typ, dds_domain_id ):
+       factory = fastdds.DomainParticipantFactory.get_instance()
+       participant_qos = fastdds.DomainParticipantQos()
+       factory.get_default_participant_qos(participant_qos)
+       participant = factory.create_participant(dds_domain_id, participant_qos)
+       match(topic_typ):
+            case "j":
+                topic_data_type = HelloWorld.HelloWorldPubSubType()
+                topic_data_type.setName("HelloWorld")
+                 
+       type_support = fastdds.TypeSupport(topic_data_type) 
+    #  topic_data_type = HelloWorld.HelloWorldPubSubType()
+    #  self.topic_data_type.setName("HelloWorld")
+       
+       participant.register_type(type_support)
+
+       topic_qos = fastdds.TopicQos()
+       participant.get_default_topic_qos(topic_qos)
+       
+       topic = participant.create_topic(topic_name, topic_data_type.getName(), topic_qos)
+       
+       publisher_qos = fastdds.PublisherQos()
+       participant.get_default_publisher_qos(publisher_qos)
+       publisher = participant.create_publisher(publisher_qos)
+       
+       writer_qos = fastdds.DataWriterQos()
+       publisher.get_default_datawriter_qos(writer_qos)
+       writer = publisher.create_datawriter(topic, writer_qos)      
+       writer.write(message)
+       
+   
+
+
+
+def dds_subscriber():
+    pass 

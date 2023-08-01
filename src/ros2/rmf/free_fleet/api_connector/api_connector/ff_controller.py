@@ -1,8 +1,4 @@
-from cyclonedds.domain import DomainParticipant
-from cyclonedds.topic import Topic
-from cyclonedds.sub import DataReader
-from cyclonedds.core import Listener
-from cyclonedds.pub import DataWriter
+
 from . import messages
 
 from threading import Thread
@@ -20,13 +16,13 @@ class free_fleet_controller:
         x.start()
 
     def get_status(self):
-        self.participant = DomainParticipant(domain_id=self.config["dds_domain"])
+        participant = DomainParticipant(domain_id=self.config["dds_domain"])
         topic = Topic(
-            self.participant,
+            participant,
             self.config["robot_state_topic"],
             messages.FreeFleetData_RobotState)
 
-        self.reader = DataReader(self.participant, topic)
+        self.reader = DataReader(participant, topic)
 
         for msg in self.reader.take_iter():
             self.robot_states = [x for x in self.robot_states if x.name != msg.name]
@@ -91,11 +87,7 @@ class free_fleet_controller:
             messages.FreeFleetData_SlideDrawerRequest)
         
 
-    def publish_dds(self, message, topicPath, topicType):
-        topic = Topic(self.participant, topicPath, topicType)
-        listener = Listener()
-        writer = DataWriter(self.participant, topic, listener=listener)
-        writer.write(message)
+    
 
     def get_robot_states(self):
         return self.robot_states
