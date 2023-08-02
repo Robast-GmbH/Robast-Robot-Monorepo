@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:web_interface_flutter/widgets/docker_overview.dart';
-import 'package:web_interface_flutter/widgets/robot_clone.dart';
 import 'package:web_interface_flutter/widgets/rosbag_overview.dart';
 import 'package:web_interface_flutter/widgets/status_overview.dart';
 import 'package:web_interface_flutter/widgets/tasks_overview.dart';
