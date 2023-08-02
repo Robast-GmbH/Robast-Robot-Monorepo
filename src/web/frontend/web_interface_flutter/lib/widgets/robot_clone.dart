@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 
 class RobotClone extends StatelessWidget {
-  const RobotClone({super.key});
-
+  const RobotClone({super.key, this.onPressed, this.selectedDrawerID});
+  final void Function(int)? onPressed;
+  final int? selectedDrawerID;
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -12,7 +13,12 @@ class RobotClone extends StatelessWidget {
         child: Container(
           width: 570.44 * size,
           height: 1310.10 * size,
-          decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.vertical(top: Radius.circular(8))),
+          decoration: BoxDecoration(
+            border: Border.all(width: 1, strokeAlign: BorderSide.strokeAlignCenter),
+            borderRadius: const BorderRadius.vertical(
+              top: Radius.circular(8),
+            ),
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
@@ -50,7 +56,7 @@ class RobotClone extends StatelessWidget {
                                 child: Container(
                                   width: 80 * size,
                                   height: 80 * size,
-                                  decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+                                  decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.black),
                                 ),
                               )
                             ],
@@ -72,12 +78,12 @@ class RobotClone extends StatelessWidget {
                             ),
                             height: (229.5 - 9.4 - 45.98) * size,
                             child: Container(
-                              color: Colors.white,
+                              color: Colors.blue,
                               margin: EdgeInsets.symmetric(vertical: 18.7 * size, horizontal: 19.7 * size),
                               child: Center(
-                                  child: Icon(
-                                Icons.landscape,
-                                size: 128 * size,
+                                  child: Image.asset(
+                                "assets/team.png",
+                                height: 120 * size,
                               )),
                             ),
                           )
@@ -87,11 +93,11 @@ class RobotClone extends StatelessWidget {
                   ],
                 ),
               ),
-              buildDrawer(size: size, height: 104.5 * size, color: Colors.green),
-              buildDrawer(size: size, height: 104.5 * size, color: Colors.green),
-              buildDrawer(size: size, height: 104.5 * size, color: Colors.transparent),
-              buildDrawer(size: size, height: 209 * size, color: Colors.red),
-              buildDrawer(size: size, height: 313.5 * size, color: Colors.transparent),
+              buildDrawer(id: 1, size: size, height: 104.5 * size, color: Colors.blue),
+              buildDrawer(id: 2, size: size, height: 104.5 * size, color: Colors.blue),
+              buildDrawer(id: 3, size: size, height: 104.5 * size, color: Colors.blue),
+              buildDrawer(id: 4, size: size, height: 209 * size, color: Colors.blue),
+              buildDrawer(id: 5, size: size, height: 313.5 * size, color: Colors.blue),
               SizedBox(
                 height: (283 / 2 - 43.6) * size,
                 width: 570.44 * size,
@@ -126,57 +132,76 @@ class RobotClone extends StatelessWidget {
     });
   }
 
-  Widget buildDrawer({required double size, required double height, required Color color}) {
+  Widget buildDrawer({required int id, required double size, required double height, required Color color}) {
     final double drawerWidth = 400 * size;
     final double topGap = 20 * size;
     final double bottomGap = 6.5 * size;
-    return Container(
-      decoration: BoxDecoration(border: Border.all(width: 0.5)),
-      height: height,
-      width: double.infinity,
-      child: Column(
-        children: [
-          SizedBox(
-            height: topGap,
-          ),
-          Expanded(
-            child: Container(
-              width: drawerWidth,
-              decoration: BoxDecoration(border: Border.all(width: 0.5), borderRadius: BorderRadius.circular(8)),
-              child: Stack(
-                alignment: Alignment.topCenter,
-                children: [
-                  Column(
-                    children: [
-                      SizedBox(
-                        height: 25 * size,
-                      ),
-                      buildGrip(size: size),
-                    ],
-                  ),
-                  Container(
-                    width: drawerWidth - 30,
-                    height: 2 * size,
-                    decoration: BoxDecoration(
-                      color: color,
-                      boxShadow: [
-                        BoxShadow(
-                          color: color, // Shadow color
-                          offset: const Offset(1, 1), // Changes position of shadow
-                          blurRadius: 3, // Changes size of shadow
-                          spreadRadius: 1, // Expands the shadow
+    final isSelected = selectedDrawerID == id;
+    return GestureDetector(
+      onTap: () => onPressed?.call(id),
+      child: Container(
+        decoration: BoxDecoration(border: Border.all(width: 0.5, strokeAlign: BorderSide.strokeAlignOutside)),
+        height: height,
+        width: double.infinity,
+        child: Column(
+          children: [
+            SizedBox(
+              height: topGap,
+            ),
+            Expanded(
+              child: Container(
+                width: drawerWidth,
+                decoration: BoxDecoration(
+                    border: Border.all(
+                      width: 0.5,
+                    ),
+                    color: Colors.white,
+                    boxShadow: isSelected
+                        ? const [
+                            BoxShadow(
+                              color: Colors.grey, // Shadow color
+                              offset: Offset(0, 0), // Changes position of shadow
+                              blurRadius: 5, // Changes size of shadow
+                              spreadRadius: 5, // Expands the shadow
+                            ),
+                          ]
+                        : null,
+                    borderRadius: BorderRadius.circular(8)),
+                child: Stack(
+                  alignment: Alignment.topCenter,
+                  children: [
+                    Column(
+                      children: [
+                        SizedBox(
+                          height: 25 * size,
                         ),
+                        buildGrip(size: size),
                       ],
                     ),
-                  ),
-                ],
+                    Container(
+                      width: drawerWidth - 30,
+                      height: 2 * size,
+                      decoration: BoxDecoration(
+                        color: color,
+                        boxShadow: [
+                          BoxShadow(
+                            color: color, // Shadow color
+                            offset: const Offset(1, 1), // Changes position of shadow
+                            blurRadius: 3, // Changes size of shadow
+                            spreadRadius: 1, // Expands the shadow
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
-          ),
-          SizedBox(
-            height: bottomGap,
-          )
-        ],
+            SizedBox(
+              height: bottomGap,
+            )
+          ],
+        ),
       ),
     );
   }
