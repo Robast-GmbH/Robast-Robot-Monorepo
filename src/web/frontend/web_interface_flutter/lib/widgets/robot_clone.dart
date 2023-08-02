@@ -5,131 +5,189 @@ class RobotClone extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: AspectRatio(
-        aspectRatio: 55 / 140,
-        child: Column(
-          children: [
-            Expanded(
-              flex: 4,
-              child: Container(
-                decoration: BoxDecoration(
-                  border: Border.all(width: 0.2),
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(8),
-                    topRight: Radius.circular(8),
-                  ),
-                ),
+    return LayoutBuilder(builder: (context, constraints) {
+      double size = constraints.maxHeight / 1350;
+      return Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          width: 570.44 * size,
+          height: 1310.10 * size,
+          decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.vertical(top: Radius.circular(8))),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Container(
+                width: (570.44 - 40.46 - 35.80) * size,
+                height: 229.50 * size,
                 child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Expanded(
+                    SizedBox(
+                      width: (237.23 - 40.46) * size,
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Expanded(
-                            child: SizedBox(),
+                          SizedBox(
+                            height: 19.8 * size,
                           ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Container(
-                                decoration: const BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: Colors.black,
-                                ),
+                          Container(
+                            width: 97 * size,
+                            height: 29.5 * size,
+                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: Colors.black),
+                          ),
+                          SizedBox(
+                            height: 40.54 * size,
+                          ),
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: (55.15 - 40.45) * size,
                               ),
-                            ),
-                          ),
+                              Container(
+                                padding: EdgeInsets.all(6 * size),
+                                width: 100 * size,
+                                height: 100 * size,
+                                decoration: BoxDecoration(border: Border.all(), shape: BoxShape.circle, color: Colors.grey),
+                                child: Container(
+                                  width: 80 * size,
+                                  height: 80 * size,
+                                  decoration: BoxDecoration(shape: BoxShape.circle, color: Colors.black),
+                                ),
+                              )
+                            ],
+                          )
                         ],
                       ),
                     ),
-                    Expanded(
-                      flex: 2,
-                      child: Container(
-                        margin: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          border: Border.all(width: 16),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: const Center(
-                            child: Icon(
-                          Icons.landscape,
-                          size: 64,
-                        )),
+                    SizedBox(
+                      width: (570.44 - 237.23 - 35.80) * size,
+                      child: Column(
+                        children: [
+                          SizedBox(
+                            height: 9.4 * size,
+                          ),
+                          Container(
+                            decoration: BoxDecoration(
+                              color: Colors.black,
+                              border: Border.all(),
+                            ),
+                            height: (229.5 - 9.4 - 45.98) * size,
+                            child: Container(
+                              color: Colors.white,
+                              margin: EdgeInsets.symmetric(vertical: 18.7 * size, horizontal: 19.7 * size),
+                              child: Center(
+                                  child: Icon(
+                                Icons.landscape,
+                                size: 128 * size,
+                              )),
+                            ),
+                          )
+                        ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-            ),
-            buildDrawer(flex: 2),
-            buildDrawer(flex: 2),
-            buildDrawer(flex: 2),
-            buildDrawer(flex: 4),
-            buildDrawer(flex: 6),
-            Container(
-              height: 2,
-              width: double.infinity,
-              decoration: BoxDecoration(border: Border(left: BorderSide(), right: BorderSide()), color: Colors.green),
-            ),
-            Expanded(
-              flex: 2,
-              child: Container(
+              buildDrawer(size: size, height: 104.5 * size, color: Colors.green),
+              buildDrawer(size: size, height: 104.5 * size, color: Colors.green),
+              buildDrawer(size: size, height: 104.5 * size, color: Colors.transparent),
+              buildDrawer(size: size, height: 209 * size, color: Colors.red),
+              buildDrawer(size: size, height: 313.5 * size, color: Colors.transparent),
+              SizedBox(
+                height: (283 / 2 - 43.6) * size,
+                width: 570.44 * size,
+                child: Center(
+                  child: Container(
+                    width: 100 * size,
+                    height: 25 * size,
+                    decoration: BoxDecoration(border: Border.all(width: 0.2), borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
+              ),
+              Container(
+                height: 38 * size,
+                width: 570.44 * size,
                 decoration: BoxDecoration(border: Border.all(width: 0.2)),
               ),
-            ),
-            Expanded(
-              child: Container(
-                decoration: BoxDecoration(border: Border.all(width: 0.2)),
+              SizedBox(
+                height: (283 / 2 - 43.6) * size,
+                width: 570.44 * size,
+                child: Center(
+                  child: Container(
+                    width: 150 * size,
+                    height: 60 * size,
+                    decoration: BoxDecoration(border: Border.all(width: 0.2), borderRadius: BorderRadius.circular(8)),
+                  ),
+                ),
               ),
-            ),
-            Expanded(
-              flex: 2,
-              child: Container(
-                decoration: BoxDecoration(border: Border.all(width: 0.2)),
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
+      );
+    });
+  }
+
+  Widget buildDrawer({required double size, required double height, required Color color}) {
+    final double drawerWidth = 400 * size;
+    final double topGap = 20 * size;
+    final double bottomGap = 6.5 * size;
+    return Container(
+      decoration: BoxDecoration(border: Border.all(width: 0.5)),
+      height: height,
+      width: double.infinity,
+      child: Column(
+        children: [
+          SizedBox(
+            height: topGap,
+          ),
+          Expanded(
+            child: Container(
+              width: drawerWidth,
+              decoration: BoxDecoration(border: Border.all(width: 0.5), borderRadius: BorderRadius.circular(8)),
+              child: Stack(
+                alignment: Alignment.topCenter,
+                children: [
+                  Column(
+                    children: [
+                      SizedBox(
+                        height: 25 * size,
+                      ),
+                      buildGrip(size: size),
+                    ],
+                  ),
+                  Container(
+                    width: drawerWidth - 30,
+                    height: 2 * size,
+                    decoration: BoxDecoration(
+                      color: color,
+                      boxShadow: [
+                        BoxShadow(
+                          color: color, // Shadow color
+                          offset: const Offset(1, 1), // Changes position of shadow
+                          blurRadius: 3, // Changes size of shadow
+                          spreadRadius: 1, // Expands the shadow
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          SizedBox(
+            height: bottomGap,
+          )
+        ],
       ),
     );
   }
 
-  Expanded buildDrawer({required int flex}) {
-    return Expanded(
-      flex: flex,
-      child: Container(
-        decoration: BoxDecoration(border: Border.all(width: 0.2)),
-        child: Container(
-          margin: const EdgeInsets.only(top: 16, left: 68, right: 68, bottom: 8),
-          decoration: BoxDecoration(
-            border: Border.all(),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: buildGrip(),
-        ),
-      ),
-    );
-  }
-
-  Column buildGrip() {
-    return Column(
-      children: [
-        const SizedBox(
-          height: 8,
-        ),
-        AspectRatio(
-          aspectRatio: 17,
-          child: Container(
-            margin: EdgeInsets.symmetric(horizontal: 8),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              border: Border.all(),
-            ),
-          ),
-        ),
-      ],
+  Widget buildGrip({required double size}) {
+    final double width = (400 - 2 * 15.51) * size;
+    final double height = 20.56 * size;
+    return Container(
+      width: width,
+      height: height,
+      decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.circular(8)),
     );
   }
 }
