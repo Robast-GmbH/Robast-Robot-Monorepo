@@ -1,9 +1,5 @@
 from typing import List
-
-# from fastapi.encoders import jsonable_encoder
-# from sqlalchemy.sql.functions import user
 from fastapi.middleware.cors import CORSMiddleware
-# from fastapi.responses import JSONResponse
 import json
 import yaml
 import uvicorn
@@ -11,9 +7,6 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 import requests
 import helper as templates
-
-
-
 import crud
 import models
 import schemas
@@ -42,7 +35,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # Dependency
 def get_db():
@@ -154,8 +146,25 @@ def set_robot(robot: schemas.Robot, db: Session = Depends(get_db)):
 
 @app.put("/robots/{robot_name}/move")
 def move_robot( robot_name: str, x: float, y: float, yaw: float, db: Session = Depends(get_db)):
-    #todo
-    return
+    db_robot= crud.get_robot(db=db, robot_name=robot_name)
+    if db_robot is None:
+        raise HTTPException(status_code=404, detail="robot not found")
+    robot= templates.json_robot()
+    robot["name"]= db_robot.robot_name
+    robot["fleet_name"]= db_robot.fleet_name
+
+    waypoint= templates.json_waypoint()
+    waypoint["pose.x"]=x
+    waypoint["pose.y"]=y
+    waypoint["pose.z"]=0
+    waypoint["orientation"]=yaw
+    
+    message={"robot":robot, "waypoint":waypoint}
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session()
+    answer  =sender.post(url= config["fleetmangement_address"]+"/move", json= json.dumps(message), headers= headers, verify=False)
+    return answer.status_code
+
 
 @app.get("/robots/{robot_name}/log", response_model = List[str])
 def get_log(robot_name: str, db: Session = Depends(get_db)):
@@ -196,7 +205,8 @@ def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depe
     drawer["fleet_name"]= db_robot.fleet_name
     message={"robot":robot, "drawer":drawer}
     headers =  {"Content-Type":"application/json"}
-    answer  =requests.post(url= "",json= json.dumps(message),headers= headers)
+    sender = requests.Session()
+    answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/open", json= json.dumps(message), headers= headers, verify=False)
     return answer.status_code
 
 # close_drawer
@@ -212,10 +222,9 @@ def close_drawer( robot_name: str, module: schemas.ModuleBase , db: Session = De
         drawer["fleet_name"]= drawer.drawer_id
         message={"robot":robot, "drawer":drawer}
         headers =  {"Content-Type":"application/json"}
-        answer  =requests.post(url= "",json= json.dumps(message),headers= headers)
+        sender = requests.Session()
+        answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/close", json= json.dumps(message),headers= headers)
         return answer.status_code
-
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port= config['restapi_port'])

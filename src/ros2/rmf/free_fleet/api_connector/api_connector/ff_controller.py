@@ -80,7 +80,7 @@ class free_fleet_controller:
             self.config["domain_id"],
             self.config["open_drawer_topic"],
             messages.FreeFleetData_OpenDrawerRequest,
-            open_drawer_request)
+            slide_drawer_request)
 
     def get_robot_states(self):
         return self.robot_states

@@ -32,8 +32,8 @@ class Task(Base):
     finished = Column(Boolean, default=False)
     target_id =Column(Integer, default=0)
     drawer_id= Column(Integer, default= 0)
-    robot_name= Column(String, default="rb0")
-    fleet_name= Column(String, default="ROBAST_1")
+    robot_name= Column(String, default="RB0")
+    fleet_name= Column(String, default="ROBAST")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", cascade="save-update")
 
@@ -48,8 +48,8 @@ class Module(Base):
 
 class Robot(Base):
     __tablename__ = "robot"
-    name= Column(String, primary_key=True)
-    fleet= Column(String)
+    robot_name= Column(String, primary_key=True)
+    fleet_name= Column(String)
     x_pose = Column(Float)
     y_pose = Column(Float)
     yaw_pose = Column(Float)

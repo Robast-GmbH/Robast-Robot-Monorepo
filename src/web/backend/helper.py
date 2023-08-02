@@ -48,3 +48,8 @@ def json_drawer():
 
 def json_robot():
               return { "fleet_name":"", "name":""}
+def json_waypoint():
+        return {  
+                  "pose":{ "x": 0, "y":0, "z": 0 },
+                  "orientation" :0
+                }
