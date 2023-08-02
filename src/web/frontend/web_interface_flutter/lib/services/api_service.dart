@@ -12,8 +12,7 @@ class APIService {
   static Future<int> postTask({
     required int ownerID,
     required int targetID,
-    required int moduleID,
-    required int drawerID,
+    required DrawerModule drawer,
     required double xPose,
     required double yPose,
     required double yawPose,
@@ -21,8 +20,8 @@ class APIService {
     final data = <String, dynamic>{
       "owner_id": ownerID,
       "target_id": targetID,
-      "module_id": moduleID,
-      "drawer_id": drawerID,
+      "module_id": drawer.moduleID,
+      "drawer_id": drawer.drawerID,
       "x_pose": xPose,
       "y_pose": yPose,
       "yaw_pose": yawPose

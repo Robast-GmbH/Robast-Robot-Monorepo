@@ -89,7 +89,7 @@ class _MapPageState extends State<MapPage> {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => TaskCreationPage(
+                builder: (context) => DrawerSelectionPage(
                   targetPosition: scalePoint(controller.position!, currentMapScale),
                 ),
               ),

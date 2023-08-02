@@ -22,7 +22,7 @@ class RobotClone extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Container(
+              SizedBox(
                 width: (570.44 - 40.46 - 35.80) * size,
                 height: 229.50 * size,
                 child: Row(
