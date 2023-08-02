@@ -32,7 +32,7 @@
                         "label": "build-ros-theron",
                         "detail": "Symlink Build for Ros-Theron.",
                         "type": "shell",
-                        "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip robast_map_update_module",
+                        "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip robast_map_update_module ndt_omp_ros2 graph_based_slam scanmatcher robast_nav_recoveries",
                         "problemMatcher": []
                 },
                 {
@@ -144,17 +144,6 @@
                         "type": "shell",
                         "label": "start rosboard",
                         "command": "source /workspace/install/setup.bash; ros2 run rosboard rosboard_node",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
-                        "label": "start tiplu_sim",
-                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py run_gzclient:='False'",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

@@ -2,26 +2,14 @@
 <robot name="rb_theron"
 	xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-
 	<!-- ***************** -->
 	<!-- Imported elements -->
 	<!-- ***************** -->
 
-	<!-- First we import all posible elements defined in the urdf.xacro files. All these elements are defined as macro:xacros -->
-
 	<!-- Import differential base elements -->
-	<xacro:include filename="$(find rb_theron_description)/urdf/bases/theron_base.urdf.xacro" />
-
-	<!-- Import wheels -->
+	<xacro:include filename="$(find rb_theron_description)/robots/rb_theron_base.urdf.xacro" />
 	<xacro:include filename="$(find rb_theron_description)/urdf/wheels/rubber_wheel_150.urdf.xacro" />
-
-	<!-- Import casters -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/wheels/castor.urdf.xacro" />
-
-	<!-- Import rocker bogie -->
-	<xacro:include filename="$(find rb_theron_description)/urdf/rocker/mcq_prototype_rocker.urdf.xacro" />
-
-	<!-- Import all available sensors -->
 	<xacro:include filename="$(find robotnik_sensors)/urdf/all_sensors.urdf.xacro" />
 
 	<!-- Import Gazebo Stuff -->
@@ -31,66 +19,36 @@
 	<!-- ***************** -->
 	<!-- Global parameters -->
 	<!-- ***************** -->
+
 	<xacro:property name="PI" value="3.1415926535897931"/>
-
-	<!-- Wheel parameters -->
-	<!-- x,y,z in translation from base_link to the center of the wheel -->
-	<xacro:property name="rocker_offset_x" value="0.1175" />
-	<xacro:property name="rocker_offset_y" value="0.1725" />
-	<xacro:property name="rocker_offset_z" value="0.0428" />
-
-	<!-- Castor paramters -->
-	<xacro:property name="caster_offset_x" value="-0.235" />
-	<xacro:property name="caster_offset_y" value="0.1725" />
-	<xacro:property name="caster_offset_z" value="0.0428" />
-
-
-	<xacro:property name="wheel_offset_z" value="0.015" />
-
-	<!-- Flag to select the high or low quality model -->
-	<xacro:property name="hq" value="false" />
-
 	<!-- Flag to determine if the base_footprint should be published or not -->
 	<xacro:property name="publish_bf" value="true"/>
 
 	<!-- This name should match the "-name" argument we need to declare when spawing the robot into ign gazebo -->
 	<xacro:property name="robot_name" value="rb_theron"/>
 
+	<!-- Wheel parameters -->
+	<!--xacro:property name="wheel_offset_x" value="0" />
+  <xacro:property name="wheel_offset_y" value="0.2516" />
+  <xacro:property name="wheel_offset_z" value="0.0" /-->
+
+	<!-- Flag to select the high or low quality model -->
+	<xacro:property name="hq" value="false" />
+
+	<xacro:arg name="prefix" default="robot_"/>
+	<!-- <xacro:arg name="gpu" default="true"/> -->
 
 	<!-- *************** -->
 	<!-- Robots Elements -->
 	<!-- *************** -->
 
-	<xacro:arg name="prefix" default=""/>
 	<xacro:arg name="topic_namespace" default=""/>
-	
+	<!-- base with wheels -->
+	<xacro:rb_theron_base prefix="$(arg prefix)" hq="${hq}" publish_bf="${publish_bf}" />
 
-	<!-- Here we create the robot elements using the xacro:macros imported at the beggining of this file -->
-	<!-- this property is for the chassis -->
-
-	<!-- rbogie base -->
-	<xacro:theron_base prefix="$(arg prefix)" publish_bf="${publish_bf}" hq="${hq}" />
-
-
+	<!-- Gazebo ros control pluggins -->
+	<!-- <xacro:ros_control/> -->
 	<xacro:gazebo_colors prefix="$(arg prefix)"/>
-
-	<!-- WHEELS -->
-	<xacro:rocker prefix="$(arg prefix)right" parent="$(arg prefix)base_link" reflect="true" hq="${hq}">
-		<origin xyz="${rocker_offset_x} -${rocker_offset_y} ${rocker_offset_z}" rpy="0 0 0"/>
-	</xacro:rocker>
-
-	<xacro:rocker prefix="$(arg prefix)left" parent="$(arg prefix)base_link" reflect="false" hq="${hq}">
-		<origin xyz="${rocker_offset_x} ${rocker_offset_y} ${rocker_offset_z}" rpy="0 0 0"/>
-	</xacro:rocker>
-
-	<xacro:caster prefix="$(arg prefix)left" parent="$(arg prefix)base_link" hq="${hq}">
-		<origin xyz="${caster_offset_x} ${caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
-	</xacro:caster>
-
-	<xacro:caster prefix="$(arg prefix)right" parent="$(arg prefix)base_link" hq="${hq}">
-		<origin xyz="${caster_offset_x} ${-caster_offset_y} ${caster_offset_z}" rpy="0 0 0"/>
-	</xacro:caster>
-
 
 	<!-- SENSORS  DEBUGG-->
 	<!-- TODO: Should be sensor_intel_d435, but this one isn't migrated to ros2 yet -->
@@ -102,11 +60,6 @@
 	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="$(arg topic_namespace)/back_realsense_camera" hq="${hq}">
 		<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
-
-  	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
-	<!--xacro:sensor_orbbec_astra prefix="$(arg prefix)front_rgbd_camera" parent="$(arg prefix)base_link" prefix_topic="front_rgbd_camera">
-		<origin xyz="0.3305 0.0 0.1898" rpy="0 0 0"/>
-	</xacro:sensor_orbbec_astra -->
 
 	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link" prefix_topic="$(arg topic_namespace)/imu">
 		<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
@@ -120,37 +73,43 @@
 		<origin xyz="0.214 0.0 0.275" rpy="-1.57079632679 0 -0.23"/>
 	</xacro:sensor_rs_lidar_16>-->
 
-	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser"  parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="$(arg topic_namespace)/top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
-            <origin xyz="0.28 -0.159 1.22" rpy="-1.570796326795 0 -1.570796326795"/>
-        </xacro:sensor_rs_bpearl>
+	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="$(arg topic_namespace)/top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
+		<origin xyz="0.3 -0.175 1.165" rpy="-1.570796326795 0 -1.570796326795"/>
+		<!-- positions of the b-pearl based on solid: xyz="0.333 -0.180 1.194" rpy="-1.570796326795 0 -1.570796326795" -->
+	</xacro:sensor_rs_bpearl>
 
 	<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="back_laser" min_angle="-1.8107619" max_angle="1.8107619">
 		<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
 	</xacro:sensor_sick_nanoscan3> -->
-	
-	<xacro:arg name="back_oak_d_camera_model"  default="OAK-D-POE" />
-    <xacro:arg name="back_oak_d_base_frame"    default="oak-d-s2-poe-base-frame" />
-    <xacro:arg name="back_oak_d_pos_x"     	   default="-0.3305" />
-    <xacro:arg name="back_oak_d_pos_y"         default="0.0" />
-    <xacro:arg name="back_oak_d_pos_z"         default="1.1468" />
-    <xacro:arg name="back_oak_d_roll"          default="0.0" />
-    <xacro:arg name="back_oak_d_pitch"         default="0.0" />
-    <xacro:arg name="back_oak_d_yaw"           default="3.1416" />
-    <xacro:depthai_camera prefix="$(arg prefix)back_top_oak_d_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="back_top_oak_d_camera" camera_model = "$(arg back_oak_d_camera_model)" base_frame = "$(arg back_oak_d_base_frame)" cam_pos_x = "$(arg back_oak_d_pos_x)" cam_pos_y = "$(arg back_oak_d_pos_y)" cam_pos_z = "$(arg back_oak_d_pos_z)" cam_roll = "$(arg back_oak_d_roll)" cam_pitch = "$(arg back_oak_d_pitch)" cam_yaw = "$(arg back_oak_d_yaw)"/>
-	
-	<xacro:arg name="front_oak_d_camera_model"  default="OAK-D-S2" />
-    <xacro:arg name="front_oak_d_base_frame"    default="oak-d-s2-usb-base--frame" />
-    <xacro:arg name="front_oak_d_pos_x"         default="0.3305" />
-    <xacro:arg name="front_oak_d_pos_y"         default="0.0" />
-    <xacro:arg name="front_oak_d_pos_z"         default="1.1468" />
-    <xacro:arg name="front_oak_d_roll"          default="0.0" />
-    <xacro:arg name="front_oak_d_pitch"         default="0.0" />
-    <xacro:arg name="front_oak_d_yaw"           default="0.0" />
-	<xacro:depthai_camera prefix="$(arg prefix)front_top_oak_d_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="front_top_oak_d_camera" camera_model = "$(arg front_oak_d_camera_model)" base_frame = "$(arg front_oak_d_base_frame)" cam_pos_x = "$(arg front_oak_d_pos_x)" cam_pos_y = "$(arg front_oak_d_pos_y)" cam_pos_z = "$(arg front_oak_d_pos_z)" cam_roll = "$(arg front_oak_d_roll)" cam_pitch = "$(arg front_oak_d_pitch)" cam_yaw = "$(arg front_oak_d_yaw)"/>
+	<gazebo>
+		<plugin name="gz::sim::systems::Sensors" filename="libgz-sim-sensors-system.so">
+			<render_engine>ogre2</render_engine>
+		</plugin>
+	</gazebo>
+
+	<xacro:arg name="back_oak_d_camera_model" default="OAK-D-POE" />
+	<xacro:arg name="back_oak_d_base_frame" default="oak-d-s2-poe-base-frame" />
+	<xacro:arg name="back_oak_d_pos_x" default="-0.3305" />
+	<xacro:arg name="back_oak_d_pos_y" default="0.0" />
+	<xacro:arg name="back_oak_d_pos_z" default="1.1468" />
+	<xacro:arg name="back_oak_d_roll" default="0.0" />
+	<xacro:arg name="back_oak_d_pitch" default="0.0" />
+	<xacro:arg name="back_oak_d_yaw" default="3.1416" />
+	<xacro:depthai_camera prefix="$(arg prefix)back_top_oak_d_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="$(arg topic_namespace)back_top_oak_d_camera" camera_model = "$(arg back_oak_d_camera_model)" base_frame = "$(arg back_oak_d_base_frame)" cam_pos_x = "$(arg back_oak_d_pos_x)" cam_pos_y = "$(arg back_oak_d_pos_y)" cam_pos_z = "$(arg back_oak_d_pos_z)" cam_roll = "$(arg back_oak_d_roll)" cam_pitch = "$(arg back_oak_d_pitch)" cam_yaw = "$(arg back_oak_d_yaw)"/>
+
+	<xacro:arg name="front_oak_d_camera_model" default="OAK-D-S2" />
+	<xacro:arg name="front_oak_d_base_frame" default="oak-d-s2-usb-base--frame" />
+	<xacro:arg name="front_oak_d_pos_x" default="0.317" />
+	<xacro:arg name="front_oak_d_pos_y" default="-0.197" />
+	<xacro:arg name="front_oak_d_pos_z" default="1.3044" />
+	<xacro:arg name="front_oak_d_roll" default="0.0" />
+	<xacro:arg name="front_oak_d_pitch" default="0.0" />
+	<xacro:arg name="front_oak_d_yaw" default="0.0" />
+	<xacro:depthai_camera prefix="$(arg prefix)front_top_oak_d_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="$(arg topic_namespace)/front_top_oak_d_camera" camera_model = "$(arg front_oak_d_camera_model)" base_frame = "$(arg front_oak_d_base_frame)" cam_pos_x = "$(arg front_oak_d_pos_x)" cam_pos_y = "$(arg front_oak_d_pos_y)" cam_pos_z = "$(arg front_oak_d_pos_z)" cam_roll = "$(arg front_oak_d_roll)" cam_pitch = "$(arg front_oak_d_pitch)" cam_yaw = "$(arg front_oak_d_yaw)"/>
 
 	<!-- ROBAST Module Cage -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
-	<xacro:module_cage prefix="$(arg prefix)" parent="$(arg prefix)base_link" hq="${hq}" >
+	<xacro:module_cage prefix="$(arg prefix)" parent="$(arg prefix)base_link" hq="${hq}">
 		<origin xyz="-0.15 0.0 0.725" rpy="0 0 0"/>
 	</xacro:module_cage>
 
@@ -174,7 +133,7 @@
 
 	<!-- ROBAST Door Opening Mechanism -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
-	<xacro:door_opening_mechanism prefix="$(arg prefix)" parent="$(arg prefix)base_link" hq="${hq}" >
+	<xacro:door_opening_mechanism prefix="$(arg prefix)" parent="$(arg prefix)base_link" hq="${hq}">
 		<origin xyz="-0.3 0 0.225" rpy="0 0 0"/>
 	</xacro:door_opening_mechanism>
 
