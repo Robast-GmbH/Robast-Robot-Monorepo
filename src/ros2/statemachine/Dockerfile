@@ -1,4 +1,7 @@
-FROM ros:humble-ros-base-jammy
+FROM ghcr.io/robast-gmbh/monorepo/communication_interfaces  AS communication_interfaces
+FROM ghcr.io/robast-gmbh/monorepo/error_handling  AS error_utils
+
+FROM ros:humble-ros-base-jammy as base
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
@@ -37,3 +40,25 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
+
+FROM ros:humble-ros-base-jammy as build
+# hier will ich jetzt den code bauen aka copy + build in ros directory
+COPY --from=base / /
+COPY --from=communication_interfaces /communication_interfaces ws/src/communication_interfaces
+COPY --from=error_utils /error_utils ws/src/error_utils
+COPY . /ws/src/statemachine
+
+WORKDIR /ws
+
+RUN rosdep update && \
+  rosdep install --from-paths /ws/src --ignore-src -r -y && \
+  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  colcon build --install-base /opt/ros/${ROS_DISTRO}/
+
+
+FROM ros:humble-ros-base-jammy as debug
+# Stage debug
+# hier will ich jetzt den code haben, rviz und ros2bag installen
+
+FROM ros:humble-ros-base-jammy as production
+# hier muss jetzt der gebaute code sein und ein skript o.Ä. um den code auch direkt auszuführen.
