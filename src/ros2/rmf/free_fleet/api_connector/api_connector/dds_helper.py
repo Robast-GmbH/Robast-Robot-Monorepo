@@ -5,6 +5,7 @@ from cyclonedds.core import Listener
 from cyclonedds.pub import DataWriter
 from threading import Thread
 
+#ToDo @Torben: Test the Fastdds fix  when dds changed
 # import fastdds
 
 
@@ -19,7 +20,7 @@ def cyclonedds_publish(dds_domain_id, message_path, message_typ, message):
     writer = DataWriter(participant, topic, listener=listener)
     writer.write(message)
 
-
+#ToDo @Torben: Test the Fastdds fix  when dds changed
 # def fastdds_publish(message, topic_name, topic_typ, dds_domain_id ):
 #     factory = fastdds.DomainParticipantFactory.get_instance()
 #     participant_qos = fastdds.DomainParticipantQos()
@@ -69,7 +70,7 @@ def get_status( dds_domain_id, topic_name, topic_typ, function):
 
     for msg in reader.take_iter():
         function(msg)
-
+#ToDo @Torben: Test the Fastdds fix  when dds changed
 #topic_data_type = HelloWorld.HelloWorldPubSubType()
 #topic_data_type.setName("HelloWorld")
 #topic_typ =HelloWorld.HelloWorld()
