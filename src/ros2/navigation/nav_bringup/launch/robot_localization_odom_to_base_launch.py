@@ -17,45 +17,81 @@ def generate_launch_description():
             print(environment_yaml)
         except yaml.YAMLError as exc:
             print(exc)
+            
+    namespace = LaunchConfiguration('namespace')
+    use_sim_time = LaunchConfiguration('use_sim_time')
+    params_file = LaunchConfiguration('params_file')
+    
+    
+    declare_namespace_cmd = DeclareLaunchArgument(
+        'namespace',
+        default_value='',
+        description='Top-level namespace')
 
-    config_directory = environment_yaml["config_directory"]
-
-    robot_localization_params_yaml = os.path.join(
-        get_package_share_directory("nav_bringup"),
-        config_directory,
-        "localization",
-        "robot_localization_ekf_odom_to_base.yaml",
+    declare_use_sim_time_cmd = DeclareLaunchArgument(
+        'use_sim_time',
+        default_value="false",
+        description='Use simulation (Gazebo) clock if true')
+    
+    declare_params_file_cmd = DeclareLaunchArgument(
+        "params_file",
+        default_value=os.path.join(
+            get_package_share_directory("nav_bringup"),
+            "config",
+            "localization",
+            "robot_localization_ekf_odom_to_base.yaml",
+        ),
+        description="Path to the localization config file",
     )
 
-    # Please mind:
-    # Because we have config files for simulation and real life we set use_sim_time directly in the config files
+    
+    if environment_yaml["is_simulation"]:
+        #TODO @all check how to rewrite a matrix parameter. In this case odom0
+        use_sim_time_default = "true"
+        param_substitutions = {
+            'use_sim_time': use_sim_time_default,
+            "odom_frame": "odom",
+            "base_link_frame":"base_footprint",
+            "world_frame":"odom",
+            "odom0": "odom",
+            "imu0": "imu/data",
+            "odom0_differential": "true",
+            "odom0_relative": "false"
+        }
+        sim_params = os.path.join(
+            get_package_share_directory("nav_bringup"),
+            "config_simulation",
+            "localization",
+            "robot_localization_ekf_odom_to_base.yaml",
+        ),
+        configured_params = RewrittenYaml(
+            source_file=sim_params,
+            root_key=namespace,
+            param_rewrites=param_substitutions,
+            convert_types=True)
+    else:
+        param_substitutions = {
+            'use_sim_time': use_sim_time,
+            "odom_frame": "robot_odom",
+            "base_link_frame":"robot_base_footprint",
+            "world_frame":"robot_odom",
+            "odom0": "/robot/robotnik_base_control/odom",
+            "imu0": "/robot/vectornav/imu/data"        
+        }
+        configured_params = RewrittenYaml(
+            source_file=params_file,
+            root_key=namespace,
+            param_rewrites=param_substitutions,
+            convert_types=True)
 
-    # namespace = LaunchConfiguration('namespace')
-    # use_sim_time = LaunchConfiguration('use_sim_time')
-    # declare_namespace_cmd = DeclareLaunchArgument(
-    #     'namespace',
-    #     default_value='',
-    #     description='Top-level namespace'
-    # )
-    # declare_use_sim_time_cmd = DeclareLaunchArgument(
-    #     'use_sim_time',
-    #     default_value='true',
-    #     description='Use simulation (Gazebo) clock if true')
-    # param_substitutions = {
-    #     'use_sim_time': use_sim_time
-    # }
-    # configured_params = RewrittenYaml(
-    #     source_file=robot_localization_params_yaml,
-    #     root_key=namespace,
-    #     param_rewrites=param_substitutions,
-    #     convert_types=True)
 
-    start_robot_localization_cmd = Node(
+
+    robot_localization_node = Node(
         package="robot_localization",
         executable="ekf_node",
         name="ekf_filter_node",
         output="screen",
-        parameters=[robot_localization_params_yaml],
+        parameters=[configured_params],
     )
 
     ld = LaunchDescription()
@@ -63,9 +99,12 @@ def generate_launch_description():
     # Set env var to print messages to stdout immediately
     ld.add_action(SetEnvironmentVariable("RCUTILS_LOGGING_BUFFERED_STREAM", "1"))
 
-    # ld.add_action(declare_namespace_cmd)
-    # ld.add_action(declare_use_sim_time_cmd)
+    # Declare the launch options
+    ld.add_action(declare_namespace_cmd)
+    ld.add_action(declare_use_sim_time_cmd)
+    ld.add_action(declare_params_file_cmd)
 
-    ld.add_action(start_robot_localization_cmd)
+    # Add the actions to launch all of the navigation nodes
+    ld.add_action(robot_localization_node)
 
     return ld
