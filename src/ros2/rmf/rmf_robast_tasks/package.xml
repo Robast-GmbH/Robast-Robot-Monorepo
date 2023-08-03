@@ -6,10 +6,12 @@
   <description>TODO: Package description</description>
   <maintainer email="t.zurhelle@robast.de">robast</maintainer>
   <license>Apache-2.0</license>
-
+  
   <depend>rmf_fleet_msgs</depend>
   <depend>rmf_task_msgs</depend>
-
+  <depend>rmf_dispenser_msgs</depend>
+  <depend>rmf_lift_msgs</depend>
+  
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
   <test_depend>ament_pep257</test_depend>
