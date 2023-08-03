@@ -53,9 +53,9 @@ RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.
 
 
 WORKDIR /ws
-RUN mv /tmp/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/src/ros2/error_handling mv /ws/src/ros2/error_handling \
-  && mv /tmp/src/ros2/dds_configs /robast/dds_configs
+RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
+  && mv /tmp/Monorepo/src/ros2/error_handling /ws/src/ros2/error_handling \
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
