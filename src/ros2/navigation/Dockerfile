@@ -19,8 +19,6 @@ ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
 ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/DDS_config.xml
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
 
@@ -99,7 +97,7 @@ RUN apt-get update && apt-get upgrade -y
 # COPY "/entrypoint.sh" "/entrypoint.sh"
 #ENTRYPOINT ["/entrypoint.sh"]
 # dds setup / configuration
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml

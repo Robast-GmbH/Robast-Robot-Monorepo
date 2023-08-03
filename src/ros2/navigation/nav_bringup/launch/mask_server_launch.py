@@ -25,12 +25,6 @@ def generate_launch_description():
     costmap_filters_dir = get_package_share_directory("nav_bringup")
 
     if is_simulation:
-        fast_mask_params_yaml = os.path.join(
-            costmap_filters_dir, "masks", "6OG_sim", "fast_lane_params.yaml"
-        )
-        fast_mask_file = os.path.join(
-            costmap_filters_dir, "masks", "6OG_sim", "fast_lane.yaml"
-        )
         no_go_mask_params_yaml = os.path.join(
             costmap_filters_dir, "masks", "6OG_sim", "no_go_params.yaml"
         )
@@ -38,7 +32,12 @@ def generate_launch_description():
             costmap_filters_dir, "masks", "6OG_sim", "no_go.yaml"
         )
     else:
-        return #TODO Tobi add rl data
+        no_go_mask_params_yaml = os.path.join(
+            costmap_filters_dir, "masks", "RL_Tiplu", "keepout_params.yaml"
+        )
+        no_go_mask_file_dir = os.path.join(
+            costmap_filters_dir, "masks", "RL_Tiplu", "keepout_mask.yaml"
+        )
 
     # Create our own temporary YAML files that include substitutions
     lifecycle_nodes = ["filter_mask_server", "costmap_filter_info_server"]
