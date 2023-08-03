@@ -13,29 +13,11 @@ def generate_launch_description():
         default_value=["rmf_robast"],
         description="Name of the map package",
     )
-    map_name = launch.actions.DeclareLaunchArgument(
-        "map_name", description="Name of the rmf_demos map to simulate"
-    )
 
     use_crowdsim = launch.actions.DeclareLaunchArgument(
         "use_crowdsim",
         default_value=["false"],
         description="Use Crowdsim to simulate crowds",
-    )
-
-    gazebo_version = launch.actions.DeclareLaunchArgument(
-        "gazebo_version", default_value=["7"], description="Version of Gazebo to use"
-    )
-    world_path = launch.actions.SetLaunchConfiguration(
-        "world_path",
-        [
-            FindPackageShare(launch.substitutions.LaunchConfiguration("map_package")),
-            "/maps/",
-            launch.substitutions.LaunchConfiguration("map_name"),
-            "_ign/",
-            launch.substitutions.LaunchConfiguration("map_name"),
-            ".world",
-        ],
     )
 
     plugin_path = launch.actions.SetLaunchConfiguration(
@@ -56,8 +38,8 @@ def generate_launch_description():
     world_model = LaunchConfiguration("world_model")
     declare_world_model_cmd = DeclareLaunchArgument(
         "world_model",
-        default_value=os.path.join(
-            get_package_share_directory("rmf_robast_demo"), "maps", "6og_ign", "6og" + ".world"
+         default_value=os.path.join(
+            get_package_share_directory("tiplu_world"), "worlds", "6OG" + ".sdf"
         ),
         description="path to the world model",
     )
@@ -79,10 +61,7 @@ def generate_launch_description():
     return launch.LaunchDescription(
         [
             map_package,
-            map_name,
             use_crowdsim,
-            gazebo_version,
-            world_path,
             declare_robot_model_cmd,
             declare_world_model_cmd,
             plugin_path,

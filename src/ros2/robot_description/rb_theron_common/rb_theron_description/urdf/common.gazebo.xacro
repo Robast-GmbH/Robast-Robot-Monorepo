@@ -2,7 +2,7 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <!-- ROS CONTROL GAZEBO PLUGIN -->
-    <xacro:macro name="ros_control" params="prefix publish_bf" namespace>
+    <xacro:macro name="ros_control" params="prefix publish_bf namespace" >
         <gazebo>
             <!-- <plugin filename="libgazebo_ros2_control.so" name="gazebo_ros2_control">
 				<parameters>$(find rb_theron_description)/config/rb_theron_controller.yaml</parameters>

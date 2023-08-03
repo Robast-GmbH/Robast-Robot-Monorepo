@@ -26,7 +26,7 @@
 
 	<!-- This name should match the "-name" argument we need to declare when spawing the robot into ign gazebo -->
 	<xacro:property name="robot_name" value="rb_theron"/>
-
+	<xacro:arg name="topic_namespace" default=""/>
 	<!-- Wheel parameters -->
 	<!--xacro:property name="wheel_offset_x" value="0" />
   <xacro:property name="wheel_offset_y" value="0.2516" />
@@ -42,7 +42,6 @@
 	<!-- Robots Elements -->
 	<!-- *************** -->
 
-	<xacro:arg name="topic_namespace" default=""/>
 	<!-- base with wheels -->
 	<xacro:rb_theron_base prefix="$(arg prefix)" hq="${hq}" publish_bf="${publish_bf}" />
 
@@ -61,15 +60,15 @@
 		<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
 
-	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link" prefix_topic="$(arg topic_namespace)/imu">
+	<xacro:sensor_imu_hector prefix="$(arg prefix)imu"  prefix_topic="$(arg topic_namespace)/imu" parent="$(arg prefix)base_link">
 		<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
 	</xacro:sensor_imu_hector>
 
 	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="$(arg topic_namespace)/front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619" gpu="true">
 		<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
-	</xacro:sensor_sick_nanoscan3>
+	</xacro:sensor_sick_nanoscan3> 
 
-	<!--<xacro:sensor_rs_lidar_16 prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" prefix_topic="top_laser" min_angle="-3.1416" max_angle="3.1416">
+	<!--<xacro:sensor_rs_lidar_16 prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" prefix_topic="$(arg topic_namespace)/top_laser" min_angle="-3.1416" max_angle="3.1416">
 		<origin xyz="0.214 0.0 0.275" rpy="-1.57079632679 0 -0.23"/>
 	</xacro:sensor_rs_lidar_16>-->
 
@@ -78,14 +77,9 @@
 		<!-- positions of the b-pearl based on solid: xyz="0.333 -0.180 1.194" rpy="-1.570796326795 0 -1.570796326795" -->
 	</xacro:sensor_rs_bpearl>
 
-	<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="back_laser" min_angle="-1.8107619" max_angle="1.8107619">
+	<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="$(arg topic_namespace)/back_laser" min_angle="-1.8107619" max_angle="1.8107619">
 		<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
 	</xacro:sensor_sick_nanoscan3> -->
-	<gazebo>
-		<plugin name="gz::sim::systems::Sensors" filename="libgz-sim-sensors-system.so">
-			<render_engine>ogre2</render_engine>
-		</plugin>
-	</gazebo>
 
 	<xacro:arg name="back_oak_d_camera_model" default="OAK-D-POE" />
 	<xacro:arg name="back_oak_d_base_frame" default="oak-d-s2-poe-base-frame" />
@@ -95,7 +89,7 @@
 	<xacro:arg name="back_oak_d_roll" default="0.0" />
 	<xacro:arg name="back_oak_d_pitch" default="0.0" />
 	<xacro:arg name="back_oak_d_yaw" default="3.1416" />
-	<xacro:depthai_camera prefix="$(arg prefix)back_top_oak_d_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="$(arg topic_namespace)back_top_oak_d_camera" camera_model = "$(arg back_oak_d_camera_model)" base_frame = "$(arg back_oak_d_base_frame)" cam_pos_x = "$(arg back_oak_d_pos_x)" cam_pos_y = "$(arg back_oak_d_pos_y)" cam_pos_z = "$(arg back_oak_d_pos_z)" cam_roll = "$(arg back_oak_d_roll)" cam_pitch = "$(arg back_oak_d_pitch)" cam_yaw = "$(arg back_oak_d_yaw)"/>
+	<xacro:depthai_camera prefix="$(arg prefix)back_top_oak_d_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="$(arg topic_namespace)/back_top_oak_d_camera" camera_model = "$(arg back_oak_d_camera_model)" base_frame = "$(arg back_oak_d_base_frame)" cam_pos_x = "$(arg back_oak_d_pos_x)" cam_pos_y = "$(arg back_oak_d_pos_y)" cam_pos_z = "$(arg back_oak_d_pos_z)" cam_roll = "$(arg back_oak_d_roll)" cam_pitch = "$(arg back_oak_d_pitch)" cam_yaw = "$(arg back_oak_d_yaw)"/>
 
 	<xacro:arg name="front_oak_d_camera_model" default="OAK-D-S2" />
 	<xacro:arg name="front_oak_d_base_frame" default="oak-d-s2-usb-base--frame" />
@@ -138,6 +132,6 @@
 	</xacro:door_opening_mechanism>
 
 	<!-- Gazebo ros control pluggins -->
-	<xacro:ros_control prefix="$(arg prefix)" publish_bf="${publish_bf}" namespace= "$(arg topic_namespace)" />
-	
+	<xacro:ros_control prefix="$(arg prefix)" publish_bf="${publish_bf}" namespace="$(arg topic_namespace)"/>
+
 </robot>
