@@ -38,6 +38,7 @@ ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
+############################## Build ##################################
 ARG GIT_BRANCH=main
 FROM ros:humble-ros-base-jammy as build
 # hier will ich jetzt den code bauen aka copy + build in ros directory
@@ -57,13 +58,31 @@ RUN rosdep update && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/
 
-
+############################## Production ##################################
 FROM ros:humble-ros-base-jammy as production
 # hier muss jetzt der gebaute code sein und ein skript o.Ä. um den code auch direkt auszuführen.
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
+ENV ROS_DOMAIN_ID=0
+# dds setup / configuration
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
+
+############################## DEBUG ##################################
 FROM ros:humble-ros-base-jammy as debug
+
+COPY --from=production / /
+
+ENV ROS_DOMAIN_ID=0
+# dds setup / configuration
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
+# rmw_cyclonedds_cpp #rmw_fastrtps_cpp
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
+
+# RUN apt insstall
 # Stage debug
 # hier will ich jetzt den code haben, rviz und ros2bag installen
