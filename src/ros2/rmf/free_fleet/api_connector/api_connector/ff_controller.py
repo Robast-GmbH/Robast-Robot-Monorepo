@@ -74,12 +74,11 @@ class free_fleet_controller:
             drawer_id,
             e_drawer,
             open)
-
         dds_helper.dds_publish(
             self.config["dds"],
             self.config["domain_id"],
-            self.config["open_drawer_topic"],
-            messages.FreeFleetData_OpenDrawerRequest,
+            self.config["slide_drawer_request_topic"],
+            messages.FreeFleetData_SlideDrawerRequest,
             slide_drawer_request)
 
     def get_robot_states(self):

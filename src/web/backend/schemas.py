@@ -8,9 +8,11 @@ class TaskTypes(str, Enum):
     Move = "Move"
     Drawer = "Drawer"
 
-class DrawerTypes(str, Enum):
+class DrawerSlideTypes(str, Enum):
     Manual = "Manual"
     Electrical = "Electrical"
+
+
 
 #Task
 class TaskBase(BaseModel):
@@ -56,7 +58,8 @@ class ModuleBase(BaseModel):
     drawer_id:int
   
 class Module(ModuleBase):
-    type: DrawerTypes
+    type: DrawerSlideTypes
+    size: int
     robot_name: str
     
     class Config:

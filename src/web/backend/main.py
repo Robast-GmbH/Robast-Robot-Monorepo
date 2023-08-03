@@ -121,8 +121,8 @@ def abort_task(task_id: int, db: Session = Depends(get_db)):
 @app.get("/robots", response_model =List[schemas.Robot])
 def get_robots_status(db: Session = Depends(get_db)):
     db_robots = crud.get_robots(db=db)
-    if db_robots is None:
-        return []
+    # if db_robots is None:
+    #     return []
     return db_robots
 
 @app.get("/robots/{robot_name}", response_model = schemas.Robot)
@@ -172,14 +172,14 @@ def get_log(robot_name: str, db: Session = Depends(get_db)):
     return None
 
 #Module
-@app.get("/robots/{robot_name}/modules/", response_model = List[schemas.ModuleBase])
+@app.get("/robots/{robot_name}/modules/", response_model = List[schemas.Module])
 def get_modules(robot_name :str, db: Session = Depends(get_db)):
-    return crud.get_drawers(robot_name)
+    return crud.get_modules(db=db, robot_name=robot_name)
 
 # get_module_info
-@app.get("/robots/{robot_name}/modules/{module_id}", response_model = schemas.ModuleBase)
+@app.get("/robots/{robot_name}/modules/{module_id}", response_model = schemas.Module)
 def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
-    return crud.get_drawer(robot_name, module_id)
+    return crud.get_drawer(db=db, robot_name=robot_name, module_id= module_id)
 
 #set_drawer
 @app.post("/robots/modules/",)

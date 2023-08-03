@@ -16,8 +16,16 @@ def init(db: Session):
                 addUser( "Torben", "Torben Zurhelle", "Robast2022HH", True, db )
                 addUser( "Tobias", "Tobias Alscher", "Robast2022HH", True, db )
                 addUser( "Jacob", "Jacob Ritterbach", "Robast2022HH", True, db )
+                
+                addRobot("RB0", "ROBAST", 0, 0, 0, db)
+                addDrawer("RB0", 1, 1, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 2, 1, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 3, 1, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 4, 1, models.DrawerSlideTypes.Manual, 20, db)
+                addDrawer("RB0", 5, 1, models.DrawerSlideTypes.Manual, 30, db)
 
         return
+
 
 def addUser( name: str, full_name:str, password:str, admin:bool, db:Session):
         db_user = models.User(email=name+"@Robast.de", hashed_password=password,admin=admin ,name= name, full_name= full_name)
@@ -29,8 +37,16 @@ def addUser( name: str, full_name:str, password:str, admin:bool, db:Session):
 def hasUser (db:Session):
       return db.query(func.count(models.User.id)).scalar() > 0
 
-def addDrawer( content: str, drawer_controller_id:int, empty:bool, db:Session):
-        db_drawer = models.Drawer( drawer_controller_id=drawer_controller_id, content=content, empty=empty)
+
+def addRobot(robot_name:str, fleet_name:str, x:float, y:float, yaw:float, db:Session):
+        db_robot = models.Robot(robot_name= robot_name, fleet_name=fleet_name, x_pose=x, y_pose=y, yaw_pose=yaw, task_id=0)
+        db.add(db_robot)
+        db.commit()
+        db.refresh(db_robot)
+        return
+
+def addDrawer( robot_name:str, module_id:int, drawer_id:int, type:models.DrawerSlideTypes, size:int, db:Session):
+        db_drawer = models.Module(drawer_id= drawer_id, id= module_id, type= type, size= size, robot_name= robot_name, )
         db.add(db_drawer)
         db.commit()
         db.refresh(db_drawer)

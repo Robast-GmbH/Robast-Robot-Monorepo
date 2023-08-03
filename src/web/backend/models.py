@@ -5,7 +5,7 @@ from xmlrpc.client import boolean
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, MetaData, Enum, Float, tuple_
 from sqlalchemy.orm import relationship
 
-from schemas import TaskTypes, DrawerTypes
+from schemas import TaskTypes, DrawerSlideTypes
 from database import Base
 
 
@@ -42,9 +42,10 @@ class Module(Base):
     __tablename__ = "module"
     id = Column(Integer, primary_key=True)
     drawer_id= Column(Integer)
-    type= Column(Enum(DrawerTypes), index=True)
+    type= Column(Enum(DrawerSlideTypes), index=True)
+    size= Column(Integer)
     robot_name= Column(String)
-    fleet_name= Column(String)
+    
 
 class Robot(Base):
     __tablename__ = "robot"

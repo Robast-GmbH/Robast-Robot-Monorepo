@@ -45,7 +45,7 @@ class RestInterface():
                 drawer.is_edrawer,
                 True
                 )
-            return
+            return "done"
         @self.app.post("/drawer/close")
         def close_drawer(drawer: Drawer, robot: Robot):
             print("/drawer/open was called")
@@ -54,6 +54,7 @@ class RestInterface():
                 robot.name,
                 drawer.module_id,
                 drawer.id,
+                drawer.is_edrawer,
                 False
                 )
             return
