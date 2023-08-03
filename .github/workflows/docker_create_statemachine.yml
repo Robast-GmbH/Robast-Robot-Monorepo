@@ -6,9 +6,9 @@ on:
     - cron: '0 0 * * 1'
   push:
     branches:
-        - dev/RE-1619
-  # paths:
-  #     - src/ros2/statemachine/Dockerfile
+        - main
+    paths:
+        - src/ros2/statemachine/Dockerfile
 
 
 jobs:
