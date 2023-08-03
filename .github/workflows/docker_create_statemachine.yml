@@ -39,6 +39,7 @@ jobs:
       with:
         context: src/ros2/${{ env.Project-Name }}/
         target: devel
+        build-args: GIT_TOKEN=${{ secrets.GITHUB_TOKEN }}
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
@@ -48,6 +49,7 @@ jobs:
       with:
         context: src/ros2/${{ env.Project-Name }}/
         target: release
+        build-args: GIT_TOKEN=${{ secrets.GITHUB_TOKEN }}
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
