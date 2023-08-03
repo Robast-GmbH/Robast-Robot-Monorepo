@@ -7,8 +7,8 @@ on:
   push:
     branches:
         - dev/RE-1619
-    paths:
-        - src/ros2/statemachine/Dockerfile
+  # paths:
+  #     - src/ros2/statemachine/Dockerfile
 
 
 jobs:
