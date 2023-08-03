@@ -39,14 +39,18 @@ ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
 ############################## Build ##################################
-ARG GIT_BRANCH=main
 FROM ros:humble-ros-base-jammy as build
+ARG GIT_TOKEN
+ARG GIT_BRANCH=main
 # hier will ich jetzt den code bauen aka copy + build in ros directory
 COPY --from=base / /
 COPY . /ws/src/statemachine
+RUN apt-get update && apt-get install -y git
+
 
 WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH git@github.com:Robast-GmbH/Monorepo.git
+RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+
 
 WORKDIR /ws
 RUN mv /tmp/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
