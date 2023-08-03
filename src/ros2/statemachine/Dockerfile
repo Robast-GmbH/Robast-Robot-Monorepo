@@ -1,4 +1,4 @@
-FROM ros:humble-ros-base-jammy as base
+FROM ros:humble-ros-base-jammy as devel
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
@@ -42,8 +42,7 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 FROM ros:humble-ros-base-jammy as build
 ARG GIT_TOKEN
 ARG GIT_BRANCH=main
-# hier will ich jetzt den code bauen aka copy + build in ros directory
-COPY --from=base / /
+COPY --from=devel / /
 COPY . /ws/src/statemachine
 RUN apt-get update && apt-get install -y git
 
@@ -64,7 +63,6 @@ RUN rosdep update && \
 
 ############################## Production ##################################
 FROM ros:humble-ros-base-jammy as production
-# hier muss jetzt der gebaute code sein und ein skript o.Ä. um den code auch direkt auszuführen.
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
