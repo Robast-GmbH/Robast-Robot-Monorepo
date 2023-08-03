@@ -67,11 +67,19 @@ FROM ros:humble-ros-base-jammy as release
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
+RUN apt-get update && apt-get upgrade -y &&\
+    apt-get install -y \
+    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+    libzmq3-dev
+
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
+
+RUN apt-get update \
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
 ############################## DEBUG ##################################
 FROM ros:humble-ros-base-jammy as debug
