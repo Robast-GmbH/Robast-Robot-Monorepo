@@ -61,8 +61,8 @@ RUN rosdep update && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/
 
-############################## Production ##################################
-FROM ros:humble-ros-base-jammy as production
+############################## Release ##################################
+FROM ros:humble-ros-base-jammy as release
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
@@ -76,7 +76,7 @@ ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 ############################## DEBUG ##################################
 FROM ros:humble-ros-base-jammy as debug
 
-COPY --from=production / /
+COPY --from=release / /
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
@@ -84,7 +84,3 @@ ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
-
-# RUN apt insstall
-# Stage debug
-# hier will ich jetzt den code haben, rviz und ros2bag installen
