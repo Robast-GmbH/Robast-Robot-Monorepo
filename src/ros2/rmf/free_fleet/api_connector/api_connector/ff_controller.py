@@ -10,7 +10,8 @@ class free_fleet_controller:
         self.config = dds_config
         self.robot_states = []  # :list[messages.FreeFleetData_RobotState] =[]
         dds_helper.dds_subscriber( self.config["dds"], self.config["domain_id"], self.config["robot_state_topic"], messages.FreeFleetData_RobotState, self.store_robot_states)
-       
+        
+
     def store_robot_states(self,msg):
         self.robot_states = [x for x in self.robot_states if x.name != msg.name]
         self.robot_states.append(msg)
@@ -74,6 +75,7 @@ class free_fleet_controller:
             drawer_id,
             e_drawer,
             open)
+     
         dds_helper.dds_publish(
             self.config["dds"],
             self.config["domain_id"],
