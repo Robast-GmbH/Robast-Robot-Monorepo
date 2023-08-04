@@ -146,10 +146,12 @@ RUN cd /tmps/openvdb-8.2.0/builds/ \
   make install
 
 
-RUN apt-get update && apt-get upgrade -y &&\
-    apt-get install -y \
+RUN apt-get update && apt-get upgrade -y\
+    && apt-get install -y \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-    libzmq3-dev
+    libzmq3-dev \
+    ros-${ROS_DISTRO}-slam-toolbox \
+    ros-${ROS_DISTRO}-robot-localization
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
