@@ -143,8 +143,7 @@ COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 COPY --from=build /tmps/openvdb-8.2.0 /tmps/openvdb-8.2.0
 RUN cd /tmps/openvdb-8.2.0/builds/ \
-  && cmake .. \
-  && make && make install
+  make install
 
 
 RUN apt-get update && apt-get upgrade -y &&\
