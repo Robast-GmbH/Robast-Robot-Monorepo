@@ -136,12 +136,14 @@ RUN apt-get update && apt-get install -y \
   libegl1 \
   libxext6 \
   libx11-6 \
+  libboost-all-dev \
   && rm -rf /var/lib/apt/lists/* 
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 COPY --from=build /tmps/openvdb-8.2.0 /tmps/openvdb-8.2.0
 RUN cd /tmps/openvdb-8.2.0/builds/ \
+  && cmake .. \
   && make && make install
 
 
