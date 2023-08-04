@@ -4,9 +4,7 @@ from sqlalchemy import func
 
 import models
 
-next_point = 1
-robot_status = 2
-open_drawer = -1
+
 
 
 def init(db: Session):
@@ -18,11 +16,11 @@ def init(db: Session):
                 addUser( "Jacob", "Jacob Ritterbach", "Robast2022HH", True, db )
                 
                 addRobot("RB0", "ROBAST", 0, 0, 0, db)
-                addDrawer("RB0", 1, 1, models.DrawerSlideTypes.Manual, 10, db)
-                addDrawer("RB0", 2, 1, models.DrawerSlideTypes.Manual, 10, db)
-                addDrawer("RB0", 3, 1, models.DrawerSlideTypes.Manual, 10, db)
-                addDrawer("RB0", 4, 1, models.DrawerSlideTypes.Manual, 20, db)
-                addDrawer("RB0", 5, 1, models.DrawerSlideTypes.Manual, 30, db)
+                addDrawer("RB0", 1, 1, 1, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 2, 1, 2, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 3, 1, 3, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 4, 1, 4, models.DrawerSlideTypes.Manual, 20, db)
+                addDrawer("RB0", 5, 1, 5, models.DrawerSlideTypes.Manual, 30, db)
 
         return
 
@@ -45,8 +43,8 @@ def addRobot(robot_name:str, fleet_name:str, x:float, y:float, yaw:float, db:Ses
         db.refresh(db_robot)
         return
 
-def addDrawer( robot_name:str, module_id:int, drawer_id:int, type:models.DrawerSlideTypes, size:int, db:Session):
-        db_drawer = models.Module(drawer_id= drawer_id, id= module_id, type= type, size= size, robot_name= robot_name, )
+def addDrawer( robot_name:str, module_id:int, drawer_id:int, position:int, type:models.DrawerSlideTypes, size:int, db:Session):
+        db_drawer = models.Module(drawer_id= drawer_id, id= module_id, position= position, status="", type= type, size= size, robot_name= robot_name, )
         db.add(db_drawer)
         db.commit()
         db.refresh(db_drawer)

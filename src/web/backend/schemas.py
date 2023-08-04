@@ -56,11 +56,14 @@ class Task(TaskDelivery):
 class ModuleBase(BaseModel):
     id:int
     drawer_id:int
+
   
 class Module(ModuleBase):
     type: DrawerSlideTypes
     size: int
-    robot_name: str
+    robot_name: str    
+    position:int
+    status:str
     
     class Config:
         orm_mode = True

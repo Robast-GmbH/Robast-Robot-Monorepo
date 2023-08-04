@@ -42,6 +42,8 @@ class Module(Base):
     __tablename__ = "module"
     id = Column(Integer, primary_key=True)
     drawer_id= Column(Integer)
+    position= Column(Integer)
+    status= Column(String)
     type= Column(Enum(DrawerSlideTypes), index=True)
     size= Column(Integer)
     robot_name= Column(String)
