@@ -1,0 +1,27 @@
+version: '3.9'
+
+services:
+  navigation:
+    image: ghcr.io/robast-gmbh/monorepo/navigation:release
+    environment:
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - ./start_scripts/:/start_scripts/:cached
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ../../src/ros2/navigation/environment_vars.yaml:/workspace/src/navigation/environment_vars.yaml:cached
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
+  statemachine:
+    image: ghcr.io/robast-gmbh/monorepo/statemachine:release
+    environment:
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - ./start_scripts/:/start_scripts/:cached
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
+
+#networks:
+#  host:
+#    name: host
+#    external: true
