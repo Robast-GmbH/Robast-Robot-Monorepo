@@ -1,6 +1,9 @@
 import rclpy
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
 from rclpy.node import Node
+
+
+from . import math_helper
 from . import dds_helper
 from . import messages
 
@@ -9,6 +12,8 @@ from enum import Enum
 from communication_interfaces.msg import DrawerAddress
 from nav2_simple_commander.robot_navigator import BasicNavigator
 from geometry_msgs.msg import PoseStamped
+from nav_msgs.msg import Odometry
+
 # TODO@ Torben this aproach is rubbisch switch the logic to simple statemaschine  
 
 class Robot_states(Enum):
@@ -25,7 +30,8 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('fleet_name', 'ROBAST_1')
         self.declare_parameter('robot_name', 'RB0')
         self.declare_parameter('robot_frame_id', 'map')
-        self.declare_parameter('hartbeat', 0.5)
+        self.declare_parameter('robot_odom', '/odom')
+        self.declare_parameter('heartbeat', 0.5)
         self.declare_parameter('statemaschine_open_drawer_topic', 'trigger_drawer_tree')
         self.declare_parameter('statemaschine_close_e_drawer_topic', 'close_drawer')
         self.declare_parameter('statemaschine_open_e_drawer_topic', 'trigger_electric_drawer_tree')
@@ -56,25 +62,19 @@ class free_fleet_client_direct(Node):
             history=QoSHistoryPolicy.KEEP_LAST,
             depth=1
         )
-        
-        qos_profile_move = QoSProfile(
-          durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
-          reliability=QoSReliabilityPolicy.RELIABLE,
-          history=QoSHistoryPolicy.KEEP_LAST,
-          depth=1)
      
         self.drawer_publisher_ = self.create_publisher(DrawerAddress, self.ros_opendrawer_topic, qos_profile=qos_profile_drawer)
         self.e_drawer_open_publisher_ = self.create_publisher(DrawerAddress, self.ros_open_e_drawer_topic, qos_profile=qos_profile_drawer)
         self.e_drawer_close_publisher_ = self.create_publisher(DrawerAddress, self.ros_close_e_drawer_topic, qos_profile=qos_profile_drawer)
-        self.move_publisher_ = self.create_publisher(PoseStamped, self.ros_move_base_server_name, qos_profile=qos_profile_move)
         timer_period = self.heartbeat
-        self.drawer_subscriber= dds_helper.dds_subscriber(self.dds_domain, self.dds_slide_drawer_topic, messages.FreeFleetData_SlideDrawerRequest, self.ros_publish_drawer_open)
-        self.movement_subscriber= dds_helper.dds_subscriber(self.dds_domain, self.dds_move_to_topic, messages.FreeFleetData_DestinationRequest, self.ros_publish_robot_move_to)
-        self.action_timer = self.create_timer(timer_period, self.start_robot_behavoir)
+        self.drawer_subscriber= dds_helper.dds_subscriber(self.dds_domain, self.dds_slide_drawer_topic, messages.FreeFleetData_SlideDrawerRequest)
+        self.movement_subscriber= dds_helper.dds_subscriber(self.dds_domain, self.dds_move_to_topic, messages.FreeFleetData_DestinationRequest)
+        # sub = self.create_subscription('/odom',Odometry, self.get_robot_odom)
+        self.action_timer = self.create_timer(timer_period, self.start_robot_behavior)
         self.info_timer = self.create_timer(timer_period, self.start_sending_robot_info)
     
 
-    def start_robot_behavoir(self):
+    def start_robot_behavior(self):
         while True:
             
             if(self.status== Robot_states.IDLE):
@@ -95,11 +95,14 @@ class free_fleet_client_direct(Node):
                 pass
             
     def start_sending_robot_info(self):  
+        #return self.navigator.isTaskComplete()
+        #return self.navigator.getResult()
         pass
 
-
     def get_next_message(self, subscriber):
-        return self.check_task_recipient(subscriber.get_next_msg())
+        #todo check that it is the correct robot 
+        return subscriber.get_next_msg()
+    
         
     def check_task_recipient(self,task):
         if task.fleet_name == self.fleet_name and task.robot_name == self.name:
@@ -146,8 +149,7 @@ class free_fleet_client_direct(Node):
     def cancel_navigation(self):
         self.goal_pose = None
         self.navigator.cancelTask()
-        #return self.navigator.isTaskComplete()
-        #return self.navigator.getResult()
+      
         
     def create_pose(self, pose_x, pose_y, pose_yaw) -> PoseStamped:
         pose = PoseStamped()
@@ -155,12 +157,30 @@ class free_fleet_client_direct(Node):
         pose.header.stamp = self.navigator.get_clock().now().to_msg()
         pose.pose.position.x = pose_x
         pose.pose.position.y = pose_y
-        qx, qy, qz, qw = self.get_quaternion_from_euler(0, 0, pose_yaw)
+        qx, qy, qz, qw = math_helper.get_quaternion_from_euler(0, 0, pose_yaw)
         pose.pose.orientation.x = qx
         pose.pose.orientation.y = qy
         pose.pose.orientation.z = qz
         pose.pose.orientation.w = qw
         return pose
+
+    def get_robot_odom(self, data):
+        x = data.pose.pose.position.x
+        y = data.pose.pose.position.y
+        q1 = data.pose.pose.orientation.x
+        q2 = data.pose.pose.orientation.y
+        q3 = data.pose.pose.orientation.z
+        q4 = data.pose.pose.orientation.w
+        q = (q1, q2, q3, q4)
+        e = math_helper.euler_from_quaternion(q)
+        th = math_helper.degrees(e[2])
+        yaw = math_helper.to_positive_angle(th)
+        self.robot_x= x
+        self.robot_y=y
+        self.robot_yaw=yaw
+
+        
+       
 
 def main(args=None):
     rclpy.init(args=args)

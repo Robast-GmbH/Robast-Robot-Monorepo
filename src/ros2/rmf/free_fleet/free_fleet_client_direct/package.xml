@@ -7,8 +7,11 @@
   <maintainer email="t.zurhelle@robast.de">robast</maintainer>
   <license>TODO: License declaration</license>
 
-  <depend>communication_interfaces</depend>
-  <depend>geometry_msgs</depend>
+  <exec_depend>geometry_msgs</exec_depend>
+  <exec_depend>nav2_msgs</exec_depend>
+  <exec_depend>navigation2</exec_depend>
+  <exec_depend>nav2_simple_commander</exec_depend>
+  <exec_depend>communication_interfaces</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
