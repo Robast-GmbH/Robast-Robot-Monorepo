@@ -26,9 +26,10 @@ find_package(std_msgs REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/AuthenticateUser.action"
   "action/CreateUserNfcTag.action"
+  "action/ChangeFootprint.action"
+  "action/ComputeInterimGoal.action"
   "action/DrawerInteraction.action"
   "action/DrawerUserAccess.action"
-  "action/ComputeInterimGoal.action"
   "action/ImportYamlPoses.action"
 
   "srv/HandleDrawer.srv"
