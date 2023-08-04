@@ -121,23 +121,37 @@ RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communicati
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/
+  colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
 ############################## Release ##################################
 FROM ros:humble-ros-base-jammy as release
 
+RUN apt-get update && apt-get install -y \
+  cmake \
+  libzmq3-dev \
+  libdw-dev \
+  libglvnd0 \
+  libgl1 \
+  libglx0 \
+  libegl1 \
+  libxext6 \
+  libx11-6 \
+  libboost-all-dev \
+  && rm -rf /var/lib/apt/lists/* 
+
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 COPY --from=build /tmps/openvdb-8.2.0 /tmps/openvdb-8.2.0
-RUN cd openvdb-8.2.0/ \
-  && mkdir builds && cd builds && cmake .. \
-  && make && make install
+RUN cd /tmps/openvdb-8.2.0/builds/ \
+  make install
 
 
-RUN apt-get update && apt-get upgrade -y &&\
-    apt-get install -y \
+RUN apt-get update && apt-get upgrade -y\
+    && apt-get install -y \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-    libzmq3-dev
+    libzmq3-dev \
+    ros-${ROS_DISTRO}-slam-toolbox \
+    ros-${ROS_DISTRO}-robot-localization
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
