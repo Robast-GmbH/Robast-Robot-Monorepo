@@ -1,6 +1,9 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import 'package:web_interface_flutter/main.dart';
 import 'package:web_interface_flutter/models/map_controller.dart';
 import 'package:web_interface_flutter/models/robot_provider.dart';
 import 'package:web_interface_flutter/pages/admin_page.dart';
@@ -17,20 +20,53 @@ class MapPage extends StatefulWidget {
   State<MapPage> createState() => _MapPageState();
 }
 
-class _MapPageState extends State<MapPage> {
+class _MapPageState extends State<MapPage> with RouteAware {
   bool isManualControlOpened = false;
   final controller = MapController();
   double currentMapScale = 1.0;
   late Future<void> loadData;
+  late Timer refreshTimer;
 
-  Offset scalePoint(Offset point, double scale) {
-    return Offset(point.dx * scale, point.dy * scale);
+  void setTimer() {
+    refreshTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+      print("Update Robots");
+      Provider.of<RobotProvider>(context, listen: false).updateRobots();
+      setState(() {});
+    });
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    routeObserver.subscribe(this, ModalRoute.of(context)!);
   }
 
   @override
   void initState() {
-    loadData = Provider.of<RobotProvider>(context, listen: false).updateProviderData();
     super.initState();
+    loadData = Provider.of<RobotProvider>(context, listen: false).updateProviderData();
+    setTimer();
+  }
+
+  @override
+  void dispose() {
+    routeObserver.unsubscribe(this);
+    refreshTimer.cancel();
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    setTimer();
+  }
+
+  @override
+  void didPushNext() {
+    refreshTimer.cancel();
+  }
+
+  Offset scalePoint(Offset point, double scale) {
+    return Offset(point.dx * scale, point.dy * scale);
   }
 
   @override
@@ -96,19 +132,20 @@ class _MapPageState extends State<MapPage> {
             );
           } else {
             showDialog(
-                context: context,
-                builder: (context) => AlertDialog(
-                      title: const Text("Keine Position ausgewählt!"),
-                      content: const Text("Bitte Map anklicken, um eine Position auszuwählen."),
-                      actions: [
-                        TextButton(
-                          child: const Text('Okay'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    ));
+              context: context,
+              builder: (context) => AlertDialog(
+                title: const Text("Keine Position ausgewählt!"),
+                content: const Text("Bitte Map anklicken, um eine Position auszuwählen."),
+                actions: [
+                  TextButton(
+                    child: const Text('Okay'),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                  ),
+                ],
+              ),
+            );
           }
         },
         child: const Icon(Icons.add_task_rounded),

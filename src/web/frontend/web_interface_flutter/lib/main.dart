@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:web_interface_flutter/models/robot_provider.dart';
 import 'package:web_interface_flutter/pages/map_page.dart';
 
+final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
+
 void main() {
   runApp(
     ChangeNotifierProvider(
@@ -25,6 +27,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       home: const MapPage(),
+      navigatorObservers: [routeObserver],
     );
   }
 }

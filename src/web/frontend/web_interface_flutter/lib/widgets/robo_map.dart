@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+
 import 'package:web_interface_flutter/models/map_controller.dart';
+
 import 'package:zoom_widget/zoom_widget.dart';
 
 class RoboMap extends StatefulWidget {
@@ -74,9 +76,9 @@ class _RoboMapState extends State<RoboMap> {
           ),
         ),
         if (widget.controller.position == null) ...[
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: const Text("Zur Zielauswahl lange drücken"),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
+            child: Text("Zur Zielauswahl lange drücken"),
           )
         ]
       ],
