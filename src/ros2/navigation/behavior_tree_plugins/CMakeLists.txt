@@ -63,6 +63,8 @@ list(APPEND plugin_libs yaml_poses_import_action_bt_node)
 
 add_library(check_state_condition_bt_node SHARED plugins/condition/check_state_condition.cpp)
 list(APPEND plugin_libs check_state_condition_bt_node)
+add_library(check_topic_state_condition_bt_node SHARED plugins/condition/check_topic_state_condition.cpp)
+list(APPEND plugin_libs check_topic_state_condition_bt_node)
 add_library(variable_update_condition_bt_node SHARED plugins/condition/variable_condition_updated.cpp)
 list(APPEND plugin_libs variable_update_condition_bt_node)
 add_library(is_incremented_condition_bt_node SHARED plugins/condition/is_incremented_condition.cpp)
@@ -91,7 +93,7 @@ install(DIRECTORY include/
   DESTINATION include/
 )
 
-# install(FILES nav2_tree_nodes.xml DESTINATION share/${PROJECT_NAME})
+install(FILES xml/bt_nodes.xml DESTINATION share/${PROJECT_NAME})
 
 ament_export_include_directories(
   include
