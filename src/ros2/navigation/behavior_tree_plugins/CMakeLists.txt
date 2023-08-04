@@ -56,11 +56,15 @@ set(dependencies
 #   ${dependencies}
 # )
 
+# ACTION NODES
 add_library(interim_goal_selector_action_bt_node SHARED plugins/action/interim_goal_selector_action.cpp)
 list(APPEND plugin_libs interim_goal_selector_action_bt_node)
 add_library(yaml_poses_import_action_bt_node SHARED plugins/action/yaml_poses_import_action.cpp)
 list(APPEND plugin_libs yaml_poses_import_action_bt_node)
+add_library(change_footprint_action_bt_node SHARED plugins/action/change_footprint_action.cpp)
+list(APPEND plugin_libs change_footprint_action_bt_node)
 
+# CONDITION NODES
 add_library(check_state_condition_bt_node SHARED plugins/condition/check_state_condition.cpp)
 list(APPEND plugin_libs check_state_condition_bt_node)
 add_library(check_topic_state_condition_bt_node SHARED plugins/condition/check_topic_state_condition.cpp)
@@ -74,6 +78,7 @@ list(APPEND plugin_libs robast_goal_updated_condition_bt_node)
 add_library(compare_integer_condition_bt_node SHARED plugins/condition/compare_integer_condition.cpp)
 list(APPEND plugin_libs compare_integer_condition_bt_node)
 
+# DECORATER NODES
 add_library(revert_path_node_decorator_bt_node SHARED plugins/decorator/revert_path_node.cpp)
 list(APPEND plugin_libs revert_path_node_decorator_bt_node)
 
