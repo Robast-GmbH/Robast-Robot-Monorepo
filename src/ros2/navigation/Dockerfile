@@ -121,7 +121,7 @@ RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communicati
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/
+  colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
 ############################## Release ##################################
 FROM ros:humble-ros-base-jammy as release
