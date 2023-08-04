@@ -16,14 +16,17 @@ class ros_controller(Node):
             FFSlideDrawer,
             'ff_open_drawer',
             10)
-        self.declare_parameter('dds_domain', 42)
+        
+        self.declare_parameter('dds', "cyclone_DDS")
+        self.declare_parameter('dds_domain_id', 42)
         self.declare_parameter('dds_robot_state_topic', "/robot_state")
         self.declare_parameter('dds_mode_request_topic', "/mode_request")
         self.declare_parameter('dds_path_request_topic', "/path_request")
         self.declare_parameter('dds_destination_request_topic', "/destination_request")
         self.declare_parameter('dds_slide_drawer_request_topic', "/slide_drawer_request")
         self.dds_config = {
-                "dds_domain": self.get_parameter('dds_domain').get_parameter_value().integer_value,
+                "dds": self.get_parameter('dds').get_parameter_value().string_value,
+                "domain_id": self.get_parameter('dds_domain_id').get_parameter_value().integer_value,
                 "robot_state_topic": self.get_parameter('dds_robot_state_topic')
                                          .get_parameter_value().string_value,
                 "mode_request_topic": self.get_parameter('dds_mode_request_topic')

@@ -34,7 +34,7 @@ ekf_filter_node:
 # Debug settings. Not for the faint of heart. Outputs a ludicrous amount of information to the file specified by
 # debug_out_file. I hope you like matrices! Please note that setting this to true will have strongly deleterious
 # effects on the performance of the node. Defaults to false if unspecified.
-        debug: true
+        debug: false
 
 # Defaults to "robot_localization_debug.txt" if unspecified. Please specify the full path.
         debug_out_file: debug_robot_localization_ekf_odom_to_base.txt
@@ -109,13 +109,20 @@ ekf_filter_node:
 # data is converted to velocity data by differentiating the absolute pose measurements. These velocities are then
 # integrated as usual. NOTE: this only applies to sensors that provide pose measurements; setting differential to true
 # for twist measurements has no effect.
-        odom0_differential: true
+        odom0_differential: false
 
 # [ADVANCED] When the node starts, if this parameter is true, then the first measurement is treated as a "zero point"
 # for all future measurements. While you can achieve the same effect with the differential paremeter, the key
 # difference is that the relative parameter doesn't cause the measurement to be converted to a velocity before
 # integrating it. If you simply want your measurements to start at 0 for a given sensor, set this to true.
-        odom0_relative: false
+        odom0_relative: true
+
+# [ADVANCED] Whether to use the starting pose of child_frame_id as the origin of odometry.
+        # Note: this is different from setting odom0_relative to true, as when child_frame is different from 
+        # base_link_frame, the rotation of base_link will be coupled into the translation of child_frame.
+        # Set to true for fusing secondary odometry sources that are rigidly connected to base_link but has a non-zero 
+        # offset from base_link.
+        odom0_pose_use_child_frame: false
 
 # [ADVANCED] If your data is subject to outliers, use these threshold settings, expressed as Mahalanobis distances, to
 # control how far away from the current vehicle state a sensor measurement is permitted to be. Each defaults to
@@ -123,13 +130,13 @@ ekf_filter_node:
 # required. Data is specified at the level of pose and twist variables, rather than for each variable in isolation.
 # For messages that have both pose and twist data, the parameter specifies to which part of the message we are applying
 # the thresholds.
-        # odom0_pose_rejection_threshold: 5.0
-        # odom0_twist_rejection_threshold: 1.0
+        odom0_pose_rejection_threshold: 5.0
+        odom0_twist_rejection_threshold: 1.0
 
 # Further input parameter examples
-        imu0: /robot/imu/data
+        imu0: /robot/vectornav/imu/data
         imu0_config: [false, false, false,
-                      false, false, true, # roll, pitch, yaw (yaw comes from Magnetometer)
+                      true, true, true, # roll, pitch, yaw (yaw comes from Magnetometer)
                       false, false, false,
                       false, false, true, # vroll, vpitch, vyaw (vyaw comes from Gyroscope)
                       true, false, false] # ax, ay, az (ax comes from Accelerometer)

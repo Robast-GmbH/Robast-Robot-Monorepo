@@ -29,31 +29,31 @@
 
 				<!-- There is no possiblity (as far as I know) to disable tf publishing of odom->base, so if you
 				don't want the tf to be published, you can just dump it into a different topic -->
-				<tf_topic>tf_dump</tf_topic> 
+                <tf_topic>tf_dump</tf_topic>
 
-				<xacro:if value="${publish_bf}">
-					<child_frame_id>$(arg prefix)base_footprint</child_frame_id>
-				</xacro:if>
-				<xacro:unless value="${publish_bf}">
-					<child_frame_id>$(arg prefix)base_link</child_frame_id>
-				</xacro:unless>
-			</plugin>
-		</gazebo>
+                <xacro:if value="${publish_bf}">
+                    <child_frame_id>$(arg prefix)base_footprint</child_frame_id>
+                </xacro:if>
+                <xacro:unless value="${publish_bf}">
+                    <child_frame_id>$(arg prefix)base_link</child_frame_id>
+                </xacro:unless>
+            </plugin>
+        </gazebo>
 
-	</xacro:macro>
+    </xacro:macro>
 
-	<xacro:macro name="gazebo_colors" params="prefix">
-		<gazebo reference="$(arg prefix)base_footprint">
-			<material>Gazebo/Green</material>
-		</gazebo>
+    <xacro:macro name="gazebo_colors" params="prefix">
+        <gazebo reference="$(arg prefix)base_footprint">
+            <material>Gazebo/Green</material>
+        </gazebo>
 
-		<gazebo reference="$(arg prefix)base_link">
-			<material>Gazebo/Grey</material>
-		</gazebo>
+        <gazebo reference="$(arg prefix)base_link">
+            <material>Gazebo/Grey</material>
+        </gazebo>
 
-		<gazebo reference="$(arg prefix)front_cover_link">
-			<material>Gazebo/Black</material>
-		</gazebo>
-	</xacro:macro>
+        <gazebo reference="$(arg prefix)front_cover_link">
+            <material>Gazebo/Black</material>
+        </gazebo>
+    </xacro:macro>
 
 </robot>

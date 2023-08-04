@@ -22,6 +22,8 @@ namespace drawer_controller
 
     uint8_t get_normed_current_position() const;
 
+    uint32_t convert_uint8_position_to_drawer_position_scale(uint8_t position) const;
+
     void set_current_position(int32_t position);
 
     void init_encoder_before_next_movement(bool is_drawer_moving_out);
@@ -33,6 +35,7 @@ namespace drawer_controller
     int32_t _current_position_int32 = 0;
 
     bool _is_drawer_moving_out;
+
     uint32_t _last_timestemp;
 
     int32_t get_integrated_drawer_position(uint32_t active_speed);

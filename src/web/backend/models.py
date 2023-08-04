@@ -5,7 +5,7 @@ from xmlrpc.client import boolean
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, MetaData, Enum, Float, tuple_
 from sqlalchemy.orm import relationship
 
-from schemas import TaskTypes, DrawerTypes
+from schemas import TaskTypes, DrawerSlideTypes
 from database import Base
 
 
@@ -32,8 +32,8 @@ class Task(Base):
     finished = Column(Boolean, default=False)
     target_id =Column(Integer, default=0)
     drawer_id= Column(Integer, default= 0)
-    robot_name= Column(String, default="rb0")
-    fleet_name= Column(String, default="ROBAST_1")
+    robot_name= Column(String, default="RB0")
+    fleet_name= Column(String, default="ROBAST")
     owner_id = Column(Integer, ForeignKey("users.id"))
     owner = relationship("User", cascade="save-update")
 
@@ -42,14 +42,17 @@ class Module(Base):
     __tablename__ = "module"
     id = Column(Integer, primary_key=True)
     drawer_id= Column(Integer)
-    type= Column(Enum(DrawerTypes), index=True)
+    position= Column(Integer)
+    status= Column(String)
+    type= Column(Enum(DrawerSlideTypes), index=True)
+    size= Column(Integer)
     robot_name= Column(String)
-    fleet_name= Column(String)
+    
 
 class Robot(Base):
     __tablename__ = "robot"
-    name= Column(String, primary_key=True)
-    fleet= Column(String)
+    robot_name= Column(String, primary_key=True)
+    fleet_name= Column(String)
     x_pose = Column(Float)
     y_pose = Column(Float)
     yaw_pose = Column(Float)

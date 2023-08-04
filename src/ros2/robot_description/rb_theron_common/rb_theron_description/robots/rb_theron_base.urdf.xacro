@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<robot name="rb_theron" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+  <!-- ***************** -->
+  <!-- Imported elements -->
+  <!-- ***************** -->
+
+  <xacro:include filename="$(find rb_theron_description)/urdf/bases/theron_base.urdf.xacro" />
+  <xacro:include filename="$(find rb_theron_description)/urdf/wheels/rubber_wheel_150.urdf.xacro" />
+  <xacro:include filename="$(find rb_theron_description)/urdf/wheels/castor.urdf.xacro" />
+
+  <!-- Import Gazebo Stuff -->
+  <xacro:include filename="$(find rb_theron_description)/urdf/common.gazebo.xacro" />
+
+
+  <!-- ***************** -->
+  <!-- Global parameters -->
+  <!-- ***************** -->
+
+  <xacro:property name="PI" value="3.14159265dd 35897931"/>
+
+  <!-- Wheel parameters -->
+  <xacro:property name="wheel_offset_x" value="0" />
+  <xacro:property name="wheel_offset_y" value="0.2516" />
+  <xacro:property name="wheel_offset_z" value="0.0" />
+
+
+  <!-- *************** -->
+  <!-- Robots Elements -->
+  <!-- *************** -->
+
+  <xacro:macro name="rb_theron_base" params="prefix hq publish_bf">
+    <xacro:theron_base prefix="${prefix}" publish_bf="${publish_bf}" hq="${hq}" />
+    <xacro:gazebo_colors prefix="${prefix}"/>
+
+    <!-- WHEELS -->
+    <xacro:rubber_wheel prefix="${prefix}right" parent="${prefix}base_link" hq="${hq}">
+      <origin xyz="${wheel_offset_x} ${-wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+    </xacro:rubber_wheel>
+    <xacro:rubber_wheel prefix="${prefix}left" parent="${prefix}base_link" hq="${hq}">
+      <origin xyz="${wheel_offset_x} ${wheel_offset_y} ${wheel_offset_z}" rpy="0 0 0"/>
+    </xacro:rubber_wheel>
+
+    <!-- CASTORS WHEELS -->
+    <xacro:caster prefix="${prefix}front_left" parent="${prefix}base_link" hq="${hq}">
+      <origin xyz="0.235 0.1825 0.046" rpy="0 0 0"/>
+    </xacro:caster>
+    <xacro:caster prefix="${prefix}front_right" parent="${prefix}base_link" hq="${hq}">
+      <origin xyz="0.235 -0.1825 0.046" rpy="0 0 0"/>
+    </xacro:caster>
+    <xacro:caster prefix="${prefix}rear_left" parent="${prefix}base_link" hq="${hq}">
+      <origin xyz="-0.235 0.1825 0.046" rpy="0 0 0"/>
+    </xacro:caster>
+    <xacro:caster prefix="${prefix}rear_right" parent="${prefix}base_link" hq="${hq}">
+      <origin xyz="-0.235 -0.1825 0.046" rpy="0 0 0"/>
+    </xacro:caster>
+  </xacro:macro>
+</robot>

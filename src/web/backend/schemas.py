@@ -1,18 +1,18 @@
 from typing import List, Optional, Any
 from enum import Enum
 import yaml
-
 from pydantic import BaseModel
-
 
 class TaskTypes(str, Enum):
     Delivery = "Delivery"
     Move = "Move"
     Drawer = "Drawer"
 
-class DrawerTypes(str, Enum):
+class DrawerSlideTypes(str, Enum):
     Manual = "Manual"
     Electrical = "Electrical"
+
+
 
 #Task
 class TaskBase(BaseModel):
@@ -35,7 +35,6 @@ class TaskDrawer(TaskBase):
     module_id: int
     drawer_id: int
 
-
 class TaskMove(TaskBase):
     x_pose:float
     y_pose: float
@@ -57,11 +56,14 @@ class Task(TaskDelivery):
 class ModuleBase(BaseModel):
     id:int
     drawer_id:int
-  
 
+  
 class Module(ModuleBase):
-    type: DrawerTypes
-    robot_name: str
+    type: DrawerSlideTypes
+    size: int
+    robot_name: str    
+    position:int
+    status:str
     
     class Config:
         orm_mode = True
@@ -78,7 +80,6 @@ class UserCreate(UserBase):
     full_name: str
     email: str
 
-
 class User(UserBase):
     id: int
     is_active: bool
@@ -88,7 +89,6 @@ class User(UserBase):
 
     class Config:
         orm_mode = True
-
 
 #Robot
 class Robot(BaseModel):

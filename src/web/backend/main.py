@@ -1,9 +1,5 @@
 from typing import List
-
-# from fastapi.encoders import jsonable_encoder
-# from sqlalchemy.sql.functions import user
 from fastapi.middleware.cors import CORSMiddleware
-# from fastapi.responses import JSONResponse
 import json
 import yaml
 import uvicorn
@@ -11,9 +7,6 @@ from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 import requests
 import helper as templates
-
-
-
 import crud
 import models
 import schemas
@@ -25,7 +18,7 @@ models.Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
 
-config = yaml.safe_load(open("../config.yml"))
+config = yaml.safe_load(open("./config.yml"))
 
 
 origins = [
@@ -42,7 +35,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # Dependency
 def get_db():
@@ -129,6 +121,8 @@ def abort_task(task_id: int, db: Session = Depends(get_db)):
 @app.get("/robots", response_model =List[schemas.Robot])
 def get_robots_status(db: Session = Depends(get_db)):
     db_robots = crud.get_robots(db=db)
+    # if db_robots is None:
+    #     return []
     return db_robots
 
 @app.get("/robots/{robot_name}", response_model = schemas.Robot)
@@ -136,26 +130,41 @@ def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     return db_robot
 
-@app.put("/robots/{robot_name}/halt")
+@app.put("/robots/halt")
 def pause_robot(robot_name: str, halt: bool , db: Session = Depends(get_db)):
     #todo
     return
 
-@app.put("/robots/{robot_name}/rosbag")
+@app.put("/robots/rosbag")
 def set_rosbag(robot_name: str, halt: bool , db: Session = Depends(get_db)):
     #todo
     return
 
-
-
-@app.put("/robots/{robot_name}/status")
-def set_robot(robot_name: str, robot: schemas.Robot, db: Session = Depends(get_db)):
+@app.put("/robots/status")
+def set_robot(robot: schemas.Robot, db: Session = Depends(get_db)):
     return crud.set_robot(db=db, robot=robot)
 
 @app.put("/robots/{robot_name}/move")
 def move_robot( robot_name: str, x: float, y: float, yaw: float, db: Session = Depends(get_db)):
-    #todo
-    return
+    db_robot= crud.get_robot(db=db, robot_name=robot_name)
+    if db_robot is None:
+        raise HTTPException(status_code=404, detail="robot not found")
+    robot= templates.json_robot()
+    robot["name"]= db_robot.robot_name
+    robot["fleet_name"]= db_robot.fleet_name
+
+    waypoint= templates.json_waypoint()
+    waypoint["pose.x"]=x
+    waypoint["pose.y"]=y
+    waypoint["pose.z"]=0
+    waypoint["orientation"]=yaw
+    
+    message={"robot":robot, "waypoint":waypoint}
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session()
+    answer  =sender.post(url= config["fleetmangement_address"]+"/move", json= json.dumps(message), headers= headers, verify=False)
+    return answer.status_code
+
 
 @app.get("/robots/{robot_name}/log", response_model = List[str])
 def get_log(robot_name: str, db: Session = Depends(get_db)):
@@ -163,29 +172,42 @@ def get_log(robot_name: str, db: Session = Depends(get_db)):
     return None
 
 #Module
-@app.get("/robots/{robot_name}/modules/", response_model = List[schemas.ModuleBase])
+@app.get("/robots/{robot_name}/modules/", response_model = List[schemas.Module])
 def get_modules(robot_name :str, db: Session = Depends(get_db)):
-    return crud.get_drawers(robot_name)
+    return crud.get_modules(db=db, robot_name=robot_name)
 
 # get_module_info
-@app.get("/robots/{robot_name}/modules/{module_id}", response_model = schemas.ModuleBase)
+@app.get("/robots/{robot_name}/modules/{module_id}", response_model = schemas.Module)
 def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
-    return crud.get_drawer(robot_name, module_id)
+    return crud.get_drawer(db=db, robot_name=robot_name, module_id= module_id)
 
+#set_drawer
+@app.post("/robots/modules/",)
+def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
+    return crud.set_module(db=db, module=module)
+ 
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
 def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depends(get_db)):
-   db_module= crud.get_drawer(module_id=module.id,drawer_id= module.drawer_id )
-   robot= templates.json_robot()
-   robot["name"]=robot_name
-   robot["fleet_name"]=""
-   drawer= templates.json_drawer()
-   drawer["id"]=db_module
-   drawer["fleet_name"]= drawer.drawer_id
-   message={"robot":robot, "drawer":drawer}
-   headers =  {"Content-Type":"application/json"}
-   answer  =requests.post(url= "",json= json.dumps(message),headers= headers)
-   return answer.status_code
+    db_module= crud.get_drawer(db=db, module_id=module.id, drawer_id= module.drawer_id,robot_name=robot_name )
+    db_robot= crud.get_robot(db=db, robot_name=robot_name)
+    if db_robot is None:
+        raise HTTPException(status_code=404, detail="robot not found")
+    
+    if db_module is None:
+        raise HTTPException(status_code=404, detail="module not found")
+
+    robot= templates.json_robot()
+    robot["name"]= db_robot.robot_name
+    robot["fleet_name"]= db_robot.fleet_name
+    drawer= templates.json_drawer()
+    drawer["id"]=db_module.drawer_id
+    drawer["fleet_name"]= db_robot.fleet_name
+    message={"robot":robot, "drawer":drawer}
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session()
+    answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/open", json= json.dumps(message), headers= headers, verify=False)
+    return answer.status_code
 
 # close_drawer
 @app.post("/robots/{robot_name}/modules/close")
@@ -200,10 +222,9 @@ def close_drawer( robot_name: str, module: schemas.ModuleBase , db: Session = De
         drawer["fleet_name"]= drawer.drawer_id
         message={"robot":robot, "drawer":drawer}
         headers =  {"Content-Type":"application/json"}
-        answer  =requests.post(url= "",json= json.dumps(message),headers= headers)
+        sender = requests.Session()
+        answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/close", json= json.dumps(message),headers= headers)
         return answer.status_code
-
-
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port= config['restapi_port'])

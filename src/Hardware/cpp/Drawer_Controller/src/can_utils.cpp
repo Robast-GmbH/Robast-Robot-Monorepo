@@ -21,7 +21,7 @@ namespace drawer_controller
       return {};
     }
     // TODO@Jacob: This can probably be removed once we are 100% sure that the queue is not infinetly growing
-    Serial.printf(
+    debug_printf(
       "get_element_from_feedback_msg_queue! num_of_msgs_in_queue = %d, _feedback_msg_queue.capacity() = %d\n",
       num_of_msgs_in_queue,
       _feedback_msg_queue.capacity());

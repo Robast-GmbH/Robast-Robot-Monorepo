@@ -142,7 +142,7 @@ class freeFleetAPI:
                 msg = ModeRequest()
                 msg.fleet_name = self.fleet_name
                 msg.robot_name = robot_name
-                msg.mode = RobotMode.MODE_MOVING
+                msg.mode = RobotMode.MODE_PAUSED
                 msg.task_id = robot_state.task_id
                 return True
         return False
