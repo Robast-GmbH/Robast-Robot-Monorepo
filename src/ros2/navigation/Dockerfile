@@ -129,7 +129,7 @@ FROM ros:humble-ros-base-jammy as release
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 COPY --from=build /tmps/openvdb-8.2.0 /tmps/openvdb-8.2.0
-RUN cd openvdb-8.2.0/ \
+RUN cd /tmps/openvdb-8.2.0/ \
   && mkdir builds && cd builds && cmake .. \
   && make && make install
 
