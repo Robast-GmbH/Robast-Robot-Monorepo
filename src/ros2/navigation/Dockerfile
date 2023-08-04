@@ -1,4 +1,4 @@
-FROM ros:humble as base
+FROM ros:humble as devel
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
@@ -68,7 +68,6 @@ RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/o
   && make && make install
 
 RUN apt-get update && apt-get install -y \
-  ros-${ROS_DISTRO}-xacro \
   # Install ros distro testing packages
   ros-${ROS_DISTRO}-ament-lint \
   ros-${ROS_DISTRO}-launch-testing \
@@ -103,4 +102,74 @@ ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
 
-#watch -d -n 0.5 nvidia-smi
+############################## Build ##################################
+FROM ros:humble-ros-base-jammy as build
+ARG GIT_TOKEN
+ARG GIT_BRANCH=main
+COPY --from=devel / /
+COPY . /ws/src/navigation
+RUN apt-get update && apt-get install -y git
+
+WORKDIR /tmp
+RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+
+
+WORKDIR /ws
+RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
+
+RUN rosdep update && \
+  rosdep install --from-paths /ws/src --ignore-src -r -y && \
+  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
+
+############################## Release ##################################
+FROM ros:humble-ros-base-jammy as release
+
+RUN apt-get update && apt-get install -y \
+  cmake \
+  libzmq3-dev \
+  libdw-dev \
+  libglvnd0 \
+  libgl1 \
+  libglx0 \
+  libegl1 \
+  libxext6 \
+  libx11-6 \
+  libboost-all-dev \
+  && rm -rf /var/lib/apt/lists/* 
+
+COPY --from=build /opt/ros /opt/ros
+COPY --from=build /robast /robast
+COPY --from=build /tmps/openvdb-8.2.0 /tmps/openvdb-8.2.0
+RUN cd /tmps/openvdb-8.2.0/builds/ \
+  make install
+
+
+RUN apt-get update && apt-get upgrade -y\
+    && apt-get install -y \
+    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+    libzmq3-dev \
+    ros-${ROS_DISTRO}-slam-toolbox \
+    ros-${ROS_DISTRO}-robot-localization
+
+ENV ROS_DOMAIN_ID=0
+# dds setup / configuration
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
+
+RUN apt-get update \
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
+
+############################## DEBUG ##################################
+FROM ros:humble-ros-base-jammy as debug
+
+COPY --from=release / /
+
+ENV ROS_DOMAIN_ID=0
+# dds setup / configuration
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
+# rmw_cyclonedds_cpp #rmw_fastrtps_cpp
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml

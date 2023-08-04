@@ -33,15 +33,24 @@ jobs:
         password: ${{ secrets.GITHUB_TOKEN }}
 
     - name: configures Docker Buildx to create a builder instance for running the image build.
-      uses: docker/setup-buildx-action@v1 
+      uses: docker/setup-buildx-action@v2 
     
-    - name: Build statemaschine dev docker
-      uses: docker/build-push-action@v2
+    - name: Build ${{ env.Project-Name }} devel docker
+      uses: docker/build-push-action@v4
       with:
         context: src/ros2/${{ env.Project-Name }}/
+        target: devel
+        build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }} #TODO @TAlscher find a smarter way then using this token
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: |
-              ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}
-        cache-from: type=gha
-        cache-to: type=gha,mode=min
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
+
+    - name: Build ${{ env.Project-Name }} release docker
+      uses: docker/build-push-action@v4
+      with:
+        context: src/ros2/${{ env.Project-Name }}/
+        target: release
+        build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
+        push: true
+        file: src/ros2/${{ env.Project-Name }}/Dockerfile
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release

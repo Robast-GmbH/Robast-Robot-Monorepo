@@ -78,10 +78,6 @@ drawer_sm_startup_debug
 DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
-trees
-DESTINATION trees)
-
-install(DIRECTORY
 config
 trees
 DESTINATION share/${PROJECT_NAME})
