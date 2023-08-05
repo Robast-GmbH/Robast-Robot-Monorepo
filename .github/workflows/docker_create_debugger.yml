@@ -1,4 +1,4 @@
-name: Create Docker Image Debug
+name: Create Docker Image debug
 
 #trigger workflow every day at 00:00
 on:
@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       Ros-Distro: humble
-      Project-Name: Debug
+      Project-Name: debug
 
     steps:
     - name: Checkout repository and submodules
