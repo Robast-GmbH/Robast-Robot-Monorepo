@@ -14,6 +14,7 @@ find_package(std_msgs REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(error_utils REQUIRED)
+find_package(bt_base_types REQUIRED)
 
 set(dependencies
   rclcpp
@@ -22,6 +23,7 @@ set(dependencies
   communication_interfaces
   behaviortree_cpp
   error_utils
+  bt_base_types
 )
 include_directories(
   include
@@ -86,6 +88,9 @@ list(APPEND plugin_libs electric_drawer_status_condition_bt_node)
 
 add_library(base_error_decorator_node SHARED src/decorator/base_error_decorator.cpp)
 list(APPEND plugin_libs base_error_decorator_node)
+
+add_library(partial_colorize_leds_action_bt_node SHARED src/action/partial_colorize_leds_action.cpp)
+list(APPEND plugin_libs partial_colorize_leds_action_bt_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})

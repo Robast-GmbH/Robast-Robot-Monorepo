@@ -23,7 +23,7 @@
 #include "behaviortree_cpp/bt_factory.h"
 #include "behaviortree_cpp/utils/shared_library.h"
 
-namespace drawer_statemachine
+namespace statemachine
 {
     BehaviorTreeEngine::BehaviorTreeEngine(const std::vector<std::string> &plugin_libraries)
     {

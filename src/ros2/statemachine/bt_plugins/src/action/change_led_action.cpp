@@ -22,7 +22,7 @@ namespace BT
     }
 }
 
-namespace drawer_statemachine
+namespace statemachine
 {
 
     using std::placeholders::_1;
@@ -84,10 +84,10 @@ namespace drawer_statemachine
         led_publisher_->publish(drawer_leds_);
     }
 
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-    factory.registerNodeType<drawer_statemachine::ChangeLED>("ChangeLED");
+    factory.registerNodeType<statemachine::ChangeLED>("ChangeLED");
 }

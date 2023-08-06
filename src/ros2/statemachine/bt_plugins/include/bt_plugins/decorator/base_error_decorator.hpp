@@ -11,7 +11,7 @@
 #include "communication_interfaces/msg/error_base_msg.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
   class BaseErrorDecorator : public BT::DecoratorNode
   {
@@ -40,5 +40,5 @@ namespace drawer_statemachine
     communication_interfaces::msg::ErrorBaseMsg::SharedPtr _error_msg;
     bool _is_error_received = false;
   };
-} // namespace drawer_statemachine
+} // namespace statemachine
 #endif // BT_PLUGINS__BT_BASE_ERROR_DECORATOR_HPP

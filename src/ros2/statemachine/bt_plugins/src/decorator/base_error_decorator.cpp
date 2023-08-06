@@ -1,7 +1,7 @@
 #include "bt_plugins/decorator/base_error_decorator.hpp"
 #include "error_utils/error_definitions.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
   BaseErrorDecorator::BaseErrorDecorator(const std::string &name, const BT::NodeConfig &config) : BT::DecoratorNode(name, config)
   {
@@ -71,10 +71,10 @@ namespace drawer_statemachine
       break;
     }
   }
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-  factory.registerNodeType<drawer_statemachine::BaseErrorDecorator>("BaseErrorDecorator");
+  factory.registerNodeType<statemachine::BaseErrorDecorator>("BaseErrorDecorator");
 }
