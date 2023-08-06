@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'client_direct = free_fleet_client_direct.client_direct:main'
+            'client_direct = free_fleet_client_direct.main:main'
         ],
     },
 )

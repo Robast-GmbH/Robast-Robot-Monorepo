@@ -2,17 +2,25 @@ import rclpy
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
 from rclpy.node import Node
 
+from rclpy.node import Node
+from cyclonedds.domain import DomainParticipant
+from cyclonedds.sub import DataReader
+from cyclonedds.topic import Topic
 
+from  .dds import dds_communicator as dds
 from . import math_helper
-from . import dds_helper
 from . import messages
 
 from enum import Enum
+
+from .dds.dds_communicator import DDS_communicator 
+from.dds import messages
 
 from communication_interfaces.msg import DrawerAddress
 from nav2_simple_commander.robot_navigator import BasicNavigator
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry
+from threading import Thread
 
 # TODO@ Torben this aproach is rubbisch switch the logic to simple statemaschine  
 
@@ -26,6 +34,13 @@ class free_fleet_client_direct(Node):
 
     def __init__(self):
         super().__init__('free_fleet_direct_client')
+        # test=DDS_communicator(42,"test",messages.FreeFleetData_SlideDrawerRequest)
+        # while True:
+        #     answer =test.get_next()
+        #     if(answer is not None):
+        #         print( answer.fleet_name)
+        #     print("")
+
 
         self.declare_parameter('fleet_name', 'ROBAST_1')
         self.declare_parameter('robot_name', 'RB0')
@@ -38,8 +53,8 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('move_base_server_name', 'goal_pose')
 
         self.declare_parameter('dds_domain', 42)
-        self.declare_parameter('dds_slide_drawer_topic', '/SlideDrawerRequest')
-        self.declare_parameter('dds_nav_goal_topic', '/MoveToRequest')
+        self.declare_parameter('dds_slide_drawer_topic', '/slide_drawer_request')
+        self.declare_parameter('dds_nav_goal_topic', '/move_to_request')
 
         self.fleet_name = self.get_parameter('fleet_name').get_parameter_value().string_value
         self.name = self.get_parameter('robot_name').get_parameter_value().string_value
@@ -63,45 +78,40 @@ class free_fleet_client_direct(Node):
             depth=1
         )
      
-        self.drawer_publisher_ = self.create_publisher(DrawerAddress, self.ros_opendrawer_topic, qos_profile=qos_profile_drawer)
-        self.e_drawer_open_publisher_ = self.create_publisher(DrawerAddress, self.ros_open_e_drawer_topic, qos_profile=qos_profile_drawer)
-        self.e_drawer_close_publisher_ = self.create_publisher(DrawerAddress, self.ros_close_e_drawer_topic, qos_profile=qos_profile_drawer)
+        self.drawer_publisher = self.create_publisher(DrawerAddress, self.ros_opendrawer_topic, qos_profile=qos_profile_drawer)
+        self.e_drawer_open_publisher = self.create_publisher(DrawerAddress, self.ros_open_e_drawer_topic, qos_profile=qos_profile_drawer)
+        self.e_drawer_close_publisher = self.create_publisher(DrawerAddress, self.ros_close_e_drawer_topic, qos_profile=qos_profile_drawer)
         timer_period = self.heartbeat
-        self.drawer_subscriber= dds_helper.dds_subscriber(self.dds_domain, self.dds_slide_drawer_topic, messages.FreeFleetData_SlideDrawerRequest)
-        self.movement_subscriber= dds_helper.dds_subscriber(self.dds_domain, self.dds_move_to_topic, messages.FreeFleetData_DestinationRequest)
-        # sub = self.create_subscription('/odom',Odometry, self.get_robot_odom)
+        self.drawer_subscriber= dds.DDS_communicator(self.dds_domain, self.dds_slide_drawer_topic, messages.FreeFleetData_SlideDrawerRequest)
+        self.movement_subscriber= dds.DDS_communicator(self.dds_domain, self.dds_move_to_topic, messages.FreeFleetData_DestinationRequest)
+        #sub = self.create_subscription('/odom',Odometry, self.get_robot_odom)
         self.action_timer = self.create_timer(timer_period, self.start_robot_behavior)
-        self.info_timer = self.create_timer(timer_period, self.start_sending_robot_info)
-    
+        #self.info_timer = self.create_timer(timer_period, self.start_sending_robot_info)
+        
 
     def start_robot_behavior(self):
-        while True:
+        if(self.status== Robot_states.IDLE):
+            drawer_task = self.drawer_subscriber.get_next()
+              
+            if drawer_task is not None:
+                self.do_drawer_action(drawer_task)
+                return
             
-            if(self.status== Robot_states.IDLE):
-                drawer_task =self.get_next_message(self.drawer_subscriber)
-                if drawer_task is not None:
-                    self.do_drawer_action(drawer_task, self.drawer_subscriber)
-                    return
+            move_task = self.movement_subscriber.get_next()
+            if move_task is not None:
+                self.do_move_action(move_task)
+                return
             
-                move_task = self.get_next_message(self.movement_subscriber)
-                if move_task is not None:
-                    self.do_move_action(move_task)
-                    return
-            
-            elif(self.status== Robot_states.DRAWERACTION):
-                pass
+            # elif(self.status== Robot_states.DRAWERACTION):
+            #     pass
 
-            elif(self.status== Robot_states.MOVEMENTACTION ):
-                pass
+            # elif(self.status== Robot_states.MOVEMENTACTION ):
+            #     pass
             
     def start_sending_robot_info(self):  
         #return self.navigator.isTaskComplete()
         #return self.navigator.getResult()
         pass
-
-    def get_next_message(self, subscriber):
-        #todo check that it is the correct robot 
-        return subscriber.get_next_msg()
     
         
     def check_task_recipient(self,task):
@@ -110,20 +120,17 @@ class free_fleet_client_direct(Node):
         else:
             return None
 
-    def do_drawer_action(self, msg, subscriber):
+    def do_drawer_action(self, msg):
         self.status= Robot_states.DRAWERACTION
         ros_msg=self.dds_Drawer_msg_to_ros(msg)
-        
         if(msg.open):
             #ToDo @Torben: nfc
             if(msg.e_drawer):
-                self.e_drawer_open_publisher_(ros_msg)
-
+                self.e_drawer_open_publisher.publish(ros_msg)
             else:
-                self.drawer_publisher_(ros_msg)
+                self.drawer_publisher.publish(ros_msg)
         else:
-                self.e_drawer_close_publisher_(ros_msg)
-                
+                self.e_drawer_close_publisher.publish(ros_msg)
 
     def dds_Drawer_msg_to_ros(self,dds_msg):
         ros_msg = DrawerAddress()
@@ -182,13 +189,3 @@ class free_fleet_client_direct(Node):
         
        
 
-def main(args=None):
-    rclpy.init(args=args)
-    ff_client = free_fleet_client_direct()
-    rclpy.spin(ff_client)
-    free_fleet_client_direct.destroy_node()
-    rclpy.shutdown()
-
-
-if __name__ == '__main__':
-    main()

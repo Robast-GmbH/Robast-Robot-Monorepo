@@ -4,20 +4,26 @@ from cyclonedds.sub import DataReader
 from cyclonedds.core import Listener
 from cyclonedds.pub import DataWriter
 from threading import Thread
+from cyclonedds.util import duration
 
 # import fastdds
 
-
-def dds_publish(dds:str, dds_domain_id:int, message_path:str, message_typ, message):
-    if dds == "cyclone_dds":
-        cyclonedds_publish(dds_domain_id, message_path, message_typ, message)
+class DDS_communicator( ):
+    def __init__(self, dds_domain_id:int, message_path:str, message_typ):
+        self.domain = DomainParticipant(dds_domain_id)
+        self.topic = Topic(self.domain, message_path, message_typ)
+        self.publischer = DataWriter(self.domain, self.topic)
+        self.subscriber = DataReader(self.domain, self.topic)
     
-def cyclonedds_publish(dds_domain_id, message_path, message_typ, message):
-    participant = DomainParticipant(domain_id=dds_domain_id)
-    topic = Topic(participant, message_path, message_typ)
-    listener = Listener()
-    writer = DataWriter(participant, topic, listener=listener)
-    writer.write(message)
+    def publish(self, message):
+        self.publischer.write(message)
+    
+    def get_next(self):
+        try:
+            sample =self.subscriber.take_one(timeout=1)
+            return sample
+        except(StopIteration):
+            return None
 
 
 # def fastdds_publish(message, topic_name, topic_typ, dds_domain_id ):
@@ -50,25 +56,7 @@ def cyclonedds_publish(dds_domain_id, message_path, message_typ, message):
 #     writer = publisher.create_datawriter(topic, writer_qos)      
 #     writer.write(message)
 
-def dds_subscriber(dds:str, dds_domain_id:int, topic_name:str, topic_typ, function):
-    if dds == "cyclone_dds":
-        cyclonedds_subscriber(dds_domain_id, topic_name, topic_typ, function)
 
-def cyclonedds_subscriber(dds_domain_id, topic_name, topic_typ, function):
-    x = Thread(target= get_status, daemon=True, args=(dds_domain_id,topic_name,topic_typ,function,))
-    x.start()
-
-def get_status( dds_domain_id, topic_name, topic_typ, function):
-    participant = DomainParticipant(domain_id = dds_domain_id)
-    topic = Topic(
-    participant,
-    topic_name,
-    topic_typ)
-
-    reader = DataReader(participant, topic)
-
-    for msg in reader.take_iter():
-        function(msg)
 
 #topic_data_type = HelloWorld.HelloWorldPubSubType()
 #topic_data_type.setName("HelloWorld")
