@@ -1,5 +1,5 @@
-#ifndef BT_PLUGINS__BT_BASE_ERROR_DECORATOR_HPP
-#define BT_PLUGINS__BT_BASE_ERROR_DECORATOR_HPP
+#ifndef BT_PLUGINS__BT_BASE_RESET_DECORATOR_HPP
+#define BT_PLUGINS__BT_BASE_RESET_DECORATOR_HPP
 
 #include <string>
 #include <memory>
@@ -35,4 +35,4 @@ namespace statemachine
     rclcpp::CallbackGroup::SharedPtr _callback_group;
   };
 } // namespace statemachine
-#endif // BT_PLUGINS__BT_BASE_ERROR_DECORATOR_HPP
+#endif // BT_PLUGINS__BT_BASE_RESET_DECORATOR_HPP
