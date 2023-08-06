@@ -23,11 +23,9 @@ namespace statemachine
     }
 
   protected:
-    void callbackDrawerFeedback(const std_msgs::msg::Bool::SharedPtr msg);
-    void logError();
-    typename rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr drawer_status_sub_;
+    void callbackResetFeedback(const std_msgs::msg::Bool::SharedPtr msg);
+    typename rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr reset_signal_sub_;
     std::string topic_name_;
-    BT::Blackboard::Ptr blackboard_;
     rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
 
   private:
