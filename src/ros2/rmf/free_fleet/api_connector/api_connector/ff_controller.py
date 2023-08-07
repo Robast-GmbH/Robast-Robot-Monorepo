@@ -49,7 +49,8 @@ class free_fleet_controller:
     # handle destination request
     def handle_destination_request(self, fleet_name, robot_name, destination):
         state = self.get_robot_state(robot_name)
-        destination_request = messages.FreeFleetData_DestinationRequest(robot_name=robot_name, fleet_name=fleet_name, task_id=state, destination=destination)
+        goal= messages.FreeFleetData_Location(sec=0, nanosec=0, x=destination.pose.x, y= destination.pose.y, yaw=destination.orientation,level_name="")
+        destination_request = messages.FreeFleetData_DestinationRequest(robot_name=robot_name, fleet_name=fleet_name, task_id="", destination=goal)
         self.dds_destination_request.publish(destination_request)
 
     # handle_open_drawer_request
