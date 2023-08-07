@@ -189,42 +189,38 @@ def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
 def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depends(get_db)):
-    db_module= crud.get_drawer(db=db, module_id=module.id, drawer_id= module.drawer_id,robot_name=robot_name )
-    db_robot= crud.get_robot(db=db, robot_name=robot_name)
-    if db_robot is None:
+    message = templates.getDrawer(crud, db, module, robot_name, schemas)
+    if message is "robot":
         raise HTTPException(status_code=404, detail="robot not found")
     
-    if db_module is None:
+    if message is "module":
         raise HTTPException(status_code=404, detail="module not found")
-
-    robot= templates.json_robot()
-    robot["name"]= db_robot.robot_name
-    robot["fleet_name"]= db_robot.fleet_name
-    drawer= templates.json_drawer()
-    drawer["id"]=db_module.drawer_id
-    drawer["fleet_name"]= db_robot.fleet_name
-    message={"robot":robot, "drawer":drawer}
+    
     headers =  {"Content-Type":"application/json"}
-    sender = requests.Session()
-    answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/open", json= json.dumps(message), headers= headers, verify=False)
-    return answer.status_code
+    sender = requests.Session() 
+    answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/open", data= json.dumps(message), headers= headers, verify=False)
+
+    if answer.status_code!= 200:
+        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    return 
 
 # close_drawer
 @app.post("/robots/{robot_name}/modules/close")
 def close_drawer( robot_name: str, module: schemas.ModuleBase , db: Session = Depends(get_db)):
-    db_module= crud.get_drawer(module_id=module.id,drawer_id= module.drawer_id )
-    if db_module is not None:
-        robot= templates.json_robot()
-        robot["name"]=robot_name
-        robot["fleet_name"]=""
-        drawer= templates.json_drawer()
-        drawer["id"]=db_module
-        drawer["fleet_name"]= drawer.drawer_id
-        message={"robot":robot, "drawer":drawer}
+        message = templates.getDrawer(crud, db, module, robot_name, schemas)
+        if message is "robot":
+            raise HTTPException(status_code=404, detail="robot not found")
+    
+        if message is "module":
+            raise HTTPException(status_code=404, detail="module not found")
+    
         headers =  {"Content-Type":"application/json"}
         sender = requests.Session()
-        answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/close", json= json.dumps(message),headers= headers)
-        return answer.status_code
+        answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/close", data= json.dumps(message),headers= headers)
+
+        if answer.status_code!= 200:
+            raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+        return 
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port= config['restapi_port'])
