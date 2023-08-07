@@ -1,5 +1,4 @@
-#include "bt_plugins/decorator/base_error_decorator.hpp"
-#include "error_utils/error_definitions.hpp"
+#include "bt_plugins/decorator/reset_tree_decorator.hpp"
 
 namespace statemachine
 {
@@ -22,7 +21,7 @@ namespace statemachine
         topic_name_,
         qos,
         std::bind(&ResetDecorator::
-                      callbackDrawerFeedback,
+                      callbackResetFeedback,
                   this, std::placeholders::_1),
         sub_option);
   }

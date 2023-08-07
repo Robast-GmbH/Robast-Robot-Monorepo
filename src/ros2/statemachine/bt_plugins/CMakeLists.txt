@@ -83,6 +83,9 @@ list(APPEND plugin_libs drawer_status_condition_bt_node)
 add_library(nfc_to_drawer_action_bt_node SHARED src/action/nfc_to_drawer_action.cpp)
 list(APPEND plugin_libs nfc_to_drawer_action_bt_node)
 
+add_library(reset_decorator_bt_node SHARED src/decorator/reset_tree_decorator.cpp)
+list(APPEND plugin_libs reset_decorator_bt_node)
+
 add_library(electric_drawer_status_condition_bt_node SHARED src/condition/electric_drawer_status_condition.cpp)
 list(APPEND plugin_libs electric_drawer_status_condition_bt_node)
 
