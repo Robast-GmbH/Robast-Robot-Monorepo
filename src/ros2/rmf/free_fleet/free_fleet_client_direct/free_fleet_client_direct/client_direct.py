@@ -12,7 +12,7 @@ from . import math_helper
 
 from enum import Enum
 
-from communication_interfaces.msg import DrawerAddress
+from communication_interfaces.msg import DrawerAddress, DrawerStatus
 from nav2_simple_commander.robot_navigator import BasicNavigator
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry
@@ -129,12 +129,10 @@ class free_fleet_client_direct(Node):
             self.robot_odom,
             self.get_robot_odom,
             QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
-        # self.subscriber_drawerStatus =self.create_subscription(
-        #     ,
-        #     ,
-        #     self.,
-        #     QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
-        #subscribe /drawer_is_open
+        self.subscriber_drawerStatus =self.create_subscription(
+            DrawerStatus, "/drawer_is_open", self.get_drawer_changes,
+            QoSProfile(depth=10, reliability=ReliabilityPolicy.BEST_EFFORT))
+        
         
     def check_task_recipient(self,task):
         if task.fleet_name == self.fleet_name and task.robot_name == self.name:
@@ -195,7 +193,7 @@ class free_fleet_client_direct(Node):
         pose.pose.orientation.w = qw
         return pose
 
-    def get_robot_odom(self, data):
+    def get_robot_odom(self, data:Odometry):
         x = data.pose.pose.position.x
         y = data.pose.pose.position.y
         q1 = data.pose.pose.orientation.x
@@ -209,6 +207,13 @@ class free_fleet_client_direct(Node):
         self.robot_x= x
         self.robot_y=y
         self.robot_yaw=yaw
+        #publish position
+
+    def get_drawer_changes(self, data:DrawerStatus):
+        drawer_id = data.drawer_address.drawer_id
+        module_id = data.drawer_address.module_id
+        drawer_open= data.drawer_is_open
+        #publish drawer update
 
 
 
