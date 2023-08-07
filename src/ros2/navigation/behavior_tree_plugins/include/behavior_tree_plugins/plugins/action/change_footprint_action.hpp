@@ -63,8 +63,8 @@ namespace nav2_behavior_tree
      */
     static BT::PortsList providedPorts()
     {
-      return providedBasicPorts({BT::InputPort<std::vector<geometry_msgs::msg::Point>>(
-        "footprint", "new footprint for local and global costmap")});
+      return providedBasicPorts(
+        {BT::InputPort<std::string>("footprint", "new footprint for local and global costmap")});
     }
   };
 

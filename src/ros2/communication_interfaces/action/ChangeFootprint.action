@@ -1,5 +1,5 @@
 #goal
-geometry_msgs/Point[] footprint
+string footprint
 ---
 #result
 ---
