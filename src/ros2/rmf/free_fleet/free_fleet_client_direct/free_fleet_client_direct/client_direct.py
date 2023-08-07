@@ -94,6 +94,7 @@ class free_fleet_client_direct(Node):
             drawer_task = self.drawer_subscriber.get_next()
               
             if drawer_task is not None:
+                print("drawer")
                 self.do_drawer_action(drawer_task)
                 return
             
