@@ -80,11 +80,6 @@ namespace behavior_tree_server
      */
     nav2_util::CallbackReturn on_shutdown(const rclcpp_lifecycle::State& state) override;
 
-    /**
-     * @brief Action server callbacks
-     */
-    void change_footprint();
-
     // Our action server
     std::unique_ptr<ChangeFootprintActionServer> action_server_;
     rclcpp::CallbackGroup::SharedPtr callback_group_;
@@ -93,6 +88,18 @@ namespace behavior_tree_server
     ActionStatus current_goal_status_;
     int loop_rate_;
     std::vector<int> failed_ids_;
+
+   private:
+    rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr create_set_parameters_client(
+      std::string service_name);
+
+    bool send_parameter_set_service_request(rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client,
+                                            std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request);
+
+    /**
+     * @brief Action server callbacks
+     */
+    void change_footprint();
   };
 
 }   // namespace behavior_tree_server
