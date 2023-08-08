@@ -38,6 +38,9 @@
             <ClearEntireCostmap name="ClearGlobalCostmap-Subtree" service_name="global_costmap/clear_entirely_global_costmap"/>
           </Sequence>
           <Wait wait_duration="5"/>
+          <!-- TODO@Jacob: To what size should the footprint be reduced? -->
+          <ChangeFootprint footprint="[[0.25, 0.20], [0.25, -0.2], [-0.25, -0.20], [-0.25, 0.2]]"/>
+          <ChangeFootprintPadding footprint_padding="0.01"/>
         </RoundRobin>
       </ReactiveFallback>
     </RecoveryNode>
