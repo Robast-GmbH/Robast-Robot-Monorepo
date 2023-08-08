@@ -4,15 +4,11 @@
 #include <memory>
 #include <mutex>
 #include <string>
-#include <vector>
 
 #include "communication_interfaces/action/change_footprint.hpp"
-#include "nav2_core/waypoint_task_executor.hpp"
 #include "nav2_util/lifecycle_node.hpp"
 #include "nav2_util/node_utils.hpp"
 #include "nav2_util/simple_action_server.hpp"
-#include "nav_msgs/msg/path.hpp"
-#include "rclcpp_action/rclcpp_action.hpp"
 
 namespace behavior_tree_server
 {
