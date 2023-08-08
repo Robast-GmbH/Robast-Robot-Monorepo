@@ -73,7 +73,7 @@ namespace behavior_tree_server
     std::string service_name)
   {
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client =
-      this->create_client<rcl_interfaces::srv::SetParameters>(service_name);
+      shared_from_this()->create_client<rcl_interfaces::srv::SetParameters>(service_name);
     if (!client->wait_for_service(std::chrono::seconds(1)))
     {
       RCLCPP_ERROR(get_logger(), "Service %s not available...", service_name.c_str());
@@ -85,13 +85,9 @@ namespace behavior_tree_server
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client,
     std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request)
   {
-    // Call the service
     auto response = client->async_send_request(request);
 
-    RCLCPP_INFO(get_logger(), "BtServerCollection::send_parameter_set_service_request()");   // TODO: Remove!
-
-    // Handle the response (optional)
-    if (rclcpp::spin_until_future_complete(shared_from_this(), response) == rclcpp::FutureReturnCode::SUCCESS)
+    if (response.wait_for(std::chrono::seconds(1)) == std::future_status::ready)
     {
       RCLCPP_INFO(get_logger(), "Parameter set successfully");
       return true;
@@ -105,7 +101,7 @@ namespace behavior_tree_server
 
   void BtServerCollection::change_footprint()
   {
-    RCLCPP_INFO(get_logger(), "BtServerCollection::change_footprint() requested!");
+    RCLCPP_INFO(get_logger(), "Change of footprint for local and global footprint requested!");
 
     auto goal = action_server_->get_current_goal();
     auto feedback = std::make_shared<ChangeFootprintAction::Feedback>();
@@ -120,21 +116,15 @@ namespace behavior_tree_server
     auto request = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
     request->parameters.push_back(parameter);
 
-    RCLCPP_INFO(get_logger(), "BtServerCollection::change_footprint() requested 2!");   // TODO: Remove!
-
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr set_local_costmap_parameters_client =
       create_set_parameters_client("/local_costmap/local_costmap/set_parameters");
 
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr set_global_costmap_parameters_client =
       create_set_parameters_client("/global_costmap/global_costmap/set_parameters");
 
-    RCLCPP_INFO(get_logger(), "BtServerCollection::change_footprint() requested 3!");   // TODO: Remove!
-
     bool set_parameter_succeeded = false;
     set_parameter_succeeded = send_parameter_set_service_request(set_local_costmap_parameters_client, request) &&
                               send_parameter_set_service_request(set_global_costmap_parameters_client, request);
-
-    RCLCPP_INFO(get_logger(), "BtServerCollection::change_footprint() requested 5!");   // TODO: Remove!
 
     if (set_parameter_succeeded)
     {
