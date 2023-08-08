@@ -1,0 +1,235 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "detail": "Symlink Build of the project",
+            "type": "shell",
+            "command": "clear; colcon build --symlink-install --packages-skip nav2_behavior_tree groot --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "problemMatcher": []
+        },
+        {
+            "label": "debug_build",
+            "detail": "Symlink Build of the project",
+            "type": "shell",
+            "command": "clear; colcon build --symlink-install --packages-skip nav2_behavior_tree groot --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic",
+            "problemMatcher": []
+        },
+        {
+            "label": "purge",
+            "detail": "delete /install /log /build",
+            "type": "shell",
+            "command": "rm -f -r ${cwd}/install ${cwd}/log ${cwd}/build ",
+            "problemMatcher": []
+        },
+        {
+            "label": "new ament_cmake package",
+            "detail": "Create a new ROS cpp package from a template.",
+            "type": "shell",
+            "command": "ros2 pkg create --destination-directory src/statemachine --build-type ament_cmake ${input:package}",
+            "problemMatcher": []
+        },
+        {
+            "label": "install dependencies",
+            "detail": "Install all dependencies specified in the workspaces package.xml files.",
+            "type": "shell",
+            "command": "sudo apt-get update && rosdep update && rosdep install --from-paths src --ignore-src -y",
+            "problemMatcher": []
+        },
+        {
+            "label": "launch nfc statemachine",
+            "detail": "launch the nfc drawer state machine.",
+            "type": "shell",
+            "command": "ros2 launch drawer_sm nfc_drawer_statemachine_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "launch drawer statemachine",
+            "detail": "launch the 'normal' drawer state machine.",
+            "type": "shell",
+            "command": "ros2 launch drawer_sm drawer_statemachine_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "launch electrical drawer statemachine",
+            "detail": "launch the electrical drawer state machine.",
+            "type": "shell",
+            "command": "ros2 launch drawer_sm electrical_drawer_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "Trigger e-drawer 1",
+            "detail": "Triggers the e-drawer statemachine to start opening.",
+            "type": "shell",
+            "command": "ros2 topic pub /trigger_electric_drawer_tree communication_interfaces/msg/DrawerAddress '{module_id: 1, drawer_id: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Trigger closing e-drawer 1",
+            "detail": "Triggers the e-drawer statemachine to start closing.",
+            "type": "shell",
+            "command": "ros2 topic pub /close_drawer communication_interfaces/msg/DrawerAddress '{module_id: 1, drawer_id: 0}' --once",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test",
+            "detail": "Build and executes all tests and shows the links to the testreport with Errors",
+            "type": "shell",
+            "dependsOn": [
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "command": "source install/setup.bash; colcon test; colcon test-result ",
+            "problemMatcher": []
+        },
+        // Linting and static code analysis tasks
+        {
+            "label": "fix",
+            "detail": "Reformat files with uncrustify.",
+            "type": "shell",
+            "command": "ament_uncrustify --reformat src/",
+            "problemMatcher": []
+        },
+        {
+            "label": "uncrustify",
+            "detail": "Lint files with uncrustify.",
+            "type": "shell",
+            "command": "ament_uncrustify src/",
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "silent",
+                "clear": true
+            },
+            "problemMatcher": [
+                {
+                    "owner": "uncrustify",
+                    "source": "uncrustify",
+                    "fileLocation": "relative",
+                    "pattern": [
+                        // just the file name message
+                        {
+                            "regexp": "^(.*)'(.*)':",
+                            "kind": "file",
+                            "file": 2,
+                            "message": 1
+                        }
+                    ]
+                }
+            ]
+        },
+        {
+            "label": "cpplint",
+            "detail": "Lint files with cpplint.",
+            "type": "ament",
+            "task": "cpplint",
+            "path": "src/",
+            "problemMatcher": [
+                "$ament_cpplint"
+            ],
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "silent",
+                "clear": true
+            },
+        },
+        {
+            "label": "cppcheck",
+            "detail": "Run static code checker cppcheck.",
+            "type": "ament",
+            "task": "cppcheck",
+            "path": "src/",
+            "problemMatcher": [
+                "$ament_cppcheck"
+            ],
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "silent",
+                "clear": true
+            },
+        },
+        {
+            "label": "lint_cmake",
+            "detail": "Run lint on cmake files.",
+            "type": "ament",
+            "task": "lint_cmake",
+            "path": "src/",
+            "problemMatcher": [
+                "$ament_lint_cmake"
+            ],
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "silent",
+                "clear": true
+            }
+        },
+        {
+            "label": "flake8",
+            "detail": "Run flake8 on python files.",
+            "type": "ament",
+            "task": "flake8",
+            "path": "src/",
+            "problemMatcher": [
+                "$ament_flake8"
+            ],
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "silent",
+                "clear": true
+            }
+        },
+        {
+            "label": "pep257",
+            "detail": "Run pep257 on python files.",
+            "type": "ament",
+            "task": "pep257",
+            "path": "src/",
+            "problemMatcher": [
+                "$ament_pep257"
+            ],
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "silent",
+                "clear": true
+            }
+        },
+        {
+            "label": "xmllint",
+            "detail": "Run xmllint on xml files.",
+            "type": "ament",
+            "task": "xmllint",
+            "path": "src/",
+            "problemMatcher": [
+                "$ament_xmllint",
+            ],
+            "presentation": {
+                "panel": "dedicated",
+                "reveal": "silent",
+                "clear": true
+            }
+        },
+        {
+            "label": "lint all",
+            "key": "crtl+shift+l",
+            "detail": "Run all linters.",
+            "dependsOn": [
+                "cppcheck",
+                "cpplint",
+                "flake8",
+                "lint_cmake",
+                "pep257",
+                "xmllint",
+                "uncrustify"
+            ],
+            "problemMatcher": []
+        },
+    ],
+    "inputs": [
+        {
+            "id": "package",
+            "type": "promptString",
+            "description": "Package name"
+        }
+    ],
+}
