@@ -83,13 +83,13 @@ namespace behavior_tree_server
     std::unique_ptr<ChangeFootprintActionServer> _action_server_change_footprint;
     std::unique_ptr<ChangeFootprintPaddingActionServer> _action_server_change_footprint_padding;
 
-    bool set_parameter_for_local_and_global_costmap(rcl_interfaces::msg::Parameter parameter);
+    bool set_parameter_for_local_and_global_costmap(const rcl_interfaces::msg::Parameter parameter);
 
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr create_set_parameters_client(
-      std::string service_name);
+      const std::string service_name);
 
     bool send_parameter_set_service_request(rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client,
-                                            std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request);
+                                            const std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request);
 
     void change_footprint();
 

@@ -78,7 +78,7 @@ namespace behavior_tree_server
   }
 
   rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr BtServerCollection::create_set_parameters_client(
-    std::string service_name)
+    const std::string service_name)
   {
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client =
       shared_from_this()->create_client<rcl_interfaces::srv::SetParameters>(service_name);
@@ -91,7 +91,7 @@ namespace behavior_tree_server
 
   bool BtServerCollection::send_parameter_set_service_request(
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client,
-    std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request)
+    const std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request)
   {
     auto response = client->async_send_request(request);
 
@@ -107,7 +107,7 @@ namespace behavior_tree_server
     }
   }
 
-  bool BtServerCollection::set_parameter_for_local_and_global_costmap(rcl_interfaces::msg::Parameter parameter)
+  bool BtServerCollection::set_parameter_for_local_and_global_costmap(const rcl_interfaces::msg::Parameter parameter)
   {
     std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request =
       std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
