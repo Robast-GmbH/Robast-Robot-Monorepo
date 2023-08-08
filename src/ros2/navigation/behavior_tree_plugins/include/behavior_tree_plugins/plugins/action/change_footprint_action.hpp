@@ -18,7 +18,6 @@
 #include <string>
 
 #include "communication_interfaces/action/change_footprint.hpp"
-#include "geometry_msgs/msg/point.hpp"
 #include "nav2_behavior_tree/bt_action_node.hpp"
 
 namespace nav2_behavior_tree
