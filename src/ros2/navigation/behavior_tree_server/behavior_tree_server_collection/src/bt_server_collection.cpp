@@ -16,16 +16,21 @@ namespace behavior_tree_server
   {
     RCLCPP_INFO(get_logger(), "Configuring");
 
-    callback_group_ = create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive, false);
-    callback_group_executor_.add_callback_group(callback_group_, get_node_base_interface());
-
-    action_server_ =
+    _action_server_change_footprint =
       std::make_unique<ChangeFootprintActionServer>(get_node_base_interface(),
                                                     get_node_clock_interface(),
                                                     get_node_logging_interface(),
                                                     get_node_waitables_interface(),
                                                     "change_footprint",
                                                     std::bind(&BtServerCollection::change_footprint, this));
+
+    _action_server_change_footprint_padding = std::make_unique<ChangeFootprintPaddingActionServer>(
+      get_node_base_interface(),
+      get_node_clock_interface(),
+      get_node_logging_interface(),
+      get_node_waitables_interface(),
+      "change_footprint_padding",
+      std::bind(&BtServerCollection::change_footprint_padding, this));
 
     return nav2_util::CallbackReturn::SUCCESS;
   }
@@ -34,7 +39,8 @@ namespace behavior_tree_server
   {
     RCLCPP_INFO(get_logger(), "Activating");
 
-    action_server_->activate();
+    _action_server_change_footprint->activate();
+    _action_server_change_footprint_padding->activate();
 
     // create bond connection
     createBond();   // TODO@Jacob: What is this? Do we need this?
@@ -46,7 +52,8 @@ namespace behavior_tree_server
   {
     RCLCPP_INFO(get_logger(), "Deactivating");
 
-    action_server_->deactivate();
+    _action_server_change_footprint->deactivate();
+    _action_server_change_footprint_padding->deactivate();
 
     // destroy bond connection
     destroyBond();   // TODO@Jacob: What is this? Do we need this?
@@ -58,7 +65,8 @@ namespace behavior_tree_server
   {
     RCLCPP_INFO(get_logger(), "Cleaning up");
 
-    action_server_.reset();
+    _action_server_change_footprint.reset();
+    _action_server_change_footprint_padding.reset();
 
     return nav2_util::CallbackReturn::SUCCESS;
   }
@@ -99,21 +107,10 @@ namespace behavior_tree_server
     }
   }
 
-  void BtServerCollection::change_footprint()
+  bool BtServerCollection::set_parameter_for_local_and_global_costmap(rcl_interfaces::msg::Parameter parameter)
   {
-    RCLCPP_INFO(get_logger(), "Change of footprint for local and global footprint requested!");
-
-    auto goal = action_server_->get_current_goal();
-    auto feedback = std::make_shared<ChangeFootprintAction::Feedback>();
-    auto result = std::make_shared<ChangeFootprintAction::Result>();
-
-    // Prepare the SetParameters service request
-    rcl_interfaces::msg::Parameter parameter;
-    parameter.name = "footprint";
-    parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
-    parameter.value.string_value = goal->footprint;
-
-    auto request = std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
+    std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request =
+      std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
     request->parameters.push_back(parameter);
 
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr set_local_costmap_parameters_client =
@@ -122,13 +119,51 @@ namespace behavior_tree_server
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr set_global_costmap_parameters_client =
       create_set_parameters_client("/global_costmap/global_costmap/set_parameters");
 
-    bool set_parameter_succeeded = false;
-    set_parameter_succeeded = send_parameter_set_service_request(set_local_costmap_parameters_client, request) &&
-                              send_parameter_set_service_request(set_global_costmap_parameters_client, request);
+    return send_parameter_set_service_request(set_local_costmap_parameters_client, request) &&
+           send_parameter_set_service_request(set_global_costmap_parameters_client, request);
+  }
 
-    if (set_parameter_succeeded)
+  void BtServerCollection::change_footprint()
+  {
+    auto goal = _action_server_change_footprint->get_current_goal();
+    auto feedback = std::make_shared<ChangeFootprintAction::Feedback>();
+    auto result = std::make_shared<ChangeFootprintAction::Result>();
+
+    RCLCPP_INFO(get_logger(),
+                "Change to target footprint %s for local and global footprint requested!",
+                (goal->footprint).c_str());
+
+    // Prepare the SetParameters service request
+    rcl_interfaces::msg::Parameter parameter;
+    parameter.name = "footprint";
+    parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
+    parameter.value.string_value = goal->footprint;
+
+    if (set_parameter_for_local_and_global_costmap(parameter))
     {
-      action_server_->succeeded_current(result);
+      _action_server_change_footprint->succeeded_current(result);
+    }
+  }
+
+  void BtServerCollection::change_footprint_padding()
+  {
+    auto goal = _action_server_change_footprint_padding->get_current_goal();
+    auto feedback = std::make_shared<ChangeFootprintPaddingAction::Feedback>();
+    auto result = std::make_shared<ChangeFootprintPaddingAction::Result>();
+
+    RCLCPP_INFO(get_logger(),
+                "Change of footprint padding to %f for local and global footprint requested!",
+                goal->footprint_padding);
+
+    // Prepare the SetParameters service request
+    rcl_interfaces::msg::Parameter parameter;
+    parameter.name = "footprint_padding";
+    parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+    parameter.value.double_value = goal->footprint_padding;
+
+    if (set_parameter_for_local_and_global_costmap(parameter))
+    {
+      _action_server_change_footprint_padding->succeeded_current(result);
     }
   }
 

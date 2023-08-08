@@ -6,6 +6,7 @@
 #include <string>
 
 #include "communication_interfaces/action/change_footprint.hpp"
+#include "communication_interfaces/action/change_footprint_padding.hpp"
 #include "nav2_util/lifecycle_node.hpp"
 #include "nav2_util/node_utils.hpp"
 #include "nav2_util/simple_action_server.hpp"
@@ -31,6 +32,8 @@ namespace behavior_tree_server
    public:
     using ChangeFootprintAction = communication_interfaces::action::ChangeFootprint;
     using ChangeFootprintActionServer = nav2_util::SimpleActionServer<ChangeFootprintAction>;
+    using ChangeFootprintPaddingAction = communication_interfaces::action::ChangeFootprintPadding;
+    using ChangeFootprintPaddingActionServer = nav2_util::SimpleActionServer<ChangeFootprintPaddingAction>;
 
     /**
      * @brief A constructor for split_path_follower::BtServerCollection class
@@ -76,26 +79,21 @@ namespace behavior_tree_server
      */
     nav2_util::CallbackReturn on_shutdown(const rclcpp_lifecycle::State& state) override;
 
-    // Our action server
-    std::unique_ptr<ChangeFootprintActionServer> action_server_;
-    rclcpp::CallbackGroup::SharedPtr callback_group_;
-    rclcpp::executors::SingleThreadedExecutor callback_group_executor_;
-    bool stop_on_failure_;
-    ActionStatus current_goal_status_;
-    int loop_rate_;
-    std::vector<int> failed_ids_;
-
    private:
+    std::unique_ptr<ChangeFootprintActionServer> _action_server_change_footprint;
+    std::unique_ptr<ChangeFootprintPaddingActionServer> _action_server_change_footprint_padding;
+
+    bool set_parameter_for_local_and_global_costmap(rcl_interfaces::msg::Parameter parameter);
+
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr create_set_parameters_client(
       std::string service_name);
 
     bool send_parameter_set_service_request(rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client,
                                             std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request);
 
-    /**
-     * @brief Action server callbacks
-     */
     void change_footprint();
+
+    void change_footprint_padding();
   };
 
 }   // namespace behavior_tree_server

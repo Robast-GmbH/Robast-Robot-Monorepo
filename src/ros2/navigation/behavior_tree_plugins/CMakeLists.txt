@@ -63,6 +63,8 @@ add_library(yaml_poses_import_action_bt_node SHARED plugins/action/yaml_poses_im
 list(APPEND plugin_libs yaml_poses_import_action_bt_node)
 add_library(change_footprint_action_bt_node SHARED plugins/action/change_footprint_action.cpp)
 list(APPEND plugin_libs change_footprint_action_bt_node)
+add_library(change_footprint_padding_action_bt_node SHARED plugins/action/change_footprint_padding_action.cpp)
+list(APPEND plugin_libs change_footprint_padding_action_bt_node)
 
 # CONDITION NODES
 add_library(check_state_condition_bt_node SHARED plugins/condition/check_state_condition.cpp)

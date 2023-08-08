@@ -27,6 +27,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "action/AuthenticateUser.action"
   "action/CreateUserNfcTag.action"
   "action/ChangeFootprint.action"
+  "action/ChangeFootprintPadding.action"
   "action/ComputeInterimGoal.action"
   "action/DrawerInteraction.action"
   "action/DrawerUserAccess.action"

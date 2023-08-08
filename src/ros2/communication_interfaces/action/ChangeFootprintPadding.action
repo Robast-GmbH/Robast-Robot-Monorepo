@@ -1,0 +1,7 @@
+#goal
+float64 footprint_padding
+---
+#result
+---
+#feedback
+std_msgs/Empty feedback
