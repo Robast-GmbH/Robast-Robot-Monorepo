@@ -89,6 +89,21 @@ namespace behavior_tree_server
     return client;
   }
 
+  void BtServerCollection::async_wait_until_reset_parameter(const rcl_interfaces::msg::Parameter parameter)
+  {
+    boost::asio::io_context io;
+    // TODO@Jacob: Add a parameter for the period of the timer
+    boost::asio::steady_timer t(io, boost::asio::chrono::milliseconds(1000));
+    t.async_wait(boost::bind(&BtServerCollection::reset_parameter, this, parameter));
+    io.run();
+  }
+
+  void BtServerCollection::reset_parameter(const rcl_interfaces::msg::Parameter parameter)
+  {
+    RCLCPP_INFO(get_logger(), "Resetting parameter after timer expired!");
+    set_parameter_for_local_and_global_costmap(parameter);
+  }
+
   bool BtServerCollection::send_parameter_set_service_request(
     rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client,
     const std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request)

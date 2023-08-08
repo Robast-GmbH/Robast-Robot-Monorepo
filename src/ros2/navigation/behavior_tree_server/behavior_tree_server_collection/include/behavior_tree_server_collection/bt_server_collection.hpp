@@ -1,6 +1,9 @@
 #ifndef BEHAVIOR_TREE_SERVER__BT_SERVER_COLLECTION_HPP_
 #define BEHAVIOR_TREE_SERVER__BT_SERVER_COLLECTION_HPP_
 
+#include <boost/asio/io_context.hpp>
+#include <boost/asio/steady_timer.hpp>
+#include <boost/bind/bind.hpp>
 #include <memory>
 #include <mutex>
 #include <string>
@@ -90,6 +93,10 @@ namespace behavior_tree_server
 
     bool send_parameter_set_service_request(rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client,
                                             const std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request);
+
+    void async_wait_until_reset_parameter(const rcl_interfaces::msg::Parameter parameter);
+
+    void reset_parameter(const rcl_interfaces::msg::Parameter parameter);
 
     void change_footprint();
 
