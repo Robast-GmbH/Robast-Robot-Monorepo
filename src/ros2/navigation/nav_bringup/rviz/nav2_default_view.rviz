@@ -5,10 +5,9 @@ Panels:
     Property Tree Widget:
       Expanded:
         - /Global Options1
+        - /RobotModel1/Status1
         - /TF1/Frames1
         - /TF1/Tree1
-        - /Map1
-        - /Controller1
         - /Controller1/Local Costmap1
         - /PointCloud23/Autocompute Value Bounds1
       Splitter Ratio: 0.46290323138237
@@ -67,7 +66,7 @@ Visualization Manager:
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
-        Link Tree Style: ""
+        Link Tree Style: Links in Alphabetic Order
       Mass Properties:
         Inertia: false
         Mass: false
@@ -81,53 +80,167 @@ Visualization Manager:
       Frame Timeout: 15
       Frames:
         All Enabled: false
+        alu_profile_link_bottom:
+          Value: true
+        alu_profile_link_gripper:
+          Value: true
+        alu_profile_link_left:
+          Value: true
+        alu_profile_link_right:
+          Value: true
+        alu_profile_link_top:
+          Value: true
+        back_realsense_camera_camera_depth_frame:
+          Value: true
+        back_realsense_camera_camera_fisheye_frame:
+          Value: true
+        back_realsense_camera_camera_fisheye_optical_frame:
+          Value: true
+        back_realsense_camera_camera_left_ir_frame:
+          Value: true
+        back_realsense_camera_camera_left_ir_optical_frame:
+          Value: true
+        back_realsense_camera_camera_right_ir_frame:
+          Value: true
+        back_realsense_camera_camera_right_ir_optical_frame:
+          Value: true
+        back_realsense_camera_link:
+          Value: true
+        back_top_oak_d_camera_left_camera_frame:
+          Value: true
+        back_top_oak_d_camera_left_camera_optical_frame:
+          Value: true
+        back_top_oak_d_camera_model_origin:
+          Value: true
+        back_top_oak_d_camera_rgb_camera_frame:
+          Value: true
+        back_top_oak_d_camera_right_camera_frame:
+          Value: true
+        base_footprint:
+          Value: true
+        base_link:
+          Value: true
+        bottom_cover_link:
+          Value: true
+        door_opening_mechanism_base_link:
+          Value: true
+        door_opening_mechanism_link_tilting_hook:
+          Value: true
+        door_opening_mechanism_link_x_axis_slide:
+          Value: true
+        door_opening_mechanism_link_x_slide_screwing:
+          Value: true
+        door_opening_mechanism_link_y_axis_rail:
+          Value: true
+        door_opening_mechanism_link_y_axis_slide:
+          Value: true
+        drawer_1:
+          Value: true
+        drawer_2:
+          Value: true
+        drawer_3:
+          Value: true
+        drawer_4:
+          Value: true
+        drawer_5:
+          Value: true
+        front_laser_base_link:
+          Value: true
+        front_realsense_camera_camera_depth_frame:
+          Value: true
+        front_realsense_camera_camera_fisheye_frame:
+          Value: true
+        front_realsense_camera_camera_fisheye_optical_frame:
+          Value: true
+        front_realsense_camera_camera_left_ir_frame:
+          Value: true
+        front_realsense_camera_camera_left_ir_optical_frame:
+          Value: true
+        front_realsense_camera_camera_right_ir_frame:
+          Value: true
+        front_realsense_camera_camera_right_ir_optical_frame:
+          Value: true
+        front_realsense_camera_link:
+          Value: true
+        front_top_oak_d_camera_left_camera_frame:
+          Value: true
+        front_top_oak_d_camera_left_camera_optical_frame:
+          Value: true
+        front_top_oak_d_camera_model_origin:
+          Value: true
+        front_top_oak_d_camera_rgb_camera_frame:
+          Value: true
+        front_top_oak_d_camera_right_camera_frame:
+          Value: true
+        hook_base_link_left_hook:
+          Value: true
+        hook_base_link_right_hook:
+          Value: true
+        hook_link_back_side_left_hook:
+          Value: true
+        hook_link_back_side_right_hook:
+          Value: true
+        hook_link_front_side_left_hook:
+          Value: true
+        hook_link_front_side_right_hook:
+          Value: true
+        left_wheel_link:
+          Value: true
+        leftcastorsupport:
+          Value: true
+        leftcastorwheel:
+          Value: true
+        leftrsupport:
+          Value: true
+        leftsupport:
+          Value: true
+        leftwheel:
+          Value: true
         map:
           Value: true
-        robot_base_footprint:
+        module_cage_link:
           Value: true
-        robot_base_link:
+        oak-d-s2-poe-base-frame:
           Value: true
-        robot_cart_laser:
+        oak-d-s2-usb-base--frame:
           Value: true
-        robot_cart_laser_noisy:
+        odom:
           Value: true
-        robot_cart_laser_noisy_0:
+        rb_theron/base_footprint/back_realsense_camera_color_link:
           Value: true
-        robot_docking_station_laser:
+        rb_theron/base_footprint/back_realsense_camera_depth_link:
           Value: true
-        robot_docking_station_laser_noisy:
+        rb_theron/base_footprint/back_top_oak_d_camera_rgb_camera_optical_frame:
           Value: true
-        robot_docking_station_laser_noisy_0:
+        rb_theron/base_footprint/back_top_oak_d_camera_right_camera_optical_frame:
           Value: true
-        robot_front_laser_base_link:
+        rb_theron/base_footprint/front_laser_link:
           Value: true
-        robot_front_laser_link:
+        rb_theron/base_footprint/front_realsense_camera_color_link:
           Value: true
-        robot_front_leftsupport:
+        rb_theron/base_footprint/front_realsense_camera_depth_link:
           Value: true
-        robot_front_leftwheel:
+        rb_theron/base_footprint/front_top_oak_d_camera_rgb_camera_optical_frame:
           Value: true
-        robot_front_rightsupport:
+        rb_theron/base_footprint/front_top_oak_d_camera_right_camera_optical_frame:
           Value: true
-        robot_front_rightwheel:
+        rb_theron/base_footprint/imu_link:
           Value: true
-        robot_left_wheel_link:
+        rb_theron/base_footprint/top_laser_link:
           Value: true
-        robot_left_wheel_tire_link:
+        right_wheel_link:
           Value: true
-        robot_odom:
+        rightcastorsupport:
           Value: true
-        robot_rear_leftsupport:
+        rightcastorwheel:
           Value: true
-        robot_rear_leftwheel:
+        rightrsupport:
           Value: true
-        robot_rear_rightsupport:
+        rightsupport:
           Value: true
-        robot_rear_rightwheel:
+        rightwheel:
           Value: true
-        robot_right_wheel_link:
-          Value: true
-        robot_right_wheel_tire_link:
+        top_laser_base_link:
           Value: true
       Marker Scale: 1
       Name: TF
@@ -136,42 +249,128 @@ Visualization Manager:
       Show Names: false
       Tree:
         map:
-          robot_odom:
-            robot_base_footprint:
-              robot_base_link:
-                robot_front_laser_base_link:
-                  robot_front_laser_link:
+          odom:
+            base_footprint:
+              base_link:
+                back_realsense_camera_link:
+                  back_realsense_camera_camera_depth_frame:
+                    back_realsense_camera_camera_fisheye_frame:
+                      back_realsense_camera_camera_fisheye_optical_frame:
+                        {}
+                    back_realsense_camera_camera_left_ir_frame:
+                      back_realsense_camera_camera_left_ir_optical_frame:
+                        {}
+                    back_realsense_camera_camera_right_ir_frame:
+                      back_realsense_camera_camera_right_ir_optical_frame:
+                        {}
+                    rb_theron/base_footprint/back_realsense_camera_color_link:
+                      {}
+                    rb_theron/base_footprint/back_realsense_camera_depth_link:
+                      {}
+                bottom_cover_link:
+                  {}
+                door_opening_mechanism_base_link:
+                  alu_profile_link_bottom:
                     {}
-                robot_front_leftsupport:
-                  robot_front_leftwheel:
+                  alu_profile_link_left:
                     {}
-                robot_front_rightsupport:
-                  robot_front_rightwheel:
+                  alu_profile_link_right:
+                    door_opening_mechanism_link_y_axis_slide:
+                      door_opening_mechanism_link_x_axis_slide:
+                        door_opening_mechanism_link_x_slide_screwing:
+                          door_opening_mechanism_link_tilting_hook:
+                            alu_profile_link_gripper:
+                              hook_base_link_left_hook:
+                                hook_link_back_side_left_hook:
+                                  {}
+                                hook_link_front_side_left_hook:
+                                  {}
+                              hook_base_link_right_hook:
+                                hook_link_back_side_right_hook:
+                                  {}
+                                hook_link_front_side_right_hook:
+                                  {}
+                  alu_profile_link_top:
                     {}
-                robot_left_wheel_link:
-                  robot_left_wheel_tire_link:
+                  door_opening_mechanism_link_y_axis_rail:
                     {}
-                robot_rear_leftsupport:
-                  robot_rear_leftwheel:
+                drawer_1:
+                  {}
+                drawer_2:
+                  {}
+                drawer_3:
+                  {}
+                drawer_4:
+                  {}
+                drawer_5:
+                  {}
+                front_laser_base_link:
+                  rb_theron/base_footprint/front_laser_link:
                     {}
-                robot_rear_rightsupport:
-                  robot_rear_rightwheel:
+                front_realsense_camera_link:
+                  front_realsense_camera_camera_depth_frame:
+                    front_realsense_camera_camera_fisheye_frame:
+                      front_realsense_camera_camera_fisheye_optical_frame:
+                        {}
+                    front_realsense_camera_camera_left_ir_frame:
+                      front_realsense_camera_camera_left_ir_optical_frame:
+                        {}
+                    front_realsense_camera_camera_right_ir_frame:
+                      front_realsense_camera_camera_right_ir_optical_frame:
+                        {}
+                    rb_theron/base_footprint/front_realsense_camera_color_link:
+                      {}
+                    rb_theron/base_footprint/front_realsense_camera_depth_link:
+                      {}
+                leftrsupport:
+                  left_wheel_link:
                     {}
-                robot_right_wheel_link:
-                  robot_right_wheel_tire_link:
+                  leftcastorsupport:
+                    leftcastorwheel:
+                      {}
+                leftsupport:
+                  leftwheel:
                     {}
-            robot_cart_laser:
-              {}
-            robot_cart_laser_noisy:
-              {}
-            robot_cart_laser_noisy_0:
-              {}
-            robot_docking_station_laser:
-              {}
-            robot_docking_station_laser_noisy:
-              {}
-            robot_docking_station_laser_noisy_0:
-              {}
+                module_cage_link:
+                  {}
+                oak-d-s2-poe-base-frame:
+                  back_top_oak_d_camera_left_camera_frame:
+                    back_top_oak_d_camera_left_camera_optical_frame:
+                      {}
+                  back_top_oak_d_camera_model_origin:
+                    {}
+                  back_top_oak_d_camera_rgb_camera_frame:
+                    rb_theron/base_footprint/back_top_oak_d_camera_rgb_camera_optical_frame:
+                      {}
+                  back_top_oak_d_camera_right_camera_frame:
+                    rb_theron/base_footprint/back_top_oak_d_camera_right_camera_optical_frame:
+                      {}
+                oak-d-s2-usb-base--frame:
+                  front_top_oak_d_camera_left_camera_frame:
+                    front_top_oak_d_camera_left_camera_optical_frame:
+                      {}
+                  front_top_oak_d_camera_model_origin:
+                    {}
+                  front_top_oak_d_camera_rgb_camera_frame:
+                    rb_theron/base_footprint/front_top_oak_d_camera_rgb_camera_optical_frame:
+                      {}
+                  front_top_oak_d_camera_right_camera_frame:
+                    rb_theron/base_footprint/front_top_oak_d_camera_right_camera_optical_frame:
+                      {}
+                rb_theron/base_footprint/imu_link:
+                  {}
+                rightrsupport:
+                  right_wheel_link:
+                    {}
+                  rightcastorsupport:
+                    rightcastorwheel:
+                      {}
+                rightsupport:
+                  rightwheel:
+                    {}
+                top_laser_base_link:
+                  rb_theron/base_footprint/top_laser_link:
+                    {}
       Update Interval: 0
       Value: true
     - Alpha: 1
@@ -209,40 +408,6 @@ Visualization Manager:
       Use rainbow: true
       Value: false
     - Alpha: 1
-      Autocompute Intensity Bounds: true
-      Autocompute Value Bounds:
-        Max Value: 10
-        Min Value: -10
-        Value: true
-      Axis: Z
-      Channel Name: intensity
-      Class: rviz_default_plugins/PointCloud2
-      Color: 255; 255; 255
-      Color Transformer: ""
-      Decay Time: 0
-      Enabled: true
-      Invert Rainbow: false
-      Max Color: 255; 255; 255
-      Max Intensity: 4096
-      Min Color: 0; 0; 0
-      Min Intensity: 0
-      Name: Bumper Hit
-      Position Transformer: ""
-      Selectable: true
-      Size (Pixels): 3
-      Size (m): 0.07999999821186066
-      Style: Spheres
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /mobile_base/sensors/bumper_pointcloud
-      Use Fixed Frame: true
-      Use rainbow: true
-      Value: true
-    - Alpha: 1
       Class: rviz_default_plugins/Map
       Color Scheme: map
       Draw Behind: true
@@ -262,27 +427,6 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /map_updates
       Use Timestamp: false
-      Value: true
-    - Alpha: 1
-      Arrow Length: 0.019999999552965164
-      Axes Length: 0.30000001192092896
-      Axes Radius: 0.009999999776482582
-      Class: rviz_default_plugins/PoseArray
-      Color: 0; 180; 0
-      Enabled: true
-      Head Length: 0.07000000029802322
-      Head Radius: 0.029999999329447746
-      Name: Amcl Particle Swarm
-      Shaft Length: 0.23000000417232513
-      Shaft Radius: 0.009999999776482582
-      Shape: Arrow (Flat)
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        Filter size: 10
-        History Policy: Keep Last
-        Reliability Policy: Best Effort
-        Value: /particlecloud
       Value: true
     - Class: rviz_common/Group
       Displays:
@@ -428,18 +572,6 @@ Visualization Manager:
           Value: true
       Enabled: true
       Name: Controller
-    - Class: rviz_default_plugins/MarkerArray
-      Enabled: true
-      Name: MarkerArray
-      Namespaces:
-        {}
-      Topic:
-        Depth: 5
-        Durability Policy: Volatile
-        History Policy: Keep Last
-        Reliability Policy: Reliable
-        Value: /waypoints
-      Value: true
     - Alpha: 1
       Autocompute Intensity Bounds: true
       Autocompute Value Bounds:
@@ -580,25 +712,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/XYOrbit
-      Distance: 12.459327697753906
+      Distance: 12.283679962158203
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 2.1704893112182617
-        Y: -3.7501792907714844
-        Z: -1.9443077690084465e-06
+        X: 1.2916102409362793
+        Y: -3.5555601119995117
+        Z: 9.499784027866554e-06
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 1.164797067642212
+      Pitch: 0.8547974228858948
       Target Frame: <Fixed Frame>
       Value: XYOrbit (rviz_default_plugins)
-      Yaw: 4.702391147613525
+      Yaw: 4.692394733428955
     Saved: ~
 Window Geometry:
   Displays:
@@ -608,7 +740,7 @@ Window Geometry:
   Hide Right Dock: false
   Navigation 2:
     collapsed: false
-  QMainWindow State: 000000ff00000000fd00000004000000000000026e00000363fc020000000afb0000001200530065006c0065006300740069006f006e000000003b000000830000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b00000363000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb00000018004e0061007600690067006100740069006f006e00200032000000019f000001ff0000012300fffffffb000000220053006c0061006d0054006f006f006c0062006f00780050006c007500670069006e00000002310000016d0000006e00ffffff000000010000010f0000033cfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003b0000033c000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004420000003efc0100000002fb0000000800540069006d00650100000000000004420000000000000000fb0000000800540069006d00650100000000000004500000000000000000000003950000036300000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd00000004000000000000026e00000363fc020000000afb0000001200530065006c0065006300740069006f006e000000003b000000830000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b00000363000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261fb00000018004e0061007600690067006100740069006f006e00200032000000019f000001ff0000012300fffffffb000000220053006c0061006d0054006f006f006c0062006f00780050006c007500670069006e00000002310000016d0000016d00ffffff000000010000010f0000033cfc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003b0000033c000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000004420000003efc0100000002fb0000000800540069006d00650100000000000004420000000000000000fb0000000800540069006d00650100000000000004500000000000000000000003950000036300000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   SlamToolboxPlugin:

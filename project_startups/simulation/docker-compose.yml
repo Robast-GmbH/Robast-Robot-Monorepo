@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   simulation:
-    image: ghcr.io/robast-gmbh/monorepo/simulation:latest
+    image: ghcr.io/robast-gmbh/monorepo/simulation:devel
     environment:
       - ROS_DOMAIN_ID=1
     volumes:
@@ -24,7 +24,7 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
     
   navigation:
-    image: ghcr.io/robast-gmbh/monorepo/navigation:latest
+    image: ghcr.io/robast-gmbh/monorepo/navigation:devel
     environment:
       - ROS_DOMAIN_ID=1
     volumes:

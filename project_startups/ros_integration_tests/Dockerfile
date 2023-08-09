@@ -103,6 +103,8 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
 #     && rosdep install --from-paths src --ignore-src -r -y 
     && chown -R ${USER} /workspace_nav2
 
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/src/DDS_config.xml
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
+# rmw_cyclonedds_cpp #rmw_fastrtps_cpp
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/src/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/workspace/src/dds_configs/cyclone_DDS_config.xml
 ENV IGN_FILE_PATH=/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}

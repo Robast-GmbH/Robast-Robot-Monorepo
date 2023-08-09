@@ -1,16 +1,14 @@
 <?xml version="1.0"?>
-<robot name="rbogie_base"
-  xmlns:xacro="http://www.ros.org/wiki/xacro">
+<robot name="theron_base" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-<xacro:macro name="box_inertia_robot" params="m x y z">
-        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
-                  iyy="${m*(x*x+z*z)/12}" iyz = "0"
-                  izz="${m*(x*x+z*z)/12}" />
-</xacro:macro>
+  <xacro:macro name="box_inertia_robot" params="m x y z">
+    <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+              iyy="${m*(x*x+z*z)/12}" iyz = "0"
+              izz="${m*(x*x+z*z)/12}" />
+  </xacro:macro>
 
   <xacro:macro name="theron_base" params="prefix publish_bf hq">
 
-    <!-- Robot mechanical and motor parameters -->
     <xacro:property name="PI" value="3.1415926535897931"/>
     <!-- xacro:property name="wheel_width" value="0.150" / -->
 
@@ -18,19 +16,18 @@
     <xacro:if value="${publish_bf}">
       <link name="${prefix}base_footprint">
         <visual>
-          <origin xyz="0 0 0" rpy="0 0 0" />
+          <origin xyz="0 0 0.01" rpy="0 0 0" />
           <geometry>
             <box size="0.001 0.001 0.001" />
           </geometry>
         </visual>
         <collision>
-          <origin xyz="0 0 0" rpy="0 0 0" />
+          <origin xyz="0 0 0.01" rpy="0 0 0" />
           <geometry>
             <box size="0.001 0.001 0.001" />
           </geometry>
         </collision>
       </link>
-
       <joint name="${prefix}base_footprint_joint" type="fixed">
         <origin xyz="0 0 ${wheel_radius - wheel_offset_z}" rpy="0 0 0" />
         <parent link="${prefix}base_footprint"/>
@@ -43,13 +40,13 @@
       <inertial>
         <mass value="45" />
         <origin xyz="0.0 0.0 0.0" />
-	    <xacro:solid_cuboid_inertia m="45" w="0.3275" h="0.2775" d="0.1525" />
+        <xacro:solid_cuboid_inertia m="45" w="0.3275" h="0.2775" d="0.1525" />
       </inertial>
       <visual>
+        <!-- <origin xyz="0 0 0" rpy="0 0 0" /> -->
         <xacro:if value="${hq}">
-          <origin xyz="0 0 0" rpy="0 0 0" />
           <geometry>
-            <mesh filename="$(find rb_theron_description)/meshes/bases/theron_base.stl"/>
+            <mesh filename="(find rb_theron_description)/meshes/bases/theron_base.stl"/>
           </geometry>
         </xacro:if>
         <xacro:unless value="${hq}">
@@ -66,13 +63,18 @@
         <origin xyz="0 0 0.05" rpy="0 0 0 " />
         <geometry>
           <box size="0.390 0.240 0.165"/>
-          <!-- <mesh filename="$(find rb_theron_description)/meshes/bases/theron_base.stl"/> -->
+          <!-- <mesh filename="(find rb_theron_description)/meshes/bases/theron_base.dae"/> -->
         </geometry>
       </collision>
     </link>
 
+    <joint name="${prefix}bottom_sheet_joint" type="fixed">
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+       <parent link="${prefix}base_link"/>
+       <child link="${prefix}bottom_sheet_link"/>
+    </joint>
 
-   <link name="${prefix}bottom_cover_link">
+    <link name="${prefix}bottom_sheet_link">
       <inertial>
         <mass value="2.0" />
         <origin xyz="0 0 0" />
@@ -103,22 +105,5 @@
         </geometry>
       </collision>
     </link> 
-
-     <joint name="${prefix}bottom_cover_joint" type="fixed">
-       <origin rpy="0 0 0" xyz="0 0 0"/>
-       <parent link="${prefix}base_link"/>
-       <child link="${prefix}bottom_cover_link"/>
-    </joint>
-
-    <!-- DOCKING CONTACTS -->
-    <!--joint name="${prefix}base_docking_joint" type="fixed">
-      <origin xyz="0.030 0.000 0.068" rpy="0 0 0 " />
-      <parent link="${prefix}front_cover_link"/>
-      <child link="${prefix}base_docking_contact_link" />
-    </joint-->
-
-    <!-- DOCKING LINK -->
-    <!--link name="${prefix}base_docking_contact_link" /-->
-
   </xacro:macro>
 </robot>

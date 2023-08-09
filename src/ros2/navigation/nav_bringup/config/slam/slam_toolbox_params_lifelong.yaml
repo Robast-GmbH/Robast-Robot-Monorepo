@@ -11,11 +11,12 @@ slam_toolbox:
     ceres_loss_function: None
 
     # ROS Parameters
-    odom_frame: odom
+    map_name: /map 
+    odom_frame: robot_odom
     map_frame: map
-    base_frame: base_footprint
-    scan_topic: /front_laser/scan
-    mode: mapping
+    base_frame: robot_base_footprint
+    scan_topic: /robot/front_laser/scan
+    mode: mapping #mapping #localization
 
     # lifelong params
     lifelong_search_use_tree: false
@@ -51,7 +52,8 @@ slam_toolbox:
     minimum_travel_distance: 0.5
     minimum_travel_heading: 0.5
     scan_buffer_size: 10
-    scan_buffer_maximum_scan_distance: 10.0
+    scan_queue_size: 2
+    scan_buffer_maximum_scan_distance: 20.0
     link_match_minimum_response_fine: 0.1  
     link_scan_maximum_distance: 1.5
     loop_search_maximum_distance: 3.0

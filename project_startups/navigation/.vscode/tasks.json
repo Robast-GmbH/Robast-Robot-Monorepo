@@ -151,28 +151,6 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start heiligenhafen_sim",
-                        "command": "source install/setup.bash; ros2 launch heiligenhafen heiligenhafen_world_launch.py run_gzclient:='True'",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
-                        "label": "start heiligenhafen_commander",
-                        "command": "source install/setup.bash; ros2 launch heiligenhafen_commander heiligenhafen_commander_launch.py",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
                         "label": "start rviz",
                         "command": "source install/setup.bash; ros2 launch nav_bringup rviz_launch.py",
                         "problemMatcher": [],
@@ -194,7 +172,7 @@
                 {
                         "type": "shell",
                         "label": "start nav_without_localization",
-                        "command": "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp; export FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/DDS_config.xml; source install/setup.bash; source /workspace_nav2/install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
+                        "command": "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp; source install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -224,17 +202,7 @@
                 {
                         "type": "shell",
                         "label": "start slam_toolbox",
-                        "command": "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp; export FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/DDS_config.xml; source install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": true
-                        }
-                },
-                {
-                        "type": "shell",
-                        "label": "start slam_toolbox_heiligenhafen",
-                        "command": "source install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py world_posegraph:='cannot_be_empty'",
+                        "command": "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp; source install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -264,7 +232,7 @@
                 {
                         "type": "shell",
                         "label": "start robot_localization",
-                        "command": "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp; export FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/DDS_config.xml; source install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py;",
+                        "command": "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp; source install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
