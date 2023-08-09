@@ -7,7 +7,7 @@ import 'package:web_interface_flutter/services/api_service.dart';
 
 class RobotProvider extends ChangeNotifier {
   final List<User> users = [];
-  final List<Robot> robots = [];
+  List<Robot> robots = [];
   final Map<String, Task> tasks = {};
   final Map<String, List<DrawerModule>> modules = {};
 
@@ -24,8 +24,8 @@ class RobotProvider extends ChangeNotifier {
   }
 
   Future<void> updateRobots() async {
-    robots.clear();
-    robots.addAll(await APIService.getRobots());
+    robots = await APIService.getRobots();
+    notifyListeners();
   }
 
   Future<void> updateTasks() async {

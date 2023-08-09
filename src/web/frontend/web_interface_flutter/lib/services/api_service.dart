@@ -12,7 +12,8 @@ class APIService {
   static Future<int> postTask({
     required int ownerID,
     required int targetID,
-    required DrawerModule drawer,
+    required int moduleID,
+    required int drawerID,
     required double xPose,
     required double yPose,
     required double yawPose,
@@ -20,8 +21,8 @@ class APIService {
     final data = <String, dynamic>{
       "owner_id": ownerID,
       "target_id": targetID,
-      "module_id": drawer.moduleID,
-      "drawer_id": drawer.drawerID,
+      "module_id": moduleID,
+      "drawer_id": drawerID,
       "x_pose": xPose,
       "y_pose": yPose,
       "yaw_pose": yawPose
@@ -54,6 +55,8 @@ class APIService {
 
   static Future<List<Robot>> getRobots() async {
     final robots = <Robot>[];
+    robots.add(Robot.mock("Test"));
+    print("start");
     try {
       final response = await http.get(Uri.parse("$baseURL:$port/robots"));
       if (response.statusCode == 200) {
@@ -66,7 +69,7 @@ class APIService {
       print("Failed get Robots");
       print(e);
     }
-
+    print("stop");
     return robots;
   }
 
@@ -95,12 +98,7 @@ class APIService {
       if (response.statusCode == 200) {
         final List<dynamic> jsonData = jsonDecode(response.body);
         for (final module in jsonData) {
-          modules.add(
-            DrawerModule(
-              moduleID: module["id"],
-              drawerID: module["drawer_id"],
-            ),
-          );
+          modules.add(DrawerModule.fromJson(module));
         }
       }
     } catch (e) {

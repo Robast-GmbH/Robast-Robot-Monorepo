@@ -28,10 +28,9 @@ class _MapPageState extends State<MapPage> with RouteAware {
   late Timer refreshTimer;
 
   void setTimer() {
-    refreshTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
+    refreshTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
       print("Update Robots");
-      Provider.of<RobotProvider>(context, listen: false).updateRobots();
-      setState(() {});
+      await Provider.of<RobotProvider>(context, listen: false).updateRobots();
     });
   }
 

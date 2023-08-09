@@ -29,8 +29,8 @@ class Robot {
     return Robot(
       name: name,
       fleetName: "Flotte 1",
-      x: 200,
-      y: 200,
+      x: 1.46,
+      y: -2.87,
       yaw: 0,
       taskID: 0,
     );
