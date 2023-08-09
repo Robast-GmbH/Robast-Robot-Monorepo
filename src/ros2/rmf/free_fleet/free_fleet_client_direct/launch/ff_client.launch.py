@@ -7,9 +7,8 @@ from launch.substitutions import LaunchConfiguration
 def generate_launch_description():
  
     ff_server_api_node = Node(
-        package='api_connector',
-        executable='web_api',
-        name='ff_server_api'
+        package='free_fleet_client_direct',
+        executable='client_direct',
     )
  
     

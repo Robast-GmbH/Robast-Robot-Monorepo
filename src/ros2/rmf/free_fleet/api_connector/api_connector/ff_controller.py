@@ -1,6 +1,6 @@
 
-from . import messages
-from . import dds_helper
+from .dds import messages
+from .dds import dds_communicator as dds
 
 
 class free_fleet_controller:
@@ -9,12 +9,16 @@ class free_fleet_controller:
     def __init__(self, dds_config: dict):
         self.config = dds_config
         self.robot_states = []  # :list[messages.FreeFleetData_RobotState] =[]
-        dds_helper.dds_subscriber( self.config["dds"], self.config["domain_id"], self.config["robot_state_topic"], messages.FreeFleetData_RobotState, self.store_robot_states)
-        
-
-    def store_robot_states(self,msg):
-        self.robot_states = [x for x in self.robot_states if x.name != msg.name]
-        self.robot_states.append(msg)
+        self.dds_robot_state= dds.DDS_communicator(self.config["domain_id"],self.config["robot_state_topic"], messages.FreeFleetData_RobotState)
+        self.dds_mode_request= dds.DDS_communicator(self.config["domain_id"],self.config["mode_request_topic"], messages.FreeFleetData_ModeRequest)
+        self.dds_path_request= dds.DDS_communicator(self.config["domain_id"],self.config["path_request_topic"], messages.FreeFleetData_PathRequest)
+        self.dds_destination_request= dds.DDS_communicator(self.config["domain_id"], self.config["destination_request_topic"], messages.FreeFleetData_DestinationRequest)
+        self.dds_slide_drawer_request= dds.DDS_communicator(self.config["domain_id"], self.config["slide_drawer_request_topic"], messages.FreeFleetData_SlideDrawerRequest)
+    
+    
+    # def store_robot_states(self,msg):
+    #     self.robot_states = [x for x in self.robot_states if x.name != msg.name]
+    #     self.robot_states.append(msg)
                 
 
     def get_robot_status(self, robot_name):
@@ -29,12 +33,7 @@ class free_fleet_controller:
         mode_request.mode = mode
         mode_request.task_id = state.task_id
         mode_request.parameters = []
-        dds_helper.dds_publish(
-            self.config["dds"],
-            self.config["domain_id"],
-            self.config["mode_request_topic"],
-            messages.FreeFleetData_PathRequest,
-            mode_request)
+        self.dds_mode_request.publish(mode_request)
 
     # handle path request
     def handle_path_request(self, fleet_name, robot_name, path):
@@ -44,27 +43,15 @@ class free_fleet_controller:
         path_request.fleet_name = fleet_name
         path_request.task_id = state.task_id
         path_request.path = path
-        dds_helper.dds_publish(
-            self.config["dds"],
-            self.config["domain_id"],
-            self.config["path_request_topic"],
-            messages.FreeFleetData_PathRequest,
-            path_request)
+        self.dds_path_request.publish(path_request)
+        
 
     # handle destination request
     def handle_destination_request(self, fleet_name, robot_name, destination):
-        state = self.get_robot_state(fleet_name, robot_name)
-        destination_request = messages.FreeFleetData_DestinationRequest()
-        destination_request.robot_name = robot_name
-        destination_request.fleet_name = fleet_name
-        destination_request.task_id = state.task_id
-        destination_request.destination = destination
-        dds_helper.dds_publish(
-            self.config["dds"],
-            self.config["domain_id"],
-            self.config["destination_request_topic"],
-            messages.FreeFleetData_DestinationRequest,
-            destination_request)
+        state = self.get_robot_state(robot_name)
+        goal= messages.FreeFleetData_Location(sec=0, nanosec=0, x=destination.pose.x, y= destination.pose.y, yaw=destination.orientation,level_name="")
+        destination_request = messages.FreeFleetData_DestinationRequest(robot_name=robot_name, fleet_name=fleet_name, task_id="", destination=goal)
+        self.dds_destination_request.publish(destination_request)
 
     # handle_open_drawer_request
     def handle_slide_drawer_request(self, fleet_name:str, robot_name: str, module_id: int, drawer_id: int , e_drawer: bool, open: bool):
@@ -75,16 +62,13 @@ class free_fleet_controller:
             drawer_id,
             e_drawer,
             open)
-     
-        dds_helper.dds_publish(
-            self.config["dds"],
-            self.config["domain_id"],
-            self.config["slide_drawer_request_topic"],
-            messages.FreeFleetData_SlideDrawerRequest,
-            slide_drawer_request)
+                
+        self.dds_slide_drawer_request.publish(slide_drawer_request)
+        
 
     def get_robot_states(self):
         return self.robot_states
 
-    def get_robot_state(self, fleet_name, name):
-        return [x for x in self.robot_states if x.name == name].first()
+    def get_robot_state(self, name):
+        #return [x for x in self.robot_states if x.name == name][0]
+        pass

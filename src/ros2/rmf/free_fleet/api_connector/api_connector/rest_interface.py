@@ -36,6 +36,7 @@ class RestInterface():
 
         @self.app.post("/drawer/open")
         def open_drawer(drawer: Drawer, robot: Robot):
+            self.ros_node.get_logger().info('open drawer')
             print("/drawer/open was called")
             free_fleet_node.handle_slide_drawer_request(
                 robot.fleet_name,
@@ -46,9 +47,10 @@ class RestInterface():
                 True
                 )
             return 
+        
         @self.app.post("/drawer/close")
         def close_drawer(drawer: Drawer, robot: Robot):
-            print("/drawer/open was called")
+            self.ros_node.get_logger().info("/drawer/open was called")
             free_fleet_node.handle_slide_drawer_request(
                 robot.fleet_name,
                 robot.name,
@@ -61,8 +63,9 @@ class RestInterface():
         
         @self.app.post("/move")
         def force_move_to_waypoint(waypoint: Waypoint, robot: Robot):
+            self.ros_node.get_logger().info('move')
             free_fleet_node.handle_destination_request(robot.fleet_name,
-                                                       robot.robot_name,
+                                                       robot.name,
                                                        waypoint)
             return
         

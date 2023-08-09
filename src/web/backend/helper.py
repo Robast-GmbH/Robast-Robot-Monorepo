@@ -16,11 +16,11 @@ def init(db: Session):
                 addUser( "Jacob", "Jacob Ritterbach", "Robast2022HH", True, db )
                 
                 addRobot("RB0", "ROBAST", 0, 0, 0, db)
-                addDrawer("RB0", 1, 1, 1, models.DrawerSlideTypes.Manual, 10, db)
-                addDrawer("RB0", 2, 1, 2, models.DrawerSlideTypes.Manual, 10, db)
-                addDrawer("RB0", 3, 1, 3, models.DrawerSlideTypes.Manual, 10, db)
-                addDrawer("RB0", 4, 1, 4, models.DrawerSlideTypes.Manual, 20, db)
-                addDrawer("RB0", 5, 1, 5, models.DrawerSlideTypes.Manual, 30, db)
+                addDrawer("RB0", 1, 0, 1, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 2, 0, 2, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 3, 0, 3, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 4, 0, 4, models.DrawerSlideTypes.Manual, 20, db)
+                addDrawer("RB0", 5, 0, 5, models.DrawerSlideTypes.Manual, 30, db)
 
         return
 
@@ -58,7 +58,7 @@ def addMapPosition( name: str, x: float, y: float, t:float, db:Session):
         return
 
 def json_drawer():
-        return { "id":0, "module_id":0}
+        return { "id":0, "module_id":0, "is_edrawer":False}
 
 def json_robot():
               return { "fleet_name":"", "name":""}
@@ -67,3 +67,22 @@ def json_waypoint():
                   "pose":{ "x": 0, "y":0, "z": 0 },
                   "orientation" :0
                 }
+def getDrawer(crud, db:Session, module, robot_name:str, schemas):
+        db_module= crud.get_drawer(db=db, module_id=module.id, drawer_id= module.drawer_id,robot_name=robot_name )
+        db_robot= crud.get_robot(db=db, robot_name=robot_name)
+        if db_module is None:
+                return "module"
+        
+        if db_robot is None:
+                return "robot"
+        
+        robot= json_robot()
+        robot["name"]= db_robot.robot_name
+        robot["fleet_name"]= db_robot.fleet_name
+        drawer= json_drawer()
+        drawer["module_id"]=db_module.id
+        drawer["id"]= db_module.drawer_id
+        drawer["is_edrawer"]= db_module.type == schemas.DrawerSlideTypes.Electrical
+        message={ "drawer":drawer, "robot":robot}
+        return message
+    
