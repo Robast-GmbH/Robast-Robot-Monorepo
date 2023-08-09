@@ -1,13 +1,11 @@
 #ifndef BEHAVIOR_TREE_SERVER__BT_SERVER_COLLECTION_HPP_
 #define BEHAVIOR_TREE_SERVER__BT_SERVER_COLLECTION_HPP_
 
-#include <boost/asio/io_context.hpp>
-#include <boost/asio/steady_timer.hpp>
-#include <boost/bind/bind.hpp>
 #include <memory>
 #include <mutex>
 #include <string>
 
+#include "behavior_tree_server_collection/parameter_service_client.hpp"
 #include "communication_interfaces/action/change_footprint.hpp"
 #include "communication_interfaces/action/change_footprint_padding.hpp"
 #include "nav2_util/lifecycle_node.hpp"
@@ -86,17 +84,7 @@ namespace behavior_tree_server
     std::unique_ptr<ChangeFootprintActionServer> _action_server_change_footprint;
     std::unique_ptr<ChangeFootprintPaddingActionServer> _action_server_change_footprint_padding;
 
-    bool set_parameter_for_local_and_global_costmap(const rcl_interfaces::msg::Parameter parameter);
-
-    rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr create_set_parameters_client(
-      const std::string service_name);
-
-    bool send_parameter_set_service_request(rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client,
-                                            const std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request);
-
-    void async_wait_until_reset_parameter(const rcl_interfaces::msg::Parameter parameter);
-
-    void reset_parameter(const rcl_interfaces::msg::Parameter parameter);
+    std::unique_ptr<ParameterServiceClient> _parameter_service_client;
 
     void change_footprint();
 

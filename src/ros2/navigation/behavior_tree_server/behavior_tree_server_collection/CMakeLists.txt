@@ -37,6 +37,7 @@ set(library_bt_server_collection ${executable_bt_server_collection}_core)
 
 add_library(${library_bt_server_collection} SHARED
   src/bt_server_collection.cpp
+  src/parameter_service_client.cpp
 )
 
 set(dependencies

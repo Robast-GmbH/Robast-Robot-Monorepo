@@ -5,7 +5,7 @@ namespace behavior_tree_server
   BtServerCollection::BtServerCollection(const rclcpp::NodeOptions& options)
       : nav2_util::LifecycleNode("split_path_follower", "", options)
   {
-    RCLCPP_INFO(get_logger(), "Creating");
+    RCLCPP_INFO(get_logger(), "Creating BtServerCollection");
   }
 
   BtServerCollection::~BtServerCollection()
@@ -14,7 +14,7 @@ namespace behavior_tree_server
 
   nav2_util::CallbackReturn BtServerCollection::on_configure(const rclcpp_lifecycle::State& /*state*/)
   {
-    RCLCPP_INFO(get_logger(), "Configuring");
+    RCLCPP_INFO(get_logger(), "Configuring BtServerCollection");
 
     _action_server_change_footprint =
       std::make_unique<ChangeFootprintActionServer>(get_node_base_interface(),
@@ -32,12 +32,14 @@ namespace behavior_tree_server
       "change_footprint_padding",
       std::bind(&BtServerCollection::change_footprint_padding, this));
 
+    _parameter_service_client = std::make_unique<ParameterServiceClient>();
+
     return nav2_util::CallbackReturn::SUCCESS;
   }
 
   nav2_util::CallbackReturn BtServerCollection::on_activate(const rclcpp_lifecycle::State& /*state*/)
   {
-    RCLCPP_INFO(get_logger(), "Activating");
+    RCLCPP_INFO(get_logger(), "Activating BtServerCollection");
 
     _action_server_change_footprint->activate();
     _action_server_change_footprint_padding->activate();
@@ -50,7 +52,7 @@ namespace behavior_tree_server
 
   nav2_util::CallbackReturn BtServerCollection::on_deactivate(const rclcpp_lifecycle::State& /*state*/)
   {
-    RCLCPP_INFO(get_logger(), "Deactivating");
+    RCLCPP_INFO(get_logger(), "Deactivating BtServerCollection");
 
     _action_server_change_footprint->deactivate();
     _action_server_change_footprint_padding->deactivate();
@@ -63,7 +65,7 @@ namespace behavior_tree_server
 
   nav2_util::CallbackReturn BtServerCollection::on_cleanup(const rclcpp_lifecycle::State& /*state*/)
   {
-    RCLCPP_INFO(get_logger(), "Cleaning up");
+    RCLCPP_INFO(get_logger(), "Cleaning up BtServerCollection");
 
     _action_server_change_footprint.reset();
     _action_server_change_footprint_padding.reset();
@@ -73,69 +75,8 @@ namespace behavior_tree_server
 
   nav2_util::CallbackReturn BtServerCollection::on_shutdown(const rclcpp_lifecycle::State& /*state*/)
   {
-    RCLCPP_INFO(get_logger(), "Shutting down");
+    RCLCPP_INFO(get_logger(), "Shutting down BtServerCollection");
     return nav2_util::CallbackReturn::SUCCESS;
-  }
-
-  rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr BtServerCollection::create_set_parameters_client(
-    const std::string service_name)
-  {
-    rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client =
-      shared_from_this()->create_client<rcl_interfaces::srv::SetParameters>(service_name);
-    if (!client->wait_for_service(std::chrono::seconds(1)))
-    {
-      RCLCPP_ERROR(get_logger(), "Service %s not available...", service_name.c_str());
-    }
-    return client;
-  }
-
-  void BtServerCollection::async_wait_until_reset_parameter(const rcl_interfaces::msg::Parameter parameter)
-  {
-    boost::asio::io_context io;
-    // TODO@Jacob: Add a parameter for the period of the timer
-    boost::asio::steady_timer t(io, boost::asio::chrono::milliseconds(1000));
-    t.async_wait(boost::bind(&BtServerCollection::reset_parameter, this, parameter));
-    io.run();
-  }
-
-  void BtServerCollection::reset_parameter(const rcl_interfaces::msg::Parameter parameter)
-  {
-    RCLCPP_INFO(get_logger(), "Resetting parameter after timer expired!");
-    set_parameter_for_local_and_global_costmap(parameter);
-  }
-
-  bool BtServerCollection::send_parameter_set_service_request(
-    rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client,
-    const std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request)
-  {
-    auto response = client->async_send_request(request);
-
-    if (response.wait_for(std::chrono::seconds(1)) == std::future_status::ready)
-    {
-      RCLCPP_INFO(get_logger(), "Parameter set successfully");
-      return true;
-    }
-    else
-    {
-      RCLCPP_ERROR(get_logger(), "Failed to set parameter");
-      return false;
-    }
-  }
-
-  bool BtServerCollection::set_parameter_for_local_and_global_costmap(const rcl_interfaces::msg::Parameter parameter)
-  {
-    std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request =
-      std::make_shared<rcl_interfaces::srv::SetParameters::Request>();
-    request->parameters.push_back(parameter);
-
-    rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr set_local_costmap_parameters_client =
-      create_set_parameters_client("/local_costmap/local_costmap/set_parameters");
-
-    rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr set_global_costmap_parameters_client =
-      create_set_parameters_client("/global_costmap/global_costmap/set_parameters");
-
-    return send_parameter_set_service_request(set_local_costmap_parameters_client, request) &&
-           send_parameter_set_service_request(set_global_costmap_parameters_client, request);
   }
 
   void BtServerCollection::change_footprint()
@@ -154,8 +95,9 @@ namespace behavior_tree_server
     parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
     parameter.value.string_value = goal->footprint;
 
-    if (set_parameter_for_local_and_global_costmap(parameter))
+    if (_parameter_service_client->set_parameter_for_local_and_global_costmap(parameter))
     {
+      RCLCPP_INFO(get_logger(), "Changing footprint parameter was successfully");
       _action_server_change_footprint->succeeded_current(result);
     }
   }
@@ -176,8 +118,9 @@ namespace behavior_tree_server
     parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
     parameter.value.double_value = goal->footprint_padding;
 
-    if (set_parameter_for_local_and_global_costmap(parameter))
+    if (_parameter_service_client->set_parameter_for_local_and_global_costmap(parameter))
     {
+      RCLCPP_INFO(get_logger(), "Changing footprint padding parameter was successfully");
       _action_server_change_footprint_padding->succeeded_current(result);
     }
   }
