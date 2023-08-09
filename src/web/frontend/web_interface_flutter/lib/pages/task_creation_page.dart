@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:web_interface_flutter/models/drawer_module.dart';
 import 'package:web_interface_flutter/models/robot_provider.dart';
 import 'package:web_interface_flutter/services/api_service.dart';
 
@@ -8,11 +7,13 @@ class TaskCreationPage extends StatefulWidget {
   const TaskCreationPage({
     super.key,
     required this.targetPosition,
-    required this.drawer,
+    required this.moduleID,
+    required this.drawerID,
   });
 
   final Offset targetPosition;
-  final DrawerModule drawer;
+  final int moduleID;
+  final int drawerID;
   @override
   State<TaskCreationPage> createState() => _TaskCreationPageState();
 }
@@ -125,7 +126,8 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
           APIService.postTask(
             ownerID: ownerID,
             targetID: targetID,
-            drawer: widget.drawer,
+            moduleID: widget.moduleID,
+            drawerID: widget.drawerID,
             xPose: widget.targetPosition.dx,
             yPose: widget.targetPosition.dy,
             yawPose: 0,

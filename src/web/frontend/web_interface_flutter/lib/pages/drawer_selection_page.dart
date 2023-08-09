@@ -39,10 +39,8 @@ class _DrawerSelectionPageState extends State<DrawerSelectionPage> {
               MaterialPageRoute(
                 builder: (context) => TaskCreationPage(
                   targetPosition: widget.targetPosition,
-                  drawer: DrawerModule(
-                    moduleID: selectedDrawerIndex!,
-                    drawerID: 0,
-                  ),
+                  moduleID: selectedDrawerIndex!,
+                  drawerID: 0,
                 ),
               ),
             );
