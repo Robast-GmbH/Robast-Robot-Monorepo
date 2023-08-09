@@ -9,7 +9,7 @@
 	],
 	"workspaceFolder": "/workspace",
 	"runArgs": [
-		"--device=/dev/ttyUSB0",
+		// "--device=/dev/ttyUSB0",
 		"--name=oak-d",
 		"--privileged",
 		"--device-cgroup-rule=c 189:* rmw",
@@ -30,3 +30,4 @@
 
 // ros2 launch depthai_ros_driver pointcloud.launch.py parent_frame:='robot_base_link' cam_pos_x:=0.317 cam_pos_y:=-0.197 cam_pos_z:=1.3044 name:='oaks'
 // ros2 launch depthai_examples stereo.launch.py parent_frame:='robot_base_link' cam_pos_x:=0.317 cam_pos_y:=-0.197 cam_pos_z:=1.3044 name:='oaks'
+// ros2 launch depthai_examples stereo_inertial_node.launch.py enableRviz:=False parent_frame:='robot_base_link' cam_pos_x:=0.317 cam_pos_y:=-0.197 cam_pos_z:=1.3044 name:='oaks'
