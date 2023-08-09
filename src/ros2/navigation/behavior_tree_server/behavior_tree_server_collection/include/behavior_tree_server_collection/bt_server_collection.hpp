@@ -86,6 +86,24 @@ namespace behavior_tree_server
 
     std::unique_ptr<ParameterServiceClient> _parameter_service_client;
 
+    rclcpp::CallbackGroup::SharedPtr _timer_cb_group;
+    rclcpp::TimerBase::SharedPtr _timer_to_reset_footprint;
+    rclcpp::TimerBase::SharedPtr _timer_to_reset_footprint_padding;
+
+    std::string _default_footprint_local_costmap;
+    std::string _default_footprint_global_costmap;
+
+    double _default_footprint_padding_local_costmap;
+    double _default_footprint_padding_global_costmap;
+
+    void reset_local_and_global_footprint();
+
+    void reset_local_and_global_footprint_padding();
+
+    void set_default_footprints_for_local_and_global_costmaps();
+
+    void set_default_footprint_padding_for_local_and_global_costmaps();
+
     void change_footprint();
 
     void change_footprint_padding();

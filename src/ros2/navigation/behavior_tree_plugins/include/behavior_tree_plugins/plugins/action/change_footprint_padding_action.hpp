@@ -63,7 +63,9 @@ namespace nav2_behavior_tree
     static BT::PortsList providedPorts()
     {
       return providedBasicPorts(
-        {BT::InputPort<double>("footprint_padding", "new footprint padding for local and global costmap")});
+        {BT::InputPort<double>("footprint_padding", "new footprint padding for local and global costmap"),
+         BT::InputPort<uint32_t>("time_until_reset_in_ms",
+                                 "time until footprint padding is reset to its default value")});
     }
   };
 

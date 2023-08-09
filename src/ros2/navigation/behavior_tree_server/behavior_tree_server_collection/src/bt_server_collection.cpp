@@ -3,7 +3,7 @@
 namespace behavior_tree_server
 {
   BtServerCollection::BtServerCollection(const rclcpp::NodeOptions& options)
-      : nav2_util::LifecycleNode("split_path_follower", "", options)
+      : nav2_util::LifecycleNode("bt_server_collection", "", options)
   {
     RCLCPP_INFO(get_logger(), "Creating BtServerCollection");
   }
@@ -32,7 +32,9 @@ namespace behavior_tree_server
       "change_footprint_padding",
       std::bind(&BtServerCollection::change_footprint_padding, this));
 
-    _parameter_service_client = std::make_unique<ParameterServiceClient>();
+    _parameter_service_client = std::make_unique<ParameterServiceClient>(shared_from_this());
+
+    _timer_cb_group = nullptr;
 
     return nav2_util::CallbackReturn::SUCCESS;
   }
@@ -79,6 +81,80 @@ namespace behavior_tree_server
     return nav2_util::CallbackReturn::SUCCESS;
   }
 
+  void BtServerCollection::reset_local_and_global_footprint()
+  {
+    rcl_interfaces::msg::Parameter parameter;
+    parameter.name = "footprint";
+    parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
+    parameter.value.string_value = _default_footprint_local_costmap;
+    _parameter_service_client->set_parameter_for_local_costmap(parameter);
+    parameter.value.string_value = _default_footprint_global_costmap;
+    _parameter_service_client->set_parameter_for_global_costmap(parameter);
+    _timer_to_reset_footprint->cancel();
+    RCLCPP_INFO(get_logger(), "Setting footprint parameter back to default values!");
+  }
+
+  void BtServerCollection::reset_local_and_global_footprint_padding()
+  {
+    rcl_interfaces::msg::Parameter parameter;
+    parameter.name = "footprint_padding";
+    parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
+    parameter.value.double_value = _default_footprint_padding_local_costmap;
+    _parameter_service_client->set_parameter_for_local_costmap(parameter);
+    parameter.value.double_value = _default_footprint_padding_global_costmap;
+    _parameter_service_client->set_parameter_for_global_costmap(parameter);
+    _timer_to_reset_footprint_padding->cancel();
+    RCLCPP_INFO(get_logger(), "Setting footprint padding parameter back to default values!");
+  }
+
+  void BtServerCollection::set_default_footprints_for_local_and_global_costmaps()
+  {
+    std::optional<rcl_interfaces::msg::ParameterValue> _param_value_footprint_local_costmap =
+      _parameter_service_client->get_parameter_value_for_local_costmap("footprint");
+    if (_param_value_footprint_local_costmap.has_value())
+    {
+      _default_footprint_local_costmap = _param_value_footprint_local_costmap.value().string_value;
+    }
+    else
+    {
+      RCLCPP_ERROR(get_logger(), "Could not get default footprint for local costmap");
+    }
+    std::optional<rcl_interfaces::msg::ParameterValue> _param_value_footprint_global_costmap =
+      _parameter_service_client->get_parameter_value_for_local_costmap("footprint");
+    if (_param_value_footprint_global_costmap.has_value())
+    {
+      _default_footprint_global_costmap = _param_value_footprint_global_costmap.value().string_value;
+    }
+    else
+    {
+      RCLCPP_ERROR(get_logger(), "Could not get default footprint for global costmap");
+    }
+  }
+
+  void BtServerCollection::set_default_footprint_padding_for_local_and_global_costmaps()
+  {
+    std::optional<rcl_interfaces::msg::ParameterValue> _param_value_footprint_padding_local_costmap =
+      _parameter_service_client->get_parameter_value_for_local_costmap("footprint_padding");
+    if (_param_value_footprint_padding_local_costmap.has_value())
+    {
+      _default_footprint_padding_local_costmap = _param_value_footprint_padding_local_costmap.value().double_value;
+    }
+    else
+    {
+      RCLCPP_ERROR(get_logger(), "Could not get default footprint padding for local costmap");
+    }
+    std::optional<rcl_interfaces::msg::ParameterValue> _param_value_footprint_padding_global_costmap =
+      _parameter_service_client->get_parameter_value_for_local_costmap("footprint_padding");
+    if (_param_value_footprint_padding_global_costmap.has_value())
+    {
+      _default_footprint_padding_global_costmap = _param_value_footprint_padding_global_costmap.value().double_value;
+    }
+    else
+    {
+      RCLCPP_ERROR(get_logger(), "Could not get default footprint padding for global costmap");
+    }
+  }
+
   void BtServerCollection::change_footprint()
   {
     auto goal = _action_server_change_footprint->get_current_goal();
@@ -89,15 +165,23 @@ namespace behavior_tree_server
                 "Change to target footprint %s for local and global footprint requested!",
                 (goal->footprint).c_str());
 
+    set_default_footprints_for_local_and_global_costmaps();
+
     // Prepare the SetParameters service request
     rcl_interfaces::msg::Parameter parameter;
     parameter.name = "footprint";
     parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
     parameter.value.string_value = goal->footprint;
 
-    if (_parameter_service_client->set_parameter_for_local_and_global_costmap(parameter))
+    if (_parameter_service_client->set_parameter_for_local_costmap(parameter) &&
+        _parameter_service_client->set_parameter_for_global_costmap(parameter))
     {
-      RCLCPP_INFO(get_logger(), "Changing footprint parameter was successfully");
+      _timer_to_reset_footprint =
+        this->create_wall_timer(std::chrono::milliseconds(goal->time_until_reset_in_ms),
+                                std::bind(&BtServerCollection::reset_local_and_global_footprint, this),
+                                _timer_cb_group);
+
+      RCLCPP_INFO(get_logger(), "Changing footprint parameter was successful!");
       _action_server_change_footprint->succeeded_current(result);
     }
   }
@@ -112,15 +196,24 @@ namespace behavior_tree_server
                 "Change of footprint padding to %f for local and global footprint requested!",
                 goal->footprint_padding);
 
+    set_default_footprint_padding_for_local_and_global_costmaps();
+
     // Prepare the SetParameters service request
     rcl_interfaces::msg::Parameter parameter;
     parameter.name = "footprint_padding";
     parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
     parameter.value.double_value = goal->footprint_padding;
 
-    if (_parameter_service_client->set_parameter_for_local_and_global_costmap(parameter))
+    if (_parameter_service_client->set_parameter_for_local_costmap(parameter) &&
+        _parameter_service_client->set_parameter_for_global_costmap(parameter))
     {
-      RCLCPP_INFO(get_logger(), "Changing footprint padding parameter was successfully");
+      RCLCPP_INFO(get_logger(), "Changing footprint padding parameter was successful!");
+
+      _timer_to_reset_footprint_padding =
+        this->create_wall_timer(std::chrono::milliseconds(goal->time_until_reset_in_ms),
+                                std::bind(&BtServerCollection::reset_local_and_global_footprint_padding, this),
+                                _timer_cb_group);
+
       _action_server_change_footprint_padding->succeeded_current(result);
     }
   }

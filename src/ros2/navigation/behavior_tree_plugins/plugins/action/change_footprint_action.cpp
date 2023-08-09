@@ -23,6 +23,7 @@ namespace nav2_behavior_tree
       : BtActionNode<communication_interfaces::action::ChangeFootprint>(xml_tag_name, action_name, conf)
   {
     getInput("footprint", goal_.footprint);
+    getInput("time_until_reset_in_ms", goal_.time_until_reset_in_ms);
   }
 
   void ChangeFootprintAction::on_tick()

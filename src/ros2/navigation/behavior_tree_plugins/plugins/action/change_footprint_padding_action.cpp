@@ -23,6 +23,7 @@ namespace nav2_behavior_tree
       : BtActionNode<communication_interfaces::action::ChangeFootprintPadding>(xml_tag_name, action_name, conf)
   {
     getInput("footprint_padding", goal_.footprint_padding);
+    getInput("time_until_reset_in_ms", goal_.time_until_reset_in_ms);
   }
 
   void ChangeFootprintPaddingAction::on_tick()

@@ -1,5 +1,6 @@
 #goal
 float64 footprint_padding
+uint32 time_until_reset_in_ms  # this period determins, when the footprint padding will be reset to its default value 
 ---
 #result
 ---
