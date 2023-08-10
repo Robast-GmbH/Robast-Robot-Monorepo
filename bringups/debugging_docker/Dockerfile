@@ -27,3 +27,5 @@ RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group
     echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV USER robast
 ARG DEBIAN_FRONTEND=
+
+#docker run --name=debug -d --restart unless-stopped --network=host -v ./:/workspace/scripts -v /media/robast/PortableSSD/hagen:/workspace/bags ghcr.io/robast-gmbh/monorepo/debug /bin/bash -c 'su robast; source /opt/ros/humble/setup.bash; ros2 launch foxglove_bridge foxglove_bridge_launch.xml'
