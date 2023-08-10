@@ -2,6 +2,11 @@ name: Create Docker Image RMF
 # TODO remove this file again. just for hagen
 #trigger workflow every day at 00:00
 on:
+  push:
+    branches:
+        - dev/hagen
+    paths:
+        - src/ros2/rmf/Dockerfile
   workflow_dispatch:
 
 jobs:
