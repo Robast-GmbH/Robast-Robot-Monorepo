@@ -96,7 +96,7 @@ controller_server:
       vy_std: 0.0
       wz_std: 0.4
       vx_max: 0.5
-      vx_min: 0.07
+      vx_min: -0.01
       vy_max: 0.0
       wz_max: 1.9
       iteration_count: 1
@@ -104,7 +104,7 @@ controller_server:
       transform_tolerance: 0.1
       temperature: 0.3
       gamma: 0.015
-      motion_model: "Ackermann"
+      motion_model: "DiffDrive"
       visualize: false
       reset_period: 1.0 # (only in Humble)
       TrajectoryVisualizer:
