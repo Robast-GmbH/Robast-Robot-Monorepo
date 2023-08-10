@@ -13,7 +13,7 @@
                 "--name=navigation",
                 "--network=host",
                 "--privileged",
-                "--volume=/dev/bus/usb:/dev/bus/usb",
+                "--volume=/dev:/dev",
                 "--device-cgroup-rule=c 189:* rmw",
         ],
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
