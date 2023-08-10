@@ -104,6 +104,8 @@ namespace behavior_tree_server
 
     void set_default_footprint_padding_for_local_and_global_costmaps();
 
+    bool cancel_timer_if_already_running(rclcpp::TimerBase::SharedPtr _timer);
+
     void change_footprint();
 
     void change_footprint_padding();

@@ -155,8 +155,26 @@ namespace behavior_tree_server
     }
   }
 
+  bool BtServerCollection::cancel_timer_if_already_running(rclcpp::TimerBase::SharedPtr _timer)
+  {
+    if (_timer != nullptr && !_timer->is_canceled())
+    {
+      _timer->cancel();
+      return true;
+    }
+    else
+    {
+      return false;
+    }
+  }
+
   void BtServerCollection::change_footprint()
   {
+    if (!cancel_timer_if_already_running(_timer_to_reset_footprint))
+    {
+      set_default_footprints_for_local_and_global_costmaps();
+    }
+
     auto goal = _action_server_change_footprint->get_current_goal();
     auto feedback = std::make_shared<ChangeFootprintAction::Feedback>();
     auto result = std::make_shared<ChangeFootprintAction::Result>();
@@ -164,8 +182,6 @@ namespace behavior_tree_server
     RCLCPP_INFO(get_logger(),
                 "Change to target footprint %s for local and global footprint requested!",
                 (goal->footprint).c_str());
-
-    set_default_footprints_for_local_and_global_costmaps();
 
     // Prepare the SetParameters service request
     rcl_interfaces::msg::Parameter parameter;
@@ -191,6 +207,11 @@ namespace behavior_tree_server
 
   void BtServerCollection::change_footprint_padding()
   {
+    if (!cancel_timer_if_already_running(_timer_to_reset_footprint_padding))
+    {
+      set_default_footprint_padding_for_local_and_global_costmaps();
+    }
+
     auto goal = _action_server_change_footprint_padding->get_current_goal();
     auto feedback = std::make_shared<ChangeFootprintPaddingAction::Feedback>();
     auto result = std::make_shared<ChangeFootprintPaddingAction::Result>();
@@ -198,8 +219,6 @@ namespace behavior_tree_server
     RCLCPP_INFO(get_logger(),
                 "Change of footprint padding to %f for local and global footprint requested!",
                 goal->footprint_padding);
-
-    set_default_footprint_padding_for_local_and_global_costmaps();
 
     // Prepare the SetParameters service request
     rcl_interfaces::msg::Parameter parameter;
