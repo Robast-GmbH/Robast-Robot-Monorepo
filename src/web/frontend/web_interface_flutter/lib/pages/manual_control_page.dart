@@ -17,7 +17,8 @@ class ManualControlPage extends StatefulWidget {
 
 class _ManualControlPageState extends State<ManualControlPage> {
   int selectedRobotIndex = 0;
-
+  final openColor = const Color.fromRGBO(128, 128, 128, 184 / 255);
+  final closedColor = const Color.fromRGBO(0, 155, 155, 25 / 255);
   late Timer refreshTimer;
 
   void setTimer() {
@@ -47,13 +48,20 @@ class _ManualControlPageState extends State<ManualControlPage> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text("Manuelle Kontrolle"),
         ),
-        body: Center(child: RobotClone(
+        body: Center(
+            child: RobotClone(
+          displayStatus: true,
           onPressed: (moduleID) async {
-            final isClosed = Random().nextBool();
-            if (isClosed) {
-              APIService.openDrawer("Robo", moduleID, 0);
-            } else {
-              APIService.closeDrawer("Robo", moduleID, 0);
+            try {
+              final module = Provider.of<RobotProvider>(context, listen: false).modules["RB0"]?.firstWhere((element) => element.moduleID == moduleID);
+
+              if (module!.status == "closed") {
+                APIService.openDrawer("RB0", moduleID, module.drawerID);
+              } else {
+                APIService.closeDrawer("RB0", moduleID, module.drawerID);
+              }
+            } catch (e) {
+              debugPrint(e.toString());
             }
           },
         )));

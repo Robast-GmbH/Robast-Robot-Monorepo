@@ -1,9 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:web_interface_flutter/models/drawer_module.dart';
+import 'package:web_interface_flutter/models/robot_provider.dart';
 
-class RobotClone extends StatelessWidget {
-  const RobotClone({super.key, this.onPressed, this.selectedDrawerID});
+class RobotClone extends StatefulWidget {
+  const RobotClone({
+    super.key,
+    this.onPressed,
+    this.selectedDrawerID,
+    this.displayStatus = false,
+  });
   final void Function(int)? onPressed;
   final int? selectedDrawerID;
+  final bool displayStatus;
+
+  @override
+  State<RobotClone> createState() => _RobotCloneState();
+}
+
+class _RobotCloneState extends State<RobotClone> {
+  final openColor = Colors.green; //Color.fromARGB(184, 165, 165, 165);
+  final closedColor = Colors.blue; //const Color.fromRGBO(0, 155, 155, 1);
+
+  Color getModuleLedColor(int id) {
+    final module = Provider.of<RobotProvider>(context, listen: false).modules["RB0"]?.firstWhere((element) => element.moduleID == id);
+    if (module != null && module.status == "open") {
+      return openColor;
+    }
+    return closedColor;
+  }
+
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(builder: (context, constraints) {
@@ -93,11 +119,20 @@ class RobotClone extends StatelessWidget {
                   ],
                 ),
               ),
-              buildDrawer(id: 1, size: size, height: 104.5 * size, color: Colors.blue),
-              buildDrawer(id: 2, size: size, height: 104.5 * size, color: Colors.blue),
-              buildDrawer(id: 3, size: size, height: 104.5 * size, color: Colors.blue),
-              buildDrawer(id: 4, size: size, height: 209 * size, color: Colors.blue),
-              buildDrawer(id: 5, size: size, height: 313.5 * size, color: Colors.blue),
+              Selector<RobotProvider, Map<String, List<DrawerModule>>>(
+                selector: (_, provider) => provider.modules,
+                builder: (context, modules, child) {
+                  return Column(
+                    children: modules.values.first
+                        .map((e) => buildDrawer(
+                            id: e.moduleID,
+                            size: size,
+                            height: e.size * 10.45 * size,
+                            color: widget.displayStatus ? getModuleLedColor(e.moduleID) : Colors.blue))
+                        .toList(),
+                  );
+                },
+              ),
               SizedBox(
                 height: (283 / 2 - 43.6) * size,
                 width: 570.44 * size,
@@ -136,9 +171,9 @@ class RobotClone extends StatelessWidget {
     final double drawerWidth = 400 * size;
     final double topGap = 20 * size;
     final double bottomGap = 6.5 * size;
-    final isSelected = selectedDrawerID == id;
+    final isSelected = widget.selectedDrawerID == id;
     return GestureDetector(
-      onTap: () => onPressed?.call(id),
+      onTap: () => widget.onPressed?.call(id),
       child: Container(
         decoration: BoxDecoration(border: Border.all(width: 0.5, strokeAlign: BorderSide.strokeAlignOutside)),
         height: height,
