@@ -34,12 +34,9 @@ class Robot_states(Enum):
     MOVEMENTMODE = 3
 
 class drawer():
-    int: module_id
-    int: drawer_id
-    dict: locked_for
-
-
-
+    module_id :int
+    drawer_id :int
+    locked_for: dict
 
 class free_fleet_client_direct(Node):
 
@@ -52,7 +49,7 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('robot_frame_id', 'map')
         self.declare_parameter('robot_odom', '/odom')
  
-        self.declare_parameter('heartbeat', 0.5)
+        self.declare_parameter('heartbeat', 0.01)
         self.declare_parameter('statemaschine_open_drawer_topic', 'trigger_drawer_tree')
         self.declare_parameter('statemaschine_close_e_drawer_topic', 'close_drawer')
         self.declare_parameter('statemaschine_open_e_drawer_topic', 'trigger_electric_drawer_tree')
@@ -80,6 +77,9 @@ class free_fleet_client_direct(Node):
         self.task_id= None
         self.open_drawers:list[drawer] =[]
         self.locked_drawers:list[drawer]=[]
+        self.robot_x= 0
+        self.robot_y=0
+        self.robot_yaw=0
 
         qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,
@@ -101,11 +101,13 @@ class free_fleet_client_direct(Node):
         self.setting_request_dds= dds.DDS_communicator(self.dds_domain,"settings_request",messages.FreeFleetData_SettingRequest)
         self.drawer_request_dds= dds.DDS_communicator(self.dds_domain, self.dds_slide_drawer_topic, messages.FreeFleetData_SlideDrawerRequest)
         self.destination_request_dds= dds.DDS_communicator(self.dds_domain, "destination_request", messages.FreeFleetData_DestinationRequest)
-        self.fleet_state_dds = dds.DDS_communicator(self.dds_domain, "fleet_state", messages.FreeFleetData_RobotState)
+        self.robot_state_dds = dds.DDS_communicator(self.dds_domain, "robot_state", messages.FreeFleetData_RobotState)
         self.drawer_states_dds = dds.DDS_communicator(self.dds_domain, "drawer_state",messages.FreeFleetData_DrawerState)
         
         self.action_timer = self.create_timer(self.heartbeat, self.start_robot_behavior)
-        self.start_sending_robot_info()
+        self.start_receiving_robot_info()
+        self.status_timer = self.create_timer(self.heartbeat,self.start_sending_status) 
+        
         
 
     def start_robot_behavior(self):
@@ -136,7 +138,7 @@ class free_fleet_client_direct(Node):
                if self.navigator.isTaskComplete():
                    self.finish_movement()
 
-    def check_setting(self):
+    def check_settings(self):
         new_settings=True 
         while(new_settings):
             msg= self.setting_request_dds.get_next()
@@ -176,7 +178,7 @@ class free_fleet_client_direct(Node):
                 result = future.result()
                 nfc_key= result.nfc_code
                 msg= messages.FreeFleetData_InfoState("new_user", self.new_user_id, nfc_key)
-                self.info_State_dds(msg)
+                self.info_State_dds.publish(msg)
 
             
     def finish_movement(self):
@@ -192,7 +194,7 @@ class free_fleet_client_direct(Node):
              movement_status = "failed"
         self.state= Robot_states.IDLE         
 
-    def start_sending_robot_info(self):  
+    def start_receiving_robot_info(self):  
         self.subscriber_odom = self.create_subscription(
             Odometry,
             self.robot_odom,
@@ -324,15 +326,15 @@ class free_fleet_client_direct(Node):
 
 
     def publish_fleet_states(self):
-        mode = self.state 
         battery= 0.0 #todo @Torben read the battery sate from the robot
-        sequence =None #todo @Torben add a list of waypoint of the robot
+        sequence = [] #todo @Torben add a list of waypoint of the robot
         current_location= messages.FreeFleetData_Location(0,0,self.robot_x,self.robot_y, self.robot_yaw,"")
-        robot_state =messages.FreeFleetData_RobotState(name=self.robot_name, model=self.robot_model,task_id=0,mode=mode, battery_percent= battery, location= current_location, path = sequence )
-        self.fleet_state_dds.publish(robot_state) 
-
-        
-       
+        robot_state =messages.FreeFleetData_RobotState(name=self.robot_name, model=self.robot_model,task_id="0",mode= messages.FreeFleetData_RobotMode(0), battery_percent= battery, location= current_location, path = sequence )
+        self.robot_state_dds.publish(robot_state) 
+   
     def receive_authentication_codes(self, msg):
         self.recived_nfc_codes =msg.data 
  
+    def start_sending_status(self):
+        self.publish_fleet_states()
+        

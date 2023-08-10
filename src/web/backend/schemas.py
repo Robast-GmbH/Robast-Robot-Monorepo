@@ -69,6 +69,10 @@ class Module(ModuleBase):
     class Config:
         orm_mode = True
 
+class UpdateModule(ModuleBase):
+    robot_name: str    
+    status: str
+
 #User
 class UserBase(BaseModel):
     name: str

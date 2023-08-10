@@ -198,4 +198,14 @@ def set_module(db:Session, module: schemas.Module)-> models.Module:
     db.refresh(db_module)
     return db_module
 
+def set_module_status(db:Session,module:schemas.UpdateModule)->models.Module:
+    db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.id, drawer_id = module.drawer_id)
+    if(db_module is None):
+        return 
+    else:
+        db_module.status= module.status
+    db.commit()
+    db.refresh(db_module)
+    return db_module
+
 

@@ -59,9 +59,17 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
 
-@app.post("/users/NFC")
-def add_nfc_code_to_user(user: schemas.UserBase, db: Session = Depends(get_db)):
-   #todo
+@app.post("/users/nfc")
+def add_nfc_code_to_user(user: schemas.User, db: Session = Depends(get_db)):
+    message={"user_id":user.id}
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session()
+    answer  =sender.post(url= config["fleetmangement_address"]+"/setting/user", json= json.dumps(message), headers= headers, verify=False)
+    return 
+
+@app.post("/users/{user_id}/nfc")
+def update_nfc_code(user_id:str, nfc_code:str, db: Session = Depends(get_db)):
+    crud.create_nfc_code(user_id=user_id,nfc_code=nfc_code)
     return 
 
 @app.post("/users/login")#, response_model=schemas.User
@@ -179,9 +187,13 @@ def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
     return crud.get_drawer(db=db, robot_name=robot_name, module_id= module_id)
 
 #set_drawer
-@app.post("/robots/modules/",)
+@app.post("/robots/modules/",schemas.Module)
 def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
     return crud.set_module(db=db, module=module)
+
+@app.post("/robots/modules/status",)
+def update_drawer_status(module: schemas.UpdateModule, db: Session = Depends(get_db)):
+    return crud.set_module_status(db=db, module=module)
  
 # finish_using_drawers
 @app.post("/robots/{robot_name}/modules/completed")

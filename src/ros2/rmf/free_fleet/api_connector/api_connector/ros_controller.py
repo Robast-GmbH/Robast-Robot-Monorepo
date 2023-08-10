@@ -26,6 +26,9 @@ class ros_controller(Node):
         self.declare_parameter('dds_slide_drawer_request_topic', "slide_drawer_request")
         self.declare_parameter('dds_setting_request_topic', "setting_request")
         self.declare_parameter('dds_info_state_topic',"info_state")
+        self.declare_parameter('dds_drawer_state_topic',"drawer_state")
+        self.declare_parameter('backend_address',"http://127.0.0.1:3001/")
+
         self.dds_config = {
                 "dds": self.get_parameter('dds').get_parameter_value().string_value,
                 "domain_id": self.get_parameter('dds_domain_id').get_parameter_value().integer_value,
@@ -42,7 +45,11 @@ class ros_controller(Node):
                 "setting_request_topic": self.get_parameter('dds_setting_request_topic')
                                           .get_parameter_value().string_value,
                 "info_state_topic": self.get_parameter('dds_info_state_topic')
-                                         .get_parameter_value().string_value
+                                         .get_parameter_value().string_value,
+                "drawer_state_topic": self.get_parameter('dds_drawer_state_topic')
+                                        .get_parameter_value().string_value,
+                "backend_address": self.get_parameter('backend_address')
+                                        .get_parameter_value().string_value
 
             }
 
@@ -58,7 +65,7 @@ class ros_controller(Node):
             drawer_controller_id = response.json()
             if (drawer_controller_id > 0):
                 # ToDO Torben: get all Values from the Frontend / restapi
-                self.openDrawer(drawer_controller_id, 1, "ROBAST_1", "rb0")
+                self.openDrawer(drawer_controller_id, 1, "ROBAST", "RB0")
                 self.delete_request(api_url)
             elif(drawer_controller_id != -1):
                 get_logger().warning(
@@ -80,7 +87,6 @@ class ros_controller(Node):
         msg.robot_name = robot_name
         msg.drawer_address.module_id = module_id
         msg.drawer_address.drawer_id = drawer_id
-        msg.drawer_
         self.slide_drawer_to_ff.publish(msg)
 
     def get_dds_config(self):
