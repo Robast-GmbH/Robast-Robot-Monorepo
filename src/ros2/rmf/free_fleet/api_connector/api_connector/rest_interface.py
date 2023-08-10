@@ -38,13 +38,11 @@ class RestInterface():
 
         @self.app.post("/drawer/open")
         def open_drawer(drawer: OpenDrawer, robot: Robot):
-
             print("/drawer/open was called")
             free_fleet_node.handle_slide_drawer_request(
                 robot.fleet_name,
                 robot.name,
                 drawer.module_id,
-                drawer.locked_for,
                 drawer.id,
                 drawer.locked_for,
                 drawer.is_edrawer,
@@ -68,41 +66,31 @@ class RestInterface():
         
         @self.app.post("/move")
         def force_move_to_waypoint(waypoint: Waypoint, robot: Robot):
-            self.ros_node.get_logger().info('move')
             free_fleet_node.handle_destination_request(robot.fleet_name,
                                                        robot.name,
                                                        waypoint)
             return
         
-        # @self.app.post("/task")
-        # def open_drawer(drawer: Drawer, robot: Robot):
-        #     self.ros_node.get_logger().info('open drawer')
-        #     print("/drawer/open was called")
-        #     free_fleet_node.handle_slide_drawer_request(
-        #         robot.fleet_name,
-        #         robot.name,
-        #         drawer.module_id,
-        #         drawer.id,
-        #         drawer.is_edrawer,
-        #         True
-        #         )
-        #     return 
         
         @self.app.post("/settings/move/pause")
         def pause_robot():
             free_fleet_node.handle_setting_request("move", "pause")
+            return
         
         @self.app.post("/settings/move/resume")
         def resume_robot():
             free_fleet_node.handle_setting_request("move", "resume")
+            return
 
         @self.app.post("/settings/move/cancel")
         def cancel_robot():
-            free_fleet_node.handle_setting_request("move", "cancel")    
+            free_fleet_node.handle_setting_request("move", "cancel")
+            return    
 
         @self.app.post("/setting/user")
         def create_new_nfc_card(user_id: int):
             free_fleet_node.handle_setting_request("new_user", str(user_id) )
+            return
 
     def run(self, host='0.0.0.0', port=3002, log_level='warning'):
         uvicorn.run(self.app, host=host, port=port, log_level=log_level)
