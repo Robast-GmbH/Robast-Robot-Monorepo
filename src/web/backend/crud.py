@@ -173,7 +173,8 @@ def get_module(db: Session, module_id: int)-> models.Module:
     return db.query(models.Module).filter(models.Module.id == module_id).all()
 
 def get_drawer(db: Session,robot_name:str, module_id: int, drawer_id: int)-> models.Module:
-    return db.query(models.Module).filter(models.Module.robot_name ==robot_name, models.Module.id == module_id, models.Module.drawer_id== drawer_id).first()
+    drawer= db.query(models.Module).filter(models.Module.robot_name ==robot_name, models.Module.id == module_id, models.Module.drawer_id== drawer_id).first()
+    return drawer
 
 def set_module(db:Session, module: schemas.Module)-> models.Module:
     db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.id, drawer_id = module.drawer_id)
@@ -182,10 +183,19 @@ def set_module(db:Session, module: schemas.Module)-> models.Module:
                                 drawer_id = module.drawer_id,
                                 type = module.type,
                                 robot_name = module.robot_name,
+                                size= module.size,
+                                position= module.position,
+                                status= module.status
                                 )
         db.add(db_module)
     else:
         db_module.type=module.type
+        db_module.robot_name = module.robot_name
+        db_module.size= int(module.size)
+        db_module.position= module.position
+        db_module.status= module.status
     db.commit()
     db.refresh(db_module)
     return db_module
+
+
