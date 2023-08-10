@@ -201,6 +201,16 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start clicked_point_to_nav_pose",
+                        "command": "source /workspace/install/setup.bash; ros2 launch clicked_point_to_nav_pose clicked_point_to_nav_pose_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start slam_toolbox",
                         "command": "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp; source install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
                         "problemMatcher": [],
