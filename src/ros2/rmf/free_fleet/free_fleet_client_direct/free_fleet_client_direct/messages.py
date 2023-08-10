@@ -62,7 +62,7 @@ class FreeFleetData_DestinationRequest(IdlStruct):
     destination: FreeFleetData_Location
     task_id: str
 
-
+#custom msg
 @dataclass
 class FreeFleetData_SlideDrawerRequest(IdlStruct):
     fleet_name: str
@@ -70,3 +70,8 @@ class FreeFleetData_SlideDrawerRequest(IdlStruct):
     module_id: int
     drawer_id: int
     open: bool
+
+@dataclass
+class FreeFleetData_Drawer_states():
+    
+    
