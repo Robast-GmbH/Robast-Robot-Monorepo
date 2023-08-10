@@ -29,32 +29,40 @@ dai::Pipeline createPipeline(std::string nnPath) {
     auto monoLeft = pipeline.create<dai::node::MonoCamera>();
     auto monoRight = pipeline.create<dai::node::MonoCamera>();
     auto stereo = pipeline.create<dai::node::StereoDepth>();
+    auto nnNetworkOut = pipeline.create<dai::node::XLinkOut>();
 
     auto xoutRgb = pipeline.create<dai::node::XLinkOut>();
     auto xoutDepth = pipeline.create<dai::node::XLinkOut>();
     auto xoutNN = pipeline.create<dai::node::XLinkOut>();
 
-    xoutRgb->setStreamName("preview");
-     xoutNN->setStreamName("detections");
-      xoutDepth->setStreamName("depth");
+    xoutRgb->setStreamName("rgb");
+    xoutNN->setStreamName("detections");
+    xoutDepth->setStreamName("depth");
+    nnNetworkOut->setStreamName("nnNetwork");
 
     // Properties
-    colorCam->setPreviewSize(640, 480);
+    colorCam->setPreviewSize(640, 640);
     colorCam->setResolution(dai::ColorCameraProperties::SensorResolution::THE_1080_P);
     colorCam->setInterleaved(false);
     colorCam->setColorOrder(dai::ColorCameraProperties::ColorOrder::BGR);
-    colorCam->setFps(40);
+    //colorCam->setFps(40);
 
-    monoLeft->setResolution(dai::node::MonoCamera::Properties::SensorResolution::THE_720_P);
+    monoLeft->setResolution(dai::node::MonoCamera::Properties::SensorResolution::THE_400_P);
     monoLeft->setBoardSocket(dai::CameraBoardSocket::LEFT);
-    monoRight->setResolution(dai::node::MonoCamera::Properties::SensorResolution::THE_720_P);
+    monoRight->setResolution(dai::node::MonoCamera::Properties::SensorResolution::THE_400_P);
     monoRight->setBoardSocket(dai::CameraBoardSocket::RIGHT);
 
-    stereo->initialConfig.setConfidenceThreshold(200);
-    stereo->setRectifyEdgeFillColor(0);  // black, to better see the cutoutS
-    stereo->initialConfig.setLeftRightCheckThreshold(5);
-    stereo->setSubpixel(true);
-    stereo->setDepthAlign(dai::CameraBoardSocket::RGB);
+
+    stereo->setDefaultProfilePreset(dai::node::StereoDepth::PresetMode::HIGH_DENSITY);
+    // Align depth map to the perspective of RGB camera, on which inference is done
+    stereo->setDepthAlign(dai::CameraBoardSocket::CAM_A);
+    stereo->setOutputSize(monoLeft->getResolutionWidth(), monoLeft->getResolutionHeight());
+
+    //stereo->initialConfig.setConfidenceThreshold(200);
+    //stereo->setRectifyEdgeFillColor(0);  // black, to better see the cutoutS
+    //stereo->initialConfig.setLeftRightCheckThreshold(5);
+    //stereo->setSubpixel(true);
+    //stereo->setDepthAlign(dai::CameraBoardSocket::RGB);
 
     spatialDetectionNetwork->setBlobPath(nnPath);
     spatialDetectionNetwork->setConfidenceThreshold(0.5f);
@@ -63,24 +71,25 @@ dai::Pipeline createPipeline(std::string nnPath) {
     spatialDetectionNetwork->setDepthLowerThreshold(100);
     spatialDetectionNetwork->setDepthUpperThreshold(5000);
 
-    spatialDetectionNetwork->setNumClasses(80);
-        spatialDetectionNetwork->setCoordinateSize(4);
-        spatialDetectionNetwork->setAnchors({10, 13, 16, 30, 33, 23, 30, 61, 62, 45, 59, 119, 116, 90, 156, 198, 373, 326});
-        spatialDetectionNetwork->setAnchorMasks({{"side80", {0, 1, 2}}, {"side40", {3, 4, 5}}, {"side20", {6, 7, 8}}});
-        spatialDetectionNetwork->setIouThreshold(0.5f);
+    spatialDetectionNetwork->setNumClasses(1);
+    spatialDetectionNetwork->setCoordinateSize(4);
+    spatialDetectionNetwork->setAnchors({10, 13, 16, 30, 33, 23, 30, 61, 62, 45, 59, 119, 116, 90, 156, 198, 373, 326});
+    spatialDetectionNetwork->setAnchorMasks({{"side80", {0, 1, 2}}, {"side40", {3, 4, 5}}, {"side20", {6, 7, 8}}});
+    spatialDetectionNetwork->setIouThreshold(0.5f);
 
-     monoLeft->out.link(stereo->left);
-        monoRight->out.link(stereo->right);
+    monoLeft->out.link(stereo->left);
+    monoRight->out.link(stereo->right);
 
 
-    //colorCam->preview.link(spatialDetectionNetwork->input);
+    colorCam->preview.link(spatialDetectionNetwork->input);
     spatialDetectionNetwork->passthrough.link(xoutRgb->input);
 
     spatialDetectionNetwork->out.link(xoutNN->input);
 
-        stereo->depth.link(spatialDetectionNetwork->inputDepth);
-        spatialDetectionNetwork->passthroughDepth.link(xoutDepth->input);
-    colorCam->preview.link(xoutRgb->input);
+    stereo->depth.link(spatialDetectionNetwork->inputDepth);
+    spatialDetectionNetwork->passthroughDepth.link(xoutDepth->input);
+    spatialDetectionNetwork->outNetwork.link(nnNetworkOut->input);
+    //colorCam->preview.link(xoutRgb->input);
 
     // setting node configs
 
@@ -128,11 +137,11 @@ int main(int argc, char** argv) {
         node->get_parameter("nnName", nnName);
     }
 
-    nnPath = resourceBaseFolder + "/" + nnName;
+    nnPath = "src/navigation/door_handle_detection/resources/yolov5.blob";
     dai::Pipeline pipeline = createPipeline(nnPath);
     dai::Device device(pipeline);
 
-    auto colorQueue = device.getOutputQueue("preview", 30, false);
+    auto colorQueue = device.getOutputQueue("rgb", 30, false);
     auto detectionQueue = device.getOutputQueue("detections", 30, false);
     auto depthQueue = device.getOutputQueue("depth", 30, false);
     auto calibrationHandler = device.readCalibration();
@@ -178,7 +187,7 @@ int main(int argc, char** argv) {
                                                                                        "color");
     //rgbPublish.addPublisherCallback();  // addPublisherCallback works only when the dataqueue is non blocking.
 
-    dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 640, 480, false);
+    dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 640, 640, false);
     dai::rosBridge::BridgePublisher<depthai_ros_msgs::msg::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(
         detectionQueue,
         node,

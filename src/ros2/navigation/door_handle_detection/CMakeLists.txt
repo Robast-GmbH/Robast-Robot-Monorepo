@@ -19,7 +19,7 @@ if(NOT OpenCV_FOUND)
 endif()
 
 # find_package(depthai CONFIG REQUIRED PATHS "/home/sachin/Desktop/luxonis/depthai-core/build/install/lib/cmake/depthai")
-set(yolov5_door_blob_name "door.blob")
+set(yolov5_door_blob_name "yolov5.blob")
 
 find_package(ament_cmake REQUIRED)
 
@@ -71,8 +71,10 @@ endmacro()
 
 
 dai_add_node_ros2(yolov5_door_spatial_node src/yolov5_door_publisher.cpp)
+dai_add_node_ros2(yolov5_door_node src/yolo.cpp)
 
 target_compile_definitions(yolov5_door_spatial_node PRIVATE BLOB_NAME="${yolov5_door_blob_name}")
+target_compile_definitions(yolov5_door_node PRIVATE BLOB_NAME="${yolov5_door_blob_name}")
 
 if($ENV{ROS_DISTRO} STREQUAL "galactic")
   target_compile_definitions(rgb_stereo_node PRIVATE IS_GALACTIC)
@@ -86,6 +88,7 @@ FILES_MATCHING PATTERN "*.py")
 
 install(TARGETS
         yolov5_door_spatial_node
+        yolov5_door_node
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
