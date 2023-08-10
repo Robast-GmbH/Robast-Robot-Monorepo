@@ -144,13 +144,18 @@ def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
 
 @app.put("/robots/pause_resume")
 def pause_robot(robot_name: str, pause: bool , db: Session = Depends(get_db)):
+    headers = {"Content-Type":"application/json"}
+    sender = requests.Session() 
     
-    return
+    if(pause):
+        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/move/pause", headers= headers, verify=False)
+    else:
+        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/move/resume", headers= headers, verify=False)
 
-# @app.put("/robots/rosbag")
-# def set_rosbag(robot_name: str, halt: bool , db: Session = Depends(get_db)):
-#     #todo
-#     return
+    if answer.status_code!= 200:
+        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    return 
+
 
 @app.put("/robots/status")
 def set_robot(robot: schemas.Robot, db: Session = Depends(get_db)):
@@ -170,12 +175,6 @@ def move_robot( robot_name: str, x: float, y: float, yaw: float, db: Session = D
     answer  =sender.post(url= config["fleetmangement_address"]+"/move", json= json.dumps(message), headers= headers, verify=False)
     return answer.status_code
 
-
-# @app.get("/robots/{robot_name}/log", response_model = List[str])
-# def get_log(robot_name: str, db: Session = Depends(get_db)):
-#    #todo
-#     return None
-
 #Module
 @app.get("/robots/{robot_name}/modules/", response_model = List[schemas.Module])
 def get_modules(robot_name :str, db: Session = Depends(get_db)):
@@ -187,7 +186,7 @@ def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
     return crud.get_drawer(db=db, robot_name=robot_name, module_id= module_id)
 
 #set_drawer
-@app.post("/robots/modules/",schemas.Module)
+@app.post("/robots/modules/", response_model= schemas.Module)
 def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
     return crud.set_module(db=db, module=module)
 
