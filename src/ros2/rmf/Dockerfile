@@ -74,7 +74,6 @@ COPY --from=base / /
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
-#install RMF
 RUN wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
