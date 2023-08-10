@@ -206,7 +206,7 @@ def open_drawer( robot_name: str, module: schemas.ModuleBase, accessible_user_id
             nfc_code= crud.get_nfc_code(db=db, user_id=id)
             nfc_codes.append(str(id)+":"+nfc_code)
 
-    message = templates.get_Drawer_interaction_json(crud, db, module, robot_name, nfc_codes, schemas)
+    message = templates.get_Drawer_interaction_json(db, module, robot_name, nfc_codes)
     if message == "robot":
         raise HTTPException(status_code=404, detail="robot not found")
     
@@ -225,7 +225,7 @@ def open_drawer( robot_name: str, module: schemas.ModuleBase, accessible_user_id
 # close_drawer
 @app.post("/robots/{robot_name}/modules/close")
 def close_drawer( robot_name: str, module: schemas.ModuleBase , db: Session = Depends(get_db)):
-        message = templates.get_Drawer_interaction_json(crud, db, module, robot_name, [],schemas)
+        message = templates.get_Drawer_interaction_json(db, module, robot_name, [])
         if message == "robot":
             raise HTTPException(status_code=404, detail="robot not found")
     
