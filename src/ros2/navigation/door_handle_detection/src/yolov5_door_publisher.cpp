@@ -20,10 +20,13 @@
 #include "depthai/pipeline/node/MonoCamera.hpp"
 #include "depthai/pipeline/node/SpatialDetectionNetwork.hpp"
 #include "depthai/pipeline/node/StereoDepth.hpp"
+#include "depthai/pipeline/node/XLinkIn.hpp"
 #include "depthai/pipeline/node/XLinkOut.hpp"
 
 dai::Pipeline createPipeline(std::string nnPath) {
     dai::Pipeline pipeline;
+
+    auto controlIn = pipeline.create<dai::node::XLinkIn>();
     auto colorCam = pipeline.create<dai::node::ColorCamera>();
     auto spatialDetectionNetwork = pipeline.create<dai::node::YoloSpatialDetectionNetwork>();
     auto monoLeft = pipeline.create<dai::node::MonoCamera>();
@@ -35,6 +38,8 @@ dai::Pipeline createPipeline(std::string nnPath) {
     auto xoutDepth = pipeline.create<dai::node::XLinkOut>();
     auto xoutNN = pipeline.create<dai::node::XLinkOut>();
 
+
+     controlIn->setStreamName("control");
     xoutRgb->setStreamName("rgb");
     xoutNN->setStreamName("detections");
     xoutDepth->setStreamName("depth");
@@ -45,23 +50,39 @@ dai::Pipeline createPipeline(std::string nnPath) {
     colorCam->setResolution(dai::ColorCameraProperties::SensorResolution::THE_1080_P);
     colorCam->setInterleaved(false);
     colorCam->setColorOrder(dai::ColorCameraProperties::ColorOrder::BGR);
+    colorCam->setBoardSocket(dai::CameraBoardSocket::CAM_A);
+
+    int rgbWidth, rgbHeight, rgbScaleNumerator, rgbScaleDinominator;
+
+    rgbWidth = 1920;
+    rgbHeight = 1080;
+    rgbScaleNumerator = 2;
+    rgbScaleDinominator = 3;
+
+    rgbWidth = rgbWidth * rgbScaleNumerator / rgbScaleDinominator;
+    rgbHeight = rgbHeight * rgbScaleNumerator / rgbScaleDinominator;
+    colorCam->setIspScale(rgbScaleNumerator, rgbScaleDinominator);
+
+    colorCam->isp.link(xoutRgb->input);
     //colorCam->setFps(40);
 
     monoLeft->setResolution(dai::node::MonoCamera::Properties::SensorResolution::THE_400_P);
-    monoLeft->setBoardSocket(dai::CameraBoardSocket::LEFT);
+    monoLeft->setBoardSocket(dai::CameraBoardSocket::CAM_B);
     monoRight->setResolution(dai::node::MonoCamera::Properties::SensorResolution::THE_400_P);
-    monoRight->setBoardSocket(dai::CameraBoardSocket::RIGHT);
+    monoRight->setBoardSocket(dai::CameraBoardSocket::CAM_C);
 
 
-    stereo->setDefaultProfilePreset(dai::node::StereoDepth::PresetMode::HIGH_DENSITY);
+    //stereo->setDefaultProfilePreset(dai::node::StereoDepth::PresetMode::HIGH_DENSITY);
     // Align depth map to the perspective of RGB camera, on which inference is done
+    stereo->initialConfig.setConfidenceThreshold(200);
+    stereo->setRectifyEdgeFillColor(0);  // black, to better see the cutoutS
+    stereo->initialConfig.setLeftRightCheckThreshold(5);
+     stereo->setLeftRightCheck(true);
+    stereo->setExtendedDisparity(false);
+    stereo->setSubpixel(true);
     stereo->setDepthAlign(dai::CameraBoardSocket::CAM_A);
     stereo->setOutputSize(monoLeft->getResolutionWidth(), monoLeft->getResolutionHeight());
 
-    //stereo->initialConfig.setConfidenceThreshold(200);
-    //stereo->setRectifyEdgeFillColor(0);  // black, to better see the cutoutS
-    //stereo->initialConfig.setLeftRightCheckThreshold(5);
-    //stereo->setSubpixel(true);
     //stereo->setDepthAlign(dai::CameraBoardSocket::RGB);
 
     spatialDetectionNetwork->setBlobPath(nnPath);
@@ -87,7 +108,7 @@ dai::Pipeline createPipeline(std::string nnPath) {
     spatialDetectionNetwork->out.link(xoutNN->input);
 
     stereo->depth.link(spatialDetectionNetwork->inputDepth);
-    spatialDetectionNetwork->passthroughDepth.link(xoutDepth->input);
+    //spatialDetectionNetwork->passthroughDepth.link(xoutDepth->input);
     spatialDetectionNetwork->outNetwork.link(nnNetworkOut->input);
     //colorCam->preview.link(xoutRgb->input);
 
@@ -173,7 +194,7 @@ int main(int argc, char** argv) {
      //std::string color_uri = camera_param_uri + "/" + "color.yaml";
 
     dai::rosBridge::ImageConverter rgbConverter(tfPrefix + "_rgb_camera_optical_frame", false);
-    auto rgbCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::RGB, -1, -1);
+    auto rgbCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, -1, -1);
     dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rgbPublish(colorQueue,
                                                                                        node,
                                                                                        std::string("color/image"),
@@ -196,7 +217,7 @@ int main(int argc, char** argv) {
         30);
 
     dai::rosBridge::ImageConverter depthConverter(tfPrefix + "_right_camera_optical_frame", true);
-    auto rightCameraInfo = depthConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::RIGHT, width, height);
+    auto rightCameraInfo = depthConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_C, width, height);
     dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> depthPublish(
         depthQueue,
         node,

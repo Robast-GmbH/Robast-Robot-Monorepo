@@ -235,8 +235,8 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool enableDepth,
             // yolo specific parameters
             spatialDetectionNetwork->setNumClasses(detectionClassesCount);
             spatialDetectionNetwork->setCoordinateSize(4);
-            spatialDetectionNetwork->setAnchors({10, 14, 23, 27, 37, 58, 81, 82, 135, 169, 344, 319});
-            spatialDetectionNetwork->setAnchorMasks({{"side13", {3, 4, 5}}, {"side26", {1, 2, 3}}});
+            spatialDetectionNetwork->setAnchors({10, 13, 16, 30, 33, 23, 30, 61, 62, 45, 59, 119, 116, 90, 156, 198, 373, 326});
+            spatialDetectionNetwork->setAnchorMasks({{"side80", {0, 1, 2}}, {"side40", {3, 4, 5}}, {"side20", {6, 7, 8}}});
             spatialDetectionNetwork->setIouThreshold(0.5f);
 
             // Link plugins CAM -> NN -> XLINK

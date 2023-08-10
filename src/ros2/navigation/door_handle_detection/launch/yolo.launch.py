@@ -11,14 +11,9 @@ import launch_ros.descriptions
 
 
 def generate_launch_description():
-    depthai_examples_path = get_package_share_directory('depthai_examples')
+    depthai_examples_path = get_package_share_directory('door_handle_detection')
     urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
 
-    aligned_rviz = os.path.join(depthai_examples_path,
-                                'rviz', 'stereoInertialDepthAlignROS2.rviz')
-    
-    rectify_rviz = os.path.join(depthai_examples_path,
-                                'rviz', 'stereoInertial.rviz')
     default_resources_path = os.path.join(depthai_examples_path,
                                 'resources')
 
@@ -52,7 +47,7 @@ def generate_launch_description():
     enableSpatialDetection  = LaunchConfiguration('enableSpatialDetection', default = True)
     syncNN                  = LaunchConfiguration('syncNN', default = True)
     detectionClassesCount   = LaunchConfiguration('detectionClassesCount', default = 80)
-    nnName                  = LaunchConfiguration('nnName', default = 'x')
+    nnName                  = LaunchConfiguration('nnName', default = 'yolov5.blob')
     resourceBaseFolder      = LaunchConfiguration('resourceBaseFolder', default = default_resources_path)
 
 
@@ -64,8 +59,8 @@ def generate_launch_description():
     rgbResolution           = LaunchConfiguration('rgbResolution',  default = '1080p')
     rgbScaleNumerator       = LaunchConfiguration('rgbScaleNumerator',  default = 2)
     rgbScaleDinominator     = LaunchConfiguration('rgbScaleDinominator',    default = 3)
-    previewWidth            = LaunchConfiguration('previewWidth',   default = 416)
-    previewHeight           = LaunchConfiguration('previewHeight',  default = 416)
+    previewWidth            = LaunchConfiguration('previewWidth',   default = 640)
+    previewHeight           = LaunchConfiguration('previewHeight',  default = 640)
     
     
     angularVelCovariance  = LaunchConfiguration('angularVelCovariance', default = 0.0)
@@ -76,7 +71,7 @@ def generate_launch_description():
     dotProjectormA     = LaunchConfiguration('dotProjectormA', default = 200.0)
     floodLightmA       = LaunchConfiguration('floodLightmA', default = 200.0)
     enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)
-    enableRviz         = LaunchConfiguration('enableRviz', default = True)
+    enableRviz         = LaunchConfiguration('enableRviz', default = False)
 
 
     declare_mxId_cmd = DeclareLaunchArgument(
@@ -324,7 +319,7 @@ def generate_launch_description():
 
 
     stereo_node = launch_ros.actions.Node(
-            package='door_handle_detection', executable='yolov5_door_node',
+            package='depthai_examples', executable='stereo_inertial_node',
             output='screen',
             parameters=[{'mxId':                    mxId},
                         {'usb2Mode':                usb2Mode},
