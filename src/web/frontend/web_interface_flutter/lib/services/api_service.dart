@@ -55,8 +55,6 @@ class APIService {
 
   static Future<List<Robot>> getRobots() async {
     final robots = <Robot>[];
-    robots.add(Robot.mock("Test"));
-    print("start");
     try {
       final response = await http.get(Uri.parse("$baseURL:$port/robots"));
       if (response.statusCode == 200) {
@@ -69,7 +67,6 @@ class APIService {
       print("Failed get Robots");
       print(e);
     }
-    print("stop");
     return robots;
   }
 
@@ -122,7 +119,7 @@ class APIService {
       http.post(
         Uri.parse("$baseURL:$port/robots/$robotName/modules/open"),
         headers: headers,
-        body: data,
+        body: jsonEncode(data),
       );
     } catch (e) {
       print("Failed open drawer");
@@ -143,7 +140,7 @@ class APIService {
       http.post(
         Uri.parse("$baseURL:$port/robots/$robotName/modules/close"),
         headers: headers,
-        body: data,
+        body: jsonEncode(data),
       );
     } catch (e) {
       print("Failed close drawer");
