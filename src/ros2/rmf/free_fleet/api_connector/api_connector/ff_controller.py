@@ -76,10 +76,11 @@ class free_fleet_controller:
         return self.robot_states
 
     def get_robot_state(self, name):
-        return [state for state in self.robot_states if state.name == name][0]
-        
+        if len(self.robot_states)>0:
+            return [state for state in self.robot_states if state.name == name][0]
+        return
+    
     def start_receiving_info(self):
-        print("test")
         info_state_msg=  self.dds_info_state.get_next() 
         if(info_state_msg is not None):
             if(info_state_msg.type== "new_user"):
