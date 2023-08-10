@@ -16,7 +16,7 @@ namespace nfc_bridge
 
     authentication_publisher_ = this->create_publisher<std_msgs::msg::String>("/authenticated_user", qos);
     timer_subscriber_ = this->create_subscription<std_msgs::msg::Bool>(
-        "/nfc_switch", 10, std::bind(&NFCBridge::control_timer, this,std::placeholders::_1));
+        "/nfc_switch", qos, std::bind(&NFCBridge::control_timer, this,std::placeholders::_1));
     
     this->action_server_ = rclcpp_action::create_server<CreateUser>(this,
                                                                     "/create_user",
@@ -183,6 +183,7 @@ namespace nfc_bridge
     feedback->task_status.is_reader_completed = false;
     goal_handle->publish_feedback(feedback);
 
+    
     // if (goal->user_id == "")
     // {
     //   user_id = db_connector_->createUser(goal->first_name, goal->last_name);
@@ -195,14 +196,14 @@ namespace nfc_bridge
     // }
     // else
     // {
-      // RCLCPP_ERROR(this->get_logger(), "user_id not found");
-      // result->task_status = feedback->task_status;
-      // result->successful = false;
-      // result->error_message = "Der Benutzer konnte nicht gefunden werden.";
-      // goal_handle->canceled(result);
-      // return;
+    // RCLCPP_ERROR(this->get_logger(), "user_id not found");
+    // result->task_status = feedback->task_status;
+    // result->successful = false;
+    // result->error_message = "Der Benutzer konnte nicht gefunden werden.";
+    // goal_handle->canceled(result);
+    // return;
     // }
-    
+    user_id = goal->user_id;
     feedback->task_status.is_db_user_created = true;
     goal_handle->publish_feedback(feedback);
 
@@ -216,7 +217,7 @@ namespace nfc_bridge
 
     feedback->task_status.is_reader_completed = true;
     goal_handle->publish_feedback(feedback);
-    
+    result->nfc_code = nfc_code;
     result->successful = true;
     result->task_status = feedback->task_status;
     goal_handle->succeed(result);
