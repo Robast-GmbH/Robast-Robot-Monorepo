@@ -176,10 +176,13 @@ namespace behavior_tree_server
     if (_parameter_service_client->set_parameter_for_local_costmap(parameter) &&
         _parameter_service_client->set_parameter_for_global_costmap(parameter))
     {
-      _timer_to_reset_footprint =
-        this->create_wall_timer(std::chrono::milliseconds(goal->time_until_reset_in_ms),
-                                std::bind(&BtServerCollection::reset_local_and_global_footprint, this),
-                                _timer_cb_group);
+      if (goal->time_until_reset_in_ms > 0)
+      {
+        _timer_to_reset_footprint =
+          this->create_wall_timer(std::chrono::milliseconds(goal->time_until_reset_in_ms),
+                                  std::bind(&BtServerCollection::reset_local_and_global_footprint, this),
+                                  _timer_cb_group);
+      }
 
       RCLCPP_INFO(get_logger(), "Changing footprint parameter was successful!");
       _action_server_change_footprint->succeeded_current(result);
@@ -209,10 +212,13 @@ namespace behavior_tree_server
     {
       RCLCPP_INFO(get_logger(), "Changing footprint padding parameter was successful!");
 
-      _timer_to_reset_footprint_padding =
-        this->create_wall_timer(std::chrono::milliseconds(goal->time_until_reset_in_ms),
-                                std::bind(&BtServerCollection::reset_local_and_global_footprint_padding, this),
-                                _timer_cb_group);
+      if (goal->time_until_reset_in_ms > 0)
+      {
+        _timer_to_reset_footprint_padding =
+          this->create_wall_timer(std::chrono::milliseconds(goal->time_until_reset_in_ms),
+                                  std::bind(&BtServerCollection::reset_local_and_global_footprint_padding, this),
+                                  _timer_cb_group);
+      }
 
       _action_server_change_footprint_padding->succeeded_current(result);
     }
