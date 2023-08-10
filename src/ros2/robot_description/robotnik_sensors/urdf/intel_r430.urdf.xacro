@@ -26,10 +26,11 @@
   <xacro:macro name="sensor_r430" params="prefix parent publish_bf robot_name prefix_topic:='front_rgbd_camera' hq *origin">
 
     <xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}" />
+		<xacro:property name="sensor_link_name" value="base_footprint/${prefix}" /> 	<!--"${robot_name}/base_footprint/${prefix}" /> -->
 		</xacro:if>
 		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}" />
+			<xacro:property name="sensor_link_name" value="base_link/${prefix}" />      <!-- value="${robot_name}/base_link/${prefix}"  -->
+
 		</xacro:unless>
 
     <!-- camera body, with origin at bottom screw mount -->
@@ -169,7 +170,7 @@
       </sensor>
       
       <sensor name="${prefix}_ired1" type="camera">
-      <topic>${prefix_topic}/${prefix}/ired1</topic>
+      <topic>/${prefix_topic}/${prefix}/ired1</topic>
         <camera name="r430">
           <horizontal_fov>${91.2*M_PI/180.0}</horizontal_fov>
           <image>

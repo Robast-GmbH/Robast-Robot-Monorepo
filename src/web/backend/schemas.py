@@ -1,55 +1,79 @@
 from typing import List, Optional, Any
 from enum import Enum
 import yaml
-
 from pydantic import BaseModel
 
+class TaskTypes(str, Enum):
+    Delivery = "Delivery"
+    Move = "Move"
+    Drawer = "Drawer"
 
-class OrderTypes(str, Enum):
-    FOOD = "Food"
-    MEDS = "Meds"
-    OTHER = "others"
+class DrawerSlideTypes(str, Enum):
+    Manual = "Manual"
+    Electrical = "Electrical"
 
+#Task
+class BaseAction(BaseModel):
+    type: str
+    position:int
+    finished: bool
 
-
-class GoalBase(BaseModel):
-    x: int
-    y: int
-    clientX: Optional[float]
-    clientY: Optional[float]
-
-
-class Goal(GoalBase):
-    pass
-    class Config:
-        orm_mode = True
-
-
-class GoalCreate(GoalBase):
-    pass
-
-
-class OrderBase(BaseModel):
-    order_item: str
-    order_type: Optional[OrderTypes] = OrderTypes.FOOD
-    goal: Goal
-    recurring_order: bool
-    finished: Optional[bool] = False
-    description: Optional[str] = ""
-
-
-class OrderCreate(OrderBase):
-    pass
-
-
-class Order(OrderBase):
+class Action(BaseAction):
     id: int
-    owner_id: int
 
+class MoveAction(Action):
+    x_pose: float
+    y_pose: float
+    yaw_pose: float
+
+class DrawerActon(Action):
+    target_id :int
+    drawer_id :int
+    module_id :int
+
+class CreateAction(MoveAction):
+    target_id :int
+    drawer_id :int
+    module_id :int
+
+class Task(BaseModel):
+    id :int
+    robot_name :str
+    fleet_name  :str
+    current_action : int
+    owner_id: int
+    actions:list[Action]
+
+class CreateTask(BaseModel):
+    owner_id: int
+    actions:list[Action]
+
+class UpdateTask(BaseModel):
+    id: int
+    current_action: int
+    actions: list[Action]
+
+#Drawer
+class ModuleBase(BaseModel):
+    id:int
+    drawer_id:int
+
+  
+class Module(ModuleBase):
+    type: DrawerSlideTypes
+    size: int
+    robot_name: str    
+    position:int
+    status:str
+    
     class Config:
         orm_mode = True
 
+class UpdateModule(ModuleBase):
+    robot_name: str    
+    status: str
 
+#User
 class UserBase(BaseModel):
     name: str
     
@@ -66,68 +90,16 @@ class User(UserBase):
     is_active: bool
     admin: bool
     full_name: str
-    orders: List[Order] = []
-
-    class Config:
-        orm_mode = True
-#drawer
-
-class DrawerBase(BaseModel):
-    drawer_controller_id: int
-    content: str
-    empty: bool
-    
-class DrawerCreate(DrawerBase):
-    pass
-
-
-class Drawer(DrawerBase):
-   
-    id: int
+    orders: List[Task] = []
 
     class Config:
         orm_mode = True
 
-#mappositions
-
-
-class MapPositionBase(BaseModel):
-    name: str
-    x: float
-    y: float
-    t:float
-
-
-class MapPositionCreate(MapPositionBase):
-    pass
-
-class MapPosition(MapPositionBase):
-    id: int
-
-    class Config:
-        orm_mode = True
-
-#mapping
-
-class Room(BaseModel):
-    x: int
-    y: int
-    name: str
-    id: int
-
-
-class RoomsBase(BaseModel):
-    map_name: str
-    map_yaml: dict
-
-
-class RoomsCreate(RoomsBase):
-    pass
-
-
-class Rooms(RoomsBase):
-    id: int
-    rooms: List[Room] = []
-
-    class Config:
-        orm_mode = True
+#Robot
+class Robot(BaseModel):
+    robot_name: str
+    fleet_name: str  
+    task_id: int
+    x_pose:float
+    y_pose: float
+    yaw_pose: float
