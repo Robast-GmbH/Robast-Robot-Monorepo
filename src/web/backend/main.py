@@ -93,7 +93,10 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
 #task
 @app.get("/tasks/", response_model=List[schemas.Task])
 def get_task_queue( db: Session = Depends(get_db)):
-    db_tasks = crud.get_tasks(db)
+    db_tasks = crud.get_tasks_queue(db)
+    
+    if len(db_tasks) ==0:
+            return[]
     return db_tasks
 
 @app.get("/tasks/{task_id}", response_model=schemas.Task)
@@ -103,26 +106,27 @@ def read_task(task_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="task not found")
     return db_task
 
-@app.post("/tasks/", response_model=schemas.TaskDelivery)
-def create_task(task: schemas.TaskDelivery, db: Session = Depends(get_db)):
-    return crud.create_task(db=db, task=task)
+@app.post("/tasks/", response_model=schemas.Task)
+def create_task(task: schemas.CreateTask, db: Session = Depends(get_db)):
+    db_task= crud.create_task(db=db, task=task, owner_id= None)
+    db_task= None
+    if db_task is None:
+        raise HTTPException(status_code=404, detail="task not found")
+    return db_task
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
-def update_task( task_id:int, task: schemas.TaskUpdate, db: Session = Depends(get_db)):
-    return crud.update_task(db=db, task_id = task_id, content=task)
-    
+def update_task( task_id:int, task: schemas.UpdateTask, db: Session = Depends(get_db)):
+    return crud.update_task(db=db, task_changes=task)
 
 @app.delete("/tasks/{task_id}")
 def abort_task(task_id: int, db: Session = Depends(get_db)):
     if(not crud.delete_task(db = db, task_id = task_id)):
         raise HTTPException(status_code=404, detail="User not found")
-       
+
 #robot
 @app.get("/robots", response_model =List[schemas.Robot])
 def get_robots_status(db: Session = Depends(get_db)):
     db_robots = crud.get_robots(db=db)
-    # if db_robots is None:
-    #     return []
     return db_robots
 
 @app.get("/robots/{robot_name}", response_model = schemas.Robot)
@@ -130,15 +134,15 @@ def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     return db_robot
 
-@app.put("/robots/halt")
-def pause_robot(robot_name: str, halt: bool , db: Session = Depends(get_db)):
-    #todo
+@app.put("/robots/pause_resume")
+def pause_robot(robot_name: str, pause: bool , db: Session = Depends(get_db)):
+    
     return
 
-@app.put("/robots/rosbag")
-def set_rosbag(robot_name: str, halt: bool , db: Session = Depends(get_db)):
-    #todo
-    return
+# @app.put("/robots/rosbag")
+# def set_rosbag(robot_name: str, halt: bool , db: Session = Depends(get_db)):
+#     #todo
+#     return
 
 @app.put("/robots/status")
 def set_robot(robot: schemas.Robot, db: Session = Depends(get_db)):
@@ -149,16 +153,9 @@ def move_robot( robot_name: str, x: float, y: float, yaw: float, db: Session = D
     db_robot= crud.get_robot(db=db, robot_name=robot_name)
     if db_robot is None:
         raise HTTPException(status_code=404, detail="robot not found")
-    robot= templates.json_robot()
-    robot["name"]= db_robot.robot_name
-    robot["fleet_name"]= db_robot.fleet_name
+    robot= templates.json_robot(fleet_name=db_robot.fleet_name, robot_name=db_robot.robot_name)
+    waypoint= templates.json_waypoint(x=x,y=y,z=0,yaw=yaw)
 
-    waypoint= templates.json_waypoint()
-    waypoint["pose.x"]=x
-    waypoint["pose.y"]=y
-    waypoint["pose.z"]=0
-    waypoint["orientation"]=yaw
-    
     message={"robot":robot, "waypoint":waypoint}
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session()
@@ -166,10 +163,10 @@ def move_robot( robot_name: str, x: float, y: float, yaw: float, db: Session = D
     return answer.status_code
 
 
-@app.get("/robots/{robot_name}/log", response_model = List[str])
-def get_log(robot_name: str, db: Session = Depends(get_db)):
-   #todo
-    return None
+# @app.get("/robots/{robot_name}/log", response_model = List[str])
+# def get_log(robot_name: str, db: Session = Depends(get_db)):
+#    #todo
+#     return None
 
 #Module
 @app.get("/robots/{robot_name}/modules/", response_model = List[schemas.Module])
@@ -186,16 +183,37 @@ def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
 def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
     return crud.set_module(db=db, module=module)
  
+# finish_using_drawers
+@app.post("/robots/{robot_name}/modules/completed")
+def drawer_actions_done( robot_name: str, db: Session = Depends(get_db)):
+
+    message= templates.get_drawer_action_completed_json(db=db, robot_name= robot_name)
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session() 
+    answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/open", data= json.dumps(message), headers= headers, verify=False)
+
+    if answer.status_code!= 200:
+        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    return 
+
+
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
-def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depends(get_db)):
-    message = templates.getDrawer(crud, db, module, robot_name, schemas)
-    if message is "robot":
+def open_drawer( robot_name: str, module: schemas.ModuleBase, accessible_user_id: list[int], db: Session = Depends(get_db)):
+    nfc_codes=[]
+    if(len(accessible_user_id)>0):
+        for id in accessible_user_id:
+            nfc_code= crud.get_nfc_code(db=db, user_id=id)
+            nfc_codes.append(str(id)+":"+nfc_code)
+
+    message = templates.get_Drawer_interaction_json(crud, db, module, robot_name, nfc_codes, schemas)
+    if message == "robot":
         raise HTTPException(status_code=404, detail="robot not found")
     
-    if message is "module":
+    if message == "module":
         raise HTTPException(status_code=404, detail="module not found")
     
+
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
     answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/open", data= json.dumps(message), headers= headers, verify=False)
@@ -207,11 +225,11 @@ def open_drawer( robot_name: str, module: schemas.ModuleBase ,db: Session = Depe
 # close_drawer
 @app.post("/robots/{robot_name}/modules/close")
 def close_drawer( robot_name: str, module: schemas.ModuleBase , db: Session = Depends(get_db)):
-        message = templates.getDrawer(crud, db, module, robot_name, schemas)
-        if message is "robot":
+        message = templates.get_Drawer_interaction_json(crud, db, module, robot_name, [],schemas)
+        if message == "robot":
             raise HTTPException(status_code=404, detail="robot not found")
     
-        if message is "module":
+        if message == "module":
             raise HTTPException(status_code=404, detail="module not found")
     
         headers =  {"Content-Type":"application/json"}
