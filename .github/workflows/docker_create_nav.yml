@@ -38,7 +38,6 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: src/ros2/${{ env.Project-Name }}/
-        platforms: linux/amd64,linux/arm64/v8
         target: devel
         build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }} #TODO @TAlscher find a smarter way then using this token
         push: true
@@ -49,7 +48,6 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: src/ros2/${{ env.Project-Name }}/
-        platforms: linux/amd64,linux/arm64/v8
         target: release
         build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
         push: true
@@ -60,7 +58,6 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: src/ros2/${{ env.Project-Name }}/
-        platforms: linux/amd64,linux/arm64/v8
         target: debug
         build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
         push: true
