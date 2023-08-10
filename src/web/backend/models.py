@@ -11,7 +11,7 @@ from database import Base
 
 
 class User(Base):
-    __tablename__ = "users"
+    __tablename__ = "user"
 
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String, index=True, unique=True)
@@ -21,27 +21,49 @@ class User(Base):
     is_active = Column(Boolean, default=True)
     admin = Column(Boolean, default=False)
 
+class Authentication(Base):
+    __tablename__ = "authentication"
+    id = Column(Integer, primary_key= True, index= True)
+    user_id = Column(Integer, ForeignKey("user.id"))
+    nfc_code= Column(String, unique=True)
+    enabled= Column(Boolean, default=True)
 
 class Task(Base):
     __tablename__ = "task"
     id = Column(Integer, primary_key=True, index=True)
-    task_type = Column(Enum(TaskTypes), index=True)
+    robot_name= Column(String)
+    fleet_name= Column(String)
+    owner_id = Column(Integer, ForeignKey("user.id"))
+
+class Action(Base):
+    __tablename__="action"
+    id = Column(Integer, primary_key=True, index=True)
+    task_id= Column(Integer, ForeignKey("task.id"))
+    finished= Column(Boolean)
+    position=Column(Integer)
+    discriminator = Column('type',String, index=True)
+    __mapper_args__ = {'polymorphic_on': discriminator}
+
+class MoveAction(Action):
+    __tablename__ = 'moveaction'
+    __mapper_args__ = {'polymorphic_identity': 'move'}
+    id = Column(Integer, ForeignKey('action.id'), primary_key=True)
     x_pose = Column(Float)
     y_pose = Column(Float)
     yaw_pose= Column(Float)
-    finished = Column(Boolean, default=False)
-    target_id =Column(Integer, default=0)
-    drawer_id= Column(Integer, default= 0)
-    robot_name= Column(String, default="RB0")
-    fleet_name= Column(String, default="ROBAST")
-    owner_id = Column(Integer, ForeignKey("users.id"))
-    owner = relationship("User", cascade="save-update")
-
+    
+class DrawerAction(Action):
+    __tablename__ = 'draweraction'
+    __mapper_args__ = {'polymorphic_identity': 'drawer'}
+    id= Column(Integer, ForeignKey('action.id'), primary_key=True)
+    target_user_id =Column(Integer)
+    drawer_id= Column(Integer, ForeignKey('module.id'))
+    module_id= Column(Integer,ForeignKey('module.drawer_id'))
 
 class Module(Base):
     __tablename__ = "module"
     id = Column(Integer, primary_key=True)
-    drawer_id= Column(Integer)
+    drawer_id= Column(Integer, primary_key=True)
     position= Column(Integer)
     status= Column(String)
     type= Column(Enum(DrawerSlideTypes), index=True)

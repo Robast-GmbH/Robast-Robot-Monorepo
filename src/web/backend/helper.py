@@ -1,7 +1,8 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from sqlalchemy import func
-
+import schemas
+import crud
 import models
 
 
@@ -57,32 +58,49 @@ def addMapPosition( name: str, x: float, y: float, t:float, db:Session):
         db.refresh(db_map_position)
         return
 
-def json_drawer():
-        return { "id":0, "module_id":0, "is_edrawer":False}
+def json_drawer(id:int, module_id:int, is_edrawer:bool, nfc_codes:list[str])-> dict:
+        return { "id": id, "module_id": module_id, "is_edrawer":is_edrawer, "locked_for":nfc_codes}
 
-def json_robot():
-              return { "fleet_name":"", "name":""}
-def json_waypoint():
+def json_robot(fleet_name:str,robot_name:str)->dict:
+              return { "fleet_name": fleet_name, "name": robot_name}
+
+def json_waypoint(x:float,y:float,z:float,yaw:float)-> dict:
         return {  
                   "pose":{ "x": 0, "y":0, "z": 0 },
                   "orientation" :0
                 }
-def getDrawer(crud, db:Session, module, robot_name:str, schemas):
-        db_module= crud.get_drawer(db=db, module_id=module.id, drawer_id= module.drawer_id,robot_name=robot_name )
+
+def find_robot_json(db:Session, robot_name):
         db_robot= crud.get_robot(db=db, robot_name=robot_name)
-        if db_module is None:
-                return "module"
-        
         if db_robot is None:
                 return "robot"
+        return json_robot(robot_name=db_robot.fleet_name, fleet_name=db_robot.fleet_name)
+
+def find_drawer_json(db:Session, module, robot_name:str, nfc_codes:list[str]):
+        db_module= crud.get_drawer(db=db, module_id=module.id, drawer_id= module.drawer_id, robot_name=robot_name )
+
+        if db_module is None:
+                return "module"
+        return json_drawer(module_id=db_module.id, id=db_module.drawer_id, is_edrawer= db_module.type == schemas.DrawerSlideTypes.Electrical, nfc_codes=nfc_codes)
+
+def get_Drawer_interaction_json(db:Session, module, robot_name:str, nfc_codes:list[str]):
+        robot= find_robot_json(db, robot_name)
+        if(robot=="robot"):
+                return robot
         
-        robot= json_robot()
-        robot["name"]= db_robot.robot_name
-        robot["fleet_name"]= db_robot.fleet_name
-        drawer= json_drawer()
-        drawer["module_id"]=db_module.id
-        drawer["id"]= db_module.drawer_id
-        drawer["is_edrawer"]= db_module.type == schemas.DrawerSlideTypes.Electrical
-        message={ "drawer":drawer, "robot":robot}
+        drawer= find_drawer_json(db, module, robot_name= robot_name,nfc_codes= nfc_codes)
+        if(drawer=="drawer"):
+                return drawer
+        
+        
+        message={"drawer":drawer, "robot":robot}
         return message
-    
+
+def get_drawer_action_completed_json( db:Session, robot_name:str)-> dict:
+        robot= find_robot_json(db, robot_name)
+        if(robot=="robot"):
+                return robot
+        
+        drawer =json_drawer(-1, -1, False,[])
+        message={"drawer":drawer, "robot":robot}
+        return message

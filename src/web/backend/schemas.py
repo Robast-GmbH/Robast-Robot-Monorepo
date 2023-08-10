@@ -12,45 +12,46 @@ class DrawerSlideTypes(str, Enum):
     Manual = "Manual"
     Electrical = "Electrical"
 
-
-
 #Task
-class TaskBase(BaseModel):
-   pass
-   
-class TaskDelivery(TaskBase):
-   
-    owner_id: int
-    target_id: int
-    module_id: int
-    drawer_id: int
-    x_pose:float
+class BaseAction(BaseModel):
+    type: str
+    position:int
+    finished: bool
+
+class Action(BaseAction):
+    id: int
+
+class MoveAction(Action):
+    x_pose: float
     y_pose: float
     yaw_pose: float
 
-class TaskDrawer(TaskBase):
-   
+class DrawerActon(Action):
+    target_id :int
+    drawer_id :int
+    module_id :int
+
+class CreateAction(MoveAction):
+    target_id :int
+    drawer_id :int
+    module_id :int
+
+class Task(BaseModel):
+    id :int
+    robot_name :str
+    fleet_name  :str
+    current_action : int
     owner_id: int
-    target_id: int
-    module_id: int
-    drawer_id: int
+    actions:list[Action]
 
-class TaskMove(TaskBase):
-    x_pose:float
-    y_pose: float
-    yaw_pose: float
+class CreateTask(BaseModel):
+    owner_id: int
+    actions:list[Action]
 
-class TaskUpdate(BaseModel):
-    id: int 
-    robot_name: str
-    status:str
-    finished: bool
-
-class Task(TaskDelivery):
-    id: int 
-    robot_name: str
-    status:str
-    finished: bool
+class UpdateTask(BaseModel):
+    id: int
+    current_action: int
+    actions: list[Action]
 
 #Drawer
 class ModuleBase(BaseModel):
