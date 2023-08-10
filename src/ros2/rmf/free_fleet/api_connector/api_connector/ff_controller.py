@@ -2,7 +2,7 @@ import requests
 import json
 from .dds import messages
 from .dds import dds_communicator as dds
-import sched, time
+import threading
 
 
 class free_fleet_controller:
@@ -20,9 +20,8 @@ class free_fleet_controller:
         self.dds_settings_request=dds.DDS_communicator(self.config["domain_id"], self.config["setting_request_topic"], messages.FreeFleetData_SettingRequest)
         self.dds_info_state= dds.DDS_communicator(self.config["domain_id"], self.config["info_state_topic"], messages.FreeFleetData_InfoState )
         self.dds_drawer_state= dds.DDS_communicator(self.config["domain_id"], self.config["drawer_state_topic"], messages.FreeFleetData_DrawerState )
-        my_scheduler = sched.scheduler(time.time, time.sleep)
-        my_scheduler.enter(60, 1, self.start_receiving_info, (my_scheduler,))
-        my_scheduler.run()
+        threading.Timer(5.0, self.start_receiving_info ).start()
+        
                 
 
     def get_robot_status(self, robot_name):
@@ -80,6 +79,7 @@ class free_fleet_controller:
         return [state for state in self.robot_states if state.name == name][0]
         
     def start_receiving_info(self):
+        print("test")
         info_state_msg=  self.dds_info_state.get_next() 
         if(info_state_msg is not None):
             if(info_state_msg.type== "new_user"):
@@ -95,8 +95,6 @@ class free_fleet_controller:
             sender = requests.Session()
             answer  =sender.post(url= self.config["backend_address"]+"/robots/status", json= json.dumps(message), headers= headers, verify=False)
 
-            pass
-
         drawer_state_msg = self.dds_drawer_state.get_next()
         if(info_state_msg is not None):
             status="closed"
@@ -108,6 +106,5 @@ class free_fleet_controller:
             sender = requests.Session()
             answer  =sender.post(url= self.config["backend_address"]+"/robots/modules/status", json= json.dumps(message), headers= headers, verify=False)
         
-        self.scheduler.enter(60, 1, self.start_receiving_info, (self.scheduler,))
 
     
