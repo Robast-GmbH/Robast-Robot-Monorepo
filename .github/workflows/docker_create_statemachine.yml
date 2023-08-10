@@ -9,6 +9,7 @@ on:
         - main
     paths:
         - src/ros2/statemachine/Dockerfile
+  workflow_dispatch:
 
 
 jobs:
