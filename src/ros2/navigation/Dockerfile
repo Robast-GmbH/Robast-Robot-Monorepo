@@ -31,6 +31,7 @@ RUN apt-get update && apt-get install -y \
   python3-pip \
   python3-rosdep \
   python3-vcstool \
+  libusb-1.0-0-dev\
   #groot qt
   qtbase5-dev \
   libqt5svg5-dev \
