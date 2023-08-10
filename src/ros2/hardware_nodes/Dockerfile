@@ -65,7 +65,7 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_DISTRO}/
 
 ############################## Release ##################################
-FROM ros:humble-ros-base-jammy as release
+FROM ros:humble-ros-base-jammy as hagen
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast

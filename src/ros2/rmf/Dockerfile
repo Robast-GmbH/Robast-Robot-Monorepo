@@ -59,55 +59,23 @@ RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs \
-  && mv /tmp/Monorepo/src/ros2/simulation/tipluworld /ws/src/ros2/simulation/tipluworld \
-  && mv /tmp/Monorepo/src/ros2/robot_description ws/src/ros2/robot_description
+  && mv /tmp/Monorepo/src/ros2/simulation/tiplu_world /ws/src/ros2/simulation \
+  && mv /tmp/Monorepo/src/ros2/robot_description /ws/src/ros2/robot_description
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/
 
-############################## Release ##################################
-FROM ros:humble-ros-base-jammy as release
+############################## Hagen ##################################
+FROM ros:humble-ros-base-jammy as hagen
 
+COPY --from=base / /
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
 #install RMF
 RUN wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
-RUN apt-get update && apt-get install -y\
-    ros-${ROS_DISTRO}-rmf-api-msgs\
-    ros-${ROS_DISTRO}-rmf-utils\
-    ros-${ROS_DISTRO}-rmf-robot-sim-common\
-    ros-${ROS_DISTRO}-rmf-robot-sim-gz-plugins\
-    ros-${ROS_DISTRO}-rmf-scheduler-msgs \
-    ros-${ROS_DISTRO}-rmf-battery \
-    ros-${ROS_DISTRO}-rmf-building-map-msgs\
-    ros-${ROS_DISTRO}-rmf-building-map-tools\
-    ros-${ROS_DISTRO}-rmf-building-sim-gz-plugins\
-    ros-${ROS_DISTRO}-rmf-task\
-    ros-${ROS_DISTRO}-rmf-task-msgs\
-    ros-${ROS_DISTRO}-rmf-task-ros2\
-    ros-${ROS_DISTRO}-rmf-task-sequence\
-    ros-${ROS_DISTRO}-rmf-fleet-adapter\
-    ros-${ROS_DISTRO}-rmf-fleet-adapter-python\
-    ros-${ROS_DISTRO}-rmf-fleet-msgs\
-    ros-${ROS_DISTRO}-rmf-traffic-ros2\
-    ros-${ROS_DISTRO}-rmf-traffic\
-    ros-${ROS_DISTRO}-rmf-traffic-editor\
-    ros-${ROS_DISTRO}-rmf-traffic-msgs\ 
-    ros-${ROS_DISTRO}-rmf-visualization\
-    ros-${ROS_DISTRO}-rmf-visualization-msgs\
-    ros-${ROS_DISTRO}-rmf-visualization-fleet-states\
-    ros-${ROS_DISTRO}-rmf-visualization-floorplans\
-    ros-${ROS_DISTRO}-rmf-visualization-rviz2-plugins\
-    ros-${ROS_DISTRO}-rmf-websocket\
-    ros-${ROS_DISTRO}-navigation2
-
-RUN pip3 install uvicorn \
-    fastapi
-
-RUN python3 -m pip install -U  cyclonedds nudged
 
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 

@@ -125,7 +125,7 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
 ############################## Release ##################################
-FROM ros:humble-ros-base-jammy as release
+FROM ros:humble-ros-base-jammy as hagen
 
 RUN apt-get update && apt-get install -y \
   cmake \
@@ -166,7 +166,7 @@ RUN apt-get update \
 ############################## DEBUG ##################################
 FROM ros:humble-ros-base-jammy as debug
 
-COPY --from=release / /
+COPY --from=hagen / /
 
 RUN apt update -y && apt upgrade -y && apt install -y \
     ros-${ROS_DISTRO}-foxglove-bridge \
