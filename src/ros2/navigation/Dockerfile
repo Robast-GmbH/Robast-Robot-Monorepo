@@ -111,7 +111,7 @@ COPY . /ws/src/navigation
 RUN apt-get update && apt-get install -y git
 
 WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+RUN git clone --recurse-submodules -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
 
 
 WORKDIR /ws
