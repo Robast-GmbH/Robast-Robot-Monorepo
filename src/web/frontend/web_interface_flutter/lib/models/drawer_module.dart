@@ -1,4 +1,4 @@
-enum ModuleType { manual, electrical }
+enum ModuleType { Manual, Electrical }
 
 class DrawerModule {
   final int moduleID;
