@@ -66,8 +66,9 @@ RUN mkdir -p /ws/src/ros2/; mkdir -p /ws/src/ros2/rmf/free_fleet/free_fleet; mkd
   && mv /tmp/free_fleet /ws/src/ros2/rmf/free_fleet/free_fleet
 
 RUN rosdep update && \
-  rosdep install --from-paths /ws/src --ignore-src -r -y && \
-  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  rosdep install --from-paths /ws/src --ignore-src -r -y
+  
+RUN  . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/
 
 ############################## Hagen ##################################
