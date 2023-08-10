@@ -54,7 +54,6 @@ RUN apt-get update && apt-get install -y git
 
 WORKDIR /tmp
 RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
-RUN git clone https://github.com/open-rmf/free_fleet.git
 
 
 WORKDIR /ws
@@ -67,9 +66,10 @@ RUN mkdir -p /ws/src/ros2/; mkdir -p /ws/src/ros2/rmf/free_fleet/free_fleet; mkd
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y
-  
-RUN  . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/
+RUN git clone https://github.com/open-rmf/free_fleet.git
+
+# RUN  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+#   colcon build --install-base /robast/${ROS_DISTRO}/
 
 ############################## Hagen ##################################
 FROM ros:humble-ros-base-jammy as hagen
