@@ -83,6 +83,7 @@ namespace behavior_tree_server
 
   void BtServerCollection::reset_local_and_global_footprint()
   {
+    _timer_to_reset_footprint->cancel();
     rcl_interfaces::msg::Parameter parameter;
     parameter.name = "footprint";
     parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_STRING;
@@ -90,12 +91,12 @@ namespace behavior_tree_server
     _parameter_service_client->set_parameter_for_local_costmap(parameter);
     parameter.value.string_value = _default_footprint_global_costmap;
     _parameter_service_client->set_parameter_for_global_costmap(parameter);
-    _timer_to_reset_footprint->cancel();
     RCLCPP_INFO(get_logger(), "Setting footprint parameter back to default values!");
   }
 
   void BtServerCollection::reset_local_and_global_footprint_padding()
   {
+    _timer_to_reset_footprint_padding->cancel();
     rcl_interfaces::msg::Parameter parameter;
     parameter.name = "footprint_padding";
     parameter.value.type = rcl_interfaces::msg::ParameterType::PARAMETER_DOUBLE;
@@ -103,7 +104,6 @@ namespace behavior_tree_server
     _parameter_service_client->set_parameter_for_local_costmap(parameter);
     parameter.value.double_value = _default_footprint_padding_global_costmap;
     _parameter_service_client->set_parameter_for_global_costmap(parameter);
-    _timer_to_reset_footprint_padding->cancel();
     RCLCPP_INFO(get_logger(), "Setting footprint padding parameter back to default values!");
   }
 
