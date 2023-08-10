@@ -1,6 +1,9 @@
 #!/bin/sh
 
 . /robast/humble/setup.sh
+cd /workspace
+colcon build --symlink-install
+. install/setup.sh
 ros2 launch nav_bringup robot_localization_odom_to_base_launch.py &
 ros2 launch nav_bringup slam_toolbox_launch.py &
 ros2 launch nav_bringup nav_without_localization_launch.py &
