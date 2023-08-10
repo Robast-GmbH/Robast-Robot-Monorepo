@@ -62,7 +62,7 @@ RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communicati
   && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs \
   && mv /tmp/Monorepo/src/ros2/simulation/tiplu_world /ws/src/ros2/simulation \
   && mv /tmp/Monorepo/src/ros2/robot_description /ws/src/ros2/robot_description \
-  && mv /tmp/free_fleet ws/ros2/rmf/free_fleet/free_fleet
+  && mv /tmp/free_fleet /ws/ros2/rmf/free_fleet/free_fleet
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
