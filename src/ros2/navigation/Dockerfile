@@ -117,8 +117,9 @@ RUN git clone https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
 
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs && mv /tmp/spatio_temporal_voxel_layer /ws/src/ros2/navigation
+RUN mkdir -p /ws/src/ros2/; mkdir /robast; mkdir -p /ws/src/ros2/navigation/spatio_temporal_voxel_layer; \
+  mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs && mv /tmp/spatio_temporal_voxel_layer /ws/src/ros2/navigation/spatio_temporal_voxel_layer
 
 RUN rm -r /ws/src/navigation/external_plugins;
 
