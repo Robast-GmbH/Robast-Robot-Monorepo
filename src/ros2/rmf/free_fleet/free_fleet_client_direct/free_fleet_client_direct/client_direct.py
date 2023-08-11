@@ -1,3 +1,4 @@
+
 import datetime
 import rclpy
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
@@ -15,9 +16,9 @@ from enum import Enum
 
 from communication_interfaces.msg import DrawerAddress, DrawerStatus
 from communication_interfaces.action import CreateUserNfcTag
-from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult 
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry
+from nav2_msgs.action import NavigateToPose
 from rclpy.qos import ReliabilityPolicy, QoSProfile
 from ddsmessages.msg  import FreeFleetDataInfoState, FreeFleetDataSettingRequest, FreeFleetDataSlideDrawerRequest, FreeFleetDataDestinationRequest, FreeFleetDataRobotState, FreeFleetDataDrawerState, FreeFleetDataLocation, FreeFleetDataRobotMode 
 
@@ -30,20 +31,21 @@ class Robot_states(Enum):
     MOVEMENTMODE = 3
 
 class drawer():
-    module_id :int
-    drawer_id :int
-    locked_for: dict
+    def __init__(self, module_id :int, drawer_id :int,locked_for: dict):
+        self.module_id=module_id
+        self.drawer_id=drawer_id
+        self.locked_for=locked_for
 
 class free_fleet_client_direct(Node):
 
     def __init__(self):
         super().__init__('free_fleet_direct_client')
         
-        self.declare_parameter('fleet_name', 'ROBAST_1')
+        self.declare_parameter('fleet_name', 'ROBAST')
         self.declare_parameter('robot_name', 'RB0')
         self.declare_parameter('robot_model',"Robast_Theron")
         self.declare_parameter('robot_frame_id', 'map')
-        self.declare_parameter('robot_odom', '/odom')
+        self.declare_parameter('robot_odom', '/odometry/filtered')
  
         self.declare_parameter('heartbeat', 0.01)
         self.declare_parameter('statemaschine_open_drawer_topic', 'trigger_drawer_tree')
@@ -68,7 +70,9 @@ class free_fleet_client_direct(Node):
         self.dds_domain = self.get_parameter('dds_domain').get_parameter_value().integer_value
         self.dds_slide_drawer_topic=self.get_parameter('dds_slide_drawer_topic').get_parameter_value().string_value
        
-        self.navigator = BasicNavigator()
+        self.nav = ActionClient(self, NavigateToPose, 'NavigateToPose')
+        self.nav.wait_for_server()
+
         self.state= Robot_states.IDLE
         self.task_id= None
         self.open_drawers:list[drawer] =[]
@@ -117,7 +121,7 @@ class free_fleet_client_direct(Node):
     def start_robot_behavior(self):
        
         if(self.state== Robot_states.IDLE):
-              
+            print("s")
             if len(self.drawer_requests)>0:
                 drawer_task= self.drawer_requests.pop()
                 self.state= Robot_states.DRAWERMODE 
@@ -139,9 +143,6 @@ class free_fleet_client_direct(Node):
                 self.do_drawer_action(drawer_task)
                 return                
 
-        elif(self.state== Robot_states.MOVEMENTMODE ): 
-               if self.navigator.isTaskComplete():
-                   self.finish_movement()
 
     def check_settings(self, msg):
         new_settings=True 
@@ -186,18 +187,18 @@ class free_fleet_client_direct(Node):
                 self.info_State_dds.publish(msg)
 
             
-    def finish_movement(self):
-        move_result= self.navigator.getResult()
-        if move_result == TaskResult.SUCCEEDED:
-            movement_status ="completetd"
-        elif move_result == TaskResult.CANCELED:
-            if(self.goal_pose== None):
-                movement_status= "canceled"
-            else:
-                movement_status= "paused"
-        elif move_result == TaskResult.FAILED:
-             movement_status = "failed"
-        self.state= Robot_states.IDLE         
+    # def finish_movement(self):
+    #     move_result= self.navigator.getResult()
+    #     if move_result == TaskResult.SUCCEEDED:
+    #         movement_status ="completetd"
+    #     elif move_result == TaskResult.CANCELED:
+    #         if(self.goal_pose== None):
+    #             movement_status= "canceled"
+    #         else:
+    #             movement_status= "paused"
+    #     elif move_result == TaskResult.FAILED:
+    #          movement_status = "failed"
+    #     self.state= Robot_states.IDLE         
 
     def start_receiving_robot_info(self):  
         self.subscriber_odom = self.create_subscription(
@@ -212,8 +213,9 @@ class free_fleet_client_direct(Node):
         
 
     def do_drawer_action(self, msg):
-        print("drawer")
-        if msg.fleet_name == self.fleet_name and msg.robot_name == self.name:
+        print(msg)
+        print(self.fleet_name+" "+ self.robot_name)
+        if msg.fleet_name == self.fleet_name and msg.robot_name == self.robot_name:
             if msg.module_id==-1 and msg.drawer_id==-1:#Drawer_task_ended
                 if(self.open_drawers.__len__==0):
                     self.publish_fleet_states()
@@ -225,17 +227,22 @@ class free_fleet_client_direct(Node):
                         return
                 self.set_drawer_lock(msg)
                 self.open_drawer(msg)
-            else:
+            elif(not msg.open):
+                print("close d")
                 ros_msg=self.dds_Drawer_msg_to_ros(msg) 
                 self.e_drawer_close_publisher.publish(ros_msg)
+            print("dd")
 
     def open_drawer(self, msg): 
-        ros_msg=self.dds_Drawer_msg_to_ros(msg)  
-        self.open_drawers.append(drawer(module_id=msg.module_id, drawer_id=msg.drawer_id))
+        ros_msg=self.dds_Drawer_msg_to_ros(msg) 
+        drawer_change= drawer(msg.module_id,msg.drawer_id,{})
+        self.open_drawers.append(drawer_change)
         if(msg.e_drawer):
             self.e_drawer_open_publisher.publish(ros_msg)
+            print("e-drawer")
         else:
             self.drawer_publisher.publish(ros_msg)
+            print("normal_drawer")
             
     def dds_Drawer_msg_to_ros(self,dds_msg):
         ros_msg = DrawerAddress()
@@ -278,23 +285,45 @@ class free_fleet_client_direct(Node):
     def set_goal_pose(self, msg):
         self.goal_pose =self.create_pose(msg.destination.x, msg.destination.y, msg.destination.yaw)
         
-    def start_navigation(self):    
-        self.navigator.goToPose(self.goal_pose)
-    
-    def pause_navigation(self):
-        self.navigator.cancelTask()
+    def start_navigation(self):  
+        print("start nav")  
+        self._send_goal_future = self.client.send_goal_async(
+                self.goal_pose,
+                feedback_callback=self.feedback_callback)
+        self._send_goal_future.add_done_callback(self.goal_response_callback)
 
-    def cancel_navigation(self):
-        self.goal_pose = None
-        self.navigator.cancelTask()
-        self.state= Robot_states.IDLE
+    def goal_response_callback(self, future):
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.get_logger().warning('Goal rejected :(')
+            return
+        self.get_logger().info('Goal accepted :)')
+        self._get_result_future = goal_handle.get_result_async()
+        self._get_result_future.add_done_callback(self.get_result_callback)
+
+    def get_result_callback(self, future: NavigateToPose.Result):
+        result = future.result().result
+        
+    
+    def feedback_callback(self, feedback_msg: NavigateToPose.Feedback):
+        
+        self.get_logger().debug('Received feedback')
+    
+    # def pause_navigation(self):
+    #     self.navigator.cancelTask()
+
+    # def cancel_navigation(self):
+    #     self.goal_pose = None
+    #     self.navigator.cancelTask()
+    #     self.state= Robot_states.IDLE
       
     def create_pose(self, pose_x, pose_y, pose_yaw) -> PoseStamped:
-        pose = PoseStamped()
+        pose = NavigateToPose.Goal()
         pose.header.frame_id = self.frame_id
-        pose.header.stamp = self.navigator.get_clock().now().to_msg()
+        pose.header.stamp = self.get_clock().now().to_msg()
         pose.pose.position.x = pose_x
         pose.pose.position.y = pose_y
+        pose.pose.position.z = 0
         qx, qy, qz, qw = math_helper.quaternion_from_euler(0, 0, pose_yaw)
         pose.pose.orientation.x = qx
         pose.pose.orientation.y = qy
@@ -323,11 +352,18 @@ class free_fleet_client_direct(Node):
         module_id = data.drawer_address.module_id
         drawer_open= data.drawer_is_open
         if(not drawer_open):
-            self.open_drawers.remove(drawer(module_id= module_id, drawer_id= drawer_id))
+            closed_drawer=next((x for x in self.open_drawers if x.module_id ==module_id and x.drawer_id== drawer_id ), None)
+            if(close_drawer is not None):
+                self.open_drawers.remove(close_drawer)
             if self.open_drawers.__len__==0:
                 self.start_wait_for_drawer =datetime.datetime.now()
 
-        drawer_state= FreeFleetDataDrawerState(self.fleet_name, self.robot_name, module_id, drawer_id, drawer_open)
+        drawer_state= FreeFleetDataDrawerState()
+        drawer_state.fleet_name= self.fleet_name
+        drawer_state.robot_name= self.robot_name
+        drawer_state.module_id= module_id
+        drawer_state.drawer_id= drawer_id
+        drawer_state.open= drawer_open
         self.drawer_states_dds.publish(drawer_state)
 
 
