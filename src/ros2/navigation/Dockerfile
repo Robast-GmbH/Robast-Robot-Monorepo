@@ -19,21 +19,11 @@ ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
 ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
 
 RUN apt-get update && apt-get install -y \
   cmake \
   gdb \
-  pylint \ 
-  python3-argcomplete \
-  python3-colcon-common-extensions \
-  python3-pip \
-  python3-rosdep \
-  python3-vcstool \
   libusb-1.0-0-dev\
-  #groot qt
-  qtbase5-dev \
   libqt5svg5-dev \
   libzmq3-dev \
   libdw-dev \
@@ -161,11 +151,9 @@ RUN apt-get update && apt-get install -y \
   libboost-all-dev \
   && rm -rf /var/lib/apt/lists/* 
 
+COPY --from=devel / /
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
-COPY --from=build /tmps/openvdb-8.2.0 /tmps/openvdb-8.2.0
-RUN cd /tmps/openvdb-8.2.0/builds/ \
-  make install
 
 
 RUN apt-get update && apt-get upgrade -y\
