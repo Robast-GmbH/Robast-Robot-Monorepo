@@ -17,14 +17,8 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
 
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
-    config_directory = environment_yaml["config_directory"]
-    is_simulation = environment_yaml["is_simulation"]
+    config_directory = os.environ["config_directory"]
+    is_simulation = os.environ["is_simulation"]
 
     if is_simulation:
         use_sim_time_default = "true"
