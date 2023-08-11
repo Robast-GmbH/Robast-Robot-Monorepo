@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   navigation:
-    image: ghcr.io/robast-gmbh/monorepo/navigation:release
+    image: ghcr.io/robast-gmbh/monorepo/navigation:hagen
     environment:
       - ROS_DOMAIN_ID=0
       - UID=1000
@@ -17,7 +17,7 @@ services:
     network_mode: "host"
 
   statemachine:
-    image: ghcr.io/robast-gmbh/monorepo/statemachine:release
+    image: ghcr.io/robast-gmbh/monorepo/statemachine:hagen
     environment:
       - ROS_DOMAIN_ID=0
       - UID=1000
@@ -31,7 +31,7 @@ services:
     network_mode: "host"
 
   hardware_nodes:
-    image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:release
+    image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:hagen
     environment:
       - ROS_DOMAIN_ID=0
       - UID=1000
@@ -41,3 +41,21 @@ services:
     command: /bin/sh -c "./start_scripts/hardware_nodes_start.sh"
     stop_signal: SIGINT
     network_mode: "host"
+
+  rmf:
+    image: ghcr.io/robast-gmbh/monorepo/rmf:hagen
+    environment:
+      - ROS_DOMAIN_ID=0
+      - UID=1000
+    volumes:
+      - ./start_scripts/:/start_scripts/:cached
+      - /dev/shm:/dev/shm
+    command: /bin/sh -c "./start_scripts/rmf_start.sh"
+    stop_signal: SIGINT
+    network_mode: "host"
+
+    backend:
+      image: ghcr.io/robast-gmbh/monorepo/backend_web_deploy
+      command: /bin/sh -c "python /workspace/src/main.py"
+      stop_signal: SIGINT
+      network_mode: "host"

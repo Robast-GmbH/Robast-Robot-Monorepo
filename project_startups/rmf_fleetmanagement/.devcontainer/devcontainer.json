@@ -3,6 +3,7 @@
 	"dockerFile": "../../../src/ros2/rmf/Dockerfile",
 	"name": "Robast rmf",
 	"build": {
+		"target": "base",
 		"args": {
 			"WORKSPACE": "${containerWorkspaceFolder}"
 		}
