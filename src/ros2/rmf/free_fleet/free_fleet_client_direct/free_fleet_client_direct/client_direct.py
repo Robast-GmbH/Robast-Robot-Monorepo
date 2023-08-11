@@ -71,7 +71,7 @@ class free_fleet_client_direct(Node):
         self.dds_slide_drawer_topic=self.get_parameter('dds_slide_drawer_topic').get_parameter_value().string_value
        
         self.nav = ActionClient(self, NavigateToPose, 'NavigateToPose')
-        self.nav.wait_for_server()
+        #self.nav.wait_for_server()
 
         self.state= Robot_states.IDLE
         self.task_id= None
@@ -116,12 +116,9 @@ class free_fleet_client_direct(Node):
         self.start_receiving_robot_info()
         self.status_timer = self.create_timer(self.heartbeat,self.start_sending_status) 
         
-        
 
     def start_robot_behavior(self):
-       
         if(self.state== Robot_states.IDLE):
-            print("s")
             if len(self.drawer_requests)>0:
                 drawer_task= self.drawer_requests.pop()
                 self.state= Robot_states.DRAWERMODE 
@@ -130,7 +127,6 @@ class free_fleet_client_direct(Node):
                 return
             
             if len(self.destination_request):
-                print("movement")
                 move_task= self.destination_request.pop()
                 self.state= Robot_states.MOVEMENTMODE
                 self.task_id= None
@@ -142,7 +138,6 @@ class free_fleet_client_direct(Node):
                 drawer_task= self.drawer_requests.pop()
                 self.do_drawer_action(drawer_task)
                 return                
-
 
     def check_settings(self, msg):
         new_settings=True 
@@ -185,20 +180,7 @@ class free_fleet_client_direct(Node):
                 nfc_key= result.nfc_code
                 msg= FreeFleetDataInfoState("new_user", self.new_user_id, nfc_key)
                 self.info_State_dds.publish(msg)
-
-            
-    # def finish_movement(self):
-    #     move_result= self.navigator.getResult()
-    #     if move_result == TaskResult.SUCCEEDED:
-    #         movement_status ="completetd"
-    #     elif move_result == TaskResult.CANCELED:
-    #         if(self.goal_pose== None):
-    #             movement_status= "canceled"
-    #         else:
-    #             movement_status= "paused"
-    #     elif move_result == TaskResult.FAILED:
-    #          movement_status = "failed"
-    #     self.state= Robot_states.IDLE         
+      
 
     def start_receiving_robot_info(self):  
         self.subscriber_odom = self.create_subscription(
@@ -213,7 +195,6 @@ class free_fleet_client_direct(Node):
         
 
     def do_drawer_action(self, msg):
-        print(msg)
         print(self.fleet_name+" "+ self.robot_name)
         if msg.fleet_name == self.fleet_name and msg.robot_name == self.robot_name:
             if msg.module_id==-1 and msg.drawer_id==-1:#Drawer_task_ended
@@ -228,10 +209,8 @@ class free_fleet_client_direct(Node):
                 self.set_drawer_lock(msg)
                 self.open_drawer(msg)
             elif(not msg.open):
-                print("close d")
                 ros_msg=self.dds_Drawer_msg_to_ros(msg) 
                 self.e_drawer_close_publisher.publish(ros_msg)
-            print("dd")
 
     def open_drawer(self, msg): 
         ros_msg=self.dds_Drawer_msg_to_ros(msg) 
@@ -239,10 +218,8 @@ class free_fleet_client_direct(Node):
         self.open_drawers.append(drawer_change)
         if(msg.e_drawer):
             self.e_drawer_open_publisher.publish(ros_msg)
-            print("e-drawer")
         else:
             self.drawer_publisher.publish(ros_msg)
-            print("normal_drawer")
             
     def dds_Drawer_msg_to_ros(self,dds_msg):
         ros_msg = DrawerAddress()
@@ -260,21 +237,21 @@ class free_fleet_client_direct(Node):
             self.locked_drawers.append(drawer(module_id=msg.module_id, drawer_id=msg.drawer_id, locked_for=user_dict))
     
     def perform_NFC_reading(self, possible_nfc_codes:dict): 
-            #read NFC        
-            nfc_toggle_msg=Bool()
-            nfc_toggle_msg.data= True
-            self.controll_nfc_publisher.publish(nfc_toggle_msg)
-            sucessfull= True
-            start = datetime.datetime.now()
-            while( self.received_nfc_codes not in possible_nfc_codes.values() ):
-                duration=  datetime.datetime.now()-start
-                if duration.total_seconds >120:
-                    sucessfull=False
-                    break
+        #read NFC        
+        nfc_toggle_msg=Bool()
+        nfc_toggle_msg.data= True
+        self.controll_nfc_publisher.publish(nfc_toggle_msg)
+        successful= True
+        start = datetime.datetime.now()
+        while( self.received_nfc_codes not in possible_nfc_codes.values() ):
+            duration=  datetime.datetime.now()-start
+            if duration.total_seconds >120:
+                successful=False
+                break
 
-            nfc_toggle_msg.data= False
-            self.controll_nfc_publisher.publish(nfc_toggle_msg)
-            return sucessfull
+        nfc_toggle_msg.data= False
+        self.controll_nfc_publisher.publish(nfc_toggle_msg)
+        return successful
     
     
     def do_move_action(self, msg):
@@ -286,11 +263,11 @@ class free_fleet_client_direct(Node):
         self.goal_pose =self.create_pose(msg.destination.x, msg.destination.y, msg.destination.yaw)
         
     def start_navigation(self):  
-        print("start nav")  
         self._send_goal_future = self.client.send_goal_async(
                 self.goal_pose,
                 feedback_callback=self.feedback_callback)
         self._send_goal_future.add_done_callback(self.goal_response_callback)
+       
 
     def goal_response_callback(self, future):
         goal_handle = future.result()
@@ -302,20 +279,20 @@ class free_fleet_client_direct(Node):
         self._get_result_future.add_done_callback(self.get_result_callback)
 
     def get_result_callback(self, future: NavigateToPose.Result):
-        result = future.result().result
+        self.state== Robot_states.IDLE
+
         
     
     def feedback_callback(self, feedback_msg: NavigateToPose.Feedback):
-        
         self.get_logger().debug('Received feedback')
     
-    # def pause_navigation(self):
-    #     self.navigator.cancelTask()
+    def pause_navigation(self):
+        self._send_goal_future.cancel()
 
-    # def cancel_navigation(self):
-    #     self.goal_pose = None
-    #     self.navigator.cancelTask()
-    #     self.state= Robot_states.IDLE
+    def cancel_navigation(self):
+        self.goal_pose = None
+        self._send_goal_future.cancel()
+        self.state= Robot_states.IDLE
       
     def create_pose(self, pose_x, pose_y, pose_yaw) -> PoseStamped:
         pose = NavigateToPose.Goal()
