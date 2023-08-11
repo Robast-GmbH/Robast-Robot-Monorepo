@@ -1,7 +1,5 @@
-from distutils.log import error
 import os
 import yaml
-
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -53,7 +51,8 @@ def generate_launch_description():
                        'behavior_server',
                        'bt_navigator',
                        'waypoint_follower',
-                       'velocity_smoother']
+                       'velocity_smoother',
+                       'bt_server_collection']
 
     # Create our own temporary YAML files that include substitutions
     # nav_to_pose_bt = os.path.join(get_package_share_directory("nav2_bt_navigator"), "nav_to_pose_with_consistent_replanning_and_if_path_becomes_invalid", ".xml")
@@ -188,6 +187,18 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings +
                         [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')]),
+
+            Node(
+                package='behavior_tree_server_collection',
+                executable='bt_server_collection',
+                name='bt_server_collection',
+                output='screen',
+                respawn=use_respawn,
+                respawn_delay=2.0,
+                parameters=[configured_params],
+                arguments=['--ros-args', '--log-level', log_level],
+                remappings=remappings),
+
             Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',
@@ -247,6 +258,12 @@ def generate_launch_description():
                 parameters=[configured_params],
                 remappings=remappings +
                 [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')]),
+            ComposableNode(
+                package='behavior_tree_server_collection',
+                plugin='behavior_tree_server_collection::BtServerCollection',
+                name='bt_server_collection',
+                parameters=[configured_params],
+                remappings=remappings),
             ComposableNode(
                 package='nav2_lifecycle_manager',
                 plugin='nav2_lifecycle_manager::LifecycleManager',

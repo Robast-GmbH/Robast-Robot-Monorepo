@@ -1,5 +1,4 @@
 import os
-import yaml
 
 import yaml
 
@@ -15,16 +14,9 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
 
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    init_x = environment_yaml["init_x"]
-    init_y = environment_yaml["init_y"]
-    init_yaw = environment_yaml["init_yaw"]
+    init_x = os.environ['init_x']
+    init_y = os.environ["init_y"]
+    init_yaw = os.environ["init_yaw"]
 
     nav_bringup_dir = get_package_share_directory("nav_bringup")
 

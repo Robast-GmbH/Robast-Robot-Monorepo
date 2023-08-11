@@ -395,7 +395,7 @@ global_costmap:
         transform_tolerance: 0.2
         mapping_mode: false
         map_save_duration: 60.0
-        observation_sources: lidar2d lidar3d_marking oak_marking oak_clearing
+        observation_sources: lidar2d lidar3d_marking
         lidar3d_marking:
           enabled: true
           data_type: PointCloud2

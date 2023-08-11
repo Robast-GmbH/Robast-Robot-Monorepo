@@ -19,21 +19,11 @@ ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
 ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
-ENV NVIDIA_VISIBLE_DEVICES all
-ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
 
 RUN apt-get update && apt-get install -y \
   cmake \
   gdb \
-  pylint \ 
-  python3-argcomplete \
-  python3-colcon-common-extensions \
-  python3-pip \
-  python3-rosdep \
-  python3-vcstool \
   libusb-1.0-0-dev\
-  #groot qt
-  qtbase5-dev \
   libqt5svg5-dev \
   libzmq3-dev \
   libdw-dev \
@@ -102,6 +92,15 @@ ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
+ENV is_simulation=true
+ENV config_directory=config_simulation
+ENV robot_name=rb_theron
+ENV init_x=1.46
+ENV init_y=-2.89
+ENV init_z=0.0
+ENV init_yaw=1.57
+
+
 
 ############################## Build ##################################
 FROM ros:humble-ros-base-jammy as build
@@ -117,10 +116,19 @@ RUN git clone https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
 
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs && mv /tmp/spatio_temporal_voxel_layer /ws/src/ros2/navigation
+RUN mkdir -p /ws/src/ros2/; mkdir /robast; mkdir -p /ws/src/ros2/navigation/spatio_temporal_voxel_layer; \
+  mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs && mv /tmp/spatio_temporal_voxel_layer /ws/src/ros2/navigation/spatio_temporal_voxel_layer
 
 RUN rm -r /ws/src/navigation/external_plugins;
+
+ENV is_simulation=false
+ENV config_directory=config
+ENV robot_name=rb_theron
+ENV init_x=1.46
+ENV init_y=-2.89
+ENV init_z=0.0
+ENV init_yaw=1.57
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
@@ -143,11 +151,9 @@ RUN apt-get update && apt-get install -y \
   libboost-all-dev \
   && rm -rf /var/lib/apt/lists/* 
 
+COPY --from=devel / /
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
-COPY --from=build /tmps/openvdb-8.2.0 /tmps/openvdb-8.2.0
-RUN cd /tmps/openvdb-8.2.0/builds/ \
-  make install
 
 
 RUN apt-get update && apt-get upgrade -y\
@@ -162,6 +168,14 @@ ENV ROS_DOMAIN_ID=0
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
+
+ENV is_simulation=false
+ENV config_directory=config
+ENV robot_name=rb_theron
+ENV init_x=1.46
+ENV init_y=-2.89
+ENV init_z=0.0
+ENV init_yaw=1.57
 
 RUN apt-get update \
   && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
