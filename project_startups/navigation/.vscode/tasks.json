@@ -181,6 +181,16 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start nav_without_localization_with_bt_server_collection",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup nav_without_localization_with_bt_server_collection_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start nav_without_localization_with_door_bells_launch",
                         "command": "source install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py use_interim_goal:=true",
                         "problemMatcher": [],
