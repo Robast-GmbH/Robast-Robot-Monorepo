@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:web_interface_flutter/widgets/api_address_input_field.dart';
 import 'package:web_interface_flutter/widgets/docker_overview.dart';
 import 'package:web_interface_flutter/widgets/rosbag_overview.dart';
 import 'package:web_interface_flutter/widgets/status_overview.dart';
@@ -12,14 +13,15 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-  final menuPoints = ["docker", "rosbag", "status", "log", "tasks"];
-  final menuIcons = [Icons.settings, Icons.backpack, Icons.battery_5_bar, Icons.file_open, Icons.task];
+  final menuPoints = ["docker", "rosbag", "status", "log", "tasks", "API"];
+  final menuIcons = [Icons.settings, Icons.backpack, Icons.battery_5_bar, Icons.file_open, Icons.task, Icons.web];
   final menuWidget = [
     const DockerOverview(),
     const RosbagOverview(),
     const StatusOverview(),
     const SizedBox(),
     const TasksOverview(),
+    const APIAddressInputField(),
   ];
   int selectedIndex = 0;
   @override
