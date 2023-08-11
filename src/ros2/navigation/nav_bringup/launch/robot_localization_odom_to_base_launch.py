@@ -38,7 +38,7 @@ def generate_launch_description():
     )
 
     
-    if os.environ["is_simulation"]:
+    if os.environ["is_simulation"]==True:
         #TODO @all check how to rewrite a matrix parameter. In this case odom0
         use_sim_time_default = "true"
         param_substitutions = {
