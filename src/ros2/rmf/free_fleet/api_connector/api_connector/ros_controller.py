@@ -134,20 +134,26 @@ class ros_controller(Node):
     # handle destination request
     def handle_destination_request(self, fleet_name, robot_name, destination):
         state = self.get_robot_state(robot_name)
-        goal= FreeFleetDataLocation(sec=0, nanosec=0, x=destination.pose.x, y= destination.pose.y, yaw=destination.orientation,level_name="")
+        goal= FreeFleetDataLocation()
+        goal.sec= 0
+        goal.nanosec=0
+        goal.x= float(destination.pose.x)
+        goal.y= float(destination.pose.y)
+        goal.yaw= float(destination.orientation)
+        goal.level_name=""
         destination_request = FreeFleetDataDestinationRequest(robot_name=robot_name, fleet_name=fleet_name, task_id="", destination=goal)
         self.dds_destination_request.publish(destination_request)
 
     # handle_drawer_request
     def handle_slide_drawer_request(self, fleet_name:str, robot_name: str, module_id: int, drawer_id: int, restricted:list[str] , e_drawer: bool, open: bool):
-        slide_drawer_request = FreeFleetDataSlideDrawerRequest(
-            fleet_name,
-            robot_name,
-            module_id,
-            drawer_id,
-            restricted,
-            e_drawer,
-            open)
+        slide_drawer_request = FreeFleetDataSlideDrawerRequest()
+        slide_drawer_request.fleet_name= fleet_name
+        slide_drawer_request.robot_name= robot_name
+        slide_drawer_request.module_id=  module_id
+        slide_drawer_request.drawer_id= drawer_id
+        slide_drawer_request.restricted= restricted
+        slide_drawer_request.e_drawer= e_drawer
+        slide_drawer_request.open= open
         self.dds_slide_drawer_request.publish(slide_drawer_request)
 
     def handle_setting_request(self, command:str, name:str, value:str):
@@ -166,7 +172,7 @@ class ros_controller(Node):
             message={"robot_name": msg.name,"fleet_name":"ROBAST", "task_id":msg.task_id, "y_pose": msg.location.y ,"x_pose": msg.location.x ,"yaw_pose": msg.location.yaw}
             headers =  {"Content-Type":"application/json"}
             sender = requests.Session()
-            sender.post(url= self.config["backend_address"]+"/robots/status", json= json.dumps(message), headers= headers, verify=False)
+            #sender.post(url= self.dds_config["backend_address"]+"/robots/status", json= json.dumps(message), headers= headers, verify=False)
  
 
     def sent_info_state(self, msg):
@@ -174,7 +180,7 @@ class ros_controller(Node):
                 message={"nfc_code":msg.value }
                 headers =  {"Content-Type":"application/json"}
                 sender = requests.Session()
-                sender.post(url= self.config["backend_address"]+"/users/"+msg.name+"/nfc", json= json.dumps(message), headers= headers, verify=False)
+               # sender.post(url= self.dds_config["backend_address"]+"/users/"+msg.name+"/nfc", json= json.dumps(message), headers= headers, verify=False)
 
     def sent_drawer_state(self, msg):
             status="closed"
@@ -184,5 +190,5 @@ class ros_controller(Node):
             message={"robot_name": msg.robot_name, "id":msg.module_id, "drawer_id":msg.drawer_it, "status":status }
             headers =  {"Content-Type":"application/json"}
             sender = requests.Session()
-            sender.post(url= self.config["backend_address"]+"/robots/modules/status", json= json.dumps(message), headers= headers, verify=False)
+           # sender.post(url= self.dds_config["backend_address"]+"/robots/modules/status", json= json.dumps(message), headers= headers, verify=False)
         

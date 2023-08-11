@@ -115,9 +115,8 @@ class free_fleet_client_direct(Node):
         
 
     def start_robot_behavior(self):
-        self.check_settings()
+       
         if(self.state== Robot_states.IDLE):
-            #drawer_task = self.drawer_request_dds.get_next()
               
             if len(self.drawer_requests)>0:
                 drawer_task= self.drawer_requests.pop()
@@ -127,6 +126,7 @@ class free_fleet_client_direct(Node):
                 return
             
             if len(self.destination_request):
+                print("movement")
                 move_task= self.destination_request.pop()
                 self.state= Robot_states.MOVEMENTMODE
                 self.task_id= None
@@ -143,7 +143,7 @@ class free_fleet_client_direct(Node):
                if self.navigator.isTaskComplete():
                    self.finish_movement()
 
-    def check_settings(self):
+    def check_settings(self, msg):
         new_settings=True 
         while(new_settings):
             if len(self.setting_requests)>0:
@@ -212,6 +212,7 @@ class free_fleet_client_direct(Node):
         
 
     def do_drawer_action(self, msg):
+        print("drawer")
         if msg.fleet_name == self.fleet_name and msg.robot_name == self.name:
             if msg.module_id==-1 and msg.drawer_id==-1:#Drawer_task_ended
                 if(self.open_drawers.__len__==0):
@@ -333,8 +334,23 @@ class free_fleet_client_direct(Node):
     def publish_fleet_states(self):
         battery= 0.0 #todo @Torben read the battery sate from the robot
         sequence = [] #todo @Torben add a list of waypoint of the robot
-        current_location= FreeFleetDataLocation(0,0,self.robot_x,self.robot_y, self.robot_yaw,"")
-        robot_state = FreeFleetDataRobotState(name=self.robot_name, model=self.robot_model,task_id="0",mode= FreeFleetDataRobotMode(0), battery_percent= battery, location= current_location, path = sequence )
+        mode= FreeFleetDataRobotMode()
+        mode.mode=0 
+        current_location= FreeFleetDataLocation()
+        current_location.sec= 0
+        current_location.nanosec=0
+        current_location.x= float(self.robot_x)
+        current_location.y= float(self.robot_y)
+        current_location.yaw= float(self.robot_yaw)
+        current_location.level_name=""
+        robot_state = FreeFleetDataRobotState()
+        robot_state.name=self.robot_name
+        robot_state.model=self.robot_model
+        robot_state.task_id="0"
+        robot_state.mode=mode
+        robot_state.battery_percent= battery
+        robot_state.location= current_location
+        robot_state.path = sequence
         self.robot_state_dds.publish(robot_state) 
    
     def receive_authentication_codes(self, msg):

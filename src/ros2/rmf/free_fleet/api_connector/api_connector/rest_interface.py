@@ -52,7 +52,7 @@ class RestInterface():
         
         @self.app.post("/drawer/close")
         def close_drawer(drawer: Drawer, robot: Robot):
-            self.ros_node.get_logger().info("/drawer/open was called")
+            self.ros_node.get_logger().info("/drawer/close was called")
             self.ros_node.handle_slide_drawer_request(
                 robot.fleet_name,
                 robot.name,
@@ -66,6 +66,7 @@ class RestInterface():
         
         @self.app.post("/move")
         def force_move_to_waypoint(waypoint: Waypoint, robot: Robot):
+            print("/move")
             self.ros_node.handle_destination_request(robot.fleet_name,
                                                        robot.name,
                                                        waypoint)
@@ -74,22 +75,22 @@ class RestInterface():
         
         @self.app.post("/settings/move/pause")
         def pause_robot():
-            self.ros_node.handle_setting_request("move", "pause")
+            self.ros_node.handle_setting_request("move", "break", "pause")
             return
         
         @self.app.post("/settings/move/resume")
         def resume_robot():
-            self.ros_node.handle_setting_request("move", "resume")
+            self.ros_node.handle_setting_request("move", "break", "resume")
             return
 
         @self.app.post("/settings/move/cancel")
         def cancel_robot():
-            self.ros_node.handle_setting_request("move", "cancel")
+            self.ros_node.handle_setting_request("move", "break", "cancel")
             return    
 
         @self.app.post("/setting/user")
         def create_new_nfc_card(user_id: int):
-            self.ros_node.handle_setting_request("new_user", str(user_id) )
+            self.ros_node.handle_setting_request("new_user", "", str(user_id) )
             return
 
     def run(self, host='0.0.0.0', port=3002, log_level='warning'):
