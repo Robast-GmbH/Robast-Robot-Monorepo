@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:web_interface_flutter/models/task.dart';
+import 'package:provider/provider.dart';
+import 'package:web_interface_flutter/models/robot_provider.dart';
 
 class TasksOverview extends StatefulWidget {
   const TasksOverview({super.key});
@@ -9,22 +10,9 @@ class TasksOverview extends StatefulWidget {
 }
 
 class _TasksOverviewState extends State<TasksOverview> {
-  final tasks = [
-    Task(
-      drawerID: 1,
-      id: 2,
-      xPose: 50,
-      yPose: 100,
-      yawPose: 2,
-      finished: false,
-      targetID: 3000,
-      ownerID: 2999,
-      robotName: "Robi",
-      moduleID: 2,
-    )
-  ];
   @override
   Widget build(BuildContext context) {
+    final tasks = Provider.of<RobotProvider>(context).tasks.values.toList();
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 8,
