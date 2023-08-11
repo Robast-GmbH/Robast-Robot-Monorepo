@@ -22,10 +22,9 @@ class _ManualControlPageState extends State<ManualControlPage> {
   late Timer refreshTimer;
 
   void setTimer() {
-    refreshTimer = Timer.periodic(const Duration(seconds: 5), (timer) {
-      print("Update Robots");
-      Provider.of<RobotProvider>(context, listen: false).updateRobots();
-      setState(() {});
+    refreshTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
+      print("Update Modules");
+      await Provider.of<RobotProvider>(context, listen: false).updateModules();
     });
   }
 
@@ -41,8 +40,26 @@ class _ManualControlPageState extends State<ManualControlPage> {
     super.dispose();
   }
 
+  Future<void> showChangeDrawerStatusDialog(bool isOpening) async {
+    await showDialog(
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: Text("Schublade wird ${isOpening ? "geöffnet" : "geschlossen"}."),
+            actions: [
+              TextButton(
+                  onPressed: () {
+                    Navigator.pop(context);
+                  },
+                  child: Text("Ok"))
+            ],
+          );
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
+    final robotProvider = Provider.of<RobotProvider>(context, listen: false);
     return Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -53,13 +70,16 @@ class _ManualControlPageState extends State<ManualControlPage> {
           displayStatus: true,
           onPressed: (moduleID) async {
             try {
-              final module = Provider.of<RobotProvider>(context, listen: false).modules["RB0"]?.firstWhere((element) => element.moduleID == moduleID);
+              final module = robotProvider.modules["RB0"]?.firstWhere((element) => element.moduleID == moduleID);
 
-              if (module!.status == "closed") {
-                APIService.openDrawer("RB0", moduleID, module.drawerID);
+              if (module!.status == "open") {
+                await APIService.closeDrawer("RB0", moduleID, module.drawerID);
+                await showChangeDrawerStatusDialog(false);
               } else {
-                APIService.closeDrawer("RB0", moduleID, module.drawerID);
+                await APIService.openDrawer("RB0", moduleID, module.drawerID);
+                await showChangeDrawerStatusDialog(true);
               }
+              await robotProvider.updateModules();
             } catch (e) {
               debugPrint(e.toString());
             }

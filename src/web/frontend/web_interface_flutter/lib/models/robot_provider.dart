@@ -9,7 +9,7 @@ class RobotProvider extends ChangeNotifier {
   final List<User> users = [];
   List<Robot> robots = [];
   final Map<String, Task> tasks = {};
-  final Map<String, List<DrawerModule>> modules = {};
+  Map<String, List<DrawerModule>> modules = {};
 
   Future<void> updateProviderData() async {
     await updateUsers();
@@ -35,10 +35,12 @@ class RobotProvider extends ChangeNotifier {
   }
 
   Future<void> updateModules() async {
-    modules.clear();
+    final updatedModules = <String, List<DrawerModule>>{};
     for (final robot in robots) {
       final robotModules = await APIService.getModules(robot.name);
-      modules[robot.name] = robotModules;
+      updatedModules[robot.name] = robotModules;
     }
+    modules = updatedModules;
+    notifyListeners();
   }
 }
