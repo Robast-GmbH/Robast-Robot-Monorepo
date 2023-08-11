@@ -19,7 +19,7 @@ def init(db: Session):
                 addRobot("RB0", "ROBAST", 0, 0, 0, db)
                 addDrawer("RB0", 1, 0, 1, models.DrawerSlideTypes.Manual, 10, db)
                 addDrawer("RB0", 2, 0, 2, models.DrawerSlideTypes.Manual, 10, db)
-                addDrawer("RB0", 3, 0, 3, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 3, 0, 3, models.DrawerSlideTypes.Electrical, 10, db)
                 addDrawer("RB0", 4, 0, 4, models.DrawerSlideTypes.Manual, 20, db)
                 addDrawer("RB0", 5, 0, 5, models.DrawerSlideTypes.Manual, 30, db)
 

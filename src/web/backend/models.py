@@ -62,9 +62,9 @@ class DrawerAction(Action):
 
 class Module(Base):
     __tablename__ = "module"
-    id = Column(Integer, primary_key=True)
-    drawer_id= Column(Integer, primary_key=True)
-    position= Column(Integer)
+    id = Column(Integer)
+    drawer_id= Column(Integer)
+    position= Column(Integer, primary_key=True )
     status= Column(String)
     type= Column(Enum(DrawerSlideTypes), index=True)
     size= Column(Integer)
