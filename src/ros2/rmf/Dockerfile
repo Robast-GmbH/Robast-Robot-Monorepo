@@ -35,8 +35,6 @@ WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/; mkdir -p /ws/src/ros2/rmf/free_fleet/free_fleet; mkdir /robast; \
   mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs \
-  && mv /tmp/Monorepo/src/ros2/simulation/tiplu_world /ws/src/ros2/simulation \
-  && mv /tmp/Monorepo/src/ros2/robot_description /ws/src/ros2/robot_description 
   
 
 RUN rosdep update && \
