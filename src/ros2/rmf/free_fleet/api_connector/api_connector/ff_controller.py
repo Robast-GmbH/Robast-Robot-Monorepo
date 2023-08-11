@@ -12,15 +12,15 @@ class free_fleet_controller:
         self.config = dds_config
         self.robot_states = []  # :list[messages.FreeFleetData_RobotState] =[]
         
-        self.dds_robot_state= dds.DDS_communicator(self.config["domain_id"], self.config["robot_state_topic"], messages.FreeFleetData_RobotState)
-        self.dds_mode_request= dds.DDS_communicator(self.config["domain_id"], self.config["mode_request_topic"], messages.FreeFleetData_ModeRequest)
-        self.dds_path_request= dds.DDS_communicator(self.config["domain_id"], self.config["path_request_topic"], messages.FreeFleetData_PathRequest)
-        self.dds_destination_request= dds.DDS_communicator(self.config["domain_id"], self.config["destination_request_topic"], messages.FreeFleetData_DestinationRequest)
-        self.dds_slide_drawer_request= dds.DDS_communicator(self.config["domain_id"], self.config["slide_drawer_request_topic"], messages.FreeFleetData_SlideDrawerRequest)
-        self.dds_settings_request=dds.DDS_communicator(self.config["domain_id"], self.config["setting_request_topic"], messages.FreeFleetData_SettingRequest)
-        self.dds_info_state= dds.DDS_communicator(self.config["domain_id"], self.config["info_state_topic"], messages.FreeFleetData_InfoState )
-        self.dds_drawer_state= dds.DDS_communicator(self.config["domain_id"], self.config["drawer_state_topic"], messages.FreeFleetData_DrawerState )
-        threading.Timer(5.0, self.start_receiving_info ).start()
+        # self.dds_robot_state= dds.DDS_communicator(self.config["domain_id"], self.config["robot_state_topic"], messages.FreeFleetData_RobotState)
+        # self.dds_mode_request= dds.DDS_communicator(self.config["domain_id"], self.config["mode_request_topic"], messages.FreeFleetData_ModeRequest)
+        # self.dds_path_request= dds.DDS_communicator(self.config["domain_id"], self.config["path_request_topic"], messages.FreeFleetData_PathRequest)
+        # self.dds_destination_request= dds.DDS_communicator(self.config["domain_id"], self.config["destination_request_topic"], messages.FreeFleetData_DestinationRequest)
+        # self.dds_slide_drawer_request= dds.DDS_communicator(self.config["domain_id"], self.config["slide_drawer_request_topic"], messages.FreeFleetData_SlideDrawerRequest)
+        # self.dds_settings_request=dds.DDS_communicator(self.config["domain_id"], self.config["setting_request_topic"], messages.FreeFleetData_SettingRequest)
+        # self.dds_info_state= dds.DDS_communicator(self.config["domain_id"], self.config["info_state_topic"], messages.FreeFleetData_InfoState )
+        # self.dds_drawer_state= dds.DDS_communicator(self.config["domain_id"], self.config["drawer_state_topic"], messages.FreeFleetData_DrawerState )
+        # threading.Timer(5.0, self.start_receiving_info ).start()
         
                 
 

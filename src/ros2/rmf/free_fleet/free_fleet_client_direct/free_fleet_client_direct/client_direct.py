@@ -6,24 +6,20 @@ from rclpy.action import ActionClient
 
 
 from rclpy.node import Node
-from .dds import messages
+# from .dds import messages
 from std_msgs.msg import Bool, String
 
-from .dds import dds_communicator as dds
+# from .dds import dds_communicator as dds
 from . import math_helper
-
-
-
-
-
 from enum import Enum
 
 from communication_interfaces.msg import DrawerAddress, DrawerStatus
 from communication_interfaces.action import CreateUserNfcTag
-from nav2_simple_commander.robot_navigator import BasicNavigator
+from nav2_simple_commander.robot_navigator import BasicNavigator, TaskResult 
 from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry
 from rclpy.qos import ReliabilityPolicy, QoSProfile
+from ddsmessages.msg  import FreeFleetDataInfoState, FreeFleetDataSettingRequest, FreeFleetDataSlideDrawerRequest, FreeFleetDataDestinationRequest, FreeFleetDataRobotState, FreeFleetDataDrawerState, FreeFleetDataLocation, FreeFleetDataRobotMode 
 
 
 # TODO@ Torben this aproach is rubbisch switch the logic to simple statemaschine  
@@ -77,9 +73,17 @@ class free_fleet_client_direct(Node):
         self.task_id= None
         self.open_drawers:list[drawer] =[]
         self.locked_drawers:list[drawer]=[]
+
+        self.drawer_requests = []
+        self.destination_request=[]
+        self.setting_requests=[]
+
+
         self.robot_x= 0
         self.robot_y=0
         self.robot_yaw=0
+
+
 
         qos_profile = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,
@@ -96,13 +100,13 @@ class free_fleet_client_direct(Node):
         self.nfc_codes_subscriber= self.create_subscription(String, "/authenticated_user",self.receive_authentication_codes, qos_profile)
         self.create_nfc_action_client= ActionClient(self, CreateUserNfcTag,"/create_user")
 
-
-        self.info_State_dds= dds.DDS_communicator(self.dds_domain, "info_state", messages.FreeFleetData_InfoState)
-        self.setting_request_dds= dds.DDS_communicator(self.dds_domain,"settings_request",messages.FreeFleetData_SettingRequest)
-        self.drawer_request_dds= dds.DDS_communicator(self.dds_domain, self.dds_slide_drawer_topic, messages.FreeFleetData_SlideDrawerRequest)
-        self.destination_request_dds= dds.DDS_communicator(self.dds_domain, "destination_request", messages.FreeFleetData_DestinationRequest)
-        self.robot_state_dds = dds.DDS_communicator(self.dds_domain, "robot_state", messages.FreeFleetData_RobotState)
-        self.drawer_states_dds = dds.DDS_communicator(self.dds_domain, "drawer_state",messages.FreeFleetData_DrawerState)
+        self.setting_request_dds=  self.create_subscription(FreeFleetDataSettingRequest, "/settings_request", self.setting_callback, 10) 
+        self.drawer_request_dds= self.create_subscription( FreeFleetDataSlideDrawerRequest, "/slide_drawer_request",self.slide_drawer_callback ,10)
+        self.destination_request_dds= self.create_subscription( FreeFleetDataDestinationRequest,  "/destination_request", self.destination_callback ,10)
+        
+        self.robot_state_dds = self.create_publisher(FreeFleetDataRobotState,  "/robot_state",10)
+        self.drawer_states_dds = self.create_publisher(FreeFleetDataDrawerState, "/drawer_state", 10)
+        self.info_state_dds= self.create_publisher(FreeFleetDataInfoState, "/info_state",10)
         
         self.action_timer = self.create_timer(self.heartbeat, self.start_robot_behavior)
         self.start_receiving_robot_info()
@@ -113,24 +117,25 @@ class free_fleet_client_direct(Node):
     def start_robot_behavior(self):
         self.check_settings()
         if(self.state== Robot_states.IDLE):
-            drawer_task = self.drawer_request_dds.get_next()
+            #drawer_task = self.drawer_request_dds.get_next()
               
-            if drawer_task is not None:
+            if len(self.drawer_requests)>0:
+                drawer_task= self.drawer_requests.pop()
                 self.state= Robot_states.DRAWERMODE 
                 self.task_id= None
                 self.do_drawer_action(drawer_task)
                 return
             
-            move_task = self.destination_request_dds.get_next()
-            if move_task is not None:
+            if len(self.destination_request):
+                move_task= self.destination_request.pop()
                 self.state= Robot_states.MOVEMENTMODE
                 self.task_id= None
                 self.do_move_action(move_task)
                 return
             
         elif(self.state== Robot_states.DRAWERMODE):
-            drawer_task = self.drawer_request_dds.get_next()
-            if drawer_task is not None:
+            if len(self.drawer_requests)>0:
+                drawer_task= self.drawer_requests.pop()
                 self.do_drawer_action(drawer_task)
                 return                
 
@@ -141,20 +146,20 @@ class free_fleet_client_direct(Node):
     def check_settings(self):
         new_settings=True 
         while(new_settings):
-            msg= self.setting_request_dds.get_next()
-            if msg is None:
+            if len(self.setting_requests)>0:
+                msg= self.setting_requests.pop()
                 new_settings= False
                 return
             if(msg.command=="move" and self.state==Robot_states.MOVEMENTMODE):
-                if(msg.new_value=="pause"):
+                if(msg.value=="pause"):
                     self.pause_navigation()
-                elif(msg.new_value== "resume"):
+                elif(msg.value== "resume"):
                     self.start_navigation()
-                elif(msg.new_value== "cancel"):
+                elif(msg.value== "cancel"):
                     self.cancel_navigation()
 
             elif(msg.command=="new_user"):
-                user_id=msg.new_value
+                user_id=msg.value
                 self.create_nfc_card(user_id)
         
         def create_nfc_card(self, user_id): 
@@ -177,7 +182,7 @@ class free_fleet_client_direct(Node):
         def store_nfc_code(self,future):
                 result = future.result()
                 nfc_key= result.nfc_code
-                msg= messages.FreeFleetData_InfoState("new_user", self.new_user_id, nfc_key)
+                msg= FreeFleetDataInfoState("new_user", self.new_user_id, nfc_key)
                 self.info_State_dds.publish(msg)
 
             
@@ -253,7 +258,7 @@ class free_fleet_client_direct(Node):
             self.controll_nfc_publisher.publish(nfc_toggle_msg)
             sucessfull= True
             start = datetime.datetime.now()
-            while( self.recived_nfc_codes not in possible_nfc_codes.values() ):
+            while( self.received_nfc_codes not in possible_nfc_codes.values() ):
                 duration=  datetime.datetime.now()-start
                 if duration.total_seconds >120:
                     sucessfull=False
@@ -321,20 +326,28 @@ class free_fleet_client_direct(Node):
             if self.open_drawers.__len__==0:
                 self.start_wait_for_drawer =datetime.datetime.now()
 
-        drawer_state= messages.FreeFleetData_DrawerState(self.fleet_name, self.robot_name, module_id, drawer_id, drawer_open)
+        drawer_state= FreeFleetDataDrawerState(self.fleet_name, self.robot_name, module_id, drawer_id, drawer_open)
         self.drawer_states_dds.publish(drawer_state)
 
 
     def publish_fleet_states(self):
         battery= 0.0 #todo @Torben read the battery sate from the robot
         sequence = [] #todo @Torben add a list of waypoint of the robot
-        current_location= messages.FreeFleetData_Location(0,0,self.robot_x,self.robot_y, self.robot_yaw,"")
-        robot_state =messages.FreeFleetData_RobotState(name=self.robot_name, model=self.robot_model,task_id="0",mode= messages.FreeFleetData_RobotMode(0), battery_percent= battery, location= current_location, path = sequence )
+        current_location= FreeFleetDataLocation(0,0,self.robot_x,self.robot_y, self.robot_yaw,"")
+        robot_state = FreeFleetDataRobotState(name=self.robot_name, model=self.robot_model,task_id="0",mode= FreeFleetDataRobotMode(0), battery_percent= battery, location= current_location, path = sequence )
         self.robot_state_dds.publish(robot_state) 
    
     def receive_authentication_codes(self, msg):
-        self.recived_nfc_codes =msg.data 
+        self.received_nfc_codes =msg.data 
  
     def start_sending_status(self):
         self.publish_fleet_states()
-        
+    
+    def setting_callback(self, msg):
+        self.setting_requests.append(msg)
+
+    def slide_drawer_callback(self, msg):
+        self.drawer_requests.append(msg)
+
+    def destination_callback(self,msg):
+        self.destination_request.append(msg)
