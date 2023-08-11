@@ -62,17 +62,6 @@ class FreeFleetData_DestinationRequest(IdlStruct):
     destination: FreeFleetData_Location
     task_id: str
 
-
-@dataclass
-class FreeFleetData_SlideDrawerRequest(IdlStruct):
-    fleet_name: str
-    robot_name: str
-    module_id: int
-    drawer_id: int
-    e_drawer: bool
-    open:bool
-
-
 #custom messages 
 @dataclass
 class FreeFleetData_SlideDrawerRequest(IdlStruct):

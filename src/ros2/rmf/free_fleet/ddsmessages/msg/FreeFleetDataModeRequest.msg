@@ -1,0 +1,5 @@
+string fleet_name
+string robot_name
+ddsmessages/FreeFleetDataRobotMode mode
+string task_id
+ddsmessages/FreeFleetDataModeParameter[] parameter

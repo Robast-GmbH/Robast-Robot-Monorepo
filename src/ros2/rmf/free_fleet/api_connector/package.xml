@@ -12,6 +12,7 @@
   <depend>rclpy</depend>
   <depend>rclpy.action</depend>
   <depend>communication_interfaces</depend>
+  <depend>ddsmessages</depend>
   <depend>geometry_msgs</depend>
 
   <test_depend>ament_copyright</test_depend>
