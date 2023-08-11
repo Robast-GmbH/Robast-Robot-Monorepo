@@ -7,8 +7,8 @@ import 'package:web_interface_flutter/models/task.dart';
 import 'package:web_interface_flutter/models/user.dart';
 
 class APIService {
-  static String baseURL = "http://10.10.23.10";
-  static int port = 443;
+  static String baseURL = "http://localhost"; //"http://10.10.23.10";
+  static int port = 3001;
 
   static Future<bool> testConnection(String url) async {
     try {
