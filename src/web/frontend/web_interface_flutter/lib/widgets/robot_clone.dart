@@ -7,11 +7,9 @@ class RobotClone extends StatefulWidget {
   const RobotClone({
     super.key,
     this.onPressed,
-    this.selectedDrawerID,
     this.displayStatus = false,
   });
   final void Function(int)? onPressed;
-  final int? selectedDrawerID;
   final bool displayStatus;
 
   @override
@@ -108,7 +106,7 @@ class _RobotCloneState extends State<RobotClone> {
                               margin: EdgeInsets.symmetric(vertical: 18.7 * size, horizontal: 19.7 * size),
                               child: Center(
                                   child: Image.asset(
-                                "assets/team.png",
+                                "assets/Logo.png",
                                 height: 120 * size,
                               )),
                             ),
@@ -122,6 +120,7 @@ class _RobotCloneState extends State<RobotClone> {
               Selector<RobotProvider, Map<String, List<DrawerModule>>>(
                 selector: (_, provider) => provider.modules,
                 builder: (context, modules, child) {
+                  if (modules.isEmpty) return const SizedBox();
                   return Column(
                     children: modules.values.first
                         .map((e) => buildDrawer(
@@ -171,7 +170,6 @@ class _RobotCloneState extends State<RobotClone> {
     final double drawerWidth = 400 * size;
     final double topGap = 20 * size;
     final double bottomGap = 6.5 * size;
-    final isSelected = widget.selectedDrawerID == id;
     return GestureDetector(
       onTap: () => widget.onPressed?.call(id),
       child: Container(
@@ -191,16 +189,6 @@ class _RobotCloneState extends State<RobotClone> {
                       width: 0.5,
                     ),
                     color: Colors.white,
-                    boxShadow: isSelected
-                        ? const [
-                            BoxShadow(
-                              color: Colors.grey, // Shadow color
-                              offset: Offset(0, 0), // Changes position of shadow
-                              blurRadius: 5, // Changes size of shadow
-                              spreadRadius: 5, // Expands the shadow
-                            ),
-                          ]
-                        : null,
                     borderRadius: BorderRadius.circular(8)),
                 child: Stack(
                   alignment: Alignment.topCenter,

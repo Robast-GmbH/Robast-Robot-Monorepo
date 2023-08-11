@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_interface_flutter/main.dart';
+import 'package:web_interface_flutter/models/drawer_module.dart';
 import 'package:web_interface_flutter/models/robot_provider.dart';
 import 'package:web_interface_flutter/services/api_service.dart';
 import 'package:web_interface_flutter/widgets/robot_clone.dart';
@@ -72,12 +73,14 @@ class _ManualControlPageState extends State<ManualControlPage> {
             try {
               final module = robotProvider.modules["RB0"]?.firstWhere((element) => element.moduleID == moduleID);
 
-              if (module!.status == "open") {
+              if (module!.status == "open" && module.type == ModuleType.Electrical) {
                 await APIService.closeDrawer("RB0", moduleID, module.drawerID);
                 await showChangeDrawerStatusDialog(false);
-              } else {
+              } else if (module.status == "closed") {
                 await APIService.openDrawer("RB0", moduleID, module.drawerID);
                 await showChangeDrawerStatusDialog(true);
+              } else {
+                return;
               }
               await robotProvider.updateModules();
             } catch (e) {

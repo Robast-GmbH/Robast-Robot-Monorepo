@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:web_interface_flutter/models/drawer_module.dart';
 import 'package:web_interface_flutter/pages/task_creation_page.dart';
 import 'package:web_interface_flutter/widgets/robot_clone.dart';
 
@@ -11,7 +10,6 @@ class DrawerSelectionPage extends StatefulWidget {
 }
 
 class _DrawerSelectionPageState extends State<DrawerSelectionPage> {
-  int? selectedDrawerIndex;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,35 +17,20 @@ class _DrawerSelectionPageState extends State<DrawerSelectionPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text("Wähle eine Schublade"),
       ),
-      body: Center(
-          child: RobotClone(
-        selectedDrawerID: selectedDrawerIndex,
+      body: Center(child: RobotClone(
         onPressed: (index) {
-          if (index != selectedDrawerIndex) {
-            selectedDrawerIndex = index;
-          } else {
-            selectedDrawerIndex = null;
-          }
-          setState(() {});
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TaskCreationPage(
+                targetPosition: widget.targetPosition,
+                moduleID: index,
+                drawerID: 0,
+              ),
+            ),
+          );
         },
       )),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (selectedDrawerIndex != null) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => TaskCreationPage(
-                  targetPosition: widget.targetPosition,
-                  moduleID: selectedDrawerIndex!,
-                  drawerID: 0,
-                ),
-              ),
-            );
-          }
-        },
-        child: Icon(Icons.check),
-      ),
     );
   }
 }
