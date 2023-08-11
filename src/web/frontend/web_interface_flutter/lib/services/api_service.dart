@@ -7,8 +7,21 @@ import 'package:web_interface_flutter/models/task.dart';
 import 'package:web_interface_flutter/models/user.dart';
 
 class APIService {
-  static const baseURL = "http://localhost";
-  static const port = 3001;
+  static String baseURL = "http://10.10.23.10";
+  static int port = 443;
+
+  static Future<bool> testConnection(String url) async {
+    try {
+      final response = await http.get(Uri.parse("$url/"));
+      if (response.statusCode == 200) {
+        return true;
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+    return false;
+  }
+
   static Future<int> postTask({
     required int ownerID,
     required int targetID,
