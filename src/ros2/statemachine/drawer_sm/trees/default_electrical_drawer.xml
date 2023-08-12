@@ -2,97 +2,97 @@
 <root BTCPP_format="4"
       main_tree_to_execute="default_electrical_drawer_tree">
   <BehaviorTree ID="default_electrical_drawer_tree">
-    <BaseErrorDecorator topic="/robast_error">
-      <Sequence>
-        <ChangeLED blue="105"
-                   brightness="150"
-                   drawer_address="{drawer}"
-                   green="205"
-                   led_topic="/drawer_leds"
-                   mode="1"
-                   red="0"
-                   use_blackboard_address="true"/>
-        <Delay delay_msec="1000">
-          <OpenDrawer drawer_address="{drawer}"
-                      drawer_open_topic="/open_drawer"/>
-        </Delay>
-        <Delay delay_msec="1000">
+    <ResetDecorator topic="/electro_tree_reset">
+      <BaseErrorDecorator topic="/robast_error">
+        <Sequence>
+          <ChangeLED blue="105"
+                     brightness="150"
+                     drawer_address="{drawer}"
+                     green="205"
+                     led_topic="/drawer_leds"
+                     mode="1"
+                     red="0"
+                     use_blackboard_address="true"/>
+          <Delay delay_msec="1000">
+            <OpenDrawer drawer_address="{drawer}"
+                        drawer_open_topic="/open_drawer"/>
+          </Delay>
+          <Delay delay_msec="1000">
+            <MoveElectricDrawer drawer_address="{drawer}"
+                                move_electric_drawer_topic="/electrical_drawer_task"
+                                speed="255"
+                                stall_guard_enable="0"
+                                target_position="251"/>
+          </Delay>
+          <ChangeLED blue="105"
+                     brightness="150"
+                     drawer_address="{drawer}"
+                     green="205"
+                     led_topic="/drawer_leds"
+                     mode="1"
+                     red="0"
+                     use_blackboard_address="false"/>
+          <ElectricDrawerStatusCondition target_value="251"
+                                         topic="/electrical_drawer_status"/>
+          <ChangeLED blue="128"
+                     brightness="184"
+                     drawer_address="{drawer}"
+                     green="128"
+                     led_topic="/drawer_leds"
+                     mode="1"
+                     red="128"
+                     use_blackboard_address="false"/>
+          <DrawerChangeStateReq drawer_address_topic="/close_drawer"
+                                drawer_address="{drawer}"/>
           <MoveElectricDrawer drawer_address="{drawer}"
                               move_electric_drawer_topic="/electrical_drawer_task"
-                              speed="255"
+                              speed="150"
                               stall_guard_enable="0"
-                              target_position="251"/>
-        </Delay>
-        <ChangeLED blue="105"
-                   brightness="150"
-                   drawer_address="{drawer}"
-                   green="205"
-                   led_topic="/drawer_leds"
-                   mode="1"
-                   red="0"
-                   use_blackboard_address="false"/>
-        <ElectricDrawerStatusCondition target_value="251"
-                                       topic="/electrical_drawer_status"/>
-        <ChangeLED blue="128"
-                   brightness="184"
-                   drawer_address="{drawer}"
-                   green="128"
-                   led_topic="/drawer_leds"
-                   mode="1"
-                   red="128"
-                   use_blackboard_address="false"/>
-        <DrawerChangeStateReq drawer_address_topic="/close_drawer"
-                              drawer_address="{drawer}"/>
-        <MoveElectricDrawer drawer_address="{drawer}"
-                            move_electric_drawer_topic="/electrical_drawer_task"
-                            speed="150"
-                            stall_guard_enable="0"
-                            target_position="0"/>
-        <ChangeLED blue="155"
-                   brightness="80"
-                   drawer_address="{drawer}"
-                   green="155"
-                   led_topic="/drawer_leds"
-                   mode="1"
-                   red="0"
-                   use_blackboard_address=""/>
-        <ElectricDrawerStatusCondition target_value="0"
-                                       topic="/electrical_drawer_status"/>
-        <Sequence>
-          <DrawerStatusCondition target_value="false"
-                                 topic="/drawer_is_open"/>
+                              target_position="0"/>
           <ChangeLED blue="155"
-                     brightness="184"
+                     brightness="80"
                      drawer_address="{drawer}"
                      green="155"
                      led_topic="/drawer_leds"
                      mode="1"
                      red="0"
-                     use_blackboard_address="false"/>
-          <Delay delay_msec="500">
+                     use_blackboard_address=""/>
+          <ElectricDrawerStatusCondition target_value="0"
+                                         topic="/electrical_drawer_status"/>
+          <Sequence>
+            <DrawerStatusCondition target_value="false"
+                                   topic="/drawer_is_open"/>
             <ChangeLED blue="155"
-                       brightness="25"
+                       brightness="184"
                        drawer_address="{drawer}"
                        green="155"
                        led_topic="/drawer_leds"
                        mode="1"
                        red="0"
-                       use_blackboard_address=""/>
-          </Delay>
+                       use_blackboard_address="false"/>
+            <Delay delay_msec="500">
+              <ChangeLED blue="155"
+                         brightness="25"
+                         drawer_address="{drawer}"
+                         green="155"
+                         led_topic="/drawer_leds"
+                         mode="1"
+                         red="0"
+                         use_blackboard_address=""/>
+            </Delay>
+          </Sequence>
         </Sequence>
-      </Sequence>
-    </BaseErrorDecorator>
+      </BaseErrorDecorator>
+    </ResetDecorator>
   </BehaviorTree>
 
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
-    <Decorator ID="BaseErrorDecorator"
-               editable="false">
+    <Decorator ID="BaseErrorDecorator">
       <input_port name="topic"
                   default="/robast_error"/>
     </Decorator>
-    <Action ID="ChangeLED"
-            editable="false">
+    <Action ID="ChangeLED">
       <input_port name="blue"
                   default="0">uint8</input_port>
       <input_port name="brightness"
@@ -110,29 +110,25 @@
       <input_port name="use_blackboard_address"
                   default="false">bool. wether to use the address that's passed around by I/O or blackboard</input_port>
     </Action>
-    <Action ID="DrawerChangeStateReq"
-            editable="false">
+    <Action ID="DrawerChangeStateReq">
       <input_port name="drawer_address_topic"
                   default="/open_request"/>
       <output_port name="drawer_address"
                    default="{drawer}"/>
     </Action>
-    <Condition ID="DrawerStatusCondition"
-               editable="false">
+    <Condition ID="DrawerStatusCondition">
       <input_port name="target_value"
                   default="false"/>
       <input_port name="topic"
                   default="/drawer_is_open"/>
     </Condition>
-    <Condition ID="ElectricDrawerStatusCondition"
-               editable="false">
+    <Condition ID="ElectricDrawerStatusCondition">
       <input_port name="target_value"
                   default="0">uint8. wether the value should be true or false</input_port>
       <input_port name="topic"
                   default="/drawer_feedback_status"/>
     </Condition>
-    <Action ID="MoveElectricDrawer"
-            editable="false">
+    <Action ID="MoveElectricDrawer">
       <input_port name="drawer_address"
                   default="{drawer}"/>
       <input_port name="move_electric_drawer_topic"
@@ -144,13 +140,16 @@
       <input_port name="target_position"
                   default="0">uint8</input_port>
     </Action>
-    <Action ID="OpenDrawer"
-            editable="false">
+    <Action ID="OpenDrawer">
       <input_port name="drawer_address"
                   default="{drawer}"/>
       <input_port name="drawer_open_topic"
                   default="/open_drawer"/>
     </Action>
+    <Decorator ID="ResetDecorator">
+      <input_port name="topic"
+                  default="/tree_reset"/>
+    </Decorator>
   </TreeNodesModel>
 
 </root>
