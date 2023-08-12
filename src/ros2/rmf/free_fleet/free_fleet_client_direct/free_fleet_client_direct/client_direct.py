@@ -295,7 +295,7 @@ class free_fleet_client_direct(Node):
         self._send_goal_future.cancel()
         self.state= Robot_states.IDLE
       
-    def create_pose(self, pose_x, pose_y, pose_yaw) -> PoseStamped:
+    def create_pose(self, pose_x, pose_y, pose_yaw) -> NavigateToPose.Goal:
         pose = NavigateToPose.Goal()
         waypoint=PoseStamped()
         waypoint.header.frame_id = self.frame_id
@@ -309,6 +309,8 @@ class free_fleet_client_direct(Node):
         waypoint.pose.orientation.z = qz
         waypoint.pose.orientation.w = qw
         pose.pose=waypoint
+        behavior_tree="navigate_to_pose_w_replanning_goal_patience_and_recovery"
+
         return pose
 
     def get_robot_odom(self, data:Odometry):

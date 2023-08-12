@@ -20,6 +20,7 @@ class BaseAction(BaseModel):
 
 class Action(BaseAction):
     id: int
+    
 
 class MoveAction(Action):
     x_pose: float
@@ -32,6 +33,7 @@ class DrawerActon(Action):
     module_id :int
 
 class CreateAction(MoveAction):
+    type:str
     target_id :int
     drawer_id :int
     module_id :int
@@ -42,16 +44,16 @@ class Task(BaseModel):
     fleet_name  :str
     current_action : int
     owner_id: int
-    actions:list[Action]
+    actions:list[CreateAction]
 
 class CreateTask(BaseModel):
     owner_id: int
-    actions:list[Action]
+    actions:list[CreateAction]
 
 class UpdateTask(BaseModel):
     id: int
     current_action: int
-    actions: list[Action]
+    actions: list[CreateAction]
 
 #Drawer
 class ModuleBase(BaseModel):
