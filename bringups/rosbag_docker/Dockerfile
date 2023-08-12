@@ -23,4 +23,4 @@ RUN apt-get update -q && \
     rm -rf /var/lib/apt/lists/*
 
 
-#docker run --name=debug -d --restart unless-stopped --network=host -v ./:/workspace/scripts -v /media/robast/PortableSSD/hagen:/workspace/bags ghcr.io/robast-gmbh/monorepo/debug /bin/bash -c 'su robast; source /opt/ros/humble/setup.bash; ros2 launch foxglove_bridge foxglove_bridge_launch.xml'
+#docker run --name=bag  --network=host -v ./:/workspace/scripts -v /media/robot/Ros_Bag/hagen:/workspace/bags ghcr.io/robast-gmbh/monorepo/debug /bin/bash -c 'while sleep 1000; do :; done'
