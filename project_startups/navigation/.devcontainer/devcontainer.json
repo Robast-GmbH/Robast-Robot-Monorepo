@@ -15,7 +15,23 @@
                 "--privileged",
                 "--volume=/dev:/dev",
                 "--device-cgroup-rule=c 189:* rmw",
+				"-e is_simulation=true",
+				"-e config_directory=config_simulation",
+				"-e robot_name=rb_theron",
+				"-e init_x=1.46",
+				"-e init_y=-2.89",
+				"-e init_z=0.0",
+				"-e init_yaw=1.57"
         ],
+	"remoteEnv": {
+			"is_simulation": "true",
+			"config_directory": "config_simulation",
+			"robot_name": "rb_theron",
+			"init_x": "1.46",
+			"init_y":"-2.89",
+			"init_z":"0.0",
+			"init_yaw":"1.57"
+		},
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {

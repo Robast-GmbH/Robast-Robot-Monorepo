@@ -17,8 +17,8 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
 
-    config_directory = os.environ["config_directory"]
-    is_simulation = os.environ["is_simulation"]
+    config_directory = "config"
+    is_simulation = False
 
     if is_simulation:
         use_sim_time_default = "true"
@@ -111,7 +111,7 @@ def generate_launch_description():
         description='Whether to respawn if a node crashes. Applied when composition is disabled.')
 
     declare_log_level_cmd = DeclareLaunchArgument(
-        'log_level', default_value='warn',
+        'log_level', default_value='info',
         description='log level')
     
 
