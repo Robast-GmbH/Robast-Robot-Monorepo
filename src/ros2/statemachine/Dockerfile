@@ -48,13 +48,16 @@ RUN apt-get update && apt-get install -y git
 
 
 WORKDIR /tmp
-RUN git clone --recurse-submodules -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+RUN git clone https://github.com/BehaviorTree/BehaviorTree.CPP.git
 
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
+RUN mkdir -p /ws/src/ros2/; mkdir /robast; mkdir -p /ws/src/ros2/bt; \
+  mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /tmp/Monorepo/src/ros2/error_handling /ws/src/ros2/error_handling \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs \
+  && mv /tmp/BehaviorTree.CPP /ws/src/ros2/bt
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
