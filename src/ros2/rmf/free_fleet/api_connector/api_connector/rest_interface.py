@@ -66,7 +66,6 @@ class RestInterface():
         
         @self.app.post("/move")
         def force_move_to_waypoint(waypoint: Waypoint, robot: Robot):
-            print("/move")
             self.ros_node.handle_destination_request(robot.fleet_name,
                                                        robot.name,
                                                        waypoint)
