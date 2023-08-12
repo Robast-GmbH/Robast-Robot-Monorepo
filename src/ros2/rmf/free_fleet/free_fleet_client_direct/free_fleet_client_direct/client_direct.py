@@ -121,6 +121,7 @@ class free_fleet_client_direct(Node):
         if(self.state== Robot_states.IDLE):
             if len(self.drawer_requests)>0:
                 drawer_task= self.drawer_requests.pop()
+                print("drawer")
                 self.state= Robot_states.DRAWERMODE 
                 self.task_id= None
                 self.do_drawer_action(drawer_task)
@@ -128,6 +129,7 @@ class free_fleet_client_direct(Node):
             
             if len(self.destination_request):
                 move_task= self.destination_request.pop()
+                print("movement")
                 self.state= Robot_states.MOVEMENTMODE
                 self.task_id= None
                 self.do_move_action(move_task)
@@ -195,7 +197,6 @@ class free_fleet_client_direct(Node):
         
 
     def do_drawer_action(self, msg):
-        print(self.fleet_name+" "+ self.robot_name)
         if msg.fleet_name == self.fleet_name and msg.robot_name == self.robot_name:
             if msg.module_id==-1 and msg.drawer_id==-1:#Drawer_task_ended
                 if(self.open_drawers.__len__==0):
@@ -263,7 +264,7 @@ class free_fleet_client_direct(Node):
         self.goal_pose =self.create_pose(msg.destination.x, msg.destination.y, msg.destination.yaw)
         
     def start_navigation(self):  
-        self._send_goal_future = self.client.send_goal_async(
+        self._send_goal_future = self.nav.send_goal_async(
                 self.goal_pose,
                 feedback_callback=self.feedback_callback)
         self._send_goal_future.add_done_callback(self.goal_response_callback)
@@ -296,16 +297,18 @@ class free_fleet_client_direct(Node):
       
     def create_pose(self, pose_x, pose_y, pose_yaw) -> PoseStamped:
         pose = NavigateToPose.Goal()
-        pose.header.frame_id = self.frame_id
-        pose.header.stamp = self.get_clock().now().to_msg()
-        pose.pose.position.x = pose_x
-        pose.pose.position.y = pose_y
-        pose.pose.position.z = 0
+        waypoint=PoseStamped()
+        waypoint.header.frame_id = self.frame_id
+        waypoint.header.stamp = self.get_clock().now().to_msg()
+        waypoint.pose.position.x = pose_x
+        waypoint.pose.position.y = pose_y
+        waypoint.pose.position.z = 0.0
         qx, qy, qz, qw = math_helper.quaternion_from_euler(0, 0, pose_yaw)
-        pose.pose.orientation.x = qx
-        pose.pose.orientation.y = qy
-        pose.pose.orientation.z = qz
-        pose.pose.orientation.w = qw
+        waypoint.pose.orientation.x = qx
+        waypoint.pose.orientation.y = qy
+        waypoint.pose.orientation.z = qz
+        waypoint.pose.orientation.w = qw
+        pose.pose=waypoint
         return pose
 
     def get_robot_odom(self, data:Odometry):
