@@ -1,6 +1,6 @@
 #include "bt_plugins/action/open_drawer_action.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
 
     // TODO @Tobi: checkout thread safety in the future again. outcommented for now.
@@ -47,10 +47,10 @@ namespace drawer_statemachine
         RCLCPP_DEBUG(rclcpp::get_logger("OpenDrawer"), "publisher resetted");
     }
 
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-    factory.registerNodeType<drawer_statemachine::OpenDrawer>("OpenDrawer");
+    factory.registerNodeType<statemachine::OpenDrawer>("OpenDrawer");
 }

@@ -12,7 +12,7 @@
 #include "communication_interfaces/msg/drawer_address.hpp"
 #include "communication_interfaces/msg/drawer_leds.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
     /**
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
@@ -73,5 +73,5 @@ namespace drawer_statemachine
     private:
         rclcpp::Node::SharedPtr _node;
     };
-} // namespace drawer_statemachine
+} // namespace statemachine
 #endif
