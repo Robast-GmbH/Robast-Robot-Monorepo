@@ -7,7 +7,7 @@ import threading
 
 def main(args=None):
     rclpy.init()
-    ros_node = ros_controller.ros_controller("")
+    ros_node = ros_controller.ros_controller("http://127.0.0.1:3001")
     web_interface = rest_interface.RestInterface(ros_node, 0.5)
     spin_thread = threading.Thread(
         target=rclpy.spin, args=(ros_node,))

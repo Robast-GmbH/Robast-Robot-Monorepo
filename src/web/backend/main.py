@@ -120,7 +120,14 @@ def create_task(task: schemas.CreateTask, db: Session = Depends(get_db)):
     db_task= None
     if db_task is None:
         raise HTTPException(status_code=404, detail="task not found")
+    for action in task.actions:
+        if action.type=="move":
+            move_robot( "RB0", action.x_pose, action.y_pose, action.yaw_pose, db)
+        elif action.type=="drawer":
+            open_drawer( "RB0", schemas.ModuleBase(id= action.id, drawer_id= action.drawer_id), [], db)
     return db_task
+  
+
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
 def update_task( task_id:int, task: schemas.UpdateTask, db: Session = Depends(get_db)):
