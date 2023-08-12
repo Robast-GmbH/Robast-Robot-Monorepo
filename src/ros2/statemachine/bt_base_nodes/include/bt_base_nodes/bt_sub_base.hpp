@@ -54,7 +54,7 @@ namespace bt_base_nodes
       blackboard_->set<std::chrono::steady_clock::time_point>(
           "transition_time",
           std::chrono::steady_clock::now());
-      bt_engine_ = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins_);
+      bt_engine_ = std::make_unique<statemachine::BehaviorTreeEngine>(plugins_);
       bt_ = bt_engine_->createTreeFromFile(_bt_path, blackboard_, maintree_name);
       init_subscriber(trigger_topic);
     }
@@ -87,7 +87,7 @@ namespace bt_base_nodes
 
     BT::Tree bt_;
     BT::Blackboard::Ptr blackboard_;
-    std::unique_ptr<drawer_statemachine::BehaviorTreeEngine> bt_engine_;
+    std::unique_ptr<statemachine::BehaviorTreeEngine> bt_engine_;
     std::vector<std::string> plugins_;
 
   private:

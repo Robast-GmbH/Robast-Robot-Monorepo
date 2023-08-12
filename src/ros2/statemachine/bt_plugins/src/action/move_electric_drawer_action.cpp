@@ -1,6 +1,6 @@
 #include "bt_plugins/action/move_electric_drawer_action.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
 
     using std::placeholders::_1;
@@ -57,10 +57,10 @@ namespace drawer_statemachine
         RCLCPP_DEBUG(rclcpp::get_logger("MoveElectricDrawer"), "publisher resetted");
     }
 
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-    factory.registerNodeType<drawer_statemachine::MoveElectricDrawer>("MoveElectricDrawer");
+    factory.registerNodeType<statemachine::MoveElectricDrawer>("MoveElectricDrawer");
 }

@@ -45,7 +45,7 @@ namespace test2
                 blackboard->set<rclcpp::Node::SharedPtr>(
                     "node",
                     node_open_drawer);
-                auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
+                auto bt_engine = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
                 auto bt = bt_engine->createTreeFromText(led_tree_xml, blackboard, "MainTree");
                 THEN("A Subtree should exist")
                 {
@@ -83,7 +83,7 @@ namespace test2
                     //                 break;
                     //             }
                     //         }
-                    //         drawer_statemachine::ChangeLED* node = dynamic_cast<drawer_statemachine::ChangeLED*> ((*iter).get());
+                    //         statemachine::ChangeLED* node = dynamic_cast<statemachine::ChangeLED*> ((*iter).get());
                     //         communication_interfaces::msg::DrawerLeds LED = node->getDrawerLED();
                     //         REQUIRE(LED.green == expected_drawer_led.green);
                     //         REQUIRE(LED.brightness == expected_drawer_led.brightness);

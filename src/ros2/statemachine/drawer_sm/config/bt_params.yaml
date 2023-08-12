@@ -7,4 +7,5 @@ drawer_tree_initiator:
       - drawer_status_condition_bt_node
       - move_electric_drawer_action_bt_node
       - base_error_decorator_node
+      - reset_decorator_bt_node
     bt_path: "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml"

@@ -11,7 +11,7 @@
 #include "std_msgs/msg/string.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
     /**
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
@@ -61,5 +61,5 @@ namespace drawer_statemachine
         // rclcpp::CallbackGroup::SharedPtr _callback_group;
         // rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
     };
-} // namespace drawer_statemachine
+} // namespace statemachine
 #endif

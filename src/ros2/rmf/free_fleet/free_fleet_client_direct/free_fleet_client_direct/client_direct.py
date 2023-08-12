@@ -258,6 +258,7 @@ class free_fleet_client_direct(Node):
     def do_move_action(self, msg):
         self.set_goal_pose(msg)
         self.start_navigation()
+        print("start_nav")
 
     
     def set_goal_pose(self, msg):
@@ -335,8 +336,8 @@ class free_fleet_client_direct(Node):
         drawer_open= data.drawer_is_open
         if(not drawer_open):
             closed_drawer=next((x for x in self.open_drawers if x.module_id ==module_id and x.drawer_id== drawer_id ), None)
-            if(close_drawer is not None):
-                self.open_drawers.remove(close_drawer)
+            if(closed_drawer is not None):
+                self.open_drawers.remove(closed_drawer)
             if self.open_drawers.__len__==0:
                 self.start_wait_for_drawer =datetime.datetime.now()
 
