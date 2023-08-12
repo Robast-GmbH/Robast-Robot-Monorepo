@@ -491,11 +491,11 @@ planner_server:
       motion_model_for_search: "DUBIN"    # For Hybrid Dubin, Redds-Shepp
       cost_travel_multiplier: 2.0         # For 2D: Cost multiplier to apply to search to steer away from high cost areas. Larger values will place in the center of aisles more exactly (if non-`FREE` cost potential field exists) but take slightly longer to compute. To optimize for speed, a value of 1.0 is reasonable. A reasonable tradeoff value is 2.0. A value of 0.0 effective disables steering away from obstacles and acts like a naive binary search A*.
       angle_quantization_bins: 64         # For Hybrid nodes: Number of angle bins for search, must be 1 for 2D node (no angle search)
-      analytic_expansion_ratio: 0.8       # For Hybrid/Lattice nodes: The ratio to attempt analytic expansions during search for final approach.
-      analytic_expansion_max_length: 0.6    # For Hybrid/Lattice nodes: The maximum length of the analytic expansion to be considered valid to prevent unsafe shortcutting (in meters). This should be scaled with minimum turning radius and be no less than 4-5x the minimum radius
+      analytic_expansion_ratio: 0.6       # For Hybrid/Lattice nodes: The ratio to attempt analytic expansions during search for final approach.
+      analytic_expansion_max_length: 0.4    # For Hybrid/Lattice nodes: The maximum length of the analytic expansion to be considered valid to prevent unsafe shortcutting (in meters). This should be scaled with minimum turning radius and be no less than 4-5x the minimum radius
       minimum_turning_radius: 0.1       # For Hybrid/Lattice nodes: minimum turning radius in m of path / vehicle
       reverse_penalty: 3.1                # For Reeds-Shepp model: penalty to apply if motion is reversing, must be => 1
-      change_penalty: 0.8                 # For Hybrid nodes: penalty to apply if motion is changing directions, must be >= 0
+      change_penalty: 1.8                 # For Hybrid nodes: penalty to apply if motion is changing directions, must be >= 0
       non_straight_penalty: 1.20          # For Hybrid nodes: penalty to apply if motion is non-straight, must be => 1
       cost_penalty: 2.0                   # For Hybrid nodes: penalty to apply to higher cost areas when adding into the obstacle map dynamic programming distance expansion heuristic. This drives the robot more towards the center of passages. A value between 1.3 - 3.5 is reasonable.
       retrospective_penalty: 0.025        # For Hybrid/Lattice nodes: penalty to prefer later maneuvers before earlier along the path. Saves search time since earlier nodes are not expanded until it is necessary. Must be >= 0.0 and <= 1.0
@@ -565,7 +565,7 @@ waypoint_follower:
 velocity_smoother: #TODO check parameters
   ros__parameters:
     use_sim_time: true
-    smoothing_frequency: 20.0
+    smoothing_frequency: 30.0
     scale_velocities: false
     feedback: "OPEN_LOOP"
     max_velocity: [1.00, 0.0, 1.0]
@@ -576,3 +576,68 @@ velocity_smoother: #TODO check parameters
     odom_duration: 0.1
     deadband_velocity: [0.0, 0.0, 0.0]
     velocity_timeout: 1.0
+
+collision_monitor:
+  ros__parameters:
+    use_sim_time: true
+    base_frame_id: "base_footprint"
+    odom_frame_id: "odom"
+    cmd_vel_in_topic: "cmd_vel_smoothed"
+    cmd_vel_out_topic: "cmd_vel"
+    state_topic: "collision_monitor_state"
+    transform_tolerance: 0.2
+    source_timeout: 2.0
+    base_shift_correction: False
+    stop_pub_timeout: 2.0
+    # Polygons represent zone around the robot for "stop", "slowdown" and "limit" action types,
+    # and robot footprint for "approach" action type.
+    # Footprint could be "polygon" type with dynamically set footprint from footprint_topic
+    # or "circle" type with static footprint set by radius. "footprint_topic" parameter
+    # to be ignored in circular case.
+
+    #"[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
+    polygons: ["PolygonStop", "PolygonSlowMinor", PolygonSlowHard]
+    PolygonStop:
+      type: "polygon"
+      points: [0.45, 0.4, 0.45, -0.4, 0.0, -0.4, 0.0, 0.4]
+      action_type: "stop"
+      min_points: 4
+      visualize: True
+      polygon_pub_topic: "polygon_stop"
+    PolygonSlowHard:
+      type: "polygon"
+      points: [0.6, 0.5, 0.6, -0.5, -0.6, -0.5, -0.6, 0.5]
+      action_type: "slowdown"
+      min_points: 4
+      slowdown_ratio: 0.3
+      visualize: True
+      polygon_pub_topic: "polygon_slowdown_hard"
+    PolygonSlowMinor:
+      type: "polygon"
+      points: [0.8, 0.5, 0.8, -0.5, -0.2, -0.6, -0.2, 0.6]
+      action_type: "slowdown"
+      min_points: 4
+      slowdown_ratio: 0.7
+      visualize: True
+      polygon_pub_topic: "polygon_slowdown_minor"
+    PolygonLimit:
+      type: "polygon"
+      points: [0.9, 0.9, 0.9, -0.9, -0.9, -0.9, -0.9, 0.9]
+      action_type: "limit"
+      min_points: 4
+      linear_limit: 0.2
+      angular_limit: 0.4
+      visualize: True
+      polygon_pub_topic: "polygon_limit"
+    FootprintApproach:
+      type: "polygon"
+      action_type: "approach"
+      footprint_topic: "/local_costmap/published_footprint"
+      time_before_collision: 2.0
+      simulation_time_step: 0.1
+      min_points: 6
+      visualize: True
+    observation_sources: ["scan"]
+    scan:
+      type: "scan"
+      topic: "/front_laser/scan"
