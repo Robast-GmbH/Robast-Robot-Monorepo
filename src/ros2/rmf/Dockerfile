@@ -1,11 +1,30 @@
-FROM ghcr.io/robast-gmbh/monorepo/simulation as base
+FROM ros:humble-ros-base-jammy as base
 
+ARG DEBIAN_FRONTEND=noninteractive
+RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
+    echo robast:robast | chpasswd && \
+    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV USER robast
+ARG DEBIAN_FRONTEND=
+
+RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
+
+RUN echo "source install/setup.bash" >> /home/$USER/.bashrc
+
+
+RUN apt-get update && apt-get install -y \
+  build-essential \
+  python3-colcon-common-extensions \
+  python3-pip \
+  python3-rosdep \
+  ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+  ros-humble-ros-testing \
+  ros-humble-ament-cmake-test \
+  ros-humble-launch-testing \
+  git \
+  && rosdep init || echo "rosdep already initialized"
 
 #install RMF
-RUN wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
-RUN apt-get update && apt-get install -y\
-    ros-${ROS_DISTRO}-navigation2
-
 RUN pip3 install uvicorn \
     fastapi\
     requests
@@ -56,7 +75,6 @@ COPY --from=base / /
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
-RUN wget https://packages.osrfoundation.org/gazebo.key -O - | sudo apt-key add -
 
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
