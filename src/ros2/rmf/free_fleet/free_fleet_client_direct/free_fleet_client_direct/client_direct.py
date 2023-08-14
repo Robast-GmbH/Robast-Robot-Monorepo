@@ -20,7 +20,7 @@ from geometry_msgs.msg import PoseStamped
 from nav_msgs.msg import Odometry
 from nav2_msgs.action import NavigateToPose
 from rclpy.qos import ReliabilityPolicy, QoSProfile
-from ddsmessages.msg  import FreeFleetDataInfoState, FreeFleetDataSettingRequest, FreeFleetDataSlideDrawerRequest, FreeFleetDataDestinationRequest, FreeFleetDataRobotState, FreeFleetDataDrawerState, FreeFleetDataLocation, FreeFleetDataRobotMode 
+import robast_dds_communicator.msg as dds 
 
 
 # TODO@ Torben this aproach is rubbisch switch the logic to simple statemaschine  
@@ -104,13 +104,13 @@ class free_fleet_client_direct(Node):
         self.nfc_codes_subscriber= self.create_subscription(String, "/authenticated_user",self.receive_authentication_codes, qos_profile)
         self.create_nfc_action_client= ActionClient(self, CreateUserNfcTag,"/create_user")
 
-        self.setting_request_dds=  self.create_subscription(FreeFleetDataSettingRequest, "/settings_request", self.setting_callback, 10) 
-        self.drawer_request_dds= self.create_subscription( FreeFleetDataSlideDrawerRequest, "/slide_drawer_request",self.slide_drawer_callback ,10)
-        self.destination_request_dds= self.create_subscription( FreeFleetDataDestinationRequest,  "/destination_request", self.destination_callback ,10)
+        self.setting_request_dds=  self.create_subscription(dds.FreeFleetDataSettingRequest, "/settings_request", self.setting_callback, 10) 
+        self.drawer_request_dds= self.create_subscription(dds.FreeFleetDataSlideDrawerRequest, "/slide_drawer_request",self.slide_drawer_callback ,10)
+        self.destination_request_dds= self.create_subscription(dds.FreeFleetDataDestinationRequest,  "/destination_request", self.destination_callback ,10)
         
-        self.robot_state_dds = self.create_publisher(FreeFleetDataRobotState,  "/robot_state",10)
-        self.drawer_states_dds = self.create_publisher(FreeFleetDataDrawerState, "/drawer_state", 10)
-        self.info_state_dds= self.create_publisher(FreeFleetDataInfoState, "/info_state",10)
+        self.robot_state_dds = self.create_publisher(dds.FreeFleetDataRobotState,  "/robot_state",10)
+        self.drawer_states_dds = self.create_publisher(dds.FreeFleetDataDrawerState, "/drawer_state", 10)
+        self.info_state_dds= self.create_publisher(dds.FreeFleetDataInfoState, "/info_state",10)
         
         self.action_timer = self.create_timer(self.heartbeat, self.start_robot_behavior)
         self.start_receiving_robot_info()
@@ -180,7 +180,7 @@ class free_fleet_client_direct(Node):
         def store_nfc_code(self,future):
                 result = future.result()
                 nfc_key= result.nfc_code
-                msg= FreeFleetDataInfoState("new_user", self.new_user_id, nfc_key)
+                msg= dds.FreeFleetDataInfoState("new_user", self.new_user_id, nfc_key)
                 self.info_State_dds.publish(msg)
       
 
@@ -341,7 +341,7 @@ class free_fleet_client_direct(Node):
             if self.open_drawers.__len__==0:
                 self.start_wait_for_drawer =datetime.datetime.now()
 
-        drawer_state= FreeFleetDataDrawerState()
+        drawer_state= dds.FreeFleetDataDrawerState()
         drawer_state.fleet_name= self.fleet_name
         drawer_state.robot_name= self.robot_name
         drawer_state.module_id= module_id
@@ -353,16 +353,16 @@ class free_fleet_client_direct(Node):
     def publish_fleet_states(self):
         battery= 0.0 #todo @Torben read the battery sate from the robot
         sequence = [] #todo @Torben add a list of waypoint of the robot
-        mode= FreeFleetDataRobotMode()
+        mode= dds.FreeFleetDataRobotMode()
         mode.mode=0 
-        current_location= FreeFleetDataLocation()
+        current_location= dds.FreeFleetDataLocation()
         current_location.sec= 0
         current_location.nanosec=0
         current_location.x= float(self.robot_x)
         current_location.y= float(self.robot_y)
         current_location.yaw= float(self.robot_yaw)
         current_location.level_name=""
-        robot_state = FreeFleetDataRobotState()
+        robot_state = dds.FreeFleetDataRobotState()
         robot_state.name=self.robot_name
         robot_state.model=self.robot_model
         robot_state.task_id="0"

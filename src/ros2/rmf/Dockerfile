@@ -25,6 +25,9 @@ RUN apt-get update && apt-get install -y \
   && rosdep init || echo "rosdep already initialized"
 
 #install RMF
+RUN apt-get update && apt-get install -y\
+    ros-${ROS_DISTRO}-navigation2
+    
 RUN pip3 install uvicorn \
     fastapi\
     requests

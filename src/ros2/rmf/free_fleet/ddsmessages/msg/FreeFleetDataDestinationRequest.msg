@@ -1,4 +1,0 @@
-string fleet_name
-string robot_name
-ddsmessages/FreeFleetDataLocation destination 
-string task_id
