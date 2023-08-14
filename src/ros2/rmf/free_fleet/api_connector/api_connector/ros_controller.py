@@ -141,7 +141,11 @@ class ros_controller(Node):
         goal.y= float(destination.pose.y)
         goal.yaw= float(destination.orientation)
         goal.level_name=""
-        destination_request = FreeFleetDataDestinationRequest(robot_name=robot_name, fleet_name=fleet_name, task_id="", destination=goal)
+        destination_request = FreeFleetDataDestinationRequest()
+        destination_request.robot_name=robot_name
+        destination_request.fleet_name=fleet_name
+        destination_request.task_id=""
+        destination_request.destination=goal
         self.dds_destination_request.publish(destination_request)
 
     # handle_drawer_request
@@ -157,7 +161,10 @@ class ros_controller(Node):
         self.dds_slide_drawer_request.publish(slide_drawer_request)
 
     def handle_setting_request(self, command:str, name:str, value:str):
-        setting_request = FreeFleetDataSettingRequest( command=command, name= name, value=value)
+        setting_request = FreeFleetDataSettingRequest()
+        setting_request.command=command
+        setting_request.name= name
+        setting_request.value=value
         self.dds_settings_request.publish(setting_request)
 
     def get_robot_states(self):
@@ -168,27 +175,28 @@ class ros_controller(Node):
             return [state for state in self.robot_states if state.name == name][0]
         return
 
-    def send_robot_state(self, msg):
-            message={"robot_name": msg.name,"fleet_name":"ROBAST", "task_id":msg.task_id, "y_pose": msg.location.y ,"x_pose": msg.location.x ,"yaw_pose": msg.location.yaw}
-            headers =  {"Content-Type":"application/json"}
-            sender = requests.Session()
-            #sender.post(url= self.dds_config["backend_address"]+"/robots/status", json= json.dumps(message), headers= headers, verify=False)
- 
+    def send_robot_state(self, msg):        
+        message={"robot_name": msg.name,"fleet_name":"ROBAST", "task_id":msg.task_id, "y_pose": msg.location.y ,"x_pose": msg.location.x ,"yaw_pose": msg.location.yaw}
+        headers =  {"Content-Type":"application/json"}
+        sender = requests.Session()
+        #sender.post(url= self.dds_config["backend_address"]+"/robots/status", json= json.dumps(message), headers= headers, verify=False)
+            
 
     def sent_info_state(self, msg):
         if(msg.type== "new_user"):
-                message={"nfc_code":msg.value }
-                headers =  {"Content-Type":"application/json"}
-                sender = requests.Session()
-               # sender.post(url= self.dds_config["backend_address"]+"/users/"+msg.name+"/nfc", json= json.dumps(message), headers= headers, verify=False)
+            message={"nfc_code":msg.value }
+            headers =  {"Content-Type":"application/json"}
+            sender = requests.Session()
+            sender.post(url= self.dds_config["backend_address"]+"/users/"+msg.name+"/nfc", json= json.dumps(message), headers= headers, verify=False)
+        
+        
 
     def sent_drawer_state(self, msg):
-            status="closed"
-            if(msg.open):
-                status="opened"
-            
+        status="closed"
+        if(msg.open):
+            status="opened"
             message={"robot_name": msg.robot_name, "id":msg.module_id, "drawer_id":msg.drawer_it, "status":status }
             headers =  {"Content-Type":"application/json"}
             sender = requests.Session()
-           # sender.post(url= self.dds_config["backend_address"]+"/robots/modules/status", json= json.dumps(message), headers= headers, verify=False)
-        
+            sender.post(url= self.dds_config["backend_address"]+"/robots/modules/status", json= json.dumps(message), headers= headers, verify=False)
+       

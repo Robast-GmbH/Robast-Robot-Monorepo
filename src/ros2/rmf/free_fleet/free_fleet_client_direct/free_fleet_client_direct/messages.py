@@ -73,5 +73,4 @@ class FreeFleetData_SlideDrawerRequest(IdlStruct):
 
 @dataclass
 class FreeFleetData_Drawer_states():
-    
-    
+   
