@@ -85,6 +85,7 @@ void loop()
   if (can_controller->is_message_available())
   {
     std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
+    led_strip::LedState target_led_state = led_strip::LedState{};
 
     if (received_message.has_value())
     {
@@ -105,6 +106,19 @@ void loop()
         case CAN_ID_DRAWER_LED:
           led_strip::add_led_strip_mode_to_queue(*received_message);
           led_strip::debug_prints_drawer_led(*received_message);
+          break;
+        case CAN_ID_LED_HEADER:
+          led_strip::initialize_led_states(received_message->get_can_signals().at(CAN_SIGNAL_NUM_OF_LEDS).get_data());
+          break;
+        case CAN_ID_SINGLE_LED_STATE:
+          target_led_state.red = received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_RED).get_data();
+          target_led_state.green = received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_GREEN).get_data();
+          target_led_state.blue = received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_BLUE).get_data();
+          target_led_state.brightness =
+            received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS).get_data();
+
+          led_strip::set_led_state(
+            target_led_state, received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_INDEX).get_data());
           break;
         default:
           debug_println("Received unsupported CAN message.");

@@ -71,6 +71,10 @@ namespace led_strip
 
   LedStrip led_strip = LedStrip(NUM_OF_LEDS, MIDDLE_LED, NUM_OF_LED_SHADOWS);
 
+  std::vector<LedState> led_states;
+  uint8_t num_of_leds = 0;   // this will be set by the LED_HEADER CAN message
+  bool all_led_states_set = false;
+
   CRGBArray<NUM_OF_LEDS> leds;
 
   hw_timer_t *fading_up_timer = NULL;
@@ -423,6 +427,22 @@ namespace led_strip
 
     led_init_mode();
     initialize_timer();
+  }
+
+  void initialize_led_states(uint8_t num_of_leds)
+  {
+    num_of_leds = num_of_leds;
+    all_led_states_set = false;
+    led_states.clear();
+  }
+
+  void set_led_state(LedState state, uint8_t index)
+  {
+    led_states[index] = state;
+    if (index == (num_of_leds - 1))
+    {
+      all_led_states_set = true;
+    }
   }
 
   void debug_prints_drawer_led(robast_can_msgs::CanMessage can_message)
