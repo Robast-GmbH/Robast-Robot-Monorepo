@@ -102,7 +102,7 @@ def get_close_drawer_interaction_json(db:Session, robot_name:str, drawer_id:int,
         if(robot=="robot"):
                 return robot
         
-        drawer= find_drawer_json(db,module_id,drawer_id, robot_name)
+        drawer= find_drawer_json(db,module_id, drawer_id, robot_name)
         if(drawer=="drawer"):
                 return drawer
         

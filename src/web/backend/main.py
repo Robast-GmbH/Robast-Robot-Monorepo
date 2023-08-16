@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 import yaml
 import uvicorn
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Body, HTTPException
+from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 import requests
 import helper as templates
@@ -220,7 +221,7 @@ def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(
 
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
-def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_user: list[int], owner:int, db: Session = Depends(get_db)):
+def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_user: list[int], owner:Annotated[int,Body()], db: Session = Depends(get_db)):
     
     nfc_codes=[]
     if(len(restricted_for_user)>0):
@@ -250,8 +251,8 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
 
 # close_drawer
 @app.post("/robots/{robot_name}/modules/close")
-def close_drawer( robot_name: str, module: schemas.Drawer , db: Session = Depends(get_db)):
-        message=templates.get_close_drawer_interaction_json(db, robot_name,module.id,module.module_id, module.is_edrawer)
+def close_drawer( robot_name: str, module: schemas.BaseDrawer , db: Session = Depends(get_db)):
+        message=templates.get_close_drawer_interaction_json(db, robot_name, module.drawer_id, module.module_id, module.is_edrawer)
     
         headers =  {"Content-Type":"application/json"}
         sender = requests.Session()
