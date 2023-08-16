@@ -45,7 +45,7 @@ def addRobot(robot_name:str, fleet_name:str, x:float, y:float, yaw:float, db:Ses
         return
 
 def addDrawer( robot_name:str, module_id:int, drawer_id:int, position:int, type:models.DrawerSlideTypes, size:int, e_drawer:bool, db:Session):
-        db_drawer = models.Module(drawer_id= drawer_id, module_id= module_id, position= position, status="", type= type, size= size, robot_name= robot_name,is_edrawer=e_drawer )
+        db_drawer = models.Module(drawer_id= drawer_id, module_id= module_id, position= position, status="closed", type= type, size= size, robot_name= robot_name,is_edrawer=e_drawer )
         db.add(db_drawer)
         db.commit()
         db.refresh(db_drawer)
