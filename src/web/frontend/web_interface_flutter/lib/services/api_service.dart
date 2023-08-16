@@ -24,22 +24,53 @@ class APIService {
   }
 
   static Future<int> postTask({
+    required String taskID,
     required int ownerID,
-    required int targetID,
+    required String targetUser,
     required int moduleID,
     required int drawerID,
     required double xPose,
     required double yPose,
     required double yawPose,
+    required String fleetName,
+    required String robotName,
   }) async {
     final data = <String, dynamic>{
-      "owner_id": ownerID,
-      "target_id": targetID,
-      "module_id": moduleID,
-      "drawer_id": drawerID,
-      "x_pose": xPose,
-      "y_pose": yPose,
-      "yaw_pose": yawPose
+      "task": {
+        "task_id": taskID,
+        "actions": [
+          {
+            "step": 0,
+            "type": "OPEN_DRAWER",
+            "action": {
+              "drawer_id": drawerID,
+              "module_id": moduleID,
+              "locked_for": [targetUser],
+            },
+          },
+          {
+            "step": 1,
+            "type": "MOVE",
+            "action": {
+              "pose": {"x": xPose, "y": yPose, "z": 0},
+              "orientation": yawPose,
+            },
+          },
+          {
+            "step": 2,
+            "type": "OPEN_DRAWER",
+            "action": {
+              "drawer_id": drawerID,
+              "module_id": moduleID,
+              "locked_for": [],
+            },
+          },
+        ],
+      },
+      "robot": {
+        "fleet_name": fleetName,
+        "robot_name": robotName,
+      },
     };
     final headers = {
       'accept': 'application/json',
@@ -126,6 +157,7 @@ class APIService {
         "module_id": moduleID,
         "drawer_id": drawerID,
       },
+      "owner": 1,
       "restricted_for_user": [],
     };
     final headers = {
@@ -134,7 +166,7 @@ class APIService {
     };
     try {
       await http.post(
-        Uri.parse("$baseURL:$port/robots/$robotName/modules/open?owner=1"),
+        Uri.parse("$baseURL:$port/robots/$robotName/modules/open"),
         headers: headers,
         body: jsonEncode(data),
       );

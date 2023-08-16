@@ -121,16 +121,19 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
             return;
           }
           final ownerID = robotProvider.users.firstWhere((element) => element.fullName == sender).id;
-          final targetID = robotProvider.users.firstWhere((element) => element.fullName == receiver).id;
+          final targetUserName = robotProvider.users.firstWhere((element) => element.fullName == receiver).fullName;
 
           APIService.postTask(
+            taskID: 0.toString(),
             ownerID: ownerID,
-            targetID: targetID,
+            targetUser: targetUserName,
             moduleID: widget.moduleID,
             drawerID: widget.drawerID,
             xPose: widget.targetPosition.dx,
             yPose: widget.targetPosition.dy,
             yawPose: 0,
+            robotName: "RB0",
+            fleetName: "ROBAST",
           );
           Navigator.pop(context);
           Navigator.pop(context);
