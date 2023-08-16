@@ -110,4 +110,21 @@ def get_close_drawer_interaction_json(db:Session, robot_name:str, drawer_id:int,
         message={"robot":robot, "drawer_id":drawer_id, "module_id":module_id, "e:drawer":e_drawer}
         return message
 
-#def create_task(Fleet_name):
+def create_task(db:Session, robot_name:str,task_id:int, action:list):
+        robot= find_robot_json(db, robot_name)
+        if(robot=="robot"):
+                return robot
+        message={"robot":robot, "task_id": task_id, "action": action}
+        return message
+
+def create_drawer_action(step:int, drawer_id:int, module_id:int, is_edrawer:bool, locked_for:list[str]):
+        message={"step":step,"type": "OPEN_DRAWER","action":{"id":drawer_id, "module_id":module_id, "is_edrawer":is_edrawer,"locked_for":locked_for}}
+        return message
+
+def create_move_action(step:int, x:float, y:float, yaw:float):
+        message={"step":step, "type":"MOVE","action":{ "pose": {"x":x, "y":y, "z":0.0 },"orientation": yaw} }
+        return message
+
+def create_new_user(step:int, user_id: int):
+        message={"step":step,"type":"NEW_USER", "user_id": user_id}
+        return message
