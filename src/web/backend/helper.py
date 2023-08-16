@@ -81,14 +81,14 @@ def find_drawer_json(db:Session,module_id:int,drawer_id:int , robot_name:str, nf
 
         if db_module is None:
                 return "module"
-        return json_drawer(module_id=db_module.id, id=db_module.drawer_id, is_edrawer= (db_module.type == schemas.DrawerSlideTypes.Electrical), nfc_codes=nfc_codes)
+        return json_drawer(module_id=db_module.module_id, id=db_module.drawer_id, is_edrawer= (db_module.type == schemas.DrawerSlideTypes.Electrical), nfc_codes=nfc_codes)
 
 def get_Drawer_interaction_json(db:Session, module, robot_name:str, nfc_codes:list[str]):
         robot= find_robot_json(db, robot_name)
         if(robot=="robot"):
                 return robot
         
-        drawer= find_drawer_json(db, module.id, module.drawer_id, robot_name= robot_name,nfc_codes= nfc_codes)
+        drawer= find_drawer_json(db, module.module_id, module.drawer_id, robot_name= robot_name,nfc_codes= nfc_codes)
         if(drawer=="drawer"):
                 return drawer
         
@@ -102,12 +102,12 @@ def get_close_drawer_interaction_json(db:Session, robot_name:str, drawer_id:int,
         if(robot=="robot"):
                 return robot
         
-        drawer= find_drawer_json(db,module_id, drawer_id, robot_name)
+        drawer= find_drawer_json(db,module_id, drawer_id, robot_name,[])
         if(drawer=="drawer"):
                 return drawer
         
         
-        message={"robot":robot, "drawer_id":drawer_id, "module_id":module_id, "e:drawer":e_drawer}
+        message={"robot":robot, "drawer_id":drawer_id, "module_id":module_id, "e_drawer":e_drawer}
         return message
 
 def create_task(db:Session, robot_name:str,task_id:int, action:list):

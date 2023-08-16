@@ -126,7 +126,7 @@ def read_task(task_id: int, db: Session = Depends(get_db)):
 
 @app.post("/tasks/")
 def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Session = Depends(get_db)):
-    task_id= crud.create_task(db=db,robot_name= robot.robot_name, owner_id= user_id)
+    task_id= crud.create_task(db=db,robot_name= robot.robot_name, fleet_name=robot.fleet_name, owner_id= user_id)
     for action in task.actions:
         if( action.type== schemas.ActionType.MOVE):
             crud.create_move_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.orientation)
@@ -252,8 +252,11 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
 # close_drawer
 @app.post("/robots/{robot_name}/modules/close")
 def close_drawer( robot_name: str, module: schemas.BaseDrawer , db: Session = Depends(get_db)):
-        message=templates.get_close_drawer_interaction_json(db, robot_name, module.drawer_id, module.module_id, module.is_edrawer)
-    
+        db_module= crud.get_module(db, module.module_id, module.drawer_id)
+        if db_module is None:
+            raise HTTPException(status_code=404, detail="module not found" )
+        message=templates.get_close_drawer_interaction_json(db, robot_name, module.drawer_id, module.module_id, db_module.is_edrawer)
+        print(message)
         headers =  {"Content-Type":"application/json"}
         sender = requests.Session()
         answer  =sender.post(url= config["fleetmangement_address"]+"/settings/drawer/close", data= json.dumps(message),headers= headers)

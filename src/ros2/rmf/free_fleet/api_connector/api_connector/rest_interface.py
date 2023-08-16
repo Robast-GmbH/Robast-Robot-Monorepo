@@ -2,7 +2,8 @@
 import uvicorn
 from . import schemas
 
-from fastapi import FastAPI , HTTPException
+from fastapi import FastAPI , HTTPException,Body
+from typing_extensions import Annotated
 import requests
 import json
 
@@ -42,9 +43,9 @@ class RestInterface():
             return  
         
         @self.app.post("/settings/drawer/close")
-        def close_drawer(robot:schemas.Robot, drawer_id:int, module_id:int, e_drawer:bool):
+        def close_drawer(robot:schemas.Robot, drawer_id:Annotated[int,Body()], module_id:Annotated[int,Body()], e_drawer:Annotated[bool,Body()]):
             if e_drawer:
-                self.ros_node.handle_setting_request("drawer", str(module_id))
+                self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name,"drawer",str(module_id) )
             else:
                     raise HTTPException(status_code=404, detail="drawer not found")
         
