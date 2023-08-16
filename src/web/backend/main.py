@@ -61,10 +61,10 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @app.post("/users/nfc")
 def add_nfc_code_to_user(user: schemas.User, db: Session = Depends(get_db)):
-    message={"user_id":user.id}
-    headers =  {"Content-Type":"application/json"}
-    sender = requests.Session()
-    answer  =sender.post(url= config["fleetmangement_address"]+"/setting/user", json= json.dumps(message), headers= headers, verify=False)
+    # message={"user_id":user.id}
+    # headers =  {"Content-Type":"application/json"}
+    # sender = requests.Session()
+    # answer  =sender.post(url= config["fleetmangement_address"]+"/setting/user", json= json.dumps(message), headers= headers, verify=False)
     return 
 
 @app.post("/users/{user_id}/nfc")
@@ -98,45 +98,44 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     if(not crud.delete_user(db = db, user_id = user_id)):
         raise HTTPException(status_code=404, detail="User not found")
     
+
+
 #task
 @app.get("/tasks/", response_model=List[schemas.Task])
 def get_task_queue( db: Session = Depends(get_db)):
     db_tasks = crud.get_tasks_queue(db)
-    
+    #todo
     if len(db_tasks) ==0:
+            
             return[]
     return db_tasks
 
-@app.get("/tasks/{task_id}", response_model=schemas.Task)
+@app.get("/tasks/{task_id}", response_model=schemas.ActiveTask)
 def read_task(task_id: int, db: Session = Depends(get_db)):
     db_task = crud.get_task(db, task_id=task_id)
     if db_task is None:
         raise HTTPException(status_code=404, detail="task not found")
     return db_task
 
-@app.post("/tasks/", response_model=schemas.Task)
-def create_task(task: schemas.CreateTask, db: Session = Depends(get_db)):
+@app.post("/tasks/")
+def create_task(task: schemas.Task, db: Session = Depends(get_db)):
     db_task= crud.create_task(db=db, task=task, owner_id= None)
-    db_task= None
+    #todo
     if db_task is None:
         raise HTTPException(status_code=404, detail="task not found")
-    for action in task.actions:
-        if action.type=="move":
-            move_robot( "RB0", action.x_pose, action.y_pose, action.yaw_pose, db)
-        elif action.type=="drawer":
-            open_drawer( "RB0", schemas.ModuleBase(id= action.id, drawer_id= action.drawer_id), [], db)
-    return db_task
-  
-
+    return 
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
-def update_task( task_id:int, task: schemas.UpdateTask, db: Session = Depends(get_db)):
-    return crud.update_task(db=db, task_changes=task)
+def update_task( task_id:int, task: schemas.BaseTask, db: Session = Depends(get_db)):#check
+    return crud.update_task(db=db, task_changes=task)#task
 
-@app.delete("/tasks/{task_id}")
-def abort_task(task_id: int, db: Session = Depends(get_db)):
-    if(not crud.delete_task(db = db, task_id = task_id)):
-        raise HTTPException(status_code=404, detail="User not found")
+@app.post("/tasks/{task_id}/{step_id}")
+def update_task( task_id:int, step_id:int, step:schemas.Action, db: Session = Depends(get_db)):
+    # update the subtask
+    #set task to complete if all subtask are done
+    pass
+
+
 
 #robot
 @app.get("/robots", response_model =List[schemas.Robot])
@@ -150,14 +149,15 @@ def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
     return db_robot
 
 @app.put("/robots/pause_resume")
-def pause_robot(robot_name: str, pause: bool , db: Session = Depends(get_db)):
+def pause_robot(robot_name: str, fleet_name:str, pause: bool , db: Session = Depends(get_db)):
     headers = {"Content-Type":"application/json"}
     sender = requests.Session() 
+    message= {"robot_name":robot_name, "fleet_name":fleet_name}
     
     if(pause):
-        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/move/pause", headers= headers, verify=False)
+        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/move/pause",json= json.dumps(message), headers= headers, verify=False)
     else:
-        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/move/resume", headers= headers, verify=False)
+        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/move/resume",json= json.dumps(message), headers= headers, verify=False)
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -170,17 +170,20 @@ def set_robot(robot: schemas.Robot, db: Session = Depends(get_db)):
 
 @app.put("/robots/{robot_name}/move")
 def move_robot( robot_name: str, x: float, y: float, yaw: float, db: Session = Depends(get_db)):
-    db_robot= crud.get_robot(db=db, robot_name=robot_name)
-    if db_robot is None:
-        raise HTTPException(status_code=404, detail="robot not found")
-    robot= templates.json_robot(fleet_name=db_robot.fleet_name, robot_name=db_robot.robot_name)
-    waypoint= templates.json_waypoint(x=x,y=y,z=0,yaw=yaw)
+    pass
+    # db_robot= crud.get_robot(db=db, robot_name=robot_name)
+    # if db_robot is None:
+    #     raise HTTPException(status_code=404, detail="robot not found")
+    # robot= templates.json_robot(fleet_name=db_robot.fleet_name, robot_name=db_robot.robot_name)
+    # waypoint= templates.json_waypoint(x=x,y=y,z=0,yaw=yaw)
 
-    message={"robot":robot, "waypoint":waypoint}
-    headers =  {"Content-Type":"application/json"}
-    sender = requests.Session()
-    answer  =sender.post(url= config["fleetmangement_address"]+"/move", json= json.dumps(message), headers= headers, verify=False)
-    return answer.status_code
+    # message={"robot":robot, "waypoint":waypoint}
+    # headers =  {"Content-Type":"application/json"}
+    # sender = requests.Session()
+    # answer  =sender.post(url= config["fleetmangement_address"]+"/move", json= json.dumps(message), headers= headers, verify=False)
+    # return answer.status_code
+
+
 
 #Module
 @app.get("/robots/{robot_name}/modules/", response_model = List[schemas.Module])
@@ -203,56 +206,51 @@ def update_drawer_status(module: schemas.UpdateModule, db: Session = Depends(get
  
 # finish_using_drawers
 @app.post("/robots/{robot_name}/modules/completed")
-def drawer_actions_done( robot_name: str, db: Session = Depends(get_db)):
+def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(get_db)):
 
-    message= templates.get_drawer_action_completed_json(db=db, robot_name= robot_name)
+    message= {"robot_name":robot_name, "fleet_name":fleet_name}
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
-    answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/open", data= json.dumps(message), headers= headers, verify=False)
+    answer  =sender.post(url= config["fleetmangement_address"]+"/settings/drawer/completed", data= json.dumps(message), headers= headers, verify=False)
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
     return 
-
 
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
 def open_drawer( robot_name: str, module: schemas.ModuleBase, accessible_user_id: list[int], db: Session = Depends(get_db)):
-    nfc_codes=[]
-    if(len(accessible_user_id)>0):
-        for id in accessible_user_id:
-            nfc_code= crud.get_nfc_code(db=db, user_id=id)
-            nfc_codes.append(str(id)+":"+nfc_code)
+    pass
+    # nfc_codes=[]
+    # if(len(accessible_user_id)>0):
+    #     for id in accessible_user_id:
+    #         nfc_code= crud.get_nfc_code(db=db, user_id=id)
+    #         nfc_codes.append(str(id)+":"+nfc_code)
 
-    message = templates.get_Drawer_interaction_json(db, module, robot_name, nfc_codes)
-    if message == "robot":
-        raise HTTPException(status_code=404, detail="robot not found")
+    # message = templates.get_Drawer_interaction_json(db, module, robot_name, nfc_codes)
+    # if message == "robot":
+    #     raise HTTPException(status_code=404, detail="robot not found")
     
-    if message == "module":
-        raise HTTPException(status_code=404, detail="module not found")
+    # if message == "module":
+    #     raise HTTPException(status_code=404, detail="module not found")
     
 
-    headers =  {"Content-Type":"application/json"}
-    sender = requests.Session() 
-    answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/open", data= json.dumps(message), headers= headers, verify=False)
+    # headers =  {"Content-Type":"application/json"}
+    # sender = requests.Session() 
+    # answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/open", data= json.dumps(message), headers= headers, verify=False)
 
-    if answer.status_code!= 200:
-        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
-    return 
+    # if answer.status_code!= 200:
+    #     raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    # return 
 
 # close_drawer
 @app.post("/robots/{robot_name}/modules/close")
-def close_drawer( robot_name: str, module: schemas.ModuleBase , db: Session = Depends(get_db)):
-        message = templates.get_Drawer_interaction_json(db, module, robot_name, [])
-        if message == "robot":
-            raise HTTPException(status_code=404, detail="robot not found")
-    
-        if message == "module":
-            raise HTTPException(status_code=404, detail="module not found")
+def close_drawer( robot_name: str, module: schemas.Drawer , db: Session = Depends(get_db)):
+        message=templates.get_close_drawer_interaction_json(db, robot_name,module.id,module.module_id, module.is_edrawer)
     
         headers =  {"Content-Type":"application/json"}
         sender = requests.Session()
-        answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/close", data= json.dumps(message),headers= headers)
+        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/drawer/close", data= json.dumps(message),headers= headers)
 
         if answer.status_code!= 200:
             raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -261,3 +259,4 @@ def close_drawer( robot_name: str, module: schemas.ModuleBase , db: Session = De
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port= config['restapi_port'])
    
+

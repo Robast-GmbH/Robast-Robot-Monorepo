@@ -60,6 +60,11 @@ class DrawerAction(Action):
     drawer_id= Column(Integer, ForeignKey('module.id'))
     module_id= Column(Integer,ForeignKey('module.drawer_id'))
 
+class newUserAction(Action):
+    _tablename__ = 'newuseraction'
+    __mapper_args__ = {'polymorphic_identity': 'newuser'}
+    user_id= Column(Integer, ForeignKey('user.id'))
+
 class Module(Base):
     __tablename__ = "module"
     id = Column(Integer)
@@ -79,5 +84,6 @@ class Robot(Base):
     y_pose = Column(Float)
     yaw_pose = Column(Float)
     task_id = Column(Integer)
+
 
     

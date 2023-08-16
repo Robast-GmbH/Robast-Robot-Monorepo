@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(ddsmessages)
+project(robast_dds_communicator)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -24,9 +24,9 @@ find_package(std_msgs REQUIRED)
 
 
 rosidl_generate_interfaces(${PROJECT_NAME}
- "msg/FreeFleetDataDrawerState.msg"
+ "msg/FreeFleetDataCreateNfcRequest.msg"
  "msg/FreeFleetDataDestinationRequest.msg"
- "msg/FreeFleetDataInfoState.msg"
+ "msg/FreeFleetDataDrawerRequest.msg"
  "msg/FreeFleetDataLocation.msg"
  "msg/FreeFleetDataModeParameter.msg"
  "msg/FreeFleetDataModeRequest.msg"
@@ -34,7 +34,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
  "msg/FreeFleetDataRobotMode.msg"
  "msg/FreeFleetDataRobotState.msg"
  "msg/FreeFleetDataSettingRequest.msg"
- "msg/FreeFleetDataSlideDrawerRequest.msg"
+ "msg/FreeFleetDataTaskState.msg"
 
   DEPENDENCIES builtin_interfaces geometry_msgs std_msgs nav_msgs
 )

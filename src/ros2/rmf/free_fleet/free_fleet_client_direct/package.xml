@@ -12,7 +12,7 @@
   <exec_depend>navigation2</exec_depend>
   <exec_depend>nav2_simple_commander</exec_depend>
   <exec_depend>communication_interfaces</exec_depend>
-  <exec_depend>ddsmessages</exec_depend>
+  <exec_depend>robast_dds_communicator</exec_depend>
 
   <test_depend>ament_copyright</test_depend>
   <test_depend>ament_flake8</test_depend>
