@@ -16,7 +16,7 @@ class Robot(BaseModel):
     robot_name: str
 
 class Drawer(BaseModel):
-    id: int
+    drawer_id: int
     module_id: int
     is_edrawer: bool
     

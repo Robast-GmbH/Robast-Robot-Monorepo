@@ -81,7 +81,7 @@ def get_task(db:Session, task_id:int):
     return db.query(models.Task).filter(models.Task.id==task_id).first()
 
 
-def create_task(db:Session, robot_name:str, fleet_name:str, owner_id :int)->schemas.BaseTask: 
+def create_task(db:Session, robot_name:str, fleet_name:str, owner_id :int)->int: 
     db_task= models.Task(owner_id= owner_id, robot_name=robot_name, fleet_name=fleet_name)
     db.add(db_task)
     db.commit()
