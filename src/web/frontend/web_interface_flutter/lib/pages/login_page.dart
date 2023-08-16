@@ -23,7 +23,6 @@ class _LoginPageState extends State<LoginPage> {
               child: TextFormField(
                 decoration: const InputDecoration(
                   icon: Icon(Icons.person),
-                  hintText: 'What do people call you?',
                   labelText: 'Name',
                 ),
                 controller: nameController,
@@ -34,8 +33,7 @@ class _LoginPageState extends State<LoginPage> {
               child: TextFormField(
                 decoration: const InputDecoration(
                   icon: Icon(Icons.lock),
-                  hintText: 'What is your secret?',
-                  labelText: 'Password',
+                  labelText: 'Passwort',
                 ),
                 controller: passwordController,
                 obscureText: true,
