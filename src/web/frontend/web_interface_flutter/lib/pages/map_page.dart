@@ -64,10 +64,6 @@ class _MapPageState extends State<MapPage> with RouteAware {
     refreshTimer.cancel();
   }
 
-  Offset scalePoint(Offset point, double scale) {
-    return Offset(point.dx * scale, point.dy * scale);
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -124,9 +120,7 @@ class _MapPageState extends State<MapPage> with RouteAware {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => DrawerSelectionPage(
-                  targetPosition: scalePoint(controller.position!, currentMapScale),
-                ),
+                builder: (context) => DrawerSelectionPage(targetPosition: controller.getScaledPoint(currentMapScale)),
               ),
             );
           } else {
