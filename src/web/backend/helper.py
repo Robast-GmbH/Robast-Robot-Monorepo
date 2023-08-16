@@ -76,19 +76,19 @@ def find_robot_json(db:Session, robot_name):
                 return "robot"
         return json_robot(robot_name=db_robot.fleet_name, fleet_name=db_robot.fleet_name)
 
-def find_drawer_json(db:Session, module, robot_name:str, nfc_codes:list[str]):
-        db_module= crud.get_drawer(db=db, module_id=module.id, drawer_id= module.drawer_id, robot_name=robot_name )
+def find_drawer_json(db:Session,module_id:int,drawer_id:int , robot_name:str, nfc_codes:list[str]):
+        db_module= crud.get_drawer(db=db, module_id= module_id, drawer_id= drawer_id, robot_name=robot_name )
 
         if db_module is None:
                 return "module"
-        return json_drawer(module_id=db_module.id, id=db_module.drawer_id, is_edrawer= db_module.type == schemas.DrawerSlideTypes.Electrical, nfc_codes=nfc_codes)
+        return json_drawer(module_id=db_module.id, id=db_module.drawer_id, is_edrawer= (db_module.type == schemas.DrawerSlideTypes.Electrical), nfc_codes=nfc_codes)
 
 def get_Drawer_interaction_json(db:Session, module, robot_name:str, nfc_codes:list[str]):
         robot= find_robot_json(db, robot_name)
         if(robot=="robot"):
                 return robot
         
-        drawer= find_drawer_json(db, module, robot_name= robot_name,nfc_codes= nfc_codes)
+        drawer= find_drawer_json(db, module.id, module.drawer_id, robot_name= robot_name,nfc_codes= nfc_codes)
         if(drawer=="drawer"):
                 return drawer
         
@@ -96,11 +96,35 @@ def get_Drawer_interaction_json(db:Session, module, robot_name:str, nfc_codes:li
         message={"drawer":drawer, "robot":robot}
         return message
 
-def get_drawer_action_completed_json( db:Session, robot_name:str)-> dict:
+
+def get_close_drawer_interaction_json(db:Session, robot_name:str, drawer_id:int,module_id:int, e_drawer:bool):
         robot= find_robot_json(db, robot_name)
         if(robot=="robot"):
                 return robot
         
-        drawer =json_drawer(-1, -1, False,[])
-        message={"drawer":drawer, "robot":robot}
+        drawer= find_drawer_json(db,module_id,drawer_id, robot_name)
+        if(drawer=="drawer"):
+                return drawer
+        
+        
+        message={"robot":robot, "drawer_id":drawer_id, "module_id":module_id, "e:drawer":e_drawer}
+        return message
+
+def create_task(db:Session, robot_name:str,task_id:int, action:list):
+        robot= find_robot_json(db, robot_name)
+        if(robot=="robot"):
+                return robot
+        message={"robot":robot, "task_id": task_id, "action": action}
+        return message
+
+def create_drawer_action(step:int, drawer_id:int, module_id:int, is_edrawer:bool, locked_for:list[str]):
+        message={"step":step,"type": "OPEN_DRAWER","action":{"id":drawer_id, "module_id":module_id, "is_edrawer":is_edrawer,"locked_for":locked_for}}
+        return message
+
+def create_move_action(step:int, x:float, y:float, yaw:float):
+        message={"step":step, "type":"MOVE","action":{ "pose": {"x":x, "y":y, "z":0.0 },"orientation": yaw} }
+        return message
+
+def create_new_user(step:int, user_id: int):
+        message={"step":step,"type":"NEW_USER", "user_id": user_id}
         return message

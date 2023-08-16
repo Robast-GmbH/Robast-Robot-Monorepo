@@ -7,5 +7,8 @@
             <Peer Address="127.0.0.1" /></Peers>
             <MaxAutoParticipantIndex>50</MaxAutoParticipantIndex>
         </Discovery>
+        <General>
+            <AllowMulticast>spdp</AllowMulticast>
+        </General>
     </Domain>
 </CycloneDDS>

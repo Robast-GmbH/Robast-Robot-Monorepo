@@ -68,8 +68,6 @@ def delete_user(db: Session, user_id: int):
     db.commit()
     return True
 
-
-
 #task management
 def get_tasks(db: Session):
     return db.query(models.Task).filter().all()
@@ -79,39 +77,45 @@ def get_tasks_queue(db:Session):
     return db.query(models.Task).filter(models.Task.id.in_(subquery)).order_by(models.Task.id).all()
 
 
-def get_task(db:Session, task_id:int):
+def get_task(db:Session, task_id:int): 
     return db.query(models.Task).filter(models.Task.id==task_id).first()
 
-def create_task(db:Session, task: schemas.CreateTask, owner_id :int)->schemas.Task:
-    db_task= models.Task(owner_id= owner_id)
+
+def create_task(db:Session, robot_name:str, fleet_name:str, owner_id :int)->schemas.BaseTask: 
+    db_task= models.Task(owner_id= owner_id, robot_name=robot_name, fleet_name=fleet_name)
     db.add(db_task)
     db.commit()
     db.refresh(db_task)
-    
-    position=0
-    for action in task.actions:
-        position+=1
-        if action.type== 'move':
-            db_action= models.MoveAction(finished=False, position=position, task_id=db_task.id, x_pose=action.x_pose, y_pose= action.y_pose, yaw= action.yaw_pose)
-        elif action.type =='drawer':
-            db_action = models.DrawerAction(finished= False, position= position, task_id= db_task.id, target_user_id= action.target_id, drawer_id=action.drawer_id, module_id= action.module_id)
-        db.add(db_action)
-        db.commit()
-        db.refresh(db_action)
-    return db_task
+    return db_task.id
 
-
-def update_task(db:Session, task_changes: schemas.UpdateTask)->models.Task:
-    db_task = get_task(db=db, id = task_changes.id )
-    db_task.robot_name = task_changes.robot_name
-    db_task.fleet_name = task_changes.fleet_name
+def update_task(db:Session, id, robot_name:str, fleet_name:str )->models.Task:
+    db_task = get_task(db=db, id = id )
+    db_task.robot_name = robot_name
+    db_task.fleet_name = fleet_name
     db.flush()
     db.commit()
     db.refresh(db_task)
     
-    for action in task_changes.actions:
-        update_action(db, action)
-    return db_task
+def create_drawer_action(db: Session,step:int, task_id, module_id:int, drawer_id:int):
+    db_action= models.DrawerAction(task_id=task_id,finished= False, position=step,drawer_id=drawer_id, module_id=module_id) 
+    db.add(db_action)
+    db.commit()
+    db.refresh(db_action)
+    return db_action
+
+def create_move_action(db:Session, step:int, task_id,x:float,y:float,yaw:float):
+    db_action= models.MoveAction(task_id=task_id, finished= False, position=step, x_pose=x, y_pose=y, yaw_pose=yaw) 
+    db.add(db_action)
+    db.commit()
+    db.refresh(db_action)
+    return db_action
+
+def create_new_user_nfc(db:Session, step:int, task_id, user_id:int ):
+    db_action= models.newUserAction(task_id=task_id, finished= False, position=step, user_id= user_id) 
+    db.add(db_action)
+    db.commit()
+    db.refresh(db_action)
+    return db_action
 
 def get_actions_of_task(db:Session, task_id:int)->[models.Action]:
     db_actions= db.query(models.Action).filter(models.Action.task_id==task_id).order_by(models.Action.position).all
@@ -127,7 +131,6 @@ def abort_task(db:Session, task_id:int):
     db.flush()
     db.commit()
     db.refresh(db_task)
-
 
 #robot
 def get_robots(db:Session, skip: int = 0, limit: int = 100)->[models.Robot]:
@@ -193,6 +196,16 @@ def set_module(db:Session, module: schemas.Module)-> models.Module:
         db_module.robot_name = module.robot_name
         db_module.size= int(module.size)
         db_module.position= module.position
+        db_module.status= module.status
+    db.commit()
+    db.refresh(db_module)
+    return db_module
+
+def set_module_status(db:Session,module:schemas.UpdateModule)->models.Module:
+    db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.id, drawer_id = module.drawer_id)
+    if(db_module is None):
+        return 
+    else:
         db_module.status= module.status
     db.commit()
     db.refresh(db_module)

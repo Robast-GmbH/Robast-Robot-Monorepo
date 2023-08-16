@@ -1,4 +1,4 @@
-FROM ros:humble-ros-base-jammy
+FROM ros:humble-ros-base-jammy as devel
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
@@ -28,8 +28,59 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt install ros-${ROS_DISTRO}-ros2-socketcan -y
 
-RUN pip3 install fastapi -U \
+#TODO: @unknown should web stff be realy part of this project?
+RUN pip3 install fastapi -U \ 
   httpx 
 
 ENV ROS_DOMAIN_ID=0
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+# dds setup / configuration
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
+
+
+############################## Build ##################################
+FROM ros:humble-ros-base-jammy as build
+ARG GIT_TOKEN
+ARG GIT_BRANCH=dev/hagen
+COPY --from=devel / /
+COPY . /ws/src/hardware_nodes
+RUN apt-get update && apt-get install -y git
+
+
+WORKDIR /tmp
+RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+
+
+WORKDIR /ws
+RUN mkdir -p /ws/src/ros2/ && mkdir /robast\
+  && mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
+  && mv /tmp/Monorepo/src/ros2/error_handling /ws/src/ros2/error_handling \
+  && mv /tmp/Monorepo/libs ws/ \
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
+
+RUN rosdep update && \
+  rosdep install --from-paths /ws/src --ignore-src -r -y && \
+  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  colcon build --install-base /robast/${ROS_DISTRO}/
+
+############################## Release ##################################
+FROM ros:humble-ros-base-jammy as hagen
+
+COPY --from=build /opt/ros /opt/ros
+COPY --from=build /robast /robast
+
+RUN apt-get update && apt-get upgrade -y &&\
+    apt-get install -y \
+    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+    ros-${ROS_DISTRO}-ros2-socketcan \
+    libboost-all-dev
+
+ENV ROS_DOMAIN_ID=0
+# dds setup / configuration
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
+
+RUN apt-get update \
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc

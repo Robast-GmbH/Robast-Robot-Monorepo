@@ -2,6 +2,7 @@ from typing import List, Optional, Any
 from enum import Enum
 import yaml
 from pydantic import BaseModel
+from typing import Union
 
 class TaskTypes(str, Enum):
     Delivery = "Delivery"
@@ -12,50 +13,55 @@ class DrawerSlideTypes(str, Enum):
     Manual = "Manual"
     Electrical = "Electrical"
 
-#Task
-class BaseAction(BaseModel):
-    type: str
-    position:int
-    finished: bool
+# Task
+class Pose(BaseModel):
+    x:  float
+    y:  float
+    z:  float
 
-class Action(BaseAction):
-    id: int
+class Waypoint(BaseModel):
+    pose: Pose
+    orientation: float
 
-class MoveAction(Action):
-    x_pose: float
-    y_pose: float
-    yaw_pose: float
+class Robot(BaseModel):
+    fleet_name: str
+    robot_name: str
 
-class DrawerActon(Action):
-    target_id :int
-    drawer_id :int
-    module_id :int
+class ActionType(str, Enum):
+    OPEN_DRAWER = 'OPEN_DRAWER'
+    MOVE = 'MOVE'
+    NEW_USER = 'NEW_USER'
 
-class CreateAction(MoveAction):
-    target_id :int
-    drawer_id :int
-    module_id :int
+class Drawer(BaseModel):
+    drawer_id: int
+    module_id: int
+    is_edrawer: bool
 
-class Task(BaseModel):
-    id :int
-    robot_name :str
-    fleet_name  :str
+class DrawerAction(Drawer):
+    locked_for: list[str]
+
+class NewUser(BaseModel):
+    user_id: int
+
+class Action(BaseModel):
+    step:int
+    type: ActionType
+    action: Union[DrawerAction, Waypoint, NewUser]
+
+class BaseTask(BaseModel):
+    task_id:str
+
+class Task(BaseTask):
+    actions:list[Action]
+
+class ActiveTask(Task):
     current_action : int
-    owner_id: int
-    actions:list[Action]
+    robot: Robot
 
-class CreateTask(BaseModel):
-    owner_id: int
-    actions:list[Action]
-
-class UpdateTask(BaseModel):
-    id: int
-    current_action: int
-    actions: list[Action]
 
 #Drawer
 class ModuleBase(BaseModel):
-    id:int
+    module_id:int
     drawer_id:int
 
   
@@ -68,6 +74,10 @@ class Module(ModuleBase):
     
     class Config:
         orm_mode = True
+
+class UpdateModule(ModuleBase):
+    robot_name: str    
+    status: str
 
 #User
 class UserBase(BaseModel):
@@ -86,7 +96,6 @@ class User(UserBase):
     is_active: bool
     admin: bool
     full_name: str
-    orders: List[Task] = []
 
     class Config:
         orm_mode = True
@@ -99,3 +108,4 @@ class Robot(BaseModel):
     x_pose:float
     y_pose: float
     yaw_pose: float
+

@@ -2,7 +2,7 @@
     "editor.formatOnSave": true,
     "editor.wordWrap": "on",
     "editor.wordWrapColumn": 120,
-    "editor.tabSize": 8,
+    "editor.tabSize": 4,
     "editor.rulers": [
         120
     ],
@@ -83,7 +83,13 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "*.ipp": "cpp",
-        "*.idl": "cpp"
+        "*.idl": "cpp",
+        "compare": "cpp",
+        "concepts": "cpp",
+        "forward_list": "cpp",
+        "numbers": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp"
     },
     // Autocomplete from ros python packages
     "python.autoComplete.extraPaths": [
@@ -97,12 +103,8 @@
         "--max-line-length=120"
     ],
     "C_Cpp.default.intelliSenseMode": "clang-x64",
-    "C_Cpp.formatting": "Disabled",
     "uncrustify.useReplaceOption": true,
-    "uncrustify.configPath.linux": "/opt/ros/humble/lib/python3.8/site-packages/ament_uncrustify/configuration/ament_code_style.cfg",
-    "[cpp]": {
-        "editor.defaultFormatter": "LaurentTreguier.uncrustify"
-    },
+
     "cSpell.words": [
         "athackst",
         "autopep",
@@ -131,12 +133,17 @@
         "**/log": true
     },
     "python.analysis.extraPaths": [
-        "/opt/ros/humble/lib/python3.8/site-packages/"
+        "/opt/ros/galactic/lib/python3.8/site-packages/"
     ],
     "[python]": {
         "editor.defaultFormatter": "ms-python.python"
     },
-    "C_Cpp.default.cppStandard": "c++20",
     "cmake.configureOnOpen": false,
-    "python.formatting.provider": "black"
+    "python.formatting.provider": "black",
+    "C_Cpp.default.cppStandard": "c++20",
+    "C_Cpp.formatting": "clangFormat", 
+    "C_Cpp.clang_format_style": "file", // formatting rules are defined in the .clang-format file
+    "[cpp]": {
+        "editor.tabSize": 2
+    },
 }

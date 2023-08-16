@@ -12,6 +12,21 @@
                         }
                 },
                 {
+                        "label": "run_ffserver",
+                        "detail": "starts the ff server called api_connector",
+                        "type": "shell",
+                        "command": "source install/setup.bash; ros2 launch api_connector web_api.launch.py",
+                        
+                },
+                {
+                        "label": "run_ffclient",
+                        "detail": "starts the ff client called free_fleet_client_direct",
+                        "type": "shell",
+                        "command": "source install/setup.bash; ros2 run free_fleet_client_direct client_direct",
+                        
+                },
+
+                {
                         "label": "clean-ros",
                         "detail": "Clean ros colcon build",
                         "type": "shell",

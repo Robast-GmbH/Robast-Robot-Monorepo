@@ -63,6 +63,9 @@ bt_navigator:
     - nav2_back_up_cancel_bt_node
     - nav2_assisted_teleop_cancel_bt_node
     - nav2_drive_on_heading_cancel_bt_node
+    - check_topic_state_condition_bt_node
+    - change_footprint_action_bt_node
+    - change_footprint_padding_action_bt_node
 
 bt_navigator_navigate_through_poses_rclcpp_node:
   ros__parameters:
@@ -96,7 +99,7 @@ controller_server:
       vy_std: 0.0
       wz_std: 0.4
       vx_max: 0.5
-      vx_min: 0.07
+      vx_min: -0.01
       vy_max: 0.0
       wz_max: 1.9
       iteration_count: 1
@@ -104,7 +107,7 @@ controller_server:
       transform_tolerance: 0.1
       temperature: 0.3
       gamma: 0.015
-      motion_model: "Ackermann"
+      motion_model: "DiffDrive"
       visualize: false
       reset_period: 1.0 # (only in Humble)
       TrajectoryVisualizer:
