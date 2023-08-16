@@ -17,13 +17,14 @@ class RestInterface():
         
         @self.app.post("/task")
         def do_task( task:schemas.Task):
+          
             for action in task.actions:
-                if action.type=="move":
-                    self.ros_node.handle_destination_request( task.robot.fleet_name, task.robot.robot_name, task.task_id+"#"+action.step, action.waypoint.pose.x, action.waypoint.y,action.orientation)
-                elif action.type=="drawer":
-                    self.ros_node.handle_slide_drawer_request( task.robot.fleet_name, task.robot.robot_name, task.task_id+"#"+action.step, action.drawer.module_id, action.drawer.drawer_id, action.drawer.locked_for, action.drawer.is_edrawer, action.drawer.open)
-                elif action.type=="NFC_generation":
-                    self.ros_node.handle_new_user_request( task.robot.fleet_name, task.robot.robot_name, task.task_id+"#"+action.step, action.new_user.user_id)
+                if action.type== schemas.ActionType.MOVE:
+                    self.ros_node.handle_destination_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.pose.x, action.action.y,action.action.orientation)
+                elif action.type== schemas.ActionType.OPEN_DRAWER:
+                    self.ros_node.handle_slide_drawer_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.module_id, action.action.drawer_id, action.action.locked_for, action.action.is_edrawer,True)
+                elif action.type== schemas.ActionType.NEW_USER:
+                    self.ros_node.handle_new_user_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.user_id)
             
         @self.app.post("/settings/move/pause")
         def pause_robot(robot:schemas.Robot):

@@ -57,7 +57,7 @@ class DrawerAction(Action):
     __mapper_args__ = {'polymorphic_identity': 'drawer'}
     id= Column(Integer, ForeignKey('action.id'), primary_key=True)
     target_user_id =Column(Integer)
-    drawer_id= Column(Integer, ForeignKey('module.id'))
+    drawer_id= Column(Integer, ForeignKey('module.module_id'))
     module_id= Column(Integer,ForeignKey('module.drawer_id'))
 
 class newUserAction(Action):
@@ -67,7 +67,7 @@ class newUserAction(Action):
 
 class Module(Base):
     __tablename__ = "module"
-    id = Column(Integer, primary_key=True)
+    module_id = Column(Integer, primary_key=True)
     drawer_id= Column(Integer, primary_key=True)
     position= Column(Integer)
     status= Column(String)

@@ -115,7 +115,8 @@ class free_fleet_client_direct(Node):
     
     #drawer request
     def slide_drawer_callback(self, msg:dds.FreeFleetDataDrawerRequest):
-        step= self.received_new_action(self, msg)
+        print("drawer recived")
+        step= self.received_new_action(msg)
         if step==1:
             self.step=1
             self.start_drawer_request(msg.fleet_name, msg.robot_name, msg.e_drawer, msg.restricted)
@@ -124,6 +125,7 @@ class free_fleet_client_direct(Node):
             self.drawer_requests.append(msg)
 
     def start_drawer_request(self, module_id:int, drawer_id:int, e_drawer:bool, restriction:[String]):
+        print("drawer open starting")
         user_restriction= next((s_drawer.locked_for for s_drawer in self.locked_drawers if  s_drawer.module_id == module_id and s_drawer.drawer_id== drawer_id),None) 
         if user_restriction is not None:
             user_name=self.perform_NFC_reading( user_restriction)
@@ -261,7 +263,7 @@ class free_fleet_client_direct(Node):
         robot_state.model=self.robot_model
         task_id=""
         if(self.task_id != ""):
-            task_id=self.task_id+"#"+self.step
+            task_id= str(self.task_id)+"#"+str(self.step)
         robot_state.task_id= task_id
         robot_state.mode=mode
         robot_state.battery_percent= battery
@@ -273,9 +275,6 @@ class free_fleet_client_direct(Node):
         task_state= dds.FreeFleetDataTaskState()
         
         task_state.task_id= self.task_id+"#"+self.step
-        if(task_state.step is None):
-            task_state.step=1
-
         task_state.status=status
         task_state.status_message= message
         task_state.completed= completed 

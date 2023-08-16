@@ -105,14 +105,12 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     if(not crud.delete_user(db = db, user_id = user_id)):
         raise HTTPException(status_code=404, detail="User not found")
-    
-
 
 #task
 @app.get("/tasks/", response_model=List[schemas.Task])
 def get_task_queue( db: Session = Depends(get_db)):
     db_tasks = crud.get_tasks_queue(db)
-    #todo
+    
     if len(db_tasks) ==0:
             
             return[]
@@ -126,11 +124,15 @@ def read_task(task_id: int, db: Session = Depends(get_db)):
     return db_task
 
 @app.post("/tasks/")
-def create_task(task: schemas.Task, db: Session = Depends(get_db)):
-    db_task= crud.create_task(db=db, task=task, owner_id= None)
-    #todo
-    if db_task is None:
-        raise HTTPException(status_code=404, detail="task not found")
+def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Session = Depends(get_db)):
+    task_id= crud.create_task(db=db,robot_name= robot.robot_name, owner_id= user_id)
+    for action in task.actions:
+        if( action.type== schemas.ActionType.MOVE):
+            crud.create_move_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.orientation)
+        elif(action.type== schemas.ActionType.OPEN_DRAWER):
+            crud.create_drawer_action(db, action.step,task_id, action.action.module_id, action.action.drawer_id)
+        elif(action.type== schemas.ActionType.NEW_USER):
+            crud.create_new_user_nfc(db, action.step, task_id, action.action.user_id)
     return 
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
@@ -218,7 +220,7 @@ def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(
 
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
-def open_drawer( robot_name: str, module: schemas.DrawerAction, accessible_user_id: list[int], owner:int, db: Session = Depends(get_db)):
+def open_drawer( robot_name: str, module: schemas.DrawerAction, restricted_for_user: list[int], owner:int, db: Session = Depends(get_db)):
     
     nfc_codes=[]
     if(len(accessible_user_id)>0):
