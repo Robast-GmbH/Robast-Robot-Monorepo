@@ -129,7 +129,7 @@ class APIService {
       'Content-Type': 'application/json',
     };
     try {
-      http.post(
+      await http.post(
         Uri.parse("$baseURL:$port/robots/$robotName/modules/open"),
         headers: headers,
         body: jsonEncode(data),
@@ -150,13 +150,35 @@ class APIService {
       'Content-Type': 'application/json',
     };
     try {
-      http.post(
+      await http.post(
         Uri.parse("$baseURL:$port/robots/$robotName/modules/close"),
         headers: headers,
         body: jsonEncode(data),
       );
     } catch (e) {
       print("Failed close drawer");
+      print(e);
+    }
+  }
+
+  static Future<void> moveRobot(String robotName, double x, double y, double yaw) async {
+    final headers = {
+      'accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    final data = <String, dynamic>{
+      "x": x,
+      "y": y,
+      "yaw": yaw,
+    };
+    try {
+      await http.put(
+        Uri.parse("$baseURL:$port/robots/$robotName/move"),
+        headers: headers,
+        body: jsonEncode(data),
+      );
+    } catch (e) {
+      print("Robot move failed");
       print(e);
     }
   }

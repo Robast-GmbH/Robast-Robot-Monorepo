@@ -13,8 +13,8 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-  final menuPoints = ["docker", "rosbag", "status", "log", "tasks", "API"];
-  final menuIcons = [Icons.settings, Icons.backpack, Icons.battery_5_bar, Icons.file_open, Icons.task, Icons.web];
+  final menuPoints = ["docker", "rosbag", "status", "log", "tasks", "API", "move"];
+  final menuIcons = [Icons.settings, Icons.backpack, Icons.battery_5_bar, Icons.file_open, Icons.task, Icons.web, Icons.directions_walk];
   final menuWidget = [
     const DockerOverview(),
     const RosbagOverview(),
@@ -22,6 +22,7 @@ class _AdminPageState extends State<AdminPage> {
     const SizedBox(),
     const TasksOverview(),
     const APIAddressInputField(),
+    const SizedBox(),
   ];
   int selectedIndex = 0;
   @override
