@@ -101,7 +101,6 @@ ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
-
 ############################## Build ##################################
 FROM ros:humble-ros-base-jammy as build
 ARG GIT_TOKEN
@@ -165,6 +164,15 @@ ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 RUN apt-get update \
   && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
+ENV is_simulation=False
+ENV config_directory=config
+ENV robot_name=rb_theron
+ENV init_x=1.46
+ENV init_y=-2.89
+ENV init_z=0.0
+ENV init_yaw=1.57
+ENV prefix=''
+
 ############################## DEBUG ##################################
 FROM ros:humble-ros-base-jammy as debug
 
@@ -201,3 +209,12 @@ ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
+
+ENV is_simulation=False
+ENV config_directory=config
+ENV robot_name=rb_theron
+ENV init_x=1.46
+ENV init_y=-2.89
+ENV init_z=0.0
+ENV init_yaw=1.57
+ENV prefix=''

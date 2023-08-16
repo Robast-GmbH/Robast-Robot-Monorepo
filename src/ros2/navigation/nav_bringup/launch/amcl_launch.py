@@ -10,20 +10,14 @@ from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
 
-    init_x = environment_yaml["init_x"]
-    init_y = environment_yaml["init_y"]
-    init_yaw = environment_yaml["init_yaw"]
-    config_directory = environment_yaml["config_directory"]
-    is_simulation = environment_yaml["is_simulation"]
+    init_x = os.environ["init_x"]
+    init_y = os.environ["init_y"]
+    init_yaw = os.environ["init_yaw"]
+    config_directory = os.environ["config_directory"]
+    is_simulation = os.environ["is_simulation"]
 
-    if is_simulation:
+    if is_simulation == "true":
         map_file_yaml = os.path.join(
             get_package_share_directory("nav_bringup"), "maps", "5OG", "5OG.yaml"
         )

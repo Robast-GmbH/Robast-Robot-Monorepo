@@ -10,13 +10,6 @@ from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
-
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
             
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -45,7 +38,7 @@ def generate_launch_description():
     )
 
     
-    if environment_yaml["is_simulation"]:
+    if os.environ["is_simulation"] == 'True':
         #TODO @all check how to rewrite a matrix parameter. In this case odom0
         use_sim_time_default = "true"
         param_substitutions = {
