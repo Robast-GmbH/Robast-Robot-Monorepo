@@ -32,12 +32,14 @@ class ActionType(str, Enum):
     MOVE = 'MOVE'
     NEW_USER = 'NEW_USER'
 
-class Drawer(BaseModel):
+class BaseDrawer(BaseModel):
     drawer_id: int
     module_id: int
+
+class Drawer(BaseDrawer):
     is_edrawer: bool
 
-class DrawerAction(Drawer):
+class DrawerAction(BaseDrawer):
     locked_for: list[str]
 
 class NewUser(BaseModel):
@@ -101,7 +103,7 @@ class User(UserBase):
         orm_mode = True
 
 #Robot
-class Robot(BaseModel):
+class Robot_status(BaseModel):
     robot_name: str
     fleet_name: str  
     task_id: int
