@@ -12,7 +12,7 @@ class TasksOverview extends StatefulWidget {
 class _TasksOverviewState extends State<TasksOverview> {
   @override
   Widget build(BuildContext context) {
-    final tasks = Provider.of<RobotProvider>(context).tasks.values.toList();
+    final tasks = Provider.of<RobotProvider>(context).tasks;
     return Padding(
       padding: const EdgeInsets.symmetric(
         horizontal: 8,
@@ -32,15 +32,15 @@ class _TasksOverviewState extends State<TasksOverview> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text("ID: ${tasks[index].id}"),
-                      Text("Robot: ${tasks[index].robotName}"),
-                      Text("Owner ID: ${tasks[index].ownerID}"),
-                      Text("Target ID: ${tasks[index].targetID}"),
-                      Text("Target x: ${tasks[index].xPose}"),
-                      Text("Target y: ${tasks[index].yPose}"),
-                      Text("Target yaw: ${tasks[index].yawPose}"),
-                      Text("Module ID: ${tasks[index].moduleID}"),
-                      Text("Drawer ID: ${tasks[index].drawerID}"),
-                      Text("Finished: ${tasks[index].finished}"),
+                      // Text("Robot: ${tasks[index].robotName}"),
+                      // Text("Owner ID: ${tasks[index].ownerID}"),
+                      // Text("Target ID: ${tasks[index].targetID}"),
+                      // Text("Target x: ${tasks[index].xPose}"),
+                      // Text("Target y: ${tasks[index].yPose}"),
+                      // Text("Target yaw: ${tasks[index].yawPose}"),
+                      // Text("Module ID: ${tasks[index].moduleID}"),
+                      // Text("Drawer ID: ${tasks[index].drawerID}"),
+                      // Text("Finished: ${tasks[index].finished}"),
                     ],
                   ),
                 ),
