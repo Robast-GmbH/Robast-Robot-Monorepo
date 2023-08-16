@@ -1,13 +1,7 @@
 {
 
-	"dockerFile": "../../../src/ros2/rmf/Dockerfile",
-	"name": "Robast rmf",
-	"build": {
-		"target": "base",
-		"args": {
-			"WORKSPACE": "${containerWorkspaceFolder}"
-		}
-	},
+	"image": "ghcr.io/robast-gmbh/monorepo/rmf:devel",
+	"remoteUser": "ubuntu",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/rmf/,target=/workspace/src/rmf,type=bind",
