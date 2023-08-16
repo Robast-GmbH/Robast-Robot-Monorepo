@@ -170,19 +170,19 @@ def set_robot(db:Session, robot:schemas.Robot):
 
 
 def get_modules(db: Session, robot_name: str)->[models.Module]:
-    return db.query(models.Module).filter(models.Module.robot_name== robot_name).all()
+    return db.query(models.Module).filter(robot_name== models.Module.robot_name ==robot_name).all()
 
 def get_module(db: Session, module_id: int)-> models.Module:
-    return db.query(models.Module).filter(models.Module.id == module_id).all()
+    return db.query(models.Module).filter(models.Module.module_id == module_id).all()
 
 def get_drawer(db: Session,robot_name:str, module_id: int, drawer_id: int)-> models.Module:
-    drawer= db.query(models.Module).filter(models.Module.robot_name ==robot_name, models.Module.id == module_id, models.Module.drawer_id== drawer_id).first()
+    drawer= db.query(models.Module).filter(models.Module.robot_name ==robot_name, models.Module.module_id == module_id, models.Module.drawer_id== drawer_id).first()
     return drawer
 
 def set_module(db:Session, module: schemas.Module)-> models.Module:
-    db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.id, drawer_id = module.drawer_id)
+    db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.module_id, drawer_id = module.drawer_id)
     if(db_module is None):
-        db_module = models.Module(id = module.id,
+        db_module = models.Module(id = module.module_id,
                                 drawer_id = module.drawer_id,
                                 type = module.type,
                                 robot_name = module.robot_name,
@@ -202,7 +202,7 @@ def set_module(db:Session, module: schemas.Module)-> models.Module:
     return db_module
 
 def set_module_status(db:Session,module:schemas.UpdateModule)->models.Module:
-    db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.id, drawer_id = module.drawer_id)
+    db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.module_id, drawer_id = module.drawer_id)
     if(db_module is None):
         return 
     else:
