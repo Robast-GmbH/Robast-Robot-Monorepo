@@ -33,7 +33,7 @@ class ActionType(str, Enum):
     NEW_USER = 'NEW_USER'
 
 class Drawer(BaseModel):
-    id: int
+    drawer_id: int
     module_id: int
     is_edrawer: bool
 
@@ -61,7 +61,7 @@ class ActiveTask(Task):
 
 #Drawer
 class ModuleBase(BaseModel):
-    id:int
+    module_id:int
     drawer_id:int
 
   

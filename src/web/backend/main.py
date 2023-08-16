@@ -60,12 +60,20 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 @app.post("/users/nfc")
-def add_nfc_code_to_user(user: schemas.User, db: Session = Depends(get_db)):
-    # message={"user_id":user.id}
-    # headers =  {"Content-Type":"application/json"}
-    # sender = requests.Session()
-    # answer  =sender.post(url= config["fleetmangement_address"]+"/setting/user", json= json.dumps(message), headers= headers, verify=False)
-    return 
+def add_nfc_code_to_user(user_id:int, robot_name:str, db: Session = Depends(get_db)):
+    db_robot = crud.get_robot(db=db, robot_name=robot_name)
+    task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, user_id)
+    step=1
+    db_action= crud.create_new_user_nfc(db, step, task_id,user_id )
+    action= templates.create_new_user(step, user_id= user_id)
+    task =templates.create_task(db,robot_name,task_id,[action])
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session() 
+    answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+
+    if answer.status_code!= 200:
+        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    return  
 
 @app.post("/users/{user_id}/nfc")
 def update_nfc_code(user_id:str, nfc_code:str, db: Session = Depends(get_db)):
@@ -129,14 +137,6 @@ def create_task(task: schemas.Task, db: Session = Depends(get_db)):
 def update_task( task_id:int, task: schemas.BaseTask, db: Session = Depends(get_db)):#check
     return crud.update_task(db=db, task_changes=task)#task
 
-@app.post("/tasks/{task_id}/{step_id}")
-def update_task( task_id:int, step_id:int, step:schemas.Action, db: Session = Depends(get_db)):
-    # update the subtask
-    #set task to complete if all subtask are done
-    pass
-
-
-
 #robot
 @app.get("/robots", response_model =List[schemas.Robot])
 def get_robots_status(db: Session = Depends(get_db)):
@@ -169,21 +169,20 @@ def set_robot(robot: schemas.Robot, db: Session = Depends(get_db)):
     return crud.set_robot(db=db, robot=robot)
 
 @app.put("/robots/{robot_name}/move")
-def move_robot( robot_name: str, x: float, y: float, yaw: float, db: Session = Depends(get_db)):
-    pass
-    # db_robot= crud.get_robot(db=db, robot_name=robot_name)
-    # if db_robot is None:
-    #     raise HTTPException(status_code=404, detail="robot not found")
-    # robot= templates.json_robot(fleet_name=db_robot.fleet_name, robot_name=db_robot.robot_name)
-    # waypoint= templates.json_waypoint(x=x,y=y,z=0,yaw=yaw)
+def move_robot( robot_name: str, x: float, y: float, yaw: float, owner_id:int, db: Session = Depends(get_db)):
+    db_robot= crud.get_robot(db=db, robot_name=robot_name)
+    task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner_id)
+    step=1
+    db_action= crud.create_move_action(db, step, task_id,x,y,yaw)
+    action= templates.create_move_action( step, x, y, yaw)
+    task =templates.create_task(db,robot_name,task_id,[action])
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session() 
+    answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
 
-    # message={"robot":robot, "waypoint":waypoint}
-    # headers =  {"Content-Type":"application/json"}
-    # sender = requests.Session()
-    # answer  =sender.post(url= config["fleetmangement_address"]+"/move", json= json.dumps(message), headers= headers, verify=False)
-    # return answer.status_code
-
-
+    if answer.status_code!= 200:
+        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    return 
 
 #Module
 @app.get("/robots/{robot_name}/modules/", response_model = List[schemas.Module])
@@ -219,29 +218,28 @@ def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(
 
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
-def open_drawer( robot_name: str, module: schemas.ModuleBase, accessible_user_id: list[int], db: Session = Depends(get_db)):
-    pass
-    # nfc_codes=[]
-    # if(len(accessible_user_id)>0):
-    #     for id in accessible_user_id:
-    #         nfc_code= crud.get_nfc_code(db=db, user_id=id)
-    #         nfc_codes.append(str(id)+":"+nfc_code)
-
-    # message = templates.get_Drawer_interaction_json(db, module, robot_name, nfc_codes)
-    # if message == "robot":
-    #     raise HTTPException(status_code=404, detail="robot not found")
+def open_drawer( robot_name: str, module: schemas.DrawerAction, accessible_user_id: list[int], owner:int, db: Session = Depends(get_db)):
     
-    # if message == "module":
-    #     raise HTTPException(status_code=404, detail="module not found")
-    
+    nfc_codes=[]
+    if(len(accessible_user_id)>0):
+        for id in accessible_user_id:
+            nfc_code= crud.get_nfc_code(db=db, user_id=id)
+            nfc_codes.append(str(id)+":"+nfc_code)
 
-    # headers =  {"Content-Type":"application/json"}
-    # sender = requests.Session() 
-    # answer  =sender.post(url= config["fleetmangement_address"]+"/drawer/open", data= json.dumps(message), headers= headers, verify=False)
+    db_robot = crud.get_robot(db=db, robot_name=robot_name)
+    task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner)
+    step=1
+    db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id)
+    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, module.is_edrawer, nfc_codes)
+    task =templates.create_task(db,robot_name,task_id,[action])
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session() 
+    answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
 
-    # if answer.status_code!= 200:
-    #     raise HTTPException(status_code=answer.status_code, detail= answer.reason)
-    # return 
+    if answer.status_code!= 200:
+        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    return 
+
 
 # close_drawer
 @app.post("/robots/{robot_name}/modules/close")
