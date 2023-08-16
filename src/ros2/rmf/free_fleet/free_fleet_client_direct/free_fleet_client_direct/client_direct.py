@@ -115,15 +115,15 @@ class free_fleet_client_direct(Node):
     
     #drawer request
     def slide_drawer_callback(self, msg:dds.FreeFleetDataDrawerRequest):
-        step= self.received_new_action(self, msg)
-        if step==1:
+        step= self.received_new_action(msg)
+       
+        if step=="1":
             self.step=1
-            self.start_drawer_request(msg.fleet_name, msg.robot_name, msg.e_drawer, msg.restricted)
-          
+            self.start_drawer_request(msg.fleet_name, msg.robot_name,msg.module_id,msg.drawer_id, msg.e_drawer, msg.restricted)
         else:
             self.drawer_requests.append(msg)
 
-    def start_drawer_request(self, module_id:int, drawer_id:int, e_drawer:bool, restriction:[String]):
+    def start_drawer_request(self,fleet_name:str, robot_name:str, module_id:int, drawer_id:int, e_drawer:bool, restriction:[String]):
         user_restriction= next((s_drawer.locked_for for s_drawer in self.locked_drawers if  s_drawer.module_id == module_id and s_drawer.drawer_id== drawer_id),None) 
         if user_restriction is not None:
             user_name=self.perform_NFC_reading( user_restriction)
@@ -131,23 +131,23 @@ class free_fleet_client_direct(Node):
                 return
             else: 
                 self.publish_task_state("Drawer", user_name, False)
-
-        self.set_drawer_lock(restriction)
-        self.open_drawer(module_id, drawer_id, e_drawer)
+        self.set_drawer_lock(module_id, drawer_id, restriction)
+        self.open_drawer( module_id=module_id, drawer_id= drawer_id, e_drawer= e_drawer)
         self.publish_task_state("Drawer", "Opened", False)
 
-    def open_drawer(self, module_id, drawer_id, e_drawer): 
+    def open_drawer(self, module_id:int, drawer_id:int, e_drawer:bool): 
         ros_msg = DrawerAddress()
-        ros_msg.module_id = module_id
-        ros_msg.drawer_id = drawer_id
-
-        drawer_change= drawer(module_id, drawer_id,{})
+        ros_msg.module_id = int(module_id)
+        ros_msg.drawer_id = int(drawer_id)
+        drawer_change= drawer(module_id, drawer_id,e_drawer,{})
         self.open_drawers.append(drawer_change)
 
         if(e_drawer):
             self.e_drawer_open_publisher.publish(ros_msg)
+            print("edrawer")
         else:
             self.drawer_publisher.publish(ros_msg)
+            print("drawer")
         
     def close_drawer(self,module_id, drawer_id, e_drawer):
         if(not e_drawer):
@@ -161,7 +161,7 @@ class free_fleet_client_direct(Node):
     def end_drawer_task(self):
         self.publish_task_state("Drawer", "Finished", True)
         
-    def set_drawer_lock(self, module_id, drawer_id, restriction):
+    def set_drawer_lock(self, module_id:int, drawer_id:int, restriction):
         if(len(restriction)>0):
             user_dict={}
             for user in restriction:
@@ -261,7 +261,7 @@ class free_fleet_client_direct(Node):
         robot_state.model=self.robot_model
         task_id=""
         if(self.task_id != ""):
-            task_id=self.task_id+"#"+self.step
+            task_id= str(self.task_id)+"#"+str(self.step)
         robot_state.task_id= task_id
         robot_state.mode=mode
         robot_state.battery_percent= battery
@@ -272,10 +272,7 @@ class free_fleet_client_direct(Node):
     def publish_task_state(self, status, message, completed):
         task_state= dds.FreeFleetDataTaskState()
         
-        task_state.task_id= self.task_id+"#"+self.step
-        if(task_state.step is None):
-            task_state.step=1
-
+        task_state.task_id= str(self.task_id)+"#"+str(self.step)
         task_state.status=status
         task_state.status_message= message
         task_state.completed= completed 
@@ -291,6 +288,7 @@ class free_fleet_client_direct(Node):
     
     def task_validation(self, task):
         return task.fleet_name == self.fleet_name and task.robot_name == self.robot_name 
+    
     
     def swap_task(self, new_task_id:str):
         self.publish_task_state("Postponed","this task is got overrolled by an other Task",False)

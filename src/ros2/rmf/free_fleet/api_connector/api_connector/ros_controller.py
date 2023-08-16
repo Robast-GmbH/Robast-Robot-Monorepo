@@ -113,6 +113,7 @@ class ros_controller(Node):
 
     # handle_drawer_request
     def handle_slide_drawer_request(self, fleet_name:str, robot_name: str, task_id:str, module_id: int, drawer_id: int, restricted:list[str] , e_drawer: bool, open: bool):
+        print("ros handle drawer")
         slide_drawer_request = dds.FreeFleetDataDrawerRequest()
         slide_drawer_request.task_id= task_id
         slide_drawer_request.fleet_name= fleet_name

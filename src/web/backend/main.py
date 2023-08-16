@@ -3,7 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import json
 import yaml
 import uvicorn
-from fastapi import Depends, FastAPI, HTTPException
+from fastapi import Depends, FastAPI, Body, HTTPException
+from typing_extensions import Annotated
 from sqlalchemy.orm import Session
 import requests
 import helper as templates
@@ -105,14 +106,12 @@ def read_user(user_id: int, db: Session = Depends(get_db)):
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     if(not crud.delete_user(db = db, user_id = user_id)):
         raise HTTPException(status_code=404, detail="User not found")
-    
-
 
 #task
 @app.get("/tasks/", response_model=List[schemas.Task])
 def get_task_queue( db: Session = Depends(get_db)):
     db_tasks = crud.get_tasks_queue(db)
-    #todo
+    
     if len(db_tasks) ==0:
             
             return[]
@@ -126,11 +125,15 @@ def read_task(task_id: int, db: Session = Depends(get_db)):
     return db_task
 
 @app.post("/tasks/")
-def create_task(task: schemas.Task, db: Session = Depends(get_db)):
-    db_task= crud.create_task(db=db, task=task, owner_id= None)
-    #todo
-    if db_task is None:
-        raise HTTPException(status_code=404, detail="task not found")
+def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Session = Depends(get_db)):
+    task_id= crud.create_task(db=db,robot_name= robot.robot_name, fleet_name=robot.fleet_name, owner_id= user_id)
+    for action in task.actions:
+        if( action.type== schemas.ActionType.MOVE):
+            crud.create_move_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.orientation)
+        elif(action.type== schemas.ActionType.OPEN_DRAWER):
+            crud.create_drawer_action(db, action.step,task_id, action.action.module_id, action.action.drawer_id)
+        elif(action.type== schemas.ActionType.NEW_USER):
+            crud.create_new_user_nfc(db, action.step, task_id, action.action.user_id)
     return 
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
@@ -138,12 +141,12 @@ def update_task( task_id:int, task: schemas.BaseTask, db: Session = Depends(get_
     return crud.update_task(db=db, task_changes=task)#task
 
 #robot
-@app.get("/robots", response_model =List[schemas.Robot])
+@app.get("/robots", response_model =List[schemas.RobotStatus])
 def get_robots_status(db: Session = Depends(get_db)):
     db_robots = crud.get_robots(db=db)
     return db_robots
 
-@app.get("/robots/{robot_name}", response_model = schemas.Robot)
+@app.get("/robots/{robot_name}", response_model = schemas.RobotStatus)
 def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     return db_robot
@@ -218,20 +221,25 @@ def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(
 
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
-def open_drawer( robot_name: str, module: schemas.DrawerAction, accessible_user_id: list[int], owner:int, db: Session = Depends(get_db)):
+def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_user: list[int], owner:Annotated[int,Body()], db: Session = Depends(get_db)):
     
     nfc_codes=[]
-    if(len(accessible_user_id)>0):
-        for id in accessible_user_id:
+    if(len(restricted_for_user)>0):
+        for id in restricted_for_user:
             nfc_code= crud.get_nfc_code(db=db, user_id=id)
             nfc_codes.append(str(id)+":"+nfc_code)
 
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
+    db_module= crud.get_module(db=db,module_id=module.module_id,drawer_id=module.drawer_id)
+    if db_module is None:
+        raise HTTPException(status_code=404, detail="module not found" )
+    
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner)
     step=1
     db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id)
-    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, module.is_edrawer, nfc_codes)
+    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.is_edrawer, nfc_codes)
     task =templates.create_task(db,robot_name,task_id,[action])
+    print(json.dumps(task),)
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
     answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
@@ -243,9 +251,12 @@ def open_drawer( robot_name: str, module: schemas.DrawerAction, accessible_user_
 
 # close_drawer
 @app.post("/robots/{robot_name}/modules/close")
-def close_drawer( robot_name: str, module: schemas.Drawer , db: Session = Depends(get_db)):
-        message=templates.get_close_drawer_interaction_json(db, robot_name,module.id,module.module_id, module.is_edrawer)
-    
+def close_drawer( robot_name: str, module: schemas.BaseDrawer , db: Session = Depends(get_db)):
+        db_module= crud.get_module(db, module.module_id, module.drawer_id)
+        if db_module is None:
+            raise HTTPException(status_code=404, detail="module not found" )
+        message=templates.get_close_drawer_interaction_json(db, robot_name, module.drawer_id, module.module_id, db_module.is_edrawer)
+        print(message)
         headers =  {"Content-Type":"application/json"}
         sender = requests.Session()
         answer  =sender.post(url= config["fleetmangement_address"]+"/settings/drawer/close", data= json.dumps(message),headers= headers)
