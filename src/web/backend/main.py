@@ -220,7 +220,7 @@ def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(
 
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
-def open_drawer( robot_name: str, module: schemas.DrawerAction, accessible_user_id: list[int], owner:int, db: Session = Depends(get_db)):
+def open_drawer( robot_name: str, module: schemas.DrawerAction, restricted_for_user: list[int], owner:int, db: Session = Depends(get_db)):
     
     nfc_codes=[]
     if(len(accessible_user_id)>0):
