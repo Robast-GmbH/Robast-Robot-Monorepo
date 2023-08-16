@@ -140,12 +140,12 @@ def update_task( task_id:int, task: schemas.BaseTask, db: Session = Depends(get_
     return crud.update_task(db=db, task_changes=task)#task
 
 #robot
-@app.get("/robots", response_model =List[schemas.Robot])
+@app.get("/robots", response_model =List[schemas.RobotStatus])
 def get_robots_status(db: Session = Depends(get_db)):
     db_robots = crud.get_robots(db=db)
     return db_robots
 
-@app.get("/robots/{robot_name}", response_model = schemas.Robot)
+@app.get("/robots/{robot_name}", response_model = schemas.RobotStatus)
 def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     return db_robot
@@ -220,20 +220,25 @@ def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(
 
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
-def open_drawer( robot_name: str, module: schemas.DrawerAction, restricted_for_user: list[int], owner:int, db: Session = Depends(get_db)):
+def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_user: list[int], owner:int, db: Session = Depends(get_db)):
     
     nfc_codes=[]
-    if(len(accessible_user_id)>0):
-        for id in accessible_user_id:
+    if(len(restricted_for_user)>0):
+        for id in restricted_for_user:
             nfc_code= crud.get_nfc_code(db=db, user_id=id)
             nfc_codes.append(str(id)+":"+nfc_code)
 
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
+    db_module= crud.get_module(db=db,module_id=module.module_id,drawer_id=module.drawer_id)
+    if db_module is None:
+        raise HTTPException(status_code=404, detail="module not found" )
+    
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner)
     step=1
     db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id)
-    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, module.is_edrawer, nfc_codes)
+    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.is_edrawer, nfc_codes)
     task =templates.create_task(db,robot_name,task_id,[action])
+    print(json.dumps(task),)
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
     answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
