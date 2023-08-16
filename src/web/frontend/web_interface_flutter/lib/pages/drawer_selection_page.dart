@@ -15,7 +15,7 @@ class _DrawerSelectionPageState extends State<DrawerSelectionPage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Wähle eine Schublade"),
+        title: const Text("Wähle eine Schublade"),
       ),
       body: Center(child: RobotClone(
         onPressed: (index) {

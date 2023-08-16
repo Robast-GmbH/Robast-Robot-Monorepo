@@ -59,11 +59,11 @@ class _APIAddressInputFieldState extends State<APIAddressInputField> {
             width: 16,
           ),
           TextButton.icon(
-            label: Text("Übernehmen"),
+            label: const Text("Übernehmen"),
             onPressed: () {
               final addressParts = controller.text.split(":");
               if (addressParts.length < 3) return;
-              final baseURL = addressParts[0] + ":" + addressParts[1];
+              final baseURL = "${addressParts[0]}:${addressParts[1]}";
               final port = int.tryParse(addressParts[2]);
               if (port != null) {
                 APIService.baseURL = baseURL;

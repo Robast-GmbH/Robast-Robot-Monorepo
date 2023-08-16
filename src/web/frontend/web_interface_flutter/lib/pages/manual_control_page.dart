@@ -1,9 +1,7 @@
 import 'dart:async';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:web_interface_flutter/main.dart';
 import 'package:web_interface_flutter/models/drawer_module.dart';
 import 'package:web_interface_flutter/models/robot_provider.dart';
 import 'package:web_interface_flutter/services/api_service.dart';
@@ -24,7 +22,7 @@ class _ManualControlPageState extends State<ManualControlPage> {
 
   void setTimer() {
     refreshTimer = Timer.periodic(const Duration(seconds: 5), (timer) async {
-      print("Update Modules");
+      debugPrint("Update Modules");
       await Provider.of<RobotProvider>(context, listen: false).updateModules();
     });
   }
@@ -52,7 +50,7 @@ class _ManualControlPageState extends State<ManualControlPage> {
                   onPressed: () {
                     Navigator.pop(context);
                   },
-                  child: Text("Ok"))
+                  child: const Text("Ok"))
             ],
           );
         });

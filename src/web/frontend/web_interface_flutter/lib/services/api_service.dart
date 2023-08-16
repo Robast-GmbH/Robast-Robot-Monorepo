@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:web_interface_flutter/models/drawer_module.dart';
 import 'package:web_interface_flutter/models/robot.dart';
@@ -17,7 +18,7 @@ class APIService {
         return true;
       }
     } catch (e) {
-      print(e.toString());
+      debugPrint(e.toString());
     }
     return false;
   }
@@ -59,8 +60,8 @@ class APIService {
         }
       }
     } catch (e) {
-      print("Failed get Users");
-      print(e);
+      debugPrint("Failed get Users");
+      debugPrint(e.toString());
     }
 
     return users;
@@ -77,8 +78,8 @@ class APIService {
         }
       }
     } catch (e) {
-      print("Failed get Robots");
-      print(e);
+      debugPrint("Failed get Robots");
+      debugPrint(e.toString());
     }
     return robots;
   }
@@ -94,8 +95,8 @@ class APIService {
         }
       }
     } catch (e) {
-      print("Failed get Tasks");
-      print(e);
+      debugPrint("Failed get Tasks");
+      debugPrint(e.toString());
     }
 
     return tasks;
@@ -112,8 +113,8 @@ class APIService {
         }
       }
     } catch (e) {
-      print("Failed get Modules");
-      print(e);
+      debugPrint("Failed get Modules");
+      debugPrint(e.toString());
     }
 
     return modules;
@@ -121,8 +122,11 @@ class APIService {
 
   static Future<void> openDrawer(String robotName, int moduleID, int drawerID) async {
     final data = <String, dynamic>{
-      "id": moduleID,
-      "drawer_id": drawerID,
+      "module": {
+        "module_id": moduleID,
+        "drawer_id": drawerID,
+      },
+      "restricted_for_user": [],
     };
     final headers = {
       'accept': 'application/json',
@@ -130,20 +134,22 @@ class APIService {
     };
     try {
       await http.post(
-        Uri.parse("$baseURL:$port/robots/$robotName/modules/open"),
+        Uri.parse("$baseURL:$port/robots/$robotName/modules/open?owner=1"),
         headers: headers,
         body: jsonEncode(data),
       );
     } catch (e) {
-      print("Failed open drawer");
-      print(e);
+      debugPrint("Failed open drawer");
+      debugPrint(e.toString());
     }
   }
 
   static Future<void> closeDrawer(String robotName, int moduleID, int drawerID) async {
     final data = <String, dynamic>{
-      "id": moduleID,
-      "drawer_id": drawerID,
+      "module": {
+        "module_id": moduleID,
+        "drawer_id": drawerID,
+      },
     };
     final headers = {
       'accept': 'application/json',
@@ -156,8 +162,8 @@ class APIService {
         body: jsonEncode(data),
       );
     } catch (e) {
-      print("Failed close drawer");
-      print(e);
+      debugPrint("Failed close drawer");
+      debugPrint(e.toString());
     }
   }
 
@@ -178,8 +184,8 @@ class APIService {
         body: jsonEncode(data),
       );
     } catch (e) {
-      print("Robot move failed");
-      print(e);
+      debugPrint("Robot move failed");
+      debugPrint(e.toString());
     }
   }
 }
