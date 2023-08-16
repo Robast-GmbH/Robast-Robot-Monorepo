@@ -45,18 +45,6 @@ class _RoboMapState extends State<RoboMap> {
                   child: Stack(
                     children: [
                       Image.asset("assets/RL_Tiplu_6.png"),
-                      Positioned(
-                        left: mapOrigin.dx - 8,
-                        top: mapOrigin.dy - 8,
-                        child: const RobotMarker(),
-                      ),
-                      ...robots
-                          .map((robot) => Positioned(
-                                left: mapOrigin.dx - 8 + robot.x / resolution,
-                                top: mapOrigin.dy - 8 - robot.y / resolution,
-                                child: Transform.rotate(angle: -1.57, child: const RobotMarker()),
-                              ))
-                          .toList(),
                       if (widget.controller.position != null) ...[
                         Positioned(
                           left: widget.controller.position!.dx - 8,
@@ -73,6 +61,13 @@ class _RoboMapState extends State<RoboMap> {
                           ),
                         ),
                       ],
+                      ...robots
+                          .map((robot) => Positioned(
+                                left: mapOrigin.dx - 8 + robot.x / resolution,
+                                top: mapOrigin.dy - 8 - robot.y / resolution,
+                                child: Transform.rotate(angle: -1.57, child: const RobotMarker()),
+                              ))
+                          .toList(),
                     ],
                   ),
                 ),
