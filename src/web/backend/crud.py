@@ -174,6 +174,8 @@ def get_modules(db: Session, robot_name: str)->[models.Module]:
 
 def get_module(db: Session, module_id: int)-> models.Module:
     return db.query(models.Module).filter(models.Module.module_id == module_id).all()
+def get_module(db: Session, module_id: int, drawer_id:int)-> models.Module:
+    return db.query(models.Module).filter(models.Module.module_id == module_id and models.Module.drawer_id== drawer_id).first()
 
 def get_drawer(db: Session,robot_name:str, module_id: int, drawer_id: int)-> models.Module:
     drawer= db.query(models.Module).filter(models.Module.robot_name ==robot_name, models.Module.module_id == module_id, models.Module.drawer_id== drawer_id).first()

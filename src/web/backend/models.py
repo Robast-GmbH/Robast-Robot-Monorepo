@@ -73,6 +73,7 @@ class Module(Base):
     status= Column(String)
     type= Column(Enum(DrawerSlideTypes), index=True)
     size= Column(Integer)
+    is_edrawer =Column(Boolean)
     robot_name= Column(String)
     
 

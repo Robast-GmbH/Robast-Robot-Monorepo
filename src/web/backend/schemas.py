@@ -103,7 +103,7 @@ class User(UserBase):
         orm_mode = True
 
 #Robot
-class Robot_status(BaseModel):
+class RobotStatus(BaseModel):
     robot_name: str
     fleet_name: str  
     task_id: int
