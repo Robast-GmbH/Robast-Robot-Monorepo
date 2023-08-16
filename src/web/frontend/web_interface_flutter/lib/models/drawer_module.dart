@@ -1,3 +1,4 @@
+// ignore: constant_identifier_names
 enum ModuleType { Manual, Electrical }
 
 class DrawerModule {
@@ -21,7 +22,7 @@ class DrawerModule {
 
   static DrawerModule fromJson(Map<String, dynamic> data) {
     return DrawerModule(
-      moduleID: data["id"],
+      moduleID: data["module_id"],
       drawerID: data["drawer_id"],
       type: ModuleType.values.firstWhere((element) => element.name == data["type"]),
       size: data["size"],
