@@ -34,7 +34,7 @@ class ros_controller(Node):
         self.declare_parameter('dds_task_state_topic',"task_state")
         
         
-        self.declare_parameter('backend_address',"http://127.0.0.1:3001/")
+        self.declare_parameter('backend_address',"http://127.0.0.1:3001")
 
         self.dds_config = {
                 "dds": self.get_parameter('dds').get_parameter_value().string_value,
