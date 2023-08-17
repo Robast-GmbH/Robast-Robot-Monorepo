@@ -25,10 +25,10 @@ namespace drawer_bridge
       _qos_config.get_qos_open_drawer(),
       std::bind(&DrawerBridge::electrical_drawer_task_topic_callback, this, std::placeholders::_1));
 
-    _drawer_leds_subscription = this->create_subscription<DrawerLeds>(
-      "drawer_leds",
-      _qos_config.get_qos_drawer_leds(),
-      std::bind(&DrawerBridge::drawer_leds_topic_callback, this, std::placeholders::_1));
+    _set_led_states_subscription = this->create_subscription<LedStates>(
+      "set_led_states",
+      _qos_config.get_qos_set_led_states(),
+      std::bind(&DrawerBridge::set_led_states_topic_callback, this, std::placeholders::_1));
 
     _can_messages_subscription = this->create_subscription<CanMessage>(
       "from_can_bus",
@@ -88,12 +88,24 @@ namespace drawer_bridge
     send_can_msg(can_msg);
   }
 
-  void DrawerBridge::drawer_leds_topic_callback(const DrawerLeds& msg)
+  void DrawerBridge::set_led_states_topic_callback(const LedStates& msg)
   {
-    RCLCPP_INFO(get_logger(), "I heard from drawer_leds topic the led mode: '%i'", msg.mode);   // Debugging
+    uint16_t num_of_led_states = sizeof(msg.led_states) / sizeof(LedState);
 
-    const CanMessage can_msg = _can_message_creator.create_can_msg_drawer_led(msg);
+    RCLCPP_INFO(get_logger(),
+                "I heard from the /set_led_states topic the module id %i and the number of led states = %i",
+                msg.drawer_address.module_id,
+                num_of_led_states);
+
+    const CanMessage can_msg = _can_message_creator.create_can_msg_led_header(msg);
     send_can_msg(can_msg);
+
+    for (uint16_t i = 0; i < num_of_led_states; i++)
+    {
+      const CanMessage can_msg =
+        _can_message_creator.create_can_msg_set_single_led_state(msg.led_states[i], msg.drawer_address);
+      send_can_msg(can_msg);
+    }
   }
 
   void DrawerBridge::publish_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg)

@@ -1,0 +1,4 @@
+communication_interfaces/DrawerAddress drawer_address
+communication_interfaces/LedState[] led_states
+uint16 start_index
+uint16 fade_time_in_ms

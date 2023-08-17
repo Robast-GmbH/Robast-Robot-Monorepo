@@ -18,7 +18,7 @@ namespace drawer_bridge
       return qos_open_drawer;
     };
 
-    rclcpp::QoS get_qos_drawer_leds()
+    rclcpp::QoS get_qos_set_led_states()
     {
       rclcpp::QoS qos_drawer_leds = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
       qos_drawer_leds.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
