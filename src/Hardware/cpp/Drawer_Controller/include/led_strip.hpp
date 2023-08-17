@@ -24,14 +24,15 @@ namespace led_strip
     fade_up = 1,
     running_led_from_mid_to_outside = 2,
     slow_fade_up_fade_down = 3,
+    single_led_control = 4,
   };
 
   struct LedState
   {
-    uint8_t brightness;
     uint8_t red;
     uint8_t green;
     uint8_t blue;
+    uint8_t brightness;
   } led_state;
 
   struct LedStripTargetSettings
@@ -119,24 +120,20 @@ namespace led_strip
         led_strip.led_current_brightness = 0;
         portEXIT_CRITICAL(&fading_up_timer_mux);
         led_strip.led_target_brightness_fade_on_fade_off = led_strip_target_settings.led_target_state.brightness;
+        break;
+
+      case LedMode::single_led_control:
+        led_strip.led_current_mode = LedMode::single_led_control;
+        break;
 
       default:
         break;
     }
   }
 
-  void add_led_strip_mode_to_queue(robast_can_msgs::CanMessage can_message)
+  void add_led_strip_target_setting_to_queue(LedStripTargetSettings led_strip_target_settings)
   {
-    auto led_strip_target_settings = LedStripTargetSettings{};
-    led_strip_target_settings.led_target_state.red = can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data();
-    led_strip_target_settings.led_target_state.green =
-      can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data();
-    led_strip_target_settings.led_target_state.blue = can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data();
-    led_strip_target_settings.led_target_state.brightness =
-      can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data();
-    led_strip_target_settings.led_target_mode = can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
-
-    debug_printf("Writing led strip mode %d to queue!\n", led_strip_target_settings.led_target_mode);   // DEBUGGING
+    debug_printf("Writing led strip mode %d to queue!\n", led_strip_target_settings.led_target_mode);
 
     // Adding led mode to queue
     xQueueSend(
@@ -146,7 +143,7 @@ namespace led_strip
 
     uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip.led_target_settings_queue);
 
-    debug_printf("Led modes in queue: %d\n", led_modes_in_queue);   // DEBUGGING
+    debug_printf("Led modes in queue: %d\n", led_modes_in_queue);
 
     if (led_modes_in_queue == 1)
     {
@@ -339,6 +336,19 @@ namespace led_strip
     get_new_target_led_settings_from_queue();   // always check if there is a new mode waiting in the queue
   }
 
+  void single_led_mode()
+  {
+    FastLED.setBrightness(255);   // individual led brightness will be scaled down later in the for loop
+    for (uint8_t i = 0; i < num_of_leds; i++)
+    {
+      leds[i].setRGB(led_states[i].red, led_states[i].green, led_states[i].blue);
+      leds[i].fadeToBlackBy(255 - led_states[i].brightness);
+    }
+    FastLED.show();
+
+    get_new_target_led_settings_from_queue();
+  }
+
   static void IRAM_ATTR on_timer_for_fading()
   {
     if (led_strip_target_settings.led_target_state.brightness > led_strip.led_current_brightness)
@@ -404,6 +414,10 @@ namespace led_strip
         led_fade_on_fade_off_mode();
         break;
 
+      case LedMode::single_led_control:
+        single_led_mode();
+        break;
+
       default:
         led_standard_mode();
         break;
@@ -438,11 +452,27 @@ namespace led_strip
 
   void set_led_state(LedState state, uint8_t index)
   {
-    led_states[index] = state;
-    if (index == (num_of_leds - 1))
+    if (!all_led_states_set)
     {
-      all_led_states_set = true;
+      led_states[index] = state;
+      if (index == (num_of_leds - 1))
+      {
+        all_led_states_set = true;
+        LedStripTargetSettings target_settings = led_strip::LedStripTargetSettings{};
+        target_settings.led_target_mode = LedMode::single_led_control;
+        add_led_strip_target_setting_to_queue(target_settings);
+      }
     }
+  }
+
+  LedState create_led_state(uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness)
+  {
+    LedState led_state = LedState{};
+    led_state.red = red;
+    led_state.green = green;
+    led_state.red = red;
+    led_state.brightness = brightness;
+    return led_state;
   }
 
   void debug_prints_drawer_led(robast_can_msgs::CanMessage can_message)
