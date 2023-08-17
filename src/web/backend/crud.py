@@ -4,6 +4,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import event, inspect, update, asc, desc
 from sqlalchemy.sql.elements import Null
 from sqlalchemy.sql.functions import user
+from sqlalchemy.orm import with_polymorphic
 import helper
 
 import models
@@ -69,12 +70,17 @@ def delete_user(db: Session, user_id: int):
     return True
 
 #task management
-def get_tasks(db: Session):
-    return db.query(models.Task).filter().all()
+
 
 def get_tasks_queue(db:Session):
     subquery=db.query(models.Action.task_id).filter(models.Action.finished== False).distinct()
-    return db.query(models.Task).filter(models.Task.id.in_(subquery)).order_by(models.Task.id).all()
+    tasks =db.query(models.Task).filter(models.Task.id.in_(subquery)).order_by(models.Task.id).all()
+    result=[]
+    for task in tasks:
+        actions= get_actions_of_task(db,task.id)
+        result.append({"task":task, "action":actions})
+    
+    return result
 
 
 def get_task(db:Session, task_id:int): 
@@ -117,9 +123,13 @@ def create_new_user_nfc(db:Session, step:int, task_id, user_id:int ):
     db.refresh(db_action)
     return db_action
 
-def get_actions_of_task(db:Session, task_id:int)->[models.Action]:
-    db_actions= db.query(models.Action).filter(models.Action.task_id==task_id).order_by(models.Action.position).all
-    return db_actions
+# def get_actions_of_task(db:Session, task_id:int)->[models.Action]:
+#     all_actions= with_polymorphic(models.Action, "*")
+#     db_actions= db.query(all_actions).filter(models.Action.task_id==task_id).order_by(models.Action.position).all
+#     return db_actions
+# def get_all_actions(db:Session):
+#     all_actions= with_polymorphic(models.Action, "*")
+#     return db.query(models.Action).all
 
 def update_action(db:Session, action:schemas.Action )->models.Action:
     db_action= db.query(models.Action).filter(models.Action.id== action.id).first

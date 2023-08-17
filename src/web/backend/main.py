@@ -108,21 +108,21 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
 
 #task
-@app.get("/tasks/", response_model=List[schemas.Task])
+@app.get("/tasks/")
 def get_task_queue( db: Session = Depends(get_db)):
     db_tasks = crud.get_tasks_queue(db)
     
     if len(db_tasks) ==0:
-            
             return[]
+    
     return db_tasks
 
-@app.get("/tasks/{task_id}", response_model=schemas.ActiveTask)
+@app.get("/tasks/{task_id}")
 def read_task(task_id: int, db: Session = Depends(get_db)):
     db_task = crud.get_task(db, task_id=task_id)
     if db_task is None:
         raise HTTPException(status_code=404, detail="task not found")
-    return db_task
+    return {db_task, db_task}
 
 @app.post("/tasks/")
 def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Session = Depends(get_db)):
@@ -140,6 +140,11 @@ def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Sessio
 def update_task( task_id:int, task: schemas.BaseTask, db: Session = Depends(get_db)):#check
     return crud.update_task(db=db, task_changes=task)#task
 
+# @app.put("/task/{task_id}/steps")
+# def get_task_actions( task_id:int, db: Session = Depends(get_db)):#check
+#     # return crud.get_actions_of_task(db=db, task_id=task_id)
+#     return crud.get_all_actions(db=db)
+
 #robot
 @app.get("/robots", response_model =List[schemas.RobotStatus])
 def get_robots_status(db: Session = Depends(get_db)):
@@ -156,7 +161,7 @@ def pause_robot(robot_name: str, fleet_name:str, pause: bool , db: Session = Dep
     headers = {"Content-Type":"application/json"}
     sender = requests.Session() 
     message= {"robot_name":robot_name, "fleet_name":fleet_name}
-    
+    print(message)
     if(pause):
         answer  =sender.post(url= config["fleetmangement_address"]+"/settings/move/pause",json= json.dumps(message), headers= headers, verify=False)
     else:
@@ -168,7 +173,7 @@ def pause_robot(robot_name: str, fleet_name:str, pause: bool , db: Session = Dep
 
 
 @app.put("/robots/status")
-def set_robot(robot: schemas.Robot, db: Session = Depends(get_db)):
+def set_robot(robot: schemas.RobotStatus, db: Session = Depends(get_db)):
     return crud.set_robot(db=db, robot=robot)
 
 @app.put("/robots/{robot_name}/move")
@@ -225,9 +230,10 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
     
     nfc_codes=[]
     if(len(restricted_for_user)>0):
-        for id in restricted_for_user:
+       
+         for id in restricted_for_user:
             nfc_code= crud.get_nfc_code(db=db, user_id=id)
-            nfc_codes.append(str(id)+":"+nfc_code)
+            nfc_codes.append(str(id)+":"+str(nfc_code))
 
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     db_module= crud.get_module(db=db,module_id=module.module_id,drawer_id=module.drawer_id)

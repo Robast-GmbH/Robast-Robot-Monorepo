@@ -58,10 +58,10 @@ class free_fleet_client_direct(Node):
         self.dds_domain = self.get_parameter('dds_domain').get_parameter_value().integer_value
         self.dds_slide_drawer_topic=self.get_parameter('dds_slide_drawer_topic').get_parameter_value().string_value
        
-        self.nav_controller= nav_controller(self, self.robot_odom, self.publish_task_state)
+        self.nav_controller= nav_controller(self, self.robot_odom, self.frame_id, self.publish_task_state)
       
         self.task_id= ""
-        self.step=""
+        self.step=-1
         self.open_drawers:list[drawer] =[]
         self.locked_drawers:list[drawer]=[]
 
@@ -88,28 +88,32 @@ class free_fleet_client_direct(Node):
         self.create_nfc_action_client= ActionClient(self, CreateUserNfcTag,"/create_user")
 
         #task_requests
-        self.setting_request_dds=  self.create_subscription(dds.FreeFleetDataSettingRequest, "/settings_request", self.setting_callback, 10) 
-        self.new_user_request_dds= self.create_subscription(dds.FreeFleetDataCreateNfcRequest, "/new_user_request",self.new_user_callback,10)
-        self.drawer_request_dds= self.create_subscription(dds.FreeFleetDataDrawerRequest, "/slide_drawer_request",self.slide_drawer_callback ,10)
-        self.destination_request_dds= self.create_subscription(dds.FreeFleetDataDestinationRequest,  "/destination_request", self.destination_callback ,10)
+        self.setting_request_dds=  self.create_subscription(dds.FreeFleetDataSettingRequest, "setting_request", self.setting_callback, 10) 
+        self.new_user_request_dds= self.create_subscription(dds.FreeFleetDataCreateNfcRequest, "new_user_request",self.new_user_callback,10)
+        self.drawer_request_dds= self.create_subscription(dds.FreeFleetDataDrawerRequest, "slide_drawer_request",self.slide_drawer_callback ,10)
+        self.destination_request_dds= self.create_subscription(dds.FreeFleetDataDestinationRequest,  "destination_request", self.destination_callback ,10)
         
         #publish_ info
-        self.robot_state_dds = self.create_publisher(dds.FreeFleetDataRobotState,  "/robot_state",10)
-        self.task_state_dds= self.create_publisher(dds.FreeFleetDataTaskState, "/info_state",10)
+        self.robot_state_dds = self.create_publisher(dds.FreeFleetDataRobotState, "robot_state",10)
+        self.task_state_dds= self.create_publisher(dds.FreeFleetDataTaskState, "task_state",10)
         
         self.status_timer = self.create_timer(self.heartbeat,self.publish_fleet_state) 
         
     ##handle task
     #navigation request
     def destination_callback(self, msg:dds.FreeFleetDataDestinationRequest):
-        step= self.received_new_action(self, msg)
-        if step==1:
+        print("recived")
+        print(msg)
+        step= self.received_new_action(msg)
+        if str(step)==str(1):
+            print("1")
             self.step=1
             self.start_navigation_task( msg.destination.x, msg.destination.y, msg.destination.yaw)
         else:
-            self.destination_request.append(msg)
+            self.destination_requests.append(msg)
 
     def start_navigation_task(self, x:float,y: float, yaw: float):
+        print("nav")
         self.publish_task_state("Navigation","Started", False)
         self.nav_controller.start_navigation(x, y, yaw)
     
@@ -117,7 +121,7 @@ class free_fleet_client_direct(Node):
     def slide_drawer_callback(self, msg:dds.FreeFleetDataDrawerRequest):
         step= self.received_new_action(msg)
        
-        if step=="1":
+        if str(step)==str(1):
             self.step=1
             self.start_drawer_request(msg.fleet_name, msg.robot_name,msg.module_id,msg.drawer_id, msg.e_drawer, msg.restricted)
         else:
@@ -150,6 +154,7 @@ class free_fleet_client_direct(Node):
             print("drawer")
         
     def close_drawer(self,module_id, drawer_id, e_drawer):
+        print("close")
         if(not e_drawer):
             return
         ros_msg = DrawerAddress()
@@ -222,6 +227,9 @@ class free_fleet_client_direct(Node):
             
     # settings request
     def setting_callback(self, msg:dds.FreeFleetDataSettingRequest):
+        print(msg)
+        if(not self.task_validation(msg)):
+            return
         if msg.command == "move":
             if msg.value == "resume":
                 self.nav_controller.start_navigation()
@@ -237,10 +245,12 @@ class free_fleet_client_direct(Node):
                 #doing a drawertask
                 if len(self.open_drawers)==0:
                     self.find_next_action()
+                    
             else:
-                selected_drawer= next((drawer for drawer in self.open_drawers if drawer.module_id== msg.value and drawer.e_drawer), None)
+                selected_drawer= next((drawer for drawer in self.open_drawers if drawer.module_id== int(msg.value) and drawer.e_drawer), None)
                 if selected_drawer is not None: 
                     self.close_drawer(selected_drawer.module_id,selected_drawer.drawer_id, selected_drawer.e_drawer)
+                    print("close drawer")
 
 
     #publish states

@@ -21,7 +21,7 @@ class RestInterface():
           
             for action in task.actions:
                 if action.type== schemas.ActionType.MOVE:
-                    self.ros_node.handle_destination_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.pose.x, action.action.y,action.action.orientation)
+                    self.ros_node.handle_destination_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.pose.x, action.action.pose.y,action.action.orientation)
                 elif action.type== schemas.ActionType.OPEN_DRAWER:
                     self.ros_node.handle_slide_drawer_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.module_id, action.action.drawer_id, action.action.locked_for, action.action.is_edrawer,True)
                 elif action.type== schemas.ActionType.NEW_USER:
@@ -29,17 +29,17 @@ class RestInterface():
             
         @self.app.post("/settings/move/pause")
         def pause_robot(robot:schemas.Robot):
-            self.ros_node.handle_setting_request("move", "pause")
+            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", "pause")
             return
         
         @self.app.post("/settings/move/resume")
         def resume_robot(robot:schemas.Robot):
-            self.ros_node.handle_setting_request("move", "resume")
+            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", "resume")
             return
 
         @self.app.post("/settings/move/cancel")
         def cancel_robot(robot:schemas.Robot ):
-            self.ros_node.handle_setting_request("move", "cancel")
+            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", "cancel")
             return  
         
         @self.app.post("/settings/drawer/close")
@@ -47,11 +47,11 @@ class RestInterface():
             if e_drawer:
                 self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name,"drawer",str(module_id) )
             else:
-                    raise HTTPException(status_code=404, detail="drawer not found")
+                    raise HTTPException(status_code=404, detail="drawer has to be closed manually")
         
         @self.app.post("/settings/drawer/completed")
         def end_drawer_action(robot:schemas.Robot):
-                self.ros_node.handle_setting_request("drawer", "completed")
+                self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name, "drawer", "completed")
 
 
     def run(self, host='0.0.0.0', port=3002, log_level='warning'):
@@ -77,7 +77,8 @@ class RestInterface():
         message= self.fill_task_status_msg( status, status_msg, finished)
         headers =  {"Content-Type":"application/json"}
         sender = requests.Session()
-        sender.post(url= self.response_api+"/robots/"+task_id+"/"+step+"status", json= json.dumps(message), headers= headers, verify=False)
+        print(message)
+        sender.post(url= self.response_api+"/robots/"+task_id+"#"+step+"/status", json= json.dumps(message), headers= headers, verify=False)
 
     def fill_robot_status_msg(self,robot_name:str, fleet_name:str, task_id:str, x_pose:int, y_pose:int, yaw_pose:int):
         return{ 
