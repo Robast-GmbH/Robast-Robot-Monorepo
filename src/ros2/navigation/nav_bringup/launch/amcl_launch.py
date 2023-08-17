@@ -17,7 +17,7 @@ def generate_launch_description():
     config_directory = os.environ["config_directory"]
     is_simulation = os.environ["is_simulation"]
 
-    if is_simulation == "true":
+    if is_simulation == 'True':
         map_file_yaml = os.path.join(
             get_package_share_directory("nav_bringup"), "maps", "5OG", "5OG.yaml"
         )
