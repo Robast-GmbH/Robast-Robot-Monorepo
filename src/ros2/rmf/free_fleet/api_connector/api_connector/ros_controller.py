@@ -74,40 +74,37 @@ class ros_controller(Node):
 
     # handle Mode request
     def handle_mode_request(self, fleet_name, robot_name, mode):
-        state = self.get_robot_state(robot_name)
         mode_request = dds.FreeFleetDataModeRequest
         mode_request.robot_name = robot_name
         mode_request.fleet_name = fleet_name
         mode_request.mode = mode
-        mode_request.task_id = state.task_id
+        mode_request.task_id =""
         mode_request.parameters = []
         self.dds_mode_request.publish(mode_request)
 
     # handle path request
     def handle_path_request(self, fleet_name, robot_name, path):
-        state = self.get_robot_state(robot_name)
         path_request = dds.FreeFleetDataPathRequest()
         path_request.robot_name = robot_name
         path_request.fleet_name = fleet_name
-        path_request.task_id = state.task_id
+        path_request.task_id = ""
         path_request.path = path
         self.dds_path_request.publish(path_request)
 
 
     # handle destination request
-    def handle_destination_request(self, fleet_name, task_id, robot_name, x_pose, y_pose, yaw):
-        state = self.get_robot_state(robot_name)
+    def handle_destination_request(self, fleet_name,robot_name, task_id, x_pose, y_pose, yaw):
         goal= dds.FreeFleetDataLocation()
         goal.sec= 0
         goal.nanosec=0
         goal.x= x_pose
         goal.y= y_pose
         goal.yaw= yaw
-        goal.level_name= task_id
+        goal.level_name= ""
         destination_request = dds.FreeFleetDataDestinationRequest()
         destination_request.robot_name=robot_name
         destination_request.fleet_name=fleet_name
-        destination_request.task_id=""
+        destination_request.task_id=task_id
         destination_request.destination=goal
         self.dds_destination_request.publish(destination_request)
 
@@ -133,6 +130,7 @@ class ros_controller(Node):
         self.dds_new_user_request.publish(new_user_request)
 
     def handle_setting_request(self, robot_name:str, fleet_name:str, command:str, value:str):
+        print("setting") 
         setting_request = dds.FreeFleetDataSettingRequest()
         setting_request.command=command
         setting_request.value=value
@@ -144,14 +142,25 @@ class ros_controller(Node):
         self.responce= responce_object
 
     def update_robot_state(self, msg:dds.FreeFleetDataRobotState):
+        print("robot_state")
+        print(msg)
         if self.responce is not None:
-            mode =msg.mode#fix
-            #self.responce.handle_robot_update(robot_name= msg.name, task_id=msg.task_id, mode=mode, x_pose= msg.location.x ,y_pose= msg.location.y, yaw_pose= msg.location.yaw)
+            mode =msg.mode
+            self.responce.handle_robot_update(robot_name= msg.name, task_id=msg.task_id, mode=mode, x_pose= msg.location.x ,y_pose= msg.location.y, yaw_pose= msg.location.yaw)
 
     def update_task_state(self, msg: dds.FreeFleetDataTaskState):
-            if self.responce is not None:
-                #self.responce.handle_task_update(robot_name= msg.robot_name, task_id= msg.task_id, step=msg.step, status= msg.status, status_msg= msg.status_message, finished= msg.completed)
-                pass
-
+        print("task state")
+        print(msg)
+        if self.responce is not None:
+            task, step= self.divide_task_id(msg.task_id)
+            self.responce.handle_task_update(task_id= task, step= step, status= msg.status, status_msg= msg.status_message, finished= msg.completed)
+            
+    def divide_task_id(self,task_id):
+        combined_ids= task_id.split('#')
+        if len(combined_ids)!=2:
+            return task_id, None
+        else:
+            return combined_ids[0], combined_ids[1] 
+        
     def get_dds_config(self):
         return self.dds_config

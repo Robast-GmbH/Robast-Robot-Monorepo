@@ -10,13 +10,15 @@ from . import math_helper
 
 class nav_controller:
 
-    def __init__(self, ros_node:Node, odom_topic:str, publish_status):
+    def __init__(self, ros_node:Node, odom_topic:str, frame_id:str, publish_status):
         self.nav = ActionClient(ros_node, NavigateToPose, 'NavigateToPose')
         self.robot_x= 0
         self.robot_y=0
         self.robot_yaw=0
         self.active=False
         self.publish_status= publish_status
+        self.frame_id=frame_id
+        self.ros_node= ros_node
 
         self.subscriber_odom = ros_node.create_subscription(
             Odometry,
@@ -64,7 +66,7 @@ class nav_controller:
         pose = NavigateToPose.Goal()
         waypoint=PoseStamped()
         waypoint.header.frame_id = self.frame_id
-        waypoint.header.stamp = self.get_clock().now().to_msg()
+        waypoint.header.stamp = self.ros_node.get_clock().now().to_msg()
         waypoint.pose.position.x = pose_x
         waypoint.pose.position.y = pose_y
         waypoint.pose.position.z = 0.0
