@@ -55,20 +55,14 @@ RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.
 
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/; mkdir -p /ws/src/ros2/rmf/free_fleet/free_fleet; mkdir /robast; \
+RUN mkdir -p /ws/src/ros2/;  mkdir /robast; \
   mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
   
-
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y
 
-WORKDIR /tmp
-RUN git clone https://github.com/open-rmf/free_fleet.git
-
 WORKDIR /ws
-RUN mv /tmp/free_fleet /ws/src/ros2/rmf/free_fleet/free_fleet
-
 RUN  . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/
 
