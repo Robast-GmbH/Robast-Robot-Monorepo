@@ -71,9 +71,8 @@ class Module(Base):
     status= Column(String)
     type= Column(Enum(DrawerSlideTypes), index=True)
     size= Column(Integer)
-    is_edrawer =Column(Boolean)
     robot_name= Column(String)
-    label= Column(String)
+    label= Column(String,default="")
     
 
 class Robot(Base):
@@ -83,8 +82,8 @@ class Robot(Base):
     x_pose = Column(Float)
     y_pose = Column(Float)
     yaw_pose = Column(Float)
-    task_id = Column(Integer)
-    battery_level=Column(Float)
+    task_id = Column(Integer, ForeignKey("task.id"))
+    battery_level=Column(Float, default=0.0)
 
 
     
