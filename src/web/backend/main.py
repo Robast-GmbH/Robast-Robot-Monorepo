@@ -198,12 +198,12 @@ def set_robot(robot: schemas.RobotStatus, db: Session = Depends(get_db)):
     return crud.set_robot(db=db, robot=robot)
 
 @app.put("/robots/{robot_name}/navigate")
-def navigate_robot( robot_name: str, x: float, y: float, yaw: float, owner_id:int, db: Session = Depends(get_db)):
+def navigate_robot( robot_name: str, target:schemas.Navigation, owner_id:Annotated[int,Body()], db: Session = Depends(get_db)):
     db_robot= crud.get_robot(db=db, robot_name=robot_name)
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner_id)
     step=1
-    db_action= crud.create_navigation_action(db, step, task_id,x,y,yaw)
-    action= templates.create_navigation_action( step, x, y, yaw)
+    db_action= crud.create_navigation_action(db, step, task_id,target.pose.x,target.pose.y,target.yaw)
+    action= templates.create_navigation_action( step, target.pose.x, target.pose.y, target.yaw)
     task =templates.create_task(db,robot_name,task_id,[action])
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
