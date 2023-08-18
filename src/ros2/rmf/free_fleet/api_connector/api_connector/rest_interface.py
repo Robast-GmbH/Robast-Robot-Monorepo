@@ -98,7 +98,4 @@ class RestInterface():
                 "module_id":module_id,
                 "drawer_id":drawer_id,
                 "status": status,
-                "robot_name": " ",
-                "label": " "
-
         }
