@@ -198,12 +198,12 @@ def set_robot(robot: schemas.RobotStatus, db: Session = Depends(get_db)):
     return crud.set_robot(db=db, robot=robot)
 
 @app.put("/robots/{robot_name}/navigate")
-def navigate_robot( robot_name: str, x: float, y: float, yaw: float, owner_id:int, db: Session = Depends(get_db)):
+def navigate_robot( robot_name: str, target:schemas.Navigation, owner_id:Annotated[int,Body()], db: Session = Depends(get_db)):
     db_robot= crud.get_robot(db=db, robot_name=robot_name)
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner_id)
     step=1
-    db_action= crud.create_navigation_action(db, step, task_id,x,y,yaw)
-    action= templates.create_navigation_action( step, x, y, yaw)
+    db_action= crud.create_navigation_action(db, step, task_id,target.pose.x,target.pose.y,target.yaw)
+    action= templates.create_navigation_action( step, target.pose.x, target.pose.y, target.yaw)
     task =templates.create_task(db,robot_name,task_id,[action])
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
@@ -231,11 +231,11 @@ def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
 @app.post("/robots/modules/status",)
 def update_drawer_status(module: schemas.UpdateModule, db: Session = Depends(get_db)):
     db_module= crud.get_module(db=db, module_id=module.module_id,drawer_id= module.drawer_id)
-    if(module.label==" "):
+    if(module.label is None):
         module.label= db_module.label
-    if(module.status== ""):
+    if(module.status  is None):
         module.status= db_module.status
-    if(module.robot_name==" "):
+    if(module.robot_name  is None):
         module.robot_name=db_module.robot_name
 
     return crud.set_module_status(db=db, module=module)
