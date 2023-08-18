@@ -34,7 +34,7 @@ class ros_controller(Node):
         self.declare_parameter('dds_task_state_topic',"task_state")
         
         
-        self.declare_parameter('backend_address',"http://127.0.0.1:3001/")
+        self.declare_parameter('backend_address',"http://127.0.0.1:3001")
 
         self.dds_config = {
                 "dds": self.get_parameter('dds').get_parameter_value().string_value,
@@ -142,18 +142,20 @@ class ros_controller(Node):
         self.responce= responce_object
 
     def update_robot_state(self, msg:dds.FreeFleetDataRobotState):
-        print("robot_state")
-        print(msg)
         if self.responce is not None:
             mode =msg.mode
-            self.responce.handle_robot_update(robot_name= msg.name, task_id=msg.task_id, mode=mode, x_pose= msg.location.x ,y_pose= msg.location.y, yaw_pose= msg.location.yaw)
+            self.responce.handle_robot_update(robot_name= msg.name, task_id=msg.task_id, mode=mode, x_pose= msg.location.x ,y_pose= msg.location.y, yaw_pose= msg.location.yaw, battery_level= msg.battery_percent)
 
     def update_task_state(self, msg: dds.FreeFleetDataTaskState):
-        print("task state")
-        print(msg)
-        if self.responce is not None:
-            task, step= self.divide_task_id(msg.task_id)
-            self.responce.handle_task_update(task_id= task, step= step, status= msg.status, status_msg= msg.status_message, finished= msg.completed)
+        self.get_logger().info(f"{msg}")
+        if msg.status=="Drawer":
+            data= msg.status_message.split()
+            self.responce.handle_drawer_drawer_status_change(task_id=msg.task_id, module_id= data[0], drawer_id=data[1], status=data[2])
+        # print("task state")
+        # print(msg)
+        # if self.responce is not None:
+        #     task, step= self.divide_task_id(msg.task_id)
+        #     self.responce.handle_task_update(task_id= task, step= step, status= msg.status, status_msg= msg.status_message, finished= msg.completed)
             
     def divide_task_id(self,task_id):
         combined_ids= task_id.split('#')

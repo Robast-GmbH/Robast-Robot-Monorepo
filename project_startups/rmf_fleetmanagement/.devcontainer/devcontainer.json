@@ -1,6 +1,6 @@
 {
 
-	"image": "ghcr.io/robast-gmbh/monorepo/rmf:devel",
+	"image": "ghcr.io/robast-gmbh/monorepo/rmf:hagen",
 	"remoteUser": "ubuntu",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [

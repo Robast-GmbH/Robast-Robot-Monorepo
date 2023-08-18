@@ -121,8 +121,8 @@ def create_drawer_action(step:int, drawer_id:int, module_id:int, is_edrawer:bool
         message={"step":step,"type": "OPEN_DRAWER","action":{"drawer_id":drawer_id, "module_id":module_id, "is_edrawer":is_edrawer,"locked_for":locked_for}}
         return message
 
-def create_move_action(step:int, x:float, y:float, yaw:float):
-        message={"step":step, "type":"MOVE","action":{ "pose": {"x":x, "y":y, "z":0.0 },"orientation": yaw} }
+def create_navigation_action(step:int, x:float, y:float, yaw:float):
+        message={"step":step, "type":"NAVIGATION","action":{ "pose": {"x":x, "y":y, "z":0.0 },"YAW": yaw} }
         return message
 
 def create_new_user(step:int, user_id: int):

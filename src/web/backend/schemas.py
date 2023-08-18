@@ -4,11 +4,6 @@ import yaml
 from pydantic import BaseModel
 from typing import Union
 
-class TaskTypes(str, Enum):
-    Delivery = "Delivery"
-    Move = "Move"
-    Drawer = "Drawer"
-
 class DrawerSlideTypes(str, Enum):
     Manual = "Manual"
     Electrical = "Electrical"
@@ -28,8 +23,8 @@ class Robot(BaseModel):
     robot_name: str
 
 class ActionType(str, Enum):
-    OPEN_DRAWER = 'OPEN_DRAWER'
-    MOVE = 'MOVE'
+    DRAWER = 'DRAWER'
+    NAVIGATION = 'NAVIGATION'
     NEW_USER = 'NEW_USER'
 
 class BaseDrawer(BaseModel):
@@ -45,6 +40,10 @@ class DrawerAction(BaseDrawer):
 class NewUser(BaseModel):
     user_id: int
 
+class UpdateAction(BaseModel):
+    status:str
+    finished:bool
+
 class Action(BaseModel):
     step:int
     type: ActionType
@@ -53,12 +52,11 @@ class Action(BaseModel):
 class BaseTask(BaseModel):
     task_id:str
 
+class UpdateTask(BaseModel):
+    robot: Robot
+    
 class Task(BaseTask):
     actions:list[Action]
-
-class ActiveTask(Task):
-    current_action : int
-    robot: Robot
 
 
 #Drawer
@@ -80,6 +78,7 @@ class Module(ModuleBase):
 class UpdateModule(ModuleBase):
     robot_name: str    
     status: str
+    label:str
 
 #User
 class UserBase(BaseModel):
@@ -106,8 +105,9 @@ class User(UserBase):
 class RobotStatus(BaseModel):
     robot_name: str
     fleet_name: str  
-    task_id: int
+    task_id: str
     x_pose:float
     y_pose: float
     yaw_pose: float
+    battery_level:float
 
