@@ -225,7 +225,6 @@ class free_fleet_client_direct(Node):
             
     # settings request
     def setting_callback(self, msg:dds.FreeFleetDataSettingRequest):
-        print(msg)
         if(not self.task_validation(msg)):
             return
         if msg.command == "move":
@@ -247,6 +246,7 @@ class free_fleet_client_direct(Node):
             else:
                 selected_drawer= next((drawer for drawer in self.open_drawers if drawer.module_id== int(msg.value) and drawer.e_drawer), None)
                 if selected_drawer is not None: 
+                    self.get_logger().info('close_drawer')
                     self.close_drawer(selected_drawer.module_id,selected_drawer.drawer_id, selected_drawer.e_drawer)
                     print("close drawer")
 

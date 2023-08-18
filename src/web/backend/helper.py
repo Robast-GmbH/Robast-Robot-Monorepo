@@ -17,11 +17,11 @@ def init(db: Session):
                 addUser( "Jacob", "Jacob Ritterbach", "Robast2022HH", True, db )
                 
                 addRobot("RB0", "ROBAST", 0, 0, 0, db)
-                addDrawer("RB0", 1, 0, 1, models.DrawerSlideTypes.Manual, 10, False,  db)
-                addDrawer("RB0", 2, 0, 2, models.DrawerSlideTypes.Manual, 10, False, db)
-                addDrawer("RB0", 3, 0, 3, models.DrawerSlideTypes.Electrical, 10, True, db)
-                addDrawer("RB0", 4, 0, 4, models.DrawerSlideTypes.Manual, 20, False, db)
-                addDrawer("RB0", 5, 0, 5, models.DrawerSlideTypes.Manual, 30, False, db)
+                addDrawer("RB0", 1, 0, 1, models.DrawerSlideTypes.Manual, 10,  db)
+                addDrawer("RB0", 2, 0, 2, models.DrawerSlideTypes.Manual, 10, db)
+                addDrawer("RB0", 3, 0, 3, models.DrawerSlideTypes.Electrical, 10, db)
+                addDrawer("RB0", 4, 0, 4, models.DrawerSlideTypes.Manual, 20, db)
+                addDrawer("RB0", 5, 0, 5, models.DrawerSlideTypes.Manual, 30, db)
 
         return
 
@@ -44,8 +44,8 @@ def addRobot(robot_name:str, fleet_name:str, x:float, y:float, yaw:float, db:Ses
         db.refresh(db_robot)
         return
 
-def addDrawer( robot_name:str, module_id:int, drawer_id:int, position:int, type:models.DrawerSlideTypes, size:int, e_drawer:bool, db:Session):
-        db_drawer = models.Module(drawer_id= drawer_id, module_id= module_id, position= position, status="closed", type= type, size= size, robot_name= robot_name,is_edrawer=e_drawer )
+def addDrawer( robot_name:str, module_id:int, drawer_id:int, position:int, type:models.DrawerSlideTypes, size:int, db:Session):
+        db_drawer = models.Module(drawer_id= drawer_id, module_id= module_id, position= position, status="Closed", type= type, size= size, robot_name= robot_name)
         db.add(db_drawer)
         db.commit()
         db.refresh(db_drawer)

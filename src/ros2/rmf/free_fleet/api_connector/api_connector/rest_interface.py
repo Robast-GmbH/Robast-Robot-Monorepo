@@ -46,7 +46,7 @@ class RestInterface():
             if e_drawer:
                 self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name,"drawer",str(module_id) )
             else:
-                    raise HTTPException(status_code=404, detail="drawer has to be closed manually")
+                    raise HTTPException(status_code=423, detail="drawer has to be closed manually")
         
         @self.app.post("/settings/drawer/completed")
         def end_drawer_action(robot:schemas.Robot):
