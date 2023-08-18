@@ -69,6 +69,7 @@ class Module(ModuleBase):
     robot_name: str    
     position:int
     status:str
+    label:str
     
     class Config:
         orm_mode = True

@@ -182,7 +182,6 @@ def get_next_task(db:Session, robot_name):
 #robot
 def get_robots(db:Session, skip: int = 0, limit: int = 100)->[models.Robot]:
     db_robots= db.query(models.Robot).offset(skip).limit(limit).all()
-    print(db_robots[0].robot_name)
     return db_robots 
 
 def get_robot(db:Session, robot_name:str)-> models.Robot:
