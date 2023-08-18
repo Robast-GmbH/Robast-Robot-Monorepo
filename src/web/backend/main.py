@@ -108,28 +108,27 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
 
 #task
-@app.get("/tasks/", response_model=List[schemas.Task])
+@app.get("/tasks/")
 def get_task_queue( db: Session = Depends(get_db)):
-    db_tasks = crud.get_tasks_queue(db)
-    
-    if len(db_tasks) ==0:
-            
-            return[]
-    return db_tasks
+    db_tasks = crud.tasks_queue(db)
+    return db_tasks 
 
-@app.get("/tasks/{task_id}", response_model=schemas.ActiveTask)
+
+@app.get("/tasks/{task_id}")
 def read_task(task_id: int, db: Session = Depends(get_db)):
     db_task = crud.get_task(db, task_id=task_id)
     if db_task is None:
         raise HTTPException(status_code=404, detail="task not found")
-    return db_task
+    db_actions= crud.get_actions( task_id= db_task.id, db=db)
+    return {"task": db_task, "actions": db_actions}
+
 
 @app.post("/tasks/")
 def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Session = Depends(get_db)):
     task_id= crud.create_task(db=db,robot_name= robot.robot_name, fleet_name=robot.fleet_name, owner_id= user_id)
     for action in task.actions:
-        if( action.type== schemas.ActionType.MOVE):
-            crud.create_move_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.orientation)
+        if( action.type== schemas.ActionType.Navigation):
+            crud.create_navigation_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.orientation)
         elif(action.type== schemas.ActionType.OPEN_DRAWER):
             crud.create_drawer_action(db, action.step,task_id, action.action.module_id, action.action.drawer_id)
         elif(action.type== schemas.ActionType.NEW_USER):
@@ -137,8 +136,35 @@ def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Sessio
     return 
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
-def update_task( task_id:int, task: schemas.BaseTask, db: Session = Depends(get_db)):#check
-    return crud.update_task(db=db, task_changes=task)#task
+def update_task( task_id:int, task: schemas.UpdateTask, db: Session = Depends(get_db)):
+    return crud.update_task(db, task.task_id, task.robot.robot_name, task.robot.fleet_name)
+
+@app.put("/tasks/{task_id}/step/{step}",response_model=schemas.UpdateAction)
+def update_action(task_id:str, step:str, status:str,finished:bool, db: Session = Depends(get_db)):
+    action_id= crud.get_action_id(db,task_id=task_id,step=step)
+    return crud.update_action(db=db, action_id=action_id, status=status, finished=finished)
+
+@app.get("/tasks/next")
+def get_next_task(db: Session = Depends(get_db)):
+    task=crud.tasks_queue(db)[0]
+    actions= crud.get_actions(task_id=task.id,db=db)
+    list_action=[]
+    for action in actions:
+        if( action.type== schemas.ActionType.NAVIGATION):
+            db_action=crud.get_navigation_action(action_id=action.id,db=db)
+            list_action.append(templates.create_navigation_action(db_action.step,db_action.x_pose,db_action.y_pose,db_action.yaw_pose))
+        elif(action.type== schemas.ActionType.DRAWER):
+            db_action=crud.get_drawer_action(action_id=action.id,db=db)
+            list_action.append(templates.create_drawer_action(db_action.step,db_action.drawer_id,db_action.module_id,db_action.is_edrawer,db_action.locked_for))
+        elif(action.type== schemas.ActionType.NEW_USER):
+            db_action =crud.get_user_action(action_id=action.id,db=db)
+            list_action.append(templates.create_new_user(db_action.step,db_action.user_id))
+            
+    task =templates.create_task(db,task.robot_name,task.id,list_action)
+
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session() 
+    answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
 
 #robot
 @app.get("/robots", response_model =List[schemas.RobotStatus])
@@ -156,28 +182,28 @@ def pause_robot(robot_name: str, fleet_name:str, pause: bool , db: Session = Dep
     headers = {"Content-Type":"application/json"}
     sender = requests.Session() 
     message= {"robot_name":robot_name, "fleet_name":fleet_name}
-    
+    print(message)
     if(pause):
-        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/move/pause",json= json.dumps(message), headers= headers, verify=False)
+        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/navigation/pause",json= json.dumps(message), headers= headers, verify=False)
     else:
-        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/move/resume",json= json.dumps(message), headers= headers, verify=False)
+        answer  =sender.post(url= config["fleetmangement_address"]+"/settings/navigation/resume",json= json.dumps(message), headers= headers, verify=False)
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
     return 
 
 
-@app.put("/robots/status")
-def set_robot(robot: schemas.Robot, db: Session = Depends(get_db)):
+@app.post("/robots/status")
+def set_robot(robot: schemas.RobotStatus, db: Session = Depends(get_db)):
     return crud.set_robot(db=db, robot=robot)
 
-@app.put("/robots/{robot_name}/move")
-def move_robot( robot_name: str, x: float, y: float, yaw: float, owner_id:int, db: Session = Depends(get_db)):
+@app.put("/robots/{robot_name}/navigate")
+def navigate_robot( robot_name: str, x: float, y: float, yaw: float, owner_id:int, db: Session = Depends(get_db)):
     db_robot= crud.get_robot(db=db, robot_name=robot_name)
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner_id)
     step=1
-    db_action= crud.create_move_action(db, step, task_id,x,y,yaw)
-    action= templates.create_move_action( step, x, y, yaw)
+    db_action= crud.create_navigation_action(db, step, task_id,x,y,yaw)
+    action= templates.create_navigation_action( step, x, y, yaw)
     task =templates.create_task(db,robot_name,task_id,[action])
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
@@ -225,9 +251,10 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
     
     nfc_codes=[]
     if(len(restricted_for_user)>0):
-        for id in restricted_for_user:
+       
+         for id in restricted_for_user:
             nfc_code= crud.get_nfc_code(db=db, user_id=id)
-            nfc_codes.append(str(id)+":"+nfc_code)
+            nfc_codes.append(str(id)+":"+str(nfc_code))
 
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     db_module= crud.get_module(db=db,module_id=module.module_id,drawer_id=module.drawer_id)
@@ -236,10 +263,9 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
     
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner)
     step=1
-    db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id)
+    db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id,owner)
     action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.is_edrawer, nfc_codes)
     task =templates.create_task(db,robot_name,task_id,[action])
-    print(json.dumps(task),)
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
     answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)

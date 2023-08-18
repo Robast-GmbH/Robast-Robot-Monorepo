@@ -5,7 +5,7 @@ from xmlrpc.client import boolean
 from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, MetaData, Enum, Float, tuple_
 from sqlalchemy.orm import relationship
 
-from schemas import TaskTypes, DrawerSlideTypes
+from schemas import ActionType, DrawerSlideTypes
 from database import Base
 
 
@@ -39,30 +39,28 @@ class Action(Base):
     __tablename__="action"
     id = Column(Integer, primary_key=True, index=True)
     task_id= Column(Integer, ForeignKey("task.id"))
-    finished= Column(Boolean)
-    position=Column(Integer)
-    discriminator = Column('type',String, index=True)
-    __mapper_args__ = {'polymorphic_on': discriminator}
+    finished= Column(Boolean,default=False)
+    step=Column(Integer)
+    type=Column(Enum(ActionType))
+    status=Column(String)
 
-class MoveAction(Action):
-    __tablename__ = 'moveaction'
-    __mapper_args__ = {'polymorphic_identity': 'move'}
+class NavigationAction(Base):
+    __tablename__="navigationaction"
     id = Column(Integer, ForeignKey('action.id'), primary_key=True)
     x_pose = Column(Float)
     y_pose = Column(Float)
     yaw_pose= Column(Float)
     
-class DrawerAction(Action):
-    __tablename__ = 'draweraction'
-    __mapper_args__ = {'polymorphic_identity': 'drawer'}
+class DrawerAction(Base):
+    __tablename__="draweraction"
     id= Column(Integer, ForeignKey('action.id'), primary_key=True)
     target_user_id =Column(Integer)
     drawer_id= Column(Integer, ForeignKey('module.module_id'))
     module_id= Column(Integer,ForeignKey('module.drawer_id'))
 
-class newUserAction(Action):
-    _tablename__ = 'newuseraction'
-    __mapper_args__ = {'polymorphic_identity': 'newuser'}
+class NewUserAction(Base):
+    __tablename__="useraction"
+    id= Column(Integer, ForeignKey('action.id'),primary_key=True)
     user_id= Column(Integer, ForeignKey('user.id'))
 
 class Module(Base):
@@ -75,6 +73,7 @@ class Module(Base):
     size= Column(Integer)
     is_edrawer =Column(Boolean)
     robot_name= Column(String)
+    label= Column(String)
     
 
 class Robot(Base):
@@ -85,6 +84,7 @@ class Robot(Base):
     y_pose = Column(Float)
     yaw_pose = Column(Float)
     task_id = Column(Integer)
+    battery_level=Column(Float)
 
 
     

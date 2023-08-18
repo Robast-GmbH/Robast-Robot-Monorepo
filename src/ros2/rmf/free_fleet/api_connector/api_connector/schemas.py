@@ -29,7 +29,7 @@ class NewUser(BaseModel):
 
 class ActionType(str, Enum):
     OPEN_DRAWER = 'OPEN_DRAWER'
-    MOVE = 'MOVE'
+    NAVIGATION = 'NAVIGATION'
     NEW_USER = 'NEW_USER'
 
 class Action(BaseModel):
