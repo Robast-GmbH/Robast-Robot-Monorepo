@@ -148,8 +148,9 @@ class ros_controller(Node):
 
     def update_task_state(self, msg: dds.FreeFleetDataTaskState):
         self.get_logger().info(f"{msg}")
-        if msg.status=="Drawer":
-            data= msg.status_message.split()
+        if msg.status=="DrawerState":
+            data= msg.status_message.split('#')
+            self.get_logger().info(f"{data}")
             self.responce.handle_drawer_drawer_status_change(task_id=msg.task_id, module_id= data[0], drawer_id=data[1], status=data[2])
         # print("task state")
         # print(msg)

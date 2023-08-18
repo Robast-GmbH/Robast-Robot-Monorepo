@@ -230,6 +230,14 @@ def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
 
 @app.post("/robots/modules/status",)
 def update_drawer_status(module: schemas.UpdateModule, db: Session = Depends(get_db)):
+    db_module= crud.get_module(db=db, module_id=module.module_id,drawer_id= module.drawer_id)
+    if(module.label==" "):
+        module.label= db_module.label
+    if(module.status== ""):
+        module.status= db_module.status
+    if(module.robot_name==" "):
+        module.robot_name=db_module.robot_name
+
     return crud.set_module_status(db=db, module=module)
  
 # finish_using_drawers
@@ -248,7 +256,6 @@ def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
 def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_user: list[int], owner:Annotated[int,Body()], db: Session = Depends(get_db)):
-    
     nfc_codes=[]
     if(len(restricted_for_user)>0):
        
@@ -264,10 +271,13 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner)
     step=1
     db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id,owner)
-    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.is_edrawer, nfc_codes)
+    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.type == models.DrawerSlideTypes.Electrical, nfc_codes)
+    if(action== "robot"):
+        raise HTTPException(status_code=404, detail="robot not found" )
     task =templates.create_task(db,robot_name,task_id,[action])
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
+    
     answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
 
     if answer.status_code!= 200:
@@ -281,7 +291,7 @@ def close_drawer( robot_name: str, module: schemas.BaseDrawer , db: Session = De
         db_module= crud.get_module(db, module.module_id, module.drawer_id)
         if db_module is None:
             raise HTTPException(status_code=404, detail="module not found" )
-        message=templates.get_close_drawer_interaction_json(db, robot_name, module.drawer_id, module.module_id, db_module.is_edrawer)
+        message=templates.get_close_drawer_interaction_json(db, robot_name, module.drawer_id, module.module_id, db_module.type== models.DrawerSlideTypes.Electrical)
         print(message)
         headers =  {"Content-Type":"application/json"}
         sender = requests.Session()
