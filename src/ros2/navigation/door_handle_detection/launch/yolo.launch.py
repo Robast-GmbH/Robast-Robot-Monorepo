@@ -24,7 +24,7 @@ def generate_launch_description():
     camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D')
     tf_prefix    = LaunchConfiguration('tf_prefix',     default = 'oak')
     mode         = LaunchConfiguration('mode', default = 'depth')
-    base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d-s2-usb-base-framee')
+    base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d-s2-usb-base-frame')
     parent_frame = LaunchConfiguration('parent_frame',  default = 'robot_base_link')
     imuMode      = LaunchConfiguration('imuMode', default = '1')
 
@@ -319,7 +319,7 @@ def generate_launch_description():
 
 
     stereo_node = launch_ros.actions.Node(
-            package='depthai_examples', executable='stereo_inertial_node',
+            package='door_handle_detection', executable='yolov5_door_node',
             output='screen',
             parameters=[{'mxId':                    mxId},
                         {'usb2Mode':                usb2Mode},
@@ -386,10 +386,10 @@ def generate_launch_description():
                                 ('points', pointcloud_topic )]
                 )
 
-        rviz_node = launch_ros.actions.Node(
+        """ rviz_node = launch_ros.actions.Node(
             package='rviz2', executable='rviz2', output='screen',
             arguments=['--display-config', aligned_rviz],
-            condition=IfCondition(enableRviz))
+            condition=IfCondition(enableRviz)) """
 
     else:
         point_cloud_creator = launch_ros.descriptions.ComposableNode(
@@ -423,11 +423,11 @@ def generate_launch_description():
                     point_cloud_creator
                 ],
                 output='screen',)
-    marker_node = launch_ros.actions.Node(
+    """ marker_node = launch_ros.actions.Node(
             package='depthai_examples', executable='rviz2', output='screen',
             arguments=['--display-config', rectify_rviz],
             condition=IfCondition(enableRviz))
-
+ """
     ld = LaunchDescription()
 
     ld.add_action(declare_mxId_cmd)

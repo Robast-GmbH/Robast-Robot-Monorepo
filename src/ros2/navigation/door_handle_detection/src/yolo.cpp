@@ -233,7 +233,7 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool enableDepth,
             spatialDetectionNetwork->setDepthUpperThreshold(10000);
 
             // yolo specific parameters
-            spatialDetectionNetwork->setNumClasses(detectionClassesCount);
+            spatialDetectionNetwork->setNumClasses(1);
             spatialDetectionNetwork->setCoordinateSize(4);
             spatialDetectionNetwork->setAnchors({10, 13, 16, 30, 33, 23, 30, 61, 62, 45, 59, 119, 116, 90, 156, 198, 373, 326});
             spatialDetectionNetwork->setAnchorMasks({{"side80", {0, 1, 2}}, {"side40", {3, 4, 5}}, {"side20", {6, 7, 8}}});
@@ -325,8 +325,8 @@ int main(int argc, char** argv) {
 
     node->declare_parameter("rgbScaleNumerator", 2);
     node->declare_parameter("rgbScaleDinominator", 3);
-    node->declare_parameter("previewWidth", 640);
-    node->declare_parameter("previewHeight", 640);
+    node->declare_parameter("previewWidth", 416);
+    node->declare_parameter("previewHeight", 416);
 
     node->declare_parameter("angularVelCovariance", 0.02);
     node->declare_parameter("linearAccelCovariance", 0.0);
@@ -393,7 +393,7 @@ int main(int argc, char** argv) {
     if(nnParam != "x") {
         node->get_parameter("nnName", nnName);
     }
-    nnPath = "src/navigation/door_handle_detection/resources/yolov5.blob";
+    nnPath = resourceBaseFolder + "/" + nnName;
 
     if(mode == "depth") {
         enableDepth = true;
@@ -576,11 +576,11 @@ int main(int argc, char** argv) {
                     "color/preview");
                 previewPublish.addPublisherCallback();
 
-                dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 640, 640, false);
+                dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 416, 416, false);
                 dai::rosBridge::BridgePublisher<depthai_ros_msgs::msg::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(
                     detectionQueue,
                     node,
-                    std::string("color/yolov4_Spatial_detections"),
+                    std::string("stereo/door_handle_position"),
                     std::bind(&dai::rosBridge::SpatialDetectionConverter::toRosMsg, &detConverter, std::placeholders::_1, std::placeholders::_2),
                     30);
                 detectionPublish.addPublisherCallback();
@@ -659,7 +659,7 @@ int main(int argc, char** argv) {
                     "color/preview");
                 previewPublish.addPublisherCallback();
 
-                dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 640, 640, false);
+                dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 416, 416, false);
                 dai::rosBridge::BridgePublisher<depthai_ros_msgs::msg::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(
                     detectionQueue,
                     node,

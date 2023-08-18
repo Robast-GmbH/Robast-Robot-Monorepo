@@ -21,6 +21,7 @@
   <depend>depthai_ros_msgs</depend>
   <depend>depthai_ros_driver</depend>
   <depend>depthai_bridge</depend>
+  <depend>depthai_examples</depend>
   <depend>depthai_descriptions</depend>
   <depend>image_transport</depend>
   <depend>libopencv-dev</depend>

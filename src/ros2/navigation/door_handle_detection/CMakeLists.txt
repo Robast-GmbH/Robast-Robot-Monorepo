@@ -21,6 +21,8 @@ endif()
 # find_package(depthai CONFIG REQUIRED PATHS "/home/sachin/Desktop/luxonis/depthai-core/build/install/lib/cmake/depthai")
 set(yolov5_door_blob_name "yolov5.blob")
 
+set(door_blob "${PROJECT_SOURCE_DIR}/resources/${yolov5_door_blob_name}")
+
 find_package(ament_cmake REQUIRED)
 
 message(STATUS "------------------------------------------")
@@ -82,8 +84,7 @@ endif()
 
 install(DIRECTORY params DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY resources DESTINATION share/${PROJECT_NAME})
-install(DIRECTORY launch/ DESTINATION share/${PROJECT_NAME}/launch
-FILES_MATCHING PATTERN "*.py")
+install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
         yolov5_door_spatial_node

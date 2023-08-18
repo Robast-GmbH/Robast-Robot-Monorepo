@@ -1,12 +1,11 @@
 {
     "model": {
-        "xml": "best.xml",
-        "bin": "best.bin"
+        "model_name": "yolov5",
+        "zoo": "door_handle_detection"
     },
     "nn_config": {
         "output_format": "detection",
         "NN_family": "YOLO",
-        "input_size": "640x640",
         "NN_specific_metadata": {
             "classes": 1,
             "coordinates": 4,
@@ -53,7 +52,7 @@
     },
     "mappings": {
         "labels": [
-            "door"
+            "door_handle"
         ]
     },
     "version": 1

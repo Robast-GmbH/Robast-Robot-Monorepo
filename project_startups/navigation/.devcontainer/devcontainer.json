@@ -11,6 +11,7 @@
 	"workspaceFolder": "/workspace",
 	"runArgs": [
                 "--name=navigation",
+		"--device=/dev/ttyUSB0",
                 "--network=host",
                 "--privileged",
                 "--volume=/dev:/dev",
