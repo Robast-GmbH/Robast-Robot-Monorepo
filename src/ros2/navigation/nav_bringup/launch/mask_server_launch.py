@@ -12,19 +12,12 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
 
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    is_simulation = environment_yaml["is_simulation"]
+    is_simulation = os.environ["is_simulation"]
 
     # Get the launch directory
     costmap_filters_dir = get_package_share_directory("nav_bringup")
 
-    if is_simulation:
+    if is_simulation == 'True':
         no_go_mask_params_yaml = os.path.join(
             costmap_filters_dir, "masks", "6OG_sim", "no_go_params.yaml"
         )

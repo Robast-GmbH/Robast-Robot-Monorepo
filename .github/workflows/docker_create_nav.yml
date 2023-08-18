@@ -58,7 +58,7 @@ jobs:
       uses: docker/build-push-action@v4
       with:
         context: src/ros2/${{ env.Project-Name }}/
-        target: release
+        target: debug
         build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
