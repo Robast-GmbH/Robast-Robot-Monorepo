@@ -75,9 +75,9 @@ class Module(ModuleBase):
         orm_mode = True
 
 class UpdateModule(ModuleBase):
-    robot_name: str    
-    status: str
-    label:str
+    robot_name:Union[str,None]= None   
+    status:Union[str,None]= None
+    label:Union[str,None]= None
 
 #User
 class UserBase(BaseModel):
