@@ -67,12 +67,12 @@ class RestInterface():
  
     def handle_drawer_drawer_status_change(self, task_id, module_id, drawer_id, status):
         #update task
-        message= ""
-        sender = requests.Session()
-        sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
+        # message= ""
+        # sender = requests.Session()
+        # sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
 
         #update drawer
-        message= self.fill_drawer_status(module_id,  drawer_id, task_id, status)
+        message= self.fill_drawer_status(module_id,  drawer_id, status)
         sender = requests.Session()
         sender.post(url= self.response_api+"/robots/modules/status", data= json.dumps(message), verify=False)
     
@@ -94,10 +94,12 @@ class RestInterface():
                 "finished": finished
                 }
     
-    def fill_drawer_status(module_id:int,  drawer_id:int, task_id:str, status:str):
+    def fill_drawer_status(self, module_id:int,  drawer_id:int, status:str):
         return{
                 "module_id":module_id,
                 "drawer_id":drawer_id,
-                "task_id":task_id,
-                "status": status
+                "status": status,
+                "robot_name": " ",
+                "label": " "
+
         }
