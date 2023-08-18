@@ -46,7 +46,7 @@ class RestInterface():
             if e_drawer:
                 self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name,"drawer",str(module_id) )
             else:
-                    raise HTTPException(status_code=404, detail="drawer has to be closed manually")
+                    raise HTTPException(status_code=423, detail="drawer has to be closed manually")
         
         @self.app.post("/settings/drawer/completed")
         def end_drawer_action(robot:schemas.Robot):
@@ -62,7 +62,7 @@ class RestInterface():
     def handle_robot_update(self, robot_name:str,  task_id:str, mode:int, x_pose:float, y_pose:float, yaw_pose:float, battery_level:float):
         message= self.fill_robot_status_msg(robot_name, "ROBAST", task_id=task_id, x_pose= x_pose, y_pose= y_pose, yaw_pose= yaw_pose, battery_level=battery_level )
         sender = requests.Session()
-        sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
+        #sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
  
     def handle_drawer_drawer_status_change(self, task_id, module_id, drawer_id, status):
         #update task

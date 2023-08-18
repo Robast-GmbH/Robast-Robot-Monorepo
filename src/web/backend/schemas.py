@@ -14,7 +14,7 @@ class Pose(BaseModel):
     y:  float
     z:  float
 
-class Waypoint(BaseModel):
+class Navigation(BaseModel):
     pose: Pose
     orientation: float
 
@@ -31,10 +31,8 @@ class BaseDrawer(BaseModel):
     drawer_id: int
     module_id: int
 
-class Drawer(BaseDrawer):
-    is_edrawer: bool
 
-class DrawerAction(BaseDrawer):
+class Drawer(BaseDrawer):
     locked_for: list[str]
 
 class NewUser(BaseModel):
@@ -47,7 +45,7 @@ class UpdateAction(BaseModel):
 class Action(BaseModel):
     step:int
     type: ActionType
-    action: Union[DrawerAction, Waypoint, NewUser]
+    action: Union[Drawer, Navigation, NewUser]
 
 class BaseTask(BaseModel):
     task_id:str
@@ -71,6 +69,7 @@ class Module(ModuleBase):
     robot_name: str    
     position:int
     status:str
+    label:str
     
     class Config:
         orm_mode = True
