@@ -1,7 +1,7 @@
 from queue import Empty
 from xmlrpc.client import boolean
 from sqlalchemy.orm import Session
-from sqlalchemy import event, inspect, update, asc, desc
+from sqlalchemy import event, inspect, update, asc, desc, distinct,cast
 from sqlalchemy.sql.elements import Null
 from sqlalchemy.sql.functions import user
 import helper
@@ -69,12 +69,13 @@ def delete_user(db: Session, user_id: int):
     return True
 
 #task management
-def get_tasks(db: Session):
-    return db.query(models.Task).filter().all()
 
-def get_tasks_queue(db:Session):
-    subquery=db.query(models.Action.task_id).filter(models.Action.finished== False).distinct()
-    return db.query(models.Task).filter(models.Task.id.in_(subquery)).order_by(models.Task.id).all()
+
+def tasks_queue(db:Session):
+    subquery= db.query(models.Action.task_id).filter(models.Action.finished==False).all()
+    active_tasks= list(map(lambda x:x[0], subquery))
+    queue= db.query(models.Task).filter(models.Task.id.in_(active_tasks)).order_by(models.Task.id).all()
+    return queue 
 
 
 def get_task(db:Session, task_id:int): 
@@ -95,42 +96,88 @@ def update_task(db:Session, id, robot_name:str, fleet_name:str )->models.Task:
     db.flush()
     db.commit()
     db.refresh(db_task)
-    
-def create_drawer_action(db: Session,step:int, task_id, module_id:int, drawer_id:int):
-    db_action= models.DrawerAction(task_id=task_id,finished= False, position=step,drawer_id=drawer_id, module_id=module_id) 
+
+def create_base_action(db:Session, task_id, step):
+    db_action= models.Action(task_id=task_id, step=step, type= schemas.ActionType.DRAWER) 
     db.add(db_action)
     db.commit()
     db.refresh(db_action)
+
     return db_action
 
-def create_move_action(db:Session, step:int, task_id,x:float,y:float,yaw:float):
-    db_action= models.MoveAction(task_id=task_id, finished= False, position=step, x_pose=x, y_pose=y, yaw_pose=yaw) 
-    db.add(db_action)
+def create_drawer_action(db: Session,step:int, task_id, module_id:int, drawer_id:int, owner:int):
+    db_action=create_base_action(db, task_id, step)
+   
+    db_drawer_action=models.DrawerAction( id=db_action.id, target_user_id= owner, drawer_id= drawer_id, module_id= module_id)
+    db.add(db_drawer_action)
     db.commit()
-    db.refresh(db_action)
-    return db_action
+    db.refresh(db_drawer_action)
+    return
+
+def create_navigation_action(db:Session, step:int, task_id,x:float,y:float,yaw:float):
+    db_action=create_base_action(db, task_id, step)
+
+    db_nav_action= models.NavigationAction( id=db_action.id, x_pose= x, y_pose=y, yaw_pose=yaw) 
+    db.add(db_nav_action)
+    db.commit()
+    db.refresh(db_nav_action)
+    return db_nav_action
 
 def create_new_user_nfc(db:Session, step:int, task_id, user_id:int ):
-    db_action= models.newUserAction(task_id=task_id, finished= False, position=step, user_id= user_id) 
-    db.add(db_action)
+    db_action=create_base_action(db, task_id, step)
+
+    db_new_user_action= models.NewUserAction( id=db_action.id, user_id= user_id) 
+    db.add(db_new_user_action)
+    db.commit()
+    db.refresh(db_new_user_action)
+    return db_new_user_action
+
+def get_actions(task_id:str, db:Session):
+    return db.query(models.Action).filter(models.Action.task_id==task_id).all()
+
+def get_action(action_id:int, db:Session)->models.Action:
+    return db.query(models.Action).filter(models.Action.id == action_id).first()
+
+def get_navigation_action(action_id:int, db:Session):
+    return db.query(models.Action, models.NavigationAction).join(models.Action.id==models.NavigationAction.id).filter(models.NavigationAction.id==action_id).first()
+
+def get_drawer_action(action_id:int, db:Session):
+    return db.query(models.Action, models.DrawerAction).join(models.Action.id==models.DrawerAction.id).filter(models.DrawerAction.id==action_id).first()
+
+def get_user_action(action_id:int, db:Session):
+    return db.query(models.Action, models.NewUserAction).join(models.Action.id==models.NewUserAction.id).filter(models.NewUserAction.id==action_id).first()
+
+def get_action_id(db:Session, task_id:str, step:int):
+    return db.query(models.Action.id).filter(models.Action.task_id== task_id and models.Action.step==step).first()[0]
+    
+
+def update_action(db:Session, action_id:int, status:str, finished:bool):
+    db_action = get_action(db=db,action_id=action_id)
+    db_action.status= status
+    db_action.finished= finished
+
+    db.flush()
     db.commit()
     db.refresh(db_action)
     return db_action
 
-def get_actions_of_task(db:Session, task_id:int)->[models.Action]:
-    db_actions= db.query(models.Action).filter(models.Action.task_id==task_id).order_by(models.Action.position).all
-    return db_actions
-
-def update_action(db:Session, action:schemas.Action )->models.Action:
-    db_action= db.query(models.Action).filter(models.Action.id== action.id).first
-    db_action.finished= action.finished
-
-def abort_task(db:Session, task_id:int):
-    db_task = get_task(db=db, id = task_id )
-    
-    db.flush()
+def delete_action(db:Session, action_id):
+    db_action = get_action(action_id= action_id,db=db)
+    db.delete(db_action)
     db.commit()
-    db.refresh(db_task)
+    
+    db_sub_action= db.query(models.DrawerAction).filter(models.DrawerAction.id== action_id)
+    if db_sub_action is None:
+        db_sub_action=db.query(models.NavigationAction).filter(models.NavigationAction.id== action_id)
+    elif db_sub_action is None:
+        db_sub_action=db.query(models.NewUserAction).filter(models.NewUserAction.id== action_id)
+    
+    db.delete(db_sub_action)
+    db.commit()
+    
+def get_next_task(db:Session, robot_name):
+    new_task=tasks_queue(db)[0]
+    return new_task
 
 #robot
 def get_robots(db:Session, skip: int = 0, limit: int = 100)->[models.Robot]:
@@ -167,8 +214,6 @@ def set_robot(db:Session, robot:schemas.Robot):
         db.refresh(db_robot)
         
 #Modules 
-
-
 def get_modules(db: Session, robot_name: str)->[models.Module]:
     return db.query(models.Module).filter(robot_name== models.Module.robot_name ==robot_name).all()
 
@@ -209,8 +254,11 @@ def set_module_status(db:Session,module:schemas.UpdateModule)->models.Module:
         return 
     else:
         db_module.status= module.status
+        db_module.label= module.label
+        db_module.robot_name= module.robot_name
     db.commit()
     db.refresh(db_module)
     return db_module
+
 
 
