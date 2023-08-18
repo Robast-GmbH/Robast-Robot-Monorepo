@@ -135,29 +135,31 @@ def create_new_user_nfc(db:Session, step:int, task_id, user_id:int ):
 def get_actions(task_id:str, db:Session):
     return db.query(models.Action).filter(models.Action.task_id==task_id).all()
 
-def get_action(action_id:str, db:Session):
-    return db.query(models.Action).filter(models.Action.id==action_id).one()
+def get_action(action_id:int, db:Session)->models.Action:
+    return db.query(models.Action).filter(models.Action.id == action_id).first()
 
 def get_navigation_action(action_id:int, db:Session):
-    return db.query(models.Action, models.NavigationAction).join(models.Action.id==models.NavigationAction.id).filter(models.NavigationAction.id==action_id).one()
+    return db.query(models.Action, models.NavigationAction).join(models.Action.id==models.NavigationAction.id).filter(models.NavigationAction.id==action_id).first()
 
 def get_drawer_action(action_id:int, db:Session):
-    return db.query(models.Action, models.DrawerAction).join(models.Action.id==models.DrawerAction.id).filter(models.DrawerAction.id==action_id).one()
+    return db.query(models.Action, models.DrawerAction).join(models.Action.id==models.DrawerAction.id).filter(models.DrawerAction.id==action_id).first()
 
 def get_user_action(action_id:int, db:Session):
-    return db.query(models.Action, models.NewUserAction).join(models.Action.id==models.NewUserAction.id).filter(models.NewUserAction.id==action_id).one()
+    return db.query(models.Action, models.NewUserAction).join(models.Action.id==models.NewUserAction.id).filter(models.NewUserAction.id==action_id).first()
 
 def get_action_id(db:Session, task_id:str, step:int):
-    return db.query(models.Action.id).filter(models.Action.task_id== task_id and models.Action.step==step)
+    return db.query(models.Action.id).filter(models.Action.task_id== task_id and models.Action.step==step).first()[0]
     
 
-def update_action(db:Session, action_id, status, finished):
-    db_action = get_action(db, action_id)
+def update_action(db:Session, action_id:int, status:str, finished:bool):
+    db_action = get_action(db=db,action_id=action_id)
     db_action.status= status
     db_action.finished= finished
-    db.flush(db_action)
+
+    db.flush()
     db.commit()
     db.refresh(db_action)
+    return db_action
 
 def delete_action(db:Session, action_id):
     db_action = get_action(action_id= action_id,db=db)

@@ -299,7 +299,6 @@ class free_fleet_client_direct(Node):
     
     
     def swap_task(self, new_task_id:str):
-        self.publish_task_state("Task","Postponed",False)
         self.clear_task()
         self.task_id= new_task_id
         self.publish_fleet_state()
@@ -345,6 +344,8 @@ class free_fleet_client_direct(Node):
         (id, step)=self.divide_task_id(msg.task_id)
             
         if self.task_id != "" and self.task_id !=id:
-            self.swap_task(id)
+            self.publish_task_state("Task","Postponed",False)
+        
+        self.swap_task(id)
         return step
     
