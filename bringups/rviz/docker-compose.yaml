@@ -1,0 +1,10 @@
+services:
+  rviz:
+    build: .
+    environment:
+      - ROS_DOMAIN_ID=0
+      - RMW_IMPLEMENTATION = rmw_fastrtps_cpp
+    volumes:
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    ports:
+      - "8000:5000"
