@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_interface_flutter/models/robot_provider.dart';
-import 'package:web_interface_flutter/pages/map_page.dart';
+import 'package:web_interface_flutter/pages/home_page.dart';
 
 final RouteObserver<ModalRoute<void>> routeObserver = RouteObserver<ModalRoute<void>>();
 
@@ -22,11 +22,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Robast',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
-        useMaterial3: true,
-      ),
-      home: const MapPage(),
+      home: const HomePage(),
       navigatorObservers: [routeObserver],
     );
   }

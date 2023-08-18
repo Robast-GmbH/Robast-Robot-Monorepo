@@ -4,7 +4,7 @@ class DrawerAction extends RobotAction {
   final int drawerID;
   final int moduleID;
   final List<String> lockedFor;
-  final type = "OPEN_DRAWER";
+  static const type = "DRAWER";
 
   DrawerAction({
     required this.drawerID,

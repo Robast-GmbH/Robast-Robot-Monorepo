@@ -2,9 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:web_interface_flutter/constants/app_colors.dart';
 import 'package:web_interface_flutter/models/drawer_module.dart';
 import 'package:web_interface_flutter/models/robot_provider.dart';
 import 'package:web_interface_flutter/services/api_service.dart';
+import 'package:web_interface_flutter/widgets/page_frame.dart';
 import 'package:web_interface_flutter/widgets/robot_clone.dart';
 
 class ManualControlPage extends StatefulWidget {
@@ -59,32 +61,53 @@ class _ManualControlPageState extends State<ManualControlPage> {
   @override
   Widget build(BuildContext context) {
     final robotProvider = Provider.of<RobotProvider>(context, listen: false);
-    return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-          title: const Text("Manuelle Kontrolle"),
+    return PageFrame(
+      color: AppColors.blue,
+      title: "Freie Schubladenauswahl",
+      child: Container(
+        margin: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: AppColors.lightGrey,
+          borderRadius: BorderRadius.circular(16),
         ),
-        body: Center(
-            child: RobotClone(
-          displayStatus: true,
-          onPressed: (moduleID) async {
-            try {
-              final module = robotProvider.modules["RB0"]?.firstWhere((element) => element.moduleID == moduleID);
+        child: Stack(
+          children: [
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: RobotClone(
+                  displayStatus: true,
+                  onPressed: (moduleID) async {
+                    try {
+                      final module = robotProvider.modules["RB0"]?.firstWhere((element) => element.moduleID == moduleID);
 
-              if (module!.status == "open" && module.type == ModuleType.Electrical) {
-                await APIService.closeDrawer("RB0", moduleID, module.drawerID);
-                await showChangeDrawerStatusDialog(false);
-              } else if (module.status == "closed") {
-                await APIService.openDrawer("RB0", moduleID, module.drawerID);
-                await showChangeDrawerStatusDialog(true);
-              } else {
-                return;
-              }
-              await robotProvider.updateModules();
-            } catch (e) {
-              debugPrint(e.toString());
-            }
-          },
-        )));
+                      if (module!.status == "Opened" && module.type == ModuleType.Electrical) {
+                        await APIService.closeDrawer("RB0", moduleID, module.drawerID);
+                        await showChangeDrawerStatusDialog(false);
+                      } else if (module.status == "Closed") {
+                        await APIService.openDrawer("RB0", moduleID, module.drawerID);
+                        await showChangeDrawerStatusDialog(true);
+                      } else {
+                        return;
+                      }
+                      await robotProvider.updateModules();
+                    } catch (e) {
+                      debugPrint(e.toString());
+                    }
+                  },
+                ),
+              ),
+            ),
+            const Padding(
+              padding: EdgeInsets.all(16),
+              child: Text(
+                "1. Modul wählen",
+                style: TextStyle(fontSize: 18),
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 }

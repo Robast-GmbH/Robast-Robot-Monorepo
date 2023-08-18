@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:web_interface_flutter/constants/app_colors.dart';
 
 import 'package:web_interface_flutter/models/map_controller.dart';
 import 'package:web_interface_flutter/models/robot.dart';
@@ -11,6 +12,7 @@ import 'package:zoom_widget/zoom_widget.dart';
 class RoboMap extends StatefulWidget {
   const RoboMap({super.key, required this.controller});
   final MapController controller;
+
   @override
   State<RoboMap> createState() => _RoboMapState();
 }
@@ -29,6 +31,7 @@ class _RoboMapState extends State<RoboMap> {
           alignment: Alignment.topCenter,
           children: [
             Zoom(
+              backgroundColor: AppColors.lightGrey,
               maxScale: 5,
               initTotalZoomOut: true,
               child: SizedBox(

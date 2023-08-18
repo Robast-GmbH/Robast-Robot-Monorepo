@@ -5,11 +5,11 @@ import 'package:web_interface_flutter/models/actions/waypoint.dart';
 class RobotAction {
   static RobotAction fromJson(Map<String, dynamic> data) {
     switch (data["type"]) {
-      case "OPEN_DRAWER":
+      case DrawerAction.type:
         return DrawerAction.fromJson(data["action"]);
-      case "MOVE":
+      case Waypoint.type:
         return Waypoint.fromJson(data["action"]);
-      case "NEW_USER":
+      case NewUser.type:
         return NewUser.fromJson(data["action"]);
     }
     throw TypeError();

@@ -3,7 +3,7 @@ import 'package:web_interface_flutter/models/actions/robot_action.dart';
 class NewUser extends RobotAction {
   final int userID;
 
-  final type = "NEW_USER";
+  static const type = "NEW_USER";
 
   NewUser({
     required this.userID,

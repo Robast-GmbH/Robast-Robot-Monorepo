@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:web_interface_flutter/constants/app_colors.dart';
 
 class RobotMarker extends StatelessWidget {
   const RobotMarker({super.key});
@@ -6,9 +7,9 @@ class RobotMarker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        borderRadius: const BorderRadius.all(Radius.circular(4)),
-        color: Theme.of(context).colorScheme.inversePrimary,
+      decoration: const BoxDecoration(
+        borderRadius: BorderRadius.all(Radius.circular(4)),
+        color: AppColors.blue,
       ),
       child: const Padding(
         padding: EdgeInsets.all(0),

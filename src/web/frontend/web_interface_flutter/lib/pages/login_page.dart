@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:web_interface_flutter/pages/map_page.dart';
+import 'package:web_interface_flutter/pages/home_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -44,13 +44,14 @@ class _LoginPageState extends State<LoginPage> {
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ElevatedButton.icon(
-                  onPressed: () {
-                    Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const MapPage()));
-                  },
-                  icon: const Icon(Icons.login),
-                  label: const Text("Login")),
-            )
+              child: TextButton.icon(
+                onPressed: () {
+                  Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => const HomePage()));
+                },
+                icon: const Icon(Icons.login),
+                label: const Text("Login"),
+              ),
+            ),
           ],
         ),
       ),

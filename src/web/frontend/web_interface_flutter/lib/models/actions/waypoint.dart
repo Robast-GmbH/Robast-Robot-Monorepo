@@ -4,7 +4,7 @@ class Waypoint extends RobotAction {
   final double x;
   final double y;
   final double yaw;
-  final type = "MOVE";
+  static const type = "NAVIGATION";
 
   Waypoint({
     required this.x,
@@ -16,7 +16,7 @@ class Waypoint extends RobotAction {
     return Waypoint(
       x: data["pose"]["x"],
       y: data["pose"]["y"],
-      yaw: data["orientation"],
+      yaw: data["yaw"],
     );
   }
 }

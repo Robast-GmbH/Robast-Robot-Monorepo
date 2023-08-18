@@ -1,241 +1,214 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:web_interface_flutter/constants/app_colors.dart';
 import 'package:web_interface_flutter/models/drawer_module.dart';
 import 'package:web_interface_flutter/models/robot_provider.dart';
 
-class RobotClone extends StatefulWidget {
+class RobotClone extends StatelessWidget {
   const RobotClone({
     super.key,
     this.onPressed,
     this.displayStatus = false,
+    this.selectedModule,
   });
   final void Function(int)? onPressed;
   final bool displayStatus;
+  final int? selectedModule;
 
-  @override
-  State<RobotClone> createState() => _RobotCloneState();
-}
-
-class _RobotCloneState extends State<RobotClone> {
-  final openColor = Colors.green; //Color.fromARGB(184, 165, 165, 165);
-  final closedColor = Colors.blue; //const Color.fromRGBO(0, 155, 155, 1);
-
-  Color getModuleLedColor(int id) {
-    final module = Provider.of<RobotProvider>(context, listen: false).modules["RB0"]?.firstWhere((element) => element.moduleID == id);
-    if (module != null && module.status == "open") {
-      return openColor;
+  Color getModuleLedColor(DrawerModule module) {
+    if ((module.status == "Opened" && displayStatus) || selectedModule == module.moduleID) {
+      return AppColors.green;
     }
-    return closedColor;
+    return AppColors.blue;
   }
 
   @override
   Widget build(BuildContext context) {
+    final robotProvider = Provider.of<RobotProvider>(context, listen: false);
     return LayoutBuilder(builder: (context, constraints) {
-      double size = constraints.maxHeight / 1350;
-      return Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          width: 570.44 * size,
-          height: 1310.10 * size,
-          decoration: BoxDecoration(
-            border: Border.all(width: 1, strokeAlign: BorderSide.strokeAlignCenter),
-            borderRadius: const BorderRadius.vertical(
-              top: Radius.circular(8),
+      double size = constraints.maxHeight / 1400;
+      return Stack(
+        alignment: Alignment.bottomCenter,
+        children: [
+          ClipOval(
+            child: Container(
+              width: size * 750,
+              height: size * 200,
+              color: AppColors.grey,
             ),
           ),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              SizedBox(
-                width: (570.44 - 40.46 - 35.80) * size,
-                height: 229.50 * size,
-                child: Row(
-                  children: [
-                    SizedBox(
-                      width: (237.23 - 40.46) * size,
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          SizedBox(
-                            height: 19.8 * size,
-                          ),
-                          Container(
-                            width: 97 * size,
-                            height: 29.5 * size,
-                            decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: Colors.black),
-                          ),
-                          SizedBox(
-                            height: 40.54 * size,
-                          ),
-                          Row(
-                            children: [
-                              SizedBox(
-                                width: (55.15 - 40.45) * size,
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Container(
+                  width: 570.44 * size,
+                  height: 1310.10 * size,
+                  decoration: BoxDecoration(
+                    color: AppColors.white,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: (570.44 - 40.46 - 35.80) * size,
+                        height: 229.50 * size,
+                        child: Row(
+                          children: [
+                            SizedBox(
+                              width: (237.23 - 40.46) * size,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  SizedBox(
+                                    height: 19.8 * size,
+                                  ),
+                                  Container(
+                                    width: 97 * size,
+                                    height: 29.5 * size,
+                                    decoration: BoxDecoration(borderRadius: BorderRadius.circular(4), color: AppColors.grey),
+                                  ),
+                                  SizedBox(
+                                    height: 40.54 * size,
+                                  ),
+                                  Row(
+                                    children: [
+                                      SizedBox(
+                                        width: (55.15 - 40.45) * size,
+                                      ),
+                                      Container(
+                                        padding: EdgeInsets.all(6 * size),
+                                        width: 100 * size,
+                                        height: 100 * size,
+                                        decoration: const BoxDecoration(shape: BoxShape.circle, color: AppColors.grey),
+                                      )
+                                    ],
+                                  )
+                                ],
                               ),
-                              Container(
-                                padding: EdgeInsets.all(6 * size),
-                                width: 100 * size,
-                                height: 100 * size,
-                                decoration: BoxDecoration(border: Border.all(), shape: BoxShape.circle, color: Colors.grey),
-                                child: Container(
-                                  width: 80 * size,
-                                  height: 80 * size,
-                                  decoration: const BoxDecoration(shape: BoxShape.circle, color: Colors.black),
-                                ),
-                              )
-                            ],
-                          )
-                        ],
+                            ),
+                            SizedBox(
+                              width: (570.44 - 237.23 - 35.80) * size,
+                              child: Column(
+                                children: [
+                                  SizedBox(
+                                    height: 9.4 * size,
+                                  ),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: AppColors.grey,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    height: (229.5 - 9.4 - 45.98) * size,
+                                  )
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      Selector<RobotProvider, Map<String, List<DrawerModule>>>(
+                          selector: (_, provider) => provider.modules,
+                          builder: (context, modules, child) {
+                            if (modules.isEmpty) return const SizedBox();
+                            return Column(
+                              children: robotProvider.modules.values.first
+                                  .map(
+                                    (e) => buildDrawer(
+                                      drawer: e,
+                                      height: e.size * 10.45 * size,
+                                    ),
+                                  )
+                                  .toList(),
+                            );
+                          }),
+                      SizedBox(
+                        height: (283 / 2 - 43.6) * size,
+                        width: 570.44 * size,
+                        child: Center(
+                          child: Container(
+                            width: 100 * size,
+                            height: 25 * size,
+                            decoration: BoxDecoration(color: AppColors.grey, borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        height: 38 * size,
+                        width: 570.44 * size,
+                        decoration: const BoxDecoration(color: AppColors.grey),
+                      ),
+                      SizedBox(
+                        height: (283 / 2 - 43.6) * size,
+                        width: 570.44 * size,
+                        child: Center(
+                          child: Container(
+                            width: 150 * size,
+                            height: 60 * size,
+                            decoration: BoxDecoration(color: AppColors.grey, borderRadius: BorderRadius.circular(8)),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Container(
+                      height: size * 20,
+                      width: size * 140,
+                      decoration: const BoxDecoration(
+                        color: AppColors.lightGrey,
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(16),
+                        ),
                       ),
                     ),
                     SizedBox(
-                      width: (570.44 - 237.23 - 35.80) * size,
-                      child: Column(
-                        children: [
-                          SizedBox(
-                            height: 9.4 * size,
-                          ),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Colors.black,
-                              border: Border.all(),
-                            ),
-                            height: (229.5 - 9.4 - 45.98) * size,
-                            child: Container(
-                              color: Colors.blue,
-                              margin: EdgeInsets.symmetric(vertical: 18.7 * size, horizontal: 19.7 * size),
-                              child: Center(
-                                  child: Image.asset(
-                                "assets/Logo.png",
-                                height: 120 * size,
-                              )),
-                            ),
-                          )
-                        ],
-                      ),
+                      width: size * 260,
                     ),
+                    Container(
+                      height: size * 20,
+                      width: size * 140,
+                      decoration: const BoxDecoration(
+                        color: AppColors.lightGrey,
+                        borderRadius: BorderRadius.vertical(
+                          bottom: Radius.circular(16),
+                        ),
+                      ),
+                    )
                   ],
-                ),
-              ),
-              Selector<RobotProvider, Map<String, List<DrawerModule>>>(
-                selector: (_, provider) => provider.modules,
-                builder: (context, modules, child) {
-                  if (modules.isEmpty) return const SizedBox();
-                  return Column(
-                    children: modules.values.first
-                        .map((e) => buildDrawer(
-                            id: e.moduleID,
-                            size: size,
-                            height: e.size * 10.45 * size,
-                            color: widget.displayStatus ? getModuleLedColor(e.moduleID) : Colors.blue))
-                        .toList(),
-                  );
-                },
-              ),
-              SizedBox(
-                height: (283 / 2 - 43.6) * size,
-                width: 570.44 * size,
-                child: Center(
-                  child: Container(
-                    width: 100 * size,
-                    height: 25 * size,
-                    decoration: BoxDecoration(border: Border.all(width: 0.2), borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-              ),
-              Container(
-                height: 38 * size,
-                width: 570.44 * size,
-                decoration: BoxDecoration(border: Border.all(width: 0.2)),
-              ),
-              SizedBox(
-                height: (283 / 2 - 43.6) * size,
-                width: 570.44 * size,
-                child: Center(
-                  child: Container(
-                    width: 150 * size,
-                    height: 60 * size,
-                    decoration: BoxDecoration(border: Border.all(width: 0.2), borderRadius: BorderRadius.circular(8)),
-                  ),
-                ),
-              ),
-            ],
+                )
+              ],
+            ),
           ),
-        ),
+        ],
       );
     });
   }
 
-  Widget buildDrawer({required int id, required double size, required double height, required Color color}) {
-    final double drawerWidth = 400 * size;
-    final double topGap = 20 * size;
-    final double bottomGap = 6.5 * size;
+  Widget buildDrawer({
+    required DrawerModule drawer,
+    required double height,
+  }) {
     return GestureDetector(
-      onTap: () => widget.onPressed?.call(id),
+      onTap: () => onPressed?.call(drawer.moduleID),
       child: Container(
-        decoration: BoxDecoration(border: Border.all(width: 0.5, strokeAlign: BorderSide.strokeAlignOutside)),
-        height: height,
-        width: double.infinity,
-        child: Column(
-          children: [
-            SizedBox(
-              height: topGap,
+          margin: const EdgeInsets.only(left: 2, right: 2, bottom: 2),
+          decoration: BoxDecoration(color: getModuleLedColor(drawer)),
+          height: height - 2,
+          width: double.infinity,
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              drawer.label,
+              style: const TextStyle(color: AppColors.white, fontWeight: FontWeight.w500, fontSize: 16),
             ),
-            Expanded(
-              child: Container(
-                width: drawerWidth,
-                decoration: BoxDecoration(
-                    border: Border.all(
-                      width: 0.5,
-                    ),
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8)),
-                child: Stack(
-                  alignment: Alignment.topCenter,
-                  children: [
-                    Column(
-                      children: [
-                        SizedBox(
-                          height: 25 * size,
-                        ),
-                        buildGrip(size: size),
-                      ],
-                    ),
-                    Container(
-                      width: drawerWidth - 30,
-                      height: 2 * size,
-                      decoration: BoxDecoration(
-                        color: color,
-                        boxShadow: [
-                          BoxShadow(
-                            color: color, // Shadow color
-                            offset: const Offset(1, 1), // Changes position of shadow
-                            blurRadius: 3, // Changes size of shadow
-                            spreadRadius: 1, // Expands the shadow
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            SizedBox(
-              height: bottomGap,
-            )
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget buildGrip({required double size}) {
-    final double width = (400 - 2 * 15.51) * size;
-    final double height = 20.56 * size;
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(border: Border.all(width: 1), borderRadius: BorderRadius.circular(8)),
+          )),
     );
   }
 }

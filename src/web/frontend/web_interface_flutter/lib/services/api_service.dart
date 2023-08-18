@@ -41,7 +41,7 @@ class APIService {
         "actions": [
           {
             "step": 0,
-            "type": "OPEN_DRAWER",
+            "type": "DRAWER",
             "action": {
               "drawer_id": drawerID,
               "module_id": moduleID,
@@ -50,15 +50,15 @@ class APIService {
           },
           {
             "step": 1,
-            "type": "MOVE",
+            "type": "NAVIGATION",
             "action": {
               "pose": {"x": xPose, "y": yPose, "z": 0},
-              "orientation": yawPose,
+              "yaw": yawPose,
             },
           },
           {
             "step": 2,
-            "type": "OPEN_DRAWER",
+            "type": "DRAWER",
             "action": {
               "drawer_id": drawerID,
               "module_id": moduleID,
@@ -76,7 +76,7 @@ class APIService {
       'accept': 'application/json',
       'Content-Type': 'application/json',
     };
-    final response = await http.post(Uri.parse("$baseURL:$port/tasks/"), headers: headers, body: jsonEncode(data));
+    final response = await http.post(Uri.parse("$baseURL:$port/tasks/?user_id=$ownerID"), headers: headers, body: jsonEncode(data));
     return response.statusCode;
   }
 
@@ -178,10 +178,8 @@ class APIService {
 
   static Future<void> closeDrawer(String robotName, int moduleID, int drawerID) async {
     final data = <String, dynamic>{
-      "module": {
-        "module_id": moduleID,
-        "drawer_id": drawerID,
-      },
+      "module_id": moduleID,
+      "drawer_id": drawerID,
     };
     final headers = {
       'accept': 'application/json',
@@ -199,24 +197,55 @@ class APIService {
     }
   }
 
-  static Future<void> moveRobot(String robotName, double x, double y, double yaw) async {
+  static Future<void> moveRobot(String robotName, double x, double y, double yaw, int ownerID) async {
     final headers = {
       'accept': 'application/json',
       'Content-Type': 'application/json',
     };
-    final data = <String, dynamic>{
-      "x": x,
-      "y": y,
-      "yaw": yaw,
+
+    final data = {
+      "target": {
+        "pose": {
+          "x": x,
+          "y": y,
+          "z": 0,
+        },
+        "yaw": yaw,
+      },
+      "owner_id": ownerID
     };
     try {
       await http.put(
-        Uri.parse("$baseURL:$port/robots/$robotName/move"),
+        Uri.parse("$baseURL:$port/robots/$robotName/navigate"),
+        headers: headers,
+        body: data,
+      );
+    } catch (e) {
+      debugPrint("Robot move failed");
+      debugPrint(e.toString());
+    }
+  }
+
+  static Future<void> relabelDrawer(int moduleID, int drawerID, String label, String robotName) async {
+    final data = <String, dynamic>{
+      "module_id": moduleID,
+      "drawer_id": drawerID,
+      "robot_name": robotName,
+      "label": label,
+      "status": "Closed",
+    };
+    final headers = {
+      'accept': 'application/json',
+      'Content-Type': 'application/json',
+    };
+    try {
+      await http.post(
+        Uri.parse("$baseURL:$port/robots/modules/status"),
         headers: headers,
         body: jsonEncode(data),
       );
     } catch (e) {
-      debugPrint("Robot move failed");
+      debugPrint("Failed to relabel drawer");
       debugPrint(e.toString());
     }
   }

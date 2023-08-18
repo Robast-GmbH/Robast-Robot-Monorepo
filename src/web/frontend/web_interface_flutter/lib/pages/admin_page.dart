@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:web_interface_flutter/widgets/api_address_input_field.dart';
 import 'package:web_interface_flutter/widgets/docker_overview.dart';
 import 'package:web_interface_flutter/widgets/manual_move_map.dart';
+import 'package:web_interface_flutter/widgets/robot_labeling_overview.dart';
 import 'package:web_interface_flutter/widgets/rosbag_overview.dart';
 import 'package:web_interface_flutter/widgets/status_overview.dart';
 import 'package:web_interface_flutter/widgets/tasks_overview.dart';
@@ -14,8 +17,18 @@ class AdminPage extends StatefulWidget {
 }
 
 class _AdminPageState extends State<AdminPage> {
-  final menuPoints = ["docker", "rosbag", "status", "log", "tasks", "API", "move"];
-  final menuIcons = [Icons.storage_rounded, Icons.backpack, Icons.battery_5_bar, Icons.text_snippet, Icons.task, Icons.web, Icons.directions_walk];
+  final menuPoints = ["docker", "rosbag", "status", "log", "tasks", "API", "move", "nano", "drawer"];
+  final menuIcons = [
+    Icons.storage_rounded,
+    Icons.backpack,
+    Icons.battery_5_bar,
+    Icons.text_snippet,
+    Icons.task,
+    Icons.web,
+    Icons.directions_walk,
+    Icons.developer_board,
+    Icons.draw,
+  ];
   final menuWidget = [
     const DockerOverview(),
     const RosbagOverview(),
@@ -24,13 +37,31 @@ class _AdminPageState extends State<AdminPage> {
     const TasksOverview(),
     const APIAddressInputField(),
     const ManualMoveMap(),
+    TextButton(
+      child: const Text("Nano aus"),
+      onPressed: () async {
+        const scriptPath = '~/robast/scripts/shutdown_jetson.sh'; // Replace with the actual path to your Bash script
+
+        final result = await Process.run('bash', [scriptPath]);
+
+        if (result.exitCode == 0) {
+          debugPrint('Script executed successfully.');
+          debugPrint('Script output:');
+          debugPrint(result.stdout);
+        } else {
+          debugPrint('Script execution failed.');
+          debugPrint('Script error:');
+          debugPrint(result.stderr);
+        }
+      },
+    ),
+    const RobotLabelingOverview(),
   ];
   int selectedIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: const Text("Admin"),
       ),
       body: Row(

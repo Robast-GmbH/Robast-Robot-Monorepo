@@ -5,6 +5,7 @@ class Robot {
   final double y;
   final double yaw;
   final int taskID;
+  final double batteryLevel;
   Robot({
     required this.name,
     required this.fleetName,
@@ -12,6 +13,7 @@ class Robot {
     required this.y,
     required this.yaw,
     required this.taskID,
+    required this.batteryLevel,
   });
 
   static Robot fromJson(Map<String, dynamic> data) {
@@ -22,6 +24,7 @@ class Robot {
       y: data["y_pose"],
       yaw: data["yaw_pose"],
       taskID: data["task_id"],
+      batteryLevel: data["battery_level"],
     );
   }
 
@@ -33,6 +36,7 @@ class Robot {
       y: -2.87,
       yaw: 0,
       taskID: 0,
+      batteryLevel: 0,
     );
   }
 }
