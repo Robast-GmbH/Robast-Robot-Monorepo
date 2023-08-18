@@ -140,8 +140,8 @@ def update_task( task_id:int, task: schemas.UpdateTask, db: Session = Depends(ge
     return crud.update_task(db, task.task_id, task.robot.robot_name, task.robot.fleet_name)
 
 @app.put("/tasks/{task_id}/step/{step}",response_model=schemas.UpdateAction)
-def update_action(task_id:str, step:str, status:str,finished:bool, db: Session = Depends(get_db)):
-    action_id= crud.get_action_id(db,task_id=task_id,step=step)
+def update_action(task_id:str, step:str, status:Annotated[str,Body()],finished:Annotated[bool,Body()], db: Session = Depends(get_db)):
+    action_id= crud.get_action_id(db=db,task_id=task_id,step=step)
     return crud.update_action(db=db, action_id=action_id, status=status, finished=finished)
 
 @app.get("/tasks/next")

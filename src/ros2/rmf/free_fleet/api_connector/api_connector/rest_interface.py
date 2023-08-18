@@ -18,7 +18,6 @@ class RestInterface():
         
         @self.app.post("/task")
         def do_task( task:schemas.Task):
-          
             for action in task.actions:
                 if action.type== schemas.ActionType.NAVIGATION:
                     self.ros_node.handle_destination_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.pose.x, action.action.pose.y,action.action.orientation)
@@ -67,9 +66,9 @@ class RestInterface():
  
     def handle_drawer_drawer_status_change(self, task_id, module_id, drawer_id, status):
         #update task
-        # message= ""
-        # sender = requests.Session()
-        # sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
+        message= self.fill_action_status(status="Drawer_is"+status, finished=False)
+        sender = requests.Session()
+        sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
 
         #update drawer
         message= self.fill_drawer_status(module_id,  drawer_id, status)
@@ -87,12 +86,12 @@ class RestInterface():
                 "yaw_pose": yaw_pose,
                 "battery_level":battery_level } 
     
-    def fill_task_status_msg(self, status:str, status_msg:str, finished:bool):
+    def fill_action_status(self,status:str, finished:bool):
         return{
-                "status": status,
-                "status_msg": status_msg,
-                "finished": finished
-                }
+                "staus": status,
+                "finished":finished
+
+        }
     
     def fill_drawer_status(self, module_id:int,  drawer_id:int, status:str):
         return{
