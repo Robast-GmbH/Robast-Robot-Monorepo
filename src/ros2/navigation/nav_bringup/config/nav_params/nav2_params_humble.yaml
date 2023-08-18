@@ -91,7 +91,7 @@ controller_server:
       transform_tolerance: 0.1
       temperature: 0.3
       gamma: 0.015
-      motion_model: "Ackermann"
+      motion_model: "DiffDrive"
       visualize: false
       reset_period: 1.0 # (only in Humble)
       TrajectoryVisualizer:
