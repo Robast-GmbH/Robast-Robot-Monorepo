@@ -35,7 +35,7 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('robot_frame_id', 'map')
         self.declare_parameter('robot_odom', '/odometry/filtered')
  
-        self.declare_parameter('heartbeat', 0.01)
+        self.declare_parameter('heartbeat', 0.001)
         self.declare_parameter('statemaschine_open_drawer_topic', 'trigger_drawer_tree')
         self.declare_parameter('statemaschine_close_e_drawer_topic', 'close_drawer')
         self.declare_parameter('statemaschine_open_e_drawer_topic', 'trigger_electric_drawer_tree')
@@ -114,7 +114,6 @@ class free_fleet_client_direct(Node):
 
     def start_navigation_task(self, x:float,y: float, yaw: float):
         print("nav")
-        self.publish_task_state("Navigation","Started", False)
         self.nav_controller.start_navigation(x, y, yaw)
     
     #drawer request
@@ -134,10 +133,10 @@ class free_fleet_client_direct(Node):
             if  user_name is None:
                 return
             else: 
-                self.publish_task_state("Drawer", user_name, False)
+                self.publish_task_state("Drawer", str(module_id)+"#"+str(drawer_id)+user_name, False)
         self.set_drawer_lock(module_id, drawer_id, restriction)
         self.open_drawer( module_id=module_id, drawer_id= drawer_id, e_drawer= e_drawer)
-        self.publish_task_state("Drawer", "Opened", False)
+        self.publish_task_state("Drawer", str(module_id)+"#"+str(drawer_id)+"#Opened", False)
 
     def open_drawer(self, module_id:int, drawer_id:int, e_drawer:bool): 
         ros_msg = DrawerAddress()
@@ -161,10 +160,10 @@ class free_fleet_client_direct(Node):
         ros_msg.module_id = module_id
         ros_msg.drawer_id = drawer_id
         self.e_drawer_close_publisher.publish(ros_msg)
-        self.publish_task_state("Drawer", "Closed", False)
+        self.publish_task_state("Drawer", str(module_id)+"#"+str(drawer_id)+"Closed", False)
     
     def end_drawer_task(self):
-        self.publish_task_state("Drawer", "Finished", True)
+        self.publish_task_state("DrawerAction", "Finished", True)
         
     def set_drawer_lock(self, module_id:int, drawer_id:int, restriction):
         if(len(restriction)>0):
@@ -301,7 +300,7 @@ class free_fleet_client_direct(Node):
     
     
     def swap_task(self, new_task_id:str):
-        self.publish_task_state("Postponed","this task is got overrolled by an other Task",False)
+        self.publish_task_state("Task","Postponed",False)
         self.clear_task()
         self.task_id= new_task_id
         self.publish_fleet_state()
@@ -333,7 +332,7 @@ class free_fleet_client_direct(Node):
         self.finish_task()
 
     def finish_task(self):
-        self.publish_task_state("Task_completed","all steps were finished", True)
+        self.publish_task_state("Task","Completed", True)
         self.clear_task()
         self.publish_fleet_state()
 
@@ -346,7 +345,7 @@ class free_fleet_client_direct(Node):
             return
         (id, step)=self.divide_task_id(msg.task_id)
             
-        if self.task_id is not None and self.task_id !=id:
+        if self.task_id != "" and self.task_id !=id:
             self.swap_task(id)
         return step
     
