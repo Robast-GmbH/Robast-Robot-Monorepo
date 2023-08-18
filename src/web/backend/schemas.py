@@ -75,9 +75,9 @@ class Module(ModuleBase):
         orm_mode = True
 
 class UpdateModule(ModuleBase):
-    robot_name: str    
-    status: str
-    label:str
+    robot_name:Union[str,None]= None   
+    status:Union[str,None]= None
+    label:Union[str,None]= None
 
 #User
 class UserBase(BaseModel):
@@ -104,7 +104,7 @@ class User(UserBase):
 class RobotStatus(BaseModel):
     robot_name: str
     fleet_name: str  
-    task_id: str
+    task_id: int
     x_pose:float
     y_pose: float
     yaw_pose: float

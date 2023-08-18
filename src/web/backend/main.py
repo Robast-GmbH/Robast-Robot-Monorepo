@@ -167,14 +167,14 @@ def get_next_task(db: Session = Depends(get_db)):
     answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
 
 #robot
-@app.get("/robots")#, response_model =List[schemas.RobotStatus])
+@app.get("/robots", response_model =List[schemas.RobotStatus])
 def get_robots_status(db: Session = Depends(get_db)):
     db_robots = crud.get_robots(db=db)
     return db_robots
 
 @app.get("/robots/{robot_name}", response_model = schemas.RobotStatus)
 def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
-    db_robot = crud.get_robots(db=db, robot_name=robot_name)
+    db_robot = crud.get_robot(db=db, robot_name=robot_name)
     return db_robot
 
 @app.put("/robots/pause_resume")
@@ -231,11 +231,11 @@ def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
 @app.post("/robots/modules/status",)
 def update_drawer_status(module: schemas.UpdateModule, db: Session = Depends(get_db)):
     db_module= crud.get_module(db=db, module_id=module.module_id,drawer_id= module.drawer_id)
-    if(module.label==" "):
+    if(module.label is None):
         module.label= db_module.label
-    if(module.status== ""):
+    if(module.status  is None):
         module.status= db_module.status
-    if(module.robot_name==" "):
+    if(module.robot_name  is None):
         module.robot_name=db_module.robot_name
 
     return crud.set_module_status(db=db, module=module)

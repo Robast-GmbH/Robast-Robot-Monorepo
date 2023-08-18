@@ -34,12 +34,14 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('robot_model',"Robast_Theron")
         self.declare_parameter('robot_frame_id', 'map')
         self.declare_parameter('robot_odom', '/odometry/filtered')
+        
  
         self.declare_parameter('heartbeat', 0.001)
         self.declare_parameter('statemaschine_open_drawer_topic', 'trigger_drawer_tree')
         self.declare_parameter('statemaschine_close_e_drawer_topic', 'close_drawer')
         self.declare_parameter('statemaschine_open_e_drawer_topic', 'trigger_electric_drawer_tree')
         self.declare_parameter('move_base_server_name', 'goal_pose')
+        self.declare_parameter('drawer_status_change_topic','/drawer_is_open')
 
         self.declare_parameter('dds_domain', 42)
         self.declare_parameter('dds_slide_drawer_topic', 'slide_drawer_request')
@@ -54,6 +56,7 @@ class free_fleet_client_direct(Node):
         self.ros_opendrawer_topic = self.get_parameter('statemaschine_open_drawer_topic').get_parameter_value().string_value
         self.ros_open_e_drawer_topic = self.get_parameter('statemaschine_open_e_drawer_topic').get_parameter_value().string_value
         self.ros_close_e_drawer_topic = self.get_parameter('statemaschine_close_e_drawer_topic').get_parameter_value().string_value
+        self.ros_drawer_change_topic = self.get_parameter('drawer_status_change_topic').get_parameter_value().string_value
         self.ros_move_base_server_name=self.get_parameter('move_base_server_name').get_parameter_value().string_value
         self.dds_domain = self.get_parameter('dds_domain').get_parameter_value().integer_value
         self.dds_slide_drawer_topic=self.get_parameter('dds_slide_drawer_topic').get_parameter_value().string_value
@@ -80,7 +83,7 @@ class free_fleet_client_direct(Node):
         self.drawer_publisher = self.create_publisher(DrawerAddress, self.ros_opendrawer_topic, qos_profile=qos_profile)
         self.e_drawer_open_publisher = self.create_publisher(DrawerAddress, self.ros_open_e_drawer_topic, qos_profile=qos_profile)
         self.e_drawer_close_publisher = self.create_publisher(DrawerAddress, self.ros_close_e_drawer_topic, qos_profile=qos_profile)
-        
+        self.drawer_status_subcriber = self.create_subscription(DrawerStatus, self.ros_drawer_change_topic, qos_profile=qos_profile, callback=self.drawer_change_callback)
       
         #controll nfc
         self.controll_nfc_publisher = self.create_publisher(Bool,"/nfc_switch", qos_profile)
@@ -135,7 +138,7 @@ class free_fleet_client_direct(Node):
                 self.publish_task_state("DrawerAuthentification", str(module_id)+"#"+str(drawer_id)+user_name, False)
         self.set_drawer_lock(module_id, drawer_id, restriction)
         self.open_drawer( module_id=module_id, drawer_id= drawer_id, e_drawer= e_drawer)
-        self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Opened", False)
+        #self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Opened", False)
 
     def open_drawer(self, module_id:int, drawer_id:int, e_drawer:bool): 
         ros_msg = DrawerAddress()
@@ -152,14 +155,13 @@ class free_fleet_client_direct(Node):
             print("drawer")
         
     def close_drawer(self,module_id, drawer_id, e_drawer):
-        print("close")
         if(not e_drawer):
             return
         ros_msg = DrawerAddress()
         ros_msg.module_id = module_id
         ros_msg.drawer_id = drawer_id
         self.e_drawer_close_publisher.publish(ros_msg)
-        self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Closed", False)
+        #self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Closed", False)
     
     def end_drawer_task(self):
         self.publish_task_state("DrawerAction", "Finished", True)
@@ -191,6 +193,12 @@ class free_fleet_client_direct(Node):
 
     def receive_authentication_codes(self, msg):
         pass
+
+    def drawer_change_callback(self, msg:DrawerStatus):
+        if(msg.drawer_is_open):
+            self.publish_task_state("DrawerState", str(msg.drawer_address.module_id)+"#"+str(msg.drawer_address.drawer_id)+"#Opened", False)
+        else:
+            self.publish_task_state("DrawerState", str(msg.drawer_address.module_id)+"#"+str(msg.drawer_address.drawer_id)+"#Closed", False)
 
     # new_NFC request
     def new_user_callback(self, msg:dds.FreeFleetDataCreateNfcRequest):
@@ -246,9 +254,7 @@ class free_fleet_client_direct(Node):
             else:
                 selected_drawer= next((drawer for drawer in self.open_drawers if drawer.module_id== int(msg.value) and drawer.e_drawer), None)
                 if selected_drawer is not None: 
-                    self.get_logger().info('close_drawer')
                     self.close_drawer(selected_drawer.module_id,selected_drawer.drawer_id, selected_drawer.e_drawer)
-                    print("close drawer")
 
 
     #publish states
