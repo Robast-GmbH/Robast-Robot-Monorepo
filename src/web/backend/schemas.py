@@ -104,7 +104,7 @@ class User(UserBase):
 class RobotStatus(BaseModel):
     robot_name: str
     fleet_name: str  
-    task_id: str
+    task_id: int
     x_pose:float
     y_pose: float
     yaw_pose: float
