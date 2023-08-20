@@ -110,7 +110,6 @@ class ros_controller(Node):
 
     # handle_drawer_request
     def handle_slide_drawer_request(self, fleet_name:str, robot_name: str, task_id:str, module_id: int, drawer_id: int, restricted:list[str] , e_drawer: bool, open: bool):
-        print("ros handle drawer")
         slide_drawer_request = dds.FreeFleetDataDrawerRequest()
         slide_drawer_request.task_id= task_id
         slide_drawer_request.fleet_name= fleet_name
@@ -130,7 +129,6 @@ class ros_controller(Node):
         self.dds_new_user_request.publish(new_user_request)
 
     def handle_setting_request(self, robot_name:str, fleet_name:str, command:str, value:str):
-        print("setting") 
         setting_request = dds.FreeFleetDataSettingRequest()
         setting_request.command=command
         setting_request.value=value
@@ -152,11 +150,10 @@ class ros_controller(Node):
             data= msg.status_message.split('#')
             self.get_logger().info(f"{data}")
             self.responce.handle_drawer_drawer_status_change(task_id=msg.task_id, module_id= data[0], drawer_id=data[1], status=data[2])
-        # print("task state")
-        # print(msg)
-        # if self.responce is not None:
-        #     task, step= self.divide_task_id(msg.task_id)
-        #     self.responce.handle_task_update(task_id= task, step= step, status= msg.status, status_msg= msg.status_message, finished= msg.completed)
+        elif msg.status=="Task":
+            if msg.message=="Completed":
+                pass# request next task
+            
             
     def divide_task_id(self,task_id):
         combined_ids= task_id.split('#')

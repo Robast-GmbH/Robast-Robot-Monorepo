@@ -20,7 +20,7 @@ class RestInterface():
         def do_task( task:schemas.Task):
             for action in task.actions:
                 if action.type== schemas.ActionType.NAVIGATION:
-                    self.ros_node.handle_destination_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.pose.x, action.action.pose.y,action.action.orientation)
+                    self.ros_node.handle_destination_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.pose.x, action.action.pose.y,action.action.yaw)
                 elif action.type== schemas.ActionType.OPEN_DRAWER:
                     self.ros_node.handle_slide_drawer_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.module_id, action.action.drawer_id, action.action.locked_for, action.action.is_edrawer,True)
                 elif action.type== schemas.ActionType.NEW_USER:
@@ -60,9 +60,15 @@ class RestInterface():
         return self.app
 
     def handle_robot_update(self, robot_name:str,  task_id:str, mode:int, x_pose:float, y_pose:float, yaw_pose:float, battery_level:float):
+        task_id= task_id.split('#')[0]
+        if not task_id.isnumeric() :
+            task_id=0
+        else:
+            task_id=int(task_id)
+
         message= self.fill_robot_status_msg(robot_name, "ROBAST", task_id=task_id, x_pose= x_pose, y_pose= y_pose, yaw_pose= yaw_pose, battery_level=battery_level )
         sender = requests.Session()
-        #sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
+        sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
  
     def handle_drawer_drawer_status_change(self, task_id, module_id, drawer_id, status):
         #update task
@@ -76,7 +82,7 @@ class RestInterface():
         sender.post(url= self.response_api+"/robots/modules/status", data= json.dumps(message), verify=False)
     
 
-    def fill_robot_status_msg(self,robot_name:str, fleet_name:str, task_id:str, x_pose:int, y_pose:int, yaw_pose:int, battery_level:float):
+    def fill_robot_status_msg(self,robot_name:str, fleet_name:str, task_id:int, x_pose:int, y_pose:int, yaw_pose:int, battery_level:float):
         return{ 
                 "robot_name": robot_name,
                 "fleet_name" : fleet_name,

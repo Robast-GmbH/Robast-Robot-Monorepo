@@ -28,6 +28,7 @@ class nav_controller:
 
     def start_navigation(self, x, y, yaw):  
         print("start_nav")
+        self.nav.wait_for_server()
         self.goal_pose =self.create_pose(x, y, yaw)
         self._send_goal_future = self.nav.send_goal_async(
                 self.goal_pose,
