@@ -8,7 +8,7 @@ namespace nfc_bridge
     using namespace std::placeholders;
     this->serial_connector_ = new serial_helper::SerialHelper(serial_port_path);
     // this->db_connector_ = new db_helper::PostgreSqlHelper("robot", "123456789", "10.10.23.9", "robast");
-    this->db_connector_ = new db_helper::PostgreSqlHelper("robast", "robast", "127.0.0.1", "RobastDB");
+    //this->db_connector_ = new db_helper::PostgreSqlHelper("robast", "robast", "127.0.0.1", "RobastDB");
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
@@ -115,7 +115,7 @@ namespace nfc_bridge
     {
       return false;
     }
-    // this->serial_connector_.send_ascii_cmd(BEEP_STANDART);
+    this->serial_connector_->send_ascii_cmd(BEEP_STANDART);
     this->serial_connector_->send_ascii_cmd(TOP_LED_OFF(LED_GREEN));
     return true;
   }
@@ -158,15 +158,15 @@ namespace nfc_bridge
       // else
       // {
         std_msgs::msg::String message = std_msgs::msg::String();
-        if (nfc_code_to_drawer_.count(*scanned_key) == 1)
-        {
+        // if (nfc_code_to_drawer_.count(*scanned_key) == 1)
+        // {
           // *found_user = nfc_code_to_drawer_.at(*scanned_key);
           //message.data = *found_user;
           message.data = *scanned_key;
           // RCLCPP_INFO(this->get_logger(), "Publishing Authenticated user %s", (*found_user).c_str());
           RCLCPP_INFO(this->get_logger(), "Publishing Authenticated user %s", (*scanned_key).c_str());
           authentication_publisher_->publish(message);
-        }
+        // }
       // }
     }
   }

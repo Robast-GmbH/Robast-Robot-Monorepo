@@ -261,7 +261,10 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
        
          for id in restricted_for_user:
             nfc_code= crud.get_nfc_code(db=db, user_id=id)
-            nfc_codes.append(str(id)+":"+str(nfc_code))
+            nfc_codes.append(str(nfc_code)+":"+str(id))
+            if nfc_code is None:
+                db_user= crud.get_user(db,id)
+                raise HTTPException(404, detail="User "+db_user.fullname+" has no permission to lock a drawer")
 
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     db_module= crud.get_module(db=db,module_id=module.module_id,drawer_id=module.drawer_id)
