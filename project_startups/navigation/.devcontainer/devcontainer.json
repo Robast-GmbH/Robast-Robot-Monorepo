@@ -1,6 +1,6 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"image": "ghcr.io/robast-gmbh/monorepo/navigation:devel",
+	"image": "ghcr.io/robast-gmbh/monorepo/navigation:hagen",
 	"remoteUser": "ubuntu",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
@@ -12,16 +12,15 @@
 	"runArgs": [
                 "--name=navigation",
                 "--network=host",
-                "--privileged",
-                "--volume=/dev:/dev",
-                "--device-cgroup-rule=c 189:* rmw",
+                "--volume=/dev/shm:/dev/shm",
 				"-e is_simulation=true",
 				"-e config_directory=config_simulation",
 				"-e robot_name=rb_theron",
 				"-e init_x=1.46",
 				"-e init_y=-2.89",
 				"-e init_z=0.0",
-				"-e init_yaw=1.57"
+				"-e init_yaw=1.57",
+				"-e FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config_shm.xml"
         ],
 	"remoteEnv": {
 			"is_simulation": "true",
