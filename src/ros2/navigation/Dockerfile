@@ -101,7 +101,6 @@ ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
-
 ############################## Build ##################################
 FROM ros:humble-ros-base-jammy as build
 ARG GIT_TOKEN
@@ -112,11 +111,14 @@ RUN apt-get update && apt-get install -y git
 
 WORKDIR /tmp
 RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+RUN git clone https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
 
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs && mv /tmp/spatio_temporal_voxel_layer /ws/src/ros2/navigation
+
+RUN rm -r /ws/src/navigation/external_plugins;
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
@@ -162,6 +164,15 @@ ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 RUN apt-get update \
   && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
+ENV is_simulation=False
+ENV config_directory=config
+ENV robot_name=rb_theron
+ENV init_x=1.46
+ENV init_y=-2.89
+ENV init_z=0.0
+ENV init_yaw=1.57
+ENV prefix=''
+
 ############################## DEBUG ##################################
 FROM ros:humble-ros-base-jammy as debug
 
@@ -198,3 +209,12 @@ ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
+
+ENV is_simulation=False
+ENV config_directory=config
+ENV robot_name=rb_theron
+ENV init_x=1.46
+ENV init_y=-2.89
+ENV init_z=0.0
+ENV init_yaw=1.57
+ENV prefix=''
