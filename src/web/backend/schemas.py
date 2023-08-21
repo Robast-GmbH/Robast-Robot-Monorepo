@@ -1,55 +1,94 @@
 from typing import List, Optional, Any
 from enum import Enum
 import yaml
-
 from pydantic import BaseModel
+from typing import Union
+
+class DrawerSlideTypes(str, Enum):
+    Manual = "Manual"
+    Electrical = "Electrical"
 
 
-class OrderTypes(str, Enum):
-    FOOD = "Food"
-    MEDS = "Meds"
-    OTHER = "others"
+#Robot
+class Robot(BaseModel):
+    fleet_name: str
+    robot_name: str
+
+class RobotStatus(Robot):
+    task_id: int
+    x_pose:float
+    y_pose: float
+    yaw_pose: float
+    battery_level:float
+
+# Task
+class Pose(BaseModel):
+    x:  float
+    y:  float
+    z:  float
+
+class Navigation(BaseModel):
+    pose: Pose
+    yaw: float
+
+class ActionType(str, Enum):
+    DRAWER = 'DRAWER'
+    NAVIGATION = 'NAVIGATION'
+    NEW_USER = 'NEW_USER'
+
+class BaseDrawer(BaseModel):
+    drawer_id: int
+    module_id: int
 
 
+class Drawer(BaseDrawer):
+    locked_for: list[str]
 
-class GoalBase(BaseModel):
-    x: int
-    y: int
-    clientX: Optional[float]
-    clientY: Optional[float]
+class NewUser(BaseModel):
+    user_id: int
+
+class UpdateAction(BaseModel):
+    status:str
+    finished:bool
+
+class Action(BaseModel):
+    step:int
+    type: ActionType
+    action: Union[Drawer, Navigation, NewUser]
+
+class BaseTask(BaseModel):
+    task_id:str
+
+class UpdateTask(BaseModel):
+    robot: Robot
+    
+class Task(BaseTask):
+    actions:list[Action]
 
 
-class Goal(GoalBase):
-    pass
+#Drawer
+class ModuleBase(BaseModel):
+    module_id:int
+    drawer_id:int
+
+  
+class Module(ModuleBase):
+    type: DrawerSlideTypes
+    size: int
+    robot_name: str    
+    position:int
+    status:str
+    label:str
+    
     class Config:
         orm_mode = True
 
+class UpdateModule(ModuleBase):
+    robot_name:Union[str,None]= None   
+    status:Union[str,None]= None
+    label:Union[str,None]= None
 
-class GoalCreate(GoalBase):
-    pass
-
-
-class OrderBase(BaseModel):
-    order_item: str
-    order_type: Optional[OrderTypes] = OrderTypes.FOOD
-    goal: Goal
-    recurring_order: bool
-    finished: Optional[bool] = False
-    description: Optional[str] = ""
-
-
-class OrderCreate(OrderBase):
-    pass
-
-
-class Order(OrderBase):
-    id: int
-    owner_id: int
-
-    class Config:
-        orm_mode = True
-
-
+#User
 class UserBase(BaseModel):
     name: str
     
@@ -66,68 +105,6 @@ class User(UserBase):
     is_active: bool
     admin: bool
     full_name: str
-    orders: List[Order] = []
-
-    class Config:
-        orm_mode = True
-#drawer
-
-class DrawerBase(BaseModel):
-    drawer_controller_id: int
-    content: str
-    empty: bool
-    
-class DrawerCreate(DrawerBase):
-    pass
-
-
-class Drawer(DrawerBase):
-   
-    id: int
-
-    class Config:
-        orm_mode = True
-
-#mappositions
-
-
-class MapPositionBase(BaseModel):
-    name: str
-    x: float
-    y: float
-    t:float
-
-
-class MapPositionCreate(MapPositionBase):
-    pass
-
-class MapPosition(MapPositionBase):
-    id: int
-
-    class Config:
-        orm_mode = True
-
-#mapping
-
-class Room(BaseModel):
-    x: int
-    y: int
-    name: str
-    id: int
-
-
-class RoomsBase(BaseModel):
-    map_name: str
-    map_yaml: dict
-
-
-class RoomsCreate(RoomsBase):
-    pass
-
-
-class Rooms(RoomsBase):
-    id: int
-    rooms: List[Room] = []
 
     class Config:
         orm_mode = True

@@ -1,39 +1,60 @@
 from queue import Empty
 from xmlrpc.client import boolean
 from sqlalchemy.orm import Session
-from sqlalchemy import event, inspect, update
+from sqlalchemy import event, inspect, update, asc, desc, distinct,cast
 from sqlalchemy.sql.elements import Null
 from sqlalchemy.sql.functions import user
 import helper
 
 import models
 import schemas
-import coords_setup
 
+
+def init(db: Session):
+    helper.init(db)
+    return
+
+#user_mangement
 
 def get_user(db: Session, user_id: int):
     users = db.query(models.User).filter(models.User.id == user_id).first()
     return users
 
-
 def get_user_by_email(db: Session, email: str):
-
     return db.query(models.User).filter(models.User.email == email).first()
 
+def create_nfc_code(db:Session, user_id:int, nfc_code:str):
+    disable_user_access(db=db, user_id=user_id)
+    new_nfc_code= models.Authentication( user_id= user_id, nfc_code=nfc_code) 
+    db.add(new_nfc_code)
+    db.commit()
+    db.refresh(new_nfc_code)
+    return new_nfc_code
+
+def get_nfc_codes(db:Session, user_id:int)->[models.Authentication]:
+    return db.query(models.Authentication).filter(models.Authentication.id== user_id, models.Authentication.enabled==True).all()
+
+def get_nfc_code(db:Session, user_id)-> str:
+    return db.query(models.Authentication.nfc_code).filter(models.Authentication.id==user_id, models.Authentication.enabled==True).first()
+
+def disable_user_access(db:Session, user_id:int):
+    old_nfc_codes= get_nfc_codes(db=db,user_id=user_id)
+    for code in old_nfc_codes:
+        code.enabled= False
+    db.flush()
+    db.commit() 
 
 def get_users(db: Session, skip: int = 0, limit: int = 100):
-
     return db.query(models.User).offset(skip).limit(limit).all()
 
 def get_users_login(db: Session, userCredentials: schemas.UserLogin):
-
     return db.query(models.User).filter(models.User.name== userCredentials.name, models.User.hashed_password== userCredentials.hashed_password).first()
-
-
 
 def create_user(db: Session, user: schemas.UserCreate):
     fake_hashed_password = user.password
-    db_user = models.User(email=user.email, hashed_password=fake_hashed_password, name=user.name)
+    db_user = models.User(email=user.email,
+                            hashed_password=fake_hashed_password,
+                            name=user.name)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -46,185 +67,198 @@ def delete_user(db: Session, user_id: int):
     db.delete(user)
     db.commit()
     return True
-    
 
-def get_orders(db: Session) -> object:
-    return db.query(models.Order).all()
+#task management
 
 
-def create_user_order(db: Session, order: schemas.OrderCreate, user_id: int):
-    if(get_user(db=db, user_id=user_id) != None):
-        order.goal = coords_setup.convertclientCoords(order.goal)
-        db_order = models.Order(**order.dict(), owner_id=user_id)
-
-        db.add(db_order)
-        db.commit()
-        db.refresh(db_order)
-        return db_order
-    else:
-        return None
-
-@event.listens_for(models.Order, 'init')
-@event.listens_for(models.Goal, 'init')
-def received_init(target, args, kwargs):
-
-    for rel in inspect(target.__class__).relationships:
-
-        rel_cls = rel.mapper.class_
-
-        if rel.key in kwargs:
-            kwargs[rel.key] = rel_cls(**kwargs[rel.key])
+def tasks_queue(db:Session):
+    subquery= db.query(models.Action.task_id).filter(models.Action.finished==False).all()
+    active_tasks= list(map(lambda x:x[0], subquery))
+    queue= db.query(models.Task).filter(models.Task.id.in_(active_tasks)).order_by(models.Task.id).all()
+    return queue 
 
 
-#Mapping
-def get_roomMap(db: Session):
-    return db.query(models.RoomMap).all()
+def get_task(db:Session, task_id:int): 
+    return db.query(models.Task).filter(models.Task.id==task_id).first()
 
 
-def get_map_by_name(db: Session, name):
-    return db.query(models.RoomMap).filter(models.RoomMap.name == name).first()
-
-
-def create_roomMap(db: Session, rooms_base: schemas.RoomsCreate):
-    rooms = []
-    for coords in rooms_base.map_yaml["rooms"].items():
-        rooms.append(models.Room(x=coords[1]["center point"]["x"], y=coords[1]["center point"]["y"], name=coords[0],
-                                  id=coords[0]))
-    map_out = models.RoomMap(name=rooms_base.map_name, rooms=rooms)
-    db.add(map_out)
+def create_task(db:Session, robot_name:str, fleet_name:str, owner_id :int)->int: 
+    db_task= models.Task(owner_id= owner_id, robot_name=robot_name, fleet_name=fleet_name)
+    db.add(db_task)
     db.commit()
-    db.refresh(map_out)
-    return map_out
+    db.refresh(db_task)
+    return db_task.id
 
-def init(db: Session):
-    helper.init(db)
+def update_task(db:Session, id, robot_name:str, fleet_name:str )->models.Task:
+    db_task = get_task(db=db, id = id )
+    db_task.robot_name = robot_name
+    db_task.fleet_name = fleet_name
+    db.flush()
+    db.commit()
+    db.refresh(db_task)
+
+def create_base_action(db:Session, task_id, step):
+    db_action= models.Action(task_id=task_id, step=step, type= schemas.ActionType.DRAWER) 
+    db.add(db_action)
+    db.commit()
+    db.refresh(db_action)
+
+    return db_action
+
+def create_drawer_action(db: Session,step:int, task_id, module_id:int, drawer_id:int, owner:int):
+    db_action=create_base_action(db, task_id, step)
+   
+    db_drawer_action=models.DrawerAction( id=db_action.id, target_user_id= owner, drawer_id= drawer_id, module_id= module_id)
+    db.add(db_drawer_action)
+    db.commit()
+    db.refresh(db_drawer_action)
     return
 
-def update_order(db: Session, order_id: int, order: schemas.OrderCreate):
-    order_old = db.query(models.Order).filter(models.Order.id == order_id).first()
-    
-    goal = coords_setup.convertclientCoords(order.goal)
+def create_navigation_action(db:Session, step:int, task_id,x:float,y:float,yaw:float):
+    db_action=create_base_action(db, task_id, step)
 
-    order_old.order_item=order.order_item
-    order_old.order_type=order.order_type
-    order_old.recurring_order = order.recurring_order
-    order_old.finished = order.finished
-    order_old.goal.x = goal.x
-    order_old.goal.y = goal.y
-    order_old.goal.clientX = goal.clientX
-    order_old.goal.clientY = goal.clientY
-    order_old.description=order.description
-
-    db.merge(order_old)
+    db_nav_action= models.NavigationAction( id=db_action.id, x_pose= x, y_pose=y, yaw_pose=yaw) 
+    db.add(db_nav_action)
     db.commit()
-    db.refresh(order_old)
-    return order_old
+    db.refresh(db_nav_action)
+    return db_nav_action
 
+def create_new_user_nfc(db:Session, step:int, task_id, user_id:int ):
+    db_action=create_base_action(db, task_id, step)
 
-def get_order(db: Session, order_id: int):
+    db_new_user_action= models.NewUserAction( id=db_action.id, user_id= user_id) 
+    db.add(db_new_user_action)
+    db.commit()
+    db.refresh(db_new_user_action)
+    return db_new_user_action
 
-    order = db.query(models.Order).filter(models.Order.id == order_id).first()
-    if(order == None):
-        return None
-    return order
+def get_actions(task_id:str, db:Session):
+    return db.query(models.Action).filter(models.Action.task_id==task_id).all()
 
+def get_action(action_id:int, db:Session)->models.Action:
+    return db.query(models.Action).filter(models.Action.id == action_id).first()
 
-def delete_order(db: Session, order_id: int):
-    order = get_order(db = db, order_id= order_id)
-    user = get_user(db = db, user_id=order.owner_id)
-    if(order != None):
+def get_navigation_action(action_id:int, db:Session):
+    return db.query(models.Action, models.NavigationAction).join(models.Action.id==models.NavigationAction.id).filter(models.NavigationAction.id==action_id).first()
 
-        db.delete(order)
+def get_drawer_action(action_id:int, db:Session):
+    return db.query(models.Action, models.DrawerAction).join(models.Action.id==models.DrawerAction.id).filter(models.DrawerAction.id==action_id).first()
+
+def get_user_action(action_id:int, db:Session):
+    return db.query(models.Action, models.NewUserAction).join(models.Action.id==models.NewUserAction.id).filter(models.NewUserAction.id==action_id).first()
+
+def get_action_id(db:Session, task_id:str, step:int):
+    return db.query(models.Action.id).filter(models.Action.task_id== task_id and models.Action.step==step).first()[0]
+    
+
+def update_action(db:Session, action_id:int, status:str, finished:bool):
+    db_action = get_action(db=db,action_id=action_id)
+    db_action.status= status
+    db_action.finished= finished
+
+    db.flush()
+    db.commit()
+    db.refresh(db_action)
+    return db_action
+
+def delete_action(db:Session, action_id):
+    db_action = get_action(action_id= action_id,db=db)
+    db.delete(db_action)
+    db.commit()
+    
+    db_sub_action= db.query(models.DrawerAction).filter(models.DrawerAction.id== action_id)
+    if db_sub_action is None:
+        db_sub_action=db.query(models.NavigationAction).filter(models.NavigationAction.id== action_id)
+    elif db_sub_action is None:
+        db_sub_action=db.query(models.NewUserAction).filter(models.NewUserAction.id== action_id)
+    
+    db.delete(db_sub_action)
+    db.commit()
+    
+def get_next_task(db:Session, robot_name):
+    new_task=tasks_queue(db)[0]
+    return new_task
+
+#robot
+def get_robots(db:Session, skip: int = 0, limit: int = 100)->[models.Robot]:
+    db_robots= db.query(models.Robot).offset(skip).limit(limit).all()
+    return db_robots 
+
+def get_robot(db:Session, robot_name:str)-> models.Robot:
+     return db.query(models.Robot).filter( models.Robot.robot_name==robot_name).first()
+
+def set_robot(db:Session, robot:schemas.Robot):
+    db_robot= get_robot(db=db,robot_name=robot.robot_name)
+    if (db_robot is None):
+        db_robot = models.Robot(robot_name = robot.robot_name,
+                                fleet_name = robot.fleet_name,
+                                x_pose = robot.x_pose,
+                                y_pose = robot.y_pose,
+                                yaw_pose = robot.yaw_pose,
+                                task_id = robot.task_id
+                                )
+        db.add(db_robot)
         db.commit()
-        return True
+        db.refresh(db_robot)
     else:
-        return False   
+        db_robot.robot_name = robot.robot_name
+        db_robot.fleet_name = robot.fleet_name
+        db_robot.x_pose = robot.x_pose
+        db_robot.y_pose = robot.y_pose
+        db_robot.yaw_pose = robot.yaw_pose
+        db_robot.task_id =robot.task_id
 
-#drawer
+        db.flush()
+        db.commit()
+        db.refresh(db_robot)
+    return db_robot
+        
+#Modules 
+def get_modules(db: Session, robot_name: str)->[models.Module]:
+    return db.query(models.Module).filter(robot_name== models.Module.robot_name ==robot_name).all()
 
+def get_module(db: Session, module_id: int)-> models.Module:
+    return db.query(models.Module).filter(models.Module.module_id == module_id).all()
+def get_module(db: Session, module_id: int, drawer_id:int)-> models.Module:
+    return db.query(models.Module).filter(models.Module.module_id == module_id and models.Module.drawer_id== drawer_id).first()
 
-def get_drawers(db: Session) -> object:
-    return db.query(models.Drawer).all() 
-
-def get_drawer(db: Session,drawer_controller_id: int):
-
-    drawer = db.query(models.Drawer).filter( models.Drawer.drawer_controller_id==drawer_controller_id).first()
-    if(drawer == None):
-        return None
+def get_drawer(db: Session,robot_name:str, module_id: int, drawer_id: int)-> models.Module:
+    drawer= db.query(models.Module).filter(models.Module.robot_name ==robot_name, models.Module.module_id == module_id, models.Module.drawer_id== drawer_id).first()
     return drawer
 
-
-def create_drawer(db: Session, drawer: schemas.DrawerCreate):
-    db_drawer= get_drawer(db = db,drawer_controller_id = drawer.drawer_controller_id) 
-    if(db_drawer != None):
-        return None
-        
-    db_drawer = models.Drawer(drawer_controller_id=drawer.drawer_controller_id, content=drawer.content, empty= drawer.empty)
-    db.add(db_drawer)
-    db.commit()
-    db.refresh(db_drawer)
-    return db_drawer
-
-
-def update_drawer(db: Session,drawer_controller_id: int, content: str ):
-    drawer_old = get_drawer(db = db,drawer_controller_id =drawer_controller_id) 
-    if(drawer_old== None):
-        return None
-
-    drawer_old.content = content
-    db.merge(drawer_old)
-    db.commit()
-    db.refresh(drawer_old)
-    return drawer_old
-
-
-def delete_drawer(db: Session, drawer_controller_id: int):
-    drawer = get_drawer(db = db, drawer_controller_id = drawer_controller_id) 
-    if(drawer != None):
-
-        db.delete(drawer)
-        db.commit()
-        return True
+def set_module(db:Session, module: schemas.Module)-> models.Module:
+    db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.module_id, drawer_id = module.drawer_id)
+    if(db_module is None):
+        db_module = models.Module(id = module.module_id,
+                                drawer_id = module.drawer_id,
+                                type = module.type,
+                                robot_name = module.robot_name,
+                                size= module.size,
+                                position= module.position,
+                                status= module.status
+                                )
+        db.add(db_module)
     else:
-        return False  
-
-def get_empty_drawer(db: Session):
-    return db.query(models.Drawer).filter(models.Drawer.empty== True).all()
-
-def change_drawer_empty_state(db: Session, drawer_controller_id:int, empty:bool):
-    drawer_old= get_drawer(db=db,drawer_controller_id= drawer_controller_id)
-    drawer_old.empty=  empty
-    db.merge(drawer_old)
+        db_module.type=module.type
+        db_module.robot_name = module.robot_name
+        db_module.size= int(module.size)
+        db_module.position= module.position
+        db_module.status= module.status
     db.commit()
-    db.refresh(drawer_old)
-    return 
+    db.refresh(db_module)
+    return db_module
 
-#Mapposition
-def get_map_positions(db: Session) -> object:
-    return db.query(models.MapPosition).all() 
-
-
-def get_map_position(db: Session, id: int):
-    map_position = db.query(models.MapPosition).filter(models.MapPosition.id == id).first()
-    if(map_position == None):
-        return None
-    return map_position
-
-
-def create_map_position(db: Session, map_position: schemas.MapPositionCreate):     
-    db_map_position = models.MapPosition(name = map_position.name, x = map_position.x, y = map_position.y, t = map_position.t)
-    db.add(db_map_position)
-    db.commit()
-    db.refresh(db_map_position)
-    return db_map_position
-
-
-
-def delete_map_position(db: Session, id :int):
-    map_position = get_map_position(db = db, id = id) 
-    if(map_position != None):
-        db.delete(map_position)
-        db.commit()
-        return True
+def set_module_status(db:Session,module:schemas.UpdateModule)->models.Module:
+    db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.module_id, drawer_id = module.drawer_id)
+    if(db_module is None):
+        return 
     else:
-        return False    
+        db_module.status= module.status
+        db_module.label= module.label
+        db_module.robot_name= module.robot_name
+    db.commit()
+    db.refresh(db_module)
+    return db_module
+
+
+
