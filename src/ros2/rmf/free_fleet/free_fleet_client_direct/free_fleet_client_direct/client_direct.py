@@ -10,6 +10,7 @@ from rclpy.action import ActionClient
 from geometry_msgs.msg import PoseStamped
 from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import Odometry
+from sensor_msgs.msg import BatteryState
 
 from rclpy.node import Node
 from rclpy.action import ActionClient
@@ -20,8 +21,6 @@ from . import math_helper
 import datetime
 from enum import Enum
 
-
-# from free_fleet_client_direct.nav_controller  import nav_controller 
 import robast_dds_communicator.msg as dds 
 
 
@@ -72,14 +71,13 @@ class free_fleet_client_direct(Node):
         self.dds_slide_drawer_topic=self.get_parameter('dds_slide_drawer_topic').get_parameter_value().string_value
        
        #nav
-        #self.nav_controller= nav_controller(self, self.robot_odom, self.frame_id, self.publish_task_state)
         self.nav = ActionClient(self, NavigateToPose, 'navigate_to_pose')
         self.robot_x= 0
         self.robot_y=0
         self.robot_yaw=0
         self.active=False
         #self.publish_status= publish_status
-        self.frame_id= "/map"
+        self.frame_id= self.frame_id
 
         self.subscriber_odom = self.create_subscription(
             Odometry,
@@ -87,7 +85,7 @@ class free_fleet_client_direct(Node):
             self.get_robot_odom,
             QoSProfile(depth=10, reliability=QoSReliabilityPolicy.BEST_EFFORT))
 
-
+        #task
         self.task_id= ""
         self.step=-1
         self.battery=0.0
@@ -126,7 +124,7 @@ class free_fleet_client_direct(Node):
         #info
         self.robot_state_dds = self.create_publisher(dds.FreeFleetDataRobotState, "robot_state",10)
         self.task_state_dds= self.create_publisher(dds.FreeFleetDataTaskState, "task_state",10)
-        #self.battery_subscriber= self.subscriptions(, "",10)
+        self.battery_subscriber= self.subscriptions(BatteryState, "/robot/robotnik_base_hw/robotnik_battery_broadcaster/battery", self.publish_battery_data, 10)
 
 
         self.status_timer = self.create_timer(timer_period_sec=self.heartbeat,callback= self.publish_fleet_state) 
@@ -138,6 +136,7 @@ class free_fleet_client_direct(Node):
         if str(step)==str(1):
             self.step=1
             self.start_navigation_task( msg.destination.x, msg.destination.y, msg.destination.yaw)
+            
         else:
             self.destination_requests.append(msg)
 
@@ -188,7 +187,6 @@ class free_fleet_client_direct(Node):
         ros_msg.drawer_id = drawer_id
         self.e_drawer_close_publisher.publish(ros_msg)
         self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Closed", False)
-        #  self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Moving", False)
     
     def end_drawer_task(self):
         self.publish_task_state("DrawerAction", "Finished", True)
@@ -318,8 +316,7 @@ class free_fleet_client_direct(Node):
             self.find_next_action()
 
     def publish_battery_data(self,msg):
-        pass
-        # self.battery=msg.battery_level
+        self.battery=msg.voltage
 
     #Tasks
     def divide_task_id(self,task_id):
@@ -365,15 +362,16 @@ class free_fleet_client_direct(Node):
         self.finish_task()
 
     def finish_task(self):
-        self.publish_task_state("Task","Completed", True)
+        #self.publish_task_state("Task","Completed", True)
         self.clear_task()
         self.publish_fleet_state()
 
     def lookup_next_action(self, task_list:list):
         new_task= next((task for task in task_list if self.divide_task_id( task.task_id)[1]==self.step), None)
-        task_list.remove(new_task)
+        if new_task is None:
+            task_list.remove(new_task)
         return new_task 
-    
+
     #suppost
     def received_new_action(self, msg):
         if not self.task_validation(msg):
@@ -382,9 +380,9 @@ class free_fleet_client_direct(Node):
             
         if self.task_id != "" and self.task_id !=id:
             self.publish_task_state("Task","Postponed",False)
-        
         self.swap_task(id)
         return step
+    
     #nav
     def start_navigation(self, x, y, yaw):  
         print("start_nav")
@@ -405,7 +403,7 @@ class free_fleet_client_direct(Node):
         if not goal_handle.accepted:
             self.get_logger().warning('Goal rejected')
             print("accepted")
-            self.publish_status( "canceld", "could not plan route to goal pose", True)
+            self.publish_task_state( "canceld", "could not plan route to goal pose", True)
             return
         self.get_logger().info('Goal accepted')
         print("rejected")
@@ -414,12 +412,12 @@ class free_fleet_client_direct(Node):
         self._get_result_future.add_done_callback(self.get_result_callback)
 
     def get_result_callback(self, future: NavigateToPose.Result):
-        self.publish_status()
+        #self.publish_task_state()
         self.active=False
 
     def feedback_callback(self, feedback_msg: NavigateToPose.Feedback):
         self.get_logger().debug('Received feedback')
-        self.publish_status()
+        #self.publish_status()
     
     def pause_navigation(self):
         self._send_goal_future.cancel()
@@ -434,7 +432,8 @@ class free_fleet_client_direct(Node):
         pose = NavigateToPose.Goal()
         waypoint=PoseStamped()
         waypoint.header.frame_id = self.frame_id
-        waypoint.header.stamp = self.get_clock().now().to_msg()
+        waypoint.header.stamp.nanosec = 0
+        waypoint.header.stamp.sec = 0
         waypoint.pose.position.x = pose_x
         waypoint.pose.position.y = pose_y
         waypoint.pose.position.z = 0.0
@@ -448,8 +447,8 @@ class free_fleet_client_direct(Node):
         return pose
 
     def get_robot_odom(self, data:Odometry):
-        x = 0.94#data.pose.pose.position.x
-        y = 0.64#data.pose.pose.position.y
+        x = data.pose.pose.position.x
+        y = data.pose.pose.position.y
         q1 = data.pose.pose.orientation.x
         q2 = data.pose.pose.orientation.y
         q3 = data.pose.pose.orientation.z
