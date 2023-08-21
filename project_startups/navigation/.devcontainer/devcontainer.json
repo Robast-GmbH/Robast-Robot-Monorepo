@@ -14,6 +14,15 @@
 		"--network=host",
 		"--volume=/dev/shm:/dev/shm" //needed if you use the fast dds on the host network with multiple docker containers running on the same host
 	],
+	"remoteEnv": {
+		"is_simulation": "False",
+		"config_directory":"config",
+		"robot_name":"rb_theron",
+	 	"init_x":"1.46",
+		"init_y":"-2.89",
+		"init_z":"0.0",
+		"init_yaw":"1.57"
+	},
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {

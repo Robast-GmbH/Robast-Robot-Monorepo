@@ -1,0 +1,15 @@
+version: '3.9'
+
+services:
+  navigation:
+    image: ghcr.io/robast-gmbh/monorepo/navigation:release
+    environment:
+      - ROS_DOMAIN_ID=0
+      - UID=1000
+    volumes:
+      - ./configs/:/configs/:cached
+      - ./start_scripts/:/start_scripts/:cached
+      - /dev/shm:/dev/shm
+    command: /bin/sh -c "./start_scripts/nav_start.sh"
+    stop_signal: SIGINT
+    network_mode: "host"
