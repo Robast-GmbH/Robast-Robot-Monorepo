@@ -295,7 +295,6 @@ def close_drawer( robot_name: str, module: schemas.BaseDrawer , db: Session = De
         if db_module is None:
             raise HTTPException(status_code=404, detail="module not found" )
         message=templates.get_close_drawer_interaction_json(db, robot_name, module.drawer_id, module.module_id, db_module.type== models.DrawerSlideTypes.Electrical)
-        print(message)
         headers =  {"Content-Type":"application/json"}
         sender = requests.Session()
         answer  =sender.post(url= config["fleetmangement_address"]+"/settings/drawer/close", data= json.dumps(message),headers= headers)
@@ -303,6 +302,20 @@ def close_drawer( robot_name: str, module: schemas.BaseDrawer , db: Session = De
         if answer.status_code!= 200:
             raise HTTPException(status_code=answer.status_code, detail= answer.reason)
         return 
+
+#reset normal drawer
+@app.post("/robots/{robot_name}/modules/reset")
+def reset_drawer( robot_name: str, db: Session = Depends(get_db)):
+    headers =  {"Content-Type":"application/json"}
+    message=templates.find_robot_json(db, robot_name)
+    if message== "robot":
+        raise HTTPException(status_code=404, detail="robot not found" )
+    sender = requests.Session()
+    answer = sender.post(url= config["fleetmangement_address"]+"/settings/drawer/reset", data= json.dumps(message), headers= headers)
+
+    if answer.status_code!= 200:
+        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    return 
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port= config['restapi_port'])
