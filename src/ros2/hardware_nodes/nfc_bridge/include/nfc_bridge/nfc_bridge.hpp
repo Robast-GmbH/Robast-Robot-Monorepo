@@ -16,6 +16,7 @@
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "serial_helper/serial_helper.h"
 #include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/bool.hpp"
 
 namespace nfc_bridge
 {
@@ -37,14 +38,15 @@ namespace nfc_bridge
     serial_helper::ISerialHelper* serial_connector_;
     db_helper::IDBHelper* db_connector_;
     rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr publisher_;
+    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr authentication_publisher_;
+    rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr timer_subscriber_;
     rclcpp_action::Server<CreateUser>::SharedPtr create_user_server_;
-    const std::map<std::string, std::string> nfc_code_to_drawer_ =
-        std::map<std::string, std::string>{{"000100000000000000000000000000000001", "1"},
-                                           {"000100000000000000000000000000000100", "2"},
-                                           {"000100000000000000000000000000010000", "3"},
-                                           {"000100000000000000000000000001000000", "4"},
-                                           {"000100000000000000000000000100000000", "5"}};
+    // const std::map<std::string, std::string> nfc_code_to_drawer_ =
+    //     std::map<std::string, std::string>{{"000100000000000000000000000000000001", "1"},
+    //                                        {"000100000000000000000000000000000100", "2"},
+    //                                        {"000100000000000000000000000000010000", "3"},
+    //                                        {"000100000000000000000000000001000000", "4"},
+    //                                        {"000100000000000000000000000100000000", "5"}};
     bool execute_scan(std::shared_ptr<std::string> received_raw_data);
     bool scan_tag(std::shared_ptr<std::string> tag_data);
 
@@ -61,6 +63,9 @@ namespace nfc_bridge
     void handle_accepted(const std::shared_ptr<GoalHandleCreateUser> goal_handle);
     void createUser(const std::shared_ptr<GoalHandleCreateUser> goal_handle);
     bool write_tag(int card_data);
+    void control_timer(const std_msgs::msg::Bool::SharedPtr msg);
+    void timer_start();
+    void timer_stop();
   };
 
 }   // namespace nfc_bridge
