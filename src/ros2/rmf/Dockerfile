@@ -1,0 +1,86 @@
+FROM ros:humble-ros-base-jammy as base
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
+    echo robast:robast | chpasswd && \
+    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV USER robast
+ARG DEBIAN_FRONTEND=
+
+RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
+
+RUN echo "source install/setup.bash" >> /home/$USER/.bashrc
+
+
+RUN apt-get update && apt-get install -y \
+  build-essential \
+  python3-colcon-common-extensions \
+  python3-pip \
+  python3-rosdep \
+  ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+  ros-humble-ros-testing \
+  ros-humble-ament-cmake-test \
+  ros-humble-launch-testing \
+  git \
+  && rosdep init || echo "rosdep already initialized"
+
+#install RMF
+RUN apt-get update && apt-get install -y\
+    ros-${ROS_DISTRO}-navigation2
+    
+RUN pip3 install uvicorn \
+    fastapi\
+    requests
+
+RUN python3 -m pip install -U  cyclonedds nudged
+
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+#######################################
+############Tobi was here##############
+###TODO remove everything below this###
+#######################################
+
+FROM ros:humble-ros-base-jammy as build
+
+ARG GIT_TOKEN
+ARG GIT_BRANCH=dev/hagen
+COPY --from=base / /
+COPY . /ws/src/rmf
+RUN apt-get update && apt-get install -y git
+
+WORKDIR /tmp
+RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+
+
+WORKDIR /ws
+RUN mkdir -p /ws/src/ros2/; mkdir -p /ws/src/ros2/rmf/free_fleet/free_fleet; mkdir /robast; \
+  mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
+  
+
+RUN rosdep update && \
+  rosdep install --from-paths /ws/src --ignore-src -r -y
+
+WORKDIR /tmp
+RUN git clone https://github.com/open-rmf/free_fleet.git
+
+WORKDIR /ws
+RUN mv /tmp/free_fleet /ws/src/ros2/rmf/free_fleet/free_fleet
+
+RUN  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  colcon build --install-base /robast/${ROS_DISTRO}/
+
+############################## Hagen ##################################
+FROM ros:humble-ros-base-jammy as hagen
+
+COPY --from=base / /
+COPY --from=build /opt/ros /opt/ros
+COPY --from=build /robast /robast
+
+
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+
+ENV ROS_DOMAIN_ID=0
+RUN apt-get update \
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
