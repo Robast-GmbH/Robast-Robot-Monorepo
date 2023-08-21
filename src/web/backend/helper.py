@@ -67,7 +67,7 @@ def json_robot(fleet_name:str,robot_name:str)->dict:
 def json_waypoint(x:float,y:float,z:float,yaw:float)-> dict:
         return {  
                   "pose":{ "x": 0, "y":0, "z": 0 },
-                  "orientation" :0
+                  "yaw" :0
                 }
 
 def find_robot_json(db:Session, robot_name):
@@ -122,7 +122,7 @@ def create_drawer_action(step:int, drawer_id:int, module_id:int, is_edrawer:bool
         return message
 
 def create_navigation_action(step:int, x:float, y:float, yaw:float):
-        message={"step":step, "type":"NAVIGATION","action":{ "pose": {"x":x, "y":y, "z":0.0 },"YAW": yaw} }
+        message={"step":step, "type":"NAVIGATION","action":{ "pose": {"x":x, "y":y, "z":0.0 },"yaw": yaw} }
         return message
 
 def create_new_user(step:int, user_id: int):

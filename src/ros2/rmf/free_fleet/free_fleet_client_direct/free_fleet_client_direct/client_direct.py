@@ -36,7 +36,7 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('robot_odom', '/odometry/filtered')
         
  
-        self.declare_parameter('heartbeat', 0.001)
+        self.declare_parameter('heartbeat', 10.0)
         self.declare_parameter('statemaschine_open_drawer_topic', 'trigger_drawer_tree')
         self.declare_parameter('statemaschine_close_e_drawer_topic', 'close_drawer')
         self.declare_parameter('statemaschine_open_e_drawer_topic', 'trigger_electric_drawer_tree')
@@ -65,6 +65,7 @@ class free_fleet_client_direct(Node):
       
         self.task_id= ""
         self.step=-1
+        self.battery=0.0
         self.open_drawers:list[drawer] =[]
         self.locked_drawers:list[drawer]=[]
 
@@ -96,27 +97,26 @@ class free_fleet_client_direct(Node):
         self.drawer_request_dds= self.create_subscription(dds.FreeFleetDataDrawerRequest, "slide_drawer_request",self.slide_drawer_callback ,10)
         self.destination_request_dds= self.create_subscription(dds.FreeFleetDataDestinationRequest,  "destination_request", self.destination_callback ,10)
         
-        #publish_ info
+        
+        #info
         self.robot_state_dds = self.create_publisher(dds.FreeFleetDataRobotState, "robot_state",10)
         self.task_state_dds= self.create_publisher(dds.FreeFleetDataTaskState, "task_state",10)
-        
-        self.status_timer = self.create_timer(self.heartbeat,self.publish_fleet_state) 
+        #self.battery_subscriber= self.subscriptions(, "",10)
+
+
+        self.status_timer = self.create_timer(timer_period_sec=self.heartbeat,callback= self.publish_fleet_state) 
         
     ##handle task
     #navigation request
     def destination_callback(self, msg:dds.FreeFleetDataDestinationRequest):
-        print("recived")
-        print(msg)
         step= self.received_new_action(msg)
         if str(step)==str(1):
-            print("1")
             self.step=1
             self.start_navigation_task( msg.destination.x, msg.destination.y, msg.destination.yaw)
         else:
             self.destination_requests.append(msg)
 
     def start_navigation_task(self, x:float,y: float, yaw: float):
-        print("nav")
         self.nav_controller.start_navigation(x, y, yaw)
     
     #drawer request
@@ -136,9 +136,10 @@ class free_fleet_client_direct(Node):
                 return
             else: 
                 self.publish_task_state("DrawerAuthentification", str(module_id)+"#"+str(drawer_id)+user_name, False)
+
         self.set_drawer_lock(module_id, drawer_id, restriction)
         self.open_drawer( module_id=module_id, drawer_id= drawer_id, e_drawer= e_drawer)
-        #self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Opened", False)
+        self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Opened", False)
 
     def open_drawer(self, module_id:int, drawer_id:int, e_drawer:bool): 
         ros_msg = DrawerAddress()
@@ -161,7 +162,8 @@ class free_fleet_client_direct(Node):
         ros_msg.module_id = module_id
         ros_msg.drawer_id = drawer_id
         self.e_drawer_close_publisher.publish(ros_msg)
-        #self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Closed", False)
+        self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Closed", False)
+        #  self.publish_task_state("DrawerState", str(module_id)+"#"+str(drawer_id)+"#Moving", False)
     
     def end_drawer_task(self):
         self.publish_task_state("DrawerAction", "Finished", True)
@@ -191,13 +193,9 @@ class free_fleet_client_direct(Node):
             return possible_nfc_codes[self.received_nfc_codes]
         return successful   
 
-    def receive_authentication_codes(self, msg):
-        pass
 
     def drawer_change_callback(self, msg:DrawerStatus):
-        if(msg.drawer_is_open):
-            self.publish_task_state("DrawerState", str(msg.drawer_address.module_id)+"#"+str(msg.drawer_address.drawer_id)+"#Opened", False)
-        else:
+        if(not msg.drawer_is_open):
             self.publish_task_state("DrawerState", str(msg.drawer_address.module_id)+"#"+str(msg.drawer_address.drawer_id)+"#Closed", False)
 
     # new_NFC request
@@ -208,6 +206,9 @@ class free_fleet_client_direct(Node):
             self.start_new_user_request(msg.user_id)
         else:
             self.new_user_requests.append(msg)
+
+    def receive_authentication_codes(self, msg):
+        pass
 
     def start_new_user_request(self, user_id):
         self.publish_task_state("User","Started", False)
@@ -247,10 +248,8 @@ class free_fleet_client_direct(Node):
 
         elif msg.command =="drawer":
             if msg.value == "completed":
-                #doing a drawertask
                 if len(self.open_drawers)==0:
-                    self.find_next_action()
-                    
+                    self.end_drawer_task()
             else:
                 selected_drawer= next((drawer for drawer in self.open_drawers if drawer.module_id== int(msg.value) and drawer.e_drawer), None)
                 if selected_drawer is not None: 
@@ -259,7 +258,7 @@ class free_fleet_client_direct(Node):
 
     #publish states
     def publish_fleet_state(self):
-        battery= 0.0 #todo @Torben read the battery sate from the robot
+        battery= self.battery #todo @Torben read the battery sate from the robot
         sequence = [] #todo @Torben add a list of waypoint of the robot
         mode= dds.FreeFleetDataRobotMode()
         mode.mode=0 
@@ -273,7 +272,7 @@ class free_fleet_client_direct(Node):
         robot_state = dds.FreeFleetDataRobotState()
         robot_state.name=self.robot_name
         robot_state.model=self.robot_model
-        task_id=""
+        task_id= ""
         if(self.task_id != ""):
             task_id= str(self.task_id)+"#"+str(self.step)
         robot_state.task_id= task_id
@@ -285,14 +284,19 @@ class free_fleet_client_direct(Node):
 
     def publish_task_state(self, status, message, completed):
         task_state= dds.FreeFleetDataTaskState()
-        
         task_state.task_id= str(self.task_id)+"#"+str(self.step)
         task_state.status=status
         task_state.status_message= message
         task_state.completed= completed 
-        self.task_state_dds.publish(task_state)    
+        self.task_state_dds.publish(task_state) 
+        if completed:
+            self.find_next_action()
 
-    #support task
+    def publish_battery_data(self,msg):
+        pass
+        # self.battery=msg.battery_level
+
+    #Tasks
     def divide_task_id(self,task_id):
         combined_ids= task_id.split('#')
         if len(combined_ids)!=2:
@@ -302,7 +306,6 @@ class free_fleet_client_direct(Node):
     
     def task_validation(self, task):
         return task.fleet_name == self.fleet_name and task.robot_name == self.robot_name 
-    
     
     def swap_task(self, new_task_id:str):
         self.clear_task()
@@ -319,20 +322,21 @@ class free_fleet_client_direct(Node):
     def find_next_action(self):
         self.step+= 1
         
-        destination_task= self.search_for_task(self.destination_requests)
+        destination_task= self.lookup_next_action(self.destination_requests)
         if(destination_task is not None):
             self.start_navigation_task( destination_task.destination.x, destination_task.destination.y, destination_task.destination.yaw)
             return 
         
-        drawer_task= self.search_for_task(self.drawer_requests)
+        drawer_task= self.lookup_next_action(self.drawer_requests)
         if(drawer_task is not None):
             self.start_drawer_request(drawer_task.fleet_name, drawer_task.robot_name, drawer_task.e_drawer, drawer_task.restricted)
             return
         
-        new_user_task= self.search_for_task(self.new_user_requests)
+        new_user_task= self.lookup_next_action(self.new_user_requests)
         if(new_user_task is not None):
             self.start_new_user_request(new_user_task.user_id)
             return
+        
         self.finish_task()
 
     def finish_task(self):
@@ -340,10 +344,12 @@ class free_fleet_client_direct(Node):
         self.clear_task()
         self.publish_fleet_state()
 
-    def search_for_task(self, task_list:list):
+    def lookup_next_action(self, task_list:list):
         new_task= next((task for task in task_list if self.divide_task_id( task.task_id)[1]==self.step), None)
+        task_list.remove(new_task)
         return new_task 
     
+    #suppost
     def received_new_action(self, msg):
         if not self.task_validation(msg):
             return

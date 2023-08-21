@@ -9,7 +9,7 @@ class Pose(BaseModel):
 
 class Waypoint(BaseModel):
     pose: Pose
-    orientation: float
+    yaw: float
 
 class Robot(BaseModel):
     fleet_name: str

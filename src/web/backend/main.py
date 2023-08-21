@@ -198,12 +198,12 @@ def set_robot(robot: schemas.RobotStatus, db: Session = Depends(get_db)):
     return crud.set_robot(db=db, robot=robot)
 
 @app.put("/robots/{robot_name}/navigate")
-def navigate_robot( robot_name: str, x: float, y: float, yaw: float, owner_id:int, db: Session = Depends(get_db)):
+def navigate_robot( robot_name: str, target:schemas.Navigation, owner_id:Annotated[int,Body()], db: Session = Depends(get_db)):
     db_robot= crud.get_robot(db=db, robot_name=robot_name)
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner_id)
     step=1
-    db_action= crud.create_navigation_action(db, step, task_id,x,y,yaw)
-    action= templates.create_navigation_action( step, x, y, yaw)
+    db_action= crud.create_navigation_action(db, step, task_id,target.pose.x,target.pose.y,target.yaw)
+    action= templates.create_navigation_action( step, target.pose.x, target.pose.y, target.yaw)
     task =templates.create_task(db,robot_name,task_id,[action])
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
@@ -261,7 +261,10 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
        
          for id in restricted_for_user:
             nfc_code= crud.get_nfc_code(db=db, user_id=id)
-            nfc_codes.append(str(id)+":"+str(nfc_code))
+            nfc_codes.append(str(nfc_code)+":"+str(id))
+            if nfc_code is None:
+                db_user= crud.get_user(db,id)
+                raise HTTPException(404, detail="User "+db_user.fullname+" has no permission to lock a drawer")
 
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     db_module= crud.get_module(db=db,module_id=module.module_id,drawer_id=module.drawer_id)

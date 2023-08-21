@@ -16,7 +16,7 @@ class Pose(BaseModel):
 
 class Navigation(BaseModel):
     pose: Pose
-    orientation: float
+    yaw: float
 
 class Robot(BaseModel):
     fleet_name: str
