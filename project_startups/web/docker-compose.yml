@@ -11,18 +11,5 @@ services:
     volumes:
       - ./backend/:/workspace/:cached
       - ../../src/web/backend:/workspace/src/:cached
-    # command: /bin/sh -c "while sleep 1000; do :; done"
-    command: /bin/sh -c "python /workspace/src/main.py"
-    
-  #evtl mit profiles testen um nur backend oder nur frontend zu starten
-  frontend:
-    build:
-      context: ../../src/web/frontend/react_frontend/
-      dockerfile: Dockerfile
-    image: frontend:react_frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend/:/workspace/:cached
-      - ../../src/web/frontend/react_frontend:/workspace/src/:cached
-    command: /bin/sh -c "serve -s /workspace/src/build"
+    command: /bin/sh -c "while sleep 1000; do :; done"
+    # command: /bin/sh -c "python /workspace/src/main.py"

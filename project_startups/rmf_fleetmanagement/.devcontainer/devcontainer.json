@@ -1,0 +1,34 @@
+{
+
+	"image": "ghcr.io/robast-gmbh/monorepo/rmf:hagen",
+	"remoteUser": "ubuntu",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../src/ros2/rmf/,target=/workspace/src/rmf,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind"
+
+	],
+	"workspaceFolder": "/workspace",
+	"runArgs": [
+		"--name=rmf",
+		"--network=host"
+	],
+	"remoteUser": "robast",
+	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
+	// "postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",		
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one",
+		"jaehyunshim.vscode-ros2",
+		"tomoki1207.pdf"
+	]
+}

@@ -228,7 +228,7 @@ def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
 def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
     return crud.set_module(db=db, module=module)
 
-@app.post("/robots/modules/status",response_model= schemas.Module)
+@app.post("/robots/modules/status")
 def update_drawer_status(module: schemas.UpdateModule, db: Session = Depends(get_db)):
     db_module= crud.get_module(db=db, module_id=module.module_id,drawer_id= module.drawer_id)
     if(module.label is None):
