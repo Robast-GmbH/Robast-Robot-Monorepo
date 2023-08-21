@@ -15,10 +15,10 @@ def euler_from_quaternion(quaternion):
     quaternion = [x, y, z, w]
     Bellow should be replaced when porting for ROS 2 Python tf_conversions is done.
     """
-    x = quaternion.x
-    y = quaternion.y
-    z = quaternion.z
-    w = quaternion.w
+    x = quaternion[0]
+    y = quaternion[1]
+    z = quaternion[2]
+    w = quaternion[3]
 
     sinr_cosp = 2 * (w * x + y * z)
     cosr_cosp = 1 - 2 * (x * x + y * y)

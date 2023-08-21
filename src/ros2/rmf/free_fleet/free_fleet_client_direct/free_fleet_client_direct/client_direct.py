@@ -7,11 +7,21 @@ from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDur
 from rclpy.node import Node
 from rclpy.action import ActionClient
 
+from geometry_msgs.msg import PoseStamped
+from nav2_msgs.action import NavigateToPose
+from nav_msgs.msg import Odometry
+
+from rclpy.node import Node
+from rclpy.action import ActionClient
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy
+
+from . import math_helper
+
 import datetime
 from enum import Enum
 
 
-from free_fleet_client_direct.nav_controller  import nav_controller 
+# from free_fleet_client_direct.nav_controller  import nav_controller 
 import robast_dds_communicator.msg as dds 
 
 
@@ -61,8 +71,23 @@ class free_fleet_client_direct(Node):
         self.dds_domain = self.get_parameter('dds_domain').get_parameter_value().integer_value
         self.dds_slide_drawer_topic=self.get_parameter('dds_slide_drawer_topic').get_parameter_value().string_value
        
-        self.nav_controller= nav_controller(self, self.robot_odom, self.frame_id, self.publish_task_state)
-      
+       #nav
+        #self.nav_controller= nav_controller(self, self.robot_odom, self.frame_id, self.publish_task_state)
+        self.nav = ActionClient(self, NavigateToPose, 'navigate_to_pose')
+        self.robot_x= 0
+        self.robot_y=0
+        self.robot_yaw=0
+        self.active=False
+        #self.publish_status= publish_status
+        self.frame_id= "/map"
+
+        self.subscriber_odom = self.create_subscription(
+            Odometry,
+            self.robot_odom,
+            self.get_robot_odom,
+            QoSProfile(depth=10, reliability=QoSReliabilityPolicy.BEST_EFFORT))
+
+
         self.task_id= ""
         self.step=-1
         self.battery=0.0
@@ -117,7 +142,7 @@ class free_fleet_client_direct(Node):
             self.destination_requests.append(msg)
 
     def start_navigation_task(self, x:float,y: float, yaw: float):
-        self.nav_controller.start_navigation(x, y, yaw)
+        self.start_navigation(x, y, yaw)
     
     #drawer request
     def slide_drawer_callback(self, msg:dds.FreeFleetDataDrawerRequest):
@@ -265,9 +290,9 @@ class free_fleet_client_direct(Node):
         current_location= dds.FreeFleetDataLocation()
         current_location.sec= 0
         current_location.nanosec=0
-        current_location.x= float(self.nav_controller.robot_x)
-        current_location.y= float(self.nav_controller.robot_y)
-        current_location.yaw= float(self.nav_controller.robot_yaw)
+        current_location.x= float(self.robot_x)
+        current_location.y= float(self.robot_y)
+        current_location.yaw= float(self.robot_yaw)
         current_location.level_name=""
         robot_state = dds.FreeFleetDataRobotState()
         robot_state.name=self.robot_name
@@ -360,4 +385,79 @@ class free_fleet_client_direct(Node):
         
         self.swap_task(id)
         return step
+    #nav
+    def start_navigation(self, x, y, yaw):  
+        print("start_nav")
+        self.goal_pose =self.create_pose(x, y, yaw)
+        print(self.goal_pose)
+
+        self.nav.wait_for_server()
+
+        self._send_goal_future = self.nav.send_goal_async(
+                self.goal_pose,
+                feedback_callback=self.feedback_callback)
+        self._send_goal_future.add_done_callback(self.goal_response_callback)
+        print("start nav done")
+
+
+    def goal_response_callback(self, future):
+        goal_handle = future.result()
+        if not goal_handle.accepted:
+            self.get_logger().warning('Goal rejected')
+            print("accepted")
+            self.publish_status( "canceld", "could not plan route to goal pose", True)
+            return
+        self.get_logger().info('Goal accepted')
+        print("rejected")
+        self.active= True
+        self._get_result_future = goal_handle.get_result_async()
+        self._get_result_future.add_done_callback(self.get_result_callback)
+
+    def get_result_callback(self, future: NavigateToPose.Result):
+        self.publish_status()
+        self.active=False
+
+    def feedback_callback(self, feedback_msg: NavigateToPose.Feedback):
+        self.get_logger().debug('Received feedback')
+        self.publish_status()
     
+    def pause_navigation(self):
+        self._send_goal_future.cancel()
+        self.active=False
+
+    def cancel_navigation(self):
+        self.goal_pose = None
+        self._send_goal_future.cancel()
+        self.active=False
+        
+    def create_pose(self, pose_x, pose_y, pose_yaw) -> NavigateToPose.Goal:
+        pose = NavigateToPose.Goal()
+        waypoint=PoseStamped()
+        waypoint.header.frame_id = self.frame_id
+        waypoint.header.stamp = self.get_clock().now().to_msg()
+        waypoint.pose.position.x = pose_x
+        waypoint.pose.position.y = pose_y
+        waypoint.pose.position.z = 0.0
+        qx, qy, qz, qw = math_helper.quaternion_from_euler(0, 0, pose_yaw)
+        waypoint.pose.orientation.x = qx
+        waypoint.pose.orientation.y = qy
+        waypoint.pose.orientation.z = qz
+        waypoint.pose.orientation.w = qw
+        pose.pose=waypoint
+        pose.behavior_tree="/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml"
+        return pose
+
+    def get_robot_odom(self, data:Odometry):
+        x = 0.94#data.pose.pose.position.x
+        y = 0.64#data.pose.pose.position.y
+        q1 = data.pose.pose.orientation.x
+        q2 = data.pose.pose.orientation.y
+        q3 = data.pose.pose.orientation.z
+        q4 = data.pose.pose.orientation.w
+        q = (q1, q2, q3, q4)
+        e = math_helper.euler_from_quaternion(q)
+        th = 90
+        yaw = math_helper.to_positive_angle(th)
+        self.robot_x= float(x)
+        self.robot_y=float(y)
+        self.robot_yaw=float(yaw)

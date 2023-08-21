@@ -11,7 +11,7 @@ from . import math_helper
 class nav_controller:
 
     def __init__(self, ros_node:Node, odom_topic:str, frame_id:str, publish_status):
-        self.nav = ActionClient(ros_node, NavigateToPose, 'NavigateToPose')
+        self.nav = ActionClient(ros_node, NavigateToPose, 'navigate_to_pose')
         self.robot_x= 0
         self.robot_y=0
         self.robot_yaw=0
@@ -28,20 +28,27 @@ class nav_controller:
 
     def start_navigation(self, x, y, yaw):  
         print("start_nav")
-        self.nav.wait_for_server()
         self.goal_pose =self.create_pose(x, y, yaw)
+        print(self.goal_pose)
+
+        self.nav.wait_for_server()
+
         self._send_goal_future = self.nav.send_goal_async(
                 self.goal_pose,
                 feedback_callback=self.feedback_callback)
         self._send_goal_future.add_done_callback(self.goal_response_callback)
+        print("start nav done")
+
 
     def goal_response_callback(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().warning('Goal rejected')
+            print("accepted")
             self.publish_status( "canceld", "could not plan route to goal pose", True)
             return
         self.get_logger().info('Goal accepted')
+        print("rejected")
         self.active= True
         self._get_result_future = goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
@@ -89,7 +96,7 @@ class nav_controller:
         q4 = data.pose.pose.orientation.w
         q = (q1, q2, q3, q4)
         e = math_helper.euler_from_quaternion(q)
-        th = math_helper.degrees(e[2])
+        th = 90
         yaw = math_helper.to_positive_angle(th)
         self.robot_x= float(x)
         self.robot_y=float(y)

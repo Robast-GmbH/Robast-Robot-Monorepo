@@ -34,7 +34,7 @@ RUN pip3 install uvicorn \
 
 RUN python3 -m pip install -U  cyclonedds nudged
 
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
 #######################################
 ############Tobi was here##############
@@ -79,7 +79,7 @@ COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
 
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 
 ENV ROS_DOMAIN_ID=0
 RUN apt-get update \
