@@ -43,12 +43,14 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('robot_model',"Robast_Theron")
         self.declare_parameter('robot_frame_id', 'map')
         self.declare_parameter('robot_odom', '/odometry/filtered')
+        self.declare_parameter('behavior_tree','/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml')
         
  
         self.declare_parameter('heartbeat', 10.0)
         self.declare_parameter('statemaschine_open_drawer_topic', 'trigger_drawer_tree')
         self.declare_parameter('statemaschine_close_e_drawer_topic', 'close_drawer')
         self.declare_parameter('statemaschine_open_e_drawer_topic', 'trigger_electric_drawer_tree')
+        self.declare_parameter('statemaschine_reset_simple_tree_topic', 'reset_simple_tree')
         self.declare_parameter('move_base_server_name', 'goal_pose')
         self.declare_parameter('drawer_status_change_topic','/drawer_is_open')
 
@@ -59,13 +61,15 @@ class free_fleet_client_direct(Node):
         self.fleet_name = self.get_parameter('fleet_name').get_parameter_value().string_value
         self.robot_name = self.get_parameter('robot_name').get_parameter_value().string_value
         self.robot_model= self.get_parameter('robot_model').get_parameter_value().string_value
-        self.frame_id = self.get_parameter("robot_frame_id").get_parameter_value().string_value
-        self.robot_odom= self.get_parameter("robot_odom").get_parameter_value().string_value
+        self.frame_id = self.get_parameter('robot_frame_id').get_parameter_value().string_value
+        self.nav_behavior_tree = self.get_parameter('behavior_tree').get_parameter_value().string_value
+        self.robot_odom= self.get_parameter('robot_odom').get_parameter_value().string_value
         self.heartbeat= self.get_parameter('heartbeat').get_parameter_value().double_value
         self.ros_opendrawer_topic = self.get_parameter('statemaschine_open_drawer_topic').get_parameter_value().string_value
         self.ros_open_e_drawer_topic = self.get_parameter('statemaschine_open_e_drawer_topic').get_parameter_value().string_value
         self.ros_close_e_drawer_topic = self.get_parameter('statemaschine_close_e_drawer_topic').get_parameter_value().string_value
         self.ros_drawer_change_topic = self.get_parameter('drawer_status_change_topic').get_parameter_value().string_value
+        self.ros_reset_simple_tree_topic = self.get_parameter('statemaschine_reset_simple_tree_topic').get_parameter_value().string_value
         self.ros_move_base_server_name=self.get_parameter('move_base_server_name').get_parameter_value().string_value
         self.dds_domain = self.get_parameter('dds_domain').get_parameter_value().integer_value
         self.dds_slide_drawer_topic=self.get_parameter('dds_slide_drawer_topic').get_parameter_value().string_value
@@ -107,7 +111,8 @@ class free_fleet_client_direct(Node):
         self.drawer_publisher = self.create_publisher(DrawerAddress, self.ros_opendrawer_topic, qos_profile=qos_profile)
         self.e_drawer_open_publisher = self.create_publisher(DrawerAddress, self.ros_open_e_drawer_topic, qos_profile=qos_profile)
         self.e_drawer_close_publisher = self.create_publisher(DrawerAddress, self.ros_close_e_drawer_topic, qos_profile=qos_profile)
-        self.drawer_status_subcriber = self.create_subscription(DrawerStatus, self.ros_drawer_change_topic, qos_profile=qos_profile, callback=self.drawer_change_callback)
+        self.drawer_status_subscriber = self.create_subscription(DrawerStatus, self.ros_drawer_change_topic, qos_profile=qos_profile, callback=self.drawer_change_callback)
+        self.reset_simple_tree_publisher= self.create_publisher(Bool, self.ros_reset_simple_tree_topic, qos_profile=qos_profile)
       
         #controll nfc
         self.controll_nfc_publisher = self.create_publisher(Bool,"/nfc_switch", qos_profile)
@@ -124,7 +129,7 @@ class free_fleet_client_direct(Node):
         #info
         self.robot_state_dds = self.create_publisher(dds.FreeFleetDataRobotState, "robot_state",10)
         self.task_state_dds= self.create_publisher(dds.FreeFleetDataTaskState, "task_state",10)
-        self.battery_subscriber= self.subscriptions(BatteryState, "/robot/robotnik_base_hw/robotnik_battery_broadcaster/battery", self.publish_battery_data, 10)
+        #self.battery_subscriber= self.subscriptions(BatteryState, "/robot/robotnik_base_hw/robotnik_battery_broadcaster/battery", self.publish_battery_data, 10)
 
 
         self.status_timer = self.create_timer(timer_period_sec=self.heartbeat,callback= self.publish_fleet_state) 
@@ -174,7 +179,7 @@ class free_fleet_client_direct(Node):
 
         if(e_drawer):
             self.e_drawer_open_publisher.publish(ros_msg)
-            print("edrawer")
+            print("e-drawer")
         else:
             self.drawer_publisher.publish(ros_msg)
             print("drawer")
@@ -190,7 +195,12 @@ class free_fleet_client_direct(Node):
     
     def end_drawer_task(self):
         self.publish_task_state("DrawerAction", "Finished", True)
-        
+    
+    def reset_simple_tree(self):
+        tree_reset_msg=Bool()
+        tree_reset_msg.data=True
+        self.reset_simple_tree_publisher.publish(tree_reset_msg)
+
     def set_drawer_lock(self, module_id:int, drawer_id:int, restriction):
         if(len(restriction)>0):
             user_dict={}
@@ -273,6 +283,8 @@ class free_fleet_client_direct(Node):
             if msg.value == "completed":
                 if len(self.open_drawers)==0:
                     self.end_drawer_task()
+            elif msg.value=="reset":
+                self.reset_simple_tree()
             else:
                 selected_drawer= next((drawer for drawer in self.open_drawers if drawer.module_id== int(msg.value) and drawer.e_drawer), None)
                 if selected_drawer is not None: 
@@ -443,7 +455,7 @@ class free_fleet_client_direct(Node):
         waypoint.pose.orientation.z = qz
         waypoint.pose.orientation.w = qw
         pose.pose=waypoint
-        pose.behavior_tree="/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml"
+        pose.behavior_tree= self.nav_behavior_tree()
         return pose
 
     def get_robot_odom(self, data:Odometry):
