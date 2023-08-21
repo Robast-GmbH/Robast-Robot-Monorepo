@@ -151,7 +151,7 @@ class ros_controller(Node):
             self.get_logger().info(f"{data}")
             self.responce.handle_drawer_drawer_status_change(task_id=msg.task_id, module_id= data[0], drawer_id=data[1], status=data[2])
         elif msg.status=="Task":
-            if msg.message=="Completed":
+            if msg.status_message=="Completed":
                 pass# request next task
             
             
