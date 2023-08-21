@@ -40,6 +40,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DrawerLeds.msg"
   "msg/DrawerStatus.msg"
   "msg/DrawerTask.msg"
+  "msg/FFSlideDrawer.msg"
   "msg/ElectricalDrawerStatus.msg"
   "msg/Module.msg"
   "msg/NfcReadStatus.msg"

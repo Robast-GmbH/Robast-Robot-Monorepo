@@ -6,7 +6,8 @@
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/rmf/,target=/workspace/src/rmf,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind"
+		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind",
+		"source=/dev/shm,target=/dev/shm,type=bind"
 
 	],
 	"workspaceFolder": "/workspace",
@@ -14,8 +15,13 @@
 		"--name=rmf",
 		"--network=host"
 	],
+	"remoteEnv": {
+		"RMW_IMPLEMENTATION":"rmw_fastrtps_cpp",
+		"FASTRTPS_DEFAULT_PROFILES_FILE": "/workspace/dds_configs/fast_DDS_config.xml",
+ 		"CYCLONEDDS_URI":"/workspace/dds_configs/cyclone_DDS_config.xml",
+		 "DISPLAY": "${localEnv:DISPLAY}"
+	},
 	"remoteUser": "robast",
-	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
 	// "postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
