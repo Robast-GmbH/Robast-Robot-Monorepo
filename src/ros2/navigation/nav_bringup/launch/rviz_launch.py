@@ -9,15 +9,6 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    config_directory = environment_yaml["config_directory"]
-    is_simulation = environment_yaml["is_simulation"]
 
     rviz_config_dir = os.path.join(
         get_package_share_directory("nav_bringup"),
