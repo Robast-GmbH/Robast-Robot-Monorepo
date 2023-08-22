@@ -58,10 +58,8 @@ class Action(BaseModel):
 
 class BaseTask(BaseModel):
     task_id:str
+    robot:Robot
 
-class UpdateTask(BaseModel):
-    robot: Robot
-    
 class Task(BaseTask):
     actions:list[Action]
 

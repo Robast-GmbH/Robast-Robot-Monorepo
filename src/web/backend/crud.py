@@ -132,20 +132,29 @@ def create_new_user_nfc(db:Session, step:int, task_id, user_id:int ):
     db.refresh(db_new_user_action)
     return db_new_user_action
 
-def get_actions(task_id:str, db:Session):
+def get_actions(task_id:str, db:Session) ->[models.Action]:
     return db.query(models.Action).filter(models.Action.task_id==task_id).all()
 
 def get_action(action_id:int, db:Session)->models.Action:
     return db.query(models.Action).filter(models.Action.id == action_id).first()
 
-def get_navigation_action(action_id:int, db:Session):
+def get_navigation_full_action(action_id:int, db:Session):
     return db.query(models.Action, models.NavigationAction).join(models.Action.id==models.NavigationAction.id).filter(models.NavigationAction.id==action_id).first()
 
-def get_drawer_action(action_id:int, db:Session):
+def get_drawer_full_action(action_id:int, db:Session):
     return db.query(models.Action, models.DrawerAction).join(models.Action.id==models.DrawerAction.id).filter(models.DrawerAction.id==action_id).first()
 
-def get_user_action(action_id:int, db:Session):
+def get_user_full_action(action_id:int, db:Session):
     return db.query(models.Action, models.NewUserAction).join(models.Action.id==models.NewUserAction.id).filter(models.NewUserAction.id==action_id).first()
+
+def get_navigation_action(action_id:int, db:Session):
+    return db.query(models.NavigationAction).filter(models.NavigationAction.id==action_id).first()
+
+def get_drawer_action(action_id:int, db:Session):
+    return db.query( models.DrawerAction).filter(models.DrawerAction.id==action_id).first()
+
+def get_user_action(action_id:int, db:Session):
+    return db.query(models.NewUserAction).filter(models.NewUserAction.id==action_id).first()
 
 def get_action_id(db:Session, task_id:str, step:int):
     return db.query(models.Action.id).filter(models.Action.task_id== task_id and models.Action.step==step).first()[0]
@@ -179,6 +188,57 @@ def get_next_task(db:Session, robot_name):
     new_task=tasks_queue(db)[0]
     return new_task
 
+def get_full_task(task_id, db):
+    
+    db_task = get_task( db=db, task_id=task_id)
+    if db_task is None:
+        return "task"
+        raise HTTPException(status_code=404, detail="task not found")
+    task_id=db_task.id
+    robot_name= db_task.robot_name
+    fleet_name=db_task.fleet_name
+    db_actions= get_actions( db_task.id,db)
+    if db_actions is None: 
+        return "action"
+    action_list=[]
+    for db_action in db_actions:
+        step = db_action.step
+        action_type = db_action.type
+        if(db_action.type==schemas.ActionType.DRAWER):
+           
+           db_drawer_action= get_drawer_action(db_action.id, db)
+           if db_drawer_action is None: 
+            return "action"
+           drawer_id=db_drawer_action.drawer_id
+        #    locked_for= [db_drawer_action.target_user_id]
+           module_id=db_drawer_action.module_id
+           drawer_action= schemas.Drawer( drawer_id=drawer_id, module_id=module_id, locked_for=[] )
+           action= schemas.Action(step=step, type=action_type,action=drawer_action)
+           
+        elif db_action.type== schemas.ActionType.NAVIGATION:
+            db_nav_action= get_navigation_action(db_action.id, db)
+            if db_drawer_action is None: 
+                return "action"
+            
+            posex=db_nav_action.x_pose
+            posey= db_nav_action.y_pose
+            posez=0
+            pose=schemas.Pose(x=posex,y=posey,z=posez)
+            yaw=db_nav_action.yaw_pose
+            nav_action=schemas.Navigation(pose=pose, yaw=yaw)
+            action.action=schemas.Action(step=step, type=action_type, action=nav_action)
+
+        elif db_action.type== schemas.ActionType.NEW_USER:
+            db_user_action= get_user_action(db_action.id, db)
+            if db_user_action is None: 
+                return "action"
+            user_id=db_user_action.user_id
+            user_action= schemas.NewUser(user_id)
+            action= schemas.Action(step=step,type=action_type, action= user_action)
+       
+        action_list.append(action)
+        robot= schemas.Robot( robot_name=robot_name, fleet_name=fleet_name)
+    return schemas.Task(task_id=str(task_id), robot=robot, actions=action_list)
 #robot
 def get_robots(db:Session, skip: int = 0, limit: int = 100)->[models.Robot]:
     db_robots= db.query(models.Robot).offset(skip).limit(limit).all()
@@ -256,6 +316,8 @@ def set_module_status(db:Session,module:schemas.UpdateModule)->models.Module:
         db_module.status= module.status
         db_module.label= module.label
         db_module.robot_name= module.robot_name
+        if db_module.label is None:
+            db_module.label=""
     db.commit()
     db.refresh(db_module)
     return db_module

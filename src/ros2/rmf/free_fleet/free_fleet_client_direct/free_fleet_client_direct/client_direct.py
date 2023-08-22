@@ -1,5 +1,6 @@
 from communication_interfaces.msg import DrawerAddress, DrawerStatus
 from communication_interfaces.action import CreateUserNfcTag
+from sensor_msgs.msg import BatteryState
 from std_msgs.msg import Bool, String
 
 import rclpy
@@ -49,7 +50,7 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('behavior_tree','/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml')
         
  
-        self.declare_parameter('heartbeat', 10.0)
+        self.declare_parameter('heartbeat', 2.0)
         self.declare_parameter('patrol_break_frequency', 0.0056) #3 minute
         self.declare_parameter('statemaschine_open_drawer_topic', 'trigger_drawer_tree')
         self.declare_parameter('statemaschine_close_e_drawer_topic', 'close_drawer')
@@ -89,11 +90,6 @@ class free_fleet_client_direct(Node):
         self.goal_frame="map"
         self.start_frame="robot_base_footprint"
 
-        # self.subscriber_odom = self.create_subscription(
-        #     Odometry,
-        #     self.robot_odom,
-        #     self.get_robot_odom,
-        #     QoSProfile(depth=10, reliability=QoSReliabilityPolicy.BEST_EFFORT))
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
@@ -137,7 +133,7 @@ class free_fleet_client_direct(Node):
         #info
         self.robot_state_dds = self.create_publisher(dds.FreeFleetDataRobotState, "robot_state",10)
         self.task_state_dds= self.create_publisher(dds.FreeFleetDataTaskState, "task_state",10)
-        #self.battery_subscriber= self.subscriptions(BatteryState, "/robot/robotnik_base_hw/robotnik_battery_broadcaster/battery", self.publish_battery_data, 10)
+        self.battery_subscriber= self.subscriptions(BatteryState, "/robot/robotnik_base_hw/robotnik_battery_broadcaster/battery", self.publish_battery_data, 10)
 
 
         self.status_timer = self.create_timer(timer_period_sec=self.heartbeat,callback= self.publish_fleet_state) 

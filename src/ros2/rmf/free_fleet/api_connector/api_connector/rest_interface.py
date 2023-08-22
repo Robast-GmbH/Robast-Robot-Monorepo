@@ -49,7 +49,6 @@ class RestInterface():
                 self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"loop", "stop")
             return  
         
-
         
         @self.app.post("/settings/drawer/close")
         def close_drawer(robot:schemas.Robot, drawer_id:Annotated[int,Body()], module_id:Annotated[int,Body()], e_drawer:Annotated[bool,Body()]):
