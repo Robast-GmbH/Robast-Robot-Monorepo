@@ -158,6 +158,7 @@ RUN apt-get update && apt-get install -y \
   libegl1 \
   libxext6 \
   libx11-6 \
+  vim \
   && rm -rf /var/lib/apt/lists/* 
 
 COPY --from=build /opt/ros /opt/ros
