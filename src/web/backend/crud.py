@@ -316,6 +316,8 @@ def set_module_status(db:Session,module:schemas.UpdateModule)->models.Module:
         db_module.status= module.status
         db_module.label= module.label
         db_module.robot_name= module.robot_name
+        if db_module.label is None:
+            db_module.label=""
     db.commit()
     db.refresh(db_module)
     return db_module

@@ -228,7 +228,7 @@ def get_modules(robot_name :str, db: Session = Depends(get_db)):
 # get_module_info
 @app.get("/robots/{robot_name}/modules/{module_id}", response_model = schemas.Module)
 def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
-    return crud.get_drawer(db=db, robot_name=robot_name, module_id= module_id)
+    return crud.get_drawer(db=db, robot_name=robot_name, module_id= module_id, drawer_id=0)
 
 #set_drawer
 @app.post("/robots/modules/", response_model= schemas.Module)
@@ -324,7 +324,7 @@ def reset_drawer( robot_name: str, db: Session = Depends(get_db)):
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
     db_modules= crud.get_modules(db=db,robot_name=robot_name)
     for module in db_modules:
-        mod=schemas.UpdateModule(module_id=module.module_id,drawer_id=module.drawer_id, status="Closed")
+        mod=schemas.UpdateModule(module_id=module.module_id, drawer_id=module.drawer_id, robot_name=robot_name ,status="Closed")
         crud.set_module_status(db=db,module=mod)
 
     return 
