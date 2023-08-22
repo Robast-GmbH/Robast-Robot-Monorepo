@@ -53,3 +53,6 @@ def quaternion_from_euler(roll, pitch, yaw):
     q[3] = sy * cp * cr - cy * sp * sr
 
     return q
+
+def euler_angle_to_degree(value):
+    return value * 180.0 / math.pi

@@ -47,6 +47,7 @@ class free_fleet_client_direct(Node):
         
  
         self.declare_parameter('heartbeat', 10.0)
+        self.declare_parameter('patrol_break_fequency', 0.0056) #3 minute
         self.declare_parameter('statemaschine_open_drawer_topic', 'trigger_drawer_tree')
         self.declare_parameter('statemaschine_close_e_drawer_topic', 'close_drawer')
         self.declare_parameter('statemaschine_open_e_drawer_topic', 'trigger_electric_drawer_tree')
@@ -65,6 +66,7 @@ class free_fleet_client_direct(Node):
         self.nav_behavior_tree = self.get_parameter('behavior_tree').get_parameter_value().string_value
         self.robot_odom= self.get_parameter('robot_odom').get_parameter_value().string_value
         self.heartbeat= self.get_parameter('heartbeat').get_parameter_value().double_value
+        self.patrol_break_fequency=self.get_parameter('patrol_break_fequency').get_parameter_value().double_value
         self.ros_opendrawer_topic = self.get_parameter('statemaschine_open_drawer_topic').get_parameter_value().string_value
         self.ros_open_e_drawer_topic = self.get_parameter('statemaschine_open_e_drawer_topic').get_parameter_value().string_value
         self.ros_close_e_drawer_topic = self.get_parameter('statemaschine_close_e_drawer_topic').get_parameter_value().string_value
@@ -80,7 +82,6 @@ class free_fleet_client_direct(Node):
         self.robot_y=0
         self.robot_yaw=0
         self.active=False
-        #self.publish_status= publish_status
         self.frame_id= self.frame_id
 
         self.subscriber_odom = self.create_subscription(
@@ -268,8 +269,14 @@ class free_fleet_client_direct(Node):
     # settings request
     def setting_callback(self, msg:dds.FreeFleetDataSettingRequest):
         if(not self.task_validation(msg)):
-            return
-        if msg.command == "move":
+            return  
+        if msg.command == "loop":
+                if msg.value=="start":
+                    self.loop = True
+                elif msg.value=="stop":
+                    self.loop = False
+
+        if msg.command == "move":  
             if msg.value == "resume":
                 self.nav_controller.start_navigation()
             elif self.nav_controller.active:
@@ -343,6 +350,7 @@ class free_fleet_client_direct(Node):
     
     def swap_task(self, new_task_id:str):
         self.clear_task()
+        self.loop=False
         self.task_id= new_task_id
         self.publish_fleet_state()
 
@@ -407,7 +415,6 @@ class free_fleet_client_direct(Node):
                 self.goal_pose,
                 feedback_callback=self.feedback_callback)
         self._send_goal_future.add_done_callback(self.goal_response_callback)
-        print("start nav done")
 
 
     def goal_response_callback(self, future):
@@ -423,8 +430,19 @@ class free_fleet_client_direct(Node):
         self._get_result_future.add_done_callback(self.get_result_callback)
 
     def get_result_callback(self, future: NavigateToPose.Result):
-        #self.publish_task_state()
-        self.active=False
+        
+        if self.loop:
+            rate =self.create_rate( self.patrol_break_fequency)
+            rate.sleep()
+            if self.loop:
+                sorted_list =map( lambda task:(self.divide_task_id( task.task_id)[1],task),self.destination_requests)
+                next_action=next(action for action in sorted_list if action[0]>self.step)
+                self.step= next_action[0]
+                self.start_navigation_task( next_action.destination.x, next_action.destination.y, next_action.destination.yaw)
+                return
+        else:
+                self.active=False
+                self.find_next_action()
 
 
     def feedback_callback(self, feedback_msg: NavigateToPose.Feedback):
@@ -466,8 +484,8 @@ class free_fleet_client_direct(Node):
         q3 = data.pose.pose.orientation.z
         q4 = data.pose.pose.orientation.w
         q = (q1, q2, q3, q4)
-        e = math_helper.euler_from_quaternion(q)
-        th = 90
+        roll, pitch, yaw= math_helper.euler_from_quaternion(q)
+        th = math_helper.euler_angle_to_degree(yaw)
         yaw = math_helper.to_positive_angle(th)
         self.robot_x= float(x)
         self.robot_y=float(y)
