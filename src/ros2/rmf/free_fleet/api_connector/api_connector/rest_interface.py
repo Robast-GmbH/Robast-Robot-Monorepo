@@ -41,6 +41,16 @@ class RestInterface():
             self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", "cancel")
             return  
         
+        @self.app.post("/settings/move/loop")
+        def loop_robot(robot:schemas.Robot, loop:Annotated[bool,Body()] ):
+            if loop:
+                self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"loop", "start")
+            else:
+                self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"loop", "stop")
+            return  
+        
+
+        
         @self.app.post("/settings/drawer/close")
         def close_drawer(robot:schemas.Robot, drawer_id:Annotated[int,Body()], module_id:Annotated[int,Body()], e_drawer:Annotated[bool,Body()]):
             if e_drawer:
