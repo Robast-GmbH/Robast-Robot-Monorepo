@@ -86,8 +86,8 @@ class free_fleet_client_direct(Node):
         self.robot_yaw=0
         self.active=False
         self.frame_id= self.frame_id
-        self.goal_frame="robot_base_footprint"
-        self.start_frame="map"
+        self.goal_frame="map"
+        self.start_frame="robot_base_footprint"
 
         # self.subscriber_odom = self.create_subscription(
         #     Odometry,
