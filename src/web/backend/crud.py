@@ -195,6 +195,8 @@ def get_full_task(task_id, db):
         return "task"
         raise HTTPException(status_code=404, detail="task not found")
     task_id=db_task.id
+    robot_name= db_task.robot_name
+    fleet_name=db_task.fleet_name
     db_actions= get_actions( db_task.id,db)
     if db_actions is None: 
         return "action"
@@ -235,7 +237,8 @@ def get_full_task(task_id, db):
             action= schemas.Action(step=step,type=action_type, action= user_action)
        
         action_list.append(action)
-    return schemas.Task(task_id=str(task_id), actions=action_list)
+        robot= schemas.Robot( robot_name=robot_name, fleet_name=fleet_name)
+    return schemas.Task(task_id=str(task_id), robot=robot, actions=action_list)
 #robot
 def get_robots(db:Session, skip: int = 0, limit: int = 100)->[models.Robot]:
     db_robots= db.query(models.Robot).offset(skip).limit(limit).all()

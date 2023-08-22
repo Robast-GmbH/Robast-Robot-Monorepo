@@ -108,10 +108,15 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="User not found")
 
 #task
-@app.get("/tasks/")
+@app.get("/tasks/",response_model=list[schemas.Task])
 def get_task_queue( db: Session = Depends(get_db)):
     db_tasks = crud.tasks_queue(db)
-    return db_tasks 
+    db_complete_tasks=[]
+    for task in db_tasks:
+        full_task=crud.get_full_task(task_id=task.id,db=db)
+        if not(full_task=="task" or full_task=="action"):
+                db_complete_tasks.append(full_task)
+    return db_complete_tasks
 
 
 @app.get("/tasks/{task_id}", response_model=schemas.Task)
@@ -128,16 +133,16 @@ def read_task(task_id: int, db: Session = Depends(get_db)):
 def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Session = Depends(get_db)):
     task_id= crud.create_task(db=db,robot_name= robot.robot_name, fleet_name=robot.fleet_name, owner_id= user_id)
     for action in task.actions:
-        if( action.type== schemas.ActionType.Navigation):
+        if( action.type== schemas.ActionType.NAVIGATION):
             crud.create_navigation_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.orientation)
-        elif(action.type== schemas.ActionType.OPEN_DRAWER):
+        elif(action.type== schemas.ActionType.NEW_USER):
             crud.create_drawer_action(db, action.step,task_id, action.action.module_id, action.action.drawer_id)
         elif(action.type== schemas.ActionType.NEW_USER):
             crud.create_new_user_nfc(db, action.step, task_id, action.action.user_id)
     return 
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
-def update_task( task_id:int, task: schemas.UpdateTask, db: Session = Depends(get_db)):
+def update_task( task_id:int, task: schemas.BaseTask, db: Session = Depends(get_db)):
     return crud.update_task(db, task.task_id, task.robot.robot_name, task.robot.fleet_name)
 
 @app.put("/tasks/{task_id}/step/{step}",response_model=schemas.UpdateAction)
@@ -148,20 +153,9 @@ def update_action(task_id:str, step:str, status:Annotated[str,Body()],finished:A
 @app.get("/tasks/next")
 def get_next_task(db: Session = Depends(get_db)):
     task=crud.tasks_queue(db)[0]
-    actions= crud.get_actions(task_id=task.id,db=db)
-    list_action=[]
-    for action in actions:
-        if( action.type== schemas.ActionType.NAVIGATION):
-            db_action=crud.get_navigation_action(action_id=action.id,db=db)
-            list_action.append(templates.create_navigation_action(db_action.step,db_action.x_pose,db_action.y_pose,db_action.yaw_pose))
-        elif(action.type== schemas.ActionType.DRAWER):
-            db_action=crud.get_drawer_action(action_id=action.id,db=db)
-            list_action.append(templates.create_drawer_action(db_action.step,db_action.drawer_id,db_action.module_id,db_action.is_edrawer,db_action.locked_for))
-        elif(action.type== schemas.ActionType.NEW_USER):
-            db_action =crud.get_user_action(action_id=action.id,db=db)
-            list_action.append(templates.create_new_user(db_action.step,db_action.user_id))
+    full_task= crud.get_full_task(task_id=task.id,db=db)
             
-    task =templates.create_task(db,task.robot_name,task.id,list_action)
+    task =templates.create_task(db,task.robot_name,task.id,full_task.actions)
 
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
