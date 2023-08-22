@@ -10,11 +10,14 @@ from rclpy.action import ActionClient
 from geometry_msgs.msg import PoseStamped
 from nav2_msgs.action import NavigateToPose
 from nav_msgs.msg import Odometry
-from sensor_msgs.msg import BatteryState
+from tf2_ros.transform_listener import TransformListener
+from tf2_ros.buffer import Buffer
 
 from rclpy.node import Node
 from rclpy.action import ActionClient
 from rclpy.qos import QoSProfile, QoSReliabilityPolicy
+
+from tf2_ros import TransformException
 
 from . import math_helper
 
@@ -24,7 +27,7 @@ from enum import Enum
 import robast_dds_communicator.msg as dds 
 
 
-# TODO@ Torben this aproach is rubbisch switch the logic to simple statemaschine  
+# TODO@ Torben this approach is rubbish switch the logic to simple statemaschine  
 
 class drawer():
     def __init__(self, module_id :int, drawer_id :int, e_drawer:bool, locked_for: dict):
@@ -66,7 +69,7 @@ class free_fleet_client_direct(Node):
         self.nav_behavior_tree = self.get_parameter('behavior_tree').get_parameter_value().string_value
         self.robot_odom= self.get_parameter('robot_odom').get_parameter_value().string_value
         self.heartbeat= self.get_parameter('heartbeat').get_parameter_value().double_value
-        self.patrol_break_fequency=self.get_parameter('patrol_break_fequency').get_parameter_value().double_value
+        self.patrol_break_frequency=self.get_parameter('patrol_break_frequency').get_parameter_value().double_value
         self.ros_opendrawer_topic = self.get_parameter('statemaschine_open_drawer_topic').get_parameter_value().string_value
         self.ros_open_e_drawer_topic = self.get_parameter('statemaschine_open_e_drawer_topic').get_parameter_value().string_value
         self.ros_close_e_drawer_topic = self.get_parameter('statemaschine_close_e_drawer_topic').get_parameter_value().string_value
@@ -83,12 +86,16 @@ class free_fleet_client_direct(Node):
         self.robot_yaw=0
         self.active=False
         self.frame_id= self.frame_id
+        self.goal_frame="robot_base_footprint"
+        self.start_frame="map"
 
-        self.subscriber_odom = self.create_subscription(
-            Odometry,
-            self.robot_odom,
-            self.get_robot_odom,
-            QoSProfile(depth=10, reliability=QoSReliabilityPolicy.BEST_EFFORT))
+        # self.subscriber_odom = self.create_subscription(
+        #     Odometry,
+        #     self.robot_odom,
+        #     self.get_robot_odom,
+        #     QoSProfile(depth=10, reliability=QoSReliabilityPolicy.BEST_EFFORT))
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
 
         #task
         self.task_id= ""
@@ -300,6 +307,7 @@ class free_fleet_client_direct(Node):
 
     #publish states
     def publish_fleet_state(self):
+        self.get_robot_location()
         battery= self.battery #todo @Torben read the battery sate from the robot
         sequence = [] #todo @Torben add a list of waypoint of the robot
         mode= dds.FreeFleetDataRobotMode()
@@ -432,7 +440,7 @@ class free_fleet_client_direct(Node):
     def get_result_callback(self, future: NavigateToPose.Result):
         
         if self.loop:
-            rate =self.create_rate( self.patrol_break_fequency)
+            rate =self.create_rate( self.patrol_break_frequency)
             rate.sleep()
             if self.loop:
                 sorted_list =map( lambda task:(self.divide_task_id( task.task_id)[1],task),self.destination_requests)
@@ -447,7 +455,7 @@ class free_fleet_client_direct(Node):
 
     def feedback_callback(self, feedback_msg: NavigateToPose.Feedback):
         self.get_logger().debug('Received feedback')
-        #self.publish_status()
+        
     
     def pause_navigation(self):
         self._send_goal_future.cancel()
@@ -476,17 +484,37 @@ class free_fleet_client_direct(Node):
         pose.behavior_tree= self.nav_behavior_tree()
         return pose
 
-    def get_robot_odom(self, data:Odometry):
-        x = data.pose.pose.position.x
-        y = data.pose.pose.position.y
-        q1 = data.pose.pose.orientation.x
-        q2 = data.pose.pose.orientation.y
-        q3 = data.pose.pose.orientation.z
-        q4 = data.pose.pose.orientation.w
-        q = (q1, q2, q3, q4)
-        roll, pitch, yaw= math_helper.euler_from_quaternion(q)
+    # def get_robot_odom(self, data:Odometry):
+    #     x = data.pose.pose.position.x
+    #     y = data.pose.pose.position.y
+    #     q1 = data.pose.pose.orientation.x
+    #     q2 = data.pose.pose.orientation.y
+    #     q3 = data.pose.pose.orientation.z
+    #     q4 = data.pose.pose.orientation.w
+    #     q = (q1, q2, q3, q4)
+    #     roll, pitch, yaw= math_helper.euler_from_quaternion(q)
+    #     th = math_helper.euler_angle_to_degree(yaw)
+    #     yaw = math_helper.to_positive_angle(th)
+    #     self.robot_x= float(x)
+    #     self.robot_y=float(y)
+    #     self.robot_yaw=float(yaw)
+    
+    def get_robot_location(self):
+        try:
+            t = self.tf_buffer.lookup_transform(
+                self.goal_frame,
+                self.start_frame,
+                rclpy.time.Time())
+            
+        except TransformException as ex:
+                self.get_logger().info( f'Could not transform {self.goal_frame} to {self.start_frame}: {ex}')
+                return
+        (_, _, yaw) = math_helper.euler_from_quaternion([t.transform.rotation.x, t.transform.rotation.y,
+                                                 t.transform.rotation.z, t.transform.rotation.w])
         th = math_helper.euler_angle_to_degree(yaw)
         yaw = math_helper.to_positive_angle(th)
-        self.robot_x= float(x)
-        self.robot_y=float(y)
-        self.robot_yaw=float(yaw)
+        self.robot_yaw=yaw
+        self.robot_x=t.transform.translation.x
+        self.robot_y=t.transform.translation.y
+            
+       
