@@ -10,24 +10,19 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 
 def generate_launch_description():
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
 
-    config_directory = environment_yaml["config_directory"]
-    is_simulation = environment_yaml["is_simulation"]
+
+    config_directory = os.environ['config_directory']
+    is_simulation = os.environ["is_simulation"]
 
     namespace = LaunchConfiguration("namespace")
     nav_bringup_dir = get_package_share_directory("nav_bringup")
     world_posegraph = LaunchConfiguration("world_posegraph")
 
-    if is_simulation:
+    if is_simulation == 'True':
         world_model = os.path.join(nav_bringup_dir, "maps", "6OG", "6OG_new")
     else:
-        world_model = (os.path.join(nav_bringup_dir, "maps", "new6OG", "6th_floor"),)
+        world_model = os.path.join(nav_bringup_dir, "maps", "6OG_Tiplu_July", "RL_Tiplu_6")
 
     declare_world_model_cmd = DeclareLaunchArgument(
         "world_posegraph",
@@ -48,10 +43,10 @@ def generate_launch_description():
     )
 
     slam_arguments = {
-        "slam_executable": "sync_slam_toolbox_node",
+        "slam_executable": "localization_slam_toolbox_node",
         "slam_params_file": slam_toolbox_params_yaml,
         "slam_posegraph": world_posegraph,
-        "slam_mode": "localization",
+        "slam_mode": "mapping",
         "slam_map_topic": "/map",
         "namespace": namespace,
     }.items()

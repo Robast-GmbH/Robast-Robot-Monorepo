@@ -10,13 +10,6 @@ from nav2_common.launch import RewrittenYaml
 
 
 def generate_launch_description():
-
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
             
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -45,7 +38,8 @@ def generate_launch_description():
     )
 
     
-    if environment_yaml["is_simulation"]:
+    if os.environ["is_simulation"] == 'True':
+        #TODO @all check how to rewrite a matrix parameter. In this case odom0
         use_sim_time_default = "true"
         param_substitutions = {
             'use_sim_time': use_sim_time_default,
@@ -53,8 +47,21 @@ def generate_launch_description():
             "base_link_frame":"base_footprint",
             "world_frame":"odom",
             "odom0": "odom",
-            "imu0": "imu/data"        
+            "imu0": "imu/data",
+            "odom0_differential": "true",
+            "odom0_relative": "false"
         }
+        sim_params = os.path.join(
+            get_package_share_directory("nav_bringup"),
+            "config_simulation",
+            "localization",
+            "robot_localization_ekf_odom_to_base.yaml",
+        ),
+        configured_params = RewrittenYaml(
+            source_file=sim_params,
+            root_key=namespace,
+            param_rewrites=param_substitutions,
+            convert_types=True)
     else:
         param_substitutions = {
             'use_sim_time': use_sim_time,
@@ -64,12 +71,12 @@ def generate_launch_description():
             "odom0": "/robot/robotnik_base_control/odom",
             "imu0": "/robot/imu/data"        
         }
+        configured_params = RewrittenYaml(
+            source_file=params_file,
+            root_key=namespace,
+            param_rewrites=param_substitutions,
+            convert_types=True)
 
-    configured_params = RewrittenYaml(
-        source_file=params_file,
-        root_key=namespace,
-        param_rewrites=param_substitutions,
-        convert_types=True)
 
 
     robot_localization_node = Node(

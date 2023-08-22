@@ -11,12 +11,6 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
 
     pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
     gz_ros_bridge_yaml = os.path.join(
@@ -27,9 +21,9 @@ def generate_launch_description():
         os.path.join(
             get_package_share_directory("rb_theron_description"),
             "robots",
-            environment_yaml["robot"] + ".urdf.xacro",
+            os.environ["robot"] + ".urdf.xacro",
         ),
-        mappings={"prefix": environment_yaml["prefix"]},
+        mappings={"prefix": os.environ["prefix"]},
     ).toxml()
 
     use_sim_time = LaunchConfiguration("use_sim_time")
@@ -116,6 +110,13 @@ def generate_launch_description():
         output="screen",
     )
 
+    start_oak_d_camera_info_node = Node(
+        package ='oak_d_camera_info_publisher',
+        executable = 'oak_d_camera_info',
+        name='camera_rgb_info_publisher'
+    )
+
+
     ld = LaunchDescription()
 
     # arguments
@@ -132,5 +133,6 @@ def generate_launch_description():
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(spawn_robot_cmd)
     ld.add_action(gz_ros_bridge_cmd)
+    ld.add_action(start_oak_d_camera_info_node)
 
     return ld

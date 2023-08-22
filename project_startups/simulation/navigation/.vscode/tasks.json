@@ -180,13 +180,7 @@
                                 "echo": false,
                                 "focus": true
                         }
-                },
-                {
-                        "type": "shell",
-                        "label": "temporary task to build mppi",
-                        "command": "cd /workspace_nav2; colcon build --packages-select nav2_mppi_controller",
-                        "problemMatcher": []
-                },      
+                },   
                 {
                         "type": "shell",
                         "label": "start nav_without_localization_with_door_bells_launch",

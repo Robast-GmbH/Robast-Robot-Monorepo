@@ -2,19 +2,23 @@ version: '3.9'
 
 services:
   simulation:
-    # image: ghcr.io/robast-gmbh/monorepo/simulation:latest
-    build:
-      context: .
-      dockerfile: ../../src/ros2/simulation/Dockerfile
-    image: robast_simulation
+    image: ghcr.io/robast-gmbh/monorepo/simulation:devel
     environment:
       - ROS_DOMAIN_ID=1
+      - is_simulation=True
+      - config_directory=config_simulation
+      - robot_name=rb_theron
+      - init_x=0.0
+      - init_y=0.0
+      - init_z=0.0
+      - init_yaw=0.0
+      - robot=rb_theron
+      - prefix=
     volumes:
       - ./simulation/:/workspace/:cached
       - ../../src/ros2/simulation:/workspace/src/simulation:cached
       - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
       - ../../src/ros2/communication_interfaces:/workspace/src/communication_interfaces:cached
-      - ../../src/ros2/navigation/environment_vars.yaml:/workspace/src/navigation/environment_vars.yaml:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
     deploy:
@@ -28,13 +32,16 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
     
   navigation:
-    build:
-      context: .
-      dockerfile: ../../src/ros2/navigation/Dockerfile
-    image: robast_navigation
-    # image: ghcr.io/robast-gmbh/monorepo/navigation:latest
+    image: ghcr.io/robast-gmbh/monorepo/navigation:devel
     environment:
       - ROS_DOMAIN_ID=1
+      - is_simulation=True
+      - config_directory=config_simulation
+      - robot_name=rb_theron
+      - init_x=0.0
+      - init_y=0.0
+      - init_z=0.0
+      - init_yaw=0.0
     volumes:
       - ./navigation/:/workspace/:cached
       - ../../src/ros2/navigation:/workspace/src/navigation:cached
