@@ -413,12 +413,11 @@ class free_fleet_client_direct(Node):
     def goal_response_callback(self, future):
         goal_handle = future.result()
         if not goal_handle.accepted:
-            self.get_logger().warning('Goal rejected')
-            print("accepted")
+            self.get_logger().info('Goal rejected')
+
             self.publish_task_state( "canceld", "could not plan route to goal pose", True)
             return
         self.get_logger().info('Goal accepted')
-        print("rejected")
         self.active= True
         self._get_result_future = goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
@@ -426,6 +425,7 @@ class free_fleet_client_direct(Node):
     def get_result_callback(self, future: NavigateToPose.Result):
         #self.publish_task_state()
         self.active=False
+
 
     def feedback_callback(self, feedback_msg: NavigateToPose.Feedback):
         self.get_logger().debug('Received feedback')
