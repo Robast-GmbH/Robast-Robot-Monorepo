@@ -89,11 +89,6 @@ class free_fleet_client_direct(Node):
         self.goal_frame="map"
         self.start_frame="robot_base_footprint"
 
-        # self.subscriber_odom = self.create_subscription(
-        #     Odometry,
-        #     self.robot_odom,
-        #     self.get_robot_odom,
-        #     QoSProfile(depth=10, reliability=QoSReliabilityPolicy.BEST_EFFORT))
         self.tf_buffer = Buffer()
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
