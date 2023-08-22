@@ -132,7 +132,7 @@ WORKDIR /mppi
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/ --packages-select nav2_mppi_controller
+  colcon build --install-base /robast/mppi/ --packages-select nav2_mppi_controller
 
 ############################## Release ##################################
 FROM ros:humble-perception as release
@@ -175,7 +175,8 @@ ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
 RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc \
+  && echo "if [ -f /robast/mppi/setup.bash ]; then source /robast/mppi/setup.bash; fi" >> ~root/.bashrc
 
 ENV is_simulation=False
 ENV config_directory=config
