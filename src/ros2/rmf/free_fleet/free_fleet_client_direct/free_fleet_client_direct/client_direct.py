@@ -1,5 +1,6 @@
 from communication_interfaces.msg import DrawerAddress, DrawerStatus
 from communication_interfaces.action import CreateUserNfcTag
+from sensor_msgs.msg import BatteryState
 from std_msgs.msg import Bool, String
 
 import rclpy
@@ -132,7 +133,7 @@ class free_fleet_client_direct(Node):
         #info
         self.robot_state_dds = self.create_publisher(dds.FreeFleetDataRobotState, "robot_state",10)
         self.task_state_dds= self.create_publisher(dds.FreeFleetDataTaskState, "task_state",10)
-        #self.battery_subscriber= self.subscriptions(BatteryState, "/robot/robotnik_base_hw/robotnik_battery_broadcaster/battery", self.publish_battery_data, 10)
+        self.battery_subscriber= self.subscriptions(BatteryState, "/robot/robotnik_base_hw/robotnik_battery_broadcaster/battery", self.publish_battery_data, 10)
 
 
         self.status_timer = self.create_timer(timer_period_sec=self.heartbeat,callback= self.publish_fleet_state) 
