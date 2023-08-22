@@ -49,7 +49,7 @@ class free_fleet_client_direct(Node):
         self.declare_parameter('behavior_tree','/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml')
         
  
-        self.declare_parameter('heartbeat', 10.0)
+        self.declare_parameter('heartbeat', 2.0)
         self.declare_parameter('patrol_break_frequency', 0.0056) #3 minute
         self.declare_parameter('statemaschine_open_drawer_topic', 'trigger_drawer_tree')
         self.declare_parameter('statemaschine_close_e_drawer_topic', 'close_drawer')

@@ -114,13 +114,14 @@ def get_task_queue( db: Session = Depends(get_db)):
     return db_tasks 
 
 
-@app.get("/tasks/{task_id}")
+@app.get("/tasks/{task_id}", response_model=schemas.Task)
 def read_task(task_id: int, db: Session = Depends(get_db)):
-    db_task = crud.get_task(db, task_id=task_id)
-    if db_task is None:
-        raise HTTPException(status_code=404, detail="task not found")
-    db_actions= crud.get_actions( task_id= db_task.id, db=db)
-    return {"task": db_task, "actions": db_actions}
+    db_task= crud.get_full_task(task_id, db)
+    if db_task=="task":
+        raise HTTPException(status_code=404, detail="Task not found")
+    elif db_task=="action":
+        raise HTTPException(status_code=404, detail="Action not found")
+    return db_task
 
 
 @app.post("/tasks/")
@@ -327,6 +328,11 @@ def reset_drawer( robot_name: str, db: Session = Depends(get_db)):
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    db_modules= crud.get_modules(db=db,robot_name=robot_name)
+    for module in db_modules:
+        mod=schemas.UpdateModule(module_id=module.module_id,drawer_id=module.drawer_id, status="Closed")
+        crud.set_module_status(db=db,module=mod)
+
     return 
 
 if __name__ == "__main__":
