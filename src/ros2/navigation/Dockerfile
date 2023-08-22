@@ -1,4 +1,4 @@
-FROM ros:humble as devel
+FROM ros:humble-perception as devel
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
@@ -40,16 +40,6 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
   # General ros stuff
-
-RUN apt-get update && apt-get install -y \
-    curl \
-    gnupg2 \
-  && curl http://repo.ros2.org/repos.key | apt-key add - \
-  && sh -c 'echo "deb [arch=amd64,arm64] http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list' \
-  && apt-get update && apt-get install -y \
-    ros-${ROS_DISTRO}-desktop \
-    python3-argcomplete \
-  && rm -rf /var/lib/apt/lists/*
 
 #instal to use the nvidia gpu in the docker
 RUN apt-get update && apt-get install -y \
