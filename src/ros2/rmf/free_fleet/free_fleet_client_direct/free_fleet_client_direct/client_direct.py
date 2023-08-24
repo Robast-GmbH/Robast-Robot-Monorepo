@@ -477,7 +477,7 @@ class free_fleet_client_direct(Node):
         waypoint.pose.orientation.z = qz
         waypoint.pose.orientation.w = qw
         pose.pose=waypoint
-        pose.behavior_tree= self.nav_behavior_tree()
+        pose.behavior_tree= "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml"
         return pose
 
     # def get_robot_odom(self, data:Odometry):
