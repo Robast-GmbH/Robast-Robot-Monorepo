@@ -47,7 +47,7 @@ namespace behavior_tree_server
     _action_server_change_footprint_padding->activate();
 
     // create bond connection
-    createBond();   // TODO@Jacob: What is this? Do we need this?
+    createBond();
 
     return nav2_util::CallbackReturn::SUCCESS;
   }
@@ -60,7 +60,7 @@ namespace behavior_tree_server
     _action_server_change_footprint_padding->deactivate();
 
     // destroy bond connection
-    destroyBond();   // TODO@Jacob: What is this? Do we need this?
+    destroyBond();
 
     return nav2_util::CallbackReturn::SUCCESS;
   }
