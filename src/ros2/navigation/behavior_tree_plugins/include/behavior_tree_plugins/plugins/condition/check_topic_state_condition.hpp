@@ -52,7 +52,7 @@ namespace nav2_behavior_tree
     {
       return {BT::InputPort<std::string>(
                 "topic", "default", "name of the topic, whose data field is checked for target state"),
-              BT::InputPort<bool>("target_state", "true", "target state the data field value is checked for")};
+              BT::InputPort<bool>("target_state", true, "target state the data field value is checked for")};
     }
 
    private:
