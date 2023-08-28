@@ -14,7 +14,7 @@ from launch_ros.actions import Node
 from rclpy.qos import (DurabilityPolicy, QoSHistoryPolicy, QoSProfile,
                        QoSReliabilityPolicy)
 
-from communication_interfaces.msg import (DrawerAddress, DrawerLeds,
+from communication_interfaces.msg import (DrawerAddress, LedState, LedStates,
                                           DrawerStatus, ErrorBaseMsg)
 
 from can_msgs.msg import Frame
@@ -85,14 +85,20 @@ class TestProcessOutput(unittest.TestCase):
         with open(INPUT_DATA_PATH) as f:
             data = yaml.safe_load(f)
 
-        drawer_leds_msg = DrawerLeds()
-        drawer_leds_msg.red = data['drawer_leds']['red']
-        drawer_leds_msg.blue = data['drawer_leds']['blue']
-        drawer_leds_msg.green = data['drawer_leds']['green']
-        drawer_leds_msg.brightness = data['drawer_leds']['brightness']
-        drawer_leds_msg.mode = data['drawer_leds']['mode']
-        self.drawer_leds_publisher_.publish(drawer_leds_msg)
-        self.node.get_logger().info('Publishing to drawer_leds topic with led mode: "%i"' % drawer_leds_msg.mode)
+        led_state_msg = LedState()
+        led_state_msg.red = data['led_state']['red']
+        led_state_msg.blue = data['led_state']['blue']
+        led_state_msg.green = data['led_state']['green']
+        led_state_msg.brightness = data['led_state']['brightness']
+
+        led_states_msg = LedStates()
+        led_states_msg.drawer_address.module_id = data['led_states']['drawer_address']['module_id']
+        led_states_msg.drawer_address.drawer_id = data['led_states']['drawer_address']['drawer_id']
+        led_states_msg.led_states = [led_state_msg, led_state_msg]
+        led_states_msg.start_index = data['led_states']['start_index']
+
+        self.led_states_publisher_.publish(led_states_msg)
+        self.node.get_logger().info('Publishing to led_states topic for module_id: "%i"' % led_states_msg.drawer_address.module_id)
 
         drawer_address_msg = DrawerAddress()
         drawer_address_msg.module_id = data['open_drawer']['module_id']
@@ -117,7 +123,7 @@ class TestProcessOutput(unittest.TestCase):
         drawer_is_open_can_msg.dlc = data['is_drawer_open_can_frame']['dlc']
         drawer_is_open_can_msg.data = data['is_drawer_open_can_frame']['data']
         self.can_in_publisher_.publish(drawer_is_open_can_msg)
-        self.node.get_logger().info('Publishing to from_can_bus topic with can_msg_id: "%s"' % drawer_is_open_can_msg.id)
+        self.node.get_logger().info('Publishing drawer_is_open_can_msg to from_can_bus topic with can_msg_id: "%s"' % drawer_is_open_can_msg.id)
 
 
     def publish_drawer_error_feedback_can_msg(self):
@@ -156,7 +162,7 @@ class TestProcessOutput(unittest.TestCase):
     
     def publish_data_to_dut(self):
         self.open_drawer_publisher_ = self.node.create_publisher(DrawerAddress, 'open_drawer', qos_profile = self.qos_profile)
-        self.drawer_leds_publisher_ = self.node.create_publisher(DrawerLeds, 'drawer_leds', qos_profile = self.qos_profile)
+        self.led_states_publisher_ = self.node.create_publisher(LedStates, 'led_states', qos_profile = self.qos_profile)
         self.can_in_publisher_ = self.node.create_publisher(Frame,'from_can_bus', qos_profile = self.qos_profile)
         self.publish_data()
 
@@ -213,6 +219,7 @@ class TestProcessOutput(unittest.TestCase):
         self.publish_drawer_error_feedback_can_msg()
 
         try:
+            self.node.get_logger().info('Starting to compare received data with expected data!')
             while not self.received_drawer_status_topic:
                 rclpy.spin_once(self.node, timeout_sec=0.1)
 
@@ -221,15 +228,18 @@ class TestProcessOutput(unittest.TestCase):
             self.assertEqual(self.received_data_drawer_is_open_module_id, self.expected_data_module_id)
             self.assertEqual(self.received_data_drawer_is_open_drawer_id, self.expected_data_drawer_id)
             self.assertEqual(self.received_data_drawer_is_open_drawer_is_open, self.expected_data_drawer_is_open)
+            self.node.get_logger().info('Finished checking received data from drawer_is_open!')
 
             while not self.received_drawer_error_feedback_topic:
                 rclpy.spin_once(self.node, timeout_sec=0.1)
 
             self.assertEqual(self.received_data_error_feedback_error_code, self.expected_data_error_feedback_error_code)
             self.assertEqual(self.received_data_error_feedback_error_data, self.expected_data_error_feedback_error_data)
+            self.node.get_logger().info('Finished checking received data from robast_error!')
+
 
 
         finally:
             self.node.destroy_publisher(self.open_drawer_publisher_)
-            self.node.destroy_publisher(self.drawer_leds_publisher_)
+            self.node.destroy_publisher(self.led_states_publisher_)
             self.node.destroy_subscription(self.drawer_status_subscriber)

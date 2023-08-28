@@ -20,12 +20,12 @@ namespace drawer_bridge
 
     rclcpp::QoS get_qos_set_led_states()
     {
-      rclcpp::QoS qos_drawer_leds = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
-      qos_drawer_leds.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-      qos_drawer_leds.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-      qos_drawer_leds.avoid_ros_namespace_conventions(false);
+      rclcpp::QoS qos_set_led_states = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
+      qos_set_led_states.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+      qos_set_led_states.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+      qos_set_led_states.avoid_ros_namespace_conventions(false);
 
-      return qos_drawer_leds;
+      return qos_set_led_states;
     };
 
     rclcpp::QoS get_qos_error_msgs()
