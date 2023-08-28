@@ -30,7 +30,7 @@ namespace nav2_behavior_tree
     getInput("topic", _topic_name);
     getInput("target_state", _target_state);
 
-    if (_topic_name == "")
+    if (_topic_name.empty())
     {
       _topic_name = "/robot/safety_module/safety_stop";
     }
