@@ -322,7 +322,7 @@ def set_module_status(db:Session,module:schemas.UpdateModule)->models.Module:
         
         if module.robot_name is not None:
             db_module.robot_name= module.robot_name
-            
+
     db.commit()
     db.refresh(db_module)
     return db_module

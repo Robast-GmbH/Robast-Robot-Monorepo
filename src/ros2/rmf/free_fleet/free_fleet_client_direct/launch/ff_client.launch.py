@@ -11,8 +11,6 @@ def generate_launch_description():
         executable='client_direct',
     )
  
-    
- 
     return LaunchDescription([
      ff_server_api_node
     ])

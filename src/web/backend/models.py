@@ -39,7 +39,7 @@ class Action(Base):
     __tablename__="action"
     id = Column(Integer, primary_key=True, index=True)
     task_id= Column(Integer, ForeignKey("task.id"))
-    finished= Column(Boolean,default=False)
+    finished= Column(Boolean, default=False)
     step=Column(Integer)
     type=Column(Enum(ActionType))
     status=Column(String)

@@ -10,7 +10,6 @@ from rclpy.action import ActionClient
 
 from geometry_msgs.msg import PoseStamped
 from nav2_msgs.action import NavigateToPose
-from nav_msgs.msg import Odometry
 from tf2_ros.transform_listener import TransformListener
 from tf2_ros.buffer import Buffer
 
@@ -26,9 +25,6 @@ import datetime
 from enum import Enum
 
 import robast_dds_communicator.msg as dds 
-
-
-# TODO@ Torben this approach is rubbish switch the logic to simple statemaschine  
 
 class drawer():
     def __init__(self, module_id :int, drawer_id :int, e_drawer:bool, locked_for: dict):
@@ -479,21 +475,6 @@ class free_fleet_client_direct(Node):
         pose.pose=waypoint
         pose.behavior_tree= self.nav_behavior_tree()
         return pose
-
-    # def get_robot_odom(self, data:Odometry):
-    #     x = data.pose.pose.position.x
-    #     y = data.pose.pose.position.y
-    #     q1 = data.pose.pose.orientation.x
-    #     q2 = data.pose.pose.orientation.y
-    #     q3 = data.pose.pose.orientation.z
-    #     q4 = data.pose.pose.orientation.w
-    #     q = (q1, q2, q3, q4)
-    #     roll, pitch, yaw= math_helper.euler_from_quaternion(q)
-    #     th = math_helper.euler_angle_to_degree(yaw)
-    #     yaw = math_helper.to_positive_angle(th)
-    #     self.robot_x= float(x)
-    #     self.robot_y=float(y)
-    #     self.robot_yaw=float(yaw)
     
     def get_robot_location(self):
         try:
