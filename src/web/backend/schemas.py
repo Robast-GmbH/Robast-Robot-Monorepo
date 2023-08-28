@@ -55,6 +55,7 @@ class Action(BaseModel):
     step:int
     type: ActionType
     action: Union[Drawer, Navigation, NewUser]
+    finished: bool
 
 class BaseTask(BaseModel):
     task_id:str

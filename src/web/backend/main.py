@@ -70,7 +70,7 @@ def add_nfc_code_to_user(user_id:int, robot_name:str, db: Session = Depends(get_
     task =templates.create_task(db,robot_name,task_id,[action])
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
-    answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+    answer  =sender.post(url= config["fleetmanagement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -150,16 +150,27 @@ def update_action(task_id:str, step:str, status:Annotated[str,Body()],finished:A
     action_id= crud.get_action_id(db=db,task_id=task_id,step=step)
     return crud.update_action(db=db, action_id=action_id, status=status, finished=finished)
 
-@app.get("/tasks/next")
-def get_next_task(db: Session = Depends(get_db)):
-    task=crud.tasks_queue(db)[0]
-    full_task= crud.get_full_task(task_id=task.id,db=db)
-            
-    task =templates.create_task(db,task.robot_name,task.id,full_task.actions)
+@app.get("/robots/{robot_name}/next_task")#, response_model=schemas.Task)
+def get_next_task(robot_name: str, db: Session = Depends(get_db)):
+   
+    db_tasks_queue = crud.tasks_queue(db)
+    for task in db_tasks_queue:
+        full_task=crud.get_full_task(task_id=task.id,db=db)
+        if(not(full_task == "task" or full_task== "action")):
+            break
+    db_robot=crud.get_robot(db=db,robot_name=robot_name)
+    crud.update_task(db=db, task_id=full_task.task_id, robot_name= db_robot.robot_name, fleet_name=db_robot.fleet_name)
+
+    actions= templates.create_action_list(db=db, robot_name=robot_name, actions=full_task.actions)
+    task =templates.create_task(db=db, robot_name=robot_name, task_id= full_task.task_id,  action=actions )
 
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
-    answer  =sender.post(url= config["fleetmangement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+    answer  =sender.post(url= config["fleetmanagement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+
+    # if answer.status_code!= 200:
+    #     raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    return task
 
 #robot
 @app.get("/robots", response_model =List[schemas.RobotStatus])

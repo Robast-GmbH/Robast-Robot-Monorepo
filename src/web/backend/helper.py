@@ -64,7 +64,7 @@ def json_drawer(id:int, module_id:int, is_edrawer:bool, nfc_codes:list[str])-> d
 def json_robot(fleet_name:str,robot_name:str)->dict:
               return { "fleet_name": fleet_name, "robot_name": robot_name}
 
-def json_waypoint(x:float,y:float,z:float,yaw:float)-> dict:
+def json_waypoint(x:float, y:float, z:float, yaw:float)-> dict:
         return {  
                   "pose":{ "x": 0, "y":0, "z": 0 },
                   "yaw" :0
@@ -117,14 +117,27 @@ def create_task(db:Session, robot_name:str,task_id:int, action:list):
         message={"robot":robot, "task_id": str(task_id), "actions": action}
         return message
 
-def create_drawer_action(step:int, drawer_id:int, module_id:int, is_edrawer:bool, locked_for:list[str]):
-        message={"step":step,"type": "OPEN_DRAWER","action":{"drawer_id":drawer_id, "module_id":module_id, "is_edrawer":is_edrawer,"locked_for":locked_for}}
+def create_action_list(db:Session, robot_name:str, actions:list[schemas.Action]):
+        action_list=[]
+        for action in actions:
+                if(action.type == schemas.ActionType.DRAWER):
+                        db_module=crud.get_drawer(db=db, robot_name=robot_name, module_id=action.action.module_id, drawer_id=action.action.drawer_id)
+                        action_list.append(create_drawer_action(step= action.step, drawer_id= action.action.drawer_id, finished=action.finished, module_id= action.action.module_id, is_edrawer= db_module.type==schemas.DrawerSlideTypes.Electrical, locked_for= action.action.locked_for))
+
+                elif(action.type == schemas.ActionType.NAVIGATION):
+                        action_list.append(create_navigation_action(action.step, action.finished, action.action.pose.x,action.action.pose.y,action.action.yaw))
+                elif(action.type == schemas.ActionType.NEW_USER):  
+                        action_list.append(create_new_user(action.step, action.finished, action.action.user_id))   
+        return action_list   
+
+def create_drawer_action(step:int, finished:bool, drawer_id:int, module_id:int, is_edrawer:bool, locked_for:list[str]):
+        message={"step":step,"type": "DRAWER", "finished":finished, "action":{"drawer_id":drawer_id, "module_id":module_id, "is_edrawer":is_edrawer,"locked_for":locked_for}}
         return message
 
-def create_navigation_action(step:int, x:float, y:float, yaw:float):
-        message={"step":step, "type":"NAVIGATION","action":{ "pose": {"x":x, "y":y, "z":0.0 },"yaw": yaw} }
+def create_navigation_action(step:int,  finished:bool, x:float, y:float, yaw:float):
+        message={"step":step, "type":"NAVIGATION", "finished":finished, "action":{ "pose": {"x":x, "y":y, "z":0.0 },"yaw": yaw} }
         return message
 
-def create_new_user(step:int, user_id: int):
-        message={"step":step,"type":"NEW_USER", "user_id": user_id}
+def create_new_user(step:int,  finished:bool, user_id: int):
+        message={"step":step, "type":"NEW_USER", "finished":finished, "user_id": user_id}
         return message

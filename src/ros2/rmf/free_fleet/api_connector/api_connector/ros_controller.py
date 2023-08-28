@@ -149,11 +149,10 @@ class ros_controller(Node):
         if msg.status=="DrawerState":
             data= msg.status_message.split('#')
             self.get_logger().info(f"{data}")
-            self.responce.handle_drawer_drawer_status_change(task_id=msg.task_id, module_id= data[0], drawer_id=data[1], status=data[2])
+            self.responce.handle_drawer_status_change(task_id=msg.task_id, module_id= data[0], drawer_id=data[1], status=data[2])
         elif msg.status=="Task":
             if msg.status_message=="Completed":
-                pass# request next task
-            
+                self.responce.handle_requesting_next_task()            
             
     def divide_task_id(self,task_id):
         combined_ids= task_id.split('#')

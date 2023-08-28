@@ -84,7 +84,7 @@ class RestInterface():
         sender = requests.Session()
         sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
  
-    def handle_drawer_drawer_status_change(self, task_id, module_id, drawer_id, status):
+    def handle_drawer_status_change(self, task_id, module_id, drawer_id, status):
         #update task
         message= self.fill_action_status(status="Drawer_is"+status, finished=False)
         sender = requests.Session()
@@ -95,6 +95,10 @@ class RestInterface():
         sender = requests.Session()
         sender.post(url= self.response_api+"/robots/modules/status", data= json.dumps(message), verify=False)
     
+    def handle_requesting_next_task(self):
+        message= None
+        sender = requests.Session()
+        sender.post(url= self.response_api+"/tasks/next", data= json.dumps(message), verify=False)
 
     def fill_robot_status_msg(self,robot_name:str, fleet_name:str, task_id:int, x_pose:int, y_pose:int, yaw_pose:int, battery_level:float):
         return{ 

@@ -71,7 +71,7 @@ def delete_user(db: Session, user_id: int):
 #task management
 
 
-def tasks_queue(db:Session):
+def tasks_queue(db:Session)->list[models.Task]:
     subquery= db.query(models.Action.task_id).filter(models.Action.finished==False).all()
     active_tasks= list(map(lambda x:x[0], subquery))
     queue= db.query(models.Task).filter(models.Task.id.in_(active_tasks)).order_by(models.Task.id).all()
@@ -89,8 +89,8 @@ def create_task(db:Session, robot_name:str, fleet_name:str, owner_id :int)->int:
     db.refresh(db_task)
     return db_task.id
 
-def update_task(db:Session, id, robot_name:str, fleet_name:str )->models.Task:
-    db_task = get_task(db=db, id = id )
+def update_task(db:Session, task_id, robot_name:str, fleet_name:str )->models.Task:
+    db_task = get_task(db=db, task_id= task_id )
     db_task.robot_name = robot_name
     db_task.fleet_name = fleet_name
     db.flush()
@@ -188,7 +188,7 @@ def get_next_task(db:Session, robot_name):
     new_task=tasks_queue(db)[0]
     return new_task
 
-def get_full_task(task_id, db):
+def get_full_task(task_id:int, db:Session)-> schemas.Task:
     
     db_task = get_task( db=db, task_id=task_id)
     if db_task is None:
@@ -213,7 +213,7 @@ def get_full_task(task_id, db):
         #    locked_for= [db_drawer_action.target_user_id]
            module_id=db_drawer_action.module_id
            drawer_action= schemas.Drawer( drawer_id=drawer_id, module_id=module_id, locked_for=[] )
-           action= schemas.Action(step=step, type=action_type,action=drawer_action)
+           action= schemas.Action(step=step, type=action_type, finished=db_action.finished,  action=drawer_action)
            
         elif db_action.type== schemas.ActionType.NAVIGATION:
             db_nav_action= get_navigation_action(db_action.id, db)
