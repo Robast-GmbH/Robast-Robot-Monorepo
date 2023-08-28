@@ -64,7 +64,8 @@ namespace nav2_behavior_tree
     {
       return providedBasicPorts(
         {BT::InputPort<std::string>("footprint", "new footprint for local and global costmap"),
-         BT::InputPort<uint32_t>("time_until_reset_in_ms", "time until footprint is reset to its default value")});
+         BT::InputPort<uint32_t>(
+           "time_until_reset_in_ms", 5000, "time until footprint is reset to its default value")});
     }
   };
 
