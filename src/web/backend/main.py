@@ -167,9 +167,9 @@ def get_next_task(robot_name: str, db: Session = Depends(get_db)):
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
     answer  =sender.post(url= config["fleetmanagement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
-
-    # if answer.status_code!= 200:
-    #     raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    
+    if answer.status_code!= 200:
+        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
     return task
 
 #robot
@@ -198,18 +198,19 @@ def pause_robot(robot_name: str, fleet_name:str, pause: bool , db: Session = Dep
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
     return 
 @app.put("/robots/loop")
-def loop_movement(robot_name:Annotated[str,Body()], loop: Annotated[bool,Body()], db: Session = Depends(get_db)):
-    headers =  {"Content-Type":"application/json"}
-    robot = templates.find_robot_json(db, robot_name)
-    if robot== "robot":
-        raise HTTPException(status_code=404, detail="robot not found" )
-    message={"robot":robot,"loop":loop}
-    sender = requests.Session()
-    answer = sender.post(url= config["fleetmanagement_address"]+"/settings/move/loop", data= json.dumps(message), headers= headers)
-    print( json.dumps(message))
-    if answer.status_code!= 200:
-         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
-    return 
+def loop_movement( task: schemas.Task, db: Session = Depends(get_db)):
+    pass
+    # headers =  {"Content-Type":"application/json"}
+    # robot = templates.find_robot_json(db, robot_name)
+    # if robot== "robot":
+    #     raise HTTPException(status_code=404, detail="robot not found" )
+    # message={"robot":robot,"loop":loop}
+    # sender = requests.Session()
+    # answer = sender.post(url= config["fleetmanagement_address"]+"/settings/move/loop", data= json.dumps(message), headers= headers)
+    # print( json.dumps(message))
+    # if answer.status_code!= 200:
+    #      raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    # return 
 
 @app.post("/robots/status", response_model= schemas.RobotStatus)
 def set_robot(robot: schemas.RobotStatus, db: Session = Depends(get_db)):
