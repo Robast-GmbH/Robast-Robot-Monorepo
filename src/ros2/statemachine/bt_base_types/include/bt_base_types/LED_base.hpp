@@ -4,6 +4,8 @@
 
 #include "communication_interfaces/msg/drawer_address.hpp"
 #include "communication_interfaces/msg/drawer_leds.hpp"
+#include "communication_interfaces/msg/ledstate.hpp"
+#include "communication_interfaces/msg/ledstates.hpp"
 
 namespace bt_base_types
 {
@@ -51,7 +53,7 @@ namespace bt_base_types
       }
     }
 
-    static communication_interfaces::msg::DrawerLeds to_base_leds(const LED &led)
+    static communication_interfaces::msg::DrawerLeds to_drawer_leds(const LED &led)
     {
       communication_interfaces::msg::DrawerLeds drawer_led;
       drawer_led.red = led.red;
@@ -63,6 +65,36 @@ namespace bt_base_types
       drawer_led.drawer_address.drawer_id = 0;
 
       return drawer_led;
+    }
+
+    static communication_interfaces::msg::LedState to_ros_led(const LED &led)
+    {
+      communication_interfaces::msg::LedState ros_led;
+      ros_led.red = led.red;
+      ros_led.blue = led.blue;
+      ros_led.green = led.green;
+      ros_led.brightness = led.brightness;
+      return ros_led;
+    }
+
+    static communication_interfaces::msg::LedStates to_ros_led_states(
+        const std::vector<LED> &leds,
+        const communication_interfaces::msg::DrawerAddress &drawer_address,
+        const uint16_t fade_in_ms,
+        const uint16_t start_index = 0)
+    {
+      communication_interfaces::msg::LedStates led_states;
+      std::vector<communication_interfaces::msg::LedState> led_state_vector;
+      led_states.reserve(leds.size());
+      for (size_t i = 0; i < leds.size(); ++i)
+      {
+        led_state_vector.push_back(to_ros_led(leds[i]));
+      }
+      led_states.led_states = led_state_vector;
+      led_states.drawer_address = drawer_address;
+      led_states.fade_in_ms = fade_in_ms;
+      led_states.start_index = start_index;
+      return led_states;
     }
 
     static LED from_drawer_leds(const communication_interfaces::msg::DrawerLeds &drawer_led)
