@@ -16,11 +16,7 @@
 
 namespace statemachine
 {
-  /**
-   * @brief A BT::ConditionNode that returns SUCCESS when goal is
-   * updated on the blackboard and FAILURE otherwise
-   */
-  class LEDPublisherAction : public BT::StatefulActionNode
+  class LEDPublisherAction : public BT::SyncActionNode
   {
   public:
     LEDPublisherAction(
@@ -29,18 +25,6 @@ namespace statemachine
 
     LEDPublisherAction() = delete;
 
-    /**
-     * @brief The main override required by a BT action
-     * @return BT::NodeStatus Status of tick execution
-     */
-    BT::NodeStatus onStart() override;
-    BT::NodeStatus onRunning() override;
-    void onHalted() override;
-
-    /**
-     * @brief Creates list of BT ports
-     * @return BT::PortsList Containing node-specific ports
-     */
     static BT::PortsList providedPorts()
     {
       return {
@@ -56,14 +40,11 @@ namespace statemachine
 
   protected:
     std::string topic_name_;
-    BT::Blackboard::Ptr blackboard_;
-    rclcpp::Publisher<communication_interfaces::msg::DrawerLeds>::SharedPtr led_publisher_;
 
   private:
+    BT::Blackboard::Ptr _blackboard;
+    rclcpp::Publisher<communication_interfaces::msg::DrawerLeds>::SharedPtr _led_publisher;
     rclcpp::Node::SharedPtr _node;
-
-    // rclcpp::CallbackGroup::SharedPtr _callback_group;
-    // rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
   };
 } // namespace statemachine
 #endif

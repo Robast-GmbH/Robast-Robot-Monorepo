@@ -7,10 +7,7 @@
 #include <cstdint> // For uint8_t
 #include "bt_base_types/LED_base.hpp"
 
-#include "rclcpp/rclcpp.hpp"
-
 #include "behaviortree_cpp/action_node.h"
-#include "std_msgs/msg/string.hpp"
 
 namespace bt_plugins
 {
@@ -40,8 +37,8 @@ namespace bt_plugins
                     "upper_bound", 0.0, "percentage"),
                 BT::InputPort<double>(
                     "lower_bound", 0.0, "percentage"),
-                BT::InputPort<base_types::LED>("LEDs"),
-                BT::OutputPort<base_types::LED>("LEDs_colored")};
+                BT::InputPort<bt_base_types::LED>("LEDs"),
+                BT::OutputPort<bt_base_types::LED>("LEDs_colored")};
         }
 
     private:

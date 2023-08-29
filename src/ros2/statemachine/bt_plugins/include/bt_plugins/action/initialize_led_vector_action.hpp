@@ -21,11 +21,11 @@ namespace bt_plugins
   class InitLEDVector : public BT::SyncActionNode
   {
   public:
-    ChangeLED(
+    InitLEDVector(
         const std::string &name,
         const BT::NodeConfig &config);
 
-    ChangeLED() = delete;
+    InitLEDVector() = delete;
 
     BT::NodeStatus tick() override;
 
@@ -38,6 +38,11 @@ namespace bt_plugins
       return {
           BT::InputPort<uint8_t>(
               "size", 128, "size"),
-          BT::OutputPort<base_types::LED>("LEDs_colored")};
+          BT::OutputPort<bt_base_types::LED>("led_vector")};
     } // namespace statemachine
+  private:
+    u_int8_t _size;
+    std::vector<bt_base_types::LED> _led_vector;
+  };
+}
 #endif

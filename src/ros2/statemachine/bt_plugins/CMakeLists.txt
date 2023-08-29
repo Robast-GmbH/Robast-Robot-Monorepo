@@ -65,6 +65,10 @@ ament_target_dependencies(${library_name}
   ${dependencies}
 )
 
+
+add_library(initialize_led_vector_action_bt_node SHARED src/action/initialize_led_vector_action.cpp)
+list(APPEND plugin_libs initialize_led_vector_action_bt_node)
+
 add_library(change_led_action_bt_node SHARED src/action/change_led_action.cpp)
 list(APPEND plugin_libs change_led_action_bt_node)
 

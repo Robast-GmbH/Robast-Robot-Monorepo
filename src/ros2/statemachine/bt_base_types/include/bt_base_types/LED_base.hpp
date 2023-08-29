@@ -5,7 +5,7 @@
 #include "communication_interfaces/msg/drawer_address.hpp"
 #include "communication_interfaces/msg/drawer_leds.hpp"
 
-namespace base_types
+namespace bt_base_types
 {
   struct LED
   {

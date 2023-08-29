@@ -38,8 +38,8 @@ namespace base_plugins
                     "green", 0, "green"),
                 BT::InputPort<uint8_t>(
                     "brightness", 0, "brightness"),
-                BT::InputPort<base_types::LED>("LED_color"),
-                BT::OutputPort<base_types::LED>("LED_color")};
+                BT::InputPort<bt_base_types::LED>("LED_color"),
+                BT::OutputPort<bt_base_types::LED>("LED_color")};
         }
 
     private:
