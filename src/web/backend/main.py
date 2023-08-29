@@ -135,7 +135,7 @@ def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Sessio
     for action in task.actions:
         if( action.type== schemas.ActionType.NAVIGATION):
             crud.create_navigation_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.orientation)
-        elif(action.type== schemas.ActionType.NEW_USER):
+        elif(action.type== schemas.ActionType.DRAWER):
             crud.create_drawer_action(db, action.step,task_id, action.action.module_id, action.action.drawer_id)
         elif(action.type== schemas.ActionType.NEW_USER):
             crud.create_new_user_nfc(db, action.step, task_id, action.action.user_id)
@@ -197,20 +197,34 @@ def pause_robot(robot_name: str, fleet_name:str, pause: bool , db: Session = Dep
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
     return 
+
 @app.put("/robots/loop")
-def loop_movement( task: schemas.Task, db: Session = Depends(get_db)):
-    pass
-    # headers =  {"Content-Type":"application/json"}
-    # robot = templates.find_robot_json(db, robot_name)
-    # if robot== "robot":
-    #     raise HTTPException(status_code=404, detail="robot not found" )
-    # message={"robot":robot,"loop":loop}
-    # sender = requests.Session()
-    # answer = sender.post(url= config["fleetmanagement_address"]+"/settings/move/loop", data= json.dumps(message), headers= headers)
-    # print( json.dumps(message))
-    # if answer.status_code!= 200:
-    #      raise HTTPException(status_code=answer.status_code, detail= answer.reason)
-    # return 
+def loop_movement( task: schemas.Task, user_id:int, db: Session = Depends(get_db)):
+    if( not all(action.type== schemas.ActionType.NAVIGATION for action in task.actions)):
+          raise HTTPException(status_code=404, detail="patrol task can only consists of navigate actions" )
+    task_id= crud.create_task(db=db,robot_name= task.robot.robot_name, fleet_name=task.robot.fleet_name, owner_id= user_id)
+    backend_actions=[]
+    for action in task.actions:
+        if( action.type== schemas.ActionType.NAVIGATION):
+            crud.create_navigation_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.orientation)
+            backend_actions.append(templates.create_navigation_action( action.step, action.pose.x, action.pose.y, action.yaw))
+        
+    task =templates.create_task(db, task.robot.robot_name, task_id, backend_actions)
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session() 
+    answer  =sender.post(url= config["fleetmanagement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+
+    headers =  {"Content-Type":"application/json"}
+    robot = templates.find_robot_json(db, task.robot.robot_name)
+    if robot== "robot":
+        raise HTTPException(status_code=404, detail="robot not found" )
+    message={"robot":robot,"loop":task.task_id}
+    sender = requests.Session()
+    answer = sender.post(url= config["fleetmanagement_address"]+"/settings/move/loop", data= json.dumps(message), headers= headers)
+    print( json.dumps(message))
+    if answer.status_code!= 200:
+         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    return 
 
 @app.post("/robots/status", response_model= schemas.RobotStatus)
 def set_robot(robot: schemas.RobotStatus, db: Session = Depends(get_db)):
