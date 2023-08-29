@@ -24,7 +24,7 @@ from . import math_helper
 import datetime
 from enum import Enum
 
-import robast_dds_communicator.msg as dds 
+import robast_fleet_interfaces.msg as dds 
 
 class drawer():
     def __init__(self, module_id :int, drawer_id :int, e_drawer:bool, locked_for: dict):

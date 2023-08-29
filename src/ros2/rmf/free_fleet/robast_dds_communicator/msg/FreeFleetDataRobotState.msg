@@ -1,7 +1,0 @@
-string name
-string model
-string task_id
-robast_dds_communicator/FreeFleetDataRobotMode mode 
-float64 battery_percent
-robast_dds_communicator/FreeFleetDataLocation location
-robast_dds_communicator/FreeFleetDataLocation[] path
