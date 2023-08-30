@@ -26,11 +26,12 @@
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
 #include "can_msgs/msg/frame.hpp"
-#include "communication_interfaces/msg/drawer_leds.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/electrical_drawer_status.hpp"
 #include "communication_interfaces/msg/error_base_msg.hpp"
+#include "communication_interfaces/msg/led_state.hpp"
+#include "communication_interfaces/msg/led_states.hpp"
 #include "communication_interfaces/msg/module.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "drawer_bridge/can_encoder_decoder.hpp"
@@ -71,7 +72,8 @@ namespace drawer_bridge
    public:
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
     using DrawerTask = communication_interfaces::msg::DrawerTask;
-    using DrawerLeds = communication_interfaces::msg::DrawerLeds;
+    using LedState = communication_interfaces::msg::LedState;
+    using LedStates = communication_interfaces::msg::LedStates;
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
     using ElectricalDrawerStatus = communication_interfaces::msg::ElectricalDrawerStatus;
     using ErrorBaseMsg = communication_interfaces::msg::ErrorBaseMsg;
@@ -90,7 +92,7 @@ namespace drawer_bridge
     rclcpp::Service<ShelfSetupInfo>::SharedPtr _shelf_setup_info_service;
     rclcpp::Subscription<DrawerAddress>::SharedPtr _open_drawer_subscription;
     rclcpp::Subscription<DrawerTask>::SharedPtr _drawer_task_subscription;
-    rclcpp::Subscription<DrawerLeds>::SharedPtr _drawer_leds_subscription;
+    rclcpp::Subscription<LedStates>::SharedPtr _set_led_states_subscription;
     rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
     rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
     rclcpp::Publisher<CanMessage>::SharedPtr _can_messages_publisher;
@@ -112,7 +114,7 @@ namespace drawer_bridge
 
     void electrical_drawer_task_topic_callback(const DrawerTask& task);
 
-    void drawer_leds_topic_callback(const DrawerLeds& msg);
+    void set_led_states_topic_callback(const LedStates& msg);
 
     void setup_publishers();
 

@@ -13,17 +13,19 @@ namespace robast_can_msgs
 
 #define CAN_ID_DRAWER_UNLOCK              0x001
 #define CAN_ID_DRAWER_FEEDBACK            0x002
-#define CAN_ID_DRAWER_LED                 0x003
-#define CAN_ID_ELECTRICAL_DRAWER_TASK     0x004
-#define CAN_ID_ELECTRICAL_DRAWER_FEEDBACK 0x005
-#define CAN_ID_ERROR_FEEDBACK             0x006
+#define CAN_ID_ELECTRICAL_DRAWER_TASK     0x003
+#define CAN_ID_ELECTRICAL_DRAWER_FEEDBACK 0x004
+#define CAN_ID_ERROR_FEEDBACK             0x005
+#define CAN_ID_LED_HEADER                 0x006
+#define CAN_ID_SINGLE_LED_STATE           0x007
 
 #define CAN_DLC_DRAWER_UNLOCK            4
 #define CAN_DLC_DRAWER_FEEDBACK          4
-#define CAN_DLC_DRAWER_LED               8
 #define CAN_DLC_ELECTRIC_DRAWER_TASK     6
 #define CAN_DLC_ELECTRIC_DRAWER_FEEDBACK 5
 #define CAN_DLC_ERROR_FEEDBACK           4
+#define CAN_DLC_LED_HEADER               8
+#define CAN_DLC_SINGLE_LED_STATE         7
 
   /*********************************************************************************************************
    CAN msg index and can signal index to access the msg and signals in our can_db vector
@@ -31,10 +33,11 @@ namespace robast_can_msgs
 
 #define CAN_MSG_DRAWER_UNLOCK              0
 #define CAN_MSG_DRAWER_FEEDBACK            1
-#define CAN_MSG_DRAWER_LED                 2
-#define CAN_MSG_ELECTRICAL_DRAWER_TASK     3
-#define CAN_MSG_ELECTRICAL_DRAWER_FEEDBACK 4
-#define CAN_MSG_ERROR_FEEDBACK             5
+#define CAN_MSG_ELECTRICAL_DRAWER_TASK     2
+#define CAN_MSG_ELECTRICAL_DRAWER_FEEDBACK 3
+#define CAN_MSG_ERROR_FEEDBACK             4
+#define CAN_MSG_LED_HEADER                 5
+#define CAN_MSG_SINGLE_LED_STATE           6
 
 // DRAWER_UNLOCK
 #define CAN_SIGNAL_MODULE_ID 0
@@ -45,15 +48,6 @@ namespace robast_can_msgs
 #define CAN_SIGNAL_DRAWER_ID                1
 #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED 2
 #define CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED    3
-
-// DRAWER_LED
-#define CAN_SIGNAL_MODULE_ID      0
-#define CAN_SIGNAL_DRAWER_ID      1
-#define CAN_SIGNAL_LED_RED        2
-#define CAN_SIGNAL_LED_GREEN      3
-#define CAN_SIGNAL_LED_BLUE       4
-#define CAN_SIGNAL_LED_BRIGHTNESS 5
-#define CAN_SIGNAL_LED_MODE       6
 
 // ELECTRICAL_DRAWER_TASK
 #define CAN_SIGNAL_MODULE_ID                 0
@@ -75,6 +69,19 @@ namespace robast_can_msgs
 #define CAN_SIGNAL_DRAWER_ID  1
 #define CAN_SIGNAL_ERROR_CODE 2
 
+// LED HEADER
+#define CAN_SIGNAL_MODULE_ID                   0
+#define CAN_SIGNAL_START_INDEX                 1
+#define CAN_SIGNAL_NUM_OF_LEDS                 2
+#define CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS 3
+
+// SINGLE LED
+#define CAN_SIGNAL_MODULE_ID                   0
+#define CAN_SIGNAL_SINGLE_LED_STATE_RED        1
+#define CAN_SIGNAL_SINGLE_LED_STATE_GREEN      2
+#define CAN_SIGNAL_SINGLE_LED_STATE_BLUE       3
+#define CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS 4
+
 /*********************************************************************************************************
  CAN SIGNAL BIT START
 *********************************************************************************************************/
@@ -94,22 +101,6 @@ namespace robast_can_msgs
 #define CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED_BIT_LENGTH 1
 #define CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED_BIT_START     27
 #define CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED_BIT_LENGTH    1
-
-// DRAWER_LED
-#define CAN_SIGNAL_MODULE_ID_BIT_START       0
-#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH      24
-#define CAN_SIGNAL_DRAWER_ID_BIT_START       24
-#define CAN_SIGNAL_DRAWER_ID_BIT_LENGTH      2
-#define CAN_SIGNAL_LED_RED_BIT_START         26
-#define CAN_SIGNAL_LED_RED_BIT_LENGTH        8
-#define CAN_SIGNAL_LED_GREEN_BIT_START       34
-#define CAN_SIGNAL_LED_GREEN_BIT_LENGTH      8
-#define CAN_SIGNAL_LED_BLUE_BIT_START        42
-#define CAN_SIGNAL_LED_BLUE_BIT_LENGTH       8
-#define CAN_SIGNAL_LED_BRIGHTNESS_BIT_START  50
-#define CAN_SIGNAL_LED_BRIGHTNESS_BIT_LENGTH 8
-#define CAN_SIGNAL_LED_MODE_BIT_START        58
-#define CAN_SIGNAL_LED_MODE_BIT_LENGTH       3
 
 // ELECTRICAL_DRAWER_TASK
 #define CAN_SIGNAL_MODULE_ID_BIT_START                  0
@@ -144,6 +135,28 @@ namespace robast_can_msgs
 #define CAN_SIGNAL_DRAWER_ID_BIT_LENGTH  2
 #define CAN_SIGNAL_ERROR_CODE_BIT_START  26
 #define CAN_SIGNAL_ERROR_CODE_BIT_LENGTH 6
+
+// LED HEADER
+#define CAN_SIGNAL_MODULE_ID_BIT_START                    0
+#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH                   24
+#define CAN_SIGNAL_LED_START_INDEX_BIT_START              24
+#define CAN_SIGNAL_LED_START_INDEX_BIT_LENGTH             16
+#define CAN_SIGNAL_NUM_OF_LEDS_BIT_START                  40
+#define CAN_SIGNAL_NUM_OF_LEDS_BIT_LENGTH                 16
+#define CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS_BIT_START  56
+#define CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS_BIT_LENGTH 8
+
+// SINGLE_LED_STATE
+#define CAN_SIGNAL_MODULE_ID_BIT_START                    0
+#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH                   24
+#define CAN_SIGNAL_SINGLE_LED_STATE_RED_BIT_START         24
+#define CAN_SIGNAL_SINGLE_LED_STATE_RED_BIT_LENGTH        8
+#define CAN_SIGNAL_SINGLE_LED_STATE_GREEN_BIT_START       32
+#define CAN_SIGNAL_SINGLE_LED_STATE_GREEN_BIT_LENGTH      8
+#define CAN_SIGNAL_SINGLE_LED_STATE_BLUE_BIT_START        40
+#define CAN_SIGNAL_SINGLE_LED_STATE_BLUE_BIT_LENGTH       8
+#define CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_START  48
+#define CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_LENGTH 8
 
   /*******************************************
    * Some defines for actual CAN data

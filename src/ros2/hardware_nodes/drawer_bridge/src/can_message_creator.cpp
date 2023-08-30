@@ -1,56 +1,73 @@
 #include "drawer_bridge/can_message_creator.hpp"
 
-drawer_bridge::CanMessageCreator::CanMessage drawer_bridge::CanMessageCreator::create_can_msg_drawer_unlock(
-  const DrawerAddress& msg) const
+namespace drawer_bridge
 {
-  robast_can_msgs::CanMessage can_msg_drawer_lock = _can_db.can_messages.at(CAN_MSG_DRAWER_UNLOCK);
 
-  std::vector<robast_can_msgs::CanSignal> can_signals_drawer_lock = can_msg_drawer_lock.get_can_signals();
+  can_msgs::msg::Frame CanMessageCreator::create_can_msg_drawer_unlock(const DrawerAddress& msg) const
+  {
+    robast_can_msgs::CanMessage can_msg_drawer_lock = _can_db.can_messages.at(CAN_MSG_DRAWER_UNLOCK);
 
-  can_signals_drawer_lock.at(CAN_SIGNAL_MODULE_ID).set_data(msg.module_id);
-  can_signals_drawer_lock.at(CAN_SIGNAL_DRAWER_ID).set_data(msg.drawer_id);
+    std::vector<robast_can_msgs::CanSignal> can_signals_drawer_lock = can_msg_drawer_lock.get_can_signals();
 
-  can_msg_drawer_lock.set_can_signals(can_signals_drawer_lock);
+    can_signals_drawer_lock.at(CAN_SIGNAL_MODULE_ID).set_data(msg.module_id);
+    can_signals_drawer_lock.at(CAN_SIGNAL_DRAWER_ID).set_data(msg.drawer_id);
 
-  return _can_encoder_decoder.encode_msg(can_msg_drawer_lock);
-}
+    can_msg_drawer_lock.set_can_signals(can_signals_drawer_lock);
 
-drawer_bridge::CanMessageCreator::CanMessage drawer_bridge::CanMessageCreator::create_can_msg_drawer_led(
-  const DrawerLeds& msg) const
-{
-  robast_can_msgs::CanMessage can_msg_drawer_led = _can_db.can_messages.at(CAN_MSG_DRAWER_LED);
+    return _can_encoder_decoder.encode_msg(can_msg_drawer_lock);
+  }
 
-  std::vector<robast_can_msgs::CanSignal> can_signals_drawer_led = can_msg_drawer_led.get_can_signals();
+  can_msgs::msg::Frame CanMessageCreator::create_can_msg_led_header(const LedStates& msg) const
+  {
+    robast_can_msgs::CanMessage can_msg_led_header = _can_db.can_messages.at(CAN_MSG_LED_HEADER);
 
-  can_signals_drawer_led.at(CAN_SIGNAL_MODULE_ID).set_data(msg.drawer_address.module_id);
-  can_signals_drawer_led.at(CAN_SIGNAL_DRAWER_ID).set_data(msg.drawer_address.drawer_id);
+    std::vector<robast_can_msgs::CanSignal> can_signals_led_header = can_msg_led_header.get_can_signals();
 
-  can_signals_drawer_led.at(CAN_SIGNAL_LED_RED).set_data(msg.red);
-  can_signals_drawer_led.at(CAN_SIGNAL_LED_GREEN).set_data(msg.green);
-  can_signals_drawer_led.at(CAN_SIGNAL_LED_BLUE).set_data(msg.blue);
-  can_signals_drawer_led.at(CAN_SIGNAL_LED_BRIGHTNESS).set_data(msg.brightness);
-  can_signals_drawer_led.at(CAN_SIGNAL_LED_MODE).set_data(msg.mode);
+    can_signals_led_header.at(CAN_SIGNAL_MODULE_ID).set_data(msg.drawer_address.module_id);
+    can_signals_led_header.at(CAN_SIGNAL_START_INDEX).set_data(msg.start_index);
+    can_signals_led_header.at(CAN_SIGNAL_NUM_OF_LEDS).set_data(sizeof(msg.led_states) / sizeof(LedState));
+    can_signals_led_header.at(CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS).set_data((uint8_t) (msg.fade_time_in_ms / 100));
 
-  can_msg_drawer_led.set_can_signals(can_signals_drawer_led);
+    can_msg_led_header.set_can_signals(can_signals_led_header);
 
-  return _can_encoder_decoder.encode_msg(can_msg_drawer_led);
-}
+    return _can_encoder_decoder.encode_msg(can_msg_led_header);
+  }
 
-drawer_bridge::CanMessageCreator::CanMessage drawer_bridge::CanMessageCreator::create_can_msg_drawer_task(
-  const DrawerTask& msg) const
-{
-  robast_can_msgs::CanMessage can_msg_drawer_task = _can_db.can_messages.at(CAN_MSG_ELECTRICAL_DRAWER_TASK);
+  can_msgs::msg::Frame CanMessageCreator::create_can_msg_set_single_led_state(const LedState& led_state,
+                                                                              const DrawerAddress& drawer_address) const
+  {
+    robast_can_msgs::CanMessage can_msg_set_single_led_state = _can_db.can_messages.at(CAN_MSG_SINGLE_LED_STATE);
 
-  std::vector<robast_can_msgs::CanSignal> can_signals_drawer_task = can_msg_drawer_task.get_can_signals();
+    std::vector<robast_can_msgs::CanSignal> can_signals_single_led_state =
+      can_msg_set_single_led_state.get_can_signals();
 
-  can_signals_drawer_task.at(CAN_SIGNAL_MODULE_ID).set_data(msg.drawer_address.module_id);
-  can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_ID).set_data(msg.drawer_address.drawer_id);
+    can_signals_single_led_state.at(CAN_SIGNAL_MODULE_ID).set_data(drawer_address.module_id);
+    can_signals_single_led_state.at(CAN_SIGNAL_SINGLE_LED_STATE_RED).set_data(led_state.red);
+    can_signals_single_led_state.at(CAN_SIGNAL_SINGLE_LED_STATE_GREEN).set_data(led_state.green);
+    can_signals_single_led_state.at(CAN_SIGNAL_SINGLE_LED_STATE_BLUE).set_data(led_state.blue);
+    can_signals_single_led_state.at(CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS).set_data(led_state.brightness);
 
-  can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_TARGET_POSITION).set_data(msg.target_position);
-  can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_SPEED).set_data(msg.speed);
-  can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).set_data(msg.stall_guard_enable);
+    can_msg_set_single_led_state.set_can_signals(can_signals_single_led_state);
 
-  can_msg_drawer_task.set_can_signals(can_signals_drawer_task);
+    return _can_encoder_decoder.encode_msg(can_msg_set_single_led_state);
+  }
 
-  return _can_encoder_decoder.encode_msg(can_msg_drawer_task);
-}
+  can_msgs::msg::Frame CanMessageCreator::create_can_msg_drawer_task(const DrawerTask& msg) const
+  {
+    robast_can_msgs::CanMessage can_msg_drawer_task = _can_db.can_messages.at(CAN_MSG_ELECTRICAL_DRAWER_TASK);
+
+    std::vector<robast_can_msgs::CanSignal> can_signals_drawer_task = can_msg_drawer_task.get_can_signals();
+
+    can_signals_drawer_task.at(CAN_SIGNAL_MODULE_ID).set_data(msg.drawer_address.module_id);
+    can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_ID).set_data(msg.drawer_address.drawer_id);
+
+    can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_TARGET_POSITION).set_data(msg.target_position);
+    can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_SPEED).set_data(msg.speed);
+    can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).set_data(msg.stall_guard_enable);
+
+    can_msg_drawer_task.set_can_signals(can_signals_drawer_task);
+
+    return _can_encoder_decoder.encode_msg(can_msg_drawer_task);
+  }
+
+}   // namespace drawer_bridge

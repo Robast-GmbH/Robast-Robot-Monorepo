@@ -4,6 +4,8 @@
 #include <Arduino.h>
 #include <FastLED.h>
 
+#include <optional>
+
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
 #include "pinout_defines.hpp"
@@ -14,398 +16,275 @@ namespace led_strip
  GLOBAL VARIABLES AND CONSTANTS
 *********************************************************************************************************/
 #define NUM_OF_LEDS                   18
-#define MIDDLE_LED                    9
-#define NUM_OF_LED_SHADOWS            3
 #define MAX_NUM_OF_LED_MODES_IN_QUEUE 3
 
-  enum LedMode
+  struct LedState
   {
-    steady_light = 0,
-    fade_up = 1,
-    running_led_from_mid_to_outside = 2,
-    slow_fade_up_fade_down = 3,
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+    uint8_t brightness;
   };
 
-  // this queue makes sure, that a requested led modes gets its time to finish the animation before the next led mode is
-  // started
-  struct LedTargetSettings
+  struct LedAnimation
   {
-    uint8_t led_target_mode;
-    uint8_t led_target_brightness;
-    uint8_t led_target_red;
-    uint8_t led_target_green;
-    uint8_t led_target_blue;
-  } led_strip_target_settings;
+    std::array<LedState, NUM_OF_LEDS> target_led_states;
+    uint8_t fade_time_in_hundreds_of_ms;        // this will be set by the LED_HEADER CAN message
+    uint16_t num_of_led_states_to_change = 0;   // this will be set by the LED_HEADER CAN message
+    uint16_t start_index_led_states = 0;        // this will be set by the LED_HEADER CAN message
 
-  struct LedStrip
-  {
-    const uint8_t num_leds;             // number of LEDs for LED strip
-    const uint8_t middle_led;           // address of the middle LED, which is important for running LED mode
-    const uint8_t num_of_led_shadows;   // Number of "shadow" LEDs for running LED. At the moment you need to do a few
-                                        // more changes to increase the number of shadow LEDs, in the future it should
-                                        // only be this define
+    // Default Constructor
+    LedAnimation()
+        : target_led_states({}),
+          fade_time_in_hundreds_of_ms(0),
+          num_of_led_states_to_change(0),
+          start_index_led_states(0)   // Initialize members to default values
+    {
+    }
 
-    volatile uint8_t led_current_brightness = 0;
-    uint8_t led_current_red = 0;
-    uint8_t led_current_green = 0;
-    uint8_t led_current_blue = 0;
-    uint8_t led_current_mode = 0;
-
-    uint8_t led_target_brightness_fade_on_fade_off = 0;
-
-    QueueHandle_t led_target_settings_queue;
-
-    // this variable controls which LED is currently shining for the running LED mode
-    volatile uint8_t running_led_offset_from_middle = 0;
-
-    LedStrip(const uint8_t num_leds_input, const uint8_t middle_led_input, const uint8_t num_of_led_shadows_input)
-        : num_leds(num_leds_input), middle_led(middle_led_input), num_of_led_shadows(num_of_led_shadows_input)
+    // Parameterized Constructor
+    LedAnimation(std::array<LedState, NUM_OF_LEDS> target_led_states_input,
+                 const uint8_t fade_time_in_hundreds_of_ms_input,
+                 const uint16_t num_of_led_states_to_change_input,
+                 const uint16_t start_index_led_states_input)
+        : target_led_states(target_led_states_input),
+          fade_time_in_hundreds_of_ms(fade_time_in_hundreds_of_ms_input),
+          num_of_led_states_to_change(num_of_led_states_to_change_input),
+          start_index_led_states(start_index_led_states_input)
     {
     }
   };
 
-  LedStrip led_strip = LedStrip(NUM_OF_LEDS, MIDDLE_LED, NUM_OF_LED_SHADOWS);
+  bool fading_in_progress;
+  std::vector<LedState> current_led_states(NUM_OF_LEDS);    // used to apply current led state to led strip
+  std::vector<LedState> starting_led_states(NUM_OF_LEDS);   // used for fading from starting to target led state
+
+  LedAnimation target_led_animation;
+
+  // this queue makes sure, that a requested led modes gets its time to finish the animation before the next led
+  // mode is started
+  // Please mind: Normaly you would not built a queue yourself and use xQueue from FreeRTOS or std::queue
+  // But: std:queue did not work and just permanently threw expections that made the ESP32 reboot
+  // To use xQueue you need to use xQueueCreate to create a queue and you need to specify the size, in bytes, required
+  // to hold each item in the queue, which is not possible for the CanMessage class because it contains a vector of
+  // CanSignals which has a different length depending on the CanMessage.
+  // Therefore we built a queue with a vector, which should be fine in this case as the queue usually only contains
+  // one or two feedback messages and is rarely used. Furthermore we try to keep it as efficient as possible and try
+  // to follow what is explained here: https://youtu.be/fHNmRkzxHWs?t=2541
+  std::vector<LedAnimation> led_animations_queue;
+  uint8_t head_of_led_animations_queue;
+
+  LedAnimation new_target_led_animation;
+
+  volatile float fade_counter = 0;
+  float max_fade_counter = 0;
+
+  // TODO: This needs to go into the queue as well
+  uint16_t num_of_led_states_to_change = 0;   // this will be set by the LED_HEADER CAN message
+  uint16_t start_index_led_states = 0;        // this will be set by the LED_HEADER CAN message
+  uint16_t current_index_led_states = 0;
 
   CRGBArray<NUM_OF_LEDS> leds;
 
-  hw_timer_t *fading_up_timer = NULL;
-  portMUX_TYPE fading_up_timer_mux;
-
-  hw_timer_t *running_led_timer = NULL;
-  portMUX_TYPE running_led_timer_mux;
+  hw_timer_t *fading_timer = NULL;
+  portMUX_TYPE fading_timer_mux;
 
   /*********************************************************************************************************
    FUNCTIONS
   *********************************************************************************************************/
-  void select_led_strip_mode()
+  // TODO@Jacob: We have the same queue in can_utils. Make one class out of it
+  void add_element_to_led_animation_queue(LedAnimation led_animation)
   {
-    switch (led_strip_target_settings.led_target_mode)
+    led_animations_queue.push_back(led_animation);
+  }
+
+  // TODO@Jacob: We have the same queue in can_utils. Make one class out of it
+  std::optional<LedAnimation> get_element_from_led_animation_queue()
+  {
+    uint8_t num_of_msgs_in_queue = led_animations_queue.size();
+    if (num_of_msgs_in_queue == 0)
     {
-      case LedMode::steady_light:
-        // standard mode
-        led_strip.led_current_mode = LedMode::steady_light;
-        break;
+      return {};
+    }
+    // TODO@Jacob: This can probably be removed once we are 100% sure that the queue is not infinetly growing
+    debug_printf(
+      "get_element_from_led_animation_queue! num_of_msgs_in_queue = %d, led_animations_queue.capacity() = %d\n",
+      num_of_msgs_in_queue,
+      led_animations_queue.capacity());
 
-      case LedMode::fade_up:
-        // fade up mode
-        led_strip.led_current_mode = LedMode::fade_up;
-        timerAlarmWrite(
-          fading_up_timer, 3000, true);   // With the alarm_value of 3000 the interrupt will be triggert 333/s
-        break;
-
-      case LedMode::running_led_from_mid_to_outside:
-        // led closing drawer mode
-        led_strip.led_current_mode = LedMode::running_led_from_mid_to_outside;
-        portENTER_CRITICAL(&running_led_timer_mux);
-        led_strip.running_led_offset_from_middle = 0;
-        portEXIT_CRITICAL(&running_led_timer_mux);
-        break;
-
-      case LedMode::slow_fade_up_fade_down:
-        // led fade on + fade off mode
-        led_strip.led_current_mode = LedMode::slow_fade_up_fade_down;
-        timerAlarmWrite(fading_up_timer, 10000, true);   // fade on + fade off should be more slowly than only fading
-                                                         // on, so choose a bigger value for the alarm_value
-        portENTER_CRITICAL(&fading_up_timer_mux);
-        led_strip.led_current_brightness = 0;
-        portEXIT_CRITICAL(&fading_up_timer_mux);
-        led_strip.led_target_brightness_fade_on_fade_off = led_strip_target_settings.led_target_brightness;
-
-      default:
-        break;
+    if (head_of_led_animations_queue == (num_of_msgs_in_queue - 1))
+    {
+      LedAnimation led_animation = led_animations_queue[head_of_led_animations_queue];
+      led_animations_queue.clear();
+      head_of_led_animations_queue = 0;
+      return led_animation;
+    }
+    else
+    {
+      return led_animations_queue[head_of_led_animations_queue++];
     }
   }
 
-  void add_led_strip_mode_to_queue(robast_can_msgs::CanMessage can_message)
+  LedState create_led_state(uint8_t red, uint8_t green, uint8_t blue, uint8_t brightness)
   {
-    auto led_target_settings = LedTargetSettings{};
-    led_target_settings.led_target_red = can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data();
-    led_target_settings.led_target_green = can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data();
-    led_target_settings.led_target_blue = can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data();
-    led_target_settings.led_target_brightness = can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data();
-    led_target_settings.led_target_mode = can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
-
-    debug_printf("Writing led strip mode %d to queue!\n", led_target_settings.led_target_mode);   // DEBUGGING
-
-    // Adding led mode to queue
-    xQueueSend(
-      led_strip.led_target_settings_queue,
-      &led_target_settings,
-      0);   // setting the third argument to 0 makes sure, filling the queue wont block, if the queue is already full
-
-    uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip.led_target_settings_queue);
-
-    debug_printf("Led modes in queue: %d\n", led_modes_in_queue);   // DEBUGGING
-
-    if (led_modes_in_queue == 1)
-    {
-      // Get the current target led settings from queue without removing it, because it will we removed after the
-      // animation is finished
-      xQueuePeek(led_strip.led_target_settings_queue, &led_strip_target_settings, 0);
-      select_led_strip_mode();
-    }
+    LedState led_state = LedState{};
+    led_state.red = red;
+    led_state.green = green;
+    led_state.red = red;
+    led_state.brightness = brightness;
+    return led_state;
   }
 
   void led_init_mode()
   {
-    led_strip_target_settings.led_target_red = 0;
-    led_strip_target_settings.led_target_green = 155;
-    led_strip_target_settings.led_target_blue = 155;
-    led_strip_target_settings.led_target_brightness = 25;
-    led_strip.running_led_offset_from_middle = 0;
-    led_strip.led_current_mode = LedMode::steady_light;
-  }
-
-  void get_new_target_led_settings_from_queue()
-  {
-    uint8_t led_modes_in_queue = uxQueueMessagesWaiting(led_strip.led_target_settings_queue);
-
-    if (led_modes_in_queue == 0)
+    for (uint8_t i = 0; i < NUM_OF_LEDS; ++i)
     {
-      return;
+      new_target_led_animation.target_led_states[i] = create_led_state(0, 155, 155, 25);
     }
-
-    xQueueReceive(led_strip.led_target_settings_queue,
-                  &led_strip_target_settings,
-                  0);   // Remove the last target led settings from queue
-
-    // In case there is another target led setting waiting in the queue, get it and start it
-    if (led_modes_in_queue > 1)
-    {
-      xQueuePeek(led_strip.led_target_settings_queue,
-                 &led_strip_target_settings,
-                 0);   // Get the current target led settings from queue without removing it
-      select_led_strip_mode();
-    }
-  }
-
-  void led_standard_mode()
-  {
-    for (int i = 0; i < led_strip.num_leds; i++)
-    {
-      leds[i] = CRGB(led_strip_target_settings.led_target_red,
-                     led_strip_target_settings.led_target_green,
-                     led_strip_target_settings.led_target_blue);
-    }
-    led_strip.led_current_red = led_strip_target_settings.led_target_red;
-    led_strip.led_current_green = led_strip_target_settings.led_target_green;
-    led_strip.led_current_blue = led_strip_target_settings.led_target_blue;
-    led_strip.led_current_brightness = led_strip_target_settings.led_target_brightness;
-    FastLED.setBrightness(led_strip.led_current_brightness);
-    FastLED.show();
-
-    get_new_target_led_settings_from_queue();
-  }
-
-  void led_fade_on_mode()
-  {
-    // Mind that the variable led_current_brightness_ is increased/decreased in a seperate interrupt
-    if (led_strip_target_settings.led_target_brightness != led_strip.led_current_brightness ||
-        led_strip_target_settings.led_target_red != led_strip.led_current_red ||
-        led_strip_target_settings.led_target_green != led_strip.led_current_green ||
-        led_strip_target_settings.led_target_blue != led_strip.led_current_blue)
-    {
-      for (int i = 0; i < led_strip.num_leds; i++)
-      {
-        leds[i] = CRGB(led_strip_target_settings.led_target_red,
-                       led_strip_target_settings.led_target_green,
-                       led_strip_target_settings.led_target_blue);
-      }
-      led_strip.led_current_red = led_strip_target_settings.led_target_red;
-      led_strip.led_current_green = led_strip_target_settings.led_target_green;
-      led_strip.led_current_blue = led_strip_target_settings.led_target_blue;
-      FastLED.setBrightness(led_strip.led_current_brightness);
-      FastLED.show();
-    }
-    else if (led_strip_target_settings.led_target_brightness == led_strip.led_current_brightness)
-    {
-      get_new_target_led_settings_from_queue();
-    }
-  }
-
-  void led_closing_drawer_mode()
-  {
-    // TODO: If we have more then one led_strip, these paramters should become an argument of this function
-    uint8_t middle_led = led_strip.middle_led;
-    uint8_t num_of_led_shadows = led_strip.num_of_led_shadows;
-    uint8_t running_led_offset_from_middle = led_strip.running_led_offset_from_middle;
-
-    if ((middle_led - running_led_offset_from_middle) >= 0 - num_of_led_shadows)
-    {
-      for (int i = 0; i < led_strip.num_leds; i++)
-      {
-        if ((i == (middle_led - running_led_offset_from_middle)) ||
-            (i == (middle_led + running_led_offset_from_middle)))
-        {
-          leds[i] = CRGB(led_strip_target_settings.led_target_red,
-                         led_strip_target_settings.led_target_green,
-                         led_strip_target_settings.led_target_blue);
-        }
-        // Create a shadow of running LED with less brightness
-        else if ((running_led_offset_from_middle >= 1) && ((i == (middle_led - running_led_offset_from_middle + 1)) ||
-                                                           (i == (middle_led + running_led_offset_from_middle - 1))))
-        {
-          leds[i] = CRGB(led_strip_target_settings.led_target_red / 2,
-                         led_strip_target_settings.led_target_green / 2,
-                         led_strip_target_settings.led_target_blue / 2);
-        }
-        // Create a shadow of running LED with less brightness
-        else if ((running_led_offset_from_middle >= 2) && ((i == (middle_led - running_led_offset_from_middle + 2)) ||
-                                                           (i == (middle_led + running_led_offset_from_middle - 2))))
-        {
-          leds[i] = CRGB(led_strip_target_settings.led_target_red / 3,
-                         led_strip_target_settings.led_target_green / 3,
-                         led_strip_target_settings.led_target_blue / 3);
-        }
-        // Create a shadow of running LED with less brightness
-        else if ((running_led_offset_from_middle >= 3) && ((i == (middle_led - running_led_offset_from_middle + 3)) ||
-                                                           (i == (middle_led + running_led_offset_from_middle - 3))))
-        {
-          leds[i] = CRGB(led_strip_target_settings.led_target_red / 4,
-                         led_strip_target_settings.led_target_green / 4,
-                         led_strip_target_settings.led_target_blue / 4);
-        }
-        else
-        {
-          leds[i] = CRGB(0, 0, 0);
-        }
-      }
-      led_strip.led_current_red = led_strip_target_settings.led_target_red;
-      led_strip.led_current_green = led_strip_target_settings.led_target_green;
-      led_strip.led_current_blue = led_strip_target_settings.led_target_blue;
-      led_strip.led_current_brightness = led_strip_target_settings.led_target_brightness;
-      FastLED.setBrightness(led_strip.led_current_brightness);
-      FastLED.show();
-    }
-
-    if ((middle_led - running_led_offset_from_middle) < 0 - num_of_led_shadows)
-    {
-      for (int i = 0; i < led_strip.num_leds; i++)
-      {
-        leds[i] = CRGB(0, 0, 0);
-      }
-      FastLED.setBrightness(0);
-      FastLED.show();
-    }
-
-    if ((led_strip.middle_led - led_strip.running_led_offset_from_middle) == (0 - led_strip.num_of_led_shadows))
-    {
-      get_new_target_led_settings_from_queue();
-    }
-  }
-
-  void led_fade_on_fade_off_mode()
-  {
-    // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
-    if (led_strip_target_settings.led_target_brightness != led_strip.led_current_brightness ||
-        led_strip_target_settings.led_target_red != led_strip.led_current_red ||
-        led_strip_target_settings.led_target_green != led_strip.led_current_green ||
-        led_strip_target_settings.led_target_blue != led_strip.led_current_blue)
-    {
-      for (int i = 0; i < led_strip.num_leds; i++)
-      {
-        leds[i] = CRGB(led_strip_target_settings.led_target_red,
-                       led_strip_target_settings.led_target_green,
-                       led_strip_target_settings.led_target_blue);
-      }
-      led_strip.led_current_red = led_strip_target_settings.led_target_red;
-      led_strip.led_current_green = led_strip_target_settings.led_target_green;
-      led_strip.led_current_blue = led_strip_target_settings.led_target_blue;
-      FastLED.setBrightness(led_strip.led_current_brightness);
-      FastLED.show();
-    }
-
-    // Mind that the variable led_current_brightness is increased/decreased in a seperate interrupt
-    if (led_strip.led_current_brightness == 0)
-    {
-      led_strip_target_settings.led_target_brightness = led_strip.led_target_brightness_fade_on_fade_off;
-    }
-    else if (led_strip.led_current_brightness == led_strip.led_target_brightness_fade_on_fade_off)
-    {
-      led_strip_target_settings.led_target_brightness = 0;
-    }
-
-    get_new_target_led_settings_from_queue();   // always check if there is a new mode waiting in the queue
+    num_of_led_states_to_change = NUM_OF_LEDS;   // TODO: Check if this correct
+    start_index_led_states = 0;
+    LedAnimation target_led_animation =
+      LedAnimation(new_target_led_animation.target_led_states, 50, NUM_OF_LEDS, 0);   // TODO: remove magical number
+    add_element_to_led_animation_queue(target_led_animation);
   }
 
   static void IRAM_ATTR on_timer_for_fading()
   {
-    if (led_strip_target_settings.led_target_brightness > led_strip.led_current_brightness)
+    if (fade_counter < max_fade_counter)
     {
-      portENTER_CRITICAL_ISR(&fading_up_timer_mux);
-      led_strip.led_current_brightness++;
-      portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
-    }
-
-    if (led_strip_target_settings.led_target_brightness < led_strip.led_current_brightness)
-    {
-      portENTER_CRITICAL_ISR(&fading_up_timer_mux);
-      led_strip.led_current_brightness--;
-      portEXIT_CRITICAL_ISR(&fading_up_timer_mux);
-    }
-  }
-
-  static void IRAM_ATTR on_timer_for_running_led()
-  {
-    if ((led_strip.middle_led - led_strip.running_led_offset_from_middle) >= (0 - led_strip.num_of_led_shadows))
-    {
-      portENTER_CRITICAL_ISR(&running_led_timer_mux);
-      led_strip.running_led_offset_from_middle++;
-      portEXIT_CRITICAL_ISR(&running_led_timer_mux);
+      portENTER_CRITICAL_ISR(&fading_timer_mux);
+      ++fade_counter;
+      portEXIT_CRITICAL_ISR(&fading_timer_mux);
     }
   }
 
   void initialize_timer()
   {
-    fading_up_timer_mux = portMUX_INITIALIZER_UNLOCKED;
-    fading_up_timer =
+    fading_timer_mux = portMUX_INITIALIZER_UNLOCKED;
+    fading_timer =
       timerBegin(0, 80, true);   // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
-    timerAttachInterrupt(fading_up_timer, &on_timer_for_fading, true);
-    timerAlarmWrite(fading_up_timer, 3000, true);   // With the alarm_value of 3000 the interrupt will be triggert 333/s
-    timerAlarmEnable(fading_up_timer);
+    timerAttachInterrupt(fading_timer, &on_timer_for_fading, true);
 
-    running_led_timer_mux = portMUX_INITIALIZER_UNLOCKED;
-    running_led_timer =
-      timerBegin(1, 80, true);   // The base signal of the ESP32 has a frequency of 80Mhz -> prescaler 80 makes it 1Mhz
-    timerAttachInterrupt(running_led_timer, &on_timer_for_running_led, true);
-    timerAlarmWrite(running_led_timer, 50000, true);   // 50000 is a good value. This defines how fast the LED will
-                                                       // "run". Higher values will decrease the running speed.
-    timerAlarmEnable(running_led_timer);
+    // The minimal fade time we can set is 100ms. To be able to display this fade time in 256 (8 bit) brightness steps
+    // we need the timer to trigger 256 times within 100ms.
+    // Therefore we need a period of T = 100ms * 1/256 = 0.0003906250s
+    // The period is determined by T = alarm_value / f
+    // Therefore alarm_value = T * f = 0.0003906250s * 1Mhz = 390.625
+    // Multiplying this by 8 gives us 6250
+    timerAlarmWrite(fading_timer, 6250, true);
+    timerAlarmEnable(fading_timer);
+  }
+
+  void set_max_counter_value(uint8_t new_fade_time_in_hundreds_of_ms)
+  {
+    // check comment in initialize_timer() function for derivation of this calculation
+    max_fade_counter = new_fade_time_in_hundreds_of_ms * (UINT8_MAX / 8);
+  }
+
+  void init_fading(uint8_t new_fade_time_in_hundreds_of_ms)
+  {
+    debug_printf("Init fading with new_fade_time_in_hundreds_of_ms = %d \n", new_fade_time_in_hundreds_of_ms);
+    fading_in_progress = true;
+    set_max_counter_value(new_fade_time_in_hundreds_of_ms);
+    initialize_timer();
+    portENTER_CRITICAL_ISR(&fading_timer_mux);
+    fade_counter = 0;
+    portEXIT_CRITICAL_ISR(&fading_timer_mux);
+  }
+
+  void apply_led_states_to_led_strip()
+  {
+    debug_printf("apply_led_states_to_led_strip with brightness = %d \n", current_led_states[0].brightness);
+    FastLED.setBrightness(255);   // individual led brightness will be scaled down later in the for loop
+    for (uint8_t i = start_index_led_states; i < num_of_led_states_to_change; ++i)
+    {
+      uint8_t red = current_led_states[i].red;
+      uint8_t green = current_led_states[i].green;
+      uint8_t blue = current_led_states[i].blue;
+      uint8_t brightness = current_led_states[i].brightness;
+      leds[i].setRGB(red, green, blue);
+      leds[i].fadeToBlackBy(255 - brightness);
+      // debug_printf(
+      //   "apply_led_states_to_led_strip with red: %d green: %d blue: %d brightness: %d\n", red, green, blue,
+      //   brightness);
+    }
+    FastLED.show();
+  }
+
+  float linear_interpolation(float a, float b, float t)
+  {
+    return a + t * (b - a);
+  }
+
+  void set_current_led_states_to_target_led_states()
+  {
+    debug_println("Setting current led states to target led states...");
+    timerAlarmDisable(fading_timer);   // Disable the timer alarm
+    timerEnd(fading_timer);            // Stop and free timer
+    fading_in_progress = false;
+    for (uint16_t i = 0; i < NUM_OF_LEDS; ++i)
+    {
+      current_led_states[i].red = target_led_animation.target_led_states[i].red;
+      current_led_states[i].green = target_led_animation.target_led_states[i].green;
+      current_led_states[i].blue = target_led_animation.target_led_states[i].blue;
+      current_led_states[i].brightness = target_led_animation.target_led_states[i].brightness;
+    }
+  }
+
+  void handle_fading(void)
+  {
+    if (max_fade_counter == 0)
+    {
+      set_current_led_states_to_target_led_states();
+    }
+    else
+    {
+      // debug_printf("fade_counter = %f, max_fade_counter = %f\n", fade_counter, max_fade_counter);
+      const float progress = fade_counter / max_fade_counter;
+      // debug_printf("Fading progress %f\n", progress);
+      if (progress < 1.0)
+      {
+        for (uint16_t i = 0; i < NUM_OF_LEDS; ++i)
+        {
+          current_led_states[i].red =
+            linear_interpolation(starting_led_states[i].red, target_led_animation.target_led_states[i].red, progress);
+          current_led_states[i].green = linear_interpolation(
+            starting_led_states[i].green, target_led_animation.target_led_states[i].green, progress);
+          current_led_states[i].blue =
+            linear_interpolation(starting_led_states[i].blue, target_led_animation.target_led_states[i].blue, progress);
+          current_led_states[i].brightness = linear_interpolation(
+            starting_led_states[i].brightness, target_led_animation.target_led_states[i].brightness, progress);
+        }
+      }
+      else
+      {
+        set_current_led_states_to_target_led_states();
+      }
+    }
   }
 
   void handle_led_control(void)
   {
-    switch (led_strip.led_current_mode)
+    if (fading_in_progress)
     {
-      case LedMode::steady_light:
-        led_standard_mode();
-        break;
-
-      case LedMode::fade_up:
-        led_fade_on_mode();
-        break;
-
-      case LedMode::running_led_from_mid_to_outside:
-        led_closing_drawer_mode();
-        break;
-
-      case LedMode::slow_fade_up_fade_down:
-        led_fade_on_fade_off_mode();
-        break;
-
-      default:
-        led_standard_mode();
-        break;
+      handle_fading();
+      apply_led_states_to_led_strip();
+    }
+    else
+    {
+      std::optional<LedAnimation> new_led_animation = get_element_from_led_animation_queue();
+      if (new_led_animation.has_value())
+      {
+        target_led_animation = new_led_animation.value();
+        init_fading(target_led_animation.fade_time_in_hundreds_of_ms);
+      }
     }
   }
 
   void initialize_queue(void)
   {
-    led_strip.led_target_settings_queue = xQueueCreate(MAX_NUM_OF_LED_MODES_IN_QUEUE, sizeof(LedTargetSettings));
-    if (led_strip.led_target_settings_queue == NULL)
-    {
-      debug_println("Error creating the led mode queue");
-    }
+    led_animations_queue.clear();
+    head_of_led_animations_queue = 0;
   }
 
   void initialize_led_strip(void)
@@ -415,29 +294,34 @@ namespace led_strip
     FastLED.addLeds<NEOPIXEL, LED_PIXEL_PIN>(leds, NUM_OF_LEDS);
 
     led_init_mode();
-    initialize_timer();
+    // initialize_timer();
   }
 
-  void debug_prints_drawer_led(robast_can_msgs::CanMessage can_message)
+  void initialize_led_states(uint16_t num_of_led_states,
+                             uint16_t start_index_led_states_input,
+                             uint8_t fade_time_in_hundreds_of_ms_input)
   {
-    debug_print("Received LED CAN message with standard ID: ");
-    debug_print_with_base(can_message.get_id(), HEX);
-    debug_print(" rx_dlc: ");
-    debug_print_with_base(can_message.get_dlc(), DEC);
-    debug_print(" MODULE ID: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data(), HEX);
-    debug_print(" DRAWER ID: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
-    debug_print(" LED RED: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_LED_RED).get_data(), DEC);
-    debug_print(" LED GREEN: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data(), DEC);
-    debug_print(" LED BLUE: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data(), DEC);
-    debug_print(" LED BRIGHTNESS: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data(), DEC);
-    debug_print(" LED MODE: ");
-    debug_println_with_base(can_message.get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data(), DEC);
+    num_of_led_states_to_change = num_of_led_states;
+    start_index_led_states = start_index_led_states_input;
+    current_index_led_states = start_index_led_states_input;
+    new_target_led_animation.fade_time_in_hundreds_of_ms =
+      fade_time_in_hundreds_of_ms_input;   // TODO@Jacob: set the timer according to that
+  }
+
+  void set_led_state(LedState state)
+  {
+    bool all_led_states_set = (num_of_led_states_to_change - start_index_led_states) == current_index_led_states;
+
+    if (all_led_states_set)
+    {
+      LedAnimation led_animation = new_target_led_animation;
+      add_element_to_led_animation_queue(led_animation);
+    }
+    else
+    {
+      new_target_led_animation.target_led_states[current_index_led_states] = state;
+      current_index_led_states++;
+    }
   }
 
 }   // namespace led_strip

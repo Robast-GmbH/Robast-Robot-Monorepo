@@ -1,9 +1,15 @@
-drawer_leds:
-  red: 1
-  blue: 2
-  green: 3
-  brightness: 7
-  mode: 1
+led_states:
+  drawer_address:
+    module_id: 0x010203
+    drawer_id: 2
+  start_index: 0
+  fade_time_in_ms: 1000
+
+led_state:
+  red: 11
+  green: 22
+  blue: 33
+  brightness: 44
 
 open_drawer:
   module_id: 0x010203
@@ -15,6 +21,6 @@ is_drawer_open_can_frame:
   data: [0x01, 0x02, 0x03, 0x80, 0x00, 0x00, 0x00, 0x00]
 
 error_feedback_can_frame:
-  id: 6
+  id: 5
   dlc: 4
   data: [0x01, 0x02, 0x03, 0x01, 0x00, 0x00, 0x00, 0x00]
