@@ -17,7 +17,7 @@ namespace drawer_bridge
     return _can_encoder_decoder.encode_msg(can_msg_drawer_lock);
   }
 
-  can_msgs::msg::Frame CanMessageCreator::create_can_msg_led_header(const LedStates& msg) const
+  can_msgs::msg::Frame CanMessageCreator::create_can_msg_led_header(const LedCmd& msg) const
   {
     robast_can_msgs::CanMessage can_msg_led_header = _can_db.can_messages.at(CAN_MSG_LED_HEADER);
 
@@ -25,7 +25,7 @@ namespace drawer_bridge
 
     can_signals_led_header.at(CAN_SIGNAL_MODULE_ID).set_data(msg.drawer_address.module_id);
     can_signals_led_header.at(CAN_SIGNAL_START_INDEX).set_data(msg.start_index);
-    can_signals_led_header.at(CAN_SIGNAL_NUM_OF_LEDS).set_data(sizeof(msg.led_states) / sizeof(LedState));
+    can_signals_led_header.at(CAN_SIGNAL_NUM_OF_LEDS).set_data(sizeof(msg.leds) / sizeof(Led));
     can_signals_led_header.at(CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS).set_data((uint8_t) (msg.fade_time_in_ms / 100));
 
     can_msg_led_header.set_can_signals(can_signals_led_header);
@@ -33,7 +33,7 @@ namespace drawer_bridge
     return _can_encoder_decoder.encode_msg(can_msg_led_header);
   }
 
-  can_msgs::msg::Frame CanMessageCreator::create_can_msg_set_single_led_state(const LedState& led_state,
+  can_msgs::msg::Frame CanMessageCreator::create_can_msg_set_single_led_state(const Led& led_state,
                                                                               const DrawerAddress& drawer_address) const
   {
     robast_can_msgs::CanMessage can_msg_set_single_led_state = _can_db.can_messages.at(CAN_MSG_SINGLE_LED_STATE);

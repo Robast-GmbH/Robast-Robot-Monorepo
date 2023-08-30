@@ -3,7 +3,8 @@
 #include "can_encoder_decoder.hpp"
 #include "can_msgs/msg/frame.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
-#include "communication_interfaces/msg/led_states.hpp"
+#include "communication_interfaces/msg/led.hpp"
+#include "communication_interfaces/msg/led_cmd.hpp"
 
 namespace drawer_bridge
 {
@@ -12,16 +13,16 @@ namespace drawer_bridge
    public:
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
     using DrawerTask = communication_interfaces::msg::DrawerTask;
-    using LedState = communication_interfaces::msg::LedState;
-    using LedStates = communication_interfaces::msg::LedStates;
+    using Led = communication_interfaces::msg::Led;
+    using LedCmd = communication_interfaces::msg::LedCmd;
 
     can_msgs::msg::Frame create_can_msg_drawer_unlock(const DrawerAddress& msg) const;
 
     can_msgs::msg::Frame create_can_msg_drawer_task(const DrawerTask& msg) const;
 
-    can_msgs::msg::Frame create_can_msg_led_header(const LedStates& msg) const;
+    can_msgs::msg::Frame create_can_msg_led_header(const LedCmd& msg) const;
 
-    can_msgs::msg::Frame create_can_msg_set_single_led_state(const LedState& led_state,
+    can_msgs::msg::Frame create_can_msg_set_single_led_state(const Led& led_state,
                                                              const DrawerAddress& drawer_address) const;
 
    private:

@@ -1,9 +1,5 @@
 #include "drawer_bridge/drawer_bridge.hpp"
 
-// For DEBUGGING purposes this is the action send_goal command:
-// ros2 action send_goal /control_drawer communication_interfaces/action/DrawerUserAccess "{drawer_address:
-// {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
-
 namespace drawer_bridge
 {
   DrawerBridge::DrawerBridge() : Node("drawer_bridge")
@@ -25,10 +21,10 @@ namespace drawer_bridge
       _qos_config.get_qos_open_drawer(),
       std::bind(&DrawerBridge::electrical_drawer_task_topic_callback, this, std::placeholders::_1));
 
-    _set_led_states_subscription = this->create_subscription<LedStates>(
-      "set_led_states",
-      _qos_config.get_qos_set_led_states(),
-      std::bind(&DrawerBridge::set_led_states_topic_callback, this, std::placeholders::_1));
+    _led_cmd_subscription =
+      this->create_subscription<LedCmd>("led_cmd",
+                                        _qos_config.get_qos_led_cmd(),
+                                        std::bind(&DrawerBridge::led_cmd_topic_callback, this, std::placeholders::_1));
 
     _can_messages_subscription = this->create_subscription<CanMessage>(
       "from_can_bus",
@@ -88,22 +84,22 @@ namespace drawer_bridge
     send_can_msg(can_msg);
   }
 
-  void DrawerBridge::set_led_states_topic_callback(const LedStates& msg)
+  void DrawerBridge::led_cmd_topic_callback(const LedCmd& msg)
   {
-    uint16_t num_of_led_states = sizeof(msg.led_states) / sizeof(LedState);
+    uint16_t num_of_leds = sizeof(msg.leds) / sizeof(Led);
 
     RCLCPP_INFO(get_logger(),
-                "I heard from the /set_led_states topic the module id %i and the number of led states = %i",
+                "I heard from the /set_leds topic the module id %i and the number of led states = %i",
                 msg.drawer_address.module_id,
-                num_of_led_states);
+                num_of_leds);
 
     const CanMessage can_msg = _can_message_creator.create_can_msg_led_header(msg);
     send_can_msg(can_msg);
 
-    for (uint16_t i = 0; i < num_of_led_states; i++)
+    for (uint16_t i = 0; i < num_of_leds; i++)
     {
       const CanMessage can_msg =
-        _can_message_creator.create_can_msg_set_single_led_state(msg.led_states[i], msg.drawer_address);
+        _can_message_creator.create_can_msg_set_single_led_state(msg.leds[i], msg.drawer_address);
       send_can_msg(can_msg);
     }
   }
