@@ -89,7 +89,7 @@ namespace drawer_bridge
     uint16_t num_of_leds = sizeof(msg.leds) / sizeof(Led);
 
     RCLCPP_INFO(get_logger(),
-                "I heard from the /set_leds topic the module id %i and the number of led states = %i",
+                "I heard from the /led_cmd topic the module id %i and the number of led states = %i",
                 msg.drawer_address.module_id,
                 num_of_leds);
 

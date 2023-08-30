@@ -1,11 +1,11 @@
-led_states:
+led_cmd:
   drawer_address:
     module_id: 0x010203
     drawer_id: 2
   start_index: 0
   fade_time_in_ms: 1000
 
-led_state:
+led:
   red: 11
   green: 22
   blue: 33
