@@ -85,8 +85,6 @@ void loop()
   if (can_controller->is_message_available())
   {
     std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
-    led_strip::LedState target_led_state = led_strip::LedState{};
-    led_strip::LedStripTargetSettings led_strip_target_settings = led_strip::LedStripTargetSettings{};
 
     if (received_message.has_value())
     {
@@ -104,33 +102,26 @@ void loop()
           drawers.at(drawer_id)->can_in(received_message.value());
         }
         break;
-        case CAN_ID_DRAWER_LED:
-          led_strip_target_settings.led_target_state =
-            led_strip::create_led_state(received_message->get_can_signals().at(CAN_SIGNAL_LED_RED).get_data(),
-                                        received_message->get_can_signals().at(CAN_SIGNAL_LED_GREEN).get_data(),
-                                        received_message->get_can_signals().at(CAN_SIGNAL_LED_BLUE).get_data(),
-                                        received_message->get_can_signals().at(CAN_SIGNAL_LED_BRIGHTNESS).get_data());
-          led_strip_target_settings.led_target_mode =
-            received_message->get_can_signals().at(CAN_SIGNAL_LED_MODE).get_data();
-
-          led_strip::add_led_strip_target_setting_to_queue(led_strip_target_settings);
-          led_strip::debug_prints_drawer_led(*received_message);
-          break;
         case CAN_ID_LED_HEADER:
-          led_strip::initialize_led_states(received_message->get_can_signals().at(CAN_SIGNAL_NUM_OF_LEDS).get_data());
-          break;
+        {
+          led_strip::initialize_led_states(
+            received_message->get_can_signals().at(CAN_SIGNAL_NUM_OF_LEDS).get_data(),
+            received_message->get_can_signals().at(CAN_SIGNAL_START_INDEX).get_data(),
+            received_message->get_can_signals().at(CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS).get_data());
+        }
+        break;
         case CAN_ID_SINGLE_LED_STATE:
+        {
+          led_strip::LedState target_led_state = led_strip::LedState{};
           target_led_state = led_strip::create_led_state(
             received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_RED).get_data(),
             received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_GREEN).get_data(),
             received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_BLUE).get_data(),
             received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS).get_data());
 
-          led_strip_target_settings.led_target_mode = led_strip::LedMode::single_led_control;
-
-          led_strip::set_led_state(
-            target_led_state, received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_INDEX).get_data());
-          break;
+          led_strip::set_led_state(target_led_state);
+        }
+        break;
         default:
           debug_println("Received unsupported CAN message.");
           break;
