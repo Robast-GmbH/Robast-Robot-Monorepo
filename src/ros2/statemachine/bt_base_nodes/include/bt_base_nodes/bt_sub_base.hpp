@@ -23,7 +23,6 @@ namespace bt_base_nodes
     BTSubBase(const rclcpp::NodeOptions &options) : Node("bt_tickers", options)
     {
       plugins_ = {
-          "change_led_action_bt_node",
           "open_drawer_action_bt_node",
           "drawer_status_condition_bt_node",
           "drawer_change_state_request_action_bt_node",

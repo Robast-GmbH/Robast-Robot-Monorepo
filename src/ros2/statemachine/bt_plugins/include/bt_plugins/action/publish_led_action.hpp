@@ -10,7 +10,6 @@
 #include "behaviortree_cpp/action_node.h"
 #include "std_msgs/msg/string.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
-#include "communication_interfaces/msg/drawer_leds.hpp"
 
 #include "bt_base_types/LED_base.hpp"
 
@@ -24,6 +23,8 @@ namespace statemachine
         const BT::NodeConfig &config);
 
     LEDPublisherAction() = delete;
+
+    BT::NodeStatus tick() override;
 
     static BT::PortsList providedPorts()
     {
@@ -45,7 +46,7 @@ namespace statemachine
 
   private:
     BT::Blackboard::Ptr _blackboard;
-    rclcpp::Publisher<communication_interfaces::msg::DrawerLeds>::SharedPtr _led_publisher;
+    rclcpp::Publisher<communication_interfaces::msg::LedCmd>::SharedPtr _led_publisher;
     rclcpp::Node::SharedPtr _node;
   };
 } // namespace statemachine

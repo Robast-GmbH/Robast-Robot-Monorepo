@@ -40,8 +40,6 @@ namespace bt_plugins
                 BT::InputPort<bt_base_types::LED>("LEDs"),
                 BT::OutputPort<bt_base_types::LED>("LEDs_colored")};
         }
-
-    private:
     };
-} // namespace statemachine
+} // namespace bt_plugins
 #endif

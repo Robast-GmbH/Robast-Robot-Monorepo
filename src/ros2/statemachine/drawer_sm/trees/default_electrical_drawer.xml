@@ -1,6 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4"
       main_tree_to_execute="default_electrical_drawer_tree">
+  <BehaviorTree ID="LED_Open">
+    <Sequence>
+      <InitLEDVector size="128"
+                     led_vector="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}"
+                          blue="0"
+                          brightness="0"
+                          green="0"
+                          lower_bound="0.0"
+                          red="0"
+                          upper_bound="0.0"
+                          LEDs_colored="{leds}"/>
+    </Sequence>
+  </BehaviorTree>
+
   <BehaviorTree ID="default_electrical_drawer_tree">
     <ResetDecorator topic="/electro_tree_reset">
       <BaseErrorDecorator topic="/robast_error">
@@ -128,6 +143,12 @@
       <input_port name="topic"
                   default="/drawer_feedback_status"/>
     </Condition>
+    <Action ID="InitLEDVector">
+      <input_port name="size"
+                  default="128">uint8_t</input_port>
+      <output_port name="led_vector"
+                   default="{leds}"/>
+    </Action>
     <Action ID="MoveElectricDrawer">
       <input_port name="drawer_address"
                   default="{drawer}"/>
@@ -145,6 +166,24 @@
                   default="{drawer}"/>
       <input_port name="drawer_open_topic"
                   default="/open_drawer"/>
+    </Action>
+    <Action ID="PartialColorizeLED">
+      <input_port name="LEDs"
+                  default="{leds}"/>
+      <input_port name="blue"
+                  default="0">uint8</input_port>
+      <input_port name="brightness"
+                  default="0">uint8 to determine the brightness</input_port>
+      <input_port name="green"
+                  default="0">uint8</input_port>
+      <input_port name="lower_bound"
+                  default="0.0">double</input_port>
+      <input_port name="red"
+                  default="0">uint8</input_port>
+      <input_port name="upper_bound"
+                  default="0.0">double</input_port>
+      <output_port name="LEDs_colored"
+                   default="{leds}"/>
     </Action>
     <Decorator ID="ResetDecorator">
       <input_port name="topic"

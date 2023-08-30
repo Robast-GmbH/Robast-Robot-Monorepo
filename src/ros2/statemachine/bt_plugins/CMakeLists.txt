@@ -69,8 +69,8 @@ ament_target_dependencies(${library_name}
 add_library(initialize_led_vector_action_bt_node SHARED src/action/initialize_led_vector_action.cpp)
 list(APPEND plugin_libs initialize_led_vector_action_bt_node)
 
-add_library(change_led_action_bt_node SHARED src/action/change_led_action.cpp)
-list(APPEND plugin_libs change_led_action_bt_node)
+# add_library(change_led_action_bt_node SHARED src/action/change_led_action.cpp)
+# list(APPEND plugin_libs change_led_action_bt_node)
 
 add_library(drawer_change_state_request_action_bt_node SHARED src/action/drawer_change_state_request_action.cpp)
 list(APPEND plugin_libs drawer_change_state_request_action_bt_node)
@@ -98,6 +98,9 @@ list(APPEND plugin_libs base_error_decorator_node)
 
 add_library(partial_colorize_leds_action_bt_node SHARED src/action/partial_colorize_leds_action.cpp)
 list(APPEND plugin_libs partial_colorize_leds_action_bt_node)
+
+add_library(publish_led_action_bt_node SHARED src/action/publish_led_action.cpp)
+list(APPEND plugin_libs publish_led_action_bt_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
@@ -132,8 +135,8 @@ if(BUILD_TESTING)
   add_library(test_helper SHARED tests/test_helper.cpp)
   list(APPEND test_libs test_helper)
 
-  add_executable(led_test tests/actions/change_led_action_test.cpp)
-  list(APPEND test_executables led_test)
+  # add_executable(led_test tests/actions/change_led_action_test.cpp)
+  # list(APPEND test_executables led_test)
   add_executable(open_drawer_test tests/actions/open_drawer_action_test.cpp)
   list(APPEND test_executables open_drawer_test)
   add_executable(drawer_status_condition_test tests/conditions/drawer_status_condition_test.cpp)
