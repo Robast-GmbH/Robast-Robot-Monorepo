@@ -30,8 +30,8 @@
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/electrical_drawer_status.hpp"
 #include "communication_interfaces/msg/error_base_msg.hpp"
-#include "communication_interfaces/msg/led_state.hpp"
-#include "communication_interfaces/msg/led_states.hpp"
+#include "communication_interfaces/msg/led.hpp"
+#include "communication_interfaces/msg/led_cmd.hpp"
 #include "communication_interfaces/msg/module.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "drawer_bridge/can_encoder_decoder.hpp"
@@ -72,8 +72,8 @@ namespace drawer_bridge
    public:
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
     using DrawerTask = communication_interfaces::msg::DrawerTask;
-    using LedState = communication_interfaces::msg::LedState;
-    using LedStates = communication_interfaces::msg::LedStates;
+    using Led = communication_interfaces::msg::Led;
+    using LedCmd = communication_interfaces::msg::LedCmd;
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
     using ElectricalDrawerStatus = communication_interfaces::msg::ElectricalDrawerStatus;
     using ErrorBaseMsg = communication_interfaces::msg::ErrorBaseMsg;
@@ -92,7 +92,7 @@ namespace drawer_bridge
     rclcpp::Service<ShelfSetupInfo>::SharedPtr _shelf_setup_info_service;
     rclcpp::Subscription<DrawerAddress>::SharedPtr _open_drawer_subscription;
     rclcpp::Subscription<DrawerTask>::SharedPtr _drawer_task_subscription;
-    rclcpp::Subscription<LedStates>::SharedPtr _set_led_states_subscription;
+    rclcpp::Subscription<LedCmd>::SharedPtr _led_cmd_subscription;
     rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
     rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
     rclcpp::Publisher<CanMessage>::SharedPtr _can_messages_publisher;
@@ -114,7 +114,7 @@ namespace drawer_bridge
 
     void electrical_drawer_task_topic_callback(const DrawerTask& task);
 
-    void set_led_states_topic_callback(const LedStates& msg);
+    void led_cmd_topic_callback(const LedCmd& msg);
 
     void setup_publishers();
 
