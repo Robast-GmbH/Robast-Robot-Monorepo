@@ -38,6 +38,8 @@ std::vector<drawer_ptr> drawers = std::vector<drawer_ptr>();
 
 std::unique_ptr<drawer_controller::CanController> can_controller;
 
+std::unique_ptr<drawer_controller::LedStrip> led_strip;
+
 void setup()
 {
   debug_setup(115200);
@@ -55,7 +57,8 @@ void setup()
   //                                SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
   // drawers.push_back(drawer_0);
 
-  led_strip::initialize_led_strip();
+  led_strip = std::make_unique<drawer_controller::LedStrip>();
+  led_strip->initialize_led_strip();
 
   can_controller = std::make_unique<drawer_controller::CanController>(
     MODULE_ID, can_db, gpio_wrapper, OE_TXB0104_PIN_ID, PCA9554_OUTPUT);
@@ -104,7 +107,7 @@ void loop()
         break;
         case CAN_ID_LED_HEADER:
         {
-          led_strip::initialize_led_states(
+          led_strip->initialize_led_states(
             received_message->get_can_signals().at(CAN_SIGNAL_NUM_OF_LEDS).get_data(),
             received_message->get_can_signals().at(CAN_SIGNAL_START_INDEX).get_data(),
             received_message->get_can_signals().at(CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS).get_data());
@@ -112,14 +115,13 @@ void loop()
         break;
         case CAN_ID_SINGLE_LED_STATE:
         {
-          led_strip::LedState target_led_state = led_strip::LedState{};
-          target_led_state = led_strip::create_led_state(
+          drawer_controller::LedState target_led_state = drawer_controller::LedState(
             received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_RED).get_data(),
             received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_GREEN).get_data(),
             received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_BLUE).get_data(),
             received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS).get_data());
 
-          led_strip::set_led_state(target_led_state);
+          led_strip->set_led_state(target_led_state);
         }
         break;
         default:
@@ -129,7 +131,7 @@ void loop()
     }
   }
 
-  led_strip::handle_led_control();
+  led_strip->handle_led_control();
 
   for (drawer_ptr drawer : drawers)
   {
