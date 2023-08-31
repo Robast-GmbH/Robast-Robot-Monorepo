@@ -154,7 +154,6 @@ namespace drawer_controller
       else
       {
         set_current_led_states_to_target_led_states();
-        led_init_mode();   // TODO: REMOVE this
       }
     }
   }
@@ -193,8 +192,7 @@ namespace drawer_controller
   {
     set_num_of_leds_to_change_to_value_within_bounds(num_of_led_states, start_index_led_states_input);
     _new_target_led_animation.start_index_led_states = start_index_led_states_input;
-    _new_target_led_animation.fade_time_in_hundreds_of_ms =
-      fade_time_in_hundreds_of_ms_input;   // TODO@Jacob: set the timer according to that
+    _new_target_led_animation.fade_time_in_hundreds_of_ms = fade_time_in_hundreds_of_ms_input;
     _current_index_led_states = start_index_led_states_input;
   }
 
