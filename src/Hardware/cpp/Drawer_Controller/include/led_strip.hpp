@@ -34,7 +34,7 @@ namespace drawer_controller
     uint8_t brightness;
 
     // Default Constructor
-    LedState() : red(0), green(0), blue(0), brightness(0)   // Initialize members to default values
+    LedState() : red(0), green(0), blue(0), brightness(0)
     {
     }
 
@@ -51,9 +51,9 @@ namespace drawer_controller
   struct LedAnimation
   {
     std::vector<LedState> target_led_states;
-    uint8_t fade_time_in_hundreds_of_ms;        // this will be set by the LED_HEADER CAN message
-    uint16_t num_of_led_states_to_change = 0;   // this will be set by the LED_HEADER CAN message
-    uint16_t start_index_led_states = 0;        // this will be set by the LED_HEADER CAN message
+    uint8_t fade_time_in_hundreds_of_ms;    // this will be set by the LED_HEADER CAN message
+    uint16_t num_of_led_states_to_change;   // this will be set by the LED_HEADER CAN message
+    uint16_t start_index_led_states;        // this will be set by the LED_HEADER CAN message
 
     // Default Constructor
     LedAnimation()

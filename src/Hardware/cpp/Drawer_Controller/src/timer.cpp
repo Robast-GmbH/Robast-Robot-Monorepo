@@ -38,7 +38,15 @@ namespace timer
     if (fading_timer != NULL)
     {
       timerAlarmDisable(fading_timer);   // Disable the timer alarm
-      timerEnd(fading_timer);            // Stop and free timer
+      // timerEnd(fading_timer);            // Stop and free timer //TODO: remove this?
+    }
+  }
+
+  void enable_timer()
+  {
+    if (fading_timer != NULL)
+    {
+      timerAlarmEnable(fading_timer);
     }
   }
 

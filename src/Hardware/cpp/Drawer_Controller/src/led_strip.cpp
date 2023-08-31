@@ -83,7 +83,7 @@ namespace drawer_controller
     debug_printf("Init fading with new_fade_time_in_hundreds_of_ms = %d \n", new_fade_time_in_hundreds_of_ms);
     _fading_in_progress = true;
     timer::set_max_counter_value(new_fade_time_in_hundreds_of_ms, TIMER_FACTOR);
-    timer::initialize_timer();
+    timer::enable_timer();
   }
 
   void LedStrip::apply_led_states_to_led_strip()
@@ -171,6 +171,7 @@ namespace drawer_controller
     FastLED.addLeds<NEOPIXEL, LED_PIXEL_PIN>(_leds, NUM_OF_LEDS);
 
     led_init_mode();
+    timer::initialize_timer();
   }
 
   void LedStrip::set_num_of_leds_to_change_to_value_within_bounds(uint16_t num_of_led_states,
@@ -198,6 +199,16 @@ namespace drawer_controller
 
   void LedStrip::set_led_state(LedState state)
   {
+    bool all_leds_already_set = (_new_target_led_animation.num_of_led_states_to_change -
+                                 _new_target_led_animation.start_index_led_states) <= _current_index_led_states;
+
+    if (all_leds_already_set)
+    {
+      Serial.println("Warning! I received more led states then the header specified!");
+      return;
+    }
+    ++_current_index_led_states;
+
     bool all_led_states_set = (_new_target_led_animation.num_of_led_states_to_change -
                                _new_target_led_animation.start_index_led_states) == _current_index_led_states;
 
@@ -205,11 +216,6 @@ namespace drawer_controller
     {
       LedAnimation led_animation = _new_target_led_animation;
       add_element_to_led_animation_queue(led_animation);
-    }
-    else
-    {
-      _new_target_led_animation.target_led_states[_current_index_led_states] = state;
-      _current_index_led_states++;
     }
   }
 

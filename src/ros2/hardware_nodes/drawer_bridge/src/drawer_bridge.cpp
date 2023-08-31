@@ -86,7 +86,7 @@ namespace drawer_bridge
 
   void DrawerBridge::led_cmd_topic_callback(const LedCmd& msg)
   {
-    uint16_t num_of_leds = sizeof(msg.leds) / sizeof(Led);
+    uint16_t num_of_leds = msg.leds.size();
 
     RCLCPP_INFO(get_logger(),
                 "I heard from the /led_cmd topic the module id %i and the number of led states = %i",
