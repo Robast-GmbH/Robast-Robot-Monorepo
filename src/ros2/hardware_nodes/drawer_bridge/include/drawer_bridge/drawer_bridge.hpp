@@ -26,6 +26,7 @@
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
 #include "can_msgs/msg/frame.hpp"
+#include "can_sender.hpp"
 #include "communication_interfaces/msg/drawer_status.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
 #include "communication_interfaces/msg/electrical_drawer_status.hpp"
@@ -95,7 +96,6 @@ namespace drawer_bridge
     rclcpp::Subscription<LedCmd>::SharedPtr _led_cmd_subscription;
     rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
     rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
-    rclcpp::Publisher<CanMessage>::SharedPtr _can_messages_publisher;
     rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr _electrical_drawer_status_publisher;
     rclcpp::Publisher<ErrorBaseMsg>::SharedPtr _error_msg_publisher;
 
@@ -106,6 +106,7 @@ namespace drawer_bridge
 
     CanEncoderDecoder _can_encoder_decoder = CanEncoderDecoder();
     CanMessageCreator _can_message_creator = CanMessageCreator();
+    CanSender _can_sender;
 
     QoSConfig _qos_config = QoSConfig();
 

@@ -7,6 +7,8 @@ namespace drawer_bridge
     setup_subscriptions();
     setup_publishers();
     setup_services();
+
+    _can_sender = CanSender(std::enable_shared_from_this<rclcpp::Node>::shared_from_this());
   }
 
   void DrawerBridge::setup_subscriptions()
@@ -34,8 +36,6 @@ namespace drawer_bridge
 
   void DrawerBridge::setup_publishers()
   {
-    _can_messages_publisher = create_publisher<CanMessage>("to_can_bus", _qos_config.get_qos_can_messages());
-
     _drawer_status_publisher = create_publisher<DrawerStatus>("drawer_is_open", _qos_config.get_qos_open_drawer());
 
     _electrical_drawer_status_publisher =
@@ -100,6 +100,7 @@ namespace drawer_bridge
     {
       const CanMessage can_msg =
         _can_message_creator.create_can_msg_set_single_led_state(msg.leds[i], msg.drawer_address);
+      // TODO: sleep()
       send_can_msg(can_msg);
     }
   }
@@ -214,9 +215,9 @@ namespace drawer_bridge
 
   void DrawerBridge::send_can_msg(CanMessage can_message)
   {
-    RCLCPP_INFO(this->get_logger(), "Publishing: '%d'\n ", can_message.id);
+    RCLCPP_INFO(this->get_logger(), "Adding to can message with id '%d' to can queue!\n ", can_message.id);
 
-    _can_messages_publisher->publish(can_message);
+    _can_sender.add_can_message_to_queue(can_message);
   }
 
 }   // namespace drawer_bridge

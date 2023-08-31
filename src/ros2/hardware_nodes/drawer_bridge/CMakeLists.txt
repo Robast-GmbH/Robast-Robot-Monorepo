@@ -45,6 +45,7 @@ add_library(${library_drawer_bridge} SHARED
   src/drawer_bridge.cpp
   src/can_encoder_decoder.cpp
   src/can_message_creator.cpp
+  src/can_sender.cpp
 )
 add_library(${library_drawer_bridge_test} SHARED
   src/drawer_bridge.cpp
