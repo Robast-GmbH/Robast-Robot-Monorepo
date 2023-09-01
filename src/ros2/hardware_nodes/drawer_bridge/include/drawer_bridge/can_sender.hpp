@@ -7,19 +7,19 @@
 #include "can_msgs/msg/frame.hpp"
 #include "qos_config.hpp"
 
-#define TIMER_PERIOD_SEND_CAN_MSGS 50
+#define TIMER_PERIOD_SEND_CAN_MSGS_IN_MS 1
 
 namespace drawer_bridge
 {
   class CanSender
   {
    public:
-    CanSender(rclcpp::Node::SharedPtr node);
+    CanSender(std::shared_ptr<rclcpp::Node> node);
 
     void add_can_message_to_queue(can_msgs::msg::Frame can_msg);
 
    private:
-    rclcpp::Node::SharedPtr _node;
+    std::shared_ptr<rclcpp::Node> _node;
     rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr _can_messages_publisher;
     rclcpp::TimerBase::SharedPtr _send_can_msgs_timer;
 

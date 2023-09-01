@@ -215,9 +215,19 @@ namespace drawer_bridge
 
   void DrawerBridge::send_can_msg(CanMessage can_message)
   {
-    RCLCPP_INFO(this->get_logger(), "Adding to can message with id '%d' to can queue!\n ", can_message.id);
+    if (_can_sender.get() == nullptr)
+    {
+      // Please mind: this cannot be initialized in the constructor because this throws a weak_ptr exception.
+      // This comes because shared_from_this() is trying to get a shared pointer from this node in the initialization
+      // phase, even though the constructor isn't fully completed yet and therefore this doesn't point to a correct
+      // instance.
+      _can_sender = std::make_unique<CanSender>(shared_from_this());
+      RCLCPP_INFO(this->get_logger(), "Initialized CanSender!\n");
+    }
 
-    _can_sender.add_can_message_to_queue(can_message);
+    RCLCPP_INFO(this->get_logger(), "Adding can message with id '%d' to can queue!\n ", can_message.id);
+
+    _can_sender->add_can_message_to_queue(can_message);
   }
 
 }   // namespace drawer_bridge
