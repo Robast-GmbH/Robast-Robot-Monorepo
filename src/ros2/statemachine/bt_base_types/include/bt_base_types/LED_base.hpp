@@ -62,24 +62,24 @@ namespace bt_base_types
       return ros_led;
     }
 
-    static communication_interfaces::msg::LedCmd to_ros_led_states(
+    static communication_interfaces::msg::LedCmd to_ros_led_cmd(
         const std::vector<LED> &leds,
         const communication_interfaces::msg::DrawerAddress &drawer_address,
         const uint16_t fade_in_ms,
         const uint16_t start_index = 0)
     {
-      communication_interfaces::msg::LedCmd led_states;
-      std::vector<communication_interfaces::msg::Led> led_state_vector;
-      led_state_vector.reserve(leds.size());
+      communication_interfaces::msg::LedCmd led_cmd;
+      std::vector<communication_interfaces::msg::Led> led_vector;
+      led_vector.reserve(leds.size());
       for (size_t i = 0; i < leds.size(); ++i)
       {
-        led_state_vector.push_back(to_ros_led(leds[i]));
+        led_vector.push_back(to_ros_led(leds[i]));
       }
-      led_states.leds = led_state_vector;
-      led_states.drawer_address = drawer_address;
-      led_states.fade_time_in_ms = fade_in_ms;
-      led_states.start_index = start_index;
-      return led_states;
+      led_cmd.leds = led_vector;
+      led_cmd.drawer_address = drawer_address;
+      led_cmd.fade_time_in_ms = fade_in_ms;
+      led_cmd.start_index = start_index;
+      return led_cmd;
     }
 
     // static LED from_drawer_leds(const communication_interfaces::msg::DrawerLeds &drawer_led)
