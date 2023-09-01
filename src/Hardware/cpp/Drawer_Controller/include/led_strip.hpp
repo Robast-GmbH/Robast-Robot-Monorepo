@@ -12,7 +12,7 @@
 #include "pinout_defines.hpp"
 #include "timer.hpp"
 
-#define NUM_OF_LEDS                         19
+#define NUM_OF_LEDS                         18
 #define MAX_NUM_OF_LED_MODES_IN_QUEUE       3
 #define LED_ANIMATION_APPLYING_PERIOD_IN_MS 50
 
@@ -92,8 +92,8 @@ namespace drawer_controller
     void initialize_led_strip();
 
     void initialize_led_state_change(uint16_t num_of_led_states,
-                               uint16_t start_index_led_states_input,
-                               uint8_t fade_time_in_hundreds_of_ms_input);
+                                     uint16_t start_index_led_states_input,
+                                     uint8_t fade_time_in_hundreds_of_ms_input);
 
     void set_led_state(LedState state);
 

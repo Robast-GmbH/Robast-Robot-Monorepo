@@ -7,8 +7,6 @@ namespace drawer_bridge
     setup_subscriptions();
     setup_publishers();
     setup_services();
-
-    _can_sender = CanSender(std::enable_shared_from_this<rclcpp::Node>::shared_from_this());
   }
 
   void DrawerBridge::setup_subscriptions()
