@@ -35,6 +35,12 @@
                               fading_time_ms="500"
                               led_topic="/led_cmd"
                               leds="{leds}"/>
+          <SubTree ID="LED_Test"
+                   _autoremap="true"/>
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="0"
+                              led_topic="/drawer_leds"
+                              leds="{leds}"/>
         </Sequence>
       </BaseErrorDecorator>
     </ResetDecorator>
@@ -80,6 +86,29 @@
                           green="128"
                           lower_bound="0.0"
                           red="128"
+                          upper_bound="100.0"
+                          LEDs_colored="{leds}"/>
+    </Sequence>
+  </BehaviorTree>
+
+  <BehaviorTree ID="LED_Test">
+    <Sequence>
+      <InitLEDVector size="18"
+                     led_vector="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}"
+                          blue="200"
+                          brightness="20"
+                          green="100"
+                          lower_bound="0.0"
+                          red="50"
+                          upper_bound="50.0"
+                          LEDs_colored="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}"
+                          blue="50"
+                          brightness="80"
+                          green="100"
+                          lower_bound="50.0"
+                          red="200"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
     </Sequence>
