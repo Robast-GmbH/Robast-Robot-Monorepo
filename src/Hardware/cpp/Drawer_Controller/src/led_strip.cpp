@@ -207,6 +207,7 @@ namespace drawer_controller
       Serial.println("Warning! I received more led states then the header specified!");
       return;
     }
+    _new_target_led_animation.target_led_states[_current_index_led_states] = state;
     ++_current_index_led_states;
 
     bool all_led_states_set = (_new_target_led_animation.num_of_led_states_to_change -
