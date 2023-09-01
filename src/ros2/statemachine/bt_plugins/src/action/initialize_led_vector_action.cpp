@@ -7,7 +7,9 @@ namespace bt_plugins
       const std::string &name,
       const BT::NodeConfig &config) : BT::SyncActionNode(name, config)
   {
-    getInput("size", _size);
+    int a = 0;
+    getInput("size", a);
+    _size = (uint8_t)a;
     _led_vector = std::vector<bt_base_types::LED>(_size, bt_base_types::LED{0, 0, 0, 0});
   }
 
