@@ -3,65 +3,39 @@
 
 #include <string>
 
-#include "nav2_behavior_tree/bt_action_node.hpp"
 #include "communication_interfaces/action/compute_interim_goal.hpp"
-
+#include "nav2_behavior_tree/bt_action_node.hpp"
 
 namespace nav2_behavior_tree
 {
-
-/**
- * @brief A nav2_behavior_tree::BtActionNode class that wraps communication_interfaces::action::ComputeInterimGoal
- */
-class InterimGoalCompAction : public BtActionNode<communication_interfaces::action::ComputeInterimGoal>
-{
-public:
-  /**
-   * @brief A constructor for nav2_behavior_tree::WaitAction
-   * @param xml_tag_name Name for the XML tag for this node
-   * @param action_name Action name this node creates a client for
-   * @param conf BT node configuration
-   */
-  InterimGoalCompAction(
-    const std::string & xml_tag_name,
-    const std::string & action_name,
-    const BT::NodeConfiguration & conf);
-
-  /**
-   * @brief Function to perform some user-defined operation on tick
-   * 
-   */
-  void on_tick() override;
-
-  /**
-   * @brief Function to perform some user-defined operation after a timeout
-   * waiting for a result that hasn't been received yet
-   */
-  void on_wait_for_result();
-
-   /**
-   * @brief Function to perform some user-defined operation upon successful completion of the action
-   */
-  BT::NodeStatus on_success() override;
-
-  /**
-   * @brief Creates list of BT ports
-   * @return BT::PortsList Containing basic ports along with node-specific ports
-   */
-  static BT::PortsList providedPorts()
+  class InterimGoalCompAction : public BtActionNode<communication_interfaces::action::ComputeInterimGoal>
   {
-    return providedBasicPorts(
-      {
-        BT::OutputPort<geometry_msgs::msg::PoseStamped>("interim_goal", "Interim goal selected by the interim_goal_selector node"),
-        BT::OutputPort<int>("waypoint_index", "Waypoint index of the path-waypoints that was closest to the chosen interim pose"),
+   public:
+    InterimGoalCompAction(const std::string& xml_tag_name,
+                          const std::string& action_name,
+                          const BT::NodeConfiguration& conf);
+
+    void on_tick() override;
+
+    void on_wait_for_result();
+
+    BT::NodeStatus on_success() override;
+
+    static BT::PortsList providedPorts()
+    {
+      return providedBasicPorts({
+        BT::OutputPort<geometry_msgs::msg::PoseStamped>("interim_goal",
+                                                        "Interim goal selected by the interim_goal_selector node"),
+        BT::OutputPort<int>("waypoint_index",
+                            "Waypoint index of the path-waypoints that was closest to the chosen interim pose"),
         BT::InputPort<nav_msgs::msg::Path>("path", "Path to Goal"),
         BT::InputPort<bool>("is_path_reversed", "Is the supplied path reversed?"),
         BT::InputPort<std::vector<geometry_msgs::msg::PoseStamped>>("interim_poses", "Interim poses list"),
         BT::InputPort<double>("search_radius", "Radius to search for interim_poses"),
       });
-  }
-};
+    }
+  };
 
-}  // namespace nav2_behavior_tree
+}   // namespace nav2_behavior_tree
 
-#endif  // NAV2_BEHAVIOR_TREE__PLUGINS__ACTION__INTERIM_GOAL_SELECTOR_ACTION_HPP_
+#endif   // NAV2_BEHAVIOR_TREE__PLUGINS__ACTION__INTERIM_GOAL_SELECTOR_ACTION_HPP_
