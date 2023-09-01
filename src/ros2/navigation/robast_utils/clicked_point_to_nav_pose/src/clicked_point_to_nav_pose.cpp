@@ -11,9 +11,7 @@ namespace robast_utils
   void ClickedPointToNavPose::setup_subscriptions()
   {
     _clicked_point_subscription = this->create_subscription<geometry_msgs::msg::PointStamped>(
-      "clicked_point",
-      10,
-      std::bind(&ClickedPointToNavPose::clicked_point_topic_callback, this, std::placeholders::_1));
+      "clicked_point", 1, std::bind(&ClickedPointToNavPose::clicked_point_topic_callback, this, std::placeholders::_1));
   }
 
   void ClickedPointToNavPose::setup_action_client()
