@@ -23,7 +23,6 @@ find_package(rclcpp_action REQUIRED)
 find_package(rclcpp_components REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(nav2_util REQUIRED)
-find_package(nav2_core REQUIRED)
 find_package(communication_interfaces REQUIRED)
 
 include_directories(include)
