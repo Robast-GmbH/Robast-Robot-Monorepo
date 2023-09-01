@@ -22,8 +22,6 @@ namespace drawer_bridge
     }
     else
     {
-      // RCLCPP_INFO(this->get_logger(), "Publishing: '%d'\n ", can_message.id); //TODO: Fix this?
-
       _can_messages_publisher->publish(this->_can_msg_queue.front());
       _can_msg_queue.pop();   // remove first element of the queue
     }
@@ -39,6 +37,10 @@ namespace drawer_bridge
       _can_msg_queue.push(can_msg);
       _send_can_msgs_timer = _node->create_wall_timer(std::chrono::microseconds(TIMER_PERIOD_SEND_CAN_MSGS_IN_US),
                                                       std::bind(&CanSender::send_can_msgs_timer_callback, this));
+      RCLCPP_INFO(_node->get_logger(),
+                  "Starting wall timer with period %i us!\n ",
+                  TIMER_PERIOD_SEND_CAN_MSGS_IN_US,
+                  _can_msg_queue.size());
     }
     else
     {
@@ -50,6 +52,7 @@ namespace drawer_bridge
       {
         // In case the queue gets to large, it can happen that some can messages wont be published to the bus properly
         // therefore we need to decrease the wall timer period in such a case
+        // TODO: This cant be a long term solution
         if (!_is_timer_period_increased)
         {
           _is_timer_period_increased = true;
@@ -59,8 +62,9 @@ namespace drawer_bridge
             _node->create_wall_timer(std::chrono::microseconds(INCREASED_TIMER_PERIOD_SEND_CAN_MSGS_IN_US),
                                      std::bind(&CanSender::send_can_msgs_timer_callback, this));
           RCLCPP_INFO(_node->get_logger(),
-                      "Increasing wall timer period because queue is larger then %li messages!\n ",
-                      _can_msg_queue.size());   // TODO: Fix this?
+                      "Increasing wall timer period to %i us because queue is larger then %li messages!\n ",
+                      INCREASED_TIMER_PERIOD_SEND_CAN_MSGS_IN_US,
+                      _can_msg_queue.size());
         }
         _can_msg_queue.push(can_msg);
       }
