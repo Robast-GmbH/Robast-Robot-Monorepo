@@ -38,7 +38,7 @@ namespace bt_plugins
       return {
           BT::InputPort<uint8_t>(
               "size", 128, "size"),
-          BT::OutputPort<bt_base_types::LED>("led_vector")};
+          BT::OutputPort<std::vector<bt_base_types::LED>>("led_vector")};
     } // namespace statemachine
   private:
     u_int8_t _size;

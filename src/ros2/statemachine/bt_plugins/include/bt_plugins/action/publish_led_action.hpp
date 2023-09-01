@@ -33,7 +33,7 @@ namespace statemachine
               "leds", "address of the drawer thats used to execute the action"),
           BT::InputPort<communication_interfaces::msg::DrawerAddress>(
               "drawer_address", "address of the drawer thats used to execute the action"),
-          BT::InputPort<u_int16_t>(
+          BT::InputPort<uint16_t>(
               "fading_time_ms", 0, "fading time in ms"),
           BT::InputPort<std::string>(
               "led_topic",

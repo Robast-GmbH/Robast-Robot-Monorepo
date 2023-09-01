@@ -37,8 +37,8 @@ namespace bt_plugins
                     "upper_bound", 0.0, "percentage"),
                 BT::InputPort<double>(
                     "lower_bound", 0.0, "percentage"),
-                BT::InputPort<bt_base_types::LED>("LEDs"),
-                BT::OutputPort<bt_base_types::LED>("LEDs_colored")};
+                BT::InputPort<std::vector<bt_base_types::LED>>("LEDs"),
+                BT::OutputPort<std::vector<bt_base_types::LED>>("LEDs_colored")};
         }
     };
 } // namespace bt_plugins
