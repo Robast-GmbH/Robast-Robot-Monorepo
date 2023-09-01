@@ -7,7 +7,9 @@
 #include "can_msgs/msg/frame.hpp"
 #include "qos_config.hpp"
 
-#define TIMER_PERIOD_SEND_CAN_MSGS_IN_US 500   // this seems to be about the lowest period possible (200 does not work)
+#define TIMER_PERIOD_SEND_CAN_MSGS_IN_US              500
+#define INCREASED_TIMER_PERIOD_SEND_CAN_MSGS_IN_US    50000
+#define MAX_QUEUE_SIZE_BEFORE_INCREASING_TIMER_PERIOD 20
 
 namespace drawer_bridge
 {
@@ -26,6 +28,8 @@ namespace drawer_bridge
     std::queue<can_msgs::msg::Frame> _can_msg_queue;
 
     QoSConfig _qos_config = QoSConfig();
+
+    bool _is_timer_period_increased;
 
     void send_can_msgs_timer_callback();
   };
