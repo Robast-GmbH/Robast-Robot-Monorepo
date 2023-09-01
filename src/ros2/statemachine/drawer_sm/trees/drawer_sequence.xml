@@ -31,20 +31,10 @@
                               leds="{leds}"/>
           <SubTree ID="LED_Default"
                    _autoremap="true"/>
-          <Delay delay_msec="500">
-            <LEDPublisherAction drawer_address="{drawer}"
-                                fading_time_ms="500"
-                                led_topic="/led_cmd"
-                                leds="{leds}"/>
-          </Delay>
-          <SubTree ID="LED_Test"
-                   _autoremap="true"/>
-          <Delay delay_msec="500">
-            <LEDPublisherAction drawer_address="{drawer}"
-                                fading_time_ms="500"
-                                led_topic="/led_cmd"
-                                leds="{leds}"/>
-          </Delay>
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="500"
+                              led_topic="/led_cmd"
+                              leds="{leds}"/>
         </Sequence>
       </BaseErrorDecorator>
     </ResetDecorator>
