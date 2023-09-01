@@ -29,8 +29,12 @@ namespace bt_base_nodes
           "nfc_to_drawer_action_bt_node",
           "electric_drawer_status_condition_bt_node",
           "move_electric_drawer_action_bt_node",
-          "base_error_decorator_node"};
-      std::string path = "/workspace/install/drawer_sm/trees/trees/default_electrical_drawer.xml";
+          "base_error_decorator_node",
+          "partial_colorize_leds_action_bt_node",
+          "publish_led_action_bt_node",
+          "reset_decorator_bt_node",
+          "initialize_led_vector_action_bt_node"};
+      std::string path = "/workspace/install/drawer_sm/share/drawer_sm/trees/drawer_sequence.xml";
       this->declare_parameter("plugins", plugins_);
       this->declare_parameter("bt_path", path);
       plugins_ = this->get_parameter("plugins").get_parameter_value().get<std::vector<std::string>>();
