@@ -46,6 +46,9 @@ namespace timer
   {
     if (fading_timer != NULL)
     {
+      portENTER_CRITICAL_ISR(&fading_timer_mux);
+      fade_counter = 0;
+      portEXIT_CRITICAL_ISR(&fading_timer_mux);
       timerAlarmEnable(fading_timer);
     }
   }
