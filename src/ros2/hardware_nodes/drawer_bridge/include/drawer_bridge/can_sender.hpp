@@ -7,7 +7,7 @@
 #include "can_msgs/msg/frame.hpp"
 #include "qos_config.hpp"
 
-#define TIMER_PERIOD_SEND_CAN_MSGS_IN_US 300   // this seems to be about the lowest period possible (200 does not work)
+#define TIMER_PERIOD_SEND_CAN_MSGS_IN_US 500   // this seems to be about the lowest period possible (200 does not work)
 
 namespace drawer_bridge
 {
