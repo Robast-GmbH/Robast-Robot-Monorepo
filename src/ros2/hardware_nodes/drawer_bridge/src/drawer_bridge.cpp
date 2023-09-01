@@ -87,9 +87,14 @@ namespace drawer_bridge
     uint16_t num_of_leds = msg.leds.size();
 
     RCLCPP_INFO(get_logger(),
-                "I heard from the /led_cmd topic the module id %i and the number of led states = %i",
+                "I heard from the /led_cmd topic the module id %i and the number of led states = %i. The states for "
+                "the first led are red = %i, green = %i, blue = %i, brightness = %i",
                 msg.drawer_address.module_id,
-                num_of_leds);
+                num_of_leds,
+                msg.leds[0].red,
+                msg.leds[0].green,
+                msg.leds[0].blue,
+                msg.leds[0].brightness);
 
     const CanMessage can_msg = _can_message_creator.create_can_msg_led_header(msg);
     send_can_msg(can_msg);
