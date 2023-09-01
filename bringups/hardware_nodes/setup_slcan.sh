@@ -1,3 +1,5 @@
+# In order to make this work run: sudo apt-get install can-utils
+
 sudo modprobe can
 sudo modprobe can-raw
 sudo modprobe slcan

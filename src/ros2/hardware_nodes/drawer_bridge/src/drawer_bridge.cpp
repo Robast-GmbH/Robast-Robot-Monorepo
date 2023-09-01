@@ -7,6 +7,8 @@ namespace drawer_bridge
     setup_subscriptions();
     setup_publishers();
     setup_services();
+
+    _can_sender = CanSender(std::enable_shared_from_this<rclcpp::Node>::shared_from_this());
   }
 
   void DrawerBridge::setup_subscriptions()
@@ -34,8 +36,6 @@ namespace drawer_bridge
 
   void DrawerBridge::setup_publishers()
   {
-    _can_messages_publisher = create_publisher<CanMessage>("to_can_bus", _qos_config.get_qos_can_messages());
-
     _drawer_status_publisher = create_publisher<DrawerStatus>("drawer_is_open", _qos_config.get_qos_open_drawer());
 
     _electrical_drawer_status_publisher =
@@ -86,10 +86,10 @@ namespace drawer_bridge
 
   void DrawerBridge::led_cmd_topic_callback(const LedCmd& msg)
   {
-    uint16_t num_of_leds = sizeof(msg.leds) / sizeof(Led);
+    uint16_t num_of_leds = msg.leds.size();
 
     RCLCPP_INFO(get_logger(),
-                "I heard from the /set_leds topic the module id %i and the number of led states = %i",
+                "I heard from the /led_cmd topic the module id %i and the number of led states = %i",
                 msg.drawer_address.module_id,
                 num_of_leds);
 
@@ -100,6 +100,7 @@ namespace drawer_bridge
     {
       const CanMessage can_msg =
         _can_message_creator.create_can_msg_set_single_led_state(msg.leds[i], msg.drawer_address);
+      // TODO: sleep()
       send_can_msg(can_msg);
     }
   }
@@ -214,9 +215,19 @@ namespace drawer_bridge
 
   void DrawerBridge::send_can_msg(CanMessage can_message)
   {
-    RCLCPP_INFO(this->get_logger(), "Publishing: '%d'\n ", can_message.id);
+    if (_can_sender.get() == nullptr)
+    {
+      // Please mind: this cannot be initialized in the constructor because this throws a weak_ptr exception.
+      // This comes because shared_from_this() is trying to get a shared pointer from this node in the initialization
+      // phase, even though the constructor isn't fully completed yet and therefore this doesn't point to a correct
+      // instance.
+      _can_sender = std::make_unique<CanSender>(shared_from_this());
+      RCLCPP_INFO(this->get_logger(), "Initialized CanSender!\n");
+    }
 
-    _can_messages_publisher->publish(can_message);
+    RCLCPP_INFO(this->get_logger(), "Adding can message with id '%d' to can queue!\n ", can_message.id);
+
+    _can_sender->add_can_message_to_queue(can_message);
   }
 
 }   // namespace drawer_bridge

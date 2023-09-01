@@ -14,7 +14,7 @@ from launch_ros.actions import Node
 from rclpy.qos import (DurabilityPolicy, QoSHistoryPolicy, QoSProfile,
                        QoSReliabilityPolicy)
 
-from communication_interfaces.msg import (DrawerAddress, LedState, LedStates,
+from communication_interfaces.msg import (DrawerAddress, Led, LedCmd,
                                           DrawerStatus, ErrorBaseMsg)
 
 from can_msgs.msg import Frame
@@ -85,20 +85,20 @@ class TestProcessOutput(unittest.TestCase):
         with open(INPUT_DATA_PATH) as f:
             data = yaml.safe_load(f)
 
-        led_state_msg = LedState()
-        led_state_msg.red = data['led_state']['red']
-        led_state_msg.blue = data['led_state']['blue']
-        led_state_msg.green = data['led_state']['green']
-        led_state_msg.brightness = data['led_state']['brightness']
+        led_msg = Led()
+        led_msg.red = data['led']['red']
+        led_msg.blue = data['led']['blue']
+        led_msg.green = data['led']['green']
+        led_msg.brightness = data['led']['brightness']
 
-        led_states_msg = LedStates()
-        led_states_msg.drawer_address.module_id = data['led_states']['drawer_address']['module_id']
-        led_states_msg.drawer_address.drawer_id = data['led_states']['drawer_address']['drawer_id']
-        led_states_msg.led_states = [led_state_msg, led_state_msg]
-        led_states_msg.start_index = data['led_states']['start_index']
+        led_cmd_msg = LedCmd()
+        led_cmd_msg.drawer_address.module_id = data['led_cmd']['drawer_address']['module_id']
+        led_cmd_msg.drawer_address.drawer_id = data['led_cmd']['drawer_address']['drawer_id']
+        led_cmd_msg.leds = [led_msg, led_msg]
+        led_cmd_msg.start_index = data['led_cmd']['start_index']
 
-        self.led_states_publisher_.publish(led_states_msg)
-        self.node.get_logger().info('Publishing to led_states topic for module_id: "%i"' % led_states_msg.drawer_address.module_id)
+        self.led_cmd_publisher_.publish(led_cmd_msg)
+        self.node.get_logger().info('Publishing to led_cmd topic for module_id: "%i"' % led_cmd_msg.drawer_address.module_id)
 
         drawer_address_msg = DrawerAddress()
         drawer_address_msg.module_id = data['open_drawer']['module_id']
@@ -162,7 +162,7 @@ class TestProcessOutput(unittest.TestCase):
     
     def publish_data_to_dut(self):
         self.open_drawer_publisher_ = self.node.create_publisher(DrawerAddress, 'open_drawer', qos_profile = self.qos_profile)
-        self.led_states_publisher_ = self.node.create_publisher(LedStates, 'led_states', qos_profile = self.qos_profile)
+        self.led_cmd_publisher_ = self.node.create_publisher(LedCmd, 'led_cmd', qos_profile = self.qos_profile)
         self.can_in_publisher_ = self.node.create_publisher(Frame,'from_can_bus', qos_profile = self.qos_profile)
         self.publish_data()
 
@@ -241,5 +241,5 @@ class TestProcessOutput(unittest.TestCase):
 
         finally:
             self.node.destroy_publisher(self.open_drawer_publisher_)
-            self.node.destroy_publisher(self.led_states_publisher_)
+            self.node.destroy_publisher(self.led_cmd_publisher_)
             self.node.destroy_subscription(self.drawer_status_subscriber)
