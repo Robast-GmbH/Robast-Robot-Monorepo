@@ -125,6 +125,12 @@ namespace drawer_controller
       _current_led_states[i].green = _target_led_animation.target_led_states[i].green;
       _current_led_states[i].blue = _target_led_animation.target_led_states[i].blue;
       _current_led_states[i].brightness = _target_led_animation.target_led_states[i].brightness;
+
+      // Save the led_states as starting_led_states for the next iteration
+      _starting_led_states[i].red = _target_led_animation.target_led_states[i].red;
+      _starting_led_states[i].green = _target_led_animation.target_led_states[i].green;
+      _starting_led_states[i].blue = _target_led_animation.target_led_states[i].blue;
+      _starting_led_states[i].brightness = _target_led_animation.target_led_states[i].brightness;
     }
   }
 
