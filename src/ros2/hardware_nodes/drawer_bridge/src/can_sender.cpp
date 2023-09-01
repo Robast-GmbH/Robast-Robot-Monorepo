@@ -4,7 +4,7 @@
 // TODO: When changing to the can bus from the jetson board this should be done properly
 namespace drawer_bridge
 {
-  CanSender::CanSender(std::shared_ptr<rclcpp::Node> node) : _node(node)
+  CanSender::CanSender(std::shared_ptr<rclcpp::Node> node) : _node(node), _is_timer_period_increased(false)
   {
     _send_can_msgs_timer = _node->create_wall_timer(std::chrono::microseconds(TIMER_PERIOD_SEND_CAN_MSGS_IN_US),
                                                     std::bind(&CanSender::send_can_msgs_timer_callback, this));
@@ -35,13 +35,35 @@ namespace drawer_bridge
     // the ascii cmds
     if (_can_msg_queue.empty())
     {
+      _is_timer_period_increased = false;
       _can_msg_queue.push(can_msg);
       _send_can_msgs_timer = _node->create_wall_timer(std::chrono::microseconds(TIMER_PERIOD_SEND_CAN_MSGS_IN_US),
                                                       std::bind(&CanSender::send_can_msgs_timer_callback, this));
     }
     else
     {
-      _can_msg_queue.push(can_msg);
+      if (_can_msg_queue.size() < MAX_QUEUE_SIZE_BEFORE_INCREASING_TIMER_PERIOD)
+      {
+        _can_msg_queue.push(can_msg);
+      }
+      else
+      {
+        // In case the queue gets to large, it can happen that some can messages wont be published to the bus properly
+        // therefore we need to decrease the wall timer period in such a case
+        if (!_is_timer_period_increased)
+        {
+          _is_timer_period_increased = true;
+          // TODO: How do i just change the interval of the timer? For cancel and restart it, but this might go easier
+          _send_can_msgs_timer->cancel();
+          _send_can_msgs_timer =
+            _node->create_wall_timer(std::chrono::microseconds(INCREASED_TIMER_PERIOD_SEND_CAN_MSGS_IN_US),
+                                     std::bind(&CanSender::send_can_msgs_timer_callback, this));
+          RCLCPP_INFO(_node->get_logger(),
+                      "Increasing wall timer period because queue is larger then %li messages!\n ",
+                      _can_msg_queue.size());   // TODO: Fix this?
+        }
+        _can_msg_queue.push(can_msg);
+      }
     }
   }
 
