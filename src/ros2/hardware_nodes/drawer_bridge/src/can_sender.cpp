@@ -6,7 +6,7 @@ namespace drawer_bridge
 {
   CanSender::CanSender(std::shared_ptr<rclcpp::Node> node) : _node(node)
   {
-    _send_can_msgs_timer = _node->create_wall_timer(std::chrono::milliseconds(TIMER_PERIOD_SEND_CAN_MSGS_IN_MS),
+    _send_can_msgs_timer = _node->create_wall_timer(std::chrono::microseconds(TIMER_PERIOD_SEND_CAN_MSGS_IN_US),
                                                     std::bind(&CanSender::send_can_msgs_timer_callback, this));
 
     _can_messages_publisher =
@@ -36,7 +36,7 @@ namespace drawer_bridge
     if (_can_msg_queue.empty())
     {
       _can_msg_queue.push(can_msg);
-      _send_can_msgs_timer = _node->create_wall_timer(std::chrono::milliseconds(TIMER_PERIOD_SEND_CAN_MSGS_IN_MS),
+      _send_can_msgs_timer = _node->create_wall_timer(std::chrono::microseconds(TIMER_PERIOD_SEND_CAN_MSGS_IN_US),
                                                       std::bind(&CanSender::send_can_msgs_timer_callback, this));
     }
     else
