@@ -187,14 +187,14 @@ namespace drawer_controller
     }
   }
 
-  void LedStrip::initialize_led_states(uint16_t num_of_led_states,
-                                       uint16_t start_index_led_states_input,
-                                       uint8_t fade_time_in_hundreds_of_ms_input)
+  void LedStrip::initialize_led_state_change(uint16_t num_of_led_states_to_change,
+                                             uint16_t start_index_of_leds_to_change,
+                                             uint8_t fade_time_in_hundreds_of_ms)
   {
-    set_num_of_leds_to_change_to_value_within_bounds(num_of_led_states, start_index_led_states_input);
-    _new_target_led_animation.start_index_led_states = start_index_led_states_input;
-    _new_target_led_animation.fade_time_in_hundreds_of_ms = fade_time_in_hundreds_of_ms_input;
-    _current_index_led_states = start_index_led_states_input;
+    set_num_of_leds_to_change_to_value_within_bounds(num_of_led_states_to_change, start_index_of_leds_to_change);
+    _new_target_led_animation.start_index_led_states = start_index_of_leds_to_change;
+    _new_target_led_animation.fade_time_in_hundreds_of_ms = fade_time_in_hundreds_of_ms;
+    _current_index_led_states = start_index_of_leds_to_change;
   }
 
   void LedStrip::set_led_state(LedState state)

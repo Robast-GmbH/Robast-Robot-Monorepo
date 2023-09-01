@@ -91,7 +91,7 @@ namespace drawer_controller
 
     void initialize_led_strip();
 
-    void initialize_led_states(uint16_t num_of_led_states,
+    void initialize_led_state_change(uint16_t num_of_led_states,
                                uint16_t start_index_led_states_input,
                                uint8_t fade_time_in_hundreds_of_ms_input);
 
