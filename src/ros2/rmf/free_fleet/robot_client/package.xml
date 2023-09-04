@@ -20,6 +20,8 @@
   <depend>nav2_msgs</depend>
   <depend>tf2_geometry_msgs</depend>
 
+  <exec_depend>ros2launch</exec_depend>
+
   <export>
     <build_type>ament_cmake</build_type>
   </export>

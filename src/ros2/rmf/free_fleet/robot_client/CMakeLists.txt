@@ -58,5 +58,11 @@ install(TARGETS
   ${executable_robot_client}
   DESTINATION lib/${PROJECT_NAME})
 
+# Install launch files.
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
+)
+
 ament_export_include_directories(include)
 ament_package()

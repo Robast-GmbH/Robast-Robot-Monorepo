@@ -39,12 +39,6 @@ namespace rmf_robot_client
           using FreeFleetDataDrawerRequest = fleet_interfaces::msg::FreeFleetDataDrawerRequest;
           using FreeFleetDataDestinationRequest = fleet_interfaces::msg::FreeFleetDataDestinationRequest;
           using FreeFleetDataRobotInfo = fleet_interfaces::msg::FreeFleetDataRobotState;
-          // using FreeFleetDataTaskInfo = fleet_interfaces::msg::FreeFleetDataTaskState;
-
-          // using DrawerAddress = communication_interfaces::msg::DrawerAddress;
-
-          // using StdMsgString= std_msgs::msg::String;
-          // using StdMsgBool= std_msgs::msg::Bool;
 
         private:
           // Parameters
@@ -72,7 +66,6 @@ namespace rmf_robot_client
           rclcpp::Subscription<FreeFleetDataDestinationRequest>::SharedPtr navigation_request_subscriber_;
 
           rclcpp::Publisher<FreeFleetDataRobotInfo>::SharedPtr robot_info_publisher_;
-          // rclcpp::Publisher<FreeFleetDataTaskInfo>::SharedPtr task_info_publisher_;
 
           //NFC
 
