@@ -35,7 +35,7 @@
 	<!-- Flag to select the high or low quality model -->
 	<xacro:property name="hq" value="false" />
 
-	<xacro:arg name="prefix" default="robot_"/>
+	<xacro:arg name="prefix" default=""/>
 	<!-- <xacro:arg name="gpu" default="true"/> -->
 
 	<!-- *************** -->
