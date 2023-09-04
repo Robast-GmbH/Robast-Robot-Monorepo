@@ -206,6 +206,8 @@ namespace gazebo_controller_manager
     trajectory_msgs::msg::MultiDOFJointTrajectory mobile_base_trajectory_msg =
         goal_trajectory.multi_dof_joint_trajectory;
 
+    // print_joint_trajectory_msg(arm_trajectory_msg);   // DEBUGGING
+
     this->set_joint_trajectory_cb(std::make_shared<trajectory_msgs::msg::JointTrajectory>(arm_trajectory_msg));
 
     this->set_mobile_base_trajectory(mobile_base_trajectory_msg);
@@ -364,6 +366,25 @@ namespace gazebo_controller_manager
     }
   }
 
+  void JointTrajectoryController::print_incorrect_joint_order_log(
+      const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
+  {
+    RCLCPP_ERROR(this->get_logger(),
+                 "The joint names of the trajectory message does not match joint names list that were given into the "
+                 "joint trajectory controller!");
+    RCLCPP_ERROR(this->get_logger(), "Joint names in trajectory message:");
+    for (const auto& joint_name : msg->joint_names)
+    {
+      RCLCPP_ERROR(this->get_logger(), "  %s", joint_name.c_str());
+    }
+
+    RCLCPP_ERROR(this->get_logger(), "Joint names given to the joint trajectory controller:");
+    for (const auto& joint_name : joint_names_)
+    {
+      RCLCPP_ERROR(this->get_logger(), "  %s", joint_name.c_str());
+    }
+  }
+
   bool JointTrajectoryController::is_joint_order_correct(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg)
   {
     for (size_t k = 0; k < joint_names_.size(); k++)
@@ -396,10 +417,7 @@ namespace gazebo_controller_manager
       reverse_joint_order();
       if (!is_joint_order_correct(msg))
       {
-        RCLCPP_ERROR(
-            this->get_logger(),
-            "The joint names of the trajectory message does not match joint names list that were given into the "
-            "joint trajectory controller!");
+        print_incorrect_joint_order_log(msg);
         return;
       }
     }
@@ -442,6 +460,58 @@ namespace gazebo_controller_manager
     else
     {
       has_trajectory_for_mobile_base_ = false;
+    }
+  }
+
+  void JointTrajectoryController::print_joint_trajectory_msg(const trajectory_msgs::msg::JointTrajectory& msg)
+  {
+    RCLCPP_INFO(get_logger(), "Joint Trajectory:");
+
+    // Print the header information
+    RCLCPP_INFO(get_logger(), "Header:");
+    RCLCPP_INFO(get_logger(), "  stamp: %f", msg.header.stamp.sec + 1e-9 * msg.header.stamp.nanosec);
+    RCLCPP_INFO(get_logger(), "  frame_id: %s", msg.header.frame_id.c_str());
+
+    // Print the joint names
+    RCLCPP_INFO(get_logger(), "Joint Names:");
+    for (const auto& name : msg.joint_names)
+    {
+      RCLCPP_INFO(get_logger(), "  %s", name.c_str());
+    }
+
+    // Print the points in the trajectory
+    RCLCPP_INFO(get_logger(), "Trajectory Points (number of points: %zu):", msg.points.size());
+    for (size_t i = 0; i < msg.points.size(); ++i)
+    {
+      const auto& point = msg.points[i];
+
+      RCLCPP_INFO(get_logger(), "  Point %zu:", i);
+      RCLCPP_INFO(
+          get_logger(), "    time_from_start: %f", point.time_from_start.sec + 1e-9 * point.time_from_start.nanosec);
+
+      RCLCPP_INFO(get_logger(), "    positions:");
+      for (const auto& pos : point.positions)
+      {
+        RCLCPP_INFO(get_logger(), "      %f", pos);
+      }
+
+      RCLCPP_INFO(get_logger(), "    velocities:");
+      for (const auto& vel : point.velocities)
+      {
+        RCLCPP_INFO(get_logger(), "      %f", vel);
+      }
+
+      // RCLCPP_INFO(get_logger(), "    accelerations:");
+      // for (const auto& accel : point.accelerations)
+      // {
+      //   RCLCPP_INFO(get_logger(), "      %f", accel);
+      // }
+
+      // RCLCPP_INFO(get_logger(), "    efforts:");
+      // for (const auto& effort : point.effort)
+      // {
+      //   RCLCPP_INFO(get_logger(), "      %f", effort);
+      // }
     }
   }
 }   // namespace gazebo_controller_manager

@@ -44,6 +44,10 @@ namespace gazebo_controller_manager
 
     void handle_finished_trajectory_execution();
 
+    void print_incorrect_joint_order_log(const trajectory_msgs::msg::JointTrajectory::SharedPtr msg);
+
+    void print_joint_trajectory_msg(const trajectory_msgs::msg::JointTrajectory& msg);
+
     rclcpp_action::GoalResponse handle_goal(
         const rclcpp_action::GoalUUID& uuid,
         std::shared_ptr<const control_msgs::action::FollowJointTrajectory::Goal> goal);
