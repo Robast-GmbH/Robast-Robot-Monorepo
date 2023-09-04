@@ -13,20 +13,16 @@ from launch_ros.actions import LoadComposableNodes
 from launch_ros.actions import Node
 from launch_ros.descriptions import ComposableNode
 from nav2_common.launch import RewrittenYaml
+from launch.substitutions import EnvironmentVariable
 
 
 def generate_launch_description():
 
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
-    config_directory = environment_yaml["config_directory"]
-    is_simulation = environment_yaml["is_simulation"]
+    config_directory = os.environ["config_directory"]
+    is_simulation = os.environ["is_simulation"]
 
-    if is_simulation:
+
+    if is_simulation=='True':
         use_sim_time_default = "true"
         remappings = [
             ("/odom", "odom"),
@@ -62,9 +58,12 @@ def generate_launch_description():
                        'velocity_smoother']
 
     # Create our own temporary YAML files that include substitutions
+    # nav_to_pose_bt = os.path.join(get_package_share_directory("nav2_bt_navigator"), "nav_to_pose_with_consistent_replanning_and_if_path_becomes_invalid", ".xml")
+    nav_to_pose_bt = os.path.join(get_package_share_directory("nav2_bt_navigator"), "navigate_to_pose_w_replanning_goal_patience_and_recovery", ".xml")
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
+        "default_nav_to_pose_bt_xml": nav_to_pose_bt,
         "map_topic": "/map"}
 
     configured_params = RewrittenYaml(
@@ -116,6 +115,7 @@ def generate_launch_description():
     declare_log_level_cmd = DeclareLaunchArgument(
         'log_level', default_value='info',
         description='log level')
+    
 
     load_nodes = GroupAction(
         condition=IfCondition(PythonExpression(['not ', use_composition])),

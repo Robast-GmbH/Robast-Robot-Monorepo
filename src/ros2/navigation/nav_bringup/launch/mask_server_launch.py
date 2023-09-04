@@ -12,31 +12,24 @@ from nav2_common.launch import RewrittenYaml
 
 def generate_launch_description():
 
-    with open("/workspace/src/navigation/environment_vars.yaml", "r") as stream:
-        try:
-            environment_yaml = yaml.safe_load(stream)
-            print(environment_yaml)
-        except yaml.YAMLError as exc:
-            print(exc)
-
-    is_simulation = environment_yaml["is_simulation"]
+    is_simulation = os.environ["is_simulation"]
 
     # Get the launch directory
     costmap_filters_dir = get_package_share_directory("nav_bringup")
 
-    if is_simulation:
-        mask_params_yaml_dir = os.path.join(
-            costmap_filters_dir, "masks", "5OG", "tiplu_fast_lane_params.yaml"
+    if is_simulation == 'True':
+        no_go_mask_params_yaml = os.path.join(
+            costmap_filters_dir, "masks", "6OG_sim", "no_go_params.yaml"
         )
-        mask_file = os.path.join(
-            costmap_filters_dir, "masks", "5OG", "tiplu_fast_lane_mask.yaml"
+        no_go_mask_file_dir = os.path.join(
+            costmap_filters_dir, "masks", "6OG_sim", "no_go.yaml"
         )
     else:
-        mask_params_yaml_dir = os.path.join(
-            costmap_filters_dir, "masks", "new6OG", "mask_tiplu_6OG_params.yaml"
+        no_go_mask_params_yaml = os.path.join(
+            costmap_filters_dir, "masks", "RL_Tiplu", "keepout_params.yaml"
         )
-        mask_file = os.path.join(
-            costmap_filters_dir, "masks", "new6OG", "mask_tiplu_6OG.yaml"
+        no_go_mask_file_dir = os.path.join(
+            costmap_filters_dir, "masks", "RL_Tiplu", "keepout_mask.yaml"
         )
 
     # Create our own temporary YAML files that include substitutions
@@ -46,8 +39,8 @@ def generate_launch_description():
     namespace = LaunchConfiguration("namespace")
     use_sim_time = LaunchConfiguration("use_sim_time")
     autostart = LaunchConfiguration("autostart")
-    params_file = LaunchConfiguration("params_file")
-    mask_yaml_file = LaunchConfiguration("mask")
+    no_go_mask_params = LaunchConfiguration("no_go_mask_params")
+    no_go_mask_file = LaunchConfiguration("no_go_mask_file")
 
     # Declare the launch arguments
     declare_namespace_cmd = DeclareLaunchArgument(
@@ -66,26 +59,26 @@ def generate_launch_description():
         description="Automatically startup the nav2 stack",
     )
 
-    declare_params_file_cmd = DeclareLaunchArgument(
-        "params_file",
-        default_value=mask_params_yaml_dir,
+    declare_no_go_mask_params_yaml_cmd = DeclareLaunchArgument(
+        "no_go_mask_params",
+        default_value=no_go_mask_params_yaml,
         description="Full path to the ROS 2 parameters file to use",
     )
 
-    declare_mask_yaml_file_cmd = DeclareLaunchArgument(
-        "mask",
-        default_value=mask_file,
+    declare_no_go_mask_file_cmd = DeclareLaunchArgument(
+        "no_go_mask_file",
+        default_value=no_go_mask_file_dir,
         description="Full path to filter mask yaml file to load",
     )
 
     # Make re-written yaml
     param_substitutions = {
         "use_sim_time": use_sim_time,
-        "yaml_filename": mask_yaml_file,
+        "yaml_filename": no_go_mask_file,
     }
 
     configured_params = RewrittenYaml(
-        source_file=params_file,
+        source_file=no_go_mask_params,
         root_key=namespace,
         param_rewrites=param_substitutions,
         convert_types=True,
@@ -131,8 +124,8 @@ def generate_launch_description():
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_autostart_cmd)
-    ld.add_action(declare_params_file_cmd)
-    ld.add_action(declare_mask_yaml_file_cmd)
+    ld.add_action(declare_no_go_mask_params_yaml_cmd)
+    ld.add_action(declare_no_go_mask_file_cmd)
 
     ld.add_action(start_lifecycle_manager_cmd)
     ld.add_action(start_map_server_cmd)
