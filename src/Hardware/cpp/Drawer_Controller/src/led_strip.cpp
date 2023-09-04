@@ -197,6 +197,12 @@ namespace drawer_controller
                                              uint16_t start_index_of_leds_to_change,
                                              uint8_t fade_time_in_hundreds_of_ms)
   {
+    debug_printf(
+      "Initialized led state change for %d num of leds with start index %d and fade_time_in_hundreds_of_ms %d!\n",
+      num_of_led_states_to_change,
+      start_index_of_leds_to_change,
+      fade_time_in_hundreds_of_ms);
+
     set_num_of_leds_to_change_to_value_within_bounds(num_of_led_states_to_change, start_index_of_leds_to_change);
     _new_target_led_animation.start_index_led_states = start_index_of_leds_to_change;
     _new_target_led_animation.fade_time_in_hundreds_of_ms = fade_time_in_hundreds_of_ms;
@@ -213,6 +219,7 @@ namespace drawer_controller
       Serial.println("Warning! I received more led states then the header specified!");
       return;
     }
+    debug_printf("Adding requested led state change with index %d!\n", _current_index_led_states);
     _new_target_led_animation.target_led_states[_current_index_led_states] = state;
     ++_current_index_led_states;
 
