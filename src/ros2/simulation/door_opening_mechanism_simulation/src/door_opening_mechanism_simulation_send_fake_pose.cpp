@@ -72,7 +72,7 @@ int main(int argc, char** argv)
 
   auto msg = std::make_shared<depthai_ros_msgs::msg::SpatialDetectionArray>();
 
-  msg->header.frame_id = "alu_profile_link_gripper";
+  msg->header.frame_id = "door_opening_mechanism_link_gripper_adapter";
   msg->detections.push_back(fake_detection);
 
   RCLCPP_INFO(LOGGER, "Publishing SpatialDetectionArray message!");
