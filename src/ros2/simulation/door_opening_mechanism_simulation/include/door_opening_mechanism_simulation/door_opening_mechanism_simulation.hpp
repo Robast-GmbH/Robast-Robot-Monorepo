@@ -37,7 +37,7 @@ namespace door_opening_mechanism_simulation
     const std::string door_handle_position_topic_ = "/stereo/door_handle_position";
 
     std::string moveit2_planning_group_name_;
-    const std::string default_moveit2_planning_group_name_ = "drawer_planning_group";
+    const std::string default_moveit2_planning_group_name_ = "mobile_base_arm";
 
     std::shared_ptr<rclcpp::Node> get_shared_pointer_of_node();
 
