@@ -41,7 +41,7 @@ namespace behavior_tree_server
     bool send_parameter_set_service_request(rclcpp::Client<rcl_interfaces::srv::SetParameters>::SharedPtr client,
                                             const std::shared_ptr<rcl_interfaces::srv::SetParameters::Request> request);
 
-    std::optional<rcl_interfaces::msg::ParameterValue> send_parameter_get_service_request(
+    std::optional<rcl_interfaces::msg::ParameterValue> get_service_parameter_request(
       rclcpp::Client<rcl_interfaces::srv::GetParameters>::SharedPtr client,
       const std::shared_ptr<rcl_interfaces::srv::GetParameters::Request> request);
   };

@@ -42,7 +42,7 @@ namespace behavior_tree_server
       std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
     request->names.push_back(parameter_name);
 
-    return send_parameter_get_service_request(_get_local_costmap_parameters_client, request);
+    return get_service_parameter_request(_get_local_costmap_parameters_client, request);
   }
 
   std::optional<rcl_interfaces::msg::ParameterValue> ParameterServiceClient::get_parameter_value_for_global_costmap(
@@ -52,7 +52,7 @@ namespace behavior_tree_server
       std::make_shared<rcl_interfaces::srv::GetParameters::Request>();
     request->names.push_back(parameter_name);
 
-    return send_parameter_get_service_request(_get_global_costmap_parameters_client, request);
+    return get_service_parameter_request(_get_global_costmap_parameters_client, request);
   }
 
   bool ParameterServiceClient::send_parameter_set_service_request(
@@ -72,7 +72,7 @@ namespace behavior_tree_server
   }
 
   // TODO@Jacob: Use generics for this to make one function out of this function and send_parameter_set_service_request
-  std::optional<rcl_interfaces::msg::ParameterValue> ParameterServiceClient::send_parameter_get_service_request(
+  std::optional<rcl_interfaces::msg::ParameterValue> ParameterServiceClient::get_service_parameter_request(
     rclcpp::Client<rcl_interfaces::srv::GetParameters>::SharedPtr client,
     const std::shared_ptr<rcl_interfaces::srv::GetParameters::Request> request)
   {
