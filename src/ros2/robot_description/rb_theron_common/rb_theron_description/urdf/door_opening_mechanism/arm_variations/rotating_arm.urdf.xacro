@@ -37,10 +37,27 @@
             <xacro:insert_block name="origin" />
         </xacro:basic_joint>
 
+        <!-- Adapter for Gripper -->
+        <!-- Please mind: We need this link as end effector for moveit in order to not include the freely rotating hook into
+        path planning -->
+        <xacro:basic_box
+            parent="${prefix}door_opening_mechanism_link_rotating_arm"
+            joint_name="${prefix}door_opening_mechanism_joint_gripper_adapter"
+            link_name="${prefix}door_opening_mechanism_link_gripper_adapter"
+            m="0.1"
+            x="0.01"
+            y="0.03"
+            z="0.03"
+            r="0"
+            g="1"
+            b="0">
+            <origin xyz="0.020 0.0 ${arm_length-0.015}" rpy="0 0 0"/>
+        </xacro:basic_box>
+
         <!-- Gripper -->
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/freely_rotating_hook.urdf.xacro" />
-        <xacro:freely_rotating_hook prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_rotating_arm">
-            <origin xyz="0.030 0.0 ${arm_length-0.015}" rpy="0 0 0"/>
+        <xacro:freely_rotating_hook prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_gripper_adapter">
+            <origin xyz="0.020 0.0 0.0" rpy="0 0 0"/>
         </xacro:freely_rotating_hook>
 
     </xacro:macro>
