@@ -26,7 +26,7 @@ class ros_controller(Node):
         self.declare_parameter('dds_mode_request_topic', "mode_request")
         self.declare_parameter('dds_path_request_topic', "path_request")
         self.declare_parameter('dds_destination_request_topic', "destination_request")
-        self.declare_parameter('dds_slide_drawer_request_topic', "slide_drawer_request")
+        self.declare_parameter('dds_slide_drawer_request_topic', "drawer_request")
         self.declare_parameter('dds_setting_request_topic', "setting_request")
         self.declare_parameter('new_user_request_topic', "new_user_request")
 

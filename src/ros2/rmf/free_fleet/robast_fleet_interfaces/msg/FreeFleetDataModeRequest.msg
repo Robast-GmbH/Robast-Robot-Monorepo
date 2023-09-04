@@ -1,5 +1,0 @@
-string fleet_name
-string robot_name
-robast_fleet_interfaces/FreeFleetDataRobotMode mode
-string task_id
-robast_fleet_interfaces/FreeFleetDataModeParameter[] parameter
