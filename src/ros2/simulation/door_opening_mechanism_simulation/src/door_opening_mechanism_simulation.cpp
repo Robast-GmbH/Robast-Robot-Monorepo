@@ -193,7 +193,7 @@ namespace door_opening_mechanism_simulation
                 "I heard from the %s topic %i detections for the frame_id %s",
                 door_handle_position_topic_.c_str(),
                 msg.detections.size(),
-                msg.header.frame_id);
+                msg.header.frame_id.c_str());
 
     // Very important: We spin up the moveit interaction in new thread, otherwise
     // the current state monitor won't get any information about the robot's state.
