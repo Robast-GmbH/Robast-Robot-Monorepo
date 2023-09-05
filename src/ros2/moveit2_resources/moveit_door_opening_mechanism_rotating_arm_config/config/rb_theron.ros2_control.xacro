@@ -29,6 +29,13 @@
                 </state_interface>
                 <state_interface name="velocity"/>
             </joint>
+            <joint name="door_opening_mechanism_joint_freely_rotating_hook">
+                <command_interface name="position"/>
+                <state_interface name="position">
+                  <param name="initial_value">${initial_positions['door_opening_mechanism_joint_freely_rotating_hook']}</param>
+                </state_interface>
+                <state_interface name="velocity"/>
+            </joint>
 
         </ros2_control>
     </xacro:macro>

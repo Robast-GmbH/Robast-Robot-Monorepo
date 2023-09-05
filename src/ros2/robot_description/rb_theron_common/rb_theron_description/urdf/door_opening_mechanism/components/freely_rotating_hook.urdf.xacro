@@ -3,17 +3,18 @@
 
     <xacro:macro name="freely_rotating_hook" params="prefix parent *origin">
 
+        <!-- Please mind: This joint is actually passive, but in order to help moveit plan the trajectory we make it active -->
         <xacro:basic_joint 
             parent="${prefix}${parent}"
             joint_name="${prefix}door_opening_mechanism_joint_freely_rotating_hook"
-            joint_type="continuous"
+            joint_type="revolute" 
             axis_x="1"
             axis_y="0"
             axis_z="0"
-            lower_limit="0"
-            upper_limit="3.141"
-            damping="0.01"
-            friction="0.01"
+            lower_limit="0.0"
+            upper_limit="3.14"
+            damping="0.05"
+            friction="0.1"
             p_gain="500"
             i_gain="1000"
             d_gain="10"

@@ -10,7 +10,7 @@
     <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
     <group name="door_opening_mechanism">
-        <chain base_link="alu_profile_link_right" tip_link="door_opening_mechanism_link_gripper_adapter"/>
+        <chain base_link="alu_profile_link_right" tip_link="door_opening_mechanism_link_freely_rotating_hook"/>
     </group>
 
     <group name="position_group">
@@ -22,7 +22,7 @@
         <group name="position_group" />
     </group>
 
-    <group_state name="home_base" group="mobile_base_arm">
+    <!-- <group_state name="home_base" group="mobile_base_arm">
         <joint name="door_opening_mechanism_joint_y_axis_slide" value="0"/>
         <joint name="door_opening_mechanism_joint_x_axis_slide" value="0"/>
         <joint name="door_opening_mechanism_joint_rotating_arm" value="0"/>
@@ -34,9 +34,9 @@
         <joint name="door_opening_mechanism_joint_x_axis_slide" value="0"/>
         <joint name="door_opening_mechanism_joint_rotating_arm" value="0"/>
         <joint name="position" value="1 0 0"/>
-    </group_state>
+    </group_state> -->
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
-    <end_effector name="door_opening_end_effector" parent_link="door_opening_mechanism_link_gripper_adapter" group="door_opening_mechanism"/>
+    <end_effector name="door_opening_end_effector" parent_link="door_opening_mechanism_link_freely_rotating_hook" group="door_opening_mechanism"/>
     <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
     <!-- <virtual_joint name="FixedBase" type="fixed" parent_frame="world" child_link="base_footprint" /> -->
     <virtual_joint name="position" type="planar" parent_frame="odom" child_link="base_footprint"/>
@@ -44,7 +44,6 @@
     <joint_property joint_name="position" property_name="min_translational_distance" value="0.01" />
     <joint_property joint_name="position" property_name="angular_distance_weight" value="0.5" />
     <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
-    <passive_joint name="door_opening_mechanism_joint_freely_rotating_hook"/>
     <passive_joint name="drawer_1_joint"/>
     <passive_joint name="drawer_2_joint"/>
     <passive_joint name="drawer_3_joint"/>
@@ -61,7 +60,7 @@
     <passive_joint name="rear_rightjoint_wheel"/>
     <passive_joint name="right_wheel_joint"/>
      <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
-    <disable_collisions link1="alu_profile_link_bottom" link2="alu_profile_link_left" reason="Never"/>
+   <disable_collisions link1="alu_profile_link_bottom" link2="alu_profile_link_left" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="alu_profile_link_right" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="alu_profile_link_top" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="back_realsense_camera_link" reason="Never"/>

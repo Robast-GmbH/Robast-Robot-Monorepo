@@ -63,9 +63,9 @@ class MinimalPublisher : public rclcpp::Node
   void timer_callback()
   {
     depthai_ros_msgs::msg::SpatialDetection fake_detection;
-    fake_detection.position.x = 0.2;   // -0.8
-    fake_detection.position.y = 0.4;   // 0.02
-    fake_detection.position.z = 0.3;   // 0.8
+    fake_detection.position.x = 0.2;    // -0.8
+    fake_detection.position.y = 0.4;    // 0.02
+    fake_detection.position.z = 0.35;   // 0.8
 
     auto msg = std::make_shared<depthai_ros_msgs::msg::SpatialDetectionArray>();
 
