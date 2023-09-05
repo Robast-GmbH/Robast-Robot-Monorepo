@@ -13,5 +13,5 @@ moveit_simple_controller_manager:
     joints:
       - door_opening_mechanism_joint_y_axis_slide
       - door_opening_mechanism_joint_x_axis_slide
-      - door_opening_mechanism_joint_tilting_hook
+      - door_opening_mechanism_joint_rotating_arm
       - position

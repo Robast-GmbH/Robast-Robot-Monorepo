@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
   std::vector<std::string> joint_names;
   std::vector<std::string> default_joint_names = {"door_opening_mechanism_joint_y_axis_slide",
                                                   "door_opening_mechanism_joint_x_axis_slide",
-                                                  "door_opening_mechanism_joint_tilting_hook"};
+                                                  "door_opening_mechanism_joint_rotating_arm"};
   // parameters
   ros_node->declare_parameter("joint_names", default_joint_names);
   joint_names = ros_node->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
