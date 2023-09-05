@@ -42,43 +42,49 @@
 #include "depthai_ros_msgs/msg/spatial_detection.hpp"
 #include "depthai_ros_msgs/msg/spatial_detection_array.hpp"
 
-// All source files that use ROS logging should define a file-specific
-// static const rclcpp::Logger named LOGGER, located at the top of the file
-// and inside the namespace with the narrowest scope (if there is one)
-static const rclcpp::Logger LOGGER = rclcpp::get_logger("move_group_demo");
+using namespace std::chrono_literals;
 
-int main(int argc, char** argv)
+class MinimalPublisher : public rclcpp::Node
+{
+ public:
+  MinimalPublisher() : Node("minimal_publisher")
+  {
+    auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
+    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+    qos.avoid_ros_namespace_conventions(false);
+
+    publisher_ =
+        this->create_publisher<depthai_ros_msgs::msg::SpatialDetectionArray>("stereo/door_handle_position", qos);
+    timer_ = this->create_wall_timer(500ms, std::bind(&MinimalPublisher::timer_callback, this));
+  }
+
+ private:
+  void timer_callback()
+  {
+    depthai_ros_msgs::msg::SpatialDetection fake_detection;
+    fake_detection.position.x = -0.2;   // -0.8
+    fake_detection.position.y = 0.02;   // 0.02
+    fake_detection.position.z = 0.1;    // 0.8
+
+    auto msg = std::make_shared<depthai_ros_msgs::msg::SpatialDetectionArray>();
+
+    msg->header.frame_id = "door_opening_mechanism_link_gripper_adapter";
+    msg->detections.push_back(fake_detection);
+
+    RCLCPP_INFO(this->get_logger(), "Publishing SpatialDetectionArray message!");
+    publisher_->publish(*msg);
+
+    this->timer_->cancel();
+  }
+  rclcpp::TimerBase::SharedPtr timer_;
+  rclcpp::Publisher<depthai_ros_msgs::msg::SpatialDetectionArray>::SharedPtr publisher_;
+};
+
+int main(int argc, char* argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::NodeOptions node_options;
-  node_options.automatically_declare_parameters_from_overrides(true);
-  auto move_group_node = rclcpp::Node::make_shared("move_group_interface_tutorial", node_options);
-
-  RCLCPP_INFO(LOGGER, "Starting door_opening_mechanism_simulation_send_fake_pose Node!");
-
-  auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
-  qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-  qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-  qos.avoid_ros_namespace_conventions(false);
-
-  rclcpp::Publisher<depthai_ros_msgs::msg::SpatialDetectionArray>::SharedPtr publisher_ =
-      move_group_node->create_publisher<depthai_ros_msgs::msg::SpatialDetectionArray>("stereo/door_handle_position",
-                                                                                      qos);
-
-  depthai_ros_msgs::msg::SpatialDetection fake_detection;
-  fake_detection.position.x = -0.2;   // -0.8
-  fake_detection.position.y = 0.02;   // 0.02
-  fake_detection.position.z = 0.1;    // 0.8
-
-  auto msg = std::make_shared<depthai_ros_msgs::msg::SpatialDetectionArray>();
-
-  msg->header.frame_id = "door_opening_mechanism_link_gripper_adapter";
-  msg->detections.push_back(fake_detection);
-
-  RCLCPP_INFO(LOGGER, "Publishing SpatialDetectionArray message!");
-
-  publisher_->publish(*msg);
-
+  rclcpp::spin(std::make_shared<MinimalPublisher>());
   rclcpp::shutdown();
   return 0;
 }
