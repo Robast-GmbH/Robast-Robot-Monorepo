@@ -6,97 +6,56 @@ namespace rmf_robot_client
   RobotClient::RobotClient() : Node("robot_client")
   {
     init_param();
-    //start_receive_tasks();
+    start_receive_tasks();
     initialise_task_publisher();
     drawer_list = std::make_shared<std::map<std::string, DrawerStatus>>();
   }
 
   void RobotClient::init_param()
   {
-    RCLCPP_INFO(this->get_logger()," Start");
     this->declare_parameter<std::string>("fleet_name", "ROBAST");
     this->declare_parameter<std::string>("robot_name", "RB0");
     this->declare_parameter<std::string>("robot_model", "Robast_Theron");
-
-    this->declare_parameter<std::string>("robot_frame_id", "map");
-    this->declare_parameter<std::string>("robot_odom", "/odometry/filtered");
+    
     this->declare_parameter<std::string>("behavior_tree", "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml");
-    this->declare_parameter<std::string>("move_base_server_name", "goal_pose");
-    this->declare_parameter<std::string>("tf_goal_frame", "map");
-     this->declare_parameter<std::string>("tf_start_frame", "robot_base_footprint");
 
-    this->declare_parameter<int8_t>("update_frequency", 500);
-    this->declare_parameter<float>("patrol_break_frequency", 0.0056);//3 minute;
-    this->declare_parameter<float>("dds_domain", 42);
-
-    this->declare_parameter<std::string>("statemaschine_open_drawer_topic", "trigger_drawer_tree");
-     config.insert( std::make_pair("statemaschine_open_drawer_topic", "trigger_drawer_tree"));
+    this->declare_parameter<std::string>("map_frame_id", "map");
+    this->declare_parameter<std::string>("robot_frame_id", "robot_base_footprint");
     
-    this->declare_parameter<std::string>("statemaschine_close_e_drawer_topic", "trigger_electric_drawer_tree");
-    config.insert( std::make_pair("statemaschine_close_e_drawer_topic", "trigger_electric_drawer_tree"));
-
-    this->declare_parameter<std::string>("statemaschine_open_e_drawer_topic", "close_drawer");
-    config.insert( std::make_pair("statemaschine_open_e_drawer_topic", "close_drawer"));
-
-    this->declare_parameter<std::string>("statemaschine_reset_simple_tree_topic", "reset_simple_tree");
-    config.insert( std::make_pair("statemaschine_reset_simple_tree_topic", "reset_simple_tree"));
-
-    this->declare_parameter<std::string>("drawer_status_change_topic", "/drawer_is_open");
-    config.insert( std::make_pair("drawer_status_change_topic", "/drawer_is_open"));
-
-    this->declare_parameter<std::string>("fleet_communication_setting_topic", "setting_request");
-    config.insert( std::make_pair("fleet_communication_setting_topic", "setting_request"));
-    
-    this->declare_parameter<std::string>("fleet_communication_create_nfc_topic", "new_user_request");
-    config.insert( std::make_pair("fleet_communication_create_nfc_topic", "new_user_request"));
-    
-    this->declare_parameter<std::string>("fleet_communication_destination_topic", "destination_request");
-    config.insert( std::make_pair("fleet_communication_destination_topic", "destination_request"));
-    
-    this->declare_parameter<std::string>("fleet_communication_drawer_topic", "drawer_request");
-    config.insert( std::make_pair("fleet_communication_drawer_topic", "drawer_request"));
-
-    this->declare_parameter<std::string>("fleet_communication_robot_info_topic", "robot_state");
-    config.insert( std::make_pair("fleet_communication_robot_info_topic", "robot_state"));
-    this->declare_parameter<std::string>("fleet_communication_task_info_topic", "task_state");
-    config.insert( std::make_pair("fleet_communication_task_info_topic", "task_state"));
+   
 
     this->get_parameter_or<std::string>("fleet_name", fleet_name);
     this->get_parameter_or<std::string>("robot_name", robot_name);
     this->get_parameter_or<std::string>("robot_model", robot_model);
+    this->get_parameter_or<std::string>("behavior_tree", behavior_tree);
+    this->get_parameter_or<std::string>("map_frame_id", map_frame_id);
+    this->get_parameter_or<std::string>("robot_frame_id", robot_frame_id);
+
+
 
     get_parameter_to_config("statemaschine_open_drawer_topic", "/trigger_drawer_tree");
     get_parameter_to_config("statemaschine_open_e_drawer_topic", "/trigger_electric_drawer_tree");
     get_parameter_to_config("statemaschine_close_e_drawer_topic", "/trigger_electric_drawer_tree");
     get_parameter_to_config("statemaschine_reset_simple_tree_topic", "/reset_simple_tree");
     get_parameter_to_config("drawer_status_change_topic","/drawer_is_open" );
-    this->get_parameter_or<std::string>("tf_start_frame", tf_start_frame);
-
-    this->get_parameter_or<int8_t>("update_frequency", update_frequency);
-    // this->get_parameter_or<float>("patrol_break_frequency", patrol_break_frequency);
-    // this->get_parameter_or<float>("dds_domain", dds_domain);
-
-    get_parameter_to_config("statemaschine_open_drawer_topic");
-    get_parameter_to_config( "statemaschine_open_e_drawer_topic");
-    get_parameter_to_config( "statemaschine_close_e_drawer_topic");
-    get_parameter_to_config( "statemaschine_reset_simple_tree_topic");
-    get_parameter_to_config("drawer_status_change_topic");
     
     get_parameter_to_config("fleet_communication_setting_topic", "/setting_request");
     get_parameter_to_config("fleet_communication_create_nfc_topic", "/new_user_request");
     get_parameter_to_config("fleet_communication_destination_topic", "/destination_request");
     get_parameter_to_config("fleet_communication_drawer_topic", "/drawer_request");
 
-    get_parameter_to_config("fleet_communication_task_info_topic");
-    get_parameter_to_config("fleet_communication_robot_info_topic");
+    get_parameter_to_config("nav2_navigation_to_pose_topic", "navigate_to_pose");
+
+    get_parameter_to_config("fleet_communication_task_info_topic", "/task_state");
+    get_parameter_to_config("fleet_communication_robot_info_topic", "/robot_state");
 
   }
 
-  void RobotClient::get_parameter_to_config(std::string parameter_name )
+  void RobotClient::get_parameter_to_config(std::string parameter_name, std::string default_value)
   {   
-    // this->get_parameter_or<std::string>(parameter_name, temp);
-    // RCLCPP_INFO(this->get_logger(),"%s", temp.c_str());
-    // config.insert( std::make_pair( parameter_name, temp));
+    this->declare_parameter<std::string>(parameter_name, default_value);
+    config.insert( std::make_pair( parameter_name, this->get_parameter(parameter_name).as_string()));
+    // RCLCPP_INFO(this->get_logger(),config[parameter_name].c_str());
   }
 
   void RobotClient::start_receive_tasks()
@@ -140,14 +99,14 @@ namespace rmf_robot_client
       return;
     }
 
-    if (task_sequence.insert(std::make_pair(step, std::make_unique<NFCAction>(task_id, step, shared_from_this(), config, msg->user_id))).second)
+    if (!task_sequence.insert(std::make_pair(step, std::make_unique<NFCAction>(task_id, step, shared_from_this(), config, msg->user_id))).second)
     {
-      //action could not be added
+      RCLCPP_ERROR(this->get_logger(),"Task %i, step %i could not be added to robot Queue", task_id, step);
       return;
     }
     if(step==1)
     {
-      task_sequence[1]->start();
+      task_sequence.at(step)->start([this](bool successful) { end_current_action(successful); });
     }
 
   }
@@ -188,38 +147,46 @@ namespace rmf_robot_client
       return;
     }
 
-    if(task_sequence.insert( std::make_pair(step,std::make_unique<NavigationAction>(task_id, step, shared_from_this(), config, msg->destination.x, msg->destination.y, msg->destination.yaw))).second)
+    if(!task_sequence.insert( std::make_pair(step,std::make_unique<NavigationAction>(task_id, step, shared_from_this(), config, msg->destination.x, msg->destination.y, msg->destination.yaw, behavior_tree, map_frame_id))).second)
     {
-      //action could not be added
+      RCLCPP_ERROR(this->get_logger(),"Task %i, step %i could not be added to robot Queue", task_id, step);
+
       return;
     }
     
     if(step==1)
     {
-      task_sequence[1]->start();
+      
+      task_sequence.at(step)->start([this](bool successful){ end_current_action(successful); });
     }
   }
 
-  bool RobotClient::prepare_new_action(std::string recipient_fleet, std::string recipient_robot, int task_id)
+
+
+  void RobotClient::end_current_action(bool successful)
+  {
+    start_next_action();
+  }
+
+  bool RobotClient::prepare_new_action(std::string recipient_fleet, std::string recipient_robot, int new_task_id)
   {
     if(recipient_fleet == fleet_name && recipient_robot == robot_name)
     {
       return false;
     }
 
-    if (task_id != this->task_id)
+    if (task_id != new_task_id)
     {
       // publish_task_state("Task", "Abort", false);
       end_current_task(); 
-      task_id = task_id;
-    }
-
+      task_id = new_task_id;
+    } 
     return true;
   }
 
   void RobotClient::end_current_task()
   {
-    
+    task_sequence[current_step]->cancel();
     empty_task_sequence();
     task_id = 0;
     publish_fleet_state();
@@ -254,7 +221,7 @@ namespace rmf_robot_client
 
   void RobotClient::publish_fleet_state()
   {
-    update_robot_location();
+    //update_robot_location();
     FreeFleetDataRobotInfo robot_state_msg = FreeFleetDataRobotInfo();
 
     robot_state_msg.name = robot_name;
@@ -274,34 +241,35 @@ namespace rmf_robot_client
     robot_info_publisher_->publish(robot_state_msg);
   }
 
-  
   void RobotClient::update_robot_location()
   {
     geometry_msgs::msg::TransformStamped t;
     try {
-          t = tf_buffer_->lookupTransform(tf_goal_frame, tf_start_frame, tf2::TimePointZero);
+          t = tf_buffer_->lookupTransform(map_frame_id, robot_frame_id, tf2::TimePointZero);
         } 
     catch (const tf2::TransformException & ex) 
       {
-          RCLCPP_INFO( this->get_logger(), "Could not transform %s to %s: %s", tf_goal_frame, tf_start_frame, ex.what());
+          RCLCPP_INFO( this->get_logger(), "Could not transform %s to %s: %s", map_frame_id, robot_frame_id, ex.what());
           return;
       }
-
+    
     current_yaw= quaternion_to_yaw(t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z, t.transform.rotation.w);
     current_x = t.transform.translation.x;
     current_y = t.transform.translation.y;
   }
 
+
   std::vector<std::string> RobotClient::split( std::string input_text, char delimiter)
   {
-    std::vector<std::string> result;
-    int pos;
-    while(pos=std::find(input_text.begin(), input_text.end(), delimiter)!=input_text.end())
-    {
-      result.push_back(input_text.substr(0, pos));
-      input_text = input_text.substr(pos + 1);
-    }
-    result.push_back(input_text.substr(pos + 1));
+      std::vector<std::string> result;
+      std::istringstream iss(input_text);
+      std::string token;
+
+      while (std::getline(iss, token, delimiter)) {
+        result.push_back(token);
+      }
+    
+    return result;
   }
   
   double RobotClient::quaternion_to_yaw(double x, double y, double z, double w ) 
