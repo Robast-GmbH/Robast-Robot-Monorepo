@@ -26,6 +26,7 @@
 #include "nfc_action.hpp"
 #include "drawer_action.hpp"
 #include "navigation_action.hpp"
+#include "drawer_status.hpp"
 
 namespace rmf_robot_client
 {
@@ -39,24 +40,17 @@ namespace rmf_robot_client
           using FreeFleetDataDrawerRequest = fleet_interfaces::msg::FreeFleetDataDrawerRequest;
           using FreeFleetDataDestinationRequest = fleet_interfaces::msg::FreeFleetDataDestinationRequest;
           using FreeFleetDataRobotInfo = fleet_interfaces::msg::FreeFleetDataRobotState;
+          using StdMsgBool = std_msgs::msg ::Bool;
 
         private:
           // Parameters
           std::string fleet_name;
           std::string robot_name;
           std::string robot_model;
-
-          std::string robot_frame_id;
-          std::string robot_odom;
+          
           std::string behavior_tree;
-          std::string move_base_server_name;
-          std::string tf_goal_frame;
-          std::string tf_start_frame;
-
-          u_int8_t update_frequency;
-          float patrol_break_frequency;
-          float dds_domain;
-
+          std::string map_frame_id;
+          std::string robot_frame_id;
           std::map<std::string, std::string> config;
 
           //fleet_server
@@ -87,6 +81,7 @@ namespace rmf_robot_client
           double current_x;
           double current_y;
           double current_yaw;
+          std::shared_ptr<std::map<std::string, DrawerStatus>> drawer_list;
 
           void init_param();
           void start_receive_tasks();

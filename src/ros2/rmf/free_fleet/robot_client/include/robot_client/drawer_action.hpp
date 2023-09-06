@@ -6,6 +6,9 @@
 
 #include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/bool.hpp"
+#include "drawer_status.hpp"
+#include <iostream>
+#include <map>
 
 namespace rmf_robot_client
 {
@@ -21,9 +24,12 @@ namespace rmf_robot_client
     int module_id;
     int drawer_id;
     std::vector<std::string> redistricted_user;
+    std::shared_ptr<std::map<std::string, DrawerStatus>> drawers;
+    
 
-    bool open_drawer();
-    bool close_drawer();
+    bool open_drawer(int module_id, int drawer_id);
+    bool close_drawer(int module_id, int drawer_id);
+    bool all_drawers_closed();
 
     // publisher
     rclcpp::Subscription<DrawerAddress>::SharedPtr drawer_status_subscriber_;
@@ -32,9 +38,10 @@ namespace rmf_robot_client
     rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_close_drawer_publisher_;
 
   public:
-    DrawerAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string,std::string> config, int drawer_int, int module_id, bool is_edrawer, std::vector<std::string> redistricted_user);
-    bool start();
+    DrawerAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string,std::string> config, std::shared_ptr<std::map<std::string, DrawerStatus>> drawers, int drawer_int, int module_id, bool is_edrawer, std::vector<std::string> redistricted_user);
+    bool start(std::function<void(bool)> next_action_callback);
     bool cancel();
+    std::string get_type();
     bool receive_new_settings(std::string command, std::string value);
     //~DrawerAction();
   };
