@@ -6,17 +6,35 @@ Panels:
       Expanded:
         - /MotionPlanning1
         - /MarkerArray1
+        - /Motion Planning Tasks1
       Splitter Ratio: 0.5
     Tree Height: 159
   - Class: rviz_common/Help
     Name: Help
-  - Class: rviz_common/Views
-    Expanded:
-      - /Current View1
-    Name: Views
-    Splitter Ratio: 0.5
   - Class: rviz_visual_tools/RvizVisualToolsGui
     Name: RvizVisualToolsGui
+  - Class: moveit_task_constructor/Motion Planning Tasks
+    Global Settings:
+      Task View Settings:
+        Show Computation Times: true
+        Task Expansion: All Expanded
+    Name: Motion Planning Tasks
+    Tasks View:
+      property_splitter:
+        - 197
+        - 121
+      solution_sorting:
+        column: 0
+        order: 1
+      solutions_splitter:
+        - 397
+        - 198
+      solutions_view_columns: ~
+      tasks_view_columns:
+        - 295
+        - 26
+        - 26
+        - 48
 Visualization Manager:
   Class: ""
   Displays:
