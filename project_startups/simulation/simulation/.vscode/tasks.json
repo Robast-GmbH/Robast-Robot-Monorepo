@@ -171,6 +171,17 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start door_opening_mechanism_mtc",
+                        "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_mtc door_opening_mechanism_mtc_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start door_opening_mechanism_simulation_send_fake_pose",
                         "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_simulation door_opening_mechanism_simulation_send_fake_pose_launch.py",
                         "problemMatcher": [],
@@ -209,6 +220,17 @@
                                 "start tiplu_sim",
                                 "start moveit_door_opening_mechanism",
                                 "start door_opening_mechanism_simulation",
+                                "start door_opening_mechanism_gazebo_trajectory_controller_manager"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "startup_sim_with_door_opening_mtc",
+                        "detail": "Starts tiplu_sim, moveit_door_opening_mechanism, door_opening_mechanism_mtc, door_opening_mechanism_gazebo_trajectory_controller_manager",
+                        "dependsOn": [
+                                "start tiplu_sim",
+                                "start moveit_door_opening_mechanism",
+                                "start door_opening_mechanism_mtc",
                                 "start door_opening_mechanism_gazebo_trajectory_controller_manager"
                         ],
                         "problemMatcher": []
