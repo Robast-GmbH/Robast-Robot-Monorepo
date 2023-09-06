@@ -14,8 +14,9 @@ namespace rmf_robot_client
       NFCAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string,std::string> config, int user_id);
       //~NFCAction();
 
-      bool start();
+      bool start(std::function<void(bool)> next_action_callback);
       bool cancel();
+      std::string get_type();
       bool receive_new_settings(std::string command, std::string value);
   };
 }// namespace robot_client

@@ -8,7 +8,7 @@ namespace rmf_robot_client
     this->user_id = user_id;
   }
 
-  bool NFCAction::start()
+  bool NFCAction::start(std::function<void(bool)> next_action_callback)
   {
     return true;
   }
@@ -21,5 +21,10 @@ namespace rmf_robot_client
   bool NFCAction::receive_new_settings(std::string command, std::string value)
   {
 
+  }
+  
+  std::string NFCAction::get_type()
+  {
+    return "NFC_ACTION";
   }
 }

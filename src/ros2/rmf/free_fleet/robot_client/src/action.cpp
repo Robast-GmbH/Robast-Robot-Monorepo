@@ -10,6 +10,13 @@ namespace rmf_robot_client
     this->step = step;
     this->ros_node = ros_node;
     this->config = config;
+    
+    rclcpp::QoS qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
+    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+    qos.avoid_ros_namespace_conventions(false);
+    
+    task_info_publisher = ros_node->create_publisher<FreeFleetDataTaskInfo>(config["fleet_communication_task_info_topic"], qos);
   }
 
   int Action::get_step()
@@ -29,11 +36,7 @@ namespace rmf_robot_client
     task_state_msg.status = status;
     task_state_msg.status_message = message;
     task_state_msg.completed = completed;
-    //task_info_publisher->publish(task_state_msg);
-    // if (completed)
-    // {
-    //   start_next_action();
-    // }
+    task_info_publisher->publish(task_state_msg);
   }
 
 }

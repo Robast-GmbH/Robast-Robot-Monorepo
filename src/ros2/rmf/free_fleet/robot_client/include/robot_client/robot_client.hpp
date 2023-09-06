@@ -60,6 +60,7 @@ namespace rmf_robot_client
           rclcpp::Subscription<FreeFleetDataDestinationRequest>::SharedPtr navigation_request_subscriber_;
 
           rclcpp::Publisher<FreeFleetDataRobotInfo>::SharedPtr robot_info_publisher_;
+          rclcpp::Publisher<StdMsgBool>::SharedPtr reset_simple_tree_publisher_;
 
           //NFC
 
@@ -92,11 +93,12 @@ namespace rmf_robot_client
           void receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg);
           bool prepare_new_action(std::string recipient_fleet, std::string recipient_robot, int task_id);
           void end_current_task();
+          void end_current_action(bool successful);
           void empty_task_sequence();
           void start_next_action();
           void publish_fleet_state();
           void update_robot_location();
-          void get_parameter_to_config(std::string parameter_name);
+          void get_parameter_to_config(std::string parameter_name, std::string default_value);
 
           //support
           std::vector<std::string> split(std::string input_text, char delimiter);
