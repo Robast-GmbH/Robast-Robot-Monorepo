@@ -69,15 +69,13 @@ def generate_launch_description():
             "base_link_frame":"robot_base_footprint",
             "world_frame":"robot_odom",
             "odom0": "/robot/robotnik_base_control/odom",
-            "imu0": "/robot/imu/data"        
+            "imu0": "/robot/vectornav/imu/data"        
         }
         configured_params = RewrittenYaml(
             source_file=params_file,
             root_key=namespace,
             param_rewrites=param_substitutions,
             convert_types=True)
-
-
 
     robot_localization_node = Node(
         package="robot_localization",

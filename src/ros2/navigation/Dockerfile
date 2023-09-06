@@ -1,4 +1,4 @@
-FROM ros:humble as devel
+FROM ros:humble-perception as devel
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
@@ -40,16 +40,6 @@ RUN apt-get update && apt-get install -y \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
   # General ros stuff
-
-RUN apt-get update && apt-get install -y \
-    curl \
-    gnupg2 \
-  && curl http://repo.ros2.org/repos.key | apt-key add - \
-  && sh -c 'echo "deb [arch=amd64,arm64] http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list' \
-  && apt-get update && apt-get install -y \
-    ros-${ROS_DISTRO}-desktop \
-    python3-argcomplete \
-  && rm -rf /var/lib/apt/lists/*
 
 #instal to use the nvidia gpu in the docker
 RUN apt-get update && apt-get install -y \
@@ -142,7 +132,7 @@ WORKDIR /mppi
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/${ROS_DISTRO}/ --packages-select nav2_mppi_controller
+  colcon build --install-base /robast/mppi/ --packages-select nav2_mppi_controller
 
 ############################## Release ##################################
 FROM ros:humble-perception as release
@@ -158,6 +148,7 @@ RUN apt-get update && apt-get install -y \
   libegl1 \
   libxext6 \
   libx11-6 \
+  vim \
   && rm -rf /var/lib/apt/lists/* 
 
 COPY --from=build /opt/ros /opt/ros
@@ -184,7 +175,8 @@ ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
 RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc \
+  && echo "if [ -f /robast/mppi/setup.bash ]; then source /robast/mppi/setup.bash; fi" >> ~root/.bashrc
 
 ENV is_simulation=False
 ENV config_directory=config
