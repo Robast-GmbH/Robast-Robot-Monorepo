@@ -20,6 +20,7 @@ namespace rmf_robot_client
       using NavigateToPose = nav2_msgs::action::NavigateToPose;
       using GoalHandleNavigateToPose = rclcpp_action::ClientGoalHandle<NavigateToPose>;
       rclcpp_action::Client<NavigateToPose>::SharedPtr navigate_to_pose_client_;
+      GoalHandleNavigateToPose::SharedPtr current_action_goal_handle;
 
       void start_navigation();
       void goal_response_callback(std::shared_future<GoalHandleNavigateToPose::SharedPtr> future);
