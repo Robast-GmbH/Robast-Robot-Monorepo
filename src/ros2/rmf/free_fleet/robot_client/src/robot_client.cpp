@@ -16,7 +16,7 @@ namespace rmf_robot_client
     this->declare_parameter<std::string>("fleet_name", "ROBAST");
     this->declare_parameter<std::string>("robot_name", "RB0");
     this->declare_parameter<std::string>("robot_model", "Robast_Theron");
-    
+
     this->declare_parameter<std::string>("behavior_tree", "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml");
 
     this->declare_parameter<std::string>("map_frame_id", "map");
@@ -38,16 +38,18 @@ namespace rmf_robot_client
     get_parameter_to_config("statemaschine_close_e_drawer_topic", "/trigger_electric_drawer_tree");
     get_parameter_to_config("statemaschine_reset_simple_tree_topic", "/reset_simple_tree");
     get_parameter_to_config("drawer_status_change_topic","/drawer_is_open" );
-    
+
+    get_parameter_to_config("nfc_write_usertag_to_card_action_topic","/create_user");
+
     get_parameter_to_config("fleet_communication_setting_topic", "/setting_request");
     get_parameter_to_config("fleet_communication_create_nfc_topic", "/new_user_request");
     get_parameter_to_config("fleet_communication_destination_topic", "/destination_request");
     get_parameter_to_config("fleet_communication_drawer_topic", "/drawer_request");
 
-    get_parameter_to_config("nav2_navigation_to_pose_topic", "navigate_to_pose");
-
     get_parameter_to_config("fleet_communication_task_info_topic", "/task_state");
-    get_parameter_to_config("fleet_communication_robot_info_topic", "/robot_state");
+    get_parameter_to_config("fleet_communication_robot_info_topic", "/robot_state"); 
+    
+    get_parameter_to_config("nav2_navigation_to_pose_action_topic", "navigate_to_pose");
 
   }
 

@@ -2,8 +2,8 @@ FROM ros:humble-ros-base-jammy as devel
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+  echo robast:robast | chpasswd && \
+  echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV USER robast
 ARG DEBIAN_FRONTEND=
 
@@ -28,9 +28,6 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt install ros-${ROS_DISTRO}-ros2-socketcan -y
 
-#TODO: @unknown should web stff be realy part of this project?
-RUN pip3 install fastapi -U \ 
-  httpx 
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
@@ -71,10 +68,10 @@ COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
 RUN apt-get update && apt-get upgrade -y &&\
-    apt-get install -y \
-    ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
-    ros-${ROS_DISTRO}-ros2-socketcan \
-    libboost-all-dev
+  apt-get install -y \
+  ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
+  ros-${ROS_DISTRO}-ros2-socketcan \
+  libboost-all-dev
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration

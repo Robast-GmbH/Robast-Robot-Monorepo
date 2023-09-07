@@ -66,7 +66,7 @@ namespace rmf_robot_client
 
           // rclcpp::Subscription<StdMsgString>::SharedPtr authenticated_user_;
           // rclcpp::Publisher<StdMsgBool>::SharedPtr controll_nfc_modules_publisher_;
-          //self.create_nfc_action_client= ActionClient(self, CreateUserNfcTag,"/create_user")
+        
         
 
 

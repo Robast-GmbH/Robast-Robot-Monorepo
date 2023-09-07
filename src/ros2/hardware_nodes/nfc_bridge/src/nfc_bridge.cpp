@@ -7,8 +7,6 @@ namespace nfc_bridge
   {
     using namespace std::placeholders;
     this->serial_connector_ = new serial_helper::SerialHelper(serial_port_path);
-    // this->db_connector_ = new db_helper::PostgreSqlHelper("robot", "123456789", "10.10.23.9", "robast");
-    //this->db_connector_ = new db_helper::PostgreSqlHelper("robast", "robast", "127.0.0.1", "RobastDB");
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);

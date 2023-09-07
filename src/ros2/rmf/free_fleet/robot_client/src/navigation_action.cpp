@@ -8,7 +8,7 @@ namespace rmf_robot_client
     this->y = y;
     this->yaw = yaw;
     this->behavior_tree = behavior_tree;
-    navigate_to_pose_client_ = rclcpp_action::create_client<NavigateToPose>(ros_node, config["nav2_navigation_to_pose_topic"]);
+    navigate_to_pose_client_ = rclcpp_action::create_client<NavigateToPose>(ros_node, config["nav2_navigation_to_pose_action_topic"]);
   }
   
   bool NavigationAction::start(std::function<void(bool)> next_action_callback)
@@ -18,13 +18,15 @@ namespace rmf_robot_client
      if (!this->navigate_to_pose_client_->wait_for_action_server()) {
       RCLCPP_ERROR(ros_node->get_logger(), "Action server not available after waiting");
       //cancel task
+      return false;
      }
      start_navigation();
+     return true;
   }
-  
+
   void NavigationAction::start_navigation()
   {
-    auto pose_msg = NavigateToPose::Goal();
+    NavigateToPose::Goal pose_msg = NavigateToPose::Goal();
     pose_msg.pose.header.frame_id= frame_id;
     pose_msg.pose.header.stamp = ros_node->now();
     pose_msg.pose.pose.position.x = x;
@@ -39,7 +41,7 @@ namespace rmf_robot_client
 
     pose_msg.behavior_tree = behavior_tree;
 
-    auto send_goal_options = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
+    rclcpp_action::Client<NavigateToPose>::SendGoalOptions send_goal_options = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
     
     //send_goal_options.goal_response_callback = std::bind(&NavigationAction::goal_response_callback, this, std::placeholders::_1);
     send_goal_options.feedback_callback = std::bind(&NavigationAction::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
@@ -50,6 +52,7 @@ namespace rmf_robot_client
 
   bool NavigationAction::cancel()
   {
+    this->navigate_to_pose_client_->async_cancel_goal(current_action_goal_handle);
     publish_task_state("Canceld", "", true);
     finish_action(false);
     return true;
@@ -58,8 +61,9 @@ namespace rmf_robot_client
 
   void NavigationAction::goal_response_callback(std::shared_future<GoalHandleNavigateToPose::SharedPtr> future)
   {
-    auto goal_handle = future.get();
-    if (!goal_handle) {
+    current_action_goal_handle= future.get();
+    if (!current_action_goal_handle)
+    {
       RCLCPP_ERROR(ros_node->get_logger(), "Goal was rejected by server");
       publish_task_state("Canceld", "could not plan route to goal pose", true);
       finish_action(false);
