@@ -57,7 +57,7 @@ namespace rmf_robot_client
   {   
     this->declare_parameter<std::string>(parameter_name, default_value);
     config.insert( std::make_pair( parameter_name, this->get_parameter(parameter_name).as_string()));
-    // RCLCPP_INFO(this->get_logger(),config[parameter_name].c_str());
+    RCLCPP_INFO(this->get_logger(),config[parameter_name].c_str());
   }
 
   void RobotClient::start_receive_tasks()
@@ -81,8 +81,8 @@ namespace rmf_robot_client
     qos.avoid_ros_namespace_conventions(false);
 
     robot_info_publisher_ = this->create_publisher<FreeFleetDataRobotInfo>(config["fleet_communication_robot_info_topic"], qos);
-    //publish_robot_info_timer= this->create_wall_timer(std::chrono::milliseconds(update_frequency), std::bind(&RobotClient::publish_fleet_state, this));
-    reset_simple_tree_publisher_ = this->create_publisher<StdMsgBool>(config["ros_reset_simple_tree_topic"], qos);
+    publish_robot_info_timer= this->create_wall_timer(std::chrono::milliseconds(update_frequency), std::bind(&RobotClient::publish_fleet_state, this));
+    reset_simple_tree_publisher_ = this->create_publisher<StdMsgBool>(config["statemaschine_reset_simple_tree_topic"], qos);
   }
 
   void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
