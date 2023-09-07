@@ -12,8 +12,8 @@
     <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_elements/basic_box.urdf.xacro" />
     <xacro:basic_box
         parent="${prefix}${parent}"
-        joint_name="${prefix}hook_joint_${suffix}"
-        link_name="${prefix}hook_base_link_${suffix}"
+        joint_name="${prefix}hook_joint${suffix}"
+        link_name="${prefix}hook_base_link${suffix}"
         m="0.1"
         x="0.06"
         y="0.01"
@@ -25,9 +25,9 @@
     </xacro:basic_box>
 
     <xacro:basic_box
-        parent="${prefix}hook_base_link_${suffix}"
-        joint_name="${prefix}hook_joint_front_side_${suffix}"
-        link_name="${prefix}hook_link_front_side_${suffix}"
+        parent="${prefix}hook_base_link${suffix}"
+        joint_name="${prefix}hook_joint_front_side${suffix}"
+        link_name="${prefix}hook_link_front_side${suffix}"
         m="0.1"
         x="0.008"
         y="0.03"
@@ -39,9 +39,9 @@
     </xacro:basic_box>
 
     <xacro:basic_box
-        parent="${prefix}hook_base_link_${suffix}"
-        joint_name="${prefix}hook_joint_back_side_${suffix}"
-        link_name="${prefix}hook_link_back_side_${suffix}"
+        parent="${prefix}hook_base_link${suffix}"
+        joint_name="${prefix}hook_joint_back_side${suffix}"
+        link_name="${prefix}hook_link_back_side${suffix}"
         m="0.1"
         x="0.008"
         y="0.03"
