@@ -80,7 +80,7 @@ namespace rmf_robot_client
     return true;
   }
   
-  bool NFCAction::receive_new_settings(std::string command, std::string value)
+  bool NFCAction::receive_new_settings(std::string command, std::vector<std::string> value)
   {
 
   }

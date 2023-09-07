@@ -34,7 +34,7 @@ namespace rmf_robot_client
       bool start(std::function<void(bool)> next_action_callback);
       bool cancel();
       std::string get_type();
-      bool receive_new_settings(std::string command, std::string value);
+      bool receive_new_settings(std::string command, std::vector<std::string> value);
 
   };
 }// namespace robot_client

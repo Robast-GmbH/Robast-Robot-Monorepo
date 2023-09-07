@@ -53,13 +53,13 @@ class RestInterface():
         @self.app.post("/settings/drawer/close")
         def close_drawer(robot:schemas.Robot, drawer_id:Annotated[int,Body()], module_id:Annotated[int,Body()], e_drawer:Annotated[bool,Body()]):
             if e_drawer:
-                self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name,"drawer",str(module_id) )
+                self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name,"drawer","Closed#"+str(module_id)+"#"+str(drawer_id))
             else:
                     raise HTTPException(status_code=423, detail="drawer has to be closed manually")
             
         @self.app.post("/settings/drawer/reset")
         def reset_drawer(robot:schemas.Robot):
-                self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name, "drawer", "reset" )
+                self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name, "reset_tree", "e-drawer" )
 
         
         @self.app.post("/settings/drawer/completed")

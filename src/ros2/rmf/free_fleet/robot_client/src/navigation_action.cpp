@@ -85,7 +85,7 @@ namespace rmf_robot_client
     finish_action(true);
   }
 
-  bool NavigationAction::receive_new_settings(std::string command, std::string value)
+  bool NavigationAction::receive_new_settings(std::string command, std::vector<std::string> value)
   {
 
   }

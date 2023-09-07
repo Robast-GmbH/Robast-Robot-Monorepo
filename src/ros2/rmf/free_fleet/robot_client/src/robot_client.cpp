@@ -57,7 +57,7 @@ namespace rmf_robot_client
   {   
     this->declare_parameter<std::string>(parameter_name, default_value);
     config.insert( std::make_pair( parameter_name, this->get_parameter(parameter_name).as_string()));
-    RCLCPP_INFO(this->get_logger(),config[parameter_name].c_str());
+    //RCLCPP_INFO(this->get_logger(),config[parameter_name].c_str());
   }
 
   void RobotClient::start_receive_tasks()
@@ -81,19 +81,37 @@ namespace rmf_robot_client
     qos.avoid_ros_namespace_conventions(false);
 
     robot_info_publisher_ = this->create_publisher<FreeFleetDataRobotInfo>(config["fleet_communication_robot_info_topic"], qos);
-    publish_robot_info_timer= this->create_wall_timer(std::chrono::milliseconds(update_frequency), std::bind(&RobotClient::publish_fleet_state, this));
+    publish_robot_info_timer= this->create_wall_timer(std::chrono::milliseconds(2000), std::bind(&RobotClient::publish_fleet_state, this));
     reset_simple_tree_publisher_ = this->create_publisher<StdMsgBool>(config["statemaschine_reset_simple_tree_topic"], qos);
   }
 
   void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
   {
     //  global settings (reset tree,..) 
-    task_sequence.at(current_step)->receive_new_settings(msg->command, msg->value);//task settings
+
+    RCLCPP_INFO( this->get_logger(), "find settings %i", current_step);
+    if(msg->command=="reset_tree")
+    {
+      StdMsgBool msg = StdMsgBool();
+      msg.data = true;
+      reset_simple_tree_publisher_->publish(msg);
+    }
+    else if (current_step==0|| current_step>task_sequence.size())
+    {
+       RCLCPP_INFO( this->get_logger(), "invalid request");
+       return;
+    }
+    else
+    {
+      task_sequence.at(current_step)->receive_new_settings(msg->command, split(msg->value,'#'));//task settings
+    }
+    RCLCPP_INFO( this->get_logger(), "settings done");
   }
 
   void RobotClient::receive_create_nfc_task(const FreeFleetDataCreateNfcRequest::ConstPtr msg)
   {
     std::vector<std::string> task_header= split(msg->task_id, '#');
+    //check for numeric
     int task_id = stoi(task_header[0]);
     int step = stoi(task_header[1]);
     if (!prepare_new_action(msg->fleet_name, msg->robot_name, task_id))
@@ -115,11 +133,12 @@ namespace rmf_robot_client
 
   void RobotClient::receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg)
   {
-    RCLCPP_INFO( this->get_logger(), "drawer_ recived");
+    RCLCPP_INFO( this->get_logger(), "drawer_received");
 
     std::vector<std::string> task_header= split(msg->task_id, '#');
-    int task_id = stoi(task_header[0]);
-    int step = stoi(task_header[1]);
+
+    int task_id = std::stoi(task_header[0]);
+    int step = std::stoi(task_header[1]);
    
     if(!prepare_new_action(msg->fleet_name, msg->robot_name, task_id))
     {
@@ -132,10 +151,12 @@ namespace rmf_robot_client
       RCLCPP_ERROR(this->get_logger(),"Task %i, step %i could not be added to robot Queue", task_id, step);
       return;
     }
-    
+   
     if(step==1)
     {
-      task_sequence.at(step)->start([this](bool successful) { end_current_action(successful); });
+      current_step = step;
+      task_sequence.at(step)->start([this](bool successful)
+                                    { end_current_action(successful); });
     }
   }
 
@@ -158,12 +179,11 @@ namespace rmf_robot_client
     
     if(step==1)
     {
-      
-      task_sequence.at(step)->start([this](bool successful){ end_current_action(successful); });
+      current_step = step;
+      task_sequence.at(step)->start([this](bool successful)
+                                    { end_current_action(successful); });
     }
   }
-
-
 
   void RobotClient::end_current_action(bool successful)
   {
@@ -177,12 +197,14 @@ namespace rmf_robot_client
       return false;
     }
 
-    if (task_id != new_task_id)
+    if (task_id != new_task_id && task_id!=0)
     {
+
       // publish_task_state("Task", "Abort", false);
       end_current_task(); 
-      task_id = new_task_id;
-    } 
+      
+    }
+    task_id = new_task_id;
     return true;
   }
 
