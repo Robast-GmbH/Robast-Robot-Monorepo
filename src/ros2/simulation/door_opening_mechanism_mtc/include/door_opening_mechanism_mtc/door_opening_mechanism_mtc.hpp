@@ -36,9 +36,9 @@ namespace door_opening_mechanism_mtc
 
     void create_subscriptions();
 
-    mtc::Task create_task();
+    mtc::Task create_task(geometry_msgs::msg::PoseStamped target_pose);
 
-    void do_task();
+    void do_task(geometry_msgs::msg::PoseStamped target_pose);
 
     void setup_planning_scene();
 

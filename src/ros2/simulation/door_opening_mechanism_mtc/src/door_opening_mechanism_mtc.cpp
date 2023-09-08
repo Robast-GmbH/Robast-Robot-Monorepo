@@ -87,9 +87,10 @@ namespace door_opening_mechanism_mtc
     geometry_msgs::msg::PoseStamped pose_in_source_frame;
     pose_in_source_frame.header = door_handle_poses->header;
     pose_in_source_frame.pose.position = door_handle_poses->detections[0].position;
-    geometry_msgs::msg::PoseStamped target_pose = convert_pose_to_target_reference_frame(pose_in_source_frame, "odom");
+    geometry_msgs::msg::PoseStamped target_pose =
+        convert_pose_to_target_reference_frame(pose_in_source_frame, "base_footprint");
 
-    do_task();
+    do_task(target_pose);
 
     // move_robot_in_simulation_to_target_pose(target_pose); //TODO: uncomment this
   }
@@ -113,10 +114,11 @@ namespace door_opening_mechanism_mtc
     psi.applyCollisionObject(object);
   }
 
-  void DoorMechanismMtc::do_task()
+  void DoorMechanismMtc::do_task(geometry_msgs::msg::PoseStamped target_pose)
   {
-    _task = create_task();
+    _task = create_task(target_pose);
 
+    RCLCPP_INFO(_LOGGER, "Initializing task!");
     try
     {
       _task.init();
@@ -127,24 +129,27 @@ namespace door_opening_mechanism_mtc
       return;
     }
 
+    RCLCPP_INFO(_LOGGER, "Planning task!");
     if (!_task.plan(5 /* max_solutions */))
     {
-      RCLCPP_ERROR_STREAM(_LOGGER, "Task planning failed");
+      RCLCPP_ERROR(_LOGGER, "Task planning failed");
       return;
     }
+    RCLCPP_INFO(_LOGGER, "Publishing task solutions!");
     _task.introspection().publishSolution(*_task.solutions().front());
 
+    RCLCPP_INFO(_LOGGER, "Executing task!");
     auto result = _task.execute(*_task.solutions().front());
     if (result.val != moveit_msgs::msg::MoveItErrorCodes::SUCCESS)
     {
-      RCLCPP_ERROR_STREAM(_LOGGER, "Task execution failed");
+      RCLCPP_ERROR(_LOGGER, "Task execution failed");
       return;
     }
 
     return;
   }
 
-  mtc::Task DoorMechanismMtc::create_task()
+  mtc::Task DoorMechanismMtc::create_task(geometry_msgs::msg::PoseStamped target_pose)
   {
     RCLCPP_INFO(_LOGGER, "Creating task!");
 
@@ -152,14 +157,14 @@ namespace door_opening_mechanism_mtc
     task.stages()->setName("approach door handle task");
     task.loadRobotModel(shared_from_this());
 
-    const auto& mobile_base_group_name = "mobile_base_arm";
-    const auto& manipulator_group_name = "door_opening_mechanism";
-    const auto& hand_frame = "panda_hand";   // TODO: What is this for?
+    const auto& group_name = "mobile_base_arm";   // mobile_base_arm or door_opening_mechanism
+    const auto& end_effector_name = "door_opening_end_effector";
+    const auto& end_effector_parent_link = "door_opening_mechanism_link_freely_rotating_hook";
 
     // Set task properties
-    task.setProperty("group", mobile_base_group_name);
-    task.setProperty("eef", manipulator_group_name);
-    task.setProperty("ik_frame", hand_frame);   // TODO: What is this for?
+    task.setProperty("group", group_name);
+    task.setProperty("eef", end_effector_name);
+    task.setProperty("ik_frame", end_effector_parent_link);
 
     mtc::Stage* current_state_ptr = nullptr;   // Forward current_state on to grasp pose generator
     auto stage_state_current = std::make_unique<mtc::stages::CurrentState>("current");
@@ -174,10 +179,52 @@ namespace door_opening_mechanism_mtc
     cartesian_planner->setMaxAccelerationScalingFactor(1.0);
     cartesian_planner->setStepSize(.01);
 
-    auto stage_open_hand = std::make_unique<mtc::stages::MoveTo>("open hand", interpolation_planner);
-    stage_open_hand->setGroup(mobile_base_group_name);
-    stage_open_hand->setGoal("test_state");
+    auto stage_open_hand = std::make_unique<mtc::stages::MoveTo>("Starting position", interpolation_planner);
+    stage_open_hand->setGroup(group_name);
+    stage_open_hand->setGoal("starting_position");
+    stage_open_hand->setIKFrame(end_effector_parent_link);
+    stage_open_hand->properties().configureInitFrom(mtc::Stage::PARENT);
     task.add(std::move(stage_open_hand));
+
+    // auto stage_move_to_pick = std::make_unique<mtc::stages::Connect>(
+    //     "move to pick", mtc::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
+    // // clang-format on
+    // stage_move_to_pick->setTimeout(5.0);
+    // stage_move_to_pick->properties().configureInitFrom(mtc::Stage::PARENT);
+    // task.add(std::move(stage_move_to_pick));
+
+    // auto stage_move_to_target_pose = std::make_unique<mtc::stages::MoveTo>("Move to target pose", sampling_planner);
+    // stage_move_to_target_pose->setGroup(group_name);
+    // stage_move_to_target_pose->setIKFrame(target_pose);
+    // stage_move_to_target_pose->setGoal(target_pose);
+    // task.add(std::move(stage_move_to_target_pose));
+
+    // auto grasp = std::make_unique<mtc::SerialContainer>("pick object");
+    // task.properties().exposeTo(grasp->properties(), {"eef", "group", "ik_frame"});
+    // // clang-format off
+    // grasp->properties().configureInitFrom(mtc::Stage::PARENT,
+    //                                       { "eef", "group", "ik_frame" });
+
+    /****************************************************
+     *                  Generate Grasp Pose              *
+     ****************************************************/
+    {
+      // Sample grasp pose
+      // auto stage = std::make_unique<mtc::stages::GeneratePose>("Generate handle grasp pose");
+      // stage->properties().configureInitFrom(mtc::Stage::PARENT);
+      // stage->properties().set("marker_ns", "grasp_pose");
+      // stage->setPose(target_pose);
+      // stage->setMonitoredStage(current_state_ptr);   // Hook into current state
+
+      // auto wrapper = std::make_unique<mtc::stages::ComputeIK>("grasp pose IK", std::move(stage));
+      // wrapper->setMaxIKSolutions(8);
+      // wrapper->setMinSolutionDistance(0.1);
+      // wrapper->setIKFrame(target_pose);
+      // wrapper->properties().configureInitFrom(mtc::Stage::PARENT, {"eef", "group"});
+      // wrapper->properties().configureInitFrom(mtc::Stage::INTERFACE, {"target_pose"});
+      // grasp->insert(std::move(wrapper));
+      // task.add(std::move(stage));
+    }
 
     return task;
   }
