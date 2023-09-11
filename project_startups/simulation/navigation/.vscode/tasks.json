@@ -95,11 +95,12 @@
                 },
                 {
                         "label": "default_startup_robot_localization",
-                        "detail": "Starts Nav, slam, robot_localization for odom->base, rviz",
+                        "detail": "Starts Nav, slam, robot_localization for odom->base, behavior_tree_server_collection, rviz",
                         "dependsOn": [
                                 "start slam_toolbox",
                                 "start nav_without_localization",
                                 "start robot_localization",
+                                "start behavior_tree_server_collection",
                                 "start rviz"
                         ],
                         "problemMatcher": []
@@ -180,7 +181,43 @@
                                 "echo": false,
                                 "focus": true
                         }
-                },   
+                },
+                {
+                        "type": "shell",
+                        "label": "start nav_without_localization_with_bt_server_collection",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup nav_without_localization_with_bt_server_collection_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start behavior_tree_server_collection",
+                        "command": "source /workspace/install/setup.bash; ros2 launch behavior_tree_server_collection bt_server_collection_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start clicked_point_to_nav_pose",
+                        "command": "source /workspace/install/setup.bash; ros2 launch clicked_point_to_nav_pose clicked_point_to_nav_pose_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "temporary task to build mppi",
+                        "command": "cd /workspace_nav2; colcon build --packages-select nav2_mppi_controller",
+                        "problemMatcher": []
+                },      
                 {
                         "type": "shell",
                         "label": "start nav_without_localization_with_door_bells_launch",
