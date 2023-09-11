@@ -12,4 +12,5 @@ electrical_drawer_tree_initiator:
       - initialize_led_vector_action_bt_node
       - publish_led_action_bt_node
       - partial_colorize_leds_action_bt_node
+      - get_blackboard_value_action_bt_node
     bt_path: "/workspace/install/drawer_sm/trees/trees/default_electrical_drawer.xml"

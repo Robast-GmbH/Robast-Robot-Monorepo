@@ -58,6 +58,10 @@
             <input_port name="size" default="128">uint8_t</input_port>
             <output_port name="led_vector" default="{leds}"/>
         </Action>
+        <Action ID="GetBlackboardEntry">
+            <input_port name="key" default="drawer_address">string</input_port>
+            <output_port name="value" default="{drawer}"/>
+        </Action>
     </TreeNodesModel>
 </root>
 

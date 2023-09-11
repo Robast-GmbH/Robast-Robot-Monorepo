@@ -102,6 +102,9 @@ list(APPEND plugin_libs partial_colorize_leds_action_bt_node)
 add_library(publish_led_action_bt_node SHARED src/action/publish_led_action.cpp)
 list(APPEND plugin_libs publish_led_action_bt_node)
 
+add_library(get_blackboard_value_action_bt_node SHARED src/action/get_blackboard_value_action.cpp)
+list(APPEND plugin_libs get_blackboard_value_action_bt_node)
+
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
   target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)

@@ -80,6 +80,8 @@
     <ResetDecorator topic="/electro_tree_reset">
       <BaseErrorDecorator topic="/robast_error">
         <Sequence>
+          <GetBlackboardEntry key="drawer_address"
+                              value="{drawer}"/>
           <SubTree ID="LED_Start"
                    _autoremap="true"/>
           <LEDPublisherAction drawer_address="{drawer}"
@@ -201,6 +203,12 @@
       <input_port name="topic"
                   default="/drawer_feedback_status"/>
     </Condition>
+    <Action ID="GetBlackboardEntry">
+      <input_port name="key"
+                  default="drawer_address">string</input_port>
+      <output_port name="value"
+                   default="{drawer}"/>
+    </Action>
     <Action ID="InitLEDVector">
       <input_port name="size"
                   default="128">uint8_t</input_port>

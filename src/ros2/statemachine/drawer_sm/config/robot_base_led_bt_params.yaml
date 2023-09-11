@@ -1,0 +1,9 @@
+drawer_tree_initiator:
+  ros__parameters:
+    plugins:
+      - base_error_decorator_node
+      - initialize_led_vector_action_bt_node
+      - publish_led_action_bt_node
+      - partial_colorize_leds_action_bt_node
+      - get_blackboard_value_action_bt_node
+    bt_path: "/workspace/src/statemachine/drawer_sm/trees/Robo_base.xml"
