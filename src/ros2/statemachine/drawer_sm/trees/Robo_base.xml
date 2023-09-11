@@ -24,6 +24,14 @@
                           green="155"
                           lower_bound="0.0"
                           red="0"
+                          upper_bound="50.0"
+                          LEDs_colored="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}"
+                          blue="0"
+                          brightness="25"
+                          green="0"
+                          lower_bound="50"
+                          red="50"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
     </Sequence>
