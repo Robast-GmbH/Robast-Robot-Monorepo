@@ -1,4 +1,0 @@
-
-  restapi_port: 3001
-  fleetmanagement_address: "http://127.0.0.1:3002" 
-  fleet_name: "ROBAST"
