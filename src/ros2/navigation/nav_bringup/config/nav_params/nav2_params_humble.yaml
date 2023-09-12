@@ -58,6 +58,10 @@ bt_navigator:
     - nav2_back_up_cancel_bt_node
     - nav2_assisted_teleop_cancel_bt_node
     - nav2_drive_on_heading_cancel_bt_node
+    - check_topic_state_condition_bt_node
+    - change_footprint_action_bt_node
+    - change_footprint_padding_action_bt_node
+
 
 bt_navigator_navigate_through_poses_rclcpp_node:
   ros__parameters:
@@ -169,7 +173,7 @@ local_costmap:
       width: 5
       height: 5
       footprint: "[ [0.4, 0.35], [0.4, -0.35], [-0.4, -0.35], [-0.4, 0.35] ]" # rb_theron footprint
-      footprint_padding: 0.05
+      footprint_padding: 0.10
       resolution: 0.025
       plugins: ["stvl_layer", "inflation_layer"]
       filters: ["keepout_filter"]
@@ -345,7 +349,7 @@ global_costmap:
       map_topic: /map
       use_sim_time: False
       footprint: "[ [0.4, 0.35], [0.4, -0.35], [-0.4, -0.35], [-0.4, 0.35] ]" # rb_theron footprint
-      footprint_padding: 0.05
+      footprint_padding: 0.10
       resolution: 0.05
       track_unknown_space: true
       plugins: ["static_layer", "stvl_layer", "inflation_layer"]
