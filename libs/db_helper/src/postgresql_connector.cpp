@@ -2,15 +2,15 @@
 
 namespace db_helper
 {
-  PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, std::string db_name)
-      : connection_parameter("user=" + username + " password=" + password + " host=" + host +
-                             " port=5432 dbname=" + db_name + " target_session_attrs=read-write")
+  PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, int port, std::string db_name)
+      : connection_parameter("user=" + username + " password=" + password + " host=" + host +" port="+  std::to_string(port) +" dbname=" + db_name + " target_session_attrs=read-write")
   {
   }
 
   PostgreSqlHelper::~PostgreSqlHelper()
   {
   }
+
   std::string PostgreSqlHelper::test_connection()
   {
     try
@@ -45,7 +45,7 @@ namespace db_helper
       return std::vector<std::vector<std::string>>();
     }
 
-    // fill the tabel Body
+    // fill the table Body
     for (pqxx::const_result_iterator::reference raw_row : raw_db_feedback)
     {
       std::vector<std::string> temp_row;

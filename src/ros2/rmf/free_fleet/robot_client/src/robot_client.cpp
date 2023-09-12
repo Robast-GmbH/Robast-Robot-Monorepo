@@ -88,8 +88,7 @@ namespace rmf_robot_client
   void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
   {
     //  global settings (reset tree,..) 
-
-    RCLCPP_INFO( this->get_logger(), "find settings %i", current_step);
+    RCLCPP_INFO( this->get_logger(), " settings recived %s %s", msg->command.c_str(), msg->value.c_str());
     if(msg->command=="reset_tree")
     {
       StdMsgBool msg = StdMsgBool();

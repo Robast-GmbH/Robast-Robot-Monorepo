@@ -2,11 +2,11 @@
 
 namespace nfc_bridge
 {
-  TestNFCBridge::TestNFCBridge(serial_helper::ISerialHelper* serial_connector, db_helper::IDBHelper* db_connector)
+  TestNFCBridge::TestNFCBridge(serial_helper::MockSerialHelper* serial_connector, db_helper::MockPostgreSqlHelper* db_connector)
       : NFCBridge()
   {
-    NFCBridge::serial_connector_ = serial_connector;
-    NFCBridge::db_connector_ = db_connector;
+    NFCBridge::serial_connector_ = std::make_unique<serial_helper::MockSerialHelper>( *serial_connector);
+    NFCBridge::db_connector_ = std::make_unique<db_helper::MockPostgreSqlHelper>( *db_connector);
   }
 
   TestNFCBridge::TestNFCBridge() : NFCBridge()
@@ -29,9 +29,9 @@ namespace nfc_bridge
     valid_user_list.insert(std::pair<std::string, std::string>(get_parameter("User3_key").as_string(),
                                                                get_parameter("User3_name").as_string()));
 
-    NFCBridge::serial_connector_ = new serial_helper::MockSerialHelper(serial_helper::MockSerialHelper(key));
+    NFCBridge::serial_connector_ = std::make_unique<serial_helper::MockSerialHelper>( serial_helper::MockSerialHelper(serial_helper::MockSerialHelper(key)));
 
-    NFCBridge::db_connector_ = new db_helper::MockPostgreSqlHelper(valid_user_list);
+    NFCBridge::db_connector_ = std::make_unique<db_helper::MockPostgreSqlHelper>( db_helper::MockPostgreSqlHelper(valid_user_list));
   }
   
   bool TestNFCBridge::execute_scan(std::shared_ptr<std::string> received_raw_data)

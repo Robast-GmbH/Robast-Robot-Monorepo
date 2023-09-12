@@ -15,7 +15,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "serial_helper/serial_helper.h"
-#include "std_msgs/msg/string.hpp"
+#include "std_msgs/msg/int16.hpp"
 #include "std_msgs/msg/bool.hpp"
 
 namespace nfc_bridge
@@ -35,23 +35,16 @@ namespace nfc_bridge
     rclcpp_action::Server<CreateUser>::SharedPtr action_server_;
     int numReadings_;
 
-    serial_helper::ISerialHelper* serial_connector_;
-    db_helper::IDBHelper* db_connector_;
+    std::unique_ptr<serial_helper::ISerialHelper> serial_connector_;
+    std::unique_ptr<db_helper::IDBHelper> db_connector_;
     rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr authentication_publisher_;
+    rclcpp::Publisher<std_msgs::msg::Int16>::SharedPtr authentication_publisher_;
     rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr timer_subscriber_;
     rclcpp_action::Server<CreateUser>::SharedPtr create_user_server_;
-    // const std::map<std::string, std::string> nfc_code_to_drawer_ =
-    //     std::map<std::string, std::string>{{"000100000000000000000000000000000001", "1"},
-    //                                        {"000100000000000000000000000000000100", "2"},
-    //                                        {"000100000000000000000000000000010000", "3"},
-    //                                        {"000100000000000000000000000001000000", "4"},
-    //                                        {"000100000000000000000000000100000000", "5"}};
+
     bool execute_scan(std::shared_ptr<std::string> received_raw_data);
     bool scan_tag(std::shared_ptr<std::string> tag_data);
-
-    // void write_tag(const std::shared_ptr<CreateUser::Request> request, std::shared_ptr<CreateUser::Response>
-    // response);
+    
     void start_up_scanner();
     void reader_procedure();
     void turn_off_scanner();

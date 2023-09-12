@@ -1,8 +1,8 @@
 from typing import List, Optional, Any
 from enum import Enum
-import yaml
 from pydantic import BaseModel
 from typing import Union
+import yaml
 
 class DrawerSlideTypes(str, Enum):
     Manual = "Manual"

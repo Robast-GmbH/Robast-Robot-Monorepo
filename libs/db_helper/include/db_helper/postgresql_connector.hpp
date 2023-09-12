@@ -23,7 +23,7 @@ namespace db_helper
     std::vector<std::vector<std::string>> perform_transaction_with_return(std::string sql_statement);
 
    public:
-    PostgreSqlHelper(std::string username, std::string password, std::string host, std::string db_name);
+    PostgreSqlHelper(std::string username, std::string password, std::string host, int port, std::string db_name);
     ~PostgreSqlHelper();
 
     std::string test_connection();

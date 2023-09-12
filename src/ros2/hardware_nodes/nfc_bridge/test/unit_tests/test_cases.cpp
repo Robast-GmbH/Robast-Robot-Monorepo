@@ -12,12 +12,12 @@ namespace nfc_bridge
         "which could be the read key")
     {
       rclcpp::init(0, nullptr);
-      fakeit::Mock<serial_helper::ISerialHelper> Serial_helper_mock;
+      fakeit::Mock<serial_helper::MockSerialHelper> Serial_helper_mock;
       Method(Serial_helper_mock, open_serial) = "";
       fakeit::Fake(Method(Serial_helper_mock, close_serial));
       Method(Serial_helper_mock, ascii_interaction);
       Method(Serial_helper_mock, send_ascii_cmd) = "";
-      fakeit::Mock<db_helper::IDBHelper> db_helper_mock;
+      fakeit::Mock<db_helper::MockPostgreSqlHelper> db_helper_mock;
       fakeit::When(Method(db_helper_mock, perform_query))
           .AlwaysDo(
               [=](std::string sqlStatment) -> std::vector<std::vector<std::string>>
@@ -107,13 +107,13 @@ namespace nfc_bridge
     GIVEN("The Serial reader gets mocked and initiated in the NFC bridge Node.")
     {
       rclcpp::init(0, nullptr);
-      fakeit::Mock<serial_helper::ISerialHelper> serial_helper_mock;
+      fakeit::Mock<serial_helper::MockSerialHelper> serial_helper_mock;
       Method(serial_helper_mock, open_serial) = "";
       fakeit::Fake(Method(serial_helper_mock, close_serial));
       Method(serial_helper_mock, ascii_interaction);
       Method(serial_helper_mock, send_ascii_cmd) = "";
       bool found;
-      fakeit::Mock<db_helper::IDBHelper> db_helper_mock;
+      fakeit::Mock<db_helper::MockPostgreSqlHelper> db_helper_mock;
       TestNFCBridge* nfc_reader = new TestNFCBridge(&serial_helper_mock.get(), &db_helper_mock.get());
 
       WHEN("No card is detected")
@@ -195,12 +195,12 @@ namespace nfc_bridge
     GIVEN("the mocked reader gets used in the nfc bridge with a list of possible keys")
     {
       rclcpp::init(0, nullptr);
-      fakeit::Mock<serial_helper::ISerialHelper> serial_helper_mock;
+      fakeit::Mock<serial_helper::MockSerialHelper> serial_helper_mock;
       Method(serial_helper_mock, open_serial) = "";
       fakeit::Fake(Method(serial_helper_mock, close_serial));
       Method(serial_helper_mock, ascii_interaction);
       Method(serial_helper_mock, send_ascii_cmd) = "";
-      fakeit::Mock<db_helper::IDBHelper> db_helper_mock;
+      fakeit::Mock<db_helper::MockPostgreSqlHelper> db_helper_mock;
 
       fakeit::When(Method(db_helper_mock, checkUserTag))
           .AlwaysDo(
@@ -222,7 +222,7 @@ namespace nfc_bridge
               });
 
       std::string target_user = "Test User1";
-      TestNFCBridge* nfc_reader = new TestNFCBridge(&serial_helper_mock.get(), &db_helper_mock.get());
+      TestNFCBridge nfc_reader = TestNFCBridge(&serial_helper_mock.get(), &db_helper_mock.get());
       std::vector<std::string> list{"Test User1", "Test User2", "Test User3", "Test User4", "Test User5"};
       std::string no_key_found = "";
 
@@ -250,7 +250,7 @@ namespace nfc_bridge
             "performed to read data from the Card")
         {
           std::string key;
-          REQUIRE(nfc_reader->execute_scan(std::make_shared<std::string>(key)));
+          REQUIRE(nfc_reader.execute_scan(std::make_shared<std::string>(key)));
           REQUIRE(key == target_user);
         }
       }
@@ -278,7 +278,7 @@ namespace nfc_bridge
         THEN("The reader returns an empty sting")
         {
           std::string key;
-          REQUIRE(nfc_reader->execute_scan(std::make_shared<std::string>(key)));
+          REQUIRE(nfc_reader.execute_scan(std::make_shared<std::string>(key)));
           REQUIRE(key == no_key_found);
         }
       }

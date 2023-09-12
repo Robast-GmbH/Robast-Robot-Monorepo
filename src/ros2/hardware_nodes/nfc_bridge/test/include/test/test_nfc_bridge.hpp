@@ -10,7 +10,7 @@ namespace nfc_bridge
   class TestNFCBridge : public NFCBridge
   {
    public:
-    TestNFCBridge(serial_helper::ISerialHelper* serial_connector, db_helper::IDBHelper* db_connector);
+    TestNFCBridge(serial_helper::MockSerialHelper* serial_connector, db_helper::MockPostgreSqlHelper* db_connector);
     TestNFCBridge();
 
     bool execute_scan(std::shared_ptr<std::string> received_raw_data);

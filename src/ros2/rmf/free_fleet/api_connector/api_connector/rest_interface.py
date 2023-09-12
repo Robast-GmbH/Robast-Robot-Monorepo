@@ -26,22 +26,22 @@ class RestInterface():
                 elif action.type== schemas.ActionType.NEW_USER:
                     self.ros_node.handle_new_user_request( task.robot.fleet_name, task.robot.robot_name, str(task.task_id)+"#"+str(action.step), action.action.user_id)
             
-        @self.app.post("/settings/move/pause")
+        @self.app.post("/settings/navigation/pause")
         def pause_robot(robot:schemas.Robot):
             self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", "pause")
             return
         
-        @self.app.post("/settings/move/resume")
+        @self.app.post("/settings/navigation/resume")
         def resume_robot(robot:schemas.Robot):
             self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", "resume")
             return
 
-        @self.app.post("/settings/move/cancel")
+        @self.app.post("/settings/navigation/cancel")
         def cancel_robot(robot:schemas.Robot ):
             self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", "cancel")
             return  
         
-        @self.app.post("/settings/move/loop")
+        @self.app.post("/settings/navigation/loop")
         def loop_robot(robot:schemas.Robot, loop:Annotated[bool,Body()] ):
             if loop:
                 self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"loop", "start")
@@ -67,8 +67,8 @@ class RestInterface():
                 self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name, "drawer", "completed")
 
 
-    def run(self, host='0.0.0.0', port=3002, log_level='warning'):
-        uvicorn.run(self.app, host=host, port=port, log_level=log_level)
+    def run(self, host='0.0.0.0', log_level='warning'):
+        uvicorn.run(self.app, host=host, port=self.config["fleet_server"], log_level=log_level)
 
     def get_fastapi(self):
         return self.app

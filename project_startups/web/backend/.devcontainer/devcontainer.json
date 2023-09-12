@@ -1,26 +1,16 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
 	"name": "backend",
-	"dockerFile": "../../../../src/web/backend/Dockerfile",
-	"build": {
-		"args": {
-			"WORKSPACE": "${containerWorkspaceFolder}"
-		}
-	},
-	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
-	"mounts": [
-		"source=${localWorkspaceFolder}/../../../src/web/backend,target=/workspace/src,type=bind"
-	],
+	"dockerComposeFile": "../../docker-compose.yml",
+	"service": "backend",
+	"workspaceFolder": "/workspace",
+	"shutdownAction": "stopCompose",
+	// "forwardPorts": [8000],
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
 	},
 	"forwardPorts": [8000],
-	"workspaceFolder": "/workspace",
-	"runArgs": [
-		"--name=web_backend",
-		"--network=host"
-	],
 	"extensions": [
 		"dotjoshjohnson.xml",
 		"laurenttreguier.uncrustify",

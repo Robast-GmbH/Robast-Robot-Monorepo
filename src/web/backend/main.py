@@ -14,18 +14,19 @@ import schemas
 from database import SessionLocal, engine
 
 
+
 models.Base.metadata.create_all(bind=engine)
 
 
 app = FastAPI()
 
-config = yaml.safe_load(open("./config.yml"))
+config = yaml.safe_load(open("./src/config.yml"))
 
 
 origins = [
-    "http://localhost:"+str(config['restapi_port']),
-    "http://127.0.0.1:"+str(config['restapi_port']),
-    "http://172.18.0.2:"+str(config['restapi_port'])
+    "http://localhost:"+str(config['RESTAPI_PORT']),
+    "http://127.0.0.1:"+str(config['RESTAPI_PORT']),
+    "http://172.18.0.2:"+str(config['RESTAPI_PORT'])
     
 ]
 
@@ -70,7 +71,7 @@ def add_nfc_code_to_user(user_id:int, robot_name:str, db: Session = Depends(get_
     task =templates.create_task(db,robot_name,task_id,[action])
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
-    answer  =sender.post(url= config["fleetmanagement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+    answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -166,7 +167,7 @@ def get_next_task(robot_name: str, db: Session = Depends(get_db)):
 
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
-    answer  =sender.post(url= config["fleetmanagement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+    answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
     
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -188,11 +189,11 @@ def pause_robot(robot_name: str, fleet_name:str, pause: bool , db: Session = Dep
     headers = {"Content-Type":"application/json"}
     sender = requests.Session() 
     message= {"robot_name":robot_name, "fleet_name":fleet_name}
-    print(message)
+  
     if(pause):
-        answer  =sender.post(url= config["fleetmanagement_address"]+"/settings/navigation/pause",json= json.dumps(message), headers= headers, verify=False)
+        answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/settings/navigation/pause",json= json.dumps(message), headers= headers, verify=False)
     else:
-        answer  =sender.post(url= config["fleetmanagement_address"]+"/settings/navigation/resume",json= json.dumps(message), headers= headers, verify=False)
+        answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/settings/navigation/resume",json= json.dumps(message), headers= headers, verify=False)
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -212,7 +213,7 @@ def loop_movement( task: schemas.Task, user_id:int, db: Session = Depends(get_db
     task =templates.create_task(db, task.robot.robot_name, task_id, backend_actions)
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
-    answer  =sender.post(url= config["fleetmanagement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+    answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
 
     headers =  {"Content-Type":"application/json"}
     robot = templates.find_robot_json(db, task.robot.robot_name)
@@ -220,7 +221,7 @@ def loop_movement( task: schemas.Task, user_id:int, db: Session = Depends(get_db
         raise HTTPException(status_code=404, detail="robot not found" )
     message={"robot":robot,"loop":task.task_id}
     sender = requests.Session()
-    answer = sender.post(url= config["fleetmanagement_address"]+"/settings/move/loop", data= json.dumps(message), headers= headers)
+    answer = sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/settings/navigation/loop", data= json.dumps(message), headers= headers)
     print( json.dumps(message))
     if answer.status_code!= 200:
          raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -240,7 +241,7 @@ def navigate_robot( robot_name: str, target:schemas.Navigation, owner_id:Annotat
     task =templates.create_task(db,robot_name,task_id,[action])
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
-    answer  =sender.post(url= config["fleetmanagement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+    answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -280,7 +281,7 @@ def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(
     message= {"robot_name":robot_name, "fleet_name":fleet_name}
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
-    answer  =sender.post(url= config["fleetmanagement_address"]+"/settings/drawer/completed", data= json.dumps(message), headers= headers, verify=False)
+    answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/settings/drawer/completed", data= json.dumps(message), headers= headers, verify=False)
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -314,7 +315,7 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
     
-    answer  =sender.post(url= config["fleetmanagement_address"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+    answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -330,7 +331,7 @@ def close_drawer( robot_name: str, module: schemas.BaseDrawer , db: Session = De
         message=templates.get_close_drawer_interaction_json(db, robot_name, module.drawer_id, module.module_id, db_module.type== models.DrawerSlideTypes.Electrical)
         headers =  {"Content-Type":"application/json"}
         sender = requests.Session()
-        answer  =sender.post(url= config["fleetmanagement_address"]+"/settings/drawer/close", data= json.dumps(message),headers= headers)
+        answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/settings/drawer/close", data= json.dumps(message),headers= headers)
 
         if answer.status_code!= 200:
             raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -344,7 +345,7 @@ def reset_drawer( robot_name: str, db: Session = Depends(get_db)):
     if message== "robot":
         raise HTTPException(status_code=404, detail="robot not found" )
     sender = requests.Session()
-    answer = sender.post(url= config["fleetmanagement_address"]+"/settings/drawer/reset", data= json.dumps(message), headers= headers)
+    answer = sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/settings/drawer/reset", data= json.dumps(message), headers= headers)
 
     if answer.status_code!= 200:
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
@@ -356,6 +357,6 @@ def reset_drawer( robot_name: str, db: Session = Depends(get_db)):
     return 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port= config['restapi_port'])
+    uvicorn.run(app, host="0.0.0.0", port= config['RESTAPI_PORT'])
    
 
