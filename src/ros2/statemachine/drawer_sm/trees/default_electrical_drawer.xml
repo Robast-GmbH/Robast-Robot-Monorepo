@@ -136,10 +136,10 @@
                               stall_guard_enable="0"
                               target_position="0"/>
           <SubTree ID="LED_Closing"
-                   _autoremap="false"/>
+                   _autoremap="true"/>
           <LEDPublisherAction drawer_address="{drawer}"
                               fading_time_ms="0"
-                              led_topic="/drawer_leds"
+                              led_topic="/led_cmd"
                               leds="{leds}"/>
           <ElectricDrawerStatusCondition target_value="0"
                                          topic="/electrical_drawer_status"/>
@@ -150,7 +150,7 @@
                      _autoremap="true"/>
             <LEDPublisherAction drawer_address="{drawer}"
                                 fading_time_ms="500"
-                                led_topic="/drawer_leds"
+                                led_topic="/led_cmd"
                                 leds="{leds}"/>
           </Sequence>
         </Sequence>
