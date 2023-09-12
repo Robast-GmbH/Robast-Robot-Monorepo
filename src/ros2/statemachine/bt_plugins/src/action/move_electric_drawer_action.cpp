@@ -17,10 +17,12 @@ namespace statemachine
         // drawer_address_ = blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
-
+        int tmp = 0;
         getInput("move_electric_drawer_topic", topic_name_);
-        getInput("target_position", drawer_task_.target_position);
-        getInput("speed", drawer_task_.speed);
+        getInput("target_position", tmp);
+        drawer_task_.target_position = (uint8_t)tmp;
+        getInput("speed", tmp);
+        drawer_task_.speed = (uint8_t)tmp;
         getInput("stall_guard_enable", drawer_task_.stall_guard_enable);
 
         initializePublisher();

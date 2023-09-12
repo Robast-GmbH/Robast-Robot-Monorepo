@@ -62,7 +62,9 @@ namespace statemachine
 
     void ElectricDrawerStatusCondition::initialize_target_value()
     {
-        getInput("target_value", target_value_);
+        int tmp = 0;
+        getInput("target_value", tmp);
+        target_value_ = (uint8_t)tmp;
     }
 } // namespace statemachine
 
