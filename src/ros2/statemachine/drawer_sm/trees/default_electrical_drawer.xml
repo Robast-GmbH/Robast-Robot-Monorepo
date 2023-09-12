@@ -16,6 +16,21 @@
     </Sequence>
   </BehaviorTree>
 
+  <BehaviorTree ID="LED_Closing">
+    <Sequence>
+      <InitLEDVector size="18"
+                     led_vector="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}"
+                          blue="0"
+                          brightness="0"
+                          green="0"
+                          lower_bound="0.0"
+                          red="0"
+                          upper_bound="0.0"
+                          LEDs_colored="{leds}"/>
+    </Sequence>
+  </BehaviorTree>
+
   <BehaviorTree ID="LED_Default">
     <Sequence>
       <InitLEDVector size="18"
@@ -99,24 +114,20 @@
                                 stall_guard_enable="0"
                                 target_position="251"/>
           </Delay>
-          <ChangeLED blue="105"
-                     brightness="150"
-                     drawer_address="{drawer}"
-                     green="205"
-                     led_topic="/drawer_leds"
-                     mode="1"
-                     red="0"
-                     use_blackboard_address="false"/>
+          <SubTree ID="LED_unlocked"
+                   _autoremap="true"/>
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="500"
+                              led_topic="/led_cmd"
+                              leds="{leds}"/>
           <ElectricDrawerStatusCondition target_value="251"
                                          topic="/electrical_drawer_status"/>
-          <ChangeLED blue="128"
-                     brightness="184"
-                     drawer_address="{drawer}"
-                     green="128"
-                     led_topic="/drawer_leds"
-                     mode="1"
-                     red="128"
-                     use_blackboard_address="false"/>
+          <SubTree ID="LED_Open"
+                   _autoremap="true"/>
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="100"
+                              led_topic="/led_cmd"
+                              leds="{leds}"/>
           <DrawerChangeStateReq drawer_address_topic="/close_drawer"
                                 drawer_address="{drawer}"/>
           <MoveElectricDrawer drawer_address="{drawer}"
@@ -124,37 +135,25 @@
                               speed="150"
                               stall_guard_enable="0"
                               target_position="0"/>
-          <ChangeLED blue="155"
-                     brightness="80"
-                     drawer_address="{drawer}"
-                     green="155"
-                     led_topic="/drawer_leds"
-                     mode="1"
-                     red="0"
-                     use_blackboard_address=""/>
+          <SubTree ID="LED_Closing"
+                   _autoremap="true"/>
           <ElectricDrawerStatusCondition target_value="0"
                                          topic="/electrical_drawer_status"/>
+          <LEDPublisherAction drawer_address="{drawer}"
+                              fading_time_ms="0"
+                              led_topic="/drawer_leds"
+                              leds="{leds}"/>
           <Sequence>
             <DrawerStatusCondition target_value="false"
                                    topic="/drawer_is_open"/>
-            <ChangeLED blue="155"
-                       brightness="184"
-                       drawer_address="{drawer}"
-                       green="155"
-                       led_topic="/drawer_leds"
-                       mode="1"
-                       red="0"
-                       use_blackboard_address="false"/>
             <Delay delay_msec="500">
-              <ChangeLED blue="155"
-                         brightness="25"
-                         drawer_address="{drawer}"
-                         green="155"
-                         led_topic="/drawer_leds"
-                         mode="1"
-                         red="0"
-                         use_blackboard_address=""/>
+              <SubTree ID="LED_Default"
+                       _autoremap="true"/>
             </Delay>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="0"
+                                led_topic="/drawer_leds"
+                                leds="{leds}"/>
           </Sequence>
         </Sequence>
       </BaseErrorDecorator>
@@ -167,24 +166,6 @@
       <input_port name="topic"
                   default="/robast_error"/>
     </Decorator>
-    <Action ID="ChangeLED">
-      <input_port name="blue"
-                  default="0">uint8</input_port>
-      <input_port name="brightness"
-                  default="0">uint8 to determine the brightness</input_port>
-      <input_port name="drawer_address"
-                  default="{drawer}"/>
-      <input_port name="green"
-                  default="0">uint8</input_port>
-      <input_port name="led_topic"
-                  default="/drawer_leds"/>
-      <input_port name="mode"
-                  default="0">uint8. describes the kind of animation thats used</input_port>
-      <input_port name="red"
-                  default="0">uint8</input_port>
-      <input_port name="use_blackboard_address"
-                  default="false">bool. wether to use the address that's passed around by I/O or blackboard</input_port>
-    </Action>
     <Action ID="DrawerChangeStateReq">
       <input_port name="drawer_address_topic"
                   default="/open_request"/>
