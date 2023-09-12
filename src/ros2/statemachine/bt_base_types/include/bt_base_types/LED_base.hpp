@@ -39,9 +39,8 @@ namespace bt_base_types
         return;
       }
 
-      size_t num_leds_to_set = static_cast<size_t>(leds.size() * ((upper_percentage - lower_percentage) / 100.0));
       size_t start_index = static_cast<size_t>(leds.size() * (lower_percentage / 100.0));
-      size_t end_index = start_index + num_leds_to_set;
+      size_t end_index = static_cast<size_t>(leds.size() * (upper_percentage / 100.0));
 
       for (size_t i = start_index; i < end_index; ++i)
       {
