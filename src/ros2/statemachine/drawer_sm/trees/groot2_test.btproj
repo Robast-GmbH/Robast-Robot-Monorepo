@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <root BTCPP_format="4" project_name="Project">
+    <include path="Robo_base.xml"/>
     <include path="default_electrical_drawer.xml"/>
     <include path="drawer_nfc_bt.xml"/>
     <include path="drawer_sequence.xml"/>
@@ -32,6 +33,10 @@
             <input_port name="target_value" default="0">uint8. wether the value should be true or false</input_port>
             <input_port name="topic" default="/drawer_feedback_status"/>
         </Condition>
+        <Action ID="GetBlackboardEntry">
+            <input_port name="key" default="drawer_address">string</input_port>
+            <output_port name="value" default="{drawer}"/>
+        </Action>
         <Action ID="Hans"/>
         <Action ID="InitLEDVector">
             <input_port name="size" default="128">uint8_t</input_port>
