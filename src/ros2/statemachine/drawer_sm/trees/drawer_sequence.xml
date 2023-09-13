@@ -3,40 +3,52 @@
       main_tree_to_execute="BehaviorTree">
   <BehaviorTree ID="BehaviorTree">
     <ResetDecorator topic="/reset_simple_tree">
-      <BaseErrorDecorator topic="/robast_error">
+      <Fallback>
+        <BaseErrorDecorator topic="/robast_error">
+          <Sequence>
+            <OpenDrawer drawer_address="{drawer}"
+                        drawer_open_topic="/open_drawer"/>
+            <SubTree ID="LED_unlocked"
+                     _autoremap="true"/>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="500"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+            <DrawerStatusCondition target_value="true"
+                                   topic="/drawer_is_open"/>
+            <SubTree ID="LED_Open"
+                     _autoremap="true"/>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="500"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+            <DrawerStatusCondition target_value="false"
+                                   topic="/drawer_is_open"/>
+            <SubTree ID="LED_Close"
+                     _autoremap="true"/>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="500"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+            <SubTree ID="LED_Default"
+                     _autoremap="true"/>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="500"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+          </Sequence>
+        </BaseErrorDecorator>
         <Sequence>
-          <OpenDrawer drawer_address="{drawer}"
-                      drawer_open_topic="/open_drawer"/>
-          <SubTree ID="LED_unlocked"
-                   _autoremap="true"/>
-          <LEDPublisherAction drawer_address="{drawer}"
-                              fading_time_ms="500"
-                              led_topic="/led_cmd"
-                              leds="{leds}"/>
-          <DrawerStatusCondition target_value="true"
-                                 topic="/drawer_is_open"/>
-          <SubTree ID="LED_Open"
-                   _autoremap="true"/>
-          <LEDPublisherAction drawer_address="{drawer}"
-                              fading_time_ms="500"
-                              led_topic="/led_cmd"
-                              leds="{leds}"/>
-          <DrawerStatusCondition target_value="false"
-                                 topic="/drawer_is_open"/>
-          <SubTree ID="LED_Close"
-                   _autoremap="true"/>
-          <LEDPublisherAction drawer_address="{drawer}"
-                              fading_time_ms="500"
-                              led_topic="/led_cmd"
-                              leds="{leds}"/>
+          <GetBlackboardEntry key="drawer_address"
+                              value="{drawer}"/>
           <SubTree ID="LED_Default"
                    _autoremap="true"/>
           <LEDPublisherAction drawer_address="{drawer}"
-                              fading_time_ms="500"
+                              fading_time_ms="100"
                               led_topic="/led_cmd"
                               leds="{leds}"/>
         </Sequence>
-      </BaseErrorDecorator>
+      </Fallback>
     </ResetDecorator>
   </BehaviorTree>
 
@@ -135,6 +147,12 @@
       <input_port name="topic"
                   default="/drawer_is_open"/>
     </Condition>
+    <Action ID="GetBlackboardEntry">
+      <input_port name="key"
+                  default="drawer_address">string</input_port>
+      <output_port name="value"
+                   default="{drawer}"/>
+    </Action>
     <Action ID="InitLEDVector">
       <input_port name="size"
                   default="128">uint8_t</input_port>
