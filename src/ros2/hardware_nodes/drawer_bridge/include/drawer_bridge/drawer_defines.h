@@ -12,16 +12,6 @@ namespace drawer_bridge
     slow_fade_up_fade_down = 3,
   };
 
-  // Some tests show that a timer period of 3 ms is to fast and asci cmds get lost at this speed, with 4 ms it worked,
-  // so use 5ms with safety margin
-#define TIMER_PERIOD_SEND_ASCII_CMDS 5ms
-
-// Mind that this period should be slightly longer then the time that the serial read is waiting for a new message.
-// Otherwise the node won't be responsive enough to do other tasks between the serial read
-// At the time of writing this comment, the serial read waits for 50ms, so theoretically there is always a 10ms time gap
-// for other tasks to be done, for example for message subscription callbacks
-#define TIMER_PERIOD_RECEIVE_CAN_MSGS 60ms
-
 // Drawer Module with 10cm Height, 40cm Depth, 1 Drawer
 #define DRAWER_INSIDE_WIDTH_10x40x1  310
 #define DRAWER_INSIDE_DEPTH_10x40x1  400
