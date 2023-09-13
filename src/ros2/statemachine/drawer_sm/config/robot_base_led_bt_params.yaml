@@ -1,4 +1,4 @@
-drawer_tree_initiator:
+robot_tree_initiator:
   ros__parameters:
     plugins:
       - base_error_decorator_node
@@ -7,3 +7,5 @@ drawer_tree_initiator:
       - partial_colorize_leds_action_bt_node
       - get_blackboard_value_action_bt_node
     bt_path: "/workspace/src/statemachine/drawer_sm/trees/Robo_base.xml"
+    trigger_topic: "trigger_base_tree"
+    main_tree: "BehaviorTree"

@@ -37,11 +37,15 @@ namespace bt_base_nodes
       std::string path = "/workspace/install/drawer_sm/share/drawer_sm/trees/drawer_sequence.xml";
       this->declare_parameter("plugins", plugins_);
       this->declare_parameter("bt_path", path);
+      this->declare_parameter("trigger_topic", "start_bt");
+      this->declare_parameter("main_tree", "main_tree");
       plugins_ = this->get_parameter("plugins").get_parameter_value().get<std::vector<std::string>>();
+      _main_tree_name = this->get_parameter("main_tree").as_string();
       _bt_path = this->get_parameter("bt_path").as_string();
+      _trigger_topic = this->get_parameter("trigger_topic").as_string();
     }
 
-    void configure(std::string trigger_topic = "start_bt", std::string maintree_name = "MainTree")
+    void configure()
     {
       static BT::NodeConfig *config_;
       config_ = new BT::NodeConfig();
@@ -58,8 +62,8 @@ namespace bt_base_nodes
           "transition_time",
           std::chrono::steady_clock::now());
       bt_engine_ = std::make_unique<statemachine::BehaviorTreeEngine>(plugins_);
-      bt_ = bt_engine_->createTreeFromFile(_bt_path, blackboard_, maintree_name);
-      init_subscriber(trigger_topic);
+      bt_ = bt_engine_->createTreeFromFile(_bt_path, blackboard_, _main_tree_name);
+      init_subscriber(_trigger_topic);
     }
 
   protected:
@@ -95,6 +99,8 @@ namespace bt_base_nodes
 
   private:
     std::string _bt_path;
+    std::string _trigger_topic;
+    std::string _main_tree_name;
     typename rclcpp::Subscription<TopicT>::SharedPtr _start_bt_sub;
   };
 }
