@@ -60,11 +60,13 @@ namespace statemachine
     switch (msg->error_code)
     {
     case ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED:
-      if (converter_.stringToMessage(msg->error_data) == blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address"))
-      {
-        _error_msg = msg;
-        _is_error_received = true;
-      }
+      // TODO @robast: there is some weird bug with the data formatation of the serialized error_data. The string has a random cutoff
+      //  if (converter_.stringToMessage(msg->error_data) == blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address"))
+      //  {
+      _error_msg = msg;
+      _is_error_received = true;
+      logError();
+      // }
       break;
 
     default:
