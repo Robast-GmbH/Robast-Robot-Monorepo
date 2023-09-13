@@ -43,8 +43,8 @@ namespace statemachine
     callback_group_executor_.spin_some();
     if (_is_error_received)
     {
-      logError();
       _is_error_received = false;
+      resetChild();
       return BT::NodeStatus::FAILURE;
     }
     const BT::NodeStatus child_status = child_node_->executeTick();
