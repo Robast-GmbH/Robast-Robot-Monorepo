@@ -10,7 +10,7 @@ namespace statemachine
     OpenDrawer::OpenDrawer(
         const std::string &name,
         const BT::NodeConfig &config)
-        : BT::StatefulActionNode(name, config)
+        : BT::SyncActionNode(name, config)
     {
         blackboard_ = config.blackboard;
 
@@ -24,13 +24,7 @@ namespace statemachine
         // sub_option.callback_group = _callback_group;
         open_publisher_ = _node->create_publisher<communication_interfaces::msg::DrawerAddress>(topic_name_, qos);
     }
-
-    BT::NodeStatus OpenDrawer::onStart()
-    {
-        return BT::NodeStatus::RUNNING;
-    }
-
-    BT::NodeStatus OpenDrawer::onRunning()
+    BT::NodeStatus OpenDrawer::tick()
     {
         // std::scoped_lock l(blackboard_->entryMutex());
         drawer_address_ = blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
@@ -39,12 +33,6 @@ namespace statemachine
         open_publisher_->publish(drawer_address_);
 
         return BT::NodeStatus::SUCCESS;
-    }
-
-    void OpenDrawer::onHalted()
-    {
-        open_publisher_.reset();
-        RCLCPP_DEBUG(rclcpp::get_logger("OpenDrawer"), "publisher resetted");
     }
 
 } // namespace statemachine
