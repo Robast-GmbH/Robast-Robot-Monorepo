@@ -5,7 +5,7 @@ namespace nfc_bridge
 
   NFCBridge::NFCBridge() : Node("nfc_bridge")
   {
-    this->declare_parameter("serial_port_path", "/dev/robast/robast_nfc");
+    this->declare_parameter("serial_port_path", "/dev/robast/robast_nfc_1");
     this->declare_parameter("db_username", "postgres");
     this->declare_parameter("db_password", "postgres");
     this->declare_parameter("db_host_address", "localhost");
