@@ -9,7 +9,7 @@ namespace rmf_robot_client
      nfc_write_new_nfc_card_client_ = rclcpp_action::create_client<CreateUserNfcTag>(ros_node, config["nfc_write_usertag_to_card_action_topic"]);
   }
 
-  bool NFCAction::start(std::function<void(bool)> next_action_callback)
+  bool NFCAction::start(std::function<void(int)> next_action_callback)
   {
      RCLCPP_INFO(ros_node->get_logger(), "start drawer_action");
     finish_action = next_action_callback;

@@ -4,6 +4,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "rclcpp/qos.hpp"
+#include <functional> 
 
 #include "fleet_interfaces/msg/free_fleet_data_setting_request.hpp"
 #include "fleet_interfaces/msg/free_fleet_data_create_nfc_request.hpp"
@@ -91,9 +92,9 @@ namespace rmf_robot_client
           void receive_create_nfc_task(const FreeFleetDataCreateNfcRequest::ConstPtr msg);
           void receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg);
           void receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg);
-          bool prepare_new_action(std::string recipient_fleet, std::string recipient_robot, int task_id);
+          bool prepare_new_action(std::string Task_def, std::string recipient_fleet, std::string recipient_robot, int &task_id, int &step);
           void end_current_task();
-          void end_current_action(bool successful);
+          void end_current_action(int step);
           void empty_task_sequence();
           void start_next_action();
           void publish_fleet_state();

@@ -33,9 +33,9 @@ class ros_controller(Node):
         
         
         self.declare_parameter('backend_address',"http://127.0.0.1:3000")
-        self.declare_parameter('fleet_server',"3002")
+        self.declare_parameter('fleet_server',3002)
 
-        self.dds_config = {
+        self.node_config = {
                 "mode_request_topic": self.get_parameter('dds_mode_request_topic')
                                           .get_parameter_value().string_value,
                 "path_request_topic": self.get_parameter('dds_path_request_topic')
@@ -53,20 +53,22 @@ class ros_controller(Node):
                 "task_state_topic":self.get_parameter('dds_task_state_topic')
                                        .get_parameter_value().string_value,
                 "backend_address": self.get_parameter('backend_address')
-                                       .get_parameter_value().string_value
+                                       .get_parameter_value().string_value,
+                "fleet_server": self.get_parameter('fleet_server')
+                                       .get_parameter_value().integer_value
             }
         
         
-        self.dds_mode_request= self.create_publisher(dds.FreeFleetDataModeRequest, self.dds_config["mode_request_topic"], 10)
-        self.dds_path_request= self.create_publisher(dds.FreeFleetDataPathRequest, self.dds_config["path_request_topic"], 10)
+        self.dds_mode_request= self.create_publisher(dds.FreeFleetDataModeRequest, self.node_config["mode_request_topic"], 10)
+        self.dds_path_request= self.create_publisher(dds.FreeFleetDataPathRequest, self.node_config["path_request_topic"], 10)
         
-        self.dds_destination_request= self.create_publisher( dds.FreeFleetDataDestinationRequest, self.dds_config["destination_request_topic"], 10)
-        self.dds_slide_drawer_request= self.create_publisher( dds.FreeFleetDataDrawerRequest, self.dds_config["slide_drawer_request_topic"], 10)
-        self.dds_new_user_request= self.create_publisher(dds.FreeFleetDataCreateNfcRequest, self.dds_config["new_user_request_topic"],10)
-        self.dds_settings_request= self.create_publisher( dds.FreeFleetDataSettingRequest, self.dds_config["setting_request_topic"], 10)
+        self.dds_destination_request= self.create_publisher( dds.FreeFleetDataDestinationRequest, self.node_config["destination_request_topic"], 10)
+        self.dds_slide_drawer_request= self.create_publisher( dds.FreeFleetDataDrawerRequest, self.node_config["slide_drawer_request_topic"], 10)
+        self.dds_new_user_request= self.create_publisher(dds.FreeFleetDataCreateNfcRequest, self.node_config["new_user_request_topic"],10)
+        self.dds_settings_request= self.create_publisher( dds.FreeFleetDataSettingRequest, self.node_config["setting_request_topic"], 10)
        
-        self.dds_robot_state= self.create_subscription(dds.FreeFleetDataRobotState, self.dds_config["robot_state_topic"], self.update_robot_state ,10)
-        self.dds_task_state=self.create_subscription(dds.FreeFleetDataTaskState, self.dds_config["task_state_topic"], self.update_task_state,10)
+        self.dds_robot_state= self.create_subscription(dds.FreeFleetDataRobotState, self.node_config["robot_state_topic"], self.update_robot_state ,10)
+        self.dds_task_state=self.create_subscription(dds.FreeFleetDataTaskState, self.node_config["task_state_topic"], self.update_task_state,10)
    
 
     # handle Mode request
@@ -158,5 +160,5 @@ class ros_controller(Node):
         else:
             return combined_ids[0], combined_ids[1] 
         
-    def get_dds_config(self):
-        return self.dds_config
+    def get_node_config(self):
+        return self.node_config

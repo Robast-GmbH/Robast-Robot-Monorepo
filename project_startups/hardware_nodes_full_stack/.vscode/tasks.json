@@ -197,7 +197,7 @@
                 "build"
             ],
             "dependsOrder": "sequence",
-            "command": "clear; source install/setup.bash; colcon test --packages-select nfc_bridge web_bridge_nfc --event-handler=console_direct+; colcon test-result --all",
+            "command": "clear; source install/setup.bash; colcon test --packages-select nfc_bridge --event-handler=console_direct+; colcon test-result --all",
             "problemMatcher": []
         },
         {

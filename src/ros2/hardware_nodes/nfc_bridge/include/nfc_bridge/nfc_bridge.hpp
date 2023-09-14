@@ -15,8 +15,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "serial_helper/serial_helper.h"
-#include "std_msgs/msg/int16.hpp"
+#include "std_msgs/msg/int64.hpp"
 #include "std_msgs/msg/bool.hpp"
+#include "std_msgs/msg/string.hpp"
 
 namespace nfc_bridge
 {
@@ -26,7 +27,7 @@ namespace nfc_bridge
     using CreateUser = communication_interfaces::action::CreateUserNfcTag;
     using GoalHandleCreateUser = rclcpp_action::ServerGoalHandle<CreateUser>;
 
-    NFCBridge(std::string serial_port_path = "/dev/robast/robast_nfc");
+    NFCBridge();
     ~NFCBridge();
 
     friend class TestNFCBridge;   // this class has full access to all private and protected parts of this class
@@ -38,7 +39,7 @@ namespace nfc_bridge
     std::unique_ptr<serial_helper::ISerialHelper> serial_connector_;
     std::unique_ptr<db_helper::IDBHelper> db_connector_;
     rclcpp::TimerBase::SharedPtr timer_;
-    rclcpp::Publisher<std_msgs::msg::Int16>::SharedPtr authentication_publisher_;
+    rclcpp::Publisher<std_msgs::msg::Int64>::SharedPtr authentication_publisher_;
     rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr timer_subscriber_;
     rclcpp_action::Server<CreateUser>::SharedPtr create_user_server_;
 

@@ -12,7 +12,7 @@ namespace db_helper
   class MockPostgreSqlHelper : public IDBHelper
   {
    public:
-    MockPostgreSqlHelper(std::map<std::string, std::string> validUserList);
+    MockPostgreSqlHelper(std::map<std::string, std::pair<int, std::string>> validUserList);
 
     std::string test_connection();
     std::string createUser(std::string first_name, std::string last_name);
@@ -25,7 +25,7 @@ namespace db_helper
     std::vector<std::vector<std::string>> perform_query(std::string sql_statment);
 
    private:
-    std::map<std::string, std::string> user_list_;
+    std::map<std::string, std::pair<int, std::string>> user_list_;
   };
 }   // namespace db_helper
 

@@ -11,7 +11,7 @@ namespace rmf_robot_client
     navigate_to_pose_client_ = rclcpp_action::create_client<NavigateToPose>(ros_node, config["nav2_navigation_to_pose_action_topic"]);
   }
   
-  bool NavigationAction::start(std::function<void(bool)> next_action_callback)
+  bool NavigationAction::start(std::function<void(int)> next_action_callback)
   {
     RCLCPP_INFO(ros_node->get_logger(), "start drawer_action");
     finish_action = next_action_callback;

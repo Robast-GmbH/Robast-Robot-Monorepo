@@ -2,7 +2,7 @@
 
 namespace db_helper
 {
-  MockPostgreSqlHelper::MockPostgreSqlHelper(std::map<std::string, std::string> valid_user_list)
+  MockPostgreSqlHelper::MockPostgreSqlHelper(std::map<std::string, std::pair<int,std::string>> valid_user_list)
   {
     user_list_ = valid_user_list;
   }
@@ -12,11 +12,14 @@ namespace db_helper
                                           std::shared_ptr<std::string> related_username,
                                           std::shared_ptr<int> id)
   {
-    if (user_list_.count(scanned_key))
-    {
-      *related_username = user_list_[scanned_key];
 
-      return true;
+    if (user_list_.find(scanned_key) != user_list_.end())
+    {
+        std::pair<int, std::string> found_user=user_list_[scanned_key];
+        *related_username = found_user.second;
+        *id = found_user.first;
+
+        return true;
     }
     return false;
   }

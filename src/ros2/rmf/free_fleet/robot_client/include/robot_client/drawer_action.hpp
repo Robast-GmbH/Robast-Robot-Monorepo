@@ -39,7 +39,7 @@ namespace rmf_robot_client
 
   public:
     DrawerAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string,std::string> config, std::shared_ptr<std::map<std::string, DrawerStatus>> drawers, int drawer_int, int module_id, bool is_edrawer, std::vector<std::string> redistricted_user);
-    bool start(std::function<void(bool)> next_action_callback);
+    bool start(std::function<void(int)> next_action_callback);
     bool cancel();
     std::string get_type();
     bool receive_new_settings(std::string command, std::vector<std::string> value);

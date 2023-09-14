@@ -12,22 +12,27 @@ namespace nfc_bridge
   TestNFCBridge::TestNFCBridge() : NFCBridge()
   {
     declare_parameter("key", "000001000000100");
-    declare_parameter("User1_name", "1");
+    declare_parameter("User1_name","1");
+    declare_parameter("User1_id", 1);
     declare_parameter("User1_key", "000001000000100");
-    declare_parameter("User2_name", "");
+    declare_parameter("User2_name", "2");
+    declare_parameter("User2_id", 2);
     declare_parameter("User2_key", "");
     declare_parameter("User3_name", "");
+    declare_parameter("User3_id", 3);
     declare_parameter("User3_key", "");
 
     std::string key = get_parameter("key").as_string();
 
-    std::map<std::string, std::string> valid_user_list;
-    valid_user_list.insert(std::pair<std::string, std::string>(get_parameter("User1_key").as_string(),
-                                                               get_parameter("User1_name").as_string()));
-    valid_user_list.insert(std::pair<std::string, std::string>(get_parameter("User2_key").as_string(),
-                                                               get_parameter("User2_name").as_string()));
-    valid_user_list.insert(std::pair<std::string, std::string>(get_parameter("User3_key").as_string(),
-                                                               get_parameter("User3_name").as_string()));
+    std::map<std::string, std::pair<int, std::string>> valid_user_list;
+    valid_user_list.insert(std::pair<std::string, std::pair<int, std::string>>(get_parameter("User1_key").as_string(),
+                                                               make_pair(get_parameter("User1_id").as_int(), get_parameter("User1_name").as_string())));
+    valid_user_list.insert(std::pair<std::string, std::pair<int, std::string>>(get_parameter("User2_key").as_string(),
+                                                               make_pair(get_parameter("User2_id").as_int(), get_parameter("User2_name").as_string())));
+    valid_user_list.insert(std::pair<std::string, std::pair<int, std::string>>(get_parameter("User3_key").as_string(),
+                                                               make_pair(get_parameter("User3_id").as_int(), get_parameter("User3_name").as_string())));
+ 
+    
 
     NFCBridge::serial_connector_ = std::make_unique<serial_helper::MockSerialHelper>( serial_helper::MockSerialHelper(serial_helper::MockSerialHelper(key)));
 

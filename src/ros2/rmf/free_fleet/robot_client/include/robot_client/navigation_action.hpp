@@ -31,7 +31,7 @@ namespace rmf_robot_client
       NavigationAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string, std::string> config, float x, float y, float yaw, std::string behavior_tree, std::string frame_id);
       //~NavigationAction();
 
-      bool start(std::function<void(bool)> next_action_callback);
+      bool start(std::function<void(int)> next_action_callback);
       bool cancel();
       std::string get_type();
       bool receive_new_settings(std::string command, std::vector<std::string> value);

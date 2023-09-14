@@ -214,11 +214,12 @@ def loop_movement( task: schemas.Task, user_id:int, db: Session = Depends(get_db
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
     answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
-
+    
     headers =  {"Content-Type":"application/json"}
     robot = templates.find_robot_json(db, task.robot.robot_name)
     if robot== "robot":
         raise HTTPException(status_code=404, detail="robot not found" )
+    
     message={"robot":robot,"loop":task.task_id}
     sender = requests.Session()
     answer = sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/settings/navigation/loop", data= json.dumps(message), headers= headers)
@@ -308,7 +309,7 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner)
     step=1
     db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id,owner)
-    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.type == models.DrawerSlideTypes.Electrical, nfc_codes)
+    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.type == models.DrawerSlideTypes.Electrical, nfc_codes, locked_for= restricted_for_user)
     if(action== "robot"):
         raise HTTPException(status_code=404, detail="robot not found" )
     task =templates.create_task(db,robot_name,task_id,[action])

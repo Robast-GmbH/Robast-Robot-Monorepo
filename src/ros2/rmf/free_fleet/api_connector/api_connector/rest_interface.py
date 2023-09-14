@@ -13,9 +13,13 @@ class RestInterface():
         self.ros_node = ros_node
         ros_node.set_responce(self)
         self.app = app
-        self.config= ros_node.get_dds_config()
+        self.config= ros_node.get_node_config()
         self.response_api=self.config["backend_address"]
         
+        @self.app.post("/test")
+        def test():
+            return 
+          
         @self.app.post("/task")
         def do_task( task:schemas.Task):
             for action in task.actions:

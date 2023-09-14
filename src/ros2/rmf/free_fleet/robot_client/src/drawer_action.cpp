@@ -27,16 +27,20 @@ namespace rmf_robot_client
     trigger_close_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(config["statemaschine_close_e_drawer_topic"], qos);
   }
 
-  bool DrawerAction::start(std::function<void(bool)> next_action_callback)
+  bool DrawerAction::start(std::function<void(int)> next_action_callback)
   {
     RCLCPP_INFO(ros_node->get_logger(), "start drawer_action");
     finish_action = next_action_callback;
+    std::string drawer_ref =module_id+"#"+drawer_id;
+    if(drawers->count(drawer_ref)>0 && drawers->at(drawer_ref).locked_for.size()>0 )
+    {
+        
+    }
     // TODo handle locking
     // access controll
     // set new lock
-
+   
     open_drawer(this->module_id, this->drawer_id);
-    
     return true;
   }
 
@@ -48,26 +52,23 @@ namespace rmf_robot_client
 
     trigger_open_drawer_publisher_->publish(drawer_msg);
 
-    std::string drawer_ref =module_id+"#"+drawer_id;
+    std::string drawer_ref =std::to_string(module_id)+"#"+std::to_string(drawer_id);
     if(drawers->count(drawer_ref)>0)
     {
-      RCLCPP_INFO(ros_node->get_logger(), "at1");
       drawers->at(drawer_ref).is_opened==true;
     }
     else 
     {
-      drawers->insert(std::pair( drawer_ref,DrawerStatus(module_id, drawer_id, true, "")));
-
+      drawers->insert(std::pair( drawer_ref,DrawerStatus(module_id, drawer_id, true, std::vector<std::string>())));
     }
     publish_task_state("DrawerState", drawer_ref+"#Opened" , false);
-    RCLCPP_INFO( ros_node->get_logger(), "drawer(%i, %i, Opend)", module_id, drawer_id);
     return true;
   }
 
   bool DrawerAction::close_drawer(int module_id, int drawer_id)
   {
-    std::string drawer_ref =module_id+"#"+drawer_id;
-    if(is_edrawer && drawers->at(drawer_ref).is_opened)
+    std::string drawer_ref =std::to_string(module_id)+"#"+std::to_string(drawer_id);
+    if(is_edrawer && drawers->count(drawer_ref)>0 && drawers->at(drawer_ref).is_opened)
     {
         
       DrawerAddress drawer_msg = DrawerAddress();
@@ -76,7 +77,7 @@ namespace rmf_robot_client
       //handle list of open drawers
       trigger_close_drawer_publisher_->publish(drawer_msg);
       publish_task_state("DrawerState", drawer_ref + "#Closed", false);
-      drawers->at(drawer_ref).is_opened==false;
+      drawers->at(drawer_ref).is_opened=false;
       RCLCPP_INFO( ros_node->get_logger(), "drawer(%i, %i, Closed)",module_id, drawer_id);
     }
     return false;
@@ -95,7 +96,7 @@ namespace rmf_robot_client
   bool DrawerAction::cancel()
   {
     publish_task_state("Canceld", "", true);
-    finish_action(false);
+    //finish_action(false);
     return true;
   }
   
@@ -114,21 +115,20 @@ namespace rmf_robot_client
 
     if(value[0]=="Closed")
     {
-      close_drawer(std::stoi(value[1]), std::stoi(value[2]));
-       RCLCPP_ERROR(ros_node->get_logger(),"Supper Closed");
+       close_drawer(std::stoi(value[1]), std::stoi(value[2]));
 
-      // publish_task_state("DrawerState", value + "#Closed", false);
+      publish_task_state("DrawerState", value[1] + "#" + value[2] + "#Closed", false);
     }
-    else if(value[0] == "Completed")
+    else if(value[0] == "completed")
     {
-      finish_action(true);
       publish_task_state("Action", "Done", true);
+      //finish_action(true);
     }
-
     else
     {
         RCLCPP_ERROR(ros_node->get_logger(),"Command %s/%s is unknown for action %s", command.c_str(), value[0].c_str(), get_type().c_str());
     }
+     return true;
   }
 
   bool DrawerAction::all_drawers_closed()

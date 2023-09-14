@@ -81,14 +81,15 @@ namespace rmf_robot_client
     qos.avoid_ros_namespace_conventions(false);
 
     robot_info_publisher_ = this->create_publisher<FreeFleetDataRobotInfo>(config["fleet_communication_robot_info_topic"], qos);
-    publish_robot_info_timer= this->create_wall_timer(std::chrono::milliseconds(2000), std::bind(&RobotClient::publish_fleet_state, this));
+    //publish_robot_info_timer= this->create_wall_timer(std::chrono::milliseconds(2000), std::bind(&RobotClient::publish_fleet_state, this)); // removed onl
+    y for debugging
     reset_simple_tree_publisher_ = this->create_publisher<StdMsgBool>(config["statemaschine_reset_simple_tree_topic"], qos);
   }
 
   void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
   {
     //  global settings (reset tree,..) 
-    RCLCPP_INFO( this->get_logger(), " settings recived %s %s", msg->command.c_str(), msg->value.c_str());
+    RCLCPP_INFO( this->get_logger(), " settings received %s %s", msg->command.c_str(), msg->value.c_str());
     if(msg->command=="reset_tree")
     {
       StdMsgBool msg = StdMsgBool();
@@ -102,18 +103,17 @@ namespace rmf_robot_client
     }
     else
     {
-      task_sequence.at(current_step)->receive_new_settings(msg->command, split(msg->value,'#'));//task settings
+      task_sequence[current_step]->receive_new_settings(msg->command, split(msg->value,'#'));//task settings
     }
     RCLCPP_INFO( this->get_logger(), "settings done");
   }
 
   void RobotClient::receive_create_nfc_task(const FreeFleetDataCreateNfcRequest::ConstPtr msg)
   {
-    std::vector<std::string> task_header= split(msg->task_id, '#');
-    //check for numeric
-    int task_id = stoi(task_header[0]);
-    int step = stoi(task_header[1]);
-    if (!prepare_new_action(msg->fleet_name, msg->robot_name, task_id))
+     RCLCPP_INFO(this->get_logger(), "nfc_received");
+
+    int step, task_id;
+    if (!prepare_new_action(msg->task_id, msg->fleet_name, msg->robot_name, task_id, step))
     {
       return;
     }
@@ -127,21 +127,15 @@ namespace rmf_robot_client
     {
       task_sequence.at(step)->start([this](bool successful) { end_current_action(successful); });
     }
-
   }
 
   void RobotClient::receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg)
   {
-    RCLCPP_INFO( this->get_logger(), "drawer_received");
+    RCLCPP_INFO(this->get_logger(), "drawer_received");
 
-    std::vector<std::string> task_header= split(msg->task_id, '#');
-
-    int task_id = std::stoi(task_header[0]);
-    int step = std::stoi(task_header[1]);
-   
-    if(!prepare_new_action(msg->fleet_name, msg->robot_name, task_id))
+    int step, task_id;
+    if (!prepare_new_action(msg->task_id, msg->fleet_name, msg->robot_name, task_id, step))
     {
-       
       return;
     }
 
@@ -154,17 +148,16 @@ namespace rmf_robot_client
     if(step==1)
     {
       current_step = step;
-      task_sequence.at(step)->start([this](bool successful)
-                                    { end_current_action(successful); });
+      task_sequence.at(step)->start([this](int step) { end_current_action(step); });
     }
   }
 
   void RobotClient::receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg)
   {
-    std::vector<std::string> task_header= split(msg->task_id, '#');
-    int task_id = stoi(task_header[0]);
-    int step = stoi(task_header[1]);
-    if(!prepare_new_action(msg->fleet_name, msg->robot_name, task_id))
+      RCLCPP_INFO(this->get_logger(), "destination_received");
+    int task_id, step;
+
+    if(!prepare_new_action(msg->task_id, msg->fleet_name, msg->robot_name, task_id, step))
     {
       return;
     }
@@ -184,24 +177,37 @@ namespace rmf_robot_client
     }
   }
 
-  void RobotClient::end_current_action(bool successful)
+  void RobotClient::end_current_action(int step)
   {
     start_next_action();
+     start_next_action();
+     return;
   }
 
-  bool RobotClient::prepare_new_action(std::string recipient_fleet, std::string recipient_robot, int new_task_id)
-  {
+  bool RobotClient::prepare_new_action(std::string task_def, std::string recipient_fleet, std::string recipient_robot,int& new_task_id, int& new_step )
+  {  
     if(recipient_fleet == fleet_name && recipient_robot == robot_name)
     {
       return false;
     }
 
+    std::vector<std::string> task_header= split(task_def, '#');
+    try
+    {
+      new_task_id = stoi(task_header[0]);
+      new_step = stoi(task_header[1]);
+    }
+    catch (const std::invalid_argument &e)
+    {
+       RCLCPP_ERROR(this->get_logger(),"Task ID %s, is not in the correct format", task_def.c_str());
+       return false;
+    }
+
     if (task_id != new_task_id && task_id!=0)
     {
-
       // publish_task_state("Task", "Abort", false);
+      task_sequence[current_step]->cancel();
       end_current_task(); 
-      
     }
     task_id = new_task_id;
     return true;
@@ -209,9 +215,10 @@ namespace rmf_robot_client
 
   void RobotClient::end_current_task()
   {
-    task_sequence[current_step]->cancel();
     empty_task_sequence();
     task_id = 0;
+    current_step = 0;
+   
     publish_fleet_state();
   }
 
@@ -227,19 +234,23 @@ namespace rmf_robot_client
   void RobotClient::start_next_action()
   {
     auto it = task_sequence.find(current_step);
-    if(it != task_sequence.end()) 
+    if(it == task_sequence.end()) 
     {
-      it++;
-      if (it != task_sequence.end())
-      { 
-          current_step = it->first;
-          // it->second->start();
-      }
-      // publish_task_state("Task", "Completed", true);
+      //publish_task_state("Task", "NotFound", true);
+      RCLCPP_INFO(this->get_logger(), "Task: %i Step: %i| Not Found in Queue");
       end_current_task();
+      return;
     }
-    // publish_task_state("Task", "NotFound", true);
+
+    it++;
+    if (it != task_sequence.end())
+    { 
+      current_step = it->first;
+      it->second->start([this](int step) { end_current_action(step); });
+    }
+    // publish_task_state("Task", "Completed", true);
     end_current_task();
+    return;
   }
 
   void RobotClient::publish_fleet_state()
@@ -264,6 +275,7 @@ namespace rmf_robot_client
     robot_info_publisher_->publish(robot_state_msg);
   }
 
+
   void RobotClient::update_robot_location()
   {
     geometry_msgs::msg::TransformStamped t;
@@ -281,16 +293,16 @@ namespace rmf_robot_client
     current_y = t.transform.translation.y;
   }
 
-
   std::vector<std::string> RobotClient::split( std::string input_text, char delimiter)
   {
-      std::vector<std::string> result;
-      std::istringstream iss(input_text);
-      std::string token;
+    std::vector<std::string> result;
+    std::istringstream iss(input_text);
+    std::string token;
 
-      while (std::getline(iss, token, delimiter)) {
-        result.push_back(token);
-      }
+    while (std::getline(iss, token, delimiter)) 
+    {
+      result.push_back(token);
+    }
     
     return result;
   }
