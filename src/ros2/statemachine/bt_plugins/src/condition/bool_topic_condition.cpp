@@ -4,7 +4,7 @@ namespace statemachine
 {
     BoolTopicCondition::BoolTopicCondition(
         const std::string &name,
-        const BT::NodeConfig &config) : BaseCompareCondition(name, config)
+        const BT::NodeConfig &config) : BaseCompareCondition(name, config, rclcpp::QoS(rclcpp::KeepLast(2)).best_effort())
     {
         // Nothing special in the default constructor
         initialize_target_value();

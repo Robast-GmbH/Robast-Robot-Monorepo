@@ -4,7 +4,7 @@ namespace statemachine
 {
     ElectricDrawerStatusCondition::ElectricDrawerStatusCondition(
         const std::string &name,
-        const BT::NodeConfig &config) : BaseCompareCondition(name, config)
+        const BT::NodeConfig &config) : BaseCompareCondition(name, config, rclcpp::QoS(rclcpp::KeepLast(1)).reliable())
     {
         // Nothing special in the default constructor
         initialize_target_value();
