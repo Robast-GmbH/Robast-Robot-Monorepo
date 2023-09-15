@@ -10,6 +10,10 @@
         <Decorator ID="BaseErrorDecorator">
             <input_port name="topic" default="/robast_error"/>
         </Decorator>
+        <Condition ID="BoolTopicCondition" editable="true">
+            <input_port name="target_value" default="true">bool</input_port>
+            <input_port name="topic" default="/topic_name"/>
+        </Condition>
         <Action ID="ChangeLED">
             <input_port name="blue" default="0">uint8</input_port>
             <input_port name="brightness" default="0">uint8 to determine the brightness</input_port>
@@ -41,6 +45,9 @@
             <input_port name="size" default="128">uint8_t</input_port>
             <output_port name="led_vector" default="{leds}"/>
         </Action>
+        <Condition ID="LEDChangedCondition" editable="true">
+            <input_port name="led_vector" default="{leds}"/>
+        </Condition>
         <Action ID="LEDPublisherAction">
             <input_port name="drawer_address" default="{drawer}"/>
             <input_port name="fading_time_ms" default="0">uint8</input_port>
