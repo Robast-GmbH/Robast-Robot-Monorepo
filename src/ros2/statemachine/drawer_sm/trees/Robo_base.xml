@@ -5,32 +5,66 @@
     <Sequence>
       <GetBlackboardEntry key="drawer_address"
                           value="{drawer}"/>
-      <SubTree ID="LED_Default"
-               _autoremap="true"/>
-      <LEDPublisherAction drawer_address="{drawer}"
-                          fading_time_ms="100"
-                          led_topic="/led_cmd"
-                          leds="{leds}"/>
-    </Sequence>
-  </BehaviorTree>
-
-  <BehaviorTree ID="LED_Default">
-    <Sequence>
-      <InitLEDVector size="128"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="0"
-                          brightness="25"
-                          green="255"
-                          lower_bound="0.0"
-                          red="0"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
+      <KeepRunningUntilFailure>
+        <Sequence>
+          <InitLEDVector size="128"
+                         led_vector="{leds}"/>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="25"
+                              green="255"
+                              lower_bound="0.0"
+                              red="0"
+                              upper_bound="100.0"
+                              LEDs_colored="{leds}"/>
+          <IfThenElse>
+            <BoolTopicCondition target_value="true"
+                                topic="/robot/safety_module/emergancy_stop"/>
+            <PartialColorizeLED LEDs="{leds}"
+                                blue="0"
+                                brightness="100"
+                                green="0"
+                                lower_bound="0.0"
+                                red="255"
+                                upper_bound="100.0"
+                                LEDs_colored="{leds}"/>
+            <AlwaysSuccess/>
+          </IfThenElse>
+          <IfThenElse>
+            <BoolTopicCondition target_value="true"
+                                topic="/robot/safety_module/safety_stop"/>
+            <PartialColorizeLED LEDs="{leds}"
+                                blue="0"
+                                brightness="100"
+                                green="0"
+                                lower_bound="27.0"
+                                red="255"
+                                upper_bound="50.0"
+                                LEDs_colored="{leds}"/>
+            <AlwaysSuccess/>
+          </IfThenElse>
+          <IfThenElse>
+            <LEDChangedCondition led_vector="{leds}"/>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="100"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+            <AlwaysSuccess/>
+          </IfThenElse>
+        </Sequence>
+      </KeepRunningUntilFailure>
     </Sequence>
   </BehaviorTree>
 
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
+    <Condition ID="BoolTopicCondition"
+               editable="true">
+      <input_port name="target_value"
+                  default="true">bool</input_port>
+      <input_port name="topic"
+                  default="/topic_name"/>
+    </Condition>
     <Action ID="GetBlackboardEntry">
       <input_port name="key"
                   default="drawer_address">string</input_port>
@@ -43,6 +77,11 @@
       <output_port name="led_vector"
                    default="{leds}"/>
     </Action>
+    <Condition ID="LEDChangedCondition"
+               editable="true">
+      <input_port name="led_vector"
+                  default="{leds}"/>
+    </Condition>
     <Action ID="LEDPublisherAction">
       <input_port name="drawer_address"
                   default="{drawer}"/>
