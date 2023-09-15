@@ -41,8 +41,6 @@ namespace base_plugins
                 BT::InputPort<bt_base_types::LED>("LED_color"),
                 BT::OutputPort<bt_base_types::LED>("LED_color")};
         }
-
-    private:
     };
 } // namespace statemachine
 #endif
