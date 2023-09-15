@@ -13,10 +13,10 @@ namespace bt_plugins
 
   BT::NodeStatus GetBlackboardEntry::tick()
   {
-    communication_interfaces::msg::DrawerAddress value = _blackboard->get<communication_interfaces::msg::DrawerAddress>(_key);
-    std::string value_string = "ticked with address: " + std::to_string(value.drawer_id) + " " + std::to_string(value.module_id);
+    communication_interfaces::msg::DrawerAddress hardware_id = _blackboard->get<communication_interfaces::msg::DrawerAddress>(_key);
+    std::string value_string = "ticked with address: " + std::to_string(hardware_id.drawer_id) + " " + std::to_string(hardware_id.module_id);
     RCLCPP_DEBUG(rclcpp::get_logger("GetBlackboardEntry"), value_string.c_str());
-    setOutput("value", value);
+    setOutput("value", hardware_id);
     return BT::NodeStatus::SUCCESS;
   }
 }

@@ -81,14 +81,5 @@ namespace bt_base_types
       return led_cmd;
     }
 
-    // static LED from_drawer_leds(const communication_interfaces::msg::DrawerLeds &drawer_led)
-    // {
-    //   LED led;
-    //   led.red = drawer_led.red;
-    //   led.blue = drawer_led.blue;
-    //   led.green = drawer_led.green;
-    //   led.brightness = drawer_led.brightness;
-    //   return led;
-    // }
   };
 }
