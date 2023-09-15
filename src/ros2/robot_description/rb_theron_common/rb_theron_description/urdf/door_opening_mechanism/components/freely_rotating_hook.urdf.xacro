@@ -11,7 +11,7 @@
             axis_x="1"
             axis_y="0"
             axis_z="0"
-            lower_limit="0.0"
+            lower_limit="-3.14"
             upper_limit="3.14"
             damping="0.05"
             friction="0.1"
