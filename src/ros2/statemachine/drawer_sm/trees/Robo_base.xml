@@ -19,7 +19,7 @@
                               LEDs_colored="{leds}"/>
           <IfThenElse>
             <BoolTopicCondition target_value="true"
-                                topic="/robot/safety_module/emergancy_stop"/>
+                                topic="/robot/safety_module/emergency_stop"/>
             <PartialColorizeLED LEDs="{leds}"
                                 blue="0"
                                 brightness="100"
