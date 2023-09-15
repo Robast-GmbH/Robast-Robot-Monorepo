@@ -153,13 +153,33 @@ namespace door_opening_mechanism_mtc
   {
     RCLCPP_INFO(_LOGGER, "Creating task!");
 
+    RCLCPP_INFO(_LOGGER, "target_pose with frame %s:", target_pose.header.frame_id.c_str());
+    RCLCPP_INFO(_LOGGER, "  x: %f", target_pose.pose.position.x);
+    RCLCPP_INFO(_LOGGER, "  y: %f", target_pose.pose.position.y);
+    RCLCPP_INFO(_LOGGER, "  z: %f", target_pose.pose.position.z);
+
+    double roll = 1.57079632679;
+    double pitch = 1.57079632679;
+    double yaw = 0.0;
+    // Create a Quaternion
+    tf2::Quaternion quaternion;
+    quaternion.setRPY(roll, pitch, yaw);
+    target_pose.pose.orientation.x = quaternion.x();
+    target_pose.pose.orientation.y = quaternion.y();
+    target_pose.pose.orientation.z = quaternion.z();
+    target_pose.pose.orientation.w = quaternion.w();
+
     mtc::Task task;
     task.stages()->setName("approach door handle task");
     task.loadRobotModel(shared_from_this());
 
-    const auto& group_name = "mobile_base_arm";   // mobile_base_arm or door_opening_mechanism
+    const auto& group_name = "door_opening_mechanism";   // mobile_base_arm or door_opening_mechanism
+    const auto& group_name_arm = "door_opening_mechanism";
     const auto& end_effector_name = "door_opening_end_effector";
     const auto& end_effector_parent_link = "door_opening_mechanism_link_freely_rotating_hook";
+
+    const auto& hand_group_name = "hand";
+    const auto& hand_frame = "hook_base_link";
 
     // Set task properties
     task.setProperty("group", group_name);
@@ -179,12 +199,26 @@ namespace door_opening_mechanism_mtc
     cartesian_planner->setMaxAccelerationScalingFactor(1.0);
     cartesian_planner->setStepSize(.01);
 
-    auto stage_open_hand = std::make_unique<mtc::stages::MoveTo>("Starting position", interpolation_planner);
-    stage_open_hand->setGroup(group_name);
-    stage_open_hand->setGoal("starting_position");
-    stage_open_hand->setIKFrame(end_effector_parent_link);
-    stage_open_hand->properties().configureInitFrom(mtc::Stage::PARENT);
-    task.add(std::move(stage_open_hand));
+    // Connect the initial stage with the generated IK solution using the sampling planner.
+    auto stage = std::make_unique<moveit::task_constructor::stages::Connect>(
+        "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name_arm, sampling_planner}});
+    stage->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT);
+    task.add(std::move(stage));
+
+    // Generate a pose (this gets put in the IK wrapper below)
+    auto generate_pose_stage = std::make_unique<moveit::task_constructor::stages::GeneratePose>("generate pose");
+    generate_pose_stage->setPose(target_pose);
+    generate_pose_stage->setMonitoredStage(task.stages()->findChild("current"));
+
+    // Compute IK
+    auto ik_wrapper = std::make_unique<moveit::task_constructor::stages::ComputeIK>("generate pose IK",
+                                                                                    std::move(generate_pose_stage));
+    ik_wrapper->setMaxIKSolutions(10);
+    ik_wrapper->setTimeout(1.0);
+    ik_wrapper->setIKFrame(end_effector_parent_link);
+    ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT, {"eef", "group"});
+    ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE, {"target_pose"});
+    task.add(std::move(ik_wrapper));
 
     // auto stage_move_to_pick = std::make_unique<mtc::stages::Connect>(
     //     "move to pick", mtc::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
