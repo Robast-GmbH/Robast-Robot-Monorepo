@@ -14,6 +14,36 @@ namespace bt_base_types
     uint8_t blue = 0;
     uint8_t green = 0;
     uint8_t brightness = 0;
+
+    LED &operator=(const communication_interfaces::msg::Led &ros_led)
+    {
+      red = ros_led.red;
+      blue = ros_led.blue;
+      green = ros_led.green;
+      brightness = ros_led.brightness;
+      return *this;
+    }
+
+    bool operator==(const communication_interfaces::msg::Led &ros_led) const
+    {
+      return red == ros_led.red &&
+             blue == ros_led.blue &&
+             green == ros_led.green &&
+             brightness == ros_led.brightness;
+    }
+
+    bool operator!=(const communication_interfaces::msg::Led &ros_led) const
+    {
+      return !(*this == ros_led);
+    }
+
+    bool operator==(const LED &led) const
+    {
+      return red == led.red &&
+             blue == led.blue &&
+             green == led.green &&
+             brightness == led.brightness;
+    }
   };
 
   class Base_LED_modes
@@ -80,15 +110,5 @@ namespace bt_base_types
       led_cmd.start_index = start_index;
       return led_cmd;
     }
-
-    // static LED from_drawer_leds(const communication_interfaces::msg::DrawerLeds &drawer_led)
-    // {
-    //   LED led;
-    //   led.red = drawer_led.red;
-    //   led.blue = drawer_led.blue;
-    //   led.green = drawer_led.green;
-    //   led.brightness = drawer_led.brightness;
-    //   return led;
-    // }
   };
 }
