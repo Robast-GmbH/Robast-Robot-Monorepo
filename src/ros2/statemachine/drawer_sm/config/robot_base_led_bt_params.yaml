@@ -11,4 +11,4 @@ robot_tree_initiator:
     bt_path: "/workspace/src/statemachine/drawer_sm/trees/Robo_base.xml"
     trigger_topic: "trigger_base_tree"
     main_tree: "BehaviorTree"
-    tree_tick_time: 1000
+    tree_tick_time: 200
