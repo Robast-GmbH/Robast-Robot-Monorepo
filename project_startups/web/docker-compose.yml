@@ -10,6 +10,8 @@ services:
       - ./backend/:/workspace/:cached
       - ../../src/web/backend:/workspace/src/:cached
     command: /bin/sh -c "while sleep 1000; do :; done"
+    network_mode: "host" 
+
   db:
     image: postgres:14.1-alpine
     restart: always
@@ -20,6 +22,8 @@ services:
       - '5432:5432'
     volumes: 
       - db:/var/lib/postgresql/data
+    network_mode: "host" 
+    
 volumes:
   db:
     driver: local

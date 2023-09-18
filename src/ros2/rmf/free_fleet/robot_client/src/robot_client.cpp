@@ -13,25 +13,19 @@ namespace rmf_robot_client
 
   void RobotClient::init_param()
   {
-    this->declare_parameter<std::string>("fleet_name", "ROBAST");
-    this->declare_parameter<std::string>("robot_name", "RB0");
-    this->declare_parameter<std::string>("robot_model", "Robast_Theron");
-
-    this->declare_parameter<std::string>("behavior_tree", "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml");
-
-    this->declare_parameter<std::string>("map_frame_id", "map");
-    this->declare_parameter<std::string>("robot_frame_id", "robot_base_footprint");
+    this->declare_parameter("fleet_name", "ROBAST");
+    this->declare_parameter("robot_name", "RB0");
+    this->declare_parameter("robot_model", "Robast_Theron");
+    this->declare_parameter("behavior_tree", "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml");
+    this->declare_parameter("map_frame_id", "map");
+    this->declare_parameter("robot_frame_id", "robot_base_footprint");
     
-   
-
-    this->get_parameter_or<std::string>("fleet_name", fleet_name);
-    this->get_parameter_or<std::string>("robot_name", robot_name);
-    this->get_parameter_or<std::string>("robot_model", robot_model);
-    this->get_parameter_or<std::string>("behavior_tree", behavior_tree);
-    this->get_parameter_or<std::string>("map_frame_id", map_frame_id);
-    this->get_parameter_or<std::string>("robot_frame_id", robot_frame_id);
-
-
+    fleet_name=this->get_parameter("fleet_name").as_string();
+    robot_name= this->get_parameter("robot_name").as_string();
+    robot_model= this->get_parameter("robot_model").as_string();
+    behavior_tree= this->get_parameter("behavior_tree").as_string();
+    map_frame_id= this->get_parameter("map_frame_id").as_string();
+    robot_frame_id= this->get_parameter("robot_frame_id").as_string();
 
     get_parameter_to_config("statemaschine_open_drawer_topic", "/trigger_drawer_tree");
     get_parameter_to_config("statemaschine_open_e_drawer_topic", "/trigger_electric_drawer_tree");
@@ -40,6 +34,8 @@ namespace rmf_robot_client
     get_parameter_to_config("drawer_status_change_topic","/drawer_is_open" );
 
     get_parameter_to_config("nfc_write_usertag_to_card_action_topic","/create_user");
+    get_parameter_to_config("nfc_on_off_switch_topic","/nfc_switch");
+    get_parameter_to_config("nfc_authenticated_user_topic","/authenticated_user");
 
     get_parameter_to_config("fleet_communication_setting_topic", "/setting_request");
     get_parameter_to_config("fleet_communication_create_nfc_topic", "/new_user_request");
@@ -81,8 +77,7 @@ namespace rmf_robot_client
     qos.avoid_ros_namespace_conventions(false);
 
     robot_info_publisher_ = this->create_publisher<FreeFleetDataRobotInfo>(config["fleet_communication_robot_info_topic"], qos);
-    //publish_robot_info_timer= this->create_wall_timer(std::chrono::milliseconds(2000), std::bind(&RobotClient::publish_fleet_state, this)); // removed onl
-    y for debugging
+    publish_robot_info_timer_ = this->create_wall_timer(std::chrono::milliseconds(2000), std::bind(&RobotClient::publish_fleet_state, this)); // removed only for debugging
     reset_simple_tree_publisher_ = this->create_publisher<StdMsgBool>(config["statemaschine_reset_simple_tree_topic"], qos);
   }
 
@@ -139,7 +134,7 @@ namespace rmf_robot_client
       return;
     }
 
-    if (!task_sequence.insert(std::make_pair(step, std::make_unique<DrawerAction>(DrawerAction(task_id, step, shared_from_this(), config, drawer_list, msg->drawer_id, msg->module_id, msg->e_drawer, msg->restricted)))).second)
+    if (!task_sequence.insert(std::make_pair(step, std::make_unique<DrawerAction>(DrawerAction(task_id, step, shared_from_this(), config, drawer_list, msg->drawer_id, msg->module_id, msg->e_drawer, msg->authorized_user)))).second)
     {
       RCLCPP_ERROR(this->get_logger(),"Task %i, step %i could not be added to robot Queue", task_id, step);
       return;
@@ -177,11 +172,13 @@ namespace rmf_robot_client
     }
   }
 
-  void RobotClient::end_current_action(int step)
+  void RobotClient::end_current_action(int comletted_step)
   {
+    if(comletted_step==current_step)
+    {
     start_next_action();
-     start_next_action();
-     return;
+    }
+    return;
   }
 
   bool RobotClient::prepare_new_action(std::string task_def, std::string recipient_fleet, std::string recipient_robot,int& new_task_id, int& new_step )
@@ -227,7 +224,7 @@ namespace rmf_robot_client
     for (auto& pair : task_sequence) {
         pair.second.reset(); 
     }
-    task_sequence.empty();
+    task_sequence.clear();
     current_step = 0;
   }
 
@@ -237,7 +234,7 @@ namespace rmf_robot_client
     if(it == task_sequence.end()) 
     {
       //publish_task_state("Task", "NotFound", true);
-      RCLCPP_INFO(this->get_logger(), "Task: %i Step: %i| Not Found in Queue");
+      RCLCPP_INFO(this->get_logger(), "Task: %i Step: %i| Not Found in Queue", task_id, current_step);
       end_current_task();
       return;
     }
@@ -284,7 +281,7 @@ namespace rmf_robot_client
         } 
     catch (const tf2::TransformException & ex) 
       {
-          RCLCPP_INFO( this->get_logger(), "Could not transform %s to %s: %s", map_frame_id, robot_frame_id, ex.what());
+          RCLCPP_INFO( this->get_logger(), "Could not transform %s to %s: %s", map_frame_id.c_str(), robot_frame_id.c_str(), ex.what());
           return;
       }
     

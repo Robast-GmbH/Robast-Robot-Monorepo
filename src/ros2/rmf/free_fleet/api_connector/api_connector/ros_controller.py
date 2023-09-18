@@ -3,6 +3,7 @@ from rclpy.node import Node
 import json
 from multiprocessing import get_logger
 import requests
+from requests.exceptions import ConnectTimeout
 from communication_interfaces.msg import FFSlideDrawer
 import fleet_interfaces.msg  as dds
 
@@ -108,14 +109,14 @@ class ros_controller(Node):
         self.dds_destination_request.publish(destination_request)
 
     # handle_drawer_request
-    def handle_slide_drawer_request(self, fleet_name:str, robot_name: str, task_id:str, module_id: int, drawer_id: int, restricted:list[str] , e_drawer: bool, open: bool):
+    def handle_slide_drawer_request(self, fleet_name:str, robot_name: str, task_id:str, module_id: int, drawer_id: int, restricted:list[int] , e_drawer: bool, open: bool):
         slide_drawer_request = dds.FreeFleetDataDrawerRequest()
         slide_drawer_request.task_id= task_id
         slide_drawer_request.fleet_name= fleet_name
         slide_drawer_request.robot_name= robot_name
         slide_drawer_request.module_id=  module_id
         slide_drawer_request.drawer_id= drawer_id
-        slide_drawer_request.restricted= restricted
+        slide_drawer_request.authorized_user = restricted
         slide_drawer_request.e_drawer= e_drawer
         self.dds_slide_drawer_request.publish(slide_drawer_request)    
 
@@ -142,6 +143,7 @@ class ros_controller(Node):
         if self.responce is not None:
             mode =msg.mode
             self.responce.handle_robot_update(robot_name= msg.name, task_id=msg.task_id, mode=mode, x_pose= msg.location.x ,y_pose= msg.location.y, yaw_pose= msg.location.yaw, battery_level= msg.battery_percent)
+          
 
     def update_task_state(self, msg: dds.FreeFleetDataTaskState):
         self.get_logger().info(f"{msg}")

@@ -43,7 +43,7 @@ namespace rmf_robot_client
 
     rclcpp_action::Client<NavigateToPose>::SendGoalOptions send_goal_options = rclcpp_action::Client<NavigateToPose>::SendGoalOptions();
     
-    //send_goal_options.goal_response_callback = std::bind(&NavigationAction::goal_response_callback, this, std::placeholders::_1);
+    send_goal_options.goal_response_callback = std::bind(&NavigationAction::goal_response_callback, this, std::placeholders::_1);
     send_goal_options.feedback_callback = std::bind(&NavigationAction::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
     send_goal_options.result_callback = std::bind(&NavigationAction::result_callback, this, std::placeholders::_1);
  
@@ -59,9 +59,9 @@ namespace rmf_robot_client
   }
   
 
-  void NavigationAction::goal_response_callback(std::shared_future<GoalHandleNavigateToPose::SharedPtr> future)
+  void NavigationAction::goal_response_callback(const GoalHandleNavigateToPose::SharedPtr& goal_handle)
   {
-    current_action_goal_handle= future.get();
+    current_action_goal_handle= goal_handle;
     if (!current_action_goal_handle)
     {
       RCLCPP_ERROR(ros_node->get_logger(), "Goal was rejected by server");

@@ -28,7 +28,7 @@ namespace rmf_robot_client
       void result_callback(const GoalHandleCreateUserNfcTag::WrappedResult &result);
 
       void start_writing_procedure();
-      void goal_response_callback(std::shared_future<GoalHandleCreateUserNfcTag::SharedPtr> future);
+      void goal_response_callback(const GoalHandleCreateUserNfcTag::SharedPtr &goal_handle);
   };
 }// namespace robot_client
 #endif   // RMF__ROBOT_CLIENT__NFC_ACTION_HPP_

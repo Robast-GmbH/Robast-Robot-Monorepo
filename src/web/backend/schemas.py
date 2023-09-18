@@ -15,7 +15,7 @@ class Robot(BaseModel):
     robot_name: str
 
 class RobotStatus(Robot):
-    task_id: int
+    task_id: Optional[int]
     x_pose:float
     y_pose: float
     yaw_pose: float

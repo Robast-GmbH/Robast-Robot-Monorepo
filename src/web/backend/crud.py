@@ -1,6 +1,7 @@
 from queue import Empty
 from xmlrpc.client import boolean
 from sqlalchemy.orm import Session
+import sqlalchemy 
 from sqlalchemy import event, inspect, update, asc, desc, distinct,cast
 from sqlalchemy.sql.elements import Null
 from sqlalchemy.sql.functions import user
@@ -248,6 +249,8 @@ def get_robot(db:Session, robot_name:str)-> models.Robot:
      return db.query(models.Robot).filter( models.Robot.robot_name==robot_name).first()
 
 def set_robot(db:Session, robot:schemas.Robot):
+    if(robot.task_id==0):
+        robot.task_id=None
     db_robot= get_robot(db=db,robot_name=robot.robot_name)
     if (db_robot is None):
         db_robot = models.Robot(robot_name = robot.robot_name,
@@ -266,7 +269,7 @@ def set_robot(db:Session, robot:schemas.Robot):
         db_robot.x_pose = robot.x_pose
         db_robot.y_pose = robot.y_pose
         db_robot.yaw_pose = robot.yaw_pose
-        db_robot.task_id =robot.task_id
+        db_robot.task_id = robot.task_id
 
         db.flush()
         db.commit()

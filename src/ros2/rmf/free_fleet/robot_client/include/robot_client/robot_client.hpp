@@ -75,7 +75,7 @@ namespace rmf_robot_client
           int task_id;
           int current_step;
           std::map<int, std::unique_ptr<Action>> task_sequence;
-          rclcpp::TimerBase::SharedPtr publish_robot_info_timer;
+          rclcpp::TimerBase::SharedPtr publish_robot_info_timer_;
 
           //robot 
           std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};

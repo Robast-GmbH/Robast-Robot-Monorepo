@@ -55,8 +55,8 @@ class DrawerAction(Base):
     __tablename__="draweraction"
     id= Column(Integer, ForeignKey('action.id'), primary_key=True)
     target_user_id =Column(Integer)
-    drawer_id= Column(Integer, ForeignKey('module.module_id'))
-    module_id= Column(Integer,ForeignKey('module.drawer_id'))
+    drawer_id= Column(Integer)
+    module_id= Column(Integer)
 
 class NewUserAction(Base):
     __tablename__="useraction"

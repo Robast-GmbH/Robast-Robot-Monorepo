@@ -11,7 +11,7 @@ import models
 def init(db: Session):
         
         if(not hasUser(db)):
-                addUser( "Werner","Werner Tester", "Robast", False, db )
+                addUser( "Werner","Werner Tester", "Robast2022HH", False, db )
                 addUser( "Torben", "Torben Zurhelle", "Robast2022HH", True, db )
                 addUser( "Tobias", "Tobias Alscher", "Robast2022HH", True, db )
                 addUser( "Jacob", "Jacob Ritterbach", "Robast2022HH", True, db )
@@ -22,7 +22,6 @@ def init(db: Session):
                 addDrawer("RB0", 3, 0, 3, models.DrawerSlideTypes.Electrical, 10, db)
                 addDrawer("RB0", 4, 0, 4, models.DrawerSlideTypes.Manual, 20, db)
                 addDrawer("RB0", 5, 0, 5, models.DrawerSlideTypes.Manual, 30, db)
-
         return
 
 
@@ -38,7 +37,7 @@ def hasUser (db:Session):
 
 
 def addRobot(robot_name:str, fleet_name:str, x:float, y:float, yaw:float, db:Session):
-        db_robot = models.Robot(robot_name= robot_name, fleet_name=fleet_name, x_pose=x, y_pose=y, yaw_pose=yaw, task_id=0)
+        db_robot = models.Robot(robot_name= robot_name, fleet_name=fleet_name, x_pose=x, y_pose=y, yaw_pose=yaw, task_id=None)
         db.add(db_robot)
         db.commit()
         db.refresh(db_robot)

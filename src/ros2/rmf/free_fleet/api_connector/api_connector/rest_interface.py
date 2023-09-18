@@ -5,6 +5,7 @@ from . import schemas
 from fastapi import FastAPI , HTTPException,Body
 from typing_extensions import Annotated
 import requests
+from requests.exceptions import ConnectionError
 import json
 
 class RestInterface():
@@ -86,7 +87,12 @@ class RestInterface():
 
         message= self.fill_robot_status_msg(robot_name, "ROBAST", task_id=task_id, x_pose= x_pose, y_pose= y_pose, yaw_pose= yaw_pose, battery_level=battery_level )
         sender = requests.Session()
-        sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
+        try:
+            sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
+        except ConnectionError:
+            self.ros_node.get_logger().error('Backend is not responding')
+            
+
  
     def handle_drawer_status_change(self, task_id, module_id, drawer_id, status):
         #update task

@@ -23,9 +23,9 @@ namespace rmf_robot_client
       GoalHandleNavigateToPose::SharedPtr current_action_goal_handle;
 
       void start_navigation();
-      void goal_response_callback(std::shared_future<GoalHandleNavigateToPose::SharedPtr> future);
       void feedback_callback(GoalHandleNavigateToPose::SharedPtr, const std::shared_ptr<const NavigateToPose::Feedback> feedback);
       void result_callback(const GoalHandleNavigateToPose::WrappedResult &result);
+      void goal_response_callback(const GoalHandleNavigateToPose::SharedPtr &goal_handle);
 
     public:
       NavigationAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string, std::string> config, float x, float y, float yaw, std::string behavior_tree, std::string frame_id);
