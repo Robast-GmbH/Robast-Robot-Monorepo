@@ -14,7 +14,7 @@ def generate_launch_description():
         executable="door_opening_mechanism_mtc",
         name="door_opening_mechanism_mtc",
         parameters=[
-            {"moveit2_planning_group_name": "door_opening_mechanism"}, # mobile_base_arm or door_opening_mechanism
+            {"moveit2_planning_group_name": "mobile_base_arm"}, # mobile_base_arm or door_opening_mechanism
             {"use_sim_time": True},
             moveit_config.to_dict()
         ],

@@ -173,7 +173,7 @@ namespace door_opening_mechanism_mtc
     task.stages()->setName("approach door handle task");
     task.loadRobotModel(shared_from_this());
 
-    const auto& group_name = "door_opening_mechanism";   // mobile_base_arm or door_opening_mechanism
+    const auto& group_name = "mobile_base_arm";   // mobile_base_arm or door_opening_mechanism
     const auto& group_name_arm = "door_opening_mechanism";
     const auto& end_effector_name = "door_opening_end_effector";
     const auto& end_effector_parent_link = "door_opening_mechanism_link_freely_rotating_hook";
@@ -192,6 +192,15 @@ namespace door_opening_mechanism_mtc
     task.add(std::move(stage_state_current));
 
     auto sampling_planner = std::make_shared<mtc::solvers::PipelinePlanner>(shared_from_this());
+    moveit_msgs::msg::WorkspaceParameters workspace_params;
+    workspace_params.min_corner.x = -5.0;
+    workspace_params.min_corner.y = -5.0;
+    workspace_params.min_corner.z = -5.0;
+    workspace_params.max_corner.x = 5.0;
+    workspace_params.max_corner.y = 5.0;
+    workspace_params.max_corner.z = 5.0;
+    sampling_planner->setProperty("workspace_parameters", workspace_params);
+
     auto interpolation_planner = std::make_shared<mtc::solvers::JointInterpolationPlanner>();
 
     auto cartesian_planner = std::make_shared<mtc::solvers::CartesianPath>();
@@ -201,8 +210,8 @@ namespace door_opening_mechanism_mtc
 
     // Connect the initial stage with the generated IK solution using the sampling planner.
     auto stage = std::make_unique<moveit::task_constructor::stages::Connect>(
-        "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name_arm, sampling_planner}});
-    stage->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT);
+        "Connect", moveit::task_constructor::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
+    stage->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT, {"eef", "group"});
     task.add(std::move(stage));
 
     // Generate a pose (this gets put in the IK wrapper below)
@@ -213,10 +222,12 @@ namespace door_opening_mechanism_mtc
     // Compute IK
     auto ik_wrapper = std::make_unique<moveit::task_constructor::stages::ComputeIK>("generate pose IK",
                                                                                     std::move(generate_pose_stage));
-    ik_wrapper->setMaxIKSolutions(10);
+    ik_wrapper->setMaxIKSolutions(3);
+    ik_wrapper->setMinSolutionDistance(1.0);
     ik_wrapper->setTimeout(1.0);
-    ik_wrapper->setIKFrame(end_effector_parent_link);
-    ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT, {"eef", "group"});
+    // ik_wrapper->setIKFrame(end_effector_parent_link);
+    ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
+                                               {"eef", "group", "workspace_parameters"});
     ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE, {"target_pose"});
     task.add(std::move(ik_wrapper));
 
