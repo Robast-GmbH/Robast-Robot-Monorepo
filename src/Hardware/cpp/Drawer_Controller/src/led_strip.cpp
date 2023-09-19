@@ -7,7 +7,7 @@ namespace drawer_controller
         _current_led_states(NUM_OF_LEDS),
         _target_led_animation(std::vector<LedState>(NUM_OF_LEDS), 0, NUM_OF_LEDS, 0),
         _new_target_led_animation(std::vector<LedState>(NUM_OF_LEDS), 0, NUM_OF_LEDS, 0),
-        _fading_in_progress(false),
+        _is_fading_in_progress(false),
         _current_index_led_states(0),
         _head_of_led_animations_queue(0),
         _previous_millis(0)
@@ -48,7 +48,7 @@ namespace drawer_controller
 
   void LedStrip::handle_led_control()
   {
-    if (_fading_in_progress)
+    if (_is_fading_in_progress)
     {
       handle_fading();
       apply_led_states_to_led_strip();
@@ -82,7 +82,7 @@ namespace drawer_controller
   void LedStrip::init_fading(const uint8_t new_fade_time_in_hundreds_of_ms)
   {
     debug_printf("Init fading with new_fade_time_in_hundreds_of_ms = %d \n", new_fade_time_in_hundreds_of_ms);
-    _fading_in_progress = true;
+    _is_fading_in_progress = true;
     timer::set_max_counter_value(new_fade_time_in_hundreds_of_ms, TIMER_FACTOR);
     timer::enable_timer();
   }
@@ -93,7 +93,7 @@ namespace drawer_controller
     unsigned long passed_time = current_millis - _previous_millis;
     if (passed_time > LED_ANIMATION_APPLYING_PERIOD_IN_MS)
     {
-      FastLED.setBrightness(255);   // individual led brightness will be scaled down later in the for loop
+      FastLED.setBrightness(LED_MAX_BRIGHTNESS);   // individual led brightness will be scaled down in the for loop
       for (uint16_t i = _target_led_animation.start_index_led_states;
            i < _target_led_animation.num_of_led_states_to_change;
            ++i)
@@ -103,7 +103,7 @@ namespace drawer_controller
         uint8_t blue = _current_led_states[i].blue;
         uint8_t brightness = _current_led_states[i].brightness;
         _leds[i].setRGB(red, green, blue);
-        _leds[i].fadeToBlackBy(255 - brightness);
+        _leds[i].fadeToBlackBy(LED_MAX_BRIGHTNESS - brightness);
       }
       FastLED.show();
       _previous_millis = current_millis;
@@ -119,7 +119,7 @@ namespace drawer_controller
   {
     debug_println("Setting current led states to target led states...");
     timer::disable_timer();
-    _fading_in_progress = false;
+    _is_fading_in_progress = false;
     for (uint16_t i = 0; i < NUM_OF_LEDS; ++i)
     {
       _current_led_states[i].red = _target_led_animation.target_led_states[i].red;
@@ -144,7 +144,7 @@ namespace drawer_controller
     else
     {
       const float progress = timer::get_fade_counter_value() / timer::get_max_fade_counter_value();
-      if (progress < 1.0)
+      if (progress < FULL_PROGRESS_LED_FADING)
       {
         for (uint16_t i = 0; i < NUM_OF_LEDS; ++i)
         {
@@ -167,7 +167,6 @@ namespace drawer_controller
 
   void LedStrip::initialize_queue()
   {
-    _led_animations_queue.clear();
     _head_of_led_animations_queue = 0;
   }
 
@@ -184,14 +183,8 @@ namespace drawer_controller
   void LedStrip::set_num_of_leds_to_change_to_value_within_bounds(const uint16_t num_of_led_states,
                                                                   const uint16_t start_index_led_states)
   {
-    if ((num_of_led_states + start_index_led_states) < NUM_OF_LEDS)
-    {
-      _new_target_led_animation.num_of_led_states_to_change = num_of_led_states;
-    }
-    else
-    {
-      _new_target_led_animation.num_of_led_states_to_change = NUM_OF_LEDS - start_index_led_states;
-    }
+    _new_target_led_animation.num_of_led_states_to_change =
+      std::min(num_of_led_states, (uint16_t) (NUM_OF_LEDS - start_index_led_states));
   }
 
   void LedStrip::initialize_led_state_change(const uint16_t num_of_led_states_to_change,

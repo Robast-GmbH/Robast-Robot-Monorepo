@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <FastLED.h>
 
+#include <algorithm>
 #include <optional>
 
 #include "can/can_db.hpp"
@@ -24,6 +25,9 @@
 #define LED_INIT_GREEN                     155
 #define LED_INIT_BLUE                      155
 #define LED_INIT_BRIGHTNESS                25
+#define LED_MAX_BRIGHTNESS                 255
+
+#define FULL_PROGRESS_LED_FADING 1.0
 
 namespace drawer_controller
 {
@@ -41,7 +45,7 @@ namespace drawer_controller
     void set_led_state(LedState state);
 
    private:
-    bool _fading_in_progress;
+    bool _is_fading_in_progress;
     std::vector<LedState> _starting_led_states;   // used for fading from starting to target led state
     std::vector<LedState> _current_led_states;    // used to apply current led state to led strip
 
