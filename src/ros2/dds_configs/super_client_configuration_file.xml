@@ -11,8 +11,8 @@
                                 <metatrafficUnicastLocatorList>
                                     <locator>
                                         <udpv4>
-                                            <address>172.18.0.3</address>
-                                            <port>11812</port>
+                                            <address>127.0.0.1</address>
+                                            <port>11811</port>
                                         </udpv4>
                                     </locator>
                                 </metatrafficUnicastLocatorList>
