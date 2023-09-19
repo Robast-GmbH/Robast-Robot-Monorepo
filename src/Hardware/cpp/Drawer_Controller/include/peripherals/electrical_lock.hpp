@@ -5,8 +5,8 @@
 
 #include <memory>
 
-#include "debug.hpp"
-#include "i_gpio_wrapper.hpp"
+#include "debug/debug.hpp"
+#include "interfaces/i_gpio_wrapper.hpp"
 
 // the time in ms the lock mechanism needs to open resp. close the lock
 #define ELECTRICAL_LOCK_MECHANISM_TIME                         700   // according to the datasheet a minimum of 600ms is required

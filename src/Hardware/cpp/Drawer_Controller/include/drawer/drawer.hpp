@@ -5,10 +5,10 @@
 #include <optional>
 
 #include "can/can_db.hpp"
-#include "can_utils.hpp"
-#include "electrical_lock.hpp"
-#include "i_drawer.hpp"
-#include "i_gpio_wrapper.hpp"
+#include "can/can_utils.hpp"
+#include "interfaces/i_drawer.hpp"
+#include "interfaces/i_gpio_wrapper.hpp"
+#include "peripherals/electrical_lock.hpp"
 
 namespace drawer_controller
 {

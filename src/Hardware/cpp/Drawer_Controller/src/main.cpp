@@ -1,12 +1,12 @@
 #include <memory>
 
-#include "can_controller.hpp"
-#include "debug.hpp"
-#include "drawer.hpp"
-#include "electrical_drawer.hpp"
-#include "gpio.hpp"
-#include "i_gpio_wrapper.hpp"
-#include "led_strip.hpp"
+#include "can/can_controller.hpp"
+#include "debug/debug.hpp"
+#include "drawer/drawer.hpp"
+#include "drawer/electrical_drawer.hpp"
+#include "interfaces/i_gpio_wrapper.hpp"
+#include "led/led_strip.hpp"
+#include "peripherals/gpio.hpp"
 
 #define MODULE_ID               3
 #define LOCK_ID                 0
@@ -58,7 +58,6 @@ void setup()
   // drawers.push_back(drawer_0);
 
   led_strip = std::make_unique<drawer_controller::LedStrip>();
-  led_strip->initialize_led_strip();
 
   can_controller = std::make_unique<drawer_controller::CanController>(
     MODULE_ID, can_db, gpio_wrapper, OE_TXB0104_PIN_ID, PCA9554_OUTPUT);

@@ -1,4 +1,4 @@
-#include "led_strip.hpp"
+#include "led/led_strip.hpp"
 
 namespace drawer_controller
 {
@@ -12,6 +12,7 @@ namespace drawer_controller
         _head_of_led_animations_queue(0),
         _previous_millis(0)
   {
+    initialize_led_strip();
   }
 
   void LedStrip::add_element_to_led_animation_queue(LedAnimation led_animation)
@@ -78,7 +79,7 @@ namespace drawer_controller
     add_element_to_led_animation_queue(initial_led_animation);
   }
 
-  void LedStrip::init_fading(uint8_t new_fade_time_in_hundreds_of_ms)
+  void LedStrip::init_fading(const uint8_t new_fade_time_in_hundreds_of_ms)
   {
     debug_printf("Init fading with new_fade_time_in_hundreds_of_ms = %d \n", new_fade_time_in_hundreds_of_ms);
     _fading_in_progress = true;
@@ -109,7 +110,7 @@ namespace drawer_controller
     }
   }
 
-  float LedStrip::linear_interpolation(float a, float b, float t)
+  float LedStrip::linear_interpolation(const float a, const float b, const float t)
   {
     return a + t * (b - a);
   }
@@ -180,8 +181,8 @@ namespace drawer_controller
     timer::initialize_timer();
   }
 
-  void LedStrip::set_num_of_leds_to_change_to_value_within_bounds(uint16_t num_of_led_states,
-                                                                  uint16_t start_index_led_states)
+  void LedStrip::set_num_of_leds_to_change_to_value_within_bounds(const uint16_t num_of_led_states,
+                                                                  const uint16_t start_index_led_states)
   {
     if ((num_of_led_states + start_index_led_states) < NUM_OF_LEDS)
     {
@@ -193,9 +194,9 @@ namespace drawer_controller
     }
   }
 
-  void LedStrip::initialize_led_state_change(uint16_t num_of_led_states_to_change,
-                                             uint16_t start_index_of_leds_to_change,
-                                             uint8_t fade_time_in_hundreds_of_ms)
+  void LedStrip::initialize_led_state_change(const uint16_t num_of_led_states_to_change,
+                                             const uint16_t start_index_of_leds_to_change,
+                                             const uint8_t fade_time_in_hundreds_of_ms)
   {
     debug_printf(
       "Initialized led state change for %d num of leds with start index %d and fade_time_in_hundreds_of_ms %d!\n",

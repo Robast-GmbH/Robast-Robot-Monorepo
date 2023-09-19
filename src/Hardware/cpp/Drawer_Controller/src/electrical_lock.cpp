@@ -1,4 +1,4 @@
-#include "electrical_lock.hpp"
+#include "peripherals/electrical_lock.hpp"
 
 namespace drawer_controller
 {
