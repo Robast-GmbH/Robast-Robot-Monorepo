@@ -45,7 +45,7 @@ namespace drawer_controller
     void set_led_state(LedState state);
 
    private:
-    bool _is_fading_in_progress;
+    bool _is_fading_in_progress = false;
     std::vector<LedState> _starting_led_states;   // used for fading from starting to target led state
     std::vector<LedState> _current_led_states;    // used to apply current led state to led strip
 
@@ -62,15 +62,15 @@ namespace drawer_controller
     // one or two feedback messages and is rarely used. Furthermore we try to keep it as efficient as possible and try
     // to follow what is explained here: https://youtu.be/fHNmRkzxHWs?t=2541
     std::vector<LedAnimation> _led_animations_queue;
-    uint8_t _head_of_led_animations_queue;
+    uint8_t _head_of_led_animations_queue = 0;
 
-    LedAnimation _new_target_led_animation;   // the new target led animation that is successive filled by can msgs
+    LedAnimation _new_target_led_animation;   // the new target led animation that is successively filled by can msgs
 
-    uint16_t _current_index_led_states;
+    uint16_t _current_index_led_states = 0;
 
     CRGBArray<NUM_OF_LEDS> _leds;
 
-    unsigned long _previous_millis;   // makes sure that applying led animations is not done more often then required
+    unsigned long _previous_millis = 0;   // makes sure that applying led animations is not done more then required
 
     void led_init_mode();
 

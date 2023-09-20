@@ -7,10 +7,6 @@ namespace drawer_controller
         _current_led_states(NUM_OF_LEDS),
         _target_led_animation(std::vector<LedState>(NUM_OF_LEDS), 0, NUM_OF_LEDS, 0),
         _new_target_led_animation(std::vector<LedState>(NUM_OF_LEDS), 0, NUM_OF_LEDS, 0),
-        _is_fading_in_progress(false),
-        _current_index_led_states(0),
-        _head_of_led_animations_queue(0),
-        _previous_millis(0)
   {
     initialize_led_strip();
   }
