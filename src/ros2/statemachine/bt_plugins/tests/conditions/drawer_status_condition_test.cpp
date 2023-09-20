@@ -38,7 +38,7 @@ namespace test2
                 blackboard->set<rclcpp::Node::SharedPtr>(
                     "node",
                     node_drawer_test);
-                auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
+                auto bt_engine = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
                 auto bt = bt_engine->createTreeFromText(led_tree_xml, blackboard, "MainTree");
                 THEN("A Subtree should exist")
                 {

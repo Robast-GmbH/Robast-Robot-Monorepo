@@ -1,0 +1,8 @@
+#goal
+string footprint
+uint32 time_until_reset_in_ms  # this period determins, when the footprint will be reset to its default value 
+---
+#result
+---
+#feedback
+std_msgs/Empty feedback

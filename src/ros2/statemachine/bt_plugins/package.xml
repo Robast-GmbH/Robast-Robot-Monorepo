@@ -18,7 +18,7 @@
   <depend>behaviortree_cpp</depend>
   <depend>communication_interfaces</depend>
   <depend>error_utils</depend>
-
+  <depend>bt_base_types</depend>
 
   <export>
     <build_type>ament_cmake</build_type>
