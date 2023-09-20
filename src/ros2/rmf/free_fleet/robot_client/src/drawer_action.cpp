@@ -14,7 +14,7 @@ namespace rmf_robot_client
       qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
       qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
       qos.avoid_ros_namespace_conventions(false);
-     close_drawer_subscriber_= ros_node->create_subscription<DrawerAddress>( "/close_drawer", 10, std::bind(&DrawerAction::recive_closed_drawer, this, std::placeholders:_1));
+      close_drawer_subscriber_= ros_node->create_subscription<DrawerAddress>( "/close_drawer", 10, std::bind(&DrawerAction::receive_closed_drawer, this, std::placeholders::_1));
    
      //controll drawer
     if(is_edrawer)
@@ -29,9 +29,9 @@ namespace rmf_robot_client
     nfc_on_off_publisher_ = ros_node->create_publisher<StdMsgBool>(config["nfc_on_off_switch_topic"], qos);
   }
 
-  void DrawerAction::recive_closed_drawer(const DrawerAddress::SharedPtr msg)
+  void DrawerAction::receive_closed_drawer(const DrawerAddress::SharedPtr msg)
   {
-
+    publish_drawer_closed(msg->module_id, msg->drawer_id);
   }
 
   bool DrawerAction::start(std::function<void(int)> next_action_callback)
@@ -128,12 +128,17 @@ namespace rmf_robot_client
       drawer_msg.drawer_id = this->drawer_id;
       drawer_msg.module_id = this->module_id;
       trigger_close_drawer_publisher_->publish(drawer_msg);
-      publish_task_state("DrawerState", drawer_ref + "#Closed", false);
-      drawers->at(drawer_ref).is_opened=false;
-      RCLCPP_INFO( ros_node->get_logger(), "drawer(%i, %i, Closed)",module_id, drawer_id);
+      publish_drawer_closed(module_id, drawer_id);
     }
   }
 
+  void DrawerAction::publish_drawer_closed(int module_id, int drawer_id)
+  {
+    std::string drawer_ref = get_drawer_ref(module_id, drawer_id);
+    publish_task_state("DrawerState", drawer_ref + "#Closed", false);
+    drawers->at(drawer_ref).is_opened=false;
+    RCLCPP_INFO( ros_node->get_logger(), "drawer(%i, %i, Closed)",module_id, drawer_id);
+  }
   std::string DrawerAction::get_drawer_ref(int module_id, int drawer_id)
   {
     return std::to_string(module_id) + "#" + std::to_string(drawer_id);

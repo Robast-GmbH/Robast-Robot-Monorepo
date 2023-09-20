@@ -37,6 +37,7 @@ namespace rmf_robot_client
     void open_drawer(int target_module_id, int target_drawer_id);
     void open_drawer_action(int target_module_id, int target_drawer_id);
     void close_drawer(int module_id, int drawer_id);
+    void publish_drawer_closed(int module_id, int drawer_id);
     std::string get_drawer_ref(int module_id, int drawer_id);
     bool all_drawers_closed();
     void start_authentication_scan();
