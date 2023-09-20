@@ -6,7 +6,7 @@ namespace drawer_controller
       : _starting_led_states(NUM_OF_LEDS),
         _current_led_states(NUM_OF_LEDS),
         _target_led_animation(std::vector<LedState>(NUM_OF_LEDS), 0, NUM_OF_LEDS, 0),
-        _new_target_led_animation(std::vector<LedState>(NUM_OF_LEDS), 0, NUM_OF_LEDS, 0),
+        _new_target_led_animation(std::vector<LedState>(NUM_OF_LEDS), 0, NUM_OF_LEDS, 0)
   {
     initialize_led_strip();
   }
