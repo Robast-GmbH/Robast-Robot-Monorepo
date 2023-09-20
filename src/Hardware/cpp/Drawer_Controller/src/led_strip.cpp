@@ -218,7 +218,7 @@ namespace drawer_controller
 
     if (all_led_states_set)
     {
-      LedAnimation led_animation = _new_target_led_animation;
+      LedAnimation led_animation = _new_target_led_animation;   // deep copy (see "=" operator definition in struct)
       add_element_to_led_animation_queue(led_animation);
     }
   }
