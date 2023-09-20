@@ -1,6 +1,6 @@
 #include "bt_plugins/action/move_electric_drawer_action.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
 
     using std::placeholders::_1;
@@ -17,10 +17,12 @@ namespace drawer_statemachine
         // drawer_address_ = blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address");
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
-
+        int tmp = 0;
         getInput("move_electric_drawer_topic", topic_name_);
-        getInput("target_position", drawer_task_.target_position);
-        getInput("speed", drawer_task_.speed);
+        getInput("target_position", tmp);
+        drawer_task_.target_position = (uint8_t)tmp;
+        getInput("speed", tmp);
+        drawer_task_.speed = (uint8_t)tmp;
         getInput("stall_guard_enable", drawer_task_.stall_guard_enable);
 
         initializePublisher();
@@ -57,10 +59,10 @@ namespace drawer_statemachine
         RCLCPP_DEBUG(rclcpp::get_logger("MoveElectricDrawer"), "publisher resetted");
     }
 
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-    factory.registerNodeType<drawer_statemachine::MoveElectricDrawer>("MoveElectricDrawer");
+    factory.registerNodeType<statemachine::MoveElectricDrawer>("MoveElectricDrawer");
 }

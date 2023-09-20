@@ -1,4 +1,4 @@
-#include "electrical_drawer.hpp"
+#include "drawer/electrical_drawer.hpp"
 
 namespace drawer_controller
 {
@@ -277,7 +277,7 @@ namespace drawer_controller
       _electrical_lock->set_open_lock_current_step(
         false);   // this makes sure the lock automatically closes as soon as the drawer is opened
       _triggered_closing_lock_after_opening =
-        true;     // this makes sure, closing the lock is only triggered once and not permanently
+        true;   // this makes sure, closing the lock is only triggered once and not permanently
       debug_println("Triggered closing the lock because drawer is not retracted anymore!");
     }
   }

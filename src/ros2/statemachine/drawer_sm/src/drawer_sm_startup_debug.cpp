@@ -9,7 +9,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/lifecycle_node.hpp"
 
-#include "bt_plugins/action/change_led_action.hpp"
+// #include "bt_plugins/action/change_led_action.hpp"
 #include "bt_plugins/action/drawer_change_state_request_action.hpp"
 #include "bt_plugins/action/open_drawer_action.hpp"
 #include "bt_plugins/action/nfc_to_drawer_action.hpp"
@@ -74,7 +74,7 @@ public:
     blackboard->set<std::map<std::string, DrawerAddress>>(
         "nfc_keys", nfc_dictionary);
 
-    auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
+    auto bt_engine = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
     bt_ = bt_engine->createTreeFromText(nfc_tree_xml, blackboard, "MainTree");
     if (bt_.subtrees[0])
     {
@@ -86,7 +86,7 @@ public:
         {
           if ((*iter)->registrationName() == "NFCToDrawer")
           {
-            drawer_statemachine::NFCToDrawer *node = dynamic_cast<drawer_statemachine::NFCToDrawer *>((*iter).get());
+            statemachine::NFCToDrawer *node = dynamic_cast<statemachine::NFCToDrawer *>((*iter).get());
             std::cout << "found: " << *plugin_name << "\n";
             found = true;
 
@@ -133,7 +133,7 @@ private:
   }
 
   rclcpp::TimerBase::SharedPtr timer_;
-  // drawer_statemachine::BehaviorTreeEngine bt_engine_;
+  // statemachine::BehaviorTreeEngine bt_engine_;
   BT::Tree bt_;
   rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _start_bt_sub;
 };
@@ -161,7 +161,7 @@ public:
     blackboard->set<std::chrono::milliseconds>(
         "bt_loop_duration",
         std::chrono::milliseconds(10));
-    auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
+    auto bt_engine = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
 
     std::string default_path = "/workspace/install/drawer_sm/trees/trees/drawer_sequence_simple.xml";
     bt_ = bt_engine->createTreeFromFile(default_path, blackboard, "MainTree");
@@ -175,7 +175,7 @@ public:
         {
           if ((*iter)->registrationName() == "DrawerChangeStateReq")
           {
-            drawer_statemachine::DrawerChangeStateReq *node = dynamic_cast<drawer_statemachine::DrawerChangeStateReq *>((*iter).get());
+            statemachine::DrawerChangeStateReq *node = dynamic_cast<statemachine::DrawerChangeStateReq *>((*iter).get());
             std::cout << "found: " << *plugin_name << "\n";
             found = true;
 
@@ -215,14 +215,14 @@ private:
   }
 
   rclcpp::TimerBase::SharedPtr timer_;
-  // drawer_statemachine::BehaviorTreeEngine bt_engine_;
+  // statemachine::BehaviorTreeEngine bt_engine_;
   BT::Tree bt_;
   rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _start_bt_sub;
 };
 
 int main(int argc, char *argv[])
 {
-  using namespace drawer_statemachine;
+  using namespace statemachine;
   rclcpp::init(argc, argv);
   // const std::vector<std::string> plugins = {
   //               "change_led_action_bt_node",
@@ -258,7 +258,7 @@ int main(int argc, char *argv[])
   // blackboard->set<rclcpp::Node::SharedPtr>(
   //     "node",
   //     node);
-  // auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
+  // auto bt_engine = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
   // auto bt = bt_engine->createTreeFromText(led_tree_xml, blackboard);
 
   auto test_node = std::make_shared<BTTest>();

@@ -5,7 +5,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "behaviortree_cpp/condition_node.h"
 
-namespace drawer_statemachine
+namespace statemachine
 {
   template <typename T, typename V>
   class BaseCompareCondition : public BT::ConditionNode
@@ -55,4 +55,4 @@ namespace drawer_statemachine
     rclcpp::Node::SharedPtr _node;
     rclcpp::CallbackGroup::SharedPtr _callback_group;
   };
-} // namespace drawer_statemachine
+} // namespace statemachine

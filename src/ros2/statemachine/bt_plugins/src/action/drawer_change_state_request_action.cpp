@@ -1,6 +1,6 @@
 #include "bt_plugins/action/drawer_change_state_request_action.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
 
     using std::placeholders::_1;
@@ -62,10 +62,10 @@ namespace drawer_statemachine
         _new_message = true;
     }
 
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-    factory.registerNodeType<drawer_statemachine::DrawerChangeStateReq>("DrawerChangeStateReq");
+    factory.registerNodeType<statemachine::DrawerChangeStateReq>("DrawerChangeStateReq");
 }

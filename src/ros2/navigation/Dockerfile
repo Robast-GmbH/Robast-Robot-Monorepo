@@ -1,4 +1,4 @@
-FROM ros:humble as devel
+FROM ros:humble-perception as devel
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
@@ -42,16 +42,6 @@ RUN apt-get update && apt-get install -y \
   && rosdep init || echo "rosdep already initialized"
   # General ros stuff
 
-RUN apt-get update && apt-get install -y \
-    curl \
-    gnupg2 \
-  && curl http://repo.ros2.org/repos.key | apt-key add - \
-  && sh -c 'echo "deb [arch=amd64,arm64] http://packages.ros.org/ros2/ubuntu `lsb_release -cs` main" > /etc/apt/sources.list.d/ros2-latest.list' \
-  && apt-get update && apt-get install -y \
-    ros-${ROS_DISTRO}-desktop \
-    python3-argcomplete \
-  && rm -rf /var/lib/apt/lists/*
-
 #instal to use the nvidia gpu in the docker
 RUN apt-get update && apt-get install -y \
     libglvnd0 \
@@ -79,6 +69,16 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-diagnostic-updater \
   ros-${ROS_DISTRO}-foxglove-bridge \
   && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /mppi
+RUN git clone -b humble https://github.com/ros-planning/navigation2.git \
+  && apt update \
+  && apt upgrade -y \
+  && rosdep update \
+  && rosdep install --from-paths /mppi --ignore-src -r -y \
+  && chown -R ${USER} /mppi \
+  && echo "if [ -f /mppi/install/setup.bash ]; then source /mppi/install/setup.bash; fi" >> /home/$USER/.bashrc
+
   
 RUN apt-get update \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
@@ -101,6 +101,8 @@ ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
+
+WORKDIR /workspace
 
 ############################## Build ##################################
 FROM ros:humble-ros-base-jammy as build
@@ -126,11 +128,19 @@ RUN rosdep update && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
+WORKDIR /mppi
+
+RUN rosdep update && \
+  rosdep install --from-paths /ws/src --ignore-src -r -y && \
+  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  colcon build --install-base /robast/mppi/ --packages-select nav2_mppi_controller
+
 ############################## Release ##################################
-FROM ros:humble-ros-base-jammy as release
+FROM ros:humble-perception as release
 
 RUN apt-get update && apt-get install -y \
   cmake \
+  wget \
   libzmq3-dev \
   libdw-dev \
   libglvnd0 \
@@ -139,14 +149,17 @@ RUN apt-get update && apt-get install -y \
   libegl1 \
   libxext6 \
   libx11-6 \
-  libboost-all-dev \
+  vim \
   && rm -rf /var/lib/apt/lists/* 
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
-COPY --from=build /tmps/openvdb-8.2.0 /tmps/openvdb-8.2.0
-RUN cd /tmps/openvdb-8.2.0/builds/ \
-  make install
+
+RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
+  && tar -xvzf v8.2.0.tar.gz \
+  && cd openvdb-8.2.0/ \
+  && mkdir builds && cd builds && cmake .. \
+  && make && make install
 
 
 RUN apt-get update && apt-get upgrade -y\
@@ -163,7 +176,8 @@ ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
 RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc \
+  && echo "if [ -f /robast/mppi/setup.bash ]; then source /robast/mppi/setup.bash; fi" >> ~root/.bashrc
 
 ENV is_simulation=False
 ENV config_directory=config

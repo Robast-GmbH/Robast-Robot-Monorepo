@@ -11,13 +11,13 @@
 #include "std_msgs/msg/string.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
     /**
      * @brief A BT::ConditionNode that returns SUCCESS when goal is
      * updated on the blackboard and FAILURE otherwise
      */
-    class OpenDrawer : public BT::StatefulActionNode
+    class OpenDrawer : public BT::SyncActionNode
     {
     public:
         OpenDrawer(
@@ -30,9 +30,7 @@ namespace drawer_statemachine
          * @brief The main override required by a BT action
          * @return BT::NodeStatus Status of tick execution
          */
-        BT::NodeStatus onStart() override;
-        BT::NodeStatus onRunning() override;
-        void onHalted() override;
+        BT::NodeStatus tick() override;
 
         /**
          * @brief Creates list of BT ports
@@ -61,5 +59,5 @@ namespace drawer_statemachine
         // rclcpp::CallbackGroup::SharedPtr _callback_group;
         // rclcpp::executors::SingleThreadedExecutor _callback_group_executor;
     };
-} // namespace drawer_statemachine
+} // namespace statemachine
 #endif
