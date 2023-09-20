@@ -18,8 +18,6 @@ def generate_launch_description():
         default_value=os.path.join(bringup_dir, 'config', 'electrical_bt_params.yaml'),
         description='path to the bt_params.yaml file')
 
-    
-    # TODO @ Tobi tidy up. Combine all launches in one and add launch params
     param_substitutions = {
         'bt_path': os.path.join(bringup_dir, 'trees', 'default_electrical_drawer.xml')}
     
@@ -31,10 +29,11 @@ def generate_launch_description():
 
     bt_node = Node(
         package="bt_base_nodes",
-        executable="electrical_drawer_tree_initiator",
+        executable="tree_initiator",
         name="electrical_drawer_tree_initiator",
         output="screen",
         parameters=[configured_params])
+    
     ld = LaunchDescription()
     ld.add_action(declare_bt_config_params_cmd)
     ld.add_action(bt_node)

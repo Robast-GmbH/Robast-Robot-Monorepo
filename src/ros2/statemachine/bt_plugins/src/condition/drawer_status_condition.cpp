@@ -1,6 +1,6 @@
 #include "bt_plugins/condition/drawer_status_condition.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
     DrawerStatusCondition::DrawerStatusCondition(
         const std::string &name,
@@ -50,10 +50,10 @@ namespace drawer_statemachine
     {
         _last_message = msg->drawer_is_open;
     }
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-    factory.registerNodeType<drawer_statemachine::DrawerStatusCondition>("DrawerStatusCondition");
+    factory.registerNodeType<statemachine::DrawerStatusCondition>("DrawerStatusCondition");
 }

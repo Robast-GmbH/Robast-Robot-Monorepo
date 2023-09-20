@@ -8,7 +8,7 @@
 #include "behaviortree_cpp/condition_node.h"
 #include "communication_interfaces/msg/drawer_status.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
     class DrawerStatusCondition : public BT::ConditionNode
     {
@@ -38,6 +38,6 @@ namespace drawer_statemachine
         bool _target_value;
         std::string _topic_name;
     };
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #endif

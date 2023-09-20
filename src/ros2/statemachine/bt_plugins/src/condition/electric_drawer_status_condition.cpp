@@ -1,6 +1,6 @@
 #include "bt_plugins/condition/electric_drawer_status_condition.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
     ElectricDrawerStatusCondition::ElectricDrawerStatusCondition(
         const std::string &name,
@@ -62,12 +62,14 @@ namespace drawer_statemachine
 
     void ElectricDrawerStatusCondition::initialize_target_value()
     {
-        getInput("target_value", target_value_);
+        int tmp = 0;
+        getInput("target_value", tmp);
+        target_value_ = (uint8_t)tmp;
     }
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-    factory.registerNodeType<drawer_statemachine::ElectricDrawerStatusCondition>("ElectricDrawerStatusCondition");
+    factory.registerNodeType<statemachine::ElectricDrawerStatusCondition>("ElectricDrawerStatusCondition");
 }
