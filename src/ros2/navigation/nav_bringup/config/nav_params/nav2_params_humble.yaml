@@ -402,7 +402,7 @@ global_costmap:
           topic: /robot/bpearl_laser/scan
           marking: true
           clearing: true
-          obstacle_range: 15.0
+          obstacle_range: 5.0
           min_obstacle_height: 0.10
           max_obstacle_height: 1.8
           expected_update_rate: 0.25 # default 0, if not updating at this rate at least, remove from buffer
@@ -446,7 +446,7 @@ global_costmap:
           topic: /robot/front_laser/scan
           marking: true
           clearing: true
-          obstacle_range: 5.0
+          obstacle_range: 15.0
           min_obstacle_height: 0.1
           max_obstacle_height: 1.0
           expected_update_rate: 0.0

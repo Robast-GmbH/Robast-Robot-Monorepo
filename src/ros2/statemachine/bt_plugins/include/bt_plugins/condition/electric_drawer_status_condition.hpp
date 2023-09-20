@@ -5,7 +5,7 @@
 #include "communication_interfaces/msg/drawer_address.hpp"           // Include für communication_interfaces::msg::DrawerAddress
 #include "communication_interfaces/msg/electrical_drawer_status.hpp" // Include für communication_interfaces::msg::DrawerStatus
 
-namespace drawer_statemachine
+namespace statemachine
 {
     class ElectricDrawerStatusCondition : public BaseCompareCondition<communication_interfaces::msg::ElectricalDrawerStatus, uint8_t>
     {
@@ -25,6 +25,6 @@ namespace drawer_statemachine
         void callbackDrawerFeedback(const communication_interfaces::msg::ElectricalDrawerStatus::SharedPtr msg) override;
         void initialize_target_value() override;
     };
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #endif // DRAWER_STATEMACHINE_ELECTRIC_DRAWER_STATUS_CONDITION_HPP_

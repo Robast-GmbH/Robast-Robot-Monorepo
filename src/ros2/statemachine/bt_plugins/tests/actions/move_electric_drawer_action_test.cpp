@@ -46,7 +46,7 @@ namespace test2
 
             WHEN("The bt engine including the open drawer plugin is created")
             {
-                auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
+                auto bt_engine = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
                 blackboard->set<rclcpp::Node::SharedPtr>(
                     "node",
                     node_electric_drawer);

@@ -45,14 +45,14 @@
             "label": "Change LED color to green for drawer x",
             "detail": "Send topic message to change led color to green for module id x",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: ${input:module_id}, drawer_id: 0}, red: 0, blue: 0, green: 255, brightness: 150, mode: 1}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /led_cmd communication_interfaces/msg/LedCmd '{drawer_address: {module_id: ${input:module_id}, drawer_id: 0}, leds: [{red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}, {red: 0, green: 255, blue: 0, brightness: 150}], start_index: 0, fade_time_in_ms: 1000}' --once",
             "problemMatcher": []
         },
         {
             "label": "Change LED color to white for drawer x",
             "detail": "Send topic message to change led color to white for module id x",
             "type": "shell",
-            "command": "source install/setup.bash; ros2 topic pub /drawer_leds communication_interfaces/msg/DrawerLeds '{drawer_address: {module_id: ${input:module_id}, drawer_id: 0}, red: 255, blue: 255, green: 255, brightness: 150, mode: 0}' --once",
+            "command": "source install/setup.bash; ros2 topic pub /led_cmd communication_interfaces/msg/LedCmd '{drawer_address: {module_id: ${input:module_id}, drawer_id: 0}, leds: [{red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}, {red: 255, green: 255, blue: 255, brightness: 150}], start_index: 0, fade_time_in_ms: 1000}' --once",
             "problemMatcher": []
         },
         {

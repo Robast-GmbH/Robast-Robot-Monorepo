@@ -18,14 +18,14 @@ namespace drawer_bridge
       return qos_open_drawer;
     };
 
-    rclcpp::QoS get_qos_drawer_leds()
+    rclcpp::QoS get_qos_led_cmd()
     {
-      rclcpp::QoS qos_drawer_leds = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
-      qos_drawer_leds.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-      qos_drawer_leds.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-      qos_drawer_leds.avoid_ros_namespace_conventions(false);
+      rclcpp::QoS qos_led_cmd = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 2));
+      qos_led_cmd.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+      qos_led_cmd.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+      qos_led_cmd.avoid_ros_namespace_conventions(false);
 
-      return qos_drawer_leds;
+      return qos_led_cmd;
     };
 
     rclcpp::QoS get_qos_error_msgs()

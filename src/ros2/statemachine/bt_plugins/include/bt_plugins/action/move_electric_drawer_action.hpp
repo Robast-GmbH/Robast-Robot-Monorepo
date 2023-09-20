@@ -12,7 +12,7 @@
 #include "communication_interfaces/msg/drawer_address.hpp"
 #include "communication_interfaces/msg/drawer_task.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
     /**
      * @brief A BT::ConditionNode that returns SUCCESS when goal is

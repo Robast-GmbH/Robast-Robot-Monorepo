@@ -39,10 +39,11 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
   "msg/Box.msg"
   "msg/DrawerAddress.msg"
-  "msg/DrawerLeds.msg"
   "msg/DrawerStatus.msg"
   "msg/DrawerTask.msg"
   "msg/ElectricalDrawerStatus.msg"
+  "msg/Led.msg"
+  "msg/LedCmd.msg"
   "msg/Module.msg"
   "msg/NfcReadStatus.msg"
   "msg/NfcWriteStatus.msg"

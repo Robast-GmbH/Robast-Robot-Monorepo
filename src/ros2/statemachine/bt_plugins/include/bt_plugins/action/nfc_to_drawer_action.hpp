@@ -11,7 +11,7 @@
 #include "std_msgs/msg/string.hpp"
 #include "communication_interfaces/msg/drawer_address.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
   class NFCToDrawer : public BT::StatefulActionNode
   {
@@ -35,6 +35,6 @@ namespace drawer_statemachine
     rclcpp::Node::SharedPtr _node;
     std::map<std::string, communication_interfaces::msg::DrawerAddress> _nfc_key_to_DrawerAddress;
   };
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #endif // DRAWER_STATEMACHINE__BT_PLUGINS__ACTION__NFC_TO_DRAWER_ACTION_HPP
