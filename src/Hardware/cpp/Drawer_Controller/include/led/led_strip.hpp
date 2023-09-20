@@ -11,6 +11,7 @@
 #include "can/can_helper.h"
 #include "debug/debug.hpp"
 #include "led/led_animation.hpp"
+#include "led/led_header.hpp"
 #include "led/led_state.hpp"
 #include "peripherals/pinout_defines.hpp"
 #include "timer/timer.hpp"
@@ -38,9 +39,7 @@ namespace drawer_controller
 
     void handle_led_control();
 
-    void initialize_led_state_change(const uint16_t num_of_led_states,
-                                     const uint16_t start_index_led_states_input,
-                                     const uint8_t fade_time_in_hundreds_of_ms_input);
+    void initialize_led_state_change(const LedHeader led_header);
 
     void set_led_state(LedState state);
 

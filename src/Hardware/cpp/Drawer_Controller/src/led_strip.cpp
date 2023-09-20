@@ -183,20 +183,19 @@ namespace drawer_controller
       std::min(num_of_led_states, (uint16_t) (NUM_OF_LEDS - start_index_led_states));
   }
 
-  void LedStrip::initialize_led_state_change(const uint16_t num_of_led_states_to_change,
-                                             const uint16_t start_index_of_leds_to_change,
-                                             const uint8_t fade_time_in_hundreds_of_ms)
+  void LedStrip::initialize_led_state_change(LedHeader led_header)
   {
     debug_printf(
       "Initialized led state change for %d num of leds with start index %d and fade_time_in_hundreds_of_ms %d!\n",
-      num_of_led_states_to_change,
-      start_index_of_leds_to_change,
-      fade_time_in_hundreds_of_ms);
+      led_header.num_of_led_states_to_change,
+      led_header.start_index_of_leds_to_change,
+      led_header.fade_time_in_hundreds_of_ms);
 
-    set_num_of_leds_to_change_to_value_within_bounds(num_of_led_states_to_change, start_index_of_leds_to_change);
-    _new_target_led_animation.start_index_led_states = start_index_of_leds_to_change;
-    _new_target_led_animation.fade_time_in_hundreds_of_ms = fade_time_in_hundreds_of_ms;
-    _current_index_led_states = start_index_of_leds_to_change;
+    set_num_of_leds_to_change_to_value_within_bounds(led_header.num_of_led_states_to_change,
+                                                     led_header.start_index_of_leds_to_change);
+    _new_target_led_animation.start_index_led_states = led_header.start_index_of_leds_to_change;
+    _new_target_led_animation.fade_time_in_hundreds_of_ms = led_header.fade_time_in_hundreds_of_ms;
+    _current_index_led_states = led_header.start_index_of_leds_to_change;
   }
 
   void LedStrip::set_led_state(LedState state)

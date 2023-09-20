@@ -10,4 +10,11 @@ namespace drawer_controller
                     msg.get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS).get_data());
   }
 
+  LedHeader DataMapper::create_led_header(const robast_can_msgs::CanMessage msg)
+  {
+    return LedHeader(msg.get_can_signals().at(CAN_SIGNAL_NUM_OF_LEDS).get_data(),
+                     msg.get_can_signals().at(CAN_SIGNAL_START_INDEX).get_data(),
+                     msg.get_can_signals().at(CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS).get_data());
+  }
+
 }   // namespace drawer_controller

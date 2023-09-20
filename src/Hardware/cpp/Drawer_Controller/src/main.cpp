@@ -111,13 +111,8 @@ void loop()
         }
         break;
         case CAN_ID_LED_HEADER:
-        {
-          led_strip->initialize_led_state_change(
-            received_message->get_can_signals().at(CAN_SIGNAL_NUM_OF_LEDS).get_data(),
-            received_message->get_can_signals().at(CAN_SIGNAL_START_INDEX).get_data(),
-            received_message->get_can_signals().at(CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS).get_data());
-        }
-        break;
+          led_strip->initialize_led_state_change(data_mapper->create_led_header(received_message.value()));
+          break;
         case CAN_ID_SINGLE_LED_STATE:
           led_strip->set_led_state(data_mapper->create_led_state(received_message.value()));
           break;
