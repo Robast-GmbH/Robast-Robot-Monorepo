@@ -111,11 +111,17 @@ void loop()
         }
         break;
         case CAN_ID_LED_HEADER:
-          led_strip->initialize_led_state_change(data_mapper->create_led_header(received_message.value()));
-          break;
+        {
+          drawer_controller::LedHeader led_header = data_mapper->create_led_header(received_message.value());
+          led_strip->initialize_led_state_change(led_header);
+        }
+        break;
         case CAN_ID_SINGLE_LED_STATE:
-          led_strip->set_led_state(data_mapper->create_led_state(received_message.value()));
-          break;
+        {
+          drawer_controller::LedState led_state = data_mapper->create_led_state(received_message.value());
+          led_strip->set_led_state(led_state);
+        }
+        break;
         default:
           debug_println("Received unsupported CAN message.");
           break;
