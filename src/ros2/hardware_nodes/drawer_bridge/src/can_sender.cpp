@@ -29,12 +29,12 @@ namespace drawer_bridge
 
   void CanSender::add_can_message_to_queue(can_msgs::msg::Frame can_msg)
   {
+    _can_msg_queue.push(can_msg);
     // if queue was empty, the timer has been canceled before, so start timer for timer callbacks which trigger sending
     // the ascii cmds
     if (_can_msg_queue.empty())
     {
       _is_timer_period_increased = false;
-      _can_msg_queue.push(can_msg);
       _send_can_msgs_timer = _node->create_wall_timer(std::chrono::microseconds(TIMER_PERIOD_SEND_CAN_MSGS_IN_US),
                                                       std::bind(&CanSender::send_can_msgs_timer_callback, this));
       RCLCPP_INFO(_node->get_logger(),
@@ -44,11 +44,7 @@ namespace drawer_bridge
     }
     else
     {
-      if (_can_msg_queue.size() < MAX_QUEUE_SIZE_BEFORE_INCREASING_TIMER_PERIOD)
-      {
-        _can_msg_queue.push(can_msg);
-      }
-      else
+      if (_can_msg_queue.size() > MAX_QUEUE_SIZE_BEFORE_INCREASING_TIMER_PERIOD)
       {
         // In case the queue gets to large, it can happen that some can messages wont be published to the bus properly
         // therefore we need to decrease the wall timer period in such a case
@@ -66,7 +62,6 @@ namespace drawer_bridge
                       INCREASED_TIMER_PERIOD_SEND_CAN_MSGS_IN_US,
                       _can_msg_queue.size());
         }
-        _can_msg_queue.push(can_msg);
       }
     }
   }
