@@ -61,22 +61,6 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(status_code=400, detail="Email already registered")
     return crud.create_user(db=db, user=user)
 
-@app.post("/users/nfc")
-def add_nfc_code_to_user(user_id:int, robot_name:str, db: Session = Depends(get_db)):
-    db_robot = crud.get_robot(db=db, robot_name=robot_name)
-    task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, user_id)
-    step=1
-    db_action= crud.create_new_user_nfc(db, step, task_id,user_id )
-    action= templates.create_new_user(step, user_id= user_id)
-    task =templates.create_task(db,robot_name,task_id,[action])
-    headers =  {"Content-Type":"application/json"}
-    sender = requests.Session() 
-    answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
-
-    if answer.status_code!= 200:
-        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
-    return  
-
 @app.post("/users/{user_id}/nfc")
 def update_nfc_code(user_id:str, nfc_code:str, db: Session = Depends(get_db)):
     crud.create_nfc_code(user_id=user_id,nfc_code=nfc_code)
@@ -130,17 +114,16 @@ def read_task(task_id: int, db: Session = Depends(get_db)):
     return db_task
 
 
-@app.post("/tasks/")
-def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Session = Depends(get_db)):
+@app.post("/tasks/", response_model=int)
+def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Session= Depends(get_db)):
     task_id= crud.create_task(db=db,robot_name= robot.robot_name, fleet_name=robot.fleet_name, owner_id= user_id)
     for action in task.actions:
         if( action.type== schemas.ActionType.NAVIGATION):
-            crud.create_navigation_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.orientation)
+            return crud.create_navigation_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.yaw).id
         elif(action.type== schemas.ActionType.DRAWER):
-            crud.create_drawer_action(db, action.step,task_id, action.action.module_id, action.action.drawer_id)
+            return crud.create_drawer_action(db, action.step,task_id, action.action.module_id, action.action.drawer_id,action.action.owner_id, action.action.locked_for).id
         elif(action.type== schemas.ActionType.NEW_USER):
-            crud.create_new_user_nfc(db, action.step, task_id, action.action.user_id)
-    return 
+           return  crud.create_new_user_nfc(db, action.step, task_id, action.action.user_id).id
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
 def update_task( task_id:int, task: schemas.BaseTask, db: Session = Depends(get_db)):
@@ -183,6 +166,12 @@ def get_robots_status(db: Session = Depends(get_db)):
 def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     return db_robot
+
+@app.delete("/robots")
+def delete_all_robots(db: Session = Depends(get_db)):
+    crud.delete_robots(db=db)
+    return 
+
 
 @app.put("/robots/pause_resume")
 def pause_robot(robot_name: str, fleet_name:str, pause: bool , db: Session = Depends(get_db)):
@@ -290,17 +279,7 @@ def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(
 
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
-def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_user: list[int], owner:Annotated[int,Body()], db: Session = Depends(get_db)):
-    nfc_codes=[]
-    if(len(restricted_for_user)>0):
-       
-         for id in restricted_for_user:
-            nfc_code= crud.get_nfc_code(db=db, user_id=id)
-            nfc_codes.append(str(nfc_code)+":"+str(id))
-            if nfc_code is None:
-                db_user= crud.get_user(db,id)
-                raise HTTPException(404, detail="User "+db_user.fullname+" has no permission to lock a drawer")
-
+def open_drawer( robot_name: str, module: schemas.BaseDrawer, authorized_user: list[int], owner:Annotated[int,Body()], db: Session = Depends(get_db)):
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     db_module= crud.get_module(db=db,module_id=module.module_id,drawer_id=module.drawer_id)
     if db_module is None:
@@ -308,18 +287,16 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_use
     
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner)
     step=1
-    db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id,owner)
-    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.type == models.DrawerSlideTypes.Electrical, nfc_codes, locked_for= restricted_for_user)
+    db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id, locked_for=authorized_user)
+    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.type == models.DrawerSlideTypes.Electrical,authorized_user,False)
     if(action== "robot"):
         raise HTTPException(status_code=404, detail="robot not found" )
     task =templates.create_task(db,robot_name,task_id,[action])
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
-    
     answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
-
     if answer.status_code!= 200:
-        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+        raise HTTPException(status_code=answer.status_code, detail= json.dumps(task))
     return 
 
 

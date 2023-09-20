@@ -61,6 +61,25 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.refresh(db_user)
     return db_user
 
+def set_user(db:Session, override:bool, user:schemas.UserCreate):
+    db_user= get_user_by_email(db=db, email=user.email)
+    if(db_user is None ):
+        db_user = models.User(email=user.email, hashed_password=user.hashed_password, admin=user.admin, name= user.name, full_name= user.full_name)
+        db.add(db_user)
+    else:
+        if(not override):
+            return None
+        db_user.hashed_password=user.password
+        db_user.admin=user.admin
+        db_user.name=user.name
+        db_user.full_name=user.full_name
+        db.flush()
+
+    db.commit()
+    db.refresh(db_user)
+    return db_user
+    
+
 def delete_user(db: Session, user_id: int):
     user = get_user(db = db, user_id= user_id)
     if(user == None):  
@@ -106,14 +125,19 @@ def create_base_action(db:Session, task_id, step):
 
     return db_action
 
-def create_drawer_action(db: Session,step:int, task_id, module_id:int, drawer_id:int, owner:int):
+def create_drawer_action(db: Session,step:int, task_id, module_id:int, drawer_id:int, locked_for:[int]):
     db_action=create_base_action(db, task_id, step)
-   
-    db_drawer_action=models.DrawerAction( id=db_action.id, target_user_id= owner, drawer_id= drawer_id, module_id= module_id)
+    unit_id= get_unit_id(db=db, module_id= module_id, drawer_id= drawer_id)
+    db_drawer_action=models.DrawerAction( id=db_action.id, unit_id=unit_id )
     db.add(db_drawer_action)
     db.commit()
     db.refresh(db_drawer_action)
-    return
+
+    for user_id in locked_for:
+        db_drawer_lock= models.DrawerLock(active=False, user_id= user_id, uint_it= unit_id )
+        db.add(db_drawer_lock)
+    db.commit()
+    return db_drawer_action
 
 def create_navigation_action(db:Session, step:int, task_id,x:float,y:float,yaw:float):
     db_action=create_base_action(db, task_id, step)
@@ -248,7 +272,7 @@ def get_robots(db:Session, skip: int = 0, limit: int = 100)->[models.Robot]:
 def get_robot(db:Session, robot_name:str)-> models.Robot:
      return db.query(models.Robot).filter( models.Robot.robot_name==robot_name).first()
 
-def set_robot(db:Session, robot:schemas.Robot):
+def set_robot(db:Session, override:bool, robot:schemas.RobotStatus):
     if(robot.task_id==0):
         robot.task_id=None
     db_robot= get_robot(db=db,robot_name=robot.robot_name)
@@ -289,10 +313,13 @@ def get_drawer(db: Session,robot_name:str, module_id: int, drawer_id: int)-> mod
     drawer= db.query(models.Module).filter(models.Module.robot_name ==robot_name, models.Module.module_id == module_id, models.Module.drawer_id== drawer_id).first()
     return drawer
 
-def set_module(db:Session, module: schemas.Module)-> models.Module:
+def get_unit_id(db:Session, module_id:int, drawer_id:int)->int:
+    return db.query(models.Module.unit_id).filter(models.Module.drawer_id == drawer_id, models.Module.module_id == module_id).first()[0]
+
+def set_module(db:Session, module: schemas.Module, override:bool)-> models.Module:
     db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.module_id, drawer_id = module.drawer_id)
     if(db_module is None):
-        db_module = models.Module(id = module.module_id,
+        db_module = models.Module(module_id = module.module_id,
                                 drawer_id = module.drawer_id,
                                 type = module.type,
                                 robot_name = module.robot_name,

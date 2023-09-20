@@ -98,10 +98,11 @@ class UserCreate(UserBase):
     hashed_password: str
     full_name: str
     email: str
+    admin: bool
 
 class User(UserBase):
-    id: int
-    is_active: bool
+    id: Union[int,None]= None
+    is_active: bool=True
     admin: bool
     full_name: str
 

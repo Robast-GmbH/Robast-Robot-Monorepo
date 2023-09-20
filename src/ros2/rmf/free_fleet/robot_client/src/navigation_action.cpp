@@ -13,9 +13,10 @@ namespace rmf_robot_client
   
   bool NavigationAction::start(std::function<void(int)> next_action_callback)
   {
-    RCLCPP_INFO(ros_node->get_logger(), "start drawer_action");
+    RCLCPP_INFO(ros_node->get_logger(), "start navigation_action");
     finish_action = next_action_callback;
-     if (!this->navigate_to_pose_client_->wait_for_action_server()) {
+    RCLCPP_ERROR(ros_node->get_logger(), "waiting for Action server ... ");
+    if (!this->navigate_to_pose_client_->wait_for_action_server()) {
       RCLCPP_ERROR(ros_node->get_logger(), "Action server not available after waiting");
       //cancel task
       return false;

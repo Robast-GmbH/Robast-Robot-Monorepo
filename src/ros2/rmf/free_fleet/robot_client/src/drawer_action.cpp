@@ -52,8 +52,8 @@ namespace rmf_robot_client
       DrawerStatus NewDrawer= DrawerStatus(target_module_id, target_drawer_id, false, std::vector<u_int16_t>());  
       drawers->insert(std::pair(drawer_ref, NewDrawer));
       selected_drawer = std::make_unique<DrawerStatus>(NewDrawer);
+      selected_drawer->authorised_users = std::vector<u_int16_t>();
     }
-    
 
     if(selected_drawer->authorised_users.size()>0 )
     {
