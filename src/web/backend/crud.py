@@ -310,7 +310,7 @@ def delete_robots(db:Session):
 
 #Modules 
 def get_modules(db: Session, robot_name: str)->[models.Module]:
-    return db.query(models.Module).filter(robot_name== models.Module.robot_name ==robot_name).all()
+    return db.query(models.Module).filter(robot_name== models.Module.robot_name ==robot_name).order_by(models.Module.position).all()
 
 def get_module(db: Session, module_id: int)-> models.Module:
     return db.query(models.Module).filter(models.Module.module_id == module_id).all()

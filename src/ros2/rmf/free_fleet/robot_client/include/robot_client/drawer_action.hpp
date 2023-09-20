@@ -45,7 +45,8 @@ namespace rmf_robot_client
     //subscriber
     rclcpp::Subscription<DrawerAddress>::SharedPtr drawer_status_subscriber_;
     rclcpp::Subscription<StdMsgInt>::SharedPtr authentication_subscriber_;
-    
+    rclcpp::Subscription<DrawerAddress>::SharedPtr close_drawer_subscriber_;
+
     // publisher
     rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_open_drawer_publisher_;
     rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_close_drawer_publisher_;
@@ -57,6 +58,7 @@ namespace rmf_robot_client
     bool cancel();
     std::string get_type();
     bool receive_new_settings(std::string command, std::vector<std::string> value);
+    void receive_closed_drawer(const DrawerAddress::SharedPtr msg);
     void check_scant_user(const StdMsgInt &msg);
     //~DrawerAction();
   };

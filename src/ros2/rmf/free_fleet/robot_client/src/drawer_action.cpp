@@ -14,7 +14,7 @@ namespace rmf_robot_client
       qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
       qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
       qos.avoid_ros_namespace_conventions(false);
-    
+     close_drawer_subscriber_= ros_node->create_subscription<DrawerAddress>( "/close_drawer", 10, std::bind(&DrawerAction::recive_closed_drawer, this, std::placeholders:_1));
    
      //controll drawer
     if(is_edrawer)
@@ -27,7 +27,11 @@ namespace rmf_robot_client
     }
     trigger_close_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(config["statemaschine_close_e_drawer_topic"], qos);
     nfc_on_off_publisher_ = ros_node->create_publisher<StdMsgBool>(config["nfc_on_off_switch_topic"], qos);
-   
+  }
+
+  void DrawerAction::recive_closed_drawer(const DrawerAddress::SharedPtr msg)
+  {
+
   }
 
   bool DrawerAction::start(std::function<void(int)> next_action_callback)
