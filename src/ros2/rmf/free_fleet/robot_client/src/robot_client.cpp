@@ -126,10 +126,10 @@ namespace rmf_robot_client
   void RobotClient::receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "drawer_received");
-
     int step, task_id;
     if (!prepare_new_action(msg->task_id, msg->fleet_name, msg->robot_name, task_id, step))
     {
+      RCLCPP_ERROR(this->get_logger(), "no valid task");
       return;
     }
 
@@ -173,6 +173,7 @@ namespace rmf_robot_client
 
   void RobotClient::end_current_action(int comletted_step)
   {
+    RCLCPP_INFO(this->get_logger(),"End Action nr %i", current_step);
     if(comletted_step==current_step)
     {
     start_next_action();
@@ -211,6 +212,7 @@ namespace rmf_robot_client
 
   void RobotClient::end_current_task()
   {
+    RCLCPP_INFO(this->get_logger(),"End task %i",task_id);
     empty_task_sequence();
     task_id = 0;
     current_step = 0;
@@ -229,6 +231,7 @@ namespace rmf_robot_client
 
   void RobotClient::start_next_action()
   {
+    RCLCPP_INFO(this->get_logger(),"start_next_action %i",task_id);
     auto it = task_sequence.find(current_step);
     if(it == task_sequence.end()) 
     {
