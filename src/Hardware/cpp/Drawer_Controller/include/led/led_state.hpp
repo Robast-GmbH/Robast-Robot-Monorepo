@@ -1,4 +1,4 @@
-#if !defined(DRAWER_CONTROLLER_LED_STATE_HPP)
+#ifndef DRAWER_CONTROLLER_LED_STATE_HPP
 #define DRAWER_CONTROLLER_LED_STATE_HPP
 
 namespace drawer_controller
