@@ -285,21 +285,29 @@ def set_robot(db:Session, override:bool, robot:schemas.RobotStatus):
                                 task_id = robot.task_id
                                 )
         db.add(db_robot)
-        db.commit()
-        db.refresh(db_robot)
     else:
+        if(not override):
+            return None
+
         db_robot.robot_name = robot.robot_name
         db_robot.fleet_name = robot.fleet_name
         db_robot.x_pose = robot.x_pose
         db_robot.y_pose = robot.y_pose
         db_robot.yaw_pose = robot.yaw_pose
         db_robot.task_id = robot.task_id
-
         db.flush()
-        db.commit()
-        db.refresh(db_robot)
+
+    db.commit()
+    db.refresh(db_robot)
     return db_robot
-        
+
+def delete_robots(db:Session):
+    try:
+        db.query(models.Robot).delete()
+        db.commit()
+    except:
+        db.rollback()
+
 #Modules 
 def get_modules(db: Session, robot_name: str)->[models.Module]:
     return db.query(models.Module).filter(robot_name== models.Module.robot_name ==robot_name).all()
@@ -329,6 +337,8 @@ def set_module(db:Session, module: schemas.Module, override:bool)-> models.Modul
                                 )
         db.add(db_module)
     else:
+        if(not override):
+            return None
         db_module.type=module.type
         db_module.robot_name = module.robot_name
         db_module.size= int(module.size)

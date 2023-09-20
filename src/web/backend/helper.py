@@ -9,46 +9,32 @@ import models
 
 
 def init(db: Session):
-        
-        if(not hasUser(db)):
-                addUser( "Werner","Werner Tester", "Robast2022HH", False, db )
-                addUser( "Torben", "Torben Zurhelle", "Robast2022HH", True, db )
-                addUser( "Tobias", "Tobias Alscher", "Robast2022HH", True, db )
-                addUser( "Jacob", "Jacob Ritterbach", "Robast2022HH", True, db )
+           
+        addUser( "Werner","Werner Tester", "Robast2022HH", False, db )
+        addUser( "Torben", "Torben Zurhelle", "Robast2022HH", True, db )
+        addUser( "Tobias", "Tobias Alscher", "Robast2022HH", True, db )
+        addUser( "Jacob", "Jacob Ritterbach", "Robast2022HH", True, db )
                 
-                addRobot("RB0", "ROBAST", 0, 0, 0, db)
-                addDrawer("RB0", 1, 0, 1, models.DrawerSlideTypes.Manual, 10,  db)
-                addDrawer("RB0", 2, 0, 2, models.DrawerSlideTypes.Manual, 10, db)
-                addDrawer("RB0", 3, 0, 3, models.DrawerSlideTypes.Electrical, 10, db)
-                addDrawer("RB0", 4, 0, 4, models.DrawerSlideTypes.Manual, 20, db)
-                addDrawer("RB0", 5, 0, 5, models.DrawerSlideTypes.Manual, 30, db)
+        addRobot("RB0", "ROBAST", 0, 0, 0, db)
+        addDrawer("RB0", 1, 0, 1, models.DrawerSlideTypes.Manual, 10,  db)
+        addDrawer("RB0", 2, 0, 2, models.DrawerSlideTypes.Manual, 10, db)
+        addDrawer("RB0", 3, 0, 3, models.DrawerSlideTypes.Electrical, 10, db)
+        addDrawer("RB0", 4, 0, 4, models.DrawerSlideTypes.Manual, 20, db)
+        addDrawer("RB0", 5, 0, 5, models.DrawerSlideTypes.Manual, 30, db)
         return
-
 
 def addUser( name: str, full_name:str, password:str, admin:bool, db:Session):
-        db_user = models.User(email=name+"@Robast.de", hashed_password=password,admin=admin ,name= name, full_name= full_name)
-        db.add(db_user)
-        db.commit()
-        db.refresh(db_user)
-        return
-
-def hasUser (db:Session):
-      return db.query(func.count(models.User.id)).scalar() > 0
-
+        user=schemas.UserCreate(name=name, full_name=full_name, email=name+"@Robast.de", hashed_password=password, admin=admin)
+        return crud.set_user(db=db, override=False, user=user)
 
 def addRobot(robot_name:str, fleet_name:str, x:float, y:float, yaw:float, db:Session):
-        db_robot = models.Robot(robot_name= robot_name, fleet_name=fleet_name, x_pose=x, y_pose=y, yaw_pose=yaw, task_id=None)
-        db.add(db_robot)
-        db.commit()
-        db.refresh(db_robot)
-        return
+        robot = schemas.RobotStatus(robot_name=robot_name, fleet_name=fleet_name, x_pose=x, y_pose=y, yaw_pose=yaw, battery_level=0, task_id=None )
+        return crud.set_robot(db=db, override=False, robot=robot)
+        
 
 def addDrawer( robot_name:str, module_id:int, drawer_id:int, position:int, type:models.DrawerSlideTypes, size:int, db:Session):
-        db_drawer = models.Module(drawer_id= drawer_id, module_id= module_id, position= position, status="Closed", type= type, size= size, robot_name= robot_name)
-        db.add(db_drawer)
-        db.commit()
-        db.refresh(db_drawer)
-        return
+        module= schemas.Module(drawer_id=drawer_id, module_id=module_id, robot_name=robot_name, status="Closed", position=position, type=type, size=size, label="")
+        return crud.set_module(db=db, override=False, module= module)
 
 def addMapPosition( name: str, x: float, y: float, t:float, db:Session):
         db_map_position = models.MapPosition( name= name, x=x, y=y, t=t)
@@ -124,19 +110,19 @@ def create_action_list(db:Session, robot_name:str, actions:list[schemas.Action])
                         action_list.append(create_drawer_action(step= action.step, drawer_id= action.action.drawer_id, finished=action.finished, module_id= action.action.module_id, is_edrawer= db_module.type==schemas.DrawerSlideTypes.Electrical, locked_for= action.action.locked_for))
 
                 elif(action.type == schemas.ActionType.NAVIGATION):
-                        action_list.append(create_navigation_action(action.step, action.finished, action.action.pose.x,action.action.pose.y,action.action.yaw))
+                        action_list.append(create_navigation_action(action.step, action.action.pose.x,action.action.pose.y,action.action.yaw, action.finished))
                 elif(action.type == schemas.ActionType.NEW_USER):  
-                        action_list.append(create_new_user(action.step, action.finished, action.action.user_id))   
+                        action_list.append(create_new_user(action.step, action.action.user_id, action.finished))   
         return action_list   
 
-def create_drawer_action(step:int, finished:bool, drawer_id:int, module_id:int, is_edrawer:bool, locked_for:list[str]):
-        message={"step":step,"type": "DRAWER", "finished":finished, "action":{"drawer_id":drawer_id, "module_id":module_id, "is_edrawer":is_edrawer,"locked_for":locked_for}}
+def create_drawer_action(step:int, drawer_id:int, module_id:int, is_edrawer:bool, locked_for:list[int], finished:bool=False):
+        message={"step":step,"type": "OPEN_DRAWER", "finished":finished, "action":{"drawer_id":drawer_id, "module_id":module_id, "is_edrawer":is_edrawer,"locked_for": locked_for}}
         return message
 
-def create_navigation_action(step:int,  finished:bool, x:float, y:float, yaw:float):
+def create_navigation_action(step:int, x:float, y:float, yaw:float, finished:bool=False):
         message={"step":step, "type":"NAVIGATION", "finished":finished, "action":{ "pose": {"x":x, "y":y, "z":0.0 },"yaw": yaw} }
         return message
 
-def create_new_user(step:int,  finished:bool, user_id: int):
+def create_new_user(step:int, user_id: int, finished:bool=False):
         message={"step":step, "type":"NEW_USER", "finished":finished, "user_id": user_id}
         return message

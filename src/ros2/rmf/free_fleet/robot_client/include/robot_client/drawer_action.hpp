@@ -34,9 +34,10 @@ namespace rmf_robot_client
 
     rclcpp::TimerBase::SharedPtr nfc_reading_timer;
 
-    bool open_drawer(int module_id, int drawer_id);
-    bool open_drawer_action(int target_module_id, int target_drawer_id);
-    bool close_drawer(int module_id, int drawer_id);
+    void open_drawer(int target_module_id, int target_drawer_id);
+    void open_drawer_action(int target_module_id, int target_drawer_id);
+    void close_drawer(int module_id, int drawer_id);
+    std::string get_drawer_ref(int module_id, int drawer_id);
     bool all_drawers_closed();
     void start_authentication_scan();
     void end_authentication_scan(bool successull);

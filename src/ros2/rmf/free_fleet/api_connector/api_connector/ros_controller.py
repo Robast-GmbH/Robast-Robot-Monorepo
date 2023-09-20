@@ -93,7 +93,7 @@ class ros_controller(Node):
 
 
     # handle destination request
-    def handle_destination_request(self, fleet_name,robot_name, task_id, x_pose, y_pose, yaw):
+    def handle_destination_request(self, fleet_name:str,robot_name:str, task_id:int,step:str, x_pose:int, y_pose:int, yaw:int):
         goal= dds.FreeFleetDataLocation()
         goal.sec= 0
         goal.nanosec=0
@@ -104,14 +104,14 @@ class ros_controller(Node):
         destination_request = dds.FreeFleetDataDestinationRequest()
         destination_request.robot_name=robot_name
         destination_request.fleet_name=fleet_name
-        destination_request.task_id=task_id
+        destination_request.task_id=task_id+"#"+step
         destination_request.destination=goal
         self.dds_destination_request.publish(destination_request)
 
     # handle_drawer_request
-    def handle_slide_drawer_request(self, fleet_name:str, robot_name: str, task_id:str, module_id: int, drawer_id: int, restricted:list[int] , e_drawer: bool, open: bool):
+    def handle_slide_drawer_request(self, fleet_name:str, robot_name: str, task_id:str, step:str, module_id: int, drawer_id: int, restricted:list[int] , e_drawer: bool, open: bool):
         slide_drawer_request = dds.FreeFleetDataDrawerRequest()
-        slide_drawer_request.task_id= task_id
+        slide_drawer_request.task_id= task_id+"#"+step
         slide_drawer_request.fleet_name= fleet_name
         slide_drawer_request.robot_name= robot_name
         slide_drawer_request.module_id=  module_id
@@ -120,15 +120,15 @@ class ros_controller(Node):
         slide_drawer_request.e_drawer= e_drawer
         self.dds_slide_drawer_request.publish(slide_drawer_request)    
 
-    def handle_new_user_request(self, fleet_name:str, robot_name:str, task_id:str, user_id:int):
+    def handle_new_user_request(self, fleet_name:str, robot_name:str, task_id:str, step:str, user_id:int):
         new_user_request=dds.FreeFleetDataCreateNfcRequest()
         new_user_request.fleet_name=fleet_name
         new_user_request.robot_name=robot_name
-        new_user_request.task_id=task_id
+        new_user_request.task_id=task_id+"#"+step
         new_user_request.user_id=user_id
         self.dds_new_user_request.publish(new_user_request)
 
-    def handle_setting_request(self, robot_name:str, fleet_name:str, command:str, value:str):
+    def handle_setting_request(self, robot_name:str, fleet_name:str, command:str, value:[str]):
         setting_request = dds.FreeFleetDataSettingRequest()
         setting_request.command=command
         setting_request.value=value

@@ -2,7 +2,7 @@ from enum import unique
 from operator import index
 from turtle import position
 from xmlrpc.client import boolean
-from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, MetaData, Enum, Float, tuple_
+from sqlalchemy import Boolean, Column, ForeignKey, Integer, String, MetaData, Enum, Float, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from schemas import ActionType, DrawerSlideTypes
@@ -54,9 +54,16 @@ class NavigationAction(Base):
 class DrawerAction(Base):
     __tablename__="draweraction"
     id= Column(Integer, ForeignKey('action.id'), primary_key=True)
-    target_user_id =Column(Integer)
-    drawer_id= Column(Integer)
-    module_id= Column(Integer)
+    # target_user= Column(Integer, ForeignKey('user.id'))
+    unit_id= Column(Integer, ForeignKey('module.unit_id'))
+    
+class DrawerLock(Base):
+    __tablename__="drawerlock"
+    id = Column(Integer, primary_key=True, index=True)
+    active= Column(Boolean)
+    user_id= Column(Integer,ForeignKey('user.id'))
+    unit_id=Column(Integer, ForeignKey('module.unit_id'))
+   
 
 class NewUserAction(Base):
     __tablename__="useraction"
@@ -65,14 +72,16 @@ class NewUserAction(Base):
 
 class Module(Base):
     __tablename__ = "module"
-    module_id = Column(Integer, primary_key=True)
-    drawer_id= Column(Integer, primary_key=True)
+    unit_id= Column(Integer, primary_key=True, index=True)
+    module_id = Column(Integer)
+    drawer_id= Column(Integer)
     position= Column(Integer)
     status= Column(String)
     type= Column(Enum(DrawerSlideTypes), index=True)
     size= Column(Integer)
     robot_name= Column(String)
     label= Column(String,default="")
+    __table_args__ = (UniqueConstraint("module_id","drawer_id", name="module_module_drawer_unique"),)
     
 
 class Robot(Base):

@@ -83,8 +83,7 @@ namespace rmf_robot_client
 
   void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
   {
-    //  global settings (reset tree,..) 
-    RCLCPP_INFO( this->get_logger(), " settings received %s %s", msg->command.c_str(), msg->value.c_str());
+    //  global settings (reset tree,..)
     if(msg->command=="reset_tree")
     {
       StdMsgBool msg = StdMsgBool();
@@ -98,7 +97,7 @@ namespace rmf_robot_client
     }
     else
     {
-      task_sequence[current_step]->receive_new_settings(msg->command, split(msg->value,'#'));//task settings
+      task_sequence[current_step]->receive_new_settings(msg->command, msg->value);//task settings
     }
     RCLCPP_INFO( this->get_logger(), "settings done");
   }
@@ -183,7 +182,7 @@ namespace rmf_robot_client
 
   bool RobotClient::prepare_new_action(std::string task_def, std::string recipient_fleet, std::string recipient_robot,int& new_task_id, int& new_step )
   {  
-    if(recipient_fleet == fleet_name && recipient_robot == robot_name)
+    if(!(recipient_fleet == fleet_name && recipient_robot == robot_name))
     {
       return false;
     }
