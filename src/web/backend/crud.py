@@ -89,8 +89,6 @@ def delete_user(db: Session, user_id: int):
     return True
 
 #task management
-
-
 def tasks_queue(db:Session)->list[models.Task]:
     subquery= db.query(models.Action.task_id).filter(models.Action.finished==False).all()
     active_tasks= list(map(lambda x:x[0], subquery))
@@ -208,7 +206,11 @@ def delete_action(db:Session, action_id):
     
     db.delete(db_sub_action)
     db.commit()
-    
+
+def reset_task(task_id:int, db:Session):
+    db.query(models.Action).filter(models.Action.task_id == task_id).update({"models.Action.finished":False})
+    db.commit()
+
 def get_next_task(db:Session, robot_name):
     new_task=tasks_queue(db)[0]
     return new_task

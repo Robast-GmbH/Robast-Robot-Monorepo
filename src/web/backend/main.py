@@ -13,13 +13,10 @@ import models
 import schemas
 from database import SessionLocal, engine
 
-
-
 models.Base.metadata.create_all(bind=engine)
 
-
 app = FastAPI()
-
+loop_task_id=None
 config = yaml.safe_load(open("./src/config.yml"))
 
 
@@ -79,7 +76,6 @@ def read_users(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
     users = crud.get_users(db, skip=skip, limit=limit)
     return users
 
-
 @app.get("/users/{user_id}", response_model=schemas.User)
 def read_user(user_id: int, db: Session = Depends(get_db)):
     db_user = crud.get_user(db, user_id=user_id)
@@ -103,7 +99,6 @@ def get_task_queue( db: Session = Depends(get_db)):
                 db_complete_tasks.append(full_task)
     return db_complete_tasks
 
-
 @app.get("/tasks/{task_id}", response_model=schemas.Task)
 def read_task(task_id: int, db: Session = Depends(get_db)):
     db_task= crud.get_full_task(task_id, db)
@@ -113,17 +108,17 @@ def read_task(task_id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Action not found")
     return db_task
 
-
 @app.post("/tasks/", response_model=int)
 def create_task(task: schemas.Task, robot:schemas.Robot, user_id:int, db: Session= Depends(get_db)):
     task_id= crud.create_task(db=db,robot_name= robot.robot_name, fleet_name=robot.fleet_name, owner_id= user_id)
     for action in task.actions:
         if( action.type== schemas.ActionType.NAVIGATION):
-            return crud.create_navigation_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.yaw).id
+            crud.create_navigation_action(db, action.step, task_id, action.action.pose.x, action.action.pose.y, action.action.yaw)
         elif(action.type== schemas.ActionType.DRAWER):
-            return crud.create_drawer_action(db, action.step,task_id, action.action.module_id, action.action.drawer_id,action.action.owner_id, action.action.locked_for).id
+            crud.create_drawer_action(db, action.step,task_id, action.action.module_id, action.action.drawer_id,action.action.owner_id, action.action.locked_for)
         elif(action.type== schemas.ActionType.NEW_USER):
-           return  crud.create_new_user_nfc(db, action.step, task_id, action.action.user_id).id
+           crud.create_new_user_nfc(db, action.step, task_id, action.action.user_id)
+    return task_id
 
 @app.put("/tasks/{task_id}", response_model=schemas.Task)
 def update_task( task_id:int, task: schemas.BaseTask, db: Session = Depends(get_db)):
@@ -136,17 +131,26 @@ def update_action(task_id:str, step:str, status:Annotated[str,Body()],finished:A
 
 @app.get("/robots/{robot_name}/next_task")#, response_model=schemas.Task)
 def get_next_task(robot_name: str, db: Session = Depends(get_db)):
-   
+    next_task=None
+    
     db_tasks_queue = crud.tasks_queue(db)
     for task in db_tasks_queue:
-        full_task=crud.get_full_task(task_id=task.id,db=db)
-        if(not(full_task == "task" or full_task== "action")):
+        next_task=crud.get_full_task(task_id=task.id,db=db)
+        if(not(next_task == "task" or next_task== "action")):
             break
-    db_robot=crud.get_robot(db=db,robot_name=robot_name)
-    crud.update_task(db=db, task_id=full_task.task_id, robot_name= db_robot.robot_name, fleet_name=db_robot.fleet_name)
+        next_task=None
 
-    actions= templates.create_action_list(db=db, robot_name=robot_name, actions=full_task.actions)
-    task =templates.create_task(db=db, robot_name=robot_name, task_id= full_task.task_id,  action=actions )
+    if(next_task is None):
+        if(loop_task_id is None):
+            return
+        crud.reset_task(task_id=loop_task_id,db=db)
+        next_task=crud.get_full_task(task_id= loop_task_id, db=db)
+    
+    db_robot=crud.get_robot(db=db,robot_name=robot_name)
+    crud.update_task(db=db, task_id=next_task.task_id, robot_name= db_robot.robot_name, fleet_name=db_robot.fleet_name)
+
+    actions= templates.create_action_list(db=db, robot_name=robot_name, actions=next_task.actions)
+    task =templates.create_task(db=db, robot_name=robot_name, task_id= next_task.task_id,  action=actions )
 
     headers =  {"Content-Type":"application/json"}
     sender = requests.Session() 
@@ -188,16 +192,21 @@ def pause_robot(robot_name: str, fleet_name:str, pause: bool , db: Session = Dep
         raise HTTPException(status_code=answer.status_code, detail= answer.reason)
     return 
 
-@app.put("/robots/loop")
-def loop_movement( task: schemas.Task, robot:schemas.Robot, user_id:int, db: Session = Depends(get_db)):
+@app.put("/robots/loop/start")
+def set_loop( task: schemas.Task, robot:schemas.Robot, user_id:int, force_start:bool, db: Session = Depends(get_db)):
     if( not all(action.type== schemas.ActionType.NAVIGATION for action in task.actions)):
           raise HTTPException(status_code=404, detail="patrol task can only consists of navigate actions" )
-    
-    answer = create_task(task, robot, user_id, db)
-    if answer.status_code!= 200:
-          raise HTTPException(status_code=answer.status_code, detail= answer.reason)
-        #register loop
+    loop_task_id = create_task(task, robot, user_id, db)
+    if force_start:
+        task=crud.get_full_task(task_id=loop_task_id, db=db)
+        headers =  {"Content-Type":"application/json"}
+        sender = requests.Session() 
+        answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
     return 
+
+@app.put("/robots/loop/stop")
+def reset_loop():
+    loop_task_id=None
 
 @app.post("/robots/status", response_model= schemas.RobotStatus)
 def set_robot(robot: schemas.RobotStatus, db: Session = Depends(get_db)):
