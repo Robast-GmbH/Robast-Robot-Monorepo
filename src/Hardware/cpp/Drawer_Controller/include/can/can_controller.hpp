@@ -9,9 +9,9 @@
 
 #include "can/can_db.hpp"
 #include "can/can_helper.h"
-#include "debug.hpp"
-#include "i_gpio_wrapper.hpp"
-#include "pinout_defines.hpp"
+#include "debug/debug.hpp"
+#include "interfaces/i_gpio_wrapper.hpp"
+#include "peripherals/pinout_defines.hpp"
 
 namespace drawer_controller
 {
@@ -39,7 +39,7 @@ namespace drawer_controller
     uint8_t _oe_txb0104_pin_id;
     bool _gpio_output_state;
 
-    static const uint32_t _CAN_BIT_RATE = 250 * 1000;
+    static const uint32_t _CAN_BIT_RATE = 800 * 1000;
 
     static const uint32_t _QUARTZ_FREQUENCY = 8 * 1000 * 1000;   // 8 MHz
 

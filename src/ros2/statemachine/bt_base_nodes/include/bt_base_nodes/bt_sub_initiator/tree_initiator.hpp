@@ -1,5 +1,5 @@
-#ifndef BT_BASE_NODES__BT_SUB_INITIATOR__DRAWER_TREE_INITIATOR_HPP_
-#define BT_BASE_NODES__BT_SUB_INITIATOR__DRAWER_TREE_INITIATOR_HPP_
+#ifndef BT_BASE_NODES__BT_SUB_INITIATOR__TREE_INITIATOR_HPP_
+#define BT_BASE_NODES__BT_SUB_INITIATOR__TREE_INITIATOR_HPP_
 
 #include <chrono>
 #include <functional>
@@ -14,11 +14,13 @@
 
 namespace bt_base_nodes
 {
-    class DrawerTreeInitiator: public bt_base_nodes::BTSubBase<communication_interfaces::msg::DrawerAddress> {
+    class TreeInitiator : public bt_base_nodes::BTSubBase<communication_interfaces::msg::DrawerAddress>
+    {
 
     public:
-        DrawerTreeInitiator(const rclcpp::NodeOptions& options = rclcpp::NodeOptions()): BTSubBase(options)
-        {}
+        TreeInitiator(const rclcpp::NodeOptions &options = rclcpp::NodeOptions()) : BTSubBase(options)
+        {
+        }
 
     protected:
         void callbackRunBT(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
@@ -29,4 +31,3 @@ namespace bt_base_nodes
     };
 }
 #endif
-

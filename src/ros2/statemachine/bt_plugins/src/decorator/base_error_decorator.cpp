@@ -1,7 +1,7 @@
 #include "bt_plugins/decorator/base_error_decorator.hpp"
 #include "error_utils/error_definitions.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
   BaseErrorDecorator::BaseErrorDecorator(const std::string &name, const BT::NodeConfig &config) : BT::DecoratorNode(name, config)
   {
@@ -43,8 +43,8 @@ namespace drawer_statemachine
     callback_group_executor_.spin_some();
     if (_is_error_received)
     {
-      logError();
       _is_error_received = false;
+      resetChild();
       return BT::NodeStatus::FAILURE;
     }
     const BT::NodeStatus child_status = child_node_->executeTick();
@@ -60,21 +60,23 @@ namespace drawer_statemachine
     switch (msg->error_code)
     {
     case ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED:
-      if (converter_.stringToMessage(msg->error_data) == blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address"))
-      {
-        _error_msg = msg;
-        _is_error_received = true;
-      }
+      // TODO @robast: there is some weird bug with the data formatation of the serialized error_data. The string has a random cutoff
+      //  if (converter_.stringToMessage(msg->error_data) == blackboard_->get<communication_interfaces::msg::DrawerAddress>("drawer_address"))
+      //  {
+      _error_msg = msg;
+      _is_error_received = true;
+      logError();
+      // }
       break;
 
     default:
       break;
     }
   }
-} // namespace drawer_statemachine
+} // namespace statemachine
 
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-  factory.registerNodeType<drawer_statemachine::BaseErrorDecorator>("BaseErrorDecorator");
+  factory.registerNodeType<statemachine::BaseErrorDecorator>("BaseErrorDecorator");
 }

@@ -1,4 +1,4 @@
-#include "motor.hpp"
+#include "peripherals/motor.hpp"
 
 namespace stepper_motor
 {

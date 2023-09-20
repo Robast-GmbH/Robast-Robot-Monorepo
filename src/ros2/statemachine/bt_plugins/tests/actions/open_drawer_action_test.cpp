@@ -45,7 +45,7 @@ namespace test2
                 blackboard->set<rclcpp::Node::SharedPtr>(
                     "node",
                     node_open_drawer);
-                auto bt_engine = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
+                auto bt_engine = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
                 auto bt = bt_engine->createTreeFromText(led_tree_xml, blackboard, "MainTree");
                 THEN("A Subtree should exist")
                 {
@@ -68,30 +68,7 @@ namespace test2
                             REQUIRE(found);
                         }
                     }
-                    // test cant be executed parallel to the test above. leeds to errors
-                    //  WHEN("The plugin is created")
-                    //  {
-                    //      THEN("The LED config should be configured to the given values")
-                    //      {
 
-                    //         auto iter = bt.subtrees[0]->nodes.begin();
-                    //         for (; iter != bt.subtrees[0]->nodes.end(); iter++)
-                    //         {
-                    //             if ((*iter)->registrationName() == nodename)
-                    //             {
-                    //                 iter = bt.subtrees[0]->nodes.begin();
-                    //                 break;
-                    //             }
-                    //         }
-                    //         drawer_statemachine::ChangeLED* node = dynamic_cast<drawer_statemachine::ChangeLED*> ((*iter).get());
-                    //         communication_interfaces::msg::DrawerLeds LED = node->getDrawerLED();
-                    //         REQUIRE(LED.green == expected_drawer_led.green);
-                    //         REQUIRE(LED.brightness == expected_drawer_led.brightness);
-                    //         REQUIRE(LED.red == expected_drawer_led.red);
-                    //         REQUIRE(LED.blue == expected_drawer_led.blue);
-                    //         REQUIRE(LED.mode == expected_drawer_led.mode);
-                    //     }
-                    // }
                 }
             }
         }

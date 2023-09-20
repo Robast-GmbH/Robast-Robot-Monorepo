@@ -38,6 +38,30 @@
         <Decorator ID="BaseErrorDecorator">
             <input_port name="topic" default="/robast_error"/>
         </Decorator>
+        <Action ID="LEDPublisherAction">
+            <input_port name="drawer_address" default="{drawer}"/>
+            <input_port name="led_topic" default="/drawer_leds"/>
+            <input_port name="leds" default="{leds}"/>
+            <input_port name="fading_time_ms" default="0">uint8</input_port>
+        </Action>
+        <Action ID="PartialColorizeLED">
+            <input_port name="red" default="0">uint8</input_port>
+            <input_port name="green" default="0">uint8</input_port>
+            <input_port name="blue" default="0">uint8</input_port>
+            <input_port name="brightness" default="0">uint8 to determine the brightness</input_port>
+            <input_port name="lower_bound" default="0.0">double</input_port>
+            <input_port name="upper_bound" default="0.0">double</input_port>
+            <input_port name="LEDs" default="{leds}"/>
+            <output_port name="LEDs_colored" default="{leds}"/>
+        </Action>
+        <Action ID="InitLEDVector">
+            <input_port name="size" default="128">uint8_t</input_port>
+            <output_port name="led_vector" default="{leds}"/>
+        </Action>
+        <Action ID="GetBlackboardEntry">
+            <input_port name="key" default="drawer_address">string</input_port>
+            <output_port name="value" default="{drawer}"/>
+        </Action>
     </TreeNodesModel>
 </root>
 

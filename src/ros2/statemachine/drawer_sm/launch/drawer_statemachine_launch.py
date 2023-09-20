@@ -12,12 +12,12 @@ from nav2_common.launch import RewrittenYaml
 def generate_launch_description():
     bringup_dir = get_package_share_directory('drawer_sm')
     bt_config_params = LaunchConfiguration('bt_config_params')
+    
     declare_bt_config_params_cmd = DeclareLaunchArgument(
         'bt_config_params',
         default_value=os.path.join(bringup_dir, 'config', 'bt_params.yaml'),
         description='path to the bt_params.yaml file')
 
-    # TODO @ Tobi tidy up. Combine all launches in one and add launch params
     param_substitutions = {
         'bt_path': os.path.join(bringup_dir, 'trees', 'drawer_sequence.xml')}
     
@@ -29,10 +29,11 @@ def generate_launch_description():
 
     bt_node = Node(
         package="bt_base_nodes",
-        executable="drawer_tree_initiator",
+        executable="tree_initiator",
         name="drawer_tree_initiator",
         output="screen",
         parameters=[configured_params])
+    
     ld = LaunchDescription()
     ld.add_action(declare_bt_config_params_cmd)
     ld.add_action(bt_node)
