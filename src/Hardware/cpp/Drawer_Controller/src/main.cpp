@@ -7,6 +7,7 @@
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "led/led_strip.hpp"
 #include "peripherals/gpio.hpp"
+#include "utils/data_mapper.hpp"
 
 #define MODULE_ID               3
 #define LOCK_ID                 0
@@ -40,6 +41,8 @@ std::unique_ptr<drawer_controller::CanController> can_controller;
 
 std::unique_ptr<drawer_controller::LedStrip> led_strip;
 
+std::unique_ptr<drawer_controller::DataMapper> data_mapper;
+
 void setup()
 {
   debug_setup(115200);
@@ -47,6 +50,7 @@ void setup()
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   gpio_wrapper = std::make_shared<drawer_controller::GPIO>();
+  data_mapper = std::make_unique<drawer_controller::DataMapper>();
 
   // TODO@all: If you want to use a "normal" drawer uncomment this and comment out the e_drawer
   // TODO@Andres: Write a script to automatically generate code with a drawer / e-drawer
@@ -113,16 +117,8 @@ void loop()
         }
         break;
         case CAN_ID_SINGLE_LED_STATE:
-        {
-          drawer_controller::LedState target_led_state = drawer_controller::LedState(
-            received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_RED).get_data(),
-            received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_GREEN).get_data(),
-            received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_BLUE).get_data(),
-            received_message->get_can_signals().at(CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS).get_data());
-
-          led_strip->set_led_state(target_led_state);
-        }
-        break;
+          led_strip->set_led_state(data_mapper->create_led_state(received_message.value()));
+          break;
         default:
           debug_println("Received unsupported CAN message.");
           break;
