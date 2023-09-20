@@ -25,6 +25,23 @@
             "problemMatcher": []
         },
         {
+            "label": "Launch ros2 socket can",
+            "detail": "Launch ros2 socket can node",
+            "type": "shell",
+            "command": "source install/setup.bash;ros2 launch ros2_socketcan socket_can_bridge.launch.xml",
+            "problemMatcher": []
+        },
+        {
+            "label": "Drawer Bridge Startup",
+            "detail": "Launch the drawer bridge node and the ros2 socket can node",
+            "type": "shell",
+            "dependsOn": [
+                "Launch ros2 socket can",
+                "Launch Drawer Bridge"
+            ],
+            "problemMatcher": []
+        },
+        {
             "label": "Launch NFC bridge",
             "detail": "Launch the NFC bridge node",
             "type": "shell",
