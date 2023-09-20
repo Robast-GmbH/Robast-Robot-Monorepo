@@ -99,12 +99,14 @@ void loop()
         case CAN_ID_DRAWER_UNLOCK:
         {
           uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
+          // TODO@Jacob: remove can_in function and put this into the data_mapper to remove can dependency from drawer
           drawers.at(drawer_id)->can_in(received_message.value());
         }
         break;
         case CAN_ID_ELECTRICAL_DRAWER_TASK:
         {
           uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
+          // TODO@Jacob: remove can_in function and put this into the data_mapper to remove can dependency from drawer
           drawers.at(drawer_id)->can_in(received_message.value());
         }
         break;

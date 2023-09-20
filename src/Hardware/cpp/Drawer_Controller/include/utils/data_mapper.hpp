@@ -15,6 +15,8 @@ namespace drawer_controller
 
     LedState create_led_state(const robast_can_msgs::CanMessage msg);
 
+    // TODO@Jacob: add more data mapping here and remove can_in functions from drawer.hpp and electrical_drawer.hpp
+
    private:
   };
 
