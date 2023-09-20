@@ -4,9 +4,9 @@
 #include <Arduino.h>
 #include <Wire.h>
 
-#include "i_gpio_wrapper.hpp"
-#include "pinout_defines.hpp"
-#include "port_expander_pca9554.hpp"
+#include "interfaces/i_gpio_wrapper.hpp"
+#include "peripherals/pinout_defines.hpp"
+#include "peripherals/port_expander_pca9554.hpp"
 
 namespace drawer_controller
 {

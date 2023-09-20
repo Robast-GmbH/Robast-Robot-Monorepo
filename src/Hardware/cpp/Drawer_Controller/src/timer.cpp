@@ -1,4 +1,4 @@
-#include "timer.hpp"
+#include "timer/timer.hpp"
 
 namespace timer
 {
@@ -19,7 +19,8 @@ namespace timer
     portENTER_CRITICAL_ISR(&fading_timer_mux);
     fade_counter = 0;
     portEXIT_CRITICAL_ISR(&fading_timer_mux);
-    fading_timer = timerBegin(0, 80, true);   // frequency of 80Mhz -> prescaler 80 makes it 1Mhz
+    fading_timer =
+      timerBegin(TIMER_ID, FADING_TIMER_PRESCALER_VALUE, true);   // frequency of 80Mhz -> prescaler 80 makes it 1Mhz
     timerAttachInterrupt(fading_timer, &on_timer_for_fading, true);
 
     // The minimal fade time we can set is 100ms. To be able to display this fade time in 256 (8 bit) brightness steps
