@@ -103,7 +103,6 @@ namespace drawer_bridge
     {
       const CanMessage can_msg =
         _can_message_creator.create_can_msg_set_single_led_state(msg.leds[i], msg.drawer_address);
-      // TODO: sleep()
       send_can_msg(can_msg);
     }
   }
