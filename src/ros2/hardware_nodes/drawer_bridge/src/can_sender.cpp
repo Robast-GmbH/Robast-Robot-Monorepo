@@ -29,10 +29,13 @@ namespace drawer_bridge
 
   void CanSender::add_can_message_to_queue(can_msgs::msg::Frame can_msg)
   {
-    _can_msg_queue.push(can_msg);
     // if queue was empty, the timer has been canceled before, so start timer for timer callbacks which trigger sending
     // the ascii cmds
-    if (_can_msg_queue.empty())
+    bool is_queue_empty = _can_msg_queue.empty();
+    
+    _can_msg_queue.push(can_msg);
+
+    if (is_queue_empty)
     {
       _is_timer_period_increased = false;
       _send_can_msgs_timer = _node->create_wall_timer(std::chrono::microseconds(TIMER_PERIOD_SEND_CAN_MSGS_IN_US),
