@@ -37,7 +37,7 @@ namespace bt_base_nodes
           "bool_topic_condition_node",
           "get_blackboard_value_action_bt_node",
           "led_changed_condition_node"};
-      std::string path = "/workspace/src/statemachine/drawer_sm/trees/Robo_base.xml";
+      std::string path = "/workspace/src/statemachine/drawer_sm/trees/robo_base.xml";
       this->declare_parameter("plugins", plugins_);
       this->declare_parameter("bt_path", path);
       this->declare_parameter("trigger_topic", "start_bt");

@@ -20,8 +20,8 @@ namespace statemachine
             return BT::NodeStatus::SUCCESS;
         }
 
-        bool areVectorsEqual = std::equal(led_vector.begin(), led_vector.end(), _old_led_vector.begin());
-        if (!areVectorsEqual)
+        bool are_vectors_equal = std::equal(led_vector.begin(), led_vector.end(), _old_led_vector.begin());
+        if (!are_vectors_equal)
         {
             _old_led_vector = led_vector;
             return BT::NodeStatus::SUCCESS;

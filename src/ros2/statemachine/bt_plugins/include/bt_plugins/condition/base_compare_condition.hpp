@@ -22,8 +22,6 @@ namespace statemachine
 
       getInput("topic", topic_name_);
 
-      // rclcpp::QoS qos(rclcpp::KeepLast(1));
-      // qos.transient_local().reliable();
 
       rclcpp::SubscriptionOptions sub_option;
       sub_option.callback_group = _callback_group;
