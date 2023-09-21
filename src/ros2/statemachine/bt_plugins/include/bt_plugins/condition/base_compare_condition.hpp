@@ -12,7 +12,7 @@ namespace statemachine
   {
 
   public:
-    BaseCompareCondition(const std::string &name, const BT::NodeConfig &config) : BT::ConditionNode(name, config)
+    BaseCompareCondition(const std::string &name, const BT::NodeConfig &config, rclcpp::QoS qos) : BT::ConditionNode(name, config)
     {
       _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
       _callback_group = _node->create_callback_group(
@@ -22,8 +22,6 @@ namespace statemachine
 
       getInput("topic", topic_name_);
 
-      rclcpp::QoS qos(rclcpp::KeepLast(1));
-      qos.transient_local().reliable();
 
       rclcpp::SubscriptionOptions sub_option;
       sub_option.callback_group = _callback_group;
