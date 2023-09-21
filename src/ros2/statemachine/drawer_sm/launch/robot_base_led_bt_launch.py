@@ -20,7 +20,7 @@ def generate_launch_description():
         description='path to the bt_params.yaml file')
     
     param_substitutions = {
-        'bt_path': os.path.join(bringup_dir, 'trees', 'Robo_base.xml')}
+        'bt_path': os.path.join(bringup_dir, 'trees', 'robo_base.xml')}
     
     configured_params = RewrittenYaml(
         source_file=bt_config_params,
