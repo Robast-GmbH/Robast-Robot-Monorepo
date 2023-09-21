@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<root BTCPP_format="4"
+      main_tree_to_execute="BehaviorTree">
+  <BehaviorTree ID="BehaviorTree">
+    <Sequence>
+      <GetBlackboardEntry key="drawer_address"
+                          value="{drawer}"/>
+      <KeepRunningUntilFailure>
+        <Sequence>
+          <InitLEDVector size="128"
+                         led_vector="{leds}"/>
+          <PartialColorizeLED LEDs="{leds}"
+                              blue="0"
+                              brightness="25"
+                              green="255"
+                              lower_bound="0.0"
+                              red="0"
+                              upper_bound="100.0"
+                              LEDs_colored="{leds}"/>
+          <IfThenElse>
+            <BoolTopicCondition target_value="true"
+                                topic="/robot/safety_module/emergency_stop"/>
+            <PartialColorizeLED LEDs="{leds}"
+                                blue="0"
+                                brightness="100"
+                                green="0"
+                                lower_bound="0.0"
+                                red="255"
+                                upper_bound="100.0"
+                                LEDs_colored="{leds}"/>
+            <AlwaysSuccess/>
+          </IfThenElse>
+          <IfThenElse>
+            <BoolTopicCondition target_value="true"
+                                topic="/robot/safety_module/safety_stop"/>
+            <PartialColorizeLED LEDs="{leds}"
+                                blue="0"
+                                brightness="100"
+                                green="0"
+                                lower_bound="27.0"
+                                red="255"
+                                upper_bound="50.0"
+                                LEDs_colored="{leds}"/>
+            <AlwaysSuccess/>
+          </IfThenElse>
+          <IfThenElse>
+            <LEDChangedCondition led_vector="{leds}"/>
+            <LEDPublisherAction drawer_address="{drawer}"
+                                fading_time_ms="100"
+                                led_topic="/led_cmd"
+                                leds="{leds}"/>
+            <AlwaysSuccess/>
+          </IfThenElse>
+        </Sequence>
+      </KeepRunningUntilFailure>
+    </Sequence>
+  </BehaviorTree>
+
+  <!-- Description of Node Models (used by Groot) -->
+  <TreeNodesModel>
+    <Condition ID="BoolTopicCondition"
+               editable="true">
+      <input_port name="target_value"
+                  default="true">bool</input_port>
+      <input_port name="topic"
+                  default="/topic_name"/>
+    </Condition>
+    <Action ID="GetBlackboardEntry">
+      <input_port name="key"
+                  default="drawer_address">string</input_port>
+      <output_port name="value"
+                   default="{drawer}"/>
+    </Action>
+    <Action ID="InitLEDVector">
+      <input_port name="size"
+                  default="128">uint8_t</input_port>
+      <output_port name="led_vector"
+                   default="{leds}"/>
+    </Action>
+    <Condition ID="LEDChangedCondition"
+               editable="true">
+      <input_port name="led_vector"
+                  default="{leds}"/>
+    </Condition>
+    <Action ID="LEDPublisherAction">
+      <input_port name="drawer_address"
+                  default="{drawer}"/>
+      <input_port name="fading_time_ms"
+                  default="0">uint8</input_port>
+      <input_port name="led_topic"
+                  default="/drawer_leds"/>
+      <input_port name="leds"
+                  default="{leds}"/>
+    </Action>
+    <Action ID="PartialColorizeLED">
+      <input_port name="LEDs"
+                  default="{leds}"/>
+      <input_port name="blue"
+                  default="0">uint8</input_port>
+      <input_port name="brightness"
+                  default="0">uint8 to determine the brightness</input_port>
+      <input_port name="green"
+                  default="0">uint8</input_port>
+      <input_port name="lower_bound"
+                  default="0.0">double</input_port>
+      <input_port name="red"
+                  default="0">uint8</input_port>
+      <input_port name="upper_bound"
+                  default="0.0">double</input_port>
+      <output_port name="LEDs_colored"
+                   default="{leds}"/>
+    </Action>
+  </TreeNodesModel>
+
+</root>

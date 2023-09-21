@@ -33,16 +33,21 @@ namespace bt_base_nodes
           "partial_colorize_leds_action_bt_node",
           "publish_led_action_bt_node",
           "reset_decorator_bt_node",
-          "initialize_led_vector_action_bt_node"};
-      std::string path = "/workspace/install/drawer_sm/share/drawer_sm/trees/drawer_sequence.xml";
+          "initialize_led_vector_action_bt_node",
+          "bool_topic_condition_node",
+          "get_blackboard_value_action_bt_node",
+          "led_changed_condition_node"};
+      std::string path = "/workspace/src/statemachine/drawer_sm/trees/robo_base.xml";
       this->declare_parameter("plugins", plugins_);
       this->declare_parameter("bt_path", path);
       this->declare_parameter("trigger_topic", "start_bt");
-      this->declare_parameter("main_tree", "main_tree");
+      this->declare_parameter("main_tree", "BehaviorTree");
+      this->declare_parameter("tree_tick_time", 100);
       plugins_ = this->get_parameter("plugins").get_parameter_value().get<std::vector<std::string>>();
       _main_tree_name = this->get_parameter("main_tree").as_string();
       _bt_path = this->get_parameter("bt_path").as_string();
       _trigger_topic = this->get_parameter("trigger_topic").as_string();
+      tree_tick_time_ = this->get_parameter("tree_tick_time").as_int();
     }
 
     void configure()
@@ -57,7 +62,7 @@ namespace bt_base_nodes
           shared_from_this());
       blackboard_->set<std::chrono::milliseconds>(
           "bt_loop_duration",
-          std::chrono::milliseconds(10));
+          std::chrono::milliseconds(tree_tick_time_));
       blackboard_->set<std::chrono::steady_clock::time_point>(
           "transition_time",
           std::chrono::steady_clock::now());
@@ -96,6 +101,7 @@ namespace bt_base_nodes
     BT::Blackboard::Ptr blackboard_;
     std::unique_ptr<statemachine::BehaviorTreeEngine> bt_engine_;
     std::vector<std::string> plugins_;
+    uint16_t tree_tick_time_;
 
   private:
     std::string _bt_path;

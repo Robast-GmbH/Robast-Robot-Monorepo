@@ -12,3 +12,4 @@ drawer_nfc_tree_initiator:
     bt_path: "/workspace/install/drawer_sm/trees/trees/drawer_nfc_bt.xml"
     trigger_topic: "authenticated_user"
     main_tree: "Drawer_NFC_BT"
+    tree_tick_time: 10
