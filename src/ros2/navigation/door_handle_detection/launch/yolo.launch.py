@@ -54,7 +54,7 @@ def generate_launch_description():
     stereo_fps            = LaunchConfiguration('stereo_fps', default = 30)
     confidence            = LaunchConfiguration('confidence', default = 200)
     LRchecktresh          = LaunchConfiguration('LRchecktresh', default = 5)
-    monoResolution        = LaunchConfiguration('monoResolution', default = '720p')
+    monoResolution        = LaunchConfiguration('monoResolution', default = '480p')
     
     rgbResolution           = LaunchConfiguration('rgbResolution',  default = '1080p')
     rgbScaleNumerator       = LaunchConfiguration('rgbScaleNumerator',  default = 2)

@@ -15,7 +15,7 @@
 #include "depthai/device/Device.hpp"
 #include "depthai/pipeline/Pipeline.hpp"
 #include "depthai/pipeline/node/ColorCamera.hpp"
-//#include "depthai/pipeline/node/IMU.hpp"
+#include "depthai/pipeline/node/IMU.hpp"
 #include "depthai/pipeline/node/MonoCamera.hpp"
 #include "depthai/pipeline/node/SpatialDetectionNetwork.hpp"
 #include "depthai/pipeline/node/StereoDepth.hpp"
@@ -226,7 +226,7 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool enableDepth,
             xoutNN->setStreamName("detections");
 
             spatialDetectionNetwork->setBlobPath(nnPath);
-            spatialDetectionNetwork->setConfidenceThreshold(0.5f);
+            spatialDetectionNetwork->setConfidenceThreshold(0.6f);
             spatialDetectionNetwork->input.setBlocking(false);
             spatialDetectionNetwork->setBoundingBoxScaleFactor(0.5);
             spatialDetectionNetwork->setDepthLowerThreshold(100);
@@ -580,7 +580,7 @@ int main(int argc, char** argv) {
                 dai::rosBridge::BridgePublisher<depthai_ros_msgs::msg::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(
                     detectionQueue,
                     node,
-                    std::string("stereo/door_handle_position"),
+                    std::string("color/yolov4_Spatial_detections"),
                     std::bind(&dai::rosBridge::SpatialDetectionConverter::toRosMsg, &detConverter, std::placeholders::_1, std::placeholders::_2),
                     30);
                 detectionPublish.addPublisherCallback();
@@ -663,7 +663,7 @@ int main(int argc, char** argv) {
                 dai::rosBridge::BridgePublisher<depthai_ros_msgs::msg::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(
                     detectionQueue,
                     node,
-                    std::string("stereo/door_handle_position"),
+                    std::string("color/yolov4_Spatial_detections"),
                     std::bind(&dai::rosBridge::SpatialDetectionConverter::toRosMsg, &detConverter, std::placeholders::_1, std::placeholders::_2),
                     30);
                 detectionPublish.addPublisherCallback();
