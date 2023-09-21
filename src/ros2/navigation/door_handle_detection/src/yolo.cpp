@@ -7,7 +7,7 @@
 #include "depthai_ros_msgs/msg/spatial_detection_array.hpp"
 #include "rclcpp/node.hpp"
 #include "sensor_msgs/msg/image.hpp"
-#include "sensor_msgs/msg/imu.hpp"
+//#include "sensor_msgs/msg/imu.hpp"
 #include "stereo_msgs/msg/disparity_image.hpp"
 
 // Inludes common necessary includes for development using depthai library
@@ -15,7 +15,7 @@
 #include "depthai/device/Device.hpp"
 #include "depthai/pipeline/Pipeline.hpp"
 #include "depthai/pipeline/node/ColorCamera.hpp"
-#include "depthai/pipeline/node/IMU.hpp"
+//#include "depthai/pipeline/node/IMU.hpp"
 #include "depthai/pipeline/node/MonoCamera.hpp"
 #include "depthai/pipeline/node/SpatialDetectionNetwork.hpp"
 #include "depthai/pipeline/node/StereoDepth.hpp"
@@ -24,7 +24,7 @@
 #include "depthai_bridge/BridgePublisher.hpp"
 #include "depthai_bridge/DisparityConverter.hpp"
 #include "depthai_bridge/ImageConverter.hpp"
-#include "depthai_bridge/ImuConverter.hpp"
+//#include "depthai_bridge/ImuConverter.hpp"
 #include "depthai_bridge/SpatialDetectionConverter.hpp"
 #include "depthai_bridge/depthaiUtility.hpp"
 
@@ -56,8 +56,8 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool enableDepth,
     auto monoRight = pipeline.create<dai::node::MonoCamera>();
     auto stereo = pipeline.create<dai::node::StereoDepth>();
     auto xoutDepth = pipeline.create<dai::node::XLinkOut>();
-    auto imu = pipeline.create<dai::node::IMU>();
-    auto xoutImu = pipeline.create<dai::node::XLinkOut>();
+    //auto imu = pipeline.create<dai::node::IMU>();
+    //auto xoutImu = pipeline.create<dai::node::XLinkOut>();
 
     controlIn->setStreamName("control");
     controlIn->out.link(monoRight->inputControl);
@@ -69,7 +69,7 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool enableDepth,
         xoutDepth->setStreamName("disparity");
     }
 
-    xoutImu->setStreamName("imu");
+    //xoutImu->setStreamName("imu");
 
     dai::node::MonoCamera::Properties::SensorResolution monoResolution;
     int stereoWidth, stereoHeight, rgbWidth, rgbHeight;
@@ -112,10 +112,10 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool enableDepth,
     if(enableDepth && depth_aligned) stereo->setDepthAlign(dai::CameraBoardSocket::CAM_A);
 
     // Imu
-    imu->enableIMUSensor(dai::IMUSensor::ACCELEROMETER_RAW, 500);
-    imu->enableIMUSensor(dai::IMUSensor::GYROSCOPE_RAW, 400);
-    imu->setBatchReportThreshold(5);
-    imu->setMaxBatchReports(20);  // Get one message only for now.
+    //imu->enableIMUSensor(dai::IMUSensor::ACCELEROMETER_RAW, 500);
+    //imu->enableIMUSensor(dai::IMUSensor::GYROSCOPE_RAW, 400);
+    //imu->setBatchReportThreshold(5);
+    //imu->setMaxBatchReports(20);  // Get one message only for now.
 
     if(depth_aligned) {
         // RGB image
@@ -278,7 +278,7 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool enableDepth,
         stereo->disparity.link(xoutDepth->input);
     }
 
-    imu->out.link(xoutImu->input);
+    //imu->out.link(xoutImu->input);
     std::cout << stereoWidth << " " << stereoHeight << " " << rgbWidth << " " << rgbHeight << std::endl;
     return std::make_tuple(pipeline, stereoWidth, stereoHeight);
 }
@@ -401,7 +401,7 @@ int main(int argc, char** argv) {
         enableDepth = false;
     }
 
-    dai::ros::ImuSyncMethod imuMode = static_cast<dai::ros::ImuSyncMethod>(imuModeParam);
+    //dai::ros::ImuSyncMethod imuMode = static_cast<dai::ros::ImuSyncMethod>(imuModeParam);
 
     dai::Pipeline pipeline;
     int width, height;
@@ -473,7 +473,7 @@ int main(int argc, char** argv) {
     } else {
         stereoQueue = device->getOutputQueue("disparity", 30, false);
     }
-    auto imuQueue = device->getOutputQueue("imu", 30, false);
+    //auto imuQueue = device->getOutputQueue("imu", 30, false);
 
     auto calibrationHandler = device->readCalibration();
 
@@ -504,20 +504,20 @@ int main(int argc, char** argv) {
     const std::string leftPubName = rectify ? std::string("left/image_rect") : std::string("left/image_raw");
     const std::string rightPubName = rectify ? std::string("right/image_rect") : std::string("right/image_raw");
 
-    dai::rosBridge::ImuConverter imuConverter(tfPrefix + "_imu_frame", imuMode, linearAccelCovariance, angularVelCovariance);
-    if(enableRosBaseTimeUpdate) {
-        imuConverter.setUpdateRosBaseTimeOnToRosMsg();
-    }
-    dai::rosBridge::BridgePublisher<sensor_msgs::msg::Imu, dai::IMUData> imuPublish(
-        imuQueue,
-        node,
-        std::string("imu"),
-        std::bind(&dai::rosBridge::ImuConverter::toRosMsg, &imuConverter, std::placeholders::_1, std::placeholders::_2),
-        30,
-        "",
-        "imu");
+    //dai::rosBridge::ImuConverter imuConverter(tfPrefix + "_imu_frame", imuMode, linearAccelCovariance, angularVelCovariance);
+    //if(enableRosBaseTimeUpdate) {
+    //    imuConverter.setUpdateRosBaseTimeOnToRosMsg();
+    //}
+    //dai::rosBridge::BridgePublisher<sensor_msgs::msg::Imu, dai::IMUData> imuPublish(
+    //    imuQueue,
+    //    node,
+    //    std::string("imu"),
+    //    std::bind(&dai::rosBridge::ImuConverter::toRosMsg, &imuConverter, std::placeholders::_1, std::placeholders::_2),
+    //    30,
+    //    "",
+    //    "imu");
 
-    imuPublish.addPublisherCallback();
+    //imuPublish.addPublisherCallback();
 
     // auto leftCameraInfo = converter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_B, monoWidth, monoHeight);
     // auto rightCameraInfo = converter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_C, monoWidth, monoHeight);
