@@ -34,43 +34,43 @@ class RestInterface():
             
         @self.app.post("/settings/navigation/pause")
         def pause_robot(robot:schemas.Robot):
-            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", {"Pause"})
+            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", ["Pause"]})
             return
         
         @self.app.post("/settings/navigation/resume")
         def resume_robot(robot:schemas.Robot):
-            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", {"Resume"})
+            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", ["Resume"])
             return
 
         @self.app.post("/settings/navigation/cancel")
         def cancel_robot(robot:schemas.Robot ):
-            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", {"Cancel"})
+            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", ["Cancel"])
             return  
         
         @self.app.post("/settings/navigation/loop")
         def loop_robot(robot:schemas.Robot, loop:Annotated[bool,Body()] ):
             if loop:
-                self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"loop", {"Start"})
+                self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"loop", ["Start"])
             else:
-                self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"loop", {"Stop"})
+                self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"loop", ["Stop"])
             return  
         
         
         @self.app.post("/settings/drawer/close")
         def close_drawer(robot:schemas.Robot, drawer_id:Annotated[int,Body()], module_id:Annotated[int,Body()], e_drawer:Annotated[bool,Body()]):
             if e_drawer:
-                self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name,"drawer",{"Closed", str(module_id), str(drawer_id)})
+                self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name,"drawer",["Closed", str(module_id), str(drawer_id)])
             else:
                     raise HTTPException(status_code=423, detail="drawer has to be closed manually")
             
         @self.app.post("/settings/drawer/reset")
         def reset_drawer(robot:schemas.Robot):
-                self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name, "reset_tree", {"E-drawer"} )
+                self.ros_node.handle_setting_request( robot.robot_name, robot.fleet_name, "reset_tree", ["E-drawer"] )
 
         
         @self.app.post("/settings/drawer/completed")
         def end_drawer_action(robot:schemas.Robot):
-                self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name, "drawer", {"Completed"})
+                self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name, "drawer", ["Completed"])
 
 
     def run(self, host='0.0.0.0', log_level='warning'):
