@@ -6,7 +6,7 @@ namespace rmf_robot_client
   {
     this->drawer_id = drawer_id;
     this->module_id = module_id;
-    this->is_edrawer = is_edrawer;
+    this->is_e_drawer = is_edrawer;
     this->autorised_user = autorised_user;
     this->drawers = drawer_states;
 
@@ -32,7 +32,7 @@ namespace rmf_robot_client
     
     if(msg->drawer_is_open==false)
     {
-    //   publish_close_drawer_status(msg->drawer_address.module_id, msg->drawer_address.drawer_id);
+      // publish_close_drawer_status(msg->drawer_address.module_id, msg->drawer_address.drawer_id);
     }
   }
 
@@ -40,7 +40,7 @@ namespace rmf_robot_client
   {
     RCLCPP_INFO(ros_node->get_logger(), "start drawer_action");
     finish_action = next_action_callback;
-    open_drawer_action(module_id, drawer_id, is_edrawer);
+    open_drawer_action(module_id, drawer_id,is_e_drawer );
     return true;
   }
 

@@ -7,7 +7,9 @@ namespace rmf_robot_client
     this->x = x;
     this->y = y;
     this->yaw = yaw;
+    this->frame_id = frame_id;
     this->behavior_tree = behavior_tree;
+
     navigate_to_pose_client_ = rclcpp_action::create_client<NavigateToPose>(ros_node, config["nav2_navigation_to_pose_action_topic"]);
   }
   
@@ -77,7 +79,7 @@ namespace rmf_robot_client
 
   void NavigationAction::feedback_callback(GoalHandleNavigateToPose::SharedPtr, const std::shared_ptr<const NavigateToPose::Feedback> feedback)
   {
-    RCLCPP_INFO(ros_node->get_logger(), "navigate_to_pose feedback recived");
+    RCLCPP_INFO(ros_node->get_logger(), "navigate_to_pose feedback received. number of recoveries:%i distance:%f ",feedback->number_of_recoveries, feedback->distance_remaining);
   }
 
   void NavigationAction::result_callback(const GoalHandleNavigateToPose::WrappedResult &result)

@@ -26,7 +26,7 @@ namespace rmf_robot_client
     using StdMsgBool= std_msgs::msg::Bool;
     using StdMsgInt = std_msgs::msg::Int64;
 
-    bool is_edrawer;
+    bool is_e_drawer;
     int module_id;
     int drawer_id;
     std::vector<u_int16_t> autorised_user;
