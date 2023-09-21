@@ -9,6 +9,9 @@ namespace rmf_robot_client
     start_receive_tasks();
     initialise_task_publisher();
     drawer_list = std::make_shared<std::map<std::string, DrawerState>>();
+    tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+    update_robot_location();
   }
 
   void RobotClient::init_param()
@@ -261,7 +264,7 @@ namespace rmf_robot_client
 
   void RobotClient::publish_fleet_state()
   {
-    //update_robot_location();
+    update_robot_location();
     FreeFleetDataRobotInfo robot_state_msg = FreeFleetDataRobotInfo();
 
     robot_state_msg.name = robot_name;
@@ -290,7 +293,7 @@ namespace rmf_robot_client
         } 
     catch (const tf2::TransformException & ex) 
       {
-          RCLCPP_INFO( this->get_logger(), "Could not transform %s to %s: %s", map_frame_id.c_str(), robot_frame_id.c_str(), ex.what());
+          //RCLCPP_INFO( this->get_logger(), "Could not transform %s to %s: %s", map_frame_id.c_str(), robot_frame_id.c_str(), ex.what());
           return;
       }
     

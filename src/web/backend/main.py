@@ -279,7 +279,7 @@ def drawer_actions_done( robot_name: str, fleet_name:str, db: Session = Depends(
 
 # open_drawer
 @app.post("/robots/{robot_name}/modules/open")
-def open_drawer( robot_name: str, module: schemas.BaseDrawer, authorized_user: list[int], owner:Annotated[int,Body()], db: Session = Depends(get_db)):
+def open_drawer( robot_name: str, module: schemas.BaseDrawer, restricted_for_user: list[int], owner:Annotated[int,Body()], db: Session = Depends(get_db)):
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
     db_module= crud.get_module(db=db,module_id=module.module_id,drawer_id=module.drawer_id)
     if db_module is None:
@@ -287,8 +287,8 @@ def open_drawer( robot_name: str, module: schemas.BaseDrawer, authorized_user: l
     
     task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, owner)
     step=1
-    db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id, locked_for=authorized_user)
-    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.type == models.DrawerSlideTypes.Electrical,authorized_user,False)
+    db_action= crud.create_drawer_action(db, step, task_id, module.module_id, module.drawer_id, locked_for=restricted_for_user)
+    action= templates.create_drawer_action(step,module.drawer_id, module.module_id, db_module.type == models.DrawerSlideTypes.Electrical, restricted_for_user,False)
     if(action== "robot"):
         raise HTTPException(status_code=404, detail="robot not found" )
     task =templates.create_task(db,robot_name,task_id,[action])
