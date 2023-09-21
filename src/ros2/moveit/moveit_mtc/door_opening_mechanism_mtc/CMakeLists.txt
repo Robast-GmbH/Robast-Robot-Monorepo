@@ -19,9 +19,10 @@ find_package(moveit_core REQUIRED)
 include_directories(include)
 
 set(executable_door_opening_mechanism_mtc door_opening_mechanism_mtc)
-
+set(executable_door_opening_mechanism_send_fake_pose door_opening_mechanism_send_fake_pose)
 
 add_executable(${executable_door_opening_mechanism_mtc} src/door_opening_mechanism_mtc_main.cpp)
+add_executable(${executable_door_opening_mechanism_send_fake_pose} src/door_opening_mechanism_send_fake_pose.cpp)
 
 set(library_door_opening_mechanism_mtc ${executable_door_opening_mechanism_mtc}_core)
 
@@ -40,6 +41,9 @@ set(dependencies
   moveit_core
 )
 
+ament_target_dependencies(${executable_door_opening_mechanism_send_fake_pose}
+  ${dependencies}
+)
 ament_target_dependencies(${executable_door_opening_mechanism_mtc}
   ${dependencies}
 )
@@ -64,6 +68,7 @@ endif()
 
 install(TARGETS
   ${executable_door_opening_mechanism_mtc}
+  ${executable_door_opening_mechanism_send_fake_pose}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
