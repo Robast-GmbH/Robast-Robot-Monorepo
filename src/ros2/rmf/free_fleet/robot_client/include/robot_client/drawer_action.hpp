@@ -8,7 +8,7 @@
 #include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "std_msgs/msg/int64.hpp"
-#include "drawer_status.hpp"
+#include "drawer_state.hpp"
 #include <iostream>
 #include <map>
 #include <chrono>
@@ -36,10 +36,10 @@ namespace rmf_robot_client
 
     rclcpp::TimerBase::SharedPtr nfc_reading_timer;
 
-    void open_drawer(int target_module_id, int target_drawer_id);
-    void open_drawer_action(int target_module_id, int target_drawer_id);
+    void open_drawer(int module_id, int drawer_id);
+    void open_drawer_action(int module_id, int drawer_id, bool is_edrawer);
     void close_drawer(int module_id, int drawer_id);
-    void publish_drawer_closed(int module_id, int drawer_id);
+    void publish_close_drawer_status(int module_id, int drawer_id);
     std::string get_drawer_ref(int module_id, int drawer_id);
     bool all_drawers_closed();
     void start_authentication_scan();
@@ -48,11 +48,11 @@ namespace rmf_robot_client
     //subscriber
     rclcpp::Subscription<DrawerStatus>::SharedPtr drawer_status_subscriber_;
     rclcpp::Subscription<StdMsgInt>::SharedPtr authentication_subscriber_;
-    //rclcpp::Subscription<DrawerAddress>::SharedPtr close_drawer_subscriber_;
 
     // publisher
     rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_open_drawer_publisher_;
-    rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_close_drawer_publisher_;
+    rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_open_e_drawer_publisher_;
+    rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_close_e_drawer_publisher_;
     rclcpp::Publisher<StdMsgBool>::SharedPtr nfc_on_off_publisher_;
 
   public:

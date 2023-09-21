@@ -8,7 +8,7 @@ namespace rmf_robot_client
     init_param();
     start_receive_tasks();
     initialise_task_publisher();
-    drawer_list = std::make_shared<std::map<std::string, DrawerStatus>>();
+    drawer_list = std::make_shared<std::map<std::string, DrawerState>>();
   }
 
   void RobotClient::init_param()

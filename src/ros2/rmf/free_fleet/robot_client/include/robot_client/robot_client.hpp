@@ -27,7 +27,7 @@
 #include "nfc_action.hpp"
 #include "drawer_action.hpp"
 #include "navigation_action.hpp"
-#include "drawer_status.hpp"
+#include "drawer_state.hpp"
 
 namespace rmf_robot_client
 {
