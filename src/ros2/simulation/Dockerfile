@@ -27,6 +27,18 @@ RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pk
     && apt-get install -y gz-${GZ_VERSION} \
     && apt-get update
 
+# Must compile ros_gz, gz-msgs and gz-transport from source because Humble + Garden is not an official combination
+RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b humble https://github.com/gazebosim/ros_gz.git \
+    && cd /workspace_ros_gz/src && git clone -b gz-msgs9 https://github.com/gazebosim/gz-msgs.git \
+    && cd /workspace_ros_gz/src && git clone -b gz-transport12 https://github.com/gazebosim/gz-transport.git \
+    && apt update \
+    && apt upgrade -y \
+    && . /opt/ros/${ROS_DISTRO}/setup.sh \
+    && rosdep update \
+    && rosdep install --from-paths /workspace_ros_gz/src --ignore-src -r -y \
+    && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install \
+    && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
+
 RUN apt-get update && apt-get install -y \
     cmake \
     gdb \
@@ -60,32 +72,6 @@ RUN apt-get update && apt-get install -y \
     software-properties-common \
     && add-apt-repository ppa:kisak/kisak-mesa -y\
     && apt upgrade -y
-
-
-# Must compile ros_gz, gz-msgs and gz-transport from source because Humble + Garden is not an official combination
-RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b humble https://github.com/gazebosim/ros_gz.git \
-    && cd /workspace_ros_gz/src && git clone -b gz-msgs9 https://github.com/gazebosim/gz-msgs.git \
-    && cd /workspace_ros_gz/src && git clone -b gz-transport12 https://github.com/gazebosim/gz-transport.git \
-    && apt update \
-    && apt upgrade -y \
-    && . /opt/ros/${ROS_DISTRO}/setup.sh \
-    && rosdep update \
-    && rosdep install --from-paths /workspace_ros_gz/src --ignore-src -r -y \
-    && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install \
-    && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
-
-# Adding moveit2_tutorials as separate workspace which can be used for learning and testing purposed.
-# Can be removed once there is enough moveit2 skill and knowledge archieved
-RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone https://github.com/ros-planning/moveit2_tutorials -b humble --depth 1 \
-  && vcs import < moveit2_tutorials/moveit2_tutorials.repos \
-  && apt update \
-  && apt upgrade -y \
-  && . /opt/ros/${ROS_DISTRO}/setup.sh \
-  && . /workspace_ros_gz/install/setup.sh \
-  && rosdep update \
-  && rosdep install --from-paths /workspace_moveit2/src --ignore-src -r -y \
-  && colcon build --parallel-workers 3 --build-base /workspace_moveit2/build --install-base /workspace_moveit2/install \
-  && echo "if [ -f /workspace_moveit2/install/setup.bash ]; then source /workspace_moveit2/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 

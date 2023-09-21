@@ -53,12 +53,24 @@ services:
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
     command: /bin/sh -c "while sleep 1000; do :; done"
 
-  # state_publisher:
-  #   build:
-  #     context: .
-  #     dockerfile: ../../src/ros2/simulation/Dockerfile
+  moveit_mtc:
+    build:
+      context: .
+      dockerfile: ../../src/ros2/moveit/moveit_mtc/Dockerfile
+    image: robast_moveit_mtc
+    environment:
+      - ROS_DOMAIN_ID=1
+      - is_simulation=True
+      - config_directory=config_simulation
+      - robot_name=rb_theron
+      - robot=rb_theron
+      - prefix=
+    volumes:
+      - ./moveit_mtc/:/workspace/:cached
+      - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
+      - ../../src/ros2/moveit:/workspace/src/moveit:cached
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
+#    network_mode: "host"
+    command: /bin/sh -c "while sleep 1000; do :; done"
 
-#networks:
-#  host:
-#    name: host
-#    external: true
