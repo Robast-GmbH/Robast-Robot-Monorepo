@@ -49,6 +49,15 @@ async def read_main(db: Session = Depends(get_db)):
     crud.init(db)
     return {"msg": "Hi Robast Fans. LETS GET STARTED!!!!"}
 
+#reset DB to initial_state
+@app.get("/reset")
+def reset_db(db:Session=Depends(get_db)):
+    models.Base.metadata.drop_all(bind=engine)
+    models.Base.metadata.create_all(bind=engine)
+    crud.init(db)
+    return{ "msg":"Database reset successful."}
+
+
 
 #User management
 @app.post("/users/", response_model=schemas.User)
@@ -322,7 +331,6 @@ def reset_drawer( robot_name: str, db: Session = Depends(get_db)):
     for module in db_modules:
         mod=schemas.UpdateModule(module_id=module.module_id, drawer_id=module.drawer_id, robot_name=robot_name ,status="Closed")
         crud.set_module_status(db=db,module=mod)
-
     return 
 
 if __name__ == "__main__":

@@ -4,14 +4,14 @@
 
 namespace rmf_robot_client
 {
-  struct DrawerStatus {
+  struct DrawerState {
     int module_id;
     int drawer_id;
     bool is_opened;
     std::vector<u_int16_t> authorised_users;
 
     // Constructor for convenience
-    DrawerStatus(int moduleId, int drawerId, bool opened, std::vector<u_int16_t> authorisedUsers)
+    DrawerState(int moduleId, int drawerId, bool opened, std::vector<u_int16_t> authorisedUsers)
         : module_id(moduleId), drawer_id(drawerId), is_opened(opened), authorised_users(authorisedUsers) {}
   };
 }// namespace robot_client

@@ -2,7 +2,7 @@
 
 namespace rmf_robot_client
 {
-  DrawerAction::DrawerAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string,std::string> config, std::shared_ptr<std::map<std::string, DrawerStatus>> drawer_states, int drawer_id, int module_id, bool is_edrawer, std::vector<uint16_t> autorised_user):Action(task_id, step, ros_node, config)
+  DrawerAction::DrawerAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string,std::string> config, std::shared_ptr<std::map<std::string, DrawerState>> drawer_states, int drawer_id, int module_id, bool is_edrawer, std::vector<uint16_t> autorised_user):Action(task_id, step, ros_node, config)
   {
     this->drawer_id = drawer_id;
     this->module_id = module_id;
@@ -14,7 +14,7 @@ namespace rmf_robot_client
       qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
       qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
       qos.avoid_ros_namespace_conventions(false);
-      close_drawer_subscriber_= ros_node->create_subscription<DrawerAddress>( "/close_drawer", 10, std::bind(&DrawerAction::receive_closed_drawer, this, std::placeholders::_1));
+      drawer_status_subscriber_= ros_node->create_subscription<DrawerStatus>( "/drawer_is_open", 10, std::bind(&DrawerAction::receive_drawer_status, this, std::placeholders::_1));
    
      //controll drawer
     if(is_edrawer)
@@ -29,9 +29,11 @@ namespace rmf_robot_client
     nfc_on_off_publisher_ = ros_node->create_publisher<StdMsgBool>(config["nfc_on_off_switch_topic"], qos);
   }
 
-  void DrawerAction::receive_closed_drawer(const DrawerAddress::SharedPtr msg)
+  void DrawerAction::receive_drawer_status(const DrawerStatus::SharedPtr msg)
   {
-    publish_drawer_closed(msg->module_id, msg->drawer_id);
+    RCLCPP_INFO(ros_node->get_logger(), "closed drawer_action");
+    if(msg->drawer_is_open==false)
+    publish_drawer_closed(msg->drawer_address.module_id, msg->drawer_address.drawer_id);
   }
 
   bool DrawerAction::start(std::function<void(int)> next_action_callback)
@@ -48,13 +50,13 @@ namespace rmf_robot_client
 
     if (drawers->count(drawer_ref) > 0)
     {
-      selected_drawer= std::make_unique<DrawerStatus>(drawers->at(drawer_ref));
+      selected_drawer= std::make_unique<DrawerState>(drawers->at(drawer_ref));
     }
     else
     {
-      DrawerStatus NewDrawer= DrawerStatus(target_module_id, target_drawer_id, false, std::vector<u_int16_t>());  
+      DrawerState NewDrawer= DrawerState(target_module_id, target_drawer_id, false, std::vector<u_int16_t>());  
       drawers->insert(std::pair(drawer_ref, NewDrawer));
-      selected_drawer = std::make_unique<DrawerStatus>(NewDrawer);
+      selected_drawer = std::make_unique<DrawerState>(NewDrawer);
       selected_drawer->authorised_users = std::vector<u_int16_t>();
     }
 
@@ -122,14 +124,13 @@ namespace rmf_robot_client
   void  DrawerAction::close_drawer(int module_id, int drawer_id)
   {
     std::string drawer_ref = get_drawer_ref(module_id, drawer_id);
-    if (is_edrawer && drawers->count(drawer_ref) > 0 && drawers->at(drawer_ref).is_opened)
-    {
+   
       DrawerAddress drawer_msg = DrawerAddress();
-      drawer_msg.drawer_id = this->drawer_id;
-      drawer_msg.module_id = this->module_id;
+      drawer_msg.drawer_id = drawer_id;
+      drawer_msg.module_id = module_id;
       trigger_close_drawer_publisher_->publish(drawer_msg);
       publish_drawer_closed(module_id, drawer_id);
-    }
+    
   }
 
   void DrawerAction::publish_drawer_closed(int module_id, int drawer_id)
@@ -171,7 +172,7 @@ namespace rmf_robot_client
     if(value[0]=="Closed")
     {
        close_drawer(std::stoi(value[1]), std::stoi(value[2]));
-
+      RCLCPP_ERROR(ros_node->get_logger(),"close drawer setting");
       publish_task_state("DrawerState", value[1] + "#" + value[2] + "#Closed", false);
     }
     else if(value[0]=="Opend")
@@ -192,7 +193,7 @@ namespace rmf_robot_client
 
   bool DrawerAction::all_drawers_closed()
   {
-    return  std::all_of(drawers->begin(), drawers->end(), [](const std::pair<std::string, DrawerStatus> &pair)
+    return  std::all_of(drawers->begin(), drawers->end(), [](const std::pair<std::string, DrawerState> &pair)
                                   { return pair.second.is_opened; });
   }
 }

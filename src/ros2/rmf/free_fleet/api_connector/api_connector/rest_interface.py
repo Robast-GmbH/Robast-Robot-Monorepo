@@ -34,7 +34,7 @@ class RestInterface():
             
         @self.app.post("/settings/navigation/pause")
         def pause_robot(robot:schemas.Robot):
-            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", ["Pause"]})
+            self.ros_node.handle_setting_request(robot.robot_name, robot.fleet_name,"move", ["Pause"])
             return
         
         @self.app.post("/settings/navigation/resume")

@@ -29,7 +29,7 @@ namespace rmf_robot_client
 
     get_parameter_to_config("statemaschine_open_drawer_topic", "/trigger_drawer_tree");
     get_parameter_to_config("statemaschine_open_e_drawer_topic", "/trigger_electric_drawer_tree");
-    get_parameter_to_config("statemaschine_close_e_drawer_topic", "/trigger_electric_drawer_tree");
+    get_parameter_to_config("statemaschine_close_e_drawer_topic", "/close_drawer");
     get_parameter_to_config("statemaschine_reset_simple_tree_topic", "/reset_simple_tree");
     get_parameter_to_config("drawer_status_change_topic","/drawer_is_open" );
 
@@ -71,14 +71,21 @@ namespace rmf_robot_client
 
   void RobotClient::initialise_task_publisher()
   {
-    rclcpp::QoS qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
-    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
-    qos.avoid_ros_namespace_conventions(false);
+    rclcpp::QoS qos_fleet_communication = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
+    qos_fleet_communication.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    qos_fleet_communication.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+    qos_fleet_communication.avoid_ros_namespace_conventions(false);
 
-    robot_info_publisher_ = this->create_publisher<FreeFleetDataRobotInfo>(config["fleet_communication_robot_info_topic"], qos);
+    rclcpp::QoS qos_statemaschine = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
+    qos_statemaschine.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+    qos_statemaschine.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+    qos_statemaschine.avoid_ros_namespace_conventions(false);
+    
+
+
+    robot_info_publisher_ = this->create_publisher<FreeFleetDataRobotInfo>(config["fleet_communication_robot_info_topic"], qos_fleet_communication);
     publish_robot_info_timer_ = this->create_wall_timer(std::chrono::milliseconds(2000), std::bind(&RobotClient::publish_fleet_state, this)); // removed only for debugging
-    reset_simple_tree_publisher_ = this->create_publisher<StdMsgBool>(config["statemaschine_reset_simple_tree_topic"], qos);
+    reset_simple_tree_publisher_ = this->create_publisher<StdMsgBool>(config["statemaschine_reset_simple_tree_topic"], qos_statemaschine);
   }
 
   void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
