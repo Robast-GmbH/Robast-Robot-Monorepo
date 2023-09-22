@@ -15,6 +15,7 @@ find_package(nav2_msgs REQUIRED)
 find_package(fleet_interfaces REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(std_msgs REQUIRED)
+# find_package(robotnik_msgs)
 
 include_directories(include)
 
@@ -39,6 +40,7 @@ set(dependencies
   fleet_interfaces
   communication_interfaces
   std_msgs
+  # robotnik_msgs
 )
 
 ament_target_dependencies(${executable_robot_client} ${dependencies})

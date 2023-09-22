@@ -49,6 +49,8 @@ namespace rmf_robot_client
     get_parameter_to_config("fleet_communication_robot_info_topic", "/robot_state"); 
     
     get_parameter_to_config("nav2_navigation_to_pose_action_topic", "navigate_to_pose");
+    get_parameter_to_config("robotnik_battery_level_topic", "/robot/battery_estimator/data");
+    
 
   }
 
@@ -85,6 +87,7 @@ namespace rmf_robot_client
     qos_statemaschine.avoid_ros_namespace_conventions(false);
     
 
+    //battery_status_sub_ = this->create_subscription<BatteryLevel>( config["robotnik_battery_level_topic"], qos_robotnik, std::bind(&RobotClient::update_battery_level, this, std::placeholders::_1));
 
     robot_info_publisher_ = this->create_publisher<FreeFleetDataRobotInfo>(config["fleet_communication_robot_info_topic"], qos_fleet_communication);
     publish_robot_info_timer_ = this->create_wall_timer(std::chrono::milliseconds(2000), std::bind(&RobotClient::publish_fleet_state, this)); // removed only for debugging
@@ -278,7 +281,7 @@ namespace rmf_robot_client
     robot_state_msg.location.y= current_y;
     robot_state_msg.location.yaw= current_yaw;
 
-    robot_state_msg.battery_percent = -1;
+    robot_state_msg.battery_percent = current_battery_level;
     //robot_state_msg.mode = FreeFleetDataRobotMode();
     //robot_state_msg.path = std::vector<>;
     robot_info_publisher_->publish(robot_state_msg);

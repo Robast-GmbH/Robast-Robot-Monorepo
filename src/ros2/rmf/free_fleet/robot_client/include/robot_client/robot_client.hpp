@@ -11,17 +11,15 @@
 #include "fleet_interfaces/msg/free_fleet_data_drawer_request.hpp"
 #include "fleet_interfaces/msg/free_fleet_data_destination_request.hpp"
 #include "fleet_interfaces/msg/free_fleet_data_robot_state.hpp"
-// #include "fleet_interfaces/msg/free_fleet_data_task_state.hpp"
 
-// #include "std_msgs/msg/string.hpp"
-// #include "std_msgs/msg/bool.hpp"
+#include "std_msgs/msg/bool.hpp"
 
-
-// #include "nav2_msgs/action/navigate_to_pose.hpp"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include "tf2/exceptions.h"
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
+
+//#include "robotnik_msgs/msg/battery_status.hpp"
 
 #include "action.hpp"
 #include "nfc_action.hpp"
@@ -42,6 +40,8 @@ namespace rmf_robot_client
           using FreeFleetDataDestinationRequest = fleet_interfaces::msg::FreeFleetDataDestinationRequest;
           using FreeFleetDataRobotInfo = fleet_interfaces::msg::FreeFleetDataRobotState;
           using StdMsgBool = std_msgs::msg ::Bool;
+          using DrawerStatus = communication_interfaces::msg::DrawerStatus;
+          //using BatteryLevel = robotnik_msgs::msg::BatteryStatus;
 
         private:
           // Parameters
@@ -59,23 +59,22 @@ namespace rmf_robot_client
           rclcpp::Subscription<FreeFleetDataCreateNfcRequest>::SharedPtr write_nfc_card_request_subscriber_;
           rclcpp::Subscription<FreeFleetDataDrawerRequest>::SharedPtr drawer_request_subscriber_;
           rclcpp::Subscription<FreeFleetDataDestinationRequest>::SharedPtr navigation_request_subscriber_;
-
+          
+          //hardware
+          //rclcpp::Subscription<BatteryLevel>::SharedPtr battery_status_sub_;
+          rclcpp::Subscription<DrawerStatus>::SharedPtr drawer_status_subscriber_;
+          
+          //other
           rclcpp::Publisher<FreeFleetDataRobotInfo>::SharedPtr robot_info_publisher_;
           rclcpp::Publisher<StdMsgBool>::SharedPtr reset_simple_tree_publisher_;
-
-          //NFC
-
-          // rclcpp::Subscription<StdMsgString>::SharedPtr authenticated_user_;
-          // rclcpp::Publisher<StdMsgBool>::SharedPtr controll_nfc_modules_publisher_;
-        
-        
-
 
           //Task
           int task_id;
           int current_step;
+          float current_battery_level = -1;
           std::map<int, std::unique_ptr<Action>> task_sequence;
           rclcpp::TimerBase::SharedPtr publish_robot_info_timer_;
+          int robot_info_inteval;
 
           //robot 
           std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
@@ -87,11 +86,16 @@ namespace rmf_robot_client
 
           void init_param();
           void start_receive_tasks();
-          void initialise_task_publisher();
+          void start_update_robot_state();
+          
           void receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg);
           void receive_create_nfc_task(const FreeFleetDataCreateNfcRequest::ConstPtr msg);
           void receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg);
           void receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg);
+          
+          void receive_drawer_status(const DrawerStatus::SharedPtr msg);
+          //void receive_battery_status(const BatteryLevel::ConstPtr msg);
+          
           bool prepare_new_action(std::string Task_def, std::string recipient_fleet, std::string recipient_robot, int &task_id, int &step);
           void end_current_task();
           void end_current_action(int step);

@@ -23,6 +23,20 @@ RUN apt-get update && apt-get install -y \
   ros-humble-launch-testing \
   git \
   && rosdep init || echo "rosdep already initialized"
+  
+WORKDIR /robotnik
+RUN git clone -b humble-devel https://github.com/RobotnikAutomation/robotnik_msgs.git && \
+. /opt/ros/${ROS_DISTRO}/setup.sh && \
+colcon build --packages-select robotnik_msgs --cmake-args -DCMAKE_BUILD_TYPE=Release
+
+WORKDIR /workspace
+
+RUN apt-get update \
+  && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
+  && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
+  && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/$USER/.bashrc \
+  && echo "if [ -f /robotnik/install/setup.bash ]; then source /robotnik/install/setup.bash; fi" >> /home/$USER/.bashrc 
+
 
 #install RMF
 RUN apt-get update && apt-get install -y\
