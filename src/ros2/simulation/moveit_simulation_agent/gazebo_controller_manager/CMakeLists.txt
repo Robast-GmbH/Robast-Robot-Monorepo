@@ -27,6 +27,7 @@ find_package(sensor_msgs REQUIRED)
 find_package(control_msgs REQUIRED)
 find_package(moveit_msgs REQUIRED)
 find_package(moveit_core REQUIRED)
+find_package(moveit_task_constructor_msgs REQUIRED)
 find_package(${gz_transport_version} REQUIRED)
 find_package(${gz_msgs_version} REQUIRED)
 
@@ -37,6 +38,7 @@ set(dependencies
   sensor_msgs
   control_msgs
   moveit_msgs
+  moveit_task_constructor_msgs
   ${gz_transport_version}
   ${gz_msgs_version}
 )
@@ -45,20 +47,27 @@ include_directories(include)
 
 set(executable_robot_trajectory_executor robot_trajectory_executor)
 set(executable_joint_trajectory_controller joint_trajectory_controller)
+set(executable_task_solution_executor task_solution_executor)
 
 add_executable(${executable_robot_trajectory_executor}
   src/robot_trajectory_executor_main.cpp)
 add_executable(${executable_joint_trajectory_controller}
   src/joint_trajectory_controller_main.cpp)
+add_executable(${executable_task_solution_executor}
+  src/task_solution_executor_main.cpp)
 
 set(library_robot_trajectory_executor ${executable_robot_trajectory_executor}_core)
 set(library_joint_trajectory_controller ${executable_joint_trajectory_controller}_core)
+set(library_task_solution_executor ${executable_task_solution_executor}_core)
 
 add_library(${library_robot_trajectory_executor} SHARED
   src/robot_trajectory_executor.cpp
 )
 add_library(${library_joint_trajectory_controller} SHARED
   src/joint_trajectory_controller.cpp
+)
+add_library(${library_task_solution_executor} SHARED
+  src/task_solution_executor.cpp
 )
 
 ament_target_dependencies(${executable_robot_trajectory_executor}
@@ -71,11 +80,19 @@ ament_target_dependencies(${executable_joint_trajectory_controller}
 )
 target_link_libraries(${executable_joint_trajectory_controller} ${library_joint_trajectory_controller})
 
+ament_target_dependencies(${executable_task_solution_executor}
+  ${dependencies}
+)
+target_link_libraries(${executable_task_solution_executor} ${library_task_solution_executor})
+
 
 ament_target_dependencies(${library_robot_trajectory_executor}
   ${dependencies}
 )
 ament_target_dependencies(${library_joint_trajectory_controller}
+  ${dependencies}
+)
+ament_target_dependencies(${library_task_solution_executor}
   ${dependencies}
 )
 
@@ -85,6 +102,11 @@ target_include_directories(${executable_robot_trajectory_executor} PUBLIC
 )
 
 target_include_directories(${executable_joint_trajectory_controller} PUBLIC
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+target_include_directories(${executable_task_solution_executor} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
@@ -105,6 +127,7 @@ endif()
 install(TARGETS
   ${executable_robot_trajectory_executor}
   ${executable_joint_trajectory_controller}
+  ${executable_task_solution_executor}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 

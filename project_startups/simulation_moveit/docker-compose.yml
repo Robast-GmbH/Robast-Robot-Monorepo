@@ -2,7 +2,12 @@ version: '3.9'
 
 services:
   simulation:
-    image: ghcr.io/robast-gmbh/monorepo/simulation:devel
+    # TODO: Use remote image from ghcr
+    # image: ghcr.io/robast-gmbh/monorepo/simulation:devel
+    build:
+      context: .
+      dockerfile: ../../src/ros2/simulation/Dockerfile
+    image: robast_simulation
     environment:
       - ROS_DOMAIN_ID=1
       - is_simulation=True
