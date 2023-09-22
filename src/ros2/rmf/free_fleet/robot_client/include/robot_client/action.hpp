@@ -13,11 +13,11 @@ namespace rmf_robot_client
   {
     protected: 
       using FreeFleetDataTaskInfo = fleet_interfaces::msg::FreeFleetDataTaskState;
-      int task_id;
-      int step;
-      std::shared_ptr<rclcpp::Node> ros_node;
-      std::map<std::string, std::string> config;
-      rclcpp::Publisher<FreeFleetDataTaskInfo>::SharedPtr task_info_publisher;
+      int task_id_;
+      int step_;
+      std::shared_ptr<rclcpp::Node> ros_node_;
+      std::map<std::string, std::string> config_;
+      rclcpp::Publisher<FreeFleetDataTaskInfo>::SharedPtr task_info_publisher_;
       std::function<void(bool)> finish_action;
 
     public:
@@ -25,7 +25,7 @@ namespace rmf_robot_client
     //  ~Action();
       virtual bool start(std::function<void(int)> next_action_callback)=0;
       virtual bool cancel()=0;
-      virtual bool receive_new_settings(std::string command, std::vector<std::string> value)=0;
+      virtual bool receive_new_settings(std::string command, std::vector<std::string> value);
       virtual std::string get_type() = 0;
       void publish_task_state(std::string status, std::string message, bool completed);
 

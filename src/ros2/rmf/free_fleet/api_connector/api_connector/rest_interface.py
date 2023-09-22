@@ -91,7 +91,7 @@ class RestInterface():
         try:
             sender.post(url= self.response_api+"/robots/status", data= json.dumps(message), verify=False)
             if(self.is_backend_running==False):
-                self.ros_node.get_logger().info('Backend is operational')
+                self.ros_node.get_logger().info('connection with the Backend is established.')
                 self.is_backend_running=True
 
         except ConnectionError:

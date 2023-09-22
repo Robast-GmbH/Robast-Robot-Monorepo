@@ -21,20 +21,20 @@ namespace rmf_robot_client
   private:
 
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
-    using DrawerStatus = communication_interfaces::msg::DrawerStatus;
-    using StdMsgString = std_msgs::msg::String;
+    // using DrawerStatus = communication_interfaces::msg::DrawerStatus;
+    // using StdMsgString = std_msgs::msg::String;
     using StdMsgBool= std_msgs::msg::Bool;
     using StdMsgInt = std_msgs::msg::Int64;
 
-    bool is_e_drawer;
-    int module_id;
-    int drawer_id;
-    std::vector<u_int16_t> autorised_user;
+    bool is_e_drawer_;
+    int module_id_;
+    int drawer_id_;
+    std::vector<u_int16_t> autorised_user_;
 
-    std::shared_ptr<std::map<std::string, DrawerState>> drawers;
-    std::unique_ptr<DrawerState> selected_drawer;
+    std::shared_ptr<std::map<std::string, DrawerState>> drawers_;
+    std::unique_ptr<DrawerState> selected_drawer_;
 
-    rclcpp::TimerBase::SharedPtr nfc_reading_timer;
+    rclcpp::TimerBase::SharedPtr nfc_reading_timer_;
 
     void open_drawer(int module_id, int drawer_id);
     void open_drawer_action(int module_id, int drawer_id, bool is_edrawer);
@@ -46,7 +46,7 @@ namespace rmf_robot_client
     void end_authentication_scan(bool successull);
 
     //subscriber
-    rclcpp::Subscription<DrawerStatus>::SharedPtr drawer_status_subscriber_;
+    //rclcpp::Subscription<DrawerStatus>::SharedPtr drawer_status_subscriber_;
     rclcpp::Subscription<StdMsgInt>::SharedPtr authentication_subscriber_;
 
     // publisher
@@ -60,9 +60,10 @@ namespace rmf_robot_client
     bool start(std::function<void(int)> next_action_callback);
     bool cancel();
     std::string get_type();
-    bool receive_new_settings(std::string command, std::vector<std::string> value);
-    void receive_drawer_status(const DrawerStatus::SharedPtr msg);
+    bool receive_new_settings(std::string command, std::vector<std::string> value) override;
+    //void receive_drawer_status(const DrawerStatus::SharedPtr msg);
     void check_scant_user(const StdMsgInt &msg);
+    void action_done(bool completted);
     //~DrawerAction();
   };
 } // namespace rmf_robot_client

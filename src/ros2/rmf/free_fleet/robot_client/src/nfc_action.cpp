@@ -11,11 +11,11 @@ namespace rmf_robot_client
 
   bool NFCAction::start(std::function<void(int)> next_action_callback)
   {
-     RCLCPP_INFO(ros_node->get_logger(), "start drawer_action");
+     RCLCPP_INFO(ros_node_->get_logger(), "start drawer_action");
     finish_action = next_action_callback;
     if (!this->nfc_write_new_nfc_card_client_->wait_for_action_server()) 
     {
-      RCLCPP_ERROR(ros_node->get_logger(), "Action server not available after waiting");
+      RCLCPP_ERROR(ros_node_->get_logger(), "Action server not available after waiting");
       //cancel task
       return false;
     }
@@ -42,19 +42,19 @@ namespace rmf_robot_client
   {
     current_action_goal_handle = goal_handle;
     if (!current_action_goal_handle) {
-      RCLCPP_ERROR(ros_node->get_logger(), "Goal was rejected by server");
+      RCLCPP_ERROR(ros_node_->get_logger(), "Goal was rejected by server");
       publish_task_state("Canceld", "could not plan route to goal pose", true);
       finish_action(false);
     }
     else
     {
-      RCLCPP_INFO(ros_node->get_logger(), "Goal accepted by server, waiting for result");
+      RCLCPP_INFO(ros_node_->get_logger(), "Goal accepted by server, waiting for result");
     }
   }
 
   void NFCAction::feedback_callback(GoalHandleCreateUserNfcTag::SharedPtr, const std::shared_ptr<const CreateUserNfcTag::Feedback> feedback)
   {
-    RCLCPP_INFO(ros_node->get_logger(), "navigate_to_pose feedback recived");
+    RCLCPP_INFO(ros_node_->get_logger(), "navigate_to_pose feedback recived");
   }
 
   void NFCAction::result_callback(const GoalHandleCreateUserNfcTag::WrappedResult &result)
@@ -82,7 +82,10 @@ namespace rmf_robot_client
   
   bool NFCAction::receive_new_settings(std::string command, std::vector<std::string> value)
   {
-
+    if(Action::receive_new_settings(command,value))
+    {
+      return true;
+    }
   }
   
   std::string NFCAction::get_type()

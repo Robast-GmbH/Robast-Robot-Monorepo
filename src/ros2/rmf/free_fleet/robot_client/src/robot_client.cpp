@@ -7,11 +7,15 @@ namespace rmf_robot_client
   {
     init_param();
     start_receive_tasks();
-    initialise_task_publisher();
+    start_update_robot_state();
     drawer_list = std::make_shared<std::map<std::string, DrawerState>>();
-    tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
-    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
-    update_robot_location();
+    
+    rclcpp::QoS qos_statemaschine = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
+    qos_statemaschine.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+    qos_statemaschine.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+    qos_statemaschine.avoid_ros_namespace_conventions(false);
+
+    reset_simple_tree_publisher_ = this->create_publisher<StdMsgBool>(config["statemaschine_reset_simple_tree_topic"], qos_statemaschine);
   }
 
   void RobotClient::init_param()
@@ -22,13 +26,15 @@ namespace rmf_robot_client
     this->declare_parameter("behavior_tree", "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml");
     this->declare_parameter("map_frame_id", "map");
     this->declare_parameter("robot_frame_id", "robot_base_footprint");
-    
+    this->declare_parameter("robot_info_inteval", 1);//in seconds
+
     fleet_name=this->get_parameter("fleet_name").as_string();
     robot_name= this->get_parameter("robot_name").as_string();
     robot_model= this->get_parameter("robot_model").as_string();
     behavior_tree= this->get_parameter("behavior_tree").as_string();
     map_frame_id= this->get_parameter("map_frame_id").as_string();
     robot_frame_id= this->get_parameter("robot_frame_id").as_string();
+    robot_info_inteval = this->get_parameter("robot_info_inteval").as_int();
 
     get_parameter_to_config("statemaschine_open_drawer_topic", "/trigger_drawer_tree");
     get_parameter_to_config("statemaschine_open_e_drawer_topic", "/trigger_electric_drawer_tree");
@@ -48,17 +54,10 @@ namespace rmf_robot_client
     get_parameter_to_config("fleet_communication_task_info_topic", "/task_state");
     get_parameter_to_config("fleet_communication_robot_info_topic", "/robot_state"); 
     
-    get_parameter_to_config("nav2_navigation_to_pose_action_topic", "navigate_to_pose");
+    get_parameter_to_config("nav2_navigation_to_pose_action_topic", "/navigate_to_pose");
     get_parameter_to_config("robotnik_battery_level_topic", "/robot/battery_estimator/data");
     
 
-  }
-
-  void RobotClient::get_parameter_to_config(std::string parameter_name, std::string default_value)
-  {   
-    this->declare_parameter<std::string>(parameter_name, default_value);
-    config.insert( std::make_pair( parameter_name, this->get_parameter(parameter_name).as_string()));
-    //RCLCPP_INFO(this->get_logger(),config[parameter_name].c_str());
   }
 
   void RobotClient::start_receive_tasks()
@@ -68,51 +67,33 @@ namespace rmf_robot_client
     qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
     qos.avoid_ros_namespace_conventions(false);
 
-    setting_subscriber_ = this->create_subscription<FreeFleetDataSettingRequest>(config["fleet_communication_setting_topic"], qos, std::bind(&RobotClient::receive_settings, this,std::placeholders::_1));
     write_nfc_card_request_subscriber_ = this->create_subscription<FreeFleetDataCreateNfcRequest>(config["fleet_communication_create_nfc_topic"], qos, std::bind(&RobotClient::receive_create_nfc_task, this,std::placeholders::_1));
     drawer_request_subscriber_ = this->create_subscription<FreeFleetDataDrawerRequest>(config["fleet_communication_drawer_topic"],qos, std::bind(&RobotClient::receive_drawer_task, this, std::placeholders::_1));
     navigation_request_subscriber_ = this->create_subscription<FreeFleetDataDestinationRequest>(config["fleet_communication_destination_topic"], qos, std::bind(&RobotClient::receive_destination_task, this, std::placeholders::_1));
+    setting_subscriber_ = this->create_subscription<FreeFleetDataSettingRequest>(config["fleet_communication_setting_topic"], qos, std::bind(&RobotClient::receive_settings, this,std::placeholders::_1));
+    drawer_status_subscriber_= this->create_subscription<DrawerStatus>( config["drawer_status_change_topic"], 10, std::bind(&RobotClient::receive_drawer_status, this, std::placeholders::_1));
   }
 
-  void RobotClient::initialise_task_publisher()
+  void RobotClient::start_update_robot_state()
   {
     rclcpp::QoS qos_fleet_communication = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
     qos_fleet_communication.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos_fleet_communication.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
     qos_fleet_communication.avoid_ros_namespace_conventions(false);
 
-    rclcpp::QoS qos_statemaschine = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
-    qos_statemaschine.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
-    qos_statemaschine.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-    qos_statemaschine.avoid_ros_namespace_conventions(false);
-    
+    rclcpp::QoS qos_robotnik = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
+    qos_robotnik.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+  
+
+    tf_buffer_ = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+    tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
+    update_robot_location();
 
     //battery_status_sub_ = this->create_subscription<BatteryLevel>( config["robotnik_battery_level_topic"], qos_robotnik, std::bind(&RobotClient::update_battery_level, this, std::placeholders::_1));
 
     robot_info_publisher_ = this->create_publisher<FreeFleetDataRobotInfo>(config["fleet_communication_robot_info_topic"], qos_fleet_communication);
-    publish_robot_info_timer_ = this->create_wall_timer(std::chrono::milliseconds(2000), std::bind(&RobotClient::publish_fleet_state, this)); // removed only for debugging
-    reset_simple_tree_publisher_ = this->create_publisher<StdMsgBool>(config["statemaschine_reset_simple_tree_topic"], qos_statemaschine);
-  }
-
-  void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
-  {
-    //  global settings (reset tree,..)
-    if(msg->command=="reset_tree")
-    {
-      StdMsgBool msg = StdMsgBool();
-      msg.data = true;
-      reset_simple_tree_publisher_->publish(msg);
-    }
-    else if (current_step==0|| current_step>task_sequence.size())
-    {
-       RCLCPP_INFO( this->get_logger(), "invalid request");
-       return;
-    }
-    else
-    {
-      task_sequence[current_step]->receive_new_settings(msg->command, msg->value);//task settings
-    }
-    RCLCPP_INFO( this->get_logger(), "settings done");
+    publish_robot_info_timer_ = this->create_wall_timer(std::chrono::seconds(robot_info_inteval), std::bind(&RobotClient::publish_fleet_state, this)); 
+    
   }
 
   void RobotClient::receive_create_nfc_task(const FreeFleetDataCreateNfcRequest::ConstPtr msg)
@@ -133,29 +114,6 @@ namespace rmf_robot_client
     if(step==1)
     {
       task_sequence.at(step)->start([this](bool successful) { end_current_action(successful); });
-    }
-  }
-
-  void RobotClient::receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg)
-  {
-    RCLCPP_INFO(this->get_logger(), "drawer_received");
-    int step, task_id;
-    if (!prepare_new_action(msg->task_id, msg->fleet_name, msg->robot_name, task_id, step))
-    {
-      RCLCPP_ERROR(this->get_logger(), "no valid task");
-      return;
-    }
-
-    if (!task_sequence.insert(std::make_pair(step, std::make_unique<DrawerAction>(DrawerAction(task_id, step, shared_from_this(), config, drawer_list, msg->drawer_id, msg->module_id, msg->e_drawer, msg->authorized_user)))).second)
-    {
-      RCLCPP_ERROR(this->get_logger(),"Task %i, step %i could not be added to robot Queue", task_id, step);
-      return;
-    }
-   
-    if(step==1)
-    {
-      current_step = step;
-      task_sequence.at(step)->start([this](int step) { end_current_action(step); });
     }
   }
 
@@ -184,15 +142,82 @@ namespace rmf_robot_client
     }
   }
 
-  void RobotClient::end_current_action(int comletted_step)
+  void RobotClient::receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg)
   {
-    RCLCPP_INFO(this->get_logger(),"End Action nr %i", current_step);
-    if(comletted_step==current_step)
+    RCLCPP_INFO(this->get_logger(), "drawer_received");
+    int step, task_id;
+    if (!prepare_new_action(msg->task_id, msg->fleet_name, msg->robot_name, task_id, step))
     {
-    start_next_action();
+      RCLCPP_ERROR(this->get_logger(), "no valid task");
+      return;
     }
-    return;
+
+    if (!task_sequence.insert(std::make_pair(step, std::make_unique<DrawerAction>(DrawerAction(task_id, step, shared_from_this(), config, drawer_list, msg->drawer_id, msg->module_id, msg->e_drawer, msg->authorized_user)))).second)
+    {
+      RCLCPP_ERROR(this->get_logger(),"Task %i, step %i could not be added to robot Queue", task_id, step);
+      return;
+    }
+   
+    if(step==1)
+    {
+      current_step = step;
+      task_sequence.at(step)->start([this](int step) { end_current_action(step); });
+    }
   }
+
+  void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
+  {
+    //  global settings (reset tree,..)
+    if(msg->command=="reset_tree")
+    {
+      StdMsgBool msg = StdMsgBool();
+      msg.data = true;
+      reset_simple_tree_publisher_->publish(msg);
+    }
+    else if (current_step==0|| current_step>task_sequence.size())
+    {
+       RCLCPP_INFO( this->get_logger(), "invalid request");
+       return;
+    }
+    else
+    {
+      task_sequence[current_step]->receive_new_settings(msg->command, msg->value);//task settings
+    }
+    RCLCPP_INFO( this->get_logger(), "settings done");
+  }
+
+  void RobotClient::receive_drawer_status(const DrawerStatus::SharedPtr msg)
+  {
+    
+    std::string drawer_ref = std::to_string(msg->drawer_address.module_id) + '#' + std::to_string(msg->drawer_address.drawer_id);
+    if (current_step==0 ||current_step>task_sequence.size())
+    {
+      RCLCPP_ERROR( this->get_logger(), "External triggered, Drawer %s state received (Drawer_id: %i, Module_id: %i ).",
+      msg->drawer_is_open? "open": "close",msg->drawer_address.drawer_id, msg->drawer_address.module_id);
+      return;
+    }
+    else
+    { 
+      task_sequence[current_step]->receive_new_settings("DrawerState", { drawer_ref + "#"+ (msg->drawer_is_open?"Opend":"Closed") });
+    }      
+    
+    if (drawer_list->count(drawer_ref))
+    {
+      drawer_list->at(drawer_ref).is_open = msg->drawer_is_open;
+    }
+    else
+    {
+      RCLCPP_ERROR( this->get_logger(), "External triggered Drawer %s state received (Drawer_id: %i, Module_id: %i ).",
+       msg->drawer_is_open? "open": "close",msg->drawer_address.drawer_id, msg->drawer_address.module_id);
+    }                    
+    
+  } 
+
+  // void RobotClient::receive_battery_status(const BatteryLevel::ConstPtr msg)
+  // {
+  //   current_battery_level= msg->level;
+  // }
+
 
   bool RobotClient::prepare_new_action(std::string task_def, std::string recipient_fleet, std::string recipient_robot,int& new_task_id, int& new_step )
   {  
@@ -223,23 +248,14 @@ namespace rmf_robot_client
     return true;
   }
 
-  void RobotClient::end_current_task()
+  void RobotClient::end_current_action(int comletted_step)
   {
-    RCLCPP_INFO(this->get_logger(),"End task %i",task_id);
-    empty_task_sequence();
-    task_id = 0;
-    current_step = 0;
-   
-    publish_fleet_state();
-  }
-
-  void RobotClient::empty_task_sequence()
-  {
-    for (auto& pair : task_sequence) {
-        pair.second.reset(); 
+    RCLCPP_INFO(this->get_logger(),"End Action nr %i", current_step);
+    if(comletted_step==current_step)
+    {
+    start_next_action();
     }
-    task_sequence.clear();
-    current_step = 0;
+    return;
   }
 
   void RobotClient::start_next_action()
@@ -265,6 +281,26 @@ namespace rmf_robot_client
     return;
   }
 
+  void RobotClient::end_current_task()
+  {
+    RCLCPP_INFO(this->get_logger(),"End task %i",task_id);
+    empty_task_sequence();
+    task_id = 0;
+    current_step = 0;
+   
+    publish_fleet_state();
+  }
+
+  void RobotClient::empty_task_sequence()
+  {
+    for (auto& pair : task_sequence) {
+        pair.second.reset(); 
+    }
+    task_sequence.clear();
+    current_step = 0;
+  }
+
+
   void RobotClient::publish_fleet_state()
   {
     update_robot_location();
@@ -286,7 +322,6 @@ namespace rmf_robot_client
     //robot_state_msg.path = std::vector<>;
     robot_info_publisher_->publish(robot_state_msg);
   }
-
 
   void RobotClient::update_robot_location()
   {
@@ -325,6 +360,13 @@ namespace rmf_robot_client
     double cosYaw = 1.0 - 2.0 * (y * y + z * z);
     double yaw = std::atan2(sinYaw, cosYaw);
     return yaw * 180.0 / M_PI;    
+  }
+
+  void RobotClient::get_parameter_to_config(std::string parameter_name, std::string default_value)
+  {   
+    this->declare_parameter<std::string>(parameter_name, default_value);
+    config.insert( std::make_pair( parameter_name, this->get_parameter(parameter_name).as_string()));
+    //RCLCPP_INFO(this->get_logger(),config[parameter_name].c_str());
   }
 
 }

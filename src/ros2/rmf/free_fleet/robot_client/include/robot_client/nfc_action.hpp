@@ -23,7 +23,7 @@ namespace rmf_robot_client
       bool start(std::function<void(int)> next_action_callback);
       bool cancel();
       std::string get_type();
-      bool receive_new_settings(std::string command, std::vector<std::string> value);
+      bool receive_new_settings(std::string command, std::vector<std::string> value) override;
       void feedback_callback(GoalHandleCreateUserNfcTag::SharedPtr, const std::shared_ptr<const CreateUserNfcTag::Feedback> feedback);
       void result_callback(const GoalHandleCreateUserNfcTag::WrappedResult &result);
 

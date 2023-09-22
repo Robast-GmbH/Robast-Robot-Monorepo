@@ -15,11 +15,11 @@ namespace rmf_robot_client
   
   bool NavigationAction::start(std::function<void(int)> next_action_callback)
   {
-    RCLCPP_INFO(ros_node->get_logger(), "start navigation_action");
+    RCLCPP_INFO(ros_node_->get_logger(), "start navigation_action");
     finish_action = next_action_callback;
-    RCLCPP_ERROR(ros_node->get_logger(), "waiting for Action server ... ");
+    RCLCPP_ERROR(ros_node_->get_logger(), "waiting for Action server ... ");
     if (!this->navigate_to_pose_client_->wait_for_action_server()) {
-      RCLCPP_ERROR(ros_node->get_logger(), "Action server not available after waiting");
+      RCLCPP_ERROR(ros_node_->get_logger(), "Action server not available after waiting");
       //cancel task
       return false;
      }
@@ -31,7 +31,7 @@ namespace rmf_robot_client
   {
     NavigateToPose::Goal pose_msg = NavigateToPose::Goal();
     pose_msg.pose.header.frame_id= frame_id;
-    pose_msg.pose.header.stamp = ros_node->now();
+    pose_msg.pose.header.stamp = ros_node_->now();
     pose_msg.pose.pose.position.x = x;
     pose_msg.pose.pose.position.y = y;
     pose_msg.pose.pose.position.z = 0;
@@ -67,19 +67,19 @@ namespace rmf_robot_client
     current_action_goal_handle= goal_handle;
     if (!current_action_goal_handle)
     {
-      RCLCPP_ERROR(ros_node->get_logger(), "Goal was rejected by server");
+      RCLCPP_ERROR(ros_node_->get_logger(), "Goal was rejected by server");
       publish_task_state("Canceld", "could not plan route to goal pose", true);
       finish_action(false);
     }
     else
     {
-      RCLCPP_INFO(ros_node->get_logger(), "Goal accepted by server, waiting for result");
+      RCLCPP_INFO(ros_node_->get_logger(), "Goal accepted by server, waiting for result");
     }
   }
 
   void NavigationAction::feedback_callback(GoalHandleNavigateToPose::SharedPtr, const std::shared_ptr<const NavigateToPose::Feedback> feedback)
   {
-    RCLCPP_INFO(ros_node->get_logger(), "navigate_to_pose feedback received. number of recoveries:%i distance:%f ",feedback->number_of_recoveries, feedback->distance_remaining);
+    RCLCPP_INFO(ros_node_->get_logger(), "navigate_to_pose feedback received. number of recoveries:%i distance:%f ",feedback->number_of_recoveries, feedback->distance_remaining);
   }
 
   void NavigationAction::result_callback(const GoalHandleNavigateToPose::WrappedResult &result)
@@ -90,7 +90,10 @@ namespace rmf_robot_client
 
   bool NavigationAction::receive_new_settings(std::string command, std::vector<std::string> value)
   {
-
+    if(Action::receive_new_settings(command,value))
+    {
+      return true;
+    }
   }
 
   std::string NavigationAction::get_type()

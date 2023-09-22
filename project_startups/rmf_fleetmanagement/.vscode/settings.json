@@ -84,7 +84,8 @@
         "semaphore": "cpp",
         "stop_token": "cpp",
         "coroutine": "cpp",
-        "source_location": "cpp"
+        "source_location": "cpp",
+        "version": "cpp"
     },
     // Autocomplete from ros python packages
     "python.autoComplete.extraPaths": [

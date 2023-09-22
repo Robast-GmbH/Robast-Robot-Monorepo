@@ -16,9 +16,11 @@
   <depend>geometry_msgs</depend>
   <depend>fleet_interfaces</depend>
   <depend>communication_interfaces</depend>
+  <depend></depend>
   <depend>std_msgs</depend>
   <depend>nav2_msgs</depend>
   <depend>tf2_geometry_msgs</depend>
+  <depend>robotnik_msgs</depend>
 
   <exec_depend>ros2launch</exec_depend>
 
