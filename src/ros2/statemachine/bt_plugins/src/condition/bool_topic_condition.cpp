@@ -41,9 +41,9 @@ namespace statemachine
         }
     }
 
-    void BoolTopicCondition::callbackDrawerFeedback(const std_msgs::msg::Bool::SharedPtr msg)
+    void BoolTopicCondition::callbackTopicFeedback(const std_msgs::msg::Bool::SharedPtr msg)
     {
-        RCLCPP_DEBUG(rclcpp::get_logger("BoolTopicCondition"), "callback got called ");
+        RCLCPP_INFO(rclcpp::get_logger("BoolTopicCondition"), "callback got called ");
         last_message_ = *msg;
         _compare_result = comparator(last_message_, target_value_);
         new_value_received_ = true;
