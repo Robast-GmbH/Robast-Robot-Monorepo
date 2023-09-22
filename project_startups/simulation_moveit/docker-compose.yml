@@ -6,7 +6,7 @@ services:
     # image: ghcr.io/robast-gmbh/monorepo/simulation:devel
     build:
       context: .
-      dockerfile: ../../src/ros2/simulation/Dockerfile
+      dockerfile: simulation/Dockerfile
     image: robast_simulation
     environment:
       - ROS_DOMAIN_ID=1
