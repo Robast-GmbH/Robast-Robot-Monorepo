@@ -6,6 +6,9 @@
 #include <moveit_msgs/msg/robot_trajectory.hpp>
 #include <mutex>
 #include <rclcpp/rclcpp.hpp>
+#include <trajectory_msgs/msg/joint_trajectory.hpp>
+#include <trajectory_msgs/msg/joint_trajectory_point.hpp>
+#include <trajectory_msgs/msg/multi_dof_joint_trajectory_point.hpp>
 #include <unordered_map>
 
 namespace gazebo_controller_manager
@@ -22,8 +25,9 @@ namespace gazebo_controller_manager
    private:
     void execute_robot_trajectory_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg);
 
-    void set_single_dof_joint_trajectory(const trajectory_msgs::msg::JointTrajectory& msg);
-    void set_multi_dof_joint_trajectory(const trajectory_msgs::msg::MultiDOFJointTrajectory& msg);
+    void set_single_dof_joint_trajectory(const trajectory_msgs::msg::JointTrajectoryPoint& joint_trajectory_point,
+                                         const std::vector<std::string> joint_names);
+    void set_multi_dof_joint_trajectory(const trajectory_msgs::msg::MultiDOFJointTrajectoryPoint& msg);
 
     std::vector<std::string> get_gz_cmd_joint_topics(std::vector<std::string> joint_names);
 

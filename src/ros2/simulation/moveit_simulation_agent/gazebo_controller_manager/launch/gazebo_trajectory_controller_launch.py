@@ -1,53 +1,31 @@
+import os
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from ament_index_python.packages import get_package_share_directory
 
 
 def generate_launch_description():
     ld = LaunchDescription()
 
-    # joint parameter for rb_theron
-    joint_names_default_list = [
-        "drawer_1_joint",
-        "drawer_2_joint",
-        "drawer_3_joint",
-        "drawer_4_joint",
-        "drawer_5_joint",
-    ]
+    gazebo_controller_manager_params = LaunchConfiguration('gazebo_controller_manager_params')
 
-    follow_joint_trajectory_action = LaunchConfiguration(
-        "follow_joint_trajectory_action"
-    )
-    joint_names_list = LaunchConfiguration("joint_names_list")
+    declare_gazebo_controller_manager_params_cmd = DeclareLaunchArgument(
+        'gazebo_controller_manager_params',
+        default_value=os.path.join(get_package_share_directory('gazebo_controller_manager'), 'config', 'gazebo_controller_rb_theron.yaml'),
+        description='path to the config yaml file')
 
-    follow_joint_trajectory_action_cmd = DeclareLaunchArgument(
-        "follow_joint_trajectory_action",
-        default_value="/door_opening_mechanism_controller/follow_joint_trajectory",
-        description="Action on which the planned trajectory, which should be executed now, \
-                    should be published.",
-    )
-    joint_names_cmd = DeclareLaunchArgument(
-        "joint_names_list",
-        default_value=joint_names_default_list,
-        description="The list of joints that is used for the movement. Mind that for now the order of \
-                    the joints is relevant and must match the order in the moveit_controller.",
-    )
 
-    #  ROS -> IGN,  joint trajectory controller
+    #  ROS -> GAZEBO,  joint trajectory controller
     joint_trajectory_controller = Node(
         package="gazebo_controller_manager",
         executable="joint_trajectory_controller",
         name="rb_theron_joint_trajectory_controller",
-        parameters=[
-            {"joint_names": joint_names_list},
-            {"rate": 200},
-            {"follow_joint_trajectory_action": follow_joint_trajectory_action},
-        ],
+        parameters=[gazebo_controller_manager_params],
         output="screen",
     )
 
-    ld.add_action(follow_joint_trajectory_action_cmd)
-    ld.add_action(joint_names_cmd)
+    ld.add_action(declare_gazebo_controller_manager_params_cmd)
     ld.add_action(joint_trajectory_controller)
     return ld

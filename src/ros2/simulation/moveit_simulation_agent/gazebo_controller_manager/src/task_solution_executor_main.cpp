@@ -6,17 +6,12 @@ int main(int argc, char* argv[])
   // creat ros2 node
   rclcpp::init(argc, argv);
   auto ros_node = std::make_shared<rclcpp::Node>("robot_trajectory_executor");
-  // variable
-  std::vector<std::string> joint_names;
-  std::vector<std::string> default_joint_names = {"door_opening_mechanism_joint_y_axis_slide",
-                                                  "door_opening_mechanism_joint_x_axis_slide",
-                                                  "door_opening_mechanism_joint_rotating_arm"};
-  // parameters
-  ros_node->declare_parameter("joint_names", default_joint_names);
-  joint_names = ros_node->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
 
-  auto robot_trajectory_executor =
-      std::make_shared<gazebo_controller_manager::TaskSolutionExecutor>(ros_node, joint_names, "/TODO");
+  const std::string ros_robot_trajectory_topic = "/door_opening_mechanism_controller/follow_joint_trajectory";
+  const std::string task_execution_solution_action = "/execute_task_solution";
+
+  auto robot_trajectory_executor = std::make_shared<gazebo_controller_manager::TaskSolutionExecutor>(
+      ros_node, ros_robot_trajectory_topic, task_execution_solution_action);
 
   rclcpp::spin(ros_node);
   rclcpp::shutdown();

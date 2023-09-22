@@ -72,43 +72,46 @@ namespace gazebo_controller_manager
 
   void RobotTrajectoryExecutor::execute_robot_trajectory_cb(const moveit_msgs::msg::RobotTrajectory::SharedPtr msg)
   {
-    // print_robot_trajectory_msg(msg);
+    print_robot_trajectory_msg(msg);
 
-    set_single_dof_joint_trajectory(msg->joint_trajectory);
+    for (auto i = 0u; i < msg->joint_trajectory.points.size(); ++i)
+    {
+      set_single_dof_joint_trajectory(msg->joint_trajectory.points[i], msg->joint_trajectory.joint_names);
 
-    set_multi_dof_joint_trajectory(msg->multi_dof_joint_trajectory);   // mobile base = planar joint
+      set_multi_dof_joint_trajectory(msg->multi_dof_joint_trajectory.points[i]);   // mobile base = planar joint
+    }
   }
 
-  void RobotTrajectoryExecutor::set_single_dof_joint_trajectory(const trajectory_msgs::msg::JointTrajectory& msg)
+  void RobotTrajectoryExecutor::set_single_dof_joint_trajectory(
+      const trajectory_msgs::msg::JointTrajectoryPoint& joint_trajectory_point,
+      const std::vector<std::string> joint_names)
   {
-    if (msg.points.size() > 0)
+    for (auto i = 0u; i < joint_trajectory_point.positions.size(); ++i)
     {
-      for (auto i = 0u; i < msg.points[0].positions.size(); ++i)
+      if (joint_names_map_.find(joint_names[i]) != joint_names_map_.end())
       {
-        if (joint_names_map_.find(msg.joint_names[i]) != joint_names_map_.end())
-        {
-          // find joint name in `joint_names_` .
-          int idx = joint_names_map_[msg.joint_names[i]];
-          gz::msgs::Double ign_msg;
-          ign_msg.set_data(msg.points[0].positions[i]);
-          gz_cmd_joint_pubs_[idx]->Publish(ign_msg);
-        }
+        // find joint name in `joint_names_` .
+        int idx = joint_names_map_[joint_names[i]];
+        gz::msgs::Double ign_msg;
+        ign_msg.set_data(joint_trajectory_point.positions[i]);
+        gz_cmd_joint_pubs_[idx]->Publish(ign_msg);
       }
     }
   }
 
-  void RobotTrajectoryExecutor::set_multi_dof_joint_trajectory(const trajectory_msgs::msg::MultiDOFJointTrajectory& msg)
+  void RobotTrajectoryExecutor::set_multi_dof_joint_trajectory(
+      const trajectory_msgs::msg::MultiDOFJointTrajectoryPoint& msg)
   {
     auto cmd_vel_msg = std::make_shared<geometry_msgs::msg::Twist>();
 
-    if (msg.points.size() > 0 && msg.points[0].velocities.size() > 0)
+    if (msg.velocities.size() > 0)
     {
-      cmd_vel_msg->linear.x = msg.points[0].velocities[0].linear.x;
-      cmd_vel_msg->linear.y = msg.points[0].velocities[0].linear.y;
-      cmd_vel_msg->linear.z = msg.points[0].velocities[0].linear.z;
-      cmd_vel_msg->angular.x = msg.points[0].velocities[0].angular.x;
-      cmd_vel_msg->angular.y = msg.points[0].velocities[0].angular.y;
-      cmd_vel_msg->angular.z = msg.points[0].velocities[0].angular.z;
+      cmd_vel_msg->linear.x = msg.velocities[0].linear.x;
+      cmd_vel_msg->linear.y = msg.velocities[0].linear.y;
+      cmd_vel_msg->linear.z = msg.velocities[0].linear.z;
+      cmd_vel_msg->angular.x = msg.velocities[0].angular.x;
+      cmd_vel_msg->angular.y = msg.velocities[0].angular.y;
+      cmd_vel_msg->angular.z = msg.velocities[0].angular.z;
     }
     else
     {
