@@ -105,6 +105,12 @@ list(APPEND plugin_libs publish_led_action_bt_node)
 add_library(get_blackboard_value_action_bt_node SHARED src/action/get_blackboard_value_action.cpp)
 list(APPEND plugin_libs get_blackboard_value_action_bt_node)
 
+add_library(bool_topic_condition_node SHARED src/condition/bool_topic_condition.cpp)
+list(APPEND plugin_libs bool_topic_condition_node)
+
+add_library(led_changed_condition_node SHARED src/condition/led_changed_condition.cpp)
+list(APPEND plugin_libs led_changed_condition_node)
+
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
   target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)

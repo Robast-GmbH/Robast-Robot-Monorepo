@@ -26,7 +26,7 @@ namespace bt_base_nodes
         void callbackRunBT(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
         {
             blackboard_->set<communication_interfaces::msg::DrawerAddress>("drawer_address", *msg);
-            bt_.tickWhileRunning(std::chrono::milliseconds(10));
+            bt_.tickWhileRunning(std::chrono::milliseconds(tree_tick_time_));
         }
     };
 }

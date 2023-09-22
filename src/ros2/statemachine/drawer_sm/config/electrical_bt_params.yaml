@@ -16,3 +16,4 @@ electrical_drawer_tree_initiator:
     bt_path: "/workspace/install/drawer_sm/trees/trees/default_electrical_drawer.xml"
     trigger_topic: "trigger_electric_drawer_tree"
     main_tree: "default_electrical_drawer_tree"
+    tree_tick_time: 10

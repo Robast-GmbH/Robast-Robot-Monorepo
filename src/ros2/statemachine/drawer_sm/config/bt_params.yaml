@@ -14,3 +14,4 @@ drawer_tree_initiator:
     bt_path: "/workspace/install/drawer_sm/trees/trees/drawer_sequence.xml"
     trigger_topic: "trigger_drawer_tree"
     main_tree: "BehaviorTree"
+    tree_tick_time: 10
