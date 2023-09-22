@@ -71,11 +71,24 @@ RUN rosdep update && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/
 
+WORKDIR /robotnik
+
+RUN rosdep update && \
+  rosdep install --from-paths /ws/src --ignore-src -r -y && \
+  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  colcon build --install-base /robast/${ROS_DISTRO}/
+
+
 ############################## Release ##################################
 FROM ros:humble-ros-base-jammy as release
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
+
+RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
+    echo robast:robast | chpasswd && \
+    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV USER robast
 
 RUN apt-get update && apt-get upgrade -y &&\
     apt-get install -y \
@@ -89,7 +102,7 @@ ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
 RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
 
 ############################## DEBUG ##################################
 FROM ros:humble-ros-base-jammy as debug
