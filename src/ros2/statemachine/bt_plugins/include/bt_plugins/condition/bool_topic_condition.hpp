@@ -21,7 +21,7 @@ namespace statemachine
     protected:
         bool new_value_received_ = false;
         bool comparator(std_msgs::msg::Bool last_message_, bool target_value_) override;
-        void callbackDrawerFeedback(const std_msgs::msg::Bool::SharedPtr msg) override;
+        void callbackTopicFeedback(const std_msgs::msg::Bool::SharedPtr msg) override;
         void initialize_target_value() override;
 
     private:

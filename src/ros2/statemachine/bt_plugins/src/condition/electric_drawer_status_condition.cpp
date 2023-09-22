@@ -53,7 +53,7 @@ namespace statemachine
         }
     }
 
-    void ElectricDrawerStatusCondition::callbackDrawerFeedback(const communication_interfaces::msg::ElectricalDrawerStatus::SharedPtr msg)
+    void ElectricDrawerStatusCondition::callbackTopicFeedback(const communication_interfaces::msg::ElectricalDrawerStatus::SharedPtr msg)
     {
         RCLCPP_DEBUG(rclcpp::get_logger("ElectricDrawerStatusCondition"), "callback got called ");
         last_message_ = *msg;
