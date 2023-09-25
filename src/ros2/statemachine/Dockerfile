@@ -27,7 +27,7 @@ RUN apt-get update && apt-get upgrade -y &&\
 WORKDIR /robotnik
 RUN git clone -b humble-devel https://github.com/RobotnikAutomation/robotnik_msgs.git && \
 . /opt/ros/${ROS_DISTRO}/setup.sh && \
-colcon build --packages-select robotnik_msgs --cmake-args -DCMAKE_BUILD_TYPE=Release
+colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args -DCMAKE_BUILD_TYPE=Release
 
 WORKDIR /workspace
 
@@ -69,6 +69,7 @@ RUN mkdir -p /ws/src/ros2/; mkdir /robast; mkdir -p /robast/src/BT; \
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  . /robast/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/
 
 WORKDIR /robotnik
