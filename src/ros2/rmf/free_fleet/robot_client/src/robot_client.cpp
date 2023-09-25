@@ -198,7 +198,7 @@ namespace rmf_robot_client
     }
     else
     { 
-      task_sequence[current_step]->receive_new_settings("DrawerState", { drawer_ref + "#"+ (msg->drawer_is_open?"Opend":"Closed") });
+      task_sequence[current_step]->receive_new_settings("DrawerState", { drawer_ref + "#"+ (msg->drawer_is_open?"Opened":"Closed") });
     }      
     
     if (drawer_list->count(drawer_ref))
