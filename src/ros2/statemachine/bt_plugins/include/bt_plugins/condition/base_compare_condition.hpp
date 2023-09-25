@@ -22,13 +22,12 @@ namespace statemachine
 
       getInput("topic", topic_name_);
 
-
       rclcpp::SubscriptionOptions sub_option;
       sub_option.callback_group = _callback_group;
       drawer_status_sub_ = _node->create_subscription<T>(
           topic_name_,
           qos,
-          std::bind(&BaseCompareCondition::callbackDrawerFeedback, this, std::placeholders::_1),
+          std::bind(&BaseCompareCondition::callbackTopicFeedback, this, std::placeholders::_1),
           sub_option);
       blackboard_ = config.blackboard;
     }
@@ -43,7 +42,7 @@ namespace statemachine
     const std::chrono::seconds timeout_duration_{20};
 
     virtual bool comparator(T last_message_, V target_value_) = 0;
-    virtual void callbackDrawerFeedback(const typename T::SharedPtr msg) = 0;
+    virtual void callbackTopicFeedback(const typename T::SharedPtr msg) = 0;
     typename rclcpp::Subscription<T>::SharedPtr drawer_status_sub_;
     std::string topic_name_;
     BT::Blackboard::Ptr blackboard_;
