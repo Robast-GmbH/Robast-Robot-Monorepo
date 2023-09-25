@@ -1,6 +1,6 @@
-#include "gazebo_controller_manager/robot_trajectory_executor.hpp"
+#include "gazebo_trajectory_executor/robot_trajectory_executor.hpp"
 
-namespace gazebo_controller_manager
+namespace gazebo_trajectory_executor
 {
   RobotTrajectoryExecutor::RobotTrajectoryExecutor(const rclcpp::Node::SharedPtr& node,
                                                    const std::vector<std::string>& joint_names,
@@ -240,4 +240,4 @@ namespace gazebo_controller_manager
       }
     }
   }
-}   // namespace gazebo_controller_manager
+}   // namespace gazebo_trajectory_executor

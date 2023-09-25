@@ -1,4 +1,4 @@
-#include <gazebo_controller_manager/robot_trajectory_executor.hpp>
+#include <gazebo_trajectory_executor/robot_trajectory_executor.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 int main(int argc, char* argv[])
@@ -15,7 +15,7 @@ int main(int argc, char* argv[])
   ros_node->declare_parameter("joint_names", default_joint_names);
   joint_names = ros_node->get_parameter("joint_names").get_parameter_value().get<std::vector<std::string>>();
 
-  auto robot_trajectory_executor = std::make_shared<gazebo_controller_manager::RobotTrajectoryExecutor>(
+  auto robot_trajectory_executor = std::make_shared<gazebo_trajectory_executor::RobotTrajectoryExecutor>(
       ros_node, joint_names, "/door_opening_mechanism_controller/follow_joint_trajectory");
 
   rclcpp::spin(ros_node);

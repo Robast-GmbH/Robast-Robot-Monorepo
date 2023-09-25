@@ -11,7 +11,7 @@
 #include <trajectory_msgs/msg/multi_dof_joint_trajectory_point.hpp>
 #include <unordered_map>
 
-namespace gazebo_controller_manager
+namespace gazebo_trajectory_executor
 {
 
   class RobotTrajectoryExecutor
@@ -53,5 +53,5 @@ namespace gazebo_controller_manager
 
     void init_joint_names_map(const std::vector<std::string>& joint_names);
   };
-}   // namespace gazebo_controller_manager
+}   // namespace gazebo_trajectory_executor
 #endif   // RB_THERON__JOINT_POSITION_CONTROLLER_HPP_

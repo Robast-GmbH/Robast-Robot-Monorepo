@@ -1,5 +1,5 @@
-#ifndef RB_THERON__JOINT_TRAJECTORY_CONTROLLER_HPP_
-#define RB_THERON__JOINT_TRAJECTORY_CONTROLLER_HPP_
+#ifndef RB_THERON__JOINT_TRAJECTORY_EXECUTOR_HPP_
+#define RB_THERON__JOINT_TRAJECTORY_EXECUTOR_HPP_
 
 #include <moveit_msgs/msg/move_it_error_codes.h>
 
@@ -15,13 +15,13 @@
 #include "control_msgs/action/follow_joint_trajectory.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
-namespace gazebo_controller_manager
+namespace gazebo_trajectory_executor
 {
-  class JointTrajectoryController : public rclcpp::Node
+  class JointTrajectoryExecutor : public rclcpp::Node
   {
    public:
-    JointTrajectoryController(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
-    ~JointTrajectoryController(){};
+    JointTrajectoryExecutor(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
+    ~JointTrajectoryExecutor(){};
 
    private:
     void declare_node_parameter();
@@ -115,5 +115,5 @@ namespace gazebo_controller_manager
     bool has_trajectory_for_mobile_base_{false};
     bool received_execute_trajectory_{false};
   };
-}   // namespace gazebo_controller_manager
-#endif   // RB_THERON__JOINT_TRAJECTORY_CONTROLLER_HPP_
+}   // namespace gazebo_trajectory_executor
+#endif   // RB_THERON__JOINT_TRAJECTORY_EXECUTOR_HPP_

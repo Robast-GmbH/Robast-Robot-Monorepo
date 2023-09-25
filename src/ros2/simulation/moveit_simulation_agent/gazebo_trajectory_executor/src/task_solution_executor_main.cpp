@@ -1,4 +1,4 @@
-#include <gazebo_controller_manager/task_solution_executor.hpp>
+#include <gazebo_trajectory_executor/task_solution_executor.hpp>
 #include <rclcpp/rclcpp.hpp>
 
 int main(int argc, char* argv[])
@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
   const std::string ros_robot_trajectory_topic = "/door_opening_mechanism_controller/follow_joint_trajectory";
   const std::string task_execution_solution_action = "/execute_task_solution";
 
-  auto robot_trajectory_executor = std::make_shared<gazebo_controller_manager::TaskSolutionExecutor>(
+  auto robot_trajectory_executor = std::make_shared<gazebo_trajectory_executor::TaskSolutionExecutor>(
       ros_node, ros_robot_trajectory_topic, task_execution_solution_action);
 
   rclcpp::spin(ros_node);

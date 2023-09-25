@@ -1,6 +1,6 @@
-#include "gazebo_controller_manager/task_solution_executor.hpp"
+#include "gazebo_trajectory_executor/task_solution_executor.hpp"
 
-namespace gazebo_controller_manager
+namespace gazebo_trajectory_executor
 {
   TaskSolutionExecutor::TaskSolutionExecutor(const rclcpp::Node::SharedPtr& node,
                                              const std::string& ros_robot_trajectory_topic,
@@ -226,4 +226,4 @@ namespace gazebo_controller_manager
     }
   }
 
-}   // namespace gazebo_controller_manager
+}   // namespace gazebo_trajectory_executor

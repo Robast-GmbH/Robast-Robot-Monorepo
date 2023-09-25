@@ -12,7 +12,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
-namespace gazebo_controller_manager
+namespace gazebo_trajectory_executor
 {
 
   class TaskSolutionExecutor
@@ -48,5 +48,5 @@ namespace gazebo_controller_manager
     void print_joint_trajectory_msg(const trajectory_msgs::msg::JointTrajectory& msg);
     void print_multi_dof_joint_trajectory(const trajectory_msgs::msg::MultiDOFJointTrajectory& msg);
   };
-}   // namespace gazebo_controller_manager
+}   // namespace gazebo_trajectory_executor
 #endif   // RB_THERON__TASK_SOLUTION_EXECUTOR_HPP_

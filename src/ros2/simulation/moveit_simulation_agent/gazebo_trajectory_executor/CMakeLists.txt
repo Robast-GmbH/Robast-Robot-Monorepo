@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(gazebo_controller_manager)
+project(gazebo_trajectory_executor)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -46,25 +46,25 @@ set(dependencies
 include_directories(include)
 
 set(executable_robot_trajectory_executor robot_trajectory_executor)
-set(executable_joint_trajectory_controller joint_trajectory_controller)
+set(executable_joint_trajectory_executor joint_trajectory_executor)
 set(executable_task_solution_executor task_solution_executor)
 
 add_executable(${executable_robot_trajectory_executor}
   src/robot_trajectory_executor_main.cpp)
-add_executable(${executable_joint_trajectory_controller}
-  src/joint_trajectory_controller_main.cpp)
+add_executable(${executable_joint_trajectory_executor}
+  src/joint_trajectory_executor_main.cpp)
 add_executable(${executable_task_solution_executor}
   src/task_solution_executor_main.cpp)
 
 set(library_robot_trajectory_executor ${executable_robot_trajectory_executor}_core)
-set(library_joint_trajectory_controller ${executable_joint_trajectory_controller}_core)
+set(library_joint_trajectory_executor ${executable_joint_trajectory_executor}_core)
 set(library_task_solution_executor ${executable_task_solution_executor}_core)
 
 add_library(${library_robot_trajectory_executor} SHARED
   src/robot_trajectory_executor.cpp
 )
-add_library(${library_joint_trajectory_controller} SHARED
-  src/joint_trajectory_controller.cpp
+add_library(${library_joint_trajectory_executor} SHARED
+  src/joint_trajectory_executor.cpp
 )
 add_library(${library_task_solution_executor} SHARED
   src/task_solution_executor.cpp
@@ -75,10 +75,10 @@ ament_target_dependencies(${executable_robot_trajectory_executor}
 )
 target_link_libraries(${executable_robot_trajectory_executor} ${library_robot_trajectory_executor})
 
-ament_target_dependencies(${executable_joint_trajectory_controller}
+ament_target_dependencies(${executable_joint_trajectory_executor}
   ${dependencies}
 )
-target_link_libraries(${executable_joint_trajectory_controller} ${library_joint_trajectory_controller})
+target_link_libraries(${executable_joint_trajectory_executor} ${library_joint_trajectory_executor})
 
 ament_target_dependencies(${executable_task_solution_executor}
   ${dependencies}
@@ -89,7 +89,7 @@ target_link_libraries(${executable_task_solution_executor} ${library_task_soluti
 ament_target_dependencies(${library_robot_trajectory_executor}
   ${dependencies}
 )
-ament_target_dependencies(${library_joint_trajectory_controller}
+ament_target_dependencies(${library_joint_trajectory_executor}
   ${dependencies}
 )
 ament_target_dependencies(${library_task_solution_executor}
@@ -101,7 +101,7 @@ target_include_directories(${executable_robot_trajectory_executor} PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 
-target_include_directories(${executable_joint_trajectory_controller} PUBLIC
+target_include_directories(${executable_joint_trajectory_executor} PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>
 )
@@ -126,7 +126,7 @@ endif()
 
 install(TARGETS
   ${executable_robot_trajectory_executor}
-  ${executable_joint_trajectory_controller}
+  ${executable_joint_trajectory_executor}
   ${executable_task_solution_executor}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
