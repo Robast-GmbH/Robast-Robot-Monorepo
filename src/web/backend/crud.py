@@ -370,4 +370,6 @@ def set_module_status(db:Session,module:schemas.UpdateModule)->models.Module:
     return db_module
 
 
-
+def remove_unlocked_state(db:Session):
+    db.query(models.Module).filter(models.Module.status=="Unlocked").update({ models.Module.status: "Closed"})
+    

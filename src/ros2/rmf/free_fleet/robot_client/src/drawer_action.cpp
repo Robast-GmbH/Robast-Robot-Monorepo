@@ -84,14 +84,14 @@ namespace rmf_robot_client
     if(drawers_->at(drawer_ref).is_e_drawer)
     {
       trigger_open_e_drawer_publisher_->publish(drawer_msg);
+      publish_task_state("DrawerState", drawer_ref+"#Opened" , false);
     }
     else
     {
        trigger_open_drawer_publisher_->publish(drawer_msg);
+        publish_task_state("DrawerState", drawer_ref+"#Unlocked" , false);
     }
-    
     drawers_->at(drawer_ref).is_open==true;
-    publish_task_state("DrawerState", drawer_ref+"#Opened" , false);
   }
 
   void  DrawerAction::close_drawer(int module_id, int drawer_id)

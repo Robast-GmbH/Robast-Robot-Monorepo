@@ -240,7 +240,11 @@ def navigate_robot( robot_name: str, target:schemas.Navigation, owner_id:Annotat
 #Module
 @app.get("/robots/{robot_name}/modules/", response_model = List[schemas.Module])
 def get_modules(robot_name :str, db: Session = Depends(get_db)):
-    return crud.get_modules(db=db, robot_name=robot_name)
+    db_modules=crud.get_modules(db=db, robot_name=robot_name)
+    for module in db_modules:
+        if(module.status=="Unlocked"):
+            module.status="Opened"  
+    return db_modules
 
 # get_module_info
 @app.get("/robots/{robot_name}/modules/{module_id}", response_model = schemas.Module)
@@ -254,6 +258,7 @@ def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
 
 @app.post("/robots/modules/status")
 def update_drawer_status(module: schemas.UpdateModule, db: Session = Depends(get_db)):
+    crud.remove_unlocked_state(db)
     db_module= crud.get_module(db=db, module_id=module.module_id,drawer_id= module.drawer_id)
     if(module.label is None):
         module.label= db_module.label
