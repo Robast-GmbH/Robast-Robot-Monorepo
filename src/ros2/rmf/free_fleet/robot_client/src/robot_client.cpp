@@ -327,14 +327,16 @@ namespace rmf_robot_client
   {
     geometry_msgs::msg::TransformStamped t;
     try {
-          t = tf_buffer_->lookupTransform(map_frame_id, robot_frame_id, tf2::TimePointZero);
+          // t = tf_buffer_->lookupTransform(map_frame_id, robot_frame_id, tf2::TimePointZero);
+          rclcpp::Time now = this->get_clock()->now();
+          t = tf_buffer_->lookupTransform( map_frame_id, robot_frame_id, now,rclcpp::Duration::from_seconds(0.05));
         } 
     catch (const tf2::TransformException & ex) 
       {
           //RCLCPP_INFO( this->get_logger(), "Could not transform %s to %s: %s", map_frame_id.c_str(), robot_frame_id.c_str(), ex.what());
           return;
       }
-    
+
     current_yaw= quaternion_to_yaw(t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z, t.transform.rotation.w);
     current_x = t.transform.translation.x;
     current_y = t.transform.translation.y;
@@ -359,7 +361,12 @@ namespace rmf_robot_client
     double sinYaw = 2.0 * (w * z + x * y);
     double cosYaw = 1.0 - 2.0 * (y * y + z * z);
     double yaw = std::atan2(sinYaw, cosYaw);
-    return yaw * 180.0 / M_PI;    
+    yaw= yaw * 180.0 / M_PI;
+
+    double yaw2 = std::atan2(x, y);
+    yaw2= yaw2 * 0.5;
+    RCLCPP_INFO(this->get_logger(), "yaw : %f vs %f", yaw, yaw2);
+    return yaw;
   }
 
   void RobotClient::get_parameter_to_config(std::string parameter_name, std::string default_value)
