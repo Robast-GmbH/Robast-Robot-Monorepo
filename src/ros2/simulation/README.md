@@ -25,7 +25,7 @@ trajectories to different ros2 topics / actions depending on what functionality 
 
 #### How to run an example?
 
-In order tun ran a MoveIt application in the simulation you have to start the following things:
+In order to run a MoveIt application in the simulation you have to start the following things:
 1. Gazebo (e.g. the task `start tiplu_sim`)
 2. Gazebo trajectory executor (depending on what application you run in MoveIt)
    1. For MTC it's e.g. the task `start gazebo_task_solution_executor for door_opening_mechanism`
