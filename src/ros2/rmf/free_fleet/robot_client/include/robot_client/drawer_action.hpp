@@ -7,7 +7,6 @@
 
 #include "std_msgs/msg/string.hpp"
 #include "std_msgs/msg/bool.hpp"
-#include "std_msgs/msg/int64.hpp"
 #include "drawer_state.hpp"
 #include <iostream>
 #include <map>
@@ -21,10 +20,8 @@ namespace rmf_robot_client
   private:
 
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
-    // using DrawerStatus = communication_interfaces::msg::DrawerStatus;
-    // using StdMsgString = std_msgs::msg::String;
+   
     using StdMsgBool= std_msgs::msg::Bool;
-    using StdMsgInt = std_msgs::msg::Int64;
 
     bool is_e_drawer_;
     int module_id_;
@@ -34,7 +31,7 @@ namespace rmf_robot_client
     std::shared_ptr<std::map<std::string, DrawerState>> drawers_;
     std::unique_ptr<DrawerState> selected_drawer_;
 
-    rclcpp::TimerBase::SharedPtr nfc_reading_timer_;
+    rclcpp::TimerBase::SharedPtr nfc_timeout_timer_;
 
     void open_drawer(int module_id, int drawer_id);
     void open_drawer_action(int module_id, int drawer_id, bool is_edrawer);
@@ -43,11 +40,9 @@ namespace rmf_robot_client
     std::string get_drawer_ref(int module_id, int drawer_id);
     bool all_drawers_closed();
     void start_authentication_scan();
-    void end_authentication_scan(bool successull);
-
-    //subscriber
-    //rclcpp::Subscription<DrawerStatus>::SharedPtr drawer_status_subscriber_;
-    rclcpp::Subscription<StdMsgInt>::SharedPtr authentication_subscriber_;
+    void end_authentication_scan();
+    void check_scant_user(int user_id);
+    void nfc_timeout();
 
     // publisher
     rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_open_drawer_publisher_;
@@ -60,10 +55,9 @@ namespace rmf_robot_client
     bool start(std::function<void(int)> next_action_callback);
     bool cancel();
     std::string get_type();
-    bool receive_new_settings(std::string command, std::vector<std::string> value) override;
-    //void receive_drawer_status(const DrawerStatus::SharedPtr msg);
-    void check_scant_user(const StdMsgInt &msg);
+   bool receive_new_settings(std::string command, std::vector<std::string> value) override;
     void action_done(bool completted);
+
     //~DrawerAction();
   };
 } // namespace rmf_robot_client

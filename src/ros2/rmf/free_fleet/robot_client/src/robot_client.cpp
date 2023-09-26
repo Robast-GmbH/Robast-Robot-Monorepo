@@ -72,6 +72,7 @@ namespace rmf_robot_client
     navigation_request_subscriber_ = this->create_subscription<FreeFleetDataDestinationRequest>(config["fleet_communication_destination_topic"], qos, std::bind(&RobotClient::receive_destination_task, this, std::placeholders::_1));
     setting_subscriber_ = this->create_subscription<FreeFleetDataSettingRequest>(config["fleet_communication_setting_topic"], qos, std::bind(&RobotClient::receive_settings, this,std::placeholders::_1));
     drawer_status_subscriber_= this->create_subscription<DrawerStatus>( config["drawer_status_change_topic"], 10, std::bind(&RobotClient::receive_drawer_status, this, std::placeholders::_1));
+    authentication_subscriber_=this->create_subscription<StdMsgInt>(config["nfc_authenticated_user_topic"], 10, std::bind(&RobotClient::receive_authenticated_user, this, std::placeholders::_1));
   }
 
   void RobotClient::start_update_robot_state()
@@ -213,6 +214,12 @@ namespace rmf_robot_client
     
   } 
 
+  void RobotClient::receive_authenticated_user(const StdMsgInt::SharedPtr msg)
+  {
+    task_sequence[current_step]->receive_new_settings("drawer", {"Authenticated_user", std::to_string(msg->data)});
+  }
+
+  //ToDo only works after the topic is bridged properly
   // void RobotClient::receive_battery_status(const BatteryLevel::ConstPtr msg)
   // {
   //   current_battery_level= msg->level;

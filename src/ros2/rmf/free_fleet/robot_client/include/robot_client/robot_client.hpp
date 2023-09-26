@@ -12,14 +12,15 @@
 #include "fleet_interfaces/msg/free_fleet_data_destination_request.hpp"
 #include "fleet_interfaces/msg/free_fleet_data_robot_state.hpp"
 
+//#include "robotnik_msgs/msg/battery_status.hpp"
+
 #include "std_msgs/msg/bool.hpp"
+#include "std_msgs/msg/int64.hpp"
 
 #include "tf2_geometry_msgs/tf2_geometry_msgs.h"
 #include "tf2/exceptions.h"
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
-
-//#include "robotnik_msgs/msg/battery_status.hpp"
 
 #include "action.hpp"
 #include "nfc_action.hpp"
@@ -39,7 +40,10 @@ namespace rmf_robot_client
           using FreeFleetDataDrawerRequest = fleet_interfaces::msg::FreeFleetDataDrawerRequest;
           using FreeFleetDataDestinationRequest = fleet_interfaces::msg::FreeFleetDataDestinationRequest;
           using FreeFleetDataRobotInfo = fleet_interfaces::msg::FreeFleetDataRobotState;
+          
           using StdMsgBool = std_msgs::msg ::Bool;
+          using StdMsgInt = std_msgs::msg::Int64;
+          
           using DrawerStatus = communication_interfaces::msg::DrawerStatus;
           //using BatteryLevel = robotnik_msgs::msg::BatteryStatus;
 
@@ -63,6 +67,7 @@ namespace rmf_robot_client
           //hardware
           //rclcpp::Subscription<BatteryLevel>::SharedPtr battery_status_sub_;
           rclcpp::Subscription<DrawerStatus>::SharedPtr drawer_status_subscriber_;
+          rclcpp::Subscription<StdMsgInt>::SharedPtr authentication_subscriber_;
           
           //other
           rclcpp::Publisher<FreeFleetDataRobotInfo>::SharedPtr robot_info_publisher_;
@@ -94,8 +99,9 @@ namespace rmf_robot_client
           void receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg);
           
           void receive_drawer_status(const DrawerStatus::SharedPtr msg);
-          //void receive_battery_status(const BatteryLevel::ConstPtr msg);
-          
+          void receive_authenticated_user(const StdMsgInt::SharedPtr msg);
+          // void receive_battery_status(const BatteryLevel::ConstPtr msg);
+
           bool prepare_new_action(std::string Task_def, std::string recipient_fleet, std::string recipient_robot, int &task_id, int &step);
           void end_current_task();
           void end_current_action(int step);

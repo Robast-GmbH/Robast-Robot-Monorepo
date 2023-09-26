@@ -132,7 +132,7 @@ def create_drawer_action(db: Session,step:int, task_id, module_id:int, drawer_id
     db.refresh(db_drawer_action)
 
     for user_id in locked_for:
-        db_drawer_lock= models.DrawerLock(active=False, user_id= user_id, uint_it= unit_id )
+        db_drawer_lock= models.DrawerLock(active=False, user_id= user_id, unit_id= unit_id )
         db.add(db_drawer_lock)
     db.commit()
     return db_drawer_action
