@@ -236,9 +236,11 @@ def get_full_task(task_id:int, db:Session)-> schemas.Task:
            db_drawer_action= get_drawer_action(db_action.id, db)
            if db_drawer_action is None: 
             return "action"
-           drawer_id=db_drawer_action.drawer_id
+           
+           db_drawer= get_module_by_unit_id(db, db_drawer_action.unit_id)
+           drawer_id=db_drawer.drawer_id
         #    locked_for= [db_drawer_action.target_user_id]
-           module_id=db_drawer_action.module_id
+           module_id=db_drawer.module_id
            drawer_action= schemas.Drawer( drawer_id=drawer_id, module_id=module_id, locked_for=[] )
            action= schemas.Action(step=step, type=action_type, finished=db_action.finished,  action=drawer_action)
            
@@ -325,6 +327,9 @@ def get_drawer(db: Session,robot_name:str, module_id: int, drawer_id: int)-> mod
 
 def get_unit_id(db:Session, module_id:int, drawer_id:int)->int:
     return db.query(models.Module.unit_id).filter(models.Module.drawer_id == drawer_id, models.Module.module_id == module_id).first()[0]
+
+def get_module_by_unit_id(db:Session, unit_id:int):
+    return db.query(models.Module).filter(models.Module.unit_id== unit_id).first()
 
 def set_module(db:Session, module: schemas.Module, override:bool)-> models.Module:
     db_module= get_drawer(db=db, robot_name= module.robot_name, module_id= module.module_id, drawer_id = module.drawer_id)

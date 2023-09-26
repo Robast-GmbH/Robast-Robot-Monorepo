@@ -327,9 +327,9 @@ namespace rmf_robot_client
   {
     geometry_msgs::msg::TransformStamped t;
     try {
-          // t = tf_buffer_->lookupTransform(map_frame_id, robot_frame_id, tf2::TimePointZero);
-          rclcpp::Time now = this->get_clock()->now();
-          t = tf_buffer_->lookupTransform( map_frame_id, robot_frame_id, now,rclcpp::Duration::from_seconds(0.05));
+          t = tf_buffer_->lookupTransform(map_frame_id, robot_frame_id, tf2::TimePointZero);
+          // rclcpp::Time now = this->get_clock()->now();
+          // t = tf_buffer_->lookupTransform( map_frame_id, robot_frame_id, now,rclcpp::Duration::from_seconds(0.05));
         } 
     catch (const tf2::TransformException & ex) 
       {
@@ -362,10 +362,6 @@ namespace rmf_robot_client
     double cosYaw = 1.0 - 2.0 * (y * y + z * z);
     double yaw = std::atan2(sinYaw, cosYaw);
     yaw= yaw * 180.0 / M_PI;
-
-    double yaw2 = std::atan2(x, y);
-    yaw2= yaw2 * 0.5;
-    RCLCPP_INFO(this->get_logger(), "yaw : %f vs %f", yaw, yaw2);
     return yaw;
   }
 
