@@ -193,12 +193,12 @@ namespace door_opening_mechanism_mtc
 
     auto sampling_planner = std::make_shared<mtc::solvers::PipelinePlanner>(shared_from_this());
     moveit_msgs::msg::WorkspaceParameters workspace_params;
-    workspace_params.min_corner.x = -5.0;
-    workspace_params.min_corner.y = -5.0;
-    workspace_params.min_corner.z = -5.0;
-    workspace_params.max_corner.x = 5.0;
-    workspace_params.max_corner.y = 5.0;
-    workspace_params.max_corner.z = 5.0;
+    workspace_params.min_corner.x = -10.0;
+    workspace_params.min_corner.y = -10.0;
+    workspace_params.min_corner.z = -10.0;
+    workspace_params.max_corner.x = 10.0;
+    workspace_params.max_corner.y = 10.0;
+    workspace_params.max_corner.z = 10.0;
     sampling_planner->setProperty("workspace_parameters", workspace_params);
 
     auto interpolation_planner = std::make_shared<mtc::solvers::JointInterpolationPlanner>();
@@ -222,54 +222,18 @@ namespace door_opening_mechanism_mtc
     // Compute IK
     auto ik_wrapper =
       std::make_unique<moveit::task_constructor::stages::ComputeIK>("generate pose IK", std::move(generate_pose_stage));
-    ik_wrapper->setMaxIKSolutions(3);
+    ik_wrapper->setMaxIKSolutions(5);
     ik_wrapper->setMinSolutionDistance(1.0);
     ik_wrapper->setTimeout(1.0);
     // ik_wrapper->setIKFrame(end_effector_parent_link);
-    ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT,
-                                               {"eef", "group", "workspace_parameters"});
+    ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::PARENT, {"eef", "group"});
     ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE, {"target_pose"});
     task.add(std::move(ik_wrapper));
 
-    // auto stage_move_to_pick = std::make_unique<mtc::stages::Connect>(
-    //     "move to pick", mtc::stages::Connect::GroupPlannerVector{{group_name, sampling_planner}});
-    // // clang-format on
-    // stage_move_to_pick->setTimeout(5.0);
-    // stage_move_to_pick->properties().configureInitFrom(mtc::Stage::PARENT);
-    // task.add(std::move(stage_move_to_pick));
-
-    // auto stage_move_to_target_pose = std::make_unique<mtc::stages::MoveTo>("Move to target pose", sampling_planner);
-    // stage_move_to_target_pose->setGroup(group_name);
-    // stage_move_to_target_pose->setIKFrame(target_pose);
-    // stage_move_to_target_pose->setGoal(target_pose);
-    // task.add(std::move(stage_move_to_target_pose));
-
-    // auto grasp = std::make_unique<mtc::SerialContainer>("pick object");
-    // task.properties().exposeTo(grasp->properties(), {"eef", "group", "ik_frame"});
-    // // clang-format off
-    // grasp->properties().configureInitFrom(mtc::Stage::PARENT,
-    //                                       { "eef", "group", "ik_frame" });
-
-    /****************************************************
-     *                  Generate Grasp Pose              *
-     ****************************************************/
-    {
-      // Sample grasp pose
-      // auto stage = std::make_unique<mtc::stages::GeneratePose>("Generate handle grasp pose");
-      // stage->properties().configureInitFrom(mtc::Stage::PARENT);
-      // stage->properties().set("marker_ns", "grasp_pose");
-      // stage->setPose(target_pose);
-      // stage->setMonitoredStage(current_state_ptr);   // Hook into current state
-
-      // auto wrapper = std::make_unique<mtc::stages::ComputeIK>("grasp pose IK", std::move(stage));
-      // wrapper->setMaxIKSolutions(8);
-      // wrapper->setMinSolutionDistance(0.1);
-      // wrapper->setIKFrame(target_pose);
-      // wrapper->properties().configureInitFrom(mtc::Stage::PARENT, {"eef", "group"});
-      // wrapper->properties().configureInitFrom(mtc::Stage::INTERFACE, {"target_pose"});
-      // grasp->insert(std::move(wrapper));
-      // task.add(std::move(stage));
-    }
+    auto stage = std::make_unique<mtc::stages::MoveTo>("Starting position", interpolation_planner);
+    stage->setGroup(group_name);
+    stage->setGoal("starting_position");
+    task.add(std::move(stage));
 
     return task;
   }
