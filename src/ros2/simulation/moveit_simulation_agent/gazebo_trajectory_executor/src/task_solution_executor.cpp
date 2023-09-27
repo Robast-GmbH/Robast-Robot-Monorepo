@@ -55,18 +55,20 @@ namespace gazebo_trajectory_executor
 
     moveit_task_constructor_msgs::msg::Solution mtc_solution = goal->solution;
 
-    uint8_t id_of_solution_with_lowest_cost = get_id_of_solution_with_lowest_cost(
-        std::make_shared<moveit_task_constructor_msgs::msg::Solution>(mtc_solution));
+    uint8_t trajectory_id = 0;
+    for (const auto& sub_trajectory : mtc_solution.sub_trajectory)
+    {
+      // RCLCPP_INFO(_node->get_logger(),
+      //             "******* Printing sub trajectory number %d and cost = %f ********",
+      //             trajectory_id,
+      //             sub_trajectory.info.cost);
+      // print_robot_trajectory_msg(std::make_shared<moveit_msgs::msg::RobotTrajectory>(sub_trajectory.trajectory));
+      ++trajectory_id;
 
-    // for (const auto& sub_trajectory : mtc_solution.sub_trajectory)
-    // {
-    //   print_robot_trajectory_msg(std::make_shared<moveit_msgs::msg::RobotTrajectory>(sub_trajectory.trajectory));
-    // }
+      _ros_robot_trajectory_pub->publish(sub_trajectory.trajectory);
 
-    moveit_task_constructor_msgs::msg::SubTrajectory sub_trajectory =
-        mtc_solution.sub_trajectory[id_of_solution_with_lowest_cost];
-
-    _ros_robot_trajectory_pub->publish(sub_trajectory.trajectory);
+      sleep(3);
+    }
 
     auto result = std::make_shared<ExecuteTaskSolution::Result>();
 
@@ -86,30 +88,6 @@ namespace gazebo_trajectory_executor
       goal_handle->succeed(result);
       RCLCPP_INFO(_node->get_logger(), "Goal succeeded");
     }
-  }
-
-  uint8_t TaskSolutionExecutor::get_id_of_solution_with_lowest_cost(
-      moveit_task_constructor_msgs::msg::Solution::SharedPtr mtc_solution)
-  {
-    float lowest_cost = std::numeric_limits<float>::max();
-    uint8_t id_of_solution_with_lowest_cost = 0;
-    uint8_t id = 0;
-
-    for (const auto& sub_solution : mtc_solution->sub_solution)
-    {
-      ++id;
-      moveit_task_constructor_msgs::msg::SolutionInfo solution_info = sub_solution.info;
-      if (solution_info.cost < lowest_cost)
-      {
-        lowest_cost = solution_info.cost;
-        id_of_solution_with_lowest_cost = id;
-      }
-    }
-    RCLCPP_INFO(_node->get_logger(),
-                "The solution with the lowest costs (%f) is the one with id %d",
-                lowest_cost,
-                id_of_solution_with_lowest_cost);
-    return id_of_solution_with_lowest_cost;
   }
 
   void TaskSolutionExecutor::print_robot_trajectory_msg(const moveit_msgs::msg::RobotTrajectory::SharedPtr& msg)

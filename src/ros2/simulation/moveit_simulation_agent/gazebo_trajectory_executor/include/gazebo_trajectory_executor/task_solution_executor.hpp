@@ -42,8 +42,6 @@ namespace gazebo_trajectory_executor
 
     void execute(const std::shared_ptr<GoalHandleExecuteTaskSolution> goal_handle);
 
-    uint8_t get_id_of_solution_with_lowest_cost(moveit_task_constructor_msgs::msg::Solution::SharedPtr mtc_solution);
-
     void print_robot_trajectory_msg(const moveit_msgs::msg::RobotTrajectory::SharedPtr& msg);
     void print_joint_trajectory_msg(const trajectory_msgs::msg::JointTrajectory& msg);
     void print_multi_dof_joint_trajectory(const trajectory_msgs::msg::MultiDOFJointTrajectory& msg);

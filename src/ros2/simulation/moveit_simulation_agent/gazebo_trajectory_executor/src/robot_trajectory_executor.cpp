@@ -79,6 +79,9 @@ namespace gazebo_trajectory_executor
       set_single_dof_joint_trajectory(msg->joint_trajectory.points[i], msg->joint_trajectory.joint_names);
 
       set_multi_dof_joint_trajectory(msg->multi_dof_joint_trajectory.points[i]);   // mobile base = planar joint
+
+      // TODO@Jacob: Remove that once we use velocity control? This just makes the robot not move instantly
+      usleep(200000);
     }
   }
 
@@ -88,6 +91,7 @@ namespace gazebo_trajectory_executor
   {
     for (auto i = 0u; i < joint_trajectory_point.positions.size(); ++i)
     {
+      // TODO@Jacob: Instead of position control, this should probably be velocity control
       if (joint_names_map_.find(joint_names[i]) != joint_names_map_.end())
       {
         // find joint name in `joint_names_` .
