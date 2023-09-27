@@ -18,10 +18,6 @@ class RestInterface():
         self.response_api=self.config["backend_address"]
         self.is_backend_running=False
         
-        @self.app.post("/test")
-        def test():
-            return 
-          
         @self.app.post("/task")
         def do_task( task:schemas.Task):
             for action in task.actions:

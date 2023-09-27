@@ -16,12 +16,11 @@ namespace rmf_robot_client
       int task_id_;
       int step_;
       std::shared_ptr<rclcpp::Node> ros_node_;
-      std::map<std::string, std::string> config_;
       rclcpp::Publisher<FreeFleetDataTaskInfo>::SharedPtr task_info_publisher_;
       std::function<void(bool)> finish_action;
 
     public:
-      Action(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string,std::string> config);
+      Action(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node);
     //  ~Action();
       virtual bool start(std::function<void(int)> next_action_callback)=0;
       virtual bool cancel()=0;

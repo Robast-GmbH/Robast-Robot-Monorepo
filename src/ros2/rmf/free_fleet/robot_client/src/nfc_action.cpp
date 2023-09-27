@@ -3,10 +3,10 @@
 namespace rmf_robot_client
 {
 
-  NFCAction::NFCAction(int task_id, int step,std::shared_ptr<rclcpp::Node>  ros_node, std::map<std::string, std::string> config, int user_id) : Action(task_id, step, ros_node, config)
+  NFCAction::NFCAction(int task_id, int step,std::shared_ptr<rclcpp::Node>  ros_node, int user_id) : Action(task_id, step, ros_node)
   {
     this->user_id = user_id;
-     nfc_write_new_nfc_card_client_ = rclcpp_action::create_client<CreateUserNfcTag>(ros_node, config["nfc_write_usertag_to_card_action_topic"]);
+     nfc_write_new_nfc_card_client_ = rclcpp_action::create_client<CreateUserNfcTag>(ros_node, ros_node_->get_parameter("nfc_write_usertag_to_card_action_topic").as_string());
   }
 
   bool NFCAction::start(std::function<void(int)> next_action_callback)

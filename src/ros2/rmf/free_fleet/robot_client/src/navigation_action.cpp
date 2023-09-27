@@ -2,15 +2,17 @@
 
 namespace rmf_robot_client
 {
-  NavigationAction::NavigationAction(int task_id, int step, std::shared_ptr<rclcpp::Node>  ros_node, std::map<std::string,std::string> config,  float x, float y, float yaw, std::string behavior_tree, std::string frame_id):Action(task_id, step, ros_node, config)
+  NavigationAction::NavigationAction(int task_id, int step, std::shared_ptr<rclcpp::Node>  ros_node, float x, float y, float yaw):Action(task_id, step, ros_node)
   {
     this->x = x;
     this->y = y;
     this->yaw = yaw;
-    this->frame_id = frame_id;
-    this->behavior_tree = behavior_tree;
 
-    navigate_to_pose_client_ = rclcpp_action::create_client<NavigateToPose>(ros_node, config["nav2_navigation_to_pose_action_topic"]);
+    frame_id= ros_node_->get_parameter("map_frame_id").as_string();
+    behavior_tree = ros_node_->get_parameter("behavior_tree").as_string();
+
+
+    navigate_to_pose_client_ = rclcpp_action::create_client<NavigateToPose>(ros_node, ros_node_->get_parameter("nav2_navigation_to_pose_action_topic").as_string());
   }
   
   bool NavigationAction::start(std::function<void(int)> next_action_callback)
@@ -30,17 +32,18 @@ namespace rmf_robot_client
   void NavigationAction::start_navigation()
   {
     NavigateToPose::Goal pose_msg = NavigateToPose::Goal();
-    pose_msg.pose.header.frame_id= frame_id;
+    pose_msg.pose.header.frame_id = frame_id;
     pose_msg.pose.header.stamp = ros_node_->now();
     pose_msg.pose.pose.position.x = x;
     pose_msg.pose.pose.position.y = y;
     pose_msg.pose.pose.position.z = 0;
-
-    double yaw_radiant = yaw * M_PI / 180;
-    pose_msg.pose.pose.orientation.x = cos(yaw_radiant / 2);
-    pose_msg.pose.pose.orientation.y = 0;
-    pose_msg.pose.pose.orientation.z = 0;
-    pose_msg.pose.pose.orientation.w = sin(yaw_radiant/2);
+  
+    tf2::Quaternion quaternion;
+    quaternion.setRPY(0, 0, yaw);
+    pose_msg.pose.pose.orientation.x = quaternion.x();
+    pose_msg.pose.pose.orientation.y = quaternion.y();
+    pose_msg.pose.pose.orientation.z = quaternion.z();
+    pose_msg.pose.pose.orientation.w = quaternion.w();
 
     pose_msg.behavior_tree = behavior_tree;
 

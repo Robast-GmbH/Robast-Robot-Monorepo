@@ -2,7 +2,7 @@
 
 namespace rmf_robot_client
 {
-  DrawerAction::DrawerAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string,std::string> config, std::shared_ptr<std::map<std::string, DrawerState>> drawer_states, int drawer_id, int module_id, bool is_edrawer, std::vector<uint16_t> autorised_user):Action(task_id, step, ros_node, config)
+  DrawerAction::DrawerAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::shared_ptr<std::map<std::string, DrawerState>> drawer_states, int drawer_id, int module_id, bool is_edrawer, std::vector<uint16_t> autorised_user):Action(task_id, step, ros_node)
   {
     this->drawer_id_ = drawer_id;
     this->module_id_ = module_id;
@@ -10,16 +10,19 @@ namespace rmf_robot_client
     this->autorised_user_ = autorised_user;
     this->drawers_ = drawer_states;
 
+    nfc_timeout_interval = ros_node_->get_parameter("nfc_timeout_interval").as_int();
+
     rclcpp::QoS qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
     qos.avoid_ros_namespace_conventions(false);
    
     //controll drawer
-    trigger_open_e_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(config["statemaschine_open_e_drawer_topic"], qos);
-    trigger_open_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(config["statemaschine_open_drawer_topic"], qos);
-    trigger_close_e_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(config["statemaschine_close_e_drawer_topic"], qos);
-    nfc_on_off_publisher_ = ros_node->create_publisher<StdMsgBool>(config["nfc_on_off_switch_topic"], qos); 
+    trigger_open_e_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(ros_node_->get_parameter("statemaschine_open_e_drawer_topic").as_string(), qos);
+    trigger_open_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(ros_node_->get_parameter("statemaschine_open_drawer_topic").as_string(), qos);
+    trigger_close_e_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(ros_node_->get_parameter("statemaschine_close_e_drawer_topic").as_string(), qos);
+    nfc_on_off_publisher_ = ros_node->create_publisher<StdMsgBool>(ros_node_->get_parameter("nfc_on_off_switch_topic").as_string(), qos); 
+
   }
 
   bool DrawerAction::start(std::function<void(int)> next_action_callback)
@@ -48,6 +51,7 @@ namespace rmf_robot_client
     if(selected_drawer_->authorised_users.size()>0 )
     {
       //scan for user
+       RCLCPP_INFO(ros_node_->get_logger(), "start authentification");
       start_authentication_scan();
     }
     else
@@ -164,7 +168,7 @@ namespace rmf_robot_client
     msg.data = true;
     nfc_on_off_publisher_->publish(msg); 
     nfc_timeout_timer_=ros_node_->create_wall_timer(
-      std::chrono::microseconds(50), std::bind(&DrawerAction::nfc_timeout, this));
+      std::chrono::minutes(nfc_timeout_interval), std::bind(&DrawerAction::nfc_timeout, this));
   }
   
   void DrawerAction::nfc_timeout()

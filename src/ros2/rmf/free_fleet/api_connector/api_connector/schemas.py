@@ -21,7 +21,7 @@ class Drawer(BaseModel):
     is_edrawer: bool
     
 class DrawerAction(Drawer):
-    locked_for: list[str]
+    locked_for: list[int]
 
 class NewUser(BaseModel):
     user_id: int

@@ -10,14 +10,17 @@ namespace rmf_robot_client
   class NFCAction : public Action
   {
     private:
-      int user_id;
+      
       using CreateUserNfcTag = communication_interfaces::action::CreateUserNfcTag;
       using GoalHandleCreateUserNfcTag = rclcpp_action::ClientGoalHandle<CreateUserNfcTag>;
+      
+      int user_id;
+      
       rclcpp_action::Client<CreateUserNfcTag>::SharedPtr nfc_write_new_nfc_card_client_;
       GoalHandleCreateUserNfcTag::SharedPtr current_action_goal_handle;
 
     public:
-      NFCAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string, std::string> config, int user_id);
+      NFCAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, int user_id);
       //~NFCAction();
 
       bool start(std::function<void(int)> next_action_callback);

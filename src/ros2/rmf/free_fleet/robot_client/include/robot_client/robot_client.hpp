@@ -56,7 +56,6 @@ namespace rmf_robot_client
           std::string behavior_tree;
           std::string map_frame_id;
           std::string robot_frame_id;
-          std::map<std::string, std::string> config;
 
           //fleet_server
           rclcpp::Subscription<FreeFleetDataSettingRequest>::SharedPtr setting_subscriber_;
@@ -80,6 +79,7 @@ namespace rmf_robot_client
           std::map<int, std::unique_ptr<Action>> task_sequence;
           rclcpp::TimerBase::SharedPtr publish_robot_info_timer_;
           int robot_info_inteval;
+          int nfc_timeout_interval;
 
           //robot 
           std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};

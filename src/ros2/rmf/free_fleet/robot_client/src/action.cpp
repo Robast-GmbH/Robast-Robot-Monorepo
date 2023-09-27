@@ -4,19 +4,18 @@
 namespace rmf_robot_client
 {
   
-  Action::Action(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string,std::string> config)
+  Action::Action(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node)
   {
     this->task_id_ = task_id;
     this->step_ = step;
     this->ros_node_ = ros_node;
-    this->config_ = config;
     
     rclcpp::QoS qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
     qos.avoid_ros_namespace_conventions(false);
     
-    task_info_publisher_ = ros_node->create_publisher<FreeFleetDataTaskInfo>(config["fleet_communication_task_info_topic"], qos);
+    task_info_publisher_ = ros_node->create_publisher<FreeFleetDataTaskInfo>(ros_node_->get_parameter("fleet_communication_task_info_topic").as_string(), qos);
   }
 
   int Action::get_step()

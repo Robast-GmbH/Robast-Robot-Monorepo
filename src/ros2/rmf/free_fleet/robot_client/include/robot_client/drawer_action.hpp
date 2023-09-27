@@ -20,7 +20,6 @@ namespace rmf_robot_client
   private:
 
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
-   
     using StdMsgBool= std_msgs::msg::Bool;
 
     bool is_e_drawer_;
@@ -28,9 +27,10 @@ namespace rmf_robot_client
     int drawer_id_;
     std::vector<u_int16_t> autorised_user_;
 
+    int nfc_timeout_interval;
+
     std::shared_ptr<std::map<std::string, DrawerState>> drawers_;
     std::unique_ptr<DrawerState> selected_drawer_;
-
     rclcpp::TimerBase::SharedPtr nfc_timeout_timer_;
 
     void open_drawer(int module_id, int drawer_id);
@@ -50,12 +50,12 @@ namespace rmf_robot_client
     rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_close_e_drawer_publisher_;
     rclcpp::Publisher<StdMsgBool>::SharedPtr nfc_on_off_publisher_;
 
-  public:
-    DrawerAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::map<std::string,std::string> config, std::shared_ptr<std::map<std::string, DrawerState>> drawers, int drawer_int, int module_id, bool is_edrawer, std::vector<uint16_t> autorised_user);
+   public:
+    DrawerAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, std::shared_ptr<std::map<std::string, DrawerState>> drawers, int drawer_int, int module_id, bool is_edrawer, std::vector<uint16_t> autorised_user);
     bool start(std::function<void(int)> next_action_callback);
     bool cancel();
     std::string get_type();
-   bool receive_new_settings(std::string command, std::vector<std::string> value) override;
+    bool receive_new_settings(std::string command, std::vector<std::string> value) override;
     void action_done(bool completted);
 
     //~DrawerAction();
