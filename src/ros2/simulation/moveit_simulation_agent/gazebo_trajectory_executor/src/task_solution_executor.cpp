@@ -67,7 +67,8 @@ namespace gazebo_trajectory_executor
 
       _ros_robot_trajectory_pub->publish(sub_trajectory.trajectory);
 
-      sleep(3);
+      // This is here to wait for the trajectory to finish and see the difference between the trajectories
+      sleep(2);
     }
 
     auto result = std::make_shared<ExecuteTaskSolution::Result>();
