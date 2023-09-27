@@ -11,11 +11,10 @@ import launch_ros.descriptions
 
 
 def generate_launch_description():
-    depthai_examples_path = get_package_share_directory('door_handle_detection')
+    door_handle_detection_path = get_package_share_directory('door_handle_detection')
     urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
 
-    default_resources_path = os.path.join(depthai_examples_path,
-                                'resources')
+    default_resources_path = os.path.join(door_handle_detection_path, 'resources')
 
     mxId         = LaunchConfiguration('mxId',      default = 'x')
     usb2Mode     = LaunchConfiguration('usb2Mode',  default = False)
@@ -56,11 +55,11 @@ def generate_launch_description():
     LRchecktresh          = LaunchConfiguration('LRchecktresh', default = 5)
     monoResolution        = LaunchConfiguration('monoResolution', default = '400p')
     
-    rgbResolution           = LaunchConfiguration('rgbResolution',  default = '1080p')
-    rgbScaleNumerator       = LaunchConfiguration('rgbScaleNumerator',  default = 2)
-    rgbScaleDinominator     = LaunchConfiguration('rgbScaleDinominator',    default = 3)
-    previewWidth            = LaunchConfiguration('previewWidth',   default = 640)
-    previewHeight           = LaunchConfiguration('previewHeight',  default = 640)
+    rgbResolution           = LaunchConfiguration('rgbResolution', default = '1080p')
+    rgbScaleNumerator       = LaunchConfiguration('rgbScaleNumerator', default = 2)
+    rgbScaleDinominator     = LaunchConfiguration('rgbScaleDinominator', default = 3)
+    previewWidth            = LaunchConfiguration('previewWidth', default = 640)
+    previewHeight           = LaunchConfiguration('previewHeight', default = 640)
     
     
     angularVelCovariance  = LaunchConfiguration('angularVelCovariance', default = 0.0)
@@ -328,7 +327,6 @@ def generate_launch_description():
 
                         {'tf_prefix':               tf_prefix},
                         {'mode':                    mode},
-                        {'imuMode':                 imuMode},
 
                         {'lrcheck':                 lrcheck},
                         {'extended':                extended},
