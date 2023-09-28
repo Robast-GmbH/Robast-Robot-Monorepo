@@ -67,7 +67,7 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @app.post("/users/{user_id}/nfc")
 def update_nfc_code(user_id:str, nfc_code:str, db: Session = Depends(get_db)):
-    crud.create_nfc_code(user_id=user_id,nfc_code=nfc_code)
+    crud.create_nfc_code(db= db, user_id=user_id,nfc_code=nfc_code)
     return 
 
 @app.post("/users/login")#, response_model=schemas.User

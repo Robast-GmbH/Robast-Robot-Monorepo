@@ -2,8 +2,10 @@
 
 namespace db_helper
 {
-  PostgreSqlHelper::PostgreSqlHelper(std::string username, std::string password, std::string host, int port, std::string db_name)
-      : connection_parameter("user=" + username + " password=" + password + " host=" + host +" port="+  std::to_string(port) +" dbname=" + db_name + " target_session_attrs=read-write")
+  PostgreSqlHelper::PostgreSqlHelper(
+      std::string username, std::string password, std::string host, int port, std::string db_name)
+      : connection_parameter("user=" + username + " password=" + password + " host=" + host + " port=" +
+                             std::to_string(port) + " dbname=" + db_name + " target_session_attrs=read-write")
   {
   }
 
@@ -16,7 +18,7 @@ namespace db_helper
     try
     {
       // make the Query from the DB
-      pqxx::connection connection_handle = pqxx::connection("");
+      pqxx::connection connection_handle = pqxx::connection(connection_parameter);
       pqxx::work session{connection_handle};
 
       connection_handle.disconnect();
@@ -25,8 +27,9 @@ namespace db_helper
     {
       return "error";
     }
-    return "";
+    return "successfull";
   }
+
   std::vector<std::vector<std::string>> PostgreSqlHelper::perform_query(std::string sql_statment)
   {
     std::vector<std::vector<std::string>> result_data;
@@ -34,7 +37,7 @@ namespace db_helper
     try
     {
       // make the Query from the DB
-      pqxx::connection connection_handle = pqxx::connection("");
+      pqxx::connection connection_handle = pqxx::connection(connection_parameter);
       pqxx::work session{connection_handle};
 
       raw_db_feedback = session.exec(sql_statment);
@@ -126,20 +129,13 @@ namespace db_helper
     }
 
     data = perform_query(
-        "SELECT concat(first_name, ' ', last_name,) AS \"name\", user_id FROM public.\"account\" WHERE key =" + tag +
-        " AND user_id in (" + target_users + ");");
+        "SELECT id, name FROM public.\"user\" WHERE id= (SELECT user_id FROM public.authentication WHERE nfc_code = "
+        "'" +
+        tag + "')");
     if (data.size() == 1)
     {
-      if (user_name.get() != nullptr)
-      {
-        user_name.reset(new std::string(data[1][0]));
-      }
-
-      if (id.get() != nullptr)
-      {
-        id.reset(new int(stoi(data[1][1])));
-      }
-
+      *user_name = data[0][1];
+      *id = stoi(data[0][0]);
       return true;
     }
     return false;

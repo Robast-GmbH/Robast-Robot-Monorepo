@@ -10,16 +10,17 @@ namespace nfc_bridge
     this->declare_parameter("db_password", "postgres");
     this->declare_parameter("db_host_address", "localhost");
     this->declare_parameter("db_port", 5432);
-    this->declare_parameter("db_name","robast" );
+    this->declare_parameter("db_name", "robast");
 
     std::string serial_port_path = this->get_parameter("serial_port_path").as_string();
     std::string db_username = this->get_parameter("db_username").as_string();
-    std::string db_password  = this->get_parameter("db_password").as_string();
-    std::string db_host  = this->get_parameter("db_host_address").as_string();
+    std::string db_password = this->get_parameter("db_password").as_string();
+    std::string db_host = this->get_parameter("db_host_address").as_string();
     int db_port = this->get_parameter("db_port").as_int();
-    std::string db_name  = this->get_parameter("db_name").as_string();
-    
-    this->serial_connector_ =std::make_unique<serial_helper::SerialHelper>(  serial_helper::SerialHelper(serial_port_path));
+    std::string db_name = this->get_parameter("db_name").as_string();
+
+    this->serial_connector_ =
+        std::make_unique<serial_helper::SerialHelper>(serial_helper::SerialHelper(serial_port_path));
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
@@ -27,14 +28,18 @@ namespace nfc_bridge
 
     authentication_publisher_ = this->create_publisher<std_msgs::msg::Int64>("/authenticated_user", qos);
     timer_subscriber_ = this->create_subscription<std_msgs::msg::Bool>(
-        "/nfc_switch", qos, std::bind(&NFCBridge::control_timer, this,std::placeholders::_1));
-    this->db_connector_= std::make_unique<db_helper::PostgreSqlHelper>(db_helper::PostgreSqlHelper(db_username, db_password, db_host, db_port, db_name));
-    this->action_server_ = rclcpp_action::create_server<CreateUser>(this,
-                                                                    "/create_user",
-                                                                    std::bind(&NFCBridge::handle_goal, this, std::placeholders::_1, std::placeholders::_2),
-                                                                    std::bind(&NFCBridge::handle_cancel, this, std::placeholders::_1),
-                                                                    std::bind(&NFCBridge::handle_accepted, this, std::placeholders::_1));
-                                                                    
+        "/nfc_switch", qos, std::bind(&NFCBridge::control_timer, this, std::placeholders::_1));
+    this->db_connector_ = std::make_unique<db_helper::PostgreSqlHelper>(
+        db_helper::PostgreSqlHelper(db_username, db_password, db_host, db_port, db_name));
+
+    RCLCPP_INFO(this->get_logger(), "DB connection test: %s", this->db_connector_->test_connection().c_str());
+
+    this->action_server_ = rclcpp_action::create_server<CreateUser>(
+        this,
+        "/create_user",
+        std::bind(&NFCBridge::handle_goal, this, std::placeholders::_1, std::placeholders::_2),
+        std::bind(&NFCBridge::handle_cancel, this, std::placeholders::_1),
+        std::bind(&NFCBridge::handle_accepted, this, std::placeholders::_1));
   }
 
   rclcpp_action::GoalResponse NFCBridge::handle_goal(const rclcpp_action::GoalUUID& uuid,
@@ -58,7 +63,7 @@ namespace nfc_bridge
 
   void NFCBridge::control_timer(const std_msgs::msg::Bool::SharedPtr msg)
   {
-    if(msg->data)
+    if (msg->data)
     {
       this->timer_start();
     }
@@ -70,7 +75,7 @@ namespace nfc_bridge
 
   void NFCBridge::timer_start()
   {
-  timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL),
+    timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL),
                                      std::bind(&NFCBridge::reader_procedure, this));
   }
 
@@ -150,7 +155,6 @@ namespace nfc_bridge
     std::shared_ptr<std::string> found_user = std::make_shared<std::string>();
     std::shared_ptr<int> found_user_id = std::make_shared<int>();
     bool found = false;
-    start_up_scanner();
     found = execute_scan(scanned_key);
     if (found)
     {
@@ -178,7 +182,6 @@ namespace nfc_bridge
     feedback->task_status.is_reader_completed = false;
     goal_handle->publish_feedback(feedback);
 
-    
     if (goal->user_id == "")
     {
       user_id = db_connector_->createUser(goal->first_name, goal->last_name);
@@ -191,19 +194,19 @@ namespace nfc_bridge
     }
     else
     {
-    RCLCPP_ERROR(this->get_logger(), "user_id not found");
-    result->task_status = feedback->task_status;
-    result->successful = false;
-    result->error_message = "Der Benutzer konnte nicht gefunden werden.";
-    goal_handle->canceled(result);
-    return;
+      RCLCPP_ERROR(this->get_logger(), "user_id not found");
+      result->task_status = feedback->task_status;
+      result->successful = false;
+      result->error_message = "Der Benutzer konnte nicht gefunden werden.";
+      goal_handle->canceled(result);
+      return;
     }
     user_id = goal->user_id;
     feedback->task_status.is_db_user_created = true;
     goal_handle->publish_feedback(feedback);
 
     int nfc_code = db_connector_->createNfcCode(user_id, std::pow(2, BLOCK_SIZE));
-    //int nfc_code = rand() % 1000;
+    // int nfc_code = rand() % 1000;
 
     feedback->task_status.is_reader_ready_to_write = false;
     goal_handle->publish_feedback(feedback);
