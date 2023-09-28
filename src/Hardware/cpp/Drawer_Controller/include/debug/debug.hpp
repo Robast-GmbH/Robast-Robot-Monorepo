@@ -41,6 +41,10 @@
 #define debug_print(x)
 #endif
 
+#ifndef debug_print_with_base
+#define debug_print_with_base(num, base)
+#endif
+
 #ifndef debug_println
 #define debug_println(num)
 #endif
