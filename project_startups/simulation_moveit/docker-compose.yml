@@ -2,12 +2,7 @@ version: '3.9'
 
 services:
   simulation:
-    # TODO: Use remote image from ghcr
-    # image: ghcr.io/robast-gmbh/monorepo/simulation:devel
-    build:
-      context: .
-      dockerfile: simulation/Dockerfile
-    image: robast_simulation
+    image: ghcr.io/robast-gmbh/monorepo/simulation:devel
     environment:
       - ROS_DOMAIN_ID=1
       - is_simulation=True
@@ -59,6 +54,7 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   moveit_mtc:
+    # TODO@Tobi: How do I use the image from ghcr?
     build:
       context: .
       dockerfile: ../../src/ros2/moveit/moveit_mtc/Dockerfile
