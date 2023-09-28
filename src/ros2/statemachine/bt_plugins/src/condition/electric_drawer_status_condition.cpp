@@ -19,14 +19,6 @@ namespace statemachine
             RCLCPP_DEBUG(rclcpp::get_logger("BaseCompareCondition"), "BT::NodeStatus::SUCCESS");
             return BT::NodeStatus::SUCCESS;
         }
-        else if (std::chrono::steady_clock::now() -
-                     blackboard_->get<std::chrono::steady_clock::time_point>("transition_time") >=
-                 timeout_duration_)
-        {
-            RCLCPP_WARN(rclcpp::get_logger("BaseCompareCondition"), "timeout compare condition");
-            // Timeout
-            return BT::NodeStatus::FAILURE;
-        }
         return BT::NodeStatus::RUNNING;
     }
 
@@ -53,7 +45,7 @@ namespace statemachine
         }
     }
 
-    void ElectricDrawerStatusCondition::callbackDrawerFeedback(const communication_interfaces::msg::ElectricalDrawerStatus::SharedPtr msg)
+    void ElectricDrawerStatusCondition::callbackTopicFeedback(const communication_interfaces::msg::ElectricalDrawerStatus::SharedPtr msg)
     {
         RCLCPP_DEBUG(rclcpp::get_logger("ElectricDrawerStatusCondition"), "callback got called ");
         last_message_ = *msg;

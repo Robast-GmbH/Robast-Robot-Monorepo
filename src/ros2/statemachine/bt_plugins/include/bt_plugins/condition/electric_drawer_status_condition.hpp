@@ -22,7 +22,7 @@ namespace statemachine
     protected:
         bool new_value_received_ = false;
         bool comparator(communication_interfaces::msg::ElectricalDrawerStatus last_message_, uint8_t target_value_) override;
-        void callbackDrawerFeedback(const communication_interfaces::msg::ElectricalDrawerStatus::SharedPtr msg) override;
+        void callbackTopicFeedback(const communication_interfaces::msg::ElectricalDrawerStatus::SharedPtr msg) override;
         void initialize_target_value() override;
     };
 } // namespace statemachine

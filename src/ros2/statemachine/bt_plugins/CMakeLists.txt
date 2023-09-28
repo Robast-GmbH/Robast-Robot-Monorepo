@@ -15,6 +15,7 @@ find_package(communication_interfaces REQUIRED)
 find_package(behaviortree_cpp REQUIRED)
 find_package(error_utils REQUIRED)
 find_package(bt_base_types REQUIRED)
+find_package(robotnik_msgs REQUIRED)
 
 set(dependencies
   rclcpp
@@ -24,6 +25,7 @@ set(dependencies
   behaviortree_cpp
   error_utils
   bt_base_types
+  robotnik_msgs
 )
 include_directories(
   include
@@ -110,6 +112,9 @@ list(APPEND plugin_libs bool_topic_condition_node)
 
 add_library(led_changed_condition_node SHARED src/condition/led_changed_condition.cpp)
 list(APPEND plugin_libs led_changed_condition_node)
+
+add_library(is_robot_charging_condition_node SHARED src/condition/is_robot_charging_condition.cpp)
+list(APPEND plugin_libs is_robot_charging_condition_node)
 
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})

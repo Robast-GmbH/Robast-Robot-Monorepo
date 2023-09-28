@@ -6,52 +6,85 @@
       <GetBlackboardEntry key="drawer_address"
                           value="{drawer}"/>
       <KeepRunningUntilFailure>
-        <Sequence>
-          <InitLEDVector size="128"
-                         led_vector="{leds}"/>
-          <PartialColorizeLED LEDs="{leds}"
-                              blue="0"
-                              brightness="25"
-                              green="255"
-                              lower_bound="0.0"
-                              red="0"
-                              upper_bound="100.0"
-                              LEDs_colored="{leds}"/>
-          <IfThenElse>
-            <BoolTopicCondition target_value="true"
-                                topic="/robot/safety_module/emergency_stop"/>
+        <IfThenElse>
+          <IsRobotChargingCondition target_value="true"
+                                    topic="/robot/battery_estimator/data"
+                                    battery_level="{battery}"/>
+          <Sequence>
+            <InitLEDVector size="128"
+                           led_vector="{leds}"/>
             <PartialColorizeLED LEDs="{leds}"
-                                blue="0"
+                                blue="255"
                                 brightness="100"
                                 green="0"
                                 lower_bound="0.0"
-                                red="255"
-                                upper_bound="100.0"
+                                red="0"
+                                upper_bound="{battery}"
                                 LEDs_colored="{leds}"/>
-            <AlwaysSuccess/>
-          </IfThenElse>
-          <IfThenElse>
-            <BoolTopicCondition target_value="true"
-                                topic="/robot/safety_module/safety_stop"/>
             <PartialColorizeLED LEDs="{leds}"
                                 blue="0"
-                                brightness="100"
+                                brightness="0"
                                 green="0"
-                                lower_bound="27.0"
-                                red="255"
-                                upper_bound="50.0"
+                                lower_bound="{battery}"
+                                red="0"
+                                upper_bound="100.0"
                                 LEDs_colored="{leds}"/>
-            <AlwaysSuccess/>
-          </IfThenElse>
-          <IfThenElse>
-            <LEDChangedCondition led_vector="{leds}"/>
-            <LEDPublisherAction drawer_address="{drawer}"
-                                fading_time_ms="100"
-                                led_topic="/led_cmd"
-                                leds="{leds}"/>
-            <AlwaysSuccess/>
-          </IfThenElse>
-        </Sequence>
+            <IfThenElse>
+              <LEDChangedCondition led_vector="{leds}"/>
+              <LEDPublisherAction drawer_address="{drawer}"
+                                  fading_time_ms="100"
+                                  led_topic="/led_cmd"
+                                  leds="{leds}"/>
+              <AlwaysSuccess/>
+            </IfThenElse>
+          </Sequence>
+          <Sequence>
+            <InitLEDVector size="128"
+                           led_vector="{leds}"/>
+            <PartialColorizeLED LEDs="{leds}"
+                                blue="0"
+                                brightness="25"
+                                green="255"
+                                lower_bound="0.0"
+                                red="0"
+                                upper_bound="100.0"
+                                LEDs_colored="{leds}"/>
+            <IfThenElse>
+              <BoolTopicCondition target_value="true"
+                                  topic="/robot/safety_module/emergency_stop"/>
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="0"
+                                  brightness="100"
+                                  green="0"
+                                  lower_bound="0.0"
+                                  red="255"
+                                  upper_bound="100.0"
+                                  LEDs_colored="{leds}"/>
+              <AlwaysSuccess/>
+            </IfThenElse>
+            <IfThenElse>
+              <BoolTopicCondition target_value="true"
+                                  topic="/robot/safety_module/safety_stop"/>
+              <PartialColorizeLED LEDs="{leds}"
+                                  blue="0"
+                                  brightness="100"
+                                  green="0"
+                                  lower_bound="27.0"
+                                  red="255"
+                                  upper_bound="50.0"
+                                  LEDs_colored="{leds}"/>
+              <AlwaysSuccess/>
+            </IfThenElse>
+            <IfThenElse>
+              <LEDChangedCondition led_vector="{leds}"/>
+              <LEDPublisherAction drawer_address="{drawer}"
+                                  fading_time_ms="100"
+                                  led_topic="/led_cmd"
+                                  leds="{leds}"/>
+              <AlwaysSuccess/>
+            </IfThenElse>
+          </Sequence>
+        </IfThenElse>
       </KeepRunningUntilFailure>
     </Sequence>
   </BehaviorTree>
@@ -77,6 +110,15 @@
       <output_port name="led_vector"
                    default="{leds}"/>
     </Action>
+    <Condition ID="IsRobotChargingCondition"
+               editable="true">
+      <input_port name="target_value"
+                  default="false"/>
+      <input_port name="topic"
+                  default="/battery_status"/>
+      <output_port name="battery_level"
+                   default="0.0"/>
+    </Condition>
     <Condition ID="LEDChangedCondition"
                editable="true">
       <input_port name="led_vector"
