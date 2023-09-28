@@ -11,7 +11,8 @@ namespace rmf_robot_client
 
   bool NFCAction::start(std::function<void(int)> next_action_callback)
   {
-     RCLCPP_INFO(ros_node_->get_logger(), "start drawer_action");
+    Action::start(next_action_callback);
+    RCLCPP_INFO(ros_node_->get_logger(), "start drawer_action");
     finish_action = next_action_callback;
     if (!this->nfc_write_new_nfc_card_client_->wait_for_action_server()) 
     {

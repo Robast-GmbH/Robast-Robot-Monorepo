@@ -15,15 +15,15 @@ namespace rmf_robot_client
       using NavigateToPose = nav2_msgs::action::NavigateToPose;
       using GoalHandleNavigateToPose = rclcpp_action::ClientGoalHandle<NavigateToPose>;
 
-      float x;
-      float y;
-      float yaw;
+      float x_;
+      float y_;
+      float yaw_;
 
-      std::string frame_id;
-      std::string behavior_tree;
+      std::string frame_id_;
+      std::string behavior_tree_;
 
       rclcpp_action::Client<NavigateToPose>::SharedPtr navigate_to_pose_client_;
-      GoalHandleNavigateToPose::SharedPtr current_action_goal_handle;
+      GoalHandleNavigateToPose::SharedPtr current_action_goal_handle_;
 
       void start_navigation();
       void feedback_callback(GoalHandleNavigateToPose::SharedPtr, const std::shared_ptr<const NavigateToPose::Feedback> feedback);
@@ -34,7 +34,7 @@ namespace rmf_robot_client
       NavigationAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, float x, float y, float yaw);
       //~NavigationAction();
 
-      bool start(std::function<void(int)> next_action_callback);
+      bool start(std::function<void(int)> next_action_callback)override;
       bool cancel();
       std::string get_type();
       bool receive_new_settings(std::string command, std::vector<std::string> value) override;

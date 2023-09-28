@@ -38,8 +38,14 @@ namespace rmf_robot_client
     }
     return false;
   }
+  
+  bool Action::start(std::function<void(int)> next_action_callback)
+  {
+    this->finish_action = next_action_callback;
+    return true;
+  }
 
-  void Action::publish_task_state( std::string status, std::string  message, bool completed)
+  void Action::publish_task_state( std::string status, std::string  message, bool completed )
   {
     FreeFleetDataTaskInfo task_state_msg = FreeFleetDataTaskInfo();
     task_state_msg.task_id = task_id_ + "#" + step_;

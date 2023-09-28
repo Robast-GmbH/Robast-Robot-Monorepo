@@ -27,8 +27,8 @@ namespace rmf_robot_client
 
   bool DrawerAction::start(std::function<void(int)> next_action_callback)
   {
+    Action::start(next_action_callback);
     RCLCPP_INFO(ros_node_->get_logger(), "start drawer_action");
-    finish_action = next_action_callback;
     open_drawer_action(module_id_, drawer_id_,is_e_drawer_ );
     return true;
   }
@@ -48,16 +48,16 @@ namespace rmf_robot_client
       selected_drawer_ = std::make_unique<DrawerState>(NewDrawer);
     }
 
-    if(selected_drawer_->authorised_users.size()>0 )
+    if(check_user_permission(active_user, selected_drawer_->authorised_users))
     {
-      //scan for user
-       RCLCPP_INFO(ros_node_->get_logger(), "start authentification");
-      start_authentication_scan();
+      open_drawer(selected_drawer_->module_id, selected_drawer_->drawer_id);
+     
     }
     else
     {
-      open_drawer(selected_drawer_->module_id, selected_drawer_->drawer_id);
-      selected_drawer_.release();
+     //scan for user
+       RCLCPP_INFO(ros_node_->get_logger(), "start authentification");
+      start_authentication_scan();
     }
   }
 
@@ -84,6 +84,7 @@ namespace rmf_robot_client
         publish_task_state("DrawerState", drawer_ref+"#Unlocked" , false);
     }
     drawers_->at(drawer_ref).is_open==true;
+    selected_drawer_.release();
   }
 
   bool DrawerAction::receive_new_settings(std::string command, std::vector<std::string> value)
@@ -98,7 +99,7 @@ namespace rmf_robot_client
       RCLCPP_ERROR(ros_node_->get_logger(),"Command %s/%s is unknown for this action %s", command.c_str(), value[0].c_str(), get_type().c_str());
       return false;
     }
-
+    
     if(value[0]=="Closed")
     {
       close_drawer(std::stoi(value[1]), std::stoi(value[2]));
@@ -129,16 +130,15 @@ namespace rmf_robot_client
 
   void DrawerAction::check_scant_user(int user_id ) 
   {
-    for(int authorisised_user_id : selected_drawer_->authorised_users)
+    active_user = user_id;
+    
+    if(check_user_permission( active_user, selected_drawer_->authorised_users))
     {
-      if(authorisised_user_id == user_id)
-      {
-        end_authentication_scan();
-        open_drawer(selected_drawer_->module_id, selected_drawer_->drawer_id);
-        selected_drawer_.release();
-        return;
-      }
+      end_authentication_scan();
+      open_drawer(selected_drawer_->module_id, selected_drawer_->drawer_id);
+      return;
     }
+    
   }
 
   void  DrawerAction::close_drawer(int module_id, int drawer_id)
@@ -174,7 +174,8 @@ namespace rmf_robot_client
   void DrawerAction::nfc_timeout()
   {
     end_authentication_scan();
-
+    selected_drawer_.release();
+    RCLCPP_WARN(ros_node_->get_logger(), "NFC reader timeout");
   }
 
   void DrawerAction::end_authentication_scan()
@@ -197,7 +198,7 @@ namespace rmf_robot_client
     trigger_open_e_drawer_publisher_.reset();
     trigger_close_e_drawer_publisher_.reset();
     nfc_on_off_publisher_.reset();
-    finish_action(is_completed);
+    finish_action(step_);
   }
 
   bool DrawerAction::cancel()
@@ -221,4 +222,10 @@ namespace rmf_robot_client
     return std::to_string(module_id) + "#" + std::to_string(drawer_id);
   }
 
+bool DrawerAction::check_user_permission(int user, std::vector<u_int16_t> authorised_user_list)
+{
+  return (authorised_user_list.size() == 0 ||
+          std::find(authorised_user_list.begin(), authorised_user_list.end(), user) !=
+              authorised_user_list.end());
+}
 }

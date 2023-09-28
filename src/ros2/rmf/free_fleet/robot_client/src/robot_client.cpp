@@ -27,7 +27,7 @@ namespace rmf_robot_client
     this->declare_parameter("map_frame_id", "map");
     this->declare_parameter("robot_frame_id", "robot_base_footprint");
     this->declare_parameter("robot_info_inteval", 1);//in seconds
-    this->declare_parameter("nfc_timeout_interval", 3);// in minutes
+    this->declare_parameter("nfc_timeout_interval", 1);// in minutes
 
     this->declare_parameter("statemaschine_open_drawer_topic", "/trigger_drawer_tree");
     this->declare_parameter("statemaschine_open_e_drawer_topic", "/trigger_electric_drawer_tree");
@@ -112,32 +112,31 @@ namespace rmf_robot_client
     }
     if(step==1)
     {
-      task_sequence.at(step)->start([this](bool successful) { end_current_action(successful); });
+      RCLCPP_INFO(this->get_logger(), "nfc started");
+      std::thread{std::bind(&RobotClient::start_action, this, step)}.detach();
     }
   }
 
   void RobotClient::receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg)
   {
-      RCLCPP_INFO(this->get_logger(), "destination_received");
-    int task_id, step;
+    RCLCPP_INFO(this->get_logger(), "destination_received");
+     int task_id, step;
 
     if(!prepare_new_action(msg->task_id, msg->fleet_name, msg->robot_name, task_id, step))
     {
       return;
     }
-
+   
     if(!task_sequence.insert( std::make_pair(step,std::make_unique<NavigationAction>(task_id, step, shared_from_this(), msg->destination.x, msg->destination.y, msg->destination.yaw))).second)
     {
       RCLCPP_ERROR(this->get_logger(),"Task %i, step %i could not be added to robot Queue", task_id, step);
 
       return;
     }
-    
+     
     if(step==1)
     {
-      current_step = step;
-      task_sequence.at(step)->start([this](bool successful)
-                                    { end_current_action(successful); });
+     std::thread{std::bind(&RobotClient::start_action, this, step)}.detach(); 
     }
   }
 
@@ -159,9 +158,16 @@ namespace rmf_robot_client
    
     if(step==1)
     {
-      current_step = step;
-      task_sequence.at(step)->start([this](int step) { end_current_action(step); });
+      RCLCPP_INFO(this->get_logger(), "drawer started");
+      std::thread{std::bind(&RobotClient::start_action, this, step)}.detach();
     }
+    return;
+  }
+
+  void RobotClient::start_action(int step)
+  {
+    current_step = step;
+    task_sequence.at(current_step)->start([this](int step){end_current_action(step);}); 
   }
 
   void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
@@ -252,36 +258,36 @@ namespace rmf_robot_client
     return true;
   }
 
-  void RobotClient::end_current_action(int comletted_step)
+  void RobotClient::end_current_action(int completed_step)
   {
-    RCLCPP_INFO(this->get_logger(),"End Action nr %i", current_step);
-    if(comletted_step==current_step)
+    RCLCPP_INFO(this->get_logger(),"End Action nr %i %i", current_step, completed_step);
+    if(completed_step==current_step)
     {
-    start_next_action();
+      start_next_action();
     }
     return;
   }
 
   void RobotClient::start_next_action()
   {
-    RCLCPP_INFO(this->get_logger(),"start_next_action %i",task_id);
-    auto it = task_sequence.find(current_step);
-    if(it == task_sequence.end()) 
-    {
-      //publish_task_state("Task", "NotFound", true);
-      RCLCPP_INFO(this->get_logger(), "Task: %i Step: %i| Not Found in Queue", task_id, current_step);
-      end_current_task();
-      return;
+    
+   
+      for (const auto& pair : task_sequence) {
+        int key = pair.first;     
     }
 
-    it++;
-    if (it != task_sequence.end())
-    { 
-      current_step = it->first;
-      it->second->start([this](int step) { end_current_action(step); });
+    auto it = task_sequence.upper_bound(current_step);
+    
+    if(it!=task_sequence.end())
+    {
+        current_step = it->first;
+        it->second->start([this](int step) { end_current_action(step); });
     }
-    // publish_task_state("Task", "Completed", true);
-    end_current_task();
+    else
+    {
+       // publish_task_state("Task", "Completed", true);
+       end_current_task();
+    }
     return;
   }
 
@@ -303,7 +309,6 @@ namespace rmf_robot_client
     task_sequence.clear();
     current_step = 0;
   }
-
 
   void RobotClient::publish_fleet_state()
   {

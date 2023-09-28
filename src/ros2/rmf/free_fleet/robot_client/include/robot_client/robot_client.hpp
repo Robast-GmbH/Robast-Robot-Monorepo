@@ -106,6 +106,7 @@ namespace rmf_robot_client
           void end_current_task();
           void end_current_action(int step);
           void empty_task_sequence();
+          void start_action(int step);
           void start_next_action();
           void publish_fleet_state();
           void update_robot_location();

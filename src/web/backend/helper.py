@@ -4,6 +4,7 @@ from sqlalchemy import func
 import schemas
 import crud
 import models
+import json
 
 
 
@@ -54,6 +55,54 @@ def json_waypoint(x:float, y:float, z:float, yaw:float)-> dict:
                   "pose":{ "x": 0, "y":0, "z": 0 },
                   "yaw" :0
                 }
+def json_task(task:schemas.Task)->dict:
+        return {
+                "task_id": task.task_id,
+                "robot": {
+                    "fleet_name": task.robot.fleet_name,
+                    "robot_name": task.robot.robot_name
+                },
+                "actions": [
+                    {
+                        "step": action.step,
+                        "type": action.type.value,
+                        "action": json_action(action.action, action.type),
+                        "finished": action.finished
+                    }
+                    for action in task.actions
+                ]
+            }
+
+def json_action(action:schemas.Action, type:schemas.ActionType):
+        if(type==schemas.ActionType.DRAWER):
+                return json_drawer_action(action)
+        elif(type == schemas.ActionType.NAVIGATION):
+                return  json_nav_action(action)       
+        elif(type == schemas.ActionType.NEW_USER):
+                return json_new_user_action(action)
+        
+def json_nav_action(action:schemas.Navigation):
+        return {
+                "pose": {
+                                "x": action.pose.x,
+                                "y": action.pose.y,
+                                "z": action.pose.z
+                        },
+                "yaw": action.yaw
+        }
+
+def json_drawer_action(action:schemas.Drawer):
+        return{
+                "drawer_id": action.drawer_id,
+                "module_id": action.module_id,
+                "locked_for": json.dumps(action.locked_for)
+                
+        }
+
+def json_new_user_action(action:schemas.NewUser):
+        return{
+               "new_user": action.user_id
+        }
 
 def find_robot_json(db:Session, robot_name):
         db_robot= crud.get_robot(db=db, robot_name=robot_name)

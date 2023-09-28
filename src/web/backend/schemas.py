@@ -42,7 +42,7 @@ class BaseDrawer(BaseModel):
 
 
 class Drawer(BaseDrawer):
-    locked_for: list[str]
+    locked_for: list[int]
 
 class NewUser(BaseModel):
     user_id: int

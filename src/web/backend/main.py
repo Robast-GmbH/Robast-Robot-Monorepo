@@ -57,8 +57,6 @@ def reset_db(db:Session=Depends(get_db)):
     crud.init(db)
     return{ "msg":"Database reset successful."}
 
-
-
 #User management
 @app.post("/users/", response_model=schemas.User)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
@@ -152,8 +150,7 @@ def get_next_task(robot_name: str, db: Session = Depends(get_db)):
     if(next_task is None):
         if(loop_task_id is None):
             return
-        crud.reset_task(task_id=loop_task_id,db=db)
-        next_task=crud.get_full_task(task_id= loop_task_id, db=db)
+        next_task=crud.get_next_patrol_action(task_id= loop_task_id, db=db)
     
     db_robot=crud.get_robot(db=db,robot_name=robot_name)
     crud.update_task(db=db, task_id=next_task.task_id, robot_name= db_robot.robot_name, fleet_name=db_robot.fleet_name)
@@ -202,15 +199,19 @@ def pause_robot(robot_name: str, fleet_name:str, pause: bool , db: Session = Dep
     return 
 
 @app.put("/robots/loop/start")
-def set_loop( task: schemas.Task, robot:schemas.Robot, user_id:int, force_start:bool, db: Session = Depends(get_db)):
+def set_loop( task: schemas.Task, user_id:int, force_start:bool, db: Session = Depends(get_db)):
     if( not all(action.type== schemas.ActionType.NAVIGATION for action in task.actions)):
           raise HTTPException(status_code=404, detail="patrol task can only consists of navigate actions" )
-    loop_task_id = create_task(task, robot, user_id, db)
+    loop_task_id = create_task(task, task.robot, user_id, db)
+    
     if force_start:
         task=crud.get_full_task(task_id=loop_task_id, db=db)
         headers =  {"Content-Type":"application/json"}
         sender = requests.Session() 
-        answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+        answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(templates.json_task(task)), headers= headers, verify=False)
+
+    if answer.status_code!= 200:
+        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
     return 
 
 @app.put("/robots/loop/stop")
@@ -250,6 +251,11 @@ def get_modules(robot_name :str, db: Session = Depends(get_db)):
 @app.get("/robots/{robot_name}/modules/{module_id}", response_model = schemas.Module)
 def get_drawer( robot_name: str, module_id:int, db: Session = Depends(get_db)):
     return crud.get_drawer(db=db, robot_name=robot_name, module_id= module_id, drawer_id=0)
+
+@app.get("/robots/{robot_name}/modules/status/reset")
+def clear_module_status( robot_name:str, db: Session = Depends(get_db)):
+    crud.set_drawers_to_close(db=db, robot_name=robot_name)
+    return 
 
 #set_drawer
 @app.post("/robots/modules/", response_model= schemas.Module)
