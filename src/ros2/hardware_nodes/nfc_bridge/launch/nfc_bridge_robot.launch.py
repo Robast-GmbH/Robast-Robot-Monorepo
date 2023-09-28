@@ -11,7 +11,7 @@ def generate_launch_description():
         executable='nfc_bridge',
         output='screen',
         name='reader_l',
-        parameters=[{'serial_port_path','/dev/robast/robast_nfc_1'}],
+        parameters=[{'serial_port_path', '/dev/robast/robast_nfc_1'}],
         emulate_tty=True,  # https://github.com/ros2/launch/issues/188
     )
 
@@ -20,14 +20,9 @@ def generate_launch_description():
         executable='nfc_bridge',
         output='screen',
         name='reader_r',
-        parameters=[{'serial_port_path','/dev/robast/robast_nfc_2'}],
+        parameters=[{'serial_port_path', '/dev/robast/robast_nfc_2'}],
         emulate_tty=True,  # https://github.com/ros2/launch/issues/188
     )
-
-    
-
-
     ld = LaunchDescription()
-
     ld.add_action(start_nfc_bridge_cmd)
     return ld
