@@ -62,7 +62,7 @@
                 {
                         "type": "shell",
                         "label": "start moveit_drawer",
-                        "command": "source /workspace/install/setup.bash; ros2 launch moveit2_drawer_config moveit_launch.py",
+                        "command": "source /workspace/install/setup.bash; ros2 launch moveit_drawer_config moveit_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

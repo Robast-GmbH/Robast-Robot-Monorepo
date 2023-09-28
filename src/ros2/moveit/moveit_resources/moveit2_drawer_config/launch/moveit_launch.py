@@ -11,7 +11,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-        moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit2_drawer_config").to_moveit_configs()
+        moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit_drawer_config").to_moveit_configs()
 
         ld = LaunchDescription()
         ld.add_action(

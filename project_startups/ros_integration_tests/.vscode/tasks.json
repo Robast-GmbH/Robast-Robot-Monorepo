@@ -7,7 +7,7 @@
             "label": "build tests",
             "detail": "Symlink Build of the project",
             "type": "shell",
-            "command": "clear; colcon build --symlink-install --packages-select error_utils communication_interfaces nav_bringup spatio_temporal_voxel_layer bt_base_nodes bt_conversions bt_plugins drawer_sm behaviortree_cpp rb_theron_description robotnik_sensors tiplu_world moveit2_drawer_config drawer_bridge_simulation gazebo_controller_manager integration_tests_pkg --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "command": "clear; colcon build --symlink-install --packages-select error_utils communication_interfaces nav_bringup spatio_temporal_voxel_layer bt_base_nodes bt_conversions bt_plugins drawer_sm behaviortree_cpp rb_theron_description robotnik_sensors tiplu_world moveit_drawer_config drawer_bridge_simulation gazebo_controller_manager integration_tests_pkg --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
             "problemMatcher": []
         },
         {

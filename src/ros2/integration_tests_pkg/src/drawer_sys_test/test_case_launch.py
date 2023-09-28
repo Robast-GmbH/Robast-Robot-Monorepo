@@ -19,7 +19,7 @@ def generate_launch_description():
     sim_bringup_dir = get_package_share_directory('tiplu_world')
     drawer_sim_dir = get_package_share_directory('drawer_bridge_simulation')
     contoller_manager_sim_dir = get_package_share_directory('gazebo_controller_manager')
-    drawer_moveit_sim_dir = get_package_share_directory('moveit2_drawer_config')
+    drawer_moveit_sim_dir = get_package_share_directory('moveit_drawer_config')
     
     sim_arguments = {
         "headless": " -s",

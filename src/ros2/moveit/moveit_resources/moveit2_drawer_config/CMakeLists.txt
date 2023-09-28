@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(moveit2_drawer_config)
+project(moveit_drawer_config)
 
 find_package(ament_cmake REQUIRED)
 
