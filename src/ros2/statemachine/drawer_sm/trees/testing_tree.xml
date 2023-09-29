@@ -3,14 +3,14 @@
   <BehaviorTree ID="BehaviorTree">
     <Sequence>
       <GetBlackboardEntry key="drawer_address" value="{drawer}"/>
-      <SubTree ID="green" _autoremap="true"/>
+      <PartialColorizeLED LEDs="{leds}" blue="0" brightness="25" green="255" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
       <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}" blue="100.0" brightness="25" green="0" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
-      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="100" led_topic="/led_cmd" leds="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}" blue="0.0" brightness="200" green="0" lower_bound="0.0" red="250" upper_bound="100.0" LEDs_colored="{leds}"/>
-      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="1000" led_topic="/led_cmd" leds="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}" blue="100.0" brightness="25" green="0" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
-      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="1000" led_topic="/led_cmd" leds="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}" blue="255" brightness="25" green="0" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
+      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}" blue="0.0" brightness="200" green="0" lower_bound="0.0" red="255" upper_bound="100.0" LEDs_colored="{leds}"/>
+      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}" blue="255" brightness="10" green="255" lower_bound="0.0" red="255" upper_bound="100.0" LEDs_colored="{leds}"/>
+      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="2000" led_topic="/led_cmd" leds="{leds}"/>
     </Sequence>
   </BehaviorTree>
 
