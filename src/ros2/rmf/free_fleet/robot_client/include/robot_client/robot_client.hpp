@@ -100,7 +100,7 @@ namespace rmf_robot_client
           
           void receive_drawer_status(const DrawerStatus::SharedPtr msg);
           void receive_authenticated_user(const StdMsgInt::SharedPtr msg);
-          // void receive_battery_status(const BatteryLevel::ConstPtr msg);
+          // void receive_battery_status(const BatteryLevel::ConstPtr msg);//ToDo: fix on the the bridge first
 
           bool prepare_new_action(std::string Task_def, std::string recipient_fleet, std::string recipient_robot, int &task_id, int &step);
           void end_current_task();
@@ -110,11 +110,11 @@ namespace rmf_robot_client
           void start_next_action();
           void publish_fleet_state();
           void update_robot_location();
-          void get_parameter_to_config(std::string parameter_name, std::string default_value);
+     
 
           //support
           std::vector<std::string> split(std::string input_text, char delimiter);
-          double quaternion_to_yaw(double x, double y, double z, double w );
+
   };
 } // namespace robot_client
 #endif   // RMF__ROBOT_CLIENT__ROBOT_CLIENT_HPP_

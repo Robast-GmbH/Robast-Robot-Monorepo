@@ -60,8 +60,6 @@ namespace rmf_robot_client
     std::string get_type();
     bool receive_new_settings(std::string command, std::vector<std::string> value) override;
     void action_done(bool completted);
-
-    //~DrawerAction();
   };
 } // namespace rmf_robot_client
 

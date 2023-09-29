@@ -2,7 +2,7 @@
 
 namespace rmf_robot_client
 {
-  NavigationAction::NavigationAction(int task_id, int step, std::shared_ptr<rclcpp::Node>  ros_node, float x, float y, float yaw):Action(task_id, step, ros_node)
+  NavigationAction::NavigationAction(int task_id, int step, std::shared_ptr<rclcpp::Node>  ros_node, double x, double y, double yaw):Action(task_id, step, ros_node)
   {
     x_ = x;
     y_ = y;
@@ -39,12 +39,12 @@ namespace rmf_robot_client
     pose_msg.pose.pose.position.y = y_;
     pose_msg.pose.pose.position.z = 0;
 
+    double yaw_rad = yaw_ * (M_PI / 180.0);
+
     tf2::Quaternion quaternion;
-    quaternion.setRPY(0, 0, yaw_);
-    pose_msg.pose.pose.orientation.x = quaternion.x();
-    pose_msg.pose.pose.orientation.y = quaternion.y();
-    pose_msg.pose.pose.orientation.z = quaternion.z();
-    pose_msg.pose.pose.orientation.w = quaternion.w();
+    quaternion.setRPY(0, 0, yaw_rad);
+    quaternion.normalize();
+    pose_msg.pose.pose.orientation = tf2::toMsg(quaternion);
 
     pose_msg.behavior_tree = behavior_tree_;
 

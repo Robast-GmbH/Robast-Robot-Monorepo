@@ -21,7 +21,6 @@ namespace rmf_robot_client
 
     public:
       Action(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node);
-    //  ~Action();
       virtual bool start(std::function<void(int)> next_action_callback);
       virtual bool cancel() = 0;
       virtual bool receive_new_settings(std::string command, std::vector<std::string> value);

@@ -21,8 +21,7 @@ namespace rmf_robot_client
 
     public:
       NFCAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, int user_id);
-      //~NFCAction();
-
+      
       bool start(std::function<void(int)> next_action_callback)override;
       bool cancel();
       std::string get_type();

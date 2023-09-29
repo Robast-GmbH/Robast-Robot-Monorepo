@@ -371,13 +371,5 @@ namespace rmf_robot_client
     return result;
   }
   
-  double RobotClient::quaternion_to_yaw(double x, double y, double z, double w ) 
-  {
-    double sinYaw = 2.0 * (w * z + x * y);
-    double cosYaw = 1.0 - 2.0 * (y * y + z * z);
-    double yaw = std::atan2(sinYaw, cosYaw);
-    yaw= yaw * 180.0 / M_PI;
-    return yaw;
-  }
-
+  
 }

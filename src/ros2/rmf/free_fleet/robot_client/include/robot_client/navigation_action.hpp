@@ -4,7 +4,8 @@
 #include "action.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "nav2_msgs/action/navigate_to_pose.hpp"
- #include <tf2/LinearMath/Quaternion.h>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.h>
+#include <tf2/LinearMath/Quaternion.h>
 #include <math.h>
 
 namespace rmf_robot_client
@@ -15,9 +16,9 @@ namespace rmf_robot_client
       using NavigateToPose = nav2_msgs::action::NavigateToPose;
       using GoalHandleNavigateToPose = rclcpp_action::ClientGoalHandle<NavigateToPose>;
 
-      float x_;
-      float y_;
-      float yaw_;
+      double x_;
+      double y_;
+      double yaw_;
 
       std::string frame_id_;
       std::string behavior_tree_;
@@ -31,8 +32,7 @@ namespace rmf_robot_client
       void goal_response_callback(const GoalHandleNavigateToPose::SharedPtr &goal_handle);
 
     public:
-      NavigationAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, float x, float y, float yaw);
-      //~NavigationAction();
+      NavigationAction(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, double x, double y, double yaw);
 
       bool start(std::function<void(int)> next_action_callback)override;
       bool cancel();
