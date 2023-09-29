@@ -346,12 +346,11 @@ namespace rmf_robot_client
           return;
       }
 
-      tf2::Quaternion quat_tf;
-      geometry_msgs::msg::Quaternion quat_msg = t.transform.rotation;
-      tf2::fromMsg(quat_msg, quat_tf);
-      double p{}, y{};
-      tf2::Matrix3x3 m(quat_tf);
-      m.getRPY(current_yaw, p, y);
+      double roll, pitch;
+      tf2::Quaternion quat;
+      tf2::fromMsg(t.transform.rotation, quat);
+      tf2::Matrix3x3(quat).getRPY(roll, pitch, current_yaw);
+      RCLCPP_INFO( this->get_logger(), "yaw %f",current_yaw);
 
       current_x = t.transform.translation.x;
       current_y = t.transform.translation.y;
