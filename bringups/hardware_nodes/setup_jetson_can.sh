@@ -11,8 +11,10 @@ sudo modprobe slcan
 # data bitrate to 1,000,000 bps, enabling error reporting (berr-reporting), and enabling flexible data-rate (fd)
 sudo ip link set can0 up type can bitrate 500000 dbitrate 1000000 berr-reporting on fd on
 
+#TODO: Find a proper way for the name of the container
+
 # Retrieve the process ID of a Docker container named hardware_nodes_drawer
-DOCKERPID=$(docker inspect -f '{{ .State.Pid }}' hardware_nodes_drawer)
+DOCKERPID=$(docker inspect -f '{{ .State.Pid }}' robo_a_hardware_nodes_1)
 # Create a pair of virtual CAN network interfaces (vxcan0 and vxcan1) in the specified network namespace associated with the Docker container
 sudo ip link add vxcan0 type vxcan peer name vxcan1 netns $DOCKERPID
 # Load CAN gateway kernel module
