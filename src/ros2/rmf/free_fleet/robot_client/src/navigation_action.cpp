@@ -39,12 +39,14 @@ namespace rmf_robot_client
     pose_msg.pose.pose.position.y = y_;
     pose_msg.pose.pose.position.z = 0;
 
-    double yaw_rad = yaw_ * (M_PI / 180.0);
+  
 
     tf2::Quaternion quaternion;
-    quaternion.setRPY(0, 0, yaw_rad);
-    quaternion.normalize();
-    pose_msg.pose.pose.orientation = tf2::toMsg(quaternion);
+    quaternion.setRPY(0, 0, yaw_);
+    pose_msg.pose.pose.orientation.x = quaternion.getX();
+    pose_msg.pose.pose.orientation.y = quaternion.getY();
+    pose_msg.pose.pose.orientation.z = quaternion.getZ();
+    pose_msg.pose.pose.orientation.w = quaternion.getW();
 
     pose_msg.behavior_tree = behavior_tree_;
 
