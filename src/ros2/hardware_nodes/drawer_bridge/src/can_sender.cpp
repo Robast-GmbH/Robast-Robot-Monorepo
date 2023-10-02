@@ -28,7 +28,6 @@ namespace drawer_bridge
 
   void CanSender::add_can_message_to_queue(can_msgs::msg::Frame can_msg)
   {
-    _can_messages_publisher->publish(can_msg);
     // if queue was empty, the timer has been canceled before, so start timer for timer callbacks which trigger sending
     // the ascii cmds
     bool is_queue_empty = _can_msg_queue.empty();
