@@ -7,7 +7,7 @@
 #include "can_msgs/msg/frame.hpp"
 #include "qos_config.hpp"
 
-#define TIMER_PERIOD_SEND_CAN_MSGS_IN_US              2000
+#define TIMER_PERIOD_SEND_CAN_MSGS_IN_US              4000
 #define INCREASED_TIMER_PERIOD_SEND_CAN_MSGS_IN_US    50000
 #define MAX_QUEUE_SIZE_BEFORE_INCREASING_TIMER_PERIOD 1000
 
