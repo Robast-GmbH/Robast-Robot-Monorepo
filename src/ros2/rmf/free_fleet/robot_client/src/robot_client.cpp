@@ -337,23 +337,25 @@ namespace rmf_robot_client
     geometry_msgs::msg::TransformStamped t;
     try {
           t = tf_buffer_->lookupTransform(map_frame_id, robot_frame_id, tf2::TimePointZero);
-          // rclcpp::Time now = this->get_clock()->now();
-          // t = tf_buffer_->lookupTransform( map_frame_id, robot_frame_id, now,rclcpp::Duration::from_seconds(0.05));
+        // t = tf_buffer_->lookupTransform( map_frame_id, robot_frame_id, this->get_clock()->now(),rclcpp::Duration::from_seconds(0.05));
         } 
     catch (const tf2::TransformException & ex) 
       {
-          //RCLCPP_INFO( this->get_logger(), "Could not transform %s to %s: %s", map_frame_id.c_str(), robot_frame_id.c_str(), ex.what());
+          RCLCPP_INFO( this->get_logger(), "Could not transform %s to %s: %s", map_frame_id.c_str(), robot_frame_id.c_str(), ex.what());
           return;
       }
 
-      double roll, pitch;
-      tf2::Quaternion quat;
-      tf2::fromMsg(t.transform.rotation, quat);
-      tf2::Matrix3x3(quat).getRPY(roll, pitch, current_yaw);
-      RCLCPP_INFO( this->get_logger(), "yaw %f",current_yaw);
+    double roll, pitch, yaw;
+    tf2::Quaternion quat;
+    tf2::fromMsg(t.transform.rotation, quat);
+    tf2::Matrix3x3(quat).getRPY(roll, pitch, yaw);
 
-      current_x = t.transform.translation.x;
-      current_y = t.transform.translation.y;
+    current_x = t.transform.translation.x;
+    current_y = t.transform.translation.y;
+    current_yaw= yaw * (180 / M_PI); 
+
+    RCLCPP_INFO(this->get_logger(), "x: %f, y: %f, z:%f w: %f", t.transform.rotation.x,  t.transform.rotation.y,  t.transform.rotation.z,  t.transform.rotation.w);
+    RCLCPP_INFO(this->get_logger(),"yaw: %f, degree %f",yaw, current_yaw);
   }
 
   std::vector<std::string> RobotClient::split( std::string input_text, char delimiter)
