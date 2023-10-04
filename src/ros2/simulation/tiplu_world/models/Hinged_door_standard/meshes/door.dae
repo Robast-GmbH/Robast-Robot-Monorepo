@@ -946,10 +946,10 @@
     </library_effects>
     <library_images>
         <image id="ID7">
-            <init_from>../materials/textures/door_white.jpeg</init_from>
+            <init_from>../materials/textures/Metal_Aluminum_Anodized.jpeg</init_from>
         </image>
         <image id="ID132">
-            <init_from>../materials/textures/wooden_door.png</init_from>
+            <init_from>../materials/textures/Metal_Rough.png</init_from>
         </image>
     </library_images>
     <scene>
