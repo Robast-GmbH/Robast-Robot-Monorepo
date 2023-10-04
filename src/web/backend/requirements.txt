@@ -1,6 +1,7 @@
 fastapi
-uvicorn[standard]
+uvicorn
 sqlalchemy
 requests
 Pillow
 psycopg2-binary
+PyYAML
