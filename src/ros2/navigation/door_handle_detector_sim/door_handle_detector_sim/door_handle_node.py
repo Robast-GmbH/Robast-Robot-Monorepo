@@ -14,10 +14,10 @@ class Door_Handle_Detection(Node):
     def __init__(self):
         super().__init__('door_handle_detection')
 
-        weights = 'src/navigation/door_handle_detector_sim/weights/door_4.pt'  # model.pt path(s)
         self.bridge = CvBridge()
 
         # Load model
+        weights = 'src/navigation/door_handle_detector_sim/weights/door_4.pt'  # model.pt path(s)
         self.model = yolov5.models.common.DetectMultiBackend(weights, dnn=False, fp16=False)
 
         self.rgb_camera_image_subscription_ = self.create_subscription(
@@ -33,13 +33,13 @@ class Door_Handle_Detection(Node):
         self.depth_camera_image_subscription_
         self.rgb_camera_image_subscription_
 
-    def callback_depth_img(self, data):
-        self.cv_depth_image = self.bridge.imgmsg_to_cv2(data, "32FC1")
+    def depth_img_callback(self, data):
+        self.cv_depth_image = self.bridge.imgmsg_to_cv2(data, desired_encoding="32FC1")
 
     def rgb_camera_callback(self, data):
 
         # Convert ROS message to BGR image
-        img_from_msg = self.bridge.imgmsg_to_cv2(data, "bgr8")
+        img_from_msg = self.bridge.imgmsg_to_cv2(data, desired_encoding="bgr8")
 
         # Convert to rgb image and normalize before feeding into the detection network
         preprocessed_image = self.preprocess_image(img_from_msg)
