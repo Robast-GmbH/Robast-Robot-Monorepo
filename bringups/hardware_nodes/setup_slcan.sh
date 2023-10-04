@@ -8,7 +8,7 @@ sudo modprobe can-raw
 sudo modprobe slcan
 
 # Attach SocketCAN device to a serial line (replace /dev/robast/robast_can with the appropriate serial line)
-sudo slcan_attach -f -s6 -o /dev/robast/robast_can
+sudo slcan_attach -f -s5 -o /dev/robast/robast_can
 # Create a CAN network device named can0 using the specified serial line device
 sudo slcand robast/robast_can can0
 # Bring the CAN network interface can0 up
