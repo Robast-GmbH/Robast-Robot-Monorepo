@@ -5,7 +5,7 @@ from launch import LaunchDescription, launch_description_sources
 from launch.actions import IncludeLaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
-from launch.conditions import IfCondition, LaunchConfigurationEquals, LaunchConfigurationNotEquals
+from launch.conditions import LaunchConfigurationEquals
 import launch_ros.actions
 import launch_ros.descriptions
 
@@ -362,70 +362,6 @@ def generate_launch_description():
                         {'enableRosBaseTimeUpdate': enableRosBaseTimeUpdate}
                         ])
     
-    depth_metric_converter = launch_ros.descriptions.ComposableNode(
-                                package='depth_image_proc',
-                                plugin='depth_image_proc::ConvertMetricNode',
-                                name='convert_metric_node',
-                                remappings=[('image_raw', 'stereo/depth'),
-                                            ('camera_info', 'stereo/camera_info'),
-                                            ('image', 'stereo/converted_depth')]
-                                )
-    pointcloud_topic = '/stereo/points'
-    point_cloud_creator = None
-    rviz_node = None
-    if LaunchConfigurationEquals('depth_aligned', 'True'): 
-        point_cloud_creator = launch_ros.descriptions.ComposableNode(
-                    package='depth_image_proc',
-                    plugin='depth_image_proc::PointCloudXyzrgbNode',
-                    name='point_cloud_xyzrgb_node',
-                    remappings=[('depth_registered/image_rect', 'stereo/converted_depth'),
-                                ('rgb/image_rect_color', 'color/image'),
-                                ('rgb/camera_info', 'color/camera_info'),
-                                ('points', pointcloud_topic )]
-                )
-
-        """ rviz_node = launch_ros.actions.Node(
-            package='rviz2', executable='rviz2', output='screen',
-            arguments=['--display-config', aligned_rviz],
-            condition=IfCondition(enableRviz)) """
-
-    else:
-        point_cloud_creator = launch_ros.descriptions.ComposableNode(
-                    package='depth_image_proc',
-                    plugin='depth_image_proc::PointCloudXyziNode',
-                    name='point_cloud_xyzi',
-
-                    remappings=[('depth/image_rect', 'stereo/converted_depth'),
-                                ('intensity/image_rect', 'right/image_rect'),
-                                ('intensity/camera_info', 'right/camera_info'),
-                                ('points', pointcloud_topic)]
-                )
-
-
-        #rviz_node = launch_ros.actions.Node(
-        #    package='rviz2', executable='rviz2', output='screen',
-        #    arguments=['--display-config', rectify_rviz],
-        #    condition=IfCondition(enableRviz))
-
-
-
-    if point_cloud_creator is not None:
-        point_cloud_container = launch_ros.actions.ComposableNodeContainer(
-                name='container',
-                namespace='',
-                package='rclcpp_components',
-                executable='component_container',
-                composable_node_descriptions=[
-                    # Driver itself
-                    depth_metric_converter,
-                    point_cloud_creator
-                ],
-                output='screen',)
-    """ marker_node = launch_ros.actions.Node(
-            package='depthai_examples', executable='rviz2', output='screen',
-            arguments=['--display-config', rectify_rviz],
-            condition=IfCondition(enableRviz))
- """
     ld = LaunchDescription()
 
     ld.add_action(declare_mxId_cmd)
@@ -485,10 +421,5 @@ def generate_launch_description():
     ld.add_action(urdf_launch)
     ld.add_action(stereo_node)
 
-    if LaunchConfigurationEquals('depth_aligned', 'True') and LaunchConfigurationEquals('rectify', 'True'):
-        ld.add_action(point_cloud_container)
-    
-    # ld.add_action(point_cloud_node)
-    if LaunchConfigurationEquals('enableRviz', 'True') and rviz_node is not None:
-        ld.add_action(rviz_node)
+
     return ld

@@ -71,10 +71,7 @@ macro(dai_add_node_ros2 node_name node_src)
 
 endmacro()
 
-
-dai_add_node_ros2(yolov5_door_spatial_node src/yolov5_door_publisher.cpp)
 dai_add_node_ros2(yolov5_door_node src/yolo.cpp)
-target_compile_definitions(yolov5_door_spatial_node PRIVATE BLOB_NAME="${yolov5_door_blob_name}")
 target_compile_definitions(yolov5_door_node PRIVATE BLOB_NAME="${yolov5_door_blob_name}")
 
 if($ENV{ROS_DISTRO} STREQUAL "galactic")
@@ -87,7 +84,6 @@ install(DIRECTORY resources DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-        yolov5_door_spatial_node
         yolov5_door_node
         DESTINATION lib/${PROJECT_NAME})
 

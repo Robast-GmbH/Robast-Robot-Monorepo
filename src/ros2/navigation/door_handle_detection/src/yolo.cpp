@@ -93,9 +93,9 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool enableDepth,
     monoRight->setFps(stereo_fps);
 
     // StereoDepth
-    stereo->initialConfig.setConfidenceThreshold(confidence);        // Known to be best
-    stereo->setRectifyEdgeFillColor(0);                              // black, to better see the cutout
-    stereo->initialConfig.setLeftRightCheckThreshold(LRchecktresh);  // Known to be best
+    stereo->initialConfig.setConfidenceThreshold(confidence);        
+    stereo->setRectifyEdgeFillColor(0);                              
+    stereo->initialConfig.setLeftRightCheckThreshold(LRchecktresh);
     stereo->setLeftRightCheck(lrcheck);
     stereo->setExtendedDisparity(extended);
     stereo->setSubpixel(subpixel);
@@ -410,12 +410,6 @@ int main(int argc, char** argv) {
     std::shared_ptr<dai::DataOutputQueue> stereoQueue;
     stereoQueue = device->getOutputQueue("depth", 30, false);
 
-    //if(enableDepth) {
-    //    stereoQueue = device->getOutputQueue("depth", 30, false);
-    //} else {
-    //    stereoQueue = device->getOutputQueue("disparity", 30, false);
-    //}
-    //auto imuQueue = device->getOutputQueue("imu", 30, false);
 
     auto calibrationHandler = device->readCalibration();
 
@@ -424,16 +418,6 @@ int main(int argc, char** argv) {
         width = 640;
         height = 480;
     }
-    //std::vector<std::tuple<std::string, int, int>> irDrivers = device->getIrDrivers();
-    //if(!irDrivers.empty()) {
-    //    if(enableDotProjector) {
-    //        device->setIrLaserDotProjectorBrightness(dotProjectormA);
-    //        }
-    //
-    //    if(enableFloodLight) {
-    //        device->setIrFloodLightBrightness(floodLightmA);
-    //    }
-    //}
 
     dai::rosBridge::ImageConverter converter(tfPrefix + "_left_camera_optical_frame", true);
     if(enableRosBaseTimeUpdate) {
