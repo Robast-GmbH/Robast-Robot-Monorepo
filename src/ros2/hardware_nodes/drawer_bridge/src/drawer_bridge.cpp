@@ -219,7 +219,7 @@ namespace drawer_bridge
 
   void DrawerBridge::send_can_msg(CanMessage can_msg)
   {
-    RCLCPP_INFO(this->get_logger(), "Adding can message with id '%d' to can queue!\n ", can_msg.id);
+    RCLCPP_INFO(this->get_logger(), "Sending can message with id '%d'!\n ", can_msg.id);
 
     _can_messages_publisher->publish(can_msg);
   }
