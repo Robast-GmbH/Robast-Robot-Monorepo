@@ -16,8 +16,7 @@ sudo modprobe can
 sudo modprobe can-raw
 # Load the MTT_CAN (Multi-threaded CAN) kernel module which adds real CAN interface support (for Jetson, mttcan)
 sudo modprobe mttcan
-# Bring up the CAN network interface can0, setting the bitrate to 500,000 bps,
-# data bitrate to 1,000,000 bps, enabling error reporting (berr-reporting), and enabling flexible data-rate (fd)
+# Bring up the CAN network interface can0, setting the can bitrate, data bitrate, enabling error reporting (berr-reporting), and enabling flexible data-rate (fd)
 sudo ip link set can0 up type can bitrate 250000 dbitrate 1000000 berr-reporting on fd on
 # Set the transmit queue length for can0 interface to 1000
 sudo ifconfig can0 txqueuelen 1000
