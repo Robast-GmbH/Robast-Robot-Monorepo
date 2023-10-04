@@ -1,6 +1,15 @@
 # Check this link for further how to setip can on jetson board:
 # https://docs.nvidia.com/jetson/archives/r35.3.1/DeveloperGuide/text/HR/ControllerAreaNetworkCan.html?#jetson-platform-details
 
+### The following commands only need to be executed once to setup a new jetson board (compare above website) ###
+#   sudo apt-get install busybox
+# Pinmux for can0_din:
+#   busybox devmem 0x0c303018 w 0xc458
+# Pinmux for can0_dout:
+#   busybox devmem 0x0c303010 w 0xc400
+
+
+### The following commands need to be executed every time the jetson board is rebooted ###
 # Load CAN kernel module
 sudo modprobe can
 # Load CAN raw protocol kernel module
