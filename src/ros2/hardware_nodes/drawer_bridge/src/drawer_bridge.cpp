@@ -34,6 +34,8 @@ namespace drawer_bridge
 
   void DrawerBridge::setup_publishers()
   {
+    _can_messages_publisher = create_publisher<can_msgs::msg::Frame>("to_can_bus", 10);
+
     _drawer_status_publisher = create_publisher<DrawerStatus>("drawer_is_open", _qos_config.get_qos_open_drawer());
 
     _electrical_drawer_status_publisher =
@@ -192,15 +194,15 @@ namespace drawer_bridge
     response->modules = ShelfSetup::get_all_mounted_drawers();
   }
 
-  void DrawerBridge::receive_can_msg_callback(CanMessage can_message)
+  void DrawerBridge::receive_can_msg_callback(CanMessage can_msg)
   {
-    RCLCPP_INFO(this->get_logger(), "Received CAN message: id:'%d' dlc:'%d' \n ", can_message.id, can_message.dlc);
+    RCLCPP_INFO(this->get_logger(), "Received CAN message: id:'%d' dlc:'%d' \n ", can_msg.id, can_msg.dlc);
 
-    const std::optional<robast_can_msgs::CanMessage> decoded_msg = _can_encoder_decoder.decode_msg(can_message);
+    const std::optional<robast_can_msgs::CanMessage> decoded_msg = _can_encoder_decoder.decode_msg(can_msg);
 
     if (decoded_msg.has_value())
     {
-      switch (can_message.id)
+      switch (can_msg.id)
       {
         case CAN_ID_DRAWER_FEEDBACK:
           publish_drawer_status(decoded_msg.value());
@@ -215,21 +217,11 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::send_can_msg(CanMessage can_message)
+  void DrawerBridge::send_can_msg(CanMessage can_msg)
   {
-    if (_can_sender.get() == nullptr)
-    {
-      // Please mind: this cannot be initialized in the constructor because this throws a weak_ptr exception.
-      // This comes because shared_from_this() is trying to get a shared pointer from this node in the initialization
-      // phase, even though the constructor isn't fully completed yet and therefore this doesn't point to a correct
-      // instance.
-      _can_sender = std::make_unique<CanSender>(shared_from_this());
-      RCLCPP_INFO(this->get_logger(), "Initialized CanSender!\n");
-    }
+    RCLCPP_INFO(this->get_logger(), "Adding can message with id '%d' to can queue!\n ", can_msg.id);
 
-    RCLCPP_INFO(this->get_logger(), "Adding can message with id '%d' to can queue!\n ", can_message.id);
-
-    _can_sender->add_can_message_to_queue(can_message);
+    _can_messages_publisher->publish(can_msg);
   }
 
 }   // namespace drawer_bridge
