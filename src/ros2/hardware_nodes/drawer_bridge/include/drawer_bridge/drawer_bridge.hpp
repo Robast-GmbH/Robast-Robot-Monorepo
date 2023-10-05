@@ -97,7 +97,7 @@ namespace drawer_bridge
     rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
     rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr _electrical_drawer_status_publisher;
     rclcpp::Publisher<ErrorBaseMsg>::SharedPtr _error_msg_publisher;
-    rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr _can_messages_publisher;
+    rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr _can_msg_publisher;
 
     robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();
 

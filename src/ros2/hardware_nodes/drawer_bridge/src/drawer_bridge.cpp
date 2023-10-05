@@ -34,7 +34,7 @@ namespace drawer_bridge
 
   void DrawerBridge::setup_publishers()
   {
-    _can_messages_publisher = create_publisher<can_msgs::msg::Frame>("to_can_bus", 10);
+    _can_msg_publisher = create_publisher<can_msgs::msg::Frame>("to_can_bus", 10);
 
     _drawer_status_publisher = create_publisher<DrawerStatus>("drawer_is_open", _qos_config.get_qos_open_drawer());
 
@@ -221,7 +221,7 @@ namespace drawer_bridge
   {
     RCLCPP_INFO(this->get_logger(), "Sending can message with id '%d'!\n ", can_msg.id);
 
-    _can_messages_publisher->publish(can_msg);
+    _can_msg_publisher->publish(can_msg);
   }
 
 }   // namespace drawer_bridge
