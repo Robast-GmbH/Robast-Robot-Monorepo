@@ -172,7 +172,7 @@
                 {
                         "type": "shell",
                         "label": "start nav_without_localization",
-                        "command": "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp; source install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
+                        "command": "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp; source install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -222,7 +222,7 @@
                 {
                         "type": "shell",
                         "label": "start slam_toolbox",
-                        "command": "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp; source install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
+                        "command": "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp; source install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -252,7 +252,7 @@
                 {
                         "type": "shell",
                         "label": "start robot_localization",
-                        "command": "export RMW_IMPLEMENTATION=rmw_fastrtps_cpp; source install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py",
+                        "command": "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp; source install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
