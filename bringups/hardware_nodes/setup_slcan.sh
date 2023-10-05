@@ -13,8 +13,11 @@ sudo slcan_attach -f -s5 -o /dev/robast/robast_can
 sudo slcand robast/robast_can can0
 # Bring the CAN network interface can0 up
 sudo ifconfig can0 up
-# Set the transmit queue length for can0 interface to 1000
-sudo ifconfig can0 txqueuelen 1000
+# Set the transmit queue length for can0 interface
+# The value for this is choosen from the estimation that one requested led change of the base needs 129 messages (1 header + 128 states) and we want
+# to make sure 4 base led changes can be queued and add a little bit of safety margin for possible other messages that might be sent in parellel
+# TODO: Discuss the size of the txqueuelen
+sudo ifconfig can0 txqueuelen 550
 
 # Retrieve the process ID of a Docker container named hardware_nodes_drawer
 DOCKERPID=$(docker inspect -f '{{ .State.Pid }}' hardware_nodes_drawer)

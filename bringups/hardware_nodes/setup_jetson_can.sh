@@ -18,5 +18,8 @@ sudo modprobe can-raw
 sudo modprobe mttcan
 # Bring up the CAN network interface can0, setting the can bitrate, data bitrate, enabling error reporting (berr-reporting), and enabling flexible data-rate (fd)
 sudo ip link set can0 up type can bitrate 250000 dbitrate 1000000 berr-reporting on fd on
-# Set the transmit queue length for can0 interface to 1000
-sudo ifconfig can0 txqueuelen 1000
+# Set the transmit queue length for can0 interface
+# The value for this is choosen from the estimation that one requested led change of the base needs 129 messages (1 header + 128 states) and we want
+# to make sure 4 base led changes can be queued and add a little bit of safety margin for possible other messages that might be sent in parellel
+# TODO: Discuss the size of the txqueuelen
+sudo ifconfig can0 txqueuelen 550
