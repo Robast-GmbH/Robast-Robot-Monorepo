@@ -124,7 +124,7 @@ void loop()
           case CAN_ID_LED_HEADER:
           {
             drawer_controller::LedHeader led_header = data_mapper->create_led_header(received_message.value());
-            num_of_can_readings_per_cycle = led_header.num_of_led_states_to_change;
+            num_of_can_readings_per_cycle = led_header.num_of_led_states_to_change + LED_HEADER_CAN_MSG_COUNT;
             led_strip->initialize_led_state_change(led_header);
           }
           break;
