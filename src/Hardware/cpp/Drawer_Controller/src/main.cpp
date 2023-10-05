@@ -93,10 +93,6 @@ void setup()
 
 void loop()
 {
-  if (can_controller->is_message_available())
-  {
-    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
-
   for (uint8_t i = 1; i <= num_of_can_readings_per_cycle; ++i)
   {
     if (can_controller->is_message_available())
