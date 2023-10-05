@@ -1,4 +1,6 @@
 import os
+import launch_ros.actions
+import launch_ros.descriptions
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription, launch_description_sources
@@ -6,8 +8,6 @@ from launch.actions import IncludeLaunchDescription
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch.conditions import LaunchConfigurationEquals
-import launch_ros.actions
-import launch_ros.descriptions
 
 
 def generate_launch_description():
@@ -65,12 +65,7 @@ def generate_launch_description():
     angularVelCovariance  = LaunchConfiguration('angularVelCovariance', default = 0.0)
     linearAccelCovariance = LaunchConfiguration('linearAccelCovariance', default = 0.0)
 
-    enableDotProjector = LaunchConfiguration('enableDotProjector', default = False)
-    enableFloodLight   = LaunchConfiguration('enableFloodLight', default = False)
-    dotProjectormA     = LaunchConfiguration('dotProjectormA', default = 200.0)
-    floodLightmA       = LaunchConfiguration('floodLightmA', default = 200.0)
     enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)
-    enableRviz         = LaunchConfiguration('enableRviz', default = False)
 
 
     declare_mxId_cmd = DeclareLaunchArgument(
@@ -270,35 +265,10 @@ def generate_launch_description():
         default_value=linearAccelCovariance,
         description='Set the Linear acceleration covariance of the IMU.')
 
-    declare_enableDotProjector_cmd = DeclareLaunchArgument(
-        'enableDotProjector',
-        default_value=enableDotProjector,
-        description='set this to true to enable the dot projector structure light (Available only on Pro models).')
-    
-    declare_enableFloodLight_cmd = DeclareLaunchArgument(
-        'enableFloodLight',
-        default_value=enableFloodLight,
-        description='Set this to true to enable the flood light for night vision (Available only on Pro models).')
-   
-    declare_dotProjectormA_cmd = DeclareLaunchArgument(
-        'dotProjectormA',
-        default_value=dotProjectormA,
-        description='Set the mA at which you intend to drive the dotProjector. Default is set to 200mA.')
-
-    declare_floodLightmA_cmd = DeclareLaunchArgument(
-        'floodLightmA',
-        default_value=floodLightmA,
-        description='Set the mA at which you intend to drive the FloodLight. Default is set to 200mA.')
     declare_enableRosBaseTimeUpdate_cmd = DeclareLaunchArgument(
         'enableRosBaseTimeUpdate',
         default_value=enableRosBaseTimeUpdate,
         description='Whether to update ROS time on each message.')
-
-
-    declare_enableRviz_cmd = DeclareLaunchArgument(
-        'enableRviz',
-        default_value=enableRviz,
-        description='When True create a RVIZ window.')
     
 
 
@@ -410,13 +380,6 @@ def generate_launch_description():
 
     ld.add_action(declare_angularVelCovariance_cmd)
     ld.add_action(declare_linearAccelCovariance_cmd)
-
-    ld.add_action(declare_enableDotProjector_cmd)
-    ld.add_action(declare_enableFloodLight_cmd)
-    ld.add_action(declare_dotProjectormA_cmd)
-    ld.add_action(declare_floodLightmA_cmd)
-
-    ld.add_action(declare_enableRviz_cmd)
 
     ld.add_action(urdf_launch)
     ld.add_action(stereo_node)

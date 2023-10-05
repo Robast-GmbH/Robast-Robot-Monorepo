@@ -276,11 +276,7 @@ int main(int argc, char** argv) {
     node->declare_parameter("detectionClassesCount", 80);
     node->declare_parameter("syncNN", true);
     node->declare_parameter("nnName", "x");
-
-    node->declare_parameter("enableDotProjector", false);
-    node->declare_parameter("enableFloodLight", false);
-    node->declare_parameter("dotProjectormA", 200.0);
-    node->declare_parameter("floodLightmA", 200.0);
+    
     node->declare_parameter("enableRosBaseTimeUpdate", false);
 
     // updating parameters if defined in launch file.
@@ -320,10 +316,6 @@ int main(int argc, char** argv) {
     node->get_parameter("detectionClassesCount", detectionClassesCount);
     node->get_parameter("syncNN", syncNN);
 
-    node->get_parameter("enableDotProjector", enableDotProjector);
-    node->get_parameter("enableFloodLight", enableFloodLight);
-    node->get_parameter("dotProjectormA", dotProjectormA);
-    node->get_parameter("floodLightmA", floodLightmA);
     node->get_parameter("enableRosBaseTimeUpdate", enableRosBaseTimeUpdate);
 
     if(resourceBaseFolder.empty()) {
