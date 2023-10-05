@@ -15,6 +15,9 @@
 	<!-- Import Gazebo Stuff -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/common.gazebo.xacro" />
 
+	<!-- Import Door opening mechanism ros2_control description -->
+  	<xacro:include filename="$(find rb_theron_description)/ros2_control/door_opening_mechanism.ros2_control.xacro" />	
+
 
 	<!-- ***************** -->
 	<!-- Global parameters -->
@@ -139,4 +142,7 @@
 	<!-- Gazebo ros control pluggins -->
 	<xacro:ros_control prefix="$(arg prefix)" publish_bf="${publish_bf}"/>
 
+    <!-- ros2_control for the door_opening_mechanism -->
+	<xacro:ros2_control_door_opening_mechanism name="Door_opening_mechanism" prefix="$(arg prefix)"/>
+	
 </robot>
