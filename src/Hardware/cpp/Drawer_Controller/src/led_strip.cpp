@@ -85,25 +85,21 @@ namespace drawer_controller
 
   void LedStrip::apply_led_states_to_led_strip()
   {
-    unsigned long current_millis = millis();
-    unsigned long passed_time = current_millis - _previous_millis;
-    if (passed_time > LED_ANIMATION_APPLYING_PERIOD_IN_MS)
+    FastLED.setBrightness(LED_MAX_BRIGHTNESS);   // individual led brightness will be scaled down in the for loop
+    for (uint16_t i = _target_led_animation.start_index_led_states;
+         i < _target_led_animation.num_of_led_states_to_change;
+         ++i)
     {
-      FastLED.setBrightness(LED_MAX_BRIGHTNESS);   // individual led brightness will be scaled down in the for loop
-      for (uint16_t i = _target_led_animation.start_index_led_states;
-           i < _target_led_animation.num_of_led_states_to_change;
-           ++i)
-      {
-        uint8_t red = _current_led_states[i].red;
-        uint8_t green = _current_led_states[i].green;
-        uint8_t blue = _current_led_states[i].blue;
-        uint8_t brightness = _current_led_states[i].brightness;
-        _leds[i].setRGB(red, green, blue);
-        _leds[i].fadeToBlackBy(LED_MAX_BRIGHTNESS - brightness);
-      }
-      FastLED.show();
-      _previous_millis = current_millis;
+      uint8_t red = _current_led_states[i].red;
+      uint8_t green = _current_led_states[i].green;
+      uint8_t blue = _current_led_states[i].blue;
+      uint8_t brightness = _current_led_states[i].brightness;
+      _leds[i].setRGB(red, green, blue);
+      _leds[i].fadeToBlackBy(LED_MAX_BRIGHTNESS - brightness);
+      // debug_printf(
+      //   "Setting led with index %d to red=%d, green=%d, blue=%d, brightness=%d!\n", i, red, green, blue, brightness);
     }
+    FastLED.show();
   }
 
   float LedStrip::linear_interpolation(const float a, const float b, const float t)
@@ -144,12 +140,19 @@ namespace drawer_controller
       {
         for (uint16_t i = 0; i < NUM_OF_LEDS; ++i)
         {
-          _current_led_states[i].red =
-            linear_interpolation(_starting_led_states[i].red, _target_led_animation.target_led_states[i].red, progress);
-          _current_led_states[i].green = linear_interpolation(
-            _starting_led_states[i].green, _target_led_animation.target_led_states[i].green, progress);
-          _current_led_states[i].blue = linear_interpolation(
-            _starting_led_states[i].blue, _target_led_animation.target_led_states[i].blue, progress);
+          // TODO@Jacob: For the leds at the base it seems that all these interpolation computations disturb the change
+          // TODO@Jacob: of the correct leds. At least when i comment this out the correct leds are changed.
+          // TODO@Jacob: Find a way to not need the linear interpolation as this is computationally expensive
+          // _current_led_states[i].red =
+          //   linear_interpolation(_starting_led_states[i].red, _target_led_animation.target_led_states[i].red,
+          //   progress);
+          // _current_led_states[i].green = linear_interpolation(
+          //   _starting_led_states[i].green, _target_led_animation.target_led_states[i].green, progress);
+          // _current_led_states[i].blue = linear_interpolation(
+          //   _starting_led_states[i].blue, _target_led_animation.target_led_states[i].blue, progress);
+          _current_led_states[i].red = _target_led_animation.target_led_states[i].red;
+          _current_led_states[i].green = _target_led_animation.target_led_states[i].green;
+          _current_led_states[i].blue = _target_led_animation.target_led_states[i].blue;
           _current_led_states[i].brightness = linear_interpolation(
             _starting_led_states[i].brightness, _target_led_animation.target_led_states[i].brightness, progress);
         }

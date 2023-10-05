@@ -10,7 +10,7 @@
 #include "behaviortree_cpp/action_node.h"
 #include "std_msgs/msg/string.hpp"
 
-#include "bt_base_types/LED_base.hpp"
+#include "bt_base_types/led_base.hpp"
 
 namespace bt_plugins
 {

@@ -4,7 +4,7 @@ sudo modprobe can
 sudo modprobe can-raw
 sudo modprobe slcan
 
-sudo slcan_attach -f -s7 -o /dev/robast/robast_can
+sudo slcan_attach -f -s5 -o /dev/robast/robast_can
 sudo slcand robast/robast_can can0
 sudo ifconfig can0 up
 
