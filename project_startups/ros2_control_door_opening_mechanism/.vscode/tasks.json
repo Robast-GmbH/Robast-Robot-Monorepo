@@ -11,8 +11,8 @@
             "problemMatcher": []
         },
         {
-            "label": "Launch Dryve D1 Gate",
-            "detail": "Launch the dryve d1 gate node",
+            "label": "Launch Dryve D1 Bridge",
+            "detail": "Launch the dryve d1 bridge node",
             "type": "shell",
             "command": "source install/setup.bash; ros2 launch dryve_d1_bridge dryve_d1_bridge_launch.py",
             "problemMatcher": []
@@ -36,8 +36,8 @@
             "problemMatcher": []
         },
         {
-            "label": "Test dryve d1 gate",
-            "detail": "Build and executes dryve d1 gate tests and shows the links to the testreport with Errors",
+            "label": "Test Dryve D1 Bridge",
+            "detail": "Build and executes dryve d1 bridge tests and shows the links to the testreport with Errors",
             "type": "shell",
             "dependsOn": [
                 "build"
