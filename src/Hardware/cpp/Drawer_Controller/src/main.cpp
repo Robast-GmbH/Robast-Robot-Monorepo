@@ -97,7 +97,7 @@ void loop()
   {
     std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
 
-  for (uint8_t i = 0; i < num_of_can_readings_per_cycle; ++i)
+  for (uint8_t i = 1; i <= num_of_can_readings_per_cycle; ++i)
   {
     if (can_controller->is_message_available())
     {
@@ -124,7 +124,7 @@ void loop()
           case CAN_ID_LED_HEADER:
           {
             drawer_controller::LedHeader led_header = data_mapper->create_led_header(received_message.value());
-            num_of_can_readings_per_cycle = led_header.num_of_led_states_to_change + 1;
+            num_of_can_readings_per_cycle = led_header.num_of_led_states_to_change;
             led_strip->initialize_led_state_change(led_header);
           }
           break;
