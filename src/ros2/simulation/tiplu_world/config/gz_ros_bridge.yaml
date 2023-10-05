@@ -95,7 +95,7 @@
 - ros_topic_name: "back_top_oak_d_camera/color_camera_info"
   gz_topic_name: "/back_top_oak_d_camera/back_top_oak_d_camera/camera_info"
   ros_type_name: "sensor_msgs/msg/CameraInfo"
-  gz_type_name: "gz.msgs.PointCloudPacked"
+  gz_type_name: "gz.msgs.CameraInfo"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: true               # Default "false"
@@ -131,7 +131,7 @@
 - ros_topic_name: "front_top_oak_d_camera/color_camera_info"
   gz_topic_name: "/front_top_oak_d_camera/front_top_oak_d_camera/camera_info"
   ros_type_name: "sensor_msgs/msg/CameraInfo"
-  gz_type_name: "gz.msgs.PointCloudPacked"
+  gz_type_name: "gz.msgs.CameraInfo"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: true               # Default "false"
