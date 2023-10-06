@@ -42,8 +42,6 @@
 #include "depthai_ros_msgs/msg/spatial_detection.hpp"
 #include "depthai_ros_msgs/msg/spatial_detection_array.hpp"
 
-using namespace std::chrono_literals;
-
 class MinimalPublisher : public rclcpp::Node
 {
  public:
@@ -56,7 +54,8 @@ class MinimalPublisher : public rclcpp::Node
 
     publisher_ =
       this->create_publisher<depthai_ros_msgs::msg::SpatialDetectionArray>("stereo/door_handle_position", qos);
-    timer_ = this->create_wall_timer(500ms, std::bind(&MinimalPublisher::timer_callback, this));
+    timer_ =
+      this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&MinimalPublisher::timer_callback, this));
   }
 
  private:
