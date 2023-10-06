@@ -103,6 +103,10 @@ namespace ros2_control_plugin_door_opening_mechanism
                                                     dryve_d1_bridge::PORT_Y_AXIS,
                                                     std::make_unique<dryve_d1_bridge::SocketWrapper>());
 
+    // Please mind! The state_machine only runs through if you made the following settings on the dryve d1:
+    // (1) Drive Profile -> Modbus TCP Gateway
+    // (2) Inputs/Outputs -> Enable
+    // (3) Communication -> Modbus TCP Gateway ON
     _x_axis->run_dryve_state_machine();
     _y_axis->run_dryve_state_machine();
     _x_axis->set_debug_mode_off();
