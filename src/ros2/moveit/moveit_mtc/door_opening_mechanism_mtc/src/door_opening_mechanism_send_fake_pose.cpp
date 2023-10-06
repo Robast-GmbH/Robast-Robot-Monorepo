@@ -47,7 +47,7 @@ using namespace std::chrono_literals;
 class MinimalPublisher : public rclcpp::Node
 {
  public:
-  MinimalPublisher() : Node("minimal_publisher")
+  MinimalPublisher() : Node("fake_pose_publisher")
   {
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
@@ -55,7 +55,7 @@ class MinimalPublisher : public rclcpp::Node
     qos.avoid_ros_namespace_conventions(false);
 
     publisher_ =
-        this->create_publisher<depthai_ros_msgs::msg::SpatialDetectionArray>("stereo/door_handle_position", qos);
+      this->create_publisher<depthai_ros_msgs::msg::SpatialDetectionArray>("stereo/door_handle_position", qos);
     timer_ = this->create_wall_timer(500ms, std::bind(&MinimalPublisher::timer_callback, this));
   }
 
