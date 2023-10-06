@@ -23,7 +23,8 @@
 	],
 	"containerEnv": {
 		"ROS_DOMAIN_ID": "1",
-		"robot": "rb_theron"
+		"robot": "rb_theron",
+		"prefix": "",
 	},
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.
