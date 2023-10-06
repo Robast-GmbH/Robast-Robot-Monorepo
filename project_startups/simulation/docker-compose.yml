@@ -38,7 +38,7 @@ services:
       - is_simulation=True
       - config_directory=config_simulation
       - robot_name=rb_theron
-      - init_x=-2.0
+      - init_x=0.0
       - init_y=0.0
       - init_z=0.0
       - init_yaw=3.14
