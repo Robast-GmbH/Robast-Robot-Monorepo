@@ -22,14 +22,14 @@ joint_state_broadcaster:
     joints:
       - door_opening_mechanism_joint_y_axis_slide
       - door_opening_mechanism_joint_x_axis_slide
-      - door_opening_mechanism_joint_tilting_hook
+      - door_opening_mechanism_joint_rotating_arm
 
 forward_position_controller:
   ros__parameters:
     joints:
       - door_opening_mechanism_joint_y_axis_slide
       - door_opening_mechanism_joint_x_axis_slide
-      - door_opening_mechanism_joint_tilting_hook
+      - door_opening_mechanism_joint_rotating_arm
     interface_name: position
 
 forward_velocity_controller:
@@ -37,7 +37,7 @@ forward_velocity_controller:
     joints:
       - door_opening_mechanism_joint_y_axis_slide
       - door_opening_mechanism_joint_x_axis_slide
-      - door_opening_mechanism_joint_tilting_hook
+      - door_opening_mechanism_joint_rotating_arm
     interface_name: velocity
 
 joint_trajectory_position_controller:
@@ -45,7 +45,7 @@ joint_trajectory_position_controller:
     joints:
       - door_opening_mechanism_joint_y_axis_slide
       - door_opening_mechanism_joint_x_axis_slide
-      - door_opening_mechanism_joint_tilting_hook
+      - door_opening_mechanism_joint_rotating_arm
 
     command_interfaces:
       - position

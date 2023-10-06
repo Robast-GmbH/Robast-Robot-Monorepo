@@ -35,7 +35,7 @@
         <state_interface name="position"/>
         <state_interface name="velocity"/>
       </joint>
-      <joint name="${prefix}door_opening_mechanism_joint_tilting_hook">
+      <joint name="${prefix}door_opening_mechanism_joint_rotating_arm">
         <command_interface name="position">
           <param name="min">-1</param>
           <param name="max">1</param>
