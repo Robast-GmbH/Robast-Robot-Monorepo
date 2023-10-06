@@ -91,8 +91,6 @@ namespace door_opening_mechanism_mtc
       convert_pose_to_target_reference_frame(pose_in_source_frame, "base_footprint");
 
     do_task(target_pose);
-
-    // move_robot_in_simulation_to_target_pose(target_pose); //TODO: uncomment this
   }
 
   void DoorMechanismMtc::setup_planning_scene()
