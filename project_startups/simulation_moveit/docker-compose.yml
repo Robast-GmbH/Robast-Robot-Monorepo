@@ -28,9 +28,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-
-        limits:
-          memory: 20gb
 #    network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
     

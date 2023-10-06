@@ -12,23 +12,6 @@
                         }
                 },
                 {
-                        "label": "clean-ros",
-                        "detail": "Clean ros colcon build",
-                        "type": "shell",
-                        "command": "colcon build --cmake-target clean",
-                        "problemMatcher": "$gcc"
-                },
-                {
-                        "label": "clean",
-                        "detail": "Purge and clean ros colcon build",
-                        "dependsOn": [
-                                "purge",
-                                "clean-ros"
-                        ],
-                        "dependsOrder": "sequence",
-                        "problemMatcher": []
-                },
-                {
                         "label": "build",
                         "detail": "Symlink Build",
                         "type": "shell",

@@ -1,3 +1,6 @@
+#ifndef MOVEIT_MTC_DOOR_OPENING_MECHANISM_MTC_HPP
+#define MOVEIT_MTC_DOOR_OPENING_MECHANISM_MTC_HPP
+
 #include <moveit/planning_scene/planning_scene.h>
 #include <moveit/planning_scene_interface/planning_scene_interface.h>
 #include <moveit/task_constructor/solvers.h>
@@ -13,10 +16,10 @@
 
 #include "depthai_ros_msgs/msg/spatial_detection_array.hpp"
 
-namespace mtc = moveit::task_constructor;
-
 namespace door_opening_mechanism_mtc
 {
+  namespace mtc = moveit::task_constructor;
+
   class DoorMechanismMtc : public rclcpp::Node
   {
    public:
@@ -44,10 +47,12 @@ namespace door_opening_mechanism_mtc
     void setup_planning_scene();
 
     geometry_msgs::msg::PoseStamped convert_pose_to_target_reference_frame(
-        const geometry_msgs::msg::PoseStamped pose_in_source_frame, const std::string target_frame);
+      const geometry_msgs::msg::PoseStamped pose_in_source_frame, const std::string target_frame);
 
     void door_handle_position_callback(const depthai_ros_msgs::msg::SpatialDetectionArray& msg);
 
     void open_door_in_simulation(const std::shared_ptr<depthai_ros_msgs::msg::SpatialDetectionArray> door_handle_poses);
   };
 }   // namespace door_opening_mechanism_mtc
+
+#endif   // MOVEIT_MTC_DOOR_OPENING_MECHANISM_MTC_HPP
