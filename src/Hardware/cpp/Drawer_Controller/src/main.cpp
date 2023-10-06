@@ -9,7 +9,7 @@
 #include "peripherals/gpio.hpp"
 #include "utils/data_mapper.hpp"
 
-#define MODULE_ID               3
+#define MODULE_ID               1
 #define LOCK_ID                 0
 #define STEPPER_MOTOR_1_ADDRESS 0
 #define USE_ENCODER             0
@@ -43,6 +43,11 @@ std::unique_ptr<drawer_controller::LedStrip> led_strip;
 
 std::unique_ptr<drawer_controller::DataMapper> data_mapper;
 
+// TODO@Jacob: This is kind of a temporary hack to ensure that the can messages are read from the controller fast enough
+// TODO@Jacob: A much better solution would be to create paralle tasks for that like I suggested in this story:
+// https://robast.atlassian.net/browse/RE-1775
+uint16_t num_of_can_readings_per_cycle = 1;
+
 void setup()
 {
   debug_setup(115200);
@@ -54,12 +59,12 @@ void setup()
 
   // TODO@all: If you want to use a "normal" drawer uncomment this and comment out the e_drawer
   // TODO@Andres: Write a script to automatically generate code with a drawer / e-drawer
-  // drawer_0 = std::make_shared<drawer_controller::Drawer>(MODULE_ID, LOCK_ID, can_db, gpio_wrapper);
-  // drawer_0->init_electrical_lock(LOCK_1_OPEN_CONROL_PIN_ID,
-  //                                LOCK_1_CLOSE_CONROL_PIN_ID,
-  //                                SENSE_INPUT_LOCK_1_PIN_ID,
-  //                                SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
-  // drawers.push_back(drawer_0);
+  drawer_0 = std::make_shared<drawer_controller::Drawer>(MODULE_ID, LOCK_ID, can_db, gpio_wrapper);
+  drawer_0->init_electrical_lock(LOCK_1_OPEN_CONROL_PIN_ID,
+                                 LOCK_1_CLOSE_CONROL_PIN_ID,
+                                 SENSE_INPUT_LOCK_1_PIN_ID,
+                                 SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
+  drawers.push_back(drawer_0);
 
   led_strip = std::make_unique<drawer_controller::LedStrip>();
 
@@ -67,67 +72,72 @@ void setup()
     MODULE_ID, can_db, gpio_wrapper, OE_TXB0104_PIN_ID, PCA9554_OUTPUT);
   can_controller->initialize_can_controller();
 
-  e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(MODULE_ID,
-                                                                     LOCK_ID,
-                                                                     can_db,
-                                                                     gpio_wrapper,
-                                                                     stepper_1_pin_id_config,
-                                                                     USE_ENCODER,
-                                                                     DRAWER_1_ENCODER_A_PIN,
-                                                                     DRAWER_1_ENCODER_B_PIN,
-                                                                     STEPPER_MOTOR_1_ADDRESS);
-  e_drawer_0->init_electrical_lock(LOCK_1_OPEN_CONROL_PIN_ID,
-                                   LOCK_1_CLOSE_CONROL_PIN_ID,
-                                   SENSE_INPUT_LOCK_1_PIN_ID,
-                                   SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
-  e_drawer_0->init_motor();
-  drawers.push_back(e_drawer_0);
+  // e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(MODULE_ID,
+  //                                                                    LOCK_ID,
+  //                                                                    can_db,
+  //                                                                    gpio_wrapper,
+  //                                                                    stepper_1_pin_id_config,
+  //                                                                    USE_ENCODER,
+  //                                                                    DRAWER_1_ENCODER_A_PIN,
+  //                                                                    DRAWER_1_ENCODER_B_PIN,
+  //                                                                    STEPPER_MOTOR_1_ADDRESS);
+  // e_drawer_0->init_electrical_lock(LOCK_1_OPEN_CONROL_PIN_ID,
+  //                                  LOCK_1_CLOSE_CONROL_PIN_ID,
+  //                                  SENSE_INPUT_LOCK_1_PIN_ID,
+  //                                  SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
+  // e_drawer_0->init_motor();
+  // drawers.push_back(e_drawer_0);
 
   debug_println("Finished setup()!");
 }
 
 void loop()
 {
-  if (can_controller->is_message_available())
+  for (uint8_t i = 1; i <= num_of_can_readings_per_cycle; ++i)
   {
-    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
-
-    if (received_message.has_value())
+    if (can_controller->is_message_available())
     {
-      switch (received_message->get_id())
+      std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
+
+      if (received_message.has_value())
       {
-        case CAN_ID_DRAWER_UNLOCK:
+        switch (received_message->get_id())
         {
-          uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
-          // TODO@Jacob: remove can_in function and put this into the data_mapper to remove can dependency from drawer
-          drawers.at(drawer_id)->can_in(received_message.value());
-        }
-        break;
-        case CAN_ID_ELECTRICAL_DRAWER_TASK:
-        {
-          uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
-          // TODO@Jacob: remove can_in function and put this into the data_mapper to remove can dependency from drawer
-          drawers.at(drawer_id)->can_in(received_message.value());
-        }
-        break;
-        case CAN_ID_LED_HEADER:
-        {
-          drawer_controller::LedHeader led_header = data_mapper->create_led_header(received_message.value());
-          led_strip->initialize_led_state_change(led_header);
-        }
-        break;
-        case CAN_ID_SINGLE_LED_STATE:
-        {
-          drawer_controller::LedState led_state = data_mapper->create_led_state(received_message.value());
-          led_strip->set_led_state(led_state);
-        }
-        break;
-        default:
-          debug_println("Received unsupported CAN message.");
+          case CAN_ID_DRAWER_UNLOCK:
+          {
+            uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
+            // TODO@Jacob: remove can_in function and put this into the data_mapper to remove can dependency from drawer
+            drawers.at(drawer_id)->can_in(received_message.value());
+          }
           break;
+          case CAN_ID_ELECTRICAL_DRAWER_TASK:
+          {
+            uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
+            // TODO@Jacob: remove can_in function and put this into the data_mapper to remove can dependency from drawer
+            drawers.at(drawer_id)->can_in(received_message.value());
+          }
+          break;
+          case CAN_ID_LED_HEADER:
+          {
+            drawer_controller::LedHeader led_header = data_mapper->create_led_header(received_message.value());
+            num_of_can_readings_per_cycle = led_header.num_of_led_states_to_change + LED_HEADER_CAN_MSG_COUNT;
+            led_strip->initialize_led_state_change(led_header);
+          }
+          break;
+          case CAN_ID_SINGLE_LED_STATE:
+          {
+            drawer_controller::LedState led_state = data_mapper->create_led_state(received_message.value());
+            led_strip->set_led_state(led_state);
+          }
+          break;
+          default:
+            debug_println("Received unsupported CAN message.");
+            break;
+        }
       }
     }
   }
+  num_of_can_readings_per_cycle = 1;
 
   led_strip->handle_led_control();
 
