@@ -16,10 +16,10 @@
 
 #include "depthai_ros_msgs/msg/spatial_detection_array.hpp"
 
-namespace mtc = moveit::task_constructor;
-
 namespace door_opening_mechanism_mtc
 {
+  namespace mtc = moveit::task_constructor;
+
   class DoorMechanismMtc : public rclcpp::Node
   {
    public:
