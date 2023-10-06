@@ -51,11 +51,7 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   moveit_mtc:
-    # TODO@Tobi: How do I use the image from ghcr?
-    build:
-      context: .
-      dockerfile: ../../src/ros2/moveit/moveit_mtc/Dockerfile
-    image: robast_moveit_mtc
+    image: ghcr.io/robast-gmbh/monorepo/moveit_mtc:devel
     environment:
       - ROS_DOMAIN_ID=1
       - is_simulation=True
