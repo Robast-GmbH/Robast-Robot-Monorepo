@@ -21,6 +21,9 @@
 		//"--device=/dev/robast/robast_nfc", //Robo module: usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04_B-if00  // Demo module:  usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04-if00 
 		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
 	],
+	"remoteEnv": {
+		"DISPLAY": "${localEnv:DISPLAY}"
+	},
 	"containerEnv": {
 		"ROS_DOMAIN_ID": "1",
 		"robot": "rb_theron",
