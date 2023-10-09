@@ -59,25 +59,25 @@
 
      <include>
       <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
-      <pose> 5.32 -3.907 0.0 0 0 1.570</pose>
+      <pose> 5.32 -3.84 0.0 0 0 1.570</pose>
       <name>Robast_tech</name>
     </include>
 
     <include>
       <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
-      <pose> 2.4 -3.907  0.0 0 0 1.570</pose>
+      <pose> 2.4 -3.84  0.0 0 0 1.570</pose>
       <name>Server</name>
     </include>
 
     <include>
       <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
-      <pose> -0.6 -3.907  0.0 0 0 1.570</pose>
+      <pose> -0.6 -3.84  0.0 0 0 1.570</pose>
       <name>drinks_storage</name>
     </include>
 
     <include>
       <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
-      <pose> -5.4 -3.95  0.0 0 0 1.570</pose>
+      <pose> -5.4 -3.84  0.0 0 0 1.570</pose>
       <name>3d_printer_door</name>
     </include>
   </world>
