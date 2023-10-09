@@ -8,8 +8,8 @@ namespace dryve_d1_bridge
   const std::string DRYVE_D1_IP_ADDRESS_X_AXIS = "10.10.23.7";
   const std::string DRYVE_D1_IP_ADDRESS_Y_AXIS = "10.10.23.7";
   // const int PORT = 502;
-  const int PORT_X_AXIS = 3502;
-  const int PORT_Y_AXIS = 3503;
+  const int PORT_X_AXIS = 3503;
+  const int PORT_Y_AXIS = 3502;
 
   const double D1_DEFAULT_VELOCITY = 1;
   const double D1_DEFAULT_ACCELERATION = 1;
