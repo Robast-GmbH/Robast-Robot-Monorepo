@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM__RRBOT_HPP_
-#define ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM__RRBOT_HPP_
+#ifndef ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_HPP_
+#define ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_HPP_
 
 #include <memory>
 #include <string>
@@ -72,7 +72,6 @@ namespace ros2_control_plugin_door_opening_mechanism
         const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
    private:
-    // Parameters for the RRBot simulation
     double hw_start_sec_;
     double hw_stop_sec_;
     double hw_slowdown_;
@@ -89,4 +88,4 @@ namespace ros2_control_plugin_door_opening_mechanism
 
 }   // namespace ros2_control_plugin_door_opening_mechanism
 
-#endif   // ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM__RRBOT_HPP_
+#endif   // ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_HPP_
