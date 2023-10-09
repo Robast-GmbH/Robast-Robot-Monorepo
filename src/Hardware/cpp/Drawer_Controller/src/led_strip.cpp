@@ -211,7 +211,11 @@ namespace drawer_controller
       Serial.println("Warning! I received more led states then the header specified!");
       return;
     }
-    debug_printf("Adding requested led state change with index %d!\n", _current_index_led_states);
+    debug_printf("Adding requested led state (red = %d, green = %d, blue = %d) change with index %d!\n",
+                 state.red,
+                 state.green,
+                 state.blue,
+                 _current_index_led_states);
     _new_target_led_animation.target_led_states[_current_index_led_states] = state;
     ++_current_index_led_states;
 
