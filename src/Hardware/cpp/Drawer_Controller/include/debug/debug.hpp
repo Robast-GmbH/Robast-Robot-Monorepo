@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-#define DEBUG
+// #define DEBUG
 
 #ifdef DEBUG
 
@@ -39,6 +39,10 @@
 
 #ifndef debug_print
 #define debug_print(x)
+#endif
+
+#ifndef debug_print_with_base
+#define debug_print_with_base(num, base)
 #endif
 
 #ifndef debug_println
