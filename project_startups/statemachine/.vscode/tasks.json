@@ -46,6 +46,20 @@
             "problemMatcher": []
         },
         {
+            "label": "launch testing tree",
+            "detail": "launch the nfc drawer state machine.",
+            "type": "shell",
+            "command": "source /robast/humble/setup.bash; ros2 launch drawer_sm testing_tree_launch.py",
+            "problemMatcher": []
+        },
+        {
+            "label": "trigger tree",
+            "detail": "trigger some tree that uses drawer address as trigger type",
+            "type": "shell",
+            "command": "ros2 topic pub ${input:topic} communication_interfaces/msg/DrawerAddress '{module_id: ${input:module}, drawer_id: ${input:drawer}}' --once",
+            "problemMatcher": []
+        },
+        {
             "label": "launch drawer statemachine",
             "detail": "launch the 'normal' drawer state machine.",
             "type": "shell",
@@ -230,6 +244,21 @@
             "id": "package",
             "type": "promptString",
             "description": "Package name"
+        },
+        {
+            "id": "topic",
+            "type": "promptString",
+            "description": "topic name"
+        },
+        {
+            "id": "module",
+            "type": "promptString",
+            "description": "module id"
+        },
+        {
+            "id": "drawer",
+            "type": "promptString",
+            "description": "drawer id"
         }
     ],
 }

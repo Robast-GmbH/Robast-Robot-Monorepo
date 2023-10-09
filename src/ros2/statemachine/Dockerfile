@@ -35,7 +35,7 @@ RUN apt-get update \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
   && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
   && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/$USER/.bashrc \
-  && echo "if [ -f /robotnik/install/setup.bash ]; then source /robotnik/install/setup.bash; fi" >> /home/$USER/.bashrc 
+  && echo "if [ -f /robast/humble/setup.bash ]; then source /robast/humble/setup.bash; fi" >> /home/$USER/.bashrc 
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
