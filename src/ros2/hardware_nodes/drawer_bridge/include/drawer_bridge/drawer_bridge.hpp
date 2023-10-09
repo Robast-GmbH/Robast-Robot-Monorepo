@@ -36,7 +36,6 @@
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "drawer_bridge/can_encoder_decoder.hpp"
 #include "drawer_bridge/can_message_creator.hpp"
-#include "drawer_bridge/can_sender.hpp"
 #include "drawer_bridge/drawer_defines.h"
 #include "drawer_bridge/qos_config.hpp"
 #include "error_utils/error_definitions.hpp"
@@ -98,12 +97,12 @@ namespace drawer_bridge
     rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
     rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr _electrical_drawer_status_publisher;
     rclcpp::Publisher<ErrorBaseMsg>::SharedPtr _error_msg_publisher;
+    rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr _can_msg_publisher;
 
     robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();
 
     CanEncoderDecoder _can_encoder_decoder = CanEncoderDecoder();
     CanMessageCreator _can_message_creator = CanMessageCreator();
-    std::unique_ptr<CanSender> _can_sender;
 
     QoSConfig _qos_config = QoSConfig();
 
@@ -120,9 +119,9 @@ namespace drawer_bridge
 
     void setup_services();
 
-    void send_can_msg(CanMessage can_message);
+    void send_can_msg(CanMessage can_msg);
 
-    void receive_can_msg_callback(CanMessage can_message);
+    void receive_can_msg_callback(CanMessage can_msg);
 
     void publish_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg);
 
