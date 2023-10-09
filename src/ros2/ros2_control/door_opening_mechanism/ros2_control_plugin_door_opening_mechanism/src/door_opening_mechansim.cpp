@@ -26,7 +26,7 @@
 namespace ros2_control_plugin_door_opening_mechanism
 {
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_init(
-      const hardware_interface::HardwareInfo& info)
+    const hardware_interface::HardwareInfo& info)
   {
     if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS)
     {
@@ -94,11 +94,15 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_configure(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
+    // Please mind! In order to get a connection to the dryve d1, there need to be a port forward on the router from the
+    // port configured in DRYVE_D1_IP_ADDRESS_X_AXIS to the Port configured for Modbus TCP in the dryve d1 (usually 502)
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Configuring x-axis....");
     _x_axis = std::make_unique<dryve_d1_bridge::D1>(dryve_d1_bridge::DRYVE_D1_IP_ADDRESS_X_AXIS,
                                                     dryve_d1_bridge::PORT_X_AXIS,
                                                     std::make_unique<dryve_d1_bridge::SocketWrapper>());
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Configuring y-axis....");
     _y_axis = std::make_unique<dryve_d1_bridge::D1>(dryve_d1_bridge::DRYVE_D1_IP_ADDRESS_Y_AXIS,
                                                     dryve_d1_bridge::PORT_Y_AXIS,
                                                     std::make_unique<dryve_d1_bridge::SocketWrapper>());
@@ -106,7 +110,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     // Please mind! The state_machine only runs through if you made the following settings on the dryve d1:
     // (1) Drive Profile -> Modbus TCP Gateway
     // (2) Inputs/Outputs -> Enable
-    // (3) Communication -> Modbus TCP Gateway ON
+    // (3) Communication -> Port = 502
+    // (4) Communication -> Modbus TCP Gateway ON
     _x_axis->run_dryve_state_machine();
     _y_axis->run_dryve_state_machine();
     _x_axis->set_debug_mode_off();
@@ -136,9 +141,9 @@ namespace ros2_control_plugin_door_opening_mechanism
     for (uint i = 0; i < info_.joints.size(); i++)
     {
       state_interfaces.emplace_back(hardware_interface::StateInterface(
-          info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_states[i]));
+        info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_states[i]));
       state_interfaces.emplace_back(hardware_interface::StateInterface(
-          info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_states[i]));
+        info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_states[i]));
     }
 
     return state_interfaces;
@@ -151,16 +156,16 @@ namespace ros2_control_plugin_door_opening_mechanism
     for (uint i = 0; i < info_.joints.size(); i++)
     {
       command_interfaces.emplace_back(hardware_interface::CommandInterface(
-          info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_commands[i]));
+        info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_commands[i]));
       command_interfaces.emplace_back(hardware_interface::CommandInterface(
-          info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_commands[i]));
+        info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_commands[i]));
     }
 
     return command_interfaces;
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_activate(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Activating ...please wait...");
@@ -190,7 +195,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_deactivate(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -208,7 +213,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_shutdown(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -227,7 +232,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_cleanup(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -245,7 +250,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_error(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -265,36 +270,36 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::return_type DoorOpeningMechanismSystemPositionOnlyHardware::read(
-      const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
+    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
   {
     _hw_position_states[1] =
-        static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
-                                                       _x_axis->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
-        dryve_d1_bridge::X_AXIS_SI_UNIT_FACTOR;
+      static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
+                                                     _x_axis->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
+      dryve_d1_bridge::X_AXIS_SI_UNIT_FACTOR;
     _hw_velocity_states[1] =
-        static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
-                                                       _x_axis->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
-        dryve_d1_bridge::X_AXIS_SI_UNIT_FACTOR;
+      static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
+                                                     _x_axis->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
+      dryve_d1_bridge::X_AXIS_SI_UNIT_FACTOR;
 
     _hw_position_states[0] =
-        static_cast<double>(_y_axis->read_object_value(_y_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
-                                                       _y_axis->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
-        dryve_d1_bridge::Y_AXIS_SI_UNIT_FACTOR;
+      static_cast<double>(_y_axis->read_object_value(_y_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
+                                                     _y_axis->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
+      dryve_d1_bridge::Y_AXIS_SI_UNIT_FACTOR;
     _hw_velocity_states[0] =
-        static_cast<double>(_y_axis->read_object_value(_y_axis->OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
-                                                       _y_axis->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
-        dryve_d1_bridge::Y_AXIS_SI_UNIT_FACTOR;
+      static_cast<double>(_y_axis->read_object_value(_y_axis->OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
+                                                     _y_axis->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
+      dryve_d1_bridge::Y_AXIS_SI_UNIT_FACTOR;
 
     return hardware_interface::return_type::OK;
   }
 
   hardware_interface::return_type DoorOpeningMechanismSystemPositionOnlyHardware::write(
-      const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
+    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
   {
     _x_axis->set_profile_velocity(
-        _hw_velocity_commands[1], dryve_d1_bridge::X_AXIS_ACCELERATION, dryve_d1_bridge::X_AXIS_DECELERATION);
+      _hw_velocity_commands[1], dryve_d1_bridge::X_AXIS_ACCELERATION, dryve_d1_bridge::X_AXIS_DECELERATION);
     _y_axis->set_profile_velocity(
-        _hw_velocity_commands[0], dryve_d1_bridge::Y_AXIS_ACCELERATION, dryve_d1_bridge::Y_AXIS_DECELERATION);
+      _hw_velocity_commands[0], dryve_d1_bridge::Y_AXIS_ACCELERATION, dryve_d1_bridge::Y_AXIS_DECELERATION);
 
     return hardware_interface::return_type::OK;
   }
