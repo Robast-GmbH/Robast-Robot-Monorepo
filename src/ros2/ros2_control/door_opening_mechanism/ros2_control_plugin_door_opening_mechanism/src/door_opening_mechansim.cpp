@@ -45,6 +45,10 @@ namespace ros2_control_plugin_door_opening_mechanism
 
     for (const hardware_interface::ComponentInfo& joint : info_.joints)
     {
+      RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+                  "Configuring joint '%s'.",
+                  joint.name.c_str());
+
       // DoorOpeningMechanismSystemPositionOnlyHardware has position and velocity state and command interface on each
       // joint
       if (joint.command_interfaces.size() > 2)
@@ -276,6 +280,14 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemPositionOnlyHardware::read(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
   {
+    // TODO@Jacob: Remove this when debugging is finished!
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+                "SI_UNIT_FACTOR from x axis = %f",
+                _x_axis->get_si_unit_factor());
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+                "SI_UNIT_FACTOR from y axis = %f",
+                _y_axis->get_si_unit_factor());
+
     _hw_position_states[1] =
       static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
                                                      _x_axis->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
@@ -300,6 +312,19 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemPositionOnlyHardware::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
   {
+    // TODO@Jacob: Remove this when debugging is finished!
+    for (uint8_t i = 0; i < _hw_velocity_commands.size(); i++)
+    {
+      double velocity_command = _hw_velocity_commands[i];
+      if (velocity_command > 0.000001)
+      {
+        RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+                    "Velocity command for axis %d: %f",
+                    i,
+                    velocity_command);
+      }
+    }
+
     _x_axis->set_profile_velocity(
       _hw_velocity_commands[1], dryve_d1_bridge::X_AXIS_ACCELERATION, dryve_d1_bridge::X_AXIS_DECELERATION);
     _y_axis->set_profile_velocity(
