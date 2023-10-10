@@ -46,4 +46,4 @@ RUN apt-get update && apt-get install -y \
   && apt upgrade -y
 
 ENV ROS_DOMAIN_ID=1
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
