@@ -44,14 +44,3 @@ jobs:
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
-
-    - name: Build ${{ env.Project-Name }} release docker
-      uses: docker/build-push-action@v4
-      with:
-        context: src/ros2/${{ env.Project-Name }}/
-        target: release
-        platforms: linux/amd64
-        build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
-        push: true
-        file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
