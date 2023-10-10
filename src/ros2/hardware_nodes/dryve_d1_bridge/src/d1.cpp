@@ -85,7 +85,7 @@ namespace dryve_d1_bridge
     telegram[22] = array_of_byte[3];
 
     unsigned int send_result =
-        _socket_wrapper->sending(sock, (char *) telegram.data(), telegram.size() / sizeof(telegram[0]), 0);
+      _socket_wrapper->sending(sock, (char *) telegram.data(), telegram.size() / sizeof(telegram[0]), 0);
 
     if (send_result == telegram.size())
     {
@@ -133,7 +133,7 @@ namespace dryve_d1_bridge
   bool D1::check_if_handshake_timeout_occurring(std::chrono::time_point<std::chrono::steady_clock> start_time)
   {
     auto elapsed_time =
-        std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
+      std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start_time);
 
     if (_debug)
     {
@@ -197,7 +197,7 @@ namespace dryve_d1_bridge
     handshake[14] = telegram[14];
 
     unsigned int send_result =
-        _socket_wrapper->sending(sock, (char *) telegram.data(), telegram.size() / sizeof(telegram[0]), 0);
+      _socket_wrapper->sending(sock, (char *) telegram.data(), telegram.size() / sizeof(telegram[0]), 0);
 
     if (send_result == telegram.size())
     {
@@ -268,7 +268,7 @@ namespace dryve_d1_bridge
     _read_buffer[14] = subindex;
 
     unsigned int send_result =
-        _socket_wrapper->sending(sock, (char *) _read_buffer, sizeof(_read_buffer) / sizeof(_read_buffer[0]), 0);
+      _socket_wrapper->sending(sock, (char *) _read_buffer, sizeof(_read_buffer) / sizeof(_read_buffer[0]), 0);
 
     if (send_result == sizeof(_read_buffer))
     {
@@ -502,9 +502,9 @@ namespace dryve_d1_bridge
       }
 
     } while (
-        std::equal(std::begin(_STATUS_SHUTDOWN), std::end(_STATUS_SHUTDOWN), std::begin(_recv_buffer)) != true &&
-        std::equal(std::begin(_STATUS_SHUTDOWN_2), std::end(_STATUS_SHUTDOWN_2), std::begin(_recv_buffer)) != true &&
-        std::equal(std::begin(_STATUS_SHUTDOWN_3), std::end(_STATUS_SHUTDOWN_3), std::begin(_recv_buffer)) != true);
+      std::equal(std::begin(_STATUS_SHUTDOWN), std::end(_STATUS_SHUTDOWN), std::begin(_recv_buffer)) != true &&
+      std::equal(std::begin(_STATUS_SHUTDOWN_2), std::end(_STATUS_SHUTDOWN_2), std::begin(_recv_buffer)) != true &&
+      std::equal(std::begin(_STATUS_SHUTDOWN_3), std::end(_STATUS_SHUTDOWN_3), std::begin(_recv_buffer)) != true);
     return std::string_view();
   }
 
@@ -525,9 +525,9 @@ namespace dryve_d1_bridge
       }
 
     } while (
-        std::equal(std::begin(_STATUS_SWITCH_ON), std::end(_STATUS_SWITCH_ON), std::begin(_recv_buffer)) != true &&
-        std::equal(std::begin(_STATUS_SWITCH_ON_2), std::end(_STATUS_SWITCH_ON_2), std::begin(_recv_buffer)) != true &&
-        std::equal(std::begin(_STATUS_SWITCH_ON_3), std::end(_STATUS_SWITCH_ON_3), std::begin(_recv_buffer)) != true);
+      std::equal(std::begin(_STATUS_SWITCH_ON), std::end(_STATUS_SWITCH_ON), std::begin(_recv_buffer)) != true &&
+      std::equal(std::begin(_STATUS_SWITCH_ON_2), std::end(_STATUS_SWITCH_ON_2), std::begin(_recv_buffer)) != true &&
+      std::equal(std::begin(_STATUS_SWITCH_ON_3), std::end(_STATUS_SWITCH_ON_3), std::begin(_recv_buffer)) != true);
     return std::string_view();
   }
 
@@ -607,6 +607,73 @@ namespace dryve_d1_bridge
     return std::string_view();
   }
 
+  std::string_view D1::set_si_unit_factor(si_unit_factor si_unit_factor, bool is_movement_type_linear)
+  {
+    unsigned char recv_buffer[19];
+    unsigned char handshake[] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+    // Swap the object and subindex bytes of the handshake to the bytes of the send telegram
+    handshake[12] = _send_si_unit_factor[12];
+    handshake[13] = _send_si_unit_factor[13];
+    handshake[14] = _send_si_unit_factor[14];
+
+    _send_si_unit_factor[19] = 0;
+    _send_si_unit_factor[20] = 0;
+    if (is_movement_type_linear)
+    {
+      _send_si_unit_factor[21] = MOVEMENT_TYPE_LINEAR;
+    }
+    else
+    {
+      _send_si_unit_factor[21] = MOVEMENT_TYPE_ROTARY;
+    }
+    _send_si_unit_factor[22] = static_cast<unsigned char>(si_unit_factor);
+
+    unsigned int send_result = _socket_wrapper->sending(
+      sock, (char *) _send_si_unit_factor.data(), _send_si_unit_factor.size() / sizeof(_send_si_unit_factor[0]), 0);
+
+    if (send_result == _send_si_unit_factor.size())
+    {
+      // Wait for response
+      std::memset(recv_buffer, 0, 19);
+      int bytes_received = _socket_wrapper->receiving(sock, (char *) recv_buffer, 19, 0);
+      if (bytes_received > 0)
+      {
+        if (_debug == true)
+        {
+          std::cout << "Bytes received: " << bytes_received << std::endl;
+          for (int i = 0; i < bytes_received; i++)
+          {
+            // Echo response to console
+            printf("%d ", recv_buffer[i]);
+          }
+          std::cout << std::endl;
+        }
+
+        std::chrono::time_point<std::chrono::steady_clock> start_time = std::chrono::steady_clock::now();
+        while (std::equal(std::begin(recv_buffer), std::end(recv_buffer), std::begin(handshake)) != true)
+        {
+          if (check_if_handshake_timeout_occurring(start_time))
+          {
+            return ERROR_MSG_HANDSHAKE_TIMEOUT;
+          }
+        }
+        if (_debug == true)
+        {
+          std::cout << "Telegram send correctly!\n";
+        }
+        return std::string_view();
+      }
+      else
+      {
+        return ERROR_MSG_ZERO_BYTES_RECEIVED;
+      }
+    }
+    else
+    {
+      return ERROR_MSG_WRONG_SEND_RESULT;
+    }
+  }
+
   std::string_view D1::set_dryve_mode_of_operation(unsigned char mode)
   {
     unsigned char status_mode_display[] = {0, 0, 0, 0, 0, 14, 0, 43, 13, 0, 0, 0, 96, 97, 0, 0, 0, 0, 1, mode};
@@ -637,38 +704,38 @@ namespace dryve_d1_bridge
     float si_factor = get_si_unit_factor();
 
     std::vector<std::function<std::string_view()>> commands = {
-        [&]()
-        {
-          return set_dryve_mode_of_operation(6);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_switch_velocity, switch_velo * si_factor);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_zero_velocity, zero_velo * si_factor);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_homing_acceleration, homing_acc * si_factor);
-        },
-        [&]()
-        {
-          return check_for_dryve_error();
-        },
-        [&]()
-        {
-          return send_constant_set_command(_SEND_RESET_START);
-        },
-        [&]()
-        {
-          return send_constant_set_command(_SEND_START_MOVEMENT);
-        },
-        [&]()
-        {
-          return wait_for_homing();
-        }};
+      [&]()
+      {
+        return set_dryve_mode_of_operation(6);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_switch_velocity, switch_velo * si_factor);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_zero_velocity, zero_velo * si_factor);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_homing_acceleration, homing_acc * si_factor);
+      },
+      [&]()
+      {
+        return check_for_dryve_error();
+      },
+      [&]()
+      {
+        return send_constant_set_command(_SEND_RESET_START);
+      },
+      [&]()
+      {
+        return send_constant_set_command(_SEND_START_MOVEMENT);
+      },
+      [&]()
+      {
+        return wait_for_homing();
+      }};
 
     for (const auto &cmd : commands)
     {
@@ -687,42 +754,42 @@ namespace dryve_d1_bridge
     float si_factor = get_si_unit_factor();
 
     std::vector<std::function<std::string_view()>> commands = {
-        [&]()
-        {
-          return set_dryve_mode_of_operation(1);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_target_position, position * si_factor);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_profile_velocity, velo * si_factor);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_profile_acceleration, accel * si_factor);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_profile_deceleration, decel * si_factor);
-        },
-        [&]()
-        {
-          return check_for_dryve_error();
-        },
-        [&]()
-        {
-          return send_constant_set_command(_SEND_RESET_START_ABS);
-        },
-        [&]()
-        {
-          return send_constant_set_command(_SEND_START_MOVEMENT);
-        },
-        [&]()
-        {
-          return wait_for_dryve_ready_state();
-        }};
+      [&]()
+      {
+        return set_dryve_mode_of_operation(1);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_target_position, position * si_factor);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_profile_velocity, velo * si_factor);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_profile_acceleration, accel * si_factor);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_profile_deceleration, decel * si_factor);
+      },
+      [&]()
+      {
+        return check_for_dryve_error();
+      },
+      [&]()
+      {
+        return send_constant_set_command(_SEND_RESET_START_ABS);
+      },
+      [&]()
+      {
+        return send_constant_set_command(_SEND_START_MOVEMENT);
+      },
+      [&]()
+      {
+        return wait_for_dryve_ready_state();
+      }};
 
     for (const auto &cmd : commands)
     {
@@ -741,42 +808,42 @@ namespace dryve_d1_bridge
     float si_factor = get_si_unit_factor();
 
     std::vector<std::function<std::string_view()>> commands = {
-        [&]()
-        {
-          return set_dryve_mode_of_operation(1);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_target_position, position * si_factor);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_profile_velocity, velo * si_factor);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_profile_acceleration, accel * si_factor);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_profile_deceleration, decel * si_factor);
-        },
-        [&]()
-        {
-          return check_for_dryve_error();
-        },
-        [&]()
-        {
-          return send_constant_set_command(_SEND_RESET_START_REL);
-        },
-        [&]()
-        {
-          return send_constant_set_command(_SEND_START_MOVEMENT_REL);
-        },
-        [&]()
-        {
-          return wait_for_dryve_ready_state();
-        }};
+      [&]()
+      {
+        return set_dryve_mode_of_operation(1);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_target_position, position * si_factor);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_profile_velocity, velo * si_factor);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_profile_acceleration, accel * si_factor);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_profile_deceleration, decel * si_factor);
+      },
+      [&]()
+      {
+        return check_for_dryve_error();
+      },
+      [&]()
+      {
+        return send_constant_set_command(_SEND_RESET_START_REL);
+      },
+      [&]()
+      {
+        return send_constant_set_command(_SEND_START_MOVEMENT_REL);
+      },
+      [&]()
+      {
+        return wait_for_dryve_ready_state();
+      }};
 
     for (const auto &cmd : commands)
     {
@@ -795,26 +862,26 @@ namespace dryve_d1_bridge
     float si_factor = get_si_unit_factor();
 
     std::vector<std::function<std::string_view()>> commands = {
-        [&]()
-        {
-          return set_dryve_mode_of_operation(3);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_profile_acceleration, accel * si_factor);
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_profile_deceleration, decel * si_factor);
-        },
-        [&]()
-        {
-          return check_for_dryve_error();
-        },
-        [&]()
-        {
-          return send_command_telegram(_send_target_velocity, velo * si_factor);
-        }};
+      [&]()
+      {
+        return set_dryve_mode_of_operation(3);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_profile_acceleration, accel * si_factor);
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_profile_deceleration, decel * si_factor);
+      },
+      [&]()
+      {
+        return check_for_dryve_error();
+      },
+      [&]()
+      {
+        return send_command_telegram(_send_target_velocity, velo * si_factor);
+      }};
 
     for (const auto &cmd : commands)
     {

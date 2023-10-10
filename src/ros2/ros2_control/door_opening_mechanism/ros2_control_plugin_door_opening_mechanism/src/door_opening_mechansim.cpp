@@ -114,6 +114,10 @@ namespace ros2_control_plugin_door_opening_mechanism
     // (4) Communication -> Modbus TCP Gateway ON
     _x_axis->run_dryve_state_machine();
     _y_axis->run_dryve_state_machine();
+
+    // TODO: Check if this is working
+    _x_axis->set_si_unit_factor(dryve_d1_bridge::si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_4, true);
+
     _x_axis->set_debug_mode_off();
     _y_axis->set_debug_mode_off();
 

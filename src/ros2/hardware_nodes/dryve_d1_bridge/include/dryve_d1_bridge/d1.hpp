@@ -15,6 +15,7 @@
 
 #include "dryve_d1_bridge/d1_configs.hpp"
 #include "dryve_d1_bridge/i_socket_wrapper.hpp"
+#include "dryve_d1_bridge/si_unit_factor.hpp"
 
 #define ERROR_E01_CONFIGURATION              25376
 #define ERROR_E02_MOTOR_OVER_CURRENT         8992
@@ -79,6 +80,8 @@ namespace dryve_d1_bridge
     /* Functions to send commands to the D1 */
     /****************************************/
 
+    std::string_view set_si_unit_factor(si_unit_factor si_unit_factor, bool is_movement_type_linear);
+
     std::string_view set_dryve_shutdown_state();
 
     std::string_view set_dryve_switch_on_state();
@@ -104,10 +107,10 @@ namespace dryve_d1_bridge
     static constexpr std::string_view ERROR_MSG_HANDSHAKE_TIMEOUT = "Error: A Handshake timeout occurred!";
 
     static constexpr std::string_view ERROR_MSG_WRONG_SEND_RESULT =
-        "Error: Trying to send command, but send_result != array_size";
+      "Error: Trying to send command, but send_result != array_size";
 
     static constexpr std::string_view ERROR_MSG_WAIT_FOR_RESPONSE_TO_EQUAL_HANDSHAKE =
-        "Error: In wait_for_response_to_equal_handshake, can't send telegram to D1!";
+      "Error: In wait_for_response_to_equal_handshake, can't send telegram to D1!";
 
     static constexpr std::string_view ERROR_MSG_ZERO_BYTES_RECEIVED = "Error: Received zero bytes from socket!";
 
@@ -157,30 +160,30 @@ namespace dryve_d1_bridge
 
     // Telegrams to read status and values of objects
     static constexpr unsigned char _READ_STATUS_WORD[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2};
+      0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 65, 0, 0, 0, 0, 2};
     static constexpr unsigned char _READ_MODES_DISPLAY[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 97, 0, 0, 0, 0, 1};
+      0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 97, 0, 0, 0, 0, 1};
     static constexpr unsigned char _READ_POSITION_ACTUAL_VALUE[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 100, 0, 0, 0, 0, 4};
+      0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 100, 0, 0, 0, 0, 4};
     static constexpr unsigned char _READ_VELOCITY_ACTUAL_VALUE[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 108, 0, 0, 0, 0, 4};
+      0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 108, 0, 0, 0, 0, 4};
     static constexpr unsigned char _READ_CURRENT_ACTUAL_VALUE[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 120, 0, 0, 0, 0, 4};
+      0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 120, 0, 0, 0, 0, 4};
     static constexpr unsigned char _READ_FOLLOWING_ERROR_ACTUAL_VALUE[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 244, 0, 0, 0, 0, 4};
+      0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 244, 0, 0, 0, 0, 4};
     static constexpr unsigned char _READ_ERROR_CODE[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 63, 0, 0, 0, 0, 2};
+      0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 63, 0, 0, 0, 0, 2};
     static constexpr unsigned char _READ_SI_UNIT_FACTOR[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 168, 0, 0, 0, 0, 4};
+      0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 168, 0, 0, 0, 0, 4};
     static constexpr unsigned char _READ_CONTROLLER_TEMP[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 32, 19, 0, 0, 0, 0, 4};
+      0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 32, 19, 0, 0, 0, 0, 4};
     unsigned char _read_buffer[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4};
 
     // Telegrams for initial parameters
     unsigned char _send_feed_rate[23] = {0, 0, 0, 0, 0, 17, 0, 43, 13, 1, 0, 0, 96, 146, 1, 0, 0, 0, 4, 0, 0, 0, 0};
     unsigned char _send_shaft_revolutions[23] = {0, 0, 0, 0, 0, 14, 0, 43, 13, 1, 0, 0, 96, 146, 2, 0, 0, 0, 1, 1};
-    unsigned char _send_si_unit_factor[23] = {0,  0,   0, 0, 0, 13, 0, 43, 13, 0, 0, 0,
-                                              96, 168, 0, 0, 0, 0,  4, 0,  0,  0, 0};
+    std::vector<unsigned char> _send_si_unit_factor{0,  0,   0, 0, 0, 13, 0, 43, 13, 0, 0, 0,
+                                                    96, 168, 0, 0, 0, 0,  4, 0,  0,  0, 0};
 
     // Telegrams to set the mode of operation
     std::vector<unsigned char> _send_mode_of_operation{0, 0, 0, 0, 0, 14, 0, 43, 13, 1, 0, 0, 96, 96, 0, 0, 0, 0, 1, 0};
