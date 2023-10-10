@@ -72,3 +72,25 @@ services:
 #    network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
 
+  # TODO@Jacob: Does it really makes sense to have add ros2_control here?
+  ros2_control:
+    # TODO@Tobi: How do I use the image from ghcr?
+    build:
+      context: .
+      dockerfile: ../../src/ros2/ros2_control/Dockerfile
+    image: robast_ros2_control
+    environment:
+      - ROS_DOMAIN_ID=1
+      - robot_name=rb_theron
+      - robot=rb_theron
+      - prefix=
+    volumes:
+      - ./ros2_control/:/workspace/:cached
+      - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
+      - ../../src/ros2/hardware_nodes/dryve_d1_bridge:/workspace/src/hardware_nodes/dryve_d1_bridge:cached
+      - ../../src/ros2/ros2_control:/workspace/src/ros2_control:cached
+      - /tmp/.X11-unix:/tmp/.X11-unix
+      - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
+#    network_mode: "host"
+    command: /bin/sh -c "while sleep 1000; do :; done"
+
