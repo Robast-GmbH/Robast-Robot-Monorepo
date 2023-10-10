@@ -133,7 +133,7 @@
         "**/log": true
     },
     "python.analysis.extraPaths": [
-        "/opt/ros/galactic/lib/python3.8/site-packages/"
+        "/opt/ros/humble/lib/python3.8/site-packages/"
     ],
     "[python]": {
         "editor.defaultFormatter": "ms-python.python"

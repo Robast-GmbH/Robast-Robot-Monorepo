@@ -30,9 +30,9 @@ def generate_launch_description():
     world_model = LaunchConfiguration("world_model")
     headless = LaunchConfiguration("headless")
     robot_name = LaunchConfiguration("robot_name")
-    init_x = LaunchConfiguration("init_x", default="-2")
-    init_y = LaunchConfiguration("init_y", default="0")
-    init_yaw = LaunchConfiguration("init_yaw", default="3.14")
+    init_x = os.environ['init_x']
+    init_y = os.environ["init_y"]
+    init_yaw = os.environ["init_yaw"]
 
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
@@ -110,12 +110,6 @@ def generate_launch_description():
         output="screen",
     )
 
-    start_oak_d_camera_info_node = Node(
-        package ='oak_d_camera_info_publisher',
-        executable = 'oak_d_camera_info',
-        name='camera_rgb_info_publisher'
-    )
-
 
     ld = LaunchDescription()
 
@@ -133,6 +127,5 @@ def generate_launch_description():
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(spawn_robot_cmd)
     ld.add_action(gz_ros_bridge_cmd)
-    ld.add_action(start_oak_d_camera_info_node)
 
     return ld

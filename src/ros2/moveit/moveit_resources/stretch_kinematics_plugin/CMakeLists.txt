@@ -9,11 +9,9 @@ find_package(ament_cmake REQUIRED)
 find_package(Eigen3 REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(random_numbers REQUIRED)
-find_package(class_loader REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(moveit_core REQUIRED)
 find_package(moveit_msgs REQUIRED)
-find_package(tf2_eigen REQUIRED)
 
 add_library(${PROJECT_NAME} SHARED
   src/stretch_kinematics_plugin.cpp
