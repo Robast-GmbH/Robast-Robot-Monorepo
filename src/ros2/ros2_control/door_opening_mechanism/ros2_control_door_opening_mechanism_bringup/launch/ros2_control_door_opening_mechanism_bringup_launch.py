@@ -66,9 +66,17 @@ def generate_launch_description():
     robot_controller_spawner = Node(
         package="controller_manager",
         executable="spawner",
+        arguments=["joint_trajectory_controller", "--controller-manager", "/controller_manager"],
+        parameters=[{"use_sim_time": use_sim_time}],
+    )
+
+    forward_velocity_controller_spawner = Node(
+        package="controller_manager",
+        executable="spawner",
         arguments=["forward_velocity_controller", "--controller-manager", "/controller_manager"],
         parameters=[{"use_sim_time": use_sim_time}],
     )
+
 
     robot_state_publisher_spawner = Node(
         package="robot_state_publisher",
@@ -99,6 +107,7 @@ def generate_launch_description():
     ld.add_action(control_node)
     ld.add_action(joint_state_broadcaster_spawner)
     ld.add_action(robot_state_publisher_spawner)
+    # ld.add_action(forward_velocity_controller_spawner)
     ld.add_action(delay_robot_controller_spawner_after_joint_state_broadcaster_spawner)
 
     # This would be probably much nice to use RegisterEventHandler to trigger the shutdown, but unfortunately we

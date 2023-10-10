@@ -5,13 +5,10 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-    forward_position_controller:
-      type: forward_command_controller/ForwardCommandController
-
     forward_velocity_controller:
       type: velocity_controllers/JointGroupVelocityController
 
-    joint_trajectory_position_controller:
+    joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
 joint_state_broadcaster:
@@ -23,14 +20,7 @@ joint_state_broadcaster:
       - door_opening_mechanism_joint_y_axis_slide
       - door_opening_mechanism_joint_x_axis_slide
       - door_opening_mechanism_joint_rotating_arm
-
-forward_position_controller:
-  ros__parameters:
-    joints:
-      - door_opening_mechanism_joint_y_axis_slide
-      - door_opening_mechanism_joint_x_axis_slide
-      - door_opening_mechanism_joint_rotating_arm
-    interface_name: position
+      - door_opening_mechanism_joint_freely_rotating_hook
 
 forward_velocity_controller:
   ros__parameters:
@@ -38,20 +28,23 @@ forward_velocity_controller:
       - door_opening_mechanism_joint_y_axis_slide
       - door_opening_mechanism_joint_x_axis_slide
       - door_opening_mechanism_joint_rotating_arm
+      - door_opening_mechanism_joint_freely_rotating_hook
     interface_name: velocity
 
-joint_trajectory_position_controller:
+joint_trajectory_controller:
   ros__parameters:
     joints:
       - door_opening_mechanism_joint_y_axis_slide
       - door_opening_mechanism_joint_x_axis_slide
       - door_opening_mechanism_joint_rotating_arm
+      - door_opening_mechanism_joint_freely_rotating_hook
 
     command_interfaces:
-      - position
+      - velocity
 
     state_interfaces:
       - position
+      - velocity
 
     state_publish_rate: 200.0 # Defaults to 50
     action_monitor_rate: 20.0 # Defaults to 20

@@ -13,17 +13,29 @@
 
       <joint name="${prefix}door_opening_mechanism_joint_y_axis_slide">
         <command_interface name="position">
-          <param name="min">-1</param>
-          <param name="max">1</param>
+          <param name="min">-5</param>
+          <param name="max">5</param>
         </command_interface>
         <command_interface name="velocity">
-          <param name="min">-1</param>
-          <param name="max">1</param>
+          <param name="min">-5</param>
+          <param name="max">5</param>
         </command_interface>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
       </joint>
       <joint name="${prefix}door_opening_mechanism_joint_x_axis_slide">
+        <command_interface name="position">
+          <param name="min">-5</param>
+          <param name="max">5</param>
+        </command_interface>
+        <command_interface name="velocity">
+          <param name="min">-5</param>
+          <param name="max">5</param>
+        </command_interface>
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+      <joint name="${prefix}door_opening_mechanism_joint_rotating_arm">
         <command_interface name="position">
           <param name="min">-1</param>
           <param name="max">1</param>
@@ -35,7 +47,7 @@
         <state_interface name="position"/>
         <state_interface name="velocity"/>
       </joint>
-      <joint name="${prefix}door_opening_mechanism_joint_rotating_arm">
+      <joint name="${prefix}door_opening_mechanism_joint_freely_rotating_hook">
         <command_interface name="position">
           <param name="min">-1</param>
           <param name="max">1</param>
