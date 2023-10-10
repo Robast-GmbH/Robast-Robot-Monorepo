@@ -182,7 +182,7 @@ namespace dryve_d1_bridge
     // Telegrams for initial parameters
     unsigned char _send_feed_rate[23] = {0, 0, 0, 0, 0, 17, 0, 43, 13, 1, 0, 0, 96, 146, 1, 0, 0, 0, 4, 0, 0, 0, 0};
     unsigned char _send_shaft_revolutions[23] = {0, 0, 0, 0, 0, 14, 0, 43, 13, 1, 0, 0, 96, 146, 2, 0, 0, 0, 1, 1};
-    std::vector<unsigned char> _send_si_unit_factor{0,  0,   0, 0, 0, 13, 0, 43, 13, 0, 0, 0,
+    std::vector<unsigned char> _send_si_unit_factor{0,  0,   0, 0, 0, 17, 0, 43, 13, 1, 0, 0,
                                                     96, 168, 0, 0, 0, 0,  4, 0,  0,  0, 0};
 
     // Telegrams to set the mode of operation
