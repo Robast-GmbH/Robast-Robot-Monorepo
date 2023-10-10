@@ -3,6 +3,8 @@
 
 namespace dryve_d1_bridge
 {
+  // Compare these values with hte values of page 164 of the dryve d1 manual:
+  // https://assets.ctfassets.net/oxcgtdo88e20/AQWcl1jIZGhasmYsUkMOW/54cc1412717a60cd5d4dcf19fa624257/DE_DAS_Handbuch_dryve_D1_DE_V3.0.1.pdf
   enum class si_unit_factor : unsigned char
   {
     TEN_TO_THE_POWER_OF_2 = 0x02,
