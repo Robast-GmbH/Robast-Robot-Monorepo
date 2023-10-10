@@ -4,9 +4,9 @@ moveit_controller_manager: moveit_simple_controller_manager/MoveItSimpleControll
 
 moveit_simple_controller_manager:
   controller_names:
-    - door_opening_mechanism_controller
+    - joint_trajectory_controller
 
-  door_opening_mechanism_controller:
+  joint_trajectory_controller:
     type: FollowJointTrajectory
     action_ns: follow_joint_trajectory
     default: true
@@ -15,4 +15,3 @@ moveit_simple_controller_manager:
       - door_opening_mechanism_joint_x_axis_slide
       - door_opening_mechanism_joint_rotating_arm
       - door_opening_mechanism_joint_freely_rotating_hook
-      - position
