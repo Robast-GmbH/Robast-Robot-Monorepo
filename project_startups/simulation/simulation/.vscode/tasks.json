@@ -66,17 +66,6 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start door_mechanism_world",
-                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world door_opening_mechanism_world_launch.py",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
                         "label": "start moveit_drawer",
                         "command": "source /workspace/install/setup.bash; ros2 launch moveit_drawer_config moveit_launch.py",
                         "problemMatcher": [],
