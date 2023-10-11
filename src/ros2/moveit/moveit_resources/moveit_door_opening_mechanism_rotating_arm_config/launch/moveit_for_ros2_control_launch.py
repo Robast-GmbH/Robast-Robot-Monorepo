@@ -32,17 +32,10 @@ def generate_launch_description():
      * robot_state_publisher
      * move_group
      * moveit_rviz
-     * warehouse_db (optional)
      * ros2_control_node + controller spawners
     """
     ld = LaunchDescription()
-    ld.add_action(
-        DeclareBooleanLaunchArg(
-            "db",
-            default_value=False,
-            description="By default, we do not start a database (it can be large)",
-        )
-    )
+
     ld.add_action(
         DeclareBooleanLaunchArg(
             "debug",
@@ -63,15 +56,6 @@ def generate_launch_description():
             )
         )
 
-    # Given the published joint states, publish tf for the robot links
-    ld.add_action(
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                str(moveit_config.package_path / "launch/rsp.launch.py")
-            ),
-        )
-    )
-
     ld.add_action(
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource(
@@ -90,22 +74,17 @@ def generate_launch_description():
         )
     )
 
-    # If database loading was enabled, start mongodb as well
-    ld.add_action(
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                str(moveit_config.package_path / "launch/warehouse_db.launch.py")
-            ),
-            condition=IfCondition(LaunchConfiguration("db")),
-        )
-    )
-
-    ld.add_action(
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                str(moveit_config.package_path / "launch/spawn_controllers.launch.py")
-            ),
-        )
-    )
+    # controller_names = moveit_config.trajectory_execution.get(
+    #     "moveit_simple_controller_manager", {}
+    # ).get("controller_names", [])
+    # for controller in controller_names:
+    #     ld.add_action(
+    #         Node(
+    #             package="controller_manager",
+    #             executable="spawner",
+    #             arguments=[controller],
+    #             output="screen",
+    #         )
+    #     )
 
     return ld
