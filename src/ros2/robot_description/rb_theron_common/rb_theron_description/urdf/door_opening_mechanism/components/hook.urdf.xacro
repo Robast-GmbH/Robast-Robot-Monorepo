@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<robot name="hook" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="box_inertia_robot" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                izz="${m*(x*x+z*z)/12}" />
+    </xacro:macro>
+
+    <xacro:macro name="hook" params="prefix suffix parent *origin r g b">
+
+    <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_elements/basic_box.urdf.xacro" />
+    <xacro:basic_box
+        parent="${prefix}${parent}"
+        joint_name="${prefix}hook_joint${suffix}"
+        link_name="${prefix}hook_base_link${suffix}"
+        m="0.1"
+        x="0.06"
+        y="0.01"
+        z="0.04"
+        r="${r}"
+        g="${g}"
+        b="${b}">
+        <xacro:insert_block name="origin" />
+    </xacro:basic_box>
+
+    <xacro:basic_box
+        parent="${prefix}hook_base_link${suffix}"
+        joint_name="${prefix}hook_joint_front_side${suffix}"
+        link_name="${prefix}hook_link_front_side${suffix}"
+        m="0.1"
+        x="0.008"
+        y="0.03"
+        z="0.04"
+        r="${r}"
+        g="${g}"
+        b="${b}">
+        <origin xyz="-0.026 0.02 0" rpy="0 0 0"/>
+    </xacro:basic_box>
+
+    <xacro:basic_box
+        parent="${prefix}hook_base_link${suffix}"
+        joint_name="${prefix}hook_joint_back_side${suffix}"
+        link_name="${prefix}hook_link_back_side${suffix}"
+        m="0.1"
+        x="0.008"
+        y="0.03"
+        z="0.04"
+        r="${r}"
+        g="${g}"
+        b="${b}">
+        <origin xyz="+0.026 0.02 0" rpy="0 0 0"/>
+    </xacro:basic_box>
+
+    </xacro:macro>
+</robot>

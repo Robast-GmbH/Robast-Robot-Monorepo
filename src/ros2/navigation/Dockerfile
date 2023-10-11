@@ -93,7 +93,9 @@ RUN apt-get update && apt-get install -y \
 
 RUN apt-get update && apt-get upgrade -y
 
-
+WORKDIR /python_dep
+COPY ./requirements.txt /python_dep
+RUN pip install -r requirements.txt
 # COPY "/entrypoint.sh" "/entrypoint.sh"
 #ENTRYPOINT ["/entrypoint.sh"]
 # dds setup / configuration
