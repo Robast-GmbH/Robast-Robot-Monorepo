@@ -1,0 +1,24 @@
+# This config file is used by ros2_control
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    door_opening_mechanism_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+door_opening_mechanism_controller:
+  ros__parameters:
+    joints:
+      - door_opening_mechanism_joint_y_axis_slide
+      - door_opening_mechanism_joint_x_axis_slide
+      - door_opening_mechanism_joint_rotating_arm
+      - door_opening_mechanism_joint_freely_rotating_hook
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity

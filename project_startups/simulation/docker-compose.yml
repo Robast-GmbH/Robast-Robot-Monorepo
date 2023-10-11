@@ -8,10 +8,10 @@ services:
       - is_simulation=True
       - config_directory=config_simulation
       - robot_name=rb_theron
-      - init_x=0.0
+      - init_x=-2.0
       - init_y=0.0
       - init_z=0.0
-      - init_yaw=0.0
+      - init_yaw=3.14
       - robot=rb_theron
       - prefix=
     volumes:
@@ -28,7 +28,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-
+#    network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
     
   navigation:
@@ -41,7 +41,7 @@ services:
       - init_x=0.0
       - init_y=0.0
       - init_z=0.0
-      - init_yaw=0.0
+      - init_yaw=3.14
     volumes:
       - ./navigation/:/workspace/:cached
       - ../../src/ros2/navigation:/workspace/src/navigation:cached
