@@ -54,7 +54,7 @@ def generate_launch_description():
     
     declare_headless_cmd = DeclareLaunchArgument(
         "headless",
-        default_value="",
+        default_value=" ",
         description="Weather to run in headless mode (-s) or with gui ''",
     )
 
