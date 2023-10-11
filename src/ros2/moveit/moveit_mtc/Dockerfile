@@ -1,4 +1,4 @@
-FROM ros:humble as base
+FROM ros:humble as devel
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
@@ -44,7 +44,6 @@ RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone http
   && apt update \
   && apt upgrade -y \
   && . /opt/ros/${ROS_DISTRO}/setup.sh \
-#   && . /workspace_ros_gz/install/setup.sh \
   && rosdep update \
   && rosdep install --from-paths /workspace_moveit2/src --ignore-src -r -y \
   && colcon build --parallel-workers 3 --build-base /workspace_moveit2/build --install-base /workspace_moveit2/install \

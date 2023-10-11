@@ -40,7 +40,6 @@ jobs:
       with:
         context: src/ros2/moveit/${{ env.Project-Name }}/
         target: devel
-        build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }} #TODO @TAlscher find a smarter way then using this token
         push: true
         file: src/ros2/moveit/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
