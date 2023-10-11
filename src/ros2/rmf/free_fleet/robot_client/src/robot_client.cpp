@@ -337,7 +337,6 @@ namespace rmf_robot_client
     geometry_msgs::msg::TransformStamped t;
     try {
           t = tf_buffer_->lookupTransform(map_frame_id, robot_frame_id, tf2::TimePointZero);
-        // t = tf_buffer_->lookupTransform( map_frame_id, robot_frame_id, this->get_clock()->now(),rclcpp::Duration::from_seconds(0.05));
         } 
     catch (const tf2::TransformException & ex) 
       {
@@ -352,10 +351,10 @@ namespace rmf_robot_client
 
     current_x = t.transform.translation.x;
     current_y = t.transform.translation.y;
-    current_yaw= yaw * (180 / M_PI); 
+    current_yaw = yaw;//= yaw * (180 / M_PI); 
 
     RCLCPP_INFO(this->get_logger(), "x: %f, y: %f, z:%f w: %f", t.transform.rotation.x,  t.transform.rotation.y,  t.transform.rotation.z,  t.transform.rotation.w);
-    RCLCPP_INFO(this->get_logger(),"yaw: %f, degree %f",yaw, current_yaw);
+    RCLCPP_INFO(this->get_logger(),"yaw: %f, degree %f",yaw, yaw * (180 / M_PI)+180);
   }
 
   std::vector<std::string> RobotClient::split( std::string input_text, char delimiter)
