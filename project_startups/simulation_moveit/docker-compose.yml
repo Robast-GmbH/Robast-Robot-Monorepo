@@ -8,10 +8,10 @@ services:
       - is_simulation=True
       - config_directory=config_simulation
       - robot_name=rb_theron
-      - init_x=0.0
+      - init_x=-2.0
       - init_y=0.0
       - init_z=0.0
-      - init_yaw=0.0
+      - init_yaw=3.14
       - robot=rb_theron
       - prefix=
     volumes:
@@ -41,7 +41,7 @@ services:
       - init_x=0.0
       - init_y=0.0
       - init_z=0.0
-      - init_yaw=0.0
+      - init_yaw=3.14
     volumes:
       - ./navigation/:/workspace/:cached
       - ../../src/ros2/navigation:/workspace/src/navigation:cached
@@ -51,11 +51,7 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   moveit_mtc:
-    # TODO@Tobi: How do I use the image from ghcr?
-    build:
-      context: .
-      dockerfile: ../../src/ros2/moveit/moveit_mtc/Dockerfile
-    image: robast_moveit_mtc
+    image: ghcr.io/robast-gmbh/monorepo/moveit_mtc:devel
     environment:
       - ROS_DOMAIN_ID=1
       - is_simulation=True

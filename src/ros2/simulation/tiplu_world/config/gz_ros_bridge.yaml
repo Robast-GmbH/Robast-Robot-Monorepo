@@ -5,7 +5,7 @@
   gz_type_name: "gz.msgs.Pose_V"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: true               # Default "false"
+  lazy: false               # Default "false"
   direction: BIDIRECTIONAL      # Default "BIDIRECTIONAL" - Bridge both directions
                             # "GZ_TO_ROS" - Bridge Ignition topic to ROS
                             # "ROS_TO_GZ" - Bridge ROS topic to Ignition
@@ -16,7 +16,7 @@
   gz_type_name: "gz.msgs.Model"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: true               # Default "false"
+  lazy: false               # Default "false"
   direction: BIDIRECTIONAL
 
 - ros_topic_name: "/joint_states"
@@ -25,7 +25,7 @@
   gz_type_name: "gz.msgs.Model"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: true               # Default "false"
+  lazy: false               # Default "false"
   direction: BIDIRECTIONAL                          
 
 
