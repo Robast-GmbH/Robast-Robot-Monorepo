@@ -120,7 +120,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     _y_axis->run_dryve_state_machine();
 
     // TODO: Check if this is working
-    _x_axis->set_si_unit_factor(dryve_d1_bridge::si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_4, true);
+    _x_axis->set_si_unit_factor(dryve_d1_bridge::si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_5, true);
+    _y_axis->set_si_unit_factor(dryve_d1_bridge::si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_5, true);
 
     _x_axis->set_debug_mode_off();
     _y_axis->set_debug_mode_off();
@@ -280,14 +281,6 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemPositionOnlyHardware::read(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
   {
-    // TODO@Jacob: Remove this when debugging is finished!
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                "SI_UNIT_FACTOR from x axis = %f",
-                _x_axis->get_si_unit_factor());
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                "SI_UNIT_FACTOR from y axis = %f",
-                _y_axis->get_si_unit_factor());
-
     _hw_position_states[1] =
       static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
                                                      _x_axis->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
@@ -316,7 +309,7 @@ namespace ros2_control_plugin_door_opening_mechanism
     for (uint8_t i = 0; i < _hw_velocity_commands.size(); i++)
     {
       double velocity_command = _hw_velocity_commands[i];
-      if (velocity_command > 0.000001)
+      if (velocity_command > 0.000001 || velocity_command < -0.000001)
       {
         RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
                     "Velocity command for axis %d: %f",
@@ -325,8 +318,8 @@ namespace ros2_control_plugin_door_opening_mechanism
       }
     }
 
-    _x_axis->set_profile_velocity(
-      _hw_velocity_commands[1], dryve_d1_bridge::X_AXIS_ACCELERATION, dryve_d1_bridge::X_AXIS_DECELERATION);
+    // _x_axis->set_profile_velocity(
+    //   _hw_velocity_commands[1], dryve_d1_bridge::X_AXIS_ACCELERATION, dryve_d1_bridge::X_AXIS_DECELERATION);
     _y_axis->set_profile_velocity(
       _hw_velocity_commands[0], dryve_d1_bridge::Y_AXIS_ACCELERATION, dryve_d1_bridge::Y_AXIS_DECELERATION);
 
