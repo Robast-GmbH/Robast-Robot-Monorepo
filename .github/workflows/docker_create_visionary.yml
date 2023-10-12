@@ -2,8 +2,6 @@ name: Create Docker Image for the sick safe visionary
 
 #trigger workflow every day at 00:00
 on:
-  schedule:
-    - cron: '0 0 * * 1'
   push:
     branches:
         - main
