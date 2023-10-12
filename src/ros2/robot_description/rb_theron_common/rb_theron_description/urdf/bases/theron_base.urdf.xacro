@@ -50,9 +50,9 @@
           </geometry>
         </xacro:if>
         <xacro:unless value="${hq}">
-          <origin xyz="0 0 0.05" rpy="0 0 0" />
+          <origin xyz="0 0 0.105" rpy="0 0 0" />
           <geometry>
-            <box size="0.390 0.240 0.165"/>
+            <box size="0.390 0.240 0.140"/>
           </geometry>
         </xacro:unless>
         <material name="darkgrey">
@@ -60,9 +60,9 @@
         </material>
       </visual>
       <collision>
-        <origin xyz="0 0 0.05" rpy="0 0 0 " />
+        <origin xyz="0 0 0.105" rpy="0 0 0 " />
         <geometry>
-          <box size="0.390 0.240 0.165"/>
+          <box size="0.390 0.240 0.140"/>
           <!-- <mesh filename="(find rb_theron_description)/meshes/bases/theron_base.dae"/> -->
         </geometry>
       </collision>
