@@ -311,10 +311,20 @@ namespace ros2_control_plugin_door_opening_mechanism
       double velocity_command = _hw_velocity_commands[i];
       if (velocity_command > 0.000001 || velocity_command < -0.000001)
       {
-        RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                    "Velocity command for axis %d: %f",
-                    i,
-                    velocity_command);
+        if (!_is_start_time_initialized)
+        {
+          _start_time = rclcpp::Clock().now();
+          _is_start_time_initialized = true;
+        }
+        rclcpp::Duration elapsed_duration = rclcpp::Clock().now() - _start_time;
+
+        RCLCPP_INFO(
+          rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+          "Velocity command for axis %d: %f. Position command: %f. Time passed since first velocity command: %f",
+          i,
+          velocity_command,
+          _hw_position_commands[i],
+          elapsed_duration.seconds() + elapsed_duration.nanoseconds() * 1e-9);
       }
     }
 
@@ -322,6 +332,9 @@ namespace ros2_control_plugin_door_opening_mechanism
     //   _hw_velocity_commands[1], dryve_d1_bridge::X_AXIS_ACCELERATION, dryve_d1_bridge::X_AXIS_DECELERATION);
     _y_axis->set_profile_velocity(
       _hw_velocity_commands[0], dryve_d1_bridge::Y_AXIS_ACCELERATION, dryve_d1_bridge::Y_AXIS_DECELERATION);
+
+    // _y_axis->move_profile_to_absolute_position(
+    //   _hw_position_commands[0], dryve_d1_bridge::Y_AXIS_VELOCITY, dryve_d1_bridge::Y_AXIS_ACCELERATION);
 
     return hardware_interface::return_type::OK;
   }
