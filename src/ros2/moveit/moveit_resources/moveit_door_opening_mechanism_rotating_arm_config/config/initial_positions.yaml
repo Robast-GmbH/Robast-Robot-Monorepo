@@ -1,0 +1,7 @@
+# Default initial positions for rb_theron's ros2_control fake system
+
+initial_positions:
+  door_opening_mechanism_joint_freely_rotating_hook: 0
+  door_opening_mechanism_joint_rotating_arm: 0
+  door_opening_mechanism_joint_x_axis_slide: 0
+  door_opening_mechanism_joint_y_axis_slide: 0

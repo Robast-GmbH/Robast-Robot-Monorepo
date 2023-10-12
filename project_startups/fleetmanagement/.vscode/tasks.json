@@ -26,22 +26,6 @@
                 "isDefault": true
             }
         },
-        // Clean
-        {
-            "label": "clean",
-            "detail": "Run the clean target",
-            "type": "shell",
-            "command": "colcon build --cmake-target clean",
-            "problemMatcher": "$gcc"
-        },
-         // Clean-ros
-        {
-            "label": "clean-ros",
-            "detail": "Clean ros colcon build",
-            "type": "shell",
-            "command": "colcon build --cmake-target clean",
-            "problemMatcher": "$gcc"
-        },
            // Build simple FleetManagement
         {
             "label": "build-ros-simple-fleetmanagement",

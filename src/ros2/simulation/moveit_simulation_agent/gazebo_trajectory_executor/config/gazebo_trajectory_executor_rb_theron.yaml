@@ -1,0 +1,9 @@
+rb_theron_robot_trajectory_executor:
+  ros__parameters:
+    joint_names:
+      - door_opening_mechanism_joint_y_axis_slide
+      - door_opening_mechanism_joint_x_axis_slide
+      - door_opening_mechanism_joint_rotating_arm
+      - door_opening_mechanism_joint_freely_rotating_hook
+    rate: 200
+    follow_joint_trajectory_action: "/door_opening_mechanism_controller/follow_joint_trajectory"

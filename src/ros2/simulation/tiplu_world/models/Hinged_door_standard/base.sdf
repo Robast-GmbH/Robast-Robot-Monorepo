@@ -12,7 +12,7 @@
         </geometry>
       </collision>
       <collision name="Door_frame_lockside_front_collision">
-        <pose>-0.05145 0.74631 1.0541 0 0 0</pose>
+        <pose>-0.05145 0.954631 1.0541 0 0 0</pose>
         <geometry>
           <box>
             <size>0.00005 0.06858 2.10820</size>
@@ -20,7 +20,7 @@
         </geometry>
       </collision>
       <collision name="Door_frame_lockside_back_collision">
-        <pose>0.0 0.74631 1.0541 0 0 0</pose>
+        <pose>0.0 0.954631 1.0541 0 0 0</pose>
         <geometry>
           <box>
             <size>0.00005 0.06858 2.10820</size>
@@ -28,10 +28,10 @@
         </geometry>
       </collision>
       <collision name="Door_frame_top_collision">
-        <pose>-0.05145 0.95631 1.0541 0 0 0</pose>
+        <pose>0 0.5 2.08 0 0 0</pose>
         <geometry>
           <box>
-            <size>0.00005 0.06858 2.10820</size>
+            <size> 0.1005 0.95 0.06858 </size>
           </box>
         </geometry>
       </collision>
@@ -40,7 +40,7 @@
         <geometry>
           <mesh>
             <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard/meshes/frame.dae</uri>
-            <scale>1 0.77 1</scale>
+            <scale>1 1 1</scale>
           </mesh>
         </geometry>
       </visual>
@@ -60,7 +60,7 @@
         </inertia>
       </inertial>
       <collision name="door_leaf_side_a_collision">
-        <pose>0.4569 0.00349 1.016 0 0 0</pose>
+        <pose>0.4569 0.00549 1.016 0 0 0</pose>
         <geometry>
           <box>
             <size>0.9144 0.00004 2.032</size>
@@ -68,7 +68,7 @@
         </geometry>
       </collision>
       <collision name="door_leaf_side_b_collision">
-        <pose>0.4569 0.0549 1.016 0 0 0</pose>
+        <pose>0.4569 -0.0549 1.016 0 0 0</pose>
         <geometry>
           <box>
             <size>0.9144 0.00004 2.032</size>
@@ -80,7 +80,7 @@
         <geometry>
           <mesh>
             <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard/meshes/door.dae</uri>
-            <scale>0.77 1 1</scale>
+            <scale>1 1 1</scale>
           </mesh>
         </geometry>
       </visual>
@@ -88,7 +88,7 @@
     <link name="handles">
       <pose>0.0 0.8 1.05 0 3.14 1.57</pose>
       <collision name="handle_connecting_rood_collision">
-        <gravity>1</gravity>
+        <pose>0 -0.015 0 -1.6 0 0</pose>
         <geometry>
           <cylinder>
             <radius>0.01</radius>
@@ -97,7 +97,7 @@
         </geometry>
       </collision>
       <visual name="handle_connecting_rood_visual">
-        <pose>0.215 -0.015 0 -1.6 0 0</pose>
+        <pose>0 -0.015 0 -1.6 0 0</pose>
         <geometry>
           <cylinder>
             <radius>0.01</radius>
@@ -106,7 +106,7 @@
         </geometry>
       </visual>
       <visual name="handle_bold_visual">
-        <pose>0.154 -0.028 0.01 0 1.54 0</pose>
+        <pose> -0.08 -0.028 0.01 0 1.64 0</pose>
         <geometry>
           <cylinder>
             <radius>0.005</radius>
@@ -115,7 +115,7 @@
         </geometry>
       </visual>
       <collision name="handle_bold_collision">
-        <pose>0.154 -0.028 0.01 0 1.54 0</pose>
+           <pose> -0.08 -0.028 0.01 0 1.64 0</pose>
         <geometry>
           <cylinder>
             <radius>0.005</radius>
@@ -124,7 +124,7 @@
         </geometry>
       </collision>
       <collision name="handle1_handpiece_side_b_collision">
-        <pose>0.32 -0.13 0 -1.57 0 -1.5</pose>
+        <pose>0.1  -0.13 0 -1.57 0 -1.5</pose>
         <geometry>
           <cylinder>
             <radius>0.02</radius>
@@ -133,7 +133,7 @@
         </geometry>
       </collision>
       <visual name="handle1_handpiece_side_b_visual">
-        <pose>0.32 -0.13 0 -1.57 0 -1.5</pose>
+        <pose>0.1 -0.13 0 -1.57 0 -1.5</pose>
         <geometry>
           <cylinder>
             <radius>0.02</radius>
@@ -142,7 +142,7 @@
         </geometry>
       </visual>
       <collision name="handle1_handpiece_side_a_collision">
-        <pose>0.32 0.13 0 -1.57 0 -1.5</pose>
+        <pose>0.1  0.13 0 -1.57 0 -1.5</pose>
         <geometry>
           <cylinder>
             <radius>0.02</radius>
@@ -151,7 +151,7 @@
         </geometry>
       </collision>
       <visual name="handle1_handpiece_side_a_visual">
-        <pose>0.32 0.13 0 -1.57 0 -1.5</pose>
+        <pose>0.1  0.13 0 -1.57 0 -1.5</pose>
         <geometry>
           <cylinder>
             <radius>0.02</radius>

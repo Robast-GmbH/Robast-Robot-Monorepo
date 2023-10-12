@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<robot name="crossbar_with_double_hook" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="crossbar_with_double_hook" params="prefix parent *origin">
+
+        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/alu_profile.urdf.xacro" />
+        <xacro:alu_profile prefix="${prefix}" suffix="gripper" parent="${parent}" x="0.03" y="0.03" z="0.3" r="0" g="1" b="0">
+            <xacro:insert_block name="origin" />
+        </xacro:alu_profile>
+
+        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/hook.urdf.xacro" />
+        <xacro:hook prefix="${prefix}" suffix="left_hook" parent="${prefix}alu_profile_link_gripper" r="0" g="0" b="1">
+            <origin xyz="-0.045 -0.01 0.13" rpy="0 0 0"/>
+        </xacro:hook>
+        <xacro:hook prefix="${prefix}" suffix="right_hook" parent="${prefix}alu_profile_link_gripper" r="0" g="0" b="1">
+            <origin xyz="-0.045 -0.01 -0.13" rpy="0 0 0"/>
+        </xacro:hook>
+
+    </xacro:macro>
+</robot>
