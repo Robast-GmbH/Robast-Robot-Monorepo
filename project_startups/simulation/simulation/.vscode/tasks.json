@@ -12,27 +12,17 @@
                         }
                 },
                 {
-                        "label": "clean-ros",
-                        "detail": "Clean ros colcon build",
-                        "type": "shell",
-                        "command": "colcon build --cmake-target clean",
-                        "problemMatcher": "$gcc"
-                },
-                {
-                        "label": "clean",
-                        "detail": "Purge and clean ros colcon build",
-                        "dependsOn": [
-                                "purge",
-                                "clean-ros"
-                        ],
-                        "dependsOrder": "sequence",
-                        "problemMatcher": []
-                },
-                {
                         "label": "build",
                         "detail": "Symlink Build",
                         "type": "shell",
-                        "command": "colcon build --symlink-install --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+                        "command": "colcon build --symlink-install --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Release' -Wall -Wextra -Wpedantic",
+                        "problemMatcher": []
+                },
+                {
+                        "label": "debug-build",
+                        "detail": "build used for debugging purposes",
+                        "type": "shell",
+                        "command": "colcon build --mixin debug --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic",
                         "problemMatcher": []
                 },
                 {
@@ -77,7 +67,7 @@
                 {
                         "type": "shell",
                         "label": "start moveit_drawer",
-                        "command": "source /workspace/install/setup.bash; ros2 launch moveit2_drawer moveit_launch.py",
+                        "command": "source /workspace/install/setup.bash; ros2 launch moveit_drawer_config moveit_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -88,7 +78,7 @@
                 {
                         "type": "shell",
                         "label": "start moveit_door_opening_mechanism",
-                        "command": "source /workspace/install/setup.bash; ros2 launch moveit2_door_opening_mechanism moveit_launch.py",
+                        "command": "source /workspace/install/setup.bash; ros2 launch moveit_door_opening_mechanism_rotating_arm_config moveit_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -98,8 +88,8 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start drawer_gazebo_controller_manager",
-                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_controller_manager_launch.py follow_joint_trajectory_action:='/drawer_planning_group_controller/follow_joint_trajectory' joint_names_list:=['drawer_1_joint','drawer_2_joint','drawer_3_joint','drawer_4_joint','drawer_5_joint']",
+                        "label": "start drawer_gazebo_trajectory_controller_manager",
+                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_trajectory_controller_launch.py follow_joint_trajectory_action:='/drawer_planning_group_controller/follow_joint_trajectory' joint_names_list:=['drawer_1_joint','drawer_2_joint','drawer_3_joint','drawer_4_joint','drawer_5_joint']",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -109,8 +99,19 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start door_opening_mechanism_gazebo_controller_manager",
-                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_controller_manager_launch.py follow_joint_trajectory_action:='/door_opening_mechanism_controller/follow_joint_trajectory' joint_names_list:=['door_opening_mechanism_joint_tilting_hook','door_opening_mechanism_joint_x_axis_slide','door_opening_mechanism_joint_y_axis_slide']",
+                        "label": "start door_opening_mechanism_gazebo_robot_trajectory_executor_launch",
+                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_robot_trajectory_executor_launch.py joint_names_list:=['door_opening_mechanism_joint_freely_rotating_hook','door_opening_mechanism_joint_rotating_arm','door_opening_mechanism_joint_x_axis_slide','door_opening_mechanism_joint_y_axis_slide']",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start door_opening_mechanism_gazebo_trajectory_controller_manager",
+                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_controller_manager gazebo_trajectory_controller_launch.py follow_joint_trajectory_action:='/door_opening_mechanism_controller/follow_joint_trajectory' joint_names_list:=['door_opening_mechanism_joint_freely_rotating_hook','door_opening_mechanism_joint_rotating_arm','door_opening_mechanism_joint_x_axis_slide','door_opening_mechanism_joint_y_axis_slide']",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -130,8 +131,52 @@
                         }
                 },
                 {
+                        "type": "shell",
+                        "label": "start door_opening_mechanism_simulation",
+                        "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_simulation door_opening_mechanism_simulation_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start door_opening_mechanism_mtc",
+                        "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_mtc door_opening_mechanism_mtc_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start door_opening_mechanism_simulation_send_fake_pose",
+                        "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_simulation door_opening_mechanism_simulation_send_fake_pose_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start door_opening_mechanism_simulation_motion_plan_request",
+                        "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_simulation door_opening_mechanism_simulation_motion_plan_request_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
                         "label": "startup_sim_with_drawer_simulation",
-                        "detail": "Starts tiplu_sim, moveit_drawer, drawer_gazebo_controller_manager and drawer_bridge_simulation",
+                        "detail": "Starts tiplu_sim, moveit_drawer, drawer_gazebo_trajectory_controller_manager and drawer_bridge_simulation",
                         "dependsOn":
                         [
                                 "start tiplu_sim",
@@ -142,13 +187,25 @@
                 },
                 {
                         "label": "startup_sim_with_door_opening_simulation",
-                        "detail": "Starts tiplu_sim, moveit_door_opening, gazebo_controller_manager",
-                        "dependsOn":
-                        [
+                        "detail": "Starts tiplu_sim, moveit_door_opening_mechanism, door_opening_mechanism_simulation, door_opening_mechanism_gazebo_trajectory_controller_manager",
+                        "dependsOn": [
                                 "start tiplu_sim",
                                 "start moveit_door_opening_mechanism",
-                                "start door_opening_mechanism_gazebo_controller_manager",
-                        ]
+                                "start door_opening_mechanism_simulation",
+                                "start door_opening_mechanism_gazebo_trajectory_controller_manager"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "label": "startup_sim_with_door_opening_mtc",
+                        "detail": "Starts tiplu_sim, moveit_door_opening_mechanism, door_opening_mechanism_mtc, door_opening_mechanism_gazebo_trajectory_controller_manager",
+                        "dependsOn": [
+                                "start tiplu_sim",
+                                "start moveit_door_opening_mechanism",
+                                "start door_opening_mechanism_mtc",
+                                "start door_opening_mechanism_gazebo_trajectory_controller_manager"
+                        ],
+                        "problemMatcher": []
                 },
                 {
                         "type": "shell",

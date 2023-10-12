@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<robot name="rotating_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="box_inertia_robot" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                izz="${m*(x*x+z*z)/12}" />
+    </xacro:macro>
+
+    <xacro:macro name="rotating_arm" params="prefix parent *origin arm_length">
+
+        <xacro:basic_joint 
+            parent="${prefix}${parent}"
+            joint_name="${prefix}door_opening_mechanism_joint_rotating_arm"
+            joint_type="revolute"
+            axis_x="1"
+            axis_y="0"
+            axis_z="0"
+            lower_limit="-0.02"
+            upper_limit="3.12"
+            damping="0.1"
+            friction="0.3"
+            p_gain="500"
+            i_gain="1000"
+            d_gain="10"
+            link_name="${prefix}door_opening_mechanism_link_rotating_arm"
+            link_origin_x="0.0"
+            link_origin_y="0.0"
+            link_origin_z="${arm_length/2}"
+            m="0.2"
+            x="0.03"
+            y="0.03"
+            z="${arm_length}"
+            r="0"
+            g="1"
+            b="0">
+            <xacro:insert_block name="origin" />
+        </xacro:basic_joint>
+
+        <!-- Adapter for Gripper -->
+        <!-- Please mind: We need this link as end effector for moveit in order to not include the freely rotating hook into
+        path planning -->
+        <xacro:basic_box
+            parent="${prefix}door_opening_mechanism_link_rotating_arm"
+            joint_name="${prefix}door_opening_mechanism_joint_gripper_adapter"
+            link_name="${prefix}door_opening_mechanism_link_gripper_adapter"
+            m="0.1"
+            x="0.01"
+            y="0.03"
+            z="0.03"
+            r="0"
+            g="1"
+            b="0">
+            <origin xyz="0.020 0.0 ${arm_length-0.015}" rpy="0 0 0"/>
+        </xacro:basic_box>
+
+        <!-- Gripper -->
+        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/freely_rotating_hook.urdf.xacro" />
+        <xacro:freely_rotating_hook prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_gripper_adapter">
+            <origin xyz="0.020 0.0 0.0" rpy="0 0 0"/>
+        </xacro:freely_rotating_hook>
+
+    </xacro:macro>
+</robot>

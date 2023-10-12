@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<robot name="tilting_arm" xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <xacro:macro name="box_inertia_robot" params="m x y z">
+        <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
+                iyy="${m*(x*x+z*z)/12}" iyz = "0"
+                izz="${m*(x*x+z*z)/12}" />
+    </xacro:macro>
+
+    <xacro:macro name="tilting_arm" params="prefix parent *origin">
+
+        <xacro:basic_joint 
+            parent="${prefix}${parent}"
+            joint_name="${prefix}door_opening_mechanism_joint_tilting_hook"
+            joint_type="revolute"
+            axis_x="1"
+            axis_y="0"
+            axis_z="0"
+            lower_limit="-0.02"
+            upper_limit="1.6"
+            damping="0.1"
+            friction="0.3"
+            p_gain="500"
+            i_gain="1000"
+            d_gain="10"
+            link_name="${prefix}door_opening_mechanism_link_tilting_hook"
+            link_origin_x="0.0"
+            link_origin_y="0.0"
+            link_origin_z="0.1"
+            m="0.2"
+            x="0.03"
+            y="0.03"
+            z="0.2"
+            r="0"
+            g="1"
+            b="0">
+            <xacro:insert_block name="origin" />
+        </xacro:basic_joint>
+
+        <!-- Gripper -->
+        <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/crossbar_with_double_hook.urdf.xacro" />
+        <xacro:crossbar_with_double_hook prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_tilting_hook" >
+            <origin xyz="0 0 0.215" rpy="0 1.57079632679 0"/>
+        </xacro:crossbar_with_double_hook>
+
+    </xacro:macro>
+</robot>
