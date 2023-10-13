@@ -36,7 +36,7 @@ def shutdown_dryve_d1():
 def generate_launch_description():
     moveit_config = (
         MoveItConfigsBuilder("rb_theron", package_name="moveit_door_opening_mechanism_rotating_arm_config")
-        .robot_description(file_path="config/rb_theron_real_life.urdf.xacro")
+        .robot_description(file_path="config/rb_theron_real_world.urdf.xacro")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .to_moveit_configs()
     )
@@ -116,7 +116,7 @@ def generate_launch_description():
         Node(
             package="controller_manager",
             executable="ros2_control_node",
-            parameters=[moveit_config.robot_description, ros2_controllers_path, {"use_sim_time": use_sim_time}],
+            parameters=[moveit_config.robot_description, ros2_controllers_path],
             output="both",
         )
     )
