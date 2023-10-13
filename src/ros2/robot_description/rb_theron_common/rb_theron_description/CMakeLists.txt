@@ -3,7 +3,7 @@ project(rb_theron_description)
 
 find_package(ament_cmake REQUIRED)
 
-install(DIRECTORY meshes urdf robots ros2_control
+install(DIRECTORY meshes urdf robots
   DESTINATION share/${PROJECT_NAME}
 )
 

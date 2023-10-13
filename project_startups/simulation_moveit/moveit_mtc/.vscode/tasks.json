@@ -55,8 +55,19 @@
                 },
                 {
                         "type": "shell",
-                        "label": "start moveit_door_opening_mechanism",
-                        "command": "source /workspace/install/setup.bash; ros2 launch moveit_door_opening_mechanism_rotating_arm_config moveit_launch.py",
+                        "label": "start moveit_door_opening_mechanism for real life",
+                        "command": "source /workspace/install/setup.bash; ros2 launch moveit_door_opening_mechanism_rotating_arm_config moveit_real_life_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start moveit_door_opening_mechanism in standalone rviz simulation",
+                        "command": "source /workspace/install/setup.bash; ros2 launch moveit_door_opening_mechanism_rotating_arm_config moveit_rviz_simulation_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

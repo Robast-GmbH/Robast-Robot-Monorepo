@@ -10,6 +10,7 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 
+from moveit_configs_utils.launches import generate_static_virtual_joint_tfs_launch
 
 from moveit_configs_utils.launch_utils import (
     DeclareBooleanLaunchArg,
@@ -29,7 +30,7 @@ from moveit_configs_utils.launch_utils import (
 def generate_launch_description():
     moveit_config = (
         MoveItConfigsBuilder("rb_theron", package_name="moveit_door_opening_mechanism_rotating_arm_config")
-        .robot_description(file_path="config/rb_theron.urdf.xacro")
+        .robot_description(file_path="config/rb_theron_simulation.urdf.xacro")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .to_moveit_configs()
     )
@@ -53,16 +54,11 @@ def generate_launch_description():
         )
     )
 
+
     # If there are virtual joints, broadcast static tf by including virtual_joints launch
-    virtual_joints_launch = (
-        moveit_config.package_path / "launch/static_virtual_joint_tfs.launch.py"
+    ld.add_action(
+        generate_static_virtual_joint_tfs_launch(moveit_config)
     )
-    if virtual_joints_launch.exists():
-        ld.add_action(
-            IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(str(virtual_joints_launch)),
-            )
-        )
 
     # Load ExecuteTaskSolutionCapability so we can execute found solutions in simulation
     move_group_capabilities = {
