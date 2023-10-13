@@ -50,7 +50,7 @@ RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone http
   && echo "if [ -f /workspace_moveit2/install/setup.bash ]; then source /workspace_moveit2/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 # Install ros2_control from source as long as we use it for learning and testing purposes
-RUN mkdir -p workspace_ros_controls/src && cd workspace_ros_controls/src \
+RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
   && git clone https://github.com/ros-controls/ros2_control -b ${ROS_DISTRO} \
   && git clone https://github.com/ros-controls/ros2_controllers -b ${ROS_DISTRO} \
   && git clone https://github.com/ros-controls/ros2_control_demos -b ${ROS_DISTRO} \
@@ -58,9 +58,9 @@ RUN mkdir -p workspace_ros_controls/src && cd workspace_ros_controls/src \
   && apt upgrade -y \
   && . /opt/ros/${ROS_DISTRO}/setup.sh \
   && rosdep update \
-  && rosdep install --from-paths /workspace_ros_controls/src --ignore-src -r -y \
-  && colcon build --parallel-workers 3 --build-base /workspace_ros_controls/build --install-base /workspace_ros_controls/install \
-  && echo "if [ -f /workspace_ros_controls/install/setup.bash ]; then source /workspace_ros_controls/install/setup.bash; fi" >> /home/$USER/.bashrc
+  && rosdep install --from-paths /workspace_ros_control/src --ignore-src -r -y \
+  && colcon build --parallel-workers 3 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
+  && echo "if [ -f /workspace_ros_control/install/setup.bash ]; then source /workspace_ros_control/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
