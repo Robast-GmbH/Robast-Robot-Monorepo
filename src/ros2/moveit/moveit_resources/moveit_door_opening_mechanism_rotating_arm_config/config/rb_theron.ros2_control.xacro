@@ -8,6 +8,7 @@
       <hardware>
         <xacro:if value="${ros2_control_hardware_type == 'mock_components'}">
             <plugin>mock_components/GenericSystem</plugin>
+            <param name="calculate_dynamics">true</param>
         </xacro:if>
         <xacro:if value="${ros2_control_hardware_type == 'dryve_d1'}">
           <plugin>ros2_control_plugin_door_opening_mechanism/DoorOpeningMechanismSystemPositionOnlyHardware</plugin>
@@ -18,22 +19,22 @@
         </xacro:if>
       </hardware>
       <joint name="door_opening_mechanism_joint_y_axis_slide">
-        <command_interface name="position"/>
+        <command_interface name="velocity"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
       </joint>
       <joint name="door_opening_mechanism_joint_x_axis_slide">
-        <command_interface name="position"/>
+        <command_interface name="velocity"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
       </joint>
       <joint name="door_opening_mechanism_joint_rotating_arm">
-        <command_interface name="position"/>
+        <command_interface name="velocity"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
       </joint>
       <joint name="door_opening_mechanism_joint_freely_rotating_hook">
-        <command_interface name="position"/>
+        <command_interface name="velocity"/>
         <state_interface name="position"/>
         <state_interface name="velocity"/>
       </joint>
