@@ -7,12 +7,6 @@
             },
             "includePath": [
                 "/opt/ros/humble/include/**",
-                "/workspace/src/communication_interfaces/**",
-                "/workspace/src/statemachine**",
-                "${workspaceFolder}/src/statemachine/bt_plugins/include",
-                "${workspaceFolder}/src/statemachine/bt_plugins/tests",
-                "${workspaceFolder}/src/statemachine/BehaviorTree.CPP/**",
-                "${workspaceFolder}/install/behaviortree_cpp/include"
             ],
             "name": "ROS2",
             "intelliSenseMode": "gcc-x64",
