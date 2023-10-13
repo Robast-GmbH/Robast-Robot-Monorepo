@@ -1,30 +1,21 @@
 import os
 
+from ament_index_python.packages import get_package_share_directory
+
 from launch import LaunchDescription
-from launch.actions import (
-    DeclareLaunchArgument,
-    IncludeLaunchDescription,
-)
-from launch.conditions import IfCondition
+from launch.actions import IncludeLaunchDescription, ExecuteProcess, DeclareLaunchArgument
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 
 from launch_ros.actions import Node
-from launch_ros.parameter_descriptions import ParameterValue
 from moveit_configs_utils import MoveItConfigsBuilder
 
-from srdfdom.srdf import SRDF
 
 from moveit_configs_utils.launch_utils import (
-    add_debuggable_node,
     DeclareBooleanLaunchArg,
 )
 
-
-def generate_launch_description():
-    moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit_door_opening_mechanism_rotating_arm_config").to_moveit_configs()
-
-    """
+"""
     Launches a self contained demo
 
     Includes
@@ -33,8 +24,26 @@ def generate_launch_description():
      * move_group
      * moveit_rviz
      * ros2_control_node + controller spawners
-    """
+"""
+
+def generate_launch_description():
+    moveit_config = (
+        MoveItConfigsBuilder("rb_theron", package_name="moveit_door_opening_mechanism_rotating_arm_config")
+        .robot_description(file_path="config/rb_theron.urdf.xacro")
+        .trajectory_execution(file_path="config/moveit_controllers.yaml")
+        .to_moveit_configs()
+    )
+
     ld = LaunchDescription()
+
+    use_sim_time = LaunchConfiguration("use_sim_time")
+
+    declare_use_sim_time_cmd = DeclareLaunchArgument(
+        "use_sim_time",
+        default_value="false",
+        description="whether to use sim time or not",
+    )
+    ld.add_action(declare_use_sim_time_cmd)
 
     ld.add_action(
         DeclareBooleanLaunchArg(
@@ -43,7 +52,6 @@ def generate_launch_description():
             description="By default, we are not in debug mode",
         )
     )
-    ld.add_action(DeclareBooleanLaunchArg("use_rviz", default_value=True))
 
     # If there are virtual joints, broadcast static tf by including virtual_joints launch
     virtual_joints_launch = (
@@ -56,35 +64,82 @@ def generate_launch_description():
             )
         )
 
+    # Load ExecuteTaskSolutionCapability so we can execute found solutions in simulation
+    move_group_capabilities = {
+        "capabilities": "move_group/ExecuteTaskSolutionCapability"
+    }
+
+    # Start the actual move_group node/action server
+    ld.add_action(Node(
+        package="moveit_ros_move_group",
+        executable="move_group",
+        output="screen",
+        parameters=[
+            moveit_config.to_dict(),
+            move_group_capabilities,
+        ],
+    ))
+
+    # RViz
+    rviz_config_file = (
+        get_package_share_directory("moveit_door_opening_mechanism_rotating_arm_config") + "/config/moveit.rviz"
+    )
     ld.add_action(
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                str(moveit_config.package_path / "launch/move_group.launch.py")
-            ),
+        Node(
+            package="rviz2",
+            executable="rviz2",
+            name="rviz2",
+            output="log",
+            arguments=["-d", rviz_config_file],
+            parameters=[
+                moveit_config.robot_description,
+                moveit_config.robot_description_semantic,
+                moveit_config.robot_description_kinematics,
+                moveit_config.planning_pipelines,
+                moveit_config.joint_limits,
+            ],
         )
     )
 
-    # Run Rviz and load the default config to see the state of the move_group node
+    # State Publisher
     ld.add_action(
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource(
-                str(moveit_config.package_path / "launch/moveit_rviz.launch.py")
-            ),
-            condition=IfCondition(LaunchConfiguration("use_rviz")),
+        Node(
+            package="robot_state_publisher",
+            executable="robot_state_publisher",
+            name="robot_state_publisher",
+            output="both",
+            parameters=[
+                moveit_config.robot_description,
+            ],
         )
     )
 
-    # controller_names = moveit_config.trajectory_execution.get(
-    #     "moveit_simple_controller_manager", {}
-    # ).get("controller_names", [])
-    # for controller in controller_names:
-    #     ld.add_action(
-    #         Node(
-    #             package="controller_manager",
-    #             executable="spawner",
-    #             arguments=[controller],
-    #             output="screen",
-    #         )
-    #     )
+    # ros2_control
+    ros2_controllers_path = os.path.join(
+        get_package_share_directory("moveit_door_opening_mechanism_rotating_arm_config"),
+        "config",
+        "ros2_controllers.yaml",
+    )
+    ld.add_action(
+        Node(
+            package="controller_manager",
+            executable="ros2_control_node",
+            parameters=[moveit_config.robot_description, ros2_controllers_path, {"use_sim_time": use_sim_time}],
+            output="both",
+        )
+    )
+    
+    # Load controllers
+    for controller in [
+        "joint_state_broadcaster",
+        "joint_trajectory_controller",
+    ]:
+        ld.add_action(
+            ExecuteProcess(
+                cmd=["ros2 run controller_manager spawner {}".format(controller)],
+                shell=True,
+                output="screen",
+            )
+        )
 
     return ld
