@@ -37,7 +37,7 @@ RUN apt-get update && apt-get install -y \
     && add-apt-repository ppa:kisak/kisak-mesa -y\
     && apt upgrade -y
 
-# Adding moveit2_tutorials as separate workspace which can be used for learning and testing purposed.
+# Adding moveit2_tutorials as separate workspace which can be used for learning and testing purposes
 # Can be removed once there is enough moveit2 skill and knowledge archieved
 RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone https://github.com/ros-planning/moveit2_tutorials -b humble --depth 1 \
   && vcs import < moveit2_tutorials/moveit2_tutorials.repos \
@@ -48,6 +48,19 @@ RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone http
   && rosdep install --from-paths /workspace_moveit2/src --ignore-src -r -y \
   && colcon build --parallel-workers 3 --build-base /workspace_moveit2/build --install-base /workspace_moveit2/install \
   && echo "if [ -f /workspace_moveit2/install/setup.bash ]; then source /workspace_moveit2/install/setup.bash; fi" >> /home/$USER/.bashrc
+
+# Install ros2_control from source as long as we use it for learning and testing purposes
+RUN mkdir -p workspace_ros_controls/src && cd workspace_ros_controls/src \
+  && git clone https://github.com/ros-controls/ros2_control -b ${ROS_DISTRO} \
+  && git clone https://github.com/ros-controls/ros2_controllers -b ${ROS_DISTRO} \
+  && git clone https://github.com/ros-controls/ros2_control_demos -b ${ROS_DISTRO} \
+  && apt update \
+  && apt upgrade -y \
+  && . /opt/ros/${ROS_DISTRO}/setup.sh \
+  && rosdep update \
+  && rosdep install --from-paths /workspace_ros_controls/src --ignore-src -r -y \
+  && colcon build --parallel-workers 3 --build-base /workspace_ros_controls/build --install-base /workspace_ros_controls/install \
+  && echo "if [ -f /workspace_ros_controls/install/setup.bash ]; then source /workspace_ros_controls/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
