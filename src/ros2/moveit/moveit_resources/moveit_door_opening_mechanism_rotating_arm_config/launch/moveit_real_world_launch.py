@@ -110,7 +110,7 @@ def generate_launch_description():
     ros2_controllers_path = os.path.join(
         get_package_share_directory("moveit_door_opening_mechanism_rotating_arm_config"),
         "config",
-        "ros2_controllers.yaml",
+        "ros2_controllers_real_world.yaml",
     )
     ld.add_action(
         Node(
