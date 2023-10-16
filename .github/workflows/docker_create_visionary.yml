@@ -33,7 +33,7 @@ jobs:
     - name: Build ${{ env.Project-Name }} release docker
       uses: docker/build-push-action@v4
       with:
-        context: src/ros2/sensors/
+        context: src/
         target: release
         platforms: linux/amd64
         push: true
