@@ -6,7 +6,7 @@ string last_name
 # Result
 bool successful
 string error_message
-uint8 nfc_code
+string nfc_code
 communication_interfaces/NfcWriteStatus task_status
 ---
 # Feedback

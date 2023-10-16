@@ -11,7 +11,7 @@
 
 #include "communication_interfaces/action/create_user_nfc_tag.hpp"
 #include "db_helper/postgresql_connector.hpp"
-#include "nfc_bridge/elatec_api.h"
+
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 #include "serial_helper/serial_helper.h"
@@ -43,23 +43,21 @@ namespace nfc_bridge
     rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr timer_subscriber_;
     rclcpp_action::Server<CreateUser>::SharedPtr create_user_server_;
 
-    bool execute_scan(std::shared_ptr<std::string> received_raw_data);
-    bool scan_tag(std::shared_ptr<std::string> tag_data);
-    
     void start_up_scanner();
-    void reader_procedure();
-    void turn_off_scanner();
-    void prepare_scanning();
-
+    void shutdown_scanner();
+    
+    void reading_procedure();
+    bool read_nfc_code(std::shared_ptr<std::string> scanned_key);
+    void createUser(const std::shared_ptr<GoalHandleCreateUser> goal_handle);
+    
+    void control_timer(const std_msgs::msg::Bool::SharedPtr msg);
+    void timer_start();
+    void timer_stop();
+    
     rclcpp_action::GoalResponse handle_goal(const rclcpp_action::GoalUUID& uuid,
                                             std::shared_ptr<const CreateUser::Goal> goal);
     rclcpp_action::CancelResponse handle_cancel(const std::shared_ptr<GoalHandleCreateUser> goal_handle);
     void handle_accepted(const std::shared_ptr<GoalHandleCreateUser> goal_handle);
-    void createUser(const std::shared_ptr<GoalHandleCreateUser> goal_handle);
-    bool write_tag(int card_data);
-    void control_timer(const std_msgs::msg::Bool::SharedPtr msg);
-    void timer_start();
-    void timer_stop();
   };
 
 }   // namespace nfc_bridge

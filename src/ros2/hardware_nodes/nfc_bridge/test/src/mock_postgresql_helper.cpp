@@ -29,9 +29,9 @@ namespace db_helper
     return "Dummy";
   }
 
-  int MockPostgreSqlHelper::createNfcCode(std::string user_id, int max_id)
+ bool MockPostgreSqlHelper::createNfcCode(std::string user_id, std::string card_id)
   {
-    return 222;
+    return true;
   }
 
   std::string MockPostgreSqlHelper::createUser(std::string first_name, std::string last_name)

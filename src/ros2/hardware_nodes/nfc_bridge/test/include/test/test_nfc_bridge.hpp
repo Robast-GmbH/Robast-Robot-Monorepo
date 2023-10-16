@@ -13,8 +13,8 @@ namespace nfc_bridge
     TestNFCBridge(serial_helper::MockSerialHelper* serial_connector, db_helper::MockPostgreSqlHelper* db_connector);
     TestNFCBridge();
 
-    bool execute_scan(std::shared_ptr<std::string> received_raw_data);
-    bool scan_tag(std::shared_ptr<std::string> tag_data);
+
+    bool read_nfc_code(std::shared_ptr<std::string> scanned_key);
     bool lookup_user_tag(std::string scanned_key,
                          std::shared_ptr<std::string> related_username,
                          std::shared_ptr<int> related_id);

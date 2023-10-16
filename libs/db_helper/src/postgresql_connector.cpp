@@ -158,15 +158,13 @@ namespace db_helper
     return result[0][0];
   }
 
-  int PostgreSqlHelper::createNfcCode(std::string user_id, int max_id)
+  bool PostgreSqlHelper::createNfcCode(std::string user_id, std::string card_uid)
   {
-    std::vector<std::vector<std::string>> result;
+    int changed_rows;
     std::string create_nfc_query = "INSERT INTO public.user_nfc_codes (user_id, card_token) VALUES(" + user_id +
-                                   ", floor(random()* (" + std::to_string(max_id / 2) +
-                                   " + 1))*2) RETURNING card_token; ";
-    result = perform_transaction_with_return(create_nfc_query);
-
-    return std::stoi(result[0][0]);
+                                   ", "+card_uid+")" ;
+    changed_rows = perform_transaction(create_nfc_query);
+    return changed_rows == 1;
   }
 
 }   // namespace db_helper

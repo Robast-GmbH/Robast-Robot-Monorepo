@@ -5,7 +5,7 @@ namespace nfc_bridge
 
   NFCBridge::NFCBridge() : Node("nfc_bridge")
   {
-    this->declare_parameter("serial_port_path", "/dev/robast/robast_nfc_1");
+    this->declare_parameter("serial_port_path", "/dev/robast/robast_nfc");
     this->declare_parameter("db_username", "postgres");
     this->declare_parameter("db_password", "postgres");
     this->declare_parameter("db_host_address", "localhost");
@@ -31,8 +31,10 @@ namespace nfc_bridge
         "/nfc_switch", qos, std::bind(&NFCBridge::control_timer, this, std::placeholders::_1));
     this->db_connector_ = std::make_unique<db_helper::PostgreSqlHelper>(
         db_helper::PostgreSqlHelper(db_username, db_password, db_host, db_port, db_name));
-
-    RCLCPP_INFO(this->get_logger(), "DB connection test: %s", this->db_connector_->test_connection().c_str());
+    if (this->db_connector_->test_connection() != "successfull")
+    {
+      RCLCPP_INFO(this->get_logger(), "DB connection test: %s", this->db_connector_->test_connection().c_str());
+    }
 
     this->action_server_ = rclcpp_action::create_server<CreateUser>(
         this,
@@ -76,7 +78,7 @@ namespace nfc_bridge
   void NFCBridge::timer_start()
   {
     timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL),
-                                     std::bind(&NFCBridge::reader_procedure, this));
+                                     std::bind(&NFCBridge::reading_procedure, this));
   }
 
   void NFCBridge::timer_stop()
@@ -86,77 +88,36 @@ namespace nfc_bridge
 
   NFCBridge::~NFCBridge()
   {
-    turn_off_scanner();
+    shutdown_scanner();
   }
 
   void NFCBridge::start_up_scanner()
   {
     this->serial_connector_->open_serial();
-    std::string response;
-
-    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, STANDART_REPLAY_MESSAGE_SIZE);
-    if (response != RESPONCE_DEVICE_STATE_CONFIGURED)
-    {
-      return;
-    }
-
-    this->serial_connector_->ascii_interaction(SET_SERIAL_TO_ASCII, &response, STANDART_REPLAY_MESSAGE_SIZE);
   }
 
-  void NFCBridge::prepare_scanning()
+  void NFCBridge::shutdown_scanner()
   {
-    std::string response;
-    this->serial_connector_->ascii_interaction(BOTTOM_LED_ON, &response, STANDART_REPLAY_MESSAGE_SIZE);
-    this->serial_connector_->ascii_interaction(TOP_LEDS_INIT(LED_RED), &response, STANDART_REPLAY_MESSAGE_SIZE);
-    this->serial_connector_->ascii_interaction(TOP_LEDS_ON(LED_RED), &response, STANDART_REPLAY_MESSAGE_SIZE);
-  }
-
-  bool NFCBridge::scan_tag(std::shared_ptr<std::string> scanned_key)
-  {
-    std::string response;
-    std::string replay =
-        this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, STANDART_REPLAY_MESSAGE_SIZE);
-
-    if (replay == RESPONCE_ERROR)
-    {
-      *scanned_key = "";
-      return false;
-    }
-
-    this->serial_connector_->ascii_interaction(NFC_LOGIN_MC_STANDART("00"), &response, STANDART_REPLAY_MESSAGE_SIZE);
-    replay =
-        this->serial_connector_->ascii_interaction(NFC_READ_MC("02"), scanned_key.get(), STANDART_REPLAY_MESSAGE_SIZE);
-
-    if (replay == RESPONCE_ERROR)
-    {
-      return false;
-    }
-    this->serial_connector_->send_ascii_cmd(BEEP_STANDART);
-    this->serial_connector_->send_ascii_cmd(TOP_LED_OFF(LED_GREEN));
-    return true;
-  }
-
-  void NFCBridge::turn_off_scanner()
-  {
-    this->serial_connector_->send_ascii_cmd(TOP_LED_OFF(LED_RED));
-    this->serial_connector_->send_ascii_cmd(BOTTOM_LED_OFF);
     this->serial_connector_->close_serial();
   }
 
-  bool NFCBridge::execute_scan(std::shared_ptr<std::string> received_raw_data)
+  bool NFCBridge::read_nfc_code(std::shared_ptr<std::string> scanned_key)
   {
-    prepare_scanning();
-    return scan_tag(received_raw_data);
+    std::string msg="3AF5B603";
+    //int size_of_received_data = serial_connector_->read_serial(&msg, 100);
+    *scanned_key = msg;
+    int size_of_received_data = 8;
+    return size_of_received_data > 0;
   }
 
-  void NFCBridge::reader_procedure()
+  void NFCBridge::reading_procedure()
   {
+    start_up_scanner();
     std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
     std::shared_ptr<std::string> found_user = std::make_shared<std::string>();
     std::shared_ptr<int> found_user_id = std::make_shared<int>();
-    bool found = false;
-    found = execute_scan(scanned_key);
-    if (found)
+
+    if (read_nfc_code(scanned_key))
     {
       RCLCPP_INFO(this->get_logger(), "tag located %s", (*scanned_key).c_str());
       if (db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user, found_user_id))
@@ -168,6 +129,7 @@ namespace nfc_bridge
         authentication_publisher_->publish(message);
       }
     }
+    shutdown_scanner();
   }
 
   void NFCBridge::createUser(const std::shared_ptr<GoalHandleCreateUser> goal_handle)
@@ -201,52 +163,33 @@ namespace nfc_bridge
       goal_handle->canceled(result);
       return;
     }
+
     user_id = goal->user_id;
     feedback->task_status.is_db_user_created = true;
     goal_handle->publish_feedback(feedback);
+    std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
+    while (!read_nfc_code(scanned_key))
+    {
+    }
 
-    int nfc_code = db_connector_->createNfcCode(user_id, std::pow(2, BLOCK_SIZE));
-    // int nfc_code = rand() % 1000;
-
+    if (!db_connector_->createNfcCode(user_id, *scanned_key))
+    {
+      RCLCPP_ERROR(this->get_logger(), "card Id could not be stored.");
+      result->task_status = feedback->task_status;
+      result->successful = false;
+      result->error_message = "Die Karten daten konnten nicht gespeichert werden.";
+      goal_handle->canceled(result);
+      return;
+    }
     feedback->task_status.is_reader_ready_to_write = false;
     goal_handle->publish_feedback(feedback);
 
-    write_tag(nfc_code);
-
     feedback->task_status.is_reader_completed = true;
     goal_handle->publish_feedback(feedback);
-    result->nfc_code = nfc_code;
+    result->nfc_code = *scanned_key;
     result->successful = true;
     result->task_status = feedback->task_status;
     goal_handle->succeed(result);
-  }
-
-  bool NFCBridge::write_tag(int card_data)
-  {
-    start_up_scanner();
-
-    std::string tag;
-    // wait for the Tag and read TAG ID
-    do   // search for a tag with the length of 10
-    {
-      this->serial_connector_->send_ascii_cmd(SEARCH_TAG);
-      if (this->serial_connector_->read_serial(&tag, 50) <= 0)
-      {
-        continue;
-      }
-
-      // RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
-    } while (tag.length() < 10);
-    this->serial_connector_->send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
-    this->serial_connector_->send_ascii_cmd(NFC_WRITE_MC("02", std::bitset<BLOCK_SIZE>(card_data).to_string()));
-
-    if (this->serial_connector_->read_serial(&tag, 50) <= 0)
-    {
-      return false;
-    }
-
-    turn_off_scanner();
-    return true;
   }
 
 }   // namespace nfc_bridge

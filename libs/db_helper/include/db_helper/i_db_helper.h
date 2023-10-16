@@ -14,7 +14,7 @@ namespace db_helper
     virtual std::string test_connection() = 0;
 
     virtual std::string createUser(std::string first_name, std::string last_name) = 0;
-    virtual int createNfcCode(std::string user_id, int max_id) = 0;
+    virtual bool createNfcCode(std::string user_id, std::string card_uid) = 0;
     virtual bool checkUser(const std::string id, const std::string first_name, const std::string last_name) = 0;
     virtual std::vector<std::vector<std::string>> perform_query(std::string sql_statment) = 0;
     virtual bool checkUserTag(std::string tag,
