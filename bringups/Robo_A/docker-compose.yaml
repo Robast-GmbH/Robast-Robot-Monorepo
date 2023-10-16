@@ -40,3 +40,15 @@ services:
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
+  
+  sick_safevisionary:
+    image: ghcr.io/robast-gmbh/monorepo/sick_safevisionary:release
+    environment:
+      - ROS_DOMAIN_ID=0
+    volumes:
+      - ./start_scripts/:/start_scripts/:cached
+      - ../../src/ros2/dds_configs/:/ws/dds_configs/:cached
+    command: /bin/bash -c "source /ws/install/setup.bash; ros2 launch sick_safevisionary_driver driver_node.launch.py frame_id:=robot_sick_safevisionary"
+    stop_signal: SIGINT
+    restart: unless-stopped
+    network_mode: "host"
