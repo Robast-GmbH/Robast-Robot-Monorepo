@@ -52,7 +52,7 @@ RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
 
 # Adding moveit2_tutorials as separate workspace which can be used for learning and testing purposes
 # Can be removed once there is enough moveit2 skill and knowledge archieved
-RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone https://github.com/ros-planning/moveit2_tutorials -b master --depth 1 \
+RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone https://github.com/ros-planning/moveit2_tutorials -b main --depth 1 \
   && vcs import < moveit2_tutorials/moveit2_tutorials.repos \
   && apt update \
   && apt upgrade -y \
