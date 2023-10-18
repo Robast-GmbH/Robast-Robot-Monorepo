@@ -26,7 +26,9 @@ namespace dryve_d1_bridge
   const double Y_AXIS_VELOCITY = 10;
   const double Y_AXIS_ACCELERATION = 10;
   const double Y_AXIS_DECELERATION = 10;
-
+  // The value of the velocity scaling was obtained empirically. Instead of scaling the velocity with a factor like this
+  // you could alternatively make the gains of the joint_trajectory_controller extremely high
+  const double Y_AXIS_VELOCITY_SCALING = 100;
 }   // namespace dryve_d1_bridge
 
 #endif   // DRYVE_D1_BRIDGE__D1_HPP_

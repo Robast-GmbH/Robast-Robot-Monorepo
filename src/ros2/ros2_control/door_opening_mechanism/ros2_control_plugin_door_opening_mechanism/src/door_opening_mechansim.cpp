@@ -305,37 +305,23 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemPositionOnlyHardware::write(
     const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
   {
-    // TODO@Jacob: Remove this when debugging is finished!
-    for (uint8_t i = 0; i < _hw_velocity_commands.size(); i++)
-    {
-      double velocity_command = _hw_velocity_commands[i];
-      if (velocity_command > 0.000001 || velocity_command < -0.000001)
-      {
-        if (!_is_start_time_initialized)
-        {
-          _start_time = rclcpp::Clock().now();
-          _is_start_time_initialized = true;
-        }
-        rclcpp::Duration elapsed_duration = rclcpp::Clock().now() - _start_time;
-
-        RCLCPP_INFO(
-          rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-          "Velocity command for axis %d: %f. Position command: %f. Time passed since first velocity command: %f",
-          i,
-          velocity_command,
-          _hw_position_commands[i],
-          elapsed_duration.seconds() + elapsed_duration.nanoseconds() * 1e-9);
-      }
-    }
-
     // _x_axis->set_profile_velocity(
     //   _hw_velocity_commands[1], dryve_d1_bridge::X_AXIS_ACCELERATION, dryve_d1_bridge::X_AXIS_DECELERATION);
-    _y_axis->set_profile_velocity(
-      _hw_velocity_commands[0], dryve_d1_bridge::Y_AXIS_ACCELERATION, dryve_d1_bridge::Y_AXIS_DECELERATION);
+    _y_axis->set_profile_velocity(_hw_velocity_commands[0] * dryve_d1_bridge::Y_AXIS_VELOCITY_SCALING,
+                                  dryve_d1_bridge::Y_AXIS_ACCELERATION,
+                                  dryve_d1_bridge::Y_AXIS_DECELERATION);
 
-    // _y_axis->move_profile_to_absolute_position(
-    //   _hw_position_commands[0], dryve_d1_bridge::Y_AXIS_VELOCITY, dryve_d1_bridge::Y_AXIS_ACCELERATION);
+    // if (_hw_position_commands[0] != 0.0)
+    // {
+    //   _y_axis->move_profile_to_relative_position(
+    //     (_hw_position_commands[0] - _hw_position_states[0]) * dryve_d1_bridge::Y_AXIS_SI_UNIT_FACTOR,
+    //     dryve_d1_bridge::Y_AXIS_VELOCITY / 5,
+    //     dryve_d1_bridge::Y_AXIS_ACCELERATION / 5);
+    // }
 
+    // _y_axis->move_profile_to_absolute_position(_hw_position_commands[0] * dryve_d1_bridge::Y_AXIS_SI_UNIT_FACTOR,
+    //                                            dryve_d1_bridge::Y_AXIS_VELOCITY / 2,
+    //                                            dryve_d1_bridge::Y_AXIS_ACCELERATION / 2);
     return hardware_interface::return_type::OK;
   }
 
