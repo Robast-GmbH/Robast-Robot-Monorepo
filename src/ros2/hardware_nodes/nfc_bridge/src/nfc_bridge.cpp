@@ -44,8 +44,8 @@ namespace nfc_bridge
         std::bind(&NFCBridge::handle_accepted, this, std::placeholders::_1));
   }
 
-  rclcpp_action::GoalResponse NFCBridge::handle_goal(const rclcpp_action::GoalUUID& uuid,
-                                                     std::shared_ptr<const CreateUser::Goal> goal)
+  rclcpp_action::GoalResponse NFCBridge::handle_goal(const rclcpp_action::GoalUUID&,
+                                                     std::shared_ptr<const CreateUser::Goal>)
   {
     return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
   }
@@ -117,8 +117,7 @@ namespace nfc_bridge
 
     if (read_nfc_code(scanned_key))
     {
-      
-      if (db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user, found_user_id,error_msg))
+      if (db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user, found_user_id, error_msg))
       {
         std_msgs::msg::Int64 message = std_msgs::msg::Int64();
         message.data = *found_user_id;
@@ -179,11 +178,12 @@ namespace nfc_bridge
     std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
     while (!read_nfc_code(scanned_key))
     {
-      if (goal_handle->is_canceling()) {
+      if (goal_handle->is_canceling())
+      {
         result->nfc_code = "";
         result->error_message = "create new nfc token was canceled.";
         goal_handle->canceled(result);
-        RCLCPP_INFO(this->get_logger(),"%s",result->error_message.c_str());
+        RCLCPP_INFO(this->get_logger(), "%s", result->error_message.c_str());
         return;
       }
     }

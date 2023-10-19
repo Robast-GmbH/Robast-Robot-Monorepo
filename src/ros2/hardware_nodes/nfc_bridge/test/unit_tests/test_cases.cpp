@@ -20,7 +20,7 @@ namespace nfc_bridge
       fakeit::Mock<db_helper::MockPostgreSqlHelper> db_helper_mock;
       fakeit::When(Method(db_helper_mock, perform_query))
           .AlwaysDo(
-              [=](std::string sqlStatment,std::shared_ptr<std::string> error) -> std::vector<std::vector<std::string>>
+              [=](std::string sqlStatment, std::shared_ptr<std::string>) -> std::vector<std::vector<std::string>>
               {
                 std::vector<std::vector<std::string>> result;
                 result.push_back(std::vector<std::string>({"name"}));
@@ -38,10 +38,10 @@ namespace nfc_bridge
       fakeit::When(Method(db_helper_mock, checkUserTag))
           .AlwaysDo(
               [=](std::string sqlStatment,
-                  std::vector<std::string> Lookup_scope,
+                  std::vector<std::string>,
                   std::shared_ptr<std::string> result_data,
                   std::shared_ptr<int>,
-                  std::shared_ptr<std::string> error) -> bool
+                  std::shared_ptr<std::string>) -> bool
               {
                 if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != std::string::npos)
                 {
@@ -91,7 +91,6 @@ namespace nfc_bridge
 
         THEN("The result of the validation should be an empty string as it is not a valid key")
         {
-          bool found;
           std::string result_name;
           int result_id;
           REQUIRE_FALSE(nfc_reader->lookup_user_tag(
@@ -112,7 +111,6 @@ namespace nfc_bridge
       Method(serial_helper_mock, open_serial) = "";
       fakeit::Fake(Method(serial_helper_mock, close_serial));
       Method(serial_helper_mock, read_serial);
-      bool found;
       fakeit::Mock<db_helper::MockPostgreSqlHelper> db_helper_mock;
       TestNFCBridge* nfc_reader = new TestNFCBridge(&serial_helper_mock.get(), &db_helper_mock.get());
 
@@ -123,7 +121,7 @@ namespace nfc_bridge
                 [=](auto& responce, auto responce_size) -> int
                 {
                   *responce = "";
-                  responce_size=0;
+                  responce_size = 0;
                   return 0;
                 });
 
@@ -134,7 +132,7 @@ namespace nfc_bridge
           REQUIRE(key == "");
         }
       }
-      // TODO Torben: valid again after RE-1783 
+      // TODO Torben: valid again after RE-1783
       // WHEN("The key from the card is empty")
       // {
       //   std::string key_from_card = "";
@@ -158,35 +156,36 @@ namespace nfc_bridge
       //   }
       // }
 
-  //TODO Torben: valid again after RE-1783 
-  //     WHEN("The key from the card is correct formated")
-  //     {
-  //       std::string key_from_card = "6df1933415dde9fa1f9f6998a26b40db";
-  //       fakeit::When(Method(serial_helper_mock, ascii_interaction))
-  //           .AlwaysDo(
-  //               [=](auto cmd, auto& responce, auto responce_size) -> std::string
-  //               {
-  //                 (void) responce_size;
-  //                 if (cmd == NFC_READ_MC("02"))
-  //                 {
-  //                   return *responce = key_from_card;
-  //                 }
-  //                 return *responce = "0001";
-  //               });
+      // TODO Torben: valid again after RE-1783
+      //      WHEN("The key from the card is correct formated")
+      //      {
+      //        std::string key_from_card = "6df1933415dde9fa1f9f6998a26b40db";
+      //        fakeit::When(Method(serial_helper_mock, ascii_interaction))
+      //            .AlwaysDo(
+      //                [=](auto cmd, auto& responce, auto responce_size) -> std::string
+      //                {
+      //                  (void) responce_size;
+      //                  if (cmd == NFC_READ_MC("02"))
+      //                  {
+      //                    return *responce = key_from_card;
+      //                  }
+      //                  return *responce = "0001";
+      //                });
 
-  //       THEN(
-  //           "The reader returns the scanned key, indecates that a Key has been found and on the serial connection the "
-  //           "a NFC login message followed by a Read Message was send in the reading process to get the data from the "
-  //           "card")
-  //       {
-  //         std::string key;
-  //         REQUIRE(nfc_reader->scan_tag(std::make_shared<std::string>(key)));
-  //         REQUIRE(key == key_from_card);
-  //         REQUIRE(fakeit::Verify(
-  //             Method(serial_helper_mock, ascii_interaction).Using(NFC_LOGIN_MC_STANDART("00"), fakeit::_, fakeit::_),
-  //             Method(serial_helper_mock, ascii_interaction).Using(NFC_READ_MC("02"), fakeit::_, fakeit::_)));
-  //       }
-  //    }
+      //       THEN(
+      //           "The reader returns the scanned key, indecates that a Key has been found and on the serial connection
+      //           the " "a NFC login message followed by a Read Message was send in the reading process to get the data
+      //           from the " "card")
+      //       {
+      //         std::string key;
+      //         REQUIRE(nfc_reader->scan_tag(std::make_shared<std::string>(key)));
+      //         REQUIRE(key == key_from_card);
+      //         REQUIRE(fakeit::Verify(
+      //             Method(serial_helper_mock, ascii_interaction).Using(NFC_LOGIN_MC_STANDART("00"), fakeit::_,
+      //             fakeit::_), Method(serial_helper_mock, ascii_interaction).Using(NFC_READ_MC("02"), fakeit::_,
+      //             fakeit::_)));
+      //       }
+      //    }
     }
     rclcpp::shutdown();
   }
@@ -206,10 +205,10 @@ namespace nfc_bridge
       fakeit::When(Method(db_helper_mock, checkUserTag))
           .AlwaysDo(
               [=](std::string sqlStatment,
-                  std::vector<std::string> Lookup_scope,
+                  std::vector<std::string>,
                   std::shared_ptr<std::string> result_data_username,
-                  std::shared_ptr<int> result_data_user_id,
-                  std::shared_ptr<std::string> error_messages) -> bool
+                  std::shared_ptr<int>,
+                  std::shared_ptr<std::string>) -> bool
               {
                 if (sqlStatment.find("6df1933415dde9fa1f9f6998a26b40db") != std::string::npos)
                 {
@@ -235,7 +234,9 @@ namespace nfc_bridge
             .AlwaysDo(
                 [=](auto cmd, auto& responce, auto responce_size) -> std::string
                 {
-                    return *responce = key_from_card;
+                  (void) responce_size;
+                  (void) cmd;
+                  return *responce = key_from_card;
                 });
 
         THEN(
@@ -258,7 +259,6 @@ namespace nfc_bridge
                   (void) responce_size;
                   (void) cmd;
                   return *responce = key_from_card;
-                
                 });
 
         THEN("The reader returns an empty sting")

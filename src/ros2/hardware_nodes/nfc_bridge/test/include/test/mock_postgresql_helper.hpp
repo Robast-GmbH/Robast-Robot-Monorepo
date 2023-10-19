@@ -23,7 +23,8 @@ namespace db_helper
                       std::shared_ptr<std::string> user_name,
                       std::shared_ptr<int> id,
                       std::shared_ptr<std::string> error_msg);
-    std::vector<std::vector<std::string>> perform_query(std::string sql_statment, std::shared_ptr<std::string> error_message);
+    std::vector<std::vector<std::string>> perform_query(std::string sql_statment,
+                                                        std::shared_ptr<std::string> error_message);
 
    private:
     std::map<std::string, std::pair<int, std::string>> user_list_;
