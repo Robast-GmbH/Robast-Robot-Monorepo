@@ -19,11 +19,6 @@ namespace ros2_control_plugin_door_opening_mechanism
       return hardware_interface::CallbackReturn::ERROR;
     }
 
-    // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
-    hw_start_sec_ = stod(info_.hardware_parameters["example_param_hw_start_duration_sec"]);
-    hw_stop_sec_ = stod(info_.hardware_parameters["example_param_hw_stop_duration_sec"]);
-    hw_slowdown_ = stod(info_.hardware_parameters["example_param_hw_slowdown"]);
-    // END: This part here is for exemplary purposes - Please do not copy to your production code
     _hw_position_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_position_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_velocity_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());

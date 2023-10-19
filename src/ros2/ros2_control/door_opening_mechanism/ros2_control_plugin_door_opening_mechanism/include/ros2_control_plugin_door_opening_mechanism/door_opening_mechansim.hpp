@@ -58,10 +58,6 @@ namespace ros2_control_plugin_door_opening_mechanism
       const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
    private:
-    double hw_start_sec_;
-    double hw_stop_sec_;
-    double hw_slowdown_;
-
     std::vector<double> _hw_position_commands;
     std::vector<double> _hw_position_states;
 
