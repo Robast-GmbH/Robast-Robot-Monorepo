@@ -247,7 +247,7 @@ local_costmap:
           expected_update_rate: 0.2 # default 0, if not updating at this rate at least, remove from buffer
           observation_persistence: 0.0 # default 0, use all measurements taken during now-value, 0=latest
           inf_is_valid: false # default false, for laser scans
-          filter: "passthrough" # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on
+          filter: "voxel" # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on
           voxel_min_points: 0
           clear_after_reading: true # default false, clear the buffer after the layer gets readings from it
           max_z: 2.0
