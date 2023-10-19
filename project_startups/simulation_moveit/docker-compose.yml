@@ -63,8 +63,6 @@ services:
       - ./moveit_mtc/:/workspace/:cached
       - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
       - ../../src/ros2/moveit:/workspace/src/moveit:cached
-      - ../../src/ros2/hardware_nodes/dryve_d1_bridge:/workspace/src/hardware_nodes/dryve_d1_bridge:cached
-      - ../../src/ros2/ros2_control:/workspace/src/ros2_control:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
 #    network_mode: "host"

@@ -1,24 +1,21 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"dockerFile": "../../../src/ros2/ros2_control/Dockerfile",
-	"build": {
-		"args": {
-			"WORKSPACE": "${containerWorkspaceFolder}"
-		}
-	},
+	"image": "ghcr.io/robast-gmbh/monorepo/moveit_mtc:devel",
+	"name": "Robast Moveit Task Constructor",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/dryve_d1_bridge,target=/workspace/src/hardware_nodes/dryve_d1_bridge,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/robot_description,target=/workspace/src/robot_description,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/ros2_control,target=/workspace/src/ros2_control,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/moveit,target=/workspace/src/moveit,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind"
 	],
 	"workspaceFolder": "/workspace",
 	"remoteUser": "robast",
 	"runArgs": [
-		"--name=ros2_control_door_opening_mechanism",
+		"--name=moveit_mtc",
 		// "--network=host",
 		"--volume=/dev/shm:/dev/shm", //needed if you use the fast dds on the host network with multiple docker containers running on the same host
-		//"--device=/dev/robast/robast_nfc", //Robo module: usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04_B-if00  // Demo module:  usb-OEM_TWN4_B1.09_NCF4.06_PRS1.04-if00 
 		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
 	],
 	"remoteEnv": {

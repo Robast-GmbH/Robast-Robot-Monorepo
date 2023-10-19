@@ -7,21 +7,7 @@
             "label": "build",
             "detail": "Symlink Build.",
             "type": "shell",
-            "command": "source ~/../../opt/ros/humble/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
-            "problemMatcher": []
-        },
-        {
-            "label": "Launch Dryve D1 Bridge",
-            "detail": "Launch the dryve d1 bridge node",
-            "type": "shell",
-            "command": "source install/setup.bash; ros2 launch dryve_d1_bridge dryve_d1_bridge_launch.py",
-            "problemMatcher": []
-        },
-        {
-            "label": "Launch ros2_control_door_opening_mechanism_bringup",
-            "detail": "Launch the ros2 control manager",
-            "type": "shell",
-            "command": "source install/setup.bash; ros2 launch ros2_control_door_opening_mechanism_bringup ros2_control_door_opening_mechanism_bringup_launch.py",
+            "command": "source ~/../../opt/ros/iron/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
             "problemMatcher": []
         },
         {
@@ -45,6 +31,17 @@
             "dependsOrder": "sequence",
             "command": "clear; source install/setup.bash; colcon test --packages-select dryve_d1_bridge --event-handler=console_direct+; colcon test-result --all",
             "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "start moveit_door_opening_mechanism for the real world",
+            "command": "source /workspace/install/setup.bash; ros2 launch moveit_door_opening_mechanism_rotating_arm_config moveit_real_world_launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "focus": false,
+                "group": "default_start"
+            }
         },
         {
             "label": "clean-build",

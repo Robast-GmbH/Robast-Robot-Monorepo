@@ -6,7 +6,7 @@
                 "limitSymbolsToIncludedHeaders": false
             },
             "includePath": [
-                "/opt/ros/humble/include/**",
+                "/opt/ros/iron/include/**",
                 "${workspaceFolder}/src/**",
                 "${workspaceFolder}/install/**",
                 "${workspaceFolder}/build/**",
