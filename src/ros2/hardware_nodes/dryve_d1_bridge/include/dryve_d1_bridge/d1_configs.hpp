@@ -5,9 +5,11 @@
 
 namespace dryve_d1_bridge
 {
+  // this is actually the IP of the robot, whose router is forwarding this to the dryve d1 motor controls
   const std::string DRYVE_D1_IP_ADDRESS_X_AXIS = "10.10.23.7";
   const std::string DRYVE_D1_IP_ADDRESS_Y_AXIS = "10.10.23.7";
-  // const int PORT = 502;
+  // these are the ports we configured in the router that are forwarded to port 502 (default modbus port) of the dryve
+  // d1
   const int PORT_X_AXIS = 3503;
   const int PORT_Y_AXIS = 3502;
 
@@ -21,6 +23,10 @@ namespace dryve_d1_bridge
   const double X_AXIS_VELOCITY = 10;
   const double X_AXIS_ACCELERATION = 10;
   const double X_AXIS_DECELERATION = 10;
+  // The value of the velocity scaling was obtained empirically. Instead of scaling the velocity with a factor like this
+  // you could alternatively make the gains of the joint_trajectory_controller extremely high
+  // TODO@Jacob: Keep checking if this is really the best way to handle this. I am not 100% sure about this
+  const double X_AXIS_VELOCITY_SCALING = -100;
 
   const double Y_AXIS_SI_UNIT_FACTOR = 100000;
   const double Y_AXIS_VELOCITY = 10;
@@ -28,6 +34,7 @@ namespace dryve_d1_bridge
   const double Y_AXIS_DECELERATION = 10;
   // The value of the velocity scaling was obtained empirically. Instead of scaling the velocity with a factor like this
   // you could alternatively make the gains of the joint_trajectory_controller extremely high
+  // TODO@Jacob: Keep checking if this is really the best way to handle this. I am not 100% sure about this
   const double Y_AXIS_VELOCITY_SCALING = 100;
 }   // namespace dryve_d1_bridge
 

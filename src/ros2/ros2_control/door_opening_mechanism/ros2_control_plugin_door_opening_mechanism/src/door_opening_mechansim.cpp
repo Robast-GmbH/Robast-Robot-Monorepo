@@ -1,17 +1,3 @@
-// Copyright 2020 ros2_control Development Team
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//     http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
-
 #include "ros2_control_plugin_door_opening_mechanism/door_opening_mechansim.hpp"
 
 #include <chrono>
@@ -25,7 +11,7 @@
 
 namespace ros2_control_plugin_door_opening_mechanism
 {
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_init(
+  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_init(
     const hardware_interface::HardwareInfo& info)
   {
     if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS)
@@ -45,15 +31,14 @@ namespace ros2_control_plugin_door_opening_mechanism
 
     for (const hardware_interface::ComponentInfo& joint : info_.joints)
     {
-      RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                  "Configuring joint '%s'.",
-                  joint.name.c_str());
+      RCLCPP_INFO(
+        rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Configuring joint '%s'.", joint.name.c_str());
 
-      // DoorOpeningMechanismSystemPositionOnlyHardware has position and velocity state and command interface on each
+      // DoorOpeningMechanismSystemHardware has position and velocity state and command interface on each
       // joint
       if (joint.command_interfaces.size() > 2)
       {
-        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"),
                      "Joint '%s' has %zu command interfaces found. 2 or less expected.",
                      joint.name.c_str(),
                      joint.command_interfaces.size());
@@ -63,7 +48,7 @@ namespace ros2_control_plugin_door_opening_mechanism
       if ((joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
           (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
       {
-        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"),
                      "Joint '%s' have %s command interfaces found. '%s' or '%s' expected.",
                      joint.name.c_str(),
                      joint.command_interfaces[0].name.c_str(),
@@ -74,7 +59,7 @@ namespace ros2_control_plugin_door_opening_mechanism
 
       if (joint.state_interfaces.size() > 2)
       {
-        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"),
                      "Joint '%s' has %zu state interface. 2 or less expected.",
                      joint.name.c_str(),
                      joint.state_interfaces.size());
@@ -84,7 +69,7 @@ namespace ros2_control_plugin_door_opening_mechanism
       if ((joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
           (joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
       {
-        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"),
                      "Joint '%s' have %s state interface. '%s' or '%s' expected.",
                      joint.name.c_str(),
                      joint.state_interfaces[0].name.c_str(),
@@ -97,16 +82,16 @@ namespace ros2_control_plugin_door_opening_mechanism
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_configure(
+  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_configure(
     const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // Please mind! In order to get a connection to the dryve d1, there need to be a port forward on the router from the
     // port configured in DRYVE_D1_IP_ADDRESS_X_AXIS to the Port configured for Modbus TCP in the dryve d1 (usually 502)
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Configuring x-axis....");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Configuring x-axis....");
     _x_axis = std::make_unique<dryve_d1_bridge::D1>(dryve_d1_bridge::DRYVE_D1_IP_ADDRESS_X_AXIS,
                                                     dryve_d1_bridge::PORT_X_AXIS,
                                                     std::make_unique<dryve_d1_bridge::SocketWrapper>());
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Configuring y-axis....");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Configuring y-axis....");
     _y_axis = std::make_unique<dryve_d1_bridge::D1>(dryve_d1_bridge::DRYVE_D1_IP_ADDRESS_Y_AXIS,
                                                     dryve_d1_bridge::PORT_Y_AXIS,
                                                     std::make_unique<dryve_d1_bridge::SocketWrapper>());
@@ -116,10 +101,12 @@ namespace ros2_control_plugin_door_opening_mechanism
     // (2) Inputs/Outputs -> Enable
     // (3) Communication -> Port = 502
     // (4) Communication -> Modbus TCP Gateway ON
+    // If these settings have already been made and once power was switched on and off you have to disable and
+    // enable the Modbus TCP Gateway once in order to be able to connect to the dryve d1 again
+    // TODO@Jacob: Find a possibility that Modbus TCP Gateway does not need to be switched on and off after power up
     _x_axis->run_dryve_state_machine();
     _y_axis->run_dryve_state_machine();
 
-    // TODO: Check if this is working
     _x_axis->set_si_unit_factor(dryve_d1_bridge::si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_5, true);
     _y_axis->set_si_unit_factor(dryve_d1_bridge::si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_5, true);
 
@@ -138,13 +125,12 @@ namespace ros2_control_plugin_door_opening_mechanism
       _hw_velocity_commands[i] = 0;
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successfully configured!");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Successfully configured!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  std::vector<hardware_interface::StateInterface>
-  DoorOpeningMechanismSystemPositionOnlyHardware::export_state_interfaces()
+  std::vector<hardware_interface::StateInterface> DoorOpeningMechanismSystemHardware::export_state_interfaces()
   {
     std::vector<hardware_interface::StateInterface> state_interfaces;
     for (uint i = 0; i < info_.joints.size(); i++)
@@ -158,8 +144,7 @@ namespace ros2_control_plugin_door_opening_mechanism
     return state_interfaces;
   }
 
-  std::vector<hardware_interface::CommandInterface>
-  DoorOpeningMechanismSystemPositionOnlyHardware::export_command_interfaces()
+  std::vector<hardware_interface::CommandInterface> DoorOpeningMechanismSystemHardware::export_command_interfaces()
   {
     std::vector<hardware_interface::CommandInterface> command_interfaces;
     for (uint i = 0; i < info_.joints.size(); i++)
@@ -173,20 +158,11 @@ namespace ros2_control_plugin_door_opening_mechanism
     return command_interfaces;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_activate(
+  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_activate(
     const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Activating ...please wait...");
-
-    for (int i = 0; i < hw_start_sec_; i++)
-    {
-      rclcpp::sleep_for(std::chrono::seconds(1));
-      RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                  "%.1f seconds left...",
-                  hw_start_sec_ - i);
-    }
-    // END: This part here is for exemplary purposes - Please do not copy to your production code
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Activating ...please wait...");
 
     // command and state should be equal when starting
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -198,88 +174,73 @@ namespace ros2_control_plugin_door_opening_mechanism
       _hw_velocity_commands[i] = _hw_velocity_states[i];
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successfully activated!");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Successfully activated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_deactivate(
+  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_deactivate(
     const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-
-    // dryve D1 to shutdown state
-
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Deactivating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Deactivating ...please wait...");
 
     _x_axis->close_connection();
     _y_axis->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successfully deactivated!");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Successfully deactivated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_shutdown(
+  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_shutdown(
     const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-
-    // dryve D1 to shutdown state
-
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                "Shutting down ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Shutting down ...please wait...");
 
     _x_axis->close_connection();
     _y_axis->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Successful shutdown!");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Successful shutdown!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_cleanup(
+  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_cleanup(
     const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-
-    // dryve D1 to shutdown state
-
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Cleaning up ...please wait...");
 
     _x_axis->close_connection();
     _y_axis->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"), "Cleaned up successfully!");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Cleaned up successfully!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemPositionOnlyHardware::on_error(
+  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_error(
     const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-
-    // dryve D1 to shutdown state
-
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                "On Error: Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "On Error: Cleaning up ...please wait...");
 
     _x_axis->close_connection();
     _y_axis->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemPositionOnlyHardware"),
-                "On Error: Cleaned up successfully!");
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "On Error: Cleaned up successfully!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::return_type DoorOpeningMechanismSystemPositionOnlyHardware::read(
-    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
+  hardware_interface::return_type DoorOpeningMechanismSystemHardware::read(const rclcpp::Time& /*time*/,
+                                                                           const rclcpp::Duration& /*period*/)
   {
     _hw_position_states[1] =
       static_cast<double>(_x_axis->read_object_value(_x_axis->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
@@ -302,26 +263,15 @@ namespace ros2_control_plugin_door_opening_mechanism
     return hardware_interface::return_type::OK;
   }
 
-  hardware_interface::return_type DoorOpeningMechanismSystemPositionOnlyHardware::write(
-    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
+  hardware_interface::return_type DoorOpeningMechanismSystemHardware::write(const rclcpp::Time& /*time*/,
+                                                                            const rclcpp::Duration& /*period*/)
   {
-    // _x_axis->set_profile_velocity(
-    //   _hw_velocity_commands[1], dryve_d1_bridge::X_AXIS_ACCELERATION, dryve_d1_bridge::X_AXIS_DECELERATION);
+    _x_axis->set_profile_velocity(_hw_velocity_commands[1] * dryve_d1_bridge::X_AXIS_VELOCITY_SCALING,
+                                  dryve_d1_bridge::X_AXIS_ACCELERATION,
+                                  dryve_d1_bridge::X_AXIS_DECELERATION);
     _y_axis->set_profile_velocity(_hw_velocity_commands[0] * dryve_d1_bridge::Y_AXIS_VELOCITY_SCALING,
                                   dryve_d1_bridge::Y_AXIS_ACCELERATION,
                                   dryve_d1_bridge::Y_AXIS_DECELERATION);
-
-    // if (_hw_position_commands[0] != 0.0)
-    // {
-    //   _y_axis->move_profile_to_relative_position(
-    //     (_hw_position_commands[0] - _hw_position_states[0]) * dryve_d1_bridge::Y_AXIS_SI_UNIT_FACTOR,
-    //     dryve_d1_bridge::Y_AXIS_VELOCITY / 5,
-    //     dryve_d1_bridge::Y_AXIS_ACCELERATION / 5);
-    // }
-
-    // _y_axis->move_profile_to_absolute_position(_hw_position_commands[0] * dryve_d1_bridge::Y_AXIS_SI_UNIT_FACTOR,
-    //                                            dryve_d1_bridge::Y_AXIS_VELOCITY / 2,
-    //                                            dryve_d1_bridge::Y_AXIS_ACCELERATION / 2);
     return hardware_interface::return_type::OK;
   }
 
@@ -329,5 +279,5 @@ namespace ros2_control_plugin_door_opening_mechanism
 
 #include "pluginlib/class_list_macros.hpp"
 
-PLUGINLIB_EXPORT_CLASS(ros2_control_plugin_door_opening_mechanism::DoorOpeningMechanismSystemPositionOnlyHardware,
+PLUGINLIB_EXPORT_CLASS(ros2_control_plugin_door_opening_mechanism::DoorOpeningMechanismSystemHardware,
                        hardware_interface::SystemInterface)

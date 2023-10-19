@@ -11,11 +11,7 @@
             <param name="calculate_dynamics">true</param>
         </xacro:if>
         <xacro:if value="${ros2_control_hardware_type == 'dryve_d1'}">
-          <plugin>ros2_control_plugin_door_opening_mechanism/DoorOpeningMechanismSystemPositionOnlyHardware</plugin>
-          <!-- TODO@Jacob: Remove these params? -->
-          <param name="example_param_hw_start_duration_sec">0</param>
-          <param name="example_param_hw_stop_duration_sec">3.0</param>
-          <param name="example_param_hw_slowdown">100</param>
+          <plugin>ros2_control_plugin_door_opening_mechanism/DoorOpeningMechanismSystemHardware</plugin>
         </xacro:if>
       </hardware>
       <joint name="door_opening_mechanism_joint_y_axis_slide">
