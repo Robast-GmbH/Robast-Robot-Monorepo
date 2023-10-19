@@ -10,7 +10,8 @@ namespace db_helper
   bool MockPostgreSqlHelper::checkUserTag(std::string scanned_key,
                                           std::vector<std::string> lookup_scope __attribute__((unused)),
                                           std::shared_ptr<std::string> related_username,
-                                          std::shared_ptr<int> id)
+                                          std::shared_ptr<int> id, 
+                                          std::shared_ptr<std::string> error_msg)
   {
 
     if (user_list_.find(scanned_key) != user_list_.end())
@@ -34,17 +35,19 @@ namespace db_helper
     return true;
   }
 
-  std::string MockPostgreSqlHelper::createUser(std::string first_name, std::string last_name)
+  int MockPostgreSqlHelper::createUser(std::string first_name, std::string last_name)
   {
-    return "Dummy";
+    return -1;
   }
 
-  bool MockPostgreSqlHelper::checkUser(std::string id, std::string first_name, std::string last_name)
+  bool MockPostgreSqlHelper::checkUser(int id, std::shared_ptr<std::string> error_msg)
   {
     return false;
   }
+  
+ 
 
-  std::vector<std::vector<std::string>> MockPostgreSqlHelper::perform_query(std::string sql_statment)
+  std::vector<std::vector<std::string>> MockPostgreSqlHelper::perform_query(std::string sql_statment, std::shared_ptr<std::string> error_message)
   {
     return std::vector<std::vector<std::string>>();
   }

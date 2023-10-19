@@ -1,7 +1,5 @@
 # Request
-string user_id
-string first_name
-string last_name
+uint8 user_id
 ---
 # Result
 bool successful

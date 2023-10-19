@@ -12,7 +12,7 @@ namespace rmf_robot_client
   bool NFCAction::start(std::function<void(int)> next_action_callback)
   {
     Action::start(next_action_callback);
-    RCLCPP_INFO(ros_node_->get_logger(), "start drawer_action");
+    RCLCPP_INFO(ros_node_->get_logger(), "start nfc action");
     finish_action = next_action_callback;
     if (!this->nfc_write_new_nfc_card_client_->wait_for_action_server()) 
     {
@@ -27,8 +27,6 @@ namespace rmf_robot_client
   void  NFCAction::start_writing_procedure()
   {
     CreateUserNfcTag::Goal msg = CreateUserNfcTag::Goal();
-    msg.first_name = "";
-    msg.last_name = "";
     msg.user_id = user_id;
     rclcpp_action::Client<CreateUserNfcTag>::SendGoalOptions send_goal_options = rclcpp_action::Client<CreateUserNfcTag>::SendGoalOptions();
 
@@ -55,13 +53,14 @@ namespace rmf_robot_client
 
   void NFCAction::feedback_callback(GoalHandleCreateUserNfcTag::SharedPtr, const std::shared_ptr<const CreateUserNfcTag::Feedback> feedback)
   {
-    RCLCPP_INFO(ros_node_->get_logger(), "navigate_to_pose feedback recived");
+    RCLCPP_INFO(ros_node_->get_logger(), "new user feedback recived");
   }
 
   void NFCAction::result_callback(const GoalHandleCreateUserNfcTag::WrappedResult &result)
   {
     if(result.result->successful)
     {
+       RCLCPP_INFO(ros_node_->get_logger(), "new user done");
       publish_task_state("Completed", "card_created", true);
       finish_action(true);
     }

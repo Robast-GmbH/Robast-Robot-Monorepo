@@ -9,7 +9,8 @@ namespace rmf_robot_client
     start_receive_tasks();
     start_update_robot_state();
     drawer_list = std::make_shared<std::map<std::string, DrawerState>>();
-    
+    is_new_tf_error = true;
+
     rclcpp::QoS qos_statemaschine = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
     qos_statemaschine.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
     qos_statemaschine.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
@@ -112,7 +113,6 @@ namespace rmf_robot_client
     }
     if(step==1)
     {
-      RCLCPP_INFO(this->get_logger(), "nfc started");
       std::thread{std::bind(&RobotClient::start_action, this, step)}.detach();
     }
   }
@@ -250,7 +250,6 @@ namespace rmf_robot_client
 
     if (task_id != new_task_id && task_id!=0)
     {
-      // publish_task_state("Task", "Abort", false);
       task_sequence[current_step]->cancel();
       end_current_task(); 
     }
@@ -285,8 +284,7 @@ namespace rmf_robot_client
     }
     else
     {
-       // publish_task_state("Task", "Completed", true);
-       end_current_task();
+      end_current_task();
     }
     return;
   }
@@ -327,8 +325,6 @@ namespace rmf_robot_client
     robot_state_msg.location.yaw= current_yaw;
 
     robot_state_msg.battery_percent = current_battery_level;
-    //robot_state_msg.mode = FreeFleetDataRobotMode();
-    //robot_state_msg.path = std::vector<>;
     robot_info_publisher_->publish(robot_state_msg);
   }
 
@@ -337,10 +333,19 @@ namespace rmf_robot_client
     geometry_msgs::msg::TransformStamped t;
     try {
           t = tf_buffer_->lookupTransform(map_frame_id, robot_frame_id, tf2::TimePointZero);
-        } 
+          if(!is_new_tf_error)
+          {
+             RCLCPP_INFO( this->get_logger(), "Transformation error resolved.");
+            is_new_tf_error = true;
+          }
+    }
     catch (const tf2::TransformException & ex) 
       {
+        if(is_new_tf_error)
+        {
           RCLCPP_INFO( this->get_logger(), "Could not transform %s to %s: %s", map_frame_id.c_str(), robot_frame_id.c_str(), ex.what());
+          is_new_tf_error = false;
+        }
           return;
       }
 

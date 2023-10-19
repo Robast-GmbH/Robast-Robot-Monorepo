@@ -173,5 +173,5 @@ def create_navigation_action(step:int, x:float, y:float, yaw:float, finished:boo
         return message
 
 def create_new_user(step:int, user_id: int, finished:bool=False):
-        message={"step":step, "type":"NEW_USER", "finished":finished, "user_id": user_id}
+        message={"step":step, "type":"NEW_USER", "finished":finished, "action":{ "user_id": user_id} }
         return message

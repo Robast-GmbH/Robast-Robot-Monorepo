@@ -66,7 +66,25 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 @app.post("/users/{user_id}/nfc")
-def update_nfc_code(user_id:str, nfc_code:str, db: Session = Depends(get_db)):
+def update_nfc_code(user_id:str, robot_name="", db: Session = Depends(get_db)):
+    db_robot= crud.get_robot(db=db, robot_name=robot_name)
+    db_user=crud.get_user(db,user_id)
+    task_id= crud.create_task( db, db_robot.robot_name, db_robot.fleet_name, user_id)
+    step=1
+    db_action= crud.create_new_user_nfc(db, step, task_id, db_user.id)
+    action= templates.create_new_user( step=step, user_id= db_user.id)
+    task =templates.create_task(db,robot_name,task_id,[action])
+    headers =  {"Content-Type":"application/json"}
+    sender = requests.Session() 
+    print(json.dumps(task))
+    answer  =sender.post(url= config["FLEETMANAGEMENT_ADDRESS"]+"/task", data= json.dumps(task), headers= headers, verify=False)
+
+    if answer.status_code!= 200:
+        raise HTTPException(status_code=answer.status_code, detail= answer.reason)
+    return 
+
+@app.post("/users/{user_id}/admin/nfc")
+def update_nfc_code_in_db(user_id:str, nfc_code:str="", db: Session = Depends(get_db)):
     crud.create_nfc_code(db= db, user_id=user_id,nfc_code=nfc_code)
     return 
 

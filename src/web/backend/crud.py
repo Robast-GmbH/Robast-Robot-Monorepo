@@ -17,11 +17,11 @@ def init(db: Session):
 
 #user_mangement
 
-def get_user(db: Session, user_id: int):
+def get_user(db: Session, user_id: int)-> models.User:
     users = db.query(models.User).filter(models.User.id == user_id).first()
     return users
 
-def get_user_by_email(db: Session, email: str):
+def get_user_by_email(db: Session, email: str)->models.User:
     return db.query(models.User).filter(models.User.email == email).first()
 
 def create_nfc_code(db:Session, user_id:int, nfc_code:str):

@@ -103,10 +103,8 @@ namespace nfc_bridge
 
   bool NFCBridge::read_nfc_code(std::shared_ptr<std::string> scanned_key)
   {
-    std::string msg="3AF5B603";
-    //int size_of_received_data = serial_connector_->read_serial(&msg, 100);
-    *scanned_key = msg;
-    int size_of_received_data = 8;
+  
+    int size_of_received_data = serial_connector_->read_serial(scanned_key.get(), 100);
     return size_of_received_data > 0;
   }
 
@@ -126,6 +124,12 @@ namespace nfc_bridge
         std_msgs::msg::Int64 message = std_msgs::msg::Int64();
         message.data = *found_user_id;
         RCLCPP_INFO(this->get_logger(), "Publishing authenticated user %s %i", (*found_user).c_str(), *found_user_id);
+        authentication_publisher_->publish(message);
+      }
+      else {
+        RCLCPP_ERROR(this->get_logger(), "Card was not recognised.");
+        std_msgs::msg::Int64 message = std_msgs::msg::Int64();
+        message.data = -1;
         authentication_publisher_->publish(message);
       }
     }

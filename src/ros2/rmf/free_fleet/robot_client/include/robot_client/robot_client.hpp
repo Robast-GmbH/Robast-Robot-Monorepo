@@ -88,6 +88,7 @@ namespace rmf_robot_client
           double current_y;
           double current_yaw;
           std::shared_ptr<std::map<std::string, DrawerState>> drawer_list;
+          bool is_new_tf_error;
 
           void init_param();
           void start_receive_tasks();

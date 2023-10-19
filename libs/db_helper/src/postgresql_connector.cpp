@@ -30,7 +30,8 @@ namespace db_helper
     return "successfull";
   }
 
-  std::vector<std::vector<std::string>> PostgreSqlHelper::perform_query(std::string sql_statment)
+  std::vector<std::vector<std::string>> PostgreSqlHelper::perform_query(std::string sql_statment,
+                                                                        std::shared_ptr<std::string> error_message)
   {
     std::vector<std::vector<std::string>> result_data;
     pqxx::result raw_db_feedback;
@@ -45,7 +46,8 @@ namespace db_helper
     }
     catch (const pqxx::pqxx_exception& e)
     {
-      return std::vector<std::vector<std::string>>();
+      *error_message = e.base().what();
+      return result_data;
     }
 
     // fill the table Body
@@ -61,7 +63,7 @@ namespace db_helper
     return result_data;
   }
 
-  int PostgreSqlHelper::perform_transaction(std::string sql_statement)
+  int PostgreSqlHelper::perform_transaction(std::string sql_statement, std::shared_ptr<std::string> error_message)
   {
     pqxx::connection connection_handle = pqxx::connection(connection_parameter);
     pqxx::work query_handle = pqxx::work(connection_handle);
@@ -79,7 +81,8 @@ namespace db_helper
     return affected_Rows;
   }
 
-  std::vector<std::vector<std::string>> PostgreSqlHelper::perform_transaction_with_return(std::string sql_statement)
+  std::vector<std::vector<std::string>> PostgreSqlHelper::perform_transaction_with_return(
+      std::string sql_statement, std::shared_ptr<std::string> error_message)
   {
     pqxx::connection connection_handle = pqxx::connection(connection_parameter);
     pqxx::work query_handle = pqxx::work(connection_handle);
@@ -114,7 +117,8 @@ namespace db_helper
   bool PostgreSqlHelper::checkUserTag(std::string tag,
                                       std::vector<std::string> lookup_scope,
                                       std::shared_ptr<std::string> user_name,
-                                      std::shared_ptr<int> id)
+                                      std::shared_ptr<int> id,
+                                      std::shared_ptr<std::string> error_msg)
   {
     std::vector<std::vector<std::string>> data = std::vector<std::vector<std::string>>();
 
@@ -127,43 +131,62 @@ namespace db_helper
       }
       target_users += lookup_scope[i];
     }
-
     data = perform_query(
-        "SELECT id, name FROM public.\"user\" WHERE id= (SELECT user_id FROM public.authentication WHERE nfc_code = "
-        "'" +
-        tag + "')");
-    if (data.size() == 1)
+        "SELECT id, name FROM public.\"user\" WHERE id= (SELECT user_id FROM public.authentication WHERE nfc_code = " +
+            tag + ")",
+        error_msg);
+
+    if (*error_msg == "")
+    {
+    }
+    else if (data.size() == 1)
     {
       *user_name = data[0][1];
       *id = stoi(data[0][0]);
       return true;
     }
+
+    *error_msg = "The tag is not assigned to a user!";
     return false;
   }
 
-  bool PostgreSqlHelper::checkUser(const std::string id, const std::string first_name, const std::string last_name)
+  bool PostgreSqlHelper::checkUser(int id, std::shared_ptr<std::string> error_msg)
   {
     std::vector<std::vector<std::string>> data = std::vector<std::vector<std::string>>();
-    data = perform_query("SELECT first_name, last_name FROM public.account WHERE user_id =" + id + ";");
-
-    return (data[0][0] == first_name && data[0][1] == last_name);
+    data = perform_query("SELECT count(*) FROM public.user WHERE id =" + std::to_string(id) + ";", error_msg);
+    if (*error_msg != "")
+    {
+      return false;
+    }
+    return data[0][0] == "1";
   }
 
-  std::string PostgreSqlHelper::createUser(std::string first_name, std::string last_name)
+  int PostgreSqlHelper::createUser(std::string first_name, std::string last_name)
   {
     std::vector<std::vector<std::string>> result;
     std::string add_user_query = "INSERT INTO public.\"account\" (user_id, first_name, last_name) VALUES ( DEFAULT, '" +
                                  first_name + "', '" + last_name + "') RETURNING user_id;";
-    result = perform_transaction_with_return(add_user_query);
-    return result[0][0];
+    std::string error_msg = "";
+    result = perform_transaction_with_return(add_user_query, std::make_shared<std::string>(error_msg));
+    if (error_msg != "")
+    {
+      return -1;
+    }
+    return stoi(result[0][0]);
   }
 
   bool PostgreSqlHelper::createNfcCode(std::string user_id, std::string card_uid)
   {
     int changed_rows;
-    std::string create_nfc_query = "INSERT INTO public.user_nfc_codes (user_id, card_token) VALUES(" + user_id +
-                                   ", "+card_uid+")" ;
-    changed_rows = perform_transaction(create_nfc_query);
+    std::string create_nfc_query =
+        "INSERT INTO public.authentication (user_id, token_uid) VALUES(" + user_id + ", '" + card_uid + "');";
+
+    std::string error_msg = "";
+    changed_rows = perform_transaction(create_nfc_query, std::make_shared<std::string>(error_msg));
+    if (error_msg != "")
+    {
+      return false;
+    }
     return changed_rows == 1;
   }
 
