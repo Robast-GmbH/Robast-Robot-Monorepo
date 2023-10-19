@@ -62,6 +62,10 @@ RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone http
   && colcon build --parallel-workers 3 --build-base /workspace_moveit2/build --install-base /workspace_moveit2/install \
   && echo "if [ -f /workspace_moveit2/install/setup.bash ]; then source /workspace_moveit2/install/setup.bash; fi" >> /home/$USER/.bashrc
 
+# Install PlotJuggler as debugging tool to view controller_state data and so forth
+# TODO@Jacob: Remove this from the docker for production
+RUN apt-get update && apt install ros-${ROS_DISTRO}-plotjuggler-ros -y
+
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
