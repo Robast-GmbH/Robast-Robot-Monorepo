@@ -103,7 +103,6 @@ namespace nfc_bridge
 
   bool NFCBridge::read_nfc_code(std::shared_ptr<std::string> scanned_key)
   {
-  
     int size_of_received_data = serial_connector_->read_serial(scanned_key.get(), 100);
     return size_of_received_data > 0;
   }
@@ -113,20 +112,21 @@ namespace nfc_bridge
     start_up_scanner();
     std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
     std::shared_ptr<std::string> found_user = std::make_shared<std::string>();
+    std::shared_ptr<std::string> error_msg = std::make_shared<std::string>();
     std::shared_ptr<int> found_user_id = std::make_shared<int>();
 
     if (read_nfc_code(scanned_key))
     {
-      RCLCPP_INFO(this->get_logger(), "tag located %s", (*scanned_key).c_str());
-      if (db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user, found_user_id))
+      
+      if (db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user, found_user_id,error_msg))
       {
-        RCLCPP_INFO(this->get_logger(), "Found tag");
         std_msgs::msg::Int64 message = std_msgs::msg::Int64();
         message.data = *found_user_id;
         RCLCPP_INFO(this->get_logger(), "Publishing authenticated user %s %i", (*found_user).c_str(), *found_user_id);
         authentication_publisher_->publish(message);
       }
-      else {
+      else
+      {
         RCLCPP_ERROR(this->get_logger(), "Card was not recognised.");
         std_msgs::msg::Int64 message = std_msgs::msg::Int64();
         message.data = -1;
@@ -141,7 +141,7 @@ namespace nfc_bridge
     std::string user_id;
     std::shared_ptr<const communication_interfaces::action::CreateUserNfcTag_Goal> goal = goal_handle->get_goal();
     std::shared_ptr<CreateUser::Result> result = std::make_shared<CreateUser::Result>();
-    std::shared_ptr<CreateUser::Feedback> feedback= std::make_shared<CreateUser::Feedback>();
+    std::shared_ptr<CreateUser::Feedback> feedback = std::make_shared<CreateUser::Feedback>();
     std::shared_ptr<std::string> error_msg = std::make_shared<std::string>();
 
     feedback->task_status.is_db_user_created = false;
@@ -149,15 +149,15 @@ namespace nfc_bridge
     feedback->task_status.is_reader_completed = false;
     goal_handle->publish_feedback(feedback);
 
-  
     if (db_connector_->checkUser(goal->user_id, error_msg))
     {
       user_id = goal->user_id;
       feedback->task_status.user_id = user_id;
     }
-    else if( *error_msg!="")
+    else if (*error_msg != "")
     {
-      result->task_status = feedback->task_status.is_error=true;
+      feedback->task_status.is_reader_error = true;
+      result->task_status = feedback->task_status;
       result->successful = false;
       result->error_message = *error_msg;
       goal_handle->canceled(result);
@@ -179,6 +179,13 @@ namespace nfc_bridge
     std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
     while (!read_nfc_code(scanned_key))
     {
+      if (goal_handle->is_canceling()) {
+        result->nfc_code = "";
+        result->error_message = "create new nfc token was canceled.";
+        goal_handle->canceled(result);
+        RCLCPP_INFO(this->get_logger(),"%s",result->error_message.c_str());
+        return;
+      }
     }
 
     if (!db_connector_->createNfcCode(user_id, *scanned_key))
