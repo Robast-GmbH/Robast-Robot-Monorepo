@@ -84,22 +84,6 @@ RUN rosdep update && \
 RUN  . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/
 
-############################## Hagen ##################################
-FROM ros:humble-ros-base-jammy as hagen
-
-COPY --from=base / /
-COPY --from=build /opt/ros /opt/ros
-COPY --from=build /robast /robast
-
-
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp
-
-ENV ROS_DOMAIN_ID=0
-RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
-
-
-
 ############################## Release ##################################
 FROM ros:humble-ros-base-jammy as release
 
