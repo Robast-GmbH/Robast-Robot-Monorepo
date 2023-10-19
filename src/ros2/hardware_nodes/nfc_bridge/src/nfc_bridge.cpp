@@ -139,24 +139,29 @@ namespace nfc_bridge
   void NFCBridge::createUser(const std::shared_ptr<GoalHandleCreateUser> goal_handle)
   {
     std::string user_id;
-    auto goal = goal_handle->get_goal();
-    auto result = std::make_shared<CreateUser::Result>();
-    auto feedback = std::make_shared<CreateUser::Feedback>();
+    std::shared_ptr<const communication_interfaces::action::CreateUserNfcTag_Goal> goal = goal_handle->get_goal();
+    std::shared_ptr<CreateUser::Result> result = std::make_shared<CreateUser::Result>();
+    std::shared_ptr<CreateUser::Feedback> feedback= std::make_shared<CreateUser::Feedback>();
+    std::shared_ptr<std::string> error_msg = std::make_shared<std::string>();
 
     feedback->task_status.is_db_user_created = false;
     feedback->task_status.is_reader_ready_to_write = false;
     feedback->task_status.is_reader_completed = false;
     goal_handle->publish_feedback(feedback);
 
-    if (goal->user_id == "")
-    {
-      user_id = db_connector_->createUser(goal->first_name, goal->last_name);
-      feedback->task_status.user_id = user_id;
-    }
-    else if (db_connector_->checkUser(goal->user_id, goal->first_name, goal->last_name))
+  
+    if (db_connector_->checkUser(goal->user_id, error_msg))
     {
       user_id = goal->user_id;
       feedback->task_status.user_id = user_id;
+    }
+    else if( *error_msg!="")
+    {
+      result->task_status = feedback->task_status.is_error=true;
+      result->successful = false;
+      result->error_message = *error_msg;
+      goal_handle->canceled(result);
+      return;
     }
     else
     {
