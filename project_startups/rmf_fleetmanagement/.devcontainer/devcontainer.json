@@ -1,7 +1,7 @@
 {
 
-	"image": "ghcr.io/robast-gmbh/monorepo/rmf:hagen",
-	"remoteUser": "ubuntu",
+	"image": "ghcr.io/robast-gmbh/monorepo/rmf:devel",
+	"remoteUser": "robast",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/rmf/,target=/workspace/src/rmf,type=bind",
@@ -21,7 +21,6 @@
  		"CYCLONEDDS_URI":"/workspace/dds_configs/cyclone_DDS_config.xml",
 		 "DISPLAY": "${localEnv:DISPLAY}"
 	},
-	"remoteUser": "robast",
 	// "postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
