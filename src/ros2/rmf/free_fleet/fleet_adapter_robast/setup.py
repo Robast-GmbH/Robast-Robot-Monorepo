@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 from glob import glob
 
-package_name = 'fleet_adapter_ff'
+package_name = 'fleet_adapter_robast'
 
 setup(
     name=package_name,
@@ -24,7 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'fleet_adapter=fleet_adapter_ff.fleet_adapter_ff:main'
+            'fleet_adapter=fleet_adapter_robast.fleet_adapter_robast:main'
         ],
     },
 )

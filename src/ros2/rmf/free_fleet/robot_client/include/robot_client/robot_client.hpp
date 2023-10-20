@@ -6,18 +6,18 @@
 #include "rclcpp/qos.hpp"
 #include <functional> 
 
-#include "fleet_interfaces/msg/free_fleet_data_setting_request.hpp"
-#include "fleet_interfaces/msg/free_fleet_data_create_nfc_request.hpp"
-#include "fleet_interfaces/msg/free_fleet_data_drawer_request.hpp"
-#include "fleet_interfaces/msg/free_fleet_data_destination_request.hpp"
-#include "fleet_interfaces/msg/free_fleet_data_robot_state.hpp"
+#include "fleet_interfaces/msg/fleet_data_setting_request.hpp"
+#include "fleet_interfaces/msg/fleet_data_create_nfc_request.hpp"
+#include "fleet_interfaces/msg/fleet_data_drawer_request.hpp"
+#include "fleet_interfaces/msg/fleet_data_destination_request.hpp"
+#include "fleet_interfaces/msg/fleet_data_robot_state.hpp"
 
 //#include "robotnik_msgs/msg/battery_status.hpp"
 
 #include "std_msgs/msg/bool.hpp"
 #include "std_msgs/msg/int64.hpp"
 
-#include "tf2_geometry_msgs/tf2_geometry_msgs.h"
+#include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2/exceptions.h"
 #include "tf2_ros/transform_listener.h"
 #include "tf2_ros/buffer.h"
@@ -35,11 +35,11 @@ namespace rmf_robot_client
     public:
 
           RobotClient();
-          using FreeFleetDataSettingRequest = fleet_interfaces::msg::FreeFleetDataSettingRequest;
-          using FreeFleetDataCreateNfcRequest = fleet_interfaces::msg::FreeFleetDataCreateNfcRequest;
-          using FreeFleetDataDrawerRequest = fleet_interfaces::msg::FreeFleetDataDrawerRequest;
-          using FreeFleetDataDestinationRequest = fleet_interfaces::msg::FreeFleetDataDestinationRequest;
-          using FreeFleetDataRobotInfo = fleet_interfaces::msg::FreeFleetDataRobotState;
+          using FleetDataSettingRequest = fleet_interfaces::msg::FleetDataSettingRequest;
+          using FleetDataCreateNfcRequest = fleet_interfaces::msg::FleetDataCreateNfcRequest;
+          using FleetDataDrawerRequest = fleet_interfaces::msg::FleetDataDrawerRequest;
+          using FleetDataDestinationRequest = fleet_interfaces::msg::FleetDataDestinationRequest;
+          using FleetDataRobotInfo = fleet_interfaces::msg::FleetDataRobotState;
           
           using StdMsgBool = std_msgs::msg ::Bool;
           using StdMsgInt = std_msgs::msg::Int64;
@@ -58,10 +58,10 @@ namespace rmf_robot_client
           std::string robot_frame_id;
 
           //fleet_server
-          rclcpp::Subscription<FreeFleetDataSettingRequest>::SharedPtr setting_subscriber_;
-          rclcpp::Subscription<FreeFleetDataCreateNfcRequest>::SharedPtr write_nfc_card_request_subscriber_;
-          rclcpp::Subscription<FreeFleetDataDrawerRequest>::SharedPtr drawer_request_subscriber_;
-          rclcpp::Subscription<FreeFleetDataDestinationRequest>::SharedPtr navigation_request_subscriber_;
+          rclcpp::Subscription<FleetDataSettingRequest>::SharedPtr setting_subscriber_;
+          rclcpp::Subscription<FleetDataCreateNfcRequest>::SharedPtr write_nfc_card_request_subscriber_;
+          rclcpp::Subscription<FleetDataDrawerRequest>::SharedPtr drawer_request_subscriber_;
+          rclcpp::Subscription<FleetDataDestinationRequest>::SharedPtr navigation_request_subscriber_;
           
           //hardware
           //rclcpp::Subscription<BatteryLevel>::SharedPtr battery_status_sub_;
@@ -69,7 +69,7 @@ namespace rmf_robot_client
           rclcpp::Subscription<StdMsgInt>::SharedPtr authentication_subscriber_;
           
           //other
-          rclcpp::Publisher<FreeFleetDataRobotInfo>::SharedPtr robot_info_publisher_;
+          rclcpp::Publisher<FleetDataRobotInfo>::SharedPtr robot_info_publisher_;
           rclcpp::Publisher<StdMsgBool>::SharedPtr reset_simple_tree_publisher_;
 
           //Task
@@ -94,10 +94,10 @@ namespace rmf_robot_client
           void start_receive_tasks();
           void start_update_robot_state();
           
-          void receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg);
-          void receive_create_nfc_task(const FreeFleetDataCreateNfcRequest::ConstPtr msg);
-          void receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg);
-          void receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg);
+          void receive_settings(const FleetDataSettingRequest::SharedPtr msg);
+          void receive_create_nfc_task(const FleetDataCreateNfcRequest::ConstPtr msg);
+          void receive_drawer_task(const FleetDataDrawerRequest::ConstPtr msg);
+          void receive_destination_task(const FleetDataDestinationRequest::ConstPtr msg);
           
           void receive_drawer_status(const DrawerStatus::SharedPtr msg);
           void receive_authenticated_user(const StdMsgInt::SharedPtr msg);

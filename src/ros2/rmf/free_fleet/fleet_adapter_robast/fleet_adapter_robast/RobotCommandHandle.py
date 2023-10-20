@@ -256,8 +256,8 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
                                     self.on_waypoint = self.target_waypoint.graph_index
                                 elif self.last_known_waypoint_index is not \
                                     None and self.dist(
-                                        self.position, self.graph.get_waypoint(
-                                        self.last_known_waypoint_index).location) < 0.5:
+                                    self.position, self.graph.get_waypoint(
+                                      self.last_known_waypoint_index).location) < 0.5:
                                     self.on_waypoint = self.last_known_waypoint_index
                                 else:
                                     self.on_lane = None  # update_off_grid()
@@ -285,12 +285,14 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
             self,
             dock_name,
             docking_finished_callback):
-        """Docking is very specific to each application. Hence, the user will\
-            need to customize this function accordingly. In this example, we \
-            assume the dock_name is the same as the name of the waypoints that \
-            the robot is trying to dock into. We then call api.start_process() \
-            to initiate the robot specific process. This could be to start a \
-            cleaning process or load/unload a cart for delivery."""
+        ''' Docking is very specific to each application. Hence, the user will
+            need to customize this function accordingly. In this example, we
+            assume the dock_name is the same as the name of the waypoints that
+            the robot is trying to dock into. We then call api.start_process()
+            to initiate the robot specific process. This could be to start a
+            cleaning process or load/unload a cart for delivery.
+        '''
+
         self._quit_dock_event.clear()
         if self._dock_thread is not None:
             self._dock_thread.join()
@@ -336,8 +338,8 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
         self._dock_thread.start()
 
     def get_position(self):
-        """This helper function returns the live position of the robot in the \
-        RMF coordinate frame"""
+        ''' This helper function returns the live position of the robot in the
+        RMF coordinate frame'''
         position = self.api.position(self.name)
         if position is not None:
             x, y = self.transforms['robot_to_rmf'].transform(
@@ -415,8 +417,8 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
                 self.update_handle.update_off_grid_position(
                     self.position, self.dock_waypoint_index)
             # if robot is merging into a waypoint
-            elif (self.target_waypoint is not None
-                  and self.target_waypoint.graph_index is not None):
+            elif (self.target_waypoint is not None and
+                self.target_waypoint.graph_index is not None):
                 self.update_handle.update_off_grid_position(
                     self.position, self.target_waypoint.graph_index)
             else:  # if robot is lost
@@ -454,15 +456,17 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
         return None
 
     def dist(self, A, B):
-        """Euclidian distance between A(x,y) and B(x,y)."""
+        ''' Euclidian distance between A(x,y) and B(x,y)'''
         assert(len(A) > 1)
         assert(len(B) > 1)
         return math.sqrt((A[0] - B[0])**2 + (A[1] - B[1])**2)
 
     def get_remaining_waypoints(self, waypoints: list):
-        """The function returns a list where each element is a tuple of the index \
-        of the waypoint and the waypoint present in waypoints. This function \
-        may be modified if waypoints in a path need to be filtered."""
+        '''
+        The function returns a list where each element is a tuple of the index
+        of the waypoint and the waypoint present in waypoints. This function
+        may be modified if waypoints in a path need to be filtered.
+        '''
         assert(len(waypoints) > 0)
         remaining_waypoints = []
 

@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>fleet_adapter_ff</name>
+  <name>fleet_adapter_robast</name>
   <version>0.0.0</version>
-  <description>RMF fleet adapter for free fleet</description>
+  <description>RMF fleet adapter for robast robots</description>
   <maintainer email="t.zurhelle@robast.de"> ROBAST</maintainer>
 
   <license>Apache License 2.0</license>

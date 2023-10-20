@@ -4,7 +4,7 @@
 #include <string>
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
-#include "fleet_interfaces/msg/free_fleet_data_task_state.hpp"
+#include "fleet_interfaces/msg/fleet_data_task_state.hpp"
 #include <functional>
 
 namespace rmf_robot_client
@@ -12,7 +12,7 @@ namespace rmf_robot_client
   class Action
   {
     protected: 
-      using FreeFleetDataTaskInfo = fleet_interfaces::msg::FreeFleetDataTaskState;
+      using FreeFleetDataTaskInfo = fleet_interfaces::msg::FleetDataTaskState;
       int task_id_;
       int step_;
       std::shared_ptr<rclcpp::Node> ros_node_;

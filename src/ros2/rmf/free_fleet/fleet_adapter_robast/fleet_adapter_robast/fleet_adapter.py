@@ -35,7 +35,7 @@ from rmf_task_msgs.msg import TaskProfile, TaskType
 from functools import partial
 
 from .RobotCommandHandle import RobotCommandHandle
-from .FreeFleetAPI import freeFleetAPI
+from .RobastFleetAPI import RobastFleetAPI
 
 # ------------------------------------------------------------------------------
 # Helper functions
@@ -163,11 +163,10 @@ def initialize_fleet(config_yaml, nav_graph_path, node, use_sim_time, server_uri
         cmd_handle.update_handle = update_handle
 
     # Initialize robot API for this fleet
-    api = freeFleetAPI(
-        fleet_config['name'],
+    api = RobastFleetAPI(
         fleet_config['fleet_manager']['prefix'],
-        fleet_config['fleet_manager']['responce-tolerance'],
-        node)
+        fleet_config['fleet_manager']['user'],
+        fleet_config['fleet_manager']['password'])
 
     # Initialize robots for this fleet
 
@@ -277,7 +276,7 @@ def main(argv=sys.argv):
     args_without_ros = rclpy.utilities.remove_ros_args(argv)
 
     parser = argparse.ArgumentParser(
-        prog="fleet_adapter_ff",
+        prog="fleet_adapter",
         description="Configure and spin up the fleet adapter")
     parser.add_argument("-c", "--config_file", type=str, required=True,
                         help="Path to the config.yaml file")

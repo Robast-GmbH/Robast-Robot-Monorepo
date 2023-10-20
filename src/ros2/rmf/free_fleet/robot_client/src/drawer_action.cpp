@@ -83,7 +83,7 @@ namespace rmf_robot_client
        trigger_open_drawer_publisher_->publish(drawer_msg);
         publish_task_state("DrawerState", drawer_ref+"#Unlocked" , false);
     }
-    drawers_->at(drawer_ref).is_open==true;
+    drawers_->at(drawer_ref).is_open=true;
     selected_drawer_.release();
   }
 

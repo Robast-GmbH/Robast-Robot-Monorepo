@@ -66,10 +66,10 @@ namespace rmf_robot_client
     qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
     qos.avoid_ros_namespace_conventions(false);
 
-    write_nfc_card_request_subscriber_ = this->create_subscription<FreeFleetDataCreateNfcRequest>(this->get_parameter("fleet_communication_create_nfc_topic").as_string(), qos, std::bind(&RobotClient::receive_create_nfc_task, this,std::placeholders::_1));
-    drawer_request_subscriber_ = this->create_subscription<FreeFleetDataDrawerRequest>(this->get_parameter("fleet_communication_drawer_topic").as_string(),qos, std::bind(&RobotClient::receive_drawer_task, this, std::placeholders::_1));
-    navigation_request_subscriber_ = this->create_subscription<FreeFleetDataDestinationRequest>(this->get_parameter("fleet_communication_destination_topic").as_string(), qos, std::bind(&RobotClient::receive_destination_task, this, std::placeholders::_1));
-    setting_subscriber_ = this->create_subscription<FreeFleetDataSettingRequest>(this->get_parameter("fleet_communication_setting_topic").as_string(), qos, std::bind(&RobotClient::receive_settings, this,std::placeholders::_1));
+    write_nfc_card_request_subscriber_ = this->create_subscription<FleetDataCreateNfcRequest>(this->get_parameter("fleet_communication_create_nfc_topic").as_string(), qos, std::bind(&RobotClient::receive_create_nfc_task, this,std::placeholders::_1));
+    drawer_request_subscriber_ = this->create_subscription<FleetDataDrawerRequest>(this->get_parameter("fleet_communication_drawer_topic").as_string(),qos, std::bind(&RobotClient::receive_drawer_task, this, std::placeholders::_1));
+    navigation_request_subscriber_ = this->create_subscription<FleetDataDestinationRequest>(this->get_parameter("fleet_communication_destination_topic").as_string(), qos, std::bind(&RobotClient::receive_destination_task, this, std::placeholders::_1));
+    setting_subscriber_ = this->create_subscription<FleetDataSettingRequest>(this->get_parameter("fleet_communication_setting_topic").as_string(), qos, std::bind(&RobotClient::receive_settings, this,std::placeholders::_1));
     drawer_status_subscriber_= this->create_subscription<DrawerStatus>( this->get_parameter("drawer_status_change_topic").as_string(), 10, std::bind(&RobotClient::receive_drawer_status, this, std::placeholders::_1));
     authentication_subscriber_=this->create_subscription<StdMsgInt>(this->get_parameter("nfc_authenticated_user_topic").as_string(), 10, std::bind(&RobotClient::receive_authenticated_user, this, std::placeholders::_1));
   }
@@ -89,14 +89,15 @@ namespace rmf_robot_client
     tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
     update_robot_location();
 
+    //ToDo only works after the topic is bridged properly
     //battery_status_sub_ = this->create_subscription<BatteryLevel>( this->get_parameter("robotnik_battery_level_topic").as_string(), qos_robotnik, std::bind(&RobotClient::update_battery_level, this, std::placeholders::_1));
 
-    robot_info_publisher_ = this->create_publisher<FreeFleetDataRobotInfo>(this->get_parameter("fleet_communication_robot_info_topic").as_string(), qos_fleet_communication);
+    robot_info_publisher_ = this->create_publisher<FleetDataRobotInfo>(this->get_parameter("fleet_communication_robot_info_topic").as_string(), qos_fleet_communication);
     publish_robot_info_timer_ = this->create_wall_timer(std::chrono::seconds(robot_info_inteval), std::bind(&RobotClient::publish_fleet_state, this)); 
     
   }
 
-  void RobotClient::receive_create_nfc_task(const FreeFleetDataCreateNfcRequest::ConstPtr msg)
+  void RobotClient::receive_create_nfc_task(const FleetDataCreateNfcRequest::ConstPtr msg)
   {
      RCLCPP_INFO(this->get_logger(), "nfc_received");
 
@@ -117,7 +118,7 @@ namespace rmf_robot_client
     }
   }
 
-  void RobotClient::receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg)
+  void RobotClient::receive_destination_task(const FleetDataDestinationRequest::ConstPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "destination_received");
      int task_id, step;
@@ -140,7 +141,7 @@ namespace rmf_robot_client
     }
   }
 
-  void RobotClient::receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg)
+  void RobotClient::receive_drawer_task(const FleetDataDrawerRequest::ConstPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "drawer_received");
     int step, task_id;
@@ -170,7 +171,7 @@ namespace rmf_robot_client
     task_sequence.at(current_step)->start([this](int step){end_current_action(step);}); 
   }
 
-  void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
+  void RobotClient::receive_settings(const FleetDataSettingRequest::SharedPtr msg)
   {
     //  global settings (reset tree,..)
     if(msg->command=="reset_tree")
@@ -269,8 +270,6 @@ namespace rmf_robot_client
 
   void RobotClient::start_next_action()
   {
-    
-   
       for (const auto& pair : task_sequence) {
         int key = pair.first;     
     }
@@ -311,7 +310,7 @@ namespace rmf_robot_client
   void RobotClient::publish_fleet_state()
   {
     update_robot_location();
-    FreeFleetDataRobotInfo robot_state_msg = FreeFleetDataRobotInfo();
+    FleetDataRobotInfo robot_state_msg = FleetDataRobotInfo();
 
     robot_state_msg.name = robot_name;
     robot_state_msg.model = robot_model;

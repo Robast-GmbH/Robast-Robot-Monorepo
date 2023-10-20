@@ -1,0 +1,5 @@
+string fleet_name
+string robot_name
+fleet_interfaces/FleetDataRobotMode mode
+string task_id
+fleet_interfaces/FleetDataModeParameter[] parameter

@@ -32,16 +32,14 @@ rmf_fleet:
   account_for_battery_drain: True
   task_capabilities: # Specify the types of RMF Tasks that robots in this fleet are capable of performing
     loop: True
-    delivery: False
+    delivery: True
     clean: False
     finishing_request: "nothing" # [park, charge, nothing]
 
 # DeliveryBot CONFIG =================================================================
 
 robots:
-  # Here the user is expected to append the configuration for each robot in the
-  # fleet.
-  # Configuration for first robot in this fleet
+   # ToDo Torben : replace the charger waypoints with the real location of the chargers  
   rb0:
     robot_config:
       max_delay: 10.0 # allowed seconds of delay of the current itinerary before it gets interrupted and replanned
@@ -53,8 +51,6 @@ robots:
         orientation: null
       charger:
         waypoint: "charger_deliverybot1"
-  # Configuration for the second robot in this fleet if there is a second robot
-  # Uncomment if more than one robot exists.
   rb1:
     robot_config:
       max_delay: 10.0 # allowed seconds of delay of the current itinerary before it gets interrupted and replanned
@@ -66,6 +62,7 @@ robots:
         orientation: null
       charger:
         waypoint: "charger_deliverybot2"
+        
 
 # TRANSFORM CONFIG =============================================================
 # For computing transforms between Robot and RMF coordinate systems
