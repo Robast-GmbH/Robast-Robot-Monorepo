@@ -10,14 +10,14 @@ default_acceleration_scaling_factor: 0.1
 joint_limits:
   door_opening_mechanism_joint_freely_rotating_hook:
     has_velocity_limits: true
-    max_velocity: 0.1
+    max_velocity: 3.0
     has_acceleration_limits: true
-    max_acceleration: 0.1
+    max_acceleration: 3.0
   door_opening_mechanism_joint_rotating_arm:
     has_velocity_limits: true
-    max_velocity: 0.1
+    max_velocity: 3.0
     has_acceleration_limits: true
-    max_acceleration: 0.1
+    max_acceleration: 3.0
   door_opening_mechanism_joint_x_axis_slide:
     has_velocity_limits: true
     max_velocity: 0.1
