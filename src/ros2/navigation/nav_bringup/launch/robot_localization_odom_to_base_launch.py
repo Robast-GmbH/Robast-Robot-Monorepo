@@ -69,7 +69,7 @@ def generate_launch_description():
             "base_link_frame":"robot_base_footprint",
             "world_frame":"robot_odom",
             "odom0": "/robot/robotnik_base_control/odom",
-            "imu0": "/robot/vectornav/imu/data"        
+            "imu0": "/robot/imu/data"        
         }
         configured_params = RewrittenYaml(
             source_file=params_file,
