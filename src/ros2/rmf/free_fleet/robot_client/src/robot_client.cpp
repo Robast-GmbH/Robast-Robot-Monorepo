@@ -119,7 +119,10 @@ void RobotClient::start_update_robot_state()
   tf_listener_ = std::make_shared<tf2_ros::TransformListener>(*tf_buffer_);
   update_robot_location();
 
-  //  battery_status_sub_ = this->create_subscription<BatteryLevel>( this->get_parameter("robotnik_battery_level_topic").as_string(), qos_robotnik, std::bind(&RobotClient::update_battery_level, this, std::placeholders::_1));
+  //  battery_status_sub_ = this->create_subscription<BatteryLevel>(
+  // this->get_parameter("robotnik_battery_level_topic").as_string(),
+  // qos_robotnik,
+  // std::bind(&RobotClient::update_battery_level, this, std::placeholders::_1));
 
   robot_info_publisher_ =
     this->create_publisher<FreeFleetDataRobotInfo>(
@@ -233,13 +236,14 @@ void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr 
 
 void RobotClient::receive_drawer_status(const DrawerStatus::SharedPtr msg)
 {
-  std::string drawer_ref = std::to_string(msg->drawer_address.module_id) + '#' + std::to_string(
-    msg->drawer_address.drawer_id);
+  std::string drawer_ref = std::to_string(msg->drawer_address.module_id)\
+                                          + '#' + std::to_string(msg->drawer_address.drawer_id);
   if (current_step == 0 || current_step > task_sequence.size()) {
-    RCLCPP_ERROR(
-      this->get_logger(), "External triggered, Drawer %s state received (Drawer_id: %i, Module_id: %i ).",
-      msg->drawer_is_open ? "open" : "close", msg->drawer_address.drawer_id,
-      msg->drawer_address.module_id);
+    RCLCPP_ERROR( this->get_logger(), \
+                                    "Drawer %s state received(Drawer_id: %i, Module_id: %i ).", \
+                                    msg->drawer_is_open ? "open" : "close", \
+                                    msg->drawer_address.drawer_id, \
+                                    msg->drawer_address.module_id);
     return;
   } else {
     task_sequence[current_step]->receive_new_settings(
@@ -250,10 +254,11 @@ void RobotClient::receive_drawer_status(const DrawerStatus::SharedPtr msg)
   if (drawer_list->count(drawer_ref)) {
     drawer_list->at(drawer_ref).is_open = msg->drawer_is_open;
   } else {
-    RCLCPP_ERROR(
-      this->get_logger(), "External triggered Drawer %s state received (Drawer_id: %i, Module_id: %i ).",
-      msg->drawer_is_open ? "open" : "close", msg->drawer_address.drawer_id,
-      msg->drawer_address.module_id);
+    RCLCPP_ERROR( this->get_logger(), \
+                  "External triggered Drawer %s state received (Drawer_id: %i, Module_id: %i ).", \
+                  msg->drawer_is_open ? "open" : "close", \
+                  msg->drawer_address.drawer_id, \
+                  msg->drawer_address.module_id);
   }
 }
 
@@ -389,8 +394,11 @@ void RobotClient::update_robot_location()
   current_yaw = yaw;  //= yaw * (180 / M_PI);
 
   RCLCPP_INFO(
-    this->get_logger(), "x: %f, y: %f, z:%f w: %f", t.transform.rotation.x, t.transform.rotation.y, t.transform.rotation.z,
-    t.transform.rotation.w);
+    this->get_logger(), "x: %f, y: %f, z:%f w: %f", \
+                              t.transform.rotation.x, \
+                              t.transform.rotation.y, \
+                              t.transform.rotation.z, \
+                              t.transform.rotation.w);
   RCLCPP_INFO(this->get_logger(), "yaw: %f, degree %f", yaw, yaw * (180 / M_PI) + 180);
 }
 

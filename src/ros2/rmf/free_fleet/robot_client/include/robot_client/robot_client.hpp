@@ -34,7 +34,6 @@
 #include "drawer_state.hpp"
 
 
-
 namespace rmf_robot_client
 {
 class RobotClient : public rclcpp::Node

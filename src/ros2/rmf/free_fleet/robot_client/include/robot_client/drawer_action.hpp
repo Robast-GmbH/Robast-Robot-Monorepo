@@ -17,7 +17,6 @@
 #include "drawer_state.hpp"
 
 
-
 namespace rmf_robot_client
 {
 class DrawerAction : public Action

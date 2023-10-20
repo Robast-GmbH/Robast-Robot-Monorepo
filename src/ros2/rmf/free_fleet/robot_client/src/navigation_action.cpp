@@ -94,9 +94,10 @@ void NavigationAction::feedback_callback(
   GoalHandleNavigateToPose::SharedPtr,
   const std::shared_ptr<const NavigateToPose::Feedback> feedback)
 {
-  RCLCPP_INFO(
-    ros_node_->get_logger(), "navigate_to_pose feedback received. number of recoveries:%i distance:%f ", feedback->number_of_recoveries,
-    feedback->distance_remaining);
+  RCLCPP_INFO( ros_node_->get_logger(), \
+               "navigate_to_pose feedback received. number of recoveries:%i distance:%f ", \
+               feedback->number_of_recoveries, \
+               feedback->distance_remaining);
 }
 
 void NavigationAction::result_callback(const GoalHandleNavigateToPose::WrappedResult & result)

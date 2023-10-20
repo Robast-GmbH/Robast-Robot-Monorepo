@@ -12,8 +12,6 @@
 #include "nav2_msgs/action/navigate_to_pose.hpp"
 
 
-
-
 namespace rmf_robot_client
 {
 class NavigationAction : public Action
