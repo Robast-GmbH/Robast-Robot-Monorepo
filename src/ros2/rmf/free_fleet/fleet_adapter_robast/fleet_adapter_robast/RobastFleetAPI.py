@@ -31,15 +31,13 @@ class RobastFleetAPI(Node):
     # The constructor below accepts parameters typically required to submit
     # http requests. Users should modify the constructor as per the
     # requirements of their robot's API
-    def __init__(self, prefix: str, user: str, password: str, fleet_responce_interval: int ):# fleet_responce_interval is in minutes
+    def __init__(self, fleetname: str, fleet_responce_interval: int, server_url: str ):# fleet_responce_interval is in minutes
         super().__init__("robast_fleet_api")
-        self.prefix = prefix
-        self.user = user
-        self.password = password
         self.fleet_responce_interval=fleet_responce_interval
         self.connected = False
         self.Robotstates=dict()
         self.LastFleetUpdate=None
+        self.fleetname="ROBAST"
 
         self.fleetstate_sub = self.create_subscription(
             FleetState,
@@ -71,7 +69,7 @@ class RobastFleetAPI(Node):
             None if any errors are encountered'''
         
         robotstate=self.Robotstates.get(robot_name)
-        if(robotstate is None):
+        if(robotstate is not None):
             return [robotstate.location.x, robotstate.location.y, robotstate.location.yaw ]
         return None
 
@@ -98,9 +96,8 @@ class RobastFleetAPI(Node):
     def stop(self, robot_name: str):
         ''' Command the robot to stop.
             Return True if robot has successfully stopped. Else False'''
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
+        param = {'robot': {'fleet_name':self.fleetname, 'robot_name':robot_name}}
+        requests.post(self.server_url+"/settings/navigation/pause", json = param)
         return False
 
     def navigation_remaining_duration(self, robot_name: str):
@@ -130,7 +127,6 @@ class RobastFleetAPI(Node):
     def battery_soc(self, robot_name: str):
         ''' Return the state of charge of the robot as a value between 0.0
             and 1.0. Else return None if any errors are encountered'''
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
+       #ToDo Torben: replace after implemented on the robo 
+       #return self.Robotstates[msg.robot_name].battery_percent/100
         return None

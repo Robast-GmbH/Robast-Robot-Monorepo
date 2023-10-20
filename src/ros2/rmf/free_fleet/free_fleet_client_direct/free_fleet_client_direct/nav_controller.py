@@ -44,11 +44,9 @@ class nav_controller:
         goal_handle = future.result()
         if not goal_handle.accepted:
             self.get_logger().warning('Goal rejected')
-            print("accepted")
             self.publish_status( "canceld", "could not plan route to goal pose", True)
             return
         self.get_logger().info('Goal accepted')
-        print("rejected")
         self.active= True
         self._get_result_future = goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
