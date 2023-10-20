@@ -1,4 +1,4 @@
-FROM ros:humble as base
+FROM ros:iron as base
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
@@ -27,8 +27,8 @@ RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pk
     && apt-get install -y gz-${GZ_VERSION} \
     && apt-get update
 
-# Must compile ros_gz, gz-msgs and gz-transport from source because Humble + Garden is not an official combination
-RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b humble https://github.com/gazebosim/ros_gz.git \
+# Must compile ros_gz, gz-msgs and gz-transport from source because iron + Garden is not an official combination
+RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b iron https://github.com/gazebosim/ros_gz.git \
     && cd /workspace_ros_gz/src && git clone -b gz-msgs9 https://github.com/gazebosim/gz-msgs.git \
     && cd /workspace_ros_gz/src && git clone -b gz-transport12 https://github.com/gazebosim/gz-transport.git \
     && apt update \
@@ -39,6 +39,18 @@ RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b hum
     && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install \
     && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
 
+# Must build gz_ros2_control from source because as of now (19.10.23) there are no binaries
+# for the combination iron + garden according to: https://github.com/ros-controls/gz_ros2_control
+RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
+  && git clone https://github.com/ros-controls/gz_ros2_control -b master \
+  && apt update \
+  && apt upgrade -y \
+  && . /opt/ros/${ROS_DISTRO}/setup.sh \
+  && rosdep update \
+  && rosdep install --from-paths /workspace_ros_control/src --ignore-src -r -y \
+  && colcon build --parallel-workers 3 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
+  && echo "if [ -f /workspace_ros_control/install/setup.bash ]; then source /workspace_ros_control/install/setup.bash; fi" >> /home/$USER/.bashrc
+
 # Must compile moveit_task_constructor_msgs from source, because the ros package is not released yet (22.09.23)
 # https://index.ros.org/p/moveit_task_constructor_msgs/
 # TODO: Remove this once moveit_task_constructor_msgs is released as ros package 
@@ -46,7 +58,7 @@ RUN mkdir -p workspace_mtc/src && cd workspace_mtc/src && git init moveit_task_c
     && cd /workspace_mtc/src/moveit_task_constructor && git remote add -f origin https://github.com/ros-planning/moveit_task_constructor.git \
     && git config core.sparseCheckout true \
     && echo "msgs" >> .git/info/sparse-checkout \
-    && git pull origin humble \
+    && git pull origin ros2 \
     && apt update \
     && apt upgrade -y \
     && . /opt/ros/${ROS_DISTRO}/setup.sh \
