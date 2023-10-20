@@ -4,10 +4,11 @@ import xacro
 import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, RegisterEventHandler
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
+from launch.event_handlers import OnProcessExit
 
 
 def generate_launch_description():
@@ -23,7 +24,8 @@ def generate_launch_description():
             "robots",
             os.environ["robot"] + ".urdf.xacro",
         ),
-        mappings={"prefix": os.environ["prefix"]},
+        mappings={"prefix": os.environ["prefix"],
+                  "ros2_control_hardware_type": "gz_ros2_control"},
     ).toxml()
 
     use_sim_time = LaunchConfiguration("use_sim_time")
@@ -110,6 +112,22 @@ def generate_launch_description():
         output="screen",
     )
 
+    load_joint_state_broadcaster = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+             'joint_state_broadcaster'],
+        output='screen'
+    )
+
+    load_joint_trajectory_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_trajectory_controller'],
+        output='screen'
+    )
+
+    load_diff_drive_base_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+             'diff_drive_base_controller'],
+        output='screen'
+    )
 
     ld = LaunchDescription()
 
@@ -127,5 +145,24 @@ def generate_launch_description():
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(spawn_robot_cmd)
     ld.add_action(gz_ros_bridge_cmd)
+
+    ld.add_action(RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=spawn_robot_cmd,
+                on_exit=[load_joint_state_broadcaster],
+            )
+        ))
+    ld.add_action(RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_state_broadcaster,
+                on_exit=[load_joint_trajectory_controller],
+            )
+        ))
+    ld.add_action(RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_trajectory_controller,
+                on_exit=[load_diff_drive_base_controller],
+            )
+        ))
 
     return ld

@@ -66,6 +66,17 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start moveit_door_opening_mechanism for working with gazebo",
+                        "command": "source /workspace/install/setup.bash; ros2 launch moveit_door_opening_mechanism_rotating_arm_config moveit_gz_simulation_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start door_opening_mechanism_mtc",
                         "command": "source /workspace/install/setup.bash; ros2 launch door_opening_mechanism_mtc door_opening_mechanism_mtc_launch.py",
                         "problemMatcher": [],

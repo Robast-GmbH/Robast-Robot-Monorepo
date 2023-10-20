@@ -28,9 +28,14 @@ from moveit_configs_utils.launch_utils import (
 """
 
 def generate_launch_description():
+
+    launch_arguments = {
+        "ros2_control_hardware_type": "mock_components",
+    }
+
     moveit_config = (
         MoveItConfigsBuilder("rb_theron", package_name="moveit_door_opening_mechanism_rotating_arm_config")
-        .robot_description(file_path="config/rb_theron_simulation.urdf.xacro")
+        .robot_description(file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments)
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .to_moveit_configs()
     )

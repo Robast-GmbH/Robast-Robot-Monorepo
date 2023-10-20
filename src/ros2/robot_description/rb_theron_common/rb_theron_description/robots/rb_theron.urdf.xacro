@@ -38,12 +38,24 @@
 	<xacro:arg name="prefix" default=""/>
 	<!-- <xacro:arg name="gpu" default="true"/> -->
 
+	<!-- ros2_control_hardware_type:
+		mock_components = ros2_control only in rviz
+		gz_ros2_control = ros2_control in gazebo
+		dryve_d1 = ros2_control only in real life
+	-->
+    <xacro:arg name="ros2_control_hardware_type" default="mock_components" />
+
 	<!-- *************** -->
 	<!-- Robots Elements -->
 	<!-- *************** -->
 
 	<!-- base with wheels -->
-	<xacro:rb_theron_base prefix="$(arg prefix)" hq="${hq}" publish_bf="${publish_bf}" />
+	<xacro:rb_theron_base
+	  prefix="$(arg prefix)"
+	  hq="${hq}"
+	  publish_bf="${publish_bf}"
+	  ros2_control_hardware_type="$(arg ros2_control_hardware_type)">
+	</xacro:rb_theron_base>
 
 	<!-- Gazebo ros control pluggins -->
 	<!-- <xacro:ros_control/> -->
@@ -114,25 +126,54 @@
 
 	<!-- ROBAST Drawer -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/drawer/drawer.urdf.xacro" />
-	<xacro:drawer prefix="$(arg prefix)" suffix="5" parent="$(arg prefix)base_link" drawer_size_z="0.28">
+	<xacro:drawer
+	    prefix="$(arg prefix)"
+		suffix="5"
+		parent="$(arg prefix)base_link"
+		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		drawer_size_z="0.28">
 		<origin xyz="0.125 0.0 0.42" rpy="0 0 0"/>
 	</xacro:drawer>
-	<xacro:drawer prefix="$(arg prefix)" suffix="4" parent="$(arg prefix)base_link" drawer_size_z="0.18">
+	<xacro:drawer
+	    prefix="$(arg prefix)"
+		suffix="4"
+		parent="$(arg prefix)base_link"
+		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		drawer_size_z="0.18">
 		<origin xyz="0.125 0.0 0.67" rpy="0 0 0"/>
 	</xacro:drawer>
-	<xacro:drawer prefix="$(arg prefix)" suffix="3" parent="$(arg prefix)base_link" drawer_size_z="0.08">
+	<xacro:drawer
+	    prefix="$(arg prefix)"
+		suffix="3"
+		parent="$(arg prefix)base_link"
+		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		drawer_size_z="0.08">
 		<origin xyz="0.125 0.0 0.82" rpy="0 0 0"/>
 	</xacro:drawer>
-	<xacro:drawer prefix="$(arg prefix)" suffix="2" parent="$(arg prefix)base_link" drawer_size_z="0.08">
+	<xacro:drawer
+		prefix="$(arg prefix)"
+		suffix="2"
+		parent="$(arg prefix)base_link"
+		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		drawer_size_z="0.08">
 		<origin xyz="0.125 0.0 0.92" rpy="0 0 0"/>
 	</xacro:drawer>
-	<xacro:drawer prefix="$(arg prefix)" suffix="1" parent="$(arg prefix)base_link" drawer_size_z="0.08">
+	<xacro:drawer
+		prefix="$(arg prefix)"
+		suffix="1"
+		parent="$(arg prefix)base_link"
+		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		drawer_size_z="0.08">
 		<origin xyz="0.125 0.0 1.02" rpy="0 0 0"/>
 	</xacro:drawer>
 
 	<!-- ROBAST Door Opening Mechanism -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
-	<xacro:door_opening_mechanism prefix="$(arg prefix)" parent="$(arg prefix)base_link" hq="${hq}">
+	<xacro:door_opening_mechanism
+	    prefix="$(arg prefix)"
+		parent="$(arg prefix)base_link"
+		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		hq="${hq}">
 		<origin xyz="-0.3 0 0.225" rpy="0 0 0"/>
 	</xacro:door_opening_mechanism>
 
