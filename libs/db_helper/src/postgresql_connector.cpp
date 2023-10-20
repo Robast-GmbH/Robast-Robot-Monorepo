@@ -75,6 +75,7 @@ namespace db_helper
     }
     else
     {
+      *error_message = "query had no effect on the DB data";
       query_handle.abort();
     }
     connection_handle.disconnect();
@@ -96,6 +97,7 @@ namespace db_helper
     }
     else
     {
+      *error_message = "query had no effect on the DB data";
       query_handle.abort();
     }
 
@@ -136,10 +138,7 @@ namespace db_helper
             tag + ")",
         error_msg);
 
-    if (*error_msg == "")
-    {
-    }
-    else if (data.size() == 1)
+    if (*error_msg == "" && data.size() == 1)
     {
       *user_name = data[0][1];
       *id = stoi(data[0][0]);
