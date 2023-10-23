@@ -14,6 +14,7 @@ services:
       - init_yaw=3.14
       - robot=rb_theron
       - prefix=
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
       - ./simulation/:/workspace/:cached
       - ../../src/ros2/simulation:/workspace/src/simulation:cached
@@ -42,6 +43,7 @@ services:
       - init_y=0.0
       - init_z=0.0
       - init_yaw=3.14
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
       - ./navigation/:/workspace/:cached
       - ../../src/ros2/navigation:/workspace/src/navigation:cached
@@ -59,6 +61,7 @@ services:
       - robot_name=rb_theron
       - robot=rb_theron
       - prefix=
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
       - ./moveit_mtc/:/workspace/:cached
       - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
