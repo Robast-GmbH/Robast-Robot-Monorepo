@@ -47,7 +47,7 @@ namespace nfc_bridge
                                       std::shared_ptr<int> related_id)
   {
     return db_connector_->checkUserTag(
-        scanned_key, std::vector<std::string>(), related_username, related_id, std::shared_ptr<std::string>());
+        scanned_key, related_username, related_id, std::shared_ptr<std::string>());
   }
 
   bool TestNFCBridge::read_nfc_code(std::shared_ptr<std::string> scanned_key)

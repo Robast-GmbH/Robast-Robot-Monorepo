@@ -33,7 +33,7 @@ namespace nfc_bridge
         db_helper::PostgreSqlHelper(db_username, db_password, db_host, db_port, db_name));
     if (this->db_connector_->test_connection() != "successfull")
     {
-      RCLCPP_INFO(this->get_logger(), "DB connection test: %s", this->db_connector_->test_connection().c_str());
+      RCLCPP_WARN(this->get_logger(), "DB connection test: %s", this->db_connector_->test_connection().c_str());
     }
 
     this->action_server_ = rclcpp_action::create_server<CreateUser>(
@@ -117,7 +117,7 @@ namespace nfc_bridge
 
     if (read_nfc_code(scanned_key))
     {
-      if (db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user, found_user_id, error_msg))
+      if (db_connector_->checkUserTag(*scanned_key, found_user, found_user_id, error_msg))
       {
         std_msgs::msg::Int64 message = std_msgs::msg::Int64();
         message.data = *found_user_id;
@@ -150,7 +150,6 @@ namespace nfc_bridge
 
     if (db_connector_->checkUser(goal->user_id, error_msg))
     {
-      user_id = goal->user_id;
       feedback->task_status.user_id = user_id;
     }
     else if (*error_msg != "")

@@ -8,10 +8,10 @@ namespace db_helper
   }
 
   bool MockPostgreSqlHelper::checkUserTag(std::string scanned_key,
-                                          std::vector<std::string> lookup_scope __attribute__((unused)),
-                                          std::shared_ptr<std::string> related_username,
-                                          std::shared_ptr<int> id,
-                                          std::shared_ptr<std::string>)
+                      std::shared_ptr<std::string> related_username,
+                      std::shared_ptr<int> id,
+                      std::shared_ptr<std::string> ,
+                      std::vector<std::string>)
   {
     if (user_list_.find(scanned_key) != user_list_.end())
     {
