@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.10.2)
-project(door_detection)
+project(door_handle_detection)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -80,9 +80,9 @@ if($ENV{ROS_DISTRO} STREQUAL "galactic")
 endif()
 
 
-install(DIRECTORY params DESTINATION share/${PROJECT_NAME})
+#install(DIRECTORY params DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY resources DESTINATION share/${PROJECT_NAME})
-install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
+#install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
         yolov5_door_node

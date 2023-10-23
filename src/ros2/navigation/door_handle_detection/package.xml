@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>door_detection</name>
+  <name>door_handle_detection</name>
   <version>0.0.0</version>
   <description>The door_handle_detection package</description>
   <maintainer email="s.lingaraj@robast.de">ubuntu</maintainer>
@@ -26,6 +26,7 @@
   <depend>stereo_msgs</depend>
   <depend>vision_msgs</depend>
   <depend>foxglove_msgs</depend>
+  <depend>rviz_imu_plugin</depend>
 
   <exec_depend>robot_state_publisher</exec_depend>
   <exec_depend>depth_image_proc</exec_depend>
