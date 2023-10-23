@@ -50,23 +50,21 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 FROM ros:humble-ros-base-jammy as build
 
 ARG GIT_TOKEN
-ARG GIT_BRANCH= main
-COPY --from=base / /
+ARG GIT_BRANCH=main
+COPY --from=devel / /
 COPY . /ws/src/rmf
 RUN apt-get update && apt-get install -y git
 
 WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
-
+RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/; mkdir -p /ws/src/ros2/rmf/free_fleet/free_fleet; mkdir /robast; \
   mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
-  
 
 RUN rosdep update && \
-  rosdep install --from-paths /ws/src --ignore-src -r -y
+  rosdep install --from-paths /ws/src --ignore-src -r -y\
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   . /robast/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/
@@ -104,5 +102,5 @@ ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
 RUN apt-get update \
   && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc \
   && echo "if [ -f /robotnik/install/setup.bash ]; then source /robotnik/install/setup.bash; fi" >> /home/$USER/.bashrc 
