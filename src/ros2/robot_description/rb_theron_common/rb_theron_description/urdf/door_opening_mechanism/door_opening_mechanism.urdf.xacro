@@ -69,8 +69,8 @@
             joint_name="${prefix}door_opening_mechanism_joint_y_axis_slide"
             joint_type="prismatic"
             axis_x="0"
-            axis_y="1"
-            axis_z="0"
+            axis_y="0"
+            axis_z="1"
             lower_limit="-0.05"
             upper_limit="0.25"
             damping="0.1"
@@ -82,12 +82,12 @@
             link_origin_z="0.0"
             m="2.64"
             x="0.06"
-            y="0.06"
-            z="0.55"
+            y="0.55"
+            z="0.06"
             r="1"
             g="0"
             b="0">
-            <origin xyz="-0.075 -0.225 -0.1" rpy="1.57079632679 0 0"/>
+            <origin xyz="-0.075 -0.225 -0.1" rpy="0 0 0"/>
         </xacro:basic_joint>
 
         <xacro:basic_joint 
@@ -113,7 +113,7 @@
             r="1"
             g="1"
             b="1">
-            <origin xyz="-0.04 0 0" rpy="0 0 1.57079632679"/>
+            <origin xyz="-0.04 0 0" rpy="1.57079632679 4.71238898038 0"/>
         </xacro:basic_joint>
 
         <xacro:basic_box
