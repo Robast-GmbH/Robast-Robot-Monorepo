@@ -15,7 +15,6 @@ controller_manager:
 
 diff_drive_base_controller:
   ros__parameters:
-    use_sim_time: true
     left_wheel_names: ["left_wheel_joint"]
     right_wheel_names: ["right_wheel_joint"]
 
@@ -74,7 +73,6 @@ diff_drive_base_controller:
 
 joint_state_broadcaster:
   ros__parameters:
-    use_sim_time: true
     interfaces:
       - position
       - velocity
