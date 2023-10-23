@@ -13,15 +13,12 @@
 # limitations under the License.
 import rclpy
 from rclpy.node import Node
-from rmf_fleet_msgs.msg._fleet_state import FleetState
-from rmf_fleet_msgs.msg._mode_request import ModeRequest
-from rmf_fleet_msgs.msg._destination_request import DestinationRequest
-from rmf_fleet_msgs.msg._path_request import PathRequest
-from rmf_fleet_msgs.msg._location import Location
-from rmf_fleet_msgs.msg._robot_mode import RobotMode
-from rmf_fleet_msgs.msg._fleet_state import FleetState
+from fleet_interfaces.msg import FleetDataTaskState
+from fleet_interfaces.msg import FleetDataRobotState
+
 from dataclasses import dataclass
 import requests
+import json
 
 from datetime import datetime, timedelta
 
@@ -35,16 +32,25 @@ class RobastFleetAPI(Node):
         super().__init__("robast_fleet_api")
         self.fleet_responce_interval=fleet_responce_interval
         self.connected = False
+        self.server_url=server_url
         self.Robotstates=dict()
+        self.Taskstates=dict()
         self.LastFleetUpdate=None
         self.fleetname="ROBAST"
+        self.task_id=0
+        self.task_prefix="rmf"
 
         self.fleetstate_sub = self.create_subscription(
-            FleetState,
+            FleetDataRobotState,
             'robot_state',
             self.listen_to_fleet_state,
             10)
-        self.fleetstate_sub 
+        
+        self.taskstate_sub = self.create_subscription(
+            FleetDataTaskState,
+            'task_state',
+            self.listen_to_task_state,
+            10)
 
         # Test connectivity
         connected = self.check_connection()
@@ -54,9 +60,15 @@ class RobastFleetAPI(Node):
         else:
             print("Unable to query API server")
     
-    def listen_to_fleet_state(self, msg:FleetState):
+    def listen_to_fleet_state(self, msg:FleetDataRobotState):
         self.LastFleetUpdate= datetime.now()
         self.Robotstates[msg.robot_name]= msg
+    
+    def listen_to_task_state(self, msg:FleetDataTaskState):
+        self.LastFleetUpdate= datetime.now()
+        if(msg.task_idstartswith(self.task_prefix)):
+            self.Taskstates[msg.task_id]= msg 
+        self.Taskstates={key: value for key, value in self.Taskstates.items() if not( int(key.lstrip(self.task_prefix)) <= self.task_id-5)}
 
 
     def check_connection(self):
@@ -78,20 +90,24 @@ class RobastFleetAPI(Node):
             and theta are in the robot's coordinate convention. This function
             should return True if the robot has accepted the request,
             else False'''
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
-        return False
+        self.task_id+=1
+        action = {"step":1, "type":"NAVIGATION", "finished":False, "action":{ "pose": {"x":pose.x, "y":pose.y, "z":0.0 },"yaw": pose.yaw} }
+        task_msg={"robot":{ "robot_name":robot_name, "fleet_name": self.fleet_name}, "task_id":self.task_prefix+self.task_id,"actions":[ action]}
+        response = requests.get(self.server_url+"/task", data= json.dumps(task_msg))
+        return response.status_code!= 200
 
     def start_process(self, robot_name: str, process: str, map_name: str):
         ''' Request the robot to begin a process. This is specific to the robot
             and the use case. For example, load/unload a cart for Deliverybot
             or begin cleaning a zone for a cleaning robot.
             Return True if the robot has accepted the request, else False'''
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
-        return False
+        self.task_id+=1
+        action = process
+         
+        task_msg={"robot":{ "robot_name":robot_name, "fleet_name": self.fleet_name}, "task_id":"rmf"+self.task_id,"actions":[ action]}
+        response = requests.get(self.server_url+"/task", data= json.dumps(task_msg))
+        return response.status_code!= 200
+     
 
     def stop(self, robot_name: str):
         ''' Command the robot to stop.
@@ -103,26 +119,20 @@ class RobastFleetAPI(Node):
     def navigation_remaining_duration(self, robot_name: str):
         ''' Return the number of seconds remaining for the robot to reach its
             destination'''
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
+
+
         return 0.0
 
     def navigation_completed(self, robot_name: str):
         ''' Return True if the robot has successfully completed its previous
             navigation request. Else False.'''
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
-        return False
+        return self.Robotstates[robot_name].task_id!="rmf"+self.task_id
 
     def process_completed(self, robot_name: str):
         ''' Return True if the robot has successfully completed its previous
             process request. Else False.'''
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
-        return False
+
+        return self.Robotstates[robot_name].task_id!="rmf"+self.task_id
 
     def battery_soc(self, robot_name: str):
         ''' Return the state of charge of the robot as a value between 0.0

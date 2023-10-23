@@ -12,7 +12,7 @@ namespace rmf_robot_client
   class Action
   {
     protected: 
-      using FreeFleetDataTaskInfo = fleet_interfaces::msg::FleetDataTaskState;
+      using FleetDataTaskInfo = fleet_interfaces::msg::FleetDataTaskState;
       int task_id_;
       int step_;
       std::shared_ptr<rclcpp::Node> ros_node_;

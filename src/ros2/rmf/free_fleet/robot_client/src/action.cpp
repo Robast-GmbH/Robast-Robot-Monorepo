@@ -52,6 +52,7 @@ namespace rmf_robot_client
     task_state_msg.status = status;
     task_state_msg.status_message = message;
     task_state_msg.completed = completed;
+    task_state_msg.typ = get_type();
     task_info_publisher_->publish(task_state_msg);
   }
 
