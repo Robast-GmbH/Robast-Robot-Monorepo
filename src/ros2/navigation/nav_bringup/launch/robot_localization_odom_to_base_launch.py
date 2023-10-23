@@ -46,7 +46,7 @@ def generate_launch_description():
             "odom_frame": "odom",
             "base_link_frame":"base_footprint",
             "world_frame":"odom",
-            "odom0": "odom",
+            "odom0": "diff_drive_base_controller/odom",
             "imu0": "imu/data",
             "odom0_differential": "true",
             "odom0_relative": "false"
