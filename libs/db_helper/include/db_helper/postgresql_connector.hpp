@@ -31,10 +31,10 @@ namespace db_helper
     int createUser(std::string first_name, std::string last_name);
     bool createNfcCode(std::string user_id, std::string card_uid);
     bool checkUserTag(std::string tag,
-                      std::vector<std::string> lookup_scope,
                       std::shared_ptr<std::string> user_name,
                       std::shared_ptr<int> id,
-                      std::shared_ptr<std::string> error_msg);
+                      std::shared_ptr<std::string> error_msg,
+                      std::vector<std::string> lookup_scope= std::vector<std::string>());
     bool checkUser(int id, std::shared_ptr<std::string> error_msg);
   };
 }   // namespace db_helper

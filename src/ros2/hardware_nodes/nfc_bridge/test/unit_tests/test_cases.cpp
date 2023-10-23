@@ -37,11 +37,10 @@ namespace nfc_bridge
 
       fakeit::When(Method(db_helper_mock, checkUserTag))
           .AlwaysDo(
-              [=](std::string sqlStatment,
-                  std::vector<std::string>,
-                  std::shared_ptr<std::string> result_data,
-                  std::shared_ptr<int>,
-                  std::shared_ptr<std::string>) -> bool
+              [=](  std::string sqlStatment, 
+                    std::shared_ptr<std::string> result_data,
+                    std::shared_ptr<int>, std::shared_ptr<std::string>,
+                    std::vector<std::string>) -> bool
               {
                 if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != std::string::npos)
                 {
@@ -205,10 +204,10 @@ namespace nfc_bridge
       fakeit::When(Method(db_helper_mock, checkUserTag))
           .AlwaysDo(
               [=](std::string sqlStatment,
-                  std::vector<std::string>,
                   std::shared_ptr<std::string> result_data_username,
                   std::shared_ptr<int>,
-                  std::shared_ptr<std::string>) -> bool
+                  std::shared_ptr<std::string>,
+                  std::vector<std::string>) -> bool
               {
                 if (sqlStatment.find("6df1933415dde9fa1f9f6998a26b40db") != std::string::npos)
                 {

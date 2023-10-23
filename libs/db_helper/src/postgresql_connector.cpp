@@ -117,10 +117,10 @@ namespace db_helper
   }
 
   bool PostgreSqlHelper::checkUserTag(std::string tag,
-                                      std::vector<std::string> lookup_scope,
                                       std::shared_ptr<std::string> user_name,
                                       std::shared_ptr<int> id,
-                                      std::shared_ptr<std::string> error_msg)
+                                      std::shared_ptr<std::string> error_msg,
+                                      std::vector<std::string> lookup_scope )
   {
     std::vector<std::vector<std::string>> data = std::vector<std::vector<std::string>>();
 
