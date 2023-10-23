@@ -67,7 +67,7 @@ RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone http
 RUN apt-get update && apt install ros-${ROS_DISTRO}-plotjuggler-ros -y
 
 # dds setup / configuration
-ENV RMW_IMPLEMENTATION=rmw_fastrtps_cpp 
+ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
