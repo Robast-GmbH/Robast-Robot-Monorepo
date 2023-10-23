@@ -98,7 +98,7 @@ RUN apt-get update && apt-get install -y \
 #update drivers to avoid a blackscreen #TODO @all regularly check if its fixed in base docker
 RUN apt-get update && apt-get install -y \
     software-properties-common \
-    && add-apt-repository ppa:kisak/kisak-mesa -y\
+    && add-apt-repository ppa:kisak/kisak-mesa -y \
     && apt upgrade -y
 
 # dds setup / configuration
