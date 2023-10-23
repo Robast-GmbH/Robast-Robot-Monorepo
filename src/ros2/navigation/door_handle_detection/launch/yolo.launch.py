@@ -25,7 +25,7 @@ def generate_launch_description():
     mode         = LaunchConfiguration('mode', default = 'depth')
     base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d-s2-usb-base-frame')
     parent_frame = LaunchConfiguration('parent_frame',  default = 'robot_base_link')
-    imuMode      = LaunchConfiguration('imuMode', default = '1')
+    #imuMode      = LaunchConfiguration('imuMode', default = '1')
 
     cam_pos_x    = LaunchConfiguration('cam_pos_x',     default = '0.317')
     cam_pos_y    = LaunchConfiguration('cam_pos_y',     default = '-0,197')
@@ -45,7 +45,7 @@ def generate_launch_description():
 
     enableSpatialDetection  = LaunchConfiguration('enableSpatialDetection', default = True)
     syncNN                  = LaunchConfiguration('syncNN', default = True)
-    detectionClassesCount   = LaunchConfiguration('detectionClassesCount', default = 80)
+    detectionClassesCount   = LaunchConfiguration('detectionClassesCount', default = 2)
     nnName                  = LaunchConfiguration('nnName', default = 'yolov5.blob')
     resourceBaseFolder      = LaunchConfiguration('resourceBaseFolder', default = default_resources_path)
 
@@ -62,10 +62,10 @@ def generate_launch_description():
     previewHeight           = LaunchConfiguration('previewHeight', default = 640)
     
     
-    angularVelCovariance  = LaunchConfiguration('angularVelCovariance', default = 0.0)
-    linearAccelCovariance = LaunchConfiguration('linearAccelCovariance', default = 0.0)
+    #angularVelCovariance  = LaunchConfiguration('angularVelCovariance', default = 0.0)
+    #linearAccelCovariance = LaunchConfiguration('linearAccelCovariance', default = 0.0)
 
-    enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)
+    #enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)
 
 
     declare_mxId_cmd = DeclareLaunchArgument(
@@ -108,10 +108,10 @@ def generate_launch_description():
         default_value=parent_frame,
         description='Name of the parent link from an another robot TF that can be connected to the base of the OAK device.')
 
-    declare_imu_mode_cmd = DeclareLaunchArgument(
-        'imuMode',
-        default_value=imuMode,
-        description=' set to 0 -> COPY, 1 -> LINEAR_INTERPOLATE_GYRO, 2 -> LINEAR_INTERPOLATE_ACCEL')
+    #declare_imu_mode_cmd = DeclareLaunchArgument(
+    #    'imuMode',
+    #    default_value=imuMode,
+    #    description=' set to 0 -> COPY, 1 -> LINEAR_INTERPOLATE_GYRO, 2 -> LINEAR_INTERPOLATE_ACCEL')
 
 
     declare_pos_x_cmd = DeclareLaunchArgument(
@@ -198,7 +198,7 @@ def generate_launch_description():
     declare_detectionClassesCount_cmd = DeclareLaunchArgument(
         'detectionClassesCount',
         default_value=detectionClassesCount,
-        description='When detectionClassesCount is number of classes the NN contains. Default is set to 80.')
+        description='When detectionClassesCount is number of classes the NN contains. Default is set to 2.')
 
     declare_nnName_cmd = DeclareLaunchArgument(
         'nnName',
@@ -255,20 +255,20 @@ def generate_launch_description():
         default_value=previewHeight,
         description='Set the height of the preview window used for the NN detection.')
 
-    declare_angularVelCovariance_cmd = DeclareLaunchArgument(
-        'angularVelCovariance',
-        default_value=angularVelCovariance,
-        description='Set the angular velocity covariance of the IMU.')
+    #declare_angularVelCovariance_cmd = DeclareLaunchArgument(
+    #    'angularVelCovariance',
+    #    default_value=angularVelCovariance,
+    #    description='Set the angular velocity covariance of the IMU.')
 
-    declare_linearAccelCovariance_cmd = DeclareLaunchArgument(
-        'linearAccelCovariance',
-        default_value=linearAccelCovariance,
-        description='Set the Linear acceleration covariance of the IMU.')
+    #declare_linearAccelCovariance_cmd = DeclareLaunchArgument(
+    #    'linearAccelCovariance',
+    #    default_value=linearAccelCovariance,
+    #    description='Set the Linear acceleration covariance of the IMU.')
 
-    declare_enableRosBaseTimeUpdate_cmd = DeclareLaunchArgument(
-        'enableRosBaseTimeUpdate',
-        default_value=enableRosBaseTimeUpdate,
-        description='Whether to update ROS time on each message.')
+    #declare_enableRosBaseTimeUpdate_cmd = DeclareLaunchArgument(
+    #    'enableRosBaseTimeUpdate',
+    #    default_value=enableRosBaseTimeUpdate,
+    #    description='Whether to update ROS time on each message.')
     
 
 
@@ -288,7 +288,7 @@ def generate_launch_description():
 
 
     stereo_node = launch_ros.actions.Node(
-            package='door_handle_detection', executable='yolov5_door_node',
+            package='depthai_examples', executable='stereo_inertial_node',
             output='screen',
             parameters=[{'mxId':                    mxId},
                         {'usb2Mode':                usb2Mode},
@@ -318,18 +318,18 @@ def generate_launch_description():
                         {'previewWidth':            previewWidth},
                         {'previewHeight':           previewHeight},
 
-                        {'angularVelCovariance':    angularVelCovariance},
-                        {'linearAccelCovariance':   linearAccelCovariance},
+                        #{'angularVelCovariance':    angularVelCovariance},
+                        #{'linearAccelCovariance':   linearAccelCovariance},
                         {'enableSpatialDetection':  enableSpatialDetection},
                         {'detectionClassesCount':   detectionClassesCount},
                         {'syncNN':                  syncNN},
                         {'nnName':                  nnName},
                         
-                        {'enableDotProjector':      enableDotProjector},
-                        {'enableFloodLight':        enableFloodLight},
-                        {'dotProjectormA':          dotProjectormA},
-                        {'floodLightmA':            floodLightmA},
-                        {'enableRosBaseTimeUpdate': enableRosBaseTimeUpdate}
+                        #{'enableDotProjector':      enableDotProjector},
+                        #{'enableFloodLight':        enableFloodLight},
+                        #{'dotProjectormA':          dotProjectormA},
+                        #{'floodLightmA':            floodLightmA},
+                        #{'enableRosBaseTimeUpdate': enableRosBaseTimeUpdate}
                         ])
     
     ld = LaunchDescription()
@@ -378,8 +378,8 @@ def generate_launch_description():
     ld.add_action(declare_previewWidth_cmd)
     ld.add_action(declare_previewHeight_cmd)
 
-    ld.add_action(declare_angularVelCovariance_cmd)
-    ld.add_action(declare_linearAccelCovariance_cmd)
+    #ld.add_action(declare_angularVelCovariance_cmd)
+    #ld.add_action(declare_linearAccelCovariance_cmd)
 
     ld.add_action(urdf_launch)
     ld.add_action(stereo_node)
