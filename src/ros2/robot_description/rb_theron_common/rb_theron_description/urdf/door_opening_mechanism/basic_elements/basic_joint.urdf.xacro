@@ -13,7 +13,7 @@
         <axis xyz="${axis_x} ${axis_y} ${axis_z}" />
         <parent link="${parent}" />
         <child link="${link_name}" />
-        <limit lower="${lower_limit}" upper="${upper_limit}" effort="100" velocity="100" />
+        <limit lower="${lower_limit}" upper="${upper_limit}" effort="1000" velocity="100" />
         <dynamics damping="${damping}" friction="${friction}"/>
         <xacro:insert_block name="origin" />
     </joint>
