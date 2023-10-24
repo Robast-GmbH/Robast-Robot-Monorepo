@@ -207,3 +207,6 @@ venv
 #export/saves
 *.db
 *.idea
+
+.light_blue
+src/preprocessing/py/map_cleaner/image_feature_matching/lightglue
