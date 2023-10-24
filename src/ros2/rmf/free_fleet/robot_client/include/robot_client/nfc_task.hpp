@@ -31,7 +31,7 @@ namespace rmf_robot_client
     void goal_response_callback(const GoalHandleCreateUserNfcTag::SharedPtr& goal_handle);
 
    private:
-    int user_id;
+    int _user_id;
 
     rclcpp_action::Client<CreateUserNfcTag>::SharedPtr _nfc_write_new_nfc_card_client;
     GoalHandleCreateUserNfcTag::SharedPtr _current_action_goal_handle;

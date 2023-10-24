@@ -11,13 +11,8 @@ namespace rmf_robot_client
     _drawer_list = std::make_shared<std::map<std::string, DrawerState>>();
     _is_new_tf_error = true;
 
-    rclcpp::QoS qos_statemaschine = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
-    qos_statemaschine.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
-    qos_statemaschine.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-    qos_statemaschine.avoid_ros_namespace_conventions(false);
-
     _reset_simple_tree_publisher = this->create_publisher<StdMsgBool>(
-        this->get_parameter("statemaschine_reset_simple_tree_topic").as_string(), qos_statemaschine);
+        this->get_parameter("statemaschine_reset_simple_tree_topic").as_string(), QoSConfig::get_statemaschine_qos());
   }
 
   void RobotClient::init_param()
@@ -64,26 +59,21 @@ namespace rmf_robot_client
 
   void RobotClient::start_receive_tasks()
   {
-    rclcpp::QoS qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
-    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
-    qos.avoid_ros_namespace_conventions(false);
-
     _write_nfc_card_request_subscriber = this->create_subscription<FreeFleetDataCreateNfcRequest>(
         this->get_parameter("fleet_communication_create_nfc_topic").as_string(),
-        qos,
+        QoSConfig::get_fleet_communication_qos(),
         std::bind(&RobotClient::receive_create_nfc_task, this, std::placeholders::_1));
     _drawer_request_subscriber = this->create_subscription<FreeFleetDataDrawerRequest>(
         this->get_parameter("fleet_communication_drawer_topic").as_string(),
-        qos,
+        QoSConfig::get_fleet_communication_qos(),
         std::bind(&RobotClient::receive_drawer_task, this, std::placeholders::_1));
     _navigation_request_subscriber = this->create_subscription<FreeFleetDataDestinationRequest>(
         this->get_parameter("fleet_communication_destination_topic").as_string(),
-        qos,
+        QoSConfig::get_fleet_communication_qos(),
         std::bind(&RobotClient::receive_destination_task, this, std::placeholders::_1));
     _setting_subscriber = this->create_subscription<FreeFleetDataSettingRequest>(
         this->get_parameter("fleet_communication_setting_topic").as_string(),
-        qos,
+        QoSConfig::get_fleet_communication_qos(),
         std::bind(&RobotClient::receive_settings, this, std::placeholders::_1));
     _drawer_status_subscriber = this->create_subscription<DrawerStatus>(
         this->get_parameter("drawer_status_change_topic").as_string(),
@@ -97,14 +87,6 @@ namespace rmf_robot_client
 
   void RobotClient::start_update_robot_state()
   {
-    rclcpp::QoS qos_fleet_communication = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
-    qos_fleet_communication.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos_fleet_communication.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
-    qos_fleet_communication.avoid_ros_namespace_conventions(false);
-
-    rclcpp::QoS qos_robotnik = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
-    qos_robotnik.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
-
     _tf_buffer = std::make_unique<tf2_ros::Buffer>(this->get_clock());
     _tf_listener = std::make_shared<tf2_ros::TransformListener>(*_tf_buffer);
     update_robot_location();
@@ -112,13 +94,14 @@ namespace rmf_robot_client
     // TODO@Torben: currently not funktional since the Bridge is not able to bridge the topic properly.
     // until the BMS is not in ROS2 or the bridge is fixed this is not usable
 
-    //  battery_status_sub_ = this->create_subscription<BatteryLevel>(
-    // this->get_parameter("robotnik_battery_level_topic").as_string(),
-    // qos_robotnik,
-    // std::bind(&RobotClient::update_battery_level, this, std::placeholders::_1));
+    // battery_status_sub_ = this->create_subscription<BatteryLevel>(
+    //     this->get_parameter("robotnik_battery_level_topic").as_string(),
+    //     QoSConfig::get_qos_robotnik_bms_qos(),
+    //     std::bind(&RobotClient::update_battery_level, this, std::placeholders::_1));
 
     _robot_info_publisher = this->create_publisher<FreeFleetDataRobotState>(
-        this->get_parameter("fleet_communication_robot_info_topic").as_string(), qos_fleet_communication);
+        this->get_parameter("fleet_communication_robot_info_topic").as_string(),
+        QoSConfig::get_fleet_communication_qos());
     _publish_robot_info_timer = this->create_wall_timer(std::chrono::seconds(_robot_info_inteval),
                                                         std::bind(&RobotClient::publish_fleet_state, this));
   }

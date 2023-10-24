@@ -6,7 +6,7 @@ namespace rmf_robot_client
   NFCTask::NFCTask(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, int user_id)
       : BaseTask(task_id, step, ros_node)
   {
-    this->user_id = user_id;
+    this->_user_id = user_id;
     _nfc_write_new_nfc_card_client = rclcpp_action::create_client<CreateUserNfcTag>(
         ros_node, ros_node_->get_parameter("nfc_write_usertag_to_card_action_topic").as_string());
   }
@@ -29,7 +29,7 @@ namespace rmf_robot_client
   void NFCTask::start_writing_procedure()
   {
     CreateUserNfcTag::Goal msg = CreateUserNfcTag::Goal();
-    msg.user_id = user_id;
+    msg.user_id = _user_id;
     rclcpp_action::Client<CreateUserNfcTag>::SendGoalOptions send_goal_options =
         rclcpp_action::Client<CreateUserNfcTag>::SendGoalOptions();
 

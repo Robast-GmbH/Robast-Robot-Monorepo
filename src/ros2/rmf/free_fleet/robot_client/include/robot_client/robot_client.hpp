@@ -12,6 +12,7 @@
 #include "fleet_interfaces/msg/free_fleet_data_drawer_request.hpp"
 #include "fleet_interfaces/msg/free_fleet_data_robot_state.hpp"
 #include "fleet_interfaces/msg/free_fleet_data_setting_request.hpp"
+#include "qos_config.hpp"
 #include "rclcpp/qos.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
