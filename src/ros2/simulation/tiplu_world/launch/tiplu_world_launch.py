@@ -129,6 +129,12 @@ def generate_launch_description():
         output='screen'
     )
 
+    load_drawer_joint_trajectory_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
+             'drawer_joint_trajectory_controller'],
+        output='screen'
+    )
+
     ld = LaunchDescription()
 
     # arguments
@@ -162,6 +168,12 @@ def generate_launch_description():
             event_handler=OnProcessExit(
                 target_action=load_joint_trajectory_controller,
                 on_exit=[load_diff_drive_base_controller],
+            )
+        ))
+    ld.add_action(RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_diff_drive_base_controller,
+                on_exit=[load_drawer_joint_trajectory_controller],
             )
         ))
 
