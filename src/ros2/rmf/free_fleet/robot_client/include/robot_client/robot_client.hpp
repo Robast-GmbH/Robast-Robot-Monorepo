@@ -18,11 +18,11 @@
 
 //  #include "robotnik_msgs/msg/battery_status.hpp"
 
-#include "action.hpp"
-#include "drawer_action.hpp"
+#include "base_task.hpp"
 #include "drawer_state.hpp"
-#include "navigation_action.hpp"
-#include "nfc_action.hpp"
+#include "drawer_task.hpp"
+#include "navigation_task.hpp"
+#include "nfc_task.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "std_msgs/msg/int64.hpp"
 #include "tf2/exceptions.h"
@@ -50,46 +50,49 @@ namespace rmf_robot_client
 
    private:
     // Parameters
-    std::string fleet_name;
-    std::string robot_name;
-    std::string robot_model;
+    std::string _fleet_name;
+    std::string _robot_name;
+    std::string _robot_model;
 
-    std::string behavior_tree;
-    std::string map_frame_id;
-    std::string robot_frame_id;
+    std::string _behavior_tree;
+    std::string _map_frame_id;
+    std::string _robot_frame_id;
 
     // fleet_server
-    rclcpp::Subscription<FreeFleetDataSettingRequest>::SharedPtr setting_subscriber_;
-    rclcpp::Subscription<FreeFleetDataCreateNfcRequest>::SharedPtr write_nfc_card_request_subscriber_;
-    rclcpp::Subscription<FreeFleetDataDrawerRequest>::SharedPtr drawer_request_subscriber_;
-    rclcpp::Subscription<FreeFleetDataDestinationRequest>::SharedPtr navigation_request_subscriber_;
+    rclcpp::Subscription<FreeFleetDataSettingRequest>::SharedPtr _setting_subscriber;
+    rclcpp::Subscription<FreeFleetDataCreateNfcRequest>::SharedPtr _write_nfc_card_request_subscriber;
+    rclcpp::Subscription<FreeFleetDataDrawerRequest>::SharedPtr _drawer_request_subscriber;
+    rclcpp::Subscription<FreeFleetDataDestinationRequest>::SharedPtr _navigation_request_subscriber;
 
     // hardware
+
+    //  ToDo only works after the topic is bridged properly
+    //  void RobotClient::receive_battery_status(const BatteryLevel::ConstPtr msg)
     // rclcpp::Subscription<BatteryLevel>::SharedPtr battery_status_sub_;
-    rclcpp::Subscription<DrawerStatus>::SharedPtr drawer_status_subscriber_;
-    rclcpp::Subscription<StdMsgInt>::SharedPtr authentication_subscriber_;
+    rclcpp::Subscription<DrawerStatus>::SharedPtr _drawer_status_subscriber;
+    rclcpp::Subscription<StdMsgInt>::SharedPtr _authentication_subscriber;
 
     // other
-    rclcpp::Publisher<FreeFleetDataRobotState>::SharedPtr robot_info_publisher_;
-    rclcpp::Publisher<StdMsgBool>::SharedPtr reset_simple_tree_publisher_;
+    rclcpp::Publisher<FreeFleetDataRobotState>::SharedPtr _robot_info_publisher;
+    rclcpp::Publisher<StdMsgBool>::SharedPtr _reset_simple_tree_publisher;
 
     // Task
-    int task_id;
-    int current_step;
-    float current_battery_level = -1;
-    std::map<int, std::unique_ptr<Action>> task_sequence;
-    rclcpp::TimerBase::SharedPtr publish_robot_info_timer_;
-    int robot_info_inteval;
-    int nfc_timeout_interval;
+    int _task_id;
+    int _current_step;
+    float _current_battery_level = -1;
+    std::map<int, std::unique_ptr<BaseTask>> _task_sequence;
+    rclcpp::TimerBase::SharedPtr _publish_robot_info_timer;
+    int _robot_info_inteval;
+    int _nfc_timeout_interval;
 
     // robot
-    std::shared_ptr<tf2_ros::TransformListener> tf_listener_{nullptr};
-    std::unique_ptr<tf2_ros::Buffer> tf_buffer_;
-    double current_x;
-    double current_y;
-    double current_yaw;
-    std::shared_ptr<std::map<std::string, DrawerState>> drawer_list;
-    bool is_new_tf_error;
+    std::shared_ptr<tf2_ros::TransformListener> _tf_listener{nullptr};
+    std::unique_ptr<tf2_ros::Buffer> _tf_buffer;
+    double _current_x;
+    double _current_y;
+    double _current_yaw;
+    std::shared_ptr<std::map<std::string, DrawerState>> _drawer_list;
+    bool _is_new_tf_error;
 
     void init_param();
     void start_receive_tasks();
@@ -102,16 +105,18 @@ namespace rmf_robot_client
 
     void receive_drawer_status(const DrawerStatus::SharedPtr msg);
     void receive_authenticated_user(const StdMsgInt::SharedPtr msg);
-    // ToDo: fix on the the bridge first
+
+    //  ToDo only works after the topic is bridged properly
+    //  void RobotClient::receive_battery_status(const BatteryLevel::ConstPtr msg)
     // void receive_battery_status(const BatteryLevel::ConstPtr msg);
 
-    bool prepare_new_action(
+    bool prepare_new_task(
         std::string Task_def, std::string recipient_fleet, std::string recipient_robot, int& task_id, int& step);
     void end_current_task();
-    void end_current_action(int step);
+    void end_current_task(int step);
     void empty_task_sequence();
-    void start_action(int step);
-    void start_next_action();
+    void start_task(int step);
+    void start_next_task();
     void publish_fleet_state();
     void update_robot_location();
 

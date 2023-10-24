@@ -1,6 +1,7 @@
 from launch import LaunchDescription
 from launch_ros.actions import Node
 
+
 def generate_launch_description():
     return LaunchDescription([
         Node(
@@ -8,5 +9,5 @@ def generate_launch_description():
             executable='robot_client',
             name='robot_client'
         ),
-        
+
     ])

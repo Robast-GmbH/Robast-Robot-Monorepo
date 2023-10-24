@@ -26,10 +26,10 @@ add_executable(${executable_robot_client}
 set(library_robot_client ${executable_robot_client}_core)
 add_library(${library_robot_client} SHARED 
   src/robot_client.cpp
-  src/action.cpp
-  src/drawer_action.cpp 
-  src/navigation_action.cpp
-  src/nfc_action.cpp )
+  src/base_task.cpp
+  src/drawer_task.cpp 
+  src/navigation_task.cpp
+  src/nfc_task.cpp )
 
 set(dependencies
   rclcpp
