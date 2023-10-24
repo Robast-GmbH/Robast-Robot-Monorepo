@@ -4,7 +4,7 @@ namespace db_helper
 {
   MockPostgreSqlHelper::MockPostgreSqlHelper(std::map<std::string, std::pair<int, std::string>> valid_user_list)
   {
-    user_list_ = valid_user_list;
+    id_by_name_of_valid_db_user = valid_user_list;
   }
 
   bool MockPostgreSqlHelper::checkUserTag(std::string scanned_key,
@@ -13,9 +13,9 @@ namespace db_helper
                       std::shared_ptr<std::string> ,
                       std::vector<std::string>)
   {
-    if (user_list_.find(scanned_key) != user_list_.end())
+    if (id_by_name_of_valid_db_user.find(scanned_key) != id_by_name_of_valid_db_user.end())
     {
-      std::pair<int, std::string> found_user = user_list_[scanned_key];
+      std::pair<int, std::string> found_user = id_by_name_of_valid_db_user[scanned_key];
       *related_username = found_user.second;
       *id = found_user.first;
 
