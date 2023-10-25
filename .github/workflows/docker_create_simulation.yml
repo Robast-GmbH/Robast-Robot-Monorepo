@@ -39,6 +39,7 @@ jobs:
         push: true
         build-args: |
           ROS_DISTRO=humble
+          ROS_CONTROL_VERSION=humble
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: |
               ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel-humble
@@ -51,6 +52,7 @@ jobs:
         context: src/ros2/${{ env.Project-Name }}/
         build-args: |
           ROS_DISTRO=iron
+          ROS_CONTROL_VERSION=master
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: |
