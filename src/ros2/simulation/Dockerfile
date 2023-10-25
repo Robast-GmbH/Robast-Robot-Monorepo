@@ -1,5 +1,5 @@
 ARG ROS_VERSION=humble
-ARG ROS_CONTROL_VERSION=master
+ARG ROS_CONTROL_VERSION=humble
 FROM ros:${ROS_VERSION} as base
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
