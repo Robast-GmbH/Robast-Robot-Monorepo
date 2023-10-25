@@ -1,4 +1,6 @@
-FROM ros:iron as base
+ARG ROS_VERSION=humble
+ARG ROS_CONTROL_VERSION=master
+FROM ros:${ROS_VERSION} as base
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
@@ -28,7 +30,7 @@ RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pk
     && apt-get update
 
 # Must compile ros_gz from source because iron + Garden is not an official combination
-RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b iron https://github.com/gazebosim/ros_gz.git \
+RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ${ROS_VERSION} https://github.com/gazebosim/ros_gz.git \
     && apt update \
     && apt upgrade -y \
     && . /opt/ros/${ROS_DISTRO}/setup.sh \
@@ -40,7 +42,7 @@ RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b iro
 # Must build gz_ros2_control from source because as of now (19.10.23) there are no binaries
 # for the combination iron + garden according to: https://github.com/ros-controls/gz_ros2_control
 RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
-  && git clone https://github.com/ros-controls/gz_ros2_control -b master \
+  && git clone https://github.com/ros-controls/gz_ros2_control -b ${ROS_CONTROL_VERSION} \
   && apt update \
   && apt upgrade -y \
   && . /opt/ros/${ROS_DISTRO}/setup.sh \
