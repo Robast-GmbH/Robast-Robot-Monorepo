@@ -1,6 +1,6 @@
 ARG ROS_VERSION=humble
-ARG ROS_CONTROL_VERSION=humble
 FROM ros:${ROS_VERSION} as base
+ARG ROS_CONTROL_VERSION=humble
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
@@ -30,7 +30,7 @@ RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pk
     && apt-get update
 
 # Must compile ros_gz from source because iron + Garden is not an official combination
-RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ${ROS_VERSION} https://github.com/gazebosim/ros_gz.git \
+RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ${ROS_DISTRO} https://github.com/gazebosim/ros_gz.git \
     && apt update \
     && apt upgrade -y \
     && . /opt/ros/${ROS_DISTRO}/setup.sh \
