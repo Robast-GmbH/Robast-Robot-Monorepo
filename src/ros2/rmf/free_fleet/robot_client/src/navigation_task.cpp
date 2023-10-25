@@ -6,11 +6,11 @@ namespace rmf_robot_client
       int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, double x, double y, double yaw)
       : BaseTask(task_id, step, ros_node)
   {
-    _x = x;
-    _y = y;
-    _yaw = yaw;
+    _target_position_x = x;
+    _target_position_y = y;
+    _target_position_yaw = yaw;
 
-    _frame_id = ros_node_->get_parameter("map_frame_id").as_string();
+    _map_frame_id = ros_node_->get_parameter("map_frame_id").as_string();
     _behavior_tree = ros_node_->get_parameter("behavior_tree").as_string();
     _navigate_to_pose_client = rclcpp_action::create_client<NavigateToPose>(
         ros_node, ros_node_->get_parameter("nav2_navigation_to_pose_action_topic").as_string());
@@ -35,14 +35,14 @@ namespace rmf_robot_client
   void NavigationTask::start_navigation()
   {
     NavigateToPose::Goal pose_msg = NavigateToPose::Goal();
-    pose_msg.pose.header.frame_id = _frame_id;
+    pose_msg.pose.header.frame_id = _map_frame_id;
     pose_msg.pose.header.stamp = ros_node_->now();
-    pose_msg.pose.pose.position.x = _x;
-    pose_msg.pose.pose.position.y = _y;
+    pose_msg.pose.pose.position.x = _target_position_x;
+    pose_msg.pose.pose.position.y = _target_position_y;
     pose_msg.pose.pose.position.z = 0;
 
     tf2::Quaternion quaternion;
-    quaternion.setRPY(0, 0, _yaw);
+    quaternion.setRPY(0, 0, _target_position_yaw);
     pose_msg.pose.pose.orientation.x = quaternion.getX();
     pose_msg.pose.pose.orientation.y = quaternion.getY();
     pose_msg.pose.pose.orientation.z = quaternion.getZ();

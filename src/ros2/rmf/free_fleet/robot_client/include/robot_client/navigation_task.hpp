@@ -28,11 +28,11 @@ namespace rmf_robot_client
     using NavigateToPose = nav2_msgs::action::NavigateToPose;
     using GoalHandleNavigateToPose = rclcpp_action::ClientGoalHandle<NavigateToPose>;
 
-    double _x;
-    double _y;
-    double _yaw;
+    double _target_position_x;
+    double _target_position_y;
+    double _target_position_yaw;
 
-    std::string _frame_id;
+    std::string _map_frame_id;
     std::string _behavior_tree;
 
     rclcpp_action::Client<NavigateToPose>::SharedPtr _navigate_to_pose_client;
