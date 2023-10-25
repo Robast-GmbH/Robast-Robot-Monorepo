@@ -25,10 +25,10 @@ namespace ros2_control_plugin_door_opening_mechanism
     RCLCPP_SHARED_PTR_DEFINITIONS(DoorOpeningMechanismSystemHardware)
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_init(
-      const hardware_interface::HardwareInfo& info) override;
+        const hardware_interface::HardwareInfo& info) override;
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_configure(
-      const rclcpp_lifecycle::State& previous_state) override;
+        const rclcpp_lifecycle::State& previous_state) override;
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC std::vector<hardware_interface::StateInterface>
     export_state_interfaces() override;
@@ -37,25 +37,25 @@ namespace ros2_control_plugin_door_opening_mechanism
     export_command_interfaces() override;
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_activate(
-      const rclcpp_lifecycle::State& previous_state) override;
+        const rclcpp_lifecycle::State& previous_state) override;
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_cleanup(
-      const rclcpp_lifecycle::State& previous_state) override;
+        const rclcpp_lifecycle::State& previous_state) override;
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_error(
-      const rclcpp_lifecycle::State& previous_state) override;
+        const rclcpp_lifecycle::State& previous_state) override;
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_deactivate(
-      const rclcpp_lifecycle::State& previous_state) override;
+        const rclcpp_lifecycle::State& previous_state) override;
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::CallbackReturn on_shutdown(
-      const rclcpp_lifecycle::State& previous_state) override;
+        const rclcpp_lifecycle::State& previous_state) override;
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::return_type read(
-      const rclcpp::Time& time, const rclcpp::Duration& period) override;
+        const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
     ROS2_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_PUBLIC hardware_interface::return_type write(
-      const rclcpp::Time& time, const rclcpp::Duration& period) override;
+        const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
    private:
     std::vector<double> _hw_position_commands;
@@ -64,11 +64,13 @@ namespace ros2_control_plugin_door_opening_mechanism
     std::vector<double> _hw_velocity_commands;
     std::vector<double> _hw_velocity_states;
 
-    std::unique_ptr<dryve_d1_bridge::D1> _x_axis;
-    std::unique_ptr<dryve_d1_bridge::D1> _y_axis;
+    std::unique_ptr<dryve_d1_bridge::D1> _dryve_d1;
 
-    bool _is_start_time_initialized = false;   // TODO@Jacob: Remove this
-    rclcpp::Time _start_time;
+    // can be either 1 or -1.There are probably better ways to handle this, but this does the job for now
+    int _direction = 1;
+
+    // this is the ports we configured in the router that is forwarded to port 502 (default modbus port) of the dryve d1
+    int _port = 3502;
   };
 
 }   // namespace ros2_control_plugin_door_opening_mechanism

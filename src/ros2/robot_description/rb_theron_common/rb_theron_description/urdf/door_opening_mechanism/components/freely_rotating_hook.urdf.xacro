@@ -16,6 +16,8 @@
             damping="0.05"
             friction="0.1"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
+            port="0"
+            direction="0"
             link_name="${prefix}door_opening_mechanism_link_freely_rotating_hook"
             link_origin_x="0.0"
             link_origin_y="0.0"

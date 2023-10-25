@@ -6,8 +6,8 @@
 namespace dryve_d1_bridge
 {
   // this is actually the IP of the robot, whose router is forwarding this to the dryve d1 motor controls
-  const std::string DRYVE_D1_IP_ADDRESS_X_AXIS = "10.10.23.7";
-  const std::string DRYVE_D1_IP_ADDRESS_Y_AXIS = "10.10.23.7";
+  // we are interfacing with the different motor controls by targeting different ports (but using the same ip)
+  const std::string DRYVE_D1_IP_ADDRESS = "10.10.23.7";
   // these are the ports we configured in the router that are forwarded to port 502 (default modbus port) of the dryve
   // d1
   const int PORT_X_AXIS = 3503;
@@ -19,23 +19,13 @@ namespace dryve_d1_bridge
 
   // Please mind: Actually you could get this value from the d1_dryve via get_si_unit_factor(), but I get stupid
   // values from it
-  const double X_AXIS_SI_UNIT_FACTOR = -100000;
-  const double X_AXIS_VELOCITY = 10;
-  const double X_AXIS_ACCELERATION = 10;
-  const double X_AXIS_DECELERATION = 10;
+  const double SI_UNIT_FACTOR = 100000;
+  const double VELOCITY = 10;
+  const double ACCELERATION = 10;
+  const double DECELERATION = 10;
   // The value of the velocity scaling was obtained empirically. Instead of scaling the velocity with a factor like this
   // you could alternatively make the gains of the joint_trajectory_controller extremely high
   // TODO@Jacob: Keep checking if this is really the best way to handle this. I am not 100% sure about this
-  const double X_AXIS_VELOCITY_SCALING = -100;
-
-  const double Y_AXIS_SI_UNIT_FACTOR = 100000;
-  const double Y_AXIS_VELOCITY = 10;
-  const double Y_AXIS_ACCELERATION = 10;
-  const double Y_AXIS_DECELERATION = 10;
-  // The value of the velocity scaling was obtained empirically. Instead of scaling the velocity with a factor like this
-  // you could alternatively make the gains of the joint_trajectory_controller extremely high
-  // TODO@Jacob: Keep checking if this is really the best way to handle this. I am not 100% sure about this
-  const double Y_AXIS_VELOCITY_SCALING = 100;
+  const double VELOCITY_SCALING = 100;
 }   // namespace dryve_d1_bridge
-
 #endif   // DRYVE_D1_BRIDGE__D1_HPP_
