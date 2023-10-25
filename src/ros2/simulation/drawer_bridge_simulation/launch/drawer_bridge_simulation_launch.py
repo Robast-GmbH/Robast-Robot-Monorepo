@@ -13,7 +13,6 @@ def generate_launch_description():
                 name="drawer_bridge_simulation",
                 parameters=[
                             {"time_until_drawer_closes_automatically_in_ms": 5000},
-                            {"moveit2_planning_group_name": "drawer_planning_group"},
                             {"num_of_drawers": 5},
                            ],
                 output='screen')

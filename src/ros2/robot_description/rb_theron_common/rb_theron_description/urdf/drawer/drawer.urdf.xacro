@@ -52,7 +52,7 @@
             <parent link="${parent}" />
             <child link="${prefix}drawer_${suffix}" />
             <xacro:insert_block name="origin" />
-            <limit lower="0.0" upper="${0.95*drawer_size_y}" effort="1000" velocity="100" />
+            <limit lower="-0.01" upper="${0.95*drawer_size_y}" effort="1000" velocity="100" />
         </joint>
 
         <ros2_control name="${prefix}drawer_${suffix}_ros2_control" type="system">
@@ -71,8 +71,8 @@
             </hardware>
             <joint name="${prefix}drawer_${suffix}_joint">
                 <command_interface name="position">
-                    <param name="min">-10</param>
-                    <param name="max">10</param>
+                    <param name="min">-0.01</param>
+                    <param name="max">${0.95*drawer_size_y}</param>
                 </command_interface>
                 <state_interface name="position"/>
                 <state_interface name="velocity"/>

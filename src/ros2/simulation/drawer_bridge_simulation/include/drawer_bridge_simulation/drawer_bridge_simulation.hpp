@@ -35,6 +35,8 @@ namespace drawer_bridge_simulation
     uint32_t _time_until_drawer_closes_automatically;
     const int _DEFAULT_TIME_UNTIL_DRAWER_CLOSES_AUTOMATICALLY = 3000;   // ms
 
+    const uint8_t _TRAJECTORY_EXECUTION_TIME_IN_SECONDS = 2;
+
     int _num_of_drawers;
     const int _DEFAULT_NUM_OF_DRAWERS = 5;
 

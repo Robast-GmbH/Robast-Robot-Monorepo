@@ -71,15 +71,15 @@ namespace drawer_bridge_simulation
     trajectory_msgs::msg::JointTrajectoryPoint point;
     point.positions.resize(_num_of_drawers);
 
-    for (uint8_t i = 0; i < _num_of_drawers; i++)
+    for (uint8_t i = 1; i <= _num_of_drawers; ++i)
     {
       if (i == module_id)
       {
-        point.positions[i] = target_position;
+        point.positions[i - 1] = target_position;
       }
       else
       {
-        point.positions[i] = 0.0;
+        point.positions[i - 1] = 0.0;
       }
     }
     point.time_from_start = rclcpp::Duration::from_seconds(time_from_start);
@@ -91,17 +91,14 @@ namespace drawer_bridge_simulation
                                                                                             const float target_position)
   {
     std::vector<std::string> joint_names;
-    for (uint8_t i = 0; i < _num_of_drawers; i++)
+    for (uint8_t i = 1; i <= _num_of_drawers; ++i)
     {
-      joint_names.push_back("drawer_" + std::to_string(i + 1) + "_joint");
+      joint_names.push_back("drawer_" + std::to_string(i) + "_joint");
     }
 
     std::vector<trajectory_msgs::msg::JointTrajectoryPoint> points;
 
-    points.push_back(create_trajectory_point(module_id, 0.0, 0.0));
-    points.push_back(create_trajectory_point(module_id, 0.1, 0.1));
-    points.push_back(create_trajectory_point(module_id, 0.2, 0.2));
-    points.push_back(create_trajectory_point(module_id, 0.3, 0.3));
+    points.push_back(create_trajectory_point(module_id, target_position, _TRAJECTORY_EXECUTION_TIME_IN_SECONDS));
 
     control_msgs::action::FollowJointTrajectory_Goal goal_msg;
     goal_msg.goal_time_tolerance = rclcpp::Duration::from_seconds(1.0);
@@ -129,16 +126,16 @@ namespace drawer_bridge_simulation
       rclcpp_action::ClientGoalHandle<control_msgs::action::FollowJointTrajectory>::SharedPtr,
       const std::shared_ptr<const control_msgs::action::FollowJointTrajectory::Feedback> feedback)
   {
-    RCLCPP_INFO(this->get_logger(), "feedback->desired.positions :");
+    RCLCPP_DEBUG(this->get_logger(), "feedback->desired.positions :");
     for (auto &x : feedback->desired.positions)
     {
-      RCLCPP_INFO(this->get_logger(), "%f\t", x);
+      RCLCPP_DEBUG(this->get_logger(), "%f\t", x);
     }
 
-    RCLCPP_INFO(this->get_logger(), "feedback->desired.velocities :");
+    RCLCPP_DEBUG(this->get_logger(), "feedback->desired.velocities :");
     for (auto &x : feedback->desired.velocities)
     {
-      RCLCPP_INFO(this->get_logger(), "%f\t", x);
+      RCLCPP_DEBUG(this->get_logger(), "%f\t", x);
     }
   }
 
@@ -184,53 +181,6 @@ namespace drawer_bridge_simulation
     control_msgs::action::FollowJointTrajectory_Goal goal =
         create_trajectory_goal(drawer_address.module_id, target_pose);
 
-    RCLCPP_INFO(this->get_logger(), "Sending async goal to _drawer_joint_trajectory_client!");
-
-    // Print the trajectory information
-    RCLCPP_INFO(rclcpp::get_logger("your_logger_name"), "Joint names:");
-    for (const auto &joint_name : goal.trajectory.joint_names)
-    {
-      RCLCPP_INFO(rclcpp::get_logger("your_logger_name"), "  %s", joint_name.c_str());
-    }
-
-    RCLCPP_INFO(rclcpp::get_logger("print_follow_joint_trajectory_goal"), "Trajectory:");
-    for (const auto &point : goal.trajectory.points)
-    {
-      RCLCPP_INFO(rclcpp::get_logger("print_follow_joint_trajectory_goal"),
-                  "  Time from start: %f",
-                  point.time_from_start.sec + point.time_from_start.nanosec * 1e-9);
-
-      // Print the joint positions
-      RCLCPP_INFO(rclcpp::get_logger("print_follow_joint_trajectory_goal"), "  Joint Positions:");
-      for (size_t i = 0; i < point.positions.size(); ++i)
-      {
-        RCLCPP_INFO(
-            rclcpp::get_logger("print_follow_joint_trajectory_goal"), "    Joint %zu: %f", i, point.positions[i]);
-      }
-
-      // Print the joint velocities if available
-      if (!point.velocities.empty())
-      {
-        RCLCPP_INFO(rclcpp::get_logger("print_follow_joint_trajectory_goal"), "  Joint Velocities:");
-        for (size_t i = 0; i < point.velocities.size(); ++i)
-        {
-          RCLCPP_INFO(
-              rclcpp::get_logger("print_follow_joint_trajectory_goal"), "    Joint %zu: %f", i, point.velocities[i]);
-        }
-      }
-
-      // Print the joint accelerations if available
-      if (!point.accelerations.empty())
-      {
-        RCLCPP_INFO(rclcpp::get_logger("print_follow_joint_trajectory_goal"), "  Joint Accelerations:");
-        for (size_t i = 0; i < point.accelerations.size(); ++i)
-        {
-          RCLCPP_INFO(
-              rclcpp::get_logger("print_follow_joint_trajectory_goal"), "    Joint %zu: %f", i, point.accelerations[i]);
-        }
-      }
-    }
-
     _drawer_joint_trajectory_client->async_send_goal(goal, opt);
   }
 
@@ -266,7 +216,7 @@ namespace drawer_bridge_simulation
 
     this->open_drawer_in_simulation(drawer_address, _target_pose_open_drawer);
 
-    // this->async_wait_until_closing_drawer_in_simulation(
-    //     _time_until_drawer_closes_automatically, drawer_address, _target_pose_closed_drawer);
+    this->async_wait_until_closing_drawer_in_simulation(
+        _time_until_drawer_closes_automatically, drawer_address, _target_pose_closed_drawer);
   }
 }   // namespace drawer_bridge_simulation
