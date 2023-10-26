@@ -52,7 +52,10 @@
     </include>
 
     <!-- TODO@Torben/Jacob: How do we pass a parameter into a sdf to distinguish between fortress and garden -->
-    <!-- 
+    <!-- TODO: Until we fixed that, you can use doors in the simulation by removing the comment tags below and use the following:
+    fortress: <plugin filename="ignition-gazebo-joint-position-controller-system" name="ignition::gazebo::systems::JointPositionController">
+    garden: <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController"> -->
+    <!--     
      <include>
       <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
       <pose> 12.5 -3.907 0.0 0 0 1.570</pose>
