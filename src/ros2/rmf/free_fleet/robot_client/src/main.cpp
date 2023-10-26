@@ -1,7 +1,7 @@
 #include <memory>
 
-#include "robot_client/robot_client.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "robot_client/robot_client.hpp"
 
 int main(int argc, char** argv)
 {

@@ -1,25 +1,27 @@
-from typing import List, Optional, Any
+from typing import Optional
 from enum import Enum
 from pydantic import BaseModel
 from typing import Union
-import yaml
+
 
 class DrawerSlideTypes(str, Enum):
-    Manual = "Manual"
-    Electrical = "Electrical"
+    MANUAL = "Manual"
+    ELECTRICAL = "Electrical"
 
 
-#Robot
+# Robot
 class Robot(BaseModel):
     fleet_name: str
     robot_name: str
 
+
 class RobotStatus(Robot):
     task_id: Optional[int]
-    x_pose:float
+    x_pose: float
     y_pose: float
     yaw_pose: float
-    battery_level:float
+    battery_level: float
+
 
 # Task
 class Pose(BaseModel):
@@ -27,14 +29,17 @@ class Pose(BaseModel):
     y:  float
     z:  float
 
+
 class Navigation(BaseModel):
     pose: Pose
     yaw: float
+
 
 class ActionType(str, Enum):
     DRAWER = 'DRAWER'
     NAVIGATION = 'NAVIGATION'
     NEW_USER = 'NEW_USER'
+
 
 class BaseDrawer(BaseModel):
     drawer_id: int
@@ -44,55 +49,64 @@ class BaseDrawer(BaseModel):
 class Drawer(BaseDrawer):
     locked_for: list[int]
 
+
 class NewUser(BaseModel):
     user_id: int
 
+
 class UpdateAction(BaseModel):
-    status:str
-    finished:bool
+    status: str
+    finished: bool
+
 
 class Action(BaseModel):
-    step:int
+    step: int
     type: ActionType
     action: Union[Drawer, Navigation, NewUser]
     finished: bool
 
+
 class BaseTask(BaseModel):
-    task_id:str
-    robot:Robot
+    task_id: str
+    robot: Robot
+
 
 class Task(BaseTask):
-    actions:list[Action]
+    actions: list[Action]
 
 
-#Drawer
+# Drawer
 class ModuleBase(BaseModel):
-    module_id:int
-    drawer_id:int
+    module_id: int
+    drawer_id: int
 
-  
+
 class Module(ModuleBase):
     type: DrawerSlideTypes
     size: int
-    robot_name: str    
-    position:int
-    status:str
-    label:str
-    
+    robot_name: str
+    position: int
+    status: str
+    label: str
+
     class Config:
         orm_mode = True
 
-class UpdateModule(ModuleBase):
-    robot_name:Union[str,None]= None   
-    status:Union[str,None]= None
-    label:Union[str,None]= None
 
-#User
+class UpdateModule(ModuleBase):
+    robot_name: Union[str, None] = None
+    status: Union[str, None] = None
+    label: Union[str, None] = None
+
+
+# User
 class UserBase(BaseModel):
     name: str
-    
+
+
 class UserLogin(UserBase):
     hashed_password: str
+
 
 class UserCreate(UserBase):
     hashed_password: str
@@ -100,9 +114,10 @@ class UserCreate(UserBase):
     email: str
     admin: bool
 
+
 class User(UserBase):
-    id: Union[int,None]= None
-    is_active: bool=True
+    id: Union[int, None] = None
+    is_active: bool = True
     admin: bool
     full_name: str
 

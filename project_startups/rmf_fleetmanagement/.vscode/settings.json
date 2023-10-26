@@ -139,7 +139,8 @@
         "/opt/ros/galactic/lib/python3.8/site-packages/"
     ],
     "[cpp]": {
-        "editor.tabSize": 2
+        "editor.tabSize": 2,
+        "editor.defaultFormatter": "ms-vscode.cpptools"
     },
     "[python]": {
         "editor.tabSize": 4,

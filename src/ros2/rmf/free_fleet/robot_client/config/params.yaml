@@ -1,0 +1,34 @@
+your_amazing_node:
+  ros__parameters:
+    fleet_name: "ROBAST"
+    robot_name: "RB0"
+    robot_model: "Robast_Theron"
+
+    nav_behavior_tree: /workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml" # this parameter defines the path to the behavior tree used bey the Robot while navigation to a certain location
+    nav2_navigation_to_pose_action_topic: "/navigate_to_pose" #ROS2 Action Topic name (to NAV2 bt_navigator) to sent the robot to a defined position  
+    map_frame_id: "map"
+    robot_frame_id: "robot_base_footprint"
+
+    robot_info_inteval: 1 #(in seconds) the interfal of which the robot_client publishes on the fleet_communication_robot_info_topic to update about the current status of the robot
+    nfc_timeout_interval: 1 #(in minutes) the the time the NFC reader waits for a card beeing presented at the reader 
+
+    statemaschine_open_drawer_topic: "/trigger_drawer_tree"  # ros topic name (to statemaschine node) to open a standart drawer module
+    statemaschine_open_e_drawer_topic: "/trigger_electric_drawer_tree" # ros topic name (to Statemaschine node) to open a electrical drawer module
+    statemaschine_close_e_drawer_topic: "/close_drawer" # ros topic name (to Statemaschine node) to close the electrical drawer after it was opened 
+    statemaschine_reset_simple_tree_topic: "/reset_simple_tree" # ros topic name (to Statemaschine node) to reset non-electric drawer tree
+
+    drawer_bridge_drawer_status_change_topic: "/drawer_is_open" # ros topic name (from drawer_bridge node) where the closing of the noramal drawer is published 
+
+    nfc_write_usertag_to_card_action_topic: "/create_user" # ros2 action topic name (to nfc_bridge node) to assign a new user to a new Token
+    nfc_on_off_switch_topic: "/nfc_switch" # ross2 topic name (to nfc_bridge node) to either turn the reader detecting token in range on or off
+    nfc_authenticated_user_topic: "/authenticated_user" # ross2 topic name (to nfc_bridge node) on which the reader publish userID's of authenticated Users 
+
+    fleet_communication_setting_topic: "/setting_request" # ros2 topic name (from fleet_server node) to communicate extra or runtime data for tasks 
+    fleet_communication_create_nfc_topic: "/new_user_request" # ros2 topic name (from fleet_server node) to comunicate a task to program a new Token for a User  
+    fleet_communication_destination_topic: "/destination_request" # ros2 topic name (from fleet_server node) to comunicate a task to move the robot to a new destination  
+    fleet_communication_drawer_topic: "/drawer_request" # ros2 topic name (from fleet_server node) to comunicate a task to request a opening of a drawer
+
+    fleet_communication_task_info_topic: "/task_state" # ros2 topic name ( to fleet_server node) to comunicate the current status of a task(on change) 
+    fleet_communication_robot_info_topic: "/robot_state" # ros2 topic name (from fleet_server node) to comunicate the current status of the robot (position, current task, battery status)  
+  
+    robotnik_battery_level_topic: "/robot/battery_estimator/data" # ros2 topic name (from Robotnik) to communicate the current status of the battery  

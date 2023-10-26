@@ -119,7 +119,7 @@ class RobastFleetAPI(Node):
     def navigation_remaining_duration(self, robot_name: str):
         ''' Return the number of seconds remaining for the robot to reach its
             destination'''
-
+        #ToDo@Torben: provide the duration from the navgoal 
 
         return 0.0
 

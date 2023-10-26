@@ -24,12 +24,12 @@ add_executable(${executable_robot_client}
   src/main.cpp)
 
 set(library_robot_client ${executable_robot_client}_core)
-add_library(${library_robot_client} SHARED 
+add_library( ${library_robot_client} SHARED
   src/robot_client.cpp
-  src/action.cpp
-  src/drawer_action.cpp 
-  src/navigation_action.cpp
-  src/nfc_action.cpp )
+  src/base_task.cpp
+  src/drawer_task.cpp
+  src/navigation_task.cpp
+  src/nfc_task.cpp )
 
 set(dependencies
   rclcpp
@@ -65,6 +65,18 @@ install(DIRECTORY
   launch
   DESTINATION share/${PROJECT_NAME}/
 )
+
+install(DIRECTORY
+  config
+  DESTINATION share/${PROJECT_NAME}/
+)
+
+if(BUILD_TESTING)
+  find_package(ament_lint_auto REQUIRED)
+  set(ament_cmake_copyright_FOUND TRUE)
+  set(ament_cmake_cpplint_FOUND TRUE)
+  ament_lint_auto_find_test_dependencies()
+endif()
 
 ament_export_include_directories(include)
 ament_package()

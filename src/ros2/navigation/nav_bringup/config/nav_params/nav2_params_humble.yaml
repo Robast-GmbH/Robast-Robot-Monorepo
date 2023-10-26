@@ -226,15 +226,15 @@ local_costmap:
         voxel_size: 0.05 # meters
         track_unknown_space: true # default space is known
         unknown_threshold: 15
-        mark_threshold: 0 # voxel height
+        mark_threshold: 1 # voxel height
         update_footprint_enabled: true
         combination_method: 1 # 1=max, 0=override
         origin_z: 0.0
-        publish_voxel_map: false
+        publish_voxel_map: true
         transform_tolerance: 0.2
         mapping_mode: false
         map_save_duration: 60.0
-        observation_sources: lidar3d_marking lidar2d_marking 
+        observation_sources: sick_safevisionary lidar2d_marking 
         lidar3d_marking:
           enabled: true
           data_type: PointCloud2
@@ -247,7 +247,7 @@ local_costmap:
           expected_update_rate: 0.2 # default 0, if not updating at this rate at least, remove from buffer
           observation_persistence: 0.0 # default 0, use all measurements taken during now-value, 0=latest
           inf_is_valid: false # default false, for laser scans
-          filter: "passthrough" # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on
+          filter: "voxel" # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on
           voxel_min_points: 0
           clear_after_reading: true # default false, clear the buffer after the layer gets readings from it
           max_z: 2.0
@@ -328,6 +328,28 @@ local_costmap:
           horizontal_fov_angle: 1.048 # default 1.04, radians
           decay_acceleration: 5.0     # default 0, 1/s^2. If laser scanner MUST be 0
           model_type: 0                # default 0, model type for frustum. 0=depth camera, 1=3d lidar like VLP16 or similar
+        sick_safevisionary:
+          enabled: true
+          data_type: PointCloud2
+          topic: /sick_safevisionary/points
+          marking: true
+          clearing: true
+          obstacle_range: 5.0
+          min_obstacle_height: 0.08
+          max_obstacle_height: 1.8
+          expected_update_rate: 0.1 # default 0, if not updating at this rate at least, remove from buffer
+          observation_persistence: 0.0 # default 0, use all measurements taken during now-value, 0=latest
+          inf_is_valid: false # default false, for laser scans
+          filter: "voxel" # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on
+          voxel_min_points: 16
+          clear_after_reading: true # default false, clear the buffer after the layer gets readings from it
+          max_z: 1.4
+          min_z: 0.05
+          vertical_fov_angle: 1.01   # default 0.7, radians. For 3D lidars it's the symmetric FOV about the planar axis.
+          vertical_fov_padding: 0.00    # 3D Lidar only. Default 0, in meters 
+          horizontal_fov_angle: 1.18 # 3D lidar scanners like the VLP16 have 360 deg horizontal FOV.
+          decay_acceleration: 0.0 # default 0, 1/s^2. If laser scanner MUST be 0
+          model_type: 0 # default 0, model type for frustum. 0=depth camera, 1=3d lidar like VLP16 or similar
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
