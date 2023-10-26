@@ -24,10 +24,10 @@ add_executable(${executable_robot_client}
   src/main.cpp)
 
 set(library_robot_client ${executable_robot_client}_core)
-add_library(${library_robot_client} SHARED 
+add_library( ${library_robot_client} SHARED
   src/robot_client.cpp
   src/base_task.cpp
-  src/drawer_task.cpp 
+  src/drawer_task.cpp
   src/navigation_task.cpp
   src/nfc_task.cpp )
 
