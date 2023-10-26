@@ -21,7 +21,7 @@ namespace rmf_robot_client
     this->declare_parameter("fleet_name", "ROBAST");
     this->declare_parameter("robot_name", "RB0");
     this->declare_parameter("robot_model", "Robast_Theron");
-    this->declare_parameter("behavior_tree",
+    this->declare_parameter("nav_behavior_tree",
                             "/workspace/src/navigation/nav_bringup/behavior_trees/humble/"
                             "navigate_to_pose_w_replanning_goal_patience_and_recovery.xml");
     this->declare_parameter("map_frame_id", "map");
@@ -33,7 +33,7 @@ namespace rmf_robot_client
     this->declare_parameter("statemaschine_open_e_drawer_topic", "/trigger_electric_drawer_tree");
     this->declare_parameter("statemaschine_close_e_drawer_topic", "/close_drawer");
     this->declare_parameter("statemaschine_reset_simple_tree_topic", "/reset_simple_tree");
-    this->declare_parameter("drawer_status_change_topic", "/drawer_is_open");
+    this->declare_parameter("drawer_bridge_drawer_status_change_topic", "/drawer_is_open");
 
     this->declare_parameter("nfc_write_usertag_to_card_action_topic", "/create_user");
     this->declare_parameter("nfc_on_off_switch_topic", "/nfc_switch");
@@ -77,7 +77,7 @@ namespace rmf_robot_client
         QoSConfig::get_fleet_communication_qos(),
         std::bind(&RobotClient::receive_settings, this, std::placeholders::_1));
     _drawer_status_subscriber = this->create_subscription<DrawerStatus>(
-        this->get_parameter("drawer_status_change_topic").as_string(),
+        this->get_parameter("drawer_bridge_drawer_status_change_topic").as_string(),
         10,
         std::bind(&RobotClient::receive_drawer_status, this, std::placeholders::_1));
     _authentication_subscriber = this->create_subscription<StdMsgInt>(
