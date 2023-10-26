@@ -17,7 +17,7 @@ namespace rmf_robot_client
     using CreateUserNfcTag = communication_interfaces::action::CreateUserNfcTag;
     using GoalHandleCreateUserNfcTag = rclcpp_action::ClientGoalHandle<CreateUserNfcTag>;
 
-    NFCTask(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, int user_id);
+    NFCTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, int user_id);
 
     bool start(std::function<void(int)> next_task_callback) override;
     bool cancel();
@@ -31,9 +31,9 @@ namespace rmf_robot_client
     void goal_response_callback(const GoalHandleCreateUserNfcTag::SharedPtr& goal_handle);
 
    private:
-    int _user_id;
+    int _user_id_for_token;
 
-    rclcpp_action::Client<CreateUserNfcTag>::SharedPtr _nfc_write_new_nfc_card_client;
+    rclcpp_action::Client<CreateUserNfcTag>::SharedPtr _nfc_write_new_nfc_token_for_client;
     GoalHandleCreateUserNfcTag::SharedPtr _current_action_goal_handle;
   };
 }   // namespace rmf_robot_client

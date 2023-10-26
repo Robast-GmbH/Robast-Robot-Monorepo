@@ -2,18 +2,14 @@
 
 namespace rmf_robot_client
 {
-  NavigationTask::NavigationTask(
-      int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, double x, double y, double yaw)
-      : BaseTask(task_id, step, ros_node)
+  NavigationTask::NavigationTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, RobotPose goal_pose)
+      : BaseTask(task_id, ros_node)
   {
-    _target_position_x = x;
-    _target_position_y = y;
-    _target_position_yaw = yaw;
-
-    _map_frame_id = ros_node_->get_parameter("map_frame_id").as_string();
-    _behavior_tree = ros_node_->get_parameter("behavior_tree").as_string();
+    _target_pose = goal_pose;
+    _map_frame_id = ros_node->get_parameter("map_frame_id").as_string();
+    _behavior_tree = ros_node->get_parameter("behavior_tree").as_string();
     _navigate_to_pose_client = rclcpp_action::create_client<NavigateToPose>(
-        ros_node, ros_node_->get_parameter("nav2_navigation_to_pose_action_topic").as_string());
+        ros_node, ros_node->get_parameter("nav2_navigation_to_pose_action_topic").as_string());
   }
 
   bool NavigationTask::start(std::function<void(int)> next_task_callback)
@@ -25,7 +21,6 @@ namespace rmf_robot_client
     if (!this->_navigate_to_pose_client->wait_for_action_server())
     {
       RCLCPP_ERROR(ros_node_->get_logger(), "Action server not available after waiting");
-      // cancel task
       return false;
     }
     start_navigation();
@@ -37,12 +32,12 @@ namespace rmf_robot_client
     NavigateToPose::Goal pose_msg = NavigateToPose::Goal();
     pose_msg.pose.header.frame_id = _map_frame_id;
     pose_msg.pose.header.stamp = ros_node_->now();
-    pose_msg.pose.pose.position.x = _target_position_x;
-    pose_msg.pose.pose.position.y = _target_position_y;
+    pose_msg.pose.pose.position.x = _target_pose.x_pose;
+    pose_msg.pose.pose.position.y = _target_pose.y_pose;
     pose_msg.pose.pose.position.z = 0;
 
     tf2::Quaternion quaternion;
-    quaternion.setRPY(0, 0, _target_position_yaw);
+    quaternion.setRPY(0, 0, _target_pose.yaw_pose);
     pose_msg.pose.pose.orientation.x = quaternion.getX();
     pose_msg.pose.pose.orientation.y = quaternion.getY();
     pose_msg.pose.pose.orientation.z = quaternion.getZ();
@@ -66,7 +61,7 @@ namespace rmf_robot_client
   {
     this->_navigate_to_pose_client->async_cancel_goal(_current_action_goal_handle);
     publish_task_state("Canceld", "", true);
-    finish_task_(step_);
+    finish_task_(task_id_.step);
     return true;
   }
 
@@ -77,7 +72,7 @@ namespace rmf_robot_client
     {
       RCLCPP_ERROR(ros_node_->get_logger(), "Goal was rejected by server");
       publish_task_state("Canceld", "could not plan route to goal pose", true);
-      finish_task_(step_);
+      finish_task_(task_id_.step);
     }
     else
     {
@@ -97,7 +92,7 @@ namespace rmf_robot_client
   void NavigationTask::result_callback(const GoalHandleNavigateToPose::WrappedResult&)
   {
     publish_task_state("Completed", "destination_reached", true);
-    finish_task_(step_);
+    finish_task_(task_id_.step);
   }
 
   bool NavigationTask::receive_new_settings(std::string command, std::vector<std::string> value)

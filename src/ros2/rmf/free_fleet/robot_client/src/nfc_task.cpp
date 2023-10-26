@@ -3,20 +3,20 @@
 namespace rmf_robot_client
 {
 
-  NFCTask::NFCTask(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, int user_id)
-      : BaseTask(task_id, step, ros_node)
+  NFCTask::NFCTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, int user_id_for_token)
+      : BaseTask(task_id, ros_node)
   {
-    this->_user_id = user_id;
-    _nfc_write_new_nfc_card_client = rclcpp_action::create_client<CreateUserNfcTag>(
-        ros_node, ros_node_->get_parameter("nfc_write_usertag_to_card_action_topic").as_string());
+    this->_user_id_for_token = user_id_for_token;
+    _nfc_write_new_nfc_token_for_client = rclcpp_action::create_client<CreateUserNfcTag>(
+        ros_node, ros_node->get_parameter("nfc_write_usertag_to_card_action_topic").as_string());
   }
 
   bool NFCTask::start(std::function<void(int)> next_task_callback)
   {
     BaseTask::start(next_task_callback);
-    RCLCPP_INFO(ros_node_->get_logger(), "start nfc task");
+    RCLCPP_INFO(ros_node_->get_logger(), "start assign new user to token task");
     finish_task_ = next_task_callback;
-    if (!this->_nfc_write_new_nfc_card_client->wait_for_action_server())
+    if (!this->_nfc_write_new_nfc_token_for_client->wait_for_action_server())
     {
       RCLCPP_ERROR(ros_node_->get_logger(), "Action server not available after waiting");
       //  cancel task
@@ -29,7 +29,7 @@ namespace rmf_robot_client
   void NFCTask::start_writing_procedure()
   {
     CreateUserNfcTag::Goal msg = CreateUserNfcTag::Goal();
-    msg.user_id = _user_id;
+    msg.user_id = _user_id_for_token;
     rclcpp_action::Client<CreateUserNfcTag>::SendGoalOptions send_goal_options =
         rclcpp_action::Client<CreateUserNfcTag>::SendGoalOptions();
 
@@ -38,7 +38,7 @@ namespace rmf_robot_client
         std::bind(&NFCTask::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
     send_goal_options.result_callback = std::bind(&NFCTask::result_callback, this, std::placeholders::_1);
 
-    this->_nfc_write_new_nfc_card_client->async_send_goal(msg, send_goal_options);
+    this->_nfc_write_new_nfc_token_for_client->async_send_goal(msg, send_goal_options);
   }
 
   void NFCTask::goal_response_callback(const GoalHandleCreateUserNfcTag::SharedPtr& goal_handle)
@@ -67,7 +67,7 @@ namespace rmf_robot_client
     if (result.result->successful)
     {
       RCLCPP_INFO(ros_node_->get_logger(), "new user done");
-      publish_task_state("Completed", "card_created", true);
+      publish_task_state("Completed", "token_created", true);
       finish_task_(true);
     }
     else
@@ -79,7 +79,7 @@ namespace rmf_robot_client
 
   bool NFCTask::cancel()
   {
-    this->_nfc_write_new_nfc_card_client->async_cancel_goal(_current_action_goal_handle);
+    this->_nfc_write_new_nfc_token_for_client->async_cancel_goal(_current_action_goal_handle);
     publish_task_state("Canceld", "", true);
     finish_task_(false);
     return true;
@@ -87,11 +87,7 @@ namespace rmf_robot_client
 
   bool NFCTask::receive_new_settings(std::string command, std::vector<std::string> value)
   {
-    if (BaseTask::receive_new_settings(command, value))
-    {
-      return true;
-    }
-    return false;
+    return BaseTask::receive_new_settings(command, value);
   }
 
   std::string NFCTask::get_type()

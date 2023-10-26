@@ -25,13 +25,31 @@ namespace rmf_robot_client
       return qos_fleet_communication;
     }
 
-    static rclcpp::QoS get_statemaschine_qos()
+    static rclcpp::QoS get_statemaschine_reset_tree_qos()
     {
       rclcpp::QoS qos_statemaschine = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
       qos_statemaschine.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
       qos_statemaschine.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
       qos_statemaschine.avoid_ros_namespace_conventions(false);
       return qos_statemaschine;
+    }
+
+    static rclcpp::QoS get_statemaschine_drawer_qos()
+    {
+      rclcpp::QoS drawer_qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
+      drawer_qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+      drawer_qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+      drawer_qos.avoid_ros_namespace_conventions(false);
+      return drawer_qos;
+    }
+
+    static rclcpp::QoS get_nfc_controll_qos()
+    {
+      rclcpp::QoS nfc_qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
+      nfc_qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+      nfc_qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+      nfc_qos.avoid_ros_namespace_conventions(false);
+      return nfc_qos;
     }
   };
 }   // namespace rmf_robot_client

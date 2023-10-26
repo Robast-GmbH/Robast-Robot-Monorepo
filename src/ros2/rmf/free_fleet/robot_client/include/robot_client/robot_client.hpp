@@ -24,8 +24,10 @@
 #include "drawer_task.hpp"
 #include "navigation_task.hpp"
 #include "nfc_task.hpp"
+#include "robot_pose.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "std_msgs/msg/int64.hpp"
+#include "task_id.hpp"
 #include "tf2/exceptions.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 #include "tf2_ros/buffer.h"
@@ -78,8 +80,7 @@ namespace rmf_robot_client
     rclcpp::Publisher<StdMsgBool>::SharedPtr _reset_simple_tree_publisher;
 
     // Task
-    int _task_id;
-    int _current_step;
+    TaskId _current_task;
     float _current_battery_level = -1;
     std::map<int, std::unique_ptr<BaseTask>> _task_sequence;
     rclcpp::TimerBase::SharedPtr _publish_robot_info_timer;
@@ -89,9 +90,7 @@ namespace rmf_robot_client
     // robot
     std::shared_ptr<tf2_ros::TransformListener> _tf_listener{nullptr};
     std::unique_ptr<tf2_ros::Buffer> _tf_buffer;
-    double _current_x;
-    double _current_y;
-    double _current_yaw;
+    RobotPose _current_robot_pose = RobotPose(0, 0, 0);
     std::shared_ptr<std::map<std::string, DrawerState>> _drawer_list;
     bool _is_new_tf_error;
 
@@ -107,12 +106,14 @@ namespace rmf_robot_client
     void receive_drawer_status(const DrawerStatus::SharedPtr msg);
     void receive_authenticated_user(const StdMsgInt::SharedPtr msg);
 
-    //  ToDo only works after the topic is bridged properly
+    //  TODO @Torben only works after the topic is bridged properly
     //  void RobotClient::receive_battery_status(const BatteryLevel::ConstPtr msg)
     // void receive_battery_status(const BatteryLevel::ConstPtr msg);
 
-    bool prepare_new_task(
-        std::string Task_def, std::string recipient_fleet, std::string recipient_robot, int& task_id, int& step);
+    bool prepare_new_task(std::string Task_def,
+                          std::string recipient_fleet,
+                          std::string recipient_robot,
+                          std::unique_ptr<TaskId> task_id);
     void end_current_task();
     void end_current_task(int step);
     void empty_task_sequence();

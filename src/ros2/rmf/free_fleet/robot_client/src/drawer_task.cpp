@@ -2,67 +2,59 @@
 
 namespace rmf_robot_client
 {
-  DrawerTask::DrawerTask(int task_id,
-                         int step,
+  DrawerTask::DrawerTask(TaskId task_id,
                          std::shared_ptr<rclcpp::Node> ros_node,
                          std::shared_ptr<std::map<std::string, DrawerState>> drawer_states,
-                         int drawer_id,
-                         int module_id,
-                         bool is_edrawer,
-                         std::vector<uint16_t> autorised_users)
-      : BaseTask(task_id, step, ros_node)
+                         DrawerState used_drawer)
+      : BaseTask(task_id, ros_node)
   {
-    this->drawer_id_ = drawer_id;
-    this->module_id_ = module_id;
-    this->is_e_drawer_ = is_edrawer;
-    this->authorised_users_ = autorised_users;
-    this->drawers_ = drawer_states;
+    this->_selected_drawer = std::make_unique<DrawerState>(used_drawer);
+    this->_drawers = drawer_states;
 
-    nfc_timeout_interval_ = ros_node_->get_parameter("nfc_timeout_interval").as_int();
+    _nfc_timeout_interval = ros_node->get_parameter("nfc_timeout_interval").as_int();
 
-    rclcpp::QoS qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
-    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-    qos.avoid_ros_namespace_conventions(false);
+    /////////////////////////////////////////////////////////////////////
 
     //  controll drawer
-    trigger_open_e_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(
-        ros_node_->get_parameter("statemaschine_open_e_drawer_topic").as_string(), qos);
-    trigger_open_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(
-        ros_node_->get_parameter("statemaschine_open_drawer_topic").as_string(), qos);
-    trigger_close_e_drawer_publisher_ = ros_node->create_publisher<DrawerAddress>(
-        ros_node_->get_parameter("statemaschine_close_e_drawer_topic").as_string(), qos);
-    nfc_on_off_publisher_ =
-        ros_node->create_publisher<StdMsgBool>(ros_node_->get_parameter("nfc_on_off_switch_topic").as_string(), qos);
+    _trigger_open_e_drawer_publisher = ros_node->create_publisher<DrawerAddress>(
+        ros_node->get_parameter("statemaschine_open_e_drawer_topic").as_string(),
+        QoSConfig::get_statemaschine_drawer_qos());
+    _trigger_open_drawer_publisher = ros_node->create_publisher<DrawerAddress>(
+        ros_node->get_parameter("statemaschine_open_drawer_topic").as_string(),
+        QoSConfig::get_statemaschine_drawer_qos());
+    _trigger_close_e_drawer_publisher = ros_node->create_publisher<DrawerAddress>(
+        ros_node->get_parameter("statemaschine_close_e_drawer_topic").as_string(),
+        QoSConfig::get_statemaschine_drawer_qos());
+    _nfc_on_off_publisher = ros_node->create_publisher<StdMsgBool>(
+        ros_node->get_parameter("nfc_on_off_switch_topic").as_string(), QoSConfig::get_nfc_controll_qos());
   }
 
   bool DrawerTask::start(std::function<void(int)> next_task_callback)
   {
     BaseTask::start(next_task_callback);
     RCLCPP_INFO(ros_node_->get_logger(), "start drawer_task");
-    open_drawer_task(module_id_, drawer_id_, is_e_drawer_);
+    open_drawer_task(*_selected_drawer);
     return true;
   }
 
-  void DrawerTask::open_drawer_task(int target_module_id, int target_drawer_id, bool target_is_edrawer)
+  void DrawerTask::open_drawer_task(DrawerState selected_drawer)
   {
-    std::string drawer_ref = get_drawer_ref(target_module_id, target_drawer_id);
+    std::string drawer_ref = selected_drawer.drawer_ref.get_ref_string();
 
-    if (drawers_->count(drawer_ref))
+    if (_drawers->count(drawer_ref))
     {
-      selected_drawer_ = std::make_unique<DrawerState>(drawers_->at(drawer_ref));
+      _selected_drawer = std::make_unique<DrawerState>(_drawers->at(drawer_ref));
     }
     else
     {
-      DrawerState NewDrawer =
-          DrawerState(target_module_id, target_drawer_id, target_is_edrawer, false, std::vector<u_int16_t>());
-      drawers_->insert(std::pair(drawer_ref, NewDrawer));
-      selected_drawer_ = std::make_unique<DrawerState>(NewDrawer);
+      DrawerState NewDrawer = DrawerState(selected_drawer);
+      _drawers->insert(std::pair(drawer_ref, NewDrawer));
+      _selected_drawer = std::make_unique<DrawerState>(NewDrawer);
     }
 
-    if (check_user_permission(active_user_, selected_drawer_->authorised_users))
+    if (check_user_permission(_active_user, _selected_drawer->authorised_users))
     {
-      open_drawer(selected_drawer_->module_id, selected_drawer_->drawer_id);
+      open_drawer(*_selected_drawer);
     }
     else
     {
@@ -72,30 +64,30 @@ namespace rmf_robot_client
     }
   }
 
-  void DrawerTask::open_drawer(int target_module_id, int target_drawer_id)
+  void DrawerTask::open_drawer(DrawerState selected_drawer)
   {
-    std::string drawer_ref = get_drawer_ref(module_id_, drawer_id_);
-    if (target_module_id == module_id_ && target_drawer_id == drawer_id_)
+    std::string drawer_ref = selected_drawer.drawer_ref.get_ref_string();
+    if (selected_drawer.drawer_ref == _selected_drawer->drawer_ref)
     {
       // set new lock
-      drawers_->at(drawer_ref).authorised_users = authorised_users_;
+      _drawers->at(drawer_ref).authorised_users = selected_drawer.authorised_users;
     }
 
     DrawerAddress drawer_msg = DrawerAddress();
-    drawer_msg.drawer_id = target_drawer_id;
-    drawer_msg.module_id = target_module_id;
-    if (drawers_->at(drawer_ref).is_e_drawer)
+    drawer_msg.drawer_id = selected_drawer.drawer_ref.drawer_id;
+    drawer_msg.module_id = selected_drawer.drawer_ref.module_id;
+    if (_drawers->at(drawer_ref).is_e_drawer)
     {
-      trigger_open_e_drawer_publisher_->publish(drawer_msg);
+      _trigger_open_e_drawer_publisher->publish(drawer_msg);
       publish_task_state("DrawerState", drawer_ref + "#Opened", false);
     }
     else
     {
-      trigger_open_drawer_publisher_->publish(drawer_msg);
+      _trigger_open_drawer_publisher->publish(drawer_msg);
       publish_task_state("DrawerState", drawer_ref + "#Unlocked", false);
     }
-    drawers_->at(drawer_ref).is_open = true;
-    selected_drawer_.release();
+    _drawers->at(drawer_ref).is_open = true;
+    _selected_drawer.release();
   }
 
   bool DrawerTask::receive_new_settings(std::string command, std::vector<std::string> value)
@@ -117,12 +109,13 @@ namespace rmf_robot_client
 
     if (value[0] == "Closed")
     {
-      close_drawer(std::stoi(value[1]), std::stoi(value[2]));
-      publish_task_state("DrawerState", value[1] + "#" + value[2] + "#Closed", false);
+      DrawerRef drawer = DrawerRef(std::stoi(value[1]), std::stoi(value[2]));
+      close_drawer(drawer);
+      publish_task_state("DrawerState", drawer.get_ref_string() + "#Closed", false);
     }
     else if (value[0] == "Opend")
     {
-      open_drawer_task(std::stoi(value[1]), std::stoi(value[2]), value[3] == "E-drawer");
+      open_drawer_task(DrawerState(DrawerRef(std::stoi(value[1]), std::stoi(value[2])), value[3] == "E-drawer"));
     }
     else if (value[0] == "Completed")
     {
@@ -131,7 +124,7 @@ namespace rmf_robot_client
     }
     else if (value[0] == "Authenticated_user")
     {
-      if (selected_drawer_ != NULL)
+      if (_selected_drawer != NULL)
       {
         check_scant_user(std::stoi(value[1]));
       }
@@ -149,33 +142,34 @@ namespace rmf_robot_client
 
   void DrawerTask::check_scant_user(int user_id)
   {
-    active_user_ = user_id;
+    _active_user = user_id;
 
-    if (check_user_permission(active_user_, selected_drawer_->authorised_users))
+    if (check_user_permission(_active_user, _selected_drawer->authorised_users))
     {
       end_authentication_scan();
-      open_drawer(selected_drawer_->module_id, selected_drawer_->drawer_id);
+      open_drawer(*_selected_drawer);
       return;
     }
   }
 
-  void DrawerTask::close_drawer(int module_id, int drawer_id)
+  void DrawerTask::close_drawer(DrawerRef selected_drawer)
   {
     DrawerAddress drawer_msg = DrawerAddress();
-    drawer_msg.drawer_id = drawer_id;
-    drawer_msg.module_id = module_id;
-    trigger_close_e_drawer_publisher_->publish(drawer_msg);
-    publish_close_drawer_status(module_id, drawer_id);
+    drawer_msg.drawer_id = selected_drawer.drawer_id;
+    drawer_msg.module_id = selected_drawer.module_id;
+    _trigger_close_e_drawer_publisher->publish(drawer_msg);
+    publish_close_drawer_status(selected_drawer);
   }
 
-  void DrawerTask::publish_close_drawer_status(int module_id, int drawer_id)
+  void DrawerTask::publish_close_drawer_status(DrawerRef selected_drawer)
   {
-    std::string drawer_ref = get_drawer_ref(module_id, drawer_id);
-    if (drawers_->count(drawer_ref))
+    std::string drawer_ref = selected_drawer.get_ref_string();
+    if (_drawers->count(drawer_ref))
     {
       publish_task_state("DrawerState", drawer_ref + "#Closed", false);
-      drawers_->at(drawer_ref).is_open = false;
-      RCLCPP_INFO(ros_node_->get_logger(), "drawer(%i, %i, Closed)", module_id, drawer_id);
+      _drawers->at(drawer_ref).is_open = false;
+      RCLCPP_INFO(
+          ros_node_->get_logger(), "drawer(%i, %i, Closed)", selected_drawer.module_id, selected_drawer.drawer_id);
     }
   }
 
@@ -183,15 +177,15 @@ namespace rmf_robot_client
   {
     StdMsgBool msg;
     msg.data = true;
-    nfc_on_off_publisher_->publish(msg);
-    nfc_timeout_timer_ = ros_node_->create_wall_timer(std::chrono::minutes(nfc_timeout_interval_),
+    _nfc_on_off_publisher->publish(msg);
+    _nfc_timeout_timer = ros_node_->create_wall_timer(std::chrono::minutes(_nfc_timeout_interval),
                                                       std::bind(&DrawerTask::nfc_timeout, this));
   }
 
   void DrawerTask::nfc_timeout()
   {
     end_authentication_scan();
-    selected_drawer_.release();
+    _selected_drawer.release();
     RCLCPP_WARN(ros_node_->get_logger(), "NFC reader timeout");
   }
 
@@ -199,14 +193,14 @@ namespace rmf_robot_client
   {
     StdMsgBool off_msg;
     off_msg.data = false;
-    nfc_on_off_publisher_->publish(off_msg);
-    nfc_timeout_timer_->cancel();
+    _nfc_on_off_publisher->publish(off_msg);
+    _nfc_timeout_timer->cancel();
   }
 
   bool DrawerTask::all_drawers_closed()
   {
-    return std::all_of(drawers_->begin(),
-                       drawers_->end(),
+    return std::all_of(_drawers->begin(),
+                       _drawers->end(),
                        [](const std::pair<std::string, DrawerState>& pair)
                        {
                          return pair.second.is_open;
@@ -215,11 +209,11 @@ namespace rmf_robot_client
 
   void DrawerTask::task_done(bool is_completed)
   {
-    trigger_open_drawer_publisher_.reset();
-    trigger_open_e_drawer_publisher_.reset();
-    trigger_close_e_drawer_publisher_.reset();
-    nfc_on_off_publisher_.reset();
-    finish_task_(step_);
+    _trigger_open_drawer_publisher.reset();
+    _trigger_open_e_drawer_publisher.reset();
+    _trigger_close_e_drawer_publisher.reset();
+    _nfc_on_off_publisher.reset();
+    finish_task_(task_id_.step);
     publish_task_state("DrawerState", "Drawertask_completed", is_completed);
   }
 
@@ -237,11 +231,6 @@ namespace rmf_robot_client
   std::string DrawerTask::get_type()
   {
     return "DRAWER_TASK";
-  }
-
-  std::string DrawerTask::get_drawer_ref(int module_id, int drawer_id)
-  {
-    return std::to_string(module_id) + "#" + std::to_string(drawer_id);
   }
 
   bool DrawerTask::check_user_permission(int user, std::vector<u_int16_t> authorised_user_list)

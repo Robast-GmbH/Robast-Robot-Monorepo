@@ -1,3 +1,4 @@
+version: '3'
 services:
   backend:
     build:
@@ -9,7 +10,11 @@ services:
     volumes:
       - ./backend/:/workspace/:cached
       - ../../src/web/backend:/workspace/src/:cached
+    depends_on:
+      - db  
     command: /bin/sh -c "while sleep 1000; do :; done"
+    links:
+      - db
 
   db:
     image: postgres:14.1-alpine
@@ -17,13 +22,13 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB= robast
+      - POSTGRES_DB=robast
     ports:
       - '5432:5432'
-    volumes: 
+    volumes:
       - db:/var/lib/postgresql/data
-  
-    
+   
+
 volumes:
   db:
     driver: local

@@ -11,8 +11,9 @@ namespace rmf_robot_client
     _drawer_list = std::make_shared<std::map<std::string, DrawerState>>();
     _is_new_tf_error = true;
 
-    _reset_simple_tree_publisher = this->create_publisher<StdMsgBool>(
-        this->get_parameter("statemaschine_reset_simple_tree_topic").as_string(), QoSConfig::get_statemaschine_qos());
+    _reset_simple_tree_publisher =
+        this->create_publisher<StdMsgBool>(this->get_parameter("statemaschine_reset_simple_tree_topic").as_string(),
+                                           QoSConfig::get_statemaschine_reset_tree_qos());
   }
 
   void RobotClient::init_param()
@@ -110,91 +111,92 @@ namespace rmf_robot_client
   {
     RCLCPP_INFO(this->get_logger(), "nfc_received");
 
-    int step, task_id;
-    if (!prepare_new_task(msg->task_id, msg->fleet_name, msg->robot_name, task_id, step))
+    TaskId task_id = TaskId(1, 1);
+    if (!prepare_new_task(msg->task_id, msg->fleet_name, msg->robot_name, std::make_unique<TaskId>(task_id)))
     {
       return;
     }
 
     if (!_task_sequence
-             .insert(std::make_pair(step, std::make_unique<NFCTask>(task_id, step, shared_from_this(), msg->user_id)))
+             .insert(std::make_pair(_current_task.step,
+                                    std::make_unique<NFCTask>(task_id, shared_from_this(), msg->user_id)))
              .second)
     {
-      RCLCPP_ERROR(this->get_logger(), "Task %i, step %i could not be added to robot Queue", task_id, step);
+      RCLCPP_ERROR(this->get_logger(), "Task %i, step %i could not be added to robot Queue", task_id.id, task_id.step);
       return;
     }
-    if (step == 1)
+    if (task_id.step == 1)
     {
-      std::thread{std::bind(&RobotClient::start_task, this, step)}.detach();
+      std::thread{std::bind(&RobotClient::start_task, this, task_id.step)}.detach();
     }
   }
 
   void RobotClient::receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "destination_received");
-    int task_id, step;
+    TaskId task_id;
 
-    if (!prepare_new_task(msg->task_id, msg->fleet_name, msg->robot_name, task_id, step))
+    if (!prepare_new_task(msg->task_id, msg->fleet_name, msg->robot_name, std::make_unique<TaskId>(task_id)))
     {
       return;
     }
 
     if (!_task_sequence
-             .insert(std::make_pair(
-                 step,
-                 std::make_unique<NavigationTask>(
-                     task_id, step, shared_from_this(), msg->destination.x, msg->destination.y, msg->destination.yaw)))
+             .insert(std::make_pair(task_id.step,
+                                    std::make_unique<NavigationTask>(
+                                        task_id,
+                                        shared_from_this(),
+                                        RobotPose(msg->destination.x, msg->destination.y, msg->destination.yaw))))
              .second)
     {
-      RCLCPP_ERROR(this->get_logger(), "Task %i, step %i could not be added to robot Queue", task_id, step);
+      RCLCPP_ERROR(this->get_logger(), "Task %i, step %i could not be added to robot Queue", task_id.id, task_id.step);
 
       return;
     }
 
-    if (step == 1)
+    if (task_id.step == 1)
     {
-      std::thread{std::bind(&RobotClient::start_task, this, step)}.detach();
+      std::thread{std::bind(&RobotClient::start_task, this, task_id.step)}.detach();
     }
   }
 
   void RobotClient::receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "drawer_received");
-    int step, task_id;
-    if (!prepare_new_task(msg->task_id, msg->fleet_name, msg->robot_name, task_id, step))
+    TaskId task_id;
+    if (!prepare_new_task(msg->task_id, msg->fleet_name, msg->robot_name, std::make_unique<TaskId>(task_id)))
     {
       RCLCPP_ERROR(this->get_logger(), "no valid task");
       return;
     }
 
     if (!_task_sequence
-             .insert(std::make_pair(step,
-                                    std::make_unique<DrawerTask>(DrawerTask(task_id,
-                                                                            step,
-                                                                            shared_from_this(),
-                                                                            _drawer_list,
-                                                                            msg->drawer_id,
-                                                                            msg->module_id,
-                                                                            msg->e_drawer,
-                                                                            msg->authorized_user))))
+             .insert(std::make_pair(
+                 task_id.step,
+                 std::make_unique<DrawerTask>(DrawerTask(
+                     task_id,
+                     shared_from_this(),
+                     _drawer_list,
+                     DrawerState(
+                         DrawerRef(msg->module_id, msg->drawer_id), msg->e_drawer, false, msg->authorized_user)))))
              .second)
     {
-      RCLCPP_ERROR(this->get_logger(), "Task %i, step %i could not be added to robot Queue", task_id, step);
+      RCLCPP_ERROR(this->get_logger(), "Task %i, step %i could not be added to robot Queue", task_id.id, task_id.step);
       return;
     }
 
-    if (step == 1)
+    if (task_id.step == 1)
     {
       RCLCPP_INFO(this->get_logger(), "drawer started");
-      std::thread{std::bind(&RobotClient::start_task, this, step)}.detach();
+      std::thread{std::bind(&RobotClient::start_task, this, task_id.step)}.detach();
     }
     return;
   }
 
   void RobotClient::start_task(int step)
   {
-    _current_step = step;
-    _task_sequence.at(_current_step)
+    _current_task.step = step;
+    _task_sequence.at(_current_task.step)
         ->start(
             [this](int step)
             {
@@ -211,14 +213,14 @@ namespace rmf_robot_client
       msg.data = true;
       _reset_simple_tree_publisher->publish(msg);
     }
-    else if (_current_step == 0 || _current_step > _task_sequence.size())
+    else if (_current_task.step == 0 || _current_task.step > _task_sequence.size())
     {
       RCLCPP_INFO(this->get_logger(), "invalid request");
       return;
     }
     else
     {
-      _task_sequence[_current_step]->receive_new_settings(msg->command, msg->value);   // task settings
+      _task_sequence[_current_task.step]->receive_new_settings(msg->command, msg->value);   // task settings
     }
     RCLCPP_INFO(this->get_logger(), "settings done");
   }
@@ -227,7 +229,7 @@ namespace rmf_robot_client
   {
     std::string drawer_ref =
         std::to_string(msg->drawer_address.module_id) + '#' + std::to_string(msg->drawer_address.drawer_id);
-    if (_current_step == 0 || _current_step > _task_sequence.size())
+    if (_current_task.step == 0 || _current_task.step > _task_sequence.size())
     {
       RCLCPP_ERROR(this->get_logger(),
                    "Drawer %s state received(Drawer_id: %i, Module_id: %i ).",
@@ -238,7 +240,7 @@ namespace rmf_robot_client
     }
     else
     {
-      _task_sequence[_current_step]->receive_new_settings(
+      _task_sequence[_current_task.step]->receive_new_settings(
           "DrawerState", {drawer_ref + "#" + (msg->drawer_is_open ? "Opened" : "Closed")});
     }
 
@@ -258,7 +260,8 @@ namespace rmf_robot_client
 
   void RobotClient::receive_authenticated_user(const StdMsgInt::SharedPtr msg)
   {
-    _task_sequence[_current_step]->receive_new_settings("drawer", {"Authenticated_user", std::to_string(msg->data)});
+    _task_sequence[_current_task.step]->receive_new_settings("drawer",
+                                                             {"Authenticated_user", std::to_string(msg->data)});
   }
 
   //  ToDo only works after the topic is bridged properly
@@ -267,8 +270,10 @@ namespace rmf_robot_client
   //   current_battery_level= msg->level;
   // }
 
-  bool RobotClient::prepare_new_task(
-      std::string task_def, std::string recipient_fleet, std::string recipient_robot, int& new_task_id, int& new_step)
+  bool RobotClient::prepare_new_task(std::string task_def,
+                                     std::string recipient_fleet,
+                                     std::string recipient_robot,
+                                     std::unique_ptr<TaskId> new_task_id)
   {
     if (!(recipient_fleet == _fleet_name && recipient_robot == _robot_name))
     {
@@ -278,8 +283,8 @@ namespace rmf_robot_client
     std::vector<std::string> task_header = split(task_def, '#');
     try
     {
-      new_task_id = stoi(task_header[0]);
-      new_step = stoi(task_header[1]);
+      new_task_id->id = stoi(task_header[0]);
+      new_task_id->step = stoi(task_header[1]);
     }
     catch (const std::invalid_argument& e)
     {
@@ -287,19 +292,19 @@ namespace rmf_robot_client
       return false;
     }
 
-    if (_task_id != new_task_id && _task_id != 0)
+    if (_current_task.id != new_task_id->id && _current_task.id != 0)
     {
-      _task_sequence[_current_step]->cancel();
+      _task_sequence[_current_task.step]->cancel();
       end_current_task();
     }
-    _task_id = new_task_id;
+    _current_task.id = new_task_id->id;
     return true;
   }
 
   void RobotClient::end_current_task(int completed_step)
   {
-    RCLCPP_INFO(this->get_logger(), "End Task nr %i %i", _current_step, completed_step);
-    if (completed_step == _current_step)
+    RCLCPP_INFO(this->get_logger(), "End Task nr %i %i", _current_task.step, completed_step);
+    if (completed_step == _current_task.step)
     {
       start_next_task();
     }
@@ -308,11 +313,11 @@ namespace rmf_robot_client
 
   void RobotClient::start_next_task()
   {
-    auto it = _task_sequence.upper_bound(_current_step);
+    auto it = _task_sequence.upper_bound(_current_task.step);
 
     if (it != _task_sequence.end())
     {
-      _current_step = it->first;
+      _current_task.step = it->first;
       it->second->start(
           [this](int step)
           {
@@ -328,22 +333,21 @@ namespace rmf_robot_client
 
   void RobotClient::end_current_task()
   {
-    RCLCPP_INFO(this->get_logger(), "End task %i", _task_id);
+    RCLCPP_INFO(this->get_logger(), "End task %i", _current_task.id);
     empty_task_sequence();
-    _task_id = 0;
-    _current_step = 0;
-
+    _current_task.id = 0;
+    _current_task.step = 0;
     publish_fleet_state();
   }
 
   void RobotClient::empty_task_sequence()
   {
-    for (auto& pair : _task_sequence)
+    for (auto& id_by_task : _task_sequence)
     {
-      pair.second.reset();
+      id_by_task.second.reset();
     }
     _task_sequence.clear();
-    _current_step = 0;
+    _current_task.step = 0;
   }
 
   void RobotClient::publish_fleet_state()
@@ -353,14 +357,14 @@ namespace rmf_robot_client
 
     robot_state_msg.name = _robot_name;
     robot_state_msg.model = _robot_model;
-    robot_state_msg.task_id = _task_id;
+    robot_state_msg.task_id = _current_task.id;
 
     robot_state_msg.location.level_name = "";
     robot_state_msg.location.nanosec = 0;
     robot_state_msg.location.sec = 0;
-    robot_state_msg.location.x = _current_x;
-    robot_state_msg.location.y = _current_y;
-    robot_state_msg.location.yaw = _current_yaw;
+    robot_state_msg.location.x = _current_robot_pose.x_pose;
+    robot_state_msg.location.y = _current_robot_pose.y_pose;
+    robot_state_msg.location.yaw = _current_robot_pose.yaw_pose;
 
     robot_state_msg.battery_percent = _current_battery_level;
     _robot_info_publisher->publish(robot_state_msg);
@@ -397,9 +401,8 @@ namespace rmf_robot_client
     tf2::fromMsg(transform_map_to_robot.transform.rotation, quat);
     tf2::Matrix3x3(quat).getRPY(roll, pitch, yaw);
 
-    _current_x = transform_map_to_robot.transform.translation.x;
-    _current_y = transform_map_to_robot.transform.translation.y;
-    _current_yaw = yaw;
+    _current_robot_pose =
+        RobotPose(transform_map_to_robot.transform.translation.x, transform_map_to_robot.transform.translation.y, yaw);
 
     RCLCPP_DEBUG(this->get_logger(),
                  "x: %f, y: %f, z:%f w: %f",

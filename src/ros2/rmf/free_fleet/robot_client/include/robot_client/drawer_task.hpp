@@ -14,20 +14,18 @@
 #include "drawer_state.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "task_id.hpp"
+#include "qos_config.hpp"
 
 namespace rmf_robot_client
 {
   class DrawerTask : public BaseTask
   {
    public:
-    DrawerTask(int task_id,
-               int step,
+    DrawerTask(TaskId task_id,
                std::shared_ptr<rclcpp::Node> ros_node,
                std::shared_ptr<std::map<std::string, DrawerState>> drawer_states,
-               int drawer_id,
-               int module_id,
-               bool is_edrawer,
-               std::vector<uint16_t> autorised_user);
+               DrawerState used_drawer);
 
     bool start(std::function<void(int)> next_task_callback) override;
     bool cancel();
@@ -39,22 +37,17 @@ namespace rmf_robot_client
     using DrawerAddress = communication_interfaces::msg::DrawerAddress;
     using StdMsgBool = std_msgs::msg::Bool;
 
-    bool is_e_drawer_;
-    int module_id_;
-    int drawer_id_;
-    std::vector<u_int16_t> authorised_users_;
+    int _nfc_timeout_interval;
+    u_int16_t _active_user;
 
-    int nfc_timeout_interval_;
-    u_int16_t active_user_;
+    std::shared_ptr<std::map<std::string, DrawerState>> _drawers;
+    std::unique_ptr<DrawerState> _selected_drawer;
+    rclcpp::TimerBase::SharedPtr _nfc_timeout_timer;
 
-    std::shared_ptr<std::map<std::string, DrawerState>> drawers_;
-    std::unique_ptr<DrawerState> selected_drawer_;
-    rclcpp::TimerBase::SharedPtr nfc_timeout_timer_;
-
-    void open_drawer(int module_id, int drawer_id);
-    void open_drawer_task(int module_id, int drawer_id, bool is_edrawer);
-    void close_drawer(int module_id, int drawer_id);
-    void publish_close_drawer_status(int module_id, int drawer_id);
+    void open_drawer(DrawerState selected_drawer);
+    void open_drawer_task(DrawerState selected_drawer);
+    void close_drawer(DrawerRef selected_drawer);
+    void publish_close_drawer_status(DrawerRef selected_drawer);
     std::string get_drawer_ref(int module_id, int drawer_id);
     bool check_user_permission(int user, std::vector<u_int16_t> authorised_user_list);
     bool all_drawers_closed();
@@ -64,10 +57,10 @@ namespace rmf_robot_client
     void nfc_timeout();
 
     // publisher
-    rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_open_drawer_publisher_;
-    rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_open_e_drawer_publisher_;
-    rclcpp::Publisher<DrawerAddress>::SharedPtr trigger_close_e_drawer_publisher_;
-    rclcpp::Publisher<StdMsgBool>::SharedPtr nfc_on_off_publisher_;
+    rclcpp::Publisher<DrawerAddress>::SharedPtr _trigger_open_drawer_publisher;
+    rclcpp::Publisher<DrawerAddress>::SharedPtr _trigger_open_e_drawer_publisher;
+    rclcpp::Publisher<DrawerAddress>::SharedPtr _trigger_close_e_drawer_publisher;
+    rclcpp::Publisher<StdMsgBool>::SharedPtr _nfc_on_off_publisher;
   };
 }   // namespace rmf_robot_client
 

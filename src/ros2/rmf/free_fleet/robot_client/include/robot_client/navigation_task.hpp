@@ -11,13 +11,14 @@
 #include "base_task.hpp"
 #include "nav2_msgs/action/navigate_to_pose.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
+#include "robot_pose.hpp"
 
 namespace rmf_robot_client
 {
   class NavigationTask : public BaseTask
   {
    public:
-    NavigationTask(int task_id, int step, std::shared_ptr<rclcpp::Node> ros_node, double x, double y, double yaw);
+    NavigationTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, RobotPose goal_pose);
 
     bool start(std::function<void(int)> next_task_callback) override;
     bool cancel();
@@ -28,9 +29,7 @@ namespace rmf_robot_client
     using NavigateToPose = nav2_msgs::action::NavigateToPose;
     using GoalHandleNavigateToPose = rclcpp_action::ClientGoalHandle<NavigateToPose>;
 
-    double _target_position_x;
-    double _target_position_y;
-    double _target_position_yaw;
+    RobotPose _target_pose;
 
     std::string _map_frame_id;
     std::string _behavior_tree;
