@@ -2,14 +2,36 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <!-- ROS CONTROL GAZEBO PLUGIN -->
-    <xacro:macro name="ros_control" params="prefix publish_bf">
-
+    <xacro:macro name="ros_control" params="ros_distro">
         <gazebo>
-            <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
-                <parameters>$(find rb_theron_description)/config/rb_theron_gz_ros2_controller.yaml</parameters>
-            </plugin>
+            <xacro:if value="${ros_distro == 'humble'}">
+                <plugin name="ign_ros2_control::IgnitionROS2ControlPlugin" filename="libign_ros2_control-system.so">
+                    <parameters>$(find rb_theron_description)/config/rb_theron_gz_ros2_controller.yaml</parameters>
+                </plugin>
+            </xacro:if>
+            <xacro:unless value="${ros_distro == 'humble'}">
+                <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
+                    <parameters>$(find rb_theron_description)/config/rb_theron_gz_ros2_controller.yaml</parameters>
+                </plugin>
+            </xacro:unless>
         </gazebo>
+    </xacro:macro>
 
+    <xacro:macro name="gazebo_sensor_plugins" params="ros_distro">
+        <gazebo>
+            <xacro:if value="${ros_distro == 'humble'}">
+                <plugin name="ignition::gazebo::systems::Imu" filename="libignition-gazebo-imu-system.so"></plugin>
+                <plugin name="ignition::gazebo::systems::Sensors" filename="libignition-gazebo-sensors-system.so">
+                    <render_engine>ogre2</render_engine>
+                </plugin>
+            </xacro:if>
+            <xacro:unless value="${ros_distro == 'humble'}">
+                <plugin name="gz::sim::systems::Imu" filename="libgz-sim-imu-system"></plugin>
+                <plugin name="gz::sim::systems::Sensors" filename="libgz-sim-sensors-system.so">
+                    <render_engine>ogre2</render_engine>
+                </plugin>
+            </xacro:unless>
+		</gazebo>
     </xacro:macro>
 
     <xacro:macro name="gazebo_colors" params="prefix">

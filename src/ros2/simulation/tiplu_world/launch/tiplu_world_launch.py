@@ -13,10 +13,24 @@ from launch.event_handlers import OnProcessExit
 
 def generate_launch_description():
 
-    pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
-    gz_ros_bridge_yaml = os.path.join(
-        get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml"
-    )
+    ros_distro = os.environ["ROS_DISTRO"]
+    gz_version = os.environ["GZ_VERSION"]
+
+    if (gz_version == "fortress"):
+        gz_version = 6
+        pkg_ros_gz_sim = get_package_share_directory("ros_ign_gazebo")
+        gz_sim_launch = os.path.join(pkg_ros_gz_sim, "launch", "ign_gazebo.launch.py")
+        gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "ign_ros_bridge.yaml")
+    if (gz_version == "garden"):
+        gz_version = 7
+        pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
+        gz_sim_launch = os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
+        gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml")
+    if (gz_version == "harmonic"):
+        gz_version = 8
+        pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
+        gz_sim_launch = os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
+        gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml")
 
     robot_xml = xacro.process_file(
         os.path.join(
@@ -25,7 +39,8 @@ def generate_launch_description():
             os.environ["robot"] + ".urdf.xacro",
         ),
         mappings={"prefix": os.environ["prefix"],
-                  "ros2_control_hardware_type": "gz_ros2_control"},
+                  "ros2_control_hardware_type": "gz_ros2_control",
+                  "ros_distro": ros_distro},
     ).toxml()
 
     use_sim_time = LaunchConfiguration("use_sim_time")
@@ -76,10 +91,10 @@ def generate_launch_description():
 
     gz_sim_cmd = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(
-            os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py"),
+            gz_sim_launch,
         ),
         launch_arguments={"gz_args": ["-r ", headless, " ", world_model],
-                          "gz_version": "7",                          
+                          "gz_version": str(gz_version),                          
                           }.items(),
     )
 

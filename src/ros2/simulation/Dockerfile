@@ -1,6 +1,7 @@
 ARG ROS_VERSION=humble
 FROM ros:${ROS_VERSION} as base
 ARG ROS_CONTROL_VERSION=humble
+ARG GAZEBO_VERSION=fortress
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
@@ -20,8 +21,8 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # Install Gazebo ignition 
-ENV GZ_VERSION=garden
-ENV IGNITION_VERSION=garden
+ENV GZ_VERSION=$GAZEBO_VERSION
+ENV IGNITION_VERSION=$GAZEBO_VERSION
 
 RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pkgs-osrf-archive-keyring.gpg \
     && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/pkgs-osrf-archive-keyring.gpg] http://packages.osrfoundation.org/gazebo/ubuntu-stable $(lsb_release -cs) main" | sudo tee /etc/apt/sources.list.d/gazebo-stable.list > /dev/null \

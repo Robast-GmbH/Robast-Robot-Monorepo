@@ -45,6 +45,8 @@
 	-->
     <xacro:arg name="ros2_control_hardware_type" default="mock_components" />
 
+	<xacro:arg name="ros_distro" default="humble" />
+
 	<!-- *************** -->
 	<!-- Robots Elements -->
 	<!-- *************** -->
@@ -54,7 +56,8 @@
 	  prefix="$(arg prefix)"
 	  hq="${hq}"
 	  publish_bf="${publish_bf}"
-	  ros2_control_hardware_type="$(arg ros2_control_hardware_type)">
+	  ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+	  ros_distro="$(arg ros_distro)">
 	</xacro:rb_theron_base>
 
 	<!-- Gazebo ros control pluggins -->
@@ -102,11 +105,6 @@
 	<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="back_laser" min_angle="-1.8107619" max_angle="1.8107619">
 		<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
 	</xacro:sensor_sick_nanoscan3> -->
-	<gazebo>
-		<plugin name="gz::sim::systems::Sensors" filename="libgz-sim-sensors-system.so">
-			<render_engine>ogre2</render_engine>
-		</plugin>
-	</gazebo>
 
 	<xacro:arg name="front_oak_d_camera_model" default="OAK-D-S2" />
 	<xacro:arg name="front_oak_d_base_frame" default="oak-d-s2-usb-base--frame" />
@@ -131,6 +129,7 @@
 		suffix="5"
 		parent="$(arg prefix)base_link"
 		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		ros_distro="$(arg ros_distro)"
 		drawer_size_z="0.28">
 		<origin xyz="0.125 0.0 0.42" rpy="0 0 0"/>
 	</xacro:drawer>
@@ -139,6 +138,7 @@
 		suffix="4"
 		parent="$(arg prefix)base_link"
 		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		ros_distro="$(arg ros_distro)"
 		drawer_size_z="0.18">
 		<origin xyz="0.125 0.0 0.67" rpy="0 0 0"/>
 	</xacro:drawer>
@@ -147,6 +147,7 @@
 		suffix="3"
 		parent="$(arg prefix)base_link"
 		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		ros_distro="$(arg ros_distro)"
 		drawer_size_z="0.08">
 		<origin xyz="0.125 0.0 0.82" rpy="0 0 0"/>
 	</xacro:drawer>
@@ -155,6 +156,7 @@
 		suffix="2"
 		parent="$(arg prefix)base_link"
 		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		ros_distro="$(arg ros_distro)"
 		drawer_size_z="0.08">
 		<origin xyz="0.125 0.0 0.92" rpy="0 0 0"/>
 	</xacro:drawer>
@@ -163,6 +165,7 @@
 		suffix="1"
 		parent="$(arg prefix)base_link"
 		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		ros_distro="$(arg ros_distro)"
 		drawer_size_z="0.08">
 		<origin xyz="0.125 0.0 1.02" rpy="0 0 0"/>
 	</xacro:drawer>
@@ -173,11 +176,13 @@
 	    prefix="$(arg prefix)"
 		parent="$(arg prefix)base_link"
 		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		ros_distro="$(arg ros_distro)"
 		hq="${hq}">
 		<origin xyz="-0.3 0 0.225" rpy="0 0 0"/>
 	</xacro:door_opening_mechanism>
 
-	<!-- Gazebo ros control pluggins -->
-	<xacro:ros_control prefix="$(arg prefix)" publish_bf="${publish_bf}"/>
+	<!-- Gazebo plugins -->
+	<xacro:ros_control ros_distro="$(arg ros_distro)"/>
+	<xacro:gazebo_sensor_plugins ros_distro="$(arg ros_distro)"/>
 	
 </robot>

@@ -6,7 +6,7 @@
         <inertia ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0" iyy="${m*(x*x+z*z)/12}" iyz = "0" izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="basic_joint" params="parent joint_name joint_type axis_x axis_y axis_z lower_limit upper_limit damping friction ros2_control_hardware_type port direction link_name link_origin_x link_origin_y link_origin_z m x y z r g b *origin">
+    <xacro:macro name="basic_joint" params="parent joint_name joint_type axis_x axis_y axis_z lower_limit upper_limit damping friction ros2_control_hardware_type port direction ros_distro link_name link_origin_x link_origin_y link_origin_z m x y z r g b *origin">
 
         <joint name="${joint_name}" type="${joint_type}">
             <axis xyz="${axis_x} ${axis_y} ${axis_z}" />
@@ -19,13 +19,21 @@
 
         <ros2_control name="${joint_name}_ros2_control" type="system">
             <hardware>
+
                 <xacro:if value="${ros2_control_hardware_type == 'mock_components'}">
                     <plugin>mock_components/GenericSystem</plugin>
                     <param name="calculate_dynamics">true</param>
                 </xacro:if>
+
                 <xacro:if value="${ros2_control_hardware_type == 'gz_ros2_control'}">
-                    <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+                    <xacro:if value="${ros_distro == 'humble'}">
+                        <plugin>ign_ros2_control/IgnitionSystem</plugin>
+                    </xacro:if>
+                    <xacro:unless value="${ros_distro == 'humble'}">
+                        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+                    </xacro:unless>
                 </xacro:if>
+
                 <xacro:if value="${ros2_control_hardware_type == 'dryve_d1'}">
                     <!-- if the value for the port is zero, there is no dryve_d1 for this joint yet so we mock it -->
                     <xacro:if value="${port == 0}">
@@ -38,6 +46,7 @@
                         <param name="direction">${direction}</param>
                     </xacro:unless>
                 </xacro:if>
+
             </hardware>
             <joint name="${joint_name}">
                 <command_interface name="velocity">
