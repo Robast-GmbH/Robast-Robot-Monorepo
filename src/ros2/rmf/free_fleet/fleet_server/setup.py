@@ -3,7 +3,7 @@ import os
 from glob import glob
 
 
-package_name = 'api_connector'
+package_name = 'fleet_server'
 
 setup(
     name=package_name,
@@ -27,7 +27,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-                        'web_api = api_connector.main:main'
+                        'web_api = fleet_server.main:main'
         ],
     },
 )
