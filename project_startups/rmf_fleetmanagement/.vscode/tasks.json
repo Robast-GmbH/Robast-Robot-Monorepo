@@ -12,14 +12,14 @@
                         }
                 },
                 {
-                        "label": "run_ffserver",
-                        "detail": "starts the ff server called api_connector",
+                        "label": "run_fleet_server",
+                        "detail": "starts the ff server called fleet_server",
                         "type": "shell",
-                        "command": "source install/setup.bash; ros2 launch api_connector web_api.launch.py",
+                        "command": "source install/setup.bash; ros2 launch fleet_server web_api.launch.py",
                         
                 },
                 {
-                        "label": "run_ffclient",
+                        "label": "run_robot_client",
                         "detail": "starts the ff client called free_fleet_client_direct",
                         "type": "shell",
                         "command": "source install/setup.bash; ros2 launch robot_client robot_client_launch.py",
