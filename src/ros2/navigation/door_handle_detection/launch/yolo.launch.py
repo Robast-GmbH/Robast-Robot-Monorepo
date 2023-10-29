@@ -9,9 +9,11 @@ from launch.substitutions import LaunchConfiguration
 from launch.conditions import LaunchConfigurationEquals
 
 def generate_launch_description():
+
     door_handle_detection_path = get_package_share_directory('door_handle_detection')
     urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
     default_resources_path = os.path.join(door_handle_detection_path, 'resources')
+
     mxId         = LaunchConfiguration('mxId',      default = 'x')
     usb2Mode     = LaunchConfiguration('usb2Mode',  default = False)
     poeMode      = LaunchConfiguration('poeMode',   default = False)
@@ -20,8 +22,6 @@ def generate_launch_description():
     mode         = LaunchConfiguration('mode', default = 'depth')
     base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d-s2-usb-base-frame')
     parent_frame = LaunchConfiguration('parent_frame',  default = 'robot_base_link')
-    imuMode      = LaunchConfiguration('imuMode', default = '1')
-    #imuMode      = LaunchConfiguration('imuMode', default = '1')
 
     cam_pos_x    = LaunchConfiguration('cam_pos_x',     default = '0.317')
     cam_pos_y    = LaunchConfiguration('cam_pos_y',     default = '-0,197')
@@ -38,7 +38,6 @@ def generate_launch_description():
     expTime        = LaunchConfiguration('expTime', default = 20000)
     sensIso        = LaunchConfiguration('sensIso', default = 800)
 
-    enableSpatialDetection  = LaunchConfiguration('enableSpatialDetection', default = True)
     syncNN                  = LaunchConfiguration('syncNN', default = True)
     detectionClassesCount   = LaunchConfiguration('detectionClassesCount', default = 80)
     detectionClassesCount   = LaunchConfiguration('detectionClassesCount', default = 2)
@@ -56,32 +55,29 @@ def generate_launch_description():
     previewWidth            = LaunchConfiguration('previewWidth', default = 640)
     previewHeight           = LaunchConfiguration('previewHeight', default = 640)
 
-
-    angularVelCovariance  = LaunchConfiguration('angularVelCovariance', default = 0.0)
-    linearAccelCovariance = LaunchConfiguration('linearAccelCovariance', default = 0.0)
-    #angularVelCovariance  = LaunchConfiguration('angularVelCovariance', default = 0.0)
-    #linearAccelCovariance = LaunchConfiguration('linearAccelCovariance', default = 0.0)
-
     enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)
-    #enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)
-
+    
 
     declare_mxId_cmd = DeclareLaunchArgument(
         'mxId',
         default_value=mxId,
         description='select the device by passing the MxID of the device. It will connect to first available device if left empty.')
+    
     declare_usb2Mode_cmd = DeclareLaunchArgument(
         'usb2Mode',
         default_value=usb2Mode,
         description='To revert and use usb2 Mode. Set this parameter to false')
+    
     declare_poeMode_cmd = DeclareLaunchArgument(
         'poeMode',
         default_value=poeMode,
         description='When MxID is set and the device is a POE model then set the poeMode to \"true\" to connect properly.')
+    
     declare_camera_model_cmd = DeclareLaunchArgument(
         'camera_model',
         default_value=camera_model,
         description='The model of the camera. Using a wrong camera model can disable camera features. Valid models: `OAK-D, OAK-D-LITE`.')
+    
     declare_tf_prefix_cmd = DeclareLaunchArgument(
         'tf_prefix',
         default_value=tf_prefix,
@@ -91,45 +87,42 @@ def generate_launch_description():
         'mode',
         default_value=mode,
         description='set to  \"depth\" or \"disparity\". Setting to depth will publish depth or else will publish disparity.')
+    
     declare_base_frame_cmd = DeclareLaunchArgument(
         'base_frame',
         default_value=base_frame,
         description='Name of the base link in the TF Tree.')
+    
     declare_parent_frame_cmd = DeclareLaunchArgument(
         'parent_frame',
         default_value=parent_frame,
         description='Name of the parent link from an another robot TF that can be connected to the base of the OAK device.')
 
-    declare_imu_mode_cmd = DeclareLaunchArgument(
-        'imuMode',
-        default_value=imuMode,
-        description=' set to 0 -> COPY, 1 -> LINEAR_INTERPOLATE_GYRO, 2 -> LINEAR_INTERPOLATE_ACCEL')
-    #declare_imu_mode_cmd = DeclareLaunchArgument(
-    #    'imuMode',
-    #    default_value=imuMode,
-    #    description=' set to 0 -> COPY, 1 -> LINEAR_INTERPOLATE_GYRO, 2 -> LINEAR_INTERPOLATE_ACCEL')
-
-
     declare_pos_x_cmd = DeclareLaunchArgument(
         'cam_pos_x',
         default_value=cam_pos_x,
         description='Position X of the camera with respect to the base frame.')
+   
     declare_pos_y_cmd = DeclareLaunchArgument(
         'cam_pos_y',
         default_value=cam_pos_y,
         description='Position Y of the camera with respect to the base frame.')
+    
     declare_pos_z_cmd = DeclareLaunchArgument(
         'cam_pos_z',
         default_value=cam_pos_z,
         description='Position Z of the camera with respect to the base frame.')
+    
     declare_roll_cmd = DeclareLaunchArgument(
         'cam_roll',
         default_value=cam_roll,
         description='Roll orientation of the camera with respect to the base frame.')
+    
     declare_pitch_cmd = DeclareLaunchArgument(
         'cam_pitch',
         default_value=cam_pitch,
         description='Pitch orientation of the camera with respect to the base frame.')
+    
     declare_yaw_cmd = DeclareLaunchArgument(
         'cam_yaw',
         default_value=cam_yaw,
@@ -139,22 +132,27 @@ def generate_launch_description():
         'lrcheck',
         default_value=lrcheck,
         description='LR-Check is used to remove incorrectly calculated disparity pixels due to occlusions at object borders. Set to true to enable it')
+    
     declare_extended_cmd = DeclareLaunchArgument(
         'extended',
         default_value=extended,
         description='Extended disparity mode allows detecting closer distance objects for the given baseline. Set this parameter to true to enable it')
+    
     declare_subpixel_cmd = DeclareLaunchArgument(
         'subpixel',
         default_value=subpixel,
         description='Subpixel mode improves the precision and is especially useful for long range measurements. It also helps for better estimating surface normals. Set this parameter to true to enable it')
+    
     declare_rectify_cmd = DeclareLaunchArgument(
         'rectify',
         default_value=rectify,
         description='enable this to publish rectified images used for depth estimation')
+    
     declare_depth_aligned_cmd = DeclareLaunchArgument(
         'depth_aligned',
         default_value=depth_aligned,
         description='When depth_aligned is enabled depth map from stereo will be aligned to the RGB camera in the center.')
+    
     declare_manualExposure_cmd = DeclareLaunchArgument(
         'manualExposure',
         default_value=manualExposure,
@@ -164,44 +162,47 @@ def generate_launch_description():
         'expTime',
         default_value=expTime,
         description='Set the exposure time of the stereo camera. Default value is 20000')
+    
     declare_sensIso_cmd = DeclareLaunchArgument(
         'sensIso',
         default_value=sensIso,
         description='Set the ISO of the stereo camera. Default value is 800')
-    declare_enableSpatialDetection_cmd = DeclareLaunchArgument(
-        'enableSpatialDetection',
-        default_value=enableSpatialDetection,
-        description='When enableSpatialDetection is enabled NN Object detection with Spatial Positioning will be run.')
+    
     declare_syncNN_cmd = DeclareLaunchArgument(
         'syncNN',
         default_value=syncNN,
         description='When syncNN is enabled Preview Image will be synced with the Detections.')
+    
     declare_detectionClassesCount_cmd = DeclareLaunchArgument(
         'detectionClassesCount',
         default_value=detectionClassesCount,
-        description='When detectionClassesCount is number of classes the NN contains. Default is set to 80.')
         description='When detectionClassesCount is number of classes the NN contains. Default is set to 2.')
 
     declare_nnName_cmd = DeclareLaunchArgument(
         'nnName',
         default_value=nnName,
         description='Name of the NN blob being used to load. By default the one in resources folder will be used.')
+    
     declare_resourceBaseFolder_cmd = DeclareLaunchArgument(
         'resourceBaseFolder',
         default_value=resourceBaseFolder,
         description='Path to the folder where NN Blob is stored.')
+    
     declare_stereo_fps_cmd = DeclareLaunchArgument(
         'stereo_fps',
         default_value=stereo_fps,
         description='Sets the FPS of the cameras used in the stereo setup.')
+    
     declare_confidence_cmd = DeclareLaunchArgument(
         'confidence',
         default_value=confidence,
         description='Set the confidence of the depth from 0-255. Max value means allow depth of all confidence. Default is set to 200')
+    
     declare_LRchecktresh_cmd = DeclareLaunchArgument(
         'LRchecktresh',
         default_value=LRchecktresh,
         description='Set the LR threshold from 1-10 to get more accurate depth. Default value is 5.')
+    
     declare_monoResolution_cmd = DeclareLaunchArgument(
         'monoResolution',
         default_value=monoResolution,
@@ -211,49 +212,31 @@ def generate_launch_description():
         'rgbResolution',
         default_value=rgbResolution,
         description='Set the resolution of the RGB setup. Choose between 1080p, 4k, 12MP.')
+    
     declare_rgbScaleNumerator_cmd = DeclareLaunchArgument(
         'rgbScaleNumerator',
         default_value=rgbScaleNumerator,
         description='Number of the scale Factor Numberator on top of RGB resolution selection.')
+    
     declare_rgbScaleDinominator_cmd = DeclareLaunchArgument(
         'rgbScaleDinominator',
         default_value=rgbScaleDinominator,
         description='Number of the scale Factor Dinominator on top of RGB resolution selection.')
+    
     declare_previewWidth_cmd = DeclareLaunchArgument(
         'previewWidth',
         default_value=previewWidth,
         description='Set the width of the preview window used for the NN detection.')
+    
     declare_previewHeight_cmd = DeclareLaunchArgument(
         'previewHeight',
         default_value=previewHeight,
         description='Set the height of the preview window used for the NN detection.')
 
-    declare_angularVelCovariance_cmd = DeclareLaunchArgument(
-        'angularVelCovariance',
-        default_value=angularVelCovariance,
-        description='Set the angular velocity covariance of the IMU.')
-    #declare_angularVelCovariance_cmd = DeclareLaunchArgument(
-    #    'angularVelCovariance',
-    #    default_value=angularVelCovariance,
-    #    description='Set the angular velocity covariance of the IMU.')
-
-    declare_linearAccelCovariance_cmd = DeclareLaunchArgument(
-        'linearAccelCovariance',
-        default_value=linearAccelCovariance,
-        description='Set the Linear acceleration covariance of the IMU.')
-    #declare_linearAccelCovariance_cmd = DeclareLaunchArgument(
-    #    'linearAccelCovariance',
-    #    default_value=linearAccelCovariance,
-    #    description='Set the Linear acceleration covariance of the IMU.')
-
     declare_enableRosBaseTimeUpdate_cmd = DeclareLaunchArgument(
         'enableRosBaseTimeUpdate',
         default_value=enableRosBaseTimeUpdate,
         description='Whether to update ROS time on each message.')
-    #declare_enableRosBaseTimeUpdate_cmd = DeclareLaunchArgument(
-    #    'enableRosBaseTimeUpdate',
-    #    default_value=enableRosBaseTimeUpdate,
-    #    description='Whether to update ROS time on each message.')
 
 
 
@@ -273,7 +256,7 @@ def generate_launch_description():
 
 
     stereo_node = launch_ros.actions.Node(
-            package='depthai_examples', executable='stereo_inertial_node',
+            package='door_handle_detection', executable='door_handle_node',
             output='screen',
             parameters=[{'mxId':                    mxId},
                         {'usb2Mode':                usb2Mode},
@@ -298,9 +281,6 @@ def generate_launch_description():
                         {'rgbScaleDinominator':     rgbScaleDinominator},
                         {'previewWidth':            previewWidth},
                         {'previewHeight':           previewHeight},
-                        #{'angularVelCovariance':    angularVelCovariance},
-                        #{'linearAccelCovariance':   linearAccelCovariance},
-                        {'enableSpatialDetection':  enableSpatialDetection},
                         {'detectionClassesCount':   detectionClassesCount},
                         {'syncNN':                  syncNN},
                         {'nnName':                  nnName},
@@ -309,7 +289,7 @@ def generate_launch_description():
                         #{'enableFloodLight':        enableFloodLight},
                         #{'dotProjectormA':          dotProjectormA},
                         #{'floodLightmA':            floodLightmA},
-                        #{'enableRosBaseTimeUpdate': enableRosBaseTimeUpdate}
+                        {'enableRosBaseTimeUpdate': enableRosBaseTimeUpdate}
                         ])
 
     ld = LaunchDescription()
@@ -321,7 +301,6 @@ def generate_launch_description():
     ld.add_action(declare_mode_cmd)
     ld.add_action(declare_base_frame_cmd)
     ld.add_action(declare_parent_frame_cmd)
-    ld.add_action(declare_imu_mode_cmd)
     ld.add_action(declare_pos_x_cmd)
     ld.add_action(declare_pos_y_cmd)
     ld.add_action(declare_pos_z_cmd)
@@ -337,7 +316,6 @@ def generate_launch_description():
     ld.add_action(declare_manualExposure_cmd)
     ld.add_action(declare_expTime_cmd)
     ld.add_action(declare_sensIso_cmd)
-    ld.add_action(declare_enableSpatialDetection_cmd)
     ld.add_action(declare_syncNN_cmd)
     ld.add_action(declare_detectionClassesCount_cmd)
     ld.add_action(declare_nnName_cmd)
@@ -351,10 +329,7 @@ def generate_launch_description():
     ld.add_action(declare_rgbScaleDinominator_cmd)
     ld.add_action(declare_previewWidth_cmd)
     ld.add_action(declare_previewHeight_cmd)
-
-    
-    #ld.add_action(declare_angularVelCovariance_cmd)
-    #ld.add_action(declare_linearAccelCovariance_cmd)
+    ld.add_action(declare_enableRosBaseTimeUpdate_cmd)
 
     ld.add_action(urdf_launch)
     ld.add_action(stereo_node)
