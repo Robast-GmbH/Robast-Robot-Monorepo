@@ -50,7 +50,6 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
     auto monoRight = pipeline.create<dai::node::MonoCamera>();
     auto stereo = pipeline.create<dai::node::StereoDepth>();
     auto xoutDepth = pipeline.create<dai::node::XLinkOut>();
-    auto xoutImu = pipeline.create<dai::node::XLinkOut>();
 
     controlIn->setStreamName("control");
     controlIn->out.link(monoRight->inputControl);
