@@ -11,9 +11,10 @@ namespace dryve_d1_bridge
 
   void DryveD1Gate::execute()
   {
-    // Declare the first object of the class D1 with the name "xAxis" (IP Address of the D1 as String, Port Number as
-    // Int)
-    D1 xAxis("10.10.13.6", 502, std::make_unique<SocketWrapper>());
+    // To run this on the robot use: 192.168.0.1
+    // To run this from another pc in the robast network in the office use: 10.10.23.7
+    // As this file is only for debugging, we use the 10.10.23.7
+    D1 xAxis("10.10.23.7", 502, std::make_unique<SocketWrapper>());
 
     // Set the Debug Mode to ON or OFF; Debug Mode displays all received telegrams from the D1 in the console
     // xAxis.set_debug_mode_on();
