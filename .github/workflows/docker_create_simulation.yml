@@ -38,7 +38,7 @@ jobs:
         context: src/ros2/${{ env.Project-Name }}/
         push: true
         build-args: |
-          ROS_DISTRO=humble
+          ROS_VERSION=humble
           ROS_CONTROL_VERSION=humble
           GAZEBO_VERSION=fortress
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
@@ -52,7 +52,7 @@ jobs:
       with:
         context: src/ros2/${{ env.Project-Name }}/
         build-args: |
-          ROS_DISTRO=iron
+          ROS_VERSION=iron
           ROS_CONTROL_VERSION=master
           GAZEBO_VERSION=garden
         push: true
