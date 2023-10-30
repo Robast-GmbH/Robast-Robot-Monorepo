@@ -1,7 +1,0 @@
-string name
-string model
-string task_id
-fleet_interfaces/FreeFleetDataRobotMode mode 
-float64 battery_percent
-fleet_interfaces/FreeFleetDataLocation location
-fleet_interfaces/FreeFleetDataLocation[] path
