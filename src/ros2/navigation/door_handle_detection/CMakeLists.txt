@@ -82,7 +82,7 @@ endif()
 
 #install(DIRECTORY params DESTINATION share/${PROJECT_NAME})
 install(DIRECTORY resources DESTINATION share/${PROJECT_NAME})
-#install(DIRECTORY launch config DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
         yolov5_door_node

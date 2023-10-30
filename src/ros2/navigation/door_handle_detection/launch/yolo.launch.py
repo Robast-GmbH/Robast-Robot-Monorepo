@@ -39,7 +39,6 @@ def generate_launch_description():
     sensIso        = LaunchConfiguration('sensIso', default = 800)
 
     syncNN                  = LaunchConfiguration('syncNN', default = True)
-    detectionClassesCount   = LaunchConfiguration('detectionClassesCount', default = 80)
     detectionClassesCount   = LaunchConfiguration('detectionClassesCount', default = 2)
     nnName                  = LaunchConfiguration('nnName', default = 'yolov5.blob')
     resourceBaseFolder      = LaunchConfiguration('resourceBaseFolder', default = default_resources_path)
@@ -51,7 +50,7 @@ def generate_launch_description():
     
     rgbResolution           = LaunchConfiguration('rgbResolution', default = '1080p')
     rgbScaleNumerator       = LaunchConfiguration('rgbScaleNumerator', default = 2)
-    rgbScaleDinominator     = LaunchConfiguration('rgbScaleDinominator', default = 3)
+    rgbScaleDenominator     = LaunchConfiguration('rgbScaleDenominator', default = 3)
     previewWidth            = LaunchConfiguration('previewWidth', default = 640)
     previewHeight           = LaunchConfiguration('previewHeight', default = 640)
 
@@ -218,9 +217,9 @@ def generate_launch_description():
         default_value=rgbScaleNumerator,
         description='Number of the scale Factor Numberator on top of RGB resolution selection.')
     
-    declare_rgbScaleDinominator_cmd = DeclareLaunchArgument(
-        'rgbScaleDinominator',
-        default_value=rgbScaleDinominator,
+    declare_rgbScaleDenominator_cmd = DeclareLaunchArgument(
+        'rgbScaleDenominator',
+        default_value=rgbScaleDenominator,
         description='Number of the scale Factor Dinominator on top of RGB resolution selection.')
     
     declare_previewWidth_cmd = DeclareLaunchArgument(
@@ -256,7 +255,7 @@ def generate_launch_description():
 
 
     stereo_node = launch_ros.actions.Node(
-            package='door_handle_detection', executable='door_handle_node',
+            package='door_handle_detection', executable='yolov5_door_node',
             output='screen',
             parameters=[{'mxId':                    mxId},
                         {'usb2Mode':                usb2Mode},
@@ -278,7 +277,7 @@ def generate_launch_description():
                         {'monoResolution':          monoResolution},
                         {'rgbResolution':           rgbResolution},
                         {'rgbScaleNumerator':       rgbScaleNumerator},
-                        {'rgbScaleDinominator':     rgbScaleDinominator},
+                        {'rgbScaleDenominator':     rgbScaleDenominator},
                         {'previewWidth':            previewWidth},
                         {'previewHeight':           previewHeight},
                         {'detectionClassesCount':   detectionClassesCount},
@@ -326,7 +325,7 @@ def generate_launch_description():
     ld.add_action(declare_monoResolution_cmd)
     ld.add_action(declare_rgbResolution_cmd)
     ld.add_action(declare_rgbScaleNumerator_cmd)
-    ld.add_action(declare_rgbScaleDinominator_cmd)
+    ld.add_action(declare_rgbScaleDenominator_cmd)
     ld.add_action(declare_previewWidth_cmd)
     ld.add_action(declare_previewHeight_cmd)
     ld.add_action(declare_enableRosBaseTimeUpdate_cmd)

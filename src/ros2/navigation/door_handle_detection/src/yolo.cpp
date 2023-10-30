@@ -50,7 +50,6 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
     auto monoRight = pipeline.create<dai::node::MonoCamera>();
     auto stereo = pipeline.create<dai::node::StereoDepth>();
     auto xoutDepth = pipeline.create<dai::node::XLinkOut>();
-    auto imu = pipeline.create<dai::node::IMU>();
     auto xoutImu = pipeline.create<dai::node::XLinkOut>();
 
     controlIn->setStreamName("control");
@@ -129,9 +128,9 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
 
     camRgb->setResolution(rgbResolution);
 
-    rgbWidth = rgbWidth * rgbScaleNumerator / rgbScaleDinominator;
-    rgbHeight = rgbHeight * rgbScaleNumerator / rgbScaleDinominator;
-    camRgb->setIspScale(rgbScaleNumerator, rgbScaleDinominator);
+    rgbWidth = rgbWidth * rgbScaleNumerator / rgbScaleDenominator;
+    rgbHeight = rgbHeight * rgbScaleNumerator / rgbScaleDenominator;
+    camRgb->setIspScale(rgbScaleNumerator, rgbScaleDenominator);
 
     camRgb->isp.link(xoutRgb->input);
 
@@ -247,8 +246,8 @@ int main(int argc, char** argv) {
 
     std::string tfPrefix, mode, mxId, resourceBaseFolder, nnPath;
     std::string monoResolution = "720p", rgbResolution = "1080p";
-    int badParams = 0, stereo_fps, confidence, LRchecktresh, imuModeParam, detectionClassesCount, expTime, sensIso;
-    int rgbScaleNumerator, rgbScaleDinominator, previewWidth, previewHeight;
+    int badParams = 0, stereo_fps, confidence, LRchecktresh, detectionClassesCount, expTime, sensIso;
+    int rgbScaleNumerator, rgbScaleDenominator, previewWidth, previewHeight;
     bool lrcheck, extended, subpixel, rectify, depth_aligned, manualExposure;
     bool enableDotProjector, enableFloodLight;
     bool usb2Mode, poeMode, syncNN;
@@ -307,7 +306,6 @@ int main(int argc, char** argv) {
 
     node->get_parameter("tf_prefix", tfPrefix);
     node->get_parameter("mode", mode);
-    node->get_parameter("imuMode", imuModeParam);
 
     node->get_parameter("lrcheck", lrcheck);
     node->get_parameter("extended", extended);
@@ -325,7 +323,7 @@ int main(int argc, char** argv) {
     node->get_parameter("sensIso", sensIso);
 
     node->get_parameter("rgbScaleNumerator", rgbScaleNumerator);
-    node->get_parameter("rgbScaleDinominator", rgbScaleDinominator);
+    node->get_parameter("rgbScaleDenominator", rgbScaleDenominator);
     node->get_parameter("previewWidth", previewWidth);
     node->get_parameter("previewHeight", previewHeight);
 
@@ -351,9 +349,6 @@ int main(int argc, char** argv) {
     }
     nnPath = resourceBaseFolder + "/" + nnName;
 
-
-    dai::ros::ImuSyncMethod imuMode = static_cast<dai::ros::ImuSyncMethod>(imuModeParam);
-
     dai::Pipeline pipeline;
     int width, height;
     bool isDeviceFound = false;
@@ -361,7 +356,6 @@ int main(int argc, char** argv) {
                                                        extended,
                                                        subpixel,
                                                        rectify,
-                                                       depth_aligned,
                                                        stereo_fps,
                                                        confidence,
                                                        LRchecktresh,
@@ -369,7 +363,7 @@ int main(int argc, char** argv) {
                                                        monoResolution,
                                                        rgbResolution,
                                                        rgbScaleNumerator,
-                                                       rgbScaleDinominator,
+                                                       rgbScaleDenominator,
                                                        previewWidth,
                                                        previewHeight,
                                                        syncNN,
