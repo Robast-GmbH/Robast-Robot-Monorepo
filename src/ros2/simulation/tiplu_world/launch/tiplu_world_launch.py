@@ -128,8 +128,7 @@ def generate_launch_description():
     )
 
     load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'joint_state_broadcaster'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_state_broadcaster'],
         output='screen'
     )
 
@@ -139,14 +138,12 @@ def generate_launch_description():
     )
 
     load_diff_drive_base_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'diff_drive_base_controller'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'diff_drive_base_controller'],
         output='screen'
     )
 
     load_drawer_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active',
-             'drawer_joint_trajectory_controller'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'drawer_joint_trajectory_controller'],
         output='screen'
     )
 
