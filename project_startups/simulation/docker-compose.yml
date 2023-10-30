@@ -29,7 +29,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-#    network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
     
   navigation:
@@ -52,12 +51,3 @@ services:
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
     command: /bin/sh -c "while sleep 1000; do :; done"
 
-  # state_publisher:
-  #   build:
-  #     context: .
-  #     dockerfile: ../../src/ros2/simulation/Dockerfile
-
-networks:
-  host:
-    name: host
-    external: true

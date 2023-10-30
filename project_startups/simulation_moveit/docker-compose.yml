@@ -30,7 +30,6 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-#    network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
     
   navigation:
@@ -71,6 +70,5 @@ services:
       - ../../src/ros2/moveit:/workspace/src/moveit:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
-#    network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
 
