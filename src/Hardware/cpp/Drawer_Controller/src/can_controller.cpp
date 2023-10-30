@@ -1,4 +1,4 @@
-#include "can_controller.hpp"
+#include "can/can_controller.hpp"
 
 namespace drawer_controller
 {

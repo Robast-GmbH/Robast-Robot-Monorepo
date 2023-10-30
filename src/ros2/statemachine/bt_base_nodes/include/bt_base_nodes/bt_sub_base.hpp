@@ -23,22 +23,34 @@ namespace bt_base_nodes
     BTSubBase(const rclcpp::NodeOptions &options) : Node("bt_tickers", options)
     {
       plugins_ = {
-          "change_led_action_bt_node",
           "open_drawer_action_bt_node",
           "drawer_status_condition_bt_node",
           "drawer_change_state_request_action_bt_node",
           "nfc_to_drawer_action_bt_node",
           "electric_drawer_status_condition_bt_node",
           "move_electric_drawer_action_bt_node",
-          "base_error_decorator_node"};
-      std::string path = "/workspace/install/drawer_sm/trees/trees/default_electrical_drawer.xml";
+          "base_error_decorator_node",
+          "partial_colorize_leds_action_bt_node",
+          "publish_led_action_bt_node",
+          "reset_decorator_bt_node",
+          "initialize_led_vector_action_bt_node",
+          "bool_topic_condition_node",
+          "get_blackboard_value_action_bt_node",
+          "led_changed_condition_node"};
+      std::string path = "/workspace/src/statemachine/drawer_sm/trees/robo_base.xml";
       this->declare_parameter("plugins", plugins_);
       this->declare_parameter("bt_path", path);
+      this->declare_parameter("trigger_topic", "start_bt");
+      this->declare_parameter("main_tree", "BehaviorTree");
+      this->declare_parameter("tree_tick_time", 100);
       plugins_ = this->get_parameter("plugins").get_parameter_value().get<std::vector<std::string>>();
+      _main_tree_name = this->get_parameter("main_tree").as_string();
       _bt_path = this->get_parameter("bt_path").as_string();
+      _trigger_topic = this->get_parameter("trigger_topic").as_string();
+      tree_tick_time_ = this->get_parameter("tree_tick_time").as_int();
     }
 
-    void configure(std::string trigger_topic = "start_bt", std::string maintree_name = "MainTree")
+    void configure()
     {
       static BT::NodeConfig *config_;
       config_ = new BT::NodeConfig();
@@ -50,13 +62,13 @@ namespace bt_base_nodes
           shared_from_this());
       blackboard_->set<std::chrono::milliseconds>(
           "bt_loop_duration",
-          std::chrono::milliseconds(10));
+          std::chrono::milliseconds(tree_tick_time_));
       blackboard_->set<std::chrono::steady_clock::time_point>(
           "transition_time",
           std::chrono::steady_clock::now());
-      bt_engine_ = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins_);
-      bt_ = bt_engine_->createTreeFromFile(_bt_path, blackboard_, maintree_name);
-      init_subscriber(trigger_topic);
+      bt_engine_ = std::make_unique<statemachine::BehaviorTreeEngine>(plugins_);
+      bt_ = bt_engine_->createTreeFromFile(_bt_path, blackboard_, _main_tree_name);
+      init_subscriber(_trigger_topic);
     }
 
   protected:
@@ -87,11 +99,14 @@ namespace bt_base_nodes
 
     BT::Tree bt_;
     BT::Blackboard::Ptr blackboard_;
-    std::unique_ptr<drawer_statemachine::BehaviorTreeEngine> bt_engine_;
+    std::unique_ptr<statemachine::BehaviorTreeEngine> bt_engine_;
     std::vector<std::string> plugins_;
+    uint16_t tree_tick_time_;
 
   private:
     std::string _bt_path;
+    std::string _trigger_topic;
+    std::string _main_tree_name;
     typename rclcpp::Subscription<TopicT>::SharedPtr _start_bt_sub;
   };
 }

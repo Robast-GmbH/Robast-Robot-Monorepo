@@ -12,23 +12,6 @@
                         }
                 },
                 {
-                        "label": "clean-ros",
-                        "detail": "Clean ros colcon build",
-                        "type": "shell",
-                        "command": "colcon build --cmake-target clean",
-                        "problemMatcher": "$gcc"
-                },
-                {
-                        "label": "clean",
-                        "detail": "Purge and clean ros colcon build",
-                        "dependsOn": [
-                                "purge",
-                                "clean-ros"
-                        ],
-                        "dependsOrder": "sequence",
-                        "problemMatcher": []
-                },
-                {
                         "label": "build-ros-theron",
                         "detail": "Symlink Build for Ros-Theron.",
                         "type": "shell",
@@ -172,7 +155,17 @@
                 {
                         "type": "shell",
                         "label": "start nav_without_localization",
-                        "command": "source install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
+                        "command": "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp; source install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start nav_without_localization_with_bt_server_collection",
+                        "command": "source install/setup.bash; ros2 launch nav_bringup nav_without_localization_with_bt_server_collection_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -191,8 +184,28 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start behavior_tree_server_collection",
+                        "command": "source /workspace/install/setup.bash; ros2 launch behavior_tree_server_collection bt_server_collection_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start clicked_point_to_nav_pose",
+                        "command": "source /workspace/install/setup.bash; ros2 launch clicked_point_to_nav_pose clicked_point_to_nav_pose_launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start slam_toolbox",
-                        "command": "source install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
+                        "command": "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp; source install/setup.bash; ros2 launch nav_bringup slam_toolbox_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
@@ -222,7 +235,7 @@
                 {
                         "type": "shell",
                         "label": "start robot_localization",
-                        "command": "source install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py",
+                        "command": "export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp; source install/setup.bash; ros2 launch nav_bringup robot_localization_odom_to_base_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

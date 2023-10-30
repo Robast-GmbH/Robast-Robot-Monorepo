@@ -26,9 +26,11 @@ find_package(std_msgs REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "action/AuthenticateUser.action"
   "action/CreateUserNfcTag.action"
+  "action/ChangeFootprint.action"
+  "action/ChangeFootprintPadding.action"
+  "action/ComputeInterimGoal.action"
   "action/DrawerInteraction.action"
   "action/DrawerUserAccess.action"
-  "action/ComputeInterimGoal.action"
   "action/ImportYamlPoses.action"
 
   "srv/HandleDrawer.srv"
@@ -37,10 +39,11 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
   "msg/Box.msg"
   "msg/DrawerAddress.msg"
-  "msg/DrawerLeds.msg"
   "msg/DrawerStatus.msg"
   "msg/DrawerTask.msg"
   "msg/ElectricalDrawerStatus.msg"
+  "msg/Led.msg"
+  "msg/LedCmd.msg"
   "msg/Module.msg"
   "msg/NfcReadStatus.msg"
   "msg/NfcWriteStatus.msg"

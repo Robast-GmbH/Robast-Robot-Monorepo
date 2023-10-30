@@ -1,9 +1,5 @@
 #include "drawer_bridge/drawer_bridge.hpp"
 
-// For DEBUGGING purposes this is the action send_goal command:
-// ros2 action send_goal /control_drawer communication_interfaces/action/DrawerUserAccess "{drawer_address:
-// {drawer_controller_id: 1, drawer_id: 1}, state: 1}"
-
 namespace drawer_bridge
 {
   DrawerBridge::DrawerBridge() : Node("drawer_bridge")
@@ -25,10 +21,10 @@ namespace drawer_bridge
       _qos_config.get_qos_open_drawer(),
       std::bind(&DrawerBridge::electrical_drawer_task_topic_callback, this, std::placeholders::_1));
 
-    _drawer_leds_subscription = this->create_subscription<DrawerLeds>(
-      "drawer_leds",
-      _qos_config.get_qos_drawer_leds(),
-      std::bind(&DrawerBridge::drawer_leds_topic_callback, this, std::placeholders::_1));
+    _led_cmd_subscription =
+      this->create_subscription<LedCmd>("led_cmd",
+                                        _qos_config.get_qos_led_cmd(),
+                                        std::bind(&DrawerBridge::led_cmd_topic_callback, this, std::placeholders::_1));
 
     _can_messages_subscription = this->create_subscription<CanMessage>(
       "from_can_bus",
@@ -38,7 +34,7 @@ namespace drawer_bridge
 
   void DrawerBridge::setup_publishers()
   {
-    _can_messages_publisher = create_publisher<CanMessage>("to_can_bus", _qos_config.get_qos_can_messages());
+    _can_msg_publisher = create_publisher<can_msgs::msg::Frame>("to_can_bus", 10);
 
     _drawer_status_publisher = create_publisher<DrawerStatus>("drawer_is_open", _qos_config.get_qos_open_drawer());
 
@@ -88,12 +84,29 @@ namespace drawer_bridge
     send_can_msg(can_msg);
   }
 
-  void DrawerBridge::drawer_leds_topic_callback(const DrawerLeds& msg)
+  void DrawerBridge::led_cmd_topic_callback(const LedCmd& msg)
   {
-    RCLCPP_INFO(get_logger(), "I heard from drawer_leds topic the led mode: '%i'", msg.mode);   // Debugging
+    uint16_t num_of_leds = msg.leds.size();
 
-    const CanMessage can_msg = _can_message_creator.create_can_msg_drawer_led(msg);
+    RCLCPP_INFO(get_logger(),
+                "I heard from the /led_cmd topic the module id %i and the number of led states = %i. The states for "
+                "the first led are red = %i, green = %i, blue = %i, brightness = %i",
+                msg.drawer_address.module_id,
+                num_of_leds,
+                msg.leds[0].red,
+                msg.leds[0].green,
+                msg.leds[0].blue,
+                msg.leds[0].brightness);
+
+    const CanMessage can_msg = _can_message_creator.create_can_msg_led_header(msg);
     send_can_msg(can_msg);
+
+    for (uint16_t i = 0; i < num_of_leds; i++)
+    {
+      const CanMessage can_msg =
+        _can_message_creator.create_can_msg_set_single_led_state(msg.leds[i], msg.drawer_address);
+      send_can_msg(can_msg);
+    }
   }
 
   void DrawerBridge::publish_drawer_status(robast_can_msgs::CanMessage drawer_feedback_can_msg)
@@ -181,15 +194,15 @@ namespace drawer_bridge
     response->modules = ShelfSetup::get_all_mounted_drawers();
   }
 
-  void DrawerBridge::receive_can_msg_callback(CanMessage can_message)
+  void DrawerBridge::receive_can_msg_callback(CanMessage can_msg)
   {
-    RCLCPP_INFO(this->get_logger(), "Received CAN message: id:'%d' dlc:'%d' \n ", can_message.id, can_message.dlc);
+    RCLCPP_INFO(this->get_logger(), "Received CAN message: id:'%d' dlc:'%d' \n ", can_msg.id, can_msg.dlc);
 
-    const std::optional<robast_can_msgs::CanMessage> decoded_msg = _can_encoder_decoder.decode_msg(can_message);
+    const std::optional<robast_can_msgs::CanMessage> decoded_msg = _can_encoder_decoder.decode_msg(can_msg);
 
     if (decoded_msg.has_value())
     {
-      switch (can_message.id)
+      switch (can_msg.id)
       {
         case CAN_ID_DRAWER_FEEDBACK:
           publish_drawer_status(decoded_msg.value());
@@ -204,11 +217,11 @@ namespace drawer_bridge
     }
   }
 
-  void DrawerBridge::send_can_msg(CanMessage can_message)
+  void DrawerBridge::send_can_msg(CanMessage can_msg)
   {
-    RCLCPP_INFO(this->get_logger(), "Publishing: '%d'\n ", can_message.id);
+    RCLCPP_INFO(this->get_logger(), "Sending can message with id '%d'!\n ", can_msg.id);
 
-    _can_messages_publisher->publish(can_message);
+    _can_msg_publisher->publish(can_msg);
   }
 
 }   // namespace drawer_bridge

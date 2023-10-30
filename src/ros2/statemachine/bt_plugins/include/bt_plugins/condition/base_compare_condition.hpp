@@ -5,14 +5,14 @@
 #include "rclcpp/rclcpp.hpp"
 #include "behaviortree_cpp/condition_node.h"
 
-namespace drawer_statemachine
+namespace statemachine
 {
   template <typename T, typename V>
   class BaseCompareCondition : public BT::ConditionNode
   {
 
   public:
-    BaseCompareCondition(const std::string &name, const BT::NodeConfig &config) : BT::ConditionNode(name, config)
+    BaseCompareCondition(const std::string &name, const BT::NodeConfig &config, rclcpp::QoS qos) : BT::ConditionNode(name, config)
     {
       _node = config.blackboard->get<rclcpp::Node::SharedPtr>("node");
       _callback_group = _node->create_callback_group(
@@ -22,15 +22,12 @@ namespace drawer_statemachine
 
       getInput("topic", topic_name_);
 
-      rclcpp::QoS qos(rclcpp::KeepLast(1));
-      qos.transient_local().reliable();
-
       rclcpp::SubscriptionOptions sub_option;
       sub_option.callback_group = _callback_group;
       drawer_status_sub_ = _node->create_subscription<T>(
           topic_name_,
           qos,
-          std::bind(&BaseCompareCondition::callbackDrawerFeedback, this, std::placeholders::_1),
+          std::bind(&BaseCompareCondition::callbackTopicFeedback, this, std::placeholders::_1),
           sub_option);
       blackboard_ = config.blackboard;
     }
@@ -45,7 +42,7 @@ namespace drawer_statemachine
     const std::chrono::seconds timeout_duration_{20};
 
     virtual bool comparator(T last_message_, V target_value_) = 0;
-    virtual void callbackDrawerFeedback(const typename T::SharedPtr msg) = 0;
+    virtual void callbackTopicFeedback(const typename T::SharedPtr msg) = 0;
     typename rclcpp::Subscription<T>::SharedPtr drawer_status_sub_;
     std::string topic_name_;
     BT::Blackboard::Ptr blackboard_;
@@ -55,4 +52,4 @@ namespace drawer_statemachine
     rclcpp::Node::SharedPtr _node;
     rclcpp::CallbackGroup::SharedPtr _callback_group;
   };
-} // namespace drawer_statemachine
+} // namespace statemachine

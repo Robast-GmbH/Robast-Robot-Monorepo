@@ -1,6 +1,6 @@
 #include "bt_plugins/action/nfc_to_drawer_action.hpp"
 
-namespace drawer_statemachine
+namespace statemachine
 {
   NFCToDrawer::NFCToDrawer(const std::string &name,
                            const BT::NodeConfig &config)
@@ -50,5 +50,5 @@ namespace drawer_statemachine
 #include "behaviortree_cpp/bt_factory.h"
 BT_REGISTER_NODES(factory)
 {
-  factory.registerNodeType<drawer_statemachine::NFCToDrawer>("NFCToDrawer");
+  factory.registerNodeType<statemachine::NFCToDrawer>("NFCToDrawer");
 }

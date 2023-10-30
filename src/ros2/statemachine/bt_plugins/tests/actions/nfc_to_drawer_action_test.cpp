@@ -49,7 +49,7 @@ namespace test
 
         blackboard->set<std::map<std::string, DrawerAddress>>(
             "nfc_keys", nfc_dictionary);
-        auto bt_engine1 = std::make_unique<drawer_statemachine::BehaviorTreeEngine>(plugins);
+        auto bt_engine1 = std::make_unique<statemachine::BehaviorTreeEngine>(plugins);
         auto bt = bt_engine1->createTreeFromText(nfc_tree_xml, blackboard, "MainTree");
 
         THEN("A Subtree should exist")

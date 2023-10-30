@@ -77,8 +77,6 @@ def generate_launch_description():
             param_rewrites=param_substitutions,
             convert_types=True)
 
-
-
     robot_localization_node = Node(
         package="robot_localization",
         executable="ekf_node",

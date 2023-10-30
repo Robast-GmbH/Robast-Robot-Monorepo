@@ -7,11 +7,12 @@ services:
       - ROS_DOMAIN_ID=1
       - is_simulation=True
       - config_directory=config_simulation
+      - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/></Peers><MaxAutoParticipantIndex>50</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
       - robot_name=rb_theron
-      - init_x=0.0
+      - init_x=-2.0
       - init_y=0.0
       - init_z=0.0
-      - init_yaw=0.0
+      - init_yaw=3.14
       - robot=rb_theron
       - prefix=
     volumes:
@@ -28,7 +29,7 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
-
+#    network_mode: "host"
     command: /bin/sh -c "while sleep 1000; do :; done"
     
   navigation:
@@ -40,8 +41,9 @@ services:
       - robot_name=rb_theron
       - init_x=0.0
       - init_y=0.0
+      - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/></Peers><MaxAutoParticipantIndex>50</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
       - init_z=0.0
-      - init_yaw=0.0
+      - init_yaw=3.14
     volumes:
       - ./navigation/:/workspace/:cached
       - ../../src/ros2/navigation:/workspace/src/navigation:cached

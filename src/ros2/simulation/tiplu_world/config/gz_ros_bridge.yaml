@@ -17,7 +17,16 @@
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: false               # Default "false"
-  direction: BIDIRECTIONAL                      
+  direction: BIDIRECTIONAL
+
+- ros_topic_name: "/joint_states"
+  gz_topic_name: "/world/6OG/model/door_opening_mechanism/joint_state"
+  ros_type_name: "sensor_msgs/msg/JointState"
+  gz_type_name: "gz.msgs.Model"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: false               # Default "false"
+  direction: BIDIRECTIONAL                          
 
 
 - ros_topic_name: "/front_laser/scan"
@@ -26,7 +35,7 @@
   gz_type_name: "gz.msgs.LaserScan"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/bpearl_laser/scan/points"
@@ -35,7 +44,7 @@
   gz_type_name: "gz.msgs.PointCloudPacked"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/front_realsense_camera/color"
@@ -92,6 +101,15 @@
   lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
+- ros_topic_name: "back_top_oak_d_camera/color_camera_info"
+  gz_topic_name: "/back_top_oak_d_camera/back_top_oak_d_camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
 - ros_topic_name: "/front_top_oak_d_camera/color"
   gz_topic_name: "/front_top_oak_d_camera/color"
   ros_type_name: "sensor_msgs/msg/Image"
@@ -112,6 +130,42 @@
 
 - ros_topic_name: "/front_top_oak_d_camera/depth/points"
   gz_topic_name: "/front_top_oak_d_camera/front_top_oak_d_camera/depth/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "front_top_oak_d_camera/color_camera_info"
+  gz_topic_name: "/front_top_oak_d_camera/front_top_oak_d_camera/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/back_top_realsense_camera/color"
+  gz_topic_name: "/back_top_realsense_camera/color"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/back_top_realsense_camera/depth"
+  gz_topic_name: "/back_top_realsense_camera/back_top_realsense_camera/depth"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/back_top_realsense_camera/depth/points"
+  gz_topic_name: "/back_top_realsense_camera/back_top_realsense_camera/depth/points"
   ros_type_name: "sensor_msgs/msg/PointCloud2"
   gz_type_name: "gz.msgs.PointCloudPacked"
   subscriber_queue: 10      # Default 10
@@ -152,7 +206,7 @@
   gz_type_name: "gz.msgs.Clock"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/odom"
@@ -161,7 +215,7 @@
   gz_type_name: "gz.msgs.Odometry"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
 - ros_topic_name: "/cmd_vel"
@@ -170,7 +224,7 @@
   gz_type_name: "gz.msgs.Twist"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
-  lazy: false               # Default "false"
+  lazy: true               # Default "false"
   direction: ROS_TO_GZ
 
 - ros_topic_name: "/imu/data"

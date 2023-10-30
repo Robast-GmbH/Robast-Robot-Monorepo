@@ -2,9 +2,14 @@ drawer_nfc_tree_initiator:
   ros__parameters:
     plugins:
       - drawer_change_state_request_action_bt_node
-      - change_led_action_bt_node
       - open_drawer_action_bt_node
       - drawer_status_condition_bt_node
       - nfc_to_drawer_action_bt_node
       - base_error_decorator_node
+      - initialize_led_vector_action_bt_node
+      - publish_led_action_bt_node
+      - partial_colorize_leds_action_bt_node
     bt_path: "/workspace/install/drawer_sm/trees/trees/drawer_nfc_bt.xml"
+    trigger_topic: "authenticated_user"
+    main_tree: "Drawer_NFC_BT"
+    tree_tick_time: 10
