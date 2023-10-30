@@ -1,6 +1,7 @@
 from rclpy.node import Node
+from rclpy.qos import QoSProfile, QoSReliabilityPolicy, QoSHistoryPolicy, QoSDurabilityPolicy
 from communication_interfaces.msg import FFSlideDrawer
-import fleet_interfaces.msg as dds
+import fleet_interfaces.msg as fleet_interfaces
 
 
 class ros_controller(Node):
@@ -14,84 +15,99 @@ class ros_controller(Node):
             FFSlideDrawer,
             'ff_open_drawer',
             10)
-
-        self.declare_parameter('dds_mode_request_topic', "mode_request")
-        self.declare_parameter('dds_path_request_topic', "path_request")
-        self.declare_parameter('dds_destination_request_topic', "destination_request")
-        self.declare_parameter('dds_slide_drawer_request_topic', "drawer_request")
-        self.declare_parameter('dds_setting_request_topic', "setting_request")
+     
+        self.declare_parameter('mode_request_topic', "mode_request")
+        self.declare_parameter('path_request_topic', "path_request")
+        self.declare_parameter('task_sequence_topic', "task_sequence")
+        self.declare_parameter('destination_request_topic', "destination_request")
+        self.declare_parameter('slide_drawer_request_topic', "drawer_request")
+        self.declare_parameter('setting_request_topic', "setting_request")
         self.declare_parameter('new_user_request_topic', "new_user_request")
 
-        self.declare_parameter('dds_robot_state_topic', "robot_state")
-        self.declare_parameter('dds_task_state_topic', "task_state")
+        self.declare_parameter('robot_state_topic', "robot_state")
+        self.declare_parameter('task_state_topic', "task_state")
 
         self.declare_parameter('backend_address', "http://127.0.0.1:3000")
         self.declare_parameter('fleet_server', 3002)
 
         self.node_config = {
-                "mode_request_topic": self.get_parameter('dds_mode_request_topic')
-                .get_parameter_value().string_value,
-                "path_request_topic": self.get_parameter('dds_path_request_topic')
-                .get_parameter_value().string_value,
-                "destination_request_topic": self.get_parameter('dds_destination_request_topic')
-                .get_parameter_value().string_value,
-                "slide_drawer_request_topic": self.get_parameter('dds_slide_drawer_request_topic')
-                .get_parameter_value().string_value,
-                "setting_request_topic": self.get_parameter('dds_setting_request_topic')
-                .get_parameter_value().string_value,
-                "new_user_request_topic": self.get_parameter('new_user_request_topic')
-                .get_parameter_value().string_value,
-                "robot_state_topic": self.get_parameter('dds_robot_state_topic')
-                .get_parameter_value().string_value,
-                "task_state_topic": self.get_parameter('dds_task_state_topic')
-                .get_parameter_value().string_value,
-                "backend_address": self.get_parameter('backend_address')
-                .get_parameter_value().string_value,
-                "fleet_server": self.get_parameter('fleet_server')
-                .get_parameter_value().integer_value
+                "mode_request_topic": self.get_parameter('mode_request_topic').get_parameter_value().string_value,
+                "path_request_topic": self.get_parameter('path_request_topic').get_parameter_value().string_value,
+                "task_sequence_topic": self.get_parameter('task_sequence_topic').get_parameter_value().string_value,
+                "destination_request_topic": self.get_parameter('destination_request_topic').get_parameter_value().string_value,
+                "slide_drawer_request_topic": self.get_parameter('slide_drawer_request_topic').get_parameter_value().string_value,
+                "setting_request_topic": self.get_parameter('setting_request_topic').get_parameter_value().string_value,
+                "new_user_request_topic": self.get_parameter('new_user_request_topic').get_parameter_value().string_value,
+                "robot_state_topic": self.get_parameter('robot_state_topic').get_parameter_value().string_value,
+                "task_state_topic": self.get_parameter('task_state_topic').get_parameter_value().string_value,
+                "backend_address": self.get_parameter('backend_address').get_parameter_value().string_value,
+                "fleet_server": self.get_parameter('fleet_server').get_parameter_value().integer_value
             }
+        fleet_communication_qos = QoSProfile(
+            reliability=QoSReliabilityPolicy.RELIABLE,
+            durability=QoSDurabilityPolicy.VOLATILE,
+            avoid_ros_namespace_conventions=False,    
+            history=QoSHistoryPolicy.KEEP_LAST,
+            depth=10
+        )
+        fleet_communication_status_qos = QoSProfile(
+            reliability=QoSReliabilityPolicy.BEST_EFFORT,
+            durability=QoSDurabilityPolicy.TRANSIENT_LOCAL,
+            avoid_ros_namespace_conventions=False,
+            history=QoSHistoryPolicy.KEEP_LAST,
+            depth=1
+        )
 
-        self.dds_mode_request = self.create_publisher(dds.FreeFleetDataModeRequest,
-                                                      self.node_config["mode_request_topic"],
-                                                      10)
+        self.mode_request = \
+            self.create_publisher(fleet_interfaces.FleetDataModeRequest,
+                                  self.node_config["mode_request_topic"],
+                                  fleet_communication_qos)
 
-        self.dds_path_request = self.create_publisher(dds.FreeFleetDataPathRequest,
-                                                      self.node_config["path_request_topic"],
-                                                      10)
+        self.path_request = \
+            self.create_publisher(fleet_interfaces.FleetDataPathRequest,
+                                  self.node_config["path_request_topic"],
+                                  fleet_communication_qos)
 
-        self.dds_destination_request = \
-            self.create_publisher(dds.FreeFleetDataDestinationRequest,
+        self.destination_request = \
+            self.create_publisher(fleet_interfaces.FleetDataDestinationRequest,
                                   self.node_config["destination_request_topic"],
-                                  10)
+                                  fleet_communication_qos)
 
-        self.dds_slide_drawer_request = \
-            self.create_publisher(dds.FreeFleetDataDrawerRequest,
+        self.slide_drawer_request = \
+            self.create_publisher(fleet_interfaces.FleetDataDrawerRequest,
                                   self.node_config["slide_drawer_request_topic"],
-                                  10)
+                                  fleet_communication_qos)
 
-        self.dds_new_user_request = \
-            self.create_publisher(dds.FreeFleetDataCreateNfcRequest,
+        self.new_user_request = \
+            self.create_publisher(fleet_interfaces.FleetDataCreateNfcRequest,
                                   self.node_config["new_user_request_topic"],
-                                  10)
+                                  fleet_communication_qos)
 
-        self.dds_settings_request = \
-            self.create_publisher(dds.FreeFleetDataSettingRequest,
+        self.settings_request = \
+            self.create_publisher(fleet_interfaces.FleetDataSettingRequest,
                                   self.node_config["setting_request_topic"],
-                                  10)
+                                  fleet_communication_qos)
+        
+        self.task_sequence_request = \
+            self.create_publisher(fleet_interfaces.FleetDataTaskSequenceHeaderRequest,
+                                  self.node_config["task_sequence_topic"],
+                                  fleet_communication_qos)
 
-        self.dds_robot_state = self.create_subscription(dds.FreeFleetDataRobotState,
-                                                        self.node_config["robot_state_topic"],
-                                                        self.update_robot_state,
-                                                        10)
+        self.robot_state = \
+            self.create_subscription(fleet_interfaces.FleetDataRobotState,
+                                     self.node_config["robot_state_topic"],
+                                     self.update_robot_state,fleet_communication_status_qos
+                                     )
 
-        self.dds_task_state = self.create_subscription(dds.FreeFleetDataTaskState,
-                                                       self.node_config["task_state_topic"],
-                                                       self.update_task_state,
-                                                       10)
+        self.dds_task_state = \
+            self.create_subscription(fleet_interfaces.FleetDataTaskState,
+                                     self.node_config["task_state_topic"],
+                                     self.update_task_state,
+                                     fleet_communication_qos)
 
     # handle Mode request
     def handle_mode_request(self, fleet_name, robot_name, mode):
-        mode_request = dds.FreeFleetDataModeRequest
+        mode_request = fleet_interfaces.FleetDataModeRequest
         mode_request.robot_name = robot_name
         mode_request.fleet_name = fleet_name
         mode_request.mode = mode
@@ -101,7 +117,7 @@ class ros_controller(Node):
 
     # handle path request
     def handle_path_request(self, fleet_name, robot_name, path):
-        path_request = dds.FreeFleetDataPathRequest()
+        path_request = fleet_interfaces.FleetDataPathRequest()
         path_request.robot_name = robot_name
         path_request.fleet_name = fleet_name
         path_request.task_id = ""
@@ -113,22 +129,22 @@ class ros_controller(Node):
                                    fleet_name: str,
                                    robot_name: str,
                                    task_id: int,
-                                   step: str,
+                                   phase: str,
                                    x_pose: int,
                                    y_pose: int,
                                    yaw: int):
 
-        goal = dds.FreeFleetDataLocation()
+        goal = fleet_interfaces.FleetDataLocation()
         goal.sec = 0
         goal.nanosec = 0
         goal.x = x_pose
         goal.y = y_pose
         goal.yaw = yaw
         goal.level_name = ""
-        destination_request = dds.FreeFleetDataDestinationRequest()
+        destination_request = fleet_interfaces.FleetDataDestinationRequest()
         destination_request.robot_name = robot_name
         destination_request.fleet_name = fleet_name
-        destination_request.task_id = task_id+"#"+step
+        destination_request.task_id = task_id+"#"+phase
         destination_request.destination = goal
         self.dds_destination_request.publish(destination_request)
 
@@ -137,48 +153,63 @@ class ros_controller(Node):
                                     fleet_name: str,
                                     robot_name: str,
                                     task_id: str,
-                                    step: str,
+                                    phase: str,
                                     module_id: int,
                                     drawer_id: int,
                                     restricted: list[int],
                                     e_drawer: bool,
                                     open: bool):
 
-        slide_drawer_request = dds.FreeFleetDataDrawerRequest()
-        slide_drawer_request.task_id = task_id+"#"+step
+        slide_drawer_request = fleet_interfaces.FleetDataDrawerRequest()
+        slide_drawer_request.task_id = task_id+"#"+phase
         slide_drawer_request.fleet_name = fleet_name
         slide_drawer_request.robot_name = robot_name
         slide_drawer_request.module_id = module_id
         slide_drawer_request.drawer_id = drawer_id
         slide_drawer_request.authorized_user = restricted
         slide_drawer_request.e_drawer = e_drawer
+        slide_drawer_request.open = open
         self.dds_slide_drawer_request.publish(slide_drawer_request)
 
     def handle_new_user_request(self,
                                 fleet_name: str,
                                 robot_name: str,
                                 task_id: str,
-                                step: str,
+                                phase: str,
                                 user_id: int):
-        new_user_request = dds.FreeFleetDataCreateNfcRequest()
+        
+        new_user_request = fleet_interfaces.FleetDataCreateNfcRequest()
         new_user_request.fleet_name = fleet_name
         new_user_request.robot_name = robot_name
-        new_user_request.task_id = task_id+"#"+step
+        new_user_request.task_id = task_id+"#"+phase
         new_user_request.user_id = user_id
         self.dds_new_user_request.publish(new_user_request)
 
     def handle_setting_request(self, robot_name: str, fleet_name: str, command: str, value: [str]):
-        setting_request = dds.FreeFleetDataSettingRequest()
+        setting_request = fleet_interfaces.FleetDataSettingRequest()
         setting_request.command = command
         setting_request.value = value
         setting_request.robot_name = robot_name
         setting_request.fleet_name = fleet_name
         self.dds_settings_request.publish(setting_request)
 
+    def handle_Sequence_request(self,
+                                fleet_name: str,
+                                robot_name: str, 
+                                task_id: str,
+                                sequence_length: int):
+        
+        task_header_request= fleet_interfaces.FleetDataTaskSequenceHeader()
+        task_header_request.fleet_name = fleet_name
+        task_header_request.robot_name = robot_name
+        task_header_request.task_id = task_id
+        task_header_request.sequence_length = sequence_length
+        self.dds_task_sequence_request.publish(task_header_request)
+
     def set_responce(self, responce_object):
         self.responce = responce_object
 
-    def update_robot_state(self, msg: dds.FreeFleetDataRobotState):
+    def update_robot_state(self, msg: fleet_interfaces.FleetDataRobotState):
         if self.responce is not None:
             mode = msg.mode
             self.responce.handle_robot_update(robot_name=msg.name,
@@ -189,7 +220,7 @@ class ros_controller(Node):
                                               yaw_pose=msg.location.yaw,
                                               battery_level=msg.battery_percent)
 
-    def update_task_state(self, msg: dds.FreeFleetDataTaskState):
+    def update_task_state(self, msg: fleet_interfaces.FleetDataTaskState):
         self.get_logger().info(f"{msg}")
         if msg.status == "DrawerState":
             data = msg.status_message.split('#')

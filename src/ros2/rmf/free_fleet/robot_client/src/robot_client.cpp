@@ -9,6 +9,7 @@ namespace rmf_robot_client
     start_receive_tasks();
     start_update_robot_state();
     _drawer_list = std::make_shared<std::map<std::string, DrawerState>>();
+    _task_sizes = std::map<int, int>();
     _is_new_tf_error = true;
 
     _reset_simple_tree_publisher =
@@ -39,10 +40,11 @@ namespace rmf_robot_client
     this->declare_parameter("nfc_on_off_switch_topic", "/nfc_switch");
     this->declare_parameter("nfc_authenticated_user_topic", "/authenticated_user");
 
-    this->declare_parameter("fleet_communication_setting_topic", "/setting_request");
+    this->declare_parameter("fleet_communication_compose_header_topic", "/compose_header");
     this->declare_parameter("fleet_communication_create_nfc_topic", "/new_user_request");
     this->declare_parameter("fleet_communication_destination_topic", "/destination_request");
     this->declare_parameter("fleet_communication_drawer_topic", "/drawer_request");
+    this->declare_parameter("fleet_communication_setting_topic", "/setting_request");
 
     this->declare_parameter("fleet_communication_task_info_topic", "/task_state");
     this->declare_parameter("fleet_communication_robot_info_topic", "/robot_state");
@@ -50,8 +52,8 @@ namespace rmf_robot_client
     this->declare_parameter("nav2_navigation_to_pose_action_topic", "/navigate_to_pose");
     this->declare_parameter("robotnik_battery_level_topic", "/robot/battery_estimator/data");
 
-    _fleet_name = this->get_parameter("fleet_name").as_string();
-    _robot_name = this->get_parameter("robot_name").as_string();
+    _robot.fleet_name = this->get_parameter("fleet_name").as_string();
+    _robot.robot_name = this->get_parameter("robot_name").as_string();
     _robot_model = this->get_parameter("robot_model").as_string();
     _map_frame_id = this->get_parameter("map_frame_id").as_string();
     _robot_frame_id = this->get_parameter("robot_frame_id").as_string();
@@ -60,119 +62,101 @@ namespace rmf_robot_client
 
   void RobotClient::start_receive_tasks()
   {
-    _write_nfc_card_request_subscriber = this->create_subscription<FreeFleetDataCreateNfcRequest>(
+    _task_sequence_request_subscriber = this->create_subscription<FleetDataTaskSequenceHeaderRequest>(
+        this->get_parameter("fleet_communication_compose_header_topic").as_string(),
+        QoSConfig::get_fleet_communication_qos(),
+        std::bind(&RobotClient::receive_task_sequence_header, this, std::placeholders::_1));
+
+    _write_nfc_card_request_subscriber = this->create_subscription<FleetDataCreateNfcRequest>(
         this->get_parameter("fleet_communication_create_nfc_topic").as_string(),
         QoSConfig::get_fleet_communication_qos(),
         std::bind(&RobotClient::receive_create_nfc_task, this, std::placeholders::_1));
-    _drawer_request_subscriber = this->create_subscription<FreeFleetDataDrawerRequest>(
+
+    _drawer_request_subscriber = this->create_subscription<FleetDataDrawerRequest>(
         this->get_parameter("fleet_communication_drawer_topic").as_string(),
         QoSConfig::get_fleet_communication_qos(),
         std::bind(&RobotClient::receive_drawer_task, this, std::placeholders::_1));
-    _navigation_request_subscriber = this->create_subscription<FreeFleetDataDestinationRequest>(
+
+    _navigation_request_subscriber = this->create_subscription<FleetDataDestinationRequest>(
         this->get_parameter("fleet_communication_destination_topic").as_string(),
         QoSConfig::get_fleet_communication_qos(),
         std::bind(&RobotClient::receive_destination_task, this, std::placeholders::_1));
-    _setting_subscriber = this->create_subscription<FreeFleetDataSettingRequest>(
+
+    _setting_subscriber = this->create_subscription<FleetDataSettingRequest>(
         this->get_parameter("fleet_communication_setting_topic").as_string(),
         QoSConfig::get_fleet_communication_qos(),
         std::bind(&RobotClient::receive_settings, this, std::placeholders::_1));
+
     _drawer_status_subscriber = this->create_subscription<DrawerStatus>(
         this->get_parameter("drawer_bridge_drawer_status_change_topic").as_string(),
         10,
         std::bind(&RobotClient::receive_drawer_status, this, std::placeholders::_1));
+
     _authentication_subscriber = this->create_subscription<StdMsgInt>(
         this->get_parameter("nfc_authenticated_user_topic").as_string(),
         10,
         std::bind(&RobotClient::receive_authenticated_user, this, std::placeholders::_1));
   }
 
-  void RobotClient::start_update_robot_state()
+  void RobotClient::receive_task_sequence_header(const FleetDataTaskSequenceHeaderRequest::ConstPtr msg)
   {
-    _tf_buffer = std::make_unique<tf2_ros::Buffer>(this->get_clock());
-    _tf_listener = std::make_shared<tf2_ros::TransformListener>(*_tf_buffer);
-    update_robot_location();
+    RCLCPP_INFO(this->get_logger(), "Task_Sequence_Header_received");
+    TaskId task_id = TaskId();
+    if (!task_validation(msg->task_id, RobotRef(msg->fleet_name, msg->robot_name), std::make_unique<TaskId>(task_id)))
+    {
+      return;
+    }
 
-    // TODO@Torben: currently not funktional since the Bridge is not able to bridge the topic properly.
-    // until the BMS is not in ROS2 or the bridge is fixed this is not usable
-
-    // battery_status_sub_ = this->create_subscription<BatteryLevel>(
-    //     this->get_parameter("robotnik_battery_level_topic").as_string(),
-    //     QoSConfig::get_qos_robotnik_bms_qos(),
-    //     std::bind(&RobotClient::update_battery_level, this, std::placeholders::_1));
-
-    _robot_info_publisher = this->create_publisher<FreeFleetDataRobotState>(
-        this->get_parameter("fleet_communication_robot_info_topic").as_string(),
-        QoSConfig::get_fleet_communication_qos());
-    _publish_robot_info_timer = this->create_wall_timer(std::chrono::seconds(_robot_info_inteval),
-                                                        std::bind(&RobotClient::publish_fleet_state, this));
+    _task_sizes[std::stoi(msg->task_id)] = msg->sequence_length;
   }
 
-  void RobotClient::receive_create_nfc_task(const FreeFleetDataCreateNfcRequest::ConstPtr msg)
+  void RobotClient::receive_create_nfc_task(const FleetDataCreateNfcRequest::ConstPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "nfc_received");
 
-    TaskId task_id = TaskId(1, 1);
-    if (!prepare_new_task(msg->task_id, msg->fleet_name, msg->robot_name, std::make_unique<TaskId>(task_id)))
+    TaskId task_id = TaskId();
+    if (!task_validation(msg->task_id, RobotRef(msg->fleet_name, msg->robot_name), std::make_unique<TaskId>(task_id)))
+    {
+      return;
+    }
+
+    std::lock_guard<std::mutex> lock(_receive_task_mutex);
+    if (!task_extension_validaton(task_id))
     {
       return;
     }
 
     if (!_task_sequence
-             .insert(std::make_pair(_current_task.step,
-                                    std::make_unique<NFCTask>(task_id, shared_from_this(), msg->user_id)))
+             .insert(
+                 std::make_pair(task_id.phase, std::make_unique<NFCTask>(task_id, shared_from_this(), msg->user_id)))
              .second)
     {
-      RCLCPP_ERROR(this->get_logger(), "Task %i, step %i could not be added to robot Queue", task_id.id, task_id.step);
+      RCLCPP_ERROR(
+          this->get_logger(), "Task %i, phase %i could not be added to robot Queue", task_id.id, task_id.phase);
       return;
     }
-    if (task_id.step == 1)
-    {
-      std::thread{std::bind(&RobotClient::start_task, this, task_id.step)}.detach();
-    }
+
+    start_task();
   }
 
-  void RobotClient::receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg)
-  {
-    RCLCPP_INFO(this->get_logger(), "destination_received");
-    TaskId task_id;
-
-    if (!prepare_new_task(msg->task_id, msg->fleet_name, msg->robot_name, std::make_unique<TaskId>(task_id)))
-    {
-      return;
-    }
-
-    if (!_task_sequence
-             .insert(std::make_pair(task_id.step,
-                                    std::make_unique<NavigationTask>(
-                                        task_id,
-                                        shared_from_this(),
-                                        RobotPose(msg->destination.x, msg->destination.y, msg->destination.yaw))))
-             .second)
-    {
-      RCLCPP_ERROR(this->get_logger(), "Task %i, step %i could not be added to robot Queue", task_id.id, task_id.step);
-
-      return;
-    }
-
-    if (task_id.step == 1)
-    {
-      std::thread{std::bind(&RobotClient::start_task, this, task_id.step)}.detach();
-    }
-  }
-
-  void RobotClient::receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg)
+  void RobotClient::receive_drawer_task(const FleetDataDrawerRequest::ConstPtr msg)
   {
     RCLCPP_INFO(this->get_logger(), "drawer_received");
-    TaskId task_id;
-    if (!prepare_new_task(msg->task_id, msg->fleet_name, msg->robot_name, std::make_unique<TaskId>(task_id)))
+    TaskId task_id = TaskId();
+    if (!task_validation(msg->task_id, RobotRef(msg->fleet_name, msg->robot_name), std::make_unique<TaskId>(task_id)))
     {
-      RCLCPP_ERROR(this->get_logger(), "no valid task");
+      return;
+    }
+
+    std::lock_guard<std::mutex> lock(_receive_task_mutex);
+    if (!task_extension_validaton(task_id))
+    {
       return;
     }
 
     if (!_task_sequence
              .insert(std::make_pair(
-                 task_id.step,
+                 task_id.phase,
                  std::make_unique<DrawerTask>(DrawerTask(
                      task_id,
                      shared_from_this(),
@@ -181,30 +165,46 @@ namespace rmf_robot_client
                          DrawerRef(msg->module_id, msg->drawer_id), msg->e_drawer, false, msg->authorized_user)))))
              .second)
     {
-      RCLCPP_ERROR(this->get_logger(), "Task %i, step %i could not be added to robot Queue", task_id.id, task_id.step);
+      RCLCPP_ERROR(
+          this->get_logger(), "Task %i, phase %i could not be added to robot Queue", task_id.id, task_id.phase);
       return;
     }
 
-    if (task_id.step == 1)
-    {
-      RCLCPP_INFO(this->get_logger(), "drawer started");
-      std::thread{std::bind(&RobotClient::start_task, this, task_id.step)}.detach();
-    }
-    return;
+    start_task();
   }
 
-  void RobotClient::start_task(int step)
+  void RobotClient::receive_destination_task(const FleetDataDestinationRequest::ConstPtr msg)
   {
-    _current_task.step = step;
-    _task_sequence.at(_current_task.step)
-        ->start(
-            [this](int step)
-            {
-              end_current_task(step);
-            });
+    RCLCPP_INFO(this->get_logger(), "destination_received");
+    TaskId task_id;
+    if (!task_validation(msg->task_id, RobotRef(msg->fleet_name, msg->robot_name), std::make_unique<TaskId>(task_id)))
+    {
+      return;
+    }
+
+    std::lock_guard<std::mutex> lock(_receive_task_mutex);
+    if (!task_extension_validaton(task_id))
+    {
+      return;
+    }
+
+    if (!_task_sequence
+             .insert(std::make_pair(task_id.phase,
+                                    std::make_unique<NavigationTask>(
+                                        task_id,
+                                        shared_from_this(),
+                                        RobotPose(msg->destination.x, msg->destination.y, msg->destination.yaw))))
+             .second)
+    {
+      RCLCPP_ERROR(
+          this->get_logger(), "Task %i, phase %i could not be added to robot Queue", task_id.id, task_id.phase);
+      return;
+    }
+
+    start_task();
   }
 
-  void RobotClient::receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg)
+  void RobotClient::receive_settings(const FleetDataSettingRequest::SharedPtr msg)
   {
     //  global settings (reset tree,..)
     if (msg->command == "reset_tree")
@@ -213,14 +213,14 @@ namespace rmf_robot_client
       msg.data = true;
       _reset_simple_tree_publisher->publish(msg);
     }
-    else if (_current_task.step == 0 || _current_task.step > _task_sequence.size())
+    else if (_current_task.phase == 0 || _current_task.phase > _task_sequence.size())
     {
       RCLCPP_INFO(this->get_logger(), "invalid request");
       return;
     }
     else
     {
-      _task_sequence[_current_task.step]->receive_new_settings(msg->command, msg->value);   // task settings
+      _task_sequence[_current_task.phase]->receive_new_settings(msg->command, msg->value);   // task settings
     }
     RCLCPP_INFO(this->get_logger(), "settings done");
   }
@@ -229,7 +229,7 @@ namespace rmf_robot_client
   {
     std::string drawer_ref =
         std::to_string(msg->drawer_address.module_id) + '#' + std::to_string(msg->drawer_address.drawer_id);
-    if (_current_task.step == 0 || _current_task.step > _task_sequence.size())
+    if (_current_task.phase == 0 || _current_task.phase > _task_sequence.size())
     {
       RCLCPP_ERROR(this->get_logger(),
                    "Drawer %s state received(Drawer_id: %i, Module_id: %i ).",
@@ -240,7 +240,7 @@ namespace rmf_robot_client
     }
     else
     {
-      _task_sequence[_current_task.step]->receive_new_settings(
+      _task_sequence[_current_task.phase]->receive_new_settings(
           "DrawerState", {drawer_ref + "#" + (msg->drawer_is_open ? "Opened" : "Closed")});
     }
 
@@ -260,102 +260,37 @@ namespace rmf_robot_client
 
   void RobotClient::receive_authenticated_user(const StdMsgInt::SharedPtr msg)
   {
-    _task_sequence[_current_task.step]->receive_new_settings("drawer",
-                                                             {"Authenticated_user", std::to_string(msg->data)});
+    _task_sequence[_current_task.phase]->receive_new_settings("drawer",
+                                                              {"Authenticated_user", std::to_string(msg->data)});
   }
 
-  //  ToDo only works after the topic is bridged properly
-  //  void RobotClient::receive_battery_status(const BatteryLevel::ConstPtr msg)
-  // {
-  //   current_battery_level= msg->level;
-  // }
-
-  bool RobotClient::prepare_new_task(std::string task_def,
-                                     std::string recipient_fleet,
-                                     std::string recipient_robot,
-                                     std::unique_ptr<TaskId> new_task_id)
+  void RobotClient::start_update_robot_state()
   {
-    if (!(recipient_fleet == _fleet_name && recipient_robot == _robot_name))
-    {
-      return false;
-    }
+    _tf_buffer = std::make_unique<tf2_ros::Buffer>(this->get_clock());
+    _tf_listener = std::make_shared<tf2_ros::TransformListener>(*_tf_buffer);
+    update_robot_location();
 
-    std::vector<std::string> task_header = split(task_def, '#');
-    try
-    {
-      new_task_id->id = stoi(task_header[0]);
-      new_task_id->step = stoi(task_header[1]);
-    }
-    catch (const std::invalid_argument& e)
-    {
-      RCLCPP_ERROR(this->get_logger(), "Task ID %s, is not in the correct format", task_def.c_str());
-      return false;
-    }
+    // TODO@Torben: currently not funktional since the Bridge is not able to bridge the topic properly.
+    // until the BMS is not in ROS2 or the bridge is fixed this is not usable
 
-    if (_current_task.id != new_task_id->id && _current_task.id != 0)
-    {
-      _task_sequence[_current_task.step]->cancel();
-      end_current_task();
-    }
-    _current_task.id = new_task_id->id;
-    return true;
-  }
+    // battery_status_sub_ = this->create_subscription<BatteryLevel>(
+    //     this->get_parameter("robotnik_battery_level_topic").as_string(),
+    //     QoSConfig::get_qos_robotnik_bms_qos(),
+    //     std::bind(&RobotClient::update_battery_level, this, std::placeholders::_1));
 
-  void RobotClient::end_current_task(int completed_step)
-  {
-    RCLCPP_INFO(this->get_logger(), "End Task nr %i %i", _current_task.step, completed_step);
-    if (completed_step == _current_task.step)
-    {
-      start_next_task();
-    }
-    return;
-  }
-
-  void RobotClient::start_next_task()
-  {
-    auto it = _task_sequence.upper_bound(_current_task.step);
-
-    if (it != _task_sequence.end())
-    {
-      _current_task.step = it->first;
-      it->second->start(
-          [this](int step)
-          {
-            end_current_task(step);
-          });
-    }
-    else
-    {
-      end_current_task();
-    }
-    return;
-  }
-
-  void RobotClient::end_current_task()
-  {
-    RCLCPP_INFO(this->get_logger(), "End task %i", _current_task.id);
-    empty_task_sequence();
-    _current_task.id = 0;
-    _current_task.step = 0;
-    publish_fleet_state();
-  }
-
-  void RobotClient::empty_task_sequence()
-  {
-    for (auto& id_by_task : _task_sequence)
-    {
-      id_by_task.second.reset();
-    }
-    _task_sequence.clear();
-    _current_task.step = 0;
+    _robot_info_publisher = this->create_publisher<FleetDataRobotState>(
+        this->get_parameter("fleet_communication_robot_info_topic").as_string(),
+        QoSConfig::get_fleet_communication_status_qos());
+    _publish_robot_info_timer = this->create_wall_timer(std::chrono::seconds(_robot_info_inteval),
+                                                        std::bind(&RobotClient::publish_fleet_state, this));
   }
 
   void RobotClient::publish_fleet_state()
   {
     update_robot_location();
-    FreeFleetDataRobotState robot_state_msg = FreeFleetDataRobotState();
+    FleetDataRobotState robot_state_msg = FleetDataRobotState();
 
-    robot_state_msg.name = _robot_name;
+    robot_state_msg.name = _robot.robot_name;
     robot_state_msg.model = _robot_model;
     robot_state_msg.task_id = _current_task.id;
 
@@ -413,18 +348,110 @@ namespace rmf_robot_client
     RCLCPP_DEBUG(this->get_logger(), "yaw: %f, degree %f", yaw, yaw * (180 / M_PI) + 180);
   }
 
-  std::vector<std::string> RobotClient::split(std::string input_text, char delimiter)
-  {
-    std::vector<std::string> result;
-    std::istringstream iss(input_text);
-    std::string token;
+  //  ToDo only works after the topic is bridged properly
+  //  void RobotClient::receive_battery_status(const BatteryLevel::ConstPtr msg)
+  // {
+  //   current_battery_level= msg->level;
+  // }
 
-    while (std::getline(iss, token, delimiter))
+  bool RobotClient::start_task()
+  {
+    if (!(_task_sequence.size() == 1 && _task_sequence.find(0) != _task_sequence.end()))
     {
-      result.push_back(token);
+      _current_task.phase = 0;
+    }
+    else if (_task_sizes.find(_current_task.id) != _task_sizes.end() &&
+             _task_sequence.size() == _task_sizes[_current_task.id])
+    {
+      if (!link_tasks())
+      {
+        return false;
+      }
+    }
+    else
+    {
+      return false;
     }
 
-    return result;
+    _task_executer = std::thread(std::bind(&BaseTask::start, _task_sequence[_current_task.phase]));
+    _task_executer.detach();
+    return true;
+  }
+
+  bool RobotClient::link_tasks()
+  {
+    for (int i = 1; i < _task_sequence.size(); i++)
+    {
+      if (_task_sequence.find(i) != _task_sequence.end())
+      {
+        _task_sequence[i]->assign_next_task(_task_sequence[i + 1]);
+      }
+      else
+      {
+        return false;
+      }
+    }
+
+    if (_task_sequence[_task_sequence.size()])
+    {
+      _current_task.phase = 1;
+    }
+    else
+    {
+      return false;
+    }
+    return true;
+  }
+
+  bool RobotClient::task_validation(std::string task_def, RobotRef robot, std::unique_ptr<TaskId> task_id)
+  {
+    // check if the task is for this robot
+    if (!(robot.fleet_name == _robot.fleet_name && robot.robot_name == _robot.robot_name))
+    {
+      return false;
+    }
+
+    // check that the task ID is valid
+    *task_id = TaskId(task_def);
+    if (task_id->id == 0)
+    {
+      return false;
+    }
+    return true;
+  }
+
+  bool RobotClient::task_extension_validaton(TaskId task_id)
+  {
+    // check if a task is already running
+    if (!_task_executer.joinable())
+    {
+      return false;
+    }
+
+    // check if a phase already exists
+    if (_task_sequence.find(task_id.phase) != _task_sequence.end())
+    {
+      return false;
+    }
+
+    // resets the task queue if the phase is not of the current task
+    if (_current_task.id != task_id.id)
+    {
+      empty_task_sequence();
+      _current_task.id = task_id.id;
+    }
+
+    return true;
+  }
+
+  void RobotClient::empty_task_sequence()
+  {
+    for (auto& id_by_task : _task_sequence)
+    {
+      id_by_task.second.reset();
+    }
+    _task_sequence.clear();
+    _current_task.phase = 0;
   }
 
 }   // namespace rmf_robot_client

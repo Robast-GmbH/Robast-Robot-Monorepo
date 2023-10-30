@@ -20,7 +20,7 @@ namespace rmf_robot_client
    public:
     NavigationTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, RobotPose goal_pose);
 
-    bool start(std::function<void(int)> next_task_callback) override;
+    void start() override;
     bool cancel();
     std::string get_type();
     bool receive_new_settings(std::string command, std::vector<std::string> value) override;
@@ -29,19 +29,19 @@ namespace rmf_robot_client
     using NavigateToPose = nav2_msgs::action::NavigateToPose;
     using GoalHandleNavigateToPose = rclcpp_action::ClientGoalHandle<NavigateToPose>;
 
-    RobotPose _target_pose;
-
-    std::string _map_frame_id;
-    std::string _behavior_tree;
-
     rclcpp_action::Client<NavigateToPose>::SharedPtr _navigate_to_pose_client;
     GoalHandleNavigateToPose::SharedPtr _current_action_goal_handle;
+
+    RobotPose _target_pose;
+    std::string _map_frame_id;
+    std::string _behavior_tree;
 
     void start_navigation();
     void feedback_callback(GoalHandleNavigateToPose::SharedPtr,
                            const std::shared_ptr<const NavigateToPose::Feedback> feedback);
     void result_callback(const GoalHandleNavigateToPose::WrappedResult& result);
     void goal_response_callback(const GoalHandleNavigateToPose::SharedPtr& goal_handle);
+    void task_done(bool is_completed);
   };
 }   // namespace rmf_robot_client
 #endif   //  ROBOT_CLIENT__NAVIGATION_ACTION_HPP_

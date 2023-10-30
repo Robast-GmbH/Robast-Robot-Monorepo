@@ -40,7 +40,7 @@ class ActionType(str, Enum):
 
 
 class Action(BaseModel):
-    step: int
+    phase: int
     type: ActionType
     action: Union[DrawerAction, Waypoint, NewUser]
 

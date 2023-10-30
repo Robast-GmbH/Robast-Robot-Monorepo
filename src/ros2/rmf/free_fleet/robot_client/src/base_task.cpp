@@ -5,13 +5,9 @@ namespace rmf_robot_client
 
   BaseTask::BaseTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node) : task_id_(task_id), ros_node_(ros_node)
   {
-    rclcpp::QoS qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));
-    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
-    qos.avoid_ros_namespace_conventions(false);
-
-    task_info_publisher_ = ros_node->create_publisher<FreeFleetDataTaskState>(
-        ros_node->get_parameter("fleet_communication_task_info_topic").as_string(), qos);
+    task_info_publisher_ = ros_node->create_publisher<FleetDataTaskState>(
+        ros_node->get_parameter("fleet_communication_task_info_topic").as_string(),
+        QoSConfig::get_fleet_communication_qos());
   }
 
   int BaseTask::get_task_id() const
@@ -19,9 +15,14 @@ namespace rmf_robot_client
     return task_id_.id;
   }
 
-  int BaseTask::get_step() const
+  int BaseTask::get_phase() const
   {
-    return task_id_.step;
+    return task_id_.phase;
+  }
+
+  void BaseTask ::assign_next_task(std::shared_ptr<BaseTask> next_task)
+  {
+    nextTask_ = next_task;
   }
 
   bool BaseTask::receive_new_settings(std::string command, std::vector<std::string> value)
@@ -34,20 +35,22 @@ namespace rmf_robot_client
     return false;
   }
 
-  bool BaseTask::start(std::function<void(int)> next_task_callback)
-  {
-    finish_task_ = next_task_callback;
-    return true;
-  }
-
   void BaseTask::publish_task_state(std::string status, std::string message, bool completed)
   {
-    FreeFleetDataTaskState task_state_msg;
+    FleetDataTaskState task_state_msg;
     task_state_msg.task_id = task_id_.Tostring();
     task_state_msg.status = status;
     task_state_msg.status_message = message;
     task_state_msg.completed = completed;
     task_info_publisher_->publish(task_state_msg);
+  }
+
+  void BaseTask::start_next_phase()
+  {
+    if (nextTask_ != nullptr)
+    {
+      nextTask_->start();
+    }
   }
 
 }   // namespace rmf_robot_client

@@ -20,12 +20,20 @@ class RestInterface():
 
         @self.app.post("/task")
         def do_task(task: schemas.Task):
+            if task.actions.__len__()>1:
+                self.ros_node.handle_Sequence_request(task.robot.fleet_name,
+                                                      task.robot.robot_name, 
+                                                      str(task.task_id),
+                                                      task.actions.__len__())
+            else:
+                task.actions[0].phase=0
+
             for action in task.actions:
                 if action.type == schemas.ActionType.NAVIGATION:
                     self.ros_node.handle_destination_request(task.robot.fleet_name,
                                                              task.robot.robot_name,
                                                              str(task.task_id),
-                                                             str(action.step),
+                                                             str(action.phase),
                                                              action.action.pose.x,
                                                              action.action.pose.y,
                                                              action.action.yaw)
@@ -33,7 +41,7 @@ class RestInterface():
                     self.ros_node.handle_slide_drawer_request(task.robot.fleet_name,
                                                               task.robot.robot_name,
                                                               str(task.task_id),
-                                                              str(action.step),
+                                                              str(action.phase),
                                                               action.action.module_id,
                                                               action.action.drawer_id,
                                                               action.action.locked_for,
@@ -44,7 +52,7 @@ class RestInterface():
                     self.ros_node.handle_new_user_request(task.robot.fleet_name,
                                                           task.robot.robot_name,
                                                           str(task.task_id),
-                                                          str(action.step),
+                                                          str(action.phase),
                                                           action.action.user_id)
 
         @self.app.post("/settings/navigation/pause")

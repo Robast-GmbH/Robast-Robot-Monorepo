@@ -12,19 +12,16 @@ namespace rmf_robot_client
         ros_node, ros_node->get_parameter("nav2_navigation_to_pose_action_topic").as_string());
   }
 
-  bool NavigationTask::start(std::function<void(int)> next_task_callback)
+  void NavigationTask::start()
   {
-    BaseTask::start(next_task_callback);
-
     RCLCPP_INFO(ros_node_->get_logger(), "start navigation_task");
-    finish_task_ = next_task_callback;
     if (!this->_navigate_to_pose_client->wait_for_action_server())
     {
       RCLCPP_ERROR(ros_node_->get_logger(), "Action server not available after waiting");
-      return false;
+      return;
     }
     start_navigation();
-    return true;
+    return;
   }
 
   void NavigationTask::start_navigation()
@@ -57,14 +54,6 @@ namespace rmf_robot_client
     this->_navigate_to_pose_client->async_send_goal(pose_msg, send_goal_options);
   }
 
-  bool NavigationTask::cancel()
-  {
-    this->_navigate_to_pose_client->async_cancel_goal(_current_action_goal_handle);
-    publish_task_state("Canceld", "", true);
-    finish_task_(task_id_.step);
-    return true;
-  }
-
   void NavigationTask::goal_response_callback(const GoalHandleNavigateToPose::SharedPtr& goal_handle)
   {
     _current_action_goal_handle = goal_handle;
@@ -72,7 +61,7 @@ namespace rmf_robot_client
     {
       RCLCPP_ERROR(ros_node_->get_logger(), "Goal was rejected by server");
       publish_task_state("Canceld", "could not plan route to goal pose", true);
-      finish_task_(task_id_.step);
+      task_done(false);
     }
     else
     {
@@ -84,24 +73,42 @@ namespace rmf_robot_client
                                          const std::shared_ptr<const NavigateToPose::Feedback> feedback)
   {
     RCLCPP_INFO(ros_node_->get_logger(),
-                "navigate_to_pose feedback received. number of recoveries:%i distance:%f ",
+                "navigate_to_pose feedback received. number of recoveries:%i, distance:%i, time to goal:%i",
                 feedback->number_of_recoveries,
-                feedback->distance_remaining);
+                feedback->number_of_recoveries,
+                feedback->estimated_time_remaining.sec);
+    publish_task_state("EstimatedTimeRemaining", feedback->estimated_time_remaining.sec + "", false);
   }
 
   void NavigationTask::result_callback(const GoalHandleNavigateToPose::WrappedResult&)
   {
     publish_task_state("Completed", "destination_reached", true);
-    finish_task_(task_id_.step);
+    task_done(true);
+    return;
   }
 
   bool NavigationTask::receive_new_settings(std::string command, std::vector<std::string> value)
   {
-    if (BaseTask::receive_new_settings(command, value))
+    return BaseTask::receive_new_settings(command, value);
+  }
+
+  bool NavigationTask::cancel()
+  {
+    this->_navigate_to_pose_client->async_cancel_goal(_current_action_goal_handle);
+    publish_task_state("Canceld", "", true);
+    task_done(false);
+    return true;
+  }
+
+  void NavigationTask::task_done(bool is_completed)
+  {
+    _navigate_to_pose_client.reset();
+    if (is_completed)
     {
-      return true;
+      start_next_phase();
     }
   }
+
 
   std::string NavigationTask::get_type()
   {

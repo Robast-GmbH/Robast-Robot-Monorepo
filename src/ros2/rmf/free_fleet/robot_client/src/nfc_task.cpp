@@ -11,19 +11,17 @@ namespace rmf_robot_client
         ros_node, ros_node->get_parameter("nfc_write_usertag_to_card_action_topic").as_string());
   }
 
-  bool NFCTask::start(std::function<void(int)> next_task_callback)
+  void NFCTask::start()
   {
-    BaseTask::start(next_task_callback);
     RCLCPP_INFO(ros_node_->get_logger(), "start assign new user to token task");
-    finish_task_ = next_task_callback;
     if (!this->_nfc_write_new_nfc_token_for_client->wait_for_action_server())
     {
       RCLCPP_ERROR(ros_node_->get_logger(), "Action server not available after waiting");
       //  cancel task
-      return false;
+      return;
     }
     start_writing_procedure();
-    return true;
+    return;
   }
 
   void NFCTask::start_writing_procedure()
@@ -48,7 +46,7 @@ namespace rmf_robot_client
     {
       RCLCPP_ERROR(ros_node_->get_logger(), "Goal was rejected by server");
       publish_task_state("Canceld", "could not plan route to goal pose", true);
-      finish_task_(false);
+      task_done(false);
     }
     else
     {
@@ -59,7 +57,7 @@ namespace rmf_robot_client
   void NFCTask::feedback_callback(GoalHandleCreateUserNfcTag::SharedPtr,
                                   const std::shared_ptr<const CreateUserNfcTag::Feedback>)
   {
-    RCLCPP_INFO(ros_node_->get_logger(), "new user feedback recived");
+    RCLCPP_INFO(ros_node_->get_logger(), "new user feedback received");
   }
 
   void NFCTask::result_callback(const GoalHandleCreateUserNfcTag::WrappedResult& result)
@@ -68,12 +66,13 @@ namespace rmf_robot_client
     {
       RCLCPP_INFO(ros_node_->get_logger(), "new user done");
       publish_task_state("Completed", "token_created", true);
-      finish_task_(true);
+      start_next_phase();
+      task_done(true);
     }
     else
     {
       publish_task_state("Canceld", "", true);
-      finish_task_(false);
+      task_done(false);
     }
   }
 
@@ -81,13 +80,21 @@ namespace rmf_robot_client
   {
     this->_nfc_write_new_nfc_token_for_client->async_cancel_goal(_current_action_goal_handle);
     publish_task_state("Canceld", "", true);
-    finish_task_(false);
+    task_done(false);
     return true;
   }
 
   bool NFCTask::receive_new_settings(std::string command, std::vector<std::string> value)
   {
     return BaseTask::receive_new_settings(command, value);
+  }
+
+  void NFCTask::task_done(bool is_completted)
+  {
+    if (is_completted)
+    {
+      start_next_phase();
+    }
   }
 
   std::string NFCTask::get_type()
