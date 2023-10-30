@@ -43,7 +43,7 @@ RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
   && . /opt/ros/${ROS_DISTRO}/setup.sh \
   && rosdep update \
   && rosdep install --from-paths /workspace_ros_control/src --ignore-src -r -y \
-  && colcon build --parallel-workers 3 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
+  && colcon build --parallel-workers 2 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
   && echo "if [ -f /workspace_ros_control/install/setup.bash ]; then source /workspace_ros_control/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 # Adding moveit2_tutorials as separate workspace which can be used for learning and testing purposes
@@ -57,7 +57,7 @@ RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone http
   && . /opt/ros/${ROS_DISTRO}/setup.sh \
   && rosdep update \
   && rosdep install --from-paths /workspace_moveit2/src --ignore-src -r -y \
-  && colcon build --parallel-workers 3 --build-base /workspace_moveit2/build --install-base /workspace_moveit2/install \
+  && colcon build --parallel-workers 2 --build-base /workspace_moveit2/build --install-base /workspace_moveit2/install \
   && echo "if [ -f /workspace_moveit2/install/setup.bash ]; then source /workspace_moveit2/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 # dds setup / configuration

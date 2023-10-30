@@ -49,7 +49,7 @@ RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
   && . /opt/ros/${ROS_DISTRO}/setup.sh \
   && rosdep update \
   && rosdep install --from-paths /workspace_ros_control/src --ignore-src -r -y \
-  && colcon build --parallel-workers 3 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
+  && colcon build --parallel-workers 2 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
   && echo "if [ -f /workspace_ros_control/install/setup.bash ]; then source /workspace_ros_control/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 RUN apt-get update && apt-get install -y \
@@ -69,7 +69,7 @@ RUN apt-get update && apt-get install -y \
 ENV NVIDIA_VISIBLE_DEVICES all
 ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
 
-#instal to use the nvidia gpu in the docker
+#install to use the nvidia gpu in the docker
 RUN apt-get update && apt-get install -y \
     libglvnd0 \
     libgl1 \
@@ -79,12 +79,6 @@ RUN apt-get update && apt-get install -y \
     libx11-6 \
     && rm -rf /var/lib/apt/lists/* \
     && rosdep init || echo "rosdep already initialized"
-
-#update drivers to avoid a blackscreen #TODO @all regularly check if its fixed in base docker
-RUN apt-get update && apt-get install -y \
-    software-properties-common \
-    && add-apt-repository ppa:kisak/kisak-mesa -y \
-    && apt upgrade -y
 
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
