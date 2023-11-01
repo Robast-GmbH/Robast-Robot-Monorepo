@@ -15,8 +15,10 @@ namespace dryve_d1_bridge
   const std::string DRYVE_D1_IP_ADDRESS_ROTATING_ARM = "192.168.0.12";
   // these are the ports we configured in the router that are forwarded to port 502 (default modbus port) of the dryve
   // d1
-  const int PORT_X_AXIS = 3503;
-  const int PORT_Y_AXIS = 3502;
+  const int RB_THERON_PORT_X_AXIS = 3503;
+  const int RB_THERON_PORT_Y_AXIS = 3502;
+
+  const int MODBUS_TCP_PORT = 502;
 
   const double D1_DEFAULT_VELOCITY = 1;
   const double D1_DEFAULT_ACCELERATION = 1;
