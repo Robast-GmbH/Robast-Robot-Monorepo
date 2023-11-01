@@ -36,7 +36,6 @@
             g
             b
             *origin">
-    </xacro:macro>
 
     <joint name="${joint_name}" type="${joint_type}">
         <axis xyz="${axis_x} ${axis_y} ${axis_z}" />
