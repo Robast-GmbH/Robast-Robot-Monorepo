@@ -19,7 +19,7 @@ namespace ros2_control_plugin_door_opening_mechanism
       return hardware_interface::CallbackReturn::ERROR;
     }
 
-    _ip_address = stod(info_.hardware_parameters["ip_address"]);
+    _ip_address = info_.hardware_parameters["ip_address"];
     _port = stod(info_.hardware_parameters["port"]);
     _direction = stod(info_.hardware_parameters["direction"]);
 
