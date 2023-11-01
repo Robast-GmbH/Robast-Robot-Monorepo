@@ -9,7 +9,7 @@ namespace dryve_d1_bridge
   // we are interfacing with the different motor controls by targeting different ports (but using the same ip)
   // To run this on the robot use: 192.168.0.1
   // To run this from another pc in the robast network in the office use: 10.10.23.7
-  const std::string DRYVE_D1_IP_ADDRESS = " 192.168.0.1";
+  const std::string DRYVE_D1_IP_ADDRESS = "192.168.0.1";
   // these are the ports we configured in the router that are forwarded to port 502 (default modbus port) of the dryve
   // d1
   const int PORT_X_AXIS = 3503;
