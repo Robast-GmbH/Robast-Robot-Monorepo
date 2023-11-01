@@ -66,11 +66,13 @@ namespace ros2_control_plugin_door_opening_mechanism
 
     std::unique_ptr<dryve_d1_bridge::D1> _dryve_d1;
 
-    // can be either 1 or -1.There are probably better ways to handle this, but this does the job for now
-    int _direction = 1;
+    std::string _ip_address;
 
     // this is the ports we configured in the router that is forwarded to port 502 (default modbus port) of the dryve d1
     int _port = 3502;
+
+    // can be either 1 or -1.There are probably better ways to handle this, but this does the job for now
+    int _direction = 1;
   };
 
 }   // namespace ros2_control_plugin_door_opening_mechanism

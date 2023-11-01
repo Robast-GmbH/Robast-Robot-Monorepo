@@ -7,9 +7,12 @@ namespace dryve_d1_bridge
 {
   // this is actually the IP of the robot, whose router is forwarding this to the dryve d1 motor controls
   // we are interfacing with the different motor controls by targeting different ports (but using the same ip)
-  // To run this on the robot use: 192.168.0.1
-  // To run this from another pc in the robast network in the office use: 10.10.23.7
-  const std::string DRYVE_D1_IP_ADDRESS = "192.168.0.1";
+  const std::string RB_THERON_IP_ADDRESS = "10.10.23.7";
+
+  // These are the IP's the motor controller have within the network of the robot
+  const std::string DRYVE_D1_IP_ADDRESS_Y_AXIS = "192.168.0.11";
+  const std::string DRYVE_D1_IP_ADDRESS_X_AXIS = "192.168.0.53";
+  const std::string DRYVE_D1_IP_ADDRESS_ROTATING_ARM = "192.168.0.12";
   // these are the ports we configured in the router that are forwarded to port 502 (default modbus port) of the dryve
   // d1
   const int PORT_X_AXIS = 3503;

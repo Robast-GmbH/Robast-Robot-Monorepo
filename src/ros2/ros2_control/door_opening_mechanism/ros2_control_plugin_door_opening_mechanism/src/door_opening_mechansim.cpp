@@ -19,6 +19,7 @@ namespace ros2_control_plugin_door_opening_mechanism
       return hardware_interface::CallbackReturn::ERROR;
     }
 
+    _ip_address = stod(info_.hardware_parameters["ip_address"]);
     _port = stod(info_.hardware_parameters["port"]);
     _direction = stod(info_.hardware_parameters["direction"]);
 
@@ -84,9 +85,12 @@ namespace ros2_control_plugin_door_opening_mechanism
   {
     // Please mind! In order to get a connection to the dryve d1, there need to be a port forward on the router from the
     // port configured in DRYVE_D1_IP_ADDRESS_X_AXIS to the Port configured for Modbus TCP in the dryve d1 (usually 502)
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Configuring dryve d1 for port %d", _port);
-    _dryve_d1 = std::make_unique<dryve_d1_bridge::D1>(
-        dryve_d1_bridge::DRYVE_D1_IP_ADDRESS, _port, std::make_unique<dryve_d1_bridge::SocketWrapper>());
+    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"),
+                "Configuring dryve d1 for ip address %s and port %d",
+                _ip_address.c_str(),
+                _port);
+    _dryve_d1 =
+        std::make_unique<dryve_d1_bridge::D1>(_ip_address, _port, std::make_unique<dryve_d1_bridge::SocketWrapper>());
 
     // Please mind! The state_machine only runs through if you made the following settings on the dryve d1:
     // (1) Drive Profile -> Modbus TCP Gateway

@@ -21,6 +21,7 @@
             damping="0.1"
             friction="0.3"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
+            ip_address="192.168.0.12"
             port="0"
             direction="0"
             ros_distro="${ros_distro}"
