@@ -2,11 +2,9 @@
 
 namespace rmf_robot_client
 {
-  DrawerTask::DrawerTask(TaskId task_id,
-                         std::shared_ptr<rclcpp::Node> ros_node,
-                         std::shared_ptr<std::map<std::string, DrawerState>> drawer_states,
-                         DrawerState used_drawer)
-      : BaseTask(task_id, ros_node)
+  DrawerTask::DrawerTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, std::shared_ptr<TaskId> task_indicator,
+                         std::shared_ptr<std::map<std::string, DrawerState>> drawer_states, DrawerState used_drawer)
+      : BaseTask(task_id, ros_node, task_indicator)
   {
     this->_selected_drawer = std::make_unique<DrawerState>(used_drawer);
     this->_drawers = drawer_states;

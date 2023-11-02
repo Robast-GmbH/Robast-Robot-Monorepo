@@ -26,8 +26,7 @@ namespace rmf_robot_client
       }
       else
       {
-        id = 0;
-        phase = 0;
+        unset();
       }
     }
 
@@ -36,9 +35,24 @@ namespace rmf_robot_client
       return (id == c.id && phase == c.phase);
     }
 
+    bool is_set()
+    {
+      return id != 0 && phase != 0;
+    }
+
+    void unset()
+    {
+      id = 0;
+      phase = 0;
+    }
+
     std::string Tostring()
     {
-      return id + "#" + phase;
+      if (is_set())
+      {
+        return id + "#" + phase;
+      }
+      return "";
     }
   };
 }   // namespace rmf_robot_client

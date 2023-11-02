@@ -3,8 +3,11 @@
 namespace rmf_robot_client
 {
 
-  NFCTask::NFCTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, int user_id_for_token)
-      : BaseTask(task_id, ros_node)
+  NFCTask::NFCTask(TaskId task_id,
+                   std::shared_ptr<rclcpp::Node> ros_node,
+                   std::shared_ptr<TaskId> task_indicator,
+                   int user_id_for_token)
+      : BaseTask(task_id, ros_node, task_indicator)
   {
     this->_user_id_for_token = user_id_for_token;
     _nfc_write_new_nfc_token_for_client = rclcpp_action::create_client<CreateUserNfcTag>(

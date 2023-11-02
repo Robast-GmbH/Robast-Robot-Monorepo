@@ -14,7 +14,7 @@ namespace rmf_robot_client
   class NFCTask : public BaseTask
   {
    public:
-    NFCTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, int user_id);
+    NFCTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, std::shared_ptr<TaskId> task_tracker, int user_id);
     void start() override;
     bool cancel();
     std::string get_type();

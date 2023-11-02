@@ -90,6 +90,7 @@ namespace rmf_robot_client
     TaskId _current_task;
     std::map<int, std::shared_ptr<BaseTask>> _task_sequence;
     std::map<int, int> _task_sizes;
+    bool _task_executer_running = false;
     std::thread _task_executer;
     std::mutex _receive_task_mutex;
 

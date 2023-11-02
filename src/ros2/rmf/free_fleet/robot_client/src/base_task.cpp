@@ -3,7 +3,8 @@
 namespace rmf_robot_client
 {
 
-  BaseTask::BaseTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node) : task_id_(task_id), ros_node_(ros_node)
+  BaseTask::BaseTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, std::shared_ptr<TaskId> task_indicator)
+      : task_id_(task_id), ros_node_(ros_node), task_indicator_(task_indicator)
   {
     task_info_publisher_ = ros_node->create_publisher<FleetDataTaskState>(
         ros_node->get_parameter("fleet_communication_task_info_topic").as_string(),
@@ -22,7 +23,7 @@ namespace rmf_robot_client
 
   void BaseTask ::assign_next_task(std::shared_ptr<BaseTask> next_task)
   {
-    nextTask_ = next_task;
+    next_task_ = next_task;
   }
 
   bool BaseTask::receive_new_settings(std::string command, std::vector<std::string> value)
@@ -47,9 +48,20 @@ namespace rmf_robot_client
 
   void BaseTask::start_next_phase()
   {
-    if (nextTask_ != nullptr)
+    if (next_task_ != nullptr)
     {
-      nextTask_->start();
+      if (task_id_ == *task_indicator_)
+      {
+        *task_indicator_ = next_task_->task_id_;
+      }
+      next_task_->start();
+    }
+    else
+    {
+      if (task_id_ == *task_indicator_)
+      {
+        task_indicator_->unset();
+      }
     }
   }
 

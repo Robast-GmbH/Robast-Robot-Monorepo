@@ -102,7 +102,7 @@ namespace rmf_robot_client
   {
     RCLCPP_INFO(this->get_logger(), "Task_Sequence_Header_received");
     TaskId task_id = TaskId();
-    if (!task_validation(msg->task_id, RobotRef(msg->fleet_name, msg->robot_name), std::make_unique<TaskId>(task_id)))
+    if (!task_validation(msg->task_id, RobotRef(msg->robot_name, msg->fleet_name), std::make_unique<TaskId>(task_id)))
     {
       return;
     }
@@ -115,35 +115,7 @@ namespace rmf_robot_client
     RCLCPP_INFO(this->get_logger(), "nfc_received");
 
     TaskId task_id = TaskId();
-    if (!task_validation(msg->task_id, RobotRef(msg->fleet_name, msg->robot_name), std::make_unique<TaskId>(task_id)))
-    {
-      return;
-    }
-
-    std::lock_guard<std::mutex> lock(_receive_task_mutex);
-    if (!task_extension_validaton(task_id))
-    {
-      return;
-    }
-
-    if (!_task_sequence
-             .insert(
-                 std::make_pair(task_id.phase, std::make_unique<NFCTask>(task_id, shared_from_this(), msg->user_id)))
-             .second)
-    {
-      RCLCPP_ERROR(
-          this->get_logger(), "Task %i, phase %i could not be added to robot Queue", task_id.id, task_id.phase);
-      return;
-    }
-
-    start_task();
-  }
-
-  void RobotClient::receive_drawer_task(const FleetDataDrawerRequest::ConstPtr msg)
-  {
-    RCLCPP_INFO(this->get_logger(), "drawer_received");
-    TaskId task_id = TaskId();
-    if (!task_validation(msg->task_id, RobotRef(msg->fleet_name, msg->robot_name), std::make_unique<TaskId>(task_id)))
+    if (!task_validation(msg->task_id, RobotRef(msg->robot_name, msg->fleet_name), std::make_unique<TaskId>(task_id)))
     {
       return;
     }
@@ -157,12 +129,8 @@ namespace rmf_robot_client
     if (!_task_sequence
              .insert(std::make_pair(
                  task_id.phase,
-                 std::make_unique<DrawerTask>(DrawerTask(
-                     task_id,
-                     shared_from_this(),
-                     _drawer_list,
-                     DrawerState(
-                         DrawerRef(msg->module_id, msg->drawer_id), msg->e_drawer, false, msg->authorized_user)))))
+                 std::make_unique<NFCTask>(
+                     task_id, shared_from_this(), std::make_shared<TaskId>(_current_task), msg->user_id)))
              .second)
     {
       RCLCPP_ERROR(
@@ -173,18 +141,56 @@ namespace rmf_robot_client
     start_task();
   }
 
-  void RobotClient::receive_destination_task(const FleetDataDestinationRequest::ConstPtr msg)
+  void RobotClient::receive_drawer_task(const FleetDataDrawerRequest::ConstPtr msg)
   {
-    RCLCPP_INFO(this->get_logger(), "destination_received");
+    RCLCPP_INFO(this->get_logger(), "drawer_received");
     TaskId task_id;
-    if (!task_validation(msg->task_id, RobotRef(msg->fleet_name, msg->robot_name), std::make_unique<TaskId>(task_id)))
+    if (!task_validation(msg->task_id, RobotRef(msg->robot_name, msg->fleet_name), std::make_unique<TaskId>(task_id)))
     {
+      RCLCPP_DEBUG(this->get_logger(), "task validation failed");
       return;
     }
 
     std::lock_guard<std::mutex> lock(_receive_task_mutex);
     if (!task_extension_validaton(task_id))
     {
+      RCLCPP_DEBUG(this->get_logger(), "task extension validation failed");
+      return;
+    }
+
+    if (!_task_sequence
+             .insert(std::make_pair(
+                 task_id.phase,
+                 std::make_unique<DrawerTask>(DrawerTask(
+                     task_id,
+                     shared_from_this(),
+                     std::make_shared<TaskId>(_current_task),
+                     _drawer_list,
+                     DrawerState(
+                         DrawerRef(msg->module_id, msg->drawer_id), msg->e_drawer, false, msg->authorized_user)))))
+             .second)
+    {
+      RCLCPP_ERROR(
+          this->get_logger(), "Task %i, phase %i could not be added to robot Queue", task_id.id, task_id.phase);
+      return;
+    }
+    start_task();
+  }
+
+  void RobotClient::receive_destination_task(const FleetDataDestinationRequest::ConstPtr msg)
+  {
+    RCLCPP_INFO(this->get_logger(), "destination_received");
+    TaskId task_id;
+    if (!task_validation(msg->task_id, RobotRef(msg->robot_name, msg->fleet_name), std::make_unique<TaskId>(task_id)))
+    {
+      RCLCPP_DEBUG(this->get_logger(), "task validation failed");
+      return;
+    }
+
+    std::lock_guard<std::mutex> lock(_receive_task_mutex);
+    if (!task_extension_validaton(task_id))
+    {
+      RCLCPP_DEBUG(this->get_logger(), "task extension validation failed");
       return;
     }
 
@@ -193,6 +199,7 @@ namespace rmf_robot_client
                                     std::make_unique<NavigationTask>(
                                         task_id,
                                         shared_from_this(),
+                                        std::make_shared<TaskId>(_current_task),
                                         RobotPose(msg->destination.x, msg->destination.y, msg->destination.yaw))))
              .second)
     {
@@ -200,7 +207,7 @@ namespace rmf_robot_client
           this->get_logger(), "Task %i, phase %i could not be added to robot Queue", task_id.id, task_id.phase);
       return;
     }
-
+    RCLCPP_INFO(this->get_logger(), "Start task");
     start_task();
   }
 
@@ -288,12 +295,15 @@ namespace rmf_robot_client
   void RobotClient::publish_fleet_state()
   {
     update_robot_location();
-    FleetDataRobotState robot_state_msg = FleetDataRobotState();
+    if (!_current_task.is_set())
+    {
+      _task_executer_running = false;
+    }
 
+    FleetDataRobotState robot_state_msg = FleetDataRobotState();
     robot_state_msg.name = _robot.robot_name;
     robot_state_msg.model = _robot_model;
-    robot_state_msg.task_id = _current_task.id;
-
+    robot_state_msg.task_id = _current_task.Tostring();
     robot_state_msg.location.level_name = "";
     robot_state_msg.location.nanosec = 0;
     robot_state_msg.location.sec = 0;
@@ -358,6 +368,10 @@ namespace rmf_robot_client
   {
     if (!(_task_sequence.size() == 1 && _task_sequence.find(0) != _task_sequence.end()))
     {
+      return false;
+    }
+    if (_current_task.phase == 0)
+    {
       _current_task.phase = 0;
     }
     else if (_task_sizes.find(_current_task.id) != _task_sizes.end() &&
@@ -365,15 +379,17 @@ namespace rmf_robot_client
     {
       if (!link_tasks())
       {
+        RCLCPP_ERROR(this->get_logger(), "Linking tasks failed");
         return false;
       }
     }
     else
     {
+      // task is not filled jet
       return false;
     }
-
     _task_executer = std::thread(std::bind(&BaseTask::start, _task_sequence[_current_task.phase]));
+    _task_executer_running = true;
     _task_executer.detach();
     return true;
   }
@@ -423,14 +439,16 @@ namespace rmf_robot_client
   bool RobotClient::task_extension_validaton(TaskId task_id)
   {
     // check if a task is already running
-    if (!_task_executer.joinable())
+    if (_task_executer_running)
     {
+      RCLCPP_ERROR(this->get_logger(), "task already running");
       return false;
     }
 
     // check if a phase already exists
     if (_task_sequence.find(task_id.phase) != _task_sequence.end())
     {
+      RCLCPP_ERROR(this->get_logger(), "Phase already in queue");
       return false;
     }
 

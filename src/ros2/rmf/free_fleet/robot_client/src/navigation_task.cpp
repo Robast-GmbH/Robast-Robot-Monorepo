@@ -2,12 +2,15 @@
 
 namespace rmf_robot_client
 {
-  NavigationTask::NavigationTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, RobotPose goal_pose)
-      : BaseTask(task_id, ros_node)
+  NavigationTask::NavigationTask(TaskId task_id,
+                                 std::shared_ptr<rclcpp::Node> ros_node,
+                                 std::shared_ptr<TaskId> task_indicator,
+                                 RobotPose goal_pose)
+      : BaseTask(task_id, ros_node, task_indicator)
   {
     _target_pose = goal_pose;
     _map_frame_id = ros_node->get_parameter("map_frame_id").as_string();
-    _behavior_tree = ros_node->get_parameter("behavior_tree").as_string();
+    _behavior_tree = ros_node->get_parameter("nav_behavior_tree").as_string();
     _navigate_to_pose_client = rclcpp_action::create_client<NavigateToPose>(
         ros_node, ros_node->get_parameter("nav2_navigation_to_pose_action_topic").as_string());
   }
@@ -51,6 +54,7 @@ namespace rmf_robot_client
         std::bind(&NavigationTask::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
     send_goal_options.result_callback = std::bind(&NavigationTask::result_callback, this, std::placeholders::_1);
 
+    RCLCPP_INFO(ros_node_->get_logger(), "navigation started");
     this->_navigate_to_pose_client->async_send_goal(pose_msg, send_goal_options);
   }
 

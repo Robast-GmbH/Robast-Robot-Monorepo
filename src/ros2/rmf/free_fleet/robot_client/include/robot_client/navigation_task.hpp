@@ -18,7 +18,10 @@ namespace rmf_robot_client
   class NavigationTask : public BaseTask
   {
    public:
-    NavigationTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, RobotPose goal_pose);
+    NavigationTask(TaskId task_id,
+                   std::shared_ptr<rclcpp::Node> ros_node,
+                   std::shared_ptr<TaskId> task_tracker,
+                   RobotPose goal_pose);
 
     void start() override;
     bool cancel();
