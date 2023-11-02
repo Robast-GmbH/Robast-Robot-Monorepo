@@ -5,7 +5,7 @@ services:
       context: ../../src/web/backend
       dockerfile: Dockerfile
     image: backend:fast_api
-    ports:
+    expose:
       - "8000:8000"
     volumes:
       - ./backend/:/workspace/:cached
@@ -13,8 +13,7 @@ services:
     depends_on:
       - db  
     command: /bin/sh -c "while sleep 1000; do :; done"
-    links:
-      - db
+    network_mode: "host" 
 
   db:
     image: postgres:14.1-alpine
@@ -24,7 +23,7 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=robast
     ports:
-      - '5432:5432'
+      - '127.0.0.1:5432:5432'
     volumes:
       - db:/var/lib/postgresql/data
    
