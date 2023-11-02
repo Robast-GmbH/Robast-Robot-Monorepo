@@ -195,6 +195,7 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
                     # ------------------------ #
                     # IMPLEMENT YOUR CODE HERE #
                     # Ensure x, y, theta are in units that api.navigate() #
+                    # sould be ok for us #
                     # ------------------------ #
                     response = self.api.navigate(self.name,
                                                  [x, y, theta],
@@ -267,6 +268,7 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
                         # If your robot does not have an API to report the
                         # remaining travel duration, replace the API call
                         # below with an estimation
+                        #we have an implementation#
                         # ------------------------ #
                         duration = self.api.navigation_remaining_duration(self.name)
                         if self.path_index is not None:
@@ -319,6 +321,8 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
             # ------------------------ #
             # IMPLEMENT YOUR CODE HERE #
             # With whatever logic you need for docking #
+            # No Docking implemented jet#
+            #ToDo change if our robot supports docking#
             # ------------------------ #
             while (not self.api.docking_completed(self.name)):
                 # Check if we need to abort
@@ -349,6 +353,7 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
             # ------------------------ #
             # IMPLEMENT YOUR CODE HERE #
             # Ensure x, y are in meters and theta in radians #
+            # is already in radients#
             # ------------------------ #
             # Wrap theta between [-pi, pi]. Else arrival estimate will
             # assume robot has to do full rotations and delay the schedule

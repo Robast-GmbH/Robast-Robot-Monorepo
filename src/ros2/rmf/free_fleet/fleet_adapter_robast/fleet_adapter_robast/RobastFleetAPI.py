@@ -40,17 +40,7 @@ class RobastFleetAPI(Node):
         self.task_id=0
         self.task_prefix="rmf"
 
-        self.fleetstate_sub = self.create_subscription(
-            FleetDataRobotState,
-            'robot_state',
-            self.listen_to_fleet_state,
-            10)
         
-        self.taskstate_sub = self.create_subscription(
-            FleetDataTaskState,
-            'task_state',
-            self.listen_to_task_state,
-            10)
 
         # Test connectivity
         connected = self.check_connection()
@@ -60,30 +50,22 @@ class RobastFleetAPI(Node):
         else:
             print("Unable to query API server")
     
-    def listen_to_fleet_state(self, msg:FleetDataRobotState):
-        self.LastFleetUpdate= datetime.now()
-        self.Robotstates[msg.robot_name]= msg
-    
-    def listen_to_task_state(self, msg:FleetDataTaskState):
-        self.LastFleetUpdate= datetime.now()
-        if(msg.task_idstartswith(self.task_prefix)):
-            self.Taskstates[msg.task_id]= msg 
-        self.Taskstates={key: value for key, value in self.Taskstates.items() if not( int(key.lstrip(self.task_prefix)) <= self.task_id-5)}
-
+  
 
     def check_connection(self):
         ''' Return True if connection to the robot API server is successful'''
-        time_to_last_update= self.LastFleetUpdate-datetime.now()
-        return (time_to_last_update.total_seconds/60) < self.fleet_responce_interval
+        responce = requests.get(self.server_url+"/robots")
+        return responce.status_code==200
 
     def position(self, robot_name: str):
         ''' Return [x, y, theta] expressed in the robot's coordinate frame or
             None if any errors are encountered'''
-        
-        robotstate=self.Robotstates.get(robot_name)
-        if(robotstate is not None):
-            return [robotstate.location.x, robotstate.location.y, robotstate.location.yaw ]
-        return None
+        responce = requests.get(self.server_url+"/robots/"+robot_name)
+        if responce.status_code!=200:
+            return None
+        else:
+            robot_data= responce.json()
+            return [robot_data["x_pose"],robot_data["y_pose"], robot_data["yaw_pose"]]
 
     def navigate(self, robot_name: str, pose, map_name: str):
         ''' Request the robot to navigate to pose:[x,y,theta] where x, y and
@@ -91,37 +73,36 @@ class RobastFleetAPI(Node):
             should return True if the robot has accepted the request,
             else False'''
         self.task_id+=1
-        action = {"step":1, "type":"NAVIGATION", "finished":False, "action":{ "pose": {"x":pose.x, "y":pose.y, "z":0.0 },"yaw": pose.yaw} }
-        task_msg={"robot":{ "robot_name":robot_name, "fleet_name": self.fleet_name}, "task_id":self.task_prefix+self.task_id,"actions":[ action]}
-        response = requests.get(self.server_url+"/task", data= json.dumps(task_msg))
-        return response.status_code!= 200
+        pose = { "x":pose.x, "y": pose.y, "z": 0.0}
+        target = { "pose": pose, "yaw": pose.theta} 
+        navigation_msg={ "target":target, "owner_id":2 }
+        response = requests.get(self.server_url+"/robots/"+robot_name+"/navigate", data= json.dumps(navigation_msg))
+        return response.status_code== 200
 
     def start_process(self, robot_name: str, process: str, map_name: str):
         ''' Request the robot to begin a process. This is specific to the robot
             and the use case. For example, load/unload a cart for Deliverybot
             or begin cleaning a zone for a cleaning robot.
             Return True if the robot has accepted the request, else False'''
-        self.task_id+=1
-        action = process
-         
-        task_msg={"robot":{ "robot_name":robot_name, "fleet_name": self.fleet_name}, "task_id":"rmf"+self.task_id,"actions":[ action]}
-        response = requests.get(self.server_url+"/task", data= json.dumps(task_msg))
-        return response.status_code!= 200
+        #ToDo Torben: implement laster    
+        return False
      
 
     def stop(self, robot_name: str):
         ''' Command the robot to stop.
             Return True if robot has successfully stopped. Else False'''
-        param = {'robot': {'fleet_name':self.fleetname, 'robot_name':robot_name}}
-        requests.post(self.server_url+"/settings/navigation/pause", json = param)
-        return False
+        response=requests.get(self.server_url+"robots/pause_resume?robot_name="+robot_name+"&fleet_name="+self.fleetname+"&pause="+"True")
+        return response.status_code== 200
 
     def navigation_remaining_duration(self, robot_name: str):
         ''' Return the number of seconds remaining for the robot to reach its
             destination'''
-        #ToDo@Torben: provide the duration from the navgoal 
-
-        return 0.0
+        responce = requests.get(self.server_url+"/robots/"+robot_name)
+        if responce.status_code!=200:
+            return None
+        else:
+            robot_data= responce.json()
+            return robot_data["status"].spit(":")[1]
 
     def navigation_completed(self, robot_name: str):
         ''' Return True if the robot has successfully completed its previous
@@ -131,12 +112,15 @@ class RobastFleetAPI(Node):
     def process_completed(self, robot_name: str):
         ''' Return True if the robot has successfully completed its previous
             process request. Else False.'''
-
         return self.Robotstates[robot_name].task_id!="rmf"+self.task_id
 
     def battery_soc(self, robot_name: str):
         ''' Return the state of charge of the robot as a value between 0.0
             and 1.0. Else return None if any errors are encountered'''
        #ToDo Torben: replace after implemented on the robo 
-       #return self.Robotstates[msg.robot_name].battery_percent/100
-        return None
+        responce = requests.get(self.server_url+"/robots/"+robot_name)
+        if responce.status_code!=200:
+            return None
+        else:
+            robot_data= responce.json()
+            return robot_data["battery_level"]
