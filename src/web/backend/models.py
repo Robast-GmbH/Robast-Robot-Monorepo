@@ -94,5 +94,6 @@ class Robot(Base):
     x_pose = Column(Float)
     y_pose = Column(Float)
     yaw_pose = Column(Float)
+    # notification= Column(String) Todo adjust the frontend to work with this object
     task_id = Column(Integer, ForeignKey("task.id"))
     battery_level = Column(Float, default=0.0)

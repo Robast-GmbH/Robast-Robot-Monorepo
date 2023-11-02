@@ -111,7 +111,7 @@ def json_task(task: schemas.Task) -> dict:
                 },
                 "actions": [
                     {
-                        "step": action.step,
+                        "phase": action.step,
                         "type": action.type.value,
                         "action": json_action(action.action, action.type),
                         "finished": action.finished
@@ -200,7 +200,7 @@ def get_Drawer_interaction_json(db: Session,
     return message
 
 
-def get_close_drawer_interaction_json(db: Session,
+def get_drawer_interaction_json(db: Session,
                                       robot_name: str,
                                       drawer_id: int,
                                       module_id: int,
@@ -268,7 +268,7 @@ def create_drawer_action(step: int,
                          is_edrawer: bool,
                          locked_for: list[int],
                          finished: bool = False):
-    message = {"step": step,
+    message = {"phase": step,
                "type": "OPEN_DRAWER",
                "finished": finished,
                "action": {"drawer_id": drawer_id,
@@ -284,7 +284,7 @@ def create_navigation_action(step: int,
                              y: float,
                              yaw: float,
                              finished: bool = False):
-    message = {"step": step,
+    message = {"phase": step,
                "type": "NAVIGATION",
                "finished": finished,
                "action": {
@@ -297,7 +297,7 @@ def create_navigation_action(step: int,
 
 
 def create_new_user(step: int, user_id: int, finished: bool = False):
-    message = {"step": step,
+    message = {"phase": step,
                "type": "NEW_USER",
                "finished": finished,
                "action": {"user_id": user_id}}

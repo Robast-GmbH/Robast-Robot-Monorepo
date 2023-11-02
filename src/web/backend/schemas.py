@@ -64,6 +64,7 @@ class Action(BaseModel):
     type: ActionType
     action: Union[Drawer, Navigation, NewUser]
     finished: bool
+    status:str
 
 
 class BaseTask(BaseModel):

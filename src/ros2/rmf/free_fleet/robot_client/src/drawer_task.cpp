@@ -32,8 +32,7 @@ namespace rmf_robot_client
   void DrawerTask::start()
   {
     RCLCPP_INFO(ros_node_->get_logger(), "start drawer_task");
-    publish_task_state(
-        "DrawerState", "Wait for user open comand of:" + _selected_drawer->drawer_ref.get_ref_string(), false);
+    publish_task_state("Notification", "wait_for_drawer_opened" + _selected_drawer->drawer_ref.get_ref_string(), false);
 
     // ToDO @Torben : remove this after the frontend has been updated
     open_drawer_task(*_selected_drawer);
@@ -84,6 +83,7 @@ namespace rmf_robot_client
     else
     {
       _trigger_open_drawer_publisher->publish(drawer_msg);
+      publish_task_state("Notification", "wait_for_drawer_moving", false);
       publish_task_state("DrawerState", drawer_ref + "#Unlocked", false);
     }
 
@@ -124,7 +124,7 @@ namespace rmf_robot_client
     }
     else if (value[0] == "Open")
     {
-      open_drawer_task(DrawerState(DrawerRef(std::stoi(value[1]), std::stoi(value[2])), value[3] == "E-drawer"));
+      open_drawer_task(DrawerState(DrawerRef(std::stoi(value[1]), std::stoi(value[2])), value[3] == "E-Drawer"));
     }
     else if (value[0] == "Authenticated_user")
     {
@@ -179,6 +179,7 @@ namespace rmf_robot_client
 
   void DrawerTask::start_authentication_scan()
   {
+    publish_task_state("Notification", "wait_for_nfc_token", false);
     StdMsgBool msg;
     msg.data = true;
     _nfc_on_off_publisher->publish(msg);
@@ -221,7 +222,7 @@ namespace rmf_robot_client
     _trigger_open_e_drawer_publisher.reset();
     _trigger_close_e_drawer_publisher.reset();
     _nfc_on_off_publisher.reset();
-    publish_task_state("DrawerState", "drawer_task_completed", is_completed);
+    publish_task_state("Completed", "drawer_task_completed", is_completed);
     if (is_completed)
     {
       start_next_phase();

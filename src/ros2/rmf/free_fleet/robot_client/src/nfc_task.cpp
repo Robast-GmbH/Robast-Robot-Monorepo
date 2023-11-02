@@ -35,7 +35,7 @@ namespace rmf_robot_client
     send_goal_options.feedback_callback =
         std::bind(&NFCTask::feedback_callback, this, std::placeholders::_1, std::placeholders::_2);
     send_goal_options.result_callback = std::bind(&NFCTask::result_callback, this, std::placeholders::_1);
-
+    publish_task_state("Notification", "wait_for_nfc_token", false);
     this->_nfc_write_new_nfc_token_for_client->async_send_goal(msg, send_goal_options);
   }
 
@@ -45,7 +45,7 @@ namespace rmf_robot_client
     if (!_current_action_goal_handle)
     {
       RCLCPP_ERROR(ros_node_->get_logger(), "Goal was rejected by server");
-      publish_task_state("Canceld", "could not plan route to goal pose", true);
+      publish_task_state("Canceld", "reader is not ready to create a token ", true);
       task_done(false);
     }
     else
@@ -65,7 +65,8 @@ namespace rmf_robot_client
     if (result.result->successful)
     {
       RCLCPP_INFO(ros_node_->get_logger(), "new user done");
-      publish_task_state("Completed", "token_created", true);
+      publish_task_state("Notification", "nfc_token_received", false);
+      publish_task_state("Completed", "token was created", true);
       start_next_phase();
       task_done(true);
     }
