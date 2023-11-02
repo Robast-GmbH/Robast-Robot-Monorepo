@@ -63,7 +63,7 @@ def get_users_login(db: Session, userCredentials: schemas.UserLogin):
 
 
 def create_user(db: Session, user: schemas.UserCreate):
-    fake_hashed_password = user.password
+    fake_hashed_password = user.hashed_password
     db_user = models.User(email=user.email,
                           hashed_password=fake_hashed_password,
                           name=user.name)
@@ -259,13 +259,19 @@ def get_user_action(action_id: int, db: Session):
 
 
 def get_action_id(db: Session, task_id: str, step: int):
-    return db.query(models.Action.id
+    action_id= db.query(models.Action.id
                     ).filter(models.Action.task_id == task_id 
-                             and models.Action.step == step).first()[0]
+                             and models.Action.step == step).first()
+    if action_id is None:
+        return None
+    else:
+        return action_id[0]
 
 
 def update_action(db: Session, action_id: int, status: str, finished: bool):
     db_action = get_action(db=db, action_id=action_id)
+    if db_action is None:
+        return None
     db_action.status = status
     db_action.finished = finished
     db.flush()
@@ -290,7 +296,7 @@ def delete_action(db: Session, action_id):
     db.commit()
 
 
-def reset_task(task_id: int, db: Session):
+def reset_task(db: Session, task_id: int):
     db.query(models.Action).filter(
         models.Action.task_id == task_id).update(
             {models.Action.finished: False})
@@ -302,7 +308,7 @@ def get_next_task(db: Session, robot_name: str):
     return new_task
 
 
-def get_full_task(task_id: int, db: Session) -> schemas.Task:
+def get_full_task( db: Session,task_id: int) -> schemas.Task:
     db_task = get_task(db=db, task_id=task_id)
     if db_task is None:
         raise HTTPException(status_code=404, detail="task not found")
@@ -339,10 +345,10 @@ def get_full_task(task_id: int, db: Session) -> schemas.Task:
             if db_nav_action is None:
                 return "action"
 
-            posex = db_nav_action.x_pose
-            posey = db_nav_action.y_pose
-            posez = 0
-            pose = schemas.Pose(x=posex, y=posey, z=posez)
+            pose_x = db_nav_action.x_pose
+            pose_y = db_nav_action.y_pose
+            pose_z = 0
+            pose = schemas.Pose(x=pose_x, y=pose_y, z=pose_z)
             yaw = db_nav_action.yaw_pose
             nav_action = schemas.Navigation(pose=pose, yaw=yaw)
             action = schemas.Action(step=step,
@@ -355,7 +361,7 @@ def get_full_task(task_id: int, db: Session) -> schemas.Task:
             if db_user_action is None: 
                 return "action"
             user_id = db_user_action.user_id
-            user_action = schemas.NewUser(user_id)
+            user_action = schemas.NewUser(user_id =user_id)
             action = schemas.Action(step=step,
                                     type=action_type,
                                     action=user_action,
@@ -422,7 +428,7 @@ def get_modules(db: Session, robot_name: str) -> [models.Module]:
             models.Module.position).all()
 
 
-def get_module(db: Session, module_id: int) -> models.Module:
+def get_module(db: Session, module_id: int) -> [models.Module]:
     return db.query(models.Module).filter(
         models.Module.module_id == module_id).all()
 

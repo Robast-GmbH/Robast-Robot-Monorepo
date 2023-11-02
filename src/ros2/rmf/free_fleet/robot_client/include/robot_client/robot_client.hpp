@@ -5,13 +5,15 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <thread>
 #include <vector>
 
-#include "fleet_interfaces/msg/free_fleet_data_create_nfc_request.hpp"
-#include "fleet_interfaces/msg/free_fleet_data_destination_request.hpp"
-#include "fleet_interfaces/msg/free_fleet_data_drawer_request.hpp"
-#include "fleet_interfaces/msg/free_fleet_data_robot_state.hpp"
-#include "fleet_interfaces/msg/free_fleet_data_setting_request.hpp"
+#include "fleet_interfaces/msg/fleet_data_create_nfc_request.hpp"
+#include "fleet_interfaces/msg/fleet_data_destination_request.hpp"
+#include "fleet_interfaces/msg/fleet_data_drawer_request.hpp"
+#include "fleet_interfaces/msg/fleet_data_robot_state.hpp"
+#include "fleet_interfaces/msg/fleet_data_setting_request.hpp"
+#include "fleet_interfaces/msg/fleet_data_task_sequence_header_request.hpp"
 #include "qos_config.hpp"
 #include "rclcpp/qos.hpp"
 #include "rclcpp/rclcpp.hpp"
@@ -25,6 +27,7 @@
 #include "navigation_task.hpp"
 #include "nfc_task.hpp"
 #include "robot_pose.hpp"
+#include "robot_ref.hpp"
 #include "std_msgs/msg/bool.hpp"
 #include "std_msgs/msg/int64.hpp"
 #include "task_id.hpp"
@@ -39,22 +42,25 @@ namespace rmf_robot_client
   {
    public:
     RobotClient();
-    using FreeFleetDataSettingRequest = fleet_interfaces::msg::FreeFleetDataSettingRequest;
-    using FreeFleetDataCreateNfcRequest = fleet_interfaces::msg::FreeFleetDataCreateNfcRequest;
-    using FreeFleetDataDrawerRequest = fleet_interfaces::msg::FreeFleetDataDrawerRequest;
-    using FreeFleetDataDestinationRequest = fleet_interfaces::msg::FreeFleetDataDestinationRequest;
-    using FreeFleetDataRobotState = fleet_interfaces::msg::FreeFleetDataRobotState;
+    using FleetDataTaskSequenceHeaderRequest = fleet_interfaces::msg::FleetDataTaskSequenceHeaderRequest;
+    using FleetDataSettingRequest = fleet_interfaces::msg::FleetDataSettingRequest;
+    using FleetDataCreateNfcRequest = fleet_interfaces::msg::FleetDataCreateNfcRequest;
+    using FleetDataDrawerRequest = fleet_interfaces::msg::FleetDataDrawerRequest;
+    using FleetDataDestinationRequest = fleet_interfaces::msg::FleetDataDestinationRequest;
+    using FleetDataRobotState = fleet_interfaces::msg::FleetDataRobotState;
 
     using StdMsgBool = std_msgs::msg::Bool;
     using StdMsgInt = std_msgs::msg::Int64;
 
     using DrawerStatus = communication_interfaces::msg::DrawerStatus;
+
+    //  ToDo only works after the topic is bridged properly
+    //  void RobotClient::receive_battery_status(const BatteryLevel::ConstPtr msg)
     // using BatteryLevel = robotnik_msgs::msg::BatteryStatus;
 
    private:
     // Parameters
-    std::string _fleet_name;
-    std::string _robot_name;
+    RobotRef _robot;
     std::string _robot_model;
 
     std::string _behavior_tree;
@@ -62,10 +68,11 @@ namespace rmf_robot_client
     std::string _robot_frame_id;
 
     // fleet_server
-    rclcpp::Subscription<FreeFleetDataSettingRequest>::SharedPtr _setting_subscriber;
-    rclcpp::Subscription<FreeFleetDataCreateNfcRequest>::SharedPtr _write_nfc_card_request_subscriber;
-    rclcpp::Subscription<FreeFleetDataDrawerRequest>::SharedPtr _drawer_request_subscriber;
-    rclcpp::Subscription<FreeFleetDataDestinationRequest>::SharedPtr _navigation_request_subscriber;
+    rclcpp::Subscription<FleetDataSettingRequest>::SharedPtr _setting_subscriber;
+    rclcpp::Subscription<FleetDataCreateNfcRequest>::SharedPtr _write_nfc_card_request_subscriber;
+    rclcpp::Subscription<FleetDataDrawerRequest>::SharedPtr _drawer_request_subscriber;
+    rclcpp::Subscription<FleetDataDestinationRequest>::SharedPtr _navigation_request_subscriber;
+    rclcpp::Subscription<FleetDataTaskSequenceHeaderRequest>::SharedPtr _task_sequence_request_subscriber;
 
     // hardware
 
@@ -76,13 +83,18 @@ namespace rmf_robot_client
     rclcpp::Subscription<StdMsgInt>::SharedPtr _authentication_subscriber;
 
     // other
-    rclcpp::Publisher<FreeFleetDataRobotState>::SharedPtr _robot_info_publisher;
+    rclcpp::Publisher<FleetDataRobotState>::SharedPtr _robot_info_publisher;
     rclcpp::Publisher<StdMsgBool>::SharedPtr _reset_simple_tree_publisher;
 
     // Task
     TaskId _current_task;
+    std::map<int, std::shared_ptr<BaseTask>> _task_sequence;
+    std::map<int, int> _task_sizes;
+    bool _task_executer_running = false;
+    std::thread _task_executer;
+    std::mutex _receive_task_mutex;
+
     float _current_battery_level = -1;
-    std::map<int, std::unique_ptr<BaseTask>> _task_sequence;
     rclcpp::TimerBase::SharedPtr _publish_robot_info_timer;
     int _robot_info_inteval;
     int _nfc_timeout_interval;
@@ -98,10 +110,11 @@ namespace rmf_robot_client
     void start_receive_tasks();
     void start_update_robot_state();
 
-    void receive_settings(const FreeFleetDataSettingRequest::SharedPtr msg);
-    void receive_create_nfc_task(const FreeFleetDataCreateNfcRequest::ConstPtr msg);
-    void receive_drawer_task(const FreeFleetDataDrawerRequest::ConstPtr msg);
-    void receive_destination_task(const FreeFleetDataDestinationRequest::ConstPtr msg);
+    void receive_task_sequence_header(const FleetDataTaskSequenceHeaderRequest::ConstPtr msg);
+    void receive_create_nfc_task(const FleetDataCreateNfcRequest::ConstPtr msg);
+    void receive_drawer_task(const FleetDataDrawerRequest::ConstPtr msg);
+    void receive_destination_task(const FleetDataDestinationRequest::ConstPtr msg);
+    void receive_settings(const FleetDataSettingRequest::SharedPtr msg);
 
     void receive_drawer_status(const DrawerStatus::SharedPtr msg);
     void receive_authenticated_user(const StdMsgInt::SharedPtr msg);
@@ -110,20 +123,15 @@ namespace rmf_robot_client
     //  void RobotClient::receive_battery_status(const BatteryLevel::ConstPtr msg)
     // void receive_battery_status(const BatteryLevel::ConstPtr msg);
 
-    bool prepare_new_task(std::string Task_def,
-                          std::string recipient_fleet,
-                          std::string recipient_robot,
-                          std::unique_ptr<TaskId> task_id);
-    void end_current_task();
-    void end_current_task(int step);
+    bool task_validation(std::string task_def, RobotRef robot, std::unique_ptr<TaskId> task_id);
+
+    bool task_extension_validaton(TaskId task_id);
     void empty_task_sequence();
-    void start_task(int step);
-    void start_next_task();
+    bool start_task();
+    bool link_tasks();
+
     void publish_fleet_state();
     void update_robot_location();
-
-    // support
-    std::vector<std::string> split(std::string input_text, char delimiter);
   };
 }   // namespace rmf_robot_client
 #endif   // ROBOT_CLIENT__ROBOT_CLIENT_HPP_

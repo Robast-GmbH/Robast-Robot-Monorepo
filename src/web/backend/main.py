@@ -260,6 +260,17 @@ def get_next_task(robot_name: str, db: Session = Depends(get_db)):
                             detail=answer.reason)
     return task
 
+@app.post("/tasks/notifications")
+def notification_task(task_id: int, phase: int, message: str, db: Session =Depends(get_db)):
+    
+    db_full_task = crud.get_full_task(db=db,task_id=task_id)
+    db_action= [e for e in db_full_task.actions if e.step== phase][0]
+    if(db_action is not None):
+        db_action.status=message
+    #ToDo only use after the frontend is adjusted 
+    # db_robot = get_robot_status(db=db, robot_name=db_full_task.robot.robot_name)
+    # db_robot.notification= message
+    return 
 
 # robot
 @app.get("/robots", response_model=List[schemas.RobotStatus])
@@ -267,6 +278,9 @@ def get_robots_status(db: Session = Depends(get_db)):
     db_robots = crud.get_robots(db=db)
     return db_robots
 
+@app.post("/robots/status", response_model=schemas.RobotStatus)
+def set_robot(robot: schemas.RobotStatus, db: Session = Depends(get_db)):
+    return crud.set_robot(db=db, override=True, robot=robot)
 
 @app.get("/robots/{robot_name}", response_model=schemas.RobotStatus)
 def get_robot_status(robot_name: str, db: Session = Depends(get_db)):
@@ -335,14 +349,8 @@ def set_loop(task: schemas.Task,
 def reset_loop():
     loop_task_id = None
 
-
-@app.post("/robots/status", response_model=schemas.RobotStatus)
-def set_robot(robot: schemas.RobotStatus, db: Session = Depends(get_db)):
-    return crud.set_robot(db=db, override=True, robot=robot)
-
-
 @app.put("/robots/{robot_name}/navigate")
-def navigate_robot(robot_name: str,
+def navigation_task(robot_name: str,
                    target: schemas.Navigation,
                    owner_id: Annotated[int, Body()],
                    db: Session = Depends(get_db)):
@@ -351,13 +359,13 @@ def navigate_robot(robot_name: str,
                                db_robot.robot_name,
                                db_robot.fleet_name,
                                owner_id)
-    step = 1
+    phase = 1
     crud.create_navigation_action(db,
-                                  step,
+                                  phase,
                                   task_id,
                                   target.pose.x,
                                   target.pose.y, target.yaw)
-    action = templates.create_navigation_action(step,
+    action = templates.create_navigation_action(phase,
                                                 target.pose.x,
                                                 target.pose.y,
                                                 target.yaw)
@@ -372,7 +380,7 @@ def navigate_robot(robot_name: str,
                          data=json.dumps(task),
                          headers=headers,
                          verify=False)
-
+    print(json.dumps(task)) 
     if answer.status_code != 200:
         raise HTTPException(status_code=answer.status_code,
                             detail=answer.reason)
@@ -392,10 +400,13 @@ def get_modules(robot_name: str, db: Session = Depends(get_db)):
 # get_module_info
 @app.get("/robots/{robot_name}/modules/{module_id}", response_model=schemas.Module)
 def get_drawer(robot_name: str, module_id: int, db: Session = Depends(get_db)):
-    return crud.get_drawer(db=db,
+    drawer= crud.get_drawer(db=db,
                            robot_name=robot_name,
                            module_id=module_id,
                            drawer_id=0)
+    if drawer is None:
+        raise HTTPException(status_code=404, detail="drawer not found")
+    return drawer
 
 
 @app.get("/robots/{robot_name}/modules/status/reset")
@@ -408,14 +419,14 @@ def clear_module_status(robot_name: str,
 # set_drawer
 @app.post("/robots/modules/", response_model=schemas.Module)
 def update_drawer(module: schemas.Module, db: Session = Depends(get_db)):
-    return crud.set_module(db=db, module=module)
+    return crud.set_module(db=db, module=module, override=True)
 
 
 @app.post("/robots/modules/status")
 def update_drawer_status(module: schemas.UpdateModule,
                          db: Session = Depends(get_db)):
     crud.remove_unlocked_state(db)
-    db_module = crud.get_module(db=db,
+    db_module = crud.get_module_by_module_and_drawer_id(db=db,
                                 module_id=module.module_id,
                                 drawer_id=module.drawer_id)
     if module.label is None:
@@ -448,14 +459,15 @@ def drawer_actions_done(robot_name: str, fleet_name: str):
 
 
 # open_drawer
+#@app.post("/robots/{robot_name}/drawer") ToDo change after frontend is adjusted 
 @app.post("/robots/{robot_name}/modules/open")
-def open_drawer(robot_name: str,
+def open_drawer_task(robot_name: str,
                 module: schemas.BaseDrawer,
                 restricted_for_user: list[int],
                 owner: Annotated[int, Body()],
                 db: Session = Depends(get_db)):
     db_robot = crud.get_robot(db=db, robot_name=robot_name)
-    db_module = crud.get_module(db=db,
+    db_module = crud.get_module_by_module_and_drawer_id(db=db,
                                 module_id=module.module_id,
                                 drawer_id=module.drawer_id)
     if db_module is None:
@@ -494,8 +506,37 @@ def open_drawer(robot_name: str,
     if answer.status_code != 200:
         raise HTTPException(status_code=answer.status_code,
                             detail=json.dumps(task))
-
     return
+
+#ToDo adjust frontend before this can be used  
+# # open_drawer
+# @app.post("/robots/{robot_name}/modules/open")
+# def open_drawer(robot_name: str,
+#                  module: schemas.BaseDrawer,
+#                  db: Session = Depends(get_db)):
+#     db_module = crud.get_module_by_module_and_drawer_id(db, module.module_id, module.drawer_id)
+#     if db_module is None:
+#         raise HTTPException(status_code=404, detail="module not found")
+#     message = templates.get_drawer_interaction_json(db,
+#                                                     robot_name,
+#                                                     module.drawer_id,
+#                                                     module.module_id,
+#                                                     db_module.type ==
+#                                                         models
+#                                                         .DrawerSlideTypes
+#                                                         .ELECTRICAL)
+#     headers = {"Content-Type": "application/json"}
+#     sender = requests.Session()
+#     answer = sender.post(url=config[
+#         "FLEETMANAGEMENT_ADDRESS"]+"/settings/drawer/open",
+#                          data=json.dumps(message),
+#                          headers=headers)
+
+#     if answer.status_code != 200:
+#         raise HTTPException(status_code=answer.status_code,
+#                             detail=answer.reason)
+#     return
+
 
 
 # close_drawer
@@ -503,7 +544,7 @@ def open_drawer(robot_name: str,
 def close_drawer(robot_name: str,
                  module: schemas.BaseDrawer,
                  db: Session = Depends(get_db)):
-    db_module = crud.get_module(db, module.module_id, module.drawer_id)
+    db_module = crud.get_module_by_module_and_drawer_id(db, module.module_id, module.drawer_id)
     if db_module is None:
         raise HTTPException(status_code=404, detail="module not found")
     message = templates.get_close_drawer_interaction_json(db,

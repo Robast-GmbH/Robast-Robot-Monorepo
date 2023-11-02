@@ -25,6 +25,16 @@ namespace rmf_robot_client
       return qos_fleet_communication;
     }
 
+    static rclcpp::QoS get_fleet_communication_status_qos()
+    {
+      rclcpp::QoS qos_fleet_status_communication =
+          rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
+      qos_fleet_status_communication.reliability(RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT);
+      qos_fleet_status_communication.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
+      qos_fleet_status_communication.avoid_ros_namespace_conventions(false);
+      return qos_fleet_status_communication;
+    }
+
     static rclcpp::QoS get_statemaschine_reset_tree_qos()
     {
       rclcpp::QoS qos_statemaschine = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 10));

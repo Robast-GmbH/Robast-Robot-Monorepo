@@ -20,12 +20,20 @@ class RestInterface():
 
         @self.app.post("/task")
         def do_task(task: schemas.Task):
+            if task.actions.__len__()>1:
+                self.ros_node.handle_Sequence_request(task.robot.fleet_name,
+                                                      task.robot.robot_name, 
+                                                      str(task.task_id),
+                                                      task.actions.__len__())
+            else:
+                task.actions[0].phase=0
+
             for action in task.actions:
                 if action.type == schemas.ActionType.NAVIGATION:
                     self.ros_node.handle_destination_request(task.robot.fleet_name,
                                                              task.robot.robot_name,
                                                              str(task.task_id),
-                                                             str(action.step),
+                                                             str(action.phase),
                                                              action.action.pose.x,
                                                              action.action.pose.y,
                                                              action.action.yaw)
@@ -33,7 +41,7 @@ class RestInterface():
                     self.ros_node.handle_slide_drawer_request(task.robot.fleet_name,
                                                               task.robot.robot_name,
                                                               str(task.task_id),
-                                                              str(action.step),
+                                                              str(action.phase),
                                                               action.action.module_id,
                                                               action.action.drawer_id,
                                                               action.action.locked_for,
@@ -44,7 +52,7 @@ class RestInterface():
                     self.ros_node.handle_new_user_request(task.robot.fleet_name,
                                                           task.robot.robot_name,
                                                           str(task.task_id),
-                                                          str(action.step),
+                                                          str(action.phase),
                                                           action.action.user_id)
 
         @self.app.post("/settings/navigation/pause")
@@ -99,6 +107,26 @@ class RestInterface():
                                                       str(drawer_id)])
             else:
                 raise HTTPException(status_code=423, detail="drawer has to be closed manually")
+            
+        @self.app.post("/settings/drawer/open")
+        def close_drawer(robot: schemas.Robot,
+                         drawer_id: Annotated[int, Body()],
+                         module_id: Annotated[int, Body()],
+                         e_drawer: Annotated[bool, Body()]):
+            
+            if e_drawer:
+                drawer_type="E-Drawer"
+            else: 
+                drawer_type="Drawer" 
+
+                self.ros_node.handle_setting_request(robot.robot_name,
+                                                     robot.fleet_name,
+                                                     "drawer",
+                                                     ["Open",
+                                                      str(module_id),
+                                                      str(drawer_id),
+                                                      str(drawer_type)
+                                                      ])
 
         @self.app.post("/settings/drawer/reset")
         def reset_drawer(robot: schemas.Robot):
@@ -155,6 +183,8 @@ class RestInterface():
                 self.ros_node.get_logger().error('Backend is not responding')
                 self.is_backend_running = False
 
+#    def handle_task_status_change(self, task_id, status):
+
     def handle_drawer_status_change(self, task_id, module_id, drawer_id, status):
         # update task
         message = self.fill_action_status(status="Drawer_is"+status, finished=False)
@@ -169,33 +199,51 @@ class RestInterface():
                     data=json.dumps(message),
                     verify=False)
 
+    def handle_update_task(self, task_id, step, status, finished):
+        message = self.fill_action_status(status=status, finished=finished)
+        sender = requests.Session()
+        sender.post(url=self.response_api+"/tasks/"+task_id+"/step/"+step, data=json.dumps(message), verify=False)
+
     def handle_requesting_next_task(self):
         message = None
         sender = requests.Session()
         sender.post(url=self.response_api+"/tasks/next", data=json.dumps(message), verify=False)
 
+    def handle_notification(self, task_id, phase, message):
+        message= self.fill_task_notification(task_id, phase, message)
+        sender = requests.Session()
+        sender.post(url=self.response_api+"/tasks/notification", data=json.dumps(message), verify=False)
+
     def fill_robot_status_msg(self, robot_name: str, fleet_name: str,
                               task_id: int, x_pose: int, y_pose: int,
                               yaw_pose: int, battery_level: float):
         return{
-                "robot_name": robot_name,
-                "fleet_name": fleet_name,
-                "task_id": task_id,
-                "x_pose": x_pose,
-                "y_pose": y_pose,
-                "yaw_pose": yaw_pose,
-                "battery_level": battery_level}
+                "robot_name"    : robot_name,
+                "fleet_name"    : fleet_name,
+                "task_id"       : task_id,
+                "x_pose"        : x_pose,
+                "y_pose"        : y_pose,
+                "yaw_pose"      : yaw_pose,
+                "battery_level" : battery_level
+            }
 
     def fill_action_status(self, status: str, finished: bool):
         return{
-                "staus": status,
-                "finished": finished
+                "staus"     : status,
+                "finished"  : finished
 
         }
 
     def fill_drawer_status(self, module_id: int,  drawer_id: int, status: str):
         return{
-                "module_id": module_id,
-                "drawer_id": drawer_id,
-                "status": status,
+                "module_id" : module_id,
+                "drawer_id" : drawer_id,
+                "status"    : status,
+        }
+    
+    def fill_task_notification(self,task_id, phase, message):
+        return{
+                "task_id"       : task_id,
+                "phase"         : phase,
+                "notification"  : message,
         }

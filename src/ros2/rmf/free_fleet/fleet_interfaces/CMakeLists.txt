@@ -24,17 +24,18 @@ find_package(std_msgs REQUIRED)
 
 
 rosidl_generate_interfaces(${PROJECT_NAME}
-  "msg/FreeFleetDataCreateNfcRequest.msg"
-  "msg/FreeFleetDataDestinationRequest.msg"
-  "msg/FreeFleetDataDrawerRequest.msg"
-  "msg/FreeFleetDataLocation.msg"
-  "msg/FreeFleetDataModeParameter.msg"
-  "msg/FreeFleetDataModeRequest.msg"
-  "msg/FreeFleetDataPathRequest.msg"
-  "msg/FreeFleetDataRobotMode.msg"
-  "msg/FreeFleetDataRobotState.msg"
-  "msg/FreeFleetDataSettingRequest.msg"
-  "msg/FreeFleetDataTaskState.msg"
+  "msg/FleetDataCreateNfcRequest.msg"
+  "msg/FleetDataDestinationRequest.msg"
+  "msg/FleetDataDrawerRequest.msg"
+  "msg/FleetDataLocation.msg"
+  "msg/FleetDataModeParameter.msg"
+  "msg/FleetDataModeRequest.msg"
+  "msg/FleetDataPathRequest.msg"
+  "msg/FleetDataRobotMode.msg"
+  "msg/FleetDataRobotState.msg"
+  "msg/FleetDataSettingRequest.msg"
+  "msg/FleetDataTaskState.msg"
+  "msg/FleetDataTaskSequenceHeaderRequest.msg"
 
   DEPENDENCIES builtin_interfaces geometry_msgs std_msgs nav_msgs
 )

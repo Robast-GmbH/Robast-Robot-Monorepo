@@ -6,7 +6,8 @@
 #include <string>
 #include <vector>
 
-#include "fleet_interfaces/msg/free_fleet_data_task_state.hpp"
+#include "fleet_interfaces/msg/fleet_data_task_state.hpp"
+#include "qos_config.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "task_id.hpp"
 
@@ -15,22 +16,30 @@ namespace rmf_robot_client
   class BaseTask
   {
    public:
-    BaseTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node);
-    virtual bool start(std::function<void(int)> next_task_callback);
+    BaseTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, std::shared_ptr<TaskId> task_indicator);
+    virtual void start() = 0;
     virtual bool cancel() = 0;
     virtual bool receive_new_settings(std::string command, std::vector<std::string> value);
     virtual std::string get_type() = 0;
-    void publish_task_state(std::string status, std::string message, bool is_completed);
 
-    int get_step() const;
+    void assign_next_task(std::shared_ptr<BaseTask> next_task);
+
+    int get_phase() const;
     int get_task_id() const;
 
    protected:
-    using FreeFleetDataTaskState = fleet_interfaces::msg::FreeFleetDataTaskState;
+    using FleetDataTaskState = fleet_interfaces::msg::FleetDataTaskState;
+
     TaskId task_id_;
+    std::shared_ptr<TaskId> task_indicator_;
     std::shared_ptr<rclcpp::Node> ros_node_;
-    rclcpp::Publisher<FreeFleetDataTaskState>::SharedPtr task_info_publisher_;
-    std::function<void(int)> finish_task_;
+
+    void publish_task_state(std::string status, std::string message, bool is_completed);
+    void start_next_phase();
+
+   private:
+    rclcpp::Publisher<FleetDataTaskState>::SharedPtr task_info_publisher_;
+    std::shared_ptr<BaseTask> next_task_;
   };
 
 }   // namespace rmf_robot_client

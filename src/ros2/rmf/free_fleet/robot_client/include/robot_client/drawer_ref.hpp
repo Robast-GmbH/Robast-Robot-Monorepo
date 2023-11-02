@@ -10,7 +10,7 @@ namespace rmf_robot_client
     int drawer_id;
 
     // Constructor for convenience
-    DrawerRef(int moduleId, int drawerId) : module_id(moduleId), drawer_id(drawerId)
+    DrawerRef(int moduleId = 0, int drawerId = 0) : module_id(moduleId), drawer_id(drawerId)
     {
     }
 
