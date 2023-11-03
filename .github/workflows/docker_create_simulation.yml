@@ -3,7 +3,7 @@ name: Create Docker Image Simulation
 #trigger workflow every day at 00:00
 on:
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: '0 0 07 * *'
   push:
     branches:
         - main
