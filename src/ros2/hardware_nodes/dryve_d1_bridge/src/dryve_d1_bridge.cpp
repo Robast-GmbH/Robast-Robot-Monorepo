@@ -4,73 +4,49 @@ namespace dryve_d1_bridge
 {
   DryveD1Gate::DryveD1Gate() : Node("dryve_d1_bridge")
   {
-    this->execute();
+    // Note: This project is only used for testing purposes with the dryve d1
 
-    rclcpp::shutdown();
+    try
+    {
+      execute();
+    }
+    catch (const std::exception& e)
+    {
+      _dryve_d1->close_connection();
+    }
   }
 
   void DryveD1Gate::execute()
   {
-    // To run this on the robot use: 192.168.0.1
+    // To run this on the robot use the individual IP address of the d1 within the robot network
     // To run this from another pc in the robast network in the office use: 10.10.23.7
     // As this file is only for debugging, we use the 10.10.23.7
-    D1 xAxis("10.10.23.7", 502, std::make_unique<SocketWrapper>());
+    std::unique_ptr<D1> _dryve_d1 =
+        std::make_unique<D1>(RB_THERON_IP_ADDRESS, RB_THERON_PORT_Y_AXIS, std::make_unique<SocketWrapper>());
 
-    // Set the Debug Mode to ON or OFF; Debug Mode displays all received telegrams from the D1 in the console
-    // xAxis.set_debug_mode_on();
-    xAxis.set_debug_mode_off();
+    RCLCPP_INFO(this->get_logger(), "Setting debug mode on!");   // Debugging
+    _dryve_d1->set_debug_mode_on();
 
     RCLCPP_INFO(this->get_logger(), "I am going to run through D1 state machine now ...");   // Debugging
 
     // Run through State Machine --> Current is applied to the motor
-    xAxis.run_dryve_state_machine();
+    _dryve_d1->run_dryve_state_machine();
 
-    RCLCPP_INFO(this->get_logger(), "Reading object value 0x2014");   // Debugging
+    RCLCPP_INFO(this->get_logger(), "Start homing now ...");   // Debugging
+    _dryve_d1->start_dryve_homing(3, 1, 10);
 
-    // Read the value of the Object 2014.1 "Status Flags" and asigned it to a variable (First Objectindex in
-    // hexadecimal, Second Objectindex in hexadecimal, Subindex)
-    int ref = xAxis.read_object_value(0x20, 0x14, 0);
+    double current_position =
+        static_cast<double>(_dryve_d1->read_object_value(_dryve_d1->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
+                                                         _dryve_d1->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
+        dryve_d1_bridge::SI_UNIT_FACTOR;
 
-    // Start Homing only if not yet referenced
-    // if (ref == 0)
-    //{
-    // xAxis.start_dryve_homing(
-    //     10, 1, 100);   // Homing (Switch search speed[°/s], Zero search speed[°/s], Acceleration for Homing[°/s²])
-    // //}
+    RCLCPP_INFO(this->get_logger(), "Current position: %f", current_position);
 
-    // Profile Position Mode(Position[°], Velocity[°/s], Acceleration[°/s²],
-    xAxis.move_profile_to_relative_position(90, 500, 500, 500);
-    sleep(2);
-    xAxis.move_profile_to_relative_position(90, 500, 500, 500);
-    sleep(2);
-    xAxis.move_profile_to_relative_position(90, 500, 500, 500);
-    sleep(2);
+    RCLCPP_INFO(this->get_logger(), "Move to absolute position now!");   // Debugging
+    // Please mind: Move to absolute position does only work if the axis was homed before!
+    _dryve_d1->move_profile_to_absolute_position(0.20 * 1000, 3, 3);
 
-    // Move the motor with a set target velocity
-    // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/s²],
-    xAxis.set_profile_velocity(90, 100, 100);
-    sleep(1);   // Wait for 2 seconds before a new movement is started
-
-    // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/ ²], Deceleration[°/s])
-    xAxis.set_profile_velocity(-90, 100, 100);
-    sleep(1);   // Wait for 2 seconds before a new movement is started
-
-    xAxis.set_profile_velocity(90, 100, 100);
-    sleep(1);   // Wait for 2 seconds before a new movement is started
-
-    // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/ ²], Deceleration[°/s])
-    xAxis.set_profile_velocity(-90, 100, 100);
-    sleep(1);
-
-    xAxis.set_profile_velocity(0, 100, 100);   // Profile Velocity Mode(Target Velocity[°/s], Acceleration[°/s²],
-                                               // Deceleration[°/s]) Stops the movement
-
-    // Shutdown the motor when the dryve in the state "Ready" --> no current is applied anymore to the motor
-    xAxis.wait_for_dryve_ready_state();
-    xAxis.set_dryve_shutdown_state();
-
-    // Gracefully close everything down
-    close(xAxis.sock);
+    _dryve_d1->close_connection();
   }
 
   DryveD1Gate::~DryveD1Gate()
