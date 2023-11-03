@@ -10,10 +10,13 @@
 	],
 	"workspaceFolder": "/workspace",
 	"runArgs": [
-		"--name=navigation",
-		"--network=host",
-		"--volume=/dev/shm:/dev/shm" //needed if you use the fast dds on the host network with multiple docker containers running on the same host
-	],
+                "--name=navigation",
+				"--device=/dev/ttyUSB0",
+                "--network=host",
+                "--privileged",
+                "--volume=/dev:/dev",
+                "--device-cgroup-rule=c 189:* rmw",
+        ],
 	"remoteEnv": {
 		"is_simulation": "False",
 		"config_directory":"config",
