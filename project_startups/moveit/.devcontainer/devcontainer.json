@@ -1,0 +1,47 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"image": "ghcr.io/robast-gmbh/monorepo/moveit_mtc:devel",
+	"name": "Robast Moveit Task Constructor",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/dryve_d1_bridge,target=/workspace/src/hardware_nodes/dryve_d1_bridge,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/robot_description,target=/workspace/src/robot_description,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/ros2_control,target=/workspace/src/ros2_control,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/moveit,target=/workspace/src/moveit,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind"
+	],
+	"workspaceFolder": "/workspace",
+	"remoteUser": "robast",
+	"runArgs": [
+		"--name=moveit_mtc",
+		// "--network=host",
+		"--volume=/dev/shm:/dev/shm", //needed if you use the fast dds on the host network with multiple docker containers running on the same host
+		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
+	],
+	"remoteEnv": {
+		"DISPLAY": "${localEnv:DISPLAY}"
+	},
+	"containerEnv": {
+		"ROS_DOMAIN_ID": "1",
+		"robot": "rb_theron",
+		"prefix": "",
+	},
+	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"ms-iot.vscode-ros",
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"redhat.vscode-yaml",
+		"smilerobotics.urdf",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one"
+	]
+}
