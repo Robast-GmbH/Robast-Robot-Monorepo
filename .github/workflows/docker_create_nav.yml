@@ -2,11 +2,16 @@ name: Create Docker Image Navigation
 
 #trigger workflow every day at 00:00
 on:
+  schedule:
+    - cron: '0 0 07 * *'
   push:
     branches:
         - main
     paths:
         - src/ros2/navigation/Dockerfile
+        - src/ros2/navigation/nav_brinup/config/*
+        - src/ros2/navigation/nav_brinup/launch/*
+        - src/ros2/dds_configs/*
   workflow_dispatch:
 
 jobs:
