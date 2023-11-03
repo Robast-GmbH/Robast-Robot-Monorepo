@@ -19,5 +19,6 @@ def generate_launch_description():
                     name='robot_client',
                     parameters=[config]
                     )
+
     ld.add_action(robot_client)
     return ld

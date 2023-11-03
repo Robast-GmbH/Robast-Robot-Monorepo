@@ -15,7 +15,7 @@ class ros_controller(Node):
             FFSlideDrawer,
             'ff_open_drawer',
             10)
-     
+
         self.declare_parameter('mode_request_topic', "mode_request")
         self.declare_parameter('path_request_topic', "path_request")
         self.declare_parameter('task_sequence_topic', "task_sequence")
@@ -31,22 +31,65 @@ class ros_controller(Node):
         self.declare_parameter('fleet_server', 3002)
 
         self.node_config = {
-                "mode_request_topic": self.get_parameter('mode_request_topic').get_parameter_value().string_value,
-                "path_request_topic": self.get_parameter('path_request_topic').get_parameter_value().string_value,
-                "task_sequence_topic": self.get_parameter('task_sequence_topic').get_parameter_value().string_value,
-                "destination_request_topic": self.get_parameter('destination_request_topic').get_parameter_value().string_value,
-                "slide_drawer_request_topic": self.get_parameter('slide_drawer_request_topic').get_parameter_value().string_value,
-                "setting_request_topic": self.get_parameter('setting_request_topic').get_parameter_value().string_value,
-                "new_user_request_topic": self.get_parameter('new_user_request_topic').get_parameter_value().string_value,
-                "robot_state_topic": self.get_parameter('robot_state_topic').get_parameter_value().string_value,
-                "task_state_topic": self.get_parameter('task_state_topic').get_parameter_value().string_value,
-                "backend_address": self.get_parameter('backend_address').get_parameter_value().string_value,
-                "fleet_server": self.get_parameter('fleet_server').get_parameter_value().integer_value
+                "mode_request_topic": self.get_parameter(
+                    'mode_request_topic'
+                ).get_parameter_value(
+                ).string_value,
+
+                "path_request_topic": self.get_parameter(
+                    'path_request_topic'
+                ).get_parameter_value(
+                ).string_value,
+
+                "task_sequence_topic": self.get_parameter(
+                    'task_sequence_topic'
+                ).get_parameter_value(
+                ).string_value,
+
+                "destination_request_topic": self.get_parameter(
+                    'destination_request_topic'
+                ).get_parameter_value(
+                ).string_value,
+
+                "slide_drawer_request_topic": self.get_parameter(
+                    'slide_drawer_request_topic'
+                ).get_parameter_value(
+                ).string_value,
+
+                "setting_request_topic": self.get_parameter(
+                    'setting_request_topic'
+                ).get_parameter_value(
+                ).string_value,
+
+                "new_user_request_topic": self.get_parameter(
+                    'new_user_request_topic'
+                ).get_parameter_value(
+                ).string_value,
+
+                "robot_state_topic": self.get_parameter(
+                    'robot_state_topic'
+                ).get_parameter_value(
+                ).string_value,
+
+                "task_state_topic": self.get_parameter(
+                    'task_state_topic'
+                ).get_parameter_value(
+                ).string_value,
+
+                "backend_address": self.get_parameter(
+                    'backend_address'
+                ).get_parameter_value(
+                ).string_value,
+
+                "fleet_server":  self.get_parameter(
+                    'fleet_server'
+                ).get_parameter_value(
+                ).integer_value
             }
         fleet_communication_qos = QoSProfile(
             reliability=QoSReliabilityPolicy.RELIABLE,
             durability=QoSDurabilityPolicy.VOLATILE,
-            avoid_ros_namespace_conventions=False,    
+            avoid_ros_namespace_conventions=False,
             history=QoSHistoryPolicy.KEEP_LAST,
             depth=10
         )
@@ -87,7 +130,7 @@ class ros_controller(Node):
             self.create_publisher(fleet_interfaces.FleetDataSettingRequest,
                                   self.node_config["setting_request_topic"],
                                   fleet_communication_qos)
-        
+
         self.task_sequence_request = \
             self.create_publisher(fleet_interfaces.FleetDataTaskSequenceHeaderRequest,
                                   self.node_config["task_sequence_topic"],
@@ -176,7 +219,7 @@ class ros_controller(Node):
                                 task_id: str,
                                 phase: str,
                                 user_id: int):
-        
+
         new_user_request = fleet_interfaces.FleetDataCreateNfcRequest()
         new_user_request.fleet_name = fleet_name
         new_user_request.robot_name = robot_name
@@ -194,11 +237,11 @@ class ros_controller(Node):
 
     def handle_Sequence_request(self,
                                 fleet_name: str,
-                                robot_name: str, 
+                                robot_name: str,
                                 task_id: str,
                                 sequence_length: int):
-        
-        task_header_request= fleet_interfaces.FleetDataTaskSequenceHeader()
+
+        task_header_request = fleet_interfaces.FleetDataTaskSequenceHeader()
         task_header_request.fleet_name = fleet_name
         task_header_request.robot_name = robot_name
         task_header_request.task_id = task_id
@@ -230,21 +273,21 @@ class ros_controller(Node):
                                                       drawer_id=data[1],
                                                       status=data[2])
         elif msg.status == "EstimatedTimeRemaining":
-            self.time_to_nav_goal=msg.status_message
-            task_ref= msg.task_id.split('#')
-        
-            self.responce.handle_update_task(task_ref[0], task_ref[1], msg.status+":"+msg.message, msg.completed)
-        
+            self.time_to_nav_goal = msg.status_message
+            task_ref = msg.task_id.split('#')
+
+            self.responce.handle_update_task(task_ref[0],
+                                             task_ref[1],
+                                             msg.status+":"+msg.message,
+                                             msg.completed)
+
         elif msg.status == "Notification":
-            task_ref= msg.task_id.split('#')
+            task_ref = msg.task_id.split('#')
             self.responce.handle_update_task(task_ref[0], task_ref[1], msg.message, msg.completed)
             self.responce.handle_notification(task_ref[0], task_ref[1], msg.message)
 
         if msg.completed:
             self.responce.handle_requesting_next_task()
-        
-
-     
 
     def divide_task_id(self, task_id):
         combined_ids = task_id.split('#')

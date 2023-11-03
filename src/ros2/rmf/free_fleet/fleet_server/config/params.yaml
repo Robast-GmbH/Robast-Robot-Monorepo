@@ -1,0 +1,14 @@
+fleet_server:
+  ros__parameters:
+    backend_address: "http://127.0.0.1:3000" # the address of the backend server
+    fleet_server: 3002 # the port on which the fleet_server should be running
+
+    robot_state_topic: "/robot_state" # ros2 topic name (from Robotnik) to communicate the current status of the robot (position, current task, battery status)
+    task_state_topic: "/task_state" # ros2 topic name ( to fleet_server node) to comunicate the current status of a task(on change)
+
+    path_request_topic: "/path_request" # ros2 topic name to comunicate the path on wihch the robot should move
+    task_sequence_topic: "/task_sequence" # ros2 topic name to comunicate a task sequence to the robot
+    destination_request_topic: "/destination_request" # ros2 topic name to comunicate a task to move the robot to a new destination
+    slide_drawer_request_topic: "/drawer_request" # ros2 topic name to comunicate a task to request a opening of a drawer
+    setting_request_topic: "/setting_request" # ros2 topic name  to communicate extra or runtime data for tasks 
+    new_user_request_topic: "/new_user_request" # ros2 topic name to comunicate a task to program a new Token for a User  

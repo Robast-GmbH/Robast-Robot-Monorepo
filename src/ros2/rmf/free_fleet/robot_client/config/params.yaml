@@ -1,4 +1,4 @@
-your_amazing_node:
+robot_client:
   ros__parameters:
     fleet_name: "ROBAST"
     robot_name: "RB0"
