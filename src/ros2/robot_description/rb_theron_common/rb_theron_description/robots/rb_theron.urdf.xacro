@@ -46,6 +46,7 @@
     <xacro:arg name="ros2_control_hardware_type" default="mock_components" />
 
 	<xacro:arg name="ros_distro" default="humble" />
+	<xacro:arg name="namespace" default="" />
 
 	<!-- *************** -->
 	<!-- Robots Elements -->
@@ -197,7 +198,7 @@
 	</xacro:door_opening_mechanism>
 
 	<!-- Gazebo plugins -->
-	<xacro:ros_control ros_distro="$(arg ros_distro)"/>
+	<xacro:ros_control ros_distro="$(arg ros_distro)" namespace= "$(arg namespace)"/>
 	<xacro:gazebo_sensor_plugins ros_distro="$(arg ros_distro)"/>
 	
 </robot>

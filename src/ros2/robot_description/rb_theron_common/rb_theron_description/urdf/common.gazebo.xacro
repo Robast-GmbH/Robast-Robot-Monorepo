@@ -2,11 +2,14 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <!-- ROS CONTROL GAZEBO PLUGIN -->
-    <xacro:macro name="ros_control" params="ros_distro">
+    <xacro:macro name="ros_control" params="ros_distro namespace" >
         <gazebo>
             <xacro:if value="${ros_distro == 'humble'}">
                 <plugin name="ign_ros2_control::IgnitionROS2ControlPlugin" filename="libign_ros2_control-system.so">
                     <parameters>$(find rb_theron_description)/config/rb_theron_gz_ros2_controller.yaml</parameters>
+                    <ros>
+                        <namespace>${namespace}</namespace>
+                    </ros>
                 </plugin>
             </xacro:if>
             <xacro:unless value="${ros_distro == 'humble'}">

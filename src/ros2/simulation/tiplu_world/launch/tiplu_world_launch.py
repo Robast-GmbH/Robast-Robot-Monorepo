@@ -84,6 +84,7 @@ def generate_launch_description():
     start_robot_state_publisher_cmd = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
+        namespace="/test",
         name="robot_state_publisher",
         parameters=[{"use_sim_time": use_sim_time}, {"robot_description": robot_xml}],
         output="screen",
@@ -101,11 +102,12 @@ def generate_launch_description():
     spawn_robot_cmd = Node(
         package="ros_gz_sim",
         executable="create",
+        namespace="test",
         arguments=[
             "-name",
             robot_name,
             "-topic",
-            "robot_description",
+            "/test/robot_description",
             "-z",
             "0.2",
             "-x",
