@@ -20,7 +20,7 @@ namespace rmf_robot_client
     {
       if (std::count(header.begin(), header.end(), '#') == 1)
       {
-        std::size_t pos = header.find("/");
+        std::size_t pos = header.find("#");
         id = stoi(header.substr(0, pos));
         phase = stoi(header.substr(pos + 1));
       }
@@ -48,6 +48,8 @@ namespace rmf_robot_client
 
     std::string Tostring()
     {
+      return std::to_string(id) + "#" + std::to_string(phase);
+
       if (is_set())
       {
         return id + "#" + phase;

@@ -148,6 +148,7 @@ class ros_controller(Node):
                                      self.update_task_state,
                                      fleet_communication_qos)
 
+
     # handle Mode request
     def handle_mode_request(self, fleet_name, robot_name, mode):
         mode_request = fleet_interfaces.FleetDataModeRequest
@@ -158,6 +159,7 @@ class ros_controller(Node):
         mode_request.parameters = []
         self.dds_mode_request.publish(mode_request)
 
+
     # handle path request
     def handle_path_request(self, fleet_name, robot_name, path):
         path_request = fleet_interfaces.FleetDataPathRequest()
@@ -166,6 +168,7 @@ class ros_controller(Node):
         path_request.task_id = ""
         path_request.path = path
         self.path_request.publish(path_request)
+
 
     # handle destination request
     def handle_destination_request(self,
@@ -191,6 +194,7 @@ class ros_controller(Node):
         destination_request.destination = goal
         self.destination_request.publish(destination_request)
 
+
     # handle_drawer_request
     def handle_slide_drawer_request(self,
                                     fleet_name: str,
@@ -213,6 +217,7 @@ class ros_controller(Node):
         slide_drawer_request.e_drawer = e_drawer
         self.slide_drawer_request.publish(slide_drawer_request)
 
+
     def handle_new_user_request(self,
                                 fleet_name: str,
                                 robot_name: str,
@@ -227,6 +232,7 @@ class ros_controller(Node):
         new_user_request.user_id = user_id
         self.new_user_request.publish(new_user_request)
 
+        
     def handle_setting_request(self, robot_name: str, fleet_name: str, command: str, value: [str]):
         setting_request = fleet_interfaces.FleetDataSettingRequest()
         setting_request.command = command
@@ -235,6 +241,7 @@ class ros_controller(Node):
         setting_request.fleet_name = fleet_name
         self.settings_request.publish(setting_request)
 
+                                
     def handle_Sequence_request(self,
                                 fleet_name: str,
                                 robot_name: str,
@@ -248,9 +255,11 @@ class ros_controller(Node):
         task_header_request.sequence_length = sequence_length
         self.task_sequence_request.publish(task_header_request)
 
+                                              
     def set_responce(self, responce_object):
         self.responce = responce_object
 
+                                              
     def update_robot_state(self, msg: fleet_interfaces.FleetDataRobotState):
         if self.responce is not None:
             mode = msg.mode
@@ -262,9 +271,8 @@ class ros_controller(Node):
                                               yaw_pose=msg.location.yaw,
                                               battery_level=msg.battery_percent)
 
+                                                      
     def update_task_state(self, msg: fleet_interfaces.FleetDataTaskState):
-        self.get_logger().info(f"{msg}")
-
         if msg.status == "DrawerState":
             data = msg.status_message.split('#')
             self.get_logger().info(f"{data}")
@@ -289,12 +297,14 @@ class ros_controller(Node):
         if msg.completed:
             self.responce.handle_requesting_next_task()
 
+
     def divide_task_id(self, task_id):
-        combined_ids = task_id.split('#')
+        combined_ids = task_id.split()
         if len(combined_ids) != 2:
             return task_id, None
         else:
             return combined_ids[0], combined_ids[1]
+
 
     def get_node_config(self):
         return self.node_config

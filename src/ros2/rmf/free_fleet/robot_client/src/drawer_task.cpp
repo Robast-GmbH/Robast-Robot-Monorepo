@@ -2,8 +2,11 @@
 
 namespace rmf_robot_client
 {
-  DrawerTask::DrawerTask(TaskId task_id, std::shared_ptr<rclcpp::Node> ros_node, std::shared_ptr<TaskId> task_indicator,
-                         std::shared_ptr<std::map<std::string, DrawerState>> drawer_states, DrawerState used_drawer)
+  DrawerTask::DrawerTask(TaskId task_id,
+                         std::shared_ptr<rclcpp::Node> ros_node,
+                         std::shared_ptr<TaskId> task_indicator,
+                         std::shared_ptr<std::map<std::string, DrawerState>> drawer_states,
+                         DrawerState used_drawer)
       : BaseTask(task_id, ros_node, task_indicator)
   {
     this->_selected_drawer = std::make_unique<DrawerState>(used_drawer);
@@ -30,7 +33,8 @@ namespace rmf_robot_client
   void DrawerTask::start()
   {
     RCLCPP_INFO(ros_node_->get_logger(), "start drawer_task");
-    publish_task_state("Notification", "wait_for_drawer_opened" + _selected_drawer->drawer_ref.get_ref_string(), false);
+    publish_task_state(
+        "Notification", "wait_for_drawer_opened#" + _selected_drawer->drawer_ref.get_ref_string(), false);
 
     // ToDO @Torben : remove this after the frontend has been updated
     open_drawer_task(*_selected_drawer);
