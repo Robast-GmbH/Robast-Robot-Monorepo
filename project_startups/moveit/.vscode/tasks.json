@@ -1,0 +1,82 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "detail": "Symlink Build.",
+            "type": "shell",
+            "command": "source ~/../../opt/ros/iron/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test",
+            "detail": "Build and executes all tests and shows the links to the testreport with Errors",
+            "type": "shell",
+            "dependsOn": [
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "command": "source install/setup.bash; colcon test --event-handler=console_direct+; colcon test-result --all",
+            "problemMatcher": []
+        },
+        {
+            "label": "Test Dryve D1 Bridge",
+            "detail": "Build and executes dryve d1 bridge tests and shows the links to the testreport with Errors",
+            "type": "shell",
+            "dependsOn": [
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "command": "clear; source install/setup.bash; colcon test --packages-select dryve_d1_bridge --event-handler=console_direct+; colcon test-result --all",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "start moveit_door_opening_mechanism for the real world",
+            "command": "source /workspace/install/setup.bash; ros2 launch moveit_door_opening_mechanism_rotating_arm_config moveit_real_world_launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "focus": false,
+                "group": "default_start"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "start moveit_door_opening_mechanism in standalone rviz simulation",
+            "command": "source /workspace/install/setup.bash; ros2 launch moveit_door_opening_mechanism_rotating_arm_config moveit_rviz_simulation_launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "focus": false,
+                "group": "default_start"
+            }
+        },
+        {
+            "label": "clean-build",
+            "detail": "Purges and symlink colcon build",
+            "dependsOn": [
+                "purge",
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "purge",
+            "detail": "Purge workspace by deleting all generated files.",
+            "type": "shell",
+            "command": "rm -fr build install log; py3clean .",
+            "problemMatcher": []
+        }
+    ],
+    "inputs": [
+        {
+            "id": "package",
+            "type": "promptString",
+            "description": "Package name"
+        }
+    ]
+}

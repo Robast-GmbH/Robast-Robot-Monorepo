@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="freely_rotating_hook" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:macro name="freely_rotating_hook" params="prefix parent *origin">
+    <xacro:macro name="freely_rotating_hook" params="prefix parent ros2_control_hardware_type ros_distro *origin">
 
         <!-- Please mind: This joint is actually passive, but in order to help moveit plan the trajectory we make it active -->
         <xacro:basic_joint 
@@ -15,9 +15,11 @@
             upper_limit="3.14"
             damping="0.05"
             friction="0.1"
-            p_gain="500"
-            i_gain="1000"
-            d_gain="10"
+            ros2_control_hardware_type="${ros2_control_hardware_type}"
+            ip_address="0"
+            port="0"
+            direction="0"
+            ros_distro="${ros_distro}"
             link_name="${prefix}door_opening_mechanism_link_freely_rotating_hook"
             link_origin_x="0.0"
             link_origin_y="0.0"

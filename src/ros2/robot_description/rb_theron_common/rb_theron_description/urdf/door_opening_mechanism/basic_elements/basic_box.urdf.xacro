@@ -4,7 +4,7 @@
     <xacro:macro name="box_inertia_robot" params="m x y z">
         <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
                 iyy="${m*(x*x+z*z)/12}" iyz = "0"
-                izz="${m*(x*x+z*z)/12}" />
+                izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
     <xacro:macro name="basic_box" params="parent joint_name link_name m x y z r g b *origin">

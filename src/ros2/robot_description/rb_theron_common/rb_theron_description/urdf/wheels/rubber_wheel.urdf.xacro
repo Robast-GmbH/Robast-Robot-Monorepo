@@ -18,7 +18,7 @@
         <inertia ixx="${m*(3*r*r+h*h)/12}" ixy = "0" ixz = "0" iyy="${m*(3*r*r+h*h)/12}" iyz = "0" izz="${m*r*r/2}" />
     </xacro:macro>
 
-    <xacro:macro name="rubber_wheel" params="prefix parent *origin reflect hq">
+    <xacro:macro name="rubber_wheel" params="prefix parent *origin reflect ros2_control_hardware_type ros_distro hq">
 
         <!--WHEEL TIRE -->
         <joint name="${prefix}_wheel_joint" type="continuous">
@@ -54,7 +54,11 @@
         </link>
 
 
-        <xacro:rubber_wheel_transmission prefix="${prefix}" />
+        <xacro:rubber_wheel_transmission
+            prefix="${prefix}"
+            ros2_control_hardware_type="${ros2_control_hardware_type}"
+            ros_distro="${ros_distro}"
+        />
         <xacro:rubber_wheel_gazebo prefix="${prefix}" />
 
 
