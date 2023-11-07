@@ -17,6 +17,7 @@ namespace dryve_d1_bridge
   // d1
   const int RB_THERON_PORT_X_AXIS = 3503;
   const int RB_THERON_PORT_Y_AXIS = 3502;
+  const int RB_THERON_PORT_ROTATING_ARM = 3012;
 
   const int MODBUS_TCP_PORT = 502;
 
