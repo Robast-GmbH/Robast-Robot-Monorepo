@@ -1,7 +1,7 @@
 ARG ROS_VERSION=humble
 FROM ros:${ROS_VERSION} as devel
 ARG ROS_CONTROL_VERSION=humble
-ARG MOVEIT2_TUTORIALS_VERSION=main
+ARG MOVEIT2_TUTORIALS_VERSION=humble
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
   echo robast:robast | chpasswd && \
