@@ -35,11 +35,32 @@ jobs:
     - name: configures Docker Buildx to create a builder instance for running the image build.
       uses: docker/setup-buildx-action@v2 
     
-    - name: Build ${{ env.Project-Name }} devel docker
+    - name: Build humble ${{ env.Project-Name }} dev docker
       uses: docker/build-push-action@v4
       with:
         context: src/ros2/moveit/${{ env.Project-Name }}/
         target: devel
         push: true
+        build-args: |
+          ROS_VERSION=humble
+          ROS_CONTROL_VERSION=humble
+          MOVEIT2_TUTORIALS_VERSION=humble
         file: src/ros2/moveit/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel-humble
+        cache-from: type=gha
+        cache-to: type=gha,mode=min
+
+    - name: Build iron ${{ env.Project-Name }} dev docker
+      uses: docker/build-push-action@v4
+      with:
+        context: src/ros2/moveit/${{ env.Project-Name }}/
+        target: devel
+        push: true
+        build-args: |
+          ROS_VERSION=iron
+          ROS_CONTROL_VERSION=master
+          MOVEIT2_TUTORIALS_VERSION=main
+        file: src/ros2/moveit/${{ env.Project-Name }}/Dockerfile
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel-iron
+        cache-from: type=gha
+        cache-to: type=gha,mode=min        
