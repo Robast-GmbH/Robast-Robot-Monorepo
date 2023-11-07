@@ -22,7 +22,7 @@
             friction="0.3"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
             ip_address="192.168.0.12"
-            port="0"
+            port="502"
             direction="0"
             ros_distro="${ros_distro}"
             link_name="${prefix}door_opening_mechanism_link_rotating_arm"
