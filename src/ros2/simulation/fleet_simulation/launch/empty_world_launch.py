@@ -13,24 +13,23 @@ from launch.event_handlers import OnProcessExit
 
 def generate_launch_description():
 
-    ros_distro = os.environ["ROS_DISTRO"]
     gz_version = os.environ["GZ_VERSION"]
 
     if (gz_version == "fortress"):
         gz_version = 6
         pkg_ros_gz_sim = get_package_share_directory("ros_ign_gazebo")
         gz_sim_launch = os.path.join(pkg_ros_gz_sim, "launch", "ign_gazebo.launch.py")
-        gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "ign_ros_bridge.yaml")
+        # gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "ign_ros_bridge.yaml")
     if (gz_version == "garden"):
         gz_version = 7
         pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
         gz_sim_launch = os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
-        gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml")
+        # gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml")
     if (gz_version == "harmonic"):
         gz_version = 8
         pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
         gz_sim_launch = os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
-        gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml")
+        # gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml")
 
    
     world_model = LaunchConfiguration("world_model")
@@ -72,17 +71,6 @@ def generate_launch_description():
                           }.items(),
     )
 
-    gz_ros_bridge_cmd = Node(
-        package="ros_gz_bridge",
-        executable="parameter_bridge",
-        parameters=[
-            {"config_file": gz_ros_bridge_yaml},
-        ],
-        output="screen",
-    )
-
-    
-
     ld = LaunchDescription()
 
     # arguments
@@ -93,12 +81,5 @@ def generate_launch_description():
 
     # included launches
     ld.add_action(gz_sim_cmd)
-
-    # nodes
-
-    ld.add_action(gz_ros_bridge_cmd)
-
-  
-
 
     return ld

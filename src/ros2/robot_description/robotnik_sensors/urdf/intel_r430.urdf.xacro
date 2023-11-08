@@ -25,6 +25,13 @@
 
   <xacro:macro name="sensor_r430" params="prefix parent publish_bf robot_name prefix_topic:='front_rgbd_camera' hq *origin">
 
+  <xacro:if value="${robot_name=='rb_theron'}">
+    <xacro:property name="robot_namespace" value="" />
+  </xacro:if>
+  <xacro:unless value="${robot_name=='rb_theron'}">
+		<xacro:property name="robot_namespace" value="${robot_name}/"/>
+	</xacro:unless> 
+
     <xacro:if value="${publish_bf}">
 			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}" />
 		</xacro:if>
@@ -144,7 +151,7 @@
     <!-- gazebo reference="${prefix}_rgb_base_link" -->
     <gazebo reference="${prefix}_link">
       <sensor name="${prefix}_color_link" type="camera">
-				<topic>${prefix_topic}/color</topic>
+				<topic>${robot_namespace}${prefix_topic}/color</topic>
         <camera name="r430">
             <horizontal_fov>1.2112585008840648</horizontal_fov>
             <image>
@@ -169,7 +176,7 @@
       </sensor>
       
       <sensor name="${prefix}_ired1" type="camera">
-      <topic>${prefix_topic}/${prefix}/ired1</topic>
+      <topic>${robot_namespace}${prefix_topic}/ired1</topic>
         <camera name="r430">
           <horizontal_fov>${91.2*M_PI/180.0}</horizontal_fov>
           <image>
@@ -193,7 +200,7 @@
       </sensor>
 
       <sensor name="${prefix}_ired2" type="camera">
-        <topic>${prefix_topic}/${prefix}/ired2</topic>
+        <topic>${robot_namespace}${prefix_topic}/ired2</topic>
         <camera name="r430">
           <horizontal_fov>1.4870205226991688</horizontal_fov>
           <image>
@@ -217,7 +224,7 @@
       </sensor>
 
       <sensor name="${prefix}_depth_link" type="depth">
-        <topic>${prefix_topic}/${prefix}/depth</topic>
+        <topic>${robot_namespace}${prefix_topic}/depth</topic>
         <camera name="r430">
           <horizontal_fov>${91.2*M_PI/180.0}</horizontal_fov>
           <image>
@@ -238,7 +245,7 @@
         <update_rate>15</update_rate>
         <visualize>1</visualize>
       </sensor>
-    </gazebo>  
+    </gazebo>   
   </xacro:macro>
 
 

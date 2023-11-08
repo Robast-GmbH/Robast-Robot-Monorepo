@@ -5,6 +5,12 @@
                                            cam_pos_x cam_pos_y cam_pos_z 
                                            cam_roll cam_pitch cam_yaw hq
                                            r:=0.8 g:=0.8 b:=0.8 a:=0.8">
+    <xacro:if value="${robot_name=='rb_theron'}">
+      <xacro:property name="robot_namespace" value="" />
+    </xacro:if>
+    <xacro:unless value="${robot_name=='rb_theron'}">
+			<xacro:property name="robot_namespace" value="${robot_name}/"/>
+		</xacro:unless>
 
     <xacro:if value="${publish_bf}">
 			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}" />
@@ -148,7 +154,7 @@
     <!-- gazebo reference="${prefix}_rgb_base_link" -->
     <gazebo reference="${base_frame}">
       <sensor name="${prefix}_rgb_camera_optical_frame" type="camera">
-				<topic>${prefix_topic}/color</topic>
+				<topic>${robot_namespace}${prefix_topic}/color</topic>
         <camera name="oak-d">
             <horizontal_fov>1.2112585008840648</horizontal_fov>
             <image>
@@ -169,7 +175,7 @@
       </sensor>
 
       <sensor name="${prefix}_right_camera_optical_frame" type="depth">
-        <topic>${prefix_topic}/${prefix}/depth</topic>
+        <topic>${robot_namespace}${prefix_topic}/depth</topic>
         <camera name="oak-d">
           <horizontal_fov>${85.2*M_PI/180.0}</horizontal_fov>
           <image>
@@ -192,5 +198,4 @@
       </sensor>
     </gazebo>  
 </xacro:macro>
-
 </robot>

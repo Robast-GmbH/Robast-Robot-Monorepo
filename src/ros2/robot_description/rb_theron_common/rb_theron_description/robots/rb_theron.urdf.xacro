@@ -10,7 +10,7 @@
 	<xacro:include filename="$(find rb_theron_description)/robots/rb_theron_base.urdf.xacro" />
 	<xacro:include filename="$(find rb_theron_description)/urdf/wheels/rubber_wheel_150.urdf.xacro" />
 	<xacro:include filename="$(find rb_theron_description)/urdf/wheels/castor.urdf.xacro" />
-	<xacro:include filename="$(find robotnik_sensors)/urdf/all_sensors.urdf.xacro" />
+	<xacro:include filename="$(find robotnik_sensors)/urdf/all_sensors.urdf.xacro" /> 
 
 	<!-- Import Gazebo Stuff -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/common.gazebo.xacro" />
@@ -24,8 +24,7 @@
 	<!-- Flag to determine if the base_footprint should be published or not -->
 	<xacro:property name="publish_bf" value="true"/>
 
-	<!-- This name should match the "-name" argument we need to declare when spawing the robot into ign gazebo -->
-	<xacro:property name="robot_name" value="rb_theron"/>
+
 
 	<!-- Wheel parameters -->
 	<!--xacro:property name="wheel_offset_x" value="0" />
@@ -35,7 +34,10 @@
 	<!-- Flag to select the high or low quality model -->
 	<xacro:property name="hq" value="false" />
 
+	<!-- This name should match the "-name" argument we need to declare when spawing the robot into ign gazebo -->
+	<xacro:arg name="robot_name" default="rb_theron"/>
 	<xacro:arg name="prefix" default=""/>
+	<xacro:arg name="use_gazebo_sensor_plugins" default="true"/>
 	<!-- <xacro:arg name="gpu" default="true"/> -->
 
 	<!-- ros2_control_hardware_type:
@@ -68,16 +70,16 @@
 	<!-- SENSORS  DEBUGG-->
 	<!-- TODO: Should be sensor_intel_d435, but this one isn't migrated to ros2 yet -->
 	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
-	<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="front_realsense_camera" hq="${hq}">
+	<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="$(arg robot_name)" prefix_topic="front_realsense_camera" hq="${hq}">
 		<origin xyz="0.3305 0.0 0.1468" rpy="0 0 0"/>
 	</xacro:sensor_r430>
 
-	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="back_realsense_camera" hq="${hq}">
+	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="$(arg robot_name)" prefix_topic="back_realsense_camera" hq="${hq}">
 		<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
 
 	<!--Added back top realsense camera because running YOLO network on depthai camera in simulation reduces Real Time Factor (RTF)-->
-	<xacro:sensor_r430 prefix="$(arg prefix)back_top_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="back_top_realsense_camera" hq="${hq}">
+	<xacro:sensor_r430 prefix="$(arg prefix)back_top_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="$(arg robot_name)" prefix_topic="back_top_realsense_camera" hq="${hq}">
 		<origin xyz="-0.3305 0.0 1.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
 
@@ -86,11 +88,11 @@
 		<origin xyz="0.3305 0.0 0.1898" rpy="0 0 0"/>
 	</xacro:sensor_orbbec_astra -->
 
-	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link">
+	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link" robot_name="$(arg robot_name)">
 		<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
 	</xacro:sensor_imu_hector>
 
-	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619" gpu="true">
+	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="$(arg robot_name)" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619" gpu="true">
 		<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
 	</xacro:sensor_sick_nanoscan3>
 
@@ -98,7 +100,7 @@
 		<origin xyz="0.214 0.0 0.275" rpy="-1.57079632679 0 -0.23"/>
 	</xacro:sensor_rs_lidar_16>-->
 
-	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
+	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="$(arg robot_name)" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
 		<origin xyz="0.3 -0.175 1.165" rpy="-1.570796326795 0 -1.570796326795"/>
 		<!-- positions of the b-pearl based on solid: xyz="0.333 -0.180 1.194" rpy="-1.570796326795 0 -1.570796326795" -->
 	</xacro:sensor_rs_bpearl>
@@ -119,7 +121,7 @@
 		prefix="$(arg prefix)front_top_oak_d_camera"
 		parent="$(arg prefix)base_link"
 		publish_bf="${publish_bf}"
-		robot_name="${robot_name}"
+		robot_name="$(arg robot_name)"
 		prefix_topic="front_top_oak_d_camera"
 		camera_model="$(arg front_oak_d_camera_model)"
 		base_frame="$(arg front_oak_d_base_frame)"
@@ -199,6 +201,7 @@
 
 	<!-- Gazebo plugins -->
 	<xacro:ros_control ros_distro="$(arg ros_distro)" namespace= "$(arg namespace)"/>
-	<xacro:gazebo_sensor_plugins ros_distro="$(arg ros_distro)"/>
-	
+	<xacro:if value="$(arg use_gazebo_sensor_plugins)">
+		<xacro:gazebo_sensor_plugins ros_distro="$(arg ros_distro)"/> 
+	</xacro:if>
 </robot>

@@ -12,6 +12,13 @@
 			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}_link" />
 		</xacro:unless>
 
+    <xacro:if value="${robot_name=='rb_theron'}">
+      <xacro:property name="robot_namespace" value="" />
+    </xacro:if>
+    <xacro:unless value="${robot_name=='rb_theron'}">
+		  <xacro:property name="robot_namespace" value="${robot_name}/"/>
+	  </xacro:unless>
+
     <joint name="${prefix}_base_joint" type="fixed">
       <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
@@ -87,7 +94,7 @@
       </visual>  
       <sensor name='${prefix}_link' type='gpu_lidar'>
         <visualize>true</visualize>
-        <topic>bpearl_laser/scan</topic>
+        <topic>${robot_namespace}bpearl_laser/scan</topic>
         <update_rate>${fps}</update_rate>
         <ray>
           <scan>

@@ -1,7 +1,13 @@
 <?xml version="1.0"?>
 <robot name="sensor_imu" xmlns:xacro="http://wiki.ros.org/xacro">
 
-	<xacro:macro name="sensor_imu_hector" params="prefix topic:='imu/data' parent *origin">
+	<xacro:macro name="sensor_imu_hector" params="prefix robot_name topic:='imu/data' parent *origin">
+		<xacro:if value="${robot_name=='rb_theron'}">
+      		<xacro:property name="robot_namespace" value="" />
+    	</xacro:if>
+    	<xacro:unless value="${robot_name=='rb_theron'}">
+			<xacro:property name="robot_namespace" value="${robot_name}/"/>
+		</xacro:unless>
 
 		<xacro:if value="${publish_bf}">
 			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}_link" />
@@ -43,7 +49,7 @@
 				<always_on>1</always_on>
 				<update_rate>40</update_rate>
 				<visualize>true</visualize>
-				<topic>imu/data</topic>
+				<topic>${robot_namespace}imu/data</topic>
 
 				<imu>
 					<!-- <orientation>

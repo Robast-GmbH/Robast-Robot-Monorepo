@@ -11,6 +11,14 @@
 			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}_link" />
 		</xacro:unless>
 
+		<xacro:if value="${robot_name=='rb_theron'}">
+      		<xacro:property name="robot_namespace" value="" />
+    	</xacro:if>
+    	<xacro:unless value="${robot_name=='rb_theron'}">
+			<xacro:property name="robot_namespace" value="${robot_name}/"/>
+	  	</xacro:unless>
+
+
 		<joint name="${prefix}_base_joint" type="fixed">
 			<xacro:insert_block name="origin" />
 			<parent link="${parent}"/>
@@ -72,7 +80,7 @@
 			</xacro:unless>
 
 			<sensor type="${ray_type}" name="${prefix}_link">
-				<topic>${prefix_topic}/scan</topic>
+				<topic>${robot_namespace}/${prefix_topic}/scan</topic>
 				<always_on>1</always_on>
     				<visualize>false</visualize>
 				<update_rate>30.0</update_rate>
