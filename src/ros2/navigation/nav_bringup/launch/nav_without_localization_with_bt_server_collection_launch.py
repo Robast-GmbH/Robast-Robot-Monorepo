@@ -27,17 +27,20 @@ def generate_launch_description():
     if is_simulation:
         use_sim_time_default = "true"
         remappings = [
-            ("/odom", "odom"),
+            ("/cmd_vel", "diff_drive_base_controller/cmd_vel_unstamped"),
+            ("/odom", "diff_drive_base_controller/odom"),
             ("/tf", "tf"),
             ("/tf_static", "tf_static"),
+            ("/cmd_vel_smoothed", "diff_drive_base_controller/cmd_vel_unstamped")
         ]
     else:
         use_sim_time_default = "false"
         remappings = [
-            ("/cmd_vel", "robot/robotnik_base_control/cmd_vel"),
+            ("/cmd_vel", "robot/robotnik_base_control/cmd_vel_unstamped"),
             ("/odom", "robot/robotnik_base_control/odom"),
             ("/robot/tf", "tf"),
             ("/robot/tf_static", "tf_static"),
+            ("/cmd_vel_smoothed", "cmd_vel")
         ]
     bringup_dir = get_package_share_directory('nav_bringup')
 
@@ -192,7 +195,7 @@ def generate_launch_description():
                 parameters=[configured_params],
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings +
-                        [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')]),
+                        [('cmd_vel', 'cmd_vel_nav')]),
 
             Node(
                 package='behavior_tree_server_collection',

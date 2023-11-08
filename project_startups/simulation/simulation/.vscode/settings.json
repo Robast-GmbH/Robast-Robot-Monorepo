@@ -144,5 +144,8 @@
         "editor.tabSize": 4,
         "editor.defaultFormatter": "ms-python.python"
     },
-    "python.formatting.provider": "black"
+    "python.formatting.provider": "black",
+    "[xml]": {
+        "editor.formatOnSave": false // disables formatting for xml files (since formatting for our xacros is garbage so far)
+    }
 }
