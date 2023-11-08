@@ -41,6 +41,7 @@
         <joint name="door_opening_mechanism_joint_y_axis_slide" value="0"/>
         <joint name="door_opening_mechanism_joint_x_axis_slide" value="0"/>
         <joint name="door_opening_mechanism_joint_rotating_arm" value="0"/>
+        <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
         <joint name="position" value="0 0 0"/>
     </group_state>
 
@@ -48,6 +49,7 @@
         <joint name="door_opening_mechanism_joint_y_axis_slide" value="0"/>
         <joint name="door_opening_mechanism_joint_x_axis_slide" value="0"/>
         <joint name="door_opening_mechanism_joint_rotating_arm" value="0"/>
+        <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
         <joint name="position" value="1 0 0"/>
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
