@@ -12,6 +12,18 @@
     <xacro:property name="PI" value="3.1415926535897931"/>
     <!-- xacro:property name="wheel_width" value="0.150" / -->
 
+    <ros2_control name="position_ros2_control" type="system">
+      <hardware>
+          <plugin>fake_components/GenericSystem</plugin>
+      </hardware>
+      <joint name="position">
+          <param name="initial_position">0.0 0.0 0.0</param>
+          <command_interface name="position" />
+          <state_interface name="position"/>
+          <state_interface name="velocity"/>
+      </joint>
+    </ros2_control>
+
     <!-- BASE FOOTPRINT -->
     <xacro:if value="${publish_bf}">
       <link name="${prefix}base_footprint">
