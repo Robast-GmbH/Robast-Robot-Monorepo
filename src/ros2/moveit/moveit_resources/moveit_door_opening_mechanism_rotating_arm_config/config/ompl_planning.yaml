@@ -162,7 +162,7 @@ door_opening_mechanism:
   projection_evaluator: joints(door_opening_mechanism_joint_y_axis_slide)
   longest_valid_segment_fraction: 0.006
   maximum_waypoint_distance: 0.1
-position:
+position_group:
   default_planner_config: RRTstarkConfigDefault
   planner_configs:
     - SBLkConfigDefault
