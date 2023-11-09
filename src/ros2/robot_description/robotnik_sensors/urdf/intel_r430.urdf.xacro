@@ -33,20 +33,20 @@
 	</xacro:unless> 
 
     <xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}" />
+			<xacro:property name="sensor_link_name" value="${robot_namespace}base_footprint/${prefix}" />
 		</xacro:if>
 		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}" />
+			<xacro:property name="sensor_link_name" value="${robot_namespace}base_link/${prefix}" />
 		</xacro:unless>
 
     <!-- camera body, with origin at bottom screw mount -->
     <joint name="${prefix}_camera_joint" type="fixed">
       <xacro:insert_block name="origin" />
       <parent link="${parent}"/>
-      <child link="${prefix}_link" />
+      <child link="${robot_namespace}${prefix}_link" />
     </joint>
 
-    <link name="${prefix}_link">
+    <link name="${robot_namespace}${prefix}_link">
       <visual>
         <!-- origin xyz="0 ${-r430_cam_mount_from_center_offset} ${r430_cam_height/2}" rpy="${M_PI/2} 0 ${M_PI/2}"/ -->
         <origin xyz="0 ${-r430_cam_mount_from_center_offset} 0" rpy="0 0 0"/>
@@ -78,69 +78,69 @@
     <!-- camera depth joints and links -->
     <joint name="${prefix}_camera_depth_joint" type="fixed">
       <origin xyz="${r430_cam_depth_px} ${r430_cam_depth_py} ${r430_cam_depth_pz}" rpy="0 0 0"/>
-      <parent link="${prefix}_link"/>
-      <child link="${prefix}_camera_depth_frame" />
+      <parent link="${robot_namespace}${prefix}_link"/>
+      <child link="${robot_namespace}${prefix}_camera_depth_frame" />
     </joint>
-    <link name="${prefix}_camera_depth_frame"/>
+    <link name="${robot_namespace}${prefix}_camera_depth_frame"/>
     
-    <joint name="${prefix}_camera_depth_optical_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_camera_depth_optical_joint" type="fixed">
       <origin xyz="0 0 0" rpy="0 0 0" />
-      <parent link="${prefix}_camera_depth_frame" />
+      <parent link="${robot_namespace}${prefix}_camera_depth_frame" />
       <child link="${sensor_link_name}_depth_link" />
     </joint>
     <link name="${sensor_link_name}_depth_link"/>
 
-    <joint name="${prefix}_camera_color_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_camera_color_joint" type="fixed">
       <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
-      <parent link="${prefix}_camera_depth_frame" />
+      <parent link="${robot_namespace}${prefix}_camera_depth_frame" />
       <child link="${sensor_link_name}_color_link" />
     </joint>
     <link name="${sensor_link_name}_color_link"/>
 
     <!-- camera left IR joints and links -->
-    <joint name="${prefix}_camera_left_ir_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_camera_left_ir_joint" type="fixed">
       <origin xyz="0 ${r430_cam_depth_to_left_ir_offset} 0" rpy="0 0 0" />
-      <parent link="${prefix}_camera_depth_frame" />
-      <child link="${prefix}_camera_left_ir_frame" />
+      <parent link="${robot_namespace}${prefix}_camera_depth_frame" />
+      <child link="${robot_namespace}${prefix}_camera_left_ir_frame" />
     </joint>
-    <link name="${prefix}_camera_left_ir_frame"/>
+    <link name="${robot_namespace}${prefix}_camera_left_ir_frame"/>
 
-    <joint name="${prefix}_camera_left_ir_optical_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_camera_left_ir_optical_joint" type="fixed">
       <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
-      <parent link="${prefix}_camera_left_ir_frame" />
-      <child link="${prefix}_camera_left_ir_optical_frame" />
+      <parent link="${robot_namespace}${prefix}_camera_left_ir_frame" />
+      <child link="${robot_namespace}${prefix}_camera_left_ir_optical_frame" />
     </joint>
-    <link name="${prefix}_camera_left_ir_optical_frame"/>
+    <link name="${robot_namespace}${prefix}_camera_left_ir_optical_frame"/>
 
     <!-- camera right IR joints and links -->
-    <joint name="${prefix}_camera_right_ir_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_camera_right_ir_joint" type="fixed">
       <origin xyz="0 ${r430_cam_depth_to_right_ir_offset} 0" rpy="0 0 0" />
-      <parent link="${prefix}_camera_depth_frame" />
-      <child link="${prefix}_camera_right_ir_frame" />
+      <parent link="${robot_namespace}${prefix}_camera_depth_frame" />
+      <child link="${robot_namespace}${prefix}_camera_right_ir_frame" />
     </joint>
-    <link name="${prefix}_camera_right_ir_frame"/>
+    <link name="${robot_namespace}${prefix}_camera_right_ir_frame"/>
 
-    <joint name="${prefix}_camera_right_ir_optical_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_camera_right_ir_optical_joint" type="fixed">
       <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
-      <parent link="${prefix}_camera_right_ir_frame" />
-      <child link="${prefix}_camera_right_ir_optical_frame" />
+      <parent link="${robot_namespace}${prefix}_camera_right_ir_frame" />
+      <child link="${robot_namespace}${prefix}_camera_right_ir_optical_frame" />
     </joint>
-    <link name="${prefix}_camera_right_ir_optical_frame"/>
+    <link name="${robot_namespace}${prefix}_camera_right_ir_optical_frame"/>
 
     <!-- camera fisheye joints and links -->
-    <joint name="${prefix}_camera_fisheye_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_camera_fisheye_joint" type="fixed">
       <origin xyz="0 ${r430_cam_depth_to_fisheye_offset} 0" rpy="0 0 0" />
-      <parent link="${prefix}_camera_depth_frame" />
-      <child link="${prefix}_camera_fisheye_frame" />
+      <parent link="${robot_namespace}${prefix}_camera_depth_frame" />
+      <child link="${robot_namespace}${prefix}_camera_fisheye_frame" />
     </joint>
-    <link name="${prefix}_camera_fisheye_frame"/>
+    <link name="${robot_namespace}${prefix}_camera_fisheye_frame"/>
 
-    <joint name="${prefix}_camera_fisheye_optical_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_camera_fisheye_optical_joint" type="fixed">
       <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
-      <parent link="${prefix}_camera_fisheye_frame" />
-      <child link="${prefix}_camera_fisheye_optical_frame" />
+      <parent link="${robot_namespace}${prefix}_camera_fisheye_frame" />
+      <child link="${robot_namespace}${prefix}_camera_fisheye_optical_frame" />
     </joint>
-    <link name="${prefix}_camera_fisheye_optical_frame"/>
+    <link name="${robot_namespace}${prefix}_camera_fisheye_optical_frame"/>
 
     <!-- RGBD sensor for simulation, same as Kinect -->
     <xacro:sensor_r430_gazebo/>

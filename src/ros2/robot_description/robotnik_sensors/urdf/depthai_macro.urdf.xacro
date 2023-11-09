@@ -13,10 +13,10 @@
 		</xacro:unless>
 
     <xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}" />
+			<xacro:property name="sensor_link_name" value="${robot_namespace}base_footprint/${prefix}" />
 		</xacro:if>
 		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}" />
+			<xacro:property name="sensor_link_name" value="${robot_namespace}base_link/${prefix}" />
 		</xacro:unless>
 
     <xacro:property name="M_PI"     value="3.1415926535897931" />
@@ -39,16 +39,16 @@
 
 
     <!-- base_link of the sensor-->
-    <link name="${base_frame}"/>
+    <link name="${robot_namespace}${base_frame}"/>
 
     <joint name="${prefix}_center_joint" type="fixed">
         <parent link="${parent}"/>
-        <child link="${base_frame}"/>
+        <child link="${robot_namespace}${base_frame}"/>
         <origin xyz="${cam_pos_x} ${cam_pos_y} ${cam_pos_z}" rpy="${cam_roll} ${cam_pitch} ${cam_yaw}" />
     </joint>
 
     <!-- device Center -->
-    <link name="${prefix}_model_origin">
+    <link name="${robot_namespace}${prefix}_model_origin">
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
@@ -78,72 +78,72 @@
         </collision>
     </link>
 
-    <joint name="${prefix}_model_origin_joint" type="fixed">
-        <parent link="${base_frame}"/>
-        <child link="${prefix}_model_origin"/>
+    <joint name="${robot_namespace}${prefix}_model_origin_joint" type="fixed">
+        <parent link="${robot_namespace}${base_frame}"/>
+        <child link="${robot_namespace}${prefix}_model_origin"/>
         <origin xyz="0 0 0" rpy="1.5708 0 1.5708" />
     </joint>
 
     <!-- IMU -->
     <xacro:if value="${has_imu}">
-        <link name="${prefix}_imu_frame" />
-        <joint name="${prefix}_imu_joint" type="fixed">
-            <parent link="${base_frame}"/>
-            <child link="${prefix}_imu_frame"/>
+        <link name="${robot_namespace}${prefix}_imu_frame" />
+        <joint name="${robot_namespace}${prefix}_imu_joint" type="fixed">
+            <parent link="${robot_namespace}${base_frame}"/>
+            <child link="${robot_namespace}${prefix}_imu_frame"/>
             <origin xyz="${imu_offset_x} ${imu_offset_y} ${imu_offset_z}" rpy="${imu_r} ${imu_p} ${imu_y}" />
         </joint>
     </xacro:if>
 
     <!-- RGB Camera -->
-    <link name="${prefix}_rgb_camera_frame" />
+    <link name="${robot_namespace}${prefix}_rgb_camera_frame" />
     
-    <joint name="${prefix}_rgb_camera_joint" type="fixed">
-        <parent link="${base_frame}"/>
-        <child link="${prefix}_rgb_camera_frame"/>
+    <joint name="${robot_namespace}${prefix}_rgb_camera_joint" type="fixed">
+        <parent link="${robot_namespace}${base_frame}"/>
+        <child link="${robot_namespace}${prefix}_rgb_camera_frame"/>
         <origin xyz="0 0 0" rpy="0 0 0" />
     </joint>
 
-    <link name="${sensor_link_name}_rgb_camera_optical_frame"/>
+    <link name="${robot_namespace}${sensor_link_name}_rgb_camera_optical_frame"/>
     
-    <joint name="${prefix}_rgb_camera_optical_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_rgb_camera_optical_joint" type="fixed">
         <origin xyz="0 0 0" rpy="-${M_PI/2} 0.0 -${M_PI/2}"/>
-        <parent link="${prefix}_rgb_camera_frame"/>
-        <child link="${sensor_link_name}_rgb_camera_optical_frame"/>
+        <parent link="${robot_namespace}${prefix}_rgb_camera_frame"/>
+        <child link="${robot_namespace}${sensor_link_name}_rgb_camera_optical_frame"/>
     </joint>
 
     <!-- Left Camera -->
-    <link name="${prefix}_left_camera_frame" />
+    <link name="${robot_namespace}${prefix}_left_camera_frame" />
     
-    <joint name="${prefix}_left_camera_joint" type="fixed">
-        <parent link="${base_frame}"/>
-        <child link="${prefix}_left_camera_frame"/>
+    <joint name="${robot_namespace}${prefix}_left_camera_joint" type="fixed">
+        <parent link="${robot_namespace}${base_frame}"/>
+        <child link="${robot_namespace}${prefix}_left_camera_frame"/>
         <origin xyz="0 ${baseline/2} 0" rpy="0 0 0" />
     </joint>
 
-    <link name="${prefix}_left_camera_optical_frame"/>
+    <link name="${robot_namespace}${prefix}_left_camera_optical_frame"/>
     
-    <joint name="${prefix}_left_camera_optical_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_left_camera_optical_joint" type="fixed">
         <origin xyz="0 0 0" rpy="-${M_PI/2} 0.0 -${M_PI/2}"/>
-        <parent link="${prefix}_left_camera_frame"/>
-        <child link="${prefix}_left_camera_optical_frame"/>
+        <parent link="${robot_namespace}${prefix}_left_camera_frame"/>
+        <child link="${robot_namespace}${prefix}_left_camera_optical_frame"/>
     </joint>
 
     
     <!-- right Camera -->
-    <link name="${prefix}_right_camera_frame" />
+    <link name="${robot_namespace}${prefix}_right_camera_frame" />
     
-    <joint name="${prefix}_right_camera_joint" type="fixed">
-        <parent link="${base_frame}"/>
-        <child link="${prefix}_right_camera_frame"/>
+    <joint name="${robot_namespace}${prefix}_right_camera_joint" type="fixed">
+        <parent link="${robot_namespace}${base_frame}"/>
+        <child link="${robot_namespace}${prefix}_right_camera_frame"/>
         <origin xyz="0 -${baseline/2} 0" rpy="0 0 0" />
     </joint>
 
-    <link name="${sensor_link_name}_right_camera_optical_frame"/>
+    <link name="${robot_namespace}${sensor_link_name}_right_camera_optical_frame"/>
     
-    <joint name="${prefix}_right_camera_optical_joint" type="fixed">
+    <joint name="${robot_namespace}${prefix}_right_camera_optical_joint" type="fixed">
         <origin xyz="0 0 0" rpy="0 0 0"/>
-        <parent link="${prefix}_right_camera_frame"/>
-        <child link="${sensor_link_name}_right_camera_optical_frame"/>
+        <parent link="${robot_namespace}${prefix}_right_camera_frame"/>
+        <child link="${robot_namespace}${sensor_link_name}_right_camera_optical_frame"/>
     </joint>
 
     <xacro:sensor_depthai_gazebo/>
@@ -152,7 +152,7 @@
   <xacro:macro name="sensor_depthai_gazebo">
 
     <!-- gazebo reference="${prefix}_rgb_base_link" -->
-    <gazebo reference="${base_frame}">
+    <gazebo reference="${robot_namespace}${base_frame}">
       <sensor name="${prefix}_rgb_camera_optical_frame" type="camera">
 				<topic>${robot_namespace}${prefix_topic}/color</topic>
         <camera name="oak-d">
