@@ -25,8 +25,8 @@ publish_period: 0.002  # 1/Nominal publish rate [seconds]
 command_out_type: std_msgs/Float64MultiArray
 
 # What to publish? Can save some bandwidth as most robots only require positions or velocities
-publish_joint_positions: true
-publish_joint_velocities: false
+publish_joint_positions: false
+publish_joint_velocities: true
 publish_joint_accelerations: false
 
 ## Plugins for smoothing outgoing commands
