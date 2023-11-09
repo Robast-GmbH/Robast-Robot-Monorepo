@@ -826,6 +826,7 @@
     <disable_collisions link1="left_wheel_link" link2="rear_rightwheel" reason="Never"/>
     <disable_collisions link1="left_wheel_link" link2="right_wheel_link" reason="Never"/>
     <disable_collisions link1="left_wheel_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="left_wheel_link" link2="left_wheel_tire_link" reason="Never"/>
     <disable_collisions link1="module_cage_link" link2="rb_theron/base_footprint/imu_link" reason="Never"/>
     <disable_collisions link1="module_cage_link" link2="rear_leftsupport" reason="Never"/>
     <disable_collisions link1="module_cage_link" link2="rear_leftwheel" reason="Never"/>
@@ -854,4 +855,5 @@
     <disable_collisions link1="rear_rightwheel" link2="right_wheel_link" reason="Never"/>
     <disable_collisions link1="rear_rightwheel" link2="top_laser_base_link" reason="Never"/>
     <disable_collisions link1="right_wheel_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="right_wheel_link" link2="right_wheel_tire_link" reason="Never"/>
 </robot>
