@@ -98,9 +98,6 @@ moveit_params:
   ompl_planning:
     package: "moveit_door_opening_mechanism_rotating_arm_config"
     path: "config/ompl_planning.yaml"
-  stomp_planning:
-    package: "moveit_door_opening_mechanism_rotating_arm_config"
-    path: "config/stomp_planning.yaml"
   kinematics:
     package: "moveit_door_opening_mechanism_rotating_arm_config"
     path: "config/kinematics.yaml"
