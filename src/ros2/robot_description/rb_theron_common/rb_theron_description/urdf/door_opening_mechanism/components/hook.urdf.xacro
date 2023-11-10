@@ -7,7 +7,7 @@
                 izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="hook" params="prefix suffix parent *origin r g b">
+    <xacro:macro name="hook" params="prefix suffix parent robot_name *origin r g b">
 
     <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/basic_elements/basic_box.urdf.xacro" />
     <xacro:basic_box

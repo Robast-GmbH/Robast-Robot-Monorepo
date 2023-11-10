@@ -1,12 +1,12 @@
 <?xml version="1.0"?>
 <robot name="freely_rotating_hook" xmlns:xacro="http://www.ros.org/wiki/xacro">
 
-    <xacro:macro name="freely_rotating_hook" params="prefix parent ros2_control_hardware_type ros_distro *origin">
+    <xacro:macro name="freely_rotating_hook" params="prefix parent robot_name ros2_control_hardware_type ros_distro *origin">
 
         <!-- Please mind: This joint is actually passive, but in order to help moveit plan the trajectory we make it active -->
         <xacro:basic_joint 
             parent="${prefix}${parent}"
-            joint_name="${prefix}door_opening_mechanism_joint_freely_rotating_hook"
+            joint_name="${robot_name}${prefix}door_opening_mechanism_joint_freely_rotating_hook"
             joint_type="revolute" 
             axis_x="1"
             axis_y="0"
@@ -20,7 +20,7 @@
             port="0"
             direction="0"
             ros_distro="${ros_distro}"
-            link_name="${prefix}door_opening_mechanism_link_freely_rotating_hook"
+            link_name="${robot_name}${prefix}door_opening_mechanism_link_freely_rotating_hook"
             link_origin_x="0.0"
             link_origin_y="0.0"
             link_origin_z="0.0"
@@ -36,7 +36,7 @@
         </xacro:basic_joint>
 
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/hook.urdf.xacro" />
-        <xacro:hook prefix="${prefix}" suffix="" parent="${prefix}door_opening_mechanism_link_freely_rotating_hook" r="1" g="0" b="1">
+        <xacro:hook prefix="${prefix}" suffix="" robot_name="${robot_name}" parent="${robot_name}${prefix}door_opening_mechanism_link_freely_rotating_hook" r="1" g="0" b="1">
             <origin xyz="0.01 0.0 0.0" rpy="0 0 -1.57079632679"/>
         </xacro:hook>
 

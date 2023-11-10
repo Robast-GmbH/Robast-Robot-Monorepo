@@ -7,7 +7,7 @@
                 izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="door_opening_mechanism" params="prefix parent ros2_control_hardware_type ros_distro *origin hq">
+    <xacro:macro name="door_opening_mechanism" params="prefix parent robot_name ros2_control_hardware_type ros_distro *origin hq">
 
         <!-- Element imports -->
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/alu_profile.urdf.xacro" />
@@ -20,10 +20,10 @@
         therefore steering of the rb_theron becomes impossible. -->
 
         <!-- Base link -->
-        <xacro:property name="door_opening_mechanism_base_link" value="${prefix}door_opening_mechanism_base_link" />
+        <xacro:property name="door_opening_mechanism_base_link" value="${robot_name}${prefix}door_opening_mechanism_base_link" />
         <xacro:basic_box 
             parent="${parent}"
-            joint_name="${prefix}door_opening_mechanism_joint"
+            joint_name="${robot_name}${prefix}door_opening_mechanism_joint"
             link_name="${door_opening_mechanism_base_link}"
             m="0.001"
             x="0.001"
@@ -36,24 +36,24 @@
         </xacro:basic_box>
 
         <!-- Aluprofile frame -->
-        <xacro:alu_profile prefix="${prefix}" suffix="bottom" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.46" r="0.1" g="0.1" b="0.1" >
+        <xacro:alu_profile prefix="${robot_name}${prefix}" suffix="bottom" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.46" r="0.1" g="0.1" b="0.1" >
             <origin xyz="0 0 0" rpy="1.57079632679 0 0"/>
         </xacro:alu_profile>
-        <xacro:alu_profile prefix="${prefix}" suffix="left" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="1.0" r="0.1" g="0.1" b="0.1" >
+        <xacro:alu_profile prefix="${robot_name}${prefix}" suffix="left" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="1.0" r="0.1" g="0.1" b="0.1" >
             <origin xyz="0 -0.245 0.515" rpy="0 0 0"/>
         </xacro:alu_profile>
-        <xacro:alu_profile prefix="${prefix}" suffix="right" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="1.0" r="0.1" g="0.1" b="0.1" >
+        <xacro:alu_profile prefix="${robot_name}${prefix}" suffix="right" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="1.0" r="0.1" g="0.1" b="0.1" >
             <origin xyz="0 +0.245 0.515" rpy="0 0 0"/>
         </xacro:alu_profile>
-        <xacro:alu_profile prefix="${prefix}" suffix="top" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.52" r="0.1" g="0.1" b="0.1" >
+        <xacro:alu_profile prefix="${robot_name}${prefix}" suffix="top" parent="${door_opening_mechanism_base_link}" x="0.03" y="0.03" z="0.52" r="0.1" g="0.1" b="0.1" >
             <origin xyz="0 0 1.03" rpy="1.57079632679 0 0"/>
         </xacro:alu_profile>
 
         <!-- Door opening mechanism -->
         <xacro:basic_box 
             parent="${door_opening_mechanism_base_link}"
-            joint_name="${prefix}door_opening_mechanism_joint_y_axis_rail"
-            link_name="${prefix}door_opening_mechanism_link_y_axis_rail"
+            joint_name="${robot_name}${prefix}door_opening_mechanism_joint_y_axis_rail"
+            link_name="${robot_name}${prefix}door_opening_mechanism_link_y_axis_rail"
             m="2.64"
             x="0.06"
             y="0.06"
@@ -65,8 +65,8 @@
         </xacro:basic_box>
 
         <xacro:basic_joint 
-            parent="${prefix}alu_profile_link_right"
-            joint_name="${prefix}door_opening_mechanism_joint_y_axis_slide"
+            parent="${robot_name}${prefix}alu_profile_link_right"
+            joint_name="${robot_name}${prefix}door_opening_mechanism_joint_y_axis_slide"
             joint_type="prismatic"
             axis_x="0"
             axis_y="0"
@@ -80,7 +80,7 @@
             port="502"
             direction="1"
             ros_distro="${ros_distro}"
-            link_name="${prefix}door_opening_mechanism_link_y_axis_slide"
+            link_name="${robot_name}${prefix}door_opening_mechanism_link_y_axis_slide"
             link_origin_x="0.0"
             link_origin_y="0.0"
             link_origin_z="0.0"
@@ -95,8 +95,8 @@
         </xacro:basic_joint>
 
         <xacro:basic_joint 
-            parent="${prefix}door_opening_mechanism_link_y_axis_slide"
-            joint_name="${prefix}door_opening_mechanism_joint_x_axis_slide"
+            parent="${robot_name}${prefix}door_opening_mechanism_link_y_axis_slide"
+            joint_name="${robot_name}${prefix}door_opening_mechanism_joint_x_axis_slide"
             joint_type="prismatic"
             axis_x="0"
             axis_y="0"
@@ -110,7 +110,7 @@
             port="502"
             direction="-1"
             ros_distro="${ros_distro}"
-            link_name="${prefix}door_opening_mechanism_link_x_axis_slide"
+            link_name="${robot_name}${prefix}door_opening_mechanism_link_x_axis_slide"
             link_origin_x="0.0"
             link_origin_y="0.0"
             link_origin_z="0.0"
@@ -125,9 +125,9 @@
         </xacro:basic_joint>
 
         <xacro:basic_box
-            parent="${prefix}door_opening_mechanism_link_x_axis_slide"
-            joint_name="${prefix}door_opening_mechanism_joint_x_axis_slide_screwing"
-            link_name="${prefix}door_opening_mechanism_link_x_slide_screwing"
+            parent="${robot_name}${prefix}door_opening_mechanism_link_x_axis_slide"
+            joint_name="${robot_name}${prefix}door_opening_mechanism_joint_x_axis_slide_screwing"
+            link_name="${robot_name}${prefix}door_opening_mechanism_link_x_slide_screwing"
             m="1"
             x="0.073"
             y="0.015"
@@ -148,7 +148,8 @@
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/arm_variations/rotating_arm.urdf.xacro" />
         <xacro:rotating_arm
             prefix="${prefix}"
-            parent="${prefix}door_opening_mechanism_link_x_slide_screwing"
+            parent="${robot_name}${prefix}door_opening_mechanism_link_x_slide_screwing"
+            robot_name="${robot_name}"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
             ros_distro="${ros_distro}"
             arm_length="0.3" >

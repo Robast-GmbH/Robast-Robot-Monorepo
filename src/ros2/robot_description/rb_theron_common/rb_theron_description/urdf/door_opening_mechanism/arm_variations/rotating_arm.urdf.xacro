@@ -7,11 +7,11 @@
                 izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="rotating_arm" params="prefix parent ros2_control_hardware_type ros_distro *origin arm_length">
+    <xacro:macro name="rotating_arm" params="prefix parent robot_name ros2_control_hardware_type ros_distro *origin arm_length">
 
         <xacro:basic_joint 
             parent="${prefix}${parent}"
-            joint_name="${prefix}door_opening_mechanism_joint_rotating_arm"
+            joint_name="${robot_name}${prefix}door_opening_mechanism_joint_rotating_arm"
             joint_type="revolute"
             axis_x="1"
             axis_y="0"
@@ -25,7 +25,7 @@
             port="0"
             direction="0"
             ros_distro="${ros_distro}"
-            link_name="${prefix}door_opening_mechanism_link_rotating_arm"
+            link_name="${robot_name}${prefix}door_opening_mechanism_link_rotating_arm"
             link_origin_x="0.0"
             link_origin_y="0.0"
             link_origin_z="${arm_length/2}"
@@ -43,9 +43,9 @@
         <!-- Please mind: We need this link as end effector for moveit in order to not include the freely rotating hook into
         path planning -->
         <xacro:basic_box
-            parent="${prefix}door_opening_mechanism_link_rotating_arm"
-            joint_name="${prefix}door_opening_mechanism_joint_gripper_adapter"
-            link_name="${prefix}door_opening_mechanism_link_gripper_adapter"
+            parent="${robot_name}${prefix}door_opening_mechanism_link_rotating_arm"
+            joint_name="${robot_name}${prefix}door_opening_mechanism_joint_gripper_adapter"
+            link_name="${robot_name}${prefix}door_opening_mechanism_link_gripper_adapter"
             m="0.1"
             x="0.01"
             y="0.03"
@@ -60,7 +60,8 @@
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/freely_rotating_hook.urdf.xacro" />
         <xacro:freely_rotating_hook
             prefix="${prefix}"
-            parent="${prefix}door_opening_mechanism_link_gripper_adapter"
+            parent="${robot_name}${prefix}door_opening_mechanism_link_gripper_adapter"
+            robot_name="${robot_name}"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
             ros_distro="${ros_distro}">
             <origin xyz="0.020 0.0 0.0" rpy="0 0 0"/>
