@@ -43,10 +43,9 @@ hardware:
   # Specify any additional launch files for running the robot in simulation mode.
   # Used when hardware.simulated is True.
   # [Optional, defaults to a blank launch file if not specified]
-  # TODO@Jacob: What do I have to do here?
   simulated_robot_driver_persist_launch_file:
     package: "rb_theron_config"
-    path: "launch/sim/robot_drivers_to_persist_sim.launch.py"
+    path: "launch/sim/world_to_odom_launch.py"
   simulated_hardware_launch_file:
     package: "moveit_studio_agent"
     path: "launch/blank.launch.py"
