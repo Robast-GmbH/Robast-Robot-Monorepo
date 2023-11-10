@@ -146,4 +146,7 @@
     "[cpp]": {
         "editor.tabSize": 2
     },
+    "[xml]": {
+        "editor.formatOnSave": false // disables formatting for xml files (since formatting for our xacros is garbage so far)
+    }
 }

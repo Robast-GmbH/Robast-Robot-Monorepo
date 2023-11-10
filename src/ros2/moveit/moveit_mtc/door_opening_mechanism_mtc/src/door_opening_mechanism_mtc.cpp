@@ -171,7 +171,10 @@ namespace door_opening_mechanism_mtc
     task.stages()->setName("approach door handle task");
     task.loadRobotModel(shared_from_this());
 
-    const auto& group_name = "mobile_base_arm";   // mobile_base_arm or door_opening_mechanism
+    // TODO@Jacob: Executing a task works only for the door_opening_mechanism for now.
+    // Since we are using the joint_trajectory_controller from ros2_control now, we have to find a way how we
+    // incorporate the mobile base into this properly
+    const auto& group_name = "door_opening_mechanism";   // mobile_base_arm or door_opening_mechanism
     const auto& group_name_arm = "door_opening_mechanism";
     const auto& end_effector_name = "door_opening_end_effector";
     const auto& end_effector_parent_link = "door_opening_mechanism_link_freely_rotating_hook";
@@ -228,10 +231,11 @@ namespace door_opening_mechanism_mtc
     ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE, {"target_pose"});
     task.add(std::move(ik_wrapper));
 
-    auto stage = std::make_unique<mtc::stages::MoveTo>("Starting position", interpolation_planner);
-    stage->setGroup(group_name);
-    stage->setGoal("starting_position");
-    task.add(std::move(stage));
+    // TODO@Jacob: After moving to iron and gz_ros2_control this makes problems. Fix this when dealing with mtc again
+    // auto stage = std::make_unique<mtc::stages::MoveTo>("Starting position", interpolation_planner);
+    // stage->setGroup(group_name);
+    // stage->setGoal("starting_position");
+    // task.add(std::move(stage));
 
     return task;
   }

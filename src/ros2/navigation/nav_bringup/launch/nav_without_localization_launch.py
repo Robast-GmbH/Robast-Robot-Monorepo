@@ -25,9 +25,11 @@ def generate_launch_description():
     if is_simulation=='True':
         use_sim_time_default = "true"
         remappings = [
-            ("/odom", "odom"),
+            ("/cmd_vel", "diff_drive_base_controller/cmd_vel_unstamped"),
+            ("/odom", "diff_drive_base_controller/odom"),
             ("/tf", "tf"),
             ("/tf_static", "tf_static"),
+            ("/cmd_vel_smoothed", "diff_drive_base_controller/cmd_vel_unstamped")
         ]
     else:
         use_sim_time_default = "false"
@@ -36,6 +38,7 @@ def generate_launch_description():
             ("/odom", "robot/robotnik_base_control/odom"),
             ("/robot/tf", "tf"),
             ("/robot/tf_static", "tf_static"),
+            ("/cmd_vel_smoothed", "cmd_vel")
         ]
     bringup_dir = get_package_share_directory('nav_bringup')
 

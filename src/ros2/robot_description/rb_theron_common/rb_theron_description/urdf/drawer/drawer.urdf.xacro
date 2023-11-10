@@ -4,7 +4,7 @@
     <xacro:macro name="box_inertia_robot" params="m x y z">
         <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
                 iyy="${m*(x*x+z*z)/12}" iyz = "0"
-                izz="${m*(x*x+z*z)/12}" />
+                izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
     <xacro:property name="drawer_size_x" value="0.45" />
@@ -19,7 +19,7 @@
     <xacro:property name="drawer_offset_z" value="0.0" />
 
 
-    <xacro:macro name="drawer" params="prefix suffix parent *origin drawer_size_z">
+    <xacro:macro name="drawer" params="prefix suffix parent *origin ros2_control_hardware_type ros_distro drawer_size_z">
         <link name="${prefix}drawer_${suffix}">
             <inertial>
                 <mass value="${drawer_mass}" />
@@ -52,19 +52,41 @@
             <parent link="${parent}" />
             <child link="${prefix}drawer_${suffix}" />
             <xacro:insert_block name="origin" />
-            <limit lower="0.0" upper="${0.95*drawer_size_y}" effort="100" velocity="100" />
+            <limit lower="-0.01" upper="${0.95*drawer_size_y}" effort="1000" velocity="100" />
         </joint>
 
-        <gazebo>
-            <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController">
-                <joint_name>${prefix}drawer_${suffix}_joint</joint_name>
-                <p_gain>50000.0</p_gain>
-                <i_gain>100</i_gain>
-                <d_gain>1000</d_gain>
-                <i_max>200</i_max>
-                <i_min>-200</i_min>
-            </plugin>
-        </gazebo>
+        <ros2_control name="${prefix}drawer_${suffix}_ros2_control" type="system">
+            <hardware>
+
+                <xacro:if value="${ros2_control_hardware_type == 'mock_components'}">
+                    <plugin>mock_components/GenericSystem</plugin>
+                    <param name="calculate_dynamics">true</param>
+                </xacro:if>
+
+                <xacro:if value="${ros2_control_hardware_type == 'gz_ros2_control'}">
+                    <xacro:if value="${ros_distro == 'humble'}">
+                        <plugin>ign_ros2_control/IgnitionSystem</plugin>
+                    </xacro:if>
+                    <xacro:unless value="${ros_distro == 'humble'}">
+                        <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+                    </xacro:unless>
+                </xacro:if>
+
+                <xacro:if value="${ros2_control_hardware_type == 'dryve_d1'}">
+                    <plugin>mock_components/GenericSystem</plugin>
+                    <param name="calculate_dynamics">true</param>
+                </xacro:if>
+
+            </hardware>
+            <joint name="${prefix}drawer_${suffix}_joint">
+                <command_interface name="position">
+                    <param name="min">-0.01</param>
+                    <param name="max">${0.95*drawer_size_y}</param>
+                </command_interface>
+                <state_interface name="position"/>
+                <state_interface name="velocity"/>
+            </joint>
+        </ros2_control>
 
     </xacro:macro>
 

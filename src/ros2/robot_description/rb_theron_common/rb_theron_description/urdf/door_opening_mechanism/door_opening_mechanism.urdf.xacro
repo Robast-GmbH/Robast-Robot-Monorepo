@@ -4,10 +4,10 @@
     <xacro:macro name="box_inertia_robot" params="m x y z">
         <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
                 iyy="${m*(x*x+z*z)/12}" iyz = "0"
-                izz="${m*(x*x+z*z)/12}" />
+                izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="door_opening_mechanism" params="prefix parent *origin hq">
+    <xacro:macro name="door_opening_mechanism" params="prefix parent ros2_control_hardware_type ros_distro *origin hq">
 
         <!-- Element imports -->
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/alu_profile.urdf.xacro" />
@@ -69,27 +69,29 @@
             joint_name="${prefix}door_opening_mechanism_joint_y_axis_slide"
             joint_type="prismatic"
             axis_x="0"
-            axis_y="1"
-            axis_z="0"
+            axis_y="0"
+            axis_z="1"
             lower_limit="-0.05"
             upper_limit="0.25"
             damping="0.1"
             friction="0.3"
-            p_gain="50000"
-            i_gain="1000"
-            d_gain="5000"
+            ros2_control_hardware_type="${ros2_control_hardware_type}"
+            ip_address="192.168.0.11"
+            port="502"
+            direction="1"
+            ros_distro="${ros_distro}"
             link_name="${prefix}door_opening_mechanism_link_y_axis_slide"
             link_origin_x="0.0"
             link_origin_y="0.0"
             link_origin_z="0.0"
             m="2.64"
             x="0.06"
-            y="0.06"
-            z="0.55"
+            y="0.55"
+            z="0.06"
             r="1"
             g="0"
             b="0">
-            <origin xyz="-0.075 -0.225 -0.1" rpy="1.57079632679 0 0"/>
+            <origin xyz="-0.075 -0.225 -0.1" rpy="0 0 0"/>
         </xacro:basic_joint>
 
         <xacro:basic_joint 
@@ -103,9 +105,11 @@
             upper_limit="0.20"
             damping="0.1"
             friction="0.3"
-            p_gain="50000"
-            i_gain="100"
-            d_gain="5000"
+            ros2_control_hardware_type="${ros2_control_hardware_type}"
+            ip_address="192.168.0.53"
+            port="502"
+            direction="-1"
+            ros_distro="${ros_distro}"
             link_name="${prefix}door_opening_mechanism_link_x_axis_slide"
             link_origin_x="0.0"
             link_origin_y="0.0"
@@ -117,7 +121,7 @@
             r="1"
             g="1"
             b="1">
-            <origin xyz="-0.04 0 0" rpy="0 0 1.57079632679"/>
+            <origin xyz="-0.04 0 0" rpy="1.57079632679 4.71238898038 0"/>
         </xacro:basic_joint>
 
         <xacro:basic_box
@@ -142,7 +146,12 @@
 
         <!-- Rotating arm -->
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/arm_variations/rotating_arm.urdf.xacro" />
-        <xacro:rotating_arm prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_x_slide_screwing" arm_length="0.3" >
+        <xacro:rotating_arm
+            prefix="${prefix}"
+            parent="${prefix}door_opening_mechanism_link_x_slide_screwing"
+            ros2_control_hardware_type="${ros2_control_hardware_type}"
+            ros_distro="${ros_distro}"
+            arm_length="0.3" >
             <origin xyz="0.05 -0.025 0" rpy="0 0 1.57079632679"/>
         </xacro:rotating_arm>
 
