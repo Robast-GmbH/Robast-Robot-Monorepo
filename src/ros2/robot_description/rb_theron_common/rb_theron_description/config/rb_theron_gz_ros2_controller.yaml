@@ -20,7 +20,7 @@ controller_manager:
       type: joint_trajectory_controller/JointTrajectoryController
 
     streaming_controller:
-      type: velocity_controllers/JointGroupVelocityController
+      type: position_controllers/JointGroupPositionController
 
 diff_drive_base_controller:
   ros__parameters:
@@ -110,7 +110,7 @@ position_joint_trajectory_controller:
     joints:
       - position
     command_interfaces:
-      - velocity
+      - position
     state_interfaces:
       - position
       - velocity

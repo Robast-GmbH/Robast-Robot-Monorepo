@@ -156,10 +156,13 @@ ros2_control:
     - "joint_trajectory_controller"
     - "diff_drive_base_controller"
     - "drawer_joint_trajectory_controller"
-    - "streaming_controller"
+    - "position_joint_trajectory_controller"
+
   # Load but do not start these controllers so they can be activated later if needed.
   # [Optional, default=[]]
-  controllers_inactive_at_startup: []
+  controllers_inactive_at_startup:
+    - "streaming_controller"
+
   # Any controllers here will not be spawned by MoveIt Studio.
   # [Optional, default=[]]
   controllers_not_managed: []
