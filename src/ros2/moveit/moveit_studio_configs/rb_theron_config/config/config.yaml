@@ -103,16 +103,16 @@ moveit_params:
     path: "config/stomp_planning.yaml"
   kinematics:
     package: "moveit_door_opening_mechanism_rotating_arm_config"
-    path: "config/trac_ik_kinematics_distance.yaml"
+    path: "config/kinematics.yaml"
   servo:
     package: "moveit_door_opening_mechanism_rotating_arm_config"
     path: "config/ur_servo.yaml"
   sensors_3d:
     package: "moveit_door_opening_mechanism_rotating_arm_config"
     path: "config/sensors_3d.yaml"
-  # servo_kinematics:
-  #   package: "moveit_door_opening_mechanism_rotating_arm_config"
-  #   path: "config/trac_ik_kinematics_speed.yaml"
+  servo_kinematics:
+    package: "moveit_door_opening_mechanism_rotating_arm_config"
+    path: "config/kinematics.yaml"
   joint_limits:
     package: "moveit_door_opening_mechanism_rotating_arm_config"
     path: "config/joint_limits.yaml"
