@@ -12,7 +12,11 @@
     <xacro:property name="PI" value="3.1415926535897931"/>
     <!-- xacro:property name="wheel_width" value="0.150" / -->
 
-    <ros2_control name="position_ros2_control" type="system">
+
+    <!-- This is the joint we configured with Henning. We might not need it as a planar joint with 3 DOFs. It might be enough
+    to configure this joint as a prismatic joint with 1 DOF as we do only need to drive strictly forwards and backwards
+    during the door opening process -->
+    <!-- <ros2_control name="position_ros2_control" type="system">
       <hardware>
           <plugin>fake_components/GenericSystem</plugin>
       </hardware>
@@ -23,7 +27,7 @@
           <state_interface name="position"/>
           <state_interface name="velocity"/>
       </joint>
-    </ros2_control>
+    </ros2_control> -->
 
     <!-- BASE FOOTPRINT -->
     <xacro:if value="${publish_bf}">
