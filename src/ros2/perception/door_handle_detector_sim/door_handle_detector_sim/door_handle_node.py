@@ -1,12 +1,14 @@
 import rclpy
 import yolov5
 import torch
+import os
 import numpy as np
 from rclpy.node import Node
 from sensor_msgs.msg import Image
 from vision_msgs.msg import ObjectHypothesis
 from depthai_ros_msgs.msg import SpatialDetectionArray, SpatialDetection
 from cv_bridge import CvBridge
+from ament_index_python.packages import get_package_share_directory
 
 
 class Door_Handle_Detection(Node):
@@ -17,7 +19,8 @@ class Door_Handle_Detection(Node):
         self.bridge = CvBridge()
 
         # Load model
-        weights = 'src/navigation/door_handle_detector_sim/weights/door_4.pt'  # model.pt path(s)
+        weights = os.path.join(get_package_share_directory("door_handle_detector_sim"), "weights", "door_4.pt")
+
         self.model = yolov5.models.common.DetectMultiBackend(weights, dnn=False, fp16=False)
 
         self.rgb_camera_image_subscription_ = self.create_subscription(
