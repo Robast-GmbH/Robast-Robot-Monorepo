@@ -5,7 +5,7 @@ RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group
     echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV USER robast
 
-# TODO @sagarvl96 : Add your dependencies here
+RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
 
 # Install dependencies
 RUN apt-get update && apt-get install -y \
