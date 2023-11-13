@@ -110,13 +110,6 @@
 
 			</sensor>
 		</gazebo>
-
-		<gazebo>
-			<plugin
-				filename="libgz-sim-imu-system"
-				name="gz::sim::systems::Imu">
-			</plugin>
-		</gazebo>
 	</xacro:macro>
 
 </robot>

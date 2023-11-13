@@ -23,10 +23,10 @@
               izz="${m*r*r/2}" />
   </xacro:macro>
 
-  <xacro:macro name="caster" params="prefix parent *origin hq">
+  <xacro:macro name="caster" params="prefix parent ros2_control_hardware_type ros_distro *origin hq">
 
-  <!--CASTER SUPPORT -->
-  <joint name="${prefix}joint_support" type="continuous">
+    <!--CASTER SUPPORT -->
+    <joint name="${prefix}joint_support" type="continuous">
       <parent link="${parent}"/>
       <child link="${prefix}support"/>
       <xacro:insert_block name="origin" />
@@ -35,6 +35,35 @@
       <!-- joint_properties damping="1.5" friction="1.5"/ -->
       <dynamics damping="0" friction="0.01"/>
     </joint>
+
+    <ros2_control name="${prefix}joint_support_ros2_control" type="system">
+      <hardware>
+
+        <xacro:if value="${ros2_control_hardware_type == 'mock_components'}">
+          <plugin>mock_components/GenericSystem</plugin>
+         <param name="calculate_dynamics">true</param>
+        </xacro:if>
+
+        <xacro:if value="${ros2_control_hardware_type == 'gz_ros2_control'}">
+          <xacro:if value="${ros_distro == 'humble'}">
+            <plugin>ign_ros2_control/IgnitionSystem</plugin>
+          </xacro:if>
+          <xacro:unless value="${ros_distro == 'humble'}">
+            <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+          </xacro:unless>
+        </xacro:if>
+
+        <xacro:if value="${ros2_control_hardware_type == 'dryve_d1'}">
+          <plugin>mock_components/GenericSystem</plugin>
+          <param name="calculate_dynamics">true</param>
+        </xacro:if>
+
+      </hardware>
+      <joint name="${prefix}joint_support">
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+    </ros2_control>
 
     <link name="${prefix}support">
       <visual>
@@ -63,22 +92,56 @@
       </inertial>
     </link> 
 
-  <!--CASTER WHEEL -->
-  <!-- xacro:caster_wheel prefix="${prefix}" parent="${prefix}support" hq="${hq}" -->
-  <xacro:caster_wheel prefix="${prefix}" parent="${prefix}support" hq="${hq}">
-    <origin xyz="${caster_wheel_offset_x} ${caster_wheel_offset_y} ${caster_wheel_offset_z}" rpy="0 0 0"/>
-   </xacro:caster_wheel>
- </xacro:macro>
+    <!--CASTER WHEEL -->
+    <!-- xacro:caster_wheel prefix="${prefix}" parent="${prefix}support" hq="${hq}" -->
+    <xacro:caster_wheel
+      prefix="${prefix}"
+      parent="${prefix}support"
+      ros2_control_hardware_type="${ros2_control_hardware_type}"
+      ros_distro="${ros_distro}"
+      hq="${hq}">
+      <origin xyz="${caster_wheel_offset_x} ${caster_wheel_offset_y} ${caster_wheel_offset_z}" rpy="0 0 0"/>
+    </xacro:caster_wheel>
+  </xacro:macro>
 
- <xacro:macro name="caster_wheel" params="prefix parent *origin hq">
-     <joint name="${prefix}joint_wheel" type="continuous">
-       <parent link="${parent}"/>
-       <child link="${prefix}wheel"/>
-       <xacro:insert_block name="origin" />
-       <axis xyz="0 1 0" rpy="0 0 0" />
-       <limit effort="100" velocity="100"/>
-       <joint_properties damping="0.1" friction="0.1"/>
+  <xacro:macro name="caster_wheel" params="prefix parent *origin ros2_control_hardware_type ros_distro hq">
+    <joint name="${prefix}joint_wheel" type="continuous">
+      <parent link="${parent}"/>
+      <child link="${prefix}wheel"/>
+      <xacro:insert_block name="origin" />
+      <axis xyz="0 1 0" rpy="0 0 0" />
+      <limit effort="100" velocity="100"/>
+      <joint_properties damping="0.1" friction="0.1"/>
     </joint>
+
+    <ros2_control name="${prefix}joint_wheel_ros2_control" type="system">
+      <hardware>
+
+				<xacro:if value="${ros2_control_hardware_type == 'mock_components'}">
+					<plugin>mock_components/GenericSystem</plugin>
+					<param name="calculate_dynamics">true</param>
+				</xacro:if>
+
+				<xacro:if value="${ros2_control_hardware_type == 'gz_ros2_control'}">
+          <xacro:if value="${ros_distro == 'humble'}">
+            <plugin>ign_ros2_control/IgnitionSystem</plugin>
+          </xacro:if>
+          <xacro:unless value="${ros_distro == 'humble'}">
+            <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+          </xacro:unless>
+        </xacro:if>
+
+				<xacro:if value="${ros2_control_hardware_type == 'dryve_d1'}">
+					<plugin>mock_components/GenericSystem</plugin>
+					<param name="calculate_dynamics">true</param>
+				</xacro:if>
+
+			</hardware> 
+      <joint name="${prefix}joint_wheel">
+        <state_interface name="position"/>
+        <state_interface name="velocity"/>
+      </joint>
+    </ros2_control>
 
     <link name="${prefix}wheel">
       <visual>

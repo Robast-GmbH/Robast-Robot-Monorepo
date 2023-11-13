@@ -4,10 +4,10 @@
     <xacro:macro name="box_inertia_robot" params="m x y z">
         <inertia  ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0"
                 iyy="${m*(x*x+z*z)/12}" iyz = "0"
-                izz="${m*(x*x+z*z)/12}" />
+                izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="rotating_arm" params="prefix parent *origin arm_length">
+    <xacro:macro name="rotating_arm" params="prefix parent ros2_control_hardware_type ros_distro *origin arm_length">
 
         <xacro:basic_joint 
             parent="${prefix}${parent}"
@@ -20,9 +20,11 @@
             upper_limit="3.12"
             damping="0.1"
             friction="0.3"
-            p_gain="500"
-            i_gain="1000"
-            d_gain="10"
+            ros2_control_hardware_type="${ros2_control_hardware_type}"
+            ip_address="192.168.0.12"
+            port="0"
+            direction="0"
+            ros_distro="${ros_distro}"
             link_name="${prefix}door_opening_mechanism_link_rotating_arm"
             link_origin_x="0.0"
             link_origin_y="0.0"
@@ -56,7 +58,11 @@
 
         <!-- Gripper -->
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/freely_rotating_hook.urdf.xacro" />
-        <xacro:freely_rotating_hook prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_gripper_adapter">
+        <xacro:freely_rotating_hook
+            prefix="${prefix}"
+            parent="${prefix}door_opening_mechanism_link_gripper_adapter"
+            ros2_control_hardware_type="${ros2_control_hardware_type}"
+            ros_distro="${ros_distro}">
             <origin xyz="0.020 0.0 0.0" rpy="0 0 0"/>
         </xacro:freely_rotating_hook>
 

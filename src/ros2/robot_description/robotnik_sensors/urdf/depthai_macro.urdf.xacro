@@ -3,7 +3,7 @@
 
 <xacro:macro name="depthai_camera" params="prefix parent publish_bf robot_name prefix_topic camera_model base_frame 
                                            cam_pos_x cam_pos_y cam_pos_z 
-                                           cam_roll cam_pitch cam_yaw
+                                           cam_roll cam_pitch cam_yaw hq
                                            r:=0.8 g:=0.8 b:=0.8 a:=0.8">
 
     <xacro:if value="${publish_bf}">
@@ -46,12 +46,30 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0"/>
             <geometry>
+              <xacro:if value="${hq}">
                 <mesh filename="$(find robotnik_sensors)/meshes/${model}.stl" />
+              </xacro:if>
+              <xacro:unless value="${hq}">
+                <!-- Please mind that this only a extremly rough estimation -->
+                <box size="0.100 0.025 0.025"/>
+              </xacro:unless>
             </geometry>
             <material name="mat">
                 <color rgba="${r} ${g} ${b} ${a}"/>
             </material>
         </visual>
+        <collision>
+            <origin xyz="0 0 0" rpy="0 0 0"/>
+            <geometry>
+              <xacro:if value="${hq}">
+                <mesh filename="$(find robotnik_sensors)/meshes/${model}.stl" />
+              </xacro:if>
+              <xacro:unless value="${hq}">
+                <!-- Please mind that this only a extremly rough estimation -->
+                <box size="0.100 0.025 0.025"/>
+              </xacro:unless>
+            </geometry>
+        </collision>
     </link>
 
     <joint name="${prefix}_model_origin_joint" type="fixed">

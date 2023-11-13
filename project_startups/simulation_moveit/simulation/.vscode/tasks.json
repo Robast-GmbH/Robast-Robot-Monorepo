@@ -65,50 +65,6 @@
                         }
                 },
                 {
-                        "type": "shell",
-                        "label": "start gazebo_trajectory_executor for drawer",
-                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_trajectory_executor gazebo_trajectory_controller_launch.py gazebo_trajectory_executor_params:='/workspace/src/simulation/moveit_simulation_agent/gazebo_trajectory_executor/config/gazebo_trajectory_executor_drawer.yaml'",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
-                        "label": "start gazebo_robot_trajectory_executor for door_opening_mechanism",
-                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_trajectory_executor gazebo_robot_trajectory_executor_launch.py gazebo_trajectory_executor_params:='/workspace/src/simulation/moveit_simulation_agent/gazebo_trajectory_executor/config/gazebo_trajectory_executor_rb_theron.yaml'",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
-                        "label": "start gazebo_task_solution_executor for door_opening_mechanism",
-                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_trajectory_executor gazebo_task_solution_executor_launch.py gazebo_trajectory_executor_params:='/workspace/src/simulation/moveit_simulation_agent/gazebo_trajectory_executor/config/gazebo_trajectory_executor_rb_theron.yaml'",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
-                        "type": "shell",
-                        "label": "start door_opening_mechanism_gazebo_trajectory_controller_manager",
-                        "command": "source /workspace/install/setup.bash; ros2 launch gazebo_trajectory_executor gazebo_trajectory_controller_launch.py follow_joint_trajectory_action:='/door_opening_mechanism_controller/follow_joint_trajectory' joint_names_list:=['door_opening_mechanism_joint_freely_rotating_hook','door_opening_mechanism_joint_rotating_arm','door_opening_mechanism_joint_x_axis_slide','door_opening_mechanism_joint_y_axis_slide']",
-                        "problemMatcher": [],
-                        "presentation": {
-                                "echo": false,
-                                "focus": false,
-                                "group": "default_start"
-                        }
-                },
-                {
                         "label": "Open drawer 1 in simulation",
                         "detail": "Send topic message to open drawer 1 in simulation. The drawer will automatically be closed after a predetermined time period.",
                         "type": "shell",
