@@ -11,12 +11,11 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>picknik_ur_base_config</depend>
+  <depend>rb_theron_config</depend>
 
   <exec_depend>moveit_ros_perception</exec_depend>
   <exec_depend>ros_gz</exec_depend>
   <exec_depend>ign_ros2_control</exec_depend>
-  <exec_depend>picknik_accessories</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
 
