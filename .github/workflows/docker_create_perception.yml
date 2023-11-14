@@ -2,7 +2,7 @@ name: Create Docker Image Perception
 #trigger workflow every day at 00:00
 on:
   schedule:
-    - cron: '0 0 * * 1'
+    - cron: '0 0 07 */2 *'
   push:
     branches:
         - main
@@ -18,11 +18,16 @@ jobs:
       Ros-Distro: humble
       Project-Name: perception
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
       with:
-        fetch-depth: 2
+        lfs: false
+        fetch-depth: 0
     
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2
