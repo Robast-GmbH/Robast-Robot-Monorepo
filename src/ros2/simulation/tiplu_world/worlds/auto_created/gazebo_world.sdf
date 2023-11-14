@@ -1,6 +1,0 @@
-<?xml version="1.0" ?>
-<sdf version="1.8">
-<!--
-This is a placeholder file, that will be used to store the URDF with replaced strings such
-as `package://package_name/path/to/file` to the actual full path of the file.
- -->

@@ -20,7 +20,7 @@ def create_world_urdf(context, *args, **settings):
     # (3) Pass the path of the modified_world_file to Gazebo launch
 
     modified_world_file = os.path.join(
-        get_package_share_directory("tiplu_world"), "worlds", "auto_created", "gazebo_world.sdf"
+        get_package_share_directory("tiplu_world"), "worlds", "auto_created_gazebo_world.sdf"
     )
     with open(world_model, "r") as file:
         world_sdf = path_pattern_change_for_gazebo(file.read())
