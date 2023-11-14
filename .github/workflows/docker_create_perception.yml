@@ -18,6 +18,10 @@ jobs:
       Ros-Distro: humble
       Project-Name: perception
 
+    permissions:
+      contents: read
+      packages: write
+
     steps:
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
