@@ -26,6 +26,7 @@ jobs:
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
       with:
+        lfs: 'false'
         fetch-depth: 2
     
     - name: Login to GitHub Container Registry
