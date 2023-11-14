@@ -44,10 +44,11 @@ class _APIAddressInputFieldState extends State<APIAddressInputField> {
               const Text("API Adresse:"),
               Gaps.mediumHorizontal,
               SizedBox(
-                  width: 256,
-                  child: TextField(
-                    controller: controller,
-                  )),
+                width: 256,
+                child: TextField(
+                  controller: controller,
+                ),
+              ),
             ],
           ),
           Gaps.mediumVertical,

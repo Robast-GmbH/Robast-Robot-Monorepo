@@ -18,12 +18,13 @@ class _ManualMovePageState extends State<ManualMovePage> {
       title: "Robotersteuerung",
       color: AppColors.turquoise,
       child: Container(
-          margin: Constants.mediumPadding,
-          decoration: BoxDecoration(
-            color: AppColors.lightGrey,
-            borderRadius: BorderRadius.circular(16),
-          ),
-          child: const ManualMoveMap()),
+        margin: Constants.mediumPadding,
+        decoration: BoxDecoration(
+          color: AppColors.lightGrey,
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: const ManualMoveMap(),
+      ),
     );
   }
 }

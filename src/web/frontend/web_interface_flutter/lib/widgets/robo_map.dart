@@ -119,7 +119,9 @@ class _RoboMapState extends State<RoboMap> {
                                   },
                                   child: Container(
                                     decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.all(Radius.circular(4)),
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(4),
+                                      ),
                                       color: Colors.orange,
                                     ),
                                     child: widget.isMultiTarget
@@ -137,11 +139,16 @@ class _RoboMapState extends State<RoboMap> {
                             ),
                           ),
                           ...robots
-                              .map((robot) => Positioned(
-                                    left: robotOrigin.dx - 12 + robot.x / widget.controller.resolution,
-                                    top: robotOrigin.dy - 12 - robot.y / widget.controller.resolution,
-                                    child: Transform.rotate(angle: -robot.yaw, child: const RobotMarker()),
-                                  ))
+                              .map(
+                                (robot) => Positioned(
+                                  left: robotOrigin.dx - 12 + robot.x / widget.controller.resolution,
+                                  top: robotOrigin.dy - 12 - robot.y / widget.controller.resolution,
+                                  child: Transform.rotate(
+                                    angle: -robot.yaw,
+                                    child: const RobotMarker(),
+                                  ),
+                                ),
+                              )
                               .toList(),
                           if (showDirectionIndicator) ...[
                             PositionedLine(

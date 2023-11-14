@@ -59,9 +59,14 @@ class _DashboardState extends State<Dashboard> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text("Hey, ich bin", style: TextStyle(color: Colors.white, fontSize: 48, fontWeight: FontWeight.w300)),
-                      Text(" ${names[Random().nextInt(names.length)]}",
-                          style: const TextStyle(color: Colors.white, fontSize: 48, fontWeight: !kIsWeb ? FontWeight.w500 : FontWeight.w600)),
+                      const Text(
+                        "Hey, ich bin",
+                        style: TextStyle(color: Colors.white, fontSize: 48, fontWeight: FontWeight.w300),
+                      ),
+                      Text(
+                        " ${names[Random().nextInt(names.length)]}",
+                        style: const TextStyle(color: Colors.white, fontSize: 48, fontWeight: !kIsWeb ? FontWeight.w500 : FontWeight.w600),
+                      ),
                     ],
                   ),
                   Gaps.tinyVertical,
@@ -132,10 +137,11 @@ class _DashboardState extends State<Dashboard> {
               return Row(
                 children: [
                   Expanded(
-                      child: Text(
-                    DateFormat('d. MMMM y').format(date),
-                    style: const TextStyle(color: AppColors.white, fontWeight: FontWeight.w300),
-                  )),
+                    child: Text(
+                      DateFormat('d. MMMM y').format(date),
+                      style: const TextStyle(color: AppColors.white, fontWeight: FontWeight.w300),
+                    ),
+                  ),
                   Expanded(
                     child: Text(
                       "${date.hour}:${date.minute < 10 ? "0${date.minute}" : date.minute}",
