@@ -47,7 +47,8 @@
     </model>
 
     <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/6_OG_normal_doors</uri>
+      <!-- <uri>file:///workspace/src/simulation/tiplu_world/models/6_OG_normal_doors</uri> -->
+      <uri>package://tiplu_world/models/6_OG_normal_doors</uri>
       <name>6_OG_normale_tueren</name>
     </include>
 
