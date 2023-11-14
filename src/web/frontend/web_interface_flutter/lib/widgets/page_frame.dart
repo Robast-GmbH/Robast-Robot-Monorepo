@@ -18,41 +18,42 @@ class PageFrame extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        backgroundColor: AppColors.grey,
-        body: IsRobotMovingWrapper(
-          child: Container(
-            margin: Constants.smallPadding,
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(32), color: color),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.only(top: 16, left: 16),
-                      child: Text(
-                        title,
-                        style: const TextStyle(color: AppColors.white, fontSize: 36),
-                      ),
+      backgroundColor: AppColors.grey,
+      body: IsRobotMovingWrapper(
+        child: Container(
+          margin: Constants.smallPadding,
+          decoration: BoxDecoration(borderRadius: BorderRadius.circular(32), color: color),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.only(top: 16, left: 16),
+                    child: Text(
+                      title,
+                      style: const TextStyle(color: AppColors.white, fontSize: 36),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.only(right: 16, top: 16),
-                      child: IconButton(
-                        padding: const EdgeInsets.all(2),
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        icon: const Icon(Icons.clear),
-                        color: AppColors.white,
-                        iconSize: 48,
-                      ),
-                    )
-                  ],
-                ),
-                Expanded(child: child),
-              ],
-            ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(right: 16, top: 16),
+                    child: IconButton(
+                      padding: const EdgeInsets.all(2),
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      icon: const Icon(Icons.clear),
+                      color: AppColors.white,
+                      iconSize: 48,
+                    ),
+                  )
+                ],
+              ),
+              Expanded(child: child),
+            ],
           ),
-        ));
+        ),
+      ),
+    );
   }
 }

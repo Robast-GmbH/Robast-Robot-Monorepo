@@ -24,35 +24,38 @@ class _RobotLabelingOverviewState extends State<RobotLabelingOverview> {
             onPressed: (moduleID) async {
               final controller = TextEditingController();
               await showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                        title: const Text("Label ändern"),
-                        content: TextField(
-                          controller: controller,
-                        ),
-                        actions: [
-                          TextButton(
-                              onPressed: () async {
-                                if (controller.text.isNotEmpty) {
-                                  await APIService.relabelDrawer(
-                                    moduleID: moduleID,
-                                    drawerID: 0,
-                                    label: controller.text,
-                                    robotName: "RB0",
-                                  );
-                                  await robotProvider.updateModules();
-                                }
-                                Navigator.pop(context);
-                                setState(() {});
-                              },
-                              child: const Text("Übernehmen")),
-                          TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text("Abbrechen"))
-                        ],
-                      ));
+                context: context,
+                builder: (context) => AlertDialog(
+                  title: const Text("Label ändern"),
+                  content: TextField(
+                    controller: controller,
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () async {
+                        if (controller.text.isNotEmpty) {
+                          await APIService.relabelDrawer(
+                            moduleID: moduleID,
+                            drawerID: 0,
+                            label: controller.text,
+                            robotName: "RB0",
+                          );
+                          await robotProvider.updateModules();
+                        }
+                        Navigator.pop(context);
+                        setState(() {});
+                      },
+                      child: const Text("Übernehmen"),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
+                      child: const Text("Abbrechen"),
+                    ),
+                  ],
+                ),
+              );
             },
           ),
         ),
@@ -61,14 +64,18 @@ class _RobotLabelingOverviewState extends State<RobotLabelingOverview> {
           child: Padding(
             padding: Constants.mediumPadding,
             child: ElevatedButton(
-              style: const ButtonStyle(minimumSize: MaterialStatePropertyAll(Size(256, 64))),
+              style: const ButtonStyle(
+                minimumSize: MaterialStatePropertyAll(
+                  Size(256, 64),
+                ),
+              ),
               child: const Text("Module zurücksetzen"),
               onPressed: () async {
                 await APIService.resetModules(robotName: "RB0");
               },
             ),
           ),
-        )
+        ),
       ],
     );
   }

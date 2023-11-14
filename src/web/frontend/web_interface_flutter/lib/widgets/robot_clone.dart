@@ -133,7 +133,10 @@ class RobotClone extends StatelessWidget {
                           child: Container(
                             width: 100 * size,
                             height: 25 * size,
-                            decoration: BoxDecoration(color: AppColors.grey, borderRadius: BorderRadius.circular(8)),
+                            decoration: BoxDecoration(
+                              color: AppColors.grey,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                         ),
                       ),
@@ -150,7 +153,10 @@ class RobotClone extends StatelessWidget {
                           child: Container(
                             width: 150 * size,
                             height: 60 * size,
-                            decoration: BoxDecoration(color: AppColors.grey, borderRadius: BorderRadius.circular(8)),
+                            decoration: BoxDecoration(
+                              color: AppColors.grey,
+                              borderRadius: BorderRadius.circular(8),
+                            ),
                           ),
                         ),
                       ),
@@ -200,26 +206,27 @@ class RobotClone extends StatelessWidget {
     return GestureDetector(
       onTap: () => onPressed?.call(drawer.moduleID),
       child: Container(
-          margin: const EdgeInsets.only(left: 2, right: 2, bottom: 2),
-          decoration: BoxDecoration(color: getModuleLedColor(drawer)),
-          height: height - 2,
-          width: double.infinity,
-          child: Padding(
-            padding: Constants.smallPadding,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  drawer.label,
-                  style: const TextStyle(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.w500,
-                    fontSize: kIsWeb ? 15 : 16,
-                  ),
+        margin: const EdgeInsets.only(left: 2, right: 2, bottom: 2),
+        decoration: BoxDecoration(color: getModuleLedColor(drawer)),
+        height: height - 2,
+        width: double.infinity,
+        child: Padding(
+          padding: Constants.smallPadding,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                drawer.label,
+                style: const TextStyle(
+                  color: AppColors.white,
+                  fontWeight: FontWeight.w500,
+                  fontSize: kIsWeb ? 15 : 16,
                 ),
-              ],
-            ),
-          )),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

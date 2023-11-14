@@ -8,7 +8,9 @@ class RobotMarker extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: const BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(4)),
+        borderRadius: BorderRadius.all(
+          Radius.circular(4),
+        ),
         color: AppColors.blue,
       ),
       child: const Icon(
