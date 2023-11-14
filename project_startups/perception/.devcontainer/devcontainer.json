@@ -1,0 +1,40 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"image": "ghcr.io/robast-gmbh/monorepo/perception:devel",
+	"remoteUser": "ubuntu",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../src/ros2/perception/,target=/workspace/src/perception,type=bind",
+	],
+	"workspaceFolder": "/workspace",
+	"runArgs": [
+                "--name=perception",
+				"--device=/dev/ttyUSB0",
+                "--network=host",
+                "--privileged",
+                "--volume=/dev:/dev",
+                "--device-cgroup-rule=c 189:* rmw",
+        ],
+	"remoteEnv": {
+		"RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp"
+	},
+	"remoteUser": "robast",
+	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"ms-iot.vscode-ros",
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"redhat.vscode-yaml",
+		"smilerobotics.urdf",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one"
+	]
+}
