@@ -29,7 +29,7 @@ class Door_Handle_Detection(Node):
             self.rgb_camera_callback,
             10)
         self.depth_camera_image_subscription_ = self.create_subscription(
-            Image, '/back_top_realsense_camera/depth', self.callback_depth_img, 10)
+            Image, '/back_top_realsense_camera/depth', self.depth_img_callback, 10)
         self.door_handle_detection_publisher_ = self.create_publisher(
             SpatialDetectionArray, 'stereo/door_handle_position', 10)
 
