@@ -82,4 +82,11 @@ services:
       - ./perception/:/workspace/:cached
       - ../../src/ros2/perception:/workspace/src/perception:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     command: /bin/sh -c "while sleep 1000; do :; done"
