@@ -23,33 +23,30 @@ class _TasksOverviewState extends State<TasksOverview> {
         children: List.generate(
           tasks.length,
           (index) => Card(
-              child: Row(
-            children: [
-              const SizedBox(width: 8),
-              Expanded(
-                child: Padding(
-                  padding: Constants.smallPadding,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("ID: ${tasks[index].id}"),
-                      Text("Robot: ${tasks[index].robotName}"),
-                      Text("Owner ID: ${tasks[index].fleetName}"),
-                      //...tasks[index].actions.map((e) => Text(e.runtimeType.toString())).toList()
-                      // Text("Target ID: ${tasks[index].targetID}"),
-                      // Text("Target x: ${tasks[index].xPose}"),
-                      // Text("Target y: ${tasks[index].yPose}"),
-                      // Text("Target yaw: ${tasks[index].yawPose}"),
-                      // Text("Module ID: ${tasks[index].moduleID}"),
-                      // Text("Drawer ID: ${tasks[index].drawerID}"),
-                      // Text("Finished: ${tasks[index].finished}"),
-                    ],
+            child: Row(
+              children: [
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Padding(
+                    padding: Constants.smallPadding,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // TODO(andreas): Add task actions overview
+                        Text("ID: ${tasks[index].id}"),
+                        Text("Robot: ${tasks[index].robotName}"),
+                        Text("Owner ID: ${tasks[index].fleetName}"),
+                      ],
+                    ),
                   ),
                 ),
-              ),
-              IconButton(onPressed: () {}, icon: const Icon(Icons.more_vert))
-            ],
-          )),
+                IconButton(
+                  onPressed: () {},
+                  icon: const Icon(Icons.more_vert),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
