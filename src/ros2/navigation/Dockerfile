@@ -41,7 +41,6 @@ RUN apt-get update && apt-get install -y \
   && rosdep init || echo "rosdep already initialized"
   # General ros stuff
 
-#instal to use the nvidia gpu in the docker
 RUN apt-get update && apt-get install -y \
     libglvnd0 \
     libgl1 \
