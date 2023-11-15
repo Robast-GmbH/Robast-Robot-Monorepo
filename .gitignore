@@ -207,3 +207,6 @@ venv
 #export/saves
 *.db
 *.idea
+
+# flutter lib exception
+!src/web/frontend/web_interface_flutter/lib/
