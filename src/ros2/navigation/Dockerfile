@@ -41,7 +41,6 @@ RUN apt-get update && apt-get install -y \
   && rosdep init || echo "rosdep already initialized"
   # General ros stuff
 
-#instal to use the nvidia gpu in the docker
 RUN apt-get update && apt-get install -y \
     libglvnd0 \
     libgl1 \
@@ -115,6 +114,7 @@ RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communicati
 
 RUN rm -r /ws/src/navigation/external_plugins;
 
+
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
@@ -122,8 +122,12 @@ RUN rosdep update && \
 
 WORKDIR /mppi
 
+#TODO @TAlscher remove this when the new version of nav2 is released
+RUN apt-get remove -y ros-${ROS_DISTRO}-nav2-mppi-controller
+#TODO @TAlscher remove this when the new version of nav2 is released
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
+  apt-get remove -y ros-${ROS_DISTRO}-nav2-mppi-controller && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/mppi/ --packages-select nav2_mppi_controller
 

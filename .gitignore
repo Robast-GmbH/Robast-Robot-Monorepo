@@ -208,5 +208,5 @@ venv
 *.db
 *.idea
 
-.light_blue
-src/preprocessing/py/map_cleaner/image_feature_matching/lightglue
+# flutter lib exception
+!src/web/frontend/web_interface_flutter/lib/
