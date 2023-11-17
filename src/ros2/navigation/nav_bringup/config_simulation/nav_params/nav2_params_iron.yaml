@@ -100,9 +100,10 @@ controller_server:
     # MPPI Parameter
     FollowPath:
       plugin: "nav2_mppi_controller::MPPIController"
-      time_steps: 56
-      model_dt: 0.02
-      batch_size: 2000
+      motion_model: "DiffDrive"
+      time_steps: 56 #Default 56. Number of time steps (points) in each sampled trajectory
+      model_dt: 0.05
+      batch_size: 1000 #Default 1000. Count of randomly sampled candidate trajectories
       vx_std: 0.2
       vy_std: 0.0
       wz_std: 0.4
@@ -110,12 +111,11 @@ controller_server:
       vx_min: -0.01
       vy_max: 0.0
       wz_max: 1.9
-      iteration_count: 1
+      iteration_count: 1 #Default 1. Iteration count in MPPI algorithm. Recommend to keep as 1 and prefer more batches.
       prune_distance: 1.7
       transform_tolerance: 0.1
       temperature: 0.3
       gamma: 0.015
-      motion_model: "DiffDrive"
       visualize: false
       TrajectoryVisualizer:
         trajectory_step: 5
@@ -125,17 +125,17 @@ controller_server:
       critics: ["ConstraintCritic", "ObstaclesCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic"]
       ConstraintCritic:
         enabled: true
-        cost_power: 1
         cost_weight: 4.0
+        cost_power: 1
       GoalCritic:
         enabled: true
-        cost_power: 1
         cost_weight: 5.0
-        threshold_to_consider: 1.0
+        cost_power: 1
+        threshold_to_consider: 1.4
       GoalAngleCritic:
         enabled: true
-        cost_power: 1
         cost_weight: 3.0
+        cost_power: 1
         threshold_to_consider: 0.4
       PreferForwardCritic:
         enabled: true
@@ -144,21 +144,22 @@ controller_server:
         threshold_to_consider: 0.4
       ObstaclesCritic:
         enabled: true
+        critical_weight: 20.0
         cost_power: 1
         repulsion_weight: 1.5
-        critical_weight: 20.0
-        consider_footprint: false
+        consider_footprint: true
         collision_cost: 10000.0
         collision_margin_distance: 0.05
-        near_goal_distance: 0.2
+        near_goal_distance: 0.5
       PathAlignCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 14.0
-        max_path_occupancy_ratio: 0.05
-        trajectory_point_step: 3
-        threshold_to_consider: 0.40
+        cost_weight: 40.0
+        max_path_occupancy_ratio: 0.07
+        trajectory_point_step: 4
+        threshold_to_consider: 0.50
         offset_from_furthest: 20
+        use_path_orientations: true
       PathFollowCritic:
         enabled: true
         cost_power: 1
@@ -167,12 +168,12 @@ controller_server:
         threshold_to_consider: 0.6
       PathAngleCritic:
         enabled: true
-        cost_power: 1
         cost_weight: 2.0
+        cost_power: 1
         offset_from_furthest: 4
-        threshold_to_consider: 0.40
+        threshold_to_consider: 0.50
         max_angle_to_furthest: 1.0
-        forward_preference: true
+        mode: 2
 
       # TwirlingCritic:
       #   enabled: true
@@ -194,7 +195,7 @@ local_costmap:
       rolling_window: true # Whether costmap should roll with robot base frame.
       width: 5
       height: 5
-      resolution: 0.025
+      resolution: 0.05
       footprint_padding: 0.05
       # robot_radius: 0.22
       footprint: "[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
@@ -340,7 +341,7 @@ global_costmap:
       use_sim_time: True
       footprint_padding: 0.05
       footprint: "[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
-      resolution: 0.025
+      resolution: 0.05
       track_unknown_space: true
       plugins: ["static_layer", "stvl_layer", "inflation_layer"]
       filters: ["keepout_filter"]
@@ -503,7 +504,7 @@ planner_server:
       angle_quantization_bins: 64         # For Hybrid nodes: Number of angle bins for search, must be 1 for 2D node (no angle search)
       analytic_expansion_ratio: 3.5       # For Hybrid/Lattice nodes: The ratio to attempt analytic expansions during search for final approach.
       analytic_expansion_max_length: 1.5    # For Hybrid/Lattice nodes: The maximum length of the analytic expansion to be considered valid to prevent unsafe shortcutting (in meters). This should be scaled with minimum turning radius and be no less than 4-5x the minimum radius
-      minimum_turning_radius: 0.3        # For Hybrid/Lattice nodes: minimum turning radius in m of path / vehicle
+      minimum_turning_radius: 0.4        # For Hybrid/Lattice nodes: minimum turning radius in m of path / vehicle
       reverse_penalty: 3.1                # For Reeds-Shepp model: penalty to apply if motion is reversing, must be => 1
       change_penalty: 0.2                 # For Hybrid nodes: penalty to apply if motion is changing directions, must be >= 0
       non_straight_penalty: 1.20          # For Hybrid nodes: penalty to apply if motion is non-straight, must be => 1
@@ -593,7 +594,7 @@ collision_monitor:
     base_frame_id: "base_footprint"
     odom_frame_id: "odom"
     cmd_vel_in_topic: "cmd_vel_smoothed"
-    cmd_vel_out_topic: "cmd_vel"
+    cmd_vel_out_topic: "diff_drive_base_controller/cmd_vel_unstamped"
     state_topic: "collision_monitor_state"
     transform_tolerance: 0.2
     source_timeout: 2.0
