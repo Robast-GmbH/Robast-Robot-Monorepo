@@ -22,10 +22,10 @@ def generate_launch_description():
     is_simulation = os.environ["is_simulation"]
 
 
-    if is_simulation=='True':
+    if is_simulation:
+
         use_sim_time_default = "true"
         remappings = [
-            ("/cmd_vel", "diff_drive_base_controller/cmd_vel_unstamped"),
             ("/odom", "diff_drive_base_controller/odom"),
             ("/tf", "tf"),
             ("/tf_static", "tf_static"),
@@ -34,13 +34,11 @@ def generate_launch_description():
     else:
         use_sim_time_default = "false"
         remappings = [
-            ("/cmd_vel", "robot/robotnik_base_control/cmd_vel"),
             ("/odom", "robot/robotnik_base_control/odom"),
             ("/robot/tf", "tf"),
             ("/robot/tf_static", "tf_static"),
-            ("/cmd_vel_smoothed", "cmd_vel")
+            ("/cmd_vel_smoothed", "robot/robotnik_base_control/cmd_vel")
         ]
-    bringup_dir = get_package_share_directory('nav_bringup')
 
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -58,8 +56,7 @@ def generate_launch_description():
                        'behavior_server',
                        'bt_navigator',
                        'waypoint_follower',
-                       'velocity_smoother',
-                       'collision_monitor']
+                       'velocity_smoother']
 
     # Create our own temporary YAML files that include substitutions
     # nav_to_pose_bt = os.path.join(get_package_share_directory("nav2_bt_navigator"), "nav_to_pose_with_consistent_replanning_and_if_path_becomes_invalid", ".xml")
@@ -113,7 +110,7 @@ def generate_launch_description():
         description='the name of conatiner that nodes will load in if use composition')
 
     declare_use_respawn_cmd = DeclareLaunchArgument(
-        'use_respawn', default_value='False',
+        'use_respawn', default_value='true',
         description='Whether to respawn if a node crashes. Applied when composition is disabled.')
 
     declare_log_level_cmd = DeclareLaunchArgument(
@@ -194,13 +191,13 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings +
                         [('cmd_vel', 'cmd_vel_nav')]),
-            Node(
-                package='nav2_collision_monitor',
-                executable='collision_monitor',
-                output='screen',
-                emulate_tty=True,  # https://github.com/ros2/launch/issues/188
-                parameters=[configured_params],
-                remappings=remappings),
+            # Node(
+            #     package='nav2_collision_monitor',
+            #     executable='collision_monitor',
+            #     output='screen',
+            #     emulate_tty=True,  # https://github.com/ros2/launch/issues/188
+            #     parameters=[configured_params],
+            #     remappings=remappings),
             
             Node(
                 package='nav2_lifecycle_manager',

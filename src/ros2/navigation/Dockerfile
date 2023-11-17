@@ -98,7 +98,7 @@ WORKDIR /workspace
 ############################## Build ##################################
 FROM ros:humble-ros-base-jammy as build
 ARG GIT_TOKEN
-ARG GIT_BRANCH=main
+ARG GIT_BRANCH=dev/RE-1144
 COPY --from=devel / /
 COPY . /ws/src/navigation
 RUN apt-get update && apt-get install -y git
@@ -123,13 +123,12 @@ RUN rosdep update && \
 WORKDIR /mppi
 
 #TODO @TAlscher remove this when the new version of nav2 is released
-RUN apt-get remove -y ros-${ROS_DISTRO}-nav2-mppi-controller
+RUN apt-get remove -y *nav2*
 #TODO @TAlscher remove this when the new version of nav2 is released
 RUN rosdep update && \
-  rosdep install --from-paths /ws/src --ignore-src -r -y && \
-  apt-get remove -y ros-${ROS_DISTRO}-nav2-mppi-controller && \
+  rosdep install --from-paths navigation2/ --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/mppi/ --packages-select nav2_mppi_controller
+  colcon build --parallel-workers 2 --packages-skip nav2_system_tests nav2_bringup --install-base /robast/mppi/
 
 ############################## Release ##################################
 FROM ros:humble-perception as release

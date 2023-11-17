@@ -95,7 +95,7 @@ controller_server:
     general_goal_checker:
       stateful: True
       plugin: "nav2_controller::SimpleGoalChecker"
-      xy_goal_tolerance: 0.10
+      xy_goal_tolerance: 0.20
       yaw_goal_tolerance: 0.10
     # MPPI Parameter
     FollowPath:
@@ -106,7 +106,7 @@ controller_server:
       batch_size: 1000 #Default 1000. Count of randomly sampled candidate trajectories
       vx_std: 0.2
       vy_std: 0.0
-      wz_std: 0.4
+      wz_std: 0.2
       vx_max: 0.5
       vx_min: -0.01
       vy_max: 0.0
