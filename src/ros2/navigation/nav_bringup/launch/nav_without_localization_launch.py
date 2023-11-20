@@ -21,7 +21,7 @@ def generate_launch_description():
     config_directory = os.environ["config_directory"]
     is_simulation = os.environ["is_simulation"]
 
-    if is_simulation:
+    if is_simulation == 'True':
         use_sim_time_default = "true"
         remappings = [
             ("/odom", "diff_drive_base_controller/odom"),
