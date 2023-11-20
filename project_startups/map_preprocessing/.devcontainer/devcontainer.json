@@ -1,0 +1,31 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"name": "Robast Map Preprocessing",
+	"dockerComposeFile": "../docker-compose.yml",
+	"service": "map_preprocessing",
+	"workspaceFolder": "/workspace",
+	"shutdownAction": "stopCompose",
+	"remoteUser": "robast",
+	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
+	"runArgs": [
+                "--name=map_preprocessing",
+				"--gpus=all"
+        ],
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"ms-iot.vscode-ros",
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"redhat.vscode-yaml",
+		"smilerobotics.urdf",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one"
+	]
+}
