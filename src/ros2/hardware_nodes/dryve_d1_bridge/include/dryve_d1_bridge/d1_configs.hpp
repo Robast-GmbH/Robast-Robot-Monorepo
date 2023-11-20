@@ -5,6 +5,10 @@
 
 namespace dryve_d1_bridge
 {
+  // TODO@Jacob: Is this the right place for this?
+#define DEGREE_TO_RAD M_PI / 180.0
+#define MM_TO_M       0.001
+
   // this is actually the IP of the robot, whose router is forwarding this to the dryve d1 motor controls
   // we are interfacing with the different motor controls by targeting different ports (but using the same ip)
   const std::string RB_THERON_IP_ADDRESS = "10.10.23.7";
@@ -24,15 +28,9 @@ namespace dryve_d1_bridge
   const double D1_DEFAULT_ACCELERATION = 1;
   const double D1_DEFAULT_DECELERATION = 1;
 
-  // Please mind: Actually you could get this value from the d1_dryve via get_si_unit_factor(), but I get stupid
-  // values from it
-  const double SI_UNIT_FACTOR = 100000;
   const double VELOCITY = 10;
   const double ACCELERATION = 10;
   const double DECELERATION = 10;
-  // The value of the velocity scaling was obtained empirically. Instead of scaling the velocity with a factor like this
-  // you could alternatively make the gains of the joint_trajectory_controller extremely high
-  // TODO@Jacob: Keep checking if this is really the best way to handle this. I am not 100% sure about this
-  const double VELOCITY_SCALING = 100;
+
 }   // namespace dryve_d1_bridge
 #endif   // DRYVE_D1_BRIDGE__D1_HPP_

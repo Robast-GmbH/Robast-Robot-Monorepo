@@ -234,14 +234,26 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemHardware::read(const rclcpp::Time& /*time*/,
                                                                            const rclcpp::Duration& /*period*/)
   {
-    _hw_position_states[0] =
+    double hw_position_state =
         static_cast<double>(_dryve_d1->read_object_value(_dryve_d1->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
                                                          _dryve_d1->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
-        dryve_d1_bridge::SI_UNIT_FACTOR * _direction;
-    _hw_velocity_states[0] =
+        _si_unit_factor * _direction;
+
+    double hw_velocity_states =
         static_cast<double>(_dryve_d1->read_object_value(_dryve_d1->OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
                                                          _dryve_d1->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
-        dryve_d1_bridge::SI_UNIT_FACTOR * _direction;
+        _si_unit_factor * _direction;
+
+    if (_is_prismatic_joint)
+    {
+      _hw_position_states[0] = hw_position_state * MM_TO_M;
+      _hw_velocity_states[0] = hw_velocity_states * MM_TO_M;
+    }
+    else
+    {
+      _hw_position_states[0] = hw_position_state * DEGREE_TO_RAD;    // convert from degree to rad
+      _hw_velocity_states[0] = hw_velocity_states * DEGREE_TO_RAD;   // convert from degree to rad
+    }
 
     return hardware_interface::return_type::OK;
   }
@@ -249,7 +261,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemHardware::write(const rclcpp::Time& /*time*/,
                                                                             const rclcpp::Duration& /*period*/)
   {
-    _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * dryve_d1_bridge::VELOCITY_SCALING * _direction,
+    _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
                                     dryve_d1_bridge::ACCELERATION,
                                     dryve_d1_bridge::DECELERATION);
     return hardware_interface::return_type::OK;
