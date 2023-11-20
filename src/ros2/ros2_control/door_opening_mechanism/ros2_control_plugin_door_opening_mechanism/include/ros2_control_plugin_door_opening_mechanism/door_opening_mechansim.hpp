@@ -73,6 +73,10 @@ namespace ros2_control_plugin_door_opening_mechanism
 
     // can be either 1 or -1.There are probably better ways to handle this, but this does the job for now
     int _direction = 1;
+
+    double _si_unit_factor;
+
+    bool _is_prismatic_joint;
   };
 
 }   // namespace ros2_control_plugin_door_opening_mechanism

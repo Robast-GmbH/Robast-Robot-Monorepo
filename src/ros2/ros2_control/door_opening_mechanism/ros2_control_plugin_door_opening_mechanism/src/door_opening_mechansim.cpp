@@ -22,6 +22,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     _ip_address = info_.hardware_parameters["ip_address"];
     _port = stod(info_.hardware_parameters["port"]);
     _direction = stod(info_.hardware_parameters["direction"]);
+    _si_unit_factor = stod(info_.hardware_parameters["si_unit_factor"]);
+    _is_prismatic_joint = info_.hardware_parameters["joint_type"] == "prismatic";
 
     _hw_position_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_position_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
@@ -102,8 +104,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     // TODO@Jacob: Find a possibility that Modbus TCP Gateway does not need to be switched on and off after power up
     _dryve_d1->run_dryve_state_machine();
 
-    // TODO@Jacob: Should this be a parameter for this plugin in the future?
-    _dryve_d1->set_si_unit_factor(dryve_d1_bridge::si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_5, true);
+    _dryve_d1->set_si_unit_factor(
+        dryve_d1_bridge::map_si_unit_factor_double_to_char(_si_unit_factor, _is_prismatic_joint), _is_prismatic_joint);
 
     _dryve_d1->set_debug_mode_off();
 

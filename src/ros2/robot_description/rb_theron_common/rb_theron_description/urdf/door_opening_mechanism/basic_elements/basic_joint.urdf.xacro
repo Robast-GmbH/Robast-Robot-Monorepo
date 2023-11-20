@@ -23,6 +23,7 @@
             ip_address
             port
             direction
+            si_unit_factor
             ros_distro
             link_name
             link_origin_x
@@ -74,6 +75,8 @@
                     <param name="ip_address">${ip_address}</param>
                     <param name="port">${port}</param>
                     <param name="direction">${direction}</param>
+                    <param name="joint_type">${joint_type}</param>
+                    <param name="si_unit_factor">${si_unit_factor}</param>
                 </xacro:unless>
             </xacro:if>
 
