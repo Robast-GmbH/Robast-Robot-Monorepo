@@ -5,6 +5,7 @@ RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group
     echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV USER robast
 
+#RUN echo 'export PATH=$PATH:/home/robast/.local/bin' >> /home/$USER/.bashrc
 # Install dependencies
 RUN apt-get update &&\
     apt-get upgrade -y &&\
@@ -12,4 +13,6 @@ RUN apt-get update &&\
     git\
     ffmpeg \
     libsm6 \
-    libxext6
+    libxext6 \
+    libopencv-dev \
+    file

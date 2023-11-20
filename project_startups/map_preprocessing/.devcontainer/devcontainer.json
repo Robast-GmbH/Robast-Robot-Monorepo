@@ -15,6 +15,9 @@
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
 	},
+	"remoteEnv": {
+		//"PATH": "/home/robast/.local/bin/"
+	},
 	"extensions": [
 		"dotjoshjohnson.xml",
 		"laurenttreguier.uncrustify",
