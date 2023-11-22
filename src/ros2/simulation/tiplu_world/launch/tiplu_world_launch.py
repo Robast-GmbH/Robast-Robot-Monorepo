@@ -1,15 +1,53 @@
 import os
-
+import re
 import xacro
-import yaml
+
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, RegisterEventHandler
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, RegisterEventHandler, OpaqueFunction
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch.event_handlers import OnProcessExit
 
+def create_world_urdf(context, *args, **settings):
+
+    world_model = LaunchConfiguration('world_model').perform(context)
+
+    # In order to swap out 'package://' paths with absolute path we need to:
+    # (1) Replace the paths in the urdf text
+    # (2) Write this new text into a modified_world_file
+    # (3) Pass the path of the modified_world_file to Gazebo launch
+
+    modified_world_file = os.path.join(
+        get_package_share_directory("tiplu_world"), "worlds", "auto_created_gazebo_world.sdf"
+    )
+    with open(world_model, "r") as file:
+        world_sdf = path_pattern_change_for_gazebo(file.read())
+    with open(modified_world_file, "w") as file:
+        file.write(world_sdf)
+
+    gz_sim_cmd = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            settings['gz_sim_launch'],
+        ),
+        launch_arguments={"gz_args": ["-r ", settings['headless'], " ", modified_world_file]}.items(),
+    )
+
+    return [gz_sim_cmd]
+
+def path_pattern_change_for_gazebo(urdf_string):
+    """
+    Replaces strings in a URDF file such as
+        package://package_name/path/to/file
+    to the actual full path of the file.
+    """
+    data = urdf_string
+    package_expressions = re.findall("(package://([^//]*))", data)
+    for expr in set(package_expressions):
+        data = data.replace(expr[0], ("file://" + get_package_share_directory(expr[1])))
+
+    return data
 
 def generate_launch_description():
 
@@ -82,11 +120,11 @@ def generate_launch_description():
         output="screen",
     )
 
-    gz_sim_cmd = IncludeLaunchDescription(
-        PythonLaunchDescriptionSource(
-            gz_sim_launch,
-        ),
-        launch_arguments={"gz_args": ["-r ", headless, " ", world_model]}.items(),
+    # As far as I understand, to get the value of a launch argument we need a OpaqueFunction for this as described here:
+    # https://robotics.stackexchange.com/questions/104340/getting-the-value-of-launchargument-inside-python-launch-file
+    launch_gazebo_opaque_func = OpaqueFunction(
+        function=create_world_urdf,
+        kwargs={'gz_sim_launch': gz_sim_launch, 'headless': headless}
     )
 
     spawn_robot_cmd = Node(
@@ -151,14 +189,15 @@ def generate_launch_description():
     ld.add_action(declare_robot_model_cmd)
     ld.add_action(declare_headless_cmd)
 
-    # included launches
-    ld.add_action(gz_sim_cmd)
+    # opaque functions
+    ld.add_action(launch_gazebo_opaque_func)
 
     # nodes
     ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(spawn_robot_cmd)
     ld.add_action(gz_ros_bridge_cmd)
 
+    # spawning ros2_control controller
     ld.add_action(RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=spawn_robot_cmd,

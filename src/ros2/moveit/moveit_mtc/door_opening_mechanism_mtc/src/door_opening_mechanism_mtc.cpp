@@ -128,11 +128,20 @@ namespace door_opening_mechanism_mtc
     }
 
     RCLCPP_INFO(_LOGGER, "Planning task!");
-    if (!_task.plan(5 /* max_solutions */))
+    try
     {
-      RCLCPP_ERROR(_LOGGER, "Task planning failed");
-      return;
+      if (!_task.plan(5 /* max_solutions */))
+      {
+        RCLCPP_ERROR(_LOGGER, "Task planning failed");
+        return;
+      }
     }
+    catch (mtc::InitStageException& e)
+    {
+      std::cerr << e << std::endl;
+      throw;
+    }
+
     RCLCPP_INFO(_LOGGER, "Publishing task solutions!");
     _task.introspection().publishSolution(*_task.solutions().front());
 
@@ -231,11 +240,10 @@ namespace door_opening_mechanism_mtc
     ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE, {"target_pose"});
     task.add(std::move(ik_wrapper));
 
-    // TODO@Jacob: After moving to iron and gz_ros2_control this makes problems. Fix this when dealing with mtc again
-    // auto stage = std::make_unique<mtc::stages::MoveTo>("Starting position", interpolation_planner);
-    // stage->setGroup(group_name);
-    // stage->setGoal("starting_position");
-    // task.add(std::move(stage));
+    auto stage = std::make_unique<mtc::stages::MoveTo>("Starting position", sampling_planner);
+    stage->setGroup(group_name);
+    stage->setGoal("starting_position_arm");
+    task.add(std::move(stage));
 
     return task;
   }

@@ -1,14 +1,12 @@
-name: Create Docker Image MoveIt MTC
-
+name: Create Docker Image Map Preprocessing
 #trigger workflow every day at 00:00
 on:
-  schedule:
-    - cron: '0 0 * * 1'
+
   push:
     branches:
         - main
     paths:
-        - src/ros2/moveit/moveit_mtc/Dockerfile
+        - src/map_preprocessing/Dockerfile
   workflow_dispatch:
 
 
@@ -16,14 +14,18 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      Ros-Distro: humble
-      Project-Name: moveit_mtc
+      Project-Name: map_preprocessing
+
+    permissions:
+      contents: read
+      packages: write
 
     steps:
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
       with:
-        fetch-depth: 2
+        lfs: false
+        fetch-depth: 0
     
     - name: Login to GitHub Container Registry
       uses: docker/login-action@v2
@@ -38,8 +40,8 @@ jobs:
     - name: Build ${{ env.Project-Name }} devel docker
       uses: docker/build-push-action@v4
       with:
-        context: src/ros2/moveit/${{ env.Project-Name }}/
+        context: src/${{ env.Project-Name }}
         target: devel
         push: true
-        file: src/ros2/moveit/${{ env.Project-Name }}/Dockerfile
+        file: src/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel

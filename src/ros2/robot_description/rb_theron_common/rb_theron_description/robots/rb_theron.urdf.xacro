@@ -2,6 +2,9 @@
 <robot name="rb_theron"
 	xmlns:xacro="http://www.ros.org/wiki/xacro">
 
+	<!-- This is only used for MoveitStudio -->
+	<xacro:attribute name="web_ui_gripper" value="package://rb_theron_description/urdf/door_opening_mechanism/components/hook.urdf" />
+
 	<!-- ***************** -->
 	<!-- Imported elements -->
 	<!-- ***************** -->

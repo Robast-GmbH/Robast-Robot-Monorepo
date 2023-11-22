@@ -1,14 +1,17 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-
-	"name": "Robast MoveIt MTC",
-	"dockerComposeFile": "../../docker-compose.yml",
-	"service": "moveit-mtc",
+	"name": "Robast Map Preprocessing",
+	"dockerComposeFile": "../docker-compose.yml",
+	"service": "map_preprocessing",
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
 	"remoteUser": "robast",
-	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
+	"runArgs": [
+                "--name=map_preprocessing",
+				"--gpus=all"
+        ],
+	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
 	},
@@ -23,8 +26,6 @@
 		"smilerobotics.urdf",
 		"streetsidesoftware.code-spell-checker",
 		"twxs.cmake",
-		"yzhang.markdown-all-in-one",
-		"jaehyunshim.vscode-ros2",
-		"tomoki1207.pdf",
+		"yzhang.markdown-all-in-one"
 	]
 }
