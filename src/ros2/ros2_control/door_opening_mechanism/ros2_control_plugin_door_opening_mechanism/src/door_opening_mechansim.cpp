@@ -261,9 +261,18 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemHardware::write(const rclcpp::Time& /*time*/,
                                                                             const rclcpp::Duration& /*period*/)
   {
-    _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
-                                    dryve_d1_bridge::ACCELERATION,
-                                    dryve_d1_bridge::DECELERATION);
+    if (_is_prismatic_joint)
+    {
+      _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
+                                      dryve_d1_bridge::ACCELERATION,
+                                      dryve_d1_bridge::DECELERATION);
+    }
+    else
+    {
+      _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction * DEGREE_TO_RAD,
+                                      dryve_d1_bridge::ACCELERATION,
+                                      dryve_d1_bridge::DECELERATION);
+    }
     return hardware_interface::return_type::OK;
   }
 
