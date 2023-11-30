@@ -36,6 +36,16 @@
 #define ERROR_E17_ENCODER_CHANNEL_I          65283
 #define ERROR_E21_BREAKING_RESISTOR_OVERLOAD 28944
 
+#define OBJECT_SUBINDEX_0 0x00
+#define OBJECT_SUBINDEX_1 0x01
+#define OBJECT_SUBINDEX_2 0x02
+#define OBJECT_SUBINDEX_3 0x03
+#define OBJECT_SUBINDEX_4 0x04
+#define OBJECT_SUBINDEX_5 0x05
+#define OBJECT_SUBINDEX_6 0x06
+#define OBJECT_SUBINDEX_7 0x07
+#define OBJECT_SUBINDEX_8 0x08
+
 #define MOVEMENT_TYPE_LINEAR 0x01
 #define MOVEMENT_TYPE_ROTARY 0x41
 
@@ -75,6 +85,8 @@ namespace dryve_d1_bridge
     std::string_view wait_for_homing();
 
     float get_si_unit_factor();
+
+    float get_actual_current_value();
 
     /****************************************/
     /* Functions to send commands to the D1 */
@@ -168,13 +180,13 @@ namespace dryve_d1_bridge
     static constexpr unsigned char _READ_VELOCITY_ACTUAL_VALUE[19] = {
         0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 108, 0, 0, 0, 0, 4};
     static constexpr unsigned char _READ_CURRENT_ACTUAL_VALUE[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 120, 0, 0, 0, 0, 4};
+        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 0x20, 0x00, OBJECT_SUBINDEX_1, 0, 0, 0, 4};
     static constexpr unsigned char _READ_FOLLOWING_ERROR_ACTUAL_VALUE[19] = {
         0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 244, 0, 0, 0, 0, 4};
     static constexpr unsigned char _READ_ERROR_CODE[19] = {
         0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 63, 0, 0, 0, 0, 2};
     static constexpr unsigned char _READ_SI_UNIT_FACTOR[19] = {
-        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 96, 168, 0, 0, 0, 0, 4};
+        0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 0x60, 0xA8, OBJECT_SUBINDEX_0, 0, 0, 0, 4};
     static constexpr unsigned char _READ_CONTROLLER_TEMP[19] = {
         0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 32, 19, 0, 0, 0, 0, 4};
     unsigned char _read_buffer[19] = {0, 0, 0, 0, 0, 13, 0, 43, 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4};

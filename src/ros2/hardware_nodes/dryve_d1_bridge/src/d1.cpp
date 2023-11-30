@@ -281,6 +281,13 @@ namespace dryve_d1_bridge
     }
   }
 
+  float D1::get_actual_current_value()
+  {
+    read_command_to_recv_buffer(_READ_CURRENT_ACTUAL_VALUE, sizeof(_READ_CURRENT_ACTUAL_VALUE));
+
+    return four_bytes_to_int(_recv_buffer);
+  }
+
   float D1::get_si_unit_factor()
   {
     read_command_to_recv_buffer(_READ_SI_UNIT_FACTOR, sizeof(_READ_SI_UNIT_FACTOR));
