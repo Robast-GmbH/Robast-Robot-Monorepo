@@ -29,6 +29,7 @@ namespace ros2_control_plugin_door_opening_mechanism
     _hw_position_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_velocity_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_velocity_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
+    _hw_effort_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
     for (const hardware_interface::ComponentInfo& joint : info_.joints)
     {
@@ -120,6 +121,10 @@ namespace ros2_control_plugin_door_opening_mechanism
       _hw_velocity_states[i] = 0;
       _hw_velocity_commands[i] = 0;
     }
+    for (uint i = 0; i < _hw_effort_states.size(); i++)
+    {
+      _hw_effort_states[i] = 0;
+    }
 
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Successfully configured!");
 
@@ -135,6 +140,8 @@ namespace ros2_control_plugin_door_opening_mechanism
           info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_states[i]));
       state_interfaces.emplace_back(hardware_interface::StateInterface(
           info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_states[i]));
+      state_interfaces.emplace_back(hardware_interface::StateInterface(
+          info_.joints[i].name, hardware_interface::HW_IF_EFFORT, &_hw_effort_states[i]));
     }
 
     return state_interfaces;
@@ -157,7 +164,6 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_activate(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Activating ...please wait...");
 
     // command and state should be equal when starting
@@ -244,15 +250,21 @@ namespace ros2_control_plugin_door_opening_mechanism
                                                          _dryve_d1->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
         _si_unit_factor * _direction;
 
+    double motor_current = static_cast<double>(_dryve_d1->get_actual_current_value()) * MA_TO_A;
+
     if (_is_prismatic_joint)
     {
       _hw_position_states[0] = hw_position_state * MM_TO_M;
       _hw_velocity_states[0] = hw_velocity_states * MM_TO_M;
+      // TODO@Jacob: Add proper calculation for effort for a prismatic joint
+      _hw_effort_states[0] = motor_current;
     }
     else
     {
       _hw_position_states[0] = hw_position_state * DEGREE_TO_RAD;    // convert from degree to rad
       _hw_velocity_states[0] = hw_velocity_states * DEGREE_TO_RAD;   // convert from degree to rad
+      // TODO@Jacob: Add proper calculation for effort for a revolute joint
+      _hw_effort_states[0] = motor_current;
     }
 
     return hardware_interface::return_type::OK;

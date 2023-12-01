@@ -8,6 +8,7 @@ namespace dryve_d1_bridge
   // TODO@Jacob: Is this the right place for this?
 #define DEGREE_TO_RAD M_PI / 180.0
 #define MM_TO_M       0.001
+#define MA_TO_A                  0.001
 
   // this is actually the IP of the robot, whose router is forwarding this to the dryve d1 motor controls
   // we are interfacing with the different motor controls by targeting different ports (but using the same ip)

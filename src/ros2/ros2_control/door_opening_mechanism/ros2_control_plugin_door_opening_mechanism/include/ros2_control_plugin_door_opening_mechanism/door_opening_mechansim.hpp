@@ -64,6 +64,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     std::vector<double> _hw_velocity_commands;
     std::vector<double> _hw_velocity_states;
 
+    std::vector<double> _hw_effort_states;
+
     std::unique_ptr<dryve_d1_bridge::D1> _dryve_d1;
 
     std::string _ip_address;
