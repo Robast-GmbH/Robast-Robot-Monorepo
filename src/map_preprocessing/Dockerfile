@@ -15,4 +15,4 @@ RUN apt-get update &&\
     libsm6 \
     libxext6 \
     libopencv-dev \
-    file
+    libqt5gui5
