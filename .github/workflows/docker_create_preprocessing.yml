@@ -40,4 +40,4 @@ jobs:
         target: devel
         push: true
         file: src/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
+        tags: ghcr.io/robast-gmbh/monorepo/tmp:devel
