@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(ros2_control_plugin_door_opening_mechanism)
+project(ros2_control_plugin_dryve_d1)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -23,34 +23,34 @@ endforeach()
 
 ## COMPILE
 add_library(
-  ros2_control_plugin_door_opening_mechanism
+  ros2_control_plugin_dryve_d1
   SHARED
-  src/door_opening_mechansim.cpp
+  src/ros2_control_plugin_dryve_d1.cpp
 )
-target_compile_features(ros2_control_plugin_door_opening_mechanism PUBLIC cxx_std_17)
-target_include_directories(ros2_control_plugin_door_opening_mechanism PUBLIC
+target_compile_features(ros2_control_plugin_dryve_d1 PUBLIC cxx_std_17)
+target_include_directories(ros2_control_plugin_dryve_d1 PUBLIC
 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-$<INSTALL_INTERFACE:include/ros2_control_plugin_door_opening_mechanism>
+$<INSTALL_INTERFACE:include/ros2_control_plugin_dryve_d1>
 )
 ament_target_dependencies(
-  ros2_control_plugin_door_opening_mechanism PUBLIC
+  ros2_control_plugin_dryve_d1 PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(${PROJECT_NAME} PRIVATE "ROS_CONTROL_PLUGIN_DOOR_OPENING_MECHANISM_BUILDING_DLL")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "ROS_CONTROL_PLUGIN_DRYVE_D1_BUILDING_DLL")
 
 # Export hardware plugins
-pluginlib_export_plugin_description_file(hardware_interface ros2_control_plugin_door_opening_mechanism.xml)
+pluginlib_export_plugin_description_file(hardware_interface ros2_control_plugin_dryve_d1.xml)
 
 # INSTALL
 install(
   DIRECTORY include/
-  DESTINATION include/ros2_control_plugin_door_opening_mechanism
+  DESTINATION include/ros2_control_plugin_dryve_d1
 )
-install(TARGETS ros2_control_plugin_door_opening_mechanism
-  EXPORT export_ros2_control_plugin_door_opening_mechanism
+install(TARGETS ros2_control_plugin_dryve_d1
+  EXPORT export_ros2_control_plugin_dryve_d1
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -61,6 +61,6 @@ if(BUILD_TESTING)
 endif()
 
 ## EXPORTS
-ament_export_targets(export_ros2_control_plugin_door_opening_mechanism HAS_LIBRARY_TARGET)
+ament_export_targets(export_ros2_control_plugin_dryve_d1 HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()

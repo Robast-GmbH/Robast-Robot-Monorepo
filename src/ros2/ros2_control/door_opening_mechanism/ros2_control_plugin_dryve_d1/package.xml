@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>ros2_control_plugin_door_opening_mechanism</name>
+  <name>ros2_control_plugin_dryve_d1</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="j.ritterbach@tiplu.de">robast</maintainer>
+  <description>This package contains a ros2 control plugin for the igus dryve d1 motor control.</description>
+  <maintainer email="j.ritterbach@robast.de">robast</maintainer>
   <license>TODO: License declaration</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>

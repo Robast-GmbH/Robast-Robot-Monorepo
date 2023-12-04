@@ -1,4 +1,4 @@
-#include "ros2_control_plugin_door_opening_mechanism/door_opening_mechansim.hpp"
+#include "ros2_control_plugin_dryve_d1/ros2_control_plugin_dryve_d1.hpp"
 
 #include <chrono>
 #include <cmath>
@@ -9,10 +9,9 @@
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "rclcpp/rclcpp.hpp"
 
-namespace ros2_control_plugin_door_opening_mechanism
+namespace ros2_control_plugin_dryve_d1
 {
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_init(
-      const hardware_interface::HardwareInfo& info)
+  hardware_interface::CallbackReturn DryveD1SystemHardware::on_init(const hardware_interface::HardwareInfo& info)
   {
     if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS)
     {
@@ -32,13 +31,12 @@ namespace ros2_control_plugin_door_opening_mechanism
 
     for (const hardware_interface::ComponentInfo& joint : info_.joints)
     {
-      RCLCPP_INFO(
-          rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Configuring joint '%s'.", joint.name.c_str());
+      RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Configuring joint '%s'.", joint.name.c_str());
 
-      // DoorOpeningMechanismSystemHardware has position and velocity state and command interface on each joint
+      // DryveD1SystemHardware has position and velocity state and command interface on each joint
       if (joint.command_interfaces.size() > 2)
       {
-        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("DryveD1SystemHardware"),
                      "Joint '%s' has %zu command interfaces found. 2 or less expected.",
                      joint.name.c_str(),
                      joint.command_interfaces.size());
@@ -48,7 +46,7 @@ namespace ros2_control_plugin_door_opening_mechanism
       if ((joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
           (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
       {
-        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("DryveD1SystemHardware"),
                      "Joint '%s' have %s command interfaces found. '%s' or '%s' expected.",
                      joint.name.c_str(),
                      joint.command_interfaces[0].name.c_str(),
@@ -59,7 +57,7 @@ namespace ros2_control_plugin_door_opening_mechanism
 
       if (joint.state_interfaces.size() > 2)
       {
-        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("DryveD1SystemHardware"),
                      "Joint '%s' has %zu state interface. 2 or less expected.",
                      joint.name.c_str(),
                      joint.state_interfaces.size());
@@ -69,7 +67,7 @@ namespace ros2_control_plugin_door_opening_mechanism
       if ((joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
           (joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
       {
-        RCLCPP_FATAL(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("DryveD1SystemHardware"),
                      "Joint '%s' have %s state interface. '%s' or '%s' expected.",
                      joint.name.c_str(),
                      joint.state_interfaces[0].name.c_str(),
@@ -82,12 +80,12 @@ namespace ros2_control_plugin_door_opening_mechanism
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_configure(
+  hardware_interface::CallbackReturn DryveD1SystemHardware::on_configure(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // Please mind! In order to get a connection to the dryve d1, there need to be a port forward on the router from the
     // port configured in DRYVE_D1_IP_ADDRESS_X_AXIS to the Port configured for Modbus TCP in the dryve d1 (usually 502)
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"),
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"),
                 "Configuring dryve d1 for ip address %s and port %d",
                 _ip_address.c_str(),
                 _port);
@@ -121,12 +119,12 @@ namespace ros2_control_plugin_door_opening_mechanism
       _hw_velocity_commands[i] = 0;
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Successfully configured!");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Successfully configured!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  std::vector<hardware_interface::StateInterface> DoorOpeningMechanismSystemHardware::export_state_interfaces()
+  std::vector<hardware_interface::StateInterface> DryveD1SystemHardware::export_state_interfaces()
   {
     std::vector<hardware_interface::StateInterface> state_interfaces;
     for (uint i = 0; i < info_.joints.size(); i++)
@@ -140,7 +138,7 @@ namespace ros2_control_plugin_door_opening_mechanism
     return state_interfaces;
   }
 
-  std::vector<hardware_interface::CommandInterface> DoorOpeningMechanismSystemHardware::export_command_interfaces()
+  std::vector<hardware_interface::CommandInterface> DryveD1SystemHardware::export_command_interfaces()
   {
     std::vector<hardware_interface::CommandInterface> command_interfaces;
     for (uint i = 0; i < info_.joints.size(); i++)
@@ -154,11 +152,11 @@ namespace ros2_control_plugin_door_opening_mechanism
     return command_interfaces;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_activate(
+  hardware_interface::CallbackReturn DryveD1SystemHardware::on_activate(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Activating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Activating ...please wait...");
 
     // command and state should be equal when starting
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -170,69 +168,68 @@ namespace ros2_control_plugin_door_opening_mechanism
       _hw_velocity_commands[i] = _hw_velocity_states[i];
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Successfully activated!");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Successfully activated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_deactivate(
+  hardware_interface::CallbackReturn DryveD1SystemHardware::on_deactivate(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Deactivating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Deactivating ...please wait...");
 
     _dryve_d1->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Successfully deactivated!");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Successfully deactivated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_shutdown(
+  hardware_interface::CallbackReturn DryveD1SystemHardware::on_shutdown(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Shutting down ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Shutting down ...please wait...");
 
     _dryve_d1->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Successful shutdown!");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Successful shutdown!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_cleanup(
+  hardware_interface::CallbackReturn DryveD1SystemHardware::on_cleanup(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Cleaning up ...please wait...");
 
     _dryve_d1->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Cleaned up successfully!");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Cleaned up successfully!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_error(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+  hardware_interface::CallbackReturn DryveD1SystemHardware::on_error(const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "On Error: Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "On Error: Cleaning up ...please wait...");
 
     _dryve_d1->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "On Error: Cleaned up successfully!");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "On Error: Cleaned up successfully!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::return_type DoorOpeningMechanismSystemHardware::read(const rclcpp::Time& /*time*/,
-                                                                           const rclcpp::Duration& /*period*/)
+  hardware_interface::return_type DryveD1SystemHardware::read(const rclcpp::Time& /*time*/,
+                                                              const rclcpp::Duration& /*period*/)
   {
     double hw_position_state =
         static_cast<double>(_dryve_d1->read_object_value(_dryve_d1->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
@@ -258,8 +255,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     return hardware_interface::return_type::OK;
   }
 
-  hardware_interface::return_type DoorOpeningMechanismSystemHardware::write(const rclcpp::Time& /*time*/,
-                                                                            const rclcpp::Duration& /*period*/)
+  hardware_interface::return_type DryveD1SystemHardware::write(const rclcpp::Time& /*time*/,
+                                                               const rclcpp::Duration& /*period*/)
   {
     _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
                                     dryve_d1_bridge::ACCELERATION,
@@ -268,9 +265,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     return hardware_interface::return_type::OK;
   }
 
-}   // namespace ros2_control_plugin_door_opening_mechanism
+}   // namespace ros2_control_plugin_dryve_d1
 
 #include "pluginlib/class_list_macros.hpp"
 
-PLUGINLIB_EXPORT_CLASS(ros2_control_plugin_door_opening_mechanism::DoorOpeningMechanismSystemHardware,
-                       hardware_interface::SystemInterface)
+PLUGINLIB_EXPORT_CLASS(ros2_control_plugin_dryve_d1::DryveD1SystemHardware, hardware_interface::SystemInterface)
