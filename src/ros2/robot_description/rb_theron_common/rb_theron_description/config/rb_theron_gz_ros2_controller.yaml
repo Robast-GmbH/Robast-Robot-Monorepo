@@ -105,6 +105,7 @@ joint_state_broadcaster:
       - rear_leftjoint_wheel
       - rear_rightjoint_support
       - rear_rightjoint_wheel
+      - position
     
 position_joint_trajectory_controller:
   ros__parameters:

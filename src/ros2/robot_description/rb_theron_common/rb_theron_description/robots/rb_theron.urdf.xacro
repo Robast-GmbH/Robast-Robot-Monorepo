@@ -50,6 +50,9 @@
 
 	<xacro:arg name="ros_distro" default="humble" />
 
+	<!-- Whether the position joint should be modeled as a prismatic joint or just as a fixed joint -->
+	<xacro:arg name="model_position_joint" default="false" />
+
 	<!-- *************** -->
 	<!-- Robots Elements -->
 	<!-- *************** -->
@@ -60,7 +63,8 @@
 	  hq="${hq}"
 	  publish_bf="${publish_bf}"
 	  ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
-	  ros_distro="$(arg ros_distro)">
+	  ros_distro="$(arg ros_distro)"
+	  model_position_joint="$(arg model_position_joint)">
 	</xacro:rb_theron_base>
 
 	<!-- Gazebo ros control pluggins -->

@@ -31,6 +31,7 @@ def generate_launch_description():
 
     launch_arguments = {
         "ros2_control_hardware_type": "mock_components",
+        "model_position_joint": "true",
     }
 
     moveit_config = (
