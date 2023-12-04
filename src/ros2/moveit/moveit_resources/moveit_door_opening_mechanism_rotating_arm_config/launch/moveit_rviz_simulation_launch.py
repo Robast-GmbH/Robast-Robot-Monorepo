@@ -136,6 +136,7 @@ def generate_launch_description():
     for controller in [
         "joint_state_broadcaster",
         "joint_trajectory_controller",
+        "diff_drive_base_controller",
     ]:
         ld.add_action(
             ExecuteProcess(
