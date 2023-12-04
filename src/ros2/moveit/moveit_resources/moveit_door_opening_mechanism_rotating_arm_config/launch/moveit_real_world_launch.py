@@ -37,6 +37,7 @@ def generate_launch_description():
 
     launch_arguments = {
         "ros2_control_hardware_type": "dryve_d1",
+        "model_position_joint": "true",
     }
 
     moveit_config = (
