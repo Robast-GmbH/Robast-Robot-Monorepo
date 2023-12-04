@@ -7,7 +7,7 @@
               izz="${m*(x*x+y*y)/12}" />
   </xacro:macro>
 
-  <xacro:macro name="theron_base" params="prefix publish_bf model_position_joint hq">
+  <xacro:macro name="theron_base" params="prefix publish_bf model_position_joint ros2_control_hardware_type_positon_joint hq">
 
     <xacro:property name="PI" value="3.1415926535897931"/>
     <!-- xacro:property name="wheel_width" value="0.150" / -->
@@ -30,17 +30,25 @@
       </link>
 
       <xacro:if value="${model_position_joint}">
+      
         <joint name="position" type="prismatic">
-          <axis xyz="1 0 0" />
+          <axis xyz="-1 0 0" />
           <origin xyz="0 0 ${wheel_radius - wheel_offset_z}" rpy="0 0 0" />
           <parent link="${prefix}base_footprint"/>
           <child link="${prefix}base_link"/>
           <limit lower="-1" upper="1" effort="1000" velocity="100" />
           <!-- <dynamics damping="${damping}" friction="${friction}"/> -->
         </joint>
+
         <ros2_control name="position_ros2_control" type="system">
           <hardware>
-              <plugin>fake_components/GenericSystem</plugin>
+            <xacro:if value="${ros2_control_hardware_type_positon_joint == 'mock_components'}">
+              <plugin>mock_components/GenericSystem</plugin>
+              <param name="calculate_dynamics">true</param>
+            </xacro:if>
+            <xacro:if value="${ros2_control_hardware_type_positon_joint == 'linear_base_movement'}">
+              <plugin>ros2_control_plugin_linear_base_movement/LinearBaseMovementSystemHardware</plugin>
+            </xacro:if>
           </hardware>
           <joint name="position" type="prismatic">
               <param name="initial_position">0.0</param>
@@ -50,6 +58,7 @@
               <state_interface name="velocity"/>
           </joint>
         </ros2_control>
+
       </xacro:if>
       <xacro:unless value="${model_position_joint}">
         <joint name="${prefix}base_footprint_joint" type="fixed">

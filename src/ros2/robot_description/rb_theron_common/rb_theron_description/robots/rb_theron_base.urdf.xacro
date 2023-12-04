@@ -29,11 +29,22 @@
   <!-- Robots Elements -->
   <!-- *************** -->
 
-  <xacro:macro name="rb_theron_base" params="prefix hq publish_bf ros2_control_hardware_type ros_distro model_position_joint">
+  <xacro:macro
+    name="rb_theron_base"
+    params="
+      prefix
+      hq
+      publish_bf
+      ros2_control_hardware_type
+      ros2_control_hardware_type_positon_joint
+      ros_distro
+      model_position_joint">
+    
     <xacro:theron_base
       prefix="${prefix}"
       publish_bf="${publish_bf}"
       model_position_joint="${model_position_joint}"
+      ros2_control_hardware_type_positon_joint="${ros2_control_hardware_type_positon_joint}"
       hq="${hq}"
     />
     <xacro:gazebo_colors prefix="${prefix}"/>
