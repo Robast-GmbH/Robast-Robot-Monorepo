@@ -12,9 +12,7 @@ from moveit_configs_utils import MoveItConfigsBuilder
 
 from moveit_configs_utils.launches import generate_static_virtual_joint_tfs_launch
 
-from moveit_configs_utils.launch_utils import (
-    DeclareBooleanLaunchArg,
-)
+from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
 
 """
     Launches a self contained demo
