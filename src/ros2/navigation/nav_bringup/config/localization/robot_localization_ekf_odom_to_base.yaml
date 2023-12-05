@@ -86,9 +86,9 @@ ekf_filter_node:
 # do not provide some of the state variables estimated by the filter. For example, a TwistWithCovarianceStamped message
 # has no pose information, so the first six values would be meaningless in that case. Each vector defaults to all false
 # if unspecified, effectively making this parameter required for each sensor.
-        odom0_config: [false, false, false, # x, y, z
+        odom0_config: [true, true, false, # x, y, z
                        false, false, false, # roll, pitch, yaw
-                       true, true, false, # vx, vy, vz
+                       false, false, false, # vx, vy, vz
                        false, false, true,  # vroll, vpitch, vyaw
                        false, false, false] # ax, ay, az
 
@@ -109,13 +109,13 @@ ekf_filter_node:
 # data is converted to velocity data by differentiating the absolute pose measurements. These velocities are then
 # integrated as usual. NOTE: this only applies to sensors that provide pose measurements; setting differential to true
 # for twist measurements has no effect.
-        odom0_differential: false
+        odom0_differential: true
 
 # [ADVANCED] When the node starts, if this parameter is true, then the first measurement is treated as a "zero point"
 # for all future measurements. While you can achieve the same effect with the differential paremeter, the key
 # difference is that the relative parameter doesn't cause the measurement to be converted to a velocity before
 # integrating it. If you simply want your measurements to start at 0 for a given sensor, set this to true.
-        odom0_relative: true
+        odom0_relative: false
 
 # [ADVANCED] Whether to use the starting pose of child_frame_id as the origin of odometry.
         # Note: this is different from setting odom0_relative to true, as when child_frame is different from 
