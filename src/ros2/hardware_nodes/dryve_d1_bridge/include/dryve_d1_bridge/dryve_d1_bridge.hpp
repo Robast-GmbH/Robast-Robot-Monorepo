@@ -21,6 +21,8 @@ namespace dryve_d1_bridge
     ~DryveD1Gate();
 
    private:
+    std::unique_ptr<D1> _dryve_d1;
+
     void execute();
   };
 

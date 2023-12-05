@@ -7,7 +7,7 @@
                 izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="rotating_arm" params="prefix parent ros2_control_hardware_type *origin arm_length">
+    <xacro:macro name="rotating_arm" params="prefix parent ros2_control_hardware_type ros_distro *origin arm_length">
 
         <xacro:basic_joint 
             parent="${prefix}${parent}"
@@ -21,8 +21,10 @@
             damping="0.1"
             friction="0.3"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
+            ip_address="192.168.0.12"
             port="0"
             direction="0"
+            ros_distro="${ros_distro}"
             link_name="${prefix}door_opening_mechanism_link_rotating_arm"
             link_origin_x="0.0"
             link_origin_y="0.0"
@@ -59,7 +61,8 @@
         <xacro:freely_rotating_hook
             prefix="${prefix}"
             parent="${prefix}door_opening_mechanism_link_gripper_adapter"
-            ros2_control_hardware_type="${ros2_control_hardware_type}">
+            ros2_control_hardware_type="${ros2_control_hardware_type}"
+            ros_distro="${ros_distro}">
             <origin xyz="0.020 0.0 0.0" rpy="0 0 0"/>
         </xacro:freely_rotating_hook>
 

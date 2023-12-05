@@ -9,7 +9,6 @@ def generate_launch_description():
             package='dryve_d1_bridge',
             executable='dryve_d1_bridge',
             output='screen',
-            emulate_tty=True,  # https://github.com/ros2/launch/issues/188
             )
 
     ld = LaunchDescription()

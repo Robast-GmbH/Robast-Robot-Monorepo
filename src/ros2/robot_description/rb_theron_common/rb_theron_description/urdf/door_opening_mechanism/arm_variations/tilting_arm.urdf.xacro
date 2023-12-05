@@ -7,7 +7,7 @@
                 izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="tilting_arm" params="prefix parent ros2_control_hardware_type *origin">
+    <xacro:macro name="tilting_arm" params="prefix parent ros2_control_hardware_type ros_distro *origin">
 
         <xacro:basic_joint 
             parent="${prefix}${parent}"
@@ -21,6 +21,9 @@
             damping="0.1"
             friction="0.3"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
+            port="0"
+            direction="0"
+            ros_distro="ros_distro"
             link_name="${prefix}door_opening_mechanism_link_tilting_hook"
             link_origin_x="0.0"
             link_origin_y="0.0"

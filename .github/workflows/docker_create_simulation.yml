@@ -2,6 +2,8 @@ name: Create Docker Image Simulation
 
 #trigger workflow every day at 00:00
 on:
+  schedule:
+    - cron: '0 0 07 * *'
   push:
     branches:
         - main
@@ -38,8 +40,9 @@ jobs:
         context: src/ros2/${{ env.Project-Name }}/
         push: true
         build-args: |
-          ROS_DISTRO=humble
+          ROS_VERSION=humble
           ROS_CONTROL_VERSION=humble
+          GAZEBO_VERSION=fortress
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: |
               ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel-humble
@@ -51,8 +54,9 @@ jobs:
       with:
         context: src/ros2/${{ env.Project-Name }}/
         build-args: |
-          ROS_DISTRO=iron
+          ROS_VERSION=iron
           ROS_CONTROL_VERSION=master
+          GAZEBO_VERSION=garden
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: |

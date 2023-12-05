@@ -6,79 +6,118 @@
         <inertia ixx="${m*(y*y+z*z)/12}" ixy = "0" ixz = "0" iyy="${m*(x*x+z*z)/12}" iyz = "0" izz="${m*(x*x+y*y)/12}" />
     </xacro:macro>
 
-    <xacro:macro name="basic_joint" params="parent joint_name joint_type axis_x axis_y axis_z lower_limit upper_limit damping friction ros2_control_hardware_type port direction link_name link_origin_x link_origin_y link_origin_z m x y z r g b *origin">
+    <xacro:macro
+        name="basic_joint"
+        params="
+            parent
+            joint_name
+            joint_type
+            axis_x
+            axis_y
+            axis_z
+            lower_limit
+            upper_limit
+            damping
+            friction
+            ros2_control_hardware_type
+            ip_address
+            port
+            direction
+            ros_distro
+            link_name
+            link_origin_x
+            link_origin_y
+            link_origin_z
+            m
+            x
+            y
+            z
+            r
+            g
+            b
+            *origin">
 
-        <joint name="${joint_name}" type="${joint_type}">
-            <axis xyz="${axis_x} ${axis_y} ${axis_z}" />
-            <parent link="${parent}" />
-            <child link="${link_name}" />
-            <limit lower="${lower_limit}" upper="${upper_limit}" effort="1000" velocity="100" />
-            <dynamics damping="${damping}" friction="${friction}"/>
-            <xacro:insert_block name="origin" />
-        </joint>
+    <joint name="${joint_name}" type="${joint_type}">
+        <axis xyz="${axis_x} ${axis_y} ${axis_z}" />
+        <parent link="${parent}" />
+        <child link="${link_name}" />
+        <limit lower="${lower_limit}" upper="${upper_limit}" effort="1000" velocity="100" />
+        <dynamics damping="${damping}" friction="${friction}"/>
+        <xacro:insert_block name="origin" />
+    </joint>
 
-        <ros2_control name="${joint_name}_ros2_control" type="system">
-            <hardware>
-                <xacro:if value="${ros2_control_hardware_type == 'mock_components'}">
+    <ros2_control name="${joint_name}_ros2_control" type="system">
+        <hardware>
+
+            <xacro:if value="${ros2_control_hardware_type == 'mock_components'}">
+                <plugin>mock_components/GenericSystem</plugin>
+                <param name="calculate_dynamics">true</param>
+            </xacro:if>
+
+            <xacro:if value="${ros2_control_hardware_type == 'gz_ros2_control'}">
+                <xacro:if value="${ros_distro == 'humble'}">
+                    <plugin>ign_ros2_control/IgnitionSystem</plugin>
+                </xacro:if>
+                <xacro:unless value="${ros_distro == 'humble'}">
+                    <plugin>gz_ros2_control/GazeboSimSystem</plugin>
+                </xacro:unless>
+            </xacro:if>
+
+            <xacro:if value="${ros2_control_hardware_type == 'dryve_d1'}">
+                <!-- if the value for the port is zero, there is no dryve_d1 for this joint yet so we mock it -->
+                <xacro:if value="${port == 0}">
                     <plugin>mock_components/GenericSystem</plugin>
                     <param name="calculate_dynamics">true</param>
                 </xacro:if>
-                <xacro:if value="${ros2_control_hardware_type == 'gz_ros2_control'}">
-                    <plugin>gz_ros2_control/GazeboSimSystem</plugin>
-                </xacro:if>
-                <xacro:if value="${ros2_control_hardware_type == 'dryve_d1'}">
-                    <!-- if the value for the port is zero, there is no dryve_d1 for this joint yet so we mock it -->
-                    <xacro:if value="${port == 0}">
-                        <plugin>mock_components/GenericSystem</plugin>
-                        <param name="calculate_dynamics">true</param>
-                    </xacro:if>
-                    <xacro:unless value="${port == 0}">
-                        <plugin>ros2_control_plugin_door_opening_mechanism/DoorOpeningMechanismSystemHardware</plugin>
-                        <param name="port">${port}</param>
-                        <param name="direction">${direction}</param>
-                    </xacro:unless>
-                </xacro:if>
-            </hardware>
-            <joint name="${joint_name}">
-                <command_interface name="velocity">
-                    <param name="min">-10</param>
-                    <param name="max">10</param>
-                </command_interface>
-                <state_interface name="position"/>
-                <state_interface name="velocity"/>
-            </joint>
-        </ros2_control>
+                <xacro:unless value="${port == 0}">
+                    <plugin>ros2_control_plugin_door_opening_mechanism/DoorOpeningMechanismSystemHardware</plugin>
+                    <param name="ip_address">${ip_address}</param>
+                    <param name="port">${port}</param>
+                    <param name="direction">${direction}</param>
+                </xacro:unless>
+            </xacro:if>
 
-        <link name="${link_name}">
+        </hardware>
+        <joint name="${joint_name}">
+            <command_interface name="velocity">
+                <param name="min">-10</param>
+                <param name="max">10</param>
+            </command_interface>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+    </ros2_control>
 
-            <inertial>
-                <origin xyz="${link_origin_x} ${link_origin_y} ${link_origin_z}" />
-                <mass value="${m}" />
-                <xacro:box_inertia_robot m="${m}" x="${x}" y="${y}" z="${z}"/>
-            </inertial>
-            <visual>
-                <origin xyz="${link_origin_x} ${link_origin_y} ${link_origin_z}" />
-                <geometry>
-                    <box size="${x} ${y} ${z}"/>
-                </geometry>
-            </visual>
-            <collision>
-                <origin xyz="${link_origin_x} ${link_origin_y} ${link_origin_z}" />
-                <geometry>
-                    <box size="${x} ${y} ${z}"/>
-                </geometry>
-            </collision>
-        </link>
-        <gazebo reference="${link_name}">
-            <visual>
-                <material>
-                    <!-- RGBA -->
-                    <ambient>${r} ${g} ${b} 1</ambient>
-                    <diffuse>${r} ${g} ${b} 1</diffuse>
-                    <specular>${r} ${g} ${b} 1</specular>
-                </material>
-            </visual>
-        </gazebo>
+    <link name="${link_name}">
+        <inertial>
+            <origin xyz="${link_origin_x} ${link_origin_y} ${link_origin_z}" />
+            <mass value="${m}" />
+            <xacro:box_inertia_robot m="${m}" x="${x}" y="${y}" z="${z}"/>
+        </inertial>
+        <visual>
+            <origin xyz="${link_origin_x} ${link_origin_y} ${link_origin_z}" />
+            <geometry>
+                <box size="${x} ${y} ${z}"/>
+            </geometry>
+        </visual>
+        <collision>
+            <origin xyz="${link_origin_x} ${link_origin_y} ${link_origin_z}" />
+            <geometry>
+                <box size="${x} ${y} ${z}"/>
+            </geometry>
+        </collision>
+    </link>
+    
+    <gazebo reference="${link_name}">
+        <visual>
+            <material>
+                <!-- RGBA -->
+                <ambient>${r} ${g} ${b} 1</ambient>
+                <diffuse>${r} ${g} ${b} 1</diffuse>
+                <specular>${r} ${g} ${b} 1</specular>
+            </material>
+        </visual>
+    </gazebo>
 
-    </xacro:macro>
+</xacro:macro>
 </robot>

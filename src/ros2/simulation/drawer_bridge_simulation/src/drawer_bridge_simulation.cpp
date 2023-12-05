@@ -10,7 +10,6 @@ namespace drawer_bridge_simulation
 
     create_drawer_joint_trajectory_action_client();
 
-    // TODO@Jacob: Change QOS
     auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
