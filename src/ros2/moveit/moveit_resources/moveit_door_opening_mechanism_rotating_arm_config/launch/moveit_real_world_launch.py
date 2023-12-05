@@ -108,7 +108,7 @@ def generate_launch_description():
     ros2_controller_manager_cmd = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[moveit_config.robot_description, ros2_controllers_path, {"use_sim_time": use_sim_time}],
+        parameters=[moveit_config.robot_description, ros2_controllers_path],
         output="both",
     )
     
