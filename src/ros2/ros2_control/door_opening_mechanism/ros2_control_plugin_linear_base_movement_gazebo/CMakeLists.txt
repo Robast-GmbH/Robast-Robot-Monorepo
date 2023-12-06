@@ -20,7 +20,6 @@ foreach(Dependency IN ITEMS ${THIS_PACKAGE_INCLUDE_DEPENDS})
   find_package(${Dependency} REQUIRED)
 endforeach()
 
-
 ## COMPILE
 add_library(
   ros2_control_plugin_linear_base_movement_gazebo
