@@ -1,5 +1,8 @@
-FROM ros:humble-perception as devel
 
+ARG ROS_BUILD_DISTRO=iron
+FROM ros:${ROS_BUILD_DISTRO}-perception as devel
+
+ARG ROS_BUILD_DISTRO
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
@@ -68,14 +71,14 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-foxglove-bridge \
   && rm -rf /var/lib/apt/lists/*
 
-WORKDIR /mppi
-RUN git clone -b humble https://github.com/ros-planning/navigation2.git \
-  && apt update \
-  && apt upgrade -y \
-  && rosdep update \
-  && rosdep install --from-paths /mppi --ignore-src -r -y \
-  && chown -R ${USER} /mppi \
-  && echo "if [ -f /mppi/install/setup.bash ]; then source /mppi/install/setup.bash; fi" >> /home/$USER/.bashrc
+# WORKDIR /mppi
+# RUN git clone -b humble https://github.com/ros-planning/navigation2.git \
+#   && apt update \
+#   && apt upgrade -y \
+#   && rosdep update \
+#   && rosdep install --from-paths /mppi --ignore-src -r -y \
+#   && chown -R ${USER} /mppi \
+#   && echo "if [ -f /mppi/install/setup.bash ]; then source /mppi/install/setup.bash; fi" >> /home/$USER/.bashrc
 
   
 RUN apt-get update \
@@ -96,7 +99,8 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 WORKDIR /workspace
 
 ############################## Build ##################################
-FROM ros:humble-ros-base-jammy as build
+FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as build
+ARG ROS_BUILD_DISTRO
 ARG GIT_TOKEN
 ARG GIT_BRANCH=dev/RE-1144
 COPY --from=devel / /
@@ -120,19 +124,19 @@ RUN rosdep update && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
-WORKDIR /mppi
+# WORKDIR /mppi
 
-#TODO @TAlscher remove this when the new version of nav2 is released
-RUN apt-get remove -y *nav2*
-#TODO @TAlscher remove this when the new version of nav2 is released
-RUN rosdep update && \
-  rosdep install --from-paths navigation2/ --ignore-src -r -y && \
-  . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --parallel-workers 2 --packages-skip nav2_system_tests nav2_bringup --install-base /robast/mppi/
+# #TODO @TAlscher remove this when the new version of nav2 is released
+# RUN apt-get remove -y *nav2*
+# #TODO @TAlscher remove this when the new version of nav2 is released
+# RUN rosdep update && \
+#   rosdep install --from-paths navigation2/ --ignore-src -r -y && \
+#   . /opt/ros/${ROS_DISTRO}/setup.sh && \
+#   colcon build --parallel-workers 2 --packages-skip nav2_system_tests nav2_bringup --install-base /robast/mppi/
 
 ############################## Release ##################################
-FROM ros:humble-perception as release
-
+FROM ros:${ROS_BUILD_DISTRO}-perception as release
+ARG ROS_BUILD_DISTRO
 RUN apt-get update && apt-get install -y \
   cmake \
   wget \
@@ -171,8 +175,7 @@ ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
 RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc \
-  && echo "if [ -f /robast/mppi/setup.bash ]; then source /robast/mppi/setup.bash; fi" >> ~root/.bashrc
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
 ENV is_simulation=False
 ENV config_directory=config
@@ -184,8 +187,8 @@ ENV init_yaw=1.57
 ENV prefix=''
 
 ############################## DEBUG ##################################
-FROM ros:humble-ros-base-jammy as debug
-
+FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as debug
+ARG ROS_BUILD_DISTRO
 COPY --from=release / /
 
 RUN apt update -y && apt upgrade -y && apt install -y \
