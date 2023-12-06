@@ -1,0 +1,10 @@
+<library path="ros2_control_plugin_linear_base_movement_gazebo">
+  <class
+    name="ros2_control_plugin_linear_base_movement_gazebo/LinearBaseMovementSystemHardware"
+    type="ros2_control_plugin_linear_base_movement_gazebo::LinearBaseMovementSystemHardware"
+    base_class_type="gazebo_ros2_control::GazeboSystemInterface">
+    <description>
+      The ros2 control plugin for moving the base in a linear motion forwards and backwards in gazebo.
+    </description>
+  </class>
+</library>
