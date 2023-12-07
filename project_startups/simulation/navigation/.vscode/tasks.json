@@ -217,12 +217,6 @@
                 },
                 {
                         "type": "shell",
-                        "label": "temporary task to build mppi",
-                        "command": "cd /workspace_nav2; colcon build --packages-select nav2_mppi_controller",
-                        "problemMatcher": []
-                },      
-                {
-                        "type": "shell",
                         "label": "start nav_without_localization_with_door_bells_launch",
                         "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py use_interim_goal:=true",
                         "problemMatcher": [],
