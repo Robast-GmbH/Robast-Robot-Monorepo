@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>ros2_control_plugin_linear_base_movement</name>
+  <name>ros2_control_base_movement</name>
   <version>0.0.0</version>
   <description>This package contains a ros2 control plugin for moving the base in a linear motion forwards and backwards.</description>
   <maintainer email="j.ritterbach@robast.de">robast</maintainer>

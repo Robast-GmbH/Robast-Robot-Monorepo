@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.16)
-project(ros2_control_plugin_linear_base_movement)
+project(ros2_control_base_movement)
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
@@ -22,34 +22,34 @@ endforeach()
 
 ## COMPILE
 add_library(
-  ros2_control_plugin_linear_base_movement
+  ros2_control_base_movement
   SHARED
-  src/ros2_control_plugin_linear_base_movement.cpp
+  src/ros2_control_base_movement.cpp
 )
-target_compile_features(ros2_control_plugin_linear_base_movement PUBLIC cxx_std_17)
-target_include_directories(ros2_control_plugin_linear_base_movement PUBLIC
+target_compile_features(ros2_control_base_movement PUBLIC cxx_std_17)
+target_include_directories(ros2_control_base_movement PUBLIC
 $<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/include>
-$<INSTALL_INTERFACE:include/ros2_control_plugin_linear_base_movement>
+$<INSTALL_INTERFACE:include/ros2_control_base_movement>
 )
 ament_target_dependencies(
-  ros2_control_plugin_linear_base_movement PUBLIC
+  ros2_control_base_movement PUBLIC
   ${THIS_PACKAGE_INCLUDE_DEPENDS}
 )
 
 # Causes the visibility macros to use dllexport rather than dllimport,
 # which is appropriate when building the dll but not consuming it.
-target_compile_definitions(${PROJECT_NAME} PRIVATE "ROS_CONTROL_PLUGIN_LINEAR_BASE_MOVEMENT_BUILDING_DLL")
+target_compile_definitions(${PROJECT_NAME} PRIVATE "ROS2_CONTROL_BASE_MOVEMENT_BUILDING_DLL")
 
 # Export hardware plugins
-pluginlib_export_plugin_description_file(hardware_interface ros2_control_plugin_linear_base_movement.xml)
+pluginlib_export_plugin_description_file(hardware_interface ros2_control_base_movement.xml)
 
 # INSTALL
 install(
   DIRECTORY include/
-  DESTINATION include/ros2_control_plugin_linear_base_movement
+  DESTINATION include/ros2_control_base_movement
 )
-install(TARGETS ros2_control_plugin_linear_base_movement
-  EXPORT export_ros2_control_plugin_linear_base_movement
+install(TARGETS ros2_control_base_movement
+  EXPORT export_ros2_control_base_movement
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -60,6 +60,6 @@ if(BUILD_TESTING)
 endif()
 
 ## EXPORTS
-ament_export_targets(export_ros2_control_plugin_linear_base_movement HAS_LIBRARY_TARGET)
+ament_export_targets(export_ros2_control_base_movement HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
 ament_package()
