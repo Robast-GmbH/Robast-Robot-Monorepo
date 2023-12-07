@@ -198,6 +198,14 @@ namespace ros2_control_base_movement
     return hardware_interface::return_type::OK;
   }
 
+  void BaseMovementSystemHardware::compute_cmd_vel(const std::vector<double>& hw_velocity_commands)
+  {
+    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"),
+                "compute_cmd_vel_cmd for velocity command %f for linear base movement.",
+                hw_velocity_commands[0]);
+    // TODO@Jacob: Implement computation of velocity commands
+  }
+
   hardware_interface::return_type BaseMovementSystemHardware::write(const rclcpp::Time& /*time*/,
                                                                     const rclcpp::Duration& /*period*/)
   {
@@ -206,6 +214,7 @@ namespace ros2_control_base_movement
       RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"),
                   "Received velocity command %f for linear base movement.",
                   _hw_velocity_commands[0]);
+      compute_cmd_vel_cmd(_hw_velocity_commands);
     }
     // TODO@Jacob: Implement write to hardware
     return hardware_interface::return_type::OK;

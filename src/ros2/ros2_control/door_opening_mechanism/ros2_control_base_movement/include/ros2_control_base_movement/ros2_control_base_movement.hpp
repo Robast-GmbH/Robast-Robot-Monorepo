@@ -54,6 +54,8 @@ namespace ros2_control_base_movement
     ROS2_CONTROL_BASE_MOVEMENT_PUBLIC hardware_interface::return_type write(const rclcpp::Time& time,
                                                                             const rclcpp::Duration& period) override;
 
+    static void compute_cmd_vel(const std::vector<double>& hw_velocity_commands);
+
    private:
     std::vector<double> _hw_position_commands;
     std::vector<double> _hw_position_states;
