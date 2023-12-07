@@ -46,7 +46,7 @@ pluginlib_export_plugin_description_file(hardware_interface ros2_control_base_mo
 # INSTALL
 install(
   DIRECTORY include/
-  DESTINATION include/ros2_control_base_movement
+  DESTINATION include/
 )
 install(TARGETS ros2_control_base_movement
   EXPORT export_ros2_control_base_movement
@@ -61,5 +61,9 @@ endif()
 
 ## EXPORTS
 ament_export_targets(export_ros2_control_base_movement HAS_LIBRARY_TARGET)
+
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
+
+ament_export_include_directories(include)
+
 ament_package()
