@@ -67,16 +67,6 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-diagnostic-updater \
   ros-${ROS_DISTRO}-foxglove-bridge \
   && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /mppi
-RUN git clone -b humble https://github.com/ros-planning/navigation2.git \
-  && apt update \
-  && apt upgrade -y \
-  && rosdep update \
-  && rosdep install --from-paths /mppi --ignore-src -r -y \
-  && chown -R ${USER} /mppi \
-  && echo "if [ -f /mppi/install/setup.bash ]; then source /mppi/install/setup.bash; fi" >> /home/$USER/.bashrc
-
   
 RUN apt-get update \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
@@ -120,17 +110,6 @@ RUN rosdep update && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
-WORKDIR /mppi
-
-#TODO @TAlscher remove this when the new version of nav2 is released
-RUN apt-get remove -y ros-${ROS_DISTRO}-nav2-mppi-controller
-#TODO @TAlscher remove this when the new version of nav2 is released
-RUN rosdep update && \
-  rosdep install --from-paths /ws/src --ignore-src -r -y && \
-  apt-get remove -y ros-${ROS_DISTRO}-nav2-mppi-controller && \
-  . /opt/ros/${ROS_DISTRO}/setup.sh && \
-  colcon build --install-base /robast/mppi/ --packages-select nav2_mppi_controller
-
 ############################## Release ##################################
 FROM ros:humble-perception as release
 
@@ -172,8 +151,7 @@ ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
 RUN apt-get update \
-  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc \
-  && echo "if [ -f /robast/mppi/setup.bash ]; then source /robast/mppi/setup.bash; fi" >> ~root/.bashrc
+  && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
 
 ENV is_simulation=False
 ENV config_directory=config
