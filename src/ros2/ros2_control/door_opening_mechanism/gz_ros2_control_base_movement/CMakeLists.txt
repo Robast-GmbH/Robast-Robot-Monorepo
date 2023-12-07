@@ -85,23 +85,23 @@ include_directories(include)
 
 #########
 
-add_library(gz_hardware_plugins SHARED
+add_library(gz_ros2_control_base_movement SHARED
   src/gz_system.cpp
 )
-ament_target_dependencies(gz_hardware_plugins
+ament_target_dependencies(gz_ros2_control_base_movement
   rclcpp_lifecycle
   hardware_interface
   rclcpp
   gz_ros2_control
   ros2_control_base_movement
 )
-target_link_libraries(gz_hardware_plugins
+target_link_libraries(gz_ros2_control_base_movement
   ${GZ_SIM}
 )
 
 ## Install
 install(TARGETS
-  gz_hardware_plugins
+  gz_ros2_control_base_movement
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -119,7 +119,7 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME} gz_hardware_plugins)
+ament_export_libraries(${PROJECT_NAME} gz_ros2_control_base_movement)
 
 # Install directories
 # install(TARGETS ${PROJECT_NAME}-system
