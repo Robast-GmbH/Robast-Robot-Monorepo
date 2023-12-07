@@ -29,7 +29,7 @@ def generate_launch_description():
 
     launch_arguments = {
         "ros2_control_hardware_type": "mock_components",
-        "ros2_control_hardware_type_positon_joint": "linear_base_movement",
+        "ros2_control_hardware_type_positon_joint": "real_life",
         "model_position_joint": "true",
     }
 

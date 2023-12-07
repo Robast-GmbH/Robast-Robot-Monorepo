@@ -55,6 +55,17 @@
                 },
                 {
                         "type": "shell",
+                        "label": "start tiplu_sim with position joint modeled",
+                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py model_position_joint:=true",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": false,
+                                "group": "default_start"
+                        }
+                },
+                {
+                        "type": "shell",
                         "label": "start drawer_bridge_simulation",
                         "command": "source /workspace/install/setup.bash; ros2 launch drawer_bridge_simulation drawer_bridge_simulation_launch.py",
                         "problemMatcher": [],

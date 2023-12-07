@@ -9,6 +9,35 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch.event_handlers import OnProcessExit
+from launch.launch_context import LaunchContext
+
+def launch_robot_state_publisher(context, *args, **settings):
+
+    model_position_joint = LaunchConfiguration("model_position_joint").perform(context)
+
+    robot_xml = xacro.process_file(
+        os.path.join(
+            get_package_share_directory("rb_theron_description"),
+            "robots",
+            settings['robot'] + ".urdf.xacro",
+        ),
+        mappings={"prefix": settings['prefix'],
+                  "ros2_control_hardware_type": "gz_ros2_control",
+                  "ros2_control_hardware_type_positon_joint": "gz_ros2_control",
+                  "ros_distro": settings['ros_distro'],
+                  "model_position_joint": model_position_joint},
+    ).toxml()
+
+    start_robot_state_publisher_cmd = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        name="robot_state_publisher",
+        parameters=[{"use_sim_time": settings['use_sim_time']}, {"robot_description": robot_xml}],
+        output="screen",
+    )
+
+    return [start_robot_state_publisher_cmd]
+
 
 def create_world_urdf(context, *args, **settings):
 
@@ -51,8 +80,27 @@ def path_pattern_change_for_gazebo(urdf_string):
 
 def generate_launch_description():
 
+    context = LaunchContext()
+
+    declare_model_position_joint_cmd = DeclareLaunchArgument(
+        "model_position_joint",
+        default_value="false",
+        description="whether to model the position joint or not",
+    )
+    
     ros_distro = os.environ["ROS_DISTRO"]
     gz_version = os.environ["GZ_VERSION"]
+
+    use_sim_time = LaunchConfiguration("use_sim_time")
+    world_model = LaunchConfiguration("world_model")
+    headless = LaunchConfiguration("headless")
+    robot_name = LaunchConfiguration("robot_name")
+    model_position_joint = LaunchConfiguration("model_position_joint")
+    init_x = os.environ['init_x']
+    init_y = os.environ["init_y"]
+    init_yaw = os.environ["init_yaw"]
+    prefix = os.environ["prefix"]
+    robot = os.environ["robot"]
 
     if (gz_version == "fortress"):
         pkg_ros_gz_sim = get_package_share_directory("ros_ign_gazebo")
@@ -62,25 +110,6 @@ def generate_launch_description():
         pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
         gz_sim_launch = os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
         gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml")
-
-    robot_xml = xacro.process_file(
-        os.path.join(
-            get_package_share_directory("rb_theron_description"),
-            "robots",
-            os.environ["robot"] + ".urdf.xacro",
-        ),
-        mappings={"prefix": os.environ["prefix"],
-                  "ros2_control_hardware_type": "gz_ros2_control",
-                  "ros_distro": ros_distro},
-    ).toxml()
-
-    use_sim_time = LaunchConfiguration("use_sim_time")
-    world_model = LaunchConfiguration("world_model")
-    headless = LaunchConfiguration("headless")
-    robot_name = LaunchConfiguration("robot_name")
-    init_x = os.environ['init_x']
-    init_y = os.environ["init_y"]
-    init_yaw = os.environ["init_yaw"]
 
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
@@ -104,27 +133,24 @@ def generate_launch_description():
         "headless",
         default_value=" ",
         description="Weather to run in headless mode (-s) or with gui ''",
-    )
+    )    
 
     declare_use_sim_time_cmd = DeclareLaunchArgument(
         "use_sim_time",
         default_value="true",
         description="whether to use sim time or not",
-    )
-
-    start_robot_state_publisher_cmd = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        name="robot_state_publisher",
-        parameters=[{"use_sim_time": use_sim_time}, {"robot_description": robot_xml}],
-        output="screen",
-    )
+    )    
 
     # As far as I understand, to get the value of a launch argument we need a OpaqueFunction for this as described here:
     # https://robotics.stackexchange.com/questions/104340/getting-the-value-of-launchargument-inside-python-launch-file
     launch_gazebo_opaque_func = OpaqueFunction(
         function=create_world_urdf,
         kwargs={'gz_sim_launch': gz_sim_launch, 'headless': headless}
+    )
+
+    launch_robot_state_publisher_opaque_func = OpaqueFunction(
+        function=launch_robot_state_publisher,
+        kwargs={'use_sim_time': use_sim_time, 'robot': robot, 'prefix': prefix, 'ros_distro': ros_distro}
     )
 
     spawn_robot_cmd = Node(
@@ -185,15 +211,16 @@ def generate_launch_description():
     # arguments
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
+    ld.add_action(declare_model_position_joint_cmd)
     ld.add_action(declare_world_model_cmd)
     ld.add_action(declare_robot_model_cmd)
     ld.add_action(declare_headless_cmd)
 
     # opaque functions
     ld.add_action(launch_gazebo_opaque_func)
+    ld.add_action(launch_robot_state_publisher_opaque_func)
 
     # nodes
-    ld.add_action(start_robot_state_publisher_cmd)
     ld.add_action(spawn_robot_cmd)
     ld.add_action(gz_ros_bridge_cmd)
 
