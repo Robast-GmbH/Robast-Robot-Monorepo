@@ -7,6 +7,7 @@
 #include <memory>
 #include <vector>
 
+#include "geometry_msgs/msg/twist.hpp"
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
@@ -58,9 +59,11 @@ namespace ros2_control_base_movement
     ROS2_CONTROL_BASE_MOVEMENT_PUBLIC hardware_interface::return_type write(const rclcpp::Time& time,
                                                                             const rclcpp::Duration& period) override;
 
-    static void compute_cmd_vel(const std::vector<double>& hw_velocity_commands);
+    static geometry_msgs::msg::Twist compute_cmd_vel(const std::vector<double>& hw_velocity_commands);
 
    private:
+    rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr _publisher_cmd_vel;
+
     std::vector<double> _hw_position_commands;
     std::vector<double> _hw_position_states;
 

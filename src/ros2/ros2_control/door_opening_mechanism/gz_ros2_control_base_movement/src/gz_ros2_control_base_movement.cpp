@@ -165,7 +165,10 @@ namespace gz_ros2_control_base_movement
   hardware_interface::return_type GzBaseMovementSystemHardware::write(const rclcpp::Time & /*time*/,
                                                                       const rclcpp::Duration & /*period*/)
   {
-    // TODO@Jacob: Implement writing to actuators
+    if (_hw_velocity_commands[0] != 0.0)
+    {
+      ros2_control_base_movement::BaseMovementSystemHardware::compute_cmd_vel(_hw_velocity_commands);
+    }
 
     return hardware_interface::return_type::OK;
   }
