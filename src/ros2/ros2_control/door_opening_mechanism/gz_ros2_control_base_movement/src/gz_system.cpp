@@ -133,7 +133,7 @@ void ImuData::OnIMU(const GZ_MSGS_NAMESPACE IMU &_msg)
   this->imu_sensor_data_[9] = _msg.linear_acceleration().z();
 }
 
-class gz_ros2_control::GazeboSimSystemPrivate
+class gz_ros2_control_base_movement::GazeboSimSystemPrivate
 {
  public:
   GazeboSimSystemPrivate() = default;
@@ -174,14 +174,14 @@ class gz_ros2_control::GazeboSimSystemPrivate
   double position_proportional_gain_;
 };
 
-namespace gz_ros2_control
+namespace gz_ros2_control_base_movement
 {
 
-  bool GazeboSimSystem::initSim(rclcpp::Node::SharedPtr &model_nh,
-                                std::map<std::string, sim::Entity> &enableJoints,
-                                const hardware_interface::HardwareInfo &hardware_info,
-                                sim::EntityComponentManager &_ecm,
-                                int &update_rate)
+  bool BaseMovementSystemHardware::initSim(rclcpp::Node::SharedPtr &model_nh,
+                                           std::map<std::string, sim::Entity> &enableJoints,
+                                           const hardware_interface::HardwareInfo &hardware_info,
+                                           sim::EntityComponentManager &_ecm,
+                                           int &update_rate)
   {
     this->dataPtr = std::make_unique<GazeboSimSystemPrivate>();
     this->dataPtr->last_update_sim_time_ros_ = rclcpp::Time();
@@ -407,7 +407,7 @@ namespace gz_ros2_control
     return true;
   }
 
-  void GazeboSimSystem::registerSensors(const hardware_interface::HardwareInfo &hardware_info)
+  void BaseMovementSystemHardware::registerSensors(const hardware_interface::HardwareInfo &hardware_info)
   {
     // Collect gazebo sensor handles
     size_t n_sensors = hardware_info.sensors.size();
@@ -473,7 +473,7 @@ namespace gz_ros2_control
         });
   }
 
-  CallbackReturn GazeboSimSystem::on_init(const hardware_interface::HardwareInfo &actuator_info)
+  CallbackReturn BaseMovementSystemHardware::on_init(const hardware_interface::HardwareInfo &actuator_info)
   {
     RCLCPP_WARN(this->nh_->get_logger(), "On init...");
     if (hardware_interface::SystemInterface::on_init(actuator_info) != CallbackReturn::SUCCESS)
@@ -483,37 +483,37 @@ namespace gz_ros2_control
     return CallbackReturn::SUCCESS;
   }
 
-  CallbackReturn GazeboSimSystem::on_configure(const rclcpp_lifecycle::State & /*previous_state*/)
+  CallbackReturn BaseMovementSystemHardware::on_configure(const rclcpp_lifecycle::State & /*previous_state*/)
   {
     RCLCPP_INFO(this->nh_->get_logger(), "System Successfully configured!");
 
     return CallbackReturn::SUCCESS;
   }
 
-  std::vector<hardware_interface::StateInterface> GazeboSimSystem::export_state_interfaces()
+  std::vector<hardware_interface::StateInterface> BaseMovementSystemHardware::export_state_interfaces()
   {
     return std::move(this->dataPtr->state_interfaces_);
   }
 
-  std::vector<hardware_interface::CommandInterface> GazeboSimSystem::export_command_interfaces()
+  std::vector<hardware_interface::CommandInterface> BaseMovementSystemHardware::export_command_interfaces()
   {
     return std::move(this->dataPtr->command_interfaces_);
   }
 
-  CallbackReturn GazeboSimSystem::on_activate(const rclcpp_lifecycle::State &previous_state)
+  CallbackReturn BaseMovementSystemHardware::on_activate(const rclcpp_lifecycle::State &previous_state)
   {
     return CallbackReturn::SUCCESS;
     return hardware_interface::SystemInterface::on_activate(previous_state);
   }
 
-  CallbackReturn GazeboSimSystem::on_deactivate(const rclcpp_lifecycle::State &previous_state)
+  CallbackReturn BaseMovementSystemHardware::on_deactivate(const rclcpp_lifecycle::State &previous_state)
   {
     return CallbackReturn::SUCCESS;
     return hardware_interface::SystemInterface::on_deactivate(previous_state);
   }
 
-  hardware_interface::return_type GazeboSimSystem::read(const rclcpp::Time & /*time*/,
-                                                        const rclcpp::Duration & /*period*/)
+  hardware_interface::return_type BaseMovementSystemHardware::read(const rclcpp::Time & /*time*/,
+                                                                   const rclcpp::Duration & /*period*/)
   {
     for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i)
     {
@@ -557,7 +557,7 @@ namespace gz_ros2_control
     return hardware_interface::return_type::OK;
   }
 
-  hardware_interface::return_type GazeboSimSystem::perform_command_mode_switch(
+  hardware_interface::return_type BaseMovementSystemHardware::perform_command_mode_switch(
       const std::vector<std::string> &start_interfaces, const std::vector<std::string> &stop_interfaces)
   {
     for (unsigned int j = 0; j < this->dataPtr->joints_.size(); j++)
@@ -604,8 +604,8 @@ namespace gz_ros2_control
     return hardware_interface::return_type::OK;
   }
 
-  hardware_interface::return_type GazeboSimSystem::write(const rclcpp::Time & /*time*/,
-                                                         const rclcpp::Duration & /*period*/)
+  hardware_interface::return_type BaseMovementSystemHardware::write(const rclcpp::Time & /*time*/,
+                                                                    const rclcpp::Duration & /*period*/)
   {
     for (unsigned int i = 0; i < this->dataPtr->joints_.size(); ++i)
     {
@@ -764,7 +764,8 @@ namespace gz_ros2_control
 
     return hardware_interface::return_type::OK;
   }
-}   // namespace gz_ros2_control
+}   // namespace gz_ros2_control_base_movement
 
 #include "pluginlib/class_list_macros.hpp"   // NOLINT
-PLUGINLIB_EXPORT_CLASS(gz_ros2_control::GazeboSimSystem, gz_ros2_control::GazeboSimSystemInterface)
+PLUGINLIB_EXPORT_CLASS(gz_ros2_control_base_movement::BaseMovementSystemHardware,
+                       gz_ros2_control::GazeboSimSystemInterface)

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GZ_ROS2_CONTROL__GZ_SYSTEM_HPP_
-#define GZ_ROS2_CONTROL__GZ_SYSTEM_HPP_
+#ifndef GZ_ROS2_CONTROL_BASE_MOVEMENT__GZ_SYSTEM_HPP_
+#define GZ_ROS2_CONTROL_BASE_MOVEMENT__GZ_SYSTEM_HPP_
 
 #include <map>
 #include <memory>
@@ -25,7 +25,7 @@
 #include "rclcpp_lifecycle/state.hpp"
 #include "ros2_control_base_movement/ros2_control_base_movement.hpp"
 
-namespace gz_ros2_control
+namespace gz_ros2_control_base_movement
 {
   using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
@@ -35,7 +35,7 @@ namespace gz_ros2_control
   // These class must inherit `gz_ros2_control::GazeboSimSystemInterface` which implements a
   // simulated `ros2_control` `hardware_interface::SystemInterface`.
 
-  class GazeboSimSystem : public GazeboSimSystemInterface
+  class BaseMovementSystemHardware : public gz_ros2_control::GazeboSimSystemInterface
   {
    public:
     // Documentation Inherited
@@ -82,6 +82,6 @@ namespace gz_ros2_control
     std::unique_ptr<GazeboSimSystemPrivate> dataPtr;
   };
 
-}   // namespace gz_ros2_control
+}   // namespace gz_ros2_control_base_movement
 
-#endif   // GZ_ROS2_CONTROL__GZ_SYSTEM_HPP_
+#endif   // GZ_ROS2_CONTROL_BASE_MOVEMENT__GZ_SYSTEM_HPP_
