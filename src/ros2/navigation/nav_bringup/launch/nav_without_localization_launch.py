@@ -21,11 +21,9 @@ def generate_launch_description():
     config_directory = os.environ["config_directory"]
     is_simulation = os.environ["is_simulation"]
 
-
-    if is_simulation=='True':
+    if is_simulation == 'True':
         use_sim_time_default = "true"
         remappings = [
-            ("/cmd_vel", "diff_drive_base_controller/cmd_vel_unstamped"),
             ("/odom", "diff_drive_base_controller/odom"),
             ("/tf", "tf"),
             ("/tf_static", "tf_static"),
@@ -34,13 +32,11 @@ def generate_launch_description():
     else:
         use_sim_time_default = "false"
         remappings = [
-            ("/cmd_vel", "robot/robotnik_base_control/cmd_vel"),
             ("/odom", "robot/robotnik_base_control/odom"),
             ("/robot/tf", "tf"),
             ("/robot/tf_static", "tf_static"),
-            ("/cmd_vel_smoothed", "cmd_vel")
+            ("/cmd_vel_smoothed", "robot/robotnik_base_control/cmd_vel")
         ]
-    bringup_dir = get_package_share_directory('nav_bringup')
 
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -161,7 +157,8 @@ def generate_launch_description():
                 respawn_delay=2.0,
                 parameters=[configured_params],
                 arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings),
+                remappings=remappings +
+                        [("/cmd_vel", "robot/robotnik_base_control/cmd_vel")]),
             Node(
                 package='nav2_bt_navigator',
                 executable='bt_navigator',
@@ -251,7 +248,7 @@ def generate_launch_description():
                 name='velocity_smoother',
                 parameters=[configured_params],
                 remappings=remappings +
-                [('cmd_vel', 'cmd_vel_nav'), ('cmd_vel_smoothed', 'cmd_vel')]),
+                [('cmd_vel', 'cmd_vel_nav')]),
             ComposableNode(
                 package='nav2_lifecycle_manager',
                 plugin='nav2_lifecycle_manager::LifecycleManager',
