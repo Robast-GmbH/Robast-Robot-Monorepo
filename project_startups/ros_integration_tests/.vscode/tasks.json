@@ -32,12 +32,6 @@
             "problemMatcher": []
         },
         {
-            "type": "shell",
-            "label": "temporary task to build mppi",
-            "command": "cd /workspace_nav2; colcon build --packages-select nav2_mppi_controller",
-            "problemMatcher": []
-        },
-        {
             "label": "execute tests in the given project",
             "detail": "use a colcon test on the given project",
             "type": "shell",
