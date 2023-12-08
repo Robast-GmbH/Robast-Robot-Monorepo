@@ -3,18 +3,18 @@
 namespace gz_ros2_control_base_movement
 {
 
-  bool BaseMovementSystemHardware::initSim(rclcpp::Node::SharedPtr &model_nh,
-                                           std::map<std::string, sim::Entity> &enableJoints,
-                                           const hardware_interface::HardwareInfo &hardware_info,
-                                           sim::EntityComponentManager &_ecm,
-                                           int &update_rate)
+  bool GzBaseMovementSystemHardware::initSim(rclcpp::Node::SharedPtr &model_nh,
+                                             std::map<std::string, sim::Entity> &enableJoints,
+                                             const hardware_interface::HardwareInfo &hardware_info,
+                                             sim::EntityComponentManager &_ecm,
+                                             int &update_rate)
   {
     return true;
   }
 
-  CallbackReturn BaseMovementSystemHardware::on_init(const hardware_interface::HardwareInfo &actuator_info)
+  CallbackReturn GzBaseMovementSystemHardware::on_init(const hardware_interface::HardwareInfo &actuator_info)
   {
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "BaseMovementSystemHardware on_init()");
+    RCLCPP_INFO(rclcpp::get_logger("GzBaseMovementSystemHardware"), "GzBaseMovementSystemHardware on_init()");
 
     if (hardware_interface::SystemInterface::on_init(actuator_info) != hardware_interface::CallbackReturn::SUCCESS)
     {
@@ -28,12 +28,12 @@ namespace gz_ros2_control_base_movement
 
     for (const hardware_interface::ComponentInfo &joint : info_.joints)
     {
-      RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Configuring joint '%s'.", joint.name.c_str());
+      RCLCPP_INFO(rclcpp::get_logger("GzBaseMovementSystemHardware"), "Configuring joint '%s'.", joint.name.c_str());
 
-      // BaseMovementSystemHardware has position and velocity state and command interface on each joint
+      // GzBaseMovementSystemHardware has position and velocity state and command interface on each joint
       if (joint.command_interfaces.size() > 2)
       {
-        RCLCPP_FATAL(rclcpp::get_logger("BaseMovementSystemHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("GzBaseMovementSystemHardware"),
                      "Joint '%s' has %zu command interfaces found. 2 or less expected.",
                      joint.name.c_str(),
                      joint.command_interfaces.size());
@@ -43,7 +43,7 @@ namespace gz_ros2_control_base_movement
       if ((joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
           (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
       {
-        RCLCPP_FATAL(rclcpp::get_logger("BaseMovementSystemHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("GzBaseMovementSystemHardware"),
                      "Joint '%s' have %s command interfaces found. '%s' or '%s' expected.",
                      joint.name.c_str(),
                      joint.command_interfaces[0].name.c_str(),
@@ -54,7 +54,7 @@ namespace gz_ros2_control_base_movement
 
       if (joint.state_interfaces.size() > 2)
       {
-        RCLCPP_FATAL(rclcpp::get_logger("BaseMovementSystemHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("GzBaseMovementSystemHardware"),
                      "Joint '%s' has %zu state interface. 2 or less expected.",
                      joint.name.c_str(),
                      joint.state_interfaces.size());
@@ -64,7 +64,7 @@ namespace gz_ros2_control_base_movement
       if ((joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
           (joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
       {
-        RCLCPP_FATAL(rclcpp::get_logger("BaseMovementSystemHardware"),
+        RCLCPP_FATAL(rclcpp::get_logger("GzBaseMovementSystemHardware"),
                      "Joint '%s' have %s state interface. '%s' or '%s' expected.",
                      joint.name.c_str(),
                      joint.state_interfaces[0].name.c_str(),
@@ -77,7 +77,7 @@ namespace gz_ros2_control_base_movement
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  CallbackReturn BaseMovementSystemHardware::on_configure(const rclcpp_lifecycle::State & /*previous_state*/)
+  CallbackReturn GzBaseMovementSystemHardware::on_configure(const rclcpp_lifecycle::State & /*previous_state*/)
   {
     // reset values always when configuring hardware
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -91,12 +91,12 @@ namespace gz_ros2_control_base_movement
       _hw_velocity_commands[i] = 0;
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Successfully configured!");
+    RCLCPP_INFO(rclcpp::get_logger("GzBaseMovementSystemHardware"), "Successfully configured!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  std::vector<hardware_interface::StateInterface> BaseMovementSystemHardware::export_state_interfaces()
+  std::vector<hardware_interface::StateInterface> GzBaseMovementSystemHardware::export_state_interfaces()
   {
     std::vector<hardware_interface::StateInterface> state_interfaces;
     for (uint i = 0; i < info_.joints.size(); i++)
@@ -110,7 +110,7 @@ namespace gz_ros2_control_base_movement
     return state_interfaces;
   }
 
-  std::vector<hardware_interface::CommandInterface> BaseMovementSystemHardware::export_command_interfaces()
+  std::vector<hardware_interface::CommandInterface> GzBaseMovementSystemHardware::export_command_interfaces()
   {
     std::vector<hardware_interface::CommandInterface> command_interfaces;
     for (uint i = 0; i < info_.joints.size(); i++)
@@ -124,9 +124,9 @@ namespace gz_ros2_control_base_movement
     return command_interfaces;
   }
 
-  CallbackReturn BaseMovementSystemHardware::on_activate(const rclcpp_lifecycle::State &previous_state)
+  CallbackReturn GzBaseMovementSystemHardware::on_activate(const rclcpp_lifecycle::State &previous_state)
   {
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Activating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("GzBaseMovementSystemHardware"), "Activating ...please wait...");
 
     // command and state should be equal when starting
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -138,32 +138,32 @@ namespace gz_ros2_control_base_movement
       _hw_velocity_commands[i] = _hw_velocity_states[i];
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Successfully activated!");
+    RCLCPP_INFO(rclcpp::get_logger("GzBaseMovementSystemHardware"), "Successfully activated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  CallbackReturn BaseMovementSystemHardware::on_deactivate(const rclcpp_lifecycle::State &previous_state)
+  CallbackReturn GzBaseMovementSystemHardware::on_deactivate(const rclcpp_lifecycle::State &previous_state)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Deactivating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger("GzBaseMovementSystemHardware"), "Deactivating ...please wait...");
 
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Successfully deactivated!");
+    RCLCPP_INFO(rclcpp::get_logger("GzBaseMovementSystemHardware"), "Successfully deactivated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::return_type BaseMovementSystemHardware::read(const rclcpp::Time & /*time*/,
-                                                                   const rclcpp::Duration & /*period*/)
+  hardware_interface::return_type GzBaseMovementSystemHardware::read(const rclcpp::Time & /*time*/,
+                                                                     const rclcpp::Duration & /*period*/)
   {
     // TODO@Jacob: Implement reading sensors
 
     return hardware_interface::return_type::OK;
   }
 
-  hardware_interface::return_type BaseMovementSystemHardware::write(const rclcpp::Time & /*time*/,
-                                                                    const rclcpp::Duration & /*period*/)
+  hardware_interface::return_type GzBaseMovementSystemHardware::write(const rclcpp::Time & /*time*/,
+                                                                      const rclcpp::Duration & /*period*/)
   {
     // TODO@Jacob: Implement writing to actuators
 
@@ -172,5 +172,5 @@ namespace gz_ros2_control_base_movement
 }   // namespace gz_ros2_control_base_movement
 
 #include "pluginlib/class_list_macros.hpp"   // NOLINT
-PLUGINLIB_EXPORT_CLASS(gz_ros2_control_base_movement::BaseMovementSystemHardware,
+PLUGINLIB_EXPORT_CLASS(gz_ros2_control_base_movement::GzBaseMovementSystemHardware,
                        gz_ros2_control::GazeboSimSystemInterface)

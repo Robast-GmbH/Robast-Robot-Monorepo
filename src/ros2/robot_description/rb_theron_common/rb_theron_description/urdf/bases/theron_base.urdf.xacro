@@ -73,7 +73,7 @@
               <param name="calculate_dynamics">true</param>
             </xacro:if>
             <xacro:if value="${ros2_control_hardware_type_positon_joint == 'gz_ros2_control'}">
-              <plugin>gz_ros2_control_base_movement/BaseMovementSystemHardware</plugin>
+              <plugin>gz_ros2_control_base_movement/GzBaseMovementSystemHardware</plugin>
             </xacro:if>
             <xacro:if value="${ros2_control_hardware_type_positon_joint == 'real_life'}">
               <plugin>ros2_control_base_movement/BaseMovementSystemHardware</plugin>

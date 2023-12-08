@@ -21,7 +21,7 @@ namespace gz_ros2_control_base_movement
   // These class must inherit `gz_ros2_control::GazeboSimSystemInterface` which implements a
   // simulated `ros2_control` `hardware_interface::SystemInterface`.
 
-  class BaseMovementSystemHardware : public gz_ros2_control::GazeboSimSystemInterface
+  class GzBaseMovementSystemHardware : public gz_ros2_control::GazeboSimSystemInterface
   {
    public:
     // Documentation Inherited

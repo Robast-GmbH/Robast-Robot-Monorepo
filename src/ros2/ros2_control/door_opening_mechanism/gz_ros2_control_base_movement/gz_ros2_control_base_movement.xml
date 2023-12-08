@@ -1,7 +1,7 @@
 <library path="gz_ros2_control_base_movement">
   <class
-    name="gz_ros2_control_base_movement/BaseMovementSystemHardware"
-    type="gz_ros2_control_base_movement::BaseMovementSystemHardware"
+    name="gz_ros2_control_base_movement/GzBaseMovementSystemHardware"
+    type="gz_ros2_control_base_movement::GzBaseMovementSystemHardware"
     base_class_type="gz_ros2_control::GazeboSimSystemInterface">
     <description>
       The ros2 control plugin for moving the base in a linear motion forwards and backwards in gazebo.
