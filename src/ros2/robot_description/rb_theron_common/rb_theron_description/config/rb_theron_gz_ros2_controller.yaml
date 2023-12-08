@@ -10,9 +10,6 @@ controller_manager:
     joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
-    position_joint_trajectory_controller:
-      type: joint_trajectory_controller/JointTrajectoryController
-
     diff_drive_base_controller:
       type: diff_drive_controller/DiffDriveController
 
@@ -79,16 +76,6 @@ diff_drive_base_controller:
     angular.z.min_acceleration: -1.0
     angular.z.max_jerk: 0.0
     angular.z.min_jerk: 0.0
-    
-position_joint_trajectory_controller:
-  ros__parameters:
-    joints:
-      - position
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
 
 joint_trajectory_controller:
   ros__parameters:
@@ -97,6 +84,7 @@ joint_trajectory_controller:
       - door_opening_mechanism_joint_x_axis_slide
       - door_opening_mechanism_joint_rotating_arm
       - door_opening_mechanism_joint_freely_rotating_hook
+      - position
     command_interfaces:
       - position
     state_interfaces:
