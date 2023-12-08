@@ -29,9 +29,6 @@ namespace gz_ros2_control_base_movement
 {
   using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
-  // Forward declaration
-  class GazeboSimSystemPrivate;
-
   // These class must inherit `gz_ros2_control::GazeboSimSystemInterface` which implements a
   // simulated `ros2_control` `hardware_interface::SystemInterface`.
 
@@ -56,10 +53,6 @@ namespace gz_ros2_control_base_movement
     CallbackReturn on_deactivate(const rclcpp_lifecycle::State& previous_state) override;
 
     // Documentation Inherited
-    hardware_interface::return_type perform_command_mode_switch(
-        const std::vector<std::string>& start_interfaces, const std::vector<std::string>& stop_interfaces) override;
-
-    // Documentation Inherited
     hardware_interface::return_type read(const rclcpp::Time& time, const rclcpp::Duration& period) override;
 
     // Documentation Inherited
@@ -73,13 +66,11 @@ namespace gz_ros2_control_base_movement
                  int& update_rate) override;
 
    private:
-    // Register a sensor (for now just IMUs)
-    // \param[in] hardware_info hardware information where the data of
-    // the sensors is extract.
-    void registerSensors(const hardware_interface::HardwareInfo& hardware_info);
+    std::vector<double> _hw_position_commands;
+    std::vector<double> _hw_position_states;
 
-    /// \brief Private data class
-    std::unique_ptr<GazeboSimSystemPrivate> dataPtr;
+    std::vector<double> _hw_velocity_commands;
+    std::vector<double> _hw_velocity_states;
   };
 
 }   // namespace gz_ros2_control_base_movement
