@@ -12,7 +12,7 @@
 namespace ros2_control_plugin_door_opening_mechanism
 {
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_init(
-      const hardware_interface::HardwareInfo& info)
+      const hardware_interface::HardwareInfo &info)
   {
     if (hardware_interface::SystemInterface::on_init(info) != hardware_interface::CallbackReturn::SUCCESS)
     {
@@ -30,7 +30,7 @@ namespace ros2_control_plugin_door_opening_mechanism
     _hw_velocity_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_velocity_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
-    for (const hardware_interface::ComponentInfo& joint : info_.joints)
+    for (const hardware_interface::ComponentInfo &joint : info_.joints)
     {
       RCLCPP_INFO(
           rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Configuring joint '%s'.", joint.name.c_str());
@@ -83,7 +83,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_configure(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State & /*previous_state*/)
   {
     // Please mind! In order to get a connection to the dryve d1, there need to be a port forward on the router from the
     // port configured in DRYVE_D1_IP_ADDRESS_X_AXIS to the Port configured for Modbus TCP in the dryve d1 (usually 502)
@@ -155,7 +155,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_activate(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State & /*previous_state*/)
   {
     // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("DoorOpeningMechanismSystemHardware"), "Activating ...please wait...");
@@ -176,7 +176,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_deactivate(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State & /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -190,7 +190,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_shutdown(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State & /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -204,7 +204,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_cleanup(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State & /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -218,7 +218,7 @@ namespace ros2_control_plugin_door_opening_mechanism
   }
 
   hardware_interface::CallbackReturn DoorOpeningMechanismSystemHardware::on_error(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State & /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -231,8 +231,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
-  hardware_interface::return_type DoorOpeningMechanismSystemHardware::read(const rclcpp::Time& /*time*/,
-                                                                           const rclcpp::Duration& /*period*/)
+  hardware_interface::return_type DoorOpeningMechanismSystemHardware::read(const rclcpp::Time & /*time*/,
+                                                                           const rclcpp::Duration & /*period*/)
   {
     double hw_position_state =
         static_cast<double>(_dryve_d1->read_object_value(_dryve_d1->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
@@ -251,23 +251,32 @@ namespace ros2_control_plugin_door_opening_mechanism
     }
     else
     {
-      _hw_position_states[0] = hw_position_state * DEGREE_TO_RAD;    // convert from degree to rad
-      _hw_velocity_states[0] = hw_velocity_states * DEGREE_TO_RAD;   // convert from degree to rad
+      _hw_position_states[0] = hw_position_state * DEGREE_TO_RAD;  // convert from degree to rad
+      _hw_velocity_states[0] = hw_velocity_states * DEGREE_TO_RAD; // convert from degree to rad
     }
 
     return hardware_interface::return_type::OK;
   }
 
-  hardware_interface::return_type DoorOpeningMechanismSystemHardware::write(const rclcpp::Time& /*time*/,
-                                                                            const rclcpp::Duration& /*period*/)
+  hardware_interface::return_type DoorOpeningMechanismSystemHardware::write(const rclcpp::Time & /*time*/,
+                                                                            const rclcpp::Duration & /*period*/)
   {
-    _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
-                                    dryve_d1_bridge::ACCELERATION,
-                                    dryve_d1_bridge::DECELERATION);
+    if (_is_prismatic_joint)
+    {
+      _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
+                                      dryve_d1_bridge::ACCELERATION,
+                                      dryve_d1_bridge::DECELERATION);
+    }
+    else
+    {
+      _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction * DEGREE_TO_RAD,
+                                      dryve_d1_bridge::ACCELERATION,
+                                      dryve_d1_bridge::DECELERATION);
+    }
     return hardware_interface::return_type::OK;
   }
 
-}   // namespace ros2_control_plugin_door_opening_mechanism
+} // namespace ros2_control_plugin_door_opening_mechanism
 
 #include "pluginlib/class_list_macros.hpp"
 

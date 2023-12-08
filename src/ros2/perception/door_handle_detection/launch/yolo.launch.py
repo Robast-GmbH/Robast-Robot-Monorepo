@@ -24,7 +24,7 @@ def generate_launch_description():
     parent_frame = LaunchConfiguration('parent_frame',  default = 'robot_base_link')
 
     cam_pos_x    = LaunchConfiguration('cam_pos_x',     default = '0.317')
-    cam_pos_y    = LaunchConfiguration('cam_pos_y',     default = '-0,197')
+    cam_pos_y    = LaunchConfiguration('cam_pos_y',     default = '-0.197')
     cam_pos_z    = LaunchConfiguration('cam_pos_z',     default = '1.3044')
     cam_roll     = LaunchConfiguration('cam_roll',      default = '0.0')
     cam_pitch    = LaunchConfiguration('cam_pitch',     default = '0.0')
@@ -51,7 +51,7 @@ def generate_launch_description():
     rgbResolution           = LaunchConfiguration('rgbResolution', default = '1080p')
     rgbScaleNumerator       = LaunchConfiguration('rgbScaleNumerator', default = 2)
     rgbScaleDenominator     = LaunchConfiguration('rgbScaleDenominator', default = 3)
-    previewWidth            = LaunchConfiguration('previewWidth', default = 640)
+    previewWidth            = LaunchConfiguration('previewWidth', default = 480)
     previewHeight           = LaunchConfiguration('previewHeight', default = 640)
 
     enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)
