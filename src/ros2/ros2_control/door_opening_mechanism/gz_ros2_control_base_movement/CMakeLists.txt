@@ -65,28 +65,8 @@ endif()
 
 include_directories(include)
 
-# add_library(${PROJECT_NAME}-system SHARED
-#   src/gz_ros2_control_plugin.cpp
-# )
-
-# target_link_libraries(${PROJECT_NAME}-system
-#   ${GZ_SIM}
-#   ${GZ_PLUGIN}
-# )
-# ament_target_dependencies(${PROJECT_NAME}-system
-#   ament_index_cpp
-#   controller_manager
-#   hardware_interface
-#   pluginlib
-#   rclcpp
-#   yaml_cpp_vendor
-#   rclcpp_lifecycle
-# )
-
-#########
-
 add_library(gz_ros2_control_base_movement SHARED
-  src/gz_system.cpp
+  src/gz_ros2_control_base_movement.cpp
 )
 ament_target_dependencies(gz_ros2_control_base_movement
   rclcpp_lifecycle
@@ -120,11 +100,6 @@ endif()
 
 ament_export_include_directories(include)
 ament_export_libraries(${PROJECT_NAME} gz_ros2_control_base_movement)
-
-# Install directories
-# install(TARGETS ${PROJECT_NAME}-system
-#   DESTINATION lib
-# )
 
 pluginlib_export_plugin_description_file(gz_ros2_control gz_ros2_control_base_movement.xml)
 

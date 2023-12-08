@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "gz_ros2_control_base_movement/gz_system.hpp"
+#include "gz_ros2_control_base_movement/gz_ros2_control_base_movement.hpp"
 
 #include <limits>
 #include <map>
