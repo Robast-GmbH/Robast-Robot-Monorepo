@@ -125,7 +125,6 @@ namespace ros2_control_base_movement
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_activate(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    // BEGIN: This part here is for exemplary purposes - Please do not copy to your production code
     RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Activating ...please wait...");
 
     // command and state should be equal when starting
