@@ -70,16 +70,6 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-diagnostic-updater \
   ros-${ROS_DISTRO}-foxglove-bridge \
   && rm -rf /var/lib/apt/lists/*
-
-# WORKDIR /mppi
-# RUN git clone -b humble https://github.com/ros-planning/navigation2.git \
-#   && apt update \
-#   && apt upgrade -y \
-#   && rosdep update \
-#   && rosdep install --from-paths /mppi --ignore-src -r -y \
-#   && chown -R ${USER} /mppi \
-#   && echo "if [ -f /mppi/install/setup.bash ]; then source /mppi/install/setup.bash; fi" >> /home/$USER/.bashrc
-
   
 RUN apt-get update \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
@@ -123,16 +113,6 @@ RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
   . /opt/ros/${ROS_DISTRO}/setup.sh && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
-
-# WORKDIR /mppi
-
-# #TODO @TAlscher remove this when the new version of nav2 is released
-# RUN apt-get remove -y *nav2*
-# #TODO @TAlscher remove this when the new version of nav2 is released
-# RUN rosdep update && \
-#   rosdep install --from-paths navigation2/ --ignore-src -r -y && \
-#   . /opt/ros/${ROS_DISTRO}/setup.sh && \
-#   colcon build --parallel-workers 2 --packages-skip nav2_system_tests nav2_bringup --install-base /robast/mppi/
 
 ############################## Release ##################################
 FROM ros:${ROS_BUILD_DISTRO}-perception as release
