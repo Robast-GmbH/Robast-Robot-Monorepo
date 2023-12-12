@@ -11,7 +11,7 @@
     <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
     <group name="mobile_base_arm">
         <chain base_link="alu_profile_link_right" tip_link="door_opening_mechanism_link_freely_rotating_hook"/>
-        <joint name="position" />
+        <joint name="position_joint" />
     </group>
 
     <group_state name="starting_position" group="mobile_base_arm">
@@ -19,7 +19,7 @@
         <joint name="door_opening_mechanism_joint_x_axis_slide" value="0.1"/>
         <joint name="door_opening_mechanism_joint_rotating_arm" value="0.1"/>
         <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
-        <joint name="position" value="0"/>
+        <joint name="position_joint" value="0"/>
     </group_state>
 
     <group_state name="home_base" group="mobile_base_arm">
@@ -27,7 +27,7 @@
         <joint name="door_opening_mechanism_joint_x_axis_slide" value="0"/>
         <joint name="door_opening_mechanism_joint_rotating_arm" value="0"/>
         <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
-        <joint name="position" value="0"/>
+        <joint name="position_joint" value="0"/>
     </group_state>
 
     <group_state name="forward_base" group="mobile_base_arm">
@@ -35,7 +35,7 @@
         <joint name="door_opening_mechanism_joint_x_axis_slide" value="0"/>
         <joint name="door_opening_mechanism_joint_rotating_arm" value="0"/>
         <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
-        <joint name="position" value="1"/>
+        <joint name="position_joint" value="1"/>
     </group_state>
     <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
     <end_effector name="door_opening_end_effector" parent_link="door_opening_mechanism_link_freely_rotating_hook" group="mobile_base_arm"/>

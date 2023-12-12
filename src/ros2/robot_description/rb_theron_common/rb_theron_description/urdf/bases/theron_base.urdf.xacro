@@ -57,7 +57,7 @@
           </collision>
         </link>
 
-        <joint name="position" type="prismatic">
+        <joint name="position_joint" type="prismatic">
           <axis xyz="-1 0 0" />
           <origin xyz="0 0 0" rpy="0 0 0" />
           <parent link="${prefix}position_link"/>
@@ -79,7 +79,7 @@
               <plugin>ros2_control_base_movement/BaseMovementSystemHardware</plugin>
             </xacro:if>
           </hardware>
-          <joint name="position" type="prismatic">
+          <joint name="position_joint" type="prismatic">
               <param name="initial_position">0.0</param>
               <command_interface name="position" />
               <command_interface name="velocity" />
