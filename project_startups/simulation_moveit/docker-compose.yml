@@ -70,7 +70,7 @@ services:
       - ./moveit/:/workspace/:cached
       - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
       - ../../src/ros2/moveit:/workspace/src/moveit:cached
-      - ../../src/ros2/ros2_control/door_opening_mechanism/ros2_control_base_movement:/workspace/src/ros2_control/door_opening_mechanism/ros2_control_base_movement:cached
+      - ../../src/ros2/ros2_control/hardware_interfaces/ros2_control_base_movement:/workspace/src/ros2_control/hardware_interfaces/ros2_control_base_movement:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
     command: /bin/sh -c "while sleep 1000; do :; done"
