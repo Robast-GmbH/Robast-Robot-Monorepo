@@ -43,15 +43,15 @@ namespace mobile_base_controller
   {
     controller_interface::InterfaceConfiguration conf;
     conf.type = controller_interface::interface_configuration_type::INDIVIDUAL;
-    if (dof_ == 0)
+    if (_dof == 0)
     {
       fprintf(stderr,
               "During ros2_control interface configuration, degrees of freedom is not valid;"
               " it should be positive. Actual DOF is %zu\n",
-              dof_);
+              _dof);
       std::exit(EXIT_FAILURE);
     }
-    conf.names.reserve(dof_ * params_.command_interfaces.size());
+    conf.names.reserve(_dof * params_.command_interfaces.size());
     for (const auto& joint_name : params_.joints)
     {
       for (const auto& interface_type : params_.command_interfaces)
@@ -73,9 +73,9 @@ namespace mobile_base_controller
   {
     params_ = param_listener_->get_params();
 
-    node_name_ = std::string(get_node()->get_name());
+    _use_stamped_vel = params_.use_stamped_vel;
 
-    dof_ = params_.joints.size();
+    _dof = params_.joints.size();
 
     command_joint_names_ = params_.joints;
 
@@ -106,6 +106,16 @@ namespace mobile_base_controller
                        command_interface_names_.size());
         }
       });
+
+    if (_use_stamped_vel)
+    {
+      _publisher_cmd_vel =
+        this->get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(params_.cmd_vel_topic, 10);
+    }
+    else
+    {
+      _publisher_cmd_vel = this->get_node()->create_publisher<geometry_msgs::msg::Twist>(params_.cmd_vel_topic, 10);
+    }
 
     // pre-reserve command interfaces
     command_interfaces_.reserve(command_interface_names_.size());
@@ -158,6 +168,39 @@ namespace mobile_base_controller
     return true;
   }
 
+  std::variant<geometry_msgs::msg::Twist, geometry_msgs::msg::TwistStamped> MobileBaseController::compute_cmd_vel(
+    const std::vector<double>& hw_velocity_commands)
+  {
+    RCLCPP_INFO(rclcpp::get_logger("MobileBaseController"),
+                "compute_cmd_vel_cmd for velocity command %f for linear base movement.",
+                hw_velocity_commands[0]);
+
+    if (_use_stamped_vel)
+    {
+      geometry_msgs::msg::TwistStamped cmd_vel_stamped;
+      cmd_vel_stamped.twist.linear.x = hw_velocity_commands[0];
+      cmd_vel_stamped.twist.linear.y = 0.0;
+      cmd_vel_stamped.twist.linear.z = 0.0;
+      cmd_vel_stamped.twist.angular.x = 0.0;
+      cmd_vel_stamped.twist.angular.y = 0.0;
+      cmd_vel_stamped.twist.angular.z = 0.0;
+      // Set the stamp
+      cmd_vel_stamped.header.stamp = this->get_node()->get_clock()->now();
+      return cmd_vel_stamped;
+    }
+    else
+    {
+      geometry_msgs::msg::Twist cmd_vel;
+      cmd_vel.linear.x = hw_velocity_commands[0];
+      cmd_vel.linear.y = 0.0;
+      cmd_vel.linear.z = 0.0;
+      cmd_vel.angular.x = 0.0;
+      cmd_vel.angular.y = 0.0;
+      cmd_vel.angular.z = 0.0;
+      return cmd_vel;
+    }
+  }
+
   controller_interface::return_type MobileBaseController::update_and_write_commands(const rclcpp::Time& /*time*/,
                                                                                     const rclcpp::Duration& /*period*/)
   {
@@ -165,7 +208,42 @@ namespace mobile_base_controller
     {
       if (!std::isnan(reference_interfaces_[i]))
       {
-        command_interfaces_[i].set_value(reference_interfaces_[i]);
+        if (reference_interfaces_[i] > 0.0000001)
+        {
+          // command_interfaces_[i].set_value(reference_interfaces_[i]);
+          RCLCPP_INFO(this->get_node()->get_logger(),
+                      "Command %s: %f",
+                      command_interface_names_[i].c_str(),
+                      reference_interfaces_[i]);
+
+          auto cmd_vel = compute_cmd_vel(reference_interfaces_);
+
+          if (std::holds_alternative<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr>(_publisher_cmd_vel))
+          {
+            auto publisher = std::get<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr>(_publisher_cmd_vel);
+            if (std::holds_alternative<geometry_msgs::msg::Twist>(cmd_vel))
+            {
+              publisher->publish(std::get<geometry_msgs::msg::Twist>(cmd_vel));
+            }
+            else
+            {
+              RCLCPP_ERROR(rclcpp::get_logger("MobileBaseController"), "Expected Twist but got TwistStamped");
+            }
+          }
+          else
+          {
+            auto publisher =
+              std::get<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr>(_publisher_cmd_vel);
+            if (std::holds_alternative<geometry_msgs::msg::TwistStamped>(cmd_vel))
+            {
+              publisher->publish(std::get<geometry_msgs::msg::TwistStamped>(cmd_vel));
+            }
+            else
+            {
+              RCLCPP_ERROR(rclcpp::get_logger("MobileBaseController"), "Expected TwistStamped but got Twist");
+            }
+          }
+        }
       }
     }
 

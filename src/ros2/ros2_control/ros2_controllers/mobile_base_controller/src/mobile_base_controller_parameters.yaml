@@ -20,3 +20,13 @@ mobile_base_controller:
       subset_of<>: [["position", "velocity", "acceleration", "effort",]]
     }
   }
+  cmd_vel_topic: {
+    type: string,
+    default_value: "/cmd_vel",
+    description:  "Name of the topic the controller should publish the cmd_vel commands to",
+  }
+  use_stamped_vel: {
+    type: bool,
+    default_value: false,
+    description: "Use geometry_msgs/TwistStamped instead of geometry_msgs/Twist for cmd_vel",
+  }

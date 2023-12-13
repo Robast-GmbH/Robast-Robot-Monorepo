@@ -62,16 +62,11 @@ namespace ros2_control_base_movement
       }
     }
 
-    // TODO@Jacob: Add the topic as a parameter
-    // TODO@Jacob: Create this publisher properly
-    // _publisher_cmd_vel =
-    //     this->create_publisher<geometry_msgs::msg::Twist>("diff_drive_base_controller/cmd_vel_unstamped", 10);
-
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_configure(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // reset values always when configuring hardware
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -96,9 +91,9 @@ namespace ros2_control_base_movement
     for (uint i = 0; i < info_.joints.size(); i++)
     {
       state_interfaces.emplace_back(hardware_interface::StateInterface(
-          info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_states[i]));
+        info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_states[i]));
       state_interfaces.emplace_back(hardware_interface::StateInterface(
-          info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_states[i]));
+        info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_states[i]));
     }
 
     return state_interfaces;
@@ -110,16 +105,16 @@ namespace ros2_control_base_movement
     for (uint i = 0; i < info_.joints.size(); i++)
     {
       command_interfaces.emplace_back(hardware_interface::CommandInterface(
-          info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_commands[i]));
+        info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_commands[i]));
       command_interfaces.emplace_back(hardware_interface::CommandInterface(
-          info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_commands[i]));
+        info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_commands[i]));
     }
 
     return command_interfaces;
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_activate(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Activating ...please wait...");
 
@@ -139,7 +134,7 @@ namespace ros2_control_base_movement
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_deactivate(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -151,7 +146,7 @@ namespace ros2_control_base_movement
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_shutdown(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -163,7 +158,7 @@ namespace ros2_control_base_movement
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_cleanup(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -175,7 +170,7 @@ namespace ros2_control_base_movement
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_error(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -193,24 +188,6 @@ namespace ros2_control_base_movement
     return hardware_interface::return_type::OK;
   }
 
-  geometry_msgs::msg::Twist BaseMovementSystemHardware::compute_cmd_vel(const std::vector<double>& hw_velocity_commands)
-  {
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"),
-                "compute_cmd_vel_cmd for velocity command %f for linear base movement.",
-                hw_velocity_commands[0]);
-    // TODO@Jacob: Implement computation of velocity commands
-
-    geometry_msgs::msg::Twist cmd_vel;
-    cmd_vel.linear.x = hw_velocity_commands[0];
-    cmd_vel.linear.y = 0.0;
-    cmd_vel.linear.z = 0.0;
-    cmd_vel.angular.x = 0.0;
-    cmd_vel.angular.y = 0.0;
-    cmd_vel.angular.z = 0.0;
-
-    return cmd_vel;
-  }
-
   hardware_interface::return_type BaseMovementSystemHardware::write(const rclcpp::Time& /*time*/,
                                                                     const rclcpp::Duration& /*period*/)
   {
@@ -219,7 +196,6 @@ namespace ros2_control_base_movement
       RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"),
                   "Received velocity command %f for linear base movement.",
                   _hw_velocity_commands[0]);
-      geometry_msgs::msg::Twist cmd_vel = compute_cmd_vel(_hw_velocity_commands);
     }
     // TODO@Jacob: Implement write to hardware
     return hardware_interface::return_type::OK;

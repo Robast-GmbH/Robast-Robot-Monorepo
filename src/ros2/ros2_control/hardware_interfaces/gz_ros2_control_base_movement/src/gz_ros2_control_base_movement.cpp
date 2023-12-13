@@ -167,7 +167,9 @@ namespace gz_ros2_control_base_movement
   {
     if (_hw_velocity_commands[0] != 0.0)
     {
-      ros2_control_base_movement::BaseMovementSystemHardware::compute_cmd_vel(_hw_velocity_commands);
+      RCLCPP_INFO(rclcpp::get_logger("GzBaseMovementSystemHardware"),
+                  "Received velocity command: %f",
+                  _hw_velocity_commands[0]);
     }
 
     return hardware_interface::return_type::OK;
