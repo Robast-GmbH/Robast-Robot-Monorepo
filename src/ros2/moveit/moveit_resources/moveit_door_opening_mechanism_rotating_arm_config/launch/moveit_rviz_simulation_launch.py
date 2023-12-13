@@ -120,12 +120,16 @@ def generate_launch_description():
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_state_broadcaster'],
         output='screen'
     )
-    load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_trajectory_controller'],
-        output='screen'
-    )
     load_diff_drive_base_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'diff_drive_base_controller'],
+        output='screen'
+    )
+    load_mobile_base_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'mobile_base_controller_cmd_vel'],
+        output='screen'
+    )
+    load_joint_trajectory_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_trajectory_controller'],
         output='screen'
     )
 
@@ -148,13 +152,19 @@ def generate_launch_description():
     ld.add_action(RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
-                on_exit=[load_joint_trajectory_controller],
+                on_exit=[load_diff_drive_base_controller],
             )
         ))
     ld.add_action(RegisterEventHandler(
             event_handler=OnProcessExit(
-                target_action=load_joint_trajectory_controller,
-                on_exit=[load_diff_drive_base_controller],
+                target_action=load_diff_drive_base_controller,
+                on_exit=[load_mobile_base_controller],
+            )
+        ))
+    ld.add_action(RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_mobile_base_controller,
+                on_exit=[load_joint_trajectory_controller],
             )
         ))
 

@@ -12,6 +12,9 @@ controller_manager:
     diff_drive_base_controller:
       type: diff_drive_controller/DiffDriveController
 
+    mobile_base_controller_cmd_vel:
+      type: mobile_base_controller/MobileBaseController
+
 joint_trajectory_controller:
   ros__parameters:
     joints:
@@ -25,6 +28,12 @@ joint_trajectory_controller:
     state_interfaces:
       - position
       - velocity
+    command_joints:
+      - door_opening_mechanism_joint_y_axis_slide
+      - door_opening_mechanism_joint_x_axis_slide
+      - door_opening_mechanism_joint_rotating_arm
+      - door_opening_mechanism_joint_freely_rotating_hook
+      - mobile_base_controller_cmd_vel/position_joint
 
     state_publish_rate: 50.0 # Defaults to 50
     action_monitor_rate: 20.0 # Defaults to 20
@@ -64,6 +73,13 @@ joint_trajectory_controller:
         i: 0.0
         d: 0.0
         ff_velocity_scale: 1.0
+
+mobile_base_controller_cmd_vel:
+  ros__parameters:
+    joints:
+      - position_joint
+    command_interfaces:
+      - velocity
 
 diff_drive_base_controller:
   ros__parameters:
