@@ -23,6 +23,7 @@ services:
       - ../../src/ros2/communication_interfaces:/workspace/src/communication_interfaces:cached
       - ../../src/ros2/ros2_control/hardware_interfaces/ros2_control_base_movement:/workspace/src/ros2_control/hardware_interfaces/ros2_control_base_movement:cached
       - ../../src/ros2/ros2_control/hardware_interfaces/gz_ros2_control_base_movement:/workspace/src/ros2_control/hardware_interfaces/gz_ros2_control_base_movement:cached
+      - ../../src/ros2/ros2_control/ros2_controllers:/workspace/src/ros2_control/ros2_controllers:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
     deploy:

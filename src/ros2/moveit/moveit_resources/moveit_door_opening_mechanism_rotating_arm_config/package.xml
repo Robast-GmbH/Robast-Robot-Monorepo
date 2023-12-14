@@ -41,6 +41,7 @@
   <exec_depend>xacro</exec_depend>
   <exec_depend>ros2_control_plugin_dryve_d1</exec_depend>
   <exec_depend>ros2_control_base_movement</exec_depend>
+  <exec_depend>mobile_base_controller</exec_depend>
 
   <export>
       <build_type>ament_cmake</build_type>

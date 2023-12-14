@@ -69,7 +69,7 @@ namespace mobile_base_controller
   }
 
   controller_interface::CallbackReturn MobileBaseController::on_configure(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     params_ = param_listener_->get_params();
 
@@ -89,28 +89,28 @@ namespace mobile_base_controller
     }
 
     joints_cmd_sub_ = this->get_node()->create_subscription<DataType>(
-      "~/commands",
-      rclcpp::SystemDefaultsQoS(),
-      [this](const DataType::SharedPtr msg)
-      {
-        // check if message is correct size, if not ignore
-        if (msg->data.size() == command_interface_names_.size())
+        "~/commands",
+        rclcpp::SystemDefaultsQoS(),
+        [this](const DataType::SharedPtr msg)
         {
-          rt_buffer_ptr_.writeFromNonRT(msg);
-        }
-        else
-        {
-          RCLCPP_ERROR(this->get_node()->get_logger(),
-                       "Invalid command received of %zu size, expected %zu size",
-                       msg->data.size(),
-                       command_interface_names_.size());
-        }
-      });
+          // check if message is correct size, if not ignore
+          if (msg->data.size() == command_interface_names_.size())
+          {
+            rt_buffer_ptr_.writeFromNonRT(msg);
+          }
+          else
+          {
+            RCLCPP_ERROR(this->get_node()->get_logger(),
+                         "Invalid command received of %zu size, expected %zu size",
+                         msg->data.size(),
+                         command_interface_names_.size());
+          }
+        });
 
     if (_use_stamped_vel)
     {
       _publisher_cmd_vel =
-        this->get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(params_.cmd_vel_topic, 10);
+          this->get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(params_.cmd_vel_topic, 10);
     }
     else
     {
@@ -131,11 +131,11 @@ namespace mobile_base_controller
   }
 
   controller_interface::CallbackReturn MobileBaseController::on_activate(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>> ordered_interfaces;
     if (!controller_interface::get_ordered_interfaces(
-          command_interfaces_, command_interface_names_, std::string(""), ordered_interfaces) ||
+            command_interfaces_, command_interface_names_, std::string(""), ordered_interfaces) ||
         command_interface_names_.size() != ordered_interfaces.size())
     {
       RCLCPP_ERROR(this->get_node()->get_logger(),
@@ -156,7 +156,7 @@ namespace mobile_base_controller
   }
 
   controller_interface::CallbackReturn MobileBaseController::on_deactivate(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // reset command buffer
     rt_buffer_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>>(nullptr);
@@ -169,16 +169,14 @@ namespace mobile_base_controller
   }
 
   std::variant<geometry_msgs::msg::Twist, geometry_msgs::msg::TwistStamped> MobileBaseController::compute_cmd_vel(
-    const std::vector<double>& hw_velocity_commands)
+      const std::vector<double>& hw_velocity_commands)
   {
-    RCLCPP_INFO(rclcpp::get_logger("MobileBaseController"),
-                "compute_cmd_vel_cmd for velocity command %f for linear base movement.",
-                hw_velocity_commands[0]);
-
+    // Please mind:
+    // I found out empirically, that i have to change the sign of the computed cmd_vel to get the correct direction
     if (_use_stamped_vel)
     {
       geometry_msgs::msg::TwistStamped cmd_vel_stamped;
-      cmd_vel_stamped.twist.linear.x = hw_velocity_commands[0];
+      cmd_vel_stamped.twist.linear.x = -hw_velocity_commands[0];
       cmd_vel_stamped.twist.linear.y = 0.0;
       cmd_vel_stamped.twist.linear.z = 0.0;
       cmd_vel_stamped.twist.angular.x = 0.0;
@@ -191,7 +189,7 @@ namespace mobile_base_controller
     else
     {
       geometry_msgs::msg::Twist cmd_vel;
-      cmd_vel.linear.x = hw_velocity_commands[0];
+      cmd_vel.linear.x = -hw_velocity_commands[0];
       cmd_vel.linear.y = 0.0;
       cmd_vel.linear.z = 0.0;
       cmd_vel.angular.x = 0.0;
@@ -208,40 +206,30 @@ namespace mobile_base_controller
     {
       if (!std::isnan(reference_interfaces_[i]))
       {
-        if (reference_interfaces_[i] > 0.0000001)
+        auto cmd_vel = compute_cmd_vel(reference_interfaces_);
+
+        if (std::holds_alternative<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr>(_publisher_cmd_vel))
         {
-          // command_interfaces_[i].set_value(reference_interfaces_[i]);
-          RCLCPP_INFO(this->get_node()->get_logger(),
-                      "Command %s: %f",
-                      command_interface_names_[i].c_str(),
-                      reference_interfaces_[i]);
-
-          auto cmd_vel = compute_cmd_vel(reference_interfaces_);
-
-          if (std::holds_alternative<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr>(_publisher_cmd_vel))
+          auto publisher = std::get<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr>(_publisher_cmd_vel);
+          if (std::holds_alternative<geometry_msgs::msg::Twist>(cmd_vel))
           {
-            auto publisher = std::get<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr>(_publisher_cmd_vel);
-            if (std::holds_alternative<geometry_msgs::msg::Twist>(cmd_vel))
-            {
-              publisher->publish(std::get<geometry_msgs::msg::Twist>(cmd_vel));
-            }
-            else
-            {
-              RCLCPP_ERROR(rclcpp::get_logger("MobileBaseController"), "Expected Twist but got TwistStamped");
-            }
+            publisher->publish(std::get<geometry_msgs::msg::Twist>(cmd_vel));
           }
           else
           {
-            auto publisher =
-              std::get<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr>(_publisher_cmd_vel);
-            if (std::holds_alternative<geometry_msgs::msg::TwistStamped>(cmd_vel))
-            {
-              publisher->publish(std::get<geometry_msgs::msg::TwistStamped>(cmd_vel));
-            }
-            else
-            {
-              RCLCPP_ERROR(rclcpp::get_logger("MobileBaseController"), "Expected TwistStamped but got Twist");
-            }
+            RCLCPP_ERROR(rclcpp::get_logger("MobileBaseController"), "Expected Twist but got TwistStamped");
+          }
+        }
+        else
+        {
+          auto publisher = std::get<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr>(_publisher_cmd_vel);
+          if (std::holds_alternative<geometry_msgs::msg::TwistStamped>(cmd_vel))
+          {
+            publisher->publish(std::get<geometry_msgs::msg::TwistStamped>(cmd_vel));
+          }
+          else
+          {
+            RCLCPP_ERROR(rclcpp::get_logger("MobileBaseController"), "Expected TwistStamped but got Twist");
           }
         }
       }
@@ -257,14 +245,14 @@ namespace mobile_base_controller
     for (size_t i = 0; i < reference_interface_names_.size(); ++i)
     {
       reference_interfaces.push_back(hardware_interface::CommandInterface(
-        get_node()->get_name(), reference_interface_names_[i], &reference_interfaces_[i]));
+          get_node()->get_name(), reference_interface_names_[i], &reference_interfaces_[i]));
     }
 
     return reference_interfaces;
   }
 
   controller_interface::return_type MobileBaseController::update_reference_from_subscribers(
-    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
+      const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
   {
     auto joint_commands = rt_buffer_ptr_.readFromRT();
     // message is valid
