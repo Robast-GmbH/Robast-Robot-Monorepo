@@ -157,21 +157,17 @@ namespace gz_ros2_control_base_movement
   hardware_interface::return_type GzBaseMovementSystemHardware::read(const rclcpp::Time & /*time*/,
                                                                      const rclcpp::Duration & /*period*/)
   {
-    // TODO@Jacob: Implement reading sensors
-
+    // Right now, this is kind of a mocked implementation. Right now, I am not sure if we need the feedback for the
+    // mobile_base joint. It might be enough that we have this joint for planning and executing the base movement open
+    // loop. If we need the feedback, we need to implement this here.
     return hardware_interface::return_type::OK;
   }
 
   hardware_interface::return_type GzBaseMovementSystemHardware::write(const rclcpp::Time & /*time*/,
                                                                       const rclcpp::Duration & /*period*/)
   {
-    if (_hw_velocity_commands[0] != 0.0)
-    {
-      RCLCPP_INFO(rclcpp::get_logger("GzBaseMovementSystemHardware"),
-                  "Received velocity command: %f",
-                  _hw_velocity_commands[0]);
-    }
-
+    // We don't do anything with the commands here, because we have a chained controller that is responsible for taking
+    // the command values of this joint and translating them into the commands for the wheels, so the cmd_vel topic
     return hardware_interface::return_type::OK;
   }
 }   // namespace gz_ros2_control_base_movement

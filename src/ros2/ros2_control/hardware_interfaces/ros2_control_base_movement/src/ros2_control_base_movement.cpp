@@ -66,7 +66,7 @@ namespace ros2_control_base_movement
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_configure(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // reset values always when configuring hardware
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -91,9 +91,9 @@ namespace ros2_control_base_movement
     for (uint i = 0; i < info_.joints.size(); i++)
     {
       state_interfaces.emplace_back(hardware_interface::StateInterface(
-        info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_states[i]));
+          info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_states[i]));
       state_interfaces.emplace_back(hardware_interface::StateInterface(
-        info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_states[i]));
+          info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_states[i]));
     }
 
     return state_interfaces;
@@ -105,16 +105,16 @@ namespace ros2_control_base_movement
     for (uint i = 0; i < info_.joints.size(); i++)
     {
       command_interfaces.emplace_back(hardware_interface::CommandInterface(
-        info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_commands[i]));
+          info_.joints[i].name, hardware_interface::HW_IF_POSITION, &_hw_position_commands[i]));
       command_interfaces.emplace_back(hardware_interface::CommandInterface(
-        info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_commands[i]));
+          info_.joints[i].name, hardware_interface::HW_IF_VELOCITY, &_hw_velocity_commands[i]));
     }
 
     return command_interfaces;
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_activate(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Activating ...please wait...");
 
@@ -134,7 +134,7 @@ namespace ros2_control_base_movement
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_deactivate(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -146,7 +146,7 @@ namespace ros2_control_base_movement
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_shutdown(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -158,7 +158,7 @@ namespace ros2_control_base_movement
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_cleanup(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -170,7 +170,7 @@ namespace ros2_control_base_movement
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_error(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -184,20 +184,17 @@ namespace ros2_control_base_movement
   hardware_interface::return_type BaseMovementSystemHardware::read(const rclcpp::Time& /*time*/,
                                                                    const rclcpp::Duration& /*period*/)
   {
-    // TODO@Jacob: Implement read from hardware
+    // Right now, this is kind of a mocked implementation. Right now, I am not sure if we need the feedback for the
+    // mobile_base joint. It might be enough that we have this joint for planning and executing the base movement open
+    // loop. If we need the feedback, we need to implement this here.
     return hardware_interface::return_type::OK;
   }
 
   hardware_interface::return_type BaseMovementSystemHardware::write(const rclcpp::Time& /*time*/,
                                                                     const rclcpp::Duration& /*period*/)
   {
-    if (_hw_velocity_commands[0] != 0.0)
-    {
-      RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"),
-                  "Received velocity command %f for linear base movement.",
-                  _hw_velocity_commands[0]);
-    }
-    // TODO@Jacob: Implement write to hardware
+    // We don't do anything with the commands here, because we have a chained controller that is responsible for taking
+    // the command values of this joint and translating them into the commands for the wheels, so the cmd_vel topic
     return hardware_interface::return_type::OK;
   }
 
