@@ -55,6 +55,20 @@
 	<!-- Whether the position joint should be modeled as a prismatic joint or just as a fixed joint -->
 	<xacro:arg name="model_position_joint" default="false" />
 
+	<!-- If we model the position joint, the sensors need be placed in the base_link frame,
+	otherwise they should be placed in the base_footprint frame -->
+	<xacro:if value="$(arg model_position_joint)">
+		<xacro:property name="sensor_base_frame" value="base_link" />
+	</xacro:if>
+	<xacro:unless value="$(arg model_position_joint)">
+		<xacro:if value="${publish_bf}">
+			<xacro:property name="sensor_base_frame" value="base_footprint" />
+		</xacro:if>
+		<xacro:unless value="${publish_bf}">
+			<xacro:property name="sensor_base_frame" value="base_link" />
+		</xacro:unless>
+	</xacro:unless>
+
 	<!-- *************** -->
 	<!-- Robots Elements -->
 	<!-- *************** -->
@@ -77,16 +91,16 @@
 	<!-- SENSORS  DEBUGG-->
 	<!-- TODO: Should be sensor_intel_d435, but this one isn't migrated to ros2 yet -->
 	<!-- TODO: Moved 0.01 in x, otherwise the camera is still inside the robot -->
-	<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="front_realsense_camera" hq="${hq}">
+	<xacro:sensor_r430 prefix="$(arg prefix)front_realsense_camera" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_realsense_camera" hq="${hq}">
 		<origin xyz="0.3305 0.0 0.1468" rpy="0 0 0"/>
 	</xacro:sensor_r430>
 
-	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="back_realsense_camera" hq="${hq}">
+	<xacro:sensor_r430 prefix="$(arg prefix)back_realsense_camera" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="back_realsense_camera" hq="${hq}">
 		<origin xyz="-0.3305 0.0 0.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
 
 	<!--Added back top realsense camera because running YOLO network on depthai camera in simulation reduces Real Time Factor (RTF)-->
-	<xacro:sensor_r430 prefix="$(arg prefix)back_top_realsense_camera" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="back_top_realsense_camera" hq="${hq}">
+	<xacro:sensor_r430 prefix="$(arg prefix)back_top_realsense_camera" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="back_top_realsense_camera" hq="${hq}">
 		<origin xyz="-0.3305 0.0 1.1468" rpy="0 0 3.1416"/>
 	</xacro:sensor_r430>
 
@@ -95,11 +109,11 @@
 		<origin xyz="0.3305 0.0 0.1898" rpy="0 0 0"/>
 	</xacro:sensor_orbbec_astra -->
 
-	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link">
+	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}">
 		<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
 	</xacro:sensor_imu_hector>
 
-	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619" gpu="true">
+	<xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)front_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="front_laser" hq="${hq}" min_angle="-1.9507619" max_angle="1.9507619" gpu="true">
 		<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
 	</xacro:sensor_sick_nanoscan3>
 
@@ -107,7 +121,7 @@
 		<origin xyz="0.214 0.0 0.275" rpy="-1.57079632679 0 -0.23"/>
 	</xacro:sensor_rs_lidar_16>-->
 
-	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" publish_bf="${publish_bf}" robot_name="${robot_name}" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
+	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
 		<origin xyz="0.3 -0.175 1.165" rpy="-1.570796326795 0 -1.570796326795"/>
 		<!-- positions of the b-pearl based on solid: xyz="0.333 -0.180 1.194" rpy="-1.570796326795 0 -1.570796326795" -->
 	</xacro:sensor_rs_bpearl>
@@ -127,7 +141,7 @@
 	<xacro:depthai_camera
 		prefix="$(arg prefix)front_top_oak_d_camera"
 		parent="$(arg prefix)base_link"
-		publish_bf="${publish_bf}"
+		sensor_base_frame="${sensor_base_frame}"
 		robot_name="${robot_name}"
 		prefix_topic="front_top_oak_d_camera"
 		camera_model="$(arg front_oak_d_camera_model)"
