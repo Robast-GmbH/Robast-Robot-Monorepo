@@ -24,13 +24,11 @@ find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
 find_package(gz_ros2_control REQUIRED)
-find_package(ros2_control_base_movement REQUIRED)
 
-# The `find_package(ros2_control_base_movement REQUIRED)` line above is supposed to find the `ros2_control_base_movement`
-# package and set several variables, including `ros2_control_base_movement_INCLUDE_DIRS`, which should contain the
+# The `find_package(gz_ros2_control REQUIRED)` line above is supposed to find the `gz_ros2_control`
+# package and set several variables, including `gz_ros2_control_INCLUDE_DIRS`, which should contain the
 # path(s) to the package's include files.
 include_directories(include ${gz_ros2_control_INCLUDE_DIRS}/include)
-include_directories(include ${ros2_control_base_movement_INCLUDE_DIRS})
 
 set(GZ_PLUGIN)
 set(GZ_SIM)
@@ -73,7 +71,6 @@ ament_target_dependencies(gz_ros2_control_base_movement
   hardware_interface
   rclcpp
   gz_ros2_control
-  ros2_control_base_movement
 )
 target_link_libraries(gz_ros2_control_base_movement
   ${GZ_SIM}
