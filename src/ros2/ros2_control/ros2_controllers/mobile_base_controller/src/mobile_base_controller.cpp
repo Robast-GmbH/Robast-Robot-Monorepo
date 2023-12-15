@@ -26,8 +26,8 @@ namespace mobile_base_controller
 
     try
     {
-      param_listener_ = std::make_shared<ParamListener>(get_node());
-      params_ = param_listener_->get_params();
+      _param_listener = std::make_shared<ParamListener>(get_node());
+      _params = _param_listener->get_params();
     }
     catch (const std::exception& e)
     {
@@ -51,10 +51,10 @@ namespace mobile_base_controller
               _dof);
       std::exit(EXIT_FAILURE);
     }
-    conf.names.reserve(_dof * params_.command_interfaces.size());
-    for (const auto& joint_name : params_.joints)
+    conf.names.reserve(_dof * _params.command_interfaces.size());
+    for (const auto& joint_name : _params.joints)
     {
-      for (const auto& interface_type : params_.command_interfaces)
+      for (const auto& interface_type : _params.command_interfaces)
       {
         conf.names.push_back(joint_name + "/" + interface_type);
       }
@@ -69,78 +69,57 @@ namespace mobile_base_controller
   }
 
   controller_interface::CallbackReturn MobileBaseController::on_configure(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    params_ = param_listener_->get_params();
+    _params = _param_listener->get_params();
 
-    _use_stamped_vel = params_.use_stamped_vel;
+    _use_stamped_vel = _params.use_stamped_vel;
 
-    _dof = params_.joints.size();
+    _dof = _params.joints.size();
 
-    command_joint_names_ = params_.joints;
-
-    command_interface_names_.clear();
-    for (const auto& joint_name : params_.joints)
+    _command_interface_names.clear();
+    for (const auto& joint_name : _params.joints)
     {
-      for (const auto& command_interface_type : params_.command_interfaces)
+      for (const auto& command_interface_type : _params.command_interfaces)
       {
-        command_interface_names_.push_back(joint_name + "/" + command_interface_type);
+        _command_interface_names.push_back(joint_name + "/" + command_interface_type);
       }
     }
-
-    joints_cmd_sub_ = this->get_node()->create_subscription<DataType>(
-        "~/commands",
-        rclcpp::SystemDefaultsQoS(),
-        [this](const DataType::SharedPtr msg)
-        {
-          // check if message is correct size, if not ignore
-          if (msg->data.size() == command_interface_names_.size())
-          {
-            rt_buffer_ptr_.writeFromNonRT(msg);
-          }
-          else
-          {
-            RCLCPP_ERROR(this->get_node()->get_logger(),
-                         "Invalid command received of %zu size, expected %zu size",
-                         msg->data.size(),
-                         command_interface_names_.size());
-          }
-        });
 
     if (_use_stamped_vel)
     {
       _publisher_cmd_vel =
-          this->get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(params_.cmd_vel_topic, 10);
+        this->get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(_params.cmd_vel_topic, 10);
     }
     else
     {
-      _publisher_cmd_vel = this->get_node()->create_publisher<geometry_msgs::msg::Twist>(params_.cmd_vel_topic, 10);
+      _publisher_cmd_vel = this->get_node()->create_publisher<geometry_msgs::msg::Twist>(_params.cmd_vel_topic, 10);
     }
 
     // pre-reserve command interfaces
-    command_interfaces_.reserve(command_interface_names_.size());
+    command_interfaces_.reserve(_command_interface_names.size());
 
     RCLCPP_INFO(this->get_node()->get_logger(), "configure successful");
 
     // The names should be in the same order as for command interfaces for easier matching
-    reference_interface_names_ = command_interface_names_;
+    _reference_interface_names = _command_interface_names;
     // for any case make reference interfaces size of command interfaces
-    reference_interfaces_.resize(reference_interface_names_.size(), std::numeric_limits<double>::quiet_NaN());
+    reference_interfaces_.resize(_reference_interface_names.size(), std::numeric_limits<double>::quiet_NaN());
 
     return controller_interface::CallbackReturn::SUCCESS;
   }
 
   controller_interface::CallbackReturn MobileBaseController::on_activate(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>> ordered_interfaces;
     if (!controller_interface::get_ordered_interfaces(
-            command_interfaces_, command_interface_names_, std::string(""), ordered_interfaces) ||
-        command_interface_names_.size() != ordered_interfaces.size())
+          command_interfaces_, _command_interface_names, std::string(""), ordered_interfaces) ||
+        _command_interface_names.size() != ordered_interfaces.size())
     {
       RCLCPP_ERROR(this->get_node()->get_logger(),
                    "Expected %zu command interfaces, got %zu",
-                   command_interface_names_.size(),
+                   _command_interface_names.size(),
                    ordered_interfaces.size());
       return controller_interface::CallbackReturn::ERROR;
     }
@@ -156,7 +135,7 @@ namespace mobile_base_controller
   }
 
   controller_interface::CallbackReturn MobileBaseController::on_deactivate(
-      const rclcpp_lifecycle::State& /*previous_state*/)
+    const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // reset command buffer
     rt_buffer_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>>(nullptr);
@@ -169,33 +148,62 @@ namespace mobile_base_controller
   }
 
   std::variant<geometry_msgs::msg::Twist, geometry_msgs::msg::TwistStamped> MobileBaseController::compute_cmd_vel(
-      const std::vector<double>& hw_velocity_commands)
+    const double hw_velocity_command)
   {
     // Please mind:
     // I found out empirically, that i have to change the sign of the computed cmd_vel to get the correct direction
     if (_use_stamped_vel)
     {
       geometry_msgs::msg::TwistStamped cmd_vel_stamped;
-      cmd_vel_stamped.twist.linear.x = -hw_velocity_commands[0];
+      cmd_vel_stamped.twist.linear.x = -hw_velocity_command;
       cmd_vel_stamped.twist.linear.y = 0.0;
       cmd_vel_stamped.twist.linear.z = 0.0;
       cmd_vel_stamped.twist.angular.x = 0.0;
       cmd_vel_stamped.twist.angular.y = 0.0;
       cmd_vel_stamped.twist.angular.z = 0.0;
-      // Set the stamp
       cmd_vel_stamped.header.stamp = this->get_node()->get_clock()->now();
       return cmd_vel_stamped;
     }
     else
     {
       geometry_msgs::msg::Twist cmd_vel;
-      cmd_vel.linear.x = -hw_velocity_commands[0];
+      cmd_vel.linear.x = -hw_velocity_command;
       cmd_vel.linear.y = 0.0;
       cmd_vel.linear.z = 0.0;
       cmd_vel.angular.x = 0.0;
       cmd_vel.angular.y = 0.0;
       cmd_vel.angular.z = 0.0;
       return cmd_vel;
+    }
+  }
+
+  void MobileBaseController::publish_cmd_vel(const double hw_velocity_command)
+  {
+    auto cmd_vel = compute_cmd_vel(hw_velocity_command);
+
+    if (std::holds_alternative<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr>(_publisher_cmd_vel))
+    {
+      auto publisher = std::get<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr>(_publisher_cmd_vel);
+      if (std::holds_alternative<geometry_msgs::msg::Twist>(cmd_vel))
+      {
+        publisher->publish(std::get<geometry_msgs::msg::Twist>(cmd_vel));
+      }
+      else
+      {
+        RCLCPP_ERROR(rclcpp::get_logger("MobileBaseController"), "Expected Twist but got TwistStamped");
+      }
+    }
+    else
+    {
+      auto publisher = std::get<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr>(_publisher_cmd_vel);
+      if (std::holds_alternative<geometry_msgs::msg::TwistStamped>(cmd_vel))
+      {
+        publisher->publish(std::get<geometry_msgs::msg::TwistStamped>(cmd_vel));
+      }
+      else
+      {
+        RCLCPP_ERROR(rclcpp::get_logger("MobileBaseController"), "Expected TwistStamped but got Twist");
+      }
     }
   }
 
@@ -206,32 +214,7 @@ namespace mobile_base_controller
     {
       if (!std::isnan(reference_interfaces_[i]))
       {
-        auto cmd_vel = compute_cmd_vel(reference_interfaces_);
-
-        if (std::holds_alternative<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr>(_publisher_cmd_vel))
-        {
-          auto publisher = std::get<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr>(_publisher_cmd_vel);
-          if (std::holds_alternative<geometry_msgs::msg::Twist>(cmd_vel))
-          {
-            publisher->publish(std::get<geometry_msgs::msg::Twist>(cmd_vel));
-          }
-          else
-          {
-            RCLCPP_ERROR(rclcpp::get_logger("MobileBaseController"), "Expected Twist but got TwistStamped");
-          }
-        }
-        else
-        {
-          auto publisher = std::get<rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr>(_publisher_cmd_vel);
-          if (std::holds_alternative<geometry_msgs::msg::TwistStamped>(cmd_vel))
-          {
-            publisher->publish(std::get<geometry_msgs::msg::TwistStamped>(cmd_vel));
-          }
-          else
-          {
-            RCLCPP_ERROR(rclcpp::get_logger("MobileBaseController"), "Expected TwistStamped but got Twist");
-          }
-        }
+        publish_cmd_vel(reference_interfaces_[0]);
       }
     }
 
@@ -242,17 +225,17 @@ namespace mobile_base_controller
   {
     std::vector<hardware_interface::CommandInterface> reference_interfaces;
 
-    for (size_t i = 0; i < reference_interface_names_.size(); ++i)
+    for (size_t i = 0; i < _reference_interface_names.size(); ++i)
     {
       reference_interfaces.push_back(hardware_interface::CommandInterface(
-          get_node()->get_name(), reference_interface_names_[i], &reference_interfaces_[i]));
+        get_node()->get_name(), _reference_interface_names[i], &reference_interfaces_[i]));
     }
 
     return reference_interfaces;
   }
 
   controller_interface::return_type MobileBaseController::update_reference_from_subscribers(
-      const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
+    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
   {
     auto joint_commands = rt_buffer_ptr_.readFromRT();
     // message is valid

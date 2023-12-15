@@ -53,32 +53,28 @@ namespace mobile_base_controller
     controller_interface::return_type update_reference_from_subscribers(const rclcpp::Time& time,
                                                                         const rclcpp::Duration& period) override;
 
-    std::shared_ptr<ParamListener> param_listener_;
-    Params params_;
-
-    // Storing command joint names for interfaces
-    std::vector<std::string> command_joint_names_;
-
-    // Degrees of freedom
-
     realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>> rt_buffer_ptr_;
-    rclcpp::Subscription<DataType>::SharedPtr joints_cmd_sub_;
-
-    std::vector<std::string> reference_interface_names_;
-
-    std::vector<std::string> command_interface_names_;
 
    private:
     bool _use_stamped_vel;
 
     size_t _dof;
 
+    std::shared_ptr<ParamListener> _param_listener;
+    Params _params;
+
+    std::vector<std::string> _reference_interface_names;
+
+    std::vector<std::string> _command_interface_names;
+
     std::variant<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr,
                  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr>
       _publisher_cmd_vel;
 
     std::variant<geometry_msgs::msg::Twist, geometry_msgs::msg::TwistStamped> compute_cmd_vel(
-      const std::vector<double>& hw_velocity_commands);
+      const double hw_velocity_command);
+
+    void publish_cmd_vel(const double hw_velocity_command);
   };
 }   // namespace mobile_base_controller
 
