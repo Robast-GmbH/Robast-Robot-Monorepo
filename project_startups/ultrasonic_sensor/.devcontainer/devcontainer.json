@@ -1,0 +1,47 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"dockerFile": "../../../src/ros2/sensors/ultrasonic_hc_sr04/Dockerfile",
+	"build": {
+		"args": {
+			"WORKSPACE": "${containerWorkspaceFolder}"
+		}
+	},
+	"name": "Ultrasonic Sensor",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../src/ros2/sensors/ultrasonic_hc_sr04,target=/workspace/src/sensors/ultrasonic_hc_sr04,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind"
+	],
+	"workspaceFolder": "/workspace",
+	"remoteUser": "robast",
+	"runArgs": [
+		"--name=ultrasonic_sensor",
+		// "--network=host",
+		"--volume=/dev/shm:/dev/shm", //needed if you use the fast dds on the host network with multiple docker containers running on the same host
+	],
+	"remoteEnv": {
+		"DISPLAY": "${localEnv:DISPLAY}"
+	},
+	"containerEnv": {
+		"ROS_DOMAIN_ID": "1",
+	},
+	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"ms-iot.vscode-ros",
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"redhat.vscode-yaml",
+		"smilerobotics.urdf",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one",
+		"github.copilot"
+	]
+}
