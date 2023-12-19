@@ -12,6 +12,8 @@ RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${RO
 RUN echo "source install/setup.bash" >> /home/$USER/.bashrc
 
 RUN apt-get update && apt-get install -y \
+  wget \
+  unzip \
   build-essential \
   python3-colcon-common-extensions \
   python3-pip \
@@ -20,6 +22,13 @@ RUN apt-get update && apt-get install -y \
   libpqxx-dev \
   git \
   && rosdep init || echo "rosdep already initialized"
+
+# libary that is required to access gpio pins of raspberry pi in c++
+RUN mkdir tmps && wget https://github.com/joan2937/pigpio/archive/master.zip \
+  && unzip master.zip \
+  && cd pigpio-master \
+  && make \
+  && sudo make install
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration

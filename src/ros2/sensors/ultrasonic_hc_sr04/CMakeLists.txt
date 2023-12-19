@@ -21,6 +21,7 @@ find_package(ament_cmake_uncrustify REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(pigpio REQUIRED)
 
 include_directories(include)
 
@@ -39,6 +40,8 @@ add_library(${library_drawer_bridge} SHARED
 set(dependencies
   rclcpp
   rclcpp_action
+  std_msgs
+  pigpio
 )
 
 ament_target_dependencies(${executable_drawer_bridge}
