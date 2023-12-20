@@ -17,55 +17,49 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_uncrustify REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclcpp_action REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(pigpio REQUIRED)
+find_package(sensor_msgs REQUIRED)
 
 include_directories(include)
 
-set(executable_drawer_bridge drawer_bridge)
-set(executable_drawer_bridge_test drawer_bridge_test)
+set(executable_ultrasonic_hc_sr04 ultrasonic_hc_sr04)
 
-add_executable(${executable_drawer_bridge}
+add_executable(${executable_ultrasonic_hc_sr04}
   src/main.cpp)
 
-set(library_drawer_bridge ${executable_drawer_bridge}_core)
+set(library_ultrasonic_hc_sr04 ${executable_ultrasonic_hc_sr04}_core)
 
-add_library(${library_drawer_bridge} SHARED
+add_library(${library_ultrasonic_hc_sr04} SHARED
   src/ultrasonic_hc_sr04.cpp
 )
 
 set(dependencies
   rclcpp
-  rclcpp_action
-  std_msgs
-  pigpio
+  sensor_msgs
 )
 
-ament_target_dependencies(${executable_drawer_bridge}
+ament_target_dependencies(${executable_ultrasonic_hc_sr04}
   ${dependencies}
 )
-target_link_libraries(${executable_drawer_bridge} ${library_drawer_bridge})
+target_link_libraries(${executable_ultrasonic_hc_sr04} ${library_ultrasonic_hc_sr04} pigpiod_if2)
 
-ament_target_dependencies(${library_drawer_bridge}
+ament_target_dependencies(${library_ultrasonic_hc_sr04}
   ${dependencies}
 )
 
-target_include_directories(drawer_bridge PUBLIC
+target_include_directories(ultrasonic_hc_sr04 PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
   $<INSTALL_INTERFACE:include>)
 
 install(TARGETS
-  ${library_drawer_bridge}
+  ${library_ultrasonic_hc_sr04}
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
 )
 
 install(TARGETS
-  ${executable_drawer_bridge}
+  ${executable_ultrasonic_hc_sr04}
   RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 

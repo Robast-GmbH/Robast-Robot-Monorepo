@@ -9,7 +9,14 @@ def generate_launch_description():
             package='ultrasonic_hc_sr04',
             executable='ultrasonic_hc_sr04',
             output='screen',
-            emulate_tty=True,  # https://github.com/ros2/launch/issues/188
+            parameters=[
+                {'pigpio_host': 'localhost'},
+                {'pigpio_port': '8888'},
+                {'trigger_pin': 14},
+                {'echo_pin': 18},
+                {'topic': 'distance'},
+                {'frequency': 10}
+            ]
             )
 
     ld = LaunchDescription()

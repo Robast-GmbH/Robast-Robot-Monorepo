@@ -24,7 +24,7 @@ RUN apt-get update && apt-get install -y \
   && rosdep init || echo "rosdep already initialized"
 
 # libary that is required to access gpio pins of raspberry pi in c++
-RUN mkdir tmps && wget https://github.com/joan2937/pigpio/archive/master.zip \
+RUN mkdir tmps && cd tmps && wget https://github.com/joan2937/pigpio/archive/master.zip \
   && unzip master.zip \
   && cd pigpio-master \
   && make \
