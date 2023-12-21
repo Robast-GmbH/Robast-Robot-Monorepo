@@ -96,23 +96,26 @@ namespace ultrasonic_sensor
     gpio_write(_pi, _trigger_pin, 0);
   }
 
+  bool UltrasonicHCSR04::is_timeout_reached(long start_time_in_us, long timeout_in_us)
+  {
+    return (micros() - start_time_in_us) > timeout_in_us;
+  }
+
   bool UltrasonicHCSR04::wait_for_echo_pin_high()
   {
     long trigger_timestamp_in_us = micros();
 
-    bool is_echo_pin_low = (gpio_read(_pi, _echo_pin) == 0);
-    bool is_timeout_reached = (micros() - trigger_timestamp_in_us) > ECHO_PIN_TIMEOUT_IN_US;
-    while (is_echo_pin_low && !is_timeout_reached)
+    while (gpio_read(_pi, _echo_pin) == 0)
     {
-    }
-
-    if (is_timeout_reached)
-    {
-      RCLCPP_WARN(this->get_logger(),
-                  "Timeout reached for ultrasonic sensor with frame_id %s. Echo pin was not set to high within %d ms!",
-                  _frame_id.c_str(),
-                  ECHO_PIN_TIMEOUT_IN_US / 1000);
-      return false;
+      if (is_timeout_reached(trigger_timestamp_in_us, ECHO_PIN_TIMEOUT_IN_US))
+      {
+        RCLCPP_WARN(
+            this->get_logger(),
+            "Timeout reached for ultrasonic sensor with frame_id %s. Echo pin was not set to high within %d ms!",
+            _frame_id.c_str(),
+            ECHO_PIN_TIMEOUT_IN_US / 1000);
+        return false;
+      }
     }
 
     return true;
@@ -134,6 +137,11 @@ namespace ultrasonic_sensor
     // Therefore we can measure the time the echo pin is high to calculate the distance
     long travel_time_in_us = get_travel_time_in_us();
 
+    if (travel_time_in_us == MAX_TRAVEL_TIME_IN_US)
+    {
+      return MAX_RANGE_IN_M;
+    }
+
     double distance_in_meters = ((travel_time_in_us * US_TO_S) * SPEED_OF_SOUND_IN_M_S) / 2;
 
     return distance_in_meters;
@@ -149,9 +157,15 @@ namespace ultrasonic_sensor
   long UltrasonicHCSR04::get_travel_time_in_us()
   {
     long start_time_us = micros();
+
     while (gpio_read(_pi, _echo_pin) == 1)
     {
+      if (is_timeout_reached(start_time_us, MAX_TRAVEL_TIME_IN_US))
+      {
+        return MAX_TRAVEL_TIME_IN_US;
+      }
     }
+
     long end_time_us = micros();
     return (end_time_us - start_time_us);
   }

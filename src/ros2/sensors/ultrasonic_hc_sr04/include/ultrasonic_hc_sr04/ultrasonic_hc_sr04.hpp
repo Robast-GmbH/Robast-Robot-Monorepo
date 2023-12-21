@@ -26,6 +26,7 @@ namespace ultrasonic_sensor
 #define SPEED_OF_SOUND_IN_M_S  343.0
 #define TRIGGER_PULSE_IN_US    10
 #define US_TO_S                0.000001
+#define MAX_TRAVEL_TIME_IN_US  (static_cast<long>((MAX_RANGE_IN_M * 2 * 1000000) / SPEED_OF_SOUND_IN_M_S))
 
   class UltrasonicHCSR04 : public rclcpp::Node
   {
@@ -53,6 +54,7 @@ namespace ultrasonic_sensor
     long get_travel_time_in_us();
     long micros();
     void publish_distance();
+    bool is_timeout_reached(long start_time_in_us, long timeout_in_us);
   };
 }   // namespace ultrasonic_sensor
 #endif   // ULTRASONIC_HC_SR04__ULTRASONIC_HC_SR04_HPP_
