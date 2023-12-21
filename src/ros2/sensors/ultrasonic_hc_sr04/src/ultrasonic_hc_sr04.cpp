@@ -76,6 +76,8 @@ namespace ultrasonic_sensor
     distance_msg.header.stamp = this->now();
 
     distance_msg.radiation_type = sensor_msgs::msg::Range::ULTRASOUND;
+    distance_msg.min_range = 0.02;
+    distance_msg.max_range = 4.0;
 
     if (distance_msg.range == 0.0)
     {
