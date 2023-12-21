@@ -30,7 +30,7 @@ namespace ultrasonic_sensor
                        this->get_parameter("pigpio_port").as_string().c_str());
     if (_pi < 0)
     {
-      RCLCPP_ERROR(this->get_logger(), "Failed to connect to pigpio daemon");
+      RCLCPP_ERROR(this->get_logger(), "Failed to connect to pigpio daemon. Make sure the daemon is running.");
       exit(1);
     }
     else
@@ -76,8 +76,9 @@ namespace ultrasonic_sensor
     distance_msg.header.stamp = this->now();
 
     distance_msg.radiation_type = sensor_msgs::msg::Range::ULTRASOUND;
-    distance_msg.min_range = 0.02;
-    distance_msg.max_range = 4.0;
+    distance_msg.min_range = MIN_RANGE_IN_M;
+    distance_msg.max_range = MAX_RANGE_IN_M;
+    distance_msg.field_of_view = FIELD_OF_VIEW_IN_DEG * DEGREE_TO_RAD;
 
     if (distance_msg.range == 0.0)
     {
@@ -89,9 +90,9 @@ namespace ultrasonic_sensor
   void UltrasonicHCSR04::trigger_sensor()
   {
     // the measurement process is started by sending a 10 microsecond pulse to the trigger input
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::microseconds(TRIGGER_PULSE_IN_US));
     gpio_write(_pi, _trigger_pin, 1);
-    std::this_thread::sleep_for(std::chrono::milliseconds(10));
+    std::this_thread::sleep_for(std::chrono::microseconds(TRIGGER_PULSE_IN_US));
     gpio_write(_pi, _trigger_pin, 0);
   }
 
@@ -133,7 +134,7 @@ namespace ultrasonic_sensor
     // Therefore we can measure the time the echo pin is high to calculate the distance
     long travel_time_in_us = get_travel_time_in_us();
 
-    double distance_in_meters = ((travel_time_in_us / 1000000.0) * 340.29) / 2;
+    double distance_in_meters = ((travel_time_in_us * US_TO_S) * SPEED_OF_SOUND_IN_M_S) / 2;
 
     return distance_in_meters;
   }

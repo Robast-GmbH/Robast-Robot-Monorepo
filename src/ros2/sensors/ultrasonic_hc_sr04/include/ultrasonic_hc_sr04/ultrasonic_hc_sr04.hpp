@@ -19,6 +19,13 @@ namespace ultrasonic_sensor
 {
 
 #define ECHO_PIN_TIMEOUT_IN_US 1000
+#define DEGREE_TO_RAD          M_PI / 180.0
+#define MIN_RANGE_IN_M         0.02
+#define MAX_RANGE_IN_M         4.0
+#define FIELD_OF_VIEW_IN_DEG   15.0
+#define SPEED_OF_SOUND_IN_M_S  343.0
+#define TRIGGER_PULSE_IN_US    10
+#define US_TO_S                0.000001
 
   class UltrasonicHCSR04 : public rclcpp::Node
   {
