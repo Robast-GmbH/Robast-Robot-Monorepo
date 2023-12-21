@@ -18,6 +18,8 @@
 namespace ultrasonic_sensor
 {
 
+#define ECHO_PIN_TIMEOUT_IN_US 1000
+
   class UltrasonicHCSR04 : public rclcpp::Node
   {
    public:
@@ -38,7 +40,9 @@ namespace ultrasonic_sensor
     void declare_parameters();
     void setup_publishers();
     void create_wall_timer_for_publisher();
-    double get_distance(uint32_t timeout);
+    double get_distance();
+    void trigger_sensor();
+    bool wait_for_echo_pin_high();
     long get_travel_time_in_us();
     long micros();
     void publish_distance();

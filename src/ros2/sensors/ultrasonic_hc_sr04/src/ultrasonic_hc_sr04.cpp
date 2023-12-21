@@ -13,8 +13,7 @@ namespace ultrasonic_sensor
 
   void UltrasonicHCSR04::declare_parameters()
   {
-    // specifies the host or IP address of the Pi running the pigpio daemon. It may be NULL in which case localhost
-    // is used unless overridden by the PIGPIO_ADDR environment variable.
+    // specifies the host or IP address of the Pi running the pigpio daemon.
     this->declare_parameter("pigpio_host", "localhost");
     this->declare_parameter("pigpio_port", "8888");
 
@@ -71,29 +70,68 @@ namespace ultrasonic_sensor
   {
     sensor_msgs::msg::Range distance_msg;
 
+    distance_msg.range = get_distance();
+
     distance_msg.header.frame_id = _frame_id;
     distance_msg.header.stamp = this->now();
 
-    distance_msg.range = get_distance(10000);
+    distance_msg.radiation_type = sensor_msgs::msg::Range::ULTRASOUND;
+
+    if (distance_msg.range == 0.0)
+    {
+      return;
+    }
     _distance_publisher->publish(distance_msg);
   }
 
-  double UltrasonicHCSR04::get_distance(uint32_t timeout_in_ms)
+  void UltrasonicHCSR04::trigger_sensor()
   {
+    // the measurement process is started by sending a 10 microsecond pulse to the trigger input
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     gpio_write(_pi, _trigger_pin, 1);
     std::this_thread::sleep_for(std::chrono::milliseconds(10));
     gpio_write(_pi, _trigger_pin, 0);
+  }
 
-    long trigger_timestamp_in_ms = micros();
+  bool UltrasonicHCSR04::wait_for_echo_pin_high()
+  {
+    long trigger_timestamp_in_us = micros();
 
-    while (gpio_read(_pi, _echo_pin) == 0 && micros() - trigger_timestamp_in_ms < timeout_in_ms)
+    bool is_echo_pin_low = (gpio_read(_pi, _echo_pin) == 0);
+    bool is_timeout_reached = (micros() - trigger_timestamp_in_us) > ECHO_PIN_TIMEOUT_IN_US;
+    while (is_echo_pin_low && !is_timeout_reached)
     {
     }
 
-    long travel_time_us = get_travel_time_in_us();
+    if (is_timeout_reached)
+    {
+      RCLCPP_WARN(this->get_logger(),
+                  "Timeout reached for ultrasonic sensor with frame_id %s. Echo pin was not set to high within %d ms!",
+                  _frame_id.c_str(),
+                  ECHO_PIN_TIMEOUT_IN_US / 1000);
+      return false;
+    }
 
-    double distance_in_meters = 100 * ((travel_time_us / 1000000.0) * 340.29) / 2;
+    return true;
+  }
+
+  double UltrasonicHCSR04::get_distance()
+  {
+    // the measurement process is started by sending a 10 microsecond pulse to the trigger input
+    // This triggers the ultrasonic burst which travels through the air
+    trigger_sensor();
+
+    // Once the burst is sent the echo pin goes high, and stays high until the echo is received back.
+    bool set_echo_pin_set_high_successfully = wait_for_echo_pin_high();
+    if (!set_echo_pin_set_high_successfully)
+    {
+      return 0.0;
+    }
+
+    // Therefore we can measure the time the echo pin is high to calculate the distance
+    long travel_time_in_us = get_travel_time_in_us();
+
+    double distance_in_meters = ((travel_time_in_us / 1000000.0) * 340.29) / 2;
 
     return distance_in_meters;
   }
