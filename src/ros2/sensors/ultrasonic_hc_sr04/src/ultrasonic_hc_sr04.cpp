@@ -80,8 +80,9 @@ namespace ultrasonic_sensor
     distance_msg.max_range = MAX_RANGE_IN_M;
     distance_msg.field_of_view = FIELD_OF_VIEW_IN_DEG * DEGREE_TO_RAD;
 
-    if (distance_msg.range == 0.0)
+    if (distance_msg.range <= MIN_RANGE_IN_M || distance_msg.range >= MAX_RANGE_IN_M)
     {
+      // Only publish valid data
       return;
     }
     _distance_publisher->publish(distance_msg);
@@ -90,6 +91,7 @@ namespace ultrasonic_sensor
   void UltrasonicHCSR04::trigger_sensor()
   {
     // the measurement process is started by sending a 10 microsecond pulse to the trigger input
+    gpio_write(_pi, _trigger_pin, 0);
     std::this_thread::sleep_for(std::chrono::microseconds(TRIGGER_PULSE_IN_US));
     gpio_write(_pi, _trigger_pin, 1);
     std::this_thread::sleep_for(std::chrono::microseconds(TRIGGER_PULSE_IN_US));
