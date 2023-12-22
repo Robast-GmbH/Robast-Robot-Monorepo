@@ -16,7 +16,7 @@
 	"remoteUser": "robast",
 	"runArgs": [
 		"--name=ultrasonic_sensor",
-		// "--network=host",
+		"--network=host",
 		// according to here it should go without privileged mode, but it didn't work for me so far:
 		// https://stackoverflow.com/questions/30059784/docker-access-to-raspberry-pi-gpio-pins
 		// TODO@Anyone: Find a solution to not use privileged mode
@@ -26,7 +26,7 @@
 		"DISPLAY": "${localEnv:DISPLAY}"
 	},
 	"containerEnv": {
-		"ROS_DOMAIN_ID": "1",
+		"ROS_DOMAIN_ID": "0",
 	},
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.
