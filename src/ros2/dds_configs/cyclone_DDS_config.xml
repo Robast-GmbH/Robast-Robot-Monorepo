@@ -9,6 +9,7 @@
             <Peers>
                 <Peer Address="127.0.0.1" />
                 <Peer Address="192.168.0.31" /> <!-- RaspberryPi -->
+                <Peer Address="192.168.0.200" /> <!-- Robo -->
             </Peers> 
             <MaxAutoParticipantIndex>50</MaxAutoParticipantIndex>
         </Discovery>
