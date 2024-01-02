@@ -12,9 +12,9 @@ def generate_launch_description():
             parameters=[
                 {'pigpio_host': 'localhost'},
                 {'pigpio_port': '8888'},
-                {'trigger_pin': 15},
-                {'echo_pin': 14},
-                {'topic': 'distance'},
+                {'trigger_pin': 3},
+                {'echo_pin': 2},
+                {'topic': 'ultrasonic_distance_middle'},
                 {'frequency': 20}, # tests showed that for now 47-50 Hz is the maximum possible frequency
                 {'ultrasonic_sensor_frame': 'ultrasonic_sensor_front_middle_frame'}
             ]
@@ -27,9 +27,9 @@ def generate_launch_description():
             parameters=[
                 {'pigpio_host': 'localhost'},
                 {'pigpio_port': '8888'},
-                {'trigger_pin': 3},
-                {'echo_pin': 2},
-                {'topic': 'distance'},
+                {'trigger_pin': 27},
+                {'echo_pin': 17},
+                {'topic': 'ultrasonic_distance_left'},
                 {'frequency': 20}, # tests showed that for now 47-50 Hz is the maximum possible frequency
                 {'ultrasonic_sensor_frame': 'ultrasonic_sensor_front_left_frame'}
             ]
@@ -42,9 +42,9 @@ def generate_launch_description():
             parameters=[
                 {'pigpio_host': 'localhost'},
                 {'pigpio_port': '8888'},
-                {'trigger_pin': 13},
-                {'echo_pin': 11},
-                {'topic': 'distance'},
+                {'trigger_pin': 15},
+                {'echo_pin': 14},
+                {'topic': 'ultrasonic_distance_right'},
                 {'frequency': 20}, # tests showed that for now 47-50 Hz is the maximum possible frequency
                 {'ultrasonic_sensor_frame': 'ultrasonic_sensor_front_right_frame'}
             ]
@@ -52,8 +52,8 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-    # ld.add_action(start_ultrasonic_hc_sr04_front_middle_cmd)
+    ld.add_action(start_ultrasonic_hc_sr04_front_middle_cmd)
     ld.add_action(start_ultrasonic_hc_sr04_front_left_cmd)
-    # ld.add_action(start_ultrasonic_hc_sr04_front_right_cmd)
+    ld.add_action(start_ultrasonic_hc_sr04_front_right_cmd)
 
     return ld
