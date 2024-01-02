@@ -4,19 +4,15 @@ import atexit
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import IncludeLaunchDescription, ExecuteProcess, DeclareLaunchArgument
-from launch.launch_description_sources import PythonLaunchDescriptionSource
-from launch.substitutions import LaunchConfiguration
+from launch.actions import ExecuteProcess, RegisterEventHandler
+from launch.event_handlers import OnProcessExit, OnProcessStart
 
 from moveit_configs_utils.launches import generate_static_virtual_joint_tfs_launch
 
 from launch_ros.actions import Node
 from moveit_configs_utils import MoveItConfigsBuilder
 
-
-from moveit_configs_utils.launch_utils import (
-    DeclareBooleanLaunchArg,
-)
+from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
 
 """
     Launches a self contained demo
@@ -37,6 +33,8 @@ def generate_launch_description():
 
     launch_arguments = {
         "ros2_control_hardware_type": "dryve_d1",
+        "ros2_control_hardware_type_positon_joint": "real_life",
+        "model_position_joint": "true",
     }
 
     moveit_config = (
@@ -48,18 +46,14 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-    ld.add_action(
-        DeclareBooleanLaunchArg(
-            "debug",
-            default_value=False,
-            description="By default, we are not in debug mode",
-        )
+    declare_debug_cmd = DeclareBooleanLaunchArg(
+        "debug",
+        default_value=False,
+        description="By default, we are not in debug mode",
     )
 
     # If there are virtual joints, broadcast static tf by including virtual_joints launch
-    ld.add_action(
-        generate_static_virtual_joint_tfs_launch(moveit_config)
-    )
+    static_virtual_joint_cmd = generate_static_virtual_joint_tfs_launch(moveit_config)
 
     # Load ExecuteTaskSolutionCapability so we can execute found solutions in simulation
     move_group_capabilities = {
@@ -67,7 +61,7 @@ def generate_launch_description():
     }
 
     # Start the actual move_group node/action server
-    ld.add_action(Node(
+    move_group_cmd = Node(
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
@@ -75,40 +69,35 @@ def generate_launch_description():
             moveit_config.to_dict(),
             move_group_capabilities,
         ],
-    ))
+    )
 
-    # RViz
     rviz_config_file = (
         get_package_share_directory("moveit_door_opening_mechanism_rotating_arm_config") + "/config/moveit.rviz"
     )
-    ld.add_action(
-        Node(
-            package="rviz2",
-            executable="rviz2",
-            name="rviz2",
-            output="log",
-            arguments=["-d", rviz_config_file],
-            parameters=[
-                moveit_config.robot_description,
-                moveit_config.robot_description_semantic,
-                moveit_config.robot_description_kinematics,
-                moveit_config.planning_pipelines,
-                moveit_config.joint_limits,
-            ],
-        )
+    rviz2_cmd = Node(
+        package="rviz2",
+        executable="rviz2",
+        name="rviz2",
+        output="log",
+        arguments=["-d", rviz_config_file],
+        parameters=[
+            moveit_config.robot_description,
+            moveit_config.robot_description_semantic,
+            moveit_config.robot_description_kinematics,
+            moveit_config.planning_pipelines,
+            moveit_config.joint_limits,
+        ],
     )
 
     # State Publisher
-    ld.add_action(
-        Node(
-            package="robot_state_publisher",
-            executable="robot_state_publisher",
-            name="robot_state_publisher",
-            output="both",
-            parameters=[
-                moveit_config.robot_description,
-            ],
-        )
+    robot_state_publisher_cmd = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        name="robot_state_publisher",
+        output="both",
+        parameters=[
+            moveit_config.robot_description,
+        ],
     )
 
     # ros2_control
@@ -117,27 +106,43 @@ def generate_launch_description():
         "config",
         "ros2_controllers_real_world.yaml",
     )
-    ld.add_action(
-        Node(
-            package="controller_manager",
-            executable="ros2_control_node",
-            parameters=[moveit_config.robot_description, ros2_controllers_path],
-            output="both",
-        )
+    ros2_controller_manager_cmd = Node(
+        package="controller_manager",
+        executable="ros2_control_node",
+        parameters=[moveit_config.robot_description, ros2_controllers_path],
+        output="both",
     )
     
-    # Load controllers
-    for controller in [
-        "joint_state_broadcaster",
-        "joint_trajectory_controller",
-    ]:
-        ld.add_action(
-            ExecuteProcess(
-                cmd=["ros2 run controller_manager spawner {}".format(controller)],
-                shell=True,
-                output="screen",
+    load_joint_state_broadcaster = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_state_broadcaster'],
+        output='screen'
+    )
+    load_joint_trajectory_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_trajectory_controller'],
+        output='screen'
+    )
+
+    ld.add_action(declare_debug_cmd)
+
+    ld.add_action(static_virtual_joint_cmd)
+    ld.add_action(rviz2_cmd)
+    ld.add_action(move_group_cmd)
+    ld.add_action(robot_state_publisher_cmd)
+    ld.add_action(ros2_controller_manager_cmd)
+
+    # spawning ros2_control controller
+    ld.add_action(RegisterEventHandler(
+            event_handler=OnProcessStart(
+                target_action=ros2_controller_manager_cmd,
+                on_start=[load_joint_state_broadcaster],
             )
-        )
+        ))
+    ld.add_action(RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_state_broadcaster,
+                on_exit=[load_joint_trajectory_controller],
+            )
+        ))
 
     # This would be probably much nice to use RegisterEventHandler to trigger the shutdown, but unfortunately we
     # did not get this running. Therefore we shutdown the dryve d1 with the "atexit" library.

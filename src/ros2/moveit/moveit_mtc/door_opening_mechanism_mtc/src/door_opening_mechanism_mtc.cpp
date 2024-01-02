@@ -179,12 +179,9 @@ namespace door_opening_mechanism_mtc
     mtc::Task task;
     task.stages()->setName("approach door handle task");
     task.loadRobotModel(shared_from_this());
-
-    // TODO@Jacob: Executing a task works only for the door_opening_mechanism for now.
-    // Since we are using the joint_trajectory_controller from ros2_control now, we have to find a way how we
-    // incorporate the mobile base into this properly
-    const auto& group_name = "door_opening_mechanism";   // mobile_base_arm or door_opening_mechanism
-    const auto& group_name_arm = "door_opening_mechanism";
+    
+    const auto& group_name = "mobile_base_arm";   // mobile_base_arm
+    const auto& group_name_arm = "mobile_base_arm";
     const auto& end_effector_name = "door_opening_end_effector";
     const auto& end_effector_parent_link = "door_opening_mechanism_link_freely_rotating_hook";
 

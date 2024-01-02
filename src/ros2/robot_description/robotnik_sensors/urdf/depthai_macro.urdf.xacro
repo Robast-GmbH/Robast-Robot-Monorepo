@@ -1,17 +1,12 @@
 <?xml version="1.0"?>
 <robot name="depthai_camera" xmlns:xacro="http://ros.org/wiki/xacro">
 
-<xacro:macro name="depthai_camera" params="prefix parent publish_bf robot_name prefix_topic camera_model base_frame 
+<xacro:macro name="depthai_camera" params="prefix parent sensor_base_frame robot_name prefix_topic camera_model base_frame 
                                            cam_pos_x cam_pos_y cam_pos_z 
                                            cam_roll cam_pitch cam_yaw hq
                                            r:=0.8 g:=0.8 b:=0.8 a:=0.8">
 
-    <xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}" />
-		</xacro:if>
-		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}" />
-		</xacro:unless>
+    <xacro:property name="sensor_link_name" value="${robot_name}/${sensor_base_frame}/${prefix}" />
 
     <xacro:property name="M_PI"     value="3.1415926535897931" />
     <xacro:property name="model"    value="${camera_model}" />

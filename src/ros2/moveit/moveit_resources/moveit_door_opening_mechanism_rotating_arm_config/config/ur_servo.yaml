@@ -35,7 +35,7 @@ smoothing_filter_plugin_name: "online_signal_smoothing::ButterworthFilterPlugin"
 low_pass_filter_coeff: 1.5  # Larger --> trust the filtered data more, trust the measurements less.
 
 ## MoveIt properties
-move_group_name: door_opening_mechanism  # Often 'manipulator' or 'arm'
+move_group_name: mobile_base_arm  # Often 'manipulator' or 'arm'
 planning_frame: base_link  # The MoveIt planning frame. Often 'base_link' or 'world'
 is_primary_planning_scene_monitor: false  # The MoveGroup node maintains the planning scene, so Servo needs to get its world info from there.
 

@@ -1,0 +1,32 @@
+# TODO@Jacob: Adapt this to our controller
+
+mobile_base_controller:
+  joints: {
+    type: string_array,
+    default_value: [],
+    description: "Names of joints used by the controller",
+    read_only: true,
+    validation: {
+      unique<>: null,
+    }
+  }
+  command_interfaces: {
+    type: string_array,
+    default_value: [],
+    description: "Names of command interfaces to claim",
+    read_only: true,
+    validation: {
+      unique<>: null,
+      subset_of<>: [["position", "velocity", "acceleration", "effort",]]
+    }
+  }
+  cmd_vel_topic: {
+    type: string,
+    default_value: "/cmd_vel",
+    description:  "Name of the topic the controller should publish the cmd_vel commands to",
+  }
+  use_stamped_vel: {
+    type: bool,
+    default_value: false,
+    description: "Use geometry_msgs/TwistStamped instead of geometry_msgs/Twist for cmd_vel",
+  }

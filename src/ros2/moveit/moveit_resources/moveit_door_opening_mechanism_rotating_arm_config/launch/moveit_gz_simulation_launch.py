@@ -29,6 +29,7 @@ def generate_launch_description():
 
     launch_arguments = {
         "ros2_control_hardware_type": "gz_ros2_control",
+        "model_position_joint": "true",
     }
 
 

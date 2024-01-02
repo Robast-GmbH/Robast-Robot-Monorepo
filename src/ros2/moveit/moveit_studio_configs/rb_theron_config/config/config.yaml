@@ -93,7 +93,7 @@ optional_feature_params:
 # For more information, refer to https://moveit.picknik.ai/humble/doc/examples/examples.html#configuration
 # [Required]
 moveit_params:
-  joint_group_name: "door_opening_mechanism"
+  joint_group_name: "mobile_base_arm"
 
   ompl_planning:
     package: "moveit_door_opening_mechanism_rotating_arm_config"

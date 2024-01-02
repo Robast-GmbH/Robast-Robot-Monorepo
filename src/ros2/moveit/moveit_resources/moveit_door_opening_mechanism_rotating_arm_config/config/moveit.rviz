@@ -405,7 +405,7 @@ Visualization Manager:
         Goal State Color: 250; 128; 0
         Interactive Marker Size: 0
         Joint Violation Color: 255; 0; 255
-        Planning Group: door_opening_mechanism
+        Planning Group: mobile_base_arm
         Query Goal State: true
         Query Start State: false
         Show Workspace: false

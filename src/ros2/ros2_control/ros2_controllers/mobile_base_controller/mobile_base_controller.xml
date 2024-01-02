@@ -1,0 +1,9 @@
+<library path="mobile_base_controller">
+  <class name="mobile_base_controller/MobileBaseController"
+         type="mobile_base_controller::MobileBaseController"
+         base_class_type="controller_interface::ChainableControllerInterface">
+    <description>
+      MobileBase ros2_control controller to generate cmd_vel commands.
+    </description>
+  </class>
+</library>
