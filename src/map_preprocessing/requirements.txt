@@ -1,3 +1,2 @@
 numpy
 ultralytics
-lama-cleaner
