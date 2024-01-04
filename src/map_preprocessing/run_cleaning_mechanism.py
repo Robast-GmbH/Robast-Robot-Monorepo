@@ -35,3 +35,4 @@ def main():
     print('Feuerplan pre-processing completed successfully.')
 
 if __name__ == '__main__':
+    main()
