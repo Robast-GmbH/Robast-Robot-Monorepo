@@ -122,6 +122,10 @@ def generate_launch_description():
         output="both",
     )
     
+    load_mobile_base_controller = ExecuteProcess(
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'mobile_base_controller_cmd_vel', '-c', controller_manager_name],
+        output='screen'
+    )
     load_joint_state_broadcaster = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_state_broadcaster', '-c', controller_manager_name],
         output='screen'
@@ -139,7 +143,7 @@ def generate_launch_description():
     ld.add_action(robot_state_publisher_cmd)
     ld.add_action(ros2_controller_manager_arm_cmd)
 
-    # spawning ros2_control controller
+    # spawning ros2_control controller for arm
     ld.add_action(RegisterEventHandler(
             event_handler=OnProcessStart(
                 target_action=ros2_controller_manager_arm_cmd,
@@ -149,6 +153,12 @@ def generate_launch_description():
     ld.add_action(RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
+                on_exit=[load_mobile_base_controller],
+            )
+        ))
+    ld.add_action(RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_mobile_base_controller,
                 on_exit=[load_joint_trajectory_controller],
             )
         ))
