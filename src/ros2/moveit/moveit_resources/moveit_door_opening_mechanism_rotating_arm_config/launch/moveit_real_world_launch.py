@@ -43,6 +43,7 @@ def generate_launch_description():
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .to_moveit_configs()
     )
+    namespace_controller_manager_arm = "arm"
 
     ld = LaunchDescription()
 
@@ -65,6 +66,7 @@ def generate_launch_description():
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
+        namespace=namespace_controller_manager_arm,
         parameters=[
             moveit_config.to_dict(),
             move_group_capabilities,
@@ -101,24 +103,31 @@ def generate_launch_description():
     )
 
     # ros2_control
-    ros2_controllers_path = os.path.join(
+    ros2_controllers_path_arm = os.path.join(
         get_package_share_directory("moveit_door_opening_mechanism_rotating_arm_config"),
         "config",
-        "ros2_controllers_real_world.yaml",
+        "ros2_controllers_real_world_arm.yaml",
     )
-    ros2_controller_manager_cmd = Node(
+    controller_manager_name = "/" + namespace_controller_manager_arm + "/controller_manager"
+    remappings_controller_manager_arm = [
+        ("/" + namespace_controller_manager_arm + "/diff_drive_base_controller/cmd_vel", "/diff_drive_base_controller/cmd_vel"),
+        ("/" + namespace_controller_manager_arm + "/joint_states", "/joint_states")
+    ]
+    ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        parameters=[moveit_config.robot_description, ros2_controllers_path],
+        namespace=namespace_controller_manager_arm,
+        remappings=remappings_controller_manager_arm,
+        parameters=[moveit_config.robot_description, ros2_controllers_path_arm,],
         output="both",
     )
     
     load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_state_broadcaster'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_state_broadcaster', '-c', controller_manager_name],
         output='screen'
     )
     load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_trajectory_controller'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_trajectory_controller', '-c', controller_manager_name],
         output='screen'
     )
 
@@ -128,12 +137,12 @@ def generate_launch_description():
     ld.add_action(rviz2_cmd)
     ld.add_action(move_group_cmd)
     ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(ros2_controller_manager_cmd)
+    ld.add_action(ros2_controller_manager_arm_cmd)
 
     # spawning ros2_control controller
     ld.add_action(RegisterEventHandler(
             event_handler=OnProcessStart(
-                target_action=ros2_controller_manager_cmd,
+                target_action=ros2_controller_manager_arm_cmd,
                 on_start=[load_joint_state_broadcaster],
             )
         ))
