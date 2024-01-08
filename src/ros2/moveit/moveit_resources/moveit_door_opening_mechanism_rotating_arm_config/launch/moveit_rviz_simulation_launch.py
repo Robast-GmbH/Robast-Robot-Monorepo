@@ -42,6 +42,7 @@ def generate_launch_description():
         )
         .to_moveit_configs()
     )
+    namespace_controller_manager_arm = "arm"
 
     ld = LaunchDescription()
 
@@ -68,13 +69,13 @@ def generate_launch_description():
     }
 
     remappings = [
-        ("/arm/joint_states", "/joint_states"),
+        ("/" + namespace_controller_manager_arm + "/joint_states", "/joint_states"),
     ]
     move_group_cmd = Node(
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
-        namespace="arm",
+        namespace=namespace_controller_manager_arm,
         remappings=remappings,
         parameters=[
             moveit_config.to_dict(),
@@ -151,28 +152,29 @@ def generate_launch_description():
     )
 
     # Second controller manager for the arm
+    controller_manager_name = "/" + namespace_controller_manager_arm + "/controller_manager"
     remappings_controller_manager_arm = [
-        ("/arm/diff_drive_base_controller/cmd_vel", "/diff_drive_base_controller/cmd_vel"),
-        ("/arm/joint_states", "/joint_states")
+        ("/" + namespace_controller_manager_arm + "/diff_drive_base_controller/cmd_vel", "/diff_drive_base_controller/cmd_vel"),
+        ("/" + namespace_controller_manager_arm + "/joint_states", "/joint_states")
     ]
     ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        namespace="arm",
+        namespace=namespace_controller_manager_arm,
         remappings=remappings_controller_manager_arm,
         parameters=[moveit_config.robot_description, ros2_controllers_path_arm, {"use_sim_time": use_sim_time}],
         output="both",
     )
     load_mobile_base_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'mobile_base_controller_cmd_vel', '-c', '/arm/controller_manager'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'mobile_base_controller_cmd_vel', '-c', controller_manager_name],
         output='screen'
     )
     load_joint_trajectory_controller = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_trajectory_controller', '-c', '/arm/controller_manager'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_trajectory_controller', '-c', controller_manager_name],
         output='screen'
     )
     load_joint_state_broadcaster = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_state_broadcaster', '-c', '/arm/controller_manager'],
+        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_state_broadcaster', '-c', controller_manager_name],
         output='screen'
     )
 
