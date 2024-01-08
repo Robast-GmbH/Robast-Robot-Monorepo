@@ -150,7 +150,7 @@
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/arm_variations/rotating_arm.urdf.xacro" />
         <xacro:rotating_arm
             prefix="${prefix}"
-            parent="${prefix}door_opening_mechanism_link_x_slide_screwing"
+            parent="door_opening_mechanism_link_x_slide_screwing"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
             ros_distro="${ros_distro}"
             arm_length="0.3" >

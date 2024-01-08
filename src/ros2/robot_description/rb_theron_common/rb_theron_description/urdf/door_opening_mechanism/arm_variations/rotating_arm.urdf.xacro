@@ -61,7 +61,7 @@
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/freely_rotating_hook.urdf.xacro" />
         <xacro:freely_rotating_hook
             prefix="${prefix}"
-            parent="${prefix}door_opening_mechanism_link_gripper_adapter"
+            parent="door_opening_mechanism_link_gripper_adapter"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
             ros_distro="${ros_distro}">
             <origin xyz="0.020 0.0 0.0" rpy="0 0 0"/>
