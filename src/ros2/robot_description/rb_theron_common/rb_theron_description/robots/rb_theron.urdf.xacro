@@ -109,7 +109,7 @@
 		<origin xyz="0.3305 0.0 0.1898" rpy="0 0 0"/>
 	</xacro:sensor_orbbec_astra -->
 
-	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}">
+	<xacro:sensor_imu_hector prefix="$(arg prefix)imu" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}">
 		<origin xyz="-0.1975 0.0 0.1598" rpy="0 0 0"/>
 	</xacro:sensor_imu_hector>
 

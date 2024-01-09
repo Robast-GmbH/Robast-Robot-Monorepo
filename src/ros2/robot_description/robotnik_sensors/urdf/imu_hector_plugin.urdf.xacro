@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <robot name="sensor_imu" xmlns:xacro="http://wiki.ros.org/xacro">
 
-	<xacro:macro name="sensor_imu_hector" params="prefix topic:='imu/data' parent sensor_base_frame *origin">
+	<xacro:macro name="sensor_imu_hector" params="prefix topic:='imu/data' parent sensor_base_frame robot_name *origin">
 
 		<xacro:property name="sensor_link_name" value="${robot_name}/${sensor_base_frame}/${prefix}_link" />
 
