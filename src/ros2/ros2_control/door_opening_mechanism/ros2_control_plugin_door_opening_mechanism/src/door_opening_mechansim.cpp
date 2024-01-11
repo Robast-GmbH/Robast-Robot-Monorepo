@@ -246,13 +246,13 @@ namespace ros2_control_plugin_door_opening_mechanism
 
     if (_is_prismatic_joint)
     {
-      _hw_position_states[0] = hw_position_state * MM_TO_M;
-      _hw_velocity_states[0] = hw_velocity_states * MM_TO_M;
+      _hw_position_states[0] = dryve_d1_bridge::mm_to_m(hw_position_state);
+      _hw_velocity_states[0] = dryve_d1_bridge::mm_to_m(hw_velocity_states);
     }
     else
     {
-      _hw_position_states[0] = hw_position_state * DEGREE_TO_RAD;    // convert from degree to rad
-      _hw_velocity_states[0] = hw_velocity_states * DEGREE_TO_RAD;   // convert from degree to rad
+      _hw_position_states[0] = dryve_d1_bridge::degree_to_rad(hw_position_state);
+      _hw_velocity_states[0] = dryve_d1_bridge::degree_to_rad(hw_velocity_states);
     }
 
     return hardware_interface::return_type::OK;

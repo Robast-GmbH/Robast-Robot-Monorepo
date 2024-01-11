@@ -37,11 +37,10 @@ namespace dryve_d1_bridge
     RCLCPP_INFO(this->get_logger(), "Start homing now ...");   // Debugging
     _dryve_d1->start_dryve_homing(3, 1, 10);
 
-    double current_position =
+    double current_position = mm_to_m(
         (static_cast<double>(_dryve_d1->read_object_value(_dryve_d1->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
                                                           _dryve_d1->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
-         SI_UNIT_FACTOR) *
-        MM_TO_M;
+         SI_UNIT_FACTOR));
 
     RCLCPP_INFO(this->get_logger(), "Current position: %f", current_position);
 
