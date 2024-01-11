@@ -95,11 +95,11 @@ controller_server:
       time_steps: 56
       model_dt: 0.05
       batch_size: 2000
-      vx_std: 0.2
+      vx_std: 0.3
       vy_std: 0.0
       wz_std: 0.4
-      vx_max: 0.5
-      vx_min: -0.01
+      vx_max: 0.6
+      vx_min: 0.0
       vy_max: 0.0
       wz_max: 1.9
       iteration_count: 1
@@ -107,14 +107,14 @@ controller_server:
       transform_tolerance: 0.1
       temperature: 0.3
       gamma: 0.015
-      motion_model: "Ackermann"
-      visualize: true
+      motion_model: "DiffDrive"
+      visualize: false
       reset_period: 1.0 # (only in Humble)
       TrajectoryVisualizer:
         trajectory_step: 5
         time_step: 3
       AckermannConstrains:
-        min_turning_r: 0.3
+        min_turning_r: 0.0
       critics: ["ConstraintCritic", "ObstaclesCritic", "GoalCritic", "GoalAngleCritic", "PathAlignCritic", "PathFollowCritic", "PathAngleCritic", "PreferForwardCritic"]
       ConstraintCritic:
         enabled: true
@@ -124,17 +124,17 @@ controller_server:
         enabled: true
         cost_power: 1
         cost_weight: 5.0
-        threshold_to_consider: 1.0
+        threshold_to_consider: 1.4
       GoalAngleCritic:
         enabled: true
         cost_power: 1
         cost_weight: 3.0
-        threshold_to_consider: 0.4
+        threshold_to_consider: 0.5
       PreferForwardCritic:
         enabled: true
         cost_power: 1
         cost_weight: 5.0
-        threshold_to_consider: 0.4
+        threshold_to_consider: 0.5
       ObstaclesCritic:
         enabled: true
         cost_power: 1
@@ -142,30 +142,31 @@ controller_server:
         critical_weight: 20.0
         consider_footprint: false
         collision_cost: 10000.0
-        collision_margin_distance: 0.05
+        collision_margin_distance: 0.1
         near_goal_distance: 0.2
         inflation_radius: 2.5 # (only in Humble)
         cost_scaling_factor: 10.0 # (only in Humble)
       PathAlignCritic:
         enabled: true
         cost_power: 1
-        cost_weight: 14.0
+        cost_weight: 20.0
         max_path_occupancy_ratio: 0.05
         trajectory_point_step: 3
-        threshold_to_consider: 0.40
+        threshold_to_consider: 0.50
         offset_from_furthest: 20
+        use_path_orientations: true
       PathFollowCritic:
         enabled: true
         cost_power: 1
         cost_weight: 5.0
         offset_from_furthest: 5
-        threshold_to_consider: 0.6
+        threshold_to_consider: 1.4
       PathAngleCritic:
         enabled: true
         cost_power: 1
         cost_weight: 2.0
         offset_from_furthest: 4
-        threshold_to_consider: 0.40
+        threshold_to_consider: 0.50
         max_angle_to_furthest: 1.0
       # TwirlingCritic:
       #   enabled: true
@@ -187,7 +188,7 @@ local_costmap:
       rolling_window: true # Whether costmap should roll with robot base frame.
       width: 5
       height: 5
-      resolution: 0.025
+      resolution: 0.05
       footprint_padding: 0.05
       # robot_radius: 0.22
       footprint: "[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
@@ -333,7 +334,7 @@ global_costmap:
       use_sim_time: True
       footprint_padding: 0.05
       footprint: "[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
-      resolution: 0.025
+      resolution: 0.1
       track_unknown_space: true
       plugins: ["static_layer", "stvl_layer", "inflation_layer"]
       filters: ["keepout_filter"]
@@ -505,6 +506,7 @@ planner_server:
       retrospective_penalty: 0.025        # For Hybrid/Lattice nodes: penalty to prefer later maneuvers before earlier along the path. Saves search time since earlier nodes are not expanded until it is necessary. Must be >= 0.0 and <= 1.0
       rotation_penalty: 1.2             # For Lattice node: Penalty to apply only to pure rotate in place commands when using minimum control sets containing rotate in place primitives. This should always be set sufficiently high to weight against this action unless strictly necessary for obstacle avoidance or there may be frequent discontinuities in the plan where it requests the robot to rotate in place to short-cut an otherwise smooth path for marginal path distance savings.
       lookup_table_size: 20.0               # For Hybrid nodes: Size of the dubin/reeds-sheep distance window to cache, in meters.
+      debug_visualizations: true
       cache_obstacle_heuristic: True      # For Hybrid nodes: Cache the obstacle map dynamic programming distance expansion heuristic between subsiquent replannings of the same goal location. Dramatically speeds up replanning performance (40x) if costmap is largely static.  
       allow_reverse_expansion: False      # For Lattice nodes: Whether to expand state lattice graph in forward primitives or reverse as well, will double the branching factor at each step.   
       smooth_path: True                   # For Lattice/Hybrid nodes: Whether or not to smooth the path, always true for 2D nodes.
