@@ -89,6 +89,8 @@ if(BUILD_TESTING)
 
   add_executable(test_d1 test/unit_tests/test_d1.cpp)
   list(APPEND test_executables test_d1)
+  add_executable(test_si_unit_factor test/unit_tests/test_si_unit_factor.cpp)
+  list(APPEND test_executables test_si_unit_factor)
 
   foreach(test ${test_executables})
     target_link_libraries(${test}

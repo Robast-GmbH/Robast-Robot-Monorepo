@@ -8,7 +8,7 @@ request_adapters: >-
   default_planner_request_adapters/FixStartStatePathConstraints
 start_state_max_bounds_error: 0.1
 ### AddTimeOptimalParameterization Parameters
-path_tolerance: 0.003 # Mind this is in rad vor revolute joints and centimeters for prismatic
+path_tolerance: 0.003 # Mind this is in rad for revolute joints and centimeters for prismatic
 resample_dt: 0.1
 min_angle_change: 0.001
 ###

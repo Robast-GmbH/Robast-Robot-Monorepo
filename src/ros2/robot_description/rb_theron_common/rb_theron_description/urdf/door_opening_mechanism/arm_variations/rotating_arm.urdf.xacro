@@ -23,7 +23,7 @@
             ros2_control_hardware_type="${ros2_control_hardware_type}"
             ip_address="192.168.0.12"
             port="502"
-            direction="-1"
+            direction="1"
             si_unit_factor="100"
             ros_distro="${ros_distro}"
             link_name="${prefix}door_opening_mechanism_link_rotating_arm"

@@ -9,7 +9,7 @@ mobile_base_arm:
 #   kinematics_solver_search_resolution: 0.005
 #   kinematics_solver_timeout: 0.1
 
-# This config was made with Henning von PickNik and according to him should work in theory
+# This config was made with Henning from PickNik and according to him should work in theory
 # mobile_base_arm:
 #   kinematics_solver: pick_ik/PickIkPlugin
 #   kinematics_solver_timeout: 0.1

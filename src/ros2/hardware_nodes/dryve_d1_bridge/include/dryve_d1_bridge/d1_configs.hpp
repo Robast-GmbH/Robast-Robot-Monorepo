@@ -5,9 +5,15 @@
 
 namespace dryve_d1_bridge
 {
-  // TODO@Jacob: Is this the right place for this?
-#define DEGREE_TO_RAD M_PI / 180.0
-#define MM_TO_M       0.001
+  constexpr double degree_to_rad(double degrees)
+  {
+    return degrees * M_PI / 180.0;
+  }
+
+  constexpr double mm_to_m(double mm)
+  {
+    return mm * 0.001;
+  }
 
   // this is actually the IP of the robot, whose router is forwarding this to the dryve d1 motor controls
   // we are interfacing with the different motor controls by targeting different ports (but using the same ip)
@@ -32,5 +38,5 @@ namespace dryve_d1_bridge
   const double ACCELERATION = 10;
   const double DECELERATION = 10;
 
-}   // namespace dryve_d1_bridge
-#endif   // DRYVE_D1_BRIDGE__D1_HPP_
+} // namespace dryve_d1_bridge
+#endif // DRYVE_D1_BRIDGE__D1_HPP_

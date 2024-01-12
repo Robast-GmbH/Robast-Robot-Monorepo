@@ -18,97 +18,97 @@ namespace dryve_d1_bridge
     TEN_TO_THE_POWER_OF_MINUS_6 = 0xFA,
   };
 
-  si_unit_factor map_si_unit_factor_double_to_char(double si_unit_factor, bool _is_prismatic_joint)
+  si_unit_factor map_si_unit_factor_double_to_char(double si_unit_factor_as_double, bool is_prismatic_joint)
   {
-    if (_is_prismatic_joint)
+    if (is_prismatic_joint)
     {
       // switch case does not work for double, so we use if else here. If you know a better way, please let me know.
-      if (si_unit_factor == 0.00001)
+      if (si_unit_factor_as_double == 0.00001)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_2;
       }
-      else if (si_unit_factor == 0.0001)
+      else if (si_unit_factor_as_double == 0.0001)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_1;
       }
-      else if (si_unit_factor == 0.001)
+      else if (si_unit_factor_as_double == 0.001)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_0;
       }
-      else if (si_unit_factor == 0.01)
+      else if (si_unit_factor_as_double == 0.01)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_1;
       }
-      else if (si_unit_factor == 0.1)
+      else if (si_unit_factor_as_double == 0.1)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_2;
       }
-      else if (si_unit_factor == 1.0)
+      else if (si_unit_factor_as_double == 1.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_3;
       }
-      else if (si_unit_factor == 10.0)
+      else if (si_unit_factor_as_double == 10.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_4;
       }
-      else if (si_unit_factor == 100.0)
+      else if (si_unit_factor_as_double == 100.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_5;
       }
-      else if (si_unit_factor == 1000.0)
+      else if (si_unit_factor_as_double == 1000.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_6;
       }
       else
       {
-        return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_5;   // Default case for prismatic / linear joint
+        return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_5; // Default case for prismatic / linear joint
       }
     }
     else
     {
-      if (si_unit_factor == 0.01)
+      if (si_unit_factor_as_double == 0.01)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_2;
       }
-      else if (si_unit_factor == 0.1)
+      else if (si_unit_factor_as_double == 0.1)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_1;
       }
-      else if (si_unit_factor == 1.0)
+      else if (si_unit_factor_as_double == 1.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_0;
       }
-      else if (si_unit_factor == 10.0)
+      else if (si_unit_factor_as_double == 10.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_1;
       }
-      else if (si_unit_factor == 100.0)
+      else if (si_unit_factor_as_double == 100.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_2;
       }
-      else if (si_unit_factor == 1000.0)
+      else if (si_unit_factor_as_double == 1000.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_3;
       }
-      else if (si_unit_factor == 10000.0)
+      else if (si_unit_factor_as_double == 10000.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_4;
       }
-      else if (si_unit_factor == 100000.0)
+      else if (si_unit_factor_as_double == 100000.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_5;
       }
-      else if (si_unit_factor == 1000000.0)
+      else if (si_unit_factor_as_double == 1000000.0)
       {
         return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_6;
       }
       else
       {
-        return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_2;   // Default case for revolute / rotating joint
+        return si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_2; // Default case for revolute / rotating joint
       }
     }
   }
 
-}   // namespace dryve_d1_bridge
+} // namespace dryve_d1_bridge
 
-#endif   // DRYVE_D1_BRIDGE__SI_UNIT_FACTOR_HPP_
+#endif // DRYVE_D1_BRIDGE__SI_UNIT_FACTOR_HPP_
