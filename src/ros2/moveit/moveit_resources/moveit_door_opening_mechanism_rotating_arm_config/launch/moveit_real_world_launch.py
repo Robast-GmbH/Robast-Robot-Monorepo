@@ -62,6 +62,13 @@ def generate_launch_description():
         "capabilities": "move_group/ExecuteTaskSolutionCapability"
     }
 
+    # For our door opening mechanism the current idea is to have two separate tf trees.
+    # (1) The "normal" tf tree used for navigation
+    # (2) The "arm" tf tree used for the door opening mechanism
+    # The reason we need to separate this is that we have put a position joint between the base_footprint and the base_link
+    # in order to plan for the motion of the base.
+    # However, this joint is not part of the real robot and therefore we need to remove it from the tf tree used for the arm.
+    # This is done by remapping the tf topics.
     remappings_move_group = [
         ("/tf", "/tf_dump"),
         ("/tf_static", "/tf_static_dump"),
