@@ -234,6 +234,11 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemHardware::read(const rclcpp::Time& /*time*/,
                                                                            const rclcpp::Duration& /*period*/)
   {
+    // Please mind:
+    // Setting the _si_unit_factor to the dryve d1 works in principle. If you check the displayed position values in the
+    // web interface, the values change when you change the si_unit_factor.
+    // BUT: No matter what si_unit_factor you set for the dryve d1, we get the same values from the tcp connection!
+    // Therefore we have to divide and multiply the si_unit_factor by hand in order to get the correct values
     double hw_position_state =
         static_cast<double>(_dryve_d1->read_object_value(_dryve_d1->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
                                                          _dryve_d1->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
