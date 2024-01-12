@@ -20,7 +20,7 @@ def generate_launch_description():
     world_posegraph = LaunchConfiguration("world_posegraph")
 
     if is_simulation == 'True':
-        world_model = os.path.join(nav_bringup_dir, "maps", "6OG", "6OG_new")
+        world_model = os.path.join(nav_bringup_dir, "maps", "6OG", "small_sim_map")
     else:
         world_model = os.path.join(nav_bringup_dir, "maps", "6OG_Tiplu_July", "RL_Tiplu_6")
 
@@ -46,7 +46,7 @@ def generate_launch_description():
         "slam_executable": "localization_slam_toolbox_node",
         "slam_params_file": slam_toolbox_params_yaml,
         "slam_posegraph": world_posegraph,
-        "slam_mode": "mapping",
+        "slam_mode": "localization",
         "slam_map_topic": "/map",
         "namespace": namespace,
     }.items()
