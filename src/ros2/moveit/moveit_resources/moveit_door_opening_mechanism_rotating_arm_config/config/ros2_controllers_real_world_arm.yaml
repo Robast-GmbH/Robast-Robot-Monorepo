@@ -72,4 +72,4 @@ arm:
         - velocity
       cmd_vel_topic: "robot/robotnik_base_control/cmd_vel"
       use_stamped_vel: true
-      min_velocity: 000.1
+      min_velocity: 0.001
