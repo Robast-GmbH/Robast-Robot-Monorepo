@@ -30,3 +30,8 @@ mobile_base_controller:
     default_value: false,
     description: "Use geometry_msgs/TwistStamped instead of geometry_msgs/Twist for cmd_vel",
   }
+  min_velocity: {
+    type: double,
+    default_value: 0.001,
+    description: "Minimum velocity that must be reached in order that cmd_vel is sent",
+  }

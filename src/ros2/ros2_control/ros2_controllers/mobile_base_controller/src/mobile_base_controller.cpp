@@ -69,13 +69,17 @@ namespace mobile_base_controller
   }
 
   controller_interface::CallbackReturn MobileBaseController::on_configure(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     _params = _param_listener->get_params();
 
     _use_stamped_vel = _params.use_stamped_vel;
 
     _dof = _params.joints.size();
+
+    _min_velocity = _params.min_velocity;
+
+    _zero_cmd_vel_published_last = false;
 
     _command_interface_names.clear();
     for (const auto& joint_name : _params.joints)
@@ -89,7 +93,7 @@ namespace mobile_base_controller
     if (_use_stamped_vel)
     {
       _publisher_cmd_vel =
-        this->get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(_params.cmd_vel_topic, 10);
+          this->get_node()->create_publisher<geometry_msgs::msg::TwistStamped>(_params.cmd_vel_topic, 10);
     }
     else
     {
@@ -110,11 +114,11 @@ namespace mobile_base_controller
   }
 
   controller_interface::CallbackReturn MobileBaseController::on_activate(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     std::vector<std::reference_wrapper<hardware_interface::LoanedCommandInterface>> ordered_interfaces;
     if (!controller_interface::get_ordered_interfaces(
-          command_interfaces_, _command_interface_names, std::string(""), ordered_interfaces) ||
+            command_interfaces_, _command_interface_names, std::string(""), ordered_interfaces) ||
         _command_interface_names.size() != ordered_interfaces.size())
     {
       RCLCPP_ERROR(this->get_node()->get_logger(),
@@ -135,7 +139,7 @@ namespace mobile_base_controller
   }
 
   controller_interface::CallbackReturn MobileBaseController::on_deactivate(
-    const rclcpp_lifecycle::State& /*previous_state*/)
+      const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // reset command buffer
     rt_buffer_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>>(nullptr);
@@ -148,7 +152,7 @@ namespace mobile_base_controller
   }
 
   std::variant<geometry_msgs::msg::Twist, geometry_msgs::msg::TwistStamped> MobileBaseController::compute_cmd_vel(
-    const double hw_velocity_command)
+      const double hw_velocity_command)
   {
     // Please mind:
     // I found out empirically, that i have to change the sign of the computed cmd_vel to get the correct direction
@@ -214,7 +218,21 @@ namespace mobile_base_controller
     {
       if (!std::isnan(reference_interfaces_[i]))
       {
-        publish_cmd_vel(reference_interfaces_[0]);
+        // check if min velocity is reached
+        if (std::abs(reference_interfaces_[0]) > _min_velocity)
+        {
+          publish_cmd_vel(reference_interfaces_[0]);
+          _zero_cmd_vel_published_last = false;
+        }
+        else
+        {
+          // prevent cmd_vel from being published permanently
+          if (!_zero_cmd_vel_published_last)
+          {
+            publish_cmd_vel(0.0);
+            _zero_cmd_vel_published_last = true;
+          }
+        }
       }
     }
 
@@ -228,7 +246,7 @@ namespace mobile_base_controller
     for (size_t i = 0; i < _reference_interface_names.size(); ++i)
     {
       reference_interfaces.push_back(hardware_interface::CommandInterface(
-        get_node()->get_name(), _reference_interface_names[i], &reference_interfaces_[i]));
+          get_node()->get_name(), _reference_interface_names[i], &reference_interfaces_[i]));
     }
 
     return reference_interfaces;

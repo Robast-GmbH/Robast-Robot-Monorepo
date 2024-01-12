@@ -82,3 +82,4 @@ arm:
         - velocity
       cmd_vel_topic: "diff_drive_base_controller/cmd_vel"
       use_stamped_vel: true
+      min_velocity: 0.001

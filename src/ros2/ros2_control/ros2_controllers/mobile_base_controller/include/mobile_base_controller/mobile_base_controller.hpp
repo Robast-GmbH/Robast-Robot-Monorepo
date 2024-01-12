@@ -60,6 +60,10 @@ namespace mobile_base_controller
 
     size_t _dof;
 
+    float _min_velocity;
+
+    bool _zero_cmd_vel_published_last;
+
     std::shared_ptr<ParamListener> _param_listener;
     Params _params;
 
