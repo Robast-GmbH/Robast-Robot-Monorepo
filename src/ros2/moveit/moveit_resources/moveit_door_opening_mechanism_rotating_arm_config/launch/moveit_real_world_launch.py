@@ -44,7 +44,7 @@ def generate_launch_description():
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .to_moveit_configs()
     )
-    namespace_controller_manager_arm = "arm"
+    namespace_arm = "arm"
 
     ld = LaunchDescription()
 
@@ -62,12 +62,20 @@ def generate_launch_description():
         "capabilities": "move_group/ExecuteTaskSolutionCapability"
     }
 
+    remappings_move_group = [
+        ("/tf", "/tf_dump"),
+        ("/tf_static", "/tf_static_dump"),
+        ("/" + namespace_arm + "/tf", "/tf"),
+        ("/" + namespace_arm + "/tf_static", "/tf_static"),
+    ]    
+
     # Start the actual move_group node/action server
     move_group_cmd = Node(
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
-        namespace=namespace_controller_manager_arm,
+        namespace=namespace_arm,
+        remappings=remappings_move_group,
         parameters=[
             moveit_config.to_dict(),
             move_group_capabilities,
@@ -92,12 +100,19 @@ def generate_launch_description():
         ],
     )
 
+    remappings_state_publisher = [
+        ("/tf", "/" + namespace_arm + "/tf"),
+        ("/tf_static", "/" + namespace_arm + "/tf_static"),
+    ]    
+
     # State Publisher
     robot_state_publisher_cmd = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         name="robot_state_publisher",
         output="both",
+        namespace=namespace_arm,
+        remappings=remappings_state_publisher,
         parameters=[
             moveit_config.robot_description,
         ],
@@ -109,15 +124,14 @@ def generate_launch_description():
         "config",
         "ros2_controllers_real_world_arm.yaml",
     )
-    controller_manager_name = "/" + namespace_controller_manager_arm + "/controller_manager"
+    controller_manager_name = "/" + namespace_arm + "/controller_manager"
     remappings_controller_manager_arm = [
-        ("/" + namespace_controller_manager_arm + "/diff_drive_base_controller/cmd_vel", "/diff_drive_base_controller/cmd_vel"),
-        ("/" + namespace_controller_manager_arm + "/joint_states", "/joint_states")
+        ("/" + namespace_arm + "/diff_drive_base_controller/cmd_vel", "/diff_drive_base_controller/cmd_vel"),
     ]
     ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        namespace=namespace_controller_manager_arm,
+        namespace=namespace_arm,
         remappings=remappings_controller_manager_arm,
         parameters=[moveit_config.robot_description, ros2_controllers_path_arm,],
         output="both",
