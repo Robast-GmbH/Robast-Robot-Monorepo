@@ -211,16 +211,9 @@
 
 	<!-- ROBAST Door Opening Mechanism -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
-	<xacro:property name="ros2_control_hardware_type" value="$(arg ros2_control_hardware_type)" />
-	<xacro:if value="${ros2_control_hardware_type == 'dryve_d1'}">
-		<xacro:property name="door_opening_mechanism_parent" value="$(arg prefix)robot_base_link" />
-	</xacro:if>
-	<xacro:unless value="${ros2_control_hardware_type == 'dryve_d1'}">
-		<xacro:property name="door_opening_mechanism_parent" value="$(arg prefix)base_link" />
-	</xacro:unless>
 	<xacro:door_opening_mechanism
 	    prefix="$(arg prefix)"
-		parent="${door_opening_mechanism_parent}"
+		parent="$(arg prefix)base_link"
 		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
 		ros_distro="$(arg ros_distro)"
 		hq="${hq}">
