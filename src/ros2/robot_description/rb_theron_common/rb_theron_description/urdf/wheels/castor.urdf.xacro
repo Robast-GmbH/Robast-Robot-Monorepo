@@ -60,7 +60,9 @@
 
       </hardware>
       <joint name="${prefix}joint_support">
-        <state_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
         <state_interface name="velocity"/>
       </joint>
     </ros2_control>
@@ -138,7 +140,9 @@
 
 			</hardware> 
       <joint name="${prefix}joint_wheel">
-        <state_interface name="position"/>
+        <state_interface name="position">
+          <param name="initial_value">0.0</param>
+        </state_interface>
         <state_interface name="velocity"/>
       </joint>
     </ros2_control>

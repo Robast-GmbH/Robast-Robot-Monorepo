@@ -1,9 +1,9 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
 
-	"name": "Robast MoveIt MTC",
+	"name": "Robast MoveIt",
 	"dockerComposeFile": "../../docker-compose.yml",
-	"service": "moveit-mtc",
+	"service": "moveit",
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
 	"remoteUser": "robast",

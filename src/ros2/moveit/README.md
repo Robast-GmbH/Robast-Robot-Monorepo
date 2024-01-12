@@ -35,3 +35,7 @@ you need to start the tasks:
 In order to run a MoveIt application in the simulation you have to start the following things:
 1. Gazebo (e.g. the task `ros2 launch tiplu_world tiplu_world_launch.py`)
 2. Run MoveIt Application in the MoveIt docker
+
+### moveit_studio_configs
+
+This package contains the configurations need to launch our robot in MoveIt Studio. Please mind that these configurations can only be used with MoveIt Studio.

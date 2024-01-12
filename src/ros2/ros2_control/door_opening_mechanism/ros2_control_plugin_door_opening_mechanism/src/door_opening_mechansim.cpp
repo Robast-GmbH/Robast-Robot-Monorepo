@@ -22,6 +22,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     _ip_address = info_.hardware_parameters["ip_address"];
     _port = stod(info_.hardware_parameters["port"]);
     _direction = stod(info_.hardware_parameters["direction"]);
+    _si_unit_factor = stod(info_.hardware_parameters["si_unit_factor"]);
+    _is_prismatic_joint = info_.hardware_parameters["joint_type"] == "prismatic";
 
     _hw_position_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_position_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
@@ -102,8 +104,8 @@ namespace ros2_control_plugin_door_opening_mechanism
     // TODO@Jacob: Find a possibility that Modbus TCP Gateway does not need to be switched on and off after power up
     _dryve_d1->run_dryve_state_machine();
 
-    // TODO@Jacob: Should this be a parameter for this plugin in the future?
-    _dryve_d1->set_si_unit_factor(dryve_d1_bridge::si_unit_factor::TEN_TO_THE_POWER_OF_MINUS_5, true);
+    _dryve_d1->set_si_unit_factor(
+        dryve_d1_bridge::map_si_unit_factor_double_to_char(_si_unit_factor, _is_prismatic_joint), _is_prismatic_joint);
 
     _dryve_d1->set_debug_mode_off();
 
@@ -232,14 +234,31 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemHardware::read(const rclcpp::Time& /*time*/,
                                                                            const rclcpp::Duration& /*period*/)
   {
-    _hw_position_states[0] =
+    // Please mind:
+    // Setting the _si_unit_factor to the dryve d1 works in principle. If you check the displayed position values in the
+    // web interface, the values change when you change the si_unit_factor.
+    // BUT: No matter what si_unit_factor you set for the dryve d1, we get the same values from the tcp connection!
+    // Therefore we have to divide and multiply the si_unit_factor by hand in order to get the correct values
+    double hw_position_state =
         static_cast<double>(_dryve_d1->read_object_value(_dryve_d1->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
                                                          _dryve_d1->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
-        dryve_d1_bridge::SI_UNIT_FACTOR * _direction;
-    _hw_velocity_states[0] =
+        _si_unit_factor * _direction;
+
+    double hw_velocity_states =
         static_cast<double>(_dryve_d1->read_object_value(_dryve_d1->OBJECT_INDEX_1_READ_VELOCITY_ACTUAL_VALUE,
                                                          _dryve_d1->OBJECT_INDEX_2_READ_VELOCITY_ACTUAL_VALUE)) /
-        dryve_d1_bridge::SI_UNIT_FACTOR * _direction;
+        _si_unit_factor * _direction;
+
+    if (_is_prismatic_joint)
+    {
+      _hw_position_states[0] = dryve_d1_bridge::mm_to_m(hw_position_state);
+      _hw_velocity_states[0] = dryve_d1_bridge::mm_to_m(hw_velocity_states);
+    }
+    else
+    {
+      _hw_position_states[0] = dryve_d1_bridge::degree_to_rad(hw_position_state);
+      _hw_velocity_states[0] = dryve_d1_bridge::degree_to_rad(hw_velocity_states);
+    }
 
     return hardware_interface::return_type::OK;
   }
@@ -247,9 +266,10 @@ namespace ros2_control_plugin_door_opening_mechanism
   hardware_interface::return_type DoorOpeningMechanismSystemHardware::write(const rclcpp::Time& /*time*/,
                                                                             const rclcpp::Duration& /*period*/)
   {
-    _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * dryve_d1_bridge::VELOCITY_SCALING * _direction,
+    _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
                                     dryve_d1_bridge::ACCELERATION,
                                     dryve_d1_bridge::DECELERATION);
+
     return hardware_interface::return_type::OK;
   }
 

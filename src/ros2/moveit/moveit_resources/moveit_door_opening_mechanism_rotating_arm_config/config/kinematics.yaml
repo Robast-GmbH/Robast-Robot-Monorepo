@@ -6,3 +6,18 @@ mobile_base_arm:
   kinematics_solver: stretch_kinematics_plugin/StretchKinematicsPlugin
   kinematics_solver_search_resolution: 0.005
   kinematics_solver_timeout: 0.1
+
+# This config was made with Henning from PickNik and according to him should work in theory
+# mobile_base_arm:
+#   kinematics_solver: pick_ik/PickIkPlugin
+#   kinematics_solver_timeout: 0.1
+#   kinematics_solver_attempts: 3
+#   mode: global
+#   stop_optimization_on_valid_solution: true
+#   position_scale: 1.0
+#   rotation_scale: 0.5
+#   position_threshold: 0.001
+#   orientation_threshold: 0.01
+#   cost_threshold: 0.01
+#   minimal_displacement_weight: 0.05
+#   gd_step_size: 0.0001

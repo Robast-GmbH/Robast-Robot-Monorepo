@@ -47,7 +47,8 @@
     </model>
 
     <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/6_OG_normal_doors</uri>
+      <!-- <uri>file:///workspace/install/tiplu_world/share/tiplu_world/models/6_OG_normal_doors</uri> -->
+      <uri>package://tiplu_world/models/6_OG_normal_doors</uri>
       <name>6_OG_normale_tueren</name>
     </include>
 
@@ -57,31 +58,31 @@
     garden: <plugin filename="libgz-sim-joint-position-controller-system.so" name="gz::sim::systems::JointPositionController"> -->
     <!--     
      <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
+      <uri>package://tiplu_world/models/Hinged_door_standard</uri>
       <pose> 12.5 -3.907 0.0 0 0 1.570</pose>
       <name>Robast_it</name>
     </include>
 
      <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
+      <uri>package://tiplu_world/models/Hinged_door_standard</uri>
       <pose> 5.32 -3.84 0.0 0 0 1.570</pose>
       <name>Robast_tech</name>
     </include>
 
     <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
+      <uri>package://tiplu_world/models/Hinged_door_standard</uri>
       <pose> 2.4 -3.84  0.0 0 0 1.570</pose>
       <name>Server</name>
     </include>
 
     <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
+      <uri>package://tiplu_world/models/Hinged_door_standard</uri>
       <pose> -0.6 -3.84  0.0 0 0 1.570</pose>
       <name>drinks_storage</name>
     </include>
 
     <include>
-      <uri>file:///workspace/src/simulation/tiplu_world/models/Hinged_door_standard</uri>
+      <uri>package://tiplu_world/models/Hinged_door_standard</uri>
       <pose> -5.4 -3.84  0.0 0 0 1.570</pose>
       <name>3d_printer_door</name>
     </include> -->

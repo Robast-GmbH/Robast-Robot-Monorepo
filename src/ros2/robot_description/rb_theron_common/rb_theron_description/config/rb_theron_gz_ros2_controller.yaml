@@ -2,7 +2,7 @@
 controller_manager:
   ros__parameters:
     update_rate: 1000  # Hz
-    use_sim_time: true
+    # use_sim_time: true
 
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
@@ -10,11 +10,17 @@ controller_manager:
     joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
 
+    position_joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
     diff_drive_base_controller:
       type: diff_drive_controller/DiffDriveController
 
     drawer_joint_trajectory_controller:
       type: joint_trajectory_controller/JointTrajectoryController
+
+    streaming_controller:
+      type: position_controllers/JointGroupPositionController
 
 diff_drive_base_controller:
   ros__parameters:
@@ -37,7 +43,7 @@ diff_drive_base_controller:
 
     open_loop: true
     # DISABLE enable_odom_tf, when using robot_localization
-    enable_odom_tf: false 
+    enable_odom_tf: true 
 
     cmd_vel_timeout: 0.5
     #publish_limited_velocity: true
@@ -99,6 +105,16 @@ joint_state_broadcaster:
       - rear_leftjoint_wheel
       - rear_rightjoint_support
       - rear_rightjoint_wheel
+    
+position_joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - position
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
 
 joint_trajectory_controller:
   ros__parameters:
@@ -108,7 +124,7 @@ joint_trajectory_controller:
       - door_opening_mechanism_joint_rotating_arm
       - door_opening_mechanism_joint_freely_rotating_hook
     command_interfaces:
-      - velocity
+      - position
     state_interfaces:
       - position
       - velocity
@@ -121,12 +137,6 @@ joint_trajectory_controller:
     allow_integration_in_goal_trajectories: true
     allow_nonzero_velocity_at_trajectory_end: true
     interpolation_method: splines
-    # constraints:
-    #   stopped_velocity_tolerance: 0.01 # Defaults to 0.01
-    #   goal_time: 0.0 # Defaults to 0.0 (start immediately)
-    #   door_opening_mechanism_joint_y_axis_slide:
-    #     trajectory: 0.05
-    #     goal: 0.02
     gains:
       door_opening_mechanism_joint_y_axis_slide:
         p: 10.0
@@ -162,3 +172,11 @@ drawer_joint_trajectory_controller:
     state_interfaces:
       - position
       - velocity
+
+streaming_controller:
+  ros__parameters:
+    joints:
+      - door_opening_mechanism_joint_y_axis_slide
+      - door_opening_mechanism_joint_x_axis_slide
+      - door_opening_mechanism_joint_rotating_arm
+      - door_opening_mechanism_joint_freely_rotating_hook
