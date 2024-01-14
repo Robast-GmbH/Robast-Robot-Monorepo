@@ -1,5 +1,8 @@
-FROM ros:humble-perception as devel
 
+ARG ROS_BUILD_DISTRO=iron
+FROM ros:${ROS_BUILD_DISTRO}-perception as devel
+
+ARG ROS_BUILD_DISTRO
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
@@ -86,7 +89,8 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 WORKDIR /workspace
 
 ############################## Build ##################################
-FROM ros:humble-ros-base-jammy as build
+FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as build
+ARG ROS_BUILD_DISTRO
 ARG GIT_TOKEN
 ARG GIT_BRANCH=dev/RE-1144
 COPY --from=devel / /
@@ -111,8 +115,8 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
 ############################## Release ##################################
-FROM ros:humble-perception as release
-
+FROM ros:${ROS_BUILD_DISTRO}-perception as release
+ARG ROS_BUILD_DISTRO
 RUN apt-get update && apt-get install -y \
   cmake \
   wget \
@@ -163,8 +167,8 @@ ENV init_yaw=1.57
 ENV prefix=''
 
 ############################## DEBUG ##################################
-FROM ros:humble-ros-base-jammy as debug
-
+FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as debug
+ARG ROS_BUILD_DISTRO
 COPY --from=release / /
 
 RUN apt update -y && apt upgrade -y && apt install -y \

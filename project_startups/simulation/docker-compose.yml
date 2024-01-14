@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   simulation:
-    image: ghcr.io/robast-gmbh/monorepo/simulation:devel-iron
+    image: ghcr.io/robast-gmbh/monorepo/simulation:devel-humble
     environment:
       - ROS_DOMAIN_ID=1
       - is_simulation=True
@@ -32,7 +32,7 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
     
   navigation:
-    image: ghcr.io/robast-gmbh/monorepo/navigation:devel-iron
+    image: ghcr.io/robast-gmbh/monorepo/navigation:devel
     environment:
       - ROS_DOMAIN_ID=1
       - is_simulation=True
@@ -42,7 +42,7 @@ services:
       - init_y=0.0
       - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/><Peer Address="perception"/></Peers><MaxAutoParticipantIndex>50</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
       - init_z=0.0
-      - init_yaw=3.14
+      - init_yaw=0.0
     volumes:
       - ./navigation/:/workspace/:cached
       - ../../src/ros2/navigation:/workspace/src/navigation:cached
