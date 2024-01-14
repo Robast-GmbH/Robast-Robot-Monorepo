@@ -29,6 +29,7 @@ def generate_launch_description():
             ("/tf_static", "tf_static"),
             ("/cmd_vel_smoothed", "diff_drive_base_controller/cmd_vel_unstamped")
         ]
+        cmd_vel_remapping_behavior_server = [("/cmd_vel", "diff_drive_base_controller/cmd_vel_unstamped")]
     else:
         use_sim_time_default = "false"
         remappings = [
@@ -37,6 +38,7 @@ def generate_launch_description():
             ("/robot/tf_static", "tf_static"),
             ("/cmd_vel_smoothed", "robot/robotnik_base_control/cmd_vel")
         ]
+        cmd_vel_remapping_behavior_server = [("/cmd_vel", "robot/robotnik_base_control/cmd_vel")]
 
     namespace = LaunchConfiguration('namespace')
     use_sim_time = LaunchConfiguration('use_sim_time')
@@ -157,8 +159,7 @@ def generate_launch_description():
                 respawn_delay=2.0,
                 parameters=[configured_params],
                 arguments=['--ros-args', '--log-level', log_level],
-                remappings=remappings +
-                        [("/cmd_vel", "robot/robotnik_base_control/cmd_vel")]),
+                remappings=remappings + cmd_vel_remapping_behavior_server),
             Node(
                 package='nav2_bt_navigator',
                 executable='bt_navigator',
@@ -237,7 +238,7 @@ def generate_launch_description():
                 plugin='behavior_server::BehaviorServer',
                 name='behavior_server',
                 parameters=[configured_params],
-                remappings=remappings),
+                remappings=remappings + cmd_vel_remapping_behavior_server),
             ComposableNode(
                 package='nav2_bt_navigator',
                 plugin='nav2_bt_navigator::BtNavigator',

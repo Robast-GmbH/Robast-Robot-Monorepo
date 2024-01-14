@@ -231,6 +231,11 @@ namespace ros2_control_plugin_dryve_d1
   hardware_interface::return_type DryveD1SystemHardware::read(const rclcpp::Time& /*time*/,
                                                               const rclcpp::Duration& /*period*/)
   {
+    // Please mind:
+    // Setting the _si_unit_factor to the dryve d1 works in principle. If you check the displayed position values in the
+    // web interface, the values change when you change the si_unit_factor.
+    // BUT: No matter what si_unit_factor you set for the dryve d1, we get the same values from the tcp connection!
+    // Therefore we have to divide and multiply the si_unit_factor by hand in order to get the correct values
     double hw_position_state =
         static_cast<double>(_dryve_d1->read_object_value(_dryve_d1->OBJECT_INDEX_1_READ_POSITION_ACTUAL_VALUE,
                                                          _dryve_d1->OBJECT_INDEX_2_READ_POSITION_ACTUAL_VALUE)) /
@@ -243,13 +248,13 @@ namespace ros2_control_plugin_dryve_d1
 
     if (_is_prismatic_joint)
     {
-      _hw_position_states[0] = hw_position_state * MM_TO_M;
-      _hw_velocity_states[0] = hw_velocity_states * MM_TO_M;
+      _hw_position_states[0] = dryve_d1_bridge::mm_to_m(hw_position_state);
+      _hw_velocity_states[0] = dryve_d1_bridge::mm_to_m(hw_velocity_states);
     }
     else
     {
-      _hw_position_states[0] = hw_position_state * DEGREE_TO_RAD;  // convert from degree to rad
-      _hw_velocity_states[0] = hw_velocity_states * DEGREE_TO_RAD; // convert from degree to rad
+      _hw_position_states[0] = dryve_d1_bridge::degree_to_rad(hw_position_state);
+      _hw_velocity_states[0] = dryve_d1_bridge::degree_to_rad(hw_velocity_states);
     }
 
     return hardware_interface::return_type::OK;
