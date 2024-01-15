@@ -1,5 +1,5 @@
 
-ARG ROS_BUILD_DISTRO=iron
+ARG ROS_BUILD_DISTRO=humble
 FROM ros:${ROS_BUILD_DISTRO}-perception as devel
 
 ARG ROS_BUILD_DISTRO
