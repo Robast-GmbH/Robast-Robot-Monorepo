@@ -32,11 +32,13 @@ def generate_launch_description():
         "model_position_joint": "true",
     }
 
-
     moveit_config = (
         MoveItConfigsBuilder("rb_theron", package_name="moveit_door_opening_mechanism_rotating_arm_config")
         .robot_description(file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments)
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
+        .planning_pipelines(
+            pipelines=["ompl"]
+        )
         .to_moveit_configs()
     )
 
@@ -83,7 +85,7 @@ def generate_launch_description():
 
     # RViz
     rviz_config_file = (
-        get_package_share_directory("moveit_door_opening_mechanism_rotating_arm_config") + "/config/moveit.rviz"
+        get_package_share_directory("moveit_door_opening_mechanism_rotating_arm_config") + "/config/moveit_gazebo.rviz"
     )
     ld.add_action(
         Node(

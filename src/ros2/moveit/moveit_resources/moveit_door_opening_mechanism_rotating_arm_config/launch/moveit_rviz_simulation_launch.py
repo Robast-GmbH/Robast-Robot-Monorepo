@@ -86,18 +86,13 @@ def generate_launch_description():
     rviz_config_file = (
         get_package_share_directory("moveit_door_opening_mechanism_rotating_arm_config") + "/config/moveit.rviz"
     )
-    # remappings= [
-    #     ("/planning_scene", "/arm/planning_scene"),
-    #     ("/planning_scene_world", "/arm/planning_scene_world"),
-    #     ("/recognized_object_array", "/arm/recognized_object_array"),
-    # ]
+
     rviz2_cmd = Node(
         package="rviz2",
         executable="rviz2",
         name="rviz2",
         output="log",
         arguments=["-d", rviz_config_file],
-        # remappings=remappings,
         parameters=[
             moveit_config.robot_description,
             moveit_config.robot_description_semantic,

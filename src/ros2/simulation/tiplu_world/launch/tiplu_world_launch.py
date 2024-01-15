@@ -202,12 +202,6 @@ def generate_launch_description():
         output='screen'
     )
 
-    load_joint_trajectory_controller_with_mobile_base = ExecuteProcess(
-        cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'joint_trajectory_controller_with_mobile_base',
-             '--use-sim-time'],
-        output='screen'
-    )
-
     load_mobile_base_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'mobile_base_controller_cmd_vel',
              '--use-sim-time'],
@@ -226,7 +220,7 @@ def generate_launch_description():
         output='screen'
     )
 
-    spawn_ros2_controller_without_mobile_base_controller = GroupAction(
+    spawn_ros2_controller_without_arm = GroupAction(
         condition=UnlessCondition(model_position_joint),
         actions=[RegisterEventHandler(
                     event_handler=OnProcessExit(
@@ -237,12 +231,6 @@ def generate_launch_description():
                 RegisterEventHandler(
                     event_handler=OnProcessExit(
                         target_action=load_joint_state_broadcaster,
-                        on_exit=[load_joint_trajectory_controller],
-                    )
-                ),
-                RegisterEventHandler(
-                    event_handler=OnProcessExit(
-                        target_action=load_joint_trajectory_controller,
                         on_exit=[load_diff_drive_base_controller],
                     )
                 ),
@@ -253,7 +241,7 @@ def generate_launch_description():
                     )
                 )])
 
-    spawn_ros2_controller_with_mobile_base_controller = GroupAction(
+    spawn_ros2_controller_with_arm = GroupAction(
         condition=IfCondition(PythonExpression([model_position_joint])),
         actions=[RegisterEventHandler(
                     event_handler=OnProcessExit(
@@ -270,12 +258,12 @@ def generate_launch_description():
                 RegisterEventHandler(
                     event_handler=OnProcessExit(
                         target_action=load_mobile_base_controller,
-                        on_exit=[load_joint_trajectory_controller_with_mobile_base],
+                        on_exit=[load_joint_trajectory_controller],
                     )
                 ),
                 RegisterEventHandler(
                     event_handler=OnProcessExit(
-                        target_action=load_joint_trajectory_controller_with_mobile_base,
+                        target_action=load_joint_trajectory_controller,
                         on_exit=[load_diff_drive_base_controller],
                     )
                 ),
@@ -306,7 +294,7 @@ def generate_launch_description():
     ld.add_action(gz_ros_bridge_cmd)
 
     # spawn ros2_controllers
-    ld.add_action(spawn_ros2_controller_without_mobile_base_controller)
-    ld.add_action(spawn_ros2_controller_with_mobile_base_controller)
+    ld.add_action(spawn_ros2_controller_without_arm)
+    ld.add_action(spawn_ros2_controller_with_arm)
 
     return ld
