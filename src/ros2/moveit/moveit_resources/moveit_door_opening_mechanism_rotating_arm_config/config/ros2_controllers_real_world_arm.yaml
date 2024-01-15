@@ -75,5 +75,5 @@ arm:
       command_interfaces:
         - velocity
       cmd_vel_topic: "robot/robotnik_base_control/cmd_vel"
-      use_stamped_vel: true
+      use_stamped_vel: false
       min_velocity: 0.001
