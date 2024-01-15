@@ -23,12 +23,17 @@ find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(yaml_cpp_vendor REQUIRED)
-find_package(gz_ros2_control REQUIRED)
 
-# The `find_package(gz_ros2_control REQUIRED)` line above is supposed to find the `gz_ros2_control`
-# package and set several variables, including `gz_ros2_control_INCLUDE_DIRS`, which should contain the
-# path(s) to the package's include files.
-include_directories(include ${gz_ros2_control_INCLUDE_DIRS}/include)
+if("$ENV{GZ_VERSION}" STREQUAL "garden" OR "$ENV{GZ_VERSION}" STREQUAL "harmonic")
+  find_package(gz_ros2_control REQUIRED)
+  # The `find_package(gz_ros2_control REQUIRED)` line above is supposed to find the `gz_ros2_control`
+  # package and set several variables, including `gz_ros2_control_INCLUDE_DIRS`, which should contain the
+  # path(s) to the package's include files.
+  include_directories(include ${gz_ros2_control_INCLUDE_DIRS}/include)
+else()
+  find_package(ign_ros2_control REQUIRED)
+  include_directories(include ${ign_ros2_control_INCLUDE_DIRS}/include)
+endif()
 
 set(GZ_PLUGIN)
 set(GZ_SIM)
@@ -63,26 +68,53 @@ endif()
 
 include_directories(include)
 
-add_library(gz_ros2_control_base_movement SHARED
-  src/gz_ros2_control_base_movement.cpp
-)
-ament_target_dependencies(gz_ros2_control_base_movement
-  rclcpp_lifecycle
-  hardware_interface
-  rclcpp
-  gz_ros2_control
-)
-target_link_libraries(gz_ros2_control_base_movement
-  ${GZ_SIM}
-)
+## GARDEN or HARMONIC
+if("$ENV{GZ_VERSION}" STREQUAL "garden" OR "$ENV{GZ_VERSION}" STREQUAL "harmonic")
+  add_library(gz_ros2_control_base_movement SHARED
+    src/gz_ros2_control_base_movement.cpp
+  )
 
-## Install
-install(TARGETS
-  gz_ros2_control_base_movement
-  ARCHIVE DESTINATION lib
-  LIBRARY DESTINATION lib
-  RUNTIME DESTINATION bin
-)
+  ament_target_dependencies(gz_ros2_control_base_movement
+    gz_ros2_control
+    rclcpp_lifecycle
+    hardware_interface
+    rclcpp
+  )  
+
+  target_link_libraries(gz_ros2_control_base_movement
+    ${GZ_SIM}
+  )
+
+  install(TARGETS
+    gz_ros2_control_base_movement
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+  )
+  
+else() ## FORTRESS
+  add_library(ign_ros2_control_base_movement SHARED
+    src/ign_ros2_control_base_movement.cpp
+  )
+
+  ament_target_dependencies(ign_ros2_control_base_movement
+    ign_ros2_control
+    rclcpp_lifecycle
+    hardware_interface
+    rclcpp
+  )
+
+  target_link_libraries(ign_ros2_control_base_movement
+    ${GZ_SIM}
+  )
+
+  install(TARGETS
+    ign_ros2_control_base_movement
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+  )
+endif()
 
 install(DIRECTORY
   include
@@ -96,9 +128,14 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(${PROJECT_NAME} gz_ros2_control_base_movement)
 
-pluginlib_export_plugin_description_file(gz_ros2_control gz_ros2_control_base_movement.xml)
+## GARDEN or HARMONIC
+if("$ENV{GZ_VERSION}" STREQUAL "garden" OR "$ENV{GZ_VERSION}" STREQUAL "harmonic")
+  ament_export_libraries(${PROJECT_NAME} gz_ros2_control_base_movement)
+  pluginlib_export_plugin_description_file(gz_ros2_control gz_ros2_control_base_movement.xml)
+else() ## FORTRESS
+  ament_export_libraries(${PROJECT_NAME} ign_ros2_control_base_movement)
+  pluginlib_export_plugin_description_file(ign_ros2_control ign_ros2_control_base_movement.xml)
+endif()
 
-# Setup the project
 ament_package()
