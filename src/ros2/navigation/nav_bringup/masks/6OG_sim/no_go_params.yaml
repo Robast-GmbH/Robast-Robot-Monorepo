@@ -11,4 +11,4 @@ filter_mask_server:
     use_sim_time: true
     frame_id: "map"
     topic_name: "/keepout_filter_mask"
-    yaml_filename: "sim_world1_keepout.yaml"
+    yaml_filename: "no_go.yaml"
