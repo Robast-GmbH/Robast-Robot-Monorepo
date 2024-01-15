@@ -140,7 +140,7 @@ def generate_launch_description():
     )
     controller_manager_name = "/" + namespace_arm + "/controller_manager"
     remappings_controller_manager_arm = [
-        ("/" + namespace_arm + "/diff_drive_base_controller/cmd_vel", "/diff_drive_base_controller/cmd_vel"),
+        ("/" + namespace_arm + "/robot/robotnik_base_control/cmd_vel", "/robot/robotnik_base_control/cmd_vel"),
     ]
     ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",
