@@ -42,7 +42,7 @@ def generate_launch_description():
         )
         .to_moveit_configs()
     )
-    namespace_controller_manager_arm = "arm"
+    namespace_arm = "arm"
 
     ld = LaunchDescription()
 
@@ -69,13 +69,13 @@ def generate_launch_description():
     }
 
     remappings = [
-        ("/" + namespace_controller_manager_arm + "/joint_states", "/joint_states"),
+        ("/" + namespace_arm + "/joint_states", "/joint_states"),
     ]
     move_group_cmd = Node(
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
-        namespace=namespace_controller_manager_arm,
+        namespace=namespace_arm,
         remappings=remappings,
         parameters=[
             moveit_config.to_dict(),
@@ -152,15 +152,15 @@ def generate_launch_description():
     )
 
     # Second controller manager for the arm
-    controller_manager_name = "/" + namespace_controller_manager_arm + "/controller_manager"
+    controller_manager_name = "/" + namespace_arm + "/controller_manager"
     remappings_controller_manager_arm = [
-        ("/" + namespace_controller_manager_arm + "/diff_drive_base_controller/cmd_vel", "/diff_drive_base_controller/cmd_vel"),
-        ("/" + namespace_controller_manager_arm + "/joint_states", "/joint_states")
+        ("/" + namespace_arm + "/diff_drive_base_controller/cmd_vel", "/diff_drive_base_controller/cmd_vel"),
+        ("/" + namespace_arm + "/joint_states", "/joint_states")
     ]
     ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        namespace=namespace_controller_manager_arm,
+        namespace=namespace_arm,
         remappings=remappings_controller_manager_arm,
         parameters=[moveit_config.robot_description, ros2_controllers_path_arm, {"use_sim_time": use_sim_time}],
         output="both",
