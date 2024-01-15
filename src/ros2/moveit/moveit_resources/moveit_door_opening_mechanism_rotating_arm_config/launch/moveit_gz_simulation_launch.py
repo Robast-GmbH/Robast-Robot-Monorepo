@@ -32,13 +32,17 @@ def generate_launch_description():
         "model_position_joint": "true",
     }
 
+    ros_distro = os.environ["ROS_DISTRO"]
+    if ros_distro == "humble":
+        planning_pipelines = ["ompl_humble"]
+    else:
+        planning_pipelines = ["ompl_iron"]
+
     moveit_config = (
         MoveItConfigsBuilder("rb_theron", package_name="moveit_door_opening_mechanism_rotating_arm_config")
         .robot_description(file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments)
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
-        .planning_pipelines(
-            pipelines=["ompl"]
-        )
+        .planning_pipelines(pipelines=planning_pipelines)
         .to_moveit_configs()
     )
 
