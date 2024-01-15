@@ -50,8 +50,14 @@ namespace mobile_base_controller
    protected:
     std::vector<hardware_interface::CommandInterface> on_export_reference_interfaces() override;
 
+#ifdef MOBILE_BASE_CONTROLLER__HUMBLE
+    controller_interface::return_type update_reference_from_subscribers() override;
+#endif
+
+#ifdef MOBILE_BASE_CONTROLLER__IRON
     controller_interface::return_type update_reference_from_subscribers(const rclcpp::Time& time,
                                                                         const rclcpp::Duration& period) override;
+#endif
 
     realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>> rt_buffer_ptr_;
 
@@ -73,12 +79,14 @@ namespace mobile_base_controller
 
     std::variant<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr,
                  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr>
-      _publisher_cmd_vel;
+        _publisher_cmd_vel;
 
     std::variant<geometry_msgs::msg::Twist, geometry_msgs::msg::TwistStamped> compute_cmd_vel(
-      const double hw_velocity_command);
+        const double hw_velocity_command);
 
     void publish_cmd_vel(const double hw_velocity_command);
+
+    controller_interface::return_type update_reference_from_subscribers_impl();
   };
 }   // namespace mobile_base_controller
 

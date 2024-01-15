@@ -252,8 +252,7 @@ namespace mobile_base_controller
     return reference_interfaces;
   }
 
-  controller_interface::return_type MobileBaseController::update_reference_from_subscribers(
-    const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
+  controller_interface::return_type MobileBaseController::update_reference_from_subscribers_impl()
   {
     auto joint_commands = rt_buffer_ptr_.readFromRT();
     // message is valid
@@ -274,6 +273,21 @@ namespace mobile_base_controller
 
     return controller_interface::return_type::OK;
   }
+
+#ifdef MOBILE_BASE_CONTROLLER__HUMBLE
+  controller_interface::return_type MobileBaseController::update_reference_from_subscribers()
+  {
+    return update_reference_from_subscribers_impl();
+  }
+#endif
+
+#ifdef MOBILE_BASE_CONTROLLER__IRON
+  controller_interface::return_type MobileBaseController::update_reference_from_subscribers(
+      const rclcpp::Time& /*time*/, const rclcpp::Duration& /*period*/)
+  {
+    return update_reference_from_subscribers_impl();
+  }
+#endif
 
 }   // namespace mobile_base_controller
 

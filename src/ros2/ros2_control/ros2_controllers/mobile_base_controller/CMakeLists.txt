@@ -51,39 +51,6 @@ target_compile_definitions(mobile_base_controller PRIVATE "MOBILE_BASE_CONTROLLE
 
 pluginlib_export_plugin_description_file(controller_interface mobile_base_controller.xml)
 
-# if(BUILD_TESTING)
-#   find_package(ament_cmake_gmock REQUIRED)
-#   find_package(controller_manager REQUIRED)
-#   find_package(ros2_control_test_assets REQUIRED)
-
-#   # Dynamically loaded during test
-#   find_package(kinematics_interface_kdl REQUIRED)
-
-#   # test loading admittance controller
-#   add_rostest_with_parameters_gmock(test_load_mobile_base_controller
-#     test/test_load_mobile_base_controller.cpp
-#     ${CMAKE_CURRENT_SOURCE_DIR}/test/test_params.yaml
-#   )
-#   ament_target_dependencies(test_load_mobile_base_controller
-#     controller_manager
-#     hardware_interface
-#     ros2_control_test_assets
-#   )
-
-#   # test admittance controller function
-#   add_rostest_with_parameters_gmock(test_mobile_base_controller
-#     test/test_mobile_base_controller.cpp
-#     ${CMAKE_CURRENT_SOURCE_DIR}/test/test_params.yaml
-#   )
-#   target_link_libraries(test_mobile_base_controller mobile_base_controller)
-#   ament_target_dependencies(test_mobile_base_controller
-#     control_msgs
-#     controller_interface
-#     hardware_interface
-#     ros2_control_test_assets
-#   )
-# endif()
-
 install(
   DIRECTORY include/
   DESTINATION include/mobile_base_controller
@@ -95,6 +62,12 @@ install(TARGETS mobile_base_controller mobile_base_controller_parameters
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
 )
+
+if("$ENV{ROS_DISTRO}" STREQUAL "humble")
+  add_definitions(-DMOBILE_BASE_CONTROLLER__HUMBLE)
+else()
+  add_definitions(-DMOBILE_BASE_CONTROLLER__IRON)
+endif()
 
 ament_export_targets(export_mobile_base_controller HAS_LIBRARY_TARGET)
 ament_export_dependencies(${THIS_PACKAGE_INCLUDE_DEPENDS})
