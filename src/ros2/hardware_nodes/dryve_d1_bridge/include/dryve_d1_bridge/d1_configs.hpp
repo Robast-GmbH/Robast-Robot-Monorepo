@@ -34,7 +34,7 @@ namespace dryve_d1_bridge
   const double D1_DEFAULT_ACCELERATION = 1;
   const double D1_DEFAULT_DECELERATION = 1;
 
-  const double MIN_VELOCITY = 0.01;   // every velocity below this value will be set to 0
+  const double MIN_VELOCITY = 0.00001;   // every velocity below this value will be set to 0
   const double VELOCITY = 10;
   const double HOMING_VELOCITY = 10;
   const double ACCELERATION = 15;
