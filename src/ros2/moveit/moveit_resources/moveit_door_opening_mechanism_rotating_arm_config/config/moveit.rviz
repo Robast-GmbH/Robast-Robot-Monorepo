@@ -175,7 +175,7 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          door_opening_mechanism_link_x_slide_screwing:
+          door_opening_mechanism_rotating_arm_mounting_plate:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -516,7 +516,7 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          door_opening_mechanism_link_x_slide_screwing:
+          door_opening_mechanism_rotating_arm_mounting_plate:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -731,8 +731,7 @@ Visualization Manager:
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
       Name: MarkerArray
-      Namespaces:
-        {}
+      Namespaces: {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
