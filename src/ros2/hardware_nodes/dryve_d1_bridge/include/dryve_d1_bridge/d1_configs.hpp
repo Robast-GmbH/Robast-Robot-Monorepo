@@ -37,7 +37,7 @@ namespace dryve_d1_bridge
   const double VELOCITY = 10;
   const double HOMING_VELOCITY = 15;
   const double ACCELERATION = 15;
-  const double HOMING_ACCELERATION = 30;
+  const double HOMING_ACCELERATION = 75;
   const double DECELERATION = 10;
 
 }   // namespace dryve_d1_bridge
