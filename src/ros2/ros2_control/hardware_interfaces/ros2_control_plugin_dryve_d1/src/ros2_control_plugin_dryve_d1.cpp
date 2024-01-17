@@ -107,6 +107,10 @@ namespace ros2_control_plugin_dryve_d1
 
     _dryve_d1->set_debug_mode_off();
 
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Start homing now ...");
+    _dryve_d1->start_dryve_homing(
+        dryve_d1_bridge::HOMING_VELOCITY, dryve_d1_bridge::HOMING_VELOCITY, dryve_d1_bridge::HOMING_ACCELERATION);
+
     // reset values always when configuring hardware
     for (uint i = 0; i < _hw_position_states.size(); i++)
     {
