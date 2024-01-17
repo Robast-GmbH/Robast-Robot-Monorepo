@@ -23,6 +23,7 @@ namespace ros2_control_plugin_dryve_d1
     _direction = stod(info_.hardware_parameters["direction"]);
     _si_unit_factor = stod(info_.hardware_parameters["si_unit_factor"]);
     _is_prismatic_joint = info_.hardware_parameters["joint_type"] == "prismatic";
+    _zero_velocity_published_last = false;
 
     _hw_position_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_position_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
@@ -267,9 +268,21 @@ namespace ros2_control_plugin_dryve_d1
   hardware_interface::return_type DryveD1SystemHardware::write(const rclcpp::Time& /*time*/,
                                                                const rclcpp::Duration& /*period*/)
   {
-    _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
-                                    dryve_d1_bridge::ACCELERATION,
-                                    dryve_d1_bridge::DECELERATION);
+    if (std::abs(_hw_velocity_commands[0] > MIN_VELOCITY))
+    {
+      _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
+                                      dryve_d1_bridge::ACCELERATION,
+                                      dryve_d1_bridge::DECELERATION);
+      _zero_velocity_published_last = false;
+    }
+    else
+    {
+      if (!_zero_velocity_published_last)
+      {
+        _dryve_d1->set_profile_velocity(0, dryve_d1_bridge::ACCELERATION, dryve_d1_bridge::DECELERATION);
+        _zero_velocity_published_last = true;
+      }
+    }
 
     return hardware_interface::return_type::OK;
   }

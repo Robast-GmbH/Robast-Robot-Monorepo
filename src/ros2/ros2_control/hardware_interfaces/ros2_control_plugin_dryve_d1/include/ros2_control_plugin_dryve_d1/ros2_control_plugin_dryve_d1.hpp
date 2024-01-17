@@ -68,6 +68,8 @@ namespace ros2_control_plugin_dryve_d1
 
     std::string _ip_address;
 
+    bool _zero_velocity_published_last;
+
     // this is the ports we configured in the router that is forwarded to port 502 (default modbus port) of the dryve d1
     int _port = 3502;
 
