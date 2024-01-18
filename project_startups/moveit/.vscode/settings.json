@@ -121,6 +121,7 @@
     "editor.formatOnType": true,
     "editor.formatOnSave": true,
     "editor.rulers": [
+        100,
         120
     ],
     "C_Cpp.formatting": "clangFormat",
