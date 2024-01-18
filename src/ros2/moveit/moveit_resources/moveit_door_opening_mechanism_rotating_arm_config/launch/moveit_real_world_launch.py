@@ -5,7 +5,7 @@ from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
 from launch.actions import ExecuteProcess, RegisterEventHandler
-from launch.event_handlers import OnProcessExit, OnProcessStart
+from launch.event_handlers import OnProcessExit
 
 from moveit_configs_utils.launches import generate_static_virtual_joint_tfs_launch
 
@@ -150,7 +150,25 @@ def generate_launch_description():
         parameters=[moveit_config.robot_description, ros2_controllers_path_arm,],
         output="both",
     )
-    
+
+    # This node listens to the rosout topic and exits if a certain trigger_message is found in the rosout message
+    # This is usefull in combination with the OnProcessExit event handler
+    # Here we need this to wait until homing of the arm is finished before we load the controllers. By some testing I
+    # found out that the homing is finished when the message "update rate is ..Hz" is published by the controller_manager
+    #TODO@all: This is not a perfect solution, maybe someone finds something better at some point
+    trigger_message = "update rate is"
+    node_name = namespace_arm + ".controller_manager"
+    rosout_listener_trigger = Node(
+        package="launch_manager",
+        executable="rosout_listener",
+        name="rosout_listener_trigger",
+        output="log",
+        parameters=[
+            {"trigger_message": trigger_message,
+             "node_name": node_name},
+        ],
+    )
+
     load_mobile_base_controller = ExecuteProcess(
         cmd=['ros2', 'control', 'load_controller', '--set-state', 'active', 'mobile_base_controller_cmd_vel', '-c', controller_manager_name],
         output='screen'
@@ -167,16 +185,16 @@ def generate_launch_description():
     ld.add_action(declare_debug_cmd)
 
     ld.add_action(static_virtual_joint_cmd)
-    ld.add_action(rviz2_cmd)
     ld.add_action(move_group_cmd)
     ld.add_action(robot_state_publisher_cmd)
     ld.add_action(ros2_controller_manager_arm_cmd)
+    ld.add_action(rosout_listener_trigger)
 
     # spawning ros2_control controller for arm
     ld.add_action(RegisterEventHandler(
-            event_handler=OnProcessStart(
-                target_action=ros2_controller_manager_arm_cmd,
-                on_start=[load_joint_state_broadcaster],
+            event_handler=OnProcessExit(
+                target_action=rosout_listener_trigger,
+                on_exit=[load_joint_state_broadcaster],
             )
         ))
     ld.add_action(RegisterEventHandler(
@@ -191,6 +209,12 @@ def generate_launch_description():
                 on_exit=[load_joint_trajectory_controller],
             )
         ))
+    ld.add_action(RegisterEventHandler(
+                event_handler=OnProcessExit(
+                    target_action=load_joint_trajectory_controller,
+                    on_exit=[rviz2_cmd],
+                )
+            ))
 
     # This would be probably much nice to use RegisterEventHandler to trigger the shutdown, but unfortunately we
     # did not get this running. Therefore we shutdown the dryve d1 with the "atexit" library.

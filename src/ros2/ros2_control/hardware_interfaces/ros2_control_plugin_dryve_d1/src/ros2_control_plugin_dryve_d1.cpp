@@ -172,7 +172,9 @@ namespace ros2_control_plugin_dryve_d1
       _hw_velocity_commands[i] = _hw_velocity_states[i];
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Successfully activated!");
+    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"),
+                "Successfully activated joint '%s'.",
+                info_.joints[0].name.c_str());
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
