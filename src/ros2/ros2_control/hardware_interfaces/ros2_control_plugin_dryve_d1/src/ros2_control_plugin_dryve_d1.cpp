@@ -267,7 +267,7 @@ namespace ros2_control_plugin_dryve_d1
   hardware_interface::return_type DryveD1SystemHardware::write(const rclcpp::Time& /*time*/,
                                                                const rclcpp::Duration& /*period*/)
   {
-    if (std::abs(_hw_velocity_commands[0] > dryve_d1_bridge::MIN_VELOCITY))
+    if (std::abs(_hw_velocity_commands[0]) > dryve_d1_bridge::MIN_VELOCITY)
     {
       _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
                                       dryve_d1_bridge::ACCELERATION,
