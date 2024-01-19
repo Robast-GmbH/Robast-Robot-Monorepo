@@ -135,5 +135,11 @@
     },
     "[xml]": {
         "editor.formatOnSave": false // disables formatting for xml files (since formatting for our xacros is garbage so far)
-    }
+    },
+    "python.testing.pytestArgs": [
+        "src"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.cwd": "/workspace/",
 }
