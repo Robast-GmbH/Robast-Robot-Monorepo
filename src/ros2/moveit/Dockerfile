@@ -67,6 +67,9 @@ RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone http
 # TODO: Remove this once we left the early development phase
 RUN sudo apt-get update && sudo apt install ros-${ROS_DISTRO}-plotjuggler-ros -y
 
+# Adds the workspace to the bashrc
+RUN echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/$USER/.bashrc
+
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
