@@ -10,7 +10,7 @@ version: '3.9'
 #       # Mount the root folder that contains .git
 #       - .:/workspace:cached
 #       - ../../src/ros2/hardware_nodes/:/workspace/src/hardware_nodes
-#     command: /bin/bash -c "cd /workspace/ && source /opt/ros/humble/setup.bash && colcon build && source install/setup.bash;"
+#     command: /bin/bash -c "cd /workspace/ && source /opt/ros/${ROS_DISTRO}/setup.bash && colcon build && source install/setup.bash;"
 
 services:
   backend:
