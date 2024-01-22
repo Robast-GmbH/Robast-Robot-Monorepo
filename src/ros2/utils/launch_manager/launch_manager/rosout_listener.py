@@ -18,11 +18,11 @@ class RosoutListener(Node):
             self.get_parameter("node_name").get_parameter_value().string_value
         )
         self.get_logger().info(
-            "Trigger message: "
+            "Listeing to the '/rosout' topic for the trigger message '"
             + self.trigger_message
-            + ". Node name: "
+            + "' published by the node name '"
             + self.node_name
-            + "."
+            + "'."
         )
 
         self.create_subscription(Log, "/rosout", self.log_callback, 10)
