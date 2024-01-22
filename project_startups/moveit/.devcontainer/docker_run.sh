@@ -12,7 +12,7 @@ docker run \
 	--volume=/home/robot/robast/Monorepo/src/ros2/moveit:/workspace/src/moveit \
 	--volume=/home/robot/robast/Monorepo/src/ros2/ros2_control/ros2_controllers:/workspace/src/ros2_control/ros2_controllers \
 	--volume=/home/robot/robast/Monorepo/src/ros2/dds_configs:/workspace/dds_configs \
-	--volume=/home/robot/robast/Monorepo/src/ros2/utils,target=/workspace/src/utils,type=bind \
+	--volume=/home/robot/robast/Monorepo/src/ros2/utils:/workspace/src/utils,type=bind \
 	-e DISPLAY=:0 \
 	--env ROS_DOMAIN_ID=0 \
 	--env robot=rb_theron \
