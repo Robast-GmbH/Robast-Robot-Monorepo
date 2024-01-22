@@ -1,6 +1,6 @@
-ARG ROS_VERSION=humble
+ARG ROS_VERSION=rolling
 FROM ros:${ROS_VERSION} as base
-ARG ROS_CONTROL_VERSION=humble
+ARG ROS_CONTROL_VERSION=rolling
 ARG GAZEBO_VERSION=fortress
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
@@ -31,26 +31,26 @@ RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pk
     && apt-get update
 
 # Must compile ros_gz from source because iron + Garden is not an official combination
-RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ${ROS_DISTRO} https://github.com/gazebosim/ros_gz.git \
-    && apt update \
-    && apt upgrade -y \
-    && . /opt/ros/${ROS_DISTRO}/setup.sh \
-    && rosdep update \
-    && rosdep install --from-paths /workspace_ros_gz/src --ignore-src -r -y \
-    && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install \
-    && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
+# RUN mkdir -p workspace_ros_gz/src && cd workspace_ros_gz/src && git clone -b ${ROS_DISTRO} https://github.com/gazebosim/ros_gz.git \
+#     && apt update \
+#     && apt upgrade -y \
+#     && . /opt/ros/${ROS_DISTRO}/setup.sh \
+#     && rosdep update \
+#     && rosdep install --from-paths /workspace_ros_gz/src --ignore-src -r -y \
+#     && colcon build --build-base /workspace_ros_gz/build --install-base /workspace_ros_gz/install \
+#     && echo "if [ -f /workspace_ros_gz/install/setup.bash ]; then source /workspace_ros_gz/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 # Must build gz_ros2_control from source because as of now (19.10.23) there are no binaries
 # for the combination iron + garden according to: https://github.com/ros-controls/gz_ros2_control
-RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
-  && git clone https://github.com/ros-controls/gz_ros2_control -b ${ROS_CONTROL_VERSION} \
-  && apt update \
-  && apt upgrade -y \
-  && . /opt/ros/${ROS_DISTRO}/setup.sh \
-  && rosdep update \
-  && rosdep install --from-paths /workspace_ros_control/src --ignore-src -r -y \
-  && colcon build --parallel-workers 2 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
-  && echo "if [ -f /workspace_ros_control/install/setup.bash ]; then source /workspace_ros_control/install/setup.bash; fi" >> /home/$USER/.bashrc
+# RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
+#   && git clone https://github.com/ros-controls/gz_ros2_control -b ${ROS_CONTROL_VERSION} \
+#   && apt update \
+#   && apt upgrade -y \
+#   && . /opt/ros/${ROS_DISTRO}/setup.sh \
+#   && rosdep update \
+#   && rosdep install --from-paths /workspace_ros_control/src --ignore-src -r -y \
+#   && colcon build --parallel-workers 2 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
+#   && echo "if [ -f /workspace_ros_control/install/setup.bash ]; then source /workspace_ros_control/install/setup.bash; fi" >> /home/$USER/.bashrc
 
 RUN apt-get update && apt-get install -y \
     cmake \
@@ -85,4 +85,4 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
-ENV IGN_FILE_PATH=$IGN_FILE_PATH:/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}
+# ENV IGN_FILE_PATH=$IGN_FILE_PATH:/workspace/src/simulation/tiplu_world/models:${GAZEBO_MODEL_PATH}

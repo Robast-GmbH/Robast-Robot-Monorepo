@@ -62,6 +62,7 @@ def generate_launch_description():
         pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
         gz_sim_launch = os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
         gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml")
+        
 
     robot_xml = xacro.process_file(
         os.path.join(
@@ -95,10 +96,23 @@ def generate_launch_description():
     declare_world_model_cmd = DeclareLaunchArgument(
         "world_model",
         default_value=os.path.join(
-            get_package_share_directory("tiplu_world"), "worlds", "6OG" + ".sdf"
+            get_package_share_directory("rmf_gazebo"), "maps", "tiplu_ign" , "tiplu.world"
         ),
         description="path to the world model",
     )
+    
+    # Get the current Ignition file path
+    ign_file_path = os.environ.get('IGN_GAZEBO_RESOURCE_PATH', '')
+
+    # Add your directory to the path
+    new_directory = os.path.join(get_package_share_directory("rmf_gazebo"), "maps", "tiplu_ign" , "models")
+    if new_directory not in ign_file_path.split(':'):
+        ign_file_path += ':' + new_directory
+
+    # Set the new Ignition file path
+    os.environ['IGN_GAZEBO_RESOURCE_PATH'] = ign_file_path
+    #export IGN_GAZEBO_RESOURCE_PATH=$IGN_GAZEBO_RESOURCE_PATH:/workspace/install/rmf_gazebo/share/rmf_gazebo/maps/tiplu_ign/models
+    #/workspace_ros_gz/install/ros_gz_sim_demos/share:/workspace/src/simulation/rmf/rmf_demos:/workspace/install/rmf_gazebo/share:/workspace/install/rmf_gazebo/share/rmf_gazebo/maps/tiplu_ign/models
     
     declare_headless_cmd = DeclareLaunchArgument(
         "headless",
@@ -138,9 +152,9 @@ def generate_launch_description():
             "-z",
             "0.2",
             "-x",
-            init_x,
+            "25",
             "-y",
-            init_y,
+            "-11",
             "-Y",
             init_yaw,
         ],
