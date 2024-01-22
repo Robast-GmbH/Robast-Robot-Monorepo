@@ -6,7 +6,7 @@
                 "limitSymbolsToIncludedHeaders": false
             },
             "includePath": [
-                "/opt/ros/iron/include/**",
+                "/opt/$ROS_DISTRO/iron/include/**",
                 "${workspaceFolder}/src/**",
                 "${workspaceFolder}/install/**",
                 "${workspaceFolder}/build/**",
