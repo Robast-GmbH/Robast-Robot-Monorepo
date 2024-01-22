@@ -40,11 +40,9 @@ from moveit_studio_utils_py.system_config import get_config_folder, SystemConfig
 
 
 def path_pattern_change_for_gazebo(urdf_string):
-    """
-    Replaces strings in a URDF file such as
-        package://package_name/path/to/file
-    to the actual full path of the file.
-    """
+    # Replaces strings in a URDF file such as
+    #     package://package_name/path/to/file
+    # to the actual full path of the file.
     data = urdf_string
     package_expressions = re.findall("(package://([^//]*))", data)
     for expr in set(package_expressions):
