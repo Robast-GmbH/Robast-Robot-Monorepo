@@ -146,7 +146,8 @@ def generate_launch_description():
     # 1. Change the controller manager configs on the real robot to also load the arm controllers
     # 2. Start a second controller manager for the arm
     # We decided to go with option 2, because it is less intrusive.
-    # So to keep the simulation as close to the real robot as possible, we also start a second controller manager here.
+    # So to keep the simulation as close to the real robot as possible, we also start a second
+    # controller manager here.
 
     # First controller manager for the robot base
     ros2_controller_manager_robot_cmd = Node(
@@ -235,10 +236,11 @@ def generate_launch_description():
         output="screen",
     )
 
-    # This node listens to the rosout topic and exits if a certain trigger_message is found in the rosout message
-    # This is usefull in combination with the OnProcessExit event handler
-    # Here we need this to wait until homing of the arm is finished before we load the controllers. By some testing I
-    # found out that the homing is finished when the message "update rate is ..Hz" is published by the controller_manager
+    # This node listens to the rosout topic and exits if a certain trigger_message is found in the
+    # rosout message. This is usefull in combination with the OnProcessExit event handler.
+    # Here we need this to wait until homing of the arm is finished before we load the controllers.
+    # By some testing I found out that the homing is finished when the message "update rate is xHz"
+    # is published by the controller_manager.
     # TODO@all: This is not a perfect solution, maybe someone finds something better at some point
     trigger_message = "update rate is"
     node_name = namespace_arm + ".controller_manager"
@@ -252,22 +254,6 @@ def generate_launch_description():
         ],
     )
 
-    # rosout_listener_trigger = ExecuteProcess(
-    #     cmd=[
-    #         "ros2",
-    #         "run",
-    #         "launch_manager",
-    #         "rosout_listener",
-    #         "--ros-args",
-    #         "-p",
-    #         f"trigger_message:={trigger_message}",
-    #         "-p",
-    #         f"node_name:={node_name}",
-    #     ],
-    #     output="log",
-    #     name="rosout_listener_trigger",
-    # )
-
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_debug_cmd)
 
@@ -278,8 +264,9 @@ def generate_launch_description():
     ld.add_action(robot_state_publisher_cmd)
     ld.add_action(ros2_controller_manager_robot_cmd)
 
-    # Make sure that the rosout_listener_trigger is started before the arm controller manager is started
-    # because the rosout_listener_trigger should listen to the content of the arm controller manager
+    # Make sure that the rosout_listener_trigger is started before the arm controller manager is
+    # started because the rosout_listener_trigger should listen to the content of the arm
+    # controller manager
     ld.add_action(
         RegisterEventHandler(
             event_handler=OnProcessStart(

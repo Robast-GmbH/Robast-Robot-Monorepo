@@ -4,8 +4,9 @@ from moveit_configs_utils import MoveItConfigsBuilder
 
 
 def generate_launch_description():
-
-    moveit_config = MoveItConfigsBuilder("rb_theron", package_name="moveit_door_opening_mechanism_rotating_arm_config").to_moveit_configs()
+    moveit_config = MoveItConfigsBuilder(
+        "rb_theron", package_name="moveit_door_opening_mechanism_rotating_arm_config"
+    ).to_moveit_configs()
 
     ld = LaunchDescription()
 
@@ -14,9 +15,9 @@ def generate_launch_description():
         executable="door_opening_mechanism_mtc",
         name="door_opening_mechanism_mtc",
         parameters=[
-            {"moveit2_planning_group_name": "mobile_base_arm"}, # mobile_base_arm
+            {"moveit2_planning_group_name": "mobile_base_arm"},
             {"use_sim_time": True},
-            moveit_config.to_dict()
+            moveit_config.to_dict(),
         ],
         output="screen",
     )

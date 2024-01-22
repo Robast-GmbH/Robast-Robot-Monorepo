@@ -19,7 +19,12 @@ import pytest
 @pytest.mark.flake8
 @pytest.mark.linter
 def test_flake8():
-    rc, errors = main_with_errors(argv=[])
-    assert rc == 0, \
-        'Found %d code style errors / warnings:\n' % len(errors) + \
-        '\n'.join(errors)
+    # Specify the directories/files to exclude from flake8 checks
+    exclude_paths = ["install"]
+
+    # Pass the additional arguments to main_with_errors
+    rc, errors = main_with_errors(argv=["--exclude"] + exclude_paths)
+
+    assert rc == 0, "Found %d code style errors / warnings:\n" % len(
+        errors
+    ) + "\n".join(errors)

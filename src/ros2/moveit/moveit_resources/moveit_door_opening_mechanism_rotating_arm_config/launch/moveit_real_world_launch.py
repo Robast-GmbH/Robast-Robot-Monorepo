@@ -78,10 +78,10 @@ def generate_launch_description():
     # For our door opening mechanism the current idea is to have two separate tf trees.
     # (1) The "normal" tf tree used for navigation
     # (2) The "arm" tf tree used for the door opening mechanism
-    # The reason we need to separate this is that we have put a position joint between the base_footprint and the base_link
-    # in order to plan for the motion of the base.
-    # However, this joint is not part of the real robot and therefore we need to remove it from the tf tree used for the arm.
-    # This is done by remapping the tf topics.
+    # The reason we need to separate this is that we have put a position joint between the
+    # base_footprint and the base_link in order to plan for the motion of the base.
+    # However, this joint is not part of the real robot and therefore we need to remove it from the
+    # tf tree used for the arm. This is done by remapping the tf topics.
     remappings_move_group = [
         ("/tf", "/tf_dump"),
         ("/tf_static", "/tf_static_dump"),
@@ -166,10 +166,11 @@ def generate_launch_description():
         output="both",
     )
 
-    # This node listens to the rosout topic and exits if a certain trigger_message is found in the rosout message
-    # This is usefull in combination with the OnProcessExit event handler
-    # Here we need this to wait until homing of the arm is finished before we load the controllers. By some testing I
-    # found out that the homing is finished when the message "update rate is ..Hz" is published by the controller_manager
+    # This node listens to the rosout topic and exits if a certain trigger_message is found in the
+    # rosout message. This is usefull in combination with the OnProcessExit event handler.
+    # Here we need this to wait until homing of the arm is finished before we load the controllers.
+    # By some testing I found out that the homing is finished when the message "update rate is xHz"
+    # is published by the controller_manager.
     # TODO@all: This is not a perfect solution, maybe someone finds something better at some point
     trigger_message = "update rate is"
     node_name = namespace_arm + ".controller_manager"
@@ -230,8 +231,9 @@ def generate_launch_description():
     ld.add_action(move_group_cmd)
     ld.add_action(robot_state_publisher_cmd)
 
-    # Make sure that the rosout_listener_trigger is started before the arm controller manager is started
-    # because the rosout_listener_trigger should listen to the content of the arm controller manager
+    # Make sure that the rosout_listener_trigger is started before the arm controller manager is
+    # started because the rosout_listener_trigger should listen to the content of the arm
+    # controller manager
     ld.add_action(
         RegisterEventHandler(
             event_handler=OnProcessStart(
@@ -275,8 +277,9 @@ def generate_launch_description():
         )
     )
 
-    # This would be probably much nice to use RegisterEventHandler to trigger the shutdown, but unfortunately we
-    # did not get this running. Therefore we shutdown the dryve d1 with the "atexit" library.
+    # This would be probably much nice to use RegisterEventHandler to trigger the shutdown, but
+    # unfortunately we did not get this running.
+    # Therefore we shutdown the dryve d1 with the "atexit" library.
     atexit.register(shutdown_dryve_d1)
 
     return ld
