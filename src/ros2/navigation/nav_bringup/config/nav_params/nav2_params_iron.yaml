@@ -658,8 +658,8 @@ velocity_smoother: #TODO check parameters
 collision_monitor:
   ros__parameters:
     use_sim_time: false
-    base_frame_id: "base_footprint"
-    odom_frame_id: "odom"
+    base_frame_id: "robot_base_footprint"
+    odom_frame_id: "robot_odom"
     cmd_vel_in_topic: "cmd_vel_smoothed"
     cmd_vel_out_topic: "cmd_vel"
     state_topic: "collision_monitor_state"
@@ -718,4 +718,4 @@ collision_monitor:
     observation_sources: ["scan"]
     scan:
       type: "scan"
-      topic: "/front_laser/scan"
+      topic: "robot/front_laser/scan"

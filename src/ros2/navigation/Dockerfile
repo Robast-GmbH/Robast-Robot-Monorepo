@@ -92,7 +92,7 @@ WORKDIR /workspace
 FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as build
 ARG ROS_BUILD_DISTRO
 ARG GIT_TOKEN
-ARG GIT_BRANCH=dev/RE-1144
+ARG GIT_BRANCH=main
 COPY --from=devel / /
 COPY . /ws/src/navigation
 RUN apt-get update && apt-get install -y git
