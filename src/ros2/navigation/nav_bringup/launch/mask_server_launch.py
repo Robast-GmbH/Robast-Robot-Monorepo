@@ -22,7 +22,7 @@ def generate_launch_description():
             costmap_filters_dir, "masks", "6OG_sim", "no_go_params.yaml"
         )
         no_go_mask_file_dir = os.path.join(
-            costmap_filters_dir, "masks", "6OG_sim", "no_go.yaml"
+            costmap_filters_dir, "masks", "6OG_sim", "sim_world1_keepout.yaml"
         )
     else:
         no_go_mask_params_yaml = os.path.join(
