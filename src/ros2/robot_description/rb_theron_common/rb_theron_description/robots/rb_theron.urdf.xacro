@@ -210,15 +210,18 @@
 	</xacro:drawer>
 
 	<!-- ROBAST Door Opening Mechanism -->
-	<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
-	<xacro:door_opening_mechanism
-	    prefix="$(arg prefix)"
-		parent="$(arg prefix)base_link"
-		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
-		ros_distro="$(arg ros_distro)"
-		hq="${hq}">
-		<origin xyz="-0.3 0 0.225" rpy="0 0 0"/>
-	</xacro:door_opening_mechanism>
+	<!-- The door opening mechanism should NOT be included when used for normal navigation simulations. -->
+	<xacro:if value="$(arg model_position_joint)">
+		<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
+		<xacro:door_opening_mechanism
+			prefix="$(arg prefix)"
+			parent="$(arg prefix)base_link"
+			ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+			ros_distro="$(arg ros_distro)"
+			hq="${hq}">
+			<origin xyz="-0.3 0 0.225" rpy="0 0 0"/>
+		</xacro:door_opening_mechanism>
+	</xacro:if>
 
 	<!-- Gazebo plugins -->
 	<xacro:ros_control ros_distro="$(arg ros_distro)"/>
