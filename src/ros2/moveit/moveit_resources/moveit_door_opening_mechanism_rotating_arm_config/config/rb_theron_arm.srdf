@@ -59,7 +59,7 @@
     <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="hook_base_link" reason="Never"/>
@@ -76,7 +76,7 @@
     <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
     <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
     <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
     <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="alu_profile_link_left" link2="hook_base_link" reason="Never"/>
@@ -92,7 +92,7 @@
     <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
     <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
     <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
     <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_y_axis_rail" reason="Default"/>
     <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_y_axis_slide" reason="Adjacent"/>
     <disable_collisions link1="alu_profile_link_right" link2="hook_base_link" reason="Never"/>
@@ -107,7 +107,7 @@
     <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
     <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
     <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
     <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="alu_profile_link_top" link2="hook_base_link" reason="Never"/>
@@ -121,7 +121,7 @@
     <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="base_footprint" link2="hook_base_link" reason="Never"/>
@@ -134,7 +134,7 @@
     <disable_collisions link1="base_link" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
     <disable_collisions link1="base_link" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
     <disable_collisions link1="base_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="base_link" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Never"/>
+    <disable_collisions link1="base_link" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
     <disable_collisions link1="base_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="base_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="base_link" link2="hook_base_link" reason="Never"/>
@@ -146,7 +146,7 @@
     <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
     <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
     <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
     <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="bottom_sheet_link" link2="hook_base_link" reason="Never"/>
@@ -157,7 +157,7 @@
     <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Adjacent"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_base_link" link2="hook_base_link" reason="Never"/>
@@ -167,7 +167,7 @@
     <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_link_gripper_adapter" reason="Adjacent"/>
     <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="hook_base_link" reason="Adjacent"/>
@@ -176,7 +176,7 @@
   
     <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_link_rotating_arm" reason="Adjacent"/>
     <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="hook_base_link" reason="Never"/>
@@ -184,25 +184,25 @@
     <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="hook_link_front_side" reason="Never"/>
 
     <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Adjacent"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Adjacent"/>
     <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="hook_base_link" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="hook_link_back_side" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="hook_link_front_side" reason="Never"/>
 
-    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="door_opening_mechanism_rotating_arm_mounting_plate" reason="Adjacent"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Adjacent"/>
     <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="door_opening_mechanism_link_y_axis_slide" reason="Adjacent"/>
     <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_base_link" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_link_back_side" reason="Never"/>
     <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_link_front_side" reason="Never"/>
 
-    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate" link2="hook_base_link" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate" link2="hook_link_back_side" reason="Never"/>
-    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="hook_link_front_side" reason="Never"/>
 
     <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="door_opening_mechanism_link_y_axis_slide" reason="Default"/>
     <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="hook_base_link" reason="Never"/>

@@ -175,7 +175,7 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          door_opening_mechanism_rotating_arm_mounting_plate:
+          door_opening_mechanism_rotating_arm_mounting_plate_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false
@@ -516,7 +516,7 @@ Visualization Manager:
             Show Axes: false
             Show Trail: false
             Value: true
-          door_opening_mechanism_rotating_arm_mounting_plate:
+          door_opening_mechanism_rotating_arm_mounting_plate_link:
             Alpha: 1
             Show Axes: false
             Show Trail: false

@@ -128,8 +128,8 @@
 
         <xacro:basic_box
             parent="${prefix}door_opening_mechanism_link_x_axis_slide"
-            joint_name="${prefix}door_opening_mechanism_rotating_arm_mounting_plate"
-            link_name="${prefix}door_opening_mechanism_rotating_arm_mounting_plate"
+            joint_name="${prefix}door_opening_mechanism_rotating_arm_mounting_plate_joint"
+            link_name="${prefix}door_opening_mechanism_rotating_arm_mounting_plate_link"
             m="1"
             x="0.145"
             y="0.05"
@@ -142,7 +142,7 @@
 
         <!-- Tilting arm -->
         <!-- <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/arm_variations/tilting_arm.urdf.xacro" />
-        <xacro:tilting_arm prefix="${prefix}" parent="${prefix}door_opening_mechanism_link_x_slide_screwing" >
+        <xacro:tilting_arm prefix="${prefix}" parent="${prefix}door_opening_mechanism_rotating_arm_mounting_plate_link" >
             <origin xyz="0 -0.025 0" rpy="0 1.57079632679 0"/>
         </xacro:tilting_arm> -->
 
@@ -150,7 +150,7 @@
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/arm_variations/rotating_arm.urdf.xacro" />
         <xacro:rotating_arm
             prefix="${prefix}"
-            parent="door_opening_mechanism_rotating_arm_mounting_plate"
+            parent="door_opening_mechanism_rotating_arm_mounting_plate_link"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
             ros_distro="${ros_distro}"
             arm_length="0.3" >
