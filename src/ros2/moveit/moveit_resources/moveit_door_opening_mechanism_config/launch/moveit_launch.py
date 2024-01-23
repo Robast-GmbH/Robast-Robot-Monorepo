@@ -10,7 +10,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     moveit_config = MoveItConfigsBuilder(
-        "rb_theron", package_name="moveit_door_opening_mechanism_rotating_arm_config"
+        "rb_theron", package_name="moveit_door_opening_mechanism_config"
     ).to_moveit_configs()
 
     ld = LaunchDescription()

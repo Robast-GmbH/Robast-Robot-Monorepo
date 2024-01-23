@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22)
-project(moveit_door_opening_mechanism_rotating_arm_config)
+project(moveit_door_opening_mechanism_config)
 
 find_package(ament_cmake REQUIRED)
 

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>moveit_door_opening_mechanism_rotating_arm_config</name>
+  <name>moveit_door_opening_mechanism_config</name>
   <version>0.3.0</version>
   <description>
      An automatically generated package with all the configuration and launch files for using the rb_theron with the MoveIt Motion Planning Framework

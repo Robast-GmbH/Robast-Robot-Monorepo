@@ -1,21 +1,16 @@
 import os
+import atexit
 
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import (
-    ExecuteProcess,
-    DeclareLaunchArgument,
-    RegisterEventHandler,
-    TimerAction,
-)
-from launch_ros.actions import Node
-from launch.substitutions import LaunchConfiguration
+from launch.actions import ExecuteProcess, RegisterEventHandler, TimerAction
 from launch.event_handlers import OnProcessExit
 
-from moveit_configs_utils import MoveItConfigsBuilder
-
 from moveit_configs_utils.launches import generate_static_virtual_joint_tfs_launch
+
+from launch_ros.actions import Node
+from moveit_configs_utils import MoveItConfigsBuilder
 
 from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
 
@@ -31,9 +26,14 @@ from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
 """
 
 
+def shutdown_dryve_d1():
+    print("Shutting down dryve d1 motor controller now!")
+    os.system("ros2 run dryve_d1_bridge shutdown_dryve_d1")
+
+
 def generate_launch_description():
     launch_arguments = {
-        "ros2_control_hardware_type": "mock_components",
+        "ros2_control_hardware_type": "dryve_d1",
         "ros2_control_hardware_type_positon_joint": "real_life",
         "model_position_joint": "true",
     }
@@ -47,10 +47,11 @@ def generate_launch_description():
     moveit_config = (
         MoveItConfigsBuilder(
             "rb_theron",
-            package_name="moveit_door_opening_mechanism_rotating_arm_config",
+            package_name="moveit_door_opening_mechanism_config",
         )
+        .robot_description_semantic(file_path="config/rb_theron_arm.srdf")
         .robot_description(
-            file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments
+            file_path="config/rb_theron_arm.urdf.xacro", mappings=launch_arguments
         )
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
@@ -59,14 +60,6 @@ def generate_launch_description():
     namespace_arm = "arm"
 
     ld = LaunchDescription()
-
-    use_sim_time = LaunchConfiguration("use_sim_time")
-
-    declare_use_sim_time_cmd = DeclareLaunchArgument(
-        "use_sim_time",
-        default_value="false",
-        description="whether to use sim time or not",
-    )
 
     declare_debug_cmd = DeclareBooleanLaunchArg(
         "debug",
@@ -82,15 +75,27 @@ def generate_launch_description():
         "capabilities": "move_group/ExecuteTaskSolutionCapability"
     }
 
-    remappings = [
-        ("/" + namespace_arm + "/joint_states", "/joint_states"),
+    # For our door opening mechanism the current idea is to have two separate tf trees.
+    # (1) The "normal" tf tree used for navigation
+    # (2) The "arm" tf tree used for the door opening mechanism
+    # The reason we need to separate this is that we have put a position joint between the
+    # base_footprint and the base_link in order to plan for the motion of the base.
+    # However, this joint is not part of the real robot and therefore we need to remove it from the
+    # tf tree used for the arm. This is done by remapping the tf topics.
+    remappings_move_group = [
+        ("/tf", "/tf_dump"),
+        ("/tf_static", "/tf_static_dump"),
+        ("/" + namespace_arm + "/tf", "/tf"),
+        ("/" + namespace_arm + "/tf_static", "/tf_static"),
     ]
+
+    # Start the actual move_group node/action server
     move_group_cmd = Node(
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
         namespace=namespace_arm,
-        remappings=remappings,
+        remappings=remappings_move_group,
         parameters=[
             moveit_config.to_dict(),
             move_group_capabilities,
@@ -98,10 +103,9 @@ def generate_launch_description():
     )
 
     rviz_config_file = (
-        get_package_share_directory("moveit_door_opening_mechanism_rotating_arm_config")
+        get_package_share_directory("moveit_door_opening_mechanism_config")
         + "/config/moveit.rviz"
     )
-
     rviz2_cmd = Node(
         package="rviz2",
         executable="rviz2",
@@ -117,76 +121,38 @@ def generate_launch_description():
         ],
     )
 
+    remappings_state_publisher = [
+        ("/tf", "/" + namespace_arm + "/tf"),
+        ("/tf_static", "/" + namespace_arm + "/tf_static"),
+    ]
+
     # State Publisher
     robot_state_publisher_cmd = Node(
         package="robot_state_publisher",
         executable="robot_state_publisher",
         name="robot_state_publisher",
         output="both",
+        namespace=namespace_arm,
+        remappings=remappings_state_publisher,
         parameters=[
             moveit_config.robot_description,
         ],
     )
 
-    ros2_controllers_path_base = os.path.join(
-        get_package_share_directory(
-            "moveit_door_opening_mechanism_rotating_arm_config"
-        ),
-        "config",
-        "ros2_controllers_simulation_base.yaml",
-    )
+    # ros2_control
     ros2_controllers_path_arm = os.path.join(
         get_package_share_directory(
-            "moveit_door_opening_mechanism_rotating_arm_config"
+            "moveit_door_opening_mechanism_config"
         ),
         "config",
-        "ros2_controllers_simulation_arm.yaml",
+        "ros2_controllers_real_world_arm.yaml",
     )
-
-    # Please mind:
-    # We could use only one controller manager for both the robot base and the arm.
-    # But on our real robot we already have a controller manager running, that is activating the
-    # diff_drive_base_controller.
-    # This gives us two options:
-    # 1. Change the controller manager configs on the real robot to also load the arm controllers
-    # 2. Start a second controller manager for the arm
-    # We decided to go with option 2, because it is less intrusive.
-    # So to keep the simulation as close to the real robot as possible, we also start a second
-    # controller manager here.
-
-    # First controller manager for the robot base
-    ros2_controller_manager_robot_cmd = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[
-            moveit_config.robot_description,
-            ros2_controllers_path_base,
-            {"use_sim_time": use_sim_time},
-        ],
-        output="both",
-    )
-    load_diff_drive_base_controller = ExecuteProcess(
-        cmd=[
-            "ros2",
-            "control",
-            "load_controller",
-            "--set-state",
-            "active",
-            "diff_drive_base_controller",
-            "-c",
-            "/controller_manager",
-        ],
-        output="screen",
-    )
-
-    # Second controller manager for the arm
     controller_manager_name = "/" + namespace_arm + "/controller_manager"
     remappings_controller_manager_arm = [
         (
-            "/" + namespace_arm + "/diff_drive_base_controller/cmd_vel",
-            "/diff_drive_base_controller/cmd_vel",
+            "/" + namespace_arm + "/robot/robotnik_base_control/cmd_vel",
+            "/robot/robotnik_base_control/cmd_vel",
         ),
-        ("/" + namespace_arm + "/joint_states", "/joint_states"),
     ]
     ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",
@@ -196,49 +162,8 @@ def generate_launch_description():
         parameters=[
             moveit_config.robot_description,
             ros2_controllers_path_arm,
-            {"use_sim_time": use_sim_time},
         ],
         output="both",
-    )
-
-    load_mobile_base_controller = ExecuteProcess(
-        cmd=[
-            "ros2",
-            "control",
-            "load_controller",
-            "--set-state",
-            "active",
-            "mobile_base_controller_cmd_vel",
-            "-c",
-            controller_manager_name,
-        ],
-        output="screen",
-    )
-    load_joint_trajectory_controller = ExecuteProcess(
-        cmd=[
-            "ros2",
-            "control",
-            "load_controller",
-            "--set-state",
-            "active",
-            "joint_trajectory_controller",
-            "-c",
-            controller_manager_name,
-        ],
-        output="screen",
-    )
-    load_joint_state_broadcaster = ExecuteProcess(
-        cmd=[
-            "ros2",
-            "control",
-            "load_controller",
-            "--set-state",
-            "active",
-            "joint_state_broadcaster",
-            "-c",
-            controller_manager_name,
-        ],
-        output="screen",
     )
 
     # This node listens to the rosout topic and exits if a certain trigger_message is found in the
@@ -259,30 +184,57 @@ def generate_launch_description():
         ],
     )
 
-    ld.add_action(declare_use_sim_time_cmd)
+    load_mobile_base_controller = ExecuteProcess(
+        cmd=[
+            "ros2",
+            "control",
+            "load_controller",
+            "--set-state",
+            "active",
+            "mobile_base_controller_cmd_vel",
+            "-c",
+            controller_manager_name,
+        ],
+        output="screen",
+    )
+    load_joint_state_broadcaster = ExecuteProcess(
+        cmd=[
+            "ros2",
+            "control",
+            "load_controller",
+            "--set-state",
+            "active",
+            "joint_state_broadcaster",
+            "-c",
+            controller_manager_name,
+        ],
+        output="screen",
+    )
+    load_joint_trajectory_controller = ExecuteProcess(
+        cmd=[
+            "ros2",
+            "control",
+            "load_controller",
+            "--set-state",
+            "active",
+            "joint_trajectory_controller",
+            "-c",
+            controller_manager_name,
+        ],
+        output="screen",
+    )
+
     ld.add_action(declare_debug_cmd)
 
     ld.add_action(rosout_listener_trigger)
     ld.add_action(static_virtual_joint_cmd)
-    ld.add_action(rviz2_cmd)
     ld.add_action(move_group_cmd)
     ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(ros2_controller_manager_robot_cmd)
 
     # Make sure that the rosout_listener_trigger is started before the arm controller manager is
     # started because the rosout_listener_trigger should listen to the content of the arm
     # controller manager
     ld.add_action(TimerAction(period=1.0, actions=[ros2_controller_manager_arm_cmd]))
-
-    # spawning ros2_control controller for robot base
-    ld.add_action(
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=rosout_listener_trigger,
-                on_exit=[load_diff_drive_base_controller],
-            )
-        )
-    )
 
     # spawning ros2_control controller for arm
     ld.add_action(
@@ -309,5 +261,18 @@ def generate_launch_description():
             )
         )
     )
+    ld.add_action(
+        RegisterEventHandler(
+            event_handler=OnProcessExit(
+                target_action=load_joint_trajectory_controller,
+                on_exit=[rviz2_cmd],
+            )
+        )
+    )
+
+    # This would be probably much nice to use RegisterEventHandler to trigger the shutdown, but
+    # unfortunately we did not get this running.
+    # Therefore we shutdown the dryve d1 with the "atexit" library.
+    atexit.register(shutdown_dryve_d1)
 
     return ld
