@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   simulation:
-    image: ghcr.io/robast-gmbh/monorepo/simulation:devel-rolling-min
+    image: ghcr.io/robast-gmbh/monorepo/simulation:devel-iron-min
     environment:
       - ROS_DOMAIN_ID=13
       - is_simulation=True
