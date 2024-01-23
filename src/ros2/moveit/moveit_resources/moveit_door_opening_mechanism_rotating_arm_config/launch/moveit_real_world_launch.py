@@ -4,8 +4,8 @@ import atexit
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, RegisterEventHandler
-from launch.event_handlers import OnProcessExit, OnProcessStart
+from launch.actions import ExecuteProcess, RegisterEventHandler, TimerAction
+from launch.event_handlers import OnProcessExit
 
 from moveit_configs_utils.launches import generate_static_virtual_joint_tfs_launch
 
@@ -234,14 +234,7 @@ def generate_launch_description():
     # Make sure that the rosout_listener_trigger is started before the arm controller manager is
     # started because the rosout_listener_trigger should listen to the content of the arm
     # controller manager
-    ld.add_action(
-        RegisterEventHandler(
-            event_handler=OnProcessStart(
-                target_action=rosout_listener_trigger,
-                on_start=[ros2_controller_manager_arm_cmd],
-            )
-        )
-    )
+    ld.add_action(TimerAction(period=1.0, actions=[ros2_controller_manager_arm_cmd]))
 
     # spawning ros2_control controller for arm
     ld.add_action(
