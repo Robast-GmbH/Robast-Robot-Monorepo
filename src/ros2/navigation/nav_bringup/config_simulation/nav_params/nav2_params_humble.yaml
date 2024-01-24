@@ -335,7 +335,7 @@ global_costmap:
       footprint: "[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
       resolution: 0.025
       track_unknown_space: true
-      plugins: ["static_layer", "stvl_layer", "inflation_layer"]
+      plugins: ["static_layer_feuerplan", "stvl_layer", "inflation_layer"]
       filters: ["keepout_filter"]
       keepout_filter:
         plugin: "nav2_costmap_2d::KeepoutFilter"
@@ -358,6 +358,11 @@ global_costmap:
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
+      static_layer_feuerplan:
+        plugin: "nav2_costmap_2d::StaticLayer"
+        map_subscribe_transient_local: True
+        subscribe_to_updates: false
+        map_topic: /map
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"
         enabled: true

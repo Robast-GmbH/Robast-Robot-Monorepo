@@ -123,8 +123,8 @@
         120
     ],
     "editor.codeActionsOnSave": {
-        "source.fixAll": true,
-        "source.organizeImports": true
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
     },
     "editor.minimap.autohide": true,
     "c-cpp-flylint.clang.defines": [
