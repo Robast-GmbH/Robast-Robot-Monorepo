@@ -13,58 +13,55 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *
-*/
+ */
 
 #ifndef SRC__FLEETADAPTER_HPP
 #define SRC__FLEETADAPTER_HPP
 
-#include <rclcpp/rclcpp.hpp>
-#include <rclcpp_action/rclcpp_action.hpp>
-
-#include <rmf_fleet_adapter/agv/EasyFullControl.hpp>
-
-#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <Eigen/Dense>
 #include <geometry_msgs/msg/pose_stamped.hpp>
-
-#include <nav_msgs/msg/odometry.hpp>
-#include <nav2_msgs/action/navigate_to_pose.hpp>
-
-#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
-
+#include <geometry_msgs/msg/transform_stamped.hpp>
 #include <memory>
 #include <mutex>
+#include <nav2_msgs/action/navigate_to_pose.hpp>
+#include <nav_msgs/msg/odometry.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <rclcpp_action/rclcpp_action.hpp>
+#include <rmf_fleet_adapter/agv/EasyFullControl.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
 #include <thread>
 
 //==============================================================================
 class FleetAdapter : public std::enable_shared_from_this<FleetAdapter>
 {
-public:
+ public:
   using EasyFullControl = rmf_fleet_adapter::agv::EasyFullControl;
-  using Graph = EasyFullControl::Graph;
-  using VehicleTraits = EasyFullControl::VehicleTraits;
-  using Configuration = EasyFullControl::Configuration;
+  using Graph = EasyFullControl::Graph;                   // rmf_traffic::agv::Graph
+  using VehicleTraits = EasyFullControl::VehicleTraits;   // rmf_traffic::agv::VehicleTraits
+  using Configuration = EasyFullControl::RobotConfiguration;
   using RobotState = EasyFullControl::RobotState;
-  using GetStateCallback = EasyFullControl::GetStateCallback;
-  using GoalCompletedCallback = EasyFullControl::GoalCompletedCallback;
+  using RobotCallbacks = EasyFullControl::RobotCallbacks;
+  // using GetStateCallback = EasyFullControl::GetStateCallback;
+  // using GoalCompletedCallback = EasyFullControl::GoalCompletedCallback;
   using NavigationRequest = EasyFullControl::NavigationRequest;
   using RobotUpdateHandle = rmf_fleet_adapter::agv::RobotUpdateHandle;
   using RobotUpdateHandlePtr = rmf_fleet_adapter::agv::RobotUpdateHandlePtr;
   using StopRequest = EasyFullControl::StopRequest;
-  using DockRequest = EasyFullControl::DockRequest;
+  using LocalizationRequest = EasyFullControl::LocalizationRequest;
+  // using DockRequest = EasyFullControl::DockRequest;
 
   using NavigationAction = nav2_msgs::action::NavigateToPose;
   using GoalHandle = rclcpp_action::ClientGoalHandle<NavigationAction>;
   using Odom = nav_msgs::msg::Odometry;
 
   /// Constructor
-  FleetAdapter(
-    const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
+  FleetAdapter(const rclcpp::NodeOptions& options = rclcpp::NodeOptions());
 
   void run();
 
   ~FleetAdapter();
 
-private:
+ private:
   struct Robot
   {
     std::string name;
@@ -80,31 +77,23 @@ private:
     GoalHandle::SharedPtr goal_handle = nullptr;
     bool finished_navigating = true;
 
-    bool initialize(
-      const std::string& ns,
-      const std::string& name,
-      const std::string& charger_name,
-      const std::string& initial_map_name,
-      rclcpp::Node::SharedPtr node);
+    bool initialize(const std::string& ns,
+                    const std::string& name,
+                    const std::string& charger_name,
+                    const std::string& initial_map_name,
+                    rclcpp::Node::SharedPtr node);
 
     RobotState get_state();
 
-    GoalCompletedCallback navigate(
-      const std::string& map_name,
-      const Eigen::Vector3d goal,
-      RobotUpdateHandlePtr robot_handle);
+    RobotCallbacks navigate(const std::string& map_name, const Eigen::Vector3d goal, RobotUpdateHandlePtr robot_handle);
 
     bool stop();
 
-    GoalCompletedCallback dock(
-      const std::string& dock_name,
-      RobotUpdateHandlePtr robot_handle);
+    // RobotCallbacks dock(const std::string& dock_name, RobotUpdateHandlePtr robot_handle);
 
-    void action_executor(
-      const std::string& category,
-      const nlohmann::json& description,
-      RobotUpdateHandle::ActionExecution execution);
-
+    void action_executor(const std::string& category,
+                         const nlohmann::json& description,
+                         RobotUpdateHandle::ActionExecution execution);
   };
 
   struct Data
@@ -121,4 +110,4 @@ private:
   std::shared_ptr<Data> _data;
 };
 
-#endif // SRC__FLEETADAPTER_HPP
+#endif   // SRC__FLEETADAPTER_HPP
