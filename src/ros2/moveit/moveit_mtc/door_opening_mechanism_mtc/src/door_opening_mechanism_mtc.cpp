@@ -12,8 +12,10 @@ namespace door_opening_mechanism_mtc
   void DoorMechanismMtc::handle_node_parameter()
   {
     declare_parameter("moveit2_planning_group_name", _DEFAULT_PLANNING_GROUP_NAME);
+    declare_parameter("planning_pipeline", _DEFAULT_PLANNING_GROUP_NAME);
 
     _planning_group_name = get_parameter("moveit2_planning_group_name").as_string();
+    _planning_pipeline = get_parameter("planning_pipeline").as_string();
   }
 
   void DoorMechanismMtc::create_subscriptions()
@@ -61,7 +63,7 @@ namespace door_opening_mechanism_mtc
   void DoorMechanismMtc::door_handle_position_callback(const depthai_ros_msgs::msg::SpatialDetectionArray& msg)
   {
     RCLCPP_INFO(_LOGGER,
-                "I heard from the %s topic %i detections for the frame_id %s",
+                "I heard from the %s topic %li detections for the frame_id %s",
                 _DOOR_HANDLE_POSITION_TOPIC.c_str(),
                 msg.detections.size(),
                 msg.header.frame_id.c_str());
@@ -179,14 +181,10 @@ namespace door_opening_mechanism_mtc
     mtc::Task task;
     task.stages()->setName("approach door handle task");
     task.loadRobotModel(shared_from_this());
-    
-    const auto& group_name = "mobile_base_arm";   // mobile_base_arm
-    const auto& group_name_arm = "mobile_base_arm";
+
+    const auto& group_name = "mobile_base_arm";
     const auto& end_effector_name = "door_opening_end_effector";
     const auto& end_effector_parent_link = "door_opening_mechanism_link_freely_rotating_hook";
-
-    const auto& hand_group_name = "hand";
-    const auto& hand_frame = "hook_base_link";
 
     // Set task properties
     task.setProperty("group", group_name);
@@ -198,7 +196,7 @@ namespace door_opening_mechanism_mtc
     current_state_ptr = stage_state_current.get();
     task.add(std::move(stage_state_current));
 
-    auto sampling_planner = std::make_shared<mtc::solvers::PipelinePlanner>(shared_from_this());
+    auto sampling_planner = std::make_shared<mtc::solvers::PipelinePlanner>(shared_from_this(), _planning_pipeline);
     moveit_msgs::msg::WorkspaceParameters workspace_params;
     workspace_params.min_corner.x = -10.0;
     workspace_params.min_corner.y = -10.0;
@@ -239,7 +237,7 @@ namespace door_opening_mechanism_mtc
 
     auto stage = std::make_unique<mtc::stages::MoveTo>("Starting position", sampling_planner);
     stage->setGroup(group_name);
-    stage->setGoal("starting_position_arm");
+    stage->setGoal("starting_position");
     task.add(std::move(stage));
 
     return task;
