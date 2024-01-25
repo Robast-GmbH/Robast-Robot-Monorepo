@@ -77,7 +77,7 @@ namespace mobile_base_controller
 
     _dof = _params.joints.size();
 
-    _min_velocity = _params.min_velocity;
+    _min_velocity = static_cast<float>(_params.min_velocity);
 
     _zero_cmd_vel_published_last = false;
 
