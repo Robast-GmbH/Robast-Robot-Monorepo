@@ -1,6 +1,5 @@
-// See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"image": "ghcr.io/robast-gmbh/monorepo/fleetmanagement:latest",
+	"image": "ghcr.io/robast-gmbh/monorepo/simple_fleetmanagement:latest",
 	"remoteUser": "ubuntu",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
@@ -10,8 +9,7 @@
 	"workspaceFolder": "/workspace",
 	"runArgs": [
 		"--name=fleetmanagement",
-		"--network=host",
-		"--volume=/dev/shm:/dev/shm" //needed if you use the fast dds on the host network with multiple docker containers running on the same host
+		"--network=host"
 	],
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.
