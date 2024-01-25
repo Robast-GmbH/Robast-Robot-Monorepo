@@ -79,6 +79,10 @@ namespace ros2_control_plugin_dryve_d1
     double _si_unit_factor;
 
     bool _is_prismatic_joint;
+
+    bool is_dryve_error_present();
+
+    void run_dryve_state_machine_after_error(std::string_view dryve_error);
   };
 
 }   // namespace ros2_control_plugin_dryve_d1

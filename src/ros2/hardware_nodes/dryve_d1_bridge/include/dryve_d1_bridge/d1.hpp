@@ -114,6 +114,26 @@ namespace dryve_d1_bridge
 
     static constexpr std::string_view ERROR_MSG_ZERO_BYTES_RECEIVED = "Error: Received zero bytes from socket!";
 
+    // Define static error messages as class variables
+    static const std::string_view ERROR_MESSAGE_E01_CONFIGURATION;
+    static const std::string_view ERROR_MESSAGE_E02_MOTOR_OVER_CURRENT;
+    static const std::string_view ERROR_MESSAGE_E03_ENCODER_OVER_CURRENT;
+    static const std::string_view ERROR_MESSAGE_E04_OUTPUT_OVER_CURRENT;
+    static const std::string_view ERROR_MESSAGE_E05_IO_SUPPLY_LOW;
+    static const std::string_view ERROR_MESSAGE_E06_LOGIC_SUPPLY_LOW;
+    static const std::string_view ERROR_MESSAGE_E07_LOGIC_SUPPLY_HIGH;
+    static const std::string_view ERROR_MESSAGE_E08_LOAD_SUPPLY_LOW;
+    static const std::string_view ERROR_MESSAGE_E09_LOAD_SUPPLY_HIGH;
+    static const std::string_view ERROR_MESSAGE_E10_TEMPERATURE_HIGH;
+    static const std::string_view ERROR_MESSAGE_E11_FOLLOWING_ERROR;
+    static const std::string_view ERROR_MESSAGE_E12_LIMIT_SWITCH;
+    static const std::string_view ERROR_MESSAGE_E13_HALL_SENSOR;
+    static const std::string_view ERROR_MESSAGE_E14_ENCODER;
+    static const std::string_view ERROR_MESSAGE_E15_ENCODER_CHANNEL_A;
+    static const std::string_view ERROR_MESSAGE_E16_ENCODER_CHANNEL_B;
+    static const std::string_view ERROR_MESSAGE_E17_ENCODER_CHANNEL_I;
+    static const std::string_view ERROR_MESSAGE_E21_BREAKING_RESISTOR_OVERLOAD;
+
    private:
     void start_connection(std::string ip_address, int port);
 

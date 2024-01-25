@@ -234,6 +234,44 @@ namespace ros2_control_plugin_dryve_d1
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
+  void DryveD1SystemHardware::run_dryve_state_machine_after_error(std::string_view dryve_error)
+  {
+    RCLCPP_WARN(rclcpp::get_logger("DryveD1SystemHardware"),
+                "Dryve Error '%s' for joint %s. Running through dryve d1 state machine setup now.",
+                dryve_error.data(),
+                info_.joints[0].name.c_str());
+    _dryve_d1->run_dryve_state_machine();
+  }
+
+  bool DryveD1SystemHardware::is_dryve_error_present()
+  {
+    std::string_view dryve_error = _dryve_d1->check_for_dryve_error();
+
+    if (dryve_error.empty())
+    {
+      return false;
+    }
+
+    if (dryve_error == _dryve_d1->ERROR_MESSAGE_E12_LIMIT_SWITCH)
+    {
+      run_dryve_state_machine_after_error(dryve_error);
+      return false;
+    }
+    else if (dryve_error == _dryve_d1->ERROR_MESSAGE_E08_LOAD_SUPPLY_LOW)
+    {
+      // TODO@Jacob: At some point we might need to find a better way how to handle this error
+      return true;
+    }
+    else
+    {
+      RCLCPP_ERROR(rclcpp::get_logger("DryveD1SystemHardware"),
+                   "Dryve Error '%s' for joint %s",
+                   dryve_error.data(),
+                   info_.joints[0].name.c_str());
+      return true;
+    }
+  }
+
   hardware_interface::return_type DryveD1SystemHardware::read(const rclcpp::Time& /*time*/,
                                                               const rclcpp::Duration& /*period*/)
   {
@@ -271,6 +309,11 @@ namespace ros2_control_plugin_dryve_d1
   {
     if (std::abs(_hw_velocity_commands[0]) > dryve_d1_bridge::MIN_VELOCITY)
     {
+      if (is_dryve_error_present())
+      {
+        return hardware_interface::return_type::ERROR;
+      }
+
       _dryve_d1->set_profile_velocity(_hw_velocity_commands[0] * _si_unit_factor * _direction,
                                       dryve_d1_bridge::ACCELERATION,
                                       dryve_d1_bridge::DECELERATION);
