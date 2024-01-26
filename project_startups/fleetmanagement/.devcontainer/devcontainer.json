@@ -4,7 +4,8 @@
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/simple_fleetmanagement/,target=/workspace/src/simple_fleetmanagement,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind"
+		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces/,target=/workspace/src/communication_interfaces,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/fleet_management/,target=/workspace/src/fleet_management,type=bind"
 	],
 	"workspaceFolder": "/workspace",
 	"runArgs": [
