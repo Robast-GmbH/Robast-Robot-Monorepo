@@ -98,17 +98,17 @@ StaticLayer::getParameters()
   if (!node) {
     throw std::runtime_error{"Failed to lock node"};
   }
-
   node->get_parameter(name_ + "." + "enabled", enabled_);
   node->get_parameter(name_ + "." + "subscribe_to_updates", subscribe_to_updates_);
   std::string private_map_topic, global_map_topic;
   node->get_parameter(name_ + "." + "map_topic", private_map_topic);
+  std::string global_map_topic;
   node->get_parameter("map_topic", global_map_topic);
-  if (!private_map_topic.empty()) {
-    map_topic_ = private_map_topic;
-  } else {
-    map_topic_ = global_map_topic;
-  }
+  //if (!private_map_topic.empty()) {
+  //  map_topic_ = private_map_topic;
+  //} else {
+  
+  map_topic_ = global_map_topic;
   node->get_parameter(
     name_ + "." + "map_subscribe_transient_local",
     map_subscribe_transient_local_);
@@ -194,6 +194,7 @@ StaticLayer::processMap(const nav_msgs::msg::OccupancyGrid & new_map)
     }
   }
 
+  //Should be anyway the same as map
   map_frame_ = new_map.header.frame_id;
 
   x_ = y_ = 0;
