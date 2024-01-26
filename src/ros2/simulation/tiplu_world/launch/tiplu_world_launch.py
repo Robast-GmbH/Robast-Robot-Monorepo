@@ -101,17 +101,32 @@ def generate_launch_description():
         description="path to the world model",
     )
     
-    # Get the current Ignition file path
-    ign_file_path = os.environ.get('IGN_GAZEBO_RESOURCE_PATH', '')
-
-    # Add your directory to the path
-    new_directory = os.path.join(get_package_share_directory("rmf_gazebo"), "maps", "tiplu_ign" , "models")
-    if new_directory not in ign_file_path.split(':'):
-        ign_file_path += ':' + new_directory
-
-    # Set the new Ignition file path
-    os.environ['IGN_GAZEBO_RESOURCE_PATH'] = ign_file_path
-    #export IGN_GAZEBO_RESOURCE_PATH=$IGN_GAZEBO_RESOURCE_PATH:/workspace/install/rmf_gazebo/share/rmf_gazebo/maps/tiplu_ign/models
+    # Add world to the path
+    ign_resource_path = os.environ.get('IGN_GAZEBO_RESOURCE_PATH', '')
+    world_path = os.path.join(get_package_share_directory("rmf_gazebo"), "maps", "tiplu_ign" , "tiplu.world")
+    if world_path not in ign_resource_path.split(':'):
+        ign_resource_path += ':' + world_path
+    world_path = os.path.join(get_package_share_directory("rmf_gazebo"), "maps", "tiplu_ign" , "models")
+    if world_path not in ign_resource_path.split(':'):
+        ign_resource_path += ':' + world_path
+    world_path = os.path.join(get_package_share_directory("rmf_gazebo"), "maps", "tiplu" , "models")
+    if world_path not in ign_resource_path.split(':'):
+        ign_resource_path += ':' + world_path
+    world_path = os.path.join(os.environ['HOME'],".gazebo", "models")
+    if world_path not in ign_resource_path.split(':'):
+        ign_resource_path += ':' + world_path
+    os.environ['IGN_GAZEBO_RESOURCE_PATH'] = ign_resource_path
+    
+    # Add plugins to the path
+    ign_plugin_path = os.environ.get('IGN_GAZEBO_SYSTEM_PLUGIN_PATH', '')
+    world_path = os.path.join(get_package_share_directory("rmf_robot_sim_gz_plugins"), "lib", "rmf_robot_sim_gz_plugins")
+    if world_path not in ign_plugin_path.split(':'):
+        ign_plugin_path += ':' + world_path
+    world_path = os.path.join(get_package_share_directory("rmf_building_sim_gz_plugins"), "lib", "rmf_building_sim_gz_plugins")
+    if world_path not in ign_plugin_path.split(':'):
+        ign_plugin_path += ':' + world_path
+    os.environ['IGN_GAZEBO_SYSTEM_PLUGIN_PATH'] = ign_plugin_path
+    
     #/workspace_ros_gz/install/ros_gz_sim_demos/share:/workspace/src/simulation/rmf/rmf_demos:/workspace/install/rmf_gazebo/share:/workspace/install/rmf_gazebo/share/rmf_gazebo/maps/tiplu_ign/models
     
     declare_headless_cmd = DeclareLaunchArgument(
@@ -152,9 +167,9 @@ def generate_launch_description():
             "-z",
             "0.2",
             "-x",
-            "25",
+            init_x,
             "-y",
-            "-11",
+            init_y,
             "-Y",
             init_yaw,
         ],
