@@ -19,6 +19,7 @@ sudo ifconfig can1 up
 # TODO: Discuss the size of the txqueuelen
 sudo ifconfig can1 txqueuelen 550
 
+# optional part, that adds the interface to a running container. Does not work currently since the ros node is launched with the docker.
 # Retrieve the process ID of a Docker container named hardware_nodes_drawer
 DOCKERPID=$(docker inspect -f '{{ .State.Pid }}' robo_a-hardware_nodes-1)
 # Create a pair of virtual CAN network interfaces (vxcan0 and vxcan1) in the specified network namespace associated with the Docker container
