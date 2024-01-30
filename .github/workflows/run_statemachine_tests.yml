@@ -16,16 +16,6 @@ jobs:
       Project: statemachine
 
     steps:
-    # - uses: actions/checkout@v3
-    # - uses: dorny/paths-filter@v2.11.1
-    #   id: filter
-    #   with:
-    #     filters: |
-    #       hardware_docker_changed:
-    #         - 'src/ros2/hardware_nodes/Dockerfile'
-    #       statemachine_docker_changed:
-    #         - 'src/ros2/statemachine/Dockerfile'
-
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
       with:
@@ -55,3 +45,31 @@ jobs:
           colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic &&
           colcon test --event-handler=console_direct+ &&
           colcon test-result --all"
+
+    - name: Generate coverage report
+      working-directory: src/ros2/${{ env.Project }}
+      run: >
+          docker run -v $(pwd):/workspace/src/${{ env.Project }}
+          -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces
+          -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
+          -v $(pwd)/../dds_configs:/workspace/dds_configs
+          --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:devel
+          /bin/sh -c "cd /workspace/ &&
+          sudo apt-get update &&
+          sudo apt-get upgrade -y &&
+          rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
+          export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
+          . /robast/humble/setup.sh &&
+          colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic &&
+          colcon test --event-handler=console_direct+ &&
+          colcon test-result --all &&
+          sudo apt install lcov &&
+          lcov --directory . --capture --output-file coverage.info &&
+          lcov --remove coverage.info '/usr/*' --output-file coverage.info &&
+          lcov --list coverage.info"
+
+    - name: Upload coverage report to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: src/ros2/${{ env.Project }}/coverage.info
