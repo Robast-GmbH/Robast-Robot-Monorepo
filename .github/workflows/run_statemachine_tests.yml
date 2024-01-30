@@ -6,7 +6,8 @@ on:
     paths:
       - src/ros2/statemachine/**
       - src/ros2/communication_interfaces/**
-      - .github/workflows/**
+      - .github/workflows/run_statemachine_test.yml
+      - .github/workflows/docker_create_statemachine.yml
        
 jobs:
   test-run-statemachine:
