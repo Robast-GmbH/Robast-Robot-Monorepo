@@ -46,7 +46,7 @@ jobs:
           colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic &&
           colcon test --event-handler=console_direct+ &&
           colcon test-result --all &&
-          sudo apt install lcov &&
+          sudo apt install lcov -y &&
           lcov --directory . --capture --output-file coverage.info &&
           lcov --remove coverage.info '/usr/*' --output-file coverage.info &&
           lcov --list coverage.info"
