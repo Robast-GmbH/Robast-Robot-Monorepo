@@ -31,7 +31,7 @@ jobs:
 
     - name: Generate coverage report
       working-directory: src/ros2/${{ env.Project }}
-      run: |
+      run: >
           docker run -v $(pwd):/workspace/src/${{ env.Project }}
           -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces
           -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
