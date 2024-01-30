@@ -224,8 +224,6 @@ def generate_launch_description():
 
     # opaque functions
     ld.add_action(launch_gazebo_opaque_func)
-    
-    
 
     # nodes
     ld.add_action(start_robot_state_publisher_cmd)

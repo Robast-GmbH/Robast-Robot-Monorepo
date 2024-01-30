@@ -12,7 +12,6 @@
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
 
-  <!-- TODO evaluate at PR, gz_ros2_control gibts nicht. entweder wir nehmen gazebo-ros2-control oder ign_ros2_control -->
   <exec_depend>ign_ros2_control</exec_depend> 
   <exec_depend>joint_state_broadcaster</exec_depend>
   <exec_depend>joint_trajectory_controller</exec_depend>
