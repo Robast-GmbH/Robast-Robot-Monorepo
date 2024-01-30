@@ -34,8 +34,10 @@ def generate_launch_description():
     ros_distro = os.environ["ROS_DISTRO"]
     if ros_distro == "humble":
         planning_pipelines = ["ompl_humble"]
-    else:
+    elif ros_distro == "iron":
         planning_pipelines = ["ompl_iron"]
+    else:
+        raise Exception("Unknown ROS distro: " + ros_distro)
 
     moveit_config = (
         MoveItConfigsBuilder(
