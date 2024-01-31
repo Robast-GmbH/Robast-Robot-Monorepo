@@ -97,11 +97,12 @@ def generate_launch_description():
     declare_world_model_cmd = DeclareLaunchArgument(
         "world_model",
         default_value=os.path.join(
-            get_package_share_directory("rmf_gazebo"), "maps", "tiplu_ign" , "tiplu.world"
+            get_package_share_directory("tiplu_world"), "worlds", "6OG" + ".sdf"
+            
         ),
-        description="path to the world model",
+        description="path to the world model, alternative get_package_share_directoryrmf_gazebo, maps, tiplu_ign , tiplu.world",
     )
-
+    
     # Add world/models to the path
     ign_resource_path = os.environ.get('IGN_GAZEBO_RESOURCE_PATH', '')
     world_path = os.path.join(get_package_share_directory("rmf_gazebo"), "maps", "tiplu_ign" , "tiplu.world")
