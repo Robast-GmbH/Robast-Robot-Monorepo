@@ -135,26 +135,6 @@ def generate_launch_description():
             get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml"
         )
 
-    robot_xml = xacro.process_file(
-        os.path.join(
-            get_package_share_directory("rb_theron_description"),
-            "robots",
-            os.environ["robot"] + ".urdf.xacro",
-        ),
-        mappings={
-            "prefix": os.environ["prefix"],
-            "ros2_control_hardware_type": "gz_ros2_control",
-            "ros_distro": ros_distro,
-        },
-    ).toxml()
-
-    use_sim_time = LaunchConfiguration("use_sim_time")
-    headless = LaunchConfiguration("headless")
-    robot_name = LaunchConfiguration("robot_name")
-    init_x = os.environ["init_x"]
-    init_y = os.environ["init_y"]
-    init_yaw = os.environ["init_yaw"]
-
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
     )
