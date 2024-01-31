@@ -11,16 +11,12 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "(GNU|Clang)")
 endif()
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
-  hardware_interface
-  pluginlib
-  rclcpp
-  rclcpp_lifecycle
-  control_msgs
   generate_parameter_library
   controller_interface
-  parameter_traits
   realtime_tools
+  control_msgs
   std_msgs
+  geometry_msgs
 )
 
 find_package(ament_cmake REQUIRED)

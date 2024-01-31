@@ -9,10 +9,12 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <depend>hardware_interface</depend>
-  <depend>pluginlib</depend>
-  <depend>rclcpp</depend>
-  <depend>rclcpp_lifecycle</depend>
+  <depend>generate_parameter_library</depend>
+  <depend>controller_interface</depend>
+  <depend>realtime_tools</depend>
+  <depend>control_msgs</depend>
+  <depend>std_msgs</depend>
+  <depend>geometry_msgs</depend>
 
   <exec_depend>controller_manager</exec_depend>
 
