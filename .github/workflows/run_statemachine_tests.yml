@@ -51,15 +51,15 @@ jobs:
           lcov --directory . --capture --output-file coverage-${{env.Project}}.info &&
           lcov --remove coverage-${{env.Project}}.info '/usr/*' --output-file coverage-${{env.Project}}.info &&
           lcov --list coverage-${{env.Project}}.info" &&
-          cp coverage-${{env.Project}}.info /home/ubuntu/coverage-${{env.Project}}.info
+          cp /workspace/coverage-${{env.Project}}.info /home/robast/coverage-${{env.Project}}.info
 
     - name: Wait for coverage report file
       run: |
           sleep 5
-          ls /home/ubuntu/coverage-${{env.Project}}.info
+          ls /home/robast/coverage-${{env.Project}}.info
 
     - name: Upload coverage report to Codecov
       uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: /home/ubuntu/coverage-${{env.Project}}.info
+        file: /home/robast/coverage-${{env.Project}}.info
