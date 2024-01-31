@@ -3,12 +3,6 @@ mobile_base_arm:
   kinematics_solver_search_resolution: 0.0050000000000000001
   kinematics_solver_timeout: 0.0050000000000000001
 
-# We need this config if we model the base as a planar position joint
-# mobile_base_arm:
-#   kinematics_solver: stretch_kinematics_plugin/StretchKinematicsPlugin
-#   kinematics_solver_search_resolution: 0.005
-#   kinematics_solver_timeout: 0.1
-
 # This config was made with Henning from PickNik and according to him should work in theory
 # mobile_base_arm:
 #   kinematics_solver: pick_ik/PickIkPlugin
