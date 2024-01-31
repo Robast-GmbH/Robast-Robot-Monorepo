@@ -16,8 +16,11 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
 from launch.event_handlers import OnProcessExit
-from launch.launch_context import LaunchContext
 from launch.conditions import IfCondition, UnlessCondition
+
+
+# TODO @all: There are still some small issues with loading packages,
+# TODO @all: but it starts and seems to work fine.
 
 
 def launch_robot_state_publisher(context, *args, **settings):
@@ -50,9 +53,6 @@ def launch_robot_state_publisher(context, *args, **settings):
     )
 
     return [start_robot_state_publisher_cmd]
-
-
-# TODO @all: There are still some small issues with loading packages, but it starts and seems to work fine.
 
 
 def create_world_urdf(context, *args, **settings):
@@ -100,8 +100,6 @@ def path_pattern_change_for_gazebo(urdf_string):
 
 
 def generate_launch_description():
-    context = LaunchContext()
-
     declare_model_position_joint_cmd = DeclareLaunchArgument(
         "model_position_joint",
         default_value="false",
@@ -112,7 +110,6 @@ def generate_launch_description():
     gz_version = os.environ["GZ_VERSION"]
 
     use_sim_time = LaunchConfiguration("use_sim_time")
-    world_model = LaunchConfiguration("world_model")
     headless = LaunchConfiguration("headless")
     robot_name = LaunchConfiguration("robot_name")
     model_position_joint = LaunchConfiguration("model_position_joint")
@@ -150,7 +147,11 @@ def generate_launch_description():
         default_value=os.path.join(
             get_package_share_directory("tiplu_world"), "worlds", "6OG" + ".sdf"
         ),
-        description="path to the world model, alternative get_package_share_directory(rmf_gazebo), maps, tiplu_ign , tiplu.world",
+        description=(
+            "path to the world model. Alternative: "
+            "get_package_share_directory(rmf_gazebo), "
+            "maps, tiplu_ign , tiplu.world"
+        ),
     )
 
     # Add world/models to the path
@@ -217,8 +218,9 @@ def generate_launch_description():
         description="whether to model the position joint or not",
     )
 
-    # As far as I understand, to get the value of a launch argument we need a OpaqueFunction for this as described here:
-    # https://robotics.stackexchange.com/questions/104340/getting-the-value-of-launchargument-inside-python-launch-file
+    # As far as I understand, to get the value of a launch argument
+    # we need a OpaqueFunction for this as described here:
+    # https://shorturl.at/eKMQV
     launch_gazebo_opaque_func = OpaqueFunction(
         function=create_world_urdf,
         kwargs={"gz_sim_launch": gz_sim_launch, "headless": headless},
