@@ -36,6 +36,7 @@ jobs:
           -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces
           -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
           -v $(pwd)/../dds_configs:/workspace/dds_configs
+          -v /home:/home &&
           --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:devel
           /bin/sh -c "cd /workspace/ &&
           sudo apt-get update &&
@@ -49,15 +50,16 @@ jobs:
           sudo apt install lcov -y &&
           lcov --directory . --capture --output-file coverage-${{env.Project}}.info &&
           lcov --remove coverage-${{env.Project}}.info '/usr/*' --output-file coverage-${{env.Project}}.info &&
-          lcov --list coverage-${{env.Project}}.info"
+          lcov --list coverage-${{env.Project}}.info" &&
+          cp coverage-${{env.Project}}.info /home/ubuntu/coverage-${{env.Project}}.info
 
     - name: Wait for coverage report file
       run: |
           sleep 5
-          ls src/ros2/${{ env.Project }}/coverage-${{env.Project}}.info
+          ls /home/ubuntu/coverage-${{env.Project}}.info
 
     - name: Upload coverage report to Codecov
       uses: codecov/codecov-action@v2
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
-        file: src/ros2/${{ env.Project }}/coverage-${{env.Project}}.info
+        file: /home/ubuntu/coverage-${{env.Project}}.info
