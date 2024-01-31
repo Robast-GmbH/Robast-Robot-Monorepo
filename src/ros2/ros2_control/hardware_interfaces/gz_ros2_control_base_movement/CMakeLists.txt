@@ -78,7 +78,7 @@ if("$ENV{GZ_VERSION}" STREQUAL "garden" OR "$ENV{GZ_VERSION}" STREQUAL "harmonic
     rclcpp_lifecycle
     hardware_interface
     rclcpp
-  )  
+  )
 
   target_link_libraries(gz_ros2_control_base_movement
     ${GZ_SIM}
@@ -90,7 +90,7 @@ if("$ENV{GZ_VERSION}" STREQUAL "garden" OR "$ENV{GZ_VERSION}" STREQUAL "harmonic
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
   )
-  
+
 else() ## FORTRESS
   add_library(ign_ros2_control_base_movement SHARED
     src/ign_ros2_control_base_movement.cpp
