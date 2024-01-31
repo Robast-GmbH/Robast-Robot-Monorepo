@@ -43,6 +43,7 @@ jobs:
           sudo apt-get upgrade -y &&
           rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
           export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
+          . /robast/humble/setup.sh &&
           colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic &&
           colcon test --packages-skip behaviourtree_cpp &&
           colcon test-result --all &&
