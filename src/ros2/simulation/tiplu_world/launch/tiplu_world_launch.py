@@ -4,7 +4,7 @@ import xacro
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, RegisterEventHandler, OpaqueFunction, GroupAction
+from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, ExecuteProcess, RegisterEventHandler, OpaqueFunction, GroupAction, SetEnvironmentVariable
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import LaunchConfiguration, PythonExpression
 from launch_ros.actions import Node
@@ -39,6 +39,8 @@ def launch_robot_state_publisher(context, *args, **settings):
 
     return [start_robot_state_publisher_cmd]
 
+
+#TODO @all: There are still some small issues with loading packages, but it starts and seems to work fine.
 
 def create_world_urdf(context, *args, **settings):
 
@@ -111,6 +113,25 @@ def generate_launch_description():
         pkg_ros_gz_sim = get_package_share_directory("ros_gz_sim")
         gz_sim_launch = os.path.join(pkg_ros_gz_sim, "launch", "gz_sim.launch.py")
         gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "gz_ros_bridge.yaml")
+        
+
+    robot_xml = xacro.process_file(
+        os.path.join(
+            get_package_share_directory("rb_theron_description"),
+            "robots",
+            os.environ["robot"] + ".urdf.xacro",
+        ),
+        mappings={"prefix": os.environ["prefix"],
+                  "ros2_control_hardware_type": "gz_ros2_control",
+                  "ros_distro": ros_distro},
+    ).toxml()
+
+    use_sim_time = LaunchConfiguration("use_sim_time")
+    headless = LaunchConfiguration("headless")
+    robot_name = LaunchConfiguration("robot_name")
+    init_x = os.environ['init_x']
+    init_y = os.environ["init_y"]
+    init_yaw = os.environ["init_yaw"]
 
     declare_namespace_cmd = DeclareLaunchArgument(
         "namespace", default_value="", description="Top-level namespace"
@@ -126,9 +147,42 @@ def generate_launch_description():
         "world_model",
         default_value=os.path.join(
             get_package_share_directory("tiplu_world"), "worlds", "6OG" + ".sdf"
+            
         ),
-        description="path to the world model",
+        description="path to the world model, alternative get_package_share_directory(rmf_gazebo), maps, tiplu_ign , tiplu.world",
+``
     )
+    
+    # Add world/models to the path
+    ign_resource_path = os.environ.get('IGN_GAZEBO_RESOURCE_PATH', '')
+    world_path = os.path.join(get_package_share_directory("rmf_gazebo"), "maps", "tiplu_ign" , "tiplu.world")
+    if world_path not in ign_resource_path.split(':'):
+        ign_resource_path += ':' + world_path
+    world_path = os.path.join(get_package_share_directory("rmf_gazebo"), "maps", "tiplu_ign" , "models")
+    if world_path not in ign_resource_path.split(':'):
+        ign_resource_path += ':' + world_path
+    world_path = os.path.join(get_package_share_directory("rmf_gazebo"), "maps", "tiplu" , "models")
+    if world_path not in ign_resource_path.split(':'):
+        ign_resource_path += ':' + world_path
+    world_path = os.path.join(get_package_share_directory("tiplu_world"), "models", "6_OG_normal_doors")
+    if world_path not in ign_resource_path.split(':'):
+        ign_resource_path += ':' + world_path
+    world_path = os.path.join(os.environ['HOME'],".gazebo", "models")
+    if world_path not in ign_resource_path.split(':'):
+        ign_resource_path += ':' + world_path
+    os.environ['IGN_GAZEBO_RESOURCE_PATH'] = ign_resource_path
+    
+    # Add plugins to the path
+    ign_plugin_path = os.environ.get('IGN_GAZEBO_SYSTEM_PLUGIN_PATH', '')
+    world_path = os.path.join(get_package_share_directory("rmf_robot_sim_gz_plugins"), "lib", "rmf_robot_sim_gz_plugins")
+    if world_path not in ign_plugin_path.split(':'):
+        ign_plugin_path += ':' + world_path
+    world_path = os.path.join(get_package_share_directory("rmf_building_sim_gz_plugins"), "lib", "rmf_building_sim_gz_plugins")
+    if world_path not in ign_plugin_path.split(':'):
+        ign_plugin_path += ':' + world_path
+    os.environ['IGN_GAZEBO_SYSTEM_PLUGIN_PATH'] = ign_plugin_path
+    os.environ['IGN_GUI_PLUGIN_PATH'] = ign_plugin_path
+    
     
     declare_headless_cmd = DeclareLaunchArgument(
         "headless",
