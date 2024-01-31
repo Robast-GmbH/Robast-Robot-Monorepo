@@ -16,6 +16,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       Project: moveit
+      Ros-Distro: humble
 
     steps:
     - name: Checkout repository and submodules
@@ -45,7 +46,7 @@ jobs:
           sudo apt-get upgrade -y &&
           rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
           export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
-          . /opt/ros/${ROS_DISTRO}/setup.sh &&
+          . /opt/ros/${{ env.Ros-Distro }}/setup.sh &&
           colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic &&
           colcon test &&
           colcon test-result --all"
