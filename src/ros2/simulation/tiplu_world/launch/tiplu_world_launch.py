@@ -220,7 +220,7 @@ def generate_launch_description():
 
     # As far as I understand, to get the value of a launch argument
     # we need a OpaqueFunction for this as described here:
-    # https://shorturl.at/eKMQV
+    # https://t.ly/pGVnN
     launch_gazebo_opaque_func = OpaqueFunction(
         function=create_world_urdf,
         kwargs={"gz_sim_launch": gz_sim_launch, "headless": headless},
