@@ -1,4 +1,4 @@
-#include "nav2_costmap_2d/static_layer.hpp"
+#include "static_layer_plugin/static_layer.hpp"
 
 #include <algorithm>
 #include <string>

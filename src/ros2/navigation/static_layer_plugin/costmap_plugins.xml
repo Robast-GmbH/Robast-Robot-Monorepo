@@ -1,0 +1,5 @@
+<class_libraries>
+  <library path="layers">
+    <class type="nav2_costmap_2d::StaticLayer"     base_class_type="nav2_costmap_2d::Layer">
+      <description>Listens to OccupancyGrid messages and copies them in, like from map_server.</description>
+    </class>
