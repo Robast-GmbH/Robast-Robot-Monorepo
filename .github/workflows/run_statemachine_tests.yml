@@ -68,7 +68,7 @@ jobs:
     - name: Generate coverage report
       working-directory: .
       run: >
-        docker build -t coverage project_startups/ros_integration_tests/Dockerfile &&
+          docker build -t coverage project_startups/ros_integration_tests/Dockerfile &&
           docker run -v $(pwd):/workspace/src/${{ env.Project2 }}
           -v $(pwd)/src/ros2:/workspace/src/
           -v $(pwd)/libs:/workspace/libs 
