@@ -97,6 +97,7 @@ target_include_directories(combine_grids PUBLIC
 )
 
 target_link_libraries(combine_grids ${rclcpp_LIBRARIES} ${OpenCV_LIBS})
+ament_target_dependencies(combine_grids ${DEPENDENCIES})
 
 target_link_libraries(map_combine_node combine_grids)
 
