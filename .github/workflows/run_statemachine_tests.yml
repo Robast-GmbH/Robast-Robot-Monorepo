@@ -15,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       Project: statemachine
+      Project2: coverage_ros2
 
     steps:
     - name: Checkout repository and submodules
@@ -63,3 +64,39 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: /home/coverage-${{env.Project}}.info
+
+    - name: Generate coverage report
+      working-directory: .
+      run: >
+        docker build -t coverage project_startups/ros_integration_tests/Dockerfile &&
+          docker run -v $(pwd):/workspace/src/${{ env.Project2 }}
+          -v $(pwd)/src/ros2:/workspace/src/
+          -v $(pwd)/libs:/workspace/libs 
+          -v /home:/home
+          --name coverage coverage
+          /bin/sh -c "cd /workspace/ &&
+          sudo apt-get update &&
+          sudo apt-get upgrade -y &&
+          rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
+          export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
+          . /robast/humble/setup.sh &&
+          . /workspace_mtc/install/setup.bash &&
+          sudo apt install lcov -y &&
+          colcon build --continue-on-error --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic &&
+          colcon test &&
+          colcon test-result --all &&
+          lcov --directory . --capture --output-file coverage-${{env.Project2}}.info &&
+          lcov --remove coverage-${{env.Project2}}.info '/usr/*' --output-file coverage-${{env.Project2}}.info &&
+          lcov --list coverage-${{env.Project2}}.info &&
+          cp /workspace/coverage-${{env.Project2}}.info /home/coverage-${{env.Project2}}.info"
+
+    - name: Wait for coverage report file
+      run: |
+          sleep 5
+          ls /home/coverage-${{env.Project2}}.info
+
+    - name: Upload coverage report to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: /home/coverage-${{env.Project2}}.info
