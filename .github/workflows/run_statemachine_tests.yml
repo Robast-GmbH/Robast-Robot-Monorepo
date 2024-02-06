@@ -79,7 +79,7 @@ jobs:
           rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
           export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
           . /robast/humble/setup.sh &&
-          . /workspace_moveit2/install/setup.bash &&
+          . /workspace_moveit2/install/setup.sh &&
           sudo apt install lcov -y &&
           colcon build --continue-on-error --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic &&
           colcon test &&
