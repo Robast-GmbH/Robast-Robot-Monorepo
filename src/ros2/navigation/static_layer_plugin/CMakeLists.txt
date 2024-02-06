@@ -16,24 +16,39 @@ find_package(pluginlib REQUIRED)
 find_package(tf2_geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 
+
+
+include_directories(include)
+  
+#add_definitions(${EIGEN3_DEFINITIONS})
+  
+
 set(dependencies
-  map_msgs
-  message_filters
-  nav2_costmap_2d
-  nav2_msgs
-  nav_msgs
-  pluginlib
-  rclcpp
-  rclcpp_lifecycle
-  tf2
-  tf2_geometry_msgs
+map_msgs
+message_filters
+nav2_costmap_2d
+nav2_msgs
+nav_msgs
+pluginlib
+rclcpp
+#rclcpp_lifecycle
+tf2
+tf2_geometry_msgs
 )
 
 add_library(layers SHARED
-  src/static_layer.cpp)
+src/static_layer_feuerplan.cpp)
 
 ament_target_dependencies(layers
   ${dependencies}
+)
+target_link_libraries(layers)
+
+install(TARGETS 
+  layers
+  ARCHIVE DESTINATION lib
+  LIBRARY DESTINATION lib
+  RUNTIME DESTINATION bin
 )
 
 install(FILES costmap_plugins.xml
@@ -51,5 +66,8 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+ament_export_include_directories(include)
+ament_export_libraries(layers)
+ament_export_dependencies(${dependencies})
 pluginlib_export_plugin_description_file(static_layer_plugin costmap_plugins.xml)
 ament_package()

@@ -19,7 +19,7 @@ namespace static_layer_plugin
  * @class StaticLayer
  * @brief Takes in a map generated from SLAM to add costs to costmap
  */
-class StaticLayer : public CostmapLayer
+class StaticLayer : public nav2_costmap_2d::CostmapLayer
 {
 public:
   /**

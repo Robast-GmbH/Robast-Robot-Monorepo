@@ -1,4 +1,4 @@
-#include "static_layer_plugin/static_layer.hpp"
+#include "static_layer_plugin/static_layer_feuerplan.hpp"
 
 #include <algorithm>
 #include <string>
@@ -7,14 +7,14 @@
 #include "tf2/convert.h"
 #include "tf2_geometry_msgs/tf2_geometry_msgs.hpp"
 
-PLUGINLIB_EXPORT_CLASS(nav2_costmap_2d::StaticLayer, nav2_costmap_2d::Layer)
+PLUGINLIB_EXPORT_CLASS(static_layer_plugin::StaticLayer, nav2_costmap_2d::Layer)
 
 using nav2_costmap_2d::NO_INFORMATION;
 using nav2_costmap_2d::LETHAL_OBSTACLE;
 using nav2_costmap_2d::FREE_SPACE;
 using rcl_interfaces::msg::ParameterType;
 
-namespace nav2_costmap_2d
+namespace static_layer_plugin
 {
 
 StaticLayer::StaticLayer()
@@ -40,11 +40,11 @@ StaticLayer::onInitialize()
     map_qos.keep_last(1);
   }
 
-  RCLCPP_INFO(
-    logger_,
-    "Subscribing to the map topic (%s) with %s durability",
-    map_topic_.c_str(),
-    map_subscribe_transient_local_ ? "transient local" : "volatile");
+  //RCLCPP_INFO(
+  //  logger_,
+  //  "Subscribing to the map topic (%s) with %s durability",
+  //  map_topic_.c_str(),
+  //  map_subscribe_transient_local_ ? "transient local" : "volatile");
 
   auto node = node_.lock();
   if (!node) {
@@ -52,7 +52,7 @@ StaticLayer::onInitialize()
   }
 
   map_sub_ = node->create_subscription<nav_msgs::msg::OccupancyGrid>(
-    map_topic_, map_qos,
+    "feuerplan_image_topic", 10,
     std::bind(&StaticLayer::incomingMap, this, std::placeholders::_1));
 
   if (subscribe_to_updates_) {
@@ -92,25 +92,24 @@ StaticLayer::getParameters()
   declareParameter("subscribe_to_updates", rclcpp::ParameterValue(false));
   declareParameter("map_subscribe_transient_local", rclcpp::ParameterValue(true));
   declareParameter("transform_tolerance", rclcpp::ParameterValue(0.0));
-  declareParameter("map_topic", rclcpp::ParameterValue(""));
+  //declareParameter("map_topic", rclcpp::ParameterValue(""));
 
   auto node = node_.lock();
   if (!node) {
     throw std::runtime_error{"Failed to lock node"};
   }
-  node->get_parameter(name_ + "." + "enabled", enabled_);
-  node->get_parameter(name_ + "." + "subscribe_to_updates", subscribe_to_updates_);
-  std::string private_map_topic, global_map_topic;
-  node->get_parameter(name_ + "." + "map_topic", private_map_topic);
-  std::string global_map_topic;
-  node->get_parameter("map_topic", global_map_topic);
+  node->get_parameter("enabled", enabled_);
+  node->get_parameter("subscribe_to_updates", subscribe_to_updates_);
+  //std::string map_topic;
+  //node->get_parameter(name_ + "." + "map_topic", private_map_topic);
+  //node->get_parameter("map_topic", map_topic);
   //if (!private_map_topic.empty()) {
   //  map_topic_ = private_map_topic;
   //} else {
   
-  map_topic_ = global_map_topic;
+  //map_topic_ = global_map_topic;
   node->get_parameter(
-    name_ + "." + "map_subscribe_transient_local",
+    "map_subscribe_transient_local",
     map_subscribe_transient_local_);
   node->get_parameter("track_unknown_space", track_unknown_space_);
   node->get_parameter("use_maximum", use_maximum_);
@@ -437,4 +436,4 @@ StaticLayer::dynamicParametersCallback(
   return result;
 }
 
-}  // namespace nav2_costmap_2d
+}  // namespace static_layer_plugin
