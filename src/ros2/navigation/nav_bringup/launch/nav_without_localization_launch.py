@@ -110,7 +110,7 @@ def generate_launch_description():
         description='the name of conatiner that nodes will load in if use composition')
 
     declare_use_respawn_cmd = DeclareLaunchArgument(
-        'use_respawn', default_value='False',
+        'use_respawn', default_value='true',
         description='Whether to respawn if a node crashes. Applied when composition is disabled.')
 
     declare_log_level_cmd = DeclareLaunchArgument(
@@ -191,6 +191,14 @@ def generate_launch_description():
                 arguments=['--ros-args', '--log-level', log_level],
                 remappings=remappings +
                         [('cmd_vel', 'cmd_vel_nav')]),
+            # Node(
+            #     package='nav2_collision_monitor',
+            #     executable='collision_monitor',
+            #     output='screen',
+            #     emulate_tty=True,  # https://github.com/ros2/launch/issues/188
+            #     parameters=[configured_params],
+            #     remappings=remappings),
+            
             Node(
                 package='nav2_lifecycle_manager',
                 executable='lifecycle_manager',

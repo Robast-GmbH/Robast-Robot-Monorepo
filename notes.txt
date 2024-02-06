@@ -1,5 +1,0 @@
-
-
-rosservice call /robot/safety_module/set_laser_mode "mode: 'x'"
-
-x = docking_station oder standard "oder door" (TODO)
