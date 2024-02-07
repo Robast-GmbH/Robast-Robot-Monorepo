@@ -43,9 +43,9 @@ ament_target_dependencies(layers
   ${dependencies}
 )
 target_link_libraries(layers)
+#target_compile_definitions(layers PUBLIC "PLUGINLIB__DISABLE_BOOST_FUNCTIONS")
 
-install(TARGETS 
-  layers
+install(TARGETS layers
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION bin
@@ -67,7 +67,10 @@ if(BUILD_TESTING)
 endif()
 
 ament_export_include_directories(include)
-ament_export_libraries(layers)
+ament_export_libraries(${PROJECT_NAME})
+#ament_export_targets(
+#  export_${PROJECT_NAME}
+#)
 ament_export_dependencies(${dependencies})
-pluginlib_export_plugin_description_file(static_layer_plugin costmap_plugins.xml)
+pluginlib_export_plugin_description_file(nav2_costmap_2d costmap_plugins.xml)
 ament_package()

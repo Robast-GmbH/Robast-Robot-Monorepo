@@ -16,14 +16,14 @@ class FeuerplanPublisher : public rclcpp::Node
     FeuerplanPublisher()
     : Node("feuerplan_publisher")
     {
-      publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("feuerplan_image_topic", 10);
-      timer_ = this->create_wall_timer(10ms, std::bind(&FeuerplanPublisher::timer_callback, this));
-    }
+      rclcpp::QoS map_qos(10); 
+      map_qos.transient_local();
+      map_qos.reliable();
+      map_qos.keep_last(1);
 
-  private:
-    void timer_callback()
-    {
-      cv::Mat feuerplan_image = cv::imread("src/navigation/feuerplan_publisher/resources/match_2.jpg", cv::IMREAD_GRAYSCALE);
+      publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("feuerplan_image_topic",map_qos);
+
+      cv::Mat feuerplan_image = cv::imread("src/navigation/feuerplan_publisher/resources/matched.jpg", cv::IMREAD_GRAYSCALE);
 
       std::vector<int8_t> data;
         for (int i = 0; i < feuerplan_image.rows; ++i) {
@@ -41,8 +41,8 @@ class FeuerplanPublisher : public rclcpp::Node
       ros_image_msg.info.resolution = 0.05000000074505806;
       ros_image_msg.info.width = feuerplan_image.cols;
       ros_image_msg.info.height = feuerplan_image.rows;
-      ros_image_msg.info.origin.position.x = -17.02382573215317;
-      ros_image_msg.info.origin.position.y = -8.725616675577179;
+      ros_image_msg.info.origin.position.x = -23.29338275267021;
+      ros_image_msg.info.origin.position.y = -7.3330556619203655;
       ros_image_msg.info.origin.position.z = 0.0;
       ros_image_msg.info.origin.orientation.x = 0.0;
       ros_image_msg.info.origin.orientation.y = 0.0;
@@ -50,17 +50,20 @@ class FeuerplanPublisher : public rclcpp::Node
       ros_image_msg.info.origin.orientation.w = 1.0;
       ros_image_msg.data = data;
       publisher_->publish(ros_image_msg);
-      RCLCPP_INFO(this->get_logger(), "Grayscale Image published");
+      //RCLCPP_INFO(this->get_logger(), "Grayscale Image published");
 
+       //publishLoop();
     }
-    rclcpp::TimerBase::SharedPtr timer_;
+    //rclcpp::TimerBase::SharedPtr timer_;
+    private:
     rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr publisher_;
 };
 
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<FeuerplanPublisher>());
+  auto node = std::make_shared<FeuerplanPublisher>();
+  rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
 }

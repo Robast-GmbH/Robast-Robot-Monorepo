@@ -34,11 +34,11 @@ StaticLayer::onInitialize()
   getParameters();
 
   rclcpp::QoS map_qos(10);  // initialize to default
-  if (map_subscribe_transient_local_) {
+  
     map_qos.transient_local();
     map_qos.reliable();
     map_qos.keep_last(1);
-  }
+  
 
   //RCLCPP_INFO(
   //  logger_,
@@ -52,18 +52,18 @@ StaticLayer::onInitialize()
   }
 
   map_sub_ = node->create_subscription<nav_msgs::msg::OccupancyGrid>(
-    "feuerplan_image_topic", 10,
+    "feuerplan_image_topic", map_qos,
     std::bind(&StaticLayer::incomingMap, this, std::placeholders::_1));
 
-  if (subscribe_to_updates_) {
-    RCLCPP_INFO(logger_, "Subscribing to updates");
-    map_update_sub_ = node->create_subscription<map_msgs::msg::OccupancyGridUpdate>(
-      map_topic_ + "_updates",
-      rclcpp::SystemDefaultsQoS(),
-      std::bind(&StaticLayer::incomingUpdate, this, std::placeholders::_1));
-  }
+  //if (subscribe_to_updates_) {
+  //  RCLCPP_INFO(logger_, "Subscribing to updates");
+  //  map_update_sub_ = node->create_subscription<map_msgs::msg::OccupancyGridUpdate>(
+  //    map_topic_ + "_updates",
+  //    rclcpp::SystemDefaultsQoS(),
+  //    std::bind(&StaticLayer::incomingUpdate, this, //std::placeholders::_1));
+  //}
 }
-
+//why need this?
 void
 StaticLayer::activate()
 {

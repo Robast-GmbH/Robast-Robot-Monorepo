@@ -16,6 +16,7 @@
 
   <depend>map_msgs</depend>
   <depend>message_filters</depend>
+  <depend>nav2_costmap_2d</depend>
   <depend>nav2_msgs</depend>
   <depend>nav_msgs</depend>
   <depend>pluginlib</depend>
