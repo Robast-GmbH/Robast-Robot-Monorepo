@@ -98,10 +98,8 @@ def generate_launch_description():
         "world_model",
         default_value=os.path.join(
             get_package_share_directory("tiplu_world"), "worlds", "6OG" + ".sdf"
-            
         ),
         description="path to the world model, alternative get_package_share_directory(rmf_gazebo), maps, tiplu_ign , tiplu.world",
-``
     )
     
     # Add world/models to the path
