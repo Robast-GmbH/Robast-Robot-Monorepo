@@ -71,6 +71,7 @@ include_directories(include)
 if("$ENV{GZ_VERSION}" STREQUAL "garden" OR "$ENV{GZ_VERSION}" STREQUAL "harmonic")
   add_library(gz_ros2_control_base_movement SHARED
     src/gz_ros2_control_base_movement.cpp
+    src/sim_ros2_control_base_movement.cpp
   )
 
   ament_target_dependencies(gz_ros2_control_base_movement
@@ -94,6 +95,7 @@ if("$ENV{GZ_VERSION}" STREQUAL "garden" OR "$ENV{GZ_VERSION}" STREQUAL "harmonic
 else() ## FORTRESS
   add_library(ign_ros2_control_base_movement SHARED
     src/ign_ros2_control_base_movement.cpp
+    src/sim_ros2_control_base_movement.cpp
   )
 
   ament_target_dependencies(ign_ros2_control_base_movement
