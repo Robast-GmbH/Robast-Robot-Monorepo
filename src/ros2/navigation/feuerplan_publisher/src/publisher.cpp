@@ -21,7 +21,7 @@ class FeuerplanPublisher : public rclcpp::Node
       map_qos.reliable();
       map_qos.keep_last(1);
 
-      publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("feuerplan_image_topic",map_qos);
+      publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_costmap/feuerplan_image_topic",map_qos);
 
       cv::Mat feuerplan_image = cv::imread("src/navigation/feuerplan_publisher/resources/matched.jpg", cv::IMREAD_GRAYSCALE);
 

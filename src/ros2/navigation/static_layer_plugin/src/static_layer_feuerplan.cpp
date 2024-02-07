@@ -35,9 +35,9 @@ StaticLayer::onInitialize()
 
   rclcpp::QoS map_qos(10);  // initialize to default
   
-    map_qos.transient_local();
-    map_qos.reliable();
-    map_qos.keep_last(1);
+  map_qos.transient_local();
+  map_qos.reliable();
+  map_qos.keep_last(1);
   
 
   //RCLCPP_INFO(
@@ -46,15 +46,16 @@ StaticLayer::onInitialize()
   //  map_topic_.c_str(),
   //  map_subscribe_transient_local_ ? "transient local" : "volatile");
 
+  RCLCPP_INFO(logger_, "node lock request");
   auto node = node_.lock();
   if (!node) {
     throw std::runtime_error{"Failed to lock node"};
   }
-
+  RCLCPP_INFO(logger_, "subscriber created (sagar)");
   map_sub_ = node->create_subscription<nav_msgs::msg::OccupancyGrid>(
     "feuerplan_image_topic", map_qos,
     std::bind(&StaticLayer::incomingMap, this, std::placeholders::_1));
-
+  RCLCPP_INFO(logger_, "subscriber created finished (sagar)");
   //if (subscribe_to_updates_) {
   //  RCLCPP_INFO(logger_, "Subscribing to updates");
   //  map_update_sub_ = node->create_subscription<map_msgs::msg::OccupancyGridUpdate>(
@@ -67,6 +68,7 @@ StaticLayer::onInitialize()
 void
 StaticLayer::activate()
 {
+  
 }
 
 void
@@ -89,17 +91,17 @@ StaticLayer::getParameters()
   double temp_tf_tol = 0.0;
 
   declareParameter("enabled", rclcpp::ParameterValue(true));
-  declareParameter("subscribe_to_updates", rclcpp::ParameterValue(false));
+  //declareParameter("subscribe_to_updates", rclcpp::ParameterValue(false));
   declareParameter("map_subscribe_transient_local", rclcpp::ParameterValue(true));
   declareParameter("transform_tolerance", rclcpp::ParameterValue(0.0));
-  //declareParameter("map_topic", rclcpp::ParameterValue(""));
+  //declareParameter("map_topic", rclcpp::ParameterValue("feuerplan_image_topic"));
 
   auto node = node_.lock();
   if (!node) {
     throw std::runtime_error{"Failed to lock node"};
   }
   node->get_parameter("enabled", enabled_);
-  node->get_parameter("subscribe_to_updates", subscribe_to_updates_);
+  //node->get_parameter("subscribe_to_updates", subscribe_to_updates_);
   //std::string map_topic;
   //node->get_parameter(name_ + "." + "map_topic", private_map_topic);
   //node->get_parameter("map_topic", map_topic);
@@ -113,6 +115,7 @@ StaticLayer::getParameters()
     map_subscribe_transient_local_);
   node->get_parameter("track_unknown_space", track_unknown_space_);
   node->get_parameter("use_maximum", use_maximum_);
+ // node->get_parameter("map_topic", map_topic)
   node->get_parameter("lethal_cost_threshold", temp_lethal_threshold);
   node->get_parameter("unknown_cost_value", unknown_cost_value_);
   node->get_parameter("trinary_costmap", trinary_costmap_);
@@ -126,21 +129,21 @@ StaticLayer::getParameters()
   transform_tolerance_ = tf2::durationFromSec(temp_tf_tol);
 
   // Add callback for dynamic parameters
-  dyn_params_handler_ = node->add_on_set_parameters_callback(
-    std::bind(
-      &StaticLayer::dynamicParametersCallback,
-      this, std::placeholders::_1));
+ // dyn_params_handler_ = node->add_on_set_parameters_callback(
+  //  std::bind(
+  //    &StaticLayer::dynamicParametersCallback,
+  //    this, std::placeholders::_1));
 }
 
 void
 StaticLayer::processMap(const nav_msgs::msg::OccupancyGrid & new_map)
 {
-  RCLCPP_DEBUG(logger_, "StaticLayer: Process map");
+  RCLCPP_INFO(logger_, "StaticLayer: Process map (sagar)");
 
   unsigned int size_x = new_map.info.width;
   unsigned int size_y = new_map.info.height;
 
-  RCLCPP_DEBUG(
+  RCLCPP_INFO(
     logger_,
     "StaticLayer: Received a %d X %d map at %f m/pix", size_x, size_y,
     new_map.info.resolution);
@@ -157,7 +160,7 @@ StaticLayer::processMap(const nav_msgs::msg::OccupancyGrid & new_map)
     // Update the size of the layered costmap (and all layers, including this one)
     RCLCPP_INFO(
       logger_,
-      "StaticLayer: Resizing costmap to %d X %d at %f m/pix", size_x, size_y,
+      "StaticLayer: Resizing costmap to %d X %d at %f m/pix (sagar)", size_x, size_y,
       new_map.info.resolution);
     layered_costmap_->resizeMap(
       size_x, size_y, new_map.info.resolution,
@@ -238,6 +241,7 @@ StaticLayer::interpretValue(unsigned char value)
 void
 StaticLayer::incomingMap(const nav_msgs::msg::OccupancyGrid::SharedPtr new_map)
 {
+  RCLCPP_INFO(logger_, "incoming map (sagar)");
   if (!map_received_) {
     processMap(*new_map);
     map_received_ = true;

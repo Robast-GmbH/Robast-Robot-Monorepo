@@ -154,6 +154,6 @@ protected:
   rclcpp::node_interfaces::OnSetParametersCallbackHandle::SharedPtr dyn_params_handler_;
 };
 
-}  // namespace nav2_costmap_2d
+}  // namespace static_layer_plugin
 
 #endif  // NAV2_COSTMAP_2D__STATIC_LAYER_HPP_
