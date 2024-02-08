@@ -88,6 +88,11 @@ jobs:
           lcov --list coverage-${{env.Project2}}.info &&
           cp /workspace/coverage-${{env.Project2}}.info /home/coverage-${{env.Project2}}.info"
 
+    - name: SonarCloud Scan
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        SONAR_TOKEN: ${{ secrets. SONARCLOUD_TOKEN }}
+
     - name: Wait for coverage report file
       run: |
           sleep 5
