@@ -73,7 +73,7 @@ jobs:
           -v $(pwd)/libs:/workspace/libs 
           -v /home:/home
           --name coverage coverage
-          /bin/sh -c "cd /workspace/ &&
+          /bin/sh -c " su robast && cd /workspace/ &&
           sudo apt-get update &&
           sudo apt-get upgrade -y &&
           rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
@@ -83,7 +83,6 @@ jobs:
           sudo apt install lcov -y &&
           colcon build --packages-skip spatio_temporal_voxel_layer --continue-on-error --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic &&
           colcon test --packages-skip spatio_temporal_voxel_layer &&
-          colcon test-result --all &&
           lcov --directory . --capture --output-file coverage-${{env.Project2}}.info &&
           lcov --remove coverage-${{env.Project2}}.info '/usr/*' --output-file coverage-${{env.Project2}}.info &&
           lcov --list coverage-${{env.Project2}}.info &&
