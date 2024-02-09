@@ -65,8 +65,8 @@ jobs:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: /home/coverage-${{env.Project}}.info
     
-    - name: Install SonarCloud Scanner (coverage_ros2 build)
-      run: sudo apt-get install sonar-scanner  # Beispiel (Anpassung evt. nötig)
+    # - name: Install SonarCloud Scanner (coverage_ros2 build)
+    #   run: sudo apt-get install sonar-scanner  # Beispiel (Anpassung evt. nötig)
 
     - name: Generate coverage report
       working-directory: .
