@@ -64,6 +64,9 @@ jobs:
       with:
         token: ${{ secrets.CODECOV_TOKEN }}
         file: /home/coverage-${{env.Project}}.info
+    
+    - name: Install SonarCloud Scanner (coverage_ros2 build)
+      run: sudo apt-get install sonar-scanner  # Beispiel (Anpassung evt. nötig)
 
     - name: Generate coverage report
       working-directory: .
@@ -88,15 +91,20 @@ jobs:
           lcov --list coverage-${{env.Project2}}.info &&
           cp /workspace/coverage-${{env.Project2}}.info /home/coverage-${{env.Project2}}.info"
 
-    - name: SonarCloud Scan
-      uses: SonarSource/sonarcloud-github-action@master
-      env:
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
     - name: Wait for coverage report file
       run: |
           sleep 5
           ls /home/coverage-${{env.Project2}}.info
+
+    - name: Run SonarCloud Analysis (coverage_ros2 build)
+      env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Hier Ihr SonarCloud Token
+      run:  sonar-scanner \
+            -Dsonar.projectKey=Monorepo \ 
+            -Dsonar.organization=robast-gmbh \ 
+            -Dsonar.host.url=https://sonarcloud.io \
+            -Dsonar.login=${{ secrets.CODECOV_TOKEN }} \
+            -Dsonar.coverage.reportPaths=/home/coverage-${{env.Project2}}.info
 
     - name: Upload coverage report to Codecov
       uses: codecov/codecov-action@v2
