@@ -102,11 +102,11 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run:  sonar-scanner \
-            -Dsonar.projectKey=Monorepo \ 
-            -Dsonar.organization=robast-gmbh \ 
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.CODECOV_TOKEN }} \
-            -Dsonar.coverage.reportPaths=/home/coverage-${{env.Project2}}.info
+            -D sonar.projectKey=Monorepo \ 
+            -D sonar.organization=robast-gmbh \ 
+            -D sonar.host.url=https://sonarcloud.io \
+            -D sonar.login=${{ secrets.CODECOV_TOKEN }} \
+            -D sonar.coverage.reportPaths=/home/coverage-${{env.Project2}}.info
 
     - name: Upload coverage report to Codecov
       uses: codecov/codecov-action@v2
