@@ -67,7 +67,8 @@ jobs:
     
     # - name: Install SonarCloud Scanner (coverage_ros2 build)
     #   run: sudo apt-get install sonar-scanner  # Beispiel (Anpassung evt. nötig)
-
+    - name: Install sonar-scanner and build-wrapper
+      uses: SonarSource/sonarcloud-github-c-cpp@v2
     - name: Generate coverage report
       working-directory: .
       run: >
