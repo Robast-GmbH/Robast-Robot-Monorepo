@@ -99,7 +99,8 @@ jobs:
 
     - name: Run SonarCloud Analysis (coverage_ros2 build)
       env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }} # Hier Ihr SonarCloud Token
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run:  sonar-scanner \
             -Dsonar.projectKey=Monorepo \ 
             -Dsonar.organization=robast-gmbh \ 
