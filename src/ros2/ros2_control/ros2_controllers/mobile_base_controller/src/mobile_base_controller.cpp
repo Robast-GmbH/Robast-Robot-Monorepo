@@ -216,22 +216,24 @@ namespace mobile_base_controller
   {
     for (size_t i = 0; i < command_interfaces_.size(); ++i)
     {
-      if (!std::isnan(reference_interfaces_[i]))
+      if (std::isnan(reference_interfaces_[i]))
       {
-        // check if min velocity is reached
-        if (std::abs(reference_interfaces_[0]) > _min_velocity)
+        continue;   // Skip the remaining code in the loop if reference_interfaces_[i] is NaN
+      }
+
+      // check if min velocity is reached
+      if (std::abs(reference_interfaces_[0]) > _min_velocity)
+      {
+        publish_cmd_vel(reference_interfaces_[0]);
+        _zero_cmd_vel_published_last = false;
+      }
+      else
+      {
+        // prevent cmd_vel from being published permanently
+        if (!_zero_cmd_vel_published_last)
         {
-          publish_cmd_vel(reference_interfaces_[0]);
-          _zero_cmd_vel_published_last = false;
-        }
-        else
-        {
-          // prevent cmd_vel from being published permanently
-          if (!_zero_cmd_vel_published_last)
-          {
-            publish_cmd_vel(0.0);
-            _zero_cmd_vel_published_last = true;
-          }
+          publish_cmd_vel(0.0);
+          _zero_cmd_vel_published_last = true;
         }
       }
     }
