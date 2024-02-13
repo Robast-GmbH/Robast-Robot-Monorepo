@@ -187,6 +187,25 @@
                 },
                 {
                         "type": "shell",
+                        "label": "publish feuerplan",
+                        "command": "source /workspace/install/setup.bash; ros2 run feuerplan_publisher talker",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "label": "start nav_with_feuerplan_static_layer",
+                        "detail": "Publishes feurplan occupancy grid and starts nav with feuerplan as static layer",
+                        "dependsOn": [
+                                "publish feuerplan",
+                                "start slam_toolbox",
+                                "start nav_without_localization"
+                        ]
+                },
+                {
+                        "type": "shell",
                         "label": "start nav_without_localization_with_bt_server_collection",
                         "command": "source install/setup.bash; ros2 launch nav_bringup nav_without_localization_with_bt_server_collection_launch.py",
                         "problemMatcher": [],

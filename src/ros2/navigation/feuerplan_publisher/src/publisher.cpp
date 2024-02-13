@@ -23,14 +23,20 @@ class FeuerplanPublisher : public rclcpp::Node
 
       publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_costmap/feuerplan_image_topic",map_qos);
 
-      cv::Mat feuerplan_image = cv::imread("src/navigation/feuerplan_publisher/resources/matched.jpg", cv::IMREAD_GRAYSCALE);
+      cv::Mat feuerplan_image = cv::imread("src/navigation/feuerplan_publisher/resources/matched.jpg",cv::IMREAD_GRAYSCALE);
+      cv::Mat feuerplan_image_smooth;
+      cv::Mat feuerplan_image_thresh;
 
+      //cv::threshold(feuerplan_image,feuerplan_image_thresh, 128, 1, cv::THRESH_BINARY | cv::THRESH_OTSU);
+      cv::GaussianBlur(feuerplan_image, feuerplan_image_thresh, cv::Size(0, 0), 3);
+      cv::addWeighted(feuerplan_image, 1.5, feuerplan_image_thresh, -0.5, 0, feuerplan_image_thresh);
       std::vector<int8_t> data;
-        for (int i = 0; i < feuerplan_image.rows; ++i) {
-            for (int j = 0; j < feuerplan_image.cols; ++j) {
-                data.push_back(feuerplan_image.at<uchar>(i, j));
-            }
+      for (int i = 0; i < feuerplan_image_thresh.rows; ++i) {
+        for (int j = 0; j < feuerplan_image_thresh.cols; ++j) {
+          data.push_back(feuerplan_image_thresh.at<uchar>(i, j));
         }
+      }
+
 
     //  RCLCPP_INFO(this->get_logger(), "%d", data)
       auto ros_image_msg = nav_msgs::msg::OccupancyGrid();
@@ -41,16 +47,16 @@ class FeuerplanPublisher : public rclcpp::Node
       ros_image_msg.info.resolution = 0.05000000074505806;
       ros_image_msg.info.width = feuerplan_image.cols;
       ros_image_msg.info.height = feuerplan_image.rows;
-      ros_image_msg.info.origin.position.x = -23.29338275267021;
-      ros_image_msg.info.origin.position.y = -7.3330556619203655;
+      ros_image_msg.info.origin.position.x = -20;
+      ros_image_msg.info.origin.position.y = -3.3;
       ros_image_msg.info.origin.position.z = 0.0;
       ros_image_msg.info.origin.orientation.x = 0.0;
       ros_image_msg.info.origin.orientation.y = 0.0;
       ros_image_msg.info.origin.orientation.z = 0.0;
       ros_image_msg.info.origin.orientation.w = 1.0;
       ros_image_msg.data = data;
+      RCLCPP_INFO(this->get_logger(), "Feuerplan published");
       publisher_->publish(ros_image_msg);
-      //RCLCPP_INFO(this->get_logger(), "Grayscale Image published");
 
        //publishLoop();
     }
