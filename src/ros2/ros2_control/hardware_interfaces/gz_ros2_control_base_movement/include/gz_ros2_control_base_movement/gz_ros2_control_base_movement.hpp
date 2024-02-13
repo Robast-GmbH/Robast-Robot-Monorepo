@@ -2,7 +2,7 @@
 #define GZ_ROS2_CONTROL_BASE_MOVEMENT__GZ_SYSTEM_HPP_
 
 #include "gz_ros2_control/gz_system_interface.hpp"
-#include "sim_ros2_control_base_movement.hpp"
+#include "gz_ros2_control_base_movement/sim_ros2_control_base_movement.hpp"
 
 namespace gz_ros2_control_base_movement
 {
