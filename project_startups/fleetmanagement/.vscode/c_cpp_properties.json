@@ -6,7 +6,7 @@
         "limitSymbolsToIncludedHeaders": false
       },
       "includePath": [
-        "/opt/ros/humble/include/**",
+        "/opt/ros/${ROS_DISTRO}/include/**",
         "/usr/include/**"
       ],
       "name": "ROS",

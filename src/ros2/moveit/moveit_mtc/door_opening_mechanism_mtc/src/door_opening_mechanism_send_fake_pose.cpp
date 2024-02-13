@@ -32,7 +32,7 @@ class MinimalPublisher : public rclcpp::Node
 
     auto msg = std::make_shared<depthai_ros_msgs::msg::SpatialDetectionArray>();
 
-    msg->header.frame_id = "rb_theron/base_footprint/back_top_realsense_camera_color_link";
+    msg->header.frame_id = "rb_theron/base_link/back_top_realsense_camera_color_link";
     msg->detections.push_back(fake_detection);
 
     RCLCPP_INFO(this->get_logger(), "Publishing SpatialDetectionArray message!");

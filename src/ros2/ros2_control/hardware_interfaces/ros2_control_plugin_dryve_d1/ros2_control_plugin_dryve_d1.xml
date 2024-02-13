@@ -1,0 +1,10 @@
+<library path="ros2_control_plugin_dryve_d1">
+  <class
+    name="ros2_control_plugin_dryve_d1/DryveD1SystemHardware"
+    type="ros2_control_plugin_dryve_d1::DryveD1SystemHardware"
+    base_class_type="hardware_interface::SystemInterface">
+    <description>
+      The ros2_control plugin for the igus dryve d1 motor control.
+    </description>
+  </class>
+</library>

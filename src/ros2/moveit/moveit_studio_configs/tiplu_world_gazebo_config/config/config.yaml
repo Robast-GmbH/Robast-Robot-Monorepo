@@ -48,7 +48,7 @@ hardware:
       package: "rb_theron_description"
       path: "robots/rb_theron.urdf.xacro"
     srdf:
-      package: "moveit_door_opening_mechanism_rotating_arm_config"
+      package: "moveit_door_opening_mechanism_config"
       path: "config/rb_theron.srdf"
     # Specify any additional parameters required for the URDF.
     # Many of these are specific to the UR descriptions packages, and can be customized as needed.
