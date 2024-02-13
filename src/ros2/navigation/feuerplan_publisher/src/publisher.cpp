@@ -27,13 +27,21 @@ class FeuerplanPublisher : public rclcpp::Node
       cv::Mat feuerplan_image_smooth;
       cv::Mat feuerplan_image_thresh;
 
-      //cv::threshold(feuerplan_image,feuerplan_image_thresh, 128, 1, cv::THRESH_BINARY | cv::THRESH_OTSU);
-      cv::GaussianBlur(feuerplan_image, feuerplan_image_thresh, cv::Size(0, 0), 3);
-      cv::addWeighted(feuerplan_image, 1.5, feuerplan_image_thresh, -0.5, 0, feuerplan_image_thresh);
+      int dilation_size = 1;
+      cv::Mat element = cv::getStructuringElement(cv::MORPH_RECT,
+                                                  cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1),
+                                                  cv::Point(dilation_size, dilation_size));
+
+      cv::GaussianBlur(feuerplan_image, feuerplan_image_thresh, cv::Size(3, 3), 3,3);
+      cv::Canny( feuerplan_image_thresh, feuerplan_image_thresh, 50, 150, 3);
+      cv::dilate(feuerplan_image_thresh, feuerplan_image_thresh, element);
+      feuerplan_image_smooth = feuerplan_image & feuerplan_image_thresh;
+      
+      cv::threshold(feuerplan_image_smooth, feuerplan_image_smooth, 150, 127, cv::THRESH_BINARY);
       std::vector<int8_t> data;
-      for (int i = 0; i < feuerplan_image_thresh.rows; ++i) {
-        for (int j = 0; j < feuerplan_image_thresh.cols; ++j) {
-          data.push_back(feuerplan_image_thresh.at<uchar>(i, j));
+      for (int i = 0; i < feuerplan_image_smooth.rows; ++i) {
+        for (int j = 0; j < feuerplan_image_smooth.cols; ++j) {
+          data.push_back(feuerplan_image_smooth.at<uchar>(i, j));
         }
       }
 
@@ -44,16 +52,16 @@ class FeuerplanPublisher : public rclcpp::Node
       ros_image_msg.header.frame_id = "map";
       ros_image_msg.info.map_load_time.sec = 0;
       ros_image_msg.info.map_load_time.nanosec = 0;
-      ros_image_msg.info.resolution = 0.05000000074505806;
-      ros_image_msg.info.width = feuerplan_image.cols;
-      ros_image_msg.info.height = feuerplan_image.rows;
-      ros_image_msg.info.origin.position.x = -20;
-      ros_image_msg.info.origin.position.y = -3.3;
+      ros_image_msg.info.resolution = 0.05;
+      ros_image_msg.info.width = feuerplan_image_smooth.cols;
+      ros_image_msg.info.height = feuerplan_image_smooth.rows;
+      ros_image_msg.info.origin.position.x = -19.8;
+      ros_image_msg.info.origin.position.y = 5.23;
       ros_image_msg.info.origin.position.z = 0.0;
-      ros_image_msg.info.origin.orientation.x = 0.0;
+      ros_image_msg.info.origin.orientation.x = 1.0;
       ros_image_msg.info.origin.orientation.y = 0.0;
       ros_image_msg.info.origin.orientation.z = 0.0;
-      ros_image_msg.info.origin.orientation.w = 1.0;
+      ros_image_msg.info.origin.orientation.w = 0.0;
       ros_image_msg.data = data;
       RCLCPP_INFO(this->get_logger(), "Feuerplan published");
       publisher_->publish(ros_image_msg);
