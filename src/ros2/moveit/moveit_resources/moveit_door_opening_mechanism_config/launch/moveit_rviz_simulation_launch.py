@@ -84,8 +84,9 @@ def generate_launch_description():
         "capabilities": "move_group/ExecuteTaskSolutionCapability"
     }
 
+    JOINT_STATES_TOPIC = "/joint_states"
     remappings = [
-        ("/" + namespace_arm + "/joint_states", "/joint_states"),
+        ("/" + namespace_arm + JOINT_STATES_TOPIC, JOINT_STATES_TOPIC),
     ]
     move_group_cmd = Node(
         package="moveit_ros_move_group",
@@ -131,16 +132,12 @@ def generate_launch_description():
     )
 
     ros2_controllers_path_base = os.path.join(
-        get_package_share_directory(
-            "moveit_door_opening_mechanism_config"
-        ),
+        get_package_share_directory("moveit_door_opening_mechanism_config"),
         "config",
         "ros2_controllers_simulation_base.yaml",
     )
     ros2_controllers_path_arm = os.path.join(
-        get_package_share_directory(
-            "moveit_door_opening_mechanism_config"
-        ),
+        get_package_share_directory("moveit_door_opening_mechanism_config"),
         "config",
         "ros2_controllers_simulation_arm.yaml",
     )
@@ -188,7 +185,7 @@ def generate_launch_description():
             "/" + namespace_arm + "/diff_drive_base_controller/cmd_vel",
             "/diff_drive_base_controller/cmd_vel",
         ),
-        ("/" + namespace_arm + "/joint_states", "/joint_states"),
+        ("/" + namespace_arm + JOINT_STATES_TOPIC, JOINT_STATES_TOPIC),
     ]
     ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",

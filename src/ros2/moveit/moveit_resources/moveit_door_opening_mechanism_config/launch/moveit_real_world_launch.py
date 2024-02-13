@@ -84,11 +84,13 @@ def generate_launch_description():
     # base_footprint and the base_link in order to plan for the motion of the base.
     # However, this joint is not part of the real robot and therefore we need to remove it from the
     # tf tree used for the arm. This is done by remapping the tf topics.
+    TF_TOPIC = "/tf"
+    TF_STATIC_TOPIC = "/tf_static"
     remappings_move_group = [
-        ("/tf", "/tf_dump"),
-        ("/tf_static", "/tf_static_dump"),
-        ("/" + namespace_arm + "/tf", "/tf"),
-        ("/" + namespace_arm + "/tf_static", "/tf_static"),
+        (TF_TOPIC, "/tf_dump"),
+        (TF_STATIC_TOPIC, "/tf_static_dump"),
+        ("/" + namespace_arm + TF_TOPIC, TF_TOPIC),
+        ("/" + namespace_arm + TF_STATIC_TOPIC, TF_STATIC_TOPIC),
     ]
 
     # Start the actual move_group node/action server
@@ -124,8 +126,8 @@ def generate_launch_description():
     )
 
     remappings_state_publisher = [
-        ("/tf", "/" + namespace_arm + "/tf"),
-        ("/tf_static", "/" + namespace_arm + "/tf_static"),
+        (TF_TOPIC, "/" + namespace_arm + TF_TOPIC),
+        (TF_STATIC_TOPIC, "/" + namespace_arm + TF_STATIC_TOPIC),
     ]
 
     # State Publisher
@@ -143,9 +145,7 @@ def generate_launch_description():
 
     # ros2_control
     ros2_controllers_path_arm = os.path.join(
-        get_package_share_directory(
-            "moveit_door_opening_mechanism_config"
-        ),
+        get_package_share_directory("moveit_door_opening_mechanism_config"),
         "config",
         "ros2_controllers_real_world_arm.yaml",
     )
