@@ -59,8 +59,6 @@ namespace mobile_base_controller
                                                                         const rclcpp::Duration& period) override;
 #endif
 
-    realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>> rt_buffer_ptr_;
-
    private:
     bool _use_stamped_vel;
 
@@ -76,6 +74,8 @@ namespace mobile_base_controller
     std::vector<std::string> _reference_interface_names;
 
     std::vector<std::string> _command_interface_names;
+
+    realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>> _rt_buffer_ptr;
 
     std::variant<rclcpp::Publisher<geometry_msgs::msg::Twist>::SharedPtr,
                  rclcpp::Publisher<geometry_msgs::msg::TwistStamped>::SharedPtr>

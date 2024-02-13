@@ -129,7 +129,7 @@ namespace mobile_base_controller
     }
 
     // reset command buffer if a command came through callback when controller was inactive
-    rt_buffer_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>>(nullptr);
+    _rt_buffer_ptr = realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>>(nullptr);
 
     RCLCPP_INFO(this->get_node()->get_logger(), "activate successful");
 
@@ -142,7 +142,7 @@ namespace mobile_base_controller
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
     // reset command buffer
-    rt_buffer_ptr_ = realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>>(nullptr);
+    _rt_buffer_ptr = realtime_tools::RealtimeBuffer<std::shared_ptr<DataType>>(nullptr);
     return controller_interface::CallbackReturn::SUCCESS;
   }
 
@@ -254,7 +254,7 @@ namespace mobile_base_controller
 
   controller_interface::return_type MobileBaseController::update_reference_from_subscribers_impl()
   {
-    auto joint_commands = rt_buffer_ptr_.readFromRT();
+    auto joint_commands = _rt_buffer_ptr.readFromRT();
     // message is valid
     if (!(!joint_commands || !(*joint_commands)))
     {
