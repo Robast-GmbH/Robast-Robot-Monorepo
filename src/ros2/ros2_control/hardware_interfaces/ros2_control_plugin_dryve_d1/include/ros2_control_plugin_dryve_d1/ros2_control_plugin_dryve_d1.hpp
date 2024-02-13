@@ -1,6 +1,9 @@
 #ifndef ROS2_CONTROL_PLUGIN_DRYVE_D1_HPP_
 #define ROS2_CONTROL_PLUGIN_DRYVE_D1_HPP_
 
+#include <chrono>
+#include <cmath>
+#include <limits>
 #include <memory>
 #include <string>
 #include <vector>
@@ -12,7 +15,10 @@
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
+#include "hardware_interface/types/hardware_interface_type_values.hpp"
+#include "hardware_interface_utils/hardware_interface_utils.hpp"
 #include "rclcpp/macros.hpp"
+#include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "ros2_control_plugin_dryve_d1/visibility_control.h"
@@ -67,6 +73,8 @@ namespace ros2_control_plugin_dryve_d1
     std::unique_ptr<dryve_d1_bridge::D1> _dryve_d1;
 
     std::string _ip_address;
+
+    std::string _logger = "DryveD1SystemHardware";
 
     bool _zero_velocity_published_last;
 

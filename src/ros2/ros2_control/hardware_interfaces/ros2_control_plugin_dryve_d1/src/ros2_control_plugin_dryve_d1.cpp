@@ -1,14 +1,5 @@
 #include "ros2_control_plugin_dryve_d1/ros2_control_plugin_dryve_d1.hpp"
 
-#include <chrono>
-#include <cmath>
-#include <limits>
-#include <memory>
-#include <vector>
-
-#include "hardware_interface/types/hardware_interface_type_values.hpp"
-#include "rclcpp/rclcpp.hpp"
-
 namespace ros2_control_plugin_dryve_d1
 {
   hardware_interface::CallbackReturn DryveD1SystemHardware::on_init(const hardware_interface::HardwareInfo& info)
@@ -30,55 +21,7 @@ namespace ros2_control_plugin_dryve_d1
     _hw_velocity_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_velocity_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
-    for (const hardware_interface::ComponentInfo& joint : info_.joints)
-    {
-      RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Configuring joint '%s'.", joint.name.c_str());
-
-      // DryveD1SystemHardware has position and velocity state and command interface on each joint
-      if (joint.command_interfaces.size() > 2)
-      {
-        RCLCPP_FATAL(rclcpp::get_logger("DryveD1SystemHardware"),
-                     "Joint '%s' has %zu command interfaces found. 2 or less expected.",
-                     joint.name.c_str(),
-                     joint.command_interfaces.size());
-        return hardware_interface::CallbackReturn::ERROR;
-      }
-
-      if ((joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
-          (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
-      {
-        RCLCPP_FATAL(rclcpp::get_logger("DryveD1SystemHardware"),
-                     "Joint '%s' have %s command interfaces found. '%s' or '%s' expected.",
-                     joint.name.c_str(),
-                     joint.command_interfaces[0].name.c_str(),
-                     hardware_interface::HW_IF_POSITION,
-                     hardware_interface::HW_IF_VELOCITY);
-        return hardware_interface::CallbackReturn::ERROR;
-      }
-
-      if (joint.state_interfaces.size() > 2)
-      {
-        RCLCPP_FATAL(rclcpp::get_logger("DryveD1SystemHardware"),
-                     "Joint '%s' has %zu state interface. 2 or less expected.",
-                     joint.name.c_str(),
-                     joint.state_interfaces.size());
-        return hardware_interface::CallbackReturn::ERROR;
-      }
-
-      if ((joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
-          (joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
-      {
-        RCLCPP_FATAL(rclcpp::get_logger("DryveD1SystemHardware"),
-                     "Joint '%s' have %s state interface. '%s' or '%s' expected.",
-                     joint.name.c_str(),
-                     joint.state_interfaces[0].name.c_str(),
-                     hardware_interface::HW_IF_POSITION,
-                     hardware_interface::HW_IF_VELOCITY);
-        return hardware_interface::CallbackReturn::ERROR;
-      }
-    }
-
-    return hardware_interface::CallbackReturn::SUCCESS;
+    return hardware_interface_utils::configure_joints(info.joints, _logger);
   }
 
   hardware_interface::CallbackReturn DryveD1SystemHardware::on_configure(
@@ -86,10 +29,8 @@ namespace ros2_control_plugin_dryve_d1
   {
     // Please mind! In order to get a connection to the dryve d1, there need to be a port forward on the router from the
     // port configured in DRYVE_D1_IP_ADDRESS_X_AXIS to the Port configured for Modbus TCP in the dryve d1 (usually 502)
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"),
-                "Configuring dryve d1 for ip address %s and port %d",
-                _ip_address.c_str(),
-                _port);
+    RCLCPP_INFO(
+        rclcpp::get_logger(_logger), "Configuring dryve d1 for ip address %s and port %d", _ip_address.c_str(), _port);
     _dryve_d1 =
         std::make_unique<dryve_d1_bridge::D1>(_ip_address, _port, std::make_unique<dryve_d1_bridge::SocketWrapper>());
 
@@ -108,7 +49,7 @@ namespace ros2_control_plugin_dryve_d1
 
     _dryve_d1->set_debug_mode_off();
 
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Start homing now ...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Start homing now ...");
     _dryve_d1->start_dryve_homing(
         dryve_d1_bridge::HOMING_VELOCITY, dryve_d1_bridge::HOMING_VELOCITY, dryve_d1_bridge::HOMING_ACCELERATION);
 
@@ -124,7 +65,7 @@ namespace ros2_control_plugin_dryve_d1
       _hw_velocity_commands[i] = 0;
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Successfully configured!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully configured!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -160,7 +101,7 @@ namespace ros2_control_plugin_dryve_d1
   hardware_interface::CallbackReturn DryveD1SystemHardware::on_activate(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Activating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Activating ...please wait...");
 
     // command and state should be equal when starting
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -172,9 +113,7 @@ namespace ros2_control_plugin_dryve_d1
       _hw_velocity_commands[i] = _hw_velocity_states[i];
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"),
-                "Successfully activated joint '%s'.",
-                info_.joints[0].name.c_str());
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully activated joint '%s'.", info_.joints[0].name.c_str());
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -184,11 +123,11 @@ namespace ros2_control_plugin_dryve_d1
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Deactivating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Deactivating ...please wait...");
 
     _dryve_d1->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Successfully deactivated!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully deactivated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -198,11 +137,11 @@ namespace ros2_control_plugin_dryve_d1
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Shutting down ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Shutting down ...please wait...");
 
     _dryve_d1->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Successful shutdown!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successful shutdown!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -212,11 +151,11 @@ namespace ros2_control_plugin_dryve_d1
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Cleaning up ...please wait...");
 
     _dryve_d1->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "Cleaned up successfully!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Cleaned up successfully!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -225,18 +164,18 @@ namespace ros2_control_plugin_dryve_d1
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "On Error: Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "On Error: Cleaning up ...please wait...");
 
     _dryve_d1->close_connection();
 
-    RCLCPP_INFO(rclcpp::get_logger("DryveD1SystemHardware"), "On Error: Cleaned up successfully!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "On Error: Cleaned up successfully!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
 
   void DryveD1SystemHardware::run_dryve_state_machine_after_error(std::string_view dryve_error)
   {
-    RCLCPP_WARN(rclcpp::get_logger("DryveD1SystemHardware"),
+    RCLCPP_WARN(rclcpp::get_logger(_logger),
                 "Dryve Error '%s' for joint %s. Running through dryve d1 state machine setup now.",
                 dryve_error.data(),
                 info_.joints[0].name.c_str());
@@ -264,7 +203,7 @@ namespace ros2_control_plugin_dryve_d1
     }
     else
     {
-      RCLCPP_ERROR(rclcpp::get_logger("DryveD1SystemHardware"),
+      RCLCPP_ERROR(rclcpp::get_logger(_logger),
                    "Dryve Error '%s' for joint %s",
                    dryve_error.data(),
                    info_.joints[0].name.c_str());

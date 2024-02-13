@@ -12,6 +12,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp
   rclcpp_lifecycle
   dryve_d1_bridge
+  hardware_interface_utils
 )
 
 # find dependencies

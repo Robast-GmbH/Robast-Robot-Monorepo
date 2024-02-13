@@ -14,55 +14,7 @@ namespace ros2_control_base_movement
     _hw_velocity_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_velocity_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
-    for (const hardware_interface::ComponentInfo& joint : info_.joints)
-    {
-      RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Configuring joint '%s'.", joint.name.c_str());
-
-      // BaseMovementSystemHardware has position and velocity state and command interface on each joint
-      if (joint.command_interfaces.size() > 2)
-      {
-        RCLCPP_FATAL(rclcpp::get_logger("BaseMovementSystemHardware"),
-                     "Joint '%s' has %zu command interfaces found. 2 or less expected.",
-                     joint.name.c_str(),
-                     joint.command_interfaces.size());
-        return hardware_interface::CallbackReturn::ERROR;
-      }
-
-      if ((joint.command_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
-          (joint.command_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
-      {
-        RCLCPP_FATAL(rclcpp::get_logger("BaseMovementSystemHardware"),
-                     "Joint '%s' have %s command interfaces found. '%s' or '%s' expected.",
-                     joint.name.c_str(),
-                     joint.command_interfaces[0].name.c_str(),
-                     hardware_interface::HW_IF_POSITION,
-                     hardware_interface::HW_IF_VELOCITY);
-        return hardware_interface::CallbackReturn::ERROR;
-      }
-
-      if (joint.state_interfaces.size() > 2)
-      {
-        RCLCPP_FATAL(rclcpp::get_logger("BaseMovementSystemHardware"),
-                     "Joint '%s' has %zu state interface. 2 or less expected.",
-                     joint.name.c_str(),
-                     joint.state_interfaces.size());
-        return hardware_interface::CallbackReturn::ERROR;
-      }
-
-      if ((joint.state_interfaces[0].name != hardware_interface::HW_IF_POSITION) &&
-          (joint.state_interfaces[0].name != hardware_interface::HW_IF_VELOCITY))
-      {
-        RCLCPP_FATAL(rclcpp::get_logger("BaseMovementSystemHardware"),
-                     "Joint '%s' have %s state interface. '%s' or '%s' expected.",
-                     joint.name.c_str(),
-                     joint.state_interfaces[0].name.c_str(),
-                     hardware_interface::HW_IF_POSITION,
-                     hardware_interface::HW_IF_VELOCITY);
-        return hardware_interface::CallbackReturn::ERROR;
-      }
-    }
-
-    return hardware_interface::CallbackReturn::SUCCESS;
+    return hardware_interface_utils::configure_joints(info.joints, _logger);
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_configure(
@@ -80,7 +32,7 @@ namespace ros2_control_base_movement
       _hw_velocity_commands[i] = 0;
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Successfully configured!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully configured!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -116,7 +68,7 @@ namespace ros2_control_base_movement
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_activate(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Activating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Activating ...please wait...");
 
     // command and state should be equal when starting
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -128,7 +80,7 @@ namespace ros2_control_base_movement
       _hw_velocity_commands[i] = _hw_velocity_states[i];
     }
 
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Successfully activated!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully activated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -138,9 +90,9 @@ namespace ros2_control_base_movement
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Deactivating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Deactivating ...please wait...");
 
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Successfully deactivated!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully deactivated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -150,9 +102,9 @@ namespace ros2_control_base_movement
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Shutting down ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Shutting down ...please wait...");
 
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Successful shutdown!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successful shutdown!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -162,9 +114,9 @@ namespace ros2_control_base_movement
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Cleaning up ...please wait...");
 
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "Cleaned up successfully!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "Cleaned up successfully!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -174,9 +126,9 @@ namespace ros2_control_base_movement
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "On Error: Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "On Error: Cleaning up ...please wait...");
 
-    RCLCPP_INFO(rclcpp::get_logger("BaseMovementSystemHardware"), "On Error: Cleaned up successfully!");
+    RCLCPP_INFO(rclcpp::get_logger(_logger), "On Error: Cleaned up successfully!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
