@@ -97,17 +97,24 @@ jobs:
       run: |
           sleep 5
           ls /home/coverage-${{env.Project2}}.info
-
-    - name: Run SonarCloud Analysis (coverage_ros2 build)
+    - name: Install sonar-scanner   
+      uses: SonarSource/sonarcloud-github-c-cpp@v2
+    - name: Run sonar-scanner
       env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run:  sonar-scanner \
-            -Dsonar.projectKey=Monorepo \ 
-            -Dsonar.organization=robast-gmbh \ 
-            -Dsonar.host.url=https://sonarcloud.io \
-            -Dsonar.login=${{ secrets.CODECOV_TOKEN }} \
-            -Dsonar.coverage.reportPaths=/home/coverage-${{env.Project2}}.info
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      run: sonar-scanner -X --define project.settings=.work/target_ws/src/Monorepo/sonar-project.properties
+      working-directory: ${{ github.workspace }}
+    # - name: Run SonarCloud Analysis (coverage_ros2 build)
+    #   env:
+    #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   run:  sonar-scanner \
+    #         -Dsonar.projectKey=Monorepo \ 
+    #         -Dsonar.organization=robast \ 
+    #         -Dsonar.host.url=https://sonarcloud.io \
+    #         -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+    #         -Dsonar.coverage.reportPaths=/home/coverage-${{env.Project2}}.info
 
     - name: Upload coverage report to Codecov
       uses: codecov/codecov-action@v2
