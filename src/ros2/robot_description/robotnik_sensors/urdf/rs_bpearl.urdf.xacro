@@ -3,14 +3,9 @@
 
   <xacro:property name="M_PI" value="3.1415926535897931" />
 
-  <xacro:macro name="sensor_rs_bpearl" params="prefix parent publish_bf robot_name prefix_topic hq *origin range_min range_max hfov samples vfov lasers fps gpu:=true">
+  <xacro:macro name="sensor_rs_bpearl" params="prefix parent sensor_base_frame robot_name prefix_topic hq *origin range_min range_max hfov samples vfov lasers fps gpu:=true">
 
-    <xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}_link" />
-		</xacro:if>
-		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}_link" />
-		</xacro:unless>
+    <xacro:property name="sensor_link_name" value="${robot_name}/${sensor_base_frame}/${prefix}_link" />
 
     <joint name="${prefix}_base_joint" type="fixed">
       <xacro:insert_block name="origin" />

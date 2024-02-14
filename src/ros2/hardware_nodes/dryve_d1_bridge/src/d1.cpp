@@ -2,6 +2,26 @@
 
 namespace dryve_d1_bridge
 {
+  // Initialize the static class variables
+  const std::string_view D1::ERROR_MESSAGE_E01_CONFIGURATION = "E01 Error Configuration";
+  const std::string_view D1::ERROR_MESSAGE_E02_MOTOR_OVER_CURRENT = "E02 Motor Over-Current";
+  const std::string_view D1::ERROR_MESSAGE_E03_ENCODER_OVER_CURRENT = "E03 Encoder Over-Current";
+  const std::string_view D1::ERROR_MESSAGE_E04_OUTPUT_OVER_CURRENT = "E04 10 V Output Over Current";
+  const std::string_view D1::ERROR_MESSAGE_E05_IO_SUPPLY_LOW = "E05 I/O Supply Low";
+  const std::string_view D1::ERROR_MESSAGE_E06_LOGIC_SUPPLY_LOW = "E06 Logic Supply Low";
+  const std::string_view D1::ERROR_MESSAGE_E07_LOGIC_SUPPLY_HIGH = "E07 Logic Supply High";
+  const std::string_view D1::ERROR_MESSAGE_E08_LOAD_SUPPLY_LOW = "E08 Load Supply Low";
+  const std::string_view D1::ERROR_MESSAGE_E09_LOAD_SUPPLY_HIGH = "E09 Load Supply High";
+  const std::string_view D1::ERROR_MESSAGE_E10_TEMPERATURE_HIGH = "E10 Temperature High";
+  const std::string_view D1::ERROR_MESSAGE_E11_FOLLOWING_ERROR = "E11 Following Error";
+  const std::string_view D1::ERROR_MESSAGE_E12_LIMIT_SWITCH = "E12 Limit Switch";
+  const std::string_view D1::ERROR_MESSAGE_E13_HALL_SENSOR = "E13 Hall Sensor";
+  const std::string_view D1::ERROR_MESSAGE_E14_ENCODER = "E14 Encoder";
+  const std::string_view D1::ERROR_MESSAGE_E15_ENCODER_CHANNEL_A = "E15 Encoder Channel A";
+  const std::string_view D1::ERROR_MESSAGE_E16_ENCODER_CHANNEL_B = "E16 Encoder Channel B";
+  const std::string_view D1::ERROR_MESSAGE_E17_ENCODER_CHANNEL_I = "E17 Encoder Channel I";
+  const std::string_view D1::ERROR_MESSAGE_E21_BREAKING_RESISTOR_OVERLOAD = "E21 Braking Resistor Overload";
+
   D1::D1(std::string ip_address, int port, std::unique_ptr<ISocketWrapper> socket_wrapper)
   {
     _socket_wrapper = std::move(socket_wrapper);
@@ -359,75 +379,75 @@ namespace dryve_d1_bridge
       switch (error_code)
       {
         case ERROR_E01_CONFIGURATION:
-          return "E01 Error Configuration";
+          return ERROR_MESSAGE_E01_CONFIGURATION;
           break;
 
         case ERROR_E02_MOTOR_OVER_CURRENT:
-          return "E02 Motor Over-Current";
+          return ERROR_MESSAGE_E02_MOTOR_OVER_CURRENT;
           break;
 
         case ERROR_E03_ENCODER_OVER_CURRENT:
-          return "E03 Encoder Over-Current";
+          return ERROR_MESSAGE_E03_ENCODER_OVER_CURRENT;
           break;
 
         case ERROR_E04_OUTPUT_OVER_CURRENT:
-          return "E04 10 V Output Over Current";
+          return ERROR_MESSAGE_E04_OUTPUT_OVER_CURRENT;
           break;
 
         case ERROR_E05_IO_SUPPLY_LOW:
-          return "E05 I/O Supply Low";
+          return ERROR_MESSAGE_E05_IO_SUPPLY_LOW;
           break;
 
         case ERROR_E06_LOGIC_SUPPLY_LOW:
-          return "E06 Logic Supply Low";
+          return ERROR_MESSAGE_E06_LOGIC_SUPPLY_LOW;
           break;
 
         case ERROR_E07_LOGIC_SUPPLY_HIGH:
-          return "E07 Logic Supply High";
+          return ERROR_MESSAGE_E07_LOGIC_SUPPLY_HIGH;
           break;
 
         case ERROR_E08_LOAD_SUPPLY_LOW:
-          return "E08 Load Supply Low";
+          return ERROR_MESSAGE_E08_LOAD_SUPPLY_LOW;
           break;
 
         case ERROR_E09_LOAD_SUPPLY_HIGH:
-          return "E09 Load Supply High";
+          return ERROR_MESSAGE_E09_LOAD_SUPPLY_HIGH;
           break;
 
         case ERROR_E10_TEMPERATURE_HIGH:
-          return "E10 Temperature High";
+          return ERROR_MESSAGE_E10_TEMPERATURE_HIGH;
           break;
 
         case ERROR_E11_FOLLOWING_ERROR:
-          return "E11 Following Error";
+          return ERROR_MESSAGE_E11_FOLLOWING_ERROR;
           break;
 
         case ERROR_E12_LIMIT_SWITCH:
-          return "E12 Limit Switch";
+          return ERROR_MESSAGE_E12_LIMIT_SWITCH;
           break;
 
         case ERROR_E13_HALL_SENSOR:
-          return "E13 Hall Sensor";
+          return ERROR_MESSAGE_E13_HALL_SENSOR;
           break;
 
         case ERROR_E14_ENCODER:
-          return "E14 Encoder";
+          return ERROR_MESSAGE_E14_ENCODER;
           break;
 
         case ERROR_E15_ENCODER_CHANNEL_A:
-          return "E15 Encoder Channel A";
+          return ERROR_MESSAGE_E15_ENCODER_CHANNEL_A;
           break;
 
         case ERROR_E16_ENCODER_CHANNEL_B:
-          return "E16 Encoder Channel B";
+          return ERROR_MESSAGE_E16_ENCODER_CHANNEL_B;
           break;
 
         case ERROR_E17_ENCODER_CHANNEL_I:
-          return "E17 Encoder Channel I";
+          return ERROR_MESSAGE_E17_ENCODER_CHANNEL_I;
           break;
 
         case ERROR_E21_BREAKING_RESISTOR_OVERLOAD:
-          return "E21 Braking Resistor Overload";
+          return ERROR_MESSAGE_E21_BREAKING_RESISTOR_OVERLOAD;
           break;
 
         default:

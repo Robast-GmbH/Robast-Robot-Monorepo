@@ -8,7 +8,7 @@ RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group
   echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV USER robast
 
-RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
+RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc
 
 RUN apt-get update && apt-get install -y \
   curl \
@@ -47,7 +47,7 @@ RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
   && rosdep update \
   && rosdep install --from-paths /workspace_ros_control/src --ignore-src -r -y \
   && colcon build --parallel-workers 2 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
-  && echo "if [ -f /workspace_ros_control/install/setup.bash ]; then source /workspace_ros_control/install/setup.bash; fi" >> /home/$USER/.bashrc
+  && echo "if [ -f /workspace_ros_control/install/setup.bash ]; then source /workspace_ros_control/install/setup.bash; fi" >> /home/${USER}/.bashrc
 
 # Adding moveit2_tutorials as separate workspace which can be used for learning and testing purposes
 # Can be removed once there is enough moveit2 skill and knowledge archieved
@@ -61,11 +61,14 @@ RUN mkdir -p workspace_moveit2/src && cd workspace_moveit2/src && git clone http
   && rosdep update \
   && rosdep install --from-paths /workspace_moveit2/src --ignore-src -r -y \
   && colcon build --parallel-workers 2 --build-base /workspace_moveit2/build --install-base /workspace_moveit2/install \
-  && echo "if [ -f /workspace_moveit2/install/setup.bash ]; then source /workspace_moveit2/install/setup.bash; fi" >> /home/$USER/.bashrc
+  && echo "if [ -f /workspace_moveit2/install/setup.bash ]; then source /workspace_moveit2/install/setup.bash; fi" >> /home/${USER}/.bashrc
 
 # Install PlotJuggler as debugging tool to view controller_state data and so forth
 # TODO: Remove this once we left the early development phase
 RUN sudo apt-get update && sudo apt install ros-${ROS_DISTRO}-plotjuggler-ros -y
+
+# Adds the workspace to the bashrc
+RUN echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/${USER}/.bashrc
 
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 

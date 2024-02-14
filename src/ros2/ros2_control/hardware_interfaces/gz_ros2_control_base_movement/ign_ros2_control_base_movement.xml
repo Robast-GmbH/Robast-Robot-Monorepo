@@ -1,0 +1,10 @@
+<library path="ign_ros2_control_base_movement">
+  <class
+    name="ign_ros2_control_base_movement/IgnBaseMovementSystemHardware"
+    type="ign_ros2_control_base_movement::IgnBaseMovementSystemHardware"
+    base_class_type="ign_ros2_control::IgnitionSystemInterface">
+    <description>
+      The ros2 control plugin for moving the base in a linear motion forwards and backwards in ignition.
+    </description>
+  </class>
+</library>

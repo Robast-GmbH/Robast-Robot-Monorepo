@@ -1,13 +1,13 @@
 {
     "python.autoComplete.extraPaths": [
         "/workspaces/Ros_Hardware_Nodes/install/communication_interfaces/local/lib/python3.10/dist-packages",
-        "/opt/ros/iron/lib/python3.10/site-packages",
-        "/opt/ros/iron/local/lib/python3.10/dist-packages"
+        "/opt/ros/${ROS_DISTRO}/lib/python3.10/site-packages",
+        "/opt/ros/${ROS_DISTRO}/local/lib/python3.10/dist-packages"
     ],
     "python.analysis.extraPaths": [
         "/workspaces/Ros_Hardware_Nodes/install/communication_interfaces/local/lib/python3.10/dist-packages",
-        "/opt/ros/iron/lib/python3.10/site-packages",
-        "/opt/ros/iron/local/lib/python3.10/dist-packages"
+        "/opt/ros/${ROS_DISTRO}/lib/python3.10/site-packages",
+        "/opt/ros/${ROS_DISTRO}/local/lib/python3.10/dist-packages"
     ],
     "files.associations": {
         "functional": "cpp",
@@ -121,6 +121,7 @@
     "editor.formatOnType": true,
     "editor.formatOnSave": true,
     "editor.rulers": [
+        100,
         120
     ],
     "C_Cpp.formatting": "clangFormat",
@@ -130,9 +131,15 @@
     },
     "[python]": {
         "editor.tabSize": 4,
-        "editor.defaultFormatter": "ms-python.python"
+        "editor.defaultFormatter": "ms-python.black-formatter"
     },
     "[xml]": {
         "editor.formatOnSave": false // disables formatting for xml files (since formatting for our xacros is garbage so far)
-    }
+    },
+    "python.testing.pytestArgs": [
+        "src"
+    ],
+    "python.testing.unittestEnabled": false,
+    "python.testing.pytestEnabled": true,
+    "python.testing.cwd": "/workspace/",
 }

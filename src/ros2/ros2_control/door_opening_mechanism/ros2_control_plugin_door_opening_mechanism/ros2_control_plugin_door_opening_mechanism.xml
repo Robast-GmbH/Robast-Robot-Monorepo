@@ -1,7 +1,0 @@
-<library path="ros2_control_plugin_door_opening_mechanism">
-  <class name="ros2_control_plugin_door_opening_mechanism/DoorOpeningMechanismSystemHardware" type="ros2_control_plugin_door_opening_mechanism::DoorOpeningMechanismSystemHardware" base_class_type="hardware_interface::SystemInterface">
-    <description>
-      The ros2_control interface for the door opening mechanism which uses the igus dryve d1 motor control.
-    </description>
-  </class>
-</library>
