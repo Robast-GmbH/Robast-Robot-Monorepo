@@ -3,11 +3,15 @@ version: '3.9'
 services:
   zed_camera:
     image: ghcr.io/robast-gmbh/monorepo/zed_camera:release
+    build: 
+      context: ./zed_camera
+      dockerfile: Dockerfile.Zed
     environment:
       - ROS_DOMAIN_ID=0
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
       - ./start_scripts/:/start_scripts/:cached
+      - ./zed_setup/:/zed_setup/:cached
     command: /bin/sh -c "./start_scripts/jetson_start.sh"
     stop_signal: SIGINT
     restart: unless-stopped
