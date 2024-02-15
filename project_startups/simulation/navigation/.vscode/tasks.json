@@ -15,7 +15,7 @@
                         "label": "debug_build",
                         "detail": "Symlink Build of the project",
                         "type": "shell",
-                        "command": "clear; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic --packages-skip robast_map_update_module ndt_omp_ros2 graph_based_slam scanmatcher robast_nav_recoveries robast_nav_interim_goal",
+                        "command": "clear; colcon build --symlink-install DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic --packages-skip robast_map_update_module ndt_omp_ros2 graph_based_slam scanmatcher robast_nav_recoveries robast_nav_interim_goal",
                         "problemMatcher": []
                     },
                 {
@@ -208,7 +208,8 @@
                         "dependsOn": [
                                 "publish feuerplan",
                                 "start slam_toolbox",
-                                "start nav_without_localization"
+                                "start nav_without_localization",
+                                "start rviz"
                         ]
                 },
                 {
