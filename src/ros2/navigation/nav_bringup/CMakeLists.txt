@@ -21,7 +21,7 @@ find_package(nav2_common REQUIRED)
 find_package(navigation2 REQUIRED)
 find_package(slam_toolbox REQUIRED)
 find_package(robot_localization REQUIRED)
-
+find_package(rtabmap_odom REQUIRED)
 nav2_package()
 
 install(DIRECTORY

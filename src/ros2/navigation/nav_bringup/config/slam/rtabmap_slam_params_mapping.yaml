@@ -1,0 +1,69 @@
+rtabmap_slam:
+  ros__parameters:
+
+    subscribe_depth:        true
+    subscribe_rgbd:         false
+    subscribe_stereo:       false
+    subscribe_scan:         false
+    subscribe_scan_cloud:   false
+    subscribe_user_data:    false
+    subscribe_odom_info:    false
+
+    database_path:      "/rtabmap.db"
+    config_path:        "/rtabmap.cfg"
+
+    frame_id:       "base_footprint"
+    map_frame_id:   "map"
+    odom_frame_id:  "odom"                   
+    odom_tf_angular_variance:  0.001     # default
+    odom_tf_linear_variance:   0.001     # default
+    tf_delay:       0.02                 # default
+    publish_tf:     true                 # default
+
+    odom_sensor_sync:               true
+    wait_for_transform_duration:    0.2
+    approx_sync:                    true
+
+    queue_size: 10
+
+    scan_normal_k:  0
+
+    Grid:
+        3D:                     true
+        FlatObstacleDetected:   true
+        MapFrameProjection:     false
+        GroundIsObstacle:       false
+        PreVoxelFiltering:      true
+        RayTracing:             true
+        FromDepth:              true
+        NormalsSegmentation:    false
+        CellSize:               0.05
+        ClusterRadius:          0.1
+        MinClusterSize:         3
+        DepthDecimation:        1
+        DepthRoiRatios:         [0.0, 0.0, 0.0, 0.0]
+        FootprintHeight:        2.0
+        FootprintLength:        0.18
+        FootprintWidth:         0.18
+        MaxGroundAngle:         30.0
+        MinGroundHeight:        -0.5
+        MaxGroundHeight:        -0.4
+        MaxObstacleHeight:      0.1
+        NoiseFilteringMinNeighbors: 5
+        NoiseFilteringRadius:   0.1
+        NormalK:                20
+        RangeMin:               0.7
+        RangeMax:               3.0
+
+    GridGlobal:
+        Eroded:                 false       
+        FootprintRadius:        0.18       
+        FullUpdate:             true        
+        MaxNodes:               0           
+        MinSize:                1.0        
+        OccupancyThr:           0.55       
+        ProbClampingMax:        0.971       
+        ProbClampingMin:        0.1192      
+        ProbHit:                0.7        
+        ProbMiss:               0.4         
+        UpdateError:            0.01     
