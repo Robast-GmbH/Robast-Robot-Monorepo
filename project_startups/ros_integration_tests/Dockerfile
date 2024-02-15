@@ -57,3 +57,4 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/src/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/src/dds_configs/cyclone_DDS_config.xml
+USER robast
