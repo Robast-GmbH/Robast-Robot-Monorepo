@@ -155,16 +155,12 @@ if(BUILD_TESTING)
   list(APPEND test_executables open_drawer_test)
   add_executable(drawer_status_condition_test tests/conditions/drawer_status_condition_test.cpp)
   list(APPEND test_executables drawer_status_condition_test)
-  # add_executable(bool_topic_condition_test tests/conditions/bool_topic_condition_test.cpp)
-  # list(APPEND test_executables bool_topic_condition_test)
   add_executable(nfc_to_drawer_action_test tests/actions/nfc_to_drawer_action_test.cpp)
   list(APPEND test_executables nfc_to_drawer_action_test)
   add_executable(move_electric_drawer_action_test tests/actions/move_electric_drawer_action_test.cpp)
   list(APPEND test_executables move_electric_drawer_action_test)
   add_executable(error_decorator_test tests/decorators/error_decorator_test.cpp)
   list(APPEND test_executables error_decorator_test)
-  # add_executable(reset_tree_decorator_test tests/decorators/reset_tree_decorator_test.cpp)
-  # list(APPEND test_executables reset_tree_decorator_test)
   
 
   ament_target_dependencies(${test_libs}
