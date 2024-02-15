@@ -94,7 +94,8 @@ jobs:
           lcov --directory . --capture --output-file coverage-${{env.Project2}}.info &&
           lcov --remove coverage-${{env.Project2}}.info '/usr/*' --output-file coverage-${{env.Project2}}.info &&
           lcov --list coverage-${{env.Project2}}.info &&
-          cp /workspace/coverage-${{env.Project2}}.info /home/coverage-${{env.Project2}}.info"
+          cp /workspace/coverage-${{env.Project2}}.info /home/coverage-${{env.Project2}}.info && 
+          cp /workspace/build/compile_commands.json /home/compile_commands.json"
     - name: Wait for coverage report file
       run: |
           sleep 5
