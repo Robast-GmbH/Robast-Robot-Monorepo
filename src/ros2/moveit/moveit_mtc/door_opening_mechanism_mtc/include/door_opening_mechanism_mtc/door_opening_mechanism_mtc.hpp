@@ -33,6 +33,9 @@ namespace door_opening_mechanism_mtc
     std::string _planning_group_name;
     const std::string _DEFAULT_PLANNING_GROUP_NAME = "mobile_base_arm";
 
+    std::string _planning_pipeline;
+    const std::string _DEFAULT_PLANNING_PIPELINE = "ompl_humble";
+
     rclcpp::Subscription<depthai_ros_msgs::msg::SpatialDetectionArray>::SharedPtr _door_handle_position_subscription;
     mtc::Task _task;
 

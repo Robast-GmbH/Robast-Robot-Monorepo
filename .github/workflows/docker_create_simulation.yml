@@ -41,7 +41,6 @@ jobs:
         push: true
         build-args: |
           ROS_VERSION=humble
-          GAZEBO_VERSION=fortress
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
         tags: |
               ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel-humble

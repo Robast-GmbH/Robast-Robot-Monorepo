@@ -23,14 +23,9 @@
   <xacro:property name="r430_cam_depth_py" value="-0.0115"/>
   <xacro:property name="r430_cam_depth_pz" value="0.0"/>
 
-  <xacro:macro name="sensor_r430" params="prefix parent publish_bf robot_name prefix_topic:='front_rgbd_camera' hq *origin">
+  <xacro:macro name="sensor_r430" params="prefix parent sensor_base_frame robot_name prefix_topic:='front_rgbd_camera' hq *origin">
 
-    <xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}" />
-		</xacro:if>
-		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}" />
-		</xacro:unless>
+    <xacro:property name="sensor_link_name" value="${robot_name}/${sensor_base_frame}/${prefix}" />
 
     <!-- camera body, with origin at bottom screw mount -->
     <joint name="${prefix}_camera_joint" type="fixed">

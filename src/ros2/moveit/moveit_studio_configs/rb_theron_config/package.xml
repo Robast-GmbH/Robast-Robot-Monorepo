@@ -12,7 +12,7 @@
 
   <buildtool_depend>ament_cmake</buildtool_depend>
 
-  <exec_depend>moveit_door_opening_mechanism_rotating_arm_config</exec_depend>
+  <exec_depend>moveit_door_opening_mechanism_config</exec_depend>
   <exec_depend>rb_theron_description</exec_depend>
 
   <exec_depend>kinematics_interface_kdl</exec_depend>

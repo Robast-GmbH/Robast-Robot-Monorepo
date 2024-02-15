@@ -6,7 +6,7 @@
                 "limitSymbolsToIncludedHeaders": false
             },
             "includePath": [
-                "/opt/ros/humble/include/**",
+                "/opt/ros/${ROS_DISTRO}/include/**",
                 "/workspace/src/communication_interfaces/**",
                 "/workspace/src/statemachine**",
                 "${workspaceFolder}/src/statemachine/bt_plugins/include",
