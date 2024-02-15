@@ -29,8 +29,6 @@
 
 import os
 import re
-import shlex
-import xacro
 
 from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
@@ -53,8 +51,8 @@ def path_pattern_change_for_gazebo(urdf_string):
         data = data.replace(expr[0], get_ros_path(expr[1]))
     return data
 
-def generate_simulation_description(context, *args, **settings):
 
+def generate_simulation_description(context, *args, **settings):
     use_gui = settings.get("gazebo_gui", False)
     is_verbose = settings.get("gazebo_verbose", False)
 
@@ -74,12 +72,12 @@ def generate_simulation_description(context, *args, **settings):
         world_sdf = path_pattern_change_for_gazebo(file.read())
     with open(modified_world_file, "w") as file:
         file.write(world_sdf)
-    
+
     # Launch Gazebo.
     print(f"Starting Gazebo with world {world_name}")
     print(f"GUI: {use_gui}, Verbose: {is_verbose}")
 
-    sim_args = f"-r"
+    sim_args = "-r"
     if is_verbose:
         sim_args += " -v 4"
     if not use_gui:
@@ -93,11 +91,12 @@ def generate_simulation_description(context, *args, **settings):
 
 
 def generate_launch_description():
-
     system_config_parser = SystemConfigParser()
     optional_feature_setting = system_config_parser.get_optional_feature_configs()
 
-    gz_ros_bridge_yaml = os.path.join(get_package_share_directory("tiplu_world"), "config", "ign_ros_bridge.yaml")
+    gz_ros_bridge_yaml = os.path.join(
+        get_package_share_directory("tiplu_world"), "config", "ign_ros_bridge.yaml"
+    )
 
     # Launch Gazebo
     gazebo = OpaqueFunction(

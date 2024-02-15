@@ -2,14 +2,9 @@
 <robot name="sensor_sick_nanoscan3"
 	xmlns:xacro="http://wiki.ros.org/xacro">
 
-	<xacro:macro name="sensor_sick_nanoscan3" params="prefix parent publish_bf robot_name prefix_topic:='front_laser' hq *origin max_angle:=2.3998 min_angle:=-2.3998 gpu:=^|false">
+	<xacro:macro name="sensor_sick_nanoscan3" params="prefix parent sensor_base_frame robot_name prefix_topic:='front_laser' hq *origin max_angle:=2.3998 min_angle:=-2.3998 gpu:=^|false">
 
-		<xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_footprint/${prefix}_link" />
-		</xacro:if>
-		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_link_name" value="${robot_name}/base_link/${prefix}_link" />
-		</xacro:unless>
+		<xacro:property name="sensor_link_name" value="${robot_name}/${sensor_base_frame}/${prefix}_link" />
 
 		<joint name="${prefix}_base_joint" type="fixed">
 			<xacro:insert_block name="origin" />

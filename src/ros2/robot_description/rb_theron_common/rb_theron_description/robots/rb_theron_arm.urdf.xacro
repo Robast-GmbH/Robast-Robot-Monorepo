@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<robot name="rb_theron"
+	xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+	<!-- This is only used for MoveitStudio -->
+	<xacro:attribute name="web_ui_gripper" value="package://rb_theron_description/urdf/door_opening_mechanism/components/hook.urdf" />
+
+	<!-- Import differential base elements -->
+	<xacro:include filename="$(find rb_theron_description)/robots/rb_theron_base.urdf.xacro" />
+
+	<xacro:property name="PI" value="3.1415926535897931"/>
+	<!-- Flag to determine if the base_footprint should be published or not -->
+	<xacro:property name="publish_bf" value="true"/>
+
+	<!-- This name should match the "-name" argument we need to declare when spawing the robot into ign gazebo -->
+	<xacro:property name="robot_name" value="rb_theron"/>
+
+	<!-- Flag to select the high or low quality model -->
+	<xacro:property name="hq" value="false" />
+
+	<xacro:arg name="prefix" default=""/>
+
+	<!-- ros2_control_hardware_type:
+		mock_components = ros2_control only in rviz
+		gz_ros2_control = ros2_control in gazebo
+		dryve_d1 = ros2_control only in real life
+	-->
+    <xacro:arg name="ros2_control_hardware_type" default="mock_components" />
+
+	<xacro:arg name="ros2_control_hardware_type_positon_joint" default="mock_components" />
+
+	<xacro:arg name="ros_distro" default="humble" />
+
+	<!-- Whether the position joint should be modeled as a prismatic joint or just as a fixed joint -->
+	<xacro:arg name="model_position_joint" default="false" />
+
+	<!-- If we model the position joint, the sensors need be placed in the base_link frame,
+	otherwise they should be placed in the base_footprint frame -->
+	<xacro:if value="$(arg model_position_joint)">
+		<xacro:property name="sensor_base_frame" value="base_link" />
+	</xacro:if>
+	<xacro:unless value="$(arg model_position_joint)">
+		<xacro:if value="${publish_bf}">
+			<xacro:property name="sensor_base_frame" value="base_footprint" />
+		</xacro:if>
+		<xacro:unless value="${publish_bf}">
+			<xacro:property name="sensor_base_frame" value="base_link" />
+		</xacro:unless>
+	</xacro:unless>
+
+    <xacro:include filename="$(find rb_theron_description)/urdf/bases/theron_base.urdf.xacro" />
+    <xacro:include filename="$(find rb_theron_description)/urdf/inertia.urdf.xacro" />
+
+    <xacro:theron_base
+      prefix="$(arg prefix)"
+      publish_bf="${publish_bf}"
+      model_position_joint="$(arg model_position_joint)"
+      ros2_control_hardware_type_positon_joint="$(arg ros2_control_hardware_type_positon_joint)"
+      hq="${hq}"
+    />
+
+	<!-- ROBAST Door Opening Mechanism -->
+	<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
+	<xacro:door_opening_mechanism
+	    prefix="$(arg prefix)"
+		parent="$(arg prefix)base_link"
+		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
+		ros_distro="$(arg ros_distro)"
+		hq="${hq}">
+		<origin xyz="-0.3 0 0.225" rpy="0 0 0"/>
+	</xacro:door_opening_mechanism>
+	
+</robot>

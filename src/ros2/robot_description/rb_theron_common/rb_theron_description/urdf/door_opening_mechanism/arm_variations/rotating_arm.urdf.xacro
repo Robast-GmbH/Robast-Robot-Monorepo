@@ -31,8 +31,8 @@
             link_origin_y="0.0"
             link_origin_z="${arm_length/2}"
             m="0.2"
-            x="0.03"
-            y="0.03"
+            x="0.02"
+            y="0.05"
             z="${arm_length}"
             r="0"
             g="1"
@@ -54,14 +54,14 @@
             r="0"
             g="1"
             b="0">
-            <origin xyz="0.020 0.0 ${arm_length-0.015}" rpy="0 0 0"/>
+            <origin xyz="-0.015 0.0 ${arm_length-0.015}" rpy="0 3.14159265359 0"/>
         </xacro:basic_box>
 
         <!-- Gripper -->
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/freely_rotating_hook.urdf.xacro" />
         <xacro:freely_rotating_hook
             prefix="${prefix}"
-            parent="${prefix}door_opening_mechanism_link_gripper_adapter"
+            parent="door_opening_mechanism_link_gripper_adapter"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
             ros_distro="${ros_distro}">
             <origin xyz="0.020 0.0 0.0" rpy="0 0 0"/>

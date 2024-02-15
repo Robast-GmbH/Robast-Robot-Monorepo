@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source /opt/ros/humble/setup.bash
+source /opt/ros/${ROS_DISTRO}/setup.bash
 ros2 bag record -o /workspace/bags/robot_imu_2.db3 \
     tf \
     tf_static \

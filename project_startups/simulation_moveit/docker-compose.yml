@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   simulation:
-    image: ghcr.io/robast-gmbh/monorepo/simulation:devel-iron
+    image: ghcr.io/robast-gmbh/monorepo/simulation:devel-humble
     environment:
       - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/><Peer Address="moveit"/><Peer Address="perception"/></Peers><MaxAutoParticipantIndex>100</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
       - ROS_DOMAIN_ID=1
@@ -21,6 +21,10 @@ services:
       - ../../src/ros2/simulation:/workspace/src/simulation:cached
       - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
       - ../../src/ros2/communication_interfaces:/workspace/src/communication_interfaces:cached
+      - ../../src/ros2/ros2_control/hardware_interfaces/ros2_control_base_movement:/workspace/src/ros2_control/hardware_interfaces/ros2_control_base_movement:cached
+      - ../../src/ros2/ros2_control/hardware_interfaces/gz_ros2_control_base_movement:/workspace/src/ros2_control/hardware_interfaces/gz_ros2_control_base_movement:cached
+      - ../../src/ros2/ros2_control/hardware_interfaces/hardware_interface_utils:/workspace/src/ros2_control/hardware_interfaces/hardware_interface_utils:cached
+      - ../../src/ros2/ros2_control/ros2_controllers:/workspace/src/ros2_control/ros2_controllers:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
     deploy:
@@ -43,7 +47,7 @@ services:
       - init_x=0.0
       - init_y=0.0
       - init_z=0.0
-      - init_yaw=3.14
+      - init_yaw=0.0
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
       - ./navigation/:/workspace/:cached
@@ -54,7 +58,7 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   moveit:
-    image: ghcr.io/robast-gmbh/monorepo/moveit:devel-iron
+    image: ghcr.io/robast-gmbh/monorepo/moveit:devel-humble
     environment:
       - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/><Peer Address="moveit"/><Peer Address="perception"/></Peers><MaxAutoParticipantIndex>100</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
       - ROS_DOMAIN_ID=1
@@ -68,8 +72,12 @@ services:
       - ./moveit/:/workspace/:cached
       - ../../src/ros2/robot_description:/workspace/src/robot_description:cached
       - ../../src/ros2/moveit:/workspace/src/moveit:cached
+      - ../../src/ros2/ros2_control/hardware_interfaces/ros2_control_base_movement:/workspace/src/ros2_control/hardware_interfaces/ros2_control_base_movement:cached
+      - ../../src/ros2/ros2_control/hardware_interfaces/hardware_interface_utils:/workspace/src/ros2_control/hardware_interfaces/hardware_interface_utils:cached
+      - ../../src/ros2/ros2_control/ros2_controllers:/workspace/src/ros2_control/ros2_controllers:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
+      - ../../src/ros2/utils:/workspace/src/utils:cached
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   perception:

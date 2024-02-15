@@ -12,7 +12,7 @@ RUN rosdep update;\
 WORKDIR /workspace
 SHELL ["/bin/bash", "-c"]
 RUN cd /workspace; \
-    source /opt/ros/humble/setup.bash; \
+    source /opt/ros/${ROS_DISTRO}/setup.bash; \
     colcon build --packages-select communication_interfaces; \
     colcon build --packages-select simple_fleetmanagement;
 
