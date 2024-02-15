@@ -4,7 +4,7 @@ services:
   zed_camera:
     image: ghcr.io/robast-gmbh/monorepo/zed_camera:release
     build: 
-      context: ./zed_camera
+      context: ./zed_setup
       dockerfile: Dockerfile.Zed
     environment:
       - ROS_DOMAIN_ID=0
