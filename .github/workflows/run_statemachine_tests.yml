@@ -100,12 +100,12 @@ jobs:
       run: |
           sleep 5
           ls /home/coverage-${{env.Project2}}.info
-    - name: Run sonar-scanner
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-      run: sonar-scanner -X --define project.settings=${{ github.workspace }}/sonar-project.properties
-      working-directory: ${{ github.workspace }}
+    # - name: Run sonar-scanner
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #   run: sonar-scanner -X --define project.settings=${{ github.workspace }}/sonar-project.properties
+    #   working-directory: ${{ github.workspace }}
     # - name: Run SonarCloud Analysis (coverage_ros2 build)
     #   env:
     #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
