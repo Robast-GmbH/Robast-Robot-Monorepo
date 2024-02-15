@@ -108,7 +108,7 @@ COPY cyclone_DDS_config.xml /dds_configs/cyclone_DDS_config.xml
 ENV CYCLONEDDS_URI=/dds_configs/cyclone_DDS_config.xml
 RUN sudo chmod 755 /sbin/ros_entrypoint.sh
 #download and optimize model for neural depth tracking
-RUN ZED_Diagnostic -nrlo 
+# RUN ZED_Diagnostic -nrlo 
 
 ENTRYPOINT ["/sbin/ros_entrypoint.sh"]
 CMD ["bash"]
