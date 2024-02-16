@@ -15,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       Project: statemachine
-      Project2: coverage_ros2
       Ros-Distro: humble
 
     steps:
