@@ -20,63 +20,41 @@
     will need to make http request calls to the appropriate endpoints within
     these functions.
 '''
-import rclpy
-import requests
-from nav2_msgs.action import NavigateToPose
-from geometry_msgs.msg import PoseStamped
-from rclpy.action import ActionClient
-from rclpy.time import Time
-from std_msgs.msg import String
-
-
 
 
 class RobotAPI:
     # The constructor below accepts parameters typically required to submit
     # http requests. Users should modify the constructor as per the
     # requirements of their robot's API
-    #need ros node for nav2, nav client
-    def __init__(self, config_yaml, node):
+    def __init__(self, config_yaml):
         self.prefix = config_yaml['prefix']
         self.user = config_yaml['user']
         self.password = config_yaml['password']
         self.timeout = 5.0
         self.debug = False
-        self.node = node
-        
-        self.nav_client = self.node.create_client(NavigateToPose, '/navigate_to_pose')
 
     def check_connection(self):
         ''' Return True if connection to the robot API server is successful '''
-        try:
-            response = requests.get(f"{self.prefix}/ping", timeout=self.timeout)
-            # If the response status code is 200, return True, else return False
-            return response.status_code == 200
-        except requests.exceptions.RequestException:
-            # If a request exception occurs, return False
-            return False
+        # ------------------------ #
+        # IMPLEMENT YOUR CODE HERE #
+        # ------------------------ #
+        return True
 
-    def navigate(self, robot_name: str, pose, map_name: str, speed_limit=0.0):
+    def navigate(
+        self,
+        robot_name: str,
+        pose,
+        map_name: str,
+        speed_limit=0.0
+    ):
         ''' Request the robot to navigate to pose:[x,y,theta] where x, y and
             and theta are in the robot's coordinate convention. This function
             should return True if the robot has accepted the request,
             else False '''
-
-        # Create a goal message
-        goal_msg = NavigateToPose.Goal()
-        goal_msg.pose.pose.position.x = pose[0]
-        goal_msg.pose.pose.position.y = pose[1]
-        goal_msg.pose.pose.orientation.z = pose[2]
-        goal_msg.pose.header.frame_id = "map"
-        goal_msg.pose.header.stamp = self.node.get_clock().now().to_msg()
-
-        # Send the goal and wait for the result
-        future = self.nav_client.send_goal_async(goal_msg)
-        rclpy.spin_until_future_complete(self.node, future)
-        result = future.result()
-
-        # Return True if the goal was accepted, else False
-        return result.accepted
+        # ------------------------ #
+        # IMPLEMENT YOUR CODE HERE #
+        # ------------------------ #
+        return False
 
     def start_activity(
         self,
@@ -89,15 +67,9 @@ class RobotAPI:
         or begin cleaning a zone for a cleaning robot.
         Return True if process has started/is queued successfully, else
         return False '''
-        publisher = self.node.create_publisher(String, f'/{robot_name}/start_activity', 10)
-
-        # Create a message with the activity details
-        msg = String()
-        msg.data = f'{activity},{label}'
-
-        # Publish the message
-        publisher.publish(msg)
-        #TODO add usefull behavior later
+        # ------------------------ #
+        # IMPLEMENT YOUR CODE HERE #
+        # ------------------------ #
         return False
 
     def stop(self, robot_name: str):
