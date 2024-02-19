@@ -43,7 +43,7 @@ diff_drive_base_controller:
 
     open_loop: true
     # DISABLE enable_odom_tf, when using robot_localization
-    enable_odom_tf: false 
+    enable_odom_tf: true 
 
     cmd_vel_timeout: 0.5
     #publish_limited_velocity: true
@@ -165,3 +165,4 @@ streaming_controller:
       - door_opening_mechanism_joint_x_axis_slide
       - door_opening_mechanism_joint_rotating_arm
       - door_opening_mechanism_joint_freely_rotating_hook
+      - position_joint
