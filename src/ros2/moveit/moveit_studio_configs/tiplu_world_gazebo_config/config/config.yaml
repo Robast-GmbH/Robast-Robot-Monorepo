@@ -58,9 +58,7 @@ hardware:
       - prefix: ""
       - ros2_control_hardware_type: "gz_ros2_control"
       - model_position_joint: "true"
-      - ros2_control_hardware_type_positon_joint: "mock_components"
-
-
+      - ros2_control_hardware_type_positon_joint: "gz_ros2_control"
 
 # Override MoveIt parameters
 # moveit_params:
