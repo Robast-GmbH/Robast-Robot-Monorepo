@@ -1,4 +1,8 @@
-# How to run MoveIt Pro
+# Setting up Moveit Pro
+
+Check the confluence page for more informations: [Setup MoveIt Pro](https://robast.atlassian.net/wiki/spaces/ROBOTNIK/pages/132743181/MoveIt+Studio+MoveIt+Pro)
+
+# How to run our Development Container with MoveIt Pro
 
 In order to start this with the terminal, you have to enter the directory that contains our `docker-compose.yaml`, `Dockerfile` and the `.env` file first. This can be important for some commands because they might need the environment variables defined in the `.env` file.
 
