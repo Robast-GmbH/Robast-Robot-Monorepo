@@ -361,11 +361,6 @@ global_costmap:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
         map_topic: /global_costmap/feuerplan_image_topic
-      static_layer_feuerplan:
-        enabled: false
-        plugin: "static_layer_plugin::StaticLayer"
-        #map_subscribe_transient_local: True
-        subscribe_to_updates: false
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"
         enabled: true

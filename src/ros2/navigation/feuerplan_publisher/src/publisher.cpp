@@ -13,8 +13,7 @@ using namespace std::chrono_literals;
 class FeuerplanPublisher : public rclcpp::Node
 {
   public:
-    FeuerplanPublisher()
-    : Node("feuerplan_publisher")
+  FeuerplanPublisher() : Node("feuerplan_publisher"), publisher_(nullptr)
     {
       rclcpp::QoS map_qos(10); 
       map_qos.transient_local();
@@ -23,52 +22,58 @@ class FeuerplanPublisher : public rclcpp::Node
 
       publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_costmap/feuerplan_image_topic",map_qos);
 
-      cv::Mat feuerplan_image = cv::imread("src/navigation/feuerplan_publisher/resources/matched_5.jpg",cv::IMREAD_GRAYSCALE);
-      cv::Mat feuerplan_image_smooth;
-      cv::Mat feuerplan_image_thresh;
-
-
-      cv::GaussianBlur(feuerplan_image, feuerplan_image, cv::Size(3, 3), 3,3);
-      cv::Canny( feuerplan_image, feuerplan_image_thresh, 50, 150, 3);
-      
-      int dilation_size = 1;
-      cv::Mat dilation_element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1), cv::Point(dilation_size, dilation_size));
-      cv::dilate(feuerplan_image_thresh, feuerplan_image_thresh, dilation_element);
-      feuerplan_image_smooth = feuerplan_image & feuerplan_image_thresh;
-      
-      cv::threshold(feuerplan_image_smooth, feuerplan_image_smooth, 150, 127, cv::THRESH_BINARY);
-      std::vector<int8_t> data;
-      for (int i = 0; i < feuerplan_image_smooth.rows; ++i) {
-        for (int j = 0; j < feuerplan_image_smooth.cols; ++j) {
-          data.push_back(feuerplan_image_smooth.at<uchar>(i, j));
-        }
-      }
-
-
-    //  RCLCPP_INFO(this->get_logger(), "%d", data)
-      auto ros_image_msg = nav_msgs::msg::OccupancyGrid();
-      ros_image_msg.header.stamp = this->now();
-      ros_image_msg.header.frame_id = "feuerplan_map";
-      ros_image_msg.info.map_load_time.sec = 0;
-      ros_image_msg.info.map_load_time.nanosec = 0;
-      ros_image_msg.info.resolution = 0.05;
-      ros_image_msg.info.width = feuerplan_image_smooth.cols;
-      ros_image_msg.info.height = feuerplan_image_smooth.rows;
-      ros_image_msg.info.origin.position.x = -20;
-      ros_image_msg.info.origin.position.y = -3.3;
-      ros_image_msg.info.origin.position.z = 0.0;
-      ros_image_msg.info.origin.orientation.x = 1.0;
-      ros_image_msg.info.origin.orientation.y = 0.0;
-      ros_image_msg.info.origin.orientation.z = 0.0;
-      ros_image_msg.info.origin.orientation.w = 0.0;
-      ros_image_msg.data = data;
-      RCLCPP_INFO(this->get_logger(), "Feuerplan published");
-      publisher_->publish(ros_image_msg);
-
-       //publishLoop();
+      cv::Mat feuerplan_image = cv::imread("src/navigation/feuerplan_publisher/resources/Slide1.jpg",cv::IMREAD_GRAYSCALE);
+      preprocessImage(feuerplan_image);
+      publishOccupancyGrid(feuerplan_image);
     }
-    //rclcpp::TimerBase::SharedPtr timer_;
-    private:
+      
+
+     void preprocessImage(cv::Mat& image)
+    {
+        cv::Mat processed_image;
+        cv::GaussianBlur(image, processed_image, cv::Size(3, 3), 3, 3);
+        cv::Canny(processed_image, processed_image, 50, 150, 3);
+
+        int dilation_size = 1;
+        cv::Mat dilation_element = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(2 * dilation_size + 1, 2 * dilation_size + 1), cv::Point(dilation_size, dilation_size));
+        cv::dilate(processed_image, processed_image, dilation_element);
+
+        image = image & processed_image;
+        cv::threshold(image, image, 150, 127, cv::THRESH_BINARY);
+    }
+
+    void publishOccupancyGrid(const cv::Mat& feuerplan_image)
+    {
+        std::vector<int8_t> data;
+        data.reserve(feuerplan_image.rows * feuerplan_image.cols);
+
+        for (int i = 0; i < feuerplan_image.rows; ++i) {
+            for (int j = 0; j < feuerplan_image.cols; ++j) {
+                data.emplace_back(feuerplan_image.at<uchar>(i, j));
+            }
+        }
+
+        auto ros_image_msg = nav_msgs::msg::OccupancyGrid();
+        ros_image_msg.header.stamp = this->now();
+        ros_image_msg.header.frame_id = "feuerplan_map";
+        ros_image_msg.info.map_load_time.sec = 0;
+        ros_image_msg.info.map_load_time.nanosec = 0;
+        ros_image_msg.info.resolution = 0.05;
+        ros_image_msg.info.width = feuerplan_image.cols;
+        ros_image_msg.info.height = feuerplan_image.rows;
+        ros_image_msg.info.origin.position.x = -20.2;
+        ros_image_msg.info.origin.position.y = -3.3;
+        ros_image_msg.info.origin.position.z = 0.0;
+        ros_image_msg.info.origin.orientation.x = 1.0;
+        ros_image_msg.info.origin.orientation.y = 0.0;
+        ros_image_msg.info.origin.orientation.z = 0.0;
+        ros_image_msg.info.origin.orientation.w = 0.0;
+        ros_image_msg.data = data;
+
+        RCLCPP_INFO(this->get_logger(), "Feuerplan published");
+        publisher_->publish(ros_image_msg);
+    }  
+  private:
     rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr publisher_;
 };
 
