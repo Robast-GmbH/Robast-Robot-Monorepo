@@ -96,9 +96,16 @@ optional_feature_params:
 moveit_params:
   joint_group_name: "mobile_base_arm"
 
+  # The config file for the planning pipeline has changed in 10/2023
+  # according to https://github.com/ros-planning/moveit2/blob/main/MIGRATION.md
+  # As far as I can see this, the config has only changed for iron, not for humble
+  # Altough moveit pro runs with humble, I need to change the config file to iron
+  # otherwise I get the error that the config format does not fit. Maybe moveit pro
+  # already merged this change into their codebase, with the "normal" moveit stuff
+  # in rviz I still need to use the omp_humble_planning.yaml file
   ompl_planning:
     package: "moveit_door_opening_mechanism_config"
-    path: "config/ompl_iron_planning.yaml"
+    path: "config/ompl_iron_planning.yaml" # check above comment
   kinematics:
     package: "moveit_door_opening_mechanism_config"
     path: "config/kinematics.yaml"
