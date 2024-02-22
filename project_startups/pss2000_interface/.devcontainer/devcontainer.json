@@ -1,0 +1,27 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+
+	"dockerFile": "Dockerfile",
+	"name": "Python docker",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../src/Hardware/py/PSS2000_conntector,target=/workspace/src/PSS200_connector,type=bind"
+	],
+	"workspaceFolder": "/workspace",
+	"runArgs": [
+		"--name=pss2000_interface",
+		"--network=host"
+	],
+	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.debugpy",
+				"ms-python.python"
+			]
+		}
+	}
+}
