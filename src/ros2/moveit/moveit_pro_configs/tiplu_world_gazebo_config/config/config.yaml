@@ -57,6 +57,8 @@ hardware:
       - ros_distro: "humble"
       - prefix: ""
       - ros2_control_hardware_type: "gz_ros2_control"
+      - model_position_joint: "true"
+      - ros2_control_hardware_type_positon_joint: "gz_ros2_control"
 
 # Override MoveIt parameters
 # moveit_params:
@@ -74,14 +76,15 @@ hardware:
 
 # This configures what controllers gets run at startup
 ros2_control:
-  controllers_active_at_startup:
+  controllers_active_at_startup: []
+
+  controllers_inactive_at_startup: []
+
+  controllers_not_managed:
     - "joint_state_broadcaster"
-    - "joint_trajectory_controller"
     - "diff_drive_base_controller"
     - "drawer_joint_trajectory_controller"
-    - "position_joint_trajectory_controller"
-
-  # Load but do not start these controllers so they can be activated later if needed.
-  # [Optional, default=[]]
-  controllers_inactive_at_startup:
+    - "mobile_base_controller_cmd_vel"
     - "streaming_controller"
+    - "joint_trajectory_controller"
+

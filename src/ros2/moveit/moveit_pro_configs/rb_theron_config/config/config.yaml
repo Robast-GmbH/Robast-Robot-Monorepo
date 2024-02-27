@@ -70,10 +70,11 @@ hardware:
     # Many of these are specific to the UR descriptions packages, and can be customized as needed.
     # [Optional]
     urdf_params:
-      - ros_distro: "humble"
+      - ros_distro: "humble" # mind that if you change this, you also need to chnage ompl_planning.yaml file
       - prefix: ""
       - ros2_control_hardware_type: "mock_components"
-
+      - model_position_joint: "true"
+      - ros2_control_hardware_type_positon_joint: "mock_components"
 
 # Sets ROS global params for launch.
 # [Optional]
@@ -95,9 +96,16 @@ optional_feature_params:
 moveit_params:
   joint_group_name: "mobile_base_arm"
 
+  # The config file for the planning pipeline has changed in 10/2023
+  # according to https://github.com/ros-planning/moveit2/blob/main/MIGRATION.md
+  # As far as I can see this, the config has only changed for iron, not for humble
+  # Altough moveit pro runs with humble, I need to change the config file to iron
+  # otherwise I get the error that the config format does not fit. Maybe moveit pro
+  # already merged this change into their codebase, with the "normal" moveit stuff
+  # in rviz I still need to use the omp_humble_planning.yaml file
   ompl_planning:
     package: "moveit_door_opening_mechanism_config"
-    path: "config/ompl_planning.yaml"
+    path: "config/ompl_iron_planning.yaml" # check above comment
   kinematics:
     package: "moveit_door_opening_mechanism_config"
     path: "config/kinematics.yaml"
@@ -152,15 +160,16 @@ ros2_control:
   # [Optional, default=[]]
   controllers_active_at_startup:
     - "joint_state_broadcaster"
-    - "joint_trajectory_controller"
     - "diff_drive_base_controller"
     - "drawer_joint_trajectory_controller"
-    - "position_joint_trajectory_controller"
+    - "mobile_base_controller_cmd_vel"
 
   # Load but do not start these controllers so they can be activated later if needed.
   # [Optional, default=[]]
   controllers_inactive_at_startup:
     - "streaming_controller"
+    - "joint_trajectory_controller"
+
 
   # Any controllers here will not be spawned by MoveIt Studio.
   # [Optional, default=[]]
@@ -195,4 +204,4 @@ objectives:
   # [Required]
   waypoints_file:
     package_name: "rb_theron_config"
-    relative_path: "waypoints/ur_waypoints.yaml"
+    relative_path: "waypoints/waypoints.yaml"
