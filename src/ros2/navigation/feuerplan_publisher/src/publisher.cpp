@@ -22,7 +22,7 @@ class FeuerplanPublisher : public rclcpp::Node
 
       publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_costmap/feuerplan_image_topic",map_qos);
 
-      cv::Mat feuerplan_image = cv::imread("src/navigation/feuerplan_publisher/resources/Slide1.jpg",cv::IMREAD_GRAYSCALE);
+      cv::Mat feuerplan_image = cv::imread("src/navigation/feuerplan_publisher/resources/slide1.jpg",cv::IMREAD_GRAYSCALE);
       preprocessImage(feuerplan_image);
       publishOccupancyGrid(feuerplan_image);
     }
