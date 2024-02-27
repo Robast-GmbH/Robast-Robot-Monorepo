@@ -209,7 +209,8 @@
                                 "publish feuerplan",
                                 "start slam_toolbox",
                                 "start nav_without_localization",
-                                "start rviz"
+                                "start rviz",
+                                "start robot_localization"
                         ]
                 },
                 {
