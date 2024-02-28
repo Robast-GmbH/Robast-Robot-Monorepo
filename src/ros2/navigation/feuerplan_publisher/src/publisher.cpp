@@ -15,6 +15,15 @@ class FeuerplanPublisher : public rclcpp::Node
   public:
   FeuerplanPublisher() : Node("feuerplan_publisher"), publisher_(nullptr)
     {
+
+      this->declare_parameter("resource_base_folder","");
+      this->declare_parameter("feuerplan_image","");
+
+      std::string resources_path = this->get_parameter("resource_base_folder").as_string();
+      std::string feuerplan_image_name = this->get_parameter("feuerplan_image").as_string();
+
+      std::string feuerplan_path = resources_path + "/" + feuerplan_image_name;
+
       rclcpp::QoS map_qos(10); 
       map_qos.transient_local();
       map_qos.reliable();
@@ -22,7 +31,7 @@ class FeuerplanPublisher : public rclcpp::Node
 
       publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_costmap/feuerplan_image_topic",map_qos);
 
-      cv::Mat feuerplan_image = cv::imread("src/navigation/feuerplan_publisher/resources/slide1.jpg",cv::IMREAD_GRAYSCALE);
+      cv::Mat feuerplan_image = cv::imread(feuerplan_path,cv::IMREAD_GRAYSCALE);
       preprocessImage(feuerplan_image);
       publishOccupancyGrid(feuerplan_image);
     }
@@ -53,6 +62,8 @@ class FeuerplanPublisher : public rclcpp::Node
             }
         }
 
+        // This is a temporary solution as the origin's orientation and positon should not be hardcoded.
+        // TODO the origin's orientation and positon should be obtained from the transformation between feuerplan and map.
         auto ros_image_msg = nav_msgs::msg::OccupancyGrid();
         ros_image_msg.header.stamp = this->now();
         ros_image_msg.header.frame_id = "feuerplan_map";

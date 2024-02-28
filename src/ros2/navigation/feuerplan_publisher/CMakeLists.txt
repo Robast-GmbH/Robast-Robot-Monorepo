@@ -16,17 +16,22 @@ find_package(cv_bridge REQUIRED)
 #include_directories(${OpenCV_INCLUDE_DIRS})
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
-add_executable(talker src/publisher.cpp)
-ament_target_dependencies(talker rclcpp sensor_msgs nav_msgs cv_bridge)
-target_link_libraries(talker ${OpenCV_LIBRARIES})
+add_executable(feuerplan_publisher_node src/publisher.cpp)
+ament_target_dependencies(feuerplan_publisher_node rclcpp sensor_msgs nav_msgs cv_bridge)
+target_link_libraries(feuerplan_publisher_node ${OpenCV_LIBRARIES})
 
 install(TARGETS
-  talker
+  feuerplan_publisher_node
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
   resources
   DESTINATION share/${PROJECT_NAME}/
+)
+
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/launch
 )
 
 if(BUILD_TESTING)
