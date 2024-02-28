@@ -22,7 +22,7 @@
 
   <depend>urdf</depend>
   <depend>xacro</depend>
-  <!--depend>gazebo_plugins</depend-->
+  <depend>gazebo_plugins</depend>
 
   <!-- Not available from ROS2 repository -->
   <!-- <depend>hector_gazebo_plugins</depend> -->

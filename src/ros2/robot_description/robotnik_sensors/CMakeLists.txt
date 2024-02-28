@@ -18,6 +18,7 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
+find_package(gazebo_plugins REQUIRED)
 
 
 if(BUILD_TESTING)

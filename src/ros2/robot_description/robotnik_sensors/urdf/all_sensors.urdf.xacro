@@ -96,9 +96,8 @@
   <xacro:include filename="$(find robotnik_sensors)/urdf/zed.urdf.xacro" />
 
   <!-- Zed 2 -->
-  <!-- <xacro:include filename="$(find robotnik_sensors)/urdf/zed2.urdf.xacro" /> -->
-  <xacro:include filename="$(find robotnik_sensors)/urdf/zed_2.urdf.xacro" />
-
+  <xacro:include filename="$(find robotnik_sensors)/urdf/zed2.urdf.xacro" />
+  
   <!-- Rplidar -->
   <xacro:include filename="$(find robotnik_sensors)/urdf/rplidar.urdf.xacro" />
 
@@ -176,7 +175,7 @@
   <!-- Vectornav -->
   <xacro:include filename="$(find robotnik_sensors)/urdf/vectornav.urdf.xacro" />
 
-  <!-- Oka-D -->
+  <!-- Oak-D -->
   <xacro:include filename="$(find robotnik_sensors)/urdf/depthai_macro.urdf.xacro" />
 
 </robot>
