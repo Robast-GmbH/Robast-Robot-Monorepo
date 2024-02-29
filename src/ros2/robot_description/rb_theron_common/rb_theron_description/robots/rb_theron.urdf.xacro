@@ -130,6 +130,14 @@
 		<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
 	</xacro:sensor_sick_nanoscan3> -->
 
+	<!-- <xacro:stereolabs_zed2 prefix="$(arg prefix)zed_camera" parent="$(arg prefix)base_link" prefix_topic="zed_camera" >
+		<origin xyz="0.317 -0.197 1.3044" rpy="-0.0 0.0 -3.1416"/>
+	</xacro:stereolabs_zed2> -->
+
+	<xacro:sensor_r430 prefix="$(arg prefix)front_top_realsense_camera" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="back_top_realsense_camera" hq="${hq}">
+		<origin xyz="0.317 -0.197 1.3044" rpy="0 0 0"/>
+	</xacro:sensor_r430>
+
 	<!-- <xacro:arg name="front_zed_camera_model" default="zed2" />
 	<xacro:arg name="front_zed_base_frame" default="zed-2i-base-frame" />
 	<xacro:arg name="front_oak_d_pos_x" default="0.317" />
@@ -154,7 +162,7 @@
 		cam_yaw="$(arg front_oak_d_yaw)">
 	</xacro:zed2> -->
 
-	<xacro:arg name="front_oak_d_camera_model" default="OAK-D-S2" />
+	<!-- <xacro:arg name="front_oak_d_camera_model" default="OAK-D-S2" />
 	<xacro:arg name="front_oak_d_base_frame" default="oak-d-s2-usb-base-frame" />
 	<xacro:arg name="front_oak_d_pos_x" default="0.317" />
 	<xacro:arg name="front_oak_d_pos_y" default="-0.197" />
@@ -177,7 +185,7 @@
 		cam_pitch="$(arg front_oak_d_pitch)"
 		cam_yaw="$(arg front_oak_d_yaw)"
 		hq="${hq}">
-	</xacro:depthai_camera>
+	</xacro:depthai_camera> -->
 
 	<!-- ROBAST Module Cage -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
