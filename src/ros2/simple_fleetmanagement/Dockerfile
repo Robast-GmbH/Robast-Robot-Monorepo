@@ -1,17 +1,15 @@
 FROM ros:humble-ros-core
 
-
- 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
     apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu && \
     rm -rf /var/lib/apt/lists/*
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
-RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group --groups adm,sudo ubuntu && \
-    echo ubuntu:ubuntu | chpasswd && \
+RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
+    echo robast:robast | chpasswd && \
     echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER ubuntu
+ENV USER robast
 ARG DEBIAN_FRONTEND=
 
 ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
@@ -44,7 +42,8 @@ RUN apt-get update && apt-get install -y \
 RUN apt-get update \
   && echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
   && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
-  && echo "cd ~/../../workspaces/Robast_RosTheron" >> /home/$USER/.bashrc \
   && echo 'export PS1="\[\e[31m\][\[\e[m\]\[\e[38;5;172m\]\u\[\e[m\]@\[\e[38;5;153m\]\h\[\e[m\]\[\e[38;5;214m\]\W\[\e[m\]\[\e[31m\]]\[\e[m\]\\$"' >> /home/$USER/.bashrc
 
 RUN apt-get update && apt-get upgrade -y
+USER robast
+WORKDIR /workspace
