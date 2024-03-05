@@ -195,7 +195,7 @@
                 {
                         "type": "shell",
                         "label": "publish feuerplan",
-                        "command": "source /workspace/install/setup.bash; ros2 run feuerplan_publisher talker",
+                        "command": "source /workspace/install/setup.bash; ros2 launch feuerplan_publisher feuerplan_publisher.launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

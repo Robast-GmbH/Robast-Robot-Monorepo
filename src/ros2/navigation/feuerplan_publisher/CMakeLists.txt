@@ -9,7 +9,6 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(OpenCV REQUIRED)
-find_package(sensor_msgs REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
 # uncomment the following section in order to fill in
@@ -26,12 +25,8 @@ install(TARGETS
 
 install(DIRECTORY
   resources
-  DESTINATION share/${PROJECT_NAME}/
-)
-
-install(DIRECTORY
   launch
-  DESTINATION share/${PROJECT_NAME}/launch
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 if(BUILD_TESTING)

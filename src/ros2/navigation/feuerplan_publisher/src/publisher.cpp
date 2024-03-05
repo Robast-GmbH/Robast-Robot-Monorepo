@@ -4,7 +4,6 @@
 #include <string>
 
 #include "rclcpp/rclcpp.hpp"
-#include "sensor_msgs/msg/image.hpp"
 #include "opencv2/opencv.hpp"
 #include "nav_msgs/msg/occupancy_grid.hpp"
 
@@ -15,14 +14,9 @@ class FeuerplanPublisher : public rclcpp::Node
   public:
   FeuerplanPublisher() : Node("feuerplan_publisher"), publisher_(nullptr)
     {
+      this->declare_parameter("feuerplan_path","");
 
-      this->declare_parameter("resource_base_folder","");
-      this->declare_parameter("feuerplan_image","");
-
-      std::string resources_path = this->get_parameter("resource_base_folder").as_string();
-      std::string feuerplan_image_name = this->get_parameter("feuerplan_image").as_string();
-
-      std::string feuerplan_path = resources_path + "/" + feuerplan_image_name;
+      std::string feuerplan_path = this->get_parameter("feuerplan_path").as_string();
 
       rclcpp::QoS map_qos(10); 
       map_qos.transient_local();
