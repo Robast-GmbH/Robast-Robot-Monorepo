@@ -1,60 +1,12 @@
 <?xml version="1.0"?>
 <robot xmlns:xacro="http://wiki.ros.org/xacro">
 
-  <xacro:macro name="depth_camera">
-
-      <gazebo reference="${prefix}_link">
-        <sensor type="camera" name="${prefix}_right_link">
-          <update_rate>10.0</update_rate>
-          <always_on>true</always_on>
-          <ignition_frame_id>camera_link_optical</ignition_frame_id>
-          <pose>0 -0.12 0 0 0 0</pose>
-          <topic>${prefix_topic}/right/image_raw</topic>
-          <horizontal_fov>1.3962634</horizontal_fov>
-          <image>
-              <width>1024</width>
-              <height>1024</height>
-              <format>R8G8B8</format>
-          </image>
-          <clip>
-              <near>0.02</near>
-              <far>300</far>
-          </clip>
-        </sensor>
-          <sensor type="camera" name="${prefix}_left_link">
-          <topic>${prefix_topic}/left/image_raw</topic>
-          <update_rate>10.0</update_rate>
-          <always_on>true</always_on>
-          <ignition_frame_id>camera_link_optical</ignition_frame_id>
-          <pose>0 0 0 0 0 0</pose>
-          <horizontal_fov>1.3962634</horizontal_fov>
-          <image>
-              <width>1024</width>
-              <height>1024</height>
-              <format>R8G8B8</format>
-          </image>
-          <clip>
-              <near>0.02</near>
-              <far>300</far>
-          </clip>
-        </sensor>
-        </gazebo>
-  </xacro:macro>
-
   <xacro:macro name="stereolabs_zed2"
-    params="prefix parent sensor_base_frame robot_name *origin model:=zed format:=R8G8B8 near:=0.5 far:=30  prefix_topic:=zed_node">
+    params="prefix parent sensor_base_frame robot_name *origin prefix_topic">
 
     <xacro:property name="sensor_link_name" value="${robot_name}/${sensor_base_frame}/${prefix}" />
 
-    <xacro:if value="${model == 'zed'}">
-        <xacro:property name="baseline" value="0.12" />
-    </xacro:if>
-    <xacro:if value="${model == 'zedm'}">
-        <xacro:property name="baseline" value="0.06" />
-    </xacro:if>
-    <xacro:if value="${model == 'zed2'}">
-        <xacro:property name="baseline" value="0.12" />
-    </xacro:if>
+    <!-- <xacro:property name="baseline" value="0.12" /> -->
 
     <joint name="${prefix}_base_joint" type="fixed">
       <xacro:insert_block name="origin" />
@@ -66,58 +18,55 @@
        <visual>
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="$(find robotnik_sensors)/meshes/${model}.stl"/>
+          <mesh filename="$(find robotnik_sensors)/meshes/zed2.stl"/>
+          <box size="0.025 0.100 0.025 "/>
         </geometry>
-        <material name="light_zed_grey">
-          <color rgba="0.35 0.35 0.35 1"/>
+        <material name="aluminium">
+          <color rgba="0.5 0.5 0.5 1"/>
         </material>
       </visual>
       <collision>
-        <origin xyz="0.0 0.0 0.0" rpy="0 0 0" />
+        <origin xyz="0 0 0" rpy="0 0 0" />
         <geometry>
-          <mesh filename="$(find robotnik_sensors)/meshes/${model}.stl" />
+        <box size="0.025 0.100 0.025 "/>
         </geometry>
       </collision>
       <inertial>
         <mass value="0.135" />
         <origin xyz="0 0 0" />
-        <xacro:solid_cuboid_inertia m="0.135" w="0.033" h="0.175" d="0.03" />
+        <xacro:solid_cuboid_inertia m="0.1" w="0.025" h="0.09" d="0.025" />
       </inertial>
     </link>
 
    <!-- Left camera -->
     <joint name="${prefix}_camera_left_joint" type="fixed">
-      <origin xyz="0.0 0.06 0.0" rpy="0.0 0.0 0.0" />
+      <origin xyz="0 0.0115 0" rpy="0 0 0" />
       <parent link="${prefix}_base_link" />
       <child link="${prefix}_left_camera_frame" />
     </joint>
-
     <link name="${prefix}_left_camera_frame"/>
 
     <joint name="${prefix}_camera_left_optical_joint" type="fixed">
-      <origin xyz="0.0 0.0 0.0" rpy="${-M_PI/2} 0.0 ${-M_PI/2}" />
+      <origin xyz="0 0 0" rpy="${-M_PI/2} 0 ${-M_PI/2}" />
       <parent link="${prefix}_left_camera_frame" />
-      <child link="${prefix}_left_camera_optical_frame" />
+      <child link="${sensor_link_name}_left_camera_optical_frame" />
     </joint>
-
-    <link name="${prefix}_left_camera_optical_frame"/>
+    <link name="${sensor_link_name}_left_camera_optical_frame"/>
 
     <!-- Right camera-->
     <joint name="${prefix}_camera_right_joint" type="fixed">
-      <origin xyz="0.0 -0.06 0.0" rpy="0.0 0.0 0.0" />
+      <origin xyz="0 -0.06 0" rpy="0 0 0" />
       <parent link="${prefix}_base_link" />
       <child link="${prefix}_right_camera_frame" />
     </joint>
-
     <link name="${prefix}_right_camera_frame"/>
 
     <joint name="${prefix}_camera_right_optical_joint" type="fixed">
-      <origin xyz="0.0 0 0.0" rpy="${-M_PI/2} 0.0 ${-M_PI/2}" />
+      <origin xyz="0 0 0" rpy="${-M_PI/2} 0.0 ${-M_PI/2}" />
       <parent link="${prefix}_right_camera_frame" />
-      <child link="${prefix}_right_camera_optical_frame" />
+      <child link="${sensor_link_name}_right_camera_optical_frame" />
     </joint>
-
-    <link name="${prefix}_right_camera_optical_frame"/>
+    <link name="${sensor_link_name}_right_camera_optical_frame"/>
 
     <!-- Depth image-->
     <!-- <joint name="${prefix}_depth_joint" type="fixed">
@@ -136,13 +85,51 @@
 
     <link name="${prefix}_depth_optical_frame"/> -->
 
-      <xacro:depth_camera/>
-    </xacro:macro>
+    <xacro:depth_camera/>
+  </xacro:macro>
 
-  <xacro:macro name="sensor_zed2" params="prefix:=zed2 parent *origin model:=zed2  prefix_topic:=zed_node" >
-    <stereolabs_zed2 prefix="${prefix}" parent="${parent}" model="${model}" prefix_topic="${prefix_topic}">
-      <xacro:insert_block name="origin" />
-    </stereolabs_zed2>
+  <xacro:macro name="depth_camera">
+
+      <gazebo reference="${prefix}_link">
+        <sensor name="${prefix}_right_link" type="camera" >
+          <topic>zed/right/image_raw</topic>
+          <camera name="zed">
+            <horizontal_fov>1.3962634</horizontal_fov>
+            <!-- <pose>0 -0.12 0 0 0 0</pose> -->
+            <image>
+                <width>640</width>
+                <height>480</height>
+                <format>RGB_INT8</format>
+            </image>
+            <clip>
+                <near>0.02</near>
+                <far>300</far>
+            </clip>
+            </camera>
+          <always_on>true</always_on>
+          <update_rate>10</update_rate>
+          <visualize>1</visualize>
+        </sensor>
+          <sensor name="${prefix}_left_link" type="camera" >
+          <topic>zed/left/image_raw</topic>
+          <camera>
+          <!-- <pose>0 0 0 0 0 0</pose> -->
+          <horizontal_fov>1.3962634</horizontal_fov>
+          <image>
+              <width>640</width>
+              <height>480</height>
+              <format>RGB_INT8</format>
+          </image>
+          <clip>
+              <near>0.02</near>
+              <far>300</far>
+          </clip>
+          </camera>
+          <update_rate>10.0</update_rate>
+          <always_on>true</always_on>
+          <visualize>1</visualize>
+        </sensor>
+        </gazebo>
   </xacro:macro>
 
 </robot>
