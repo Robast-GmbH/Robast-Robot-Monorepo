@@ -1,12 +1,11 @@
 import socket
-from bitarray import bitarray
 
 # Default IP address
 DEFAULT_IP = "10.10.13.10"
 
 # Class for TCP connection
 class TCPConnection:
-    def __init__(self, ip=DEFAULT_IP, port=5000):
+    def __init__(self, ip=DEFAULT_IP, port=10001):
         self.ip = ip
         self.port = port
         self.sock = None
@@ -22,9 +21,9 @@ class TCPConnection:
         if self.sock is not None:
             self.sock.close()
 
-    def send(self, bit_array):
-        # Convert bit array to byte array
-        bytes_to_send = bit_array.tobytes()
+    def send(self, message):
+        # Convert message to bytes
+        bytes_to_send = message.encode()
 
         # Send length of byte array
         self.sock.sendall(len(bytes_to_send).to_bytes(4, byteorder="big"))
@@ -39,28 +38,37 @@ class TCPConnection:
         # Receive byte array
         bytes_received = self.sock.recv(bytes_length)
 
-        # Convert byte array to bit array
-        return bitarray(bytes_received)
+        # Convert byte array to string
+        return bytes_received.decode()
 
 # Main function
 def main():
     # Enter IP address and port
     ip = input("IP address: ") or DEFAULT_IP
-    port = int(input("Port: ")) or 5000
+    port = int(input("Port: ")) or 10001
 
     # Connect to server
     with TCPConnection(ip, port) as connection:
-        # Create bit array to send
-        bit_array_to_send = bitarray([1, 0, 1, 1, 0, 0, 1, 1])
+        # Create message to send
+        message_to_send = "Hello, server!"
 
-        # Send bit array
-        connection.send(bit_array_to_send)
+        # Send message
+        connection.send(message_to_send)
 
-        # Receive bit array
-        bit_array_received = connection.receive()
+        # Receive message
+        message_received = connection.receive()
 
-        # Print received bit array
-        print("Received bit array:", bit_array_received)
+        # Print received message
+        print("Received message:", message_received)
 
 if __name__ == "__main__":
     main()
+
+'''
+Response Tag Present	STX	n	Source 	22	Ack/Nak	Status Tag	LSB LF ID MSB		LSB Tag ID MSB				LSB HF ID MSB		RSSI X	RSSI Y	RSSI Z	RSSI Abstand	CRC	ETX
+Set Tag Actor	STX	n	Target	2E	Ack/Nak	LSB Tag ID MSB				Aktor	tbd	tbd	tbd	tbd	tbd	tbd	tbd	CRC	ETX	
+also mache ich für Set Tag Actor sowas wie: 0x02 n 2E 0x06 0x00035976 10000000 crc <CR> 
+oder Reader Status	0x02	n 	26	0x06	Output	Modis	Input	LF-Dist.	Status	max.LF-Ampl.		C-kombi	CRC	ETX
+
+0x00035976 -> ASCII:5976
+'''
