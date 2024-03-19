@@ -31,36 +31,49 @@ class TCPConnection:
         # Send byte array
         self.sock.sendall(bytes_to_send)
 
-    def receive(self):
-        # Receive length of byte array
-        bytes_length = int.from_bytes(self.sock.recv(4), byteorder="big")
+    def receive(self) -> bytes:
+        # Receive STX byte
+        stx_byte = self.sock.recv(1)
+        if stx_byte != b'\x02':
+            raise ValueError("Invalid message format: missing STX byte")
+
+        # Receive length byte
+        length_byte = self.sock.recv(1)
+        bytes_length = int.from_bytes(length_byte, byteorder="big")
 
         # Receive byte array
         bytes_received = self.sock.recv(bytes_length)
 
+        # Receive ETX byte
+        # etx_byte = self.sock.recv(1)
+        # if etx_byte != b'\x03':
+        #     raise ValueError("Invalid message format: missing ETX byte")
+
         # Convert byte array to string
-        return bytes_received.decode()
+        return bytes_received
 
 # Main function
 def main():
     # Enter IP address and port
-    ip = input("IP address: ") or DEFAULT_IP
-    port = int(input("Port: ")) or 10001
+    ip = DEFAULT_IP
+    port = 10001
 
     # Connect to server
     with TCPConnection(ip, port) as connection:
-        # Create message to send
-        message_to_send = "Hello, server!"
+        # # Create message to send
+        # message_to_send = "Hello, server!"
 
-        # Send message
-        connection.send(message_to_send)
-
-        # Receive message
-        message_received = connection.receive()
-
-        # Print received message
-        print("Received message:", message_received)
-
+        # # Send message
+        # connection.send(message_to_send)
+        
+        for i in range(0, 20):
+            # Receive message
+            message_received = connection.receive()
+            # Print received message
+            decoded_message = message_received.decode()
+            if (len(decoded_message)+1) % 2 != 0:
+                decoded_message = '0' + decoded_message
+            print("Received message:", decoded_message)
 if __name__ == "__main__":
     main()
 
@@ -71,4 +84,5 @@ also mache ich für Set Tag Actor sowas wie: 0x02 n 2E 0x06 0x00035976 10000000 
 oder Reader Status	0x02	n 	26	0x06	Output	Modis	Input	LF-Dist.	Status	max.LF-Ampl.		C-kombi	CRC	ETX
 
 0x00035976 -> ASCII:5976
+
 '''
