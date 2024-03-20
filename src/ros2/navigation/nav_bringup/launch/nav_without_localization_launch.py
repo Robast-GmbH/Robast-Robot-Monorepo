@@ -64,8 +64,7 @@ def generate_launch_description():
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
-        "default_nav_to_pose_bt_xml": nav_to_pose_bt,
-        "map_topic": "/map"}
+        "default_nav_to_pose_bt_xml": nav_to_pose_bt}
 
     configured_params = RewrittenYaml(
         source_file=params_file,
