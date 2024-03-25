@@ -80,7 +80,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get install -y --no-install-recommends \
         less \
         gdb \
-        nano
+        nano \
+        ros-humble-plotjuggler-ros
 
 # Set up the user's .bashrc file and shell.
 CMD ["/usr/bin/bash"]
