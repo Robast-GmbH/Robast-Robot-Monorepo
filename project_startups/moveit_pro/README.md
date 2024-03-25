@@ -29,6 +29,6 @@ Then use the 4 terminals to run (you might need to `source install/setup.bash`):
 
 `robot.app` (not sure if this is always required)
 
-`studio.app`
+`studio_bridge.app`
 
 `rest_api.app`
