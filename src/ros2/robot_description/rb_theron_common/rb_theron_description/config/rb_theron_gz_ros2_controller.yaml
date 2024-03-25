@@ -104,7 +104,7 @@ joint_trajectory_controller:
     action_monitor_rate: 20.0 # Defaults to 20
 
     allow_partial_joints_goal: false # Defaults to false
-    open_loop_control: true
+    open_loop_control: false
     allow_integration_in_goal_trajectories: true
     allow_nonzero_velocity_at_trajectory_end: true
     interpolation_method: splines
@@ -130,10 +130,10 @@ joint_trajectory_controller:
         d: 0.1
         ff_velocity_scale: 1.0
       position_joint:
-          p: 0.0
-          i: 0.0
-          d: 0.0
-          ff_velocity_scale: 1.0
+        p: 0.0
+        i: 0.0
+        d: 0.0
+        ff_velocity_scale: 1.0
 
 mobile_base_controller_cmd_vel:
   ros__parameters:
