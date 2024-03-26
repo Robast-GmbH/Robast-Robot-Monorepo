@@ -12,8 +12,10 @@ namespace door_opening_mechanism_mtc
   void DoorMechanismMtc::handle_node_parameter()
   {
     declare_parameter("moveit2_planning_group_name", _DEFAULT_PLANNING_GROUP_NAME);
+    declare_parameter("planning_pipeline", _DEFAULT_PLANNING_GROUP_NAME);
 
     _planning_group_name = get_parameter("moveit2_planning_group_name").as_string();
+    _planning_pipeline = get_parameter("planning_pipeline").as_string();
   }
 
   void DoorMechanismMtc::create_subscriptions()
@@ -61,7 +63,7 @@ namespace door_opening_mechanism_mtc
   void DoorMechanismMtc::door_handle_position_callback(const depthai_ros_msgs::msg::SpatialDetectionArray& msg)
   {
     RCLCPP_INFO(_LOGGER,
-                "I heard from the %s topic %i detections for the frame_id %s",
+                "I heard from the %s topic %li detections for the frame_id %s",
                 _DOOR_HANDLE_POSITION_TOPIC.c_str(),
                 msg.detections.size(),
                 msg.header.frame_id.c_str());
@@ -128,11 +130,20 @@ namespace door_opening_mechanism_mtc
     }
 
     RCLCPP_INFO(_LOGGER, "Planning task!");
-    if (!_task.plan(5 /* max_solutions */))
+    try
     {
-      RCLCPP_ERROR(_LOGGER, "Task planning failed");
-      return;
+      if (!_task.plan(5 /* max_solutions */))
+      {
+        RCLCPP_ERROR(_LOGGER, "Task planning failed");
+        return;
+      }
     }
+    catch (mtc::InitStageException& e)
+    {
+      std::cerr << e << std::endl;
+      throw;
+    }
+
     RCLCPP_INFO(_LOGGER, "Publishing task solutions!");
     _task.introspection().publishSolution(*_task.solutions().front());
 
@@ -171,16 +182,9 @@ namespace door_opening_mechanism_mtc
     task.stages()->setName("approach door handle task");
     task.loadRobotModel(shared_from_this());
 
-    // TODO@Jacob: Executing a task works only for the door_opening_mechanism for now.
-    // Since we are using the joint_trajectory_controller from ros2_control now, we have to find a way how we
-    // incorporate the mobile base into this properly
-    const auto& group_name = "door_opening_mechanism";   // mobile_base_arm or door_opening_mechanism
-    const auto& group_name_arm = "door_opening_mechanism";
+    const auto& group_name = "mobile_base_arm";
     const auto& end_effector_name = "door_opening_end_effector";
     const auto& end_effector_parent_link = "door_opening_mechanism_link_freely_rotating_hook";
-
-    const auto& hand_group_name = "hand";
-    const auto& hand_frame = "hook_base_link";
 
     // Set task properties
     task.setProperty("group", group_name);
@@ -192,7 +196,7 @@ namespace door_opening_mechanism_mtc
     current_state_ptr = stage_state_current.get();
     task.add(std::move(stage_state_current));
 
-    auto sampling_planner = std::make_shared<mtc::solvers::PipelinePlanner>(shared_from_this());
+    auto sampling_planner = std::make_shared<mtc::solvers::PipelinePlanner>(shared_from_this(), _planning_pipeline);
     moveit_msgs::msg::WorkspaceParameters workspace_params;
     workspace_params.min_corner.x = -10.0;
     workspace_params.min_corner.y = -10.0;
@@ -231,11 +235,10 @@ namespace door_opening_mechanism_mtc
     ik_wrapper->properties().configureInitFrom(moveit::task_constructor::Stage::INTERFACE, {"target_pose"});
     task.add(std::move(ik_wrapper));
 
-    // TODO@Jacob: After moving to iron and gz_ros2_control this makes problems. Fix this when dealing with mtc again
-    // auto stage = std::make_unique<mtc::stages::MoveTo>("Starting position", interpolation_planner);
-    // stage->setGroup(group_name);
-    // stage->setGoal("starting_position");
-    // task.add(std::move(stage));
+    auto stage = std::make_unique<mtc::stages::MoveTo>("Starting position", sampling_planner);
+    stage->setGroup(group_name);
+    stage->setGoal("starting_position");
+    task.add(std::move(stage));
 
     return task;
   }

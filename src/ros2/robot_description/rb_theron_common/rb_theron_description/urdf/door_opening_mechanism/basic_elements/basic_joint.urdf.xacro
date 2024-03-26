@@ -23,6 +23,7 @@
             ip_address
             port
             direction
+            si_unit_factor
             ros_distro
             link_name
             link_origin_x
@@ -70,10 +71,12 @@
                     <param name="calculate_dynamics">true</param>
                 </xacro:if>
                 <xacro:unless value="${port == 0}">
-                    <plugin>ros2_control_plugin_door_opening_mechanism/DoorOpeningMechanismSystemHardware</plugin>
+                    <plugin>ros2_control_plugin_dryve_d1/DryveD1SystemHardware</plugin>
                     <param name="ip_address">${ip_address}</param>
                     <param name="port">${port}</param>
                     <param name="direction">${direction}</param>
+                    <param name="joint_type">${joint_type}</param>
+                    <param name="si_unit_factor">${si_unit_factor}</param>
                 </xacro:unless>
             </xacro:if>
 
@@ -83,7 +86,11 @@
                 <param name="min">-10</param>
                 <param name="max">10</param>
             </command_interface>
-            <state_interface name="position"/>
+            <command_interface name="position">
+            </command_interface>
+            <state_interface name="position">
+                <param name="initial_value">0.0</param>
+            </state_interface>
             <state_interface name="velocity"/>
         </joint>
     </ros2_control>

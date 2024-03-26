@@ -1,20 +1,24 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"image": "ghcr.io/robast-gmbh/monorepo/moveit_mtc:devel",
-	"name": "Robast Moveit Task Constructor",
+	"image": "ghcr.io/robast-gmbh/monorepo/moveit:devel-humble",
+	"name": "Robast MoveIt",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/dryve_d1_bridge,target=/workspace/src/hardware_nodes/dryve_d1_bridge,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/robot_description,target=/workspace/src/robot_description,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/ros2_control,target=/workspace/src/ros2_control,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/ros2_control/hardware_interfaces/ros2_control_plugin_dryve_d1,target=/workspace/src/ros2_control/hardware_interfaces/ros2_control_plugin_dryve_d1,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/ros2_control/hardware_interfaces/ros2_control_base_movement,target=/workspace/src/ros2_control/hardware_interfaces/ros2_control_base_movement,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/ros2_control/hardware_interfaces/hardware_interface_utils,target=/workspace/src/ros2_control/hardware_interfaces/hardware_interface_utils,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/moveit,target=/workspace/src/moveit,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind"
+		"source=${localWorkspaceFolder}/../../src/ros2/ros2_control/ros2_controllers,target=/workspace/src/ros2_control/ros2_controllers,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/utils,target=/workspace/src/utils,type=bind",
 	],
 	"workspaceFolder": "/workspace",
 	"remoteUser": "robast",
 	"runArgs": [
-		"--name=moveit_mtc",
-		// "--network=host",
+		"--name=moveit",
+		"--network=host",
 		"--volume=/dev/shm:/dev/shm", //needed if you use the fast dds on the host network with multiple docker containers running on the same host
 		"--volume=/tmp/.X11-unix:/tmp/.X11-unix"
 	],
@@ -22,7 +26,7 @@
 		"DISPLAY": "${localEnv:DISPLAY}"
 	},
 	"containerEnv": {
-		"ROS_DOMAIN_ID": "1",
+		"ROS_DOMAIN_ID": "0",
 		"robot": "rb_theron",
 		"prefix": "",
 	},
@@ -37,6 +41,7 @@
 		"ms-azuretools.vscode-docker",
 		"ms-iot.vscode-ros",
 		"ms-python.python",
+		"ms-python.black-formatter",
 		"ms-vscode.cpptools",
 		"redhat.vscode-yaml",
 		"smilerobotics.urdf",
