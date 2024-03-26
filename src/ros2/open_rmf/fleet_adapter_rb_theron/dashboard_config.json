@@ -1,0 +1,16 @@
+{ 
+  "world_name" : "tiplu",
+  "valid_task" : ["Loop"],
+  "task": {
+    "Delivery": {},
+    "Loop": {
+      "places": [
+        "dart"
+      ]
+    },
+    "Clean": {},
+    "Station": {},
+    "Patrol": {},
+    "Charging": {}
+  }
+}
