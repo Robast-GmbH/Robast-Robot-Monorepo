@@ -1,4 +1,4 @@
-FROM python:3.10-slim as devel
+FROM python:3
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
