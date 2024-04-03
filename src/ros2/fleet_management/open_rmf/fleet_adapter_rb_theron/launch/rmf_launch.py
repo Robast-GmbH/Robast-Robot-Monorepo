@@ -20,12 +20,12 @@ def generate_launch_description():
     )
     config_file = LaunchConfiguration(
         "config_file",
-        default="/workspace/src/fleet_adapter_rb_theron/tiplu_Tiplu/tiplu.building.yaml",
+        default="/workspace/src/fleet_management/open_rmf/fleet_adapter_rb_theron/tiplu_Tiplu/tiplu.building.yaml",
         # default="/workspace/src/simulation/rmf_gazebo/maps/tiplu.building.yaml",
     )
     dashboard_config_file = LaunchConfiguration(
         "dashboard_config_file",
-        default="/workspace/src/fleet_adapter_rb_theron/dashboard_config.json",
+        default="/workspace/src/fleet_management/open_rmf/fleet_adapter_rb_theron/dashboard_config.json",
     )
     initial_map = LaunchConfiguration("initial_map", default="Tiplu")
     headless = LaunchConfiguration("headless", default="false")
@@ -87,7 +87,7 @@ def generate_launch_description():
     # Dashboard
     dashboard_launch = IncludeLaunchDescription(
         XMLLaunchDescriptionSource(
-            "/workspace/src/fleet_adapter_rb_theron/launch/dashboard.launch.xml"
+            "/workspace/src/fleet_management/open_rmf/fleet_adapter_rb_theron/launch/dashboard.launch.xml"
         ),
         launch_arguments={
             "use_sim_time": use_sim_time,
@@ -95,20 +95,20 @@ def generate_launch_description():
         }.items(),
     )
 
-    fleet_adapter = Node(
-        package="fleet_adapter_rb_theron",
-        executable="fleet_adapter",
-        name="fleet_adapter",
-        arguments=[
-            "--config_file",
-            "/workspace/src/fleet_adapter_rb_theron/config.yaml",
-            "--nav_graph",
-            "/workspace/src/fleet_adapter_rb_theron/tiplu_Tiplu/0.yaml",
-            "--server_uri",
-            "http://localhost:8000/_internal",
-        ],
-        parameters=[use_sim_time],
-    )
+    # fleet_adapter = Node(
+    #     package="fleet_adapter_rb_theron",
+    #     executable="fleet_adapter",
+    #     name="fleet_adapter",
+    #     arguments=[
+    #         "--config_file",
+    #         "/workspace/src/fleet_management/open_rmf/fleet_adapter_rb_theron/config.yaml",
+    #         "--nav_graph",
+    #         "/workspace/src/fleet_management/open_rmf/fleet_adapter_rb_theron/tiplu_Tiplu/0.yaml",
+    #         "--server_uri",
+    #         "http://localhost:8000/_internal",
+    #     ],
+    #     parameters=[use_sim_time],
+    # )
 
     return LaunchDescription(
         [
@@ -118,6 +118,6 @@ def generate_launch_description():
             # visualization_launch,
             rmf_task_dispatcher,
             #  dashboard_launch,
-            fleet_adapter,
+            # fleet_adapter,
         ]
     )
