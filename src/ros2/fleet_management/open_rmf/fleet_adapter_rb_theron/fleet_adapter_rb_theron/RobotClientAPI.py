@@ -18,7 +18,8 @@
     will need to make http request calls to the appropriate endpoints within
     these functions.
 """
-from .rosbridge import Rosbridge
+from rosbridge import Rosbridge
+import nudged
 
 
 class RobotAPI:
@@ -35,7 +36,34 @@ class RobotAPI:
         self.user = user
         self.password = password
         self.connected = False
-        self.pose = [100.0, 0.0, 0.0]
+        # Transforms
+        rmf_coordinates = [
+            [32.1081, -5.9120],
+            [23.1892, -9.9892],
+            [16.8186, -6.1668],
+            [6.3197, -9.1738],
+        ]
+        robot_coordinates = [[8.2, 3.0], [-0.65, -0.65], [-6.8, 2.9], [-16.9, -0.25]]
+        self.transforms = {
+            "rmf_to_robot": nudged.estimate(rmf_coordinates, robot_coordinates),
+            "robot_to_rmf": nudged.estimate(robot_coordinates, rmf_coordinates),
+        }
+        self.transforms["orientation_offset"] = self.transforms[
+            "rmf_to_robot"
+        ].get_rotation()
+        mse = nudged.estimate_error(
+            self.transforms["rmf_to_robot"], rmf_coordinates, robot_coordinates
+        )
+        print(f"Coordinate transformation error: {mse}")
+        print("RMF to Robot transform:")
+        print(f"    rotation:{self.transforms['rmf_to_robot'].get_rotation()}")
+        print(f"    scale:{self.transforms['rmf_to_robot'].get_scale()}")
+        print(f"    trans:{self.transforms['rmf_to_robot'].get_translation()}")
+        print("Robot to RMF transform:")
+        print(f"    rotation:{self.transforms['robot_to_rmf'].get_rotation()}")
+        print(f"    scale:{self.transforms['robot_to_rmf'].get_scale()}")
+        print(f"    trans:{self.transforms['robot_to_rmf'].get_translation()}")
+        # self.pose = [100.0, 0.0, 0.0]
         self.rosbridge = Rosbridge()
 
         # Test connectivity
@@ -56,9 +84,14 @@ class RobotAPI:
         # ------------------------ #
         # IMPLEMENT YOUR CODE HERE #
         # ------------------------ #
-        return self.rosbridge.position(robot_name)
+        # return [454.46, -174.56, 0.0]
+        pose = self.rosbridge.position(robot_name)
+        x, y = self.transforms["robot_to_rmf"].transform([pose[0], pose[1]])
+        return [x * 10.0, y * 10.0, pose[2]]
 
-    def navigate(self, robot_name: str, pose, map_name: str):
+    def navigate(
+        self, robot_name: str, cmd_id: int, pose, map_name: str, speed_limit=0.0
+    ):
         """Request the robot to navigate to pose:[x,y,theta] where x, y and
         and theta are in the robot's coordinate convention. This function
         should return True if the robot has accepted the request,
@@ -70,7 +103,10 @@ class RobotAPI:
         self.rosbridge.navigate_to_goal_pose(robot_name, pose)
         return True
 
-    def stop(self, robot_name: str):
+    def requires_replan(self, robot_name: str):
+        return False
+
+    def stop(self, robot_name: str, cmd_id: int):
         """Command the robot to stop.
         Return True if robot has successfully stopped. Else False"""
         # ------------------------ #
@@ -78,7 +114,7 @@ class RobotAPI:
         # ------------------------ #
         return True
 
-    def navigation_remaining_duration(self, robot_name: str):
+    def navigation_remaining_duration(self, robot_name: str, cmd_id: int):
         """Return the number of seconds remaining for the robot to reach its
         destination"""
         # ------------------------ #
@@ -86,7 +122,7 @@ class RobotAPI:
         # ------------------------ #
         return self.rosbridge.get_remaining_nav_time()
 
-    def navigation_completed(self, robot_name: str):
+    def navigation_completed(self, robot_name: str, cmd_id: int):
         """Return True if the robot has successfully completed its previous
         navigation request. Else False."""
         # ------------------------ #

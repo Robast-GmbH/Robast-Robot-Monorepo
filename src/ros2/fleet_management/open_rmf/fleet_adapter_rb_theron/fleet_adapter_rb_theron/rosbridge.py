@@ -46,15 +46,17 @@ class Rosbridge:
         """Return [x, y, theta] expressed in the robot's coordinate frame or
         None if any errors are encountered"""
         position = self.context.get("/robot_position")
-        offset = [466.0, 110.0]
+        offset = [23.3, -7.33]
         if position is None:
+
             return [offset[0], offset[1], 0.0]
         # position = [
         #     offset[0] + position["x"] * 20.0,
-        #     offset[1] + position["y"] * 20.0,
+        #     -offset[1] + position["y"] * 20.0,
         #     position["z"],
         # ]
-        print(position)
+        # return position
+        # print(position)
         return [position["x"], position["y"], position["z"]]
 
     def start_subscriber(self, topic, msg_type):
@@ -62,7 +64,7 @@ class Rosbridge:
         listener.subscribe(lambda message: self.context.update(topic, message))
 
     def navigate_to_goal_pose(self, robot_name, goal_pose):
-        self.context.update("/is_navigating", True)
+        self.context.update("/is_navigating", {"data": True})
         goal_msg = Message(
             {
                 "position": {
@@ -76,7 +78,7 @@ class Rosbridge:
         self._goal_pose_publisher.publish(goal_msg)
 
     def is_navigating(self):
-        return self.context.get("/is_navigating")
+        return self.context.get("/is_navigating")["data"]
 
     def start_action(self, topic, action_type, goal_msg, feedback_cb):
         action_client = ActionClient(self.ros, topic, action_type)
