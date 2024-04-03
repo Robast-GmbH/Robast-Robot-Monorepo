@@ -22,8 +22,6 @@ setup(
     entry_points={
         "console_scripts": [
             "fleet_adapter=fleet_adapter_rb_theron.fleet_adapter:main",
-            "pose_publisher=fleet_adapter_rb_theron.tf_node:main",
-            "nav_action_node=fleet_adapter_rb_theron.nav_action_node:main",
         ],
     },
 )
