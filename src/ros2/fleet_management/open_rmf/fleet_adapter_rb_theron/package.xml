@@ -9,6 +9,10 @@
 
   <exec_depend>rmf_fleet_adapter_python</exec_depend>
   <exec_depend>ros2launch</exec_depend>
+  <exec_depend>rmf_task_ros2</exec_depend>
+  <exec_depend>rmf_fleet_adapter</exec_depend>
+  <exec_depend>rmf_building_map_tools</exec_depend>
+  <exec_depend>rviz2</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>

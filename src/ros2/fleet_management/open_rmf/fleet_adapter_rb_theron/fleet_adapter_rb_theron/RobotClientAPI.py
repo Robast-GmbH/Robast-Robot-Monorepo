@@ -25,7 +25,12 @@ class RobotAPI:
     # The constructor below accepts parameters typically required to submit
     # http requests. Users should modify the constructor as per the
     # requirements of their robot's API
-    def __init__(self, prefix: str, user: str, password: str):
+    def __init__(
+        self,
+        prefix: str,
+        user: str,
+        password: str,
+    ):
         self.prefix = prefix
         self.user = user
         self.password = password
@@ -51,8 +56,7 @@ class RobotAPI:
         # ------------------------ #
         # IMPLEMENT YOUR CODE HERE #
         # ------------------------ #
-        print("pos")
-        return self.pose
+        return self.rosbridge.position(robot_name)
 
     def navigate(self, robot_name: str, pose, map_name: str):
         """Request the robot to navigate to pose:[x,y,theta] where x, y and
@@ -63,6 +67,7 @@ class RobotAPI:
         # ------------------------ #
         # IMPLEMENT YOUR CODE HERE #
         # ------------------------ #
+        self.rosbridge.navigate_to_goal_pose(robot_name, pose)
         return True
 
     def stop(self, robot_name: str):
@@ -79,7 +84,7 @@ class RobotAPI:
         # ------------------------ #
         # IMPLEMENT YOUR CODE HERE #
         # ------------------------ #
-        return 1.0
+        return self.rosbridge.get_remaining_nav_time()
 
     def navigation_completed(self, robot_name: str):
         """Return True if the robot has successfully completed its previous
@@ -87,7 +92,7 @@ class RobotAPI:
         # ------------------------ #
         # IMPLEMENT YOUR CODE HERE #
         # ------------------------ #
-        return False
+        return not self.rosbridge.is_navigating()
 
     def start_process(self, robot_name: str, process: str, map_name: str):
         """Request the robot to begin a process. This is specific to the robot

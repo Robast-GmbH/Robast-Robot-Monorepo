@@ -12,7 +12,6 @@ def generate_launch_description():
         "rmf_visualization_schedule"
     )
     rmf_visualization_share_dir = get_package_share_directory("rmf_visualization")
-    rmf_demos_share_dir = get_package_share_directory("rmf_demos")
 
     use_sim_time = LaunchConfiguration("use_sim_time", default="true")
     viz_config_file = LaunchConfiguration(
@@ -21,11 +20,12 @@ def generate_launch_description():
     )
     config_file = LaunchConfiguration(
         "config_file",
-        default="/workspace/src/simulation/rmf_gazebo/maps/tiplu.building.yaml",
+        default="/workspace/src/fleet_adapter_rb_theron/tiplu_Tiplu/tiplu.building.yaml",
+        # default="/workspace/src/simulation/rmf_gazebo/maps/tiplu.building.yaml",
     )
     dashboard_config_file = LaunchConfiguration(
         "dashboard_config_file",
-        default="/workspace/src/fleet_adapter_template/fleet_adapter_template/dashboard_config.json",
+        default="/workspace/src/fleet_adapter_rb_theron/dashboard_config.json",
     )
     initial_map = LaunchConfiguration("initial_map", default="Tiplu")
     headless = LaunchConfiguration("headless", default="false")
@@ -70,11 +70,11 @@ def generate_launch_description():
     )
 
     # Door Supervisor
-    door_supervisor = Node(
-        package="rmf_fleet_adapter",
-        executable="door_supervisor",
-        parameters=[use_sim_time],
-    )
+    # door_supervisor = Node(
+    #     package="rmf_fleet_adapter",
+    #     executable="door_supervisor",
+    #     parameters=[use_sim_time],
+    # )
 
     # Dispatcher Node
     rmf_task_dispatcher = Node(
@@ -86,7 +86,9 @@ def generate_launch_description():
 
     # Dashboard
     dashboard_launch = IncludeLaunchDescription(
-        XMLLaunchDescriptionSource(f"{rmf_demos_share_dir}/dashboard.launch.xml"),
+        XMLLaunchDescriptionSource(
+            "/workspace/src/fleet_adapter_rb_theron/launch/dashboard.launch.xml"
+        ),
         launch_arguments={
             "use_sim_time": use_sim_time,
             "dashboard_config_file": dashboard_config_file,
@@ -99,9 +101,9 @@ def generate_launch_description():
         name="fleet_adapter",
         arguments=[
             "--config_file",
-            "/workspace/src/fleet_adapter_template/fleet_adapter_rb_theron/config.yaml",
+            "/workspace/src/fleet_adapter_rb_theron/config.yaml",
             "--nav_graph",
-            "/workspace/src/fleet_adapter_template/fleet_adapter_rb_theron/map0.yaml",
+            "/workspace/src/fleet_adapter_rb_theron/tiplu_Tiplu/0.yaml",
             "--server_uri",
             "http://localhost:8000/_internal",
         ],
@@ -113,10 +115,9 @@ def generate_launch_description():
             rmf_traffic_schedule_primary,
             rmf_traffic_blockade,
             building_map_server,
-            visualization_launch,
-            door_supervisor,
+            # visualization_launch,
             rmf_task_dispatcher,
-            dashboard_launch,
+            #  dashboard_launch,
             fleet_adapter,
         ]
     )

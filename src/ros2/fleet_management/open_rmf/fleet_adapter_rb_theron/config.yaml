@@ -13,8 +13,8 @@ rmf_fleet:
     linear: [0.4, 0.2] # velocity, acceleration
     angular: [0.3, 0.35] # velocity, acceleration
   profile: # Robot profile is modelled as a circle
-    footprint: 0.5 # radius in m
-    vicinity: 0.6 # radius in m
+    footprint: 0.25 # radius in m
+    vicinity: 0.3 # radius in m
   reversible: False # whether robots in this fleet can reverse
   battery_system:
     voltage: 24.0 # V
@@ -53,10 +53,10 @@ robots:
         map_name: "Tiplu"
         # waypoint: "charger_deliverybot1" # Optional
         # orientation: 0.0 # Optional, radians
-        waypoint: "server_door"
+        waypoint: "bar"
         orientation: 0.0
       charger:
-        waypoint: "Robast"
+        waypoint: "bar"
   # Configuration for the second robot in this fleet if there is a second robot
   # Uncomment if more than one robot exists.
   # deliverybot2:
@@ -77,11 +77,13 @@ robots:
 # For computing transforms between Robot and RMF coordinate systems
 
 reference_coordinates:
-  rmf: [[20.33, -3.156],
-        [8.908, -2.57],
-        [13.02, -3.601],
-        [21.93, -4.124]]
-  robot: [[59, 399],
-        [57, 172],
-        [68, 251],
-        [75, 429]]
+  rmf: [[32.1081,-5.9120],
+        [23.1892,-9.9892],
+        [16.8186,-6.1668],
+        [6.3197,-9.1738]]
+  robot: [[8.2,3.0],[-0.65,-0.65],[-6.8,2.9],[-16.9,-0.25]]
+  
+  # [[630.08, 116.704],
+  #       [455,196],
+  #       [330,121],
+  #       [124,181]]
