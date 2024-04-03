@@ -1,6 +1,7 @@
 sudo apt-get install ros-humble-rosbridge-server -y
 sudo apt install ros-humble-nav2-msgs
-pip install roslibpy
+pip3 install roslibpy
+pip3 install nudged
 sudo apt update && sudo apt install curl
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.37.2/install.sh > install_nvm.sh
 . install_nvm.sh
@@ -13,6 +14,8 @@ nvm install 16
 curl -fsSL https://get.pnpm.io/install.sh > install_pnpm.sh
 . install_pnpm.sh
 rm install_pnpm.sh
+export PNPM_HOME="/home/robast/.local/share/pnpm"
+export PATH="$PNPM_HOME:$PATH"
 source /home/robast/.bashrc
 pnpm env use --global 16
 sudo apt install python3-venv -y
