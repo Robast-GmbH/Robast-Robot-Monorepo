@@ -11,7 +11,7 @@ from tf2_ros.transform_listener import TransformListener
 class FrameListener(Node):
 
     def __init__(self):
-        super().__init__("turtle_tf2_frame_listener")
+        super().__init__("robot_pose_publisher")
 
         # Declare and acquire `target_frame` parameter
         self.target_frame = (
