@@ -39,7 +39,7 @@ class NavigateToPoseActionClient(Node):
         goal_pose_stamped.header.stamp = now.to_msg()
         goal_msg.pose = goal_pose_stamped
 
-        goal_msg.behavior_tree = "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml"
+        goal_msg.behavior_tree = "/opt/ros/humble/share/nav2_bt_navigator/behavior_trees/navigate_to_pose_w_replanning_goal_patience_and_recovery.xml"
         success = self._action_client.wait_for_server(timeout_sec=2.0)
         if success:
             self._send_goal_future = self._action_client.send_goal_async(
