@@ -8,6 +8,8 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
+    ros_bridge_share_dir = get_package_share_directory("rosbridge_server")
+
     rmf_visualization_schedule_share_dir = get_package_share_directory(
         "rmf_visualization_schedule"
     )
@@ -30,6 +32,13 @@ def generate_launch_description():
     initial_map = LaunchConfiguration("initial_map", default="Tiplu")
     headless = LaunchConfiguration("headless", default="false")
     bidding_time_window = LaunchConfiguration("bidding_time_window", default="2.0")
+
+    # Rosbridge
+    rosbridge_launch = IncludeLaunchDescription(
+        XMLLaunchDescriptionSource(
+            f"{ros_bridge_share_dir}/launch/rosbridge_websocket_launch.xml"
+        )
+    )
 
     # Traffic Schedule
     rmf_traffic_schedule_primary = Node(
@@ -112,6 +121,7 @@ def generate_launch_description():
 
     return LaunchDescription(
         [
+            rosbridge_launch,
             rmf_traffic_schedule_primary,
             rmf_traffic_blockade,
             building_map_server,
