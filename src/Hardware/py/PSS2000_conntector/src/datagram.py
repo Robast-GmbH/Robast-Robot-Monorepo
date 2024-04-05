@@ -1,4 +1,5 @@
 # from crccheck.crc import Crc8
+import numpy as np
 
 '''
 Was brauche ich hier:
@@ -31,17 +32,15 @@ Ausgaben aus dem pss2000 debug:
 '''
 class command:
     def __init__(self):
-        self.STX = 0x02
-        self.n = 0
-        self.Ack = 0x06
-        self.Nak = 0x15
-        self.CRC = 0x00
-        self.ETX = 0x03
+        self.STX = "02"
+        self.Ack = "06"
+        self.Nak = "15"
+        self.CRC = "00"
         self.unused = 0x00
         self.LSBTagIDMSB = 0x00000000
         self.StatusTag = 0x00
         
-    def set_tag_actor(self, tag_id = 0x000359AA, actor = 0x80):
+    def set_tag_actor(self, tag_id = "000359AA", actor = 0x80):
         n = 0x10
         command_code = 0x2E
         self.LSBTagIDMSB = tag_id
@@ -49,7 +48,6 @@ class command:
             raise ValueError("Tag ID must be 4 bytes in hexadecimal format")
         self.actor = actor
         command = [
-            self.STX,
             n,
             command_code,
             self.LSBTagIDMSB,
@@ -61,18 +59,21 @@ class command:
             self.unused,
             self.unused,
             self.unused,
-            self.CRC,
-            self.ETX]
-        return command
+            self.CRC]
+        return transform_array_to_string(command)
+      
+def transform_string_to_array(string):
+  hex_array = []
+  for i in range(0, len(string), 2):
+    hex_value = int(string[i:i+2], 16)
+    hex_array.append(hex_value)
+  return hex_array
+
+def transform_array_to_string(array):
+  return ''.join(array)
         
-#noch nicht sicher wie ichs genau implemente aber brauche eig das "Request Tag recieved" und "Set Tag Actor" command evtl noch den Heartbeat evtl auch noch Reader Status fürs debuggen
-        
-    def convert_to_ascii(self, data):
-        pass
-    def convert_to_byte(self, data):
-        pass
     
-def crc_8(buf, data_byte):
+def crc_8(buf:bytearray) -> np.uint8:
   """
   Berechnet die 8-Bit-CRC-Prüfsumme für ein Datenfeld.
 
@@ -84,9 +85,9 @@ def crc_8(buf, data_byte):
     Die berechnete CRC-8-Prüfsumme.
   """
 
-  crc = 0x00
-  data_bit = 0x80
-
+  crc = np.uint8(0x00)
+  data_bit = np.uint8(0x80)
+  data_byte = buf[1]-1
   while data_byte > 0:
     if ((crc & 0x01) != 0) != ((buf[data_byte] & data_bit) != 0):
       # Datenbit EXOR mit Rückkopplung
@@ -94,11 +95,10 @@ def crc_8(buf, data_byte):
       crc ^= 0xCD
     else:
       crc >>= 1
-
     data_bit >>= 1
 
     if not data_bit:
-      data_bit = 0x80
+      data_bit = np.uint8(0x80)
       data_byte -= 1
 
   return crc
@@ -108,7 +108,7 @@ def crc_8(buf, data_byte):
 # 22 06 26 D007 765903 00D0072A
 # buf = [0x02, 0x0D, 0x22, 0x06, 0x2E, 0xD0, 0x07, 0xAA, 0x59, 0x03, 0x00, 0xD0, 0x07, 0xD0, 0x03]
 # buf = [0x02, 0x0E, 0x2E, 0x76, 0x59, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x65, 0x03]
-buf = [0x02, 0x03, 0x26, 0xfe, 0x03]
-data_byte = 0x03-1
-crc = crc_8(buf, data_byte)
+# buf = [0x02, 0x03, 0x26, 0xfe, 0x03]
+buf = transform_string_to_array("020326FE03")
+crc = crc_8(buf)
 print(f"CRC-8: {hex(crc)}")

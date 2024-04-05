@@ -87,6 +87,19 @@ def main():
             print(f"Received message: {message_received} with length: {length}")
 if __name__ == "__main__":
     main()
+    
+'''
+verlauf:
+senden von command
+warten auf antwort zu passnedem command
+auswerten der antwort
+
+mean while: auf bestimtme codes müssen immer reagiert werden
+
+was brauche ich dafür? 
+ - ne factory für nachrichten
+ - auseinanderbauen von nachrichten 
+'''
 
 '''
 Response Tag Present	STX	n	Source 	22	Ack/Nak	Status Tag	LSB LF ID MSB		LSB Tag ID MSB				LSB HF ID MSB		RSSI X	RSSI Y	RSSI Z	RSSI Abstand	CRC	ETX
