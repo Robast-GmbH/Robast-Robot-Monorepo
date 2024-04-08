@@ -8,7 +8,6 @@ class Rosbridge:
         self.context = ThreadSafeDict()
         self.ros = Ros("127.0.0.1", 9090)
         self.ros.run()
-        self.ros.on_ready(lambda: print("Is ROS connected?", self.ros.is_connected))
 
         self.start_subscriber(
             "/robot_position",
@@ -34,6 +33,9 @@ class Rosbridge:
             "std_msgs/msg/Bool",
         )
 
+        self.map_offset = [466.0, -179.4]
+        self.map_scale = 0.05
+
     def check_connection(self):
         """Return True if connection to the robot API server is successful"""
         return self.ros.is_connected
@@ -44,12 +46,11 @@ class Rosbridge:
         position = self.context.get("/robot_position")
 
         if position is None:
-            offset = [23.3, -7.33]
-            return [offset[0], offset[1], 0.0]
+            return [self.map_offset[0], self.map_offset[1], 0.0]
         else:
             return [
-                position["x"] * 20.0 + 466.0,
-                position["y"] * 20.0 - 179.4,
+                position["x"] / self.map_scale + self.map_offset[0],
+                position["y"] / self.map_scale + self.map_offset[1],
                 position["z"],
             ]
 
@@ -62,11 +63,16 @@ class Rosbridge:
         goal_msg = Message(
             {
                 "position": {
-                    "x": (goal_pose[0] - 466.0) * 0.05,
-                    "y": (goal_pose[1] + 179.4) * 0.05,
+                    "x": (goal_pose[0] - self.map_offset[0]) * self.map_scale,
+                    "y": (goal_pose[1] - self.map_offset[1]) * self.map_scale,
                     "z": 0.0,
                 },
-                "orientation": {"x": 0.0, "y": 0.0, "z": 0.0, "w": 1.0},
+                "orientation": {
+                    "x": 0.0,
+                    "y": 0.0,
+                    "z": 0.0,
+                    "w": 1.0,
+                },
             }
         )
         self._goal_pose_publisher.publish(goal_msg)

@@ -61,7 +61,6 @@ class RobotAPI:
     def position(self, robot_name: str):
         """Return [x, y, theta] expressed in the robot's coordinate frame or
         None if any errors are encountered"""
-        # return [454.46, -174.56, 0.0]
         pose = self.rosbridge.position(robot_name)
         x, y = self.transforms["robot_to_rmf"].transform([pose[0], pose[1]])
         return [x, y, pose[2]]
