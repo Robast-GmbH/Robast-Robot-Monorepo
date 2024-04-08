@@ -17,6 +17,9 @@ class NavigateToPoseActionClient(Node):
         self._goal_subscriber = self.create_subscription(
             Pose, "set_goal_pose", self.send_goal, 10
         )
+        self._cancel_goal_subscriber = self.create_subscription(
+            Bool, "cancel_goal", self.cancel_goal, 10
+        )
         self._remaining_time_publisher = self.create_publisher(
             Duration, "navigation_remaining_time", 10
         )
@@ -49,6 +52,10 @@ class NavigateToPoseActionClient(Node):
             self._send_goal_future.add_done_callback(self.goal_response_callback)
         else:
             self.get_logger().info("Action server not available")
+
+    def cancel_goal(self, unused):
+        self._send_goal_future.cancel()
+        self.get_logger().info("Action canceled")
 
     def goal_response_callback(self, future):
         goal_handle = future.result()
