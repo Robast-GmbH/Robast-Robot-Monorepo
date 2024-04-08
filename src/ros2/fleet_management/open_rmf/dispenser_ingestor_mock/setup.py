@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'process_mock'
+package_name = 'dispenser_ingestor_mock'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'process_mock = process_mock.process_mock:main'
+            'dispenser_ingestor_mock = dispenser_ingestor_mock.dispenser_ingestor_mock:main'
         ],
     },
 )

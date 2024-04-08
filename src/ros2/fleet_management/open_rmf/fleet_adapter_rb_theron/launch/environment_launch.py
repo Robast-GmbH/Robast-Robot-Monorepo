@@ -9,9 +9,9 @@ def generate_launch_description():
         executable="nav_action_node",
     )
 
-    process_mock = Node(
-        package="process_mock",
-        executable="process_mock",
+    dispenser_ingestor_mock = Node(
+        package="dispenser_ingestor_mock",
+        executable="dispenser_ingestor_mock",
     )
 
     robot_pose_publisher = Node(
@@ -22,7 +22,7 @@ def generate_launch_description():
     return LaunchDescription(
         [
             nav_action_node,
-            process_mock,
+            dispenser_ingestor_mock,
             robot_pose_publisher,
         ]
     )

@@ -6,10 +6,10 @@ from rmf_dispenser_msgs.msg import DispenserRequest, DispenserResult
 from rmf_ingestor_msgs.msg import IngestorRequest, IngestorResult
 
 
-class ProcessMock(Node):
+class DispenserIngestorMock(Node):
 
     def __init__(self):
-        super().__init__("process_mock")
+        super().__init__("dispenser_ingestor_mock")
         self.dispenser_publisher_ = self.create_publisher(
             DispenserResult, "/dispenser_results", 10
         )
@@ -68,11 +68,11 @@ class ProcessMock(Node):
 def main(args=None):
     rclpy.init(args=args)
 
-    process_mock = ProcessMock()
+    dispenser_ingestor_mock = DispenserIngestorMock()
 
-    rclpy.spin(process_mock)
+    rclpy.spin(dispenser_ingestor_mock)
 
-    process_mock.destroy_node()
+    dispenser_ingestor_mock.destroy_node()
     rclpy.shutdown()
 
 
