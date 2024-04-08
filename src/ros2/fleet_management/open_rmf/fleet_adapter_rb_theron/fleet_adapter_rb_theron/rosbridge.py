@@ -1,9 +1,6 @@
 import threading
-import time
 
-from roslibpy import Header, Message, Ros, Time, Topic
-from roslibpy.actionlib import ActionClient, Goal
-from geometry_msgs.msg import Pose
+from roslibpy import Message, Ros, Topic
 
 
 class ThreadSafeDict:
@@ -49,22 +46,16 @@ class Rosbridge:
         """Return [x, y, theta] expressed in the robot's coordinate frame or
         None if any errors are encountered"""
         position = self.context.get("/robot_position")
-        offset = [23.3, -7.33]
-        if position is None:
 
+        if position is None:
+            offset = [23.3, -7.33]
             return [offset[0], offset[1], 0.0]
-        # position = [
-        #     offset[0] + position["x"] * 20.0,
-        #     -offset[1] + position["y"] * 20.0,
-        #     position["z"],
-        # ]
-        # return position
-        # print(position)
-        return [
-            position["x"] * 20.0 + 466.0,
-            position["y"] * 20.0 - 179.4,
-            position["z"],
-        ]
+        else:
+            return [
+                position["x"] * 20.0 + 466.0,
+                position["y"] * 20.0 - 179.4,
+                position["z"],
+            ]
 
     def start_subscriber(self, topic, msg_type):
         listener = Topic(self.ros, topic, msg_type)
@@ -91,12 +82,6 @@ class Rosbridge:
 
     def is_navigating(self):
         return self.context.get("/is_navigating")["data"]
-
-    def start_action(self, topic, action_type, goal_msg, feedback_cb):
-        action_client = ActionClient(self.ros, topic, action_type)
-        goal = Goal(action_client, goal_msg)
-        goal.on("feedback", feedback_cb)
-        goal.send()
 
     def get_remaining_nav_time(self):
         remaining_time = self.context.get("navigation_remaining_time")
