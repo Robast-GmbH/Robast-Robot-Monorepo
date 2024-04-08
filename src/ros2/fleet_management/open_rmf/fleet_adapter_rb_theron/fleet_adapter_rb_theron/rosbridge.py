@@ -33,10 +33,13 @@ class Rosbridge:
             "/navigation_remaining_time", "builtin_interfaces/msg/Duration"
         )
         self.start_subscriber("/is_navigating", "std_msgs/msg/Bool")
+
         self._goal_pose_publisher = Topic(
             self.ros, "/set_goal_pose", "geometry_msgs/msg/Pose"
         )
-        # TODO: Check if ros.close() is needed
+        self._cancel_goal_publisher = Topic(
+            self.ros, "/cancel_goal", "std_msgs/msg/Bool"
+        )
 
     def check_connection(self):
         """Return True if connection to the robot API server is successful"""
@@ -57,7 +60,11 @@ class Rosbridge:
         # ]
         # return position
         # print(position)
-        return [position["x"], position["y"], position["z"]]
+        return [
+            position["x"] * 20.0 + 466.0,
+            position["y"] * 20.0 - 179.4,
+            position["z"],
+        ]
 
     def start_subscriber(self, topic, msg_type):
         listener = Topic(self.ros, topic, msg_type)
@@ -76,6 +83,11 @@ class Rosbridge:
             }
         )
         self._goal_pose_publisher.publish(goal_msg)
+        return True
+
+    def cancel_navigate_to_goal_pose(self):
+        self._cancel_goal_publisher.publish(Message({"data": True}))
+        return True
 
     def is_navigating(self):
         return self.context.get("/is_navigating")["data"]
@@ -92,40 +104,3 @@ class Rosbridge:
             return 0
         else:
             return remaining_time["sec"]
-
-    # def retrieve_data(self,topic,msg_type):
-    #     context = dict(wait=threading.Event(), counter=0)
-    #     listener = Topic(self.ros, topic, msg_type)
-
-    #     def receive_message(message):
-    #         context["value"] = message
-    #         listener.unsubscribe()
-    #         context["wait"].set()
-
-    #     def start_receiving():
-    #         listener.subscribe(receive_message)
-
-    #     t1 = threading.Thread(target=start_receiving)
-    #     t1.start()
-
-    #     if not context["wait"].wait(10):
-    #         raise Exception
-
-    #     t1.join()
-    #     return context["value"]
-
-    def publish_data(self, topic, msg_type, data):
-        publisher = Topic(self.ros, topic, msg_type)
-        message = Message(data)
-        publisher.publish(message)
-
-
-# ros_bridge = Rosbridge()
-# ros_bridge.start_subscriber("/robot_position", "geometry_msgs/msg/Point")
-# try:
-#     while True:
-#         time.sleep(1)
-#         print(ros_bridge.context.get("/robot_position"))
-
-# except KeyboardInterrupt:
-#     ros_bridge.ros.terminate()

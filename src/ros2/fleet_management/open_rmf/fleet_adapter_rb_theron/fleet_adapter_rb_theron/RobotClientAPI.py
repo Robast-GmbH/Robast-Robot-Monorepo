@@ -51,24 +51,10 @@ class RobotAPI:
         self.transforms["orientation_offset"] = self.transforms[
             "rmf_to_robot"
         ].get_rotation()
-        mse = nudged.estimate_error(
-            self.transforms["rmf_to_robot"], rmf_coordinates, robot_coordinates
-        )
-        print(f"Coordinate transformation error: {mse}")
-        print("RMF to Robot transform:")
-        print(f"    rotation:{self.transforms['rmf_to_robot'].get_rotation()}")
-        print(f"    scale:{self.transforms['rmf_to_robot'].get_scale()}")
-        print(f"    trans:{self.transforms['rmf_to_robot'].get_translation()}")
-        print("Robot to RMF transform:")
-        print(f"    rotation:{self.transforms['robot_to_rmf'].get_rotation()}")
-        print(f"    scale:{self.transforms['robot_to_rmf'].get_scale()}")
-        print(f"    trans:{self.transforms['robot_to_rmf'].get_translation()}")
-        # self.pose = [100.0, 0.0, 0.0]
+
         self.rosbridge = Rosbridge()
 
-        # Test connectivity
-        connected = self.check_connection()
-        if connected:
+        if self.check_connection():
             print("Successfully able to query API server")
             self.connected = True
         else:
@@ -81,13 +67,10 @@ class RobotAPI:
     def position(self, robot_name: str):
         """Return [x, y, theta] expressed in the robot's coordinate frame or
         None if any errors are encountered"""
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
         # return [454.46, -174.56, 0.0]
         pose = self.rosbridge.position(robot_name)
         x, y = self.transforms["robot_to_rmf"].transform([pose[0], pose[1]])
-        return [x * 10.0, y * 10.0, pose[2]]
+        return [x, y, pose[2]]
 
     def navigate(
         self, robot_name: str, cmd_id: int, pose, map_name: str, speed_limit=0.0
@@ -96,10 +79,6 @@ class RobotAPI:
         and theta are in the robot's coordinate convention. This function
         should return True if the robot has accepted the request,
         else False"""
-        # self.pose = pose
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
         self.rosbridge.navigate_to_goal_pose(robot_name, pose)
         return True
 
@@ -109,26 +88,22 @@ class RobotAPI:
     def stop(self, robot_name: str, cmd_id: int):
         """Command the robot to stop.
         Return True if robot has successfully stopped. Else False"""
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
-        return True
+        return self.rosbridge.cancel_navigate_to_goal_pose()
 
     def navigation_remaining_duration(self, robot_name: str, cmd_id: int):
         """Return the number of seconds remaining for the robot to reach its
         destination"""
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
         return self.rosbridge.get_remaining_nav_time()
 
     def navigation_completed(self, robot_name: str, cmd_id: int):
         """Return True if the robot has successfully completed its previous
         navigation request. Else False."""
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
         return not self.rosbridge.is_navigating()
+
+    def battery_soc(self, robot_name: str):
+        """Return the state of charge of the robot as a value between 0.0
+        and 1.0. Else return None if any errors are encountered"""
+        return 1.0
 
     def start_process(self, robot_name: str, process: str, map_name: str):
         """Request the robot to begin a process. This is specific to the robot
@@ -147,11 +122,3 @@ class RobotAPI:
         # IMPLEMENT YOUR CODE HERE #
         # ------------------------ #
         return True
-
-    def battery_soc(self, robot_name: str):
-        """Return the state of charge of the robot as a value between 0.0
-        and 1.0. Else return None if any errors are encountered"""
-        # ------------------------ #
-        # IMPLEMENT YOUR CODE HERE #
-        # ------------------------ #
-        return 1.0
