@@ -1,41 +1,37 @@
-import threading
+from thread_safe_dict import ThreadSafeDict
 
 from roslibpy import Message, Ros, Topic
 
 
-class ThreadSafeDict:
-    def __init__(self):
-        self.lock = threading.Lock()
-        self.dict = {}
-
-    def update(self, key, value):
-        with self.lock:
-            self.dict[key] = value
-
-    def get(self, key):
-        with self.lock:
-            return self.dict.get(key)
-
-
 class Rosbridge:
     def __init__(self):
-        # create ROS connection
-        # self.context = dict(wait=threading.Event(), counter=0)
         self.context = ThreadSafeDict()
         self.ros = Ros("127.0.0.1", 9090)
         self.ros.run()
         self.ros.on_ready(lambda: print("Is ROS connected?", self.ros.is_connected))
-        self.start_subscriber("/robot_position", "geometry_msgs/msg/Point")
+
         self.start_subscriber(
-            "/navigation_remaining_time", "builtin_interfaces/msg/Duration"
+            "/robot_position",
+            "geometry_msgs/msg/Point",
         )
-        self.start_subscriber("/is_navigating", "std_msgs/msg/Bool")
+        self.start_subscriber(
+            "/navigation_remaining_time",
+            "builtin_interfaces/msg/Duration",
+        )
+        self.start_subscriber(
+            "/is_navigating",
+            "std_msgs/msg/Bool",
+        )
 
         self._goal_pose_publisher = Topic(
-            self.ros, "/set_goal_pose", "geometry_msgs/msg/Pose"
+            self.ros,
+            "/set_goal_pose",
+            "geometry_msgs/msg/Pose",
         )
         self._cancel_goal_publisher = Topic(
-            self.ros, "/cancel_goal", "std_msgs/msg/Bool"
+            self.ros,
+            "/cancel_goal",
+            "std_msgs/msg/Bool",
         )
 
     def check_connection(self):

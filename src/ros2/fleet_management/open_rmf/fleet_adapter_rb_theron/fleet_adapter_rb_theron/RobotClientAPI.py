@@ -54,12 +54,6 @@ class RobotAPI:
 
         self.rosbridge = Rosbridge()
 
-        if self.check_connection():
-            print("Successfully able to query API server")
-            self.connected = True
-        else:
-            print("Unable to query API server")
-
     def check_connection(self):
         """Return True if connection to the robot API server is successful"""
         return self.rosbridge.check_connection()
