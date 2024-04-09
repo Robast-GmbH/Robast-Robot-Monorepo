@@ -4,9 +4,9 @@
 rmf_fleet:
   name: "deliveryRobot"
   fleet_manager:
-    prefix: "http://0.0.0.0:7878"
-    ip: "0.0.0.0"
-    port: "7878"
+    prefix: "http://127.0.0.1:8001"
+    ip: "127.0.0.1"
+    port: "8001"
     user: "some_user"
     password: "some_password"
   limits:

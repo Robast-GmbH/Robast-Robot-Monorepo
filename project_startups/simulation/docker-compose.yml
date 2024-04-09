@@ -23,6 +23,7 @@ services:
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
       - ../../src/ros2/fleet_management/:/workspace/src/fleet_management:cached
+      - ../../src/robot_backend/:/workspace/src/robot_backend:cached
     deploy:
       resources:
         reservations:

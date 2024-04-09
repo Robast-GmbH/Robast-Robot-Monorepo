@@ -18,7 +18,8 @@
     will need to make http request calls to the appropriate endpoints within
     these functions.
 """
-from rosbridge import Rosbridge
+
+import requests
 import nudged
 
 
@@ -51,19 +52,20 @@ class RobotAPI:
         self.transforms["orientation_offset"] = self.transforms[
             "rmf_to_robot"
         ].get_rotation()
-
-        self.rosbridge = Rosbridge()
+        self.map_offset = [466.0, -179.4]
+        self.map_scale = 0.05
 
     def check_connection(self):
         """Return True if connection to the robot API server is successful"""
-        return self.rosbridge.check_connection()
+        response = requests.get(f"{self.prefix}/is_ros_bridge_connected").json()
+        return response["is_connected"]
 
     def position(self, robot_name: str):
         """Return [x, y, theta] expressed in the robot's coordinate frame or
         None if any errors are encountered"""
-        pose = self.rosbridge.position(robot_name)
-        x, y = self.transforms["robot_to_rmf"].transform([pose[0], pose[1]])
-        return [x, y, pose[2]]
+        pose = requests.get(f"{self.prefix}/robot_pos").json()
+        x, y = self.transforms["robot_to_rmf"].transform([pose["x"], pose["y"]])
+        return [x, y, pose["z"]]
 
     def navigate(
         self, robot_name: str, cmd_id: int, pose, map_name: str, speed_limit=0.0
@@ -72,7 +74,15 @@ class RobotAPI:
         and theta are in the robot's coordinate convention. This function
         should return True if the robot has accepted the request,
         else False"""
-        self.rosbridge.navigate_to_goal_pose(robot_name, pose)
+        goal_pose = [
+            (pose[0] - self.map_offset[0]) * self.map_scale,
+            (pose[1] - self.map_offset[1]) * self.map_scale,
+            pose[2],
+        ]
+
+        requests.post(
+            f"{self.prefix}/goal_pose?x={goal_pose[0]}&y={goal_pose[1]}&z={goal_pose[2]}"
+        )
         return True
 
     def requires_replan(self, robot_name: str):
@@ -81,17 +91,20 @@ class RobotAPI:
     def stop(self, robot_name: str, cmd_id: int):
         """Command the robot to stop.
         Return True if robot has successfully stopped. Else False"""
-        return self.rosbridge.cancel_navigate_to_goal_pose()
+        requests.post(f"{self.prefix}/cancel_goal")
+        return True
 
     def navigation_remaining_duration(self, robot_name: str, cmd_id: int):
         """Return the number of seconds remaining for the robot to reach its
         destination"""
-        return self.rosbridge.get_remaining_nav_time()
+        response = requests.get(f"{self.prefix}/remaining_nav_time").json()
+        return response["remaining_seconds"]
 
     def navigation_completed(self, robot_name: str, cmd_id: int):
         """Return True if the robot has successfully completed its previous
         navigation request. Else False."""
-        return not self.rosbridge.is_navigating()
+        response = requests.get(f"{self.prefix}/is_navigating").json()
+        return not response["is_navigating"]
 
     def battery_soc(self, robot_name: str):
         """Return the state of charge of the robot as a value between 0.0
