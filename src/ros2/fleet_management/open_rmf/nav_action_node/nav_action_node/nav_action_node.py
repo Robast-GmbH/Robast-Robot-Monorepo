@@ -8,7 +8,6 @@ from std_msgs.msg import Bool
 from builtin_interfaces.msg import Duration
 
 
-# TODO: add publisher for is navigation finished
 class NavigateToPoseActionClient(Node):
 
     def __init__(self):
@@ -28,6 +27,7 @@ class NavigateToPoseActionClient(Node):
         timer_period = 1.0  # seconds
         self.timer = self.create_timer(timer_period, self.timer_callback)
         self.remaining_time = Duration()
+        self.goal_handle = None
 
     def timer_callback(self):
         self._remaining_time_publisher.publish(self.remaining_time)
@@ -54,18 +54,20 @@ class NavigateToPoseActionClient(Node):
             self.get_logger().info("Action server not available")
 
     def cancel_goal(self, unused):
-        self._send_goal_future.cancel()
+        if self.goal_handle is None:
+            return
+        self._action_client._cancel_goal_async(self.goal_handle)
         self.get_logger().info("Action canceled")
 
     def goal_response_callback(self, future):
-        goal_handle = future.result()
-        if not goal_handle.accepted:
+        self.goal_handle = future.result()
+        if not self.goal_handle.accepted:
             self.get_logger().info("Goal rejected :(")
             return
 
         self.get_logger().info("Goal accepted :)")
         self._is_navigating_publisher.publish(Bool(data=True))
-        self._get_result_future = goal_handle.get_result_async()
+        self._get_result_future = self.goal_handle.get_result_async()
         self._get_result_future.add_done_callback(self.get_result_callback)
 
     def get_result_callback(self, future):
