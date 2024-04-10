@@ -27,31 +27,35 @@ Ausgaben aus dem pss2000 debug:
 02 0D 22 06 2E D0 07 AA 59 03 00 D0 07 D0 03
 
 >  00 02 03 26 FE 03 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-<-  02 0C 26 06 00 52 00 1E 00 1B 00 05 72 03
+<- 02 0C 26 06 00 52 00 1E 00 1B 00 05 72 03
 
 '''
-class command:
+class DatagramFactory:
     def __init__(self):
         self.STX = "02"
         self.Ack = "06"
         self.Nak = "15"
         self.CRC = "00"
-        self.unused = 0x00
-        self.LSBTagIDMSB = 0x00000000
-        self.StatusTag = 0x00
+        self.unused = "00"
         
-    def set_tag_actor(self, tag_id = "000359AA", actor = 0x80):
-        n = 0x10
-        command_code = 0x2E
-        self.LSBTagIDMSB = tag_id
-        if len(self.tag_id) != 8 or not self.tag_id.isalnum():
+    def calculate_and_add_crc(self, command):
+      temporarry_string = transform_array_to_string(command[:-1])
+      crc = crc_8(transform_string_to_array(temporarry_string))
+      command[-1] = format(crc, '02X')  # Convert CRC to hexadecimal format
+      return command
+    
+    def set_tag_actor(self, hex_tag_id = "000359AA", actor = "01"):
+        n = "0F"
+        command_code = "2E"
+        if len(hex_tag_id) != 8 or not hex_tag_id.isalnum():
             raise ValueError("Tag ID must be 4 bytes in hexadecimal format")
-        self.actor = actor
+        LSBTagIDMSB = invert_byte_order(hex_tag_id)
         command = [
+            self.STX,
             n,
             command_code,
-            self.LSBTagIDMSB,
-            self.actor,
+            LSBTagIDMSB,
+            actor,
             self.unused,
             self.unused,
             self.unused,
@@ -60,7 +64,71 @@ class command:
             self.unused,
             self.unused,
             self.CRC]
-        return transform_array_to_string(command)
+        command = self.calculate_and_add_crc(command)
+        return transform_array_to_string(command[1:])
+    
+    def get_software_version(self):
+        n = "03"
+        command_code = "27"
+        command = [
+            self.STX,
+            n,
+            command_code,
+            self.CRC]
+        command = self.calculate_and_add_crc(command)
+        return transform_array_to_string(command[1:])
+      
+    def get_status(self):
+        n = "03"
+        command_code = "26"
+        command = [
+            self.STX,
+            n,
+            command_code,
+            self.CRC]
+        command = self.calculate_and_add_crc(command)
+        return transform_array_to_string(command[1:])
+
+    def translate_command(self, message, length):
+      crc_position = message[0:2]
+      message = message[2:]
+      command = message[0:2]
+      if message[2:4] != "06":
+        return "Nak"
+      match command:
+        case "22":
+          print("Response Tag Present")
+          tag_status = message[4:6]
+          print(f"Tag Status: {tag_status}")
+          LSB_LF_ID_MSB = message[6:10]
+          LSB_LF_ID_MSB = invert_byte_order(LSB_LF_ID_MSB)
+          print(f"LSB LF ID MSB: {LSB_LF_ID_MSB}")
+          LSB_Tag_ID_MSB = message[10:18]
+          LSB_Tag_ID_MSB = invert_byte_order(LSB_Tag_ID_MSB)
+          print(f"LSB Tag ID MSB: {LSB_Tag_ID_MSB}")
+          LSB_HF_ID_MSB = message[18:22]
+          LSB_HF_ID_MSB = invert_byte_order(LSB_HF_ID_MSB)
+          print(f"LSB HF ID MSB: {LSB_HF_ID_MSB}")
+        case "26":
+          print("Reader Status")
+          output = message[4:6]
+          modis = message[6:8]
+          input = message[8:10]
+          lf_distance = message[10:12]
+          status = message[12:14]
+        case "2E":
+          print("Set Tag Actor")
+          LSB_Tag_ID_MSB = message[4:12]
+          Aktor = message[12:14]
+          LSB_Tag_ID_MSB = invert_byte_order(LSB_Tag_ID_MSB)
+          print(f"LSB Tag ID MSB: {LSB_Tag_ID_MSB}; Aktor: {Aktor}")
+        case "11":
+          print("Heartbeat")
+          status = message[4:6]
+          print(f"Status: {status}")
+        case _:
+          print("Unknown command")
+
       
 def transform_string_to_array(string):
   hex_array = []
@@ -71,6 +139,14 @@ def transform_string_to_array(string):
 
 def transform_array_to_string(array):
   return ''.join(array)
+
+def invert_byte_order(string:str):
+  if not string.isalnum():
+    print("Warning: String should be in hexadecimal format")
+    return ""
+  byte_array = bytearray.fromhex(string)
+  byte_array.reverse()
+  return transform_array_to_string(byte_array.hex())
         
     
 def crc_8(buf:bytearray) -> np.uint8:
@@ -109,6 +185,10 @@ def crc_8(buf:bytearray) -> np.uint8:
 # buf = [0x02, 0x0D, 0x22, 0x06, 0x2E, 0xD0, 0x07, 0xAA, 0x59, 0x03, 0x00, 0xD0, 0x07, 0xD0, 0x03]
 # buf = [0x02, 0x0E, 0x2E, 0x76, 0x59, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x65, 0x03]
 # buf = [0x02, 0x03, 0x26, 0xfe, 0x03]
-buf = transform_string_to_array("020326FE03")
-crc = crc_8(buf)
-print(f"CRC-8: {hex(crc)}")
+if __name__ == "__main__":
+  command = DatagramFactory()
+  cmd = command.set_tag_actor()
+  print(f"Command: {cmd}")
+  buf = transform_string_to_array("020326FE03")
+  crc = crc_8(buf)
+  print(f"CRC-8: {hex(crc)}")
