@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from ros_bridge import RosBridge
-
+import uvicorn
 
 ros_bridge = RosBridge(ip="localhost", port=9090)
 app = FastAPI()
@@ -39,3 +39,6 @@ def read_is_navigating():
 @app.get("/remaining_nav_time", tags=["Navigation"])
 def read_remaining_nav_time():
     return {"remaining_seconds": ros_bridge.nav_bridge.get_remaining_nav_time()}
+
+
+uvicorn.run(app, port=8001)
