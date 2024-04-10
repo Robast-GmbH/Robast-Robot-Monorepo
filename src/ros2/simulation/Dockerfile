@@ -28,6 +28,19 @@ RUN wget https://packages.osrfoundation.org/gazebo.gpg -O /usr/share/keyrings/pk
     && apt-get install -y gz-${GZ_VERSION} \
     && apt-get update
 
+# TODO@Jacob/Tobi: Regularly check if the issue was fixed, then we can remove this and it will be installed automatically via rosdep again
+# THIS IS A QUICK AND DIRTY SOLUTION BECAUSE OF HARD CODED VERSION TAG
+# Must build gz_ros2_control from source because of this issue: https://github.com/ros-controls/gz_ros2_control/issues/259
+RUN mkdir -p workspace_ros_control/src && cd workspace_ros_control/src \
+  && git clone https://github.com/ros-controls/gz_ros2_control -b 0.7.5 \
+  && apt update \
+  && apt upgrade -y \
+  && . /opt/ros/${ROS_DISTRO}/setup.sh \
+  && rosdep update \
+  && rosdep install --from-paths /workspace_ros_control/src --ignore-src -r -y \
+  && colcon build --parallel-workers 2 --build-base /workspace_ros_control/build --install-base /workspace_ros_control/install \
+  && echo "if [ -f /workspace_ros_control/install/setup.bash ]; then source /workspace_ros_control/install/setup.bash; fi" >> /home/$USER/.bashrc
+
 RUN apt-get update && apt-get install -y \
     cmake \
     gdb \
