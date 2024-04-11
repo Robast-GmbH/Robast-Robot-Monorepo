@@ -97,38 +97,27 @@ class DatagramFactory:
         return "Nak"
       match command:
         case "22":
-          print("Response Tag Present")
           tag_status = message[4:6]
-          print(f"Tag Status: {tag_status}")
           LSB_LF_ID_MSB = message[6:10]
           LSB_LF_ID_MSB = invert_byte_order(LSB_LF_ID_MSB)
-          print(f"LSB LF ID MSB: {LSB_LF_ID_MSB}")
           LSB_Tag_ID_MSB = message[10:18]
           LSB_Tag_ID_MSB = invert_byte_order(LSB_Tag_ID_MSB)
-          print(f"LSB Tag ID MSB: {LSB_Tag_ID_MSB}")
           LSB_HF_ID_MSB = message[18:22]
           LSB_HF_ID_MSB = invert_byte_order(LSB_HF_ID_MSB)
-          print(f"LSB HF ID MSB: {LSB_HF_ID_MSB}")
         case "26":
-          print("Reader Status")
           output = message[4:6]
           modis = message[6:8]
           input = message[8:10]
           lf_distance = message[10:12]
           status = message[12:14]
         case "2E":
-          print("Set Tag Actor")
           LSB_Tag_ID_MSB = message[4:12]
           Aktor = message[12:14]
           LSB_Tag_ID_MSB = invert_byte_order(LSB_Tag_ID_MSB)
-          print(f"LSB Tag ID MSB: {LSB_Tag_ID_MSB}; Aktor: {Aktor}")
         case "11":
-          print("Heartbeat")
           status = message[4:6]
-          print(f"Status: {status}")
         case _:
-          print("Unknown command")
-
+          pass
       
 def transform_string_to_array(string):
   hex_array = []
