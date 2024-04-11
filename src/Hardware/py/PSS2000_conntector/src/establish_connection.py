@@ -37,7 +37,7 @@ class TCPConnection:
             byte = self.sock.recv(1)
             if byte == b'\x02':  # STX
                 continue  # Discard STX and start accumulating
-            elif byte == b'\r':  # ETX
+            elif byte == b'\r' or byte == b'\x03':  # ETX
                 break
             message_data += byte
 
