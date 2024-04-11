@@ -1,0 +1,16 @@
+modules:
+  - module_id: 1
+    drawer_id: 0
+    is_e_drawer: false
+  - module_id: 2
+    drawer_id: 0
+    is_e_drawer: true
+  - module_id: 3
+    drawer_id: 0
+    is_e_drawer: false
+  - module_id: 4
+    drawer_id: 0
+    is_e_drawer: false
+  - module_id: 5
+    drawer_id: 0
+    is_e_drawer: false

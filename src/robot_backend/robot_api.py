@@ -23,12 +23,12 @@ def read_robot_pos():
 
 @app.post("/goal_pose", tags=["Navigation"])
 def post_goal_pose(x: float, y: float, z: float):
-    return ros_bridge.nav_bridge.navigate_to_goal_pose("robot", (x, y, z))
+    return {"success":ros_bridge.nav_bridge.navigate_to_goal_pose("robot", (x, y, z))}
 
 
 @app.post("/cancel_goal", tags=["Navigation"])
 def post_cancel_goal():
-    return ros_bridge.nav_bridge.cancel_navigate_to_goal_pose()
+    return {"success":ros_bridge.nav_bridge.cancel_navigate_to_goal_pose()}
 
 
 @app.get("/is_navigating", tags=["Navigation"])
@@ -40,5 +40,22 @@ def read_is_navigating():
 def read_remaining_nav_time():
     return {"remaining_seconds": ros_bridge.nav_bridge.get_remaining_nav_time()}
 
+@app.get("/modules", tags=["Modules"])
+def read_modules():
+    module_data = {}
+    for module in ros_bridge.module_bridge.modules:
+        is_open = ros_bridge.module_bridge.context.get(f'drawer_is_open_{module.module_id}_{module.drawer_id}')
+        module_data[f'{module.module_id}_{module.drawer_id}'] = {"is_open": is_open, "is_e_drawer": module.is_e_drawer}
 
-uvicorn.run(app, port=8001)
+    return module_data
+
+@app.post("/open_drawer", tags=["Modules"])
+def post_open_drawer(module_id: int, drawer_id: int):
+    return {"success":ros_bridge.module_bridge.open_drawer(module_id, drawer_id)}
+
+@app.post("/close_drawer", tags=["Modules"])
+def post_close_drawer(module_id: int, drawer_id: int):
+    return {"success":ros_bridge.module_bridge.close_drawer(module_id, drawer_id)}
+
+
+uvicorn.run(app,host="192.168.0.200", port=8001)

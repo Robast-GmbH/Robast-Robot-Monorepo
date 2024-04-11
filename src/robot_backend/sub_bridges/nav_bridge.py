@@ -4,8 +4,8 @@ from roslibpy import Ros, Message
 
 
 class NavBridge(BaseBridge):
-    def __init__(self, ros: Ros, context: ThreadSafeDict) -> None:
-        super().__init__(ros, context)
+    def __init__(self, ros: Ros) -> None:
+        super().__init__(ros)
 
         self.start_subscriber(
             "/navigation_remaining_time",
@@ -50,7 +50,11 @@ class NavBridge(BaseBridge):
         return True
 
     def is_navigating(self):
-        return self.context.get("/is_navigating")["data"]
+        is_navigating = self.context.get("/is_navigating")
+        if is_navigating is None:
+            return False
+        else:
+            return is_navigating["data"]
 
     def get_remaining_nav_time(self):
         remaining_time = self.context.get("/navigation_remaining_time")
