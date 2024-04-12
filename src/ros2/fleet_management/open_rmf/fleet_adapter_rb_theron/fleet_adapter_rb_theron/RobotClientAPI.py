@@ -37,14 +37,19 @@ class RobotAPI:
         self.user = user
         self.password = password
         self.connected = False
-        # Transforms
+
         rmf_coordinates = [
-            [32.1081, -5.9120],
-            [23.1892, -9.9892],
-            [16.8186, -6.1668],
-            [6.3197, -9.1738],
+            [10.77,-22.39],
+            [10.63,-16.09],
+            [11.42,-31.53],
+            [7.38,-31.68],
         ]
-        robot_coordinates = [[8.2, 3.0], [-0.65, -0.65], [-6.8, 2.9], [-16.9, -0.25]]
+        robot_coordinates = [
+            [1.31,-6.45],
+            [1.3,-0.04],
+            [1.7,-15.6],
+            [-1.82,-15.4],
+        ]
         self.transforms = {
             "rmf_to_robot": nudged.estimate(rmf_coordinates, robot_coordinates),
             "robot_to_rmf": nudged.estimate(robot_coordinates, rmf_coordinates),
@@ -52,8 +57,6 @@ class RobotAPI:
         self.transforms["orientation_offset"] = self.transforms[
             "rmf_to_robot"
         ].get_rotation()
-        self.map_offset = [466.0, -179.4]
-        self.map_scale = 0.05
 
     def check_connection(self):
         """Return True if connection to the robot API server is successful"""
@@ -74,14 +77,9 @@ class RobotAPI:
         and theta are in the robot's coordinate convention. This function
         should return True if the robot has accepted the request,
         else False"""
-        goal_pose = [
-            (pose[0] - self.map_offset[0]) * self.map_scale,
-            (pose[1] - self.map_offset[1]) * self.map_scale,
-            pose[2],
-        ]
-
+        x, y = self.transforms["rmf_to_robot"].transform([pose[0], pose[1]])
         requests.post(
-            f"{self.prefix}/goal_pose?robot_name={robot_name}&x={goal_pose[0]}&y={goal_pose[1]}&z={goal_pose[2]}"
+            f"{self.prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={pose[2]}"
         )
         return True
 
