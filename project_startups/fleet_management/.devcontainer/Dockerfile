@@ -50,3 +50,6 @@ RUN apt-get update \
 
 WORKDIR /workspace
 USER robast
+
+# Adds the workspace to the bashrc
+RUN echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/${USER}/.bashrc
