@@ -52,12 +52,11 @@ namespace statemachine
         }
 
     protected:
-        std::string topic_name_;
-        BT::Blackboard::Ptr blackboard_;
-
         rclcpp::Publisher<communication_interfaces::msg::DrawerStatus>::SharedPtr status_publisher;
 
     private:
+        std::string _topic_name;
+        BT::Blackboard::Ptr _blackboard;
         rclcpp::Node::SharedPtr _node;
 
         // rclcpp::CallbackGroup::SharedPtr _callback_group;

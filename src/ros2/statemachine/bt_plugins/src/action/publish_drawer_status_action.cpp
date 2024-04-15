@@ -11,17 +11,17 @@ namespace statemachine
         const BT::NodeConfig &config)
         : BT::SyncActionNode(name, config)
     {
-        blackboard_ = config.blackboard;
+        _blackboard = config.blackboard;
 
-        getInput("topic_name", topic_name_);
+        getInput("topic_name", _topic_name);
         // std::scoped_lock l(blackboard_->entryMutex());
-        _node = blackboard_->get<rclcpp::Node::SharedPtr>("node");
+        _node = _blackboard->get<rclcpp::Node::SharedPtr>("node");
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
 
         rclcpp::SubscriptionOptions sub_option;
         // sub_option.callback_group = _callback_group;
-        status_publisher = _node->create_publisher<communication_interfaces::msg::DrawerStatus>(topic_name_, qos);
+        status_publisher = _node->create_publisher<communication_interfaces::msg::DrawerStatus>(_topic_name, qos);
     }
     BT::NodeStatus PublishDrawerStatus::tick()
     {
