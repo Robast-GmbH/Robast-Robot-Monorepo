@@ -51,13 +51,11 @@ namespace statemachine
                     "topic thats used to execute the action")};
         }
 
-    protected:
-        rclcpp::Publisher<communication_interfaces::msg::DrawerStatus>::SharedPtr status_publisher;
-
     private:
         std::string _topic_name;
         BT::Blackboard::Ptr _blackboard;
         rclcpp::Node::SharedPtr _node;
+        rclcpp::Publisher<communication_interfaces::msg::DrawerStatus>::SharedPtr _status_publisher;
 
         // rclcpp::CallbackGroup::SharedPtr _callback_group;
         // rclcpp::executors::SingleThreadedExecutor _callback_group_executor;

@@ -21,7 +21,7 @@ namespace statemachine
 
         rclcpp::SubscriptionOptions sub_option;
         // sub_option.callback_group = _callback_group;
-        status_publisher = _node->create_publisher<communication_interfaces::msg::DrawerStatus>(_topic_name, qos);
+        _status_publisher = _node->create_publisher<communication_interfaces::msg::DrawerStatus>(_topic_name, qos);
     }
     BT::NodeStatus PublishDrawerStatus::tick()
     {
@@ -33,7 +33,7 @@ namespace statemachine
         communication_interfaces::msg::DrawerStatus drawer_status;
         drawer_status.drawer_address = drawer_address;
         drawer_status.drawer_is_open = is_open;
-        status_publisher->publish(drawer_status);
+        _status_publisher->publish(drawer_status);
 
         return BT::NodeStatus::SUCCESS;
     }
