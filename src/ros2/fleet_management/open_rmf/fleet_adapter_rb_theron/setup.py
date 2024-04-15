@@ -11,7 +11,6 @@ setup(
         ("share/" + package_name, ["package.xml"]),
         ("share/" + package_name, ["config.yaml"]),
         ("share/" + package_name + "/launch", ["launch/rmf_launch.py"]),
-        ("share/" + package_name + "/launch", ["launch/environment_launch.py"]),
     ],
     install_requires=["setuptools"],
     zip_safe=True,
