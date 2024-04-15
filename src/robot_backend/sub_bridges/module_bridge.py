@@ -17,6 +17,7 @@ class ModuleBridge(BaseBridge):
         self.start_subscriber('/drawer_is_open', 'communication_interfaces/msg/DrawerStatus',on_msg_callback=self.on_msg_callback)
         self.drawer_tree_publisher = self.start_publisher('/trigger_drawer_tree', 'communication_interfaces/msg/DrawerAddress')
         self.electric_drawer_tree_publisher = self.start_publisher('/trigger_electric_drawer_tree', 'communication_interfaces/msg/DrawerAddress')
+        self.close_drawer_publisher = self.start_publisher('/close_drawer', 'communication_interfaces/msg/DrawerAddress')
 
 
     def load_config(self, path):
@@ -58,7 +59,7 @@ class ModuleBridge(BaseBridge):
             print("Module not found")
             return False
         if module.is_e_drawer:
-            self.electric_drawer_tree_publisher.publish({'module_id': module_id, 'drawer_id': drawer_id})
+            self.close_drawer_publisher.publish({'module_id': module_id, 'drawer_id': drawer_id})
             return True
         else:
             print("Tried closing a manual drawer.")
