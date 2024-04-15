@@ -4,11 +4,11 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-    use_sim_time = LaunchConfiguration("use_sim_time", default="true")
+    use_sim_time = LaunchConfiguration("use_sim_time", default="false")
 
     config_file = LaunchConfiguration(
         "config_file",
-        default="/workspace/src/fleet_management/open_rmf/fleet_adapter_rb_theron/tiplu_Tiplu/tiplu.building.yaml",
+        default="/workspace/src/open_rmf/fleet_adapter_rb_theron/map/tiplu.building.yaml",
     )
 
     bidding_time_window = LaunchConfiguration("bidding_time_window", default="2.0")

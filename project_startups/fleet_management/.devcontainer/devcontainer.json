@@ -1,0 +1,34 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{	
+	"name": "open_rmf",
+	"dockerFile": "Dockerfile",
+	"remoteUser": "robast",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../src/ros2/fleet_management/open_rmf/,target=/workspace/src/open_rmf,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/simulation/rmf_gazebo/,target=/workspace/src/rmf_gazebo,type=bind",
+		"source=${localWorkspaceFolder}/../../src/web/rmf-web/,target=/workspace/src/rmf-web,type=bind"
+	],
+	"workspaceFolder": "/workspace",
+	"runArgs": [
+		"--network=host"
+	],
+	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"ms-iot.vscode-ros",
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"redhat.vscode-yaml",
+		"smilerobotics.urdf",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one"
+	]
+}

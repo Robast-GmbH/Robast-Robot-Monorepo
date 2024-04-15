@@ -4,9 +4,9 @@
 rmf_fleet:
   name: "deliveryRobot"
   fleet_manager:
-    prefix: "http://127.0.0.1:8001"
+    prefix: "http://127.0.0.1:8003"
     ip: "127.0.0.1"
-    port: "8001"
+    port: "8003"
     user: "some_user"
     password: "some_password"
   limits:
@@ -53,25 +53,10 @@ robots:
         map_name: "Tiplu"
         # waypoint: "charger_deliverybot1" # Optional
         # orientation: 0.0 # Optional, radians
-        waypoint: "bar"
+        waypoint: "printer"
         orientation: 0.0
       charger:
-        waypoint: "bar"
-  # Configuration for the second robot in this fleet if there is a second robot
-  # Uncomment if more than one robot exists.
-  # deliverybot2:
-  #   robot_config:
-  #     max_delay: 10.0 # allowed seconds of delay of the current itinerary before it gets interrupted and replanned
-  #   rmf_config:
-  #     robot_state_update_frequency: 0.5
-  #     start:
-  #       map_name: "L1"
-  #       # waypoint: "charger_deliverybot2" # Optional
-  #       # orientation: 0.0 # Optional, radians
-  #       waypoint: null
-  #       orientation: null
-  #     charger:
-  #       waypoint: "charger_deliverybot2"
+        waypoint: "printer"
 
 # TRANSFORM CONFIG =============================================================
 # For computing transforms between Robot and RMF coordinate systems
