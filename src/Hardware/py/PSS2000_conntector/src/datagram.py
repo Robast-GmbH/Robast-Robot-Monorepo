@@ -89,6 +89,17 @@ class DatagramFactory:
         command = self.calculate_and_add_crc(command)
         return transform_array_to_string(command[1:])
 
+    def get_command(self, message) -> str:
+        command = message[2:4]        
+        return command
+      
+    def is_ack(self, message) -> bool:
+        ack_nak = message[4:6]
+        if ack_nak == self.Ack:
+          return True
+        else:
+          return False
+    
     def translate_command(self, message, length):
       crc_position = message[0:2]
       message = message[2:]
@@ -117,6 +128,7 @@ class DatagramFactory:
         case "11":
           status = message[4:6]
         case _:
+          #implement further cases if needed. results are currently unused but prepared to be usable
           pass
       
 def transform_string_to_array(string):
@@ -167,7 +179,7 @@ def crc_8(buf:bytearray) -> np.uint8:
       data_byte -= 1
 
   return crc
-#             0x22, 0x06, 0x2E, 0xD0, 0x07, 0xAA, 0x59, 0x03, 0x00, 0xD0, 0x07
+# 0x22, 0x06, 0x2E, 0xD0, 0x07, 0xAA, 0x59, 0x03, 0x00, 0xD0, 0x07
 # Beispiel 22 06 2E D0 07 AA 59 03 00 D0 07
 # really recieved: 0x0d 0x22 0x06 0x26 0xd0 0x07 0xaa 0x59 0x03 0x00 0xd0 0x07 with crc=0xaf
 # 22 06 26 D007 765903 00D0072A
