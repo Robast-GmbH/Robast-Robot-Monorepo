@@ -41,7 +41,7 @@ namespace statemachine
         {
             return {
                 BT::InputPort<bool>(
-                    "status", true, "address of the drawer thats used to execute the action"),
+                    "status", true, "is_open status of the drawer thats used to execute the action"),
                 BT::InputPort<communication_interfaces::msg::DrawerAddress>(
                     "drawer_address",
                     "address of the drawer thats used to execute the action"),
