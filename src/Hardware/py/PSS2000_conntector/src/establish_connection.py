@@ -1,5 +1,5 @@
 import socket
-import datagram
+from . import datagram
 
 # Default IP address
 DEFAULT_IP = "10.10.13.10"
@@ -67,7 +67,6 @@ class TCPConnection:
                 print(f"Error receiving message: {e}")
                 message_received = ""            
             max_tries -= 1
-            print(f"Command received: {self.datagram_factory.get_command(message_received)} with ack: {self.datagram_factory.is_ack(message_received)}")
             if max_tries == 0:
                 return False
         return True
@@ -91,17 +90,11 @@ def main():
         # Create message to send
         # message_to_send = "\x020E2E765903030000000000000065\x03"
         # message_to_send = "0327CF" #Get Software Version
-        message_to_send = datagram_factory.set_tag_actor(hex_tag_id = "000359AA", actor = "01")
-        # message_to_send = datagram_factory.get_status()
-        # Send message
-        
+        message_to_send = datagram_factory.set_tag_actor(hex_tag_id = "000359AA", actor = "01")        
         for i in range(0, 5):
             # Receive message
             if connection.send_and_wait_for_response(message_to_send):
                 print("Lights on")
-            # message_received, length = connection.receive()
-            # datagram_factory.translate_command(message_received, length)
-            # print(f"Received message: {message_received} with length: {length}")
         message_to_send = datagram_factory.set_tag_actor(hex_tag_id = "000359AA", actor = "00")
         if connection.send_and_wait_for_response(message_to_send):
             print("Lights off")
@@ -110,19 +103,6 @@ if __name__ == "__main__":
     
 
     
-'''
-verlauf:
-senden von command
-warten auf antwort zu passnedem command
-auswerten der antwort
-
-mean while: auf bestimtme codes müssen immer reagiert werden
-
-was brauche ich dafür? 
- - ne factory für nachrichten
- - auseinanderbauen von nachrichten 
-'''
-
 '''
 Response Tag Present	STX	n	Source 	22	Ack/Nak	Status Tag	LSB LF ID MSB		LSB Tag ID MSB				LSB HF ID MSB		RSSI X	RSSI Y	RSSI Z	RSSI Abstand	CRC	ETX
 Set Tag Actor	STX	n	Target	2E	Ack/Nak	LSB Tag ID MSB				Aktor	tbd	tbd	tbd	tbd	tbd	tbd	tbd	CRC	ETX	

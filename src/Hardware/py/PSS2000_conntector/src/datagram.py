@@ -2,27 +2,6 @@
 import numpy as np
 
 '''
-Was brauche ich hier:
-- einen converter  von ascii auf byte und andersrum
-- List of defined command parts:
-    - STX = 0x02
-    - n = position of crc
-    - Ack/Nak = 0x06 / 0x15
-    - CRC
-    - ETX = 0x03
-- 2,3 hardcoded commands. e.g.:
-    - Response Tag Present	STX	n	Source 	22	Ack/Nak	Status Tag	LSB LF ID MSB		LSB Tag ID MSB				LSB HF ID MSB		RSSI X	RSSI Y	RSSI Z	RSSI Abstand	CRC	ETX
-        - Set Tag Actor: 0x02 0x10 0x00 0x2E 0x06 0x00035976 0x80 0x00 0x00 0x00 0x00 0x00 0x00 0x00 0x3c 0x03 
-            also: 0x0210002E060003597680000000000000003c03 -> as ascii: .Yv< oder (base64) b'\x02\x10\x00\x2E\x06\x00\x03\x59\x76\x80\x00\x00\x00\x00\x00\x00\x00\x3c\x03' = AhAALgYAA1l2gAAAAAAAAAA8Aw==
-    - Set Tag Actor	STX	n	Target	2E	Ack/Nak	LSB Tag ID MSB				Aktor	tbd	tbd	tbd	tbd	tbd	tbd	tbd	CRC	ETX	
-import base64
-
-data = b'\x02\x10\x00\x2E\x06\x00\x03\x59\x76\x80\x00\x00\x00\x00\x00\x00\x00\x3c\x03'
-base64_data = base64.b64encode(data)
-print(base64_data)
-original_data = base64.b64decode(base64_data)
-print(original_data)
-
 Ausgaben aus dem pss2000 debug:
 02 0D 22 06 2E D0 07 AA 59 03 00 D0 07 D0 03
 
