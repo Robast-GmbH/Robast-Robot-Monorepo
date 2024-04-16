@@ -1,4 +1,4 @@
-from typing import Dict
+from __future__ import annotations
 from thread_safe_dict import ThreadSafeDict
 import yaml
 
@@ -14,7 +14,6 @@ class Drawer:
         self.size = size
         self.type = type
         self.is_open = False
-        self.in_process = False
 
     instances = ThreadSafeDict()
     ids = []
@@ -23,7 +22,7 @@ class Drawer:
     def load_drawers(cls, path):
         with open(path, "r") as file:
             data = yaml.safe_load(file)
-        for drawer in data["drawers"]:
+        for drawer in data["modules"]:
             cls.create_drawer_from_json(drawer)
 
     @classmethod
@@ -36,16 +35,16 @@ class Drawer:
             json["type"],
         )
         id = f"{drawer.module_id}_{drawer.drawer_id}"
-        cls.instances.update[id] = drawer
+        cls.instances.update(id,drawer)
         cls.ids.append(id)
         return drawer
 
     @classmethod
     def drawers_as_json(cls):
-        return [cls.instances[id].to_json() for id in cls.ids]
+        return [cls.instances.get(id).to_json() for id in cls.ids]
 
     @classmethod
-    def get_drawer(cls, module_id, drawer_id):
+    def get_drawer(cls, module_id, drawer_id)-> Drawer:
         id = f"{module_id}_{drawer_id}"
         return cls.instances.get(id)
 
@@ -57,5 +56,4 @@ class Drawer:
             "size": self.size,
             "type": self.type,
             "is_open": self.is_open,
-            "in_process": self.in_process,
         }

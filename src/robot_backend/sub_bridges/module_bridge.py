@@ -8,7 +8,7 @@ class ModuleBridge(BaseBridge):
         super().__init__(ros)
         Drawer.load_drawers("/workspace/src/robot_backend/configs/module_config.yaml")
         self.start_subscriber(
-            "/drawer_is_open",
+            "/bt_drawer_open",
             "communication_interfaces/msg/DrawerStatus",
             on_msg_callback=self.on_drawer_is_open_msg_callback,
         )
@@ -27,10 +27,9 @@ class ModuleBridge(BaseBridge):
         module_id = msg["drawer_address"]["module_id"]
         drawer_id = msg["drawer_address"]["drawer_id"]
         is_open = msg["drawer_is_open"]
+        print("opened drawer", module_id, drawer_id, is_open)
         id = f"{module_id}_{drawer_id}"
         Drawer.instances.get(id).is_open = is_open
-        if not is_open:
-            Drawer.instances.get(id).in_process = False
 
     def open_drawer(self, module_id, drawer_id):
         drawer = Drawer.get_drawer(module_id, drawer_id)
@@ -38,7 +37,6 @@ class ModuleBridge(BaseBridge):
             print("Module not found")
             return False
 
-        drawer.in_process = True
         if drawer.type == TYPE_ELECTRIC_DRAWER:
             self.electric_drawer_tree_publisher.publish(
                 {"module_id": module_id, "drawer_id": drawer_id}
@@ -63,9 +61,5 @@ class ModuleBridge(BaseBridge):
             print("Tried closing a manual drawer.")
             return False
 
-    def is_drawer_in_process(self, module_id, drawer_id):
-        drawer = Drawer.get_drawer(module_id, drawer_id)
-        if drawer is None:
-            print("Module not found")
-            return None
-        return {"in_process": drawer.in_process}
+    def get_modules(self):
+        return Drawer.drawers_as_json()

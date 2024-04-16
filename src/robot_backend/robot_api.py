@@ -42,12 +42,7 @@ def read_remaining_nav_time():
 
 @app.get("/modules", tags=["Modules"])
 def read_modules():
-    module_data = {}
-    for module in ros_bridge.module_bridge.modules:
-        is_open = ros_bridge.module_bridge.context.get(f'drawer_is_open_{module.module_id}_{module.drawer_id}')
-        module_data[f'{module.module_id}_{module.drawer_id}'] = {"is_open": is_open, "is_e_drawer": module.is_e_drawer}
-
-    return module_data
+    return ros_bridge.module_bridge.get_modules()
 
 @app.post("/open_drawer", tags=["Modules"])
 def post_open_drawer(module_id: int, drawer_id: int):
