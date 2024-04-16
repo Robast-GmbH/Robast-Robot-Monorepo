@@ -2,7 +2,7 @@
 from setuptools import setup, find_packages
 
 setup(
-    name="PSS200_connector",
-    version="0.1",
+    name="PSS2000_connector",
+    version="0.2",
     packages=find_packages(),
 )

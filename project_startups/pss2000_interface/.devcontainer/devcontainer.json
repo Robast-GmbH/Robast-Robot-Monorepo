@@ -5,7 +5,8 @@
 	"name": "Python docker",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
-		"source=${localWorkspaceFolder}/../../src/Hardware/py/PSS2000_conntector,target=/workspace/src/PSS200_connector,type=bind"
+		"source=${localWorkspaceFolder}/../../src/Hardware/py/PSS2000_conntector,target=/workspace/src/PSS2000_connector,type=bind",
+		"source=${localWorkspaceFolder}/../../src/Hardware/py/door_bridge,target=/workspace/src/door_bridge,type=bind"
 	],
 	"workspaceFolder": "/workspace",
 	"runArgs": [
