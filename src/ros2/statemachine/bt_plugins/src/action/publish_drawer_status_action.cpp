@@ -19,7 +19,7 @@ namespace statemachine
         rclcpp::QoS qos(rclcpp::KeepLast(1));
         qos.transient_local().reliable();
 
-        rclcpp::SubscriptionOptions sub_option;
+        // rclcpp::SubscriptionOptions sub_option;
         // sub_option.callback_group = _callback_group;
         _status_publisher = _node->create_publisher<communication_interfaces::msg::DrawerStatus>(_topic_name, qos);
     }
