@@ -43,8 +43,8 @@ levels:
     measurements:
       - [15, 16, {distance: [3, 9.25]}]
     vertices:
-      - [217.66200000000001, 451.52499999999998, 0, printer, {is_charger: [4, true], spawn_robot_name: [1, rb_theron]}]
-      - [224.32599999999999, 542.16099999999994, 0, storage]
+      - [217.66200000000001, 451.52499999999998, 0, printer, {is_charger: [4, true], spawn_robot_name: [1, rb_theron],pickup_dispenser: [1, coke_dispenser]}]
+      - [224.32599999999999, 542.16099999999994, 0, storage,{dropoff_ingestor: [1, coke_ingestor]}]
       - [230.99100000000001, 635.46400000000006, 0, tt]
       - [196.33600000000001, 639.46299999999997, 0, mensa_main]
       - [148.351, 638.79600000000005, 0, mensa_side]
