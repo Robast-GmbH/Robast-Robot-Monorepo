@@ -16,5 +16,5 @@
         <Internal>
             <SocketReceiveBufferSize min="10MB"/>
         </Internal>
-  </Domain>
+    </Domain>
 </CycloneDDS>
