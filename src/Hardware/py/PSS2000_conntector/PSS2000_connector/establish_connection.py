@@ -2,7 +2,7 @@ import socket
 from . import datagram
 
 # Default IP address
-DEFAULT_IP = "10.10.13.10"
+DEFAULT_IP = "192.168.0.42"
 
 # Class for TCP connection
 class TCPConnection:

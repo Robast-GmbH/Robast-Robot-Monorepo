@@ -13,7 +13,7 @@ def convert_to_hex(decimal_string):
 class DoorBridge:
     def __init__(self):
         self.datagram_factory = DatagramFactory()
-        self.ip = "10.10.13.10"
+        self.ip = "192.168.0.42"
         self.port = 10001
         self.door_is_open_state = False
 
