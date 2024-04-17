@@ -184,9 +184,6 @@ def crc_8(buf:bytearray) -> np.uint8:
 if __name__ == "__main__":
   command = DatagramFactory()
   cmd = command.set_tag_actor()
-  cmd2 = command.get_software_version()
-  cmd3 = command.get_status()
-  cmd4 = command.set_tag_actor(hex_tag_id="000359AA", actor="01")
   print(f"Command: {cmd}")
   buf = transform_string_to_array("020326FE03")
   crc = crc_8(buf)

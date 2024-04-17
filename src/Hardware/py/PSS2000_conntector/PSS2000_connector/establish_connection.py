@@ -23,7 +23,6 @@ class TCPConnection:
         if self.sock is not None:
             self.sock.close()
             
-    
     def send(self, message):
         # Add STX and <CR> to the message
         message_with_stx_cr = '\x02' + message + '\r'
@@ -98,6 +97,7 @@ def main():
         message_to_send = datagram_factory.set_tag_actor(hex_tag_id = "000359AA", actor = "00")
         if connection.send_and_wait_for_response(message_to_send):
             print("Lights off")
+            
 if __name__ == "__main__":
     main()
     
