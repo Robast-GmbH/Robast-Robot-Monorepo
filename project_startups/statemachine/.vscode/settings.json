@@ -79,7 +79,9 @@
         "fstream": "cpp",
         "span": "cpp",
         "cfenv": "cpp",
-        "regex": "cpp"
+        "regex": "cpp",
+        "ranges": "cpp",
+        "valarray": "cpp"
     },
     "python.formatting.autopep8Path": "/usr/bin/autopep8",
     "python.formatting.autopep8Args": [
@@ -92,8 +94,8 @@
         100
     ],
     "editor.codeActionsOnSave": {
-        "source.fixAll": true,
-        "source.organizeImports": true
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
     },
     "editor.minimap.autohide": true,
     "c-cpp-flylint.clang.defines": [
