@@ -1,5 +1,5 @@
 import socket
-from . import datagram
+from .datagram import DatagramFactory
 
 # Default IP address
 DEFAULT_IP = "192.168.0.42"
@@ -10,7 +10,7 @@ class TCPConnection:
         self.ip = ip
         self.port = port
         self.sock = None
-        self.datagram_factory = datagram.DatagramFactory()
+        self.datagram_factory = DatagramFactory()
 
     def __enter__(self):
         # Create and connect socket
@@ -58,7 +58,7 @@ class TCPConnection:
         self.send(message)
         message_received, _ = self.receive()
         max_tries = 100
-        while not (self.datagram_factory.get_command(message_received) == self.datagram_factory.get_command(message) and self.datagram_factory.is_ack(message_received)):
+        while not (self.__check_acknowledged_response(message, message_received)):
             self.send(message)            
             try:
                 message_received, _ = self.receive()
@@ -69,6 +69,9 @@ class TCPConnection:
             if max_tries == 0:
                 return False
         return True
+
+    def __check_acknowledged_response(self, message, message_received):
+        return self.datagram_factory.get_command(message_received) == self.datagram_factory.get_command(message) and self.datagram_factory.is_ack(message_received)
     
 def hex_to_decimal(hex_string):
     try:
@@ -82,7 +85,7 @@ def main():
     # Enter IP address and port
     ip = DEFAULT_IP
     port = 10001
-    datagram_factory = datagram.DatagramFactory()
+    datagram_factory = DatagramFactory()
 
     # Connect to server
     with TCPConnection(ip, port) as connection:

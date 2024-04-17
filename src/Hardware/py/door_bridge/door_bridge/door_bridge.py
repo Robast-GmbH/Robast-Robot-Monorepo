@@ -3,8 +3,6 @@ from PSS2000_connector.datagram import DatagramFactory
 from PSS2000_connector.establish_connection import TCPConnection
 import time
 
-#python3 -m src.door_bridge.src.door_bridge
-
 
 def convert_to_hex(decimal_string):
     hex_string = hex(int(decimal_string))[2:].upper()
@@ -32,9 +30,7 @@ class DoorBridge:
             self.door_is_open_state = connection.send_and_wait_for_response(message_to_send)
             return self.door_is_open_state
         return False
-    
-    #do we need a funtion that displays all tags in range?
-        
+            
 if __name__ == "__main__":
     DoorBridge().open_door()
     time.sleep(5)

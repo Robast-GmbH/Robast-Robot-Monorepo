@@ -18,8 +18,8 @@ class DatagramFactory:
         self.unused = "00"
         
     def calculate_and_add_crc(self, command):
-      temporarry_string = transform_array_to_string(command[:-1])
-      crc = crc_8(transform_string_to_array(temporarry_string))
+      reduced_crc_calculation_string = transform_array_to_string(command[:-1])
+      crc = crc_8(transform_string_to_array(reduced_crc_calculation_string))
       command[-1] = format(crc, '02X')  # Convert CRC to hexadecimal format
       return command
     
@@ -147,14 +147,14 @@ def invert_byte_order(string:str):
     
 def crc_8(buf:bytearray) -> np.uint8:
   """
-  Berechnet die 8-Bit-CRC-Prüfsumme für ein Datenfeld.
+  Calculates the 8-bit CRC checksum for a data field.
 
   Args:
-    buf: Ein Byte-Array mit den Daten.
-    data_byte: Die Länge des Datenfeldes in Bytes.
+    buf: A byte array containing the data.
+    data_byte: The length of the data field in bytes.
 
   Returns:
-    Die berechnete CRC-8-Prüfsumme.
+    The calculated CRC-8 checksum.
   """
 
   crc = np.uint8(0x00)
@@ -174,17 +174,11 @@ def crc_8(buf:bytearray) -> np.uint8:
       data_byte -= 1
 
   return crc
-# 0x22, 0x06, 0x2E, 0xD0, 0x07, 0xAA, 0x59, 0x03, 0x00, 0xD0, 0x07
-# Beispiel 22 06 2E D0 07 AA 59 03 00 D0 07
-# really recieved: 0x0d 0x22 0x06 0x26 0xd0 0x07 0xaa 0x59 0x03 0x00 0xd0 0x07 with crc=0xaf
-# 22 06 26 D007 765903 00D0072A
-# buf = [0x02, 0x0D, 0x22, 0x06, 0x2E, 0xD0, 0x07, 0xAA, 0x59, 0x03, 0x00, 0xD0, 0x07, 0xD0, 0x03]
-# buf = [0x02, 0x0E, 0x2E, 0x76, 0x59, 0x03, 0x03, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x65, 0x03]
-# buf = [0x02, 0x03, 0x26, 0xfe, 0x03]
 if __name__ == "__main__":
   command = DatagramFactory()
   cmd = command.set_tag_actor()
   print(f"Command: {cmd}")
+  #example crc calculation for the get status message
   buf = transform_string_to_array("020326FE03")
   crc = crc_8(buf)
   print(f"CRC-8: {hex(crc)}")
