@@ -8,7 +8,8 @@ from LightGlue.lightglue.utils import load_image, rbd
 image1 = load_image("/workspace/src/map_preprocessing/output.jpg")
 image2 = load_image("/workspace/src/map_preprocessing/tiplu_6OG.jpg")
 
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+#device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+device = "cpu"
 
 extractor = SuperPoint(max_num_keypoints=2048).eval().to(device)
 matcher = LightGlue(features="superpoint").eval().to(device)
@@ -25,17 +26,8 @@ feats0, feats1, matches01 = [
 kpts1, kpts2, matches = feats1["keypoints"], feats2["keypoints"], matches12["matches"]
 
 kpc1, kpc2 = viz2d.cm_prune(matches12["prune0"]), viz2d.cm_prune(matches12["prune1"])
-print(kpc1, kpc2)
-#viz2d.plot_images([image1, image2])
-#iz2d.plot_keypoints([kpts1, kpts2])
-#kpts1_np, kpts2_np = kpts1.cpu().numpy(), kpts2.cpu().numpy()
-#print(kpts1)
-#m_kpts1, m_kpts2 = kpts1[matches[..., 0]], kpts2[matches[..., 1]]
-
-
-# src_img = cv.imread("src/map_preprocessing/tiplu_6OG.pgm")
-# dst_img = cv.imread("src/map_preprocessing/ceaned.jpg")
-# transformation_matrix, _ = cv.estimateAffinePartial2D(kpts1_np, kpts2_np)
-# transformed_image = cv.warpAffine(dst_img, transformation_matrix, (dst_img.shape[1], dst_img.shape[0]))
+points0 = feats0['keypoints'][matches[..., 0]]  
+points1 = feats1['keypoints'][matches[..., 1]]  
+print(points0, points1)
 
 

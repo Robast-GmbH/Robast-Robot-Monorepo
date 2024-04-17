@@ -6,8 +6,10 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED)
+find_package(ament_cmake REQUIRED),
+find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
@@ -22,6 +24,8 @@ target_link_libraries(feuerplan_publisher_node ${OpenCV_LIBRARIES})
 install(TARGETS
   feuerplan_publisher_node
   DESTINATION lib/${PROJECT_NAME})
+
+install()
 
 install(DIRECTORY
   resources
