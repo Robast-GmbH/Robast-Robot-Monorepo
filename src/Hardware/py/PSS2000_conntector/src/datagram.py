@@ -23,28 +23,43 @@ class DatagramFactory:
       command[-1] = format(crc, '02X')  # Convert CRC to hexadecimal format
       return command
     
-    def set_tag_actor(self, hex_tag_id = "000359AA", actor = "01"):
-        n = "0F"
-        command_code = "2E"
-        if len(hex_tag_id) != 8 or not hex_tag_id.isalnum():
-            raise ValueError("Tag ID must be 4 bytes in hexadecimal format")
-        LSBTagIDMSB = invert_byte_order(hex_tag_id)
-        command = [
-            self.STX,
-            n,
-            command_code,
-            LSBTagIDMSB,
-            actor,
-            self.unused,
-            self.unused,
-            self.unused,
-            self.unused,
-            self.unused,
-            self.unused,
-            self.unused,
-            self.CRC]
-        command = self.calculate_and_add_crc(command)
-        return transform_array_to_string(command[1:])
+    
+    def set_tag_actor(self, hex_tag_id="000359AA", actor="01"):
+      """
+      Sets the tag actor for a given tag ID.
+
+      Args:
+        hex_tag_id (str): The hexadecimal representation of the tag ID. Must be 4 bytes in length.
+        actor (str): The actor code. Use '00' to disable all relays, '01' to enable relay 1, and '02' to enable relay 2.
+
+      Returns:
+        str: The transformed command as a string.
+
+      Raises:
+        ValueError: If the tag ID is not 4 bytes in hexadecimal format.
+
+      """
+      n = "0F"
+      command_code = "2E"
+      if len(hex_tag_id) != 8 or not hex_tag_id.isalnum():
+        raise ValueError("Tag ID must be 4 bytes in hexadecimal format")
+      LSBTagIDMSB = invert_byte_order(hex_tag_id)
+      command = [
+        self.STX,
+        n,
+        command_code,
+        LSBTagIDMSB,
+        actor,
+        self.unused,
+        self.unused,
+        self.unused,
+        self.unused,
+        self.unused,
+        self.unused,
+        self.unused,
+        self.CRC]
+      command = self.calculate_and_add_crc(command)
+      return transform_array_to_string(command[1:])
     
     def get_software_version(self):
         n = "03"
@@ -85,6 +100,7 @@ class DatagramFactory:
       command = message[0:2]
       if message[2:4] != "06":
         return "Nak"
+      #preperation thats just used IF we need more details. But its pain to look everything up in excel so I prepared this for further use.
       match command:
         case "22":
           tag_status = message[4:6]
@@ -168,6 +184,9 @@ def crc_8(buf:bytearray) -> np.uint8:
 if __name__ == "__main__":
   command = DatagramFactory()
   cmd = command.set_tag_actor()
+  cmd2 = command.get_software_version()
+  cmd3 = command.get_status()
+  cmd4 = command.set_tag_actor(hex_tag_id="000359AA", actor="01")
   print(f"Command: {cmd}")
   buf = transform_string_to_array("020326FE03")
   crc = crc_8(buf)
