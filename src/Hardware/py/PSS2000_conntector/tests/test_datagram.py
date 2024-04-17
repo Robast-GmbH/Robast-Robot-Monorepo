@@ -1,5 +1,5 @@
 import unittest
-from src.datagram import DatagramFactory
+from PSS2000_connector.datagram import DatagramFactory
 
 class TestDatagramFactory(unittest.TestCase):
     def setUp(self):

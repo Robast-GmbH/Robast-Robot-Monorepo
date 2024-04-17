@@ -1,6 +1,6 @@
 #TODO @TAlscher: fix imports
-from src.PSS2000_connector.src.datagram import DatagramFactory
-from src.PSS2000_connector.src.establish_connection import TCPConnection
+from PSS2000_connector.datagram import DatagramFactory
+from PSS2000_connector.establish_connection import TCPConnection
 import time
 
 #python3 -m src.door_bridge.src.door_bridge
