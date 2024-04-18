@@ -59,19 +59,19 @@ class APIService {
  
   static Future<List<DrawerModule>> getModules({required String robotName}) async {
     final modules = <DrawerModule>[];
+    try {
+      final response = await http.get(Uri.parse("$baseURL:$port/modules?robot_name=$robotName"));
+      if (response.statusCode == 200) {
+        final List<dynamic> jsonData = jsonDecode(response.body);
+        for (final module in jsonData) {
+          modules.add(DrawerModule.fromJson(module));
+        }
+      }
+    } catch (e) {
+      debugPrint("Failed get Modules");
+      debugPrint(e.toString());
+    }
     return modules;
-    // try {
-    //   final response = await http.get(Uri.parse("$baseURL:$port/robots/$robotName/modules/"));
-    //   if (response.statusCode == 200) {
-    //     final List<dynamic> jsonData = jsonDecode(response.body);
-    //     for (final module in jsonData) {
-    //       modules.add(DrawerModule.fromJson(module));
-    //     }
-    //   }
-    // } catch (e) {
-    //   debugPrint("Failed get Modules");
-    //   debugPrint(e.toString());
-    // }
   }
 
   static Future<void> openDrawer({
@@ -79,23 +79,9 @@ class APIService {
     required int moduleID,
     required int drawerID,
   }) async {
-    final data = <String, dynamic>{
-      "module": {
-        "module_id": moduleID,
-        "drawer_id": drawerID,
-      },
-      "owner": 1,
-      "restricted_for_user": [],
-    };
-    final headers = {
-      'accept': 'application/json',
-      'Content-Type': 'application/json',
-    };
     try {
       await http.post(
-        Uri.parse("$baseURL:$port/robots/$robotName/modules/open"),
-        headers: headers,
-        body: jsonEncode(data),
+        Uri.parse("$baseURL:$port/open_drawer?robot_name=$robotName&module_id=$moduleID&drawer_id=$drawerID"),
       );
     } catch (e) {
       debugPrint("Failed open drawer");
@@ -108,19 +94,10 @@ class APIService {
     required int moduleID,
     required int drawerID,
   }) async {
-    final data = <String, dynamic>{
-      "module_id": moduleID,
-      "drawer_id": drawerID,
-    };
-    final headers = {
-      'accept': 'application/json',
-      'Content-Type': 'application/json',
-    };
+
     try {
       await http.post(
-        Uri.parse("$baseURL:$port/robots/$robotName/modules/close"),
-        headers: headers,
-        body: jsonEncode(data),
+        Uri.parse("$baseURL:$port/close_drawer?robot_name=$robotName&module_id=$moduleID&drawer_id=$drawerID"),
       );
     } catch (e) {
       debugPrint("Failed close drawer");

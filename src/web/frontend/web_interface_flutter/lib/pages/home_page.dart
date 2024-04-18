@@ -29,8 +29,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    loadData = Provider.of<RobotProvider>(context, listen: false).updateProviderData();
-    Provider.of<RobotProvider>(context, listen: false).startPeriodicRobotUpdate();
+    loadData =
+        Provider.of<RobotProvider>(context, listen: false).updateProviderData();
+    Provider.of<RobotProvider>(context, listen: false)
+        .startPeriodicRobotUpdate();
   }
 
   @override
@@ -41,8 +43,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
-    return WillPopScope(
-      onWillPop: () async => false,
+    return PopScope(
+      canPop: false,
       child: Scaffold(
         backgroundColor: AppColors.grey,
         body: IsRobotMovingWrapper(
@@ -107,7 +109,8 @@ class _HomePageState extends State<HomePage> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     const LoginButton(),
-                    if (Provider.of<RobotProvider>(context, listen: false).isAdmin) ...[
+                    if (Provider.of<RobotProvider>(context, listen: false)
+                        .isAdmin) ...[
                       const AdminMenuButton(),
                     ],
                   ],
