@@ -44,7 +44,7 @@ class Drawer:
         return [cls.instances.get(id).to_json() for id in cls.ids]
 
     @classmethod
-    def get_drawer(cls, module_id, drawer_id)-> Drawer:
+    def get_drawer(cls, module_id, drawer_id)-> Drawer|None:
         id = f"{module_id}_{drawer_id}"
         return cls.instances.get(id)
 
