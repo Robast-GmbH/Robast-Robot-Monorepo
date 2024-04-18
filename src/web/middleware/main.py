@@ -32,14 +32,6 @@ def read_fleet():
     return {"fleet": list(name_to_ip.keys())}
 
 
-@app.get("/is_ros_bridge_connected")
-def read_is_ros_bridge_connected(robot_ip: str = Depends(get_robot_ip)):
-    response = requests.get(
-        f"http://{robot_ip}:{robot_api_port}/is_ros_bridge_connected"
-    ).json()
-    return response
-
-
 """
 ===========================
 Robot Status API Endpoints
@@ -47,13 +39,22 @@ Robot Status API Endpoints
 """
 
 
-@app.get("/robot_pos", tags=["Robot Position"])
+@app.get("/is_ros_bridge_connected", tags=["Robot Status"])
+def read_is_ros_bridge_connected(robot_ip: str = Depends(get_robot_ip)):
+    response = requests.get(
+        f"http://{robot_ip}:{robot_api_port}/is_ros_bridge_connected"
+    ).json()
+    return response
+
+
+@app.get("/robot_pos", tags=["Robot Status"])
 def read_robot_pos(robot_ip: str = Depends(get_robot_ip)):
     response = requests.get(f"http://{robot_ip}:{robot_api_port}/robot_pos").json()
     return response
 
-@app.get("/battery_level", tags=["Robot Position"])
-def read_robot_pos(robot_ip: str = Depends(get_robot_ip)):
+
+@app.get("/battery_level", tags=["Robot Status"])
+def read_robot_battery_level(robot_ip: str = Depends(get_robot_ip)):
     return {"battery_level": 1.0}
 
 
