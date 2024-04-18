@@ -27,7 +27,6 @@ class ModuleBridge(BaseBridge):
         module_id = msg["drawer_address"]["module_id"]
         drawer_id = msg["drawer_address"]["drawer_id"]
         is_open = msg["drawer_is_open"]
-        print("opened drawer", module_id, drawer_id, is_open)
         id = f"{module_id}_{drawer_id}"
         Drawer.instances.get(id).is_open = is_open
 
