@@ -3,24 +3,27 @@ from rclpy.node import Node
 
 from rmf_dispenser_msgs.msg import DispenserRequest, DispenserResult
 from rmf_ingestor_msgs.msg import IngestorRequest, IngestorResult
-from dispenser_ingestor_mock.robot_api import RobotAPI
+from dispenser_ingestor_mock.robot_drawer_api import (
+    RobotDrawerAPI,
+    DRAWER_IDLE,
+    DRAWER_OPEN,
+)
 
-DRAWER_IDLE = 0
-DRAWER_OPEN = 1
 
 class DispenserIngestorMock(Node):
 
     def __init__(self):
         super().__init__("dispenser_ingestor_mock")
+        
+        self.declare_parameter("api_url",'http://localhost:8003')
+        api_url = self.get_parameter("api_url").value
+        self.robot_drawer_api = RobotDrawerAPI(api_url=api_url)
 
         self.dispenser_publisher_ = self.create_publisher(
             DispenserResult, "/dispenser_results", 10
         )
         self.dispenser_subscriber_ = self.create_subscription(
-            DispenserRequest,
-            "/dispenser_requests",
-            self.on_request_callback,
-            10,
+            DispenserRequest, "/dispenser_requests", self.on_request_callback, 10
         )
 
         self.ingestor_publisher_ = self.create_publisher(
@@ -29,14 +32,14 @@ class DispenserIngestorMock(Node):
         self.ingestor_subscriber_ = self.create_subscription(
             IngestorRequest, "/ingestor_requests", self.on_request_callback, 10
         )
-        self.timer_period = 1.0  # seconds
+
+        self.update_timer_period = 1.0  # seconds
         self.process_finish_delay = 5  # seconds
         self.request_guid = ""
-        self.source_guid = ""
+        self.target_guid = ""
         self.timer = None
         self.drawer_status = DRAWER_IDLE
         self.is_in_process = False
-        self.robot_api = RobotAPI()
 
     def create_result_msg(self):
         if isinstance(self.current_request, DispenserRequest):
@@ -50,12 +53,14 @@ class DispenserIngestorMock(Node):
             return
         msg.time = self.get_clock().now().to_msg()
         msg.request_guid = self.request_guid
-        msg.source_guid = self.source_guid
+        msg.source_guid = self.target_guid
         return msg
 
-
-    def drawer_status_request(self):
-        is_drawer_open = self.robot_api.is_drawer_open()
+    def update_drawer_status(self):
+        self.get_logger().info("Updating drawer status")
+        is_drawer_open = self.robot_drawer_api.is_drawer_open()
+        if is_drawer_open is None:
+            return
         if self.drawer_status == DRAWER_IDLE and is_drawer_open:
             self.drawer_status = DRAWER_OPEN
         elif self.drawer_status == DRAWER_OPEN and not is_drawer_open:
@@ -64,36 +69,39 @@ class DispenserIngestorMock(Node):
             msg = self.create_result_msg()
             self.publish_result_with_delay(msg)
 
-
     def publish_result_with_delay(self, msg):
         if isinstance(self.current_request, DispenserRequest):
             self.dispenser_publisher_.publish(msg)
         else:
             self.ingestor_publisher_.publish(msg)
         self.timer = self.create_timer(
-            self.process_finish_delay, lambda : self.finish_process_callback()
+            self.process_finish_delay, lambda: self.finish_process_callback()
         )
 
     def finish_process_callback(self):
         self.is_in_process = False
+        self.get_logger().info("Finished pick-up/drop-off process")
         self.timer.cancel()
 
     def on_request_callback(self, msg):
         if not self.is_in_process:
+            self.get_logger().info("Started pick-up/drop-off process")
             self.is_in_process = True
             self.request_guid = msg.request_guid
-            self.source_guid = msg.target_guid
-            self.robot_api.open_drawer()
+            self.target_guid = msg.target_guid
+            # For now the drawer_address is derived from the entered item type
+            # Example: 2_0_item_type for module 2 drawer 0
+            self.robot_drawer_api.open_drawer(msg.items[0].type_guid)
             self.current_request = msg
             self.timer = self.create_timer(
-                self.timer_period, lambda : self.drawer_status_request()
+                self.update_timer_period, lambda: self.update_drawer_status()
             )
-            self.get_logger().info("started drawer request timer")
+
 
 
 def main(args=None):
     rclpy.init(args=args)
-
+    
     dispenser_ingestor_mock = DispenserIngestorMock()
 
     rclpy.spin(dispenser_ingestor_mock)
