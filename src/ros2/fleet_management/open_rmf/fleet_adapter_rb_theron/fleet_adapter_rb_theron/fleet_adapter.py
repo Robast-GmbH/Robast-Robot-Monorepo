@@ -41,8 +41,8 @@ from rclpy.qos import QoSDurabilityPolicy as Durability
 from rclpy.qos import QoSReliabilityPolicy as Reliability
 from rclpy.qos import qos_profile_system_default
 
-from RobotCommandHandle import RobotCommandHandle
-from RobotClientAPI import RobotAPI
+from fleet_adapter_rb_theron.RobotCommandHandle import RobotCommandHandle
+from fleet_adapter_rb_theron.RobotClientAPI import RobotAPI
 
 # ------------------------------------------------------------------------------
 # Helper functions
@@ -100,10 +100,7 @@ def initialize_fleet(config_yaml, nav_graph_path, node, use_sim_time):
     adapter.start()
     time.sleep(1.0)
 
-    node.declare_parameter("server_uri", rclpy.Parameter.Type.STRING)
-    server_uri = "http://localhost:8000/_internal"  # node.get_parameter("server_uri").get_parameter_value().string_value
-    if server_uri == "":
-        server_uri = None
+    server_uri = "http://localhost:8000/_internal"
 
     fleet_handle = adapter.add_fleet(fleet_name, vehicle_traits, nav_graph, server_uri)
 
