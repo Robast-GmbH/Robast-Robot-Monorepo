@@ -15,13 +15,13 @@ class FrameListener(Node):
 
         # Declare and acquire `target_frame` parameter
         self.target_frame = (
-            self.declare_parameter("target_frame", "base_link")
+            self.declare_parameter("target_frame", "robot_base_link")
             .get_parameter_value()
             .string_value
         )
 
         self.tf_buffer = Buffer()
-        self.tf_listener = TransformListener(self.tf_buffer, self)
+        self.tf_listener = TransformListener(self.tf_buffer, self,spin_thread=True)
 
         # Call on_timer function every second
         self.timer = self.create_timer(1.0, self.on_timer)
