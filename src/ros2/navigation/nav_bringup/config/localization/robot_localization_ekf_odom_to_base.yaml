@@ -133,7 +133,17 @@ ekf_filter_node:
         odom0_pose_rejection_threshold: 5.0
         odom0_twist_rejection_threshold: 1.0
 
-# Further input parameter examples
+        odom1: /zed/zed_node/odom 
+        odom1_config: [true,  true,  true,  # X, Y, Z
+                true,  true,  true,  # Roll, Pitch, Yaw
+                false, false, false, # Vx, Vy, Vz
+                false, false, false,  # Vroll, Vpitch, Vyaw
+                false, false, false] # Ax, Ay, Az
+        odom1_differential: false
+        odom1_relative: true
+        odom1_queue_size: 2
+
+# Further input parameter 
         imu0: /robot/imu/data
         imu0_config: [false, false, false,
                       true, true, true, # roll, pitch, yaw (yaw comes from Magnetometer)
