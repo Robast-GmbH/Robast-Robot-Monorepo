@@ -1,5 +1,5 @@
 from sub_bridges.base_bridge import BaseBridge
-from models.drawer import *
+from models.drawer import Drawer, TYPE_ELECTRIC_DRAWER, TYPE_MANUAL_DRAWER
 from roslibpy import Ros
 
 
@@ -27,8 +27,8 @@ class ModuleBridge(BaseBridge):
         module_id = msg["drawer_address"]["module_id"]
         drawer_id = msg["drawer_address"]["drawer_id"]
         is_open = msg["drawer_is_open"]
-        id = f"{module_id}_{drawer_id}"
-        Drawer.instances.get(id).is_open = is_open
+        concatenated_id = f"{module_id}_{drawer_id}"
+        Drawer.instances.get(concatenated_id).is_open = is_open
 
     def open_drawer(self, module_id, drawer_id):
         drawer = Drawer.get_drawer(module_id, drawer_id)

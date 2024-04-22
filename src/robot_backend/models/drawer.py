@@ -34,19 +34,19 @@ class Drawer:
             json["size"],
             json["type"],
         )
-        id = f"{drawer.module_id}_{drawer.drawer_id}"
-        cls.instances.update(id,drawer)
-        cls.ids.append(id)
+        concatenated_id = f"{drawer.module_id}_{drawer.drawer_id}"
+        cls.instances.update(concatenated_id,drawer)
+        cls.ids.append(concatenated_id)
         return drawer
 
     @classmethod
     def drawers_as_json(cls):
-        return [cls.instances.get(id).to_json() for id in cls.ids]
+        return [cls.instances.get(concatenated_id).to_json() for concatenated_id in cls.ids]
 
     @classmethod
     def get_drawer(cls, module_id, drawer_id)-> Drawer|None:
-        id = f"{module_id}_{drawer_id}"
-        return cls.instances.get(id)
+        concatenated_id = f"{module_id}_{drawer_id}"
+        return cls.instances.get(concatenated_id)
 
     def to_json(self):
         return {
