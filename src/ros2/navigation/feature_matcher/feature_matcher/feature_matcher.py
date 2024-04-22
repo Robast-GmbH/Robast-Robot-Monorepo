@@ -6,12 +6,11 @@ import numpy as np
 import cv2 as cv
 
 from rclpy.node import Node
-from LightGlue.lightglue import LightGlue, SuperPoint, DISK, SIFT, ALIKED, DoGHardNet, viz2d
-from LightGlue.lightglue.utils import load_image, rbd
+from lightGlue.lightglue import LightGlue
+#from LightGlue.lightglue.utils import load_image, rbd
 
 
 from nav_msgs.msg import OccupancyGrid
-
 
 class MinimalSubscriber(Node):
 
@@ -44,14 +43,13 @@ class MinimalSubscriber(Node):
 
         device = "cpu"
         extractor = SuperPoint(max_num_keypoints = 2048).eval().to(device)
-        matcher = LightGlue(features = "superpoint").eval().to(device)j
+        matcher = LightGlue(features = "superpoint").eval().to(device)
 
         feats1 = extractor.extract(image1.to(device))
-        feats2 = extractor.extract(image1.to(device))
+        feats2 = extractor.extract(image2.to(device))
         matches1 = matcher({"image1":feats1, "image2":feats2})
         feats1, feats2, matches1 = [
-            rbd(x) for x in [feats1, feats2, matches]
+            rbd(x) for x in [feats1, feats2, matches1]
         ]
         kpts1, kpts2, matches1 = feats1["keypoints"], feats2["keypoints"], matches1["matches"]
-        if kpts1 < .8
-        m_kpts1, mkpts1 = kpts1[matches1[...,0]], kpts2[matches[...,1]]
+        m_kpts1, mkpts1 = kpts1[matches1[...,0]], kpts2[matches1[...,1]]

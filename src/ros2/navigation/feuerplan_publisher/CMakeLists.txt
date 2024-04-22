@@ -6,7 +6,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 # find dependencies
-find_package(ament_cmake REQUIRED),
+find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
@@ -23,9 +23,15 @@ target_link_libraries(feuerplan_publisher_node ${OpenCV_LIBRARIES})
 
 install(TARGETS
   feuerplan_publisher_node
-  DESTINATION lib/${PROJECT_NAME})
+  DESTINATION lib/${PROJECT_NAME}
+)
 
-install()
+ament_python_install_package(${PROJECT_NAME})
+
+install(PROGRAMS
+  scripts/create_transform.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 install(DIRECTORY
   resources
