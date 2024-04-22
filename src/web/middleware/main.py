@@ -4,7 +4,7 @@ import requests
 
 app = FastAPI()
 
-name_to_ip = {"rb_theron": "10.10.23.7"}
+name_to_ip = {"rb_theron": "10.10.23.11"}
 robot_api_port = 8001
 
 
@@ -126,4 +126,4 @@ def post_close_drawer(
     return response
 
 
-uvicorn.run(app, port=8003)
+uvicorn.run(app, port=8003, host='0.0.0.0')
