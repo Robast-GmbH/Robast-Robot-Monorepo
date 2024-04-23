@@ -8,7 +8,7 @@ def generate_launch_description():
 
     config_file = LaunchConfiguration(
         "config_file",
-        default="/workspace/src/open_rmf/fleet_adapter_rb_theron/map/tiplu.building.yaml",
+        default="/workspace/src/open_rmf/fleet_adapter_rb_theron/maps/6OG_bp/tiplu.building.yaml",
     )
 
     bidding_time_window = LaunchConfiguration("bidding_time_window", default="2.0")

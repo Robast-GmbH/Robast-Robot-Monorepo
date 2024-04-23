@@ -3,9 +3,10 @@ import uvicorn
 import requests
 
 app = FastAPI()
-
-name_to_ip = {"rb_theron": "10.10.23.11"}
-robot_api_port = 8001
+# 10.10.23.11
+# 10.10.23.7
+name_to_ip = {"rb_theron": "10.10.13.7"}
+robot_api_port = 8005
 
 
 def get_robot_ip(robot_name: str):

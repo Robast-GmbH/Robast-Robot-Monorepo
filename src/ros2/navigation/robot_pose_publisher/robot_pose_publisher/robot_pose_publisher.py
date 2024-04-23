@@ -15,7 +15,7 @@ class FrameListener(Node):
 
         # Declare and acquire `target_frame` parameter
         self.target_frame = (
-            self.declare_parameter("target_frame", "robot_base_link")
+            self.declare_parameter("target_frame", "base_link")
             .get_parameter_value()
             .string_value
         )
