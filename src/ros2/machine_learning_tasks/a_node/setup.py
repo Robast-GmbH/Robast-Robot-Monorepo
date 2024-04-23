@@ -1,6 +1,6 @@
 from setuptools import find_packages, setup
 
-package_name = 'feature_matcher'
+package_name = 'a_node'
 
 setup(
     name=package_name,
@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'feature_matcher = feature_matcher.feature_extractor:main'
+            'listener = a_node.function:main',
         ],
     },
 )

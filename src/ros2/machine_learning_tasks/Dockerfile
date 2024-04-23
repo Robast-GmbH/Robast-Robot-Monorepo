@@ -1,4 +1,4 @@
-FROM ros:humble-perception as devel
+FROM ros:humble as devel
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \

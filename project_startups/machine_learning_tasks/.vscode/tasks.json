@@ -5,7 +5,7 @@
             "label": "build-ros-theron",
             "detail": "Symlink Build for Ros-Theron.",
             "type": "shell",
-            "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip lightglue_robast",
+            "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip lightglue_robast communication_interfaces",
             "problemMatcher": []
         },
         {
