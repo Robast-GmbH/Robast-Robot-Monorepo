@@ -32,24 +32,16 @@ class RobotAPI:
         prefix: str,
         user: str,
         password: str,
+        reference_coordinates
     ):
         self.prefix = prefix
         self.user = user
         self.password = password
         self.connected = False
 
-        rmf_coordinates = [
-            [10.77,-22.39],
-            [10.63,-16.09],
-            [11.42,-31.53],
-            [7.38,-31.68],
-        ]
-        robot_coordinates = [
-            [1.31,-6.45],
-            [1.3,-0.04],
-            [1.7,-15.6],
-            [-1.82,-15.4],
-        ]
+        rmf_coordinates = reference_coordinates["rmf"]
+        robot_coordinates = reference_coordinates["robot"]
+
         self.transforms = {
             "rmf_to_robot": nudged.estimate(rmf_coordinates, robot_coordinates),
             "robot_to_rmf": nudged.estimate(robot_coordinates, rmf_coordinates),
@@ -68,7 +60,8 @@ class RobotAPI:
         None if any errors are encountered"""
         pose = requests.get(f"{self.prefix}/robot_pos?robot_name={robot_name}").json()
         x, y = self.transforms["robot_to_rmf"].transform([pose["x"], pose["y"]])
-        return [x, y, pose["z"]]
+        z = pose["z"] + self.transforms["orientation_offset"]
+        return [x, y, z]
 
     def navigate(
         self, robot_name: str, cmd_id: int, pose, map_name: str, speed_limit=0.0
@@ -78,8 +71,9 @@ class RobotAPI:
         should return True if the robot has accepted the request,
         else False"""
         x, y = self.transforms["rmf_to_robot"].transform([pose[0], pose[1]])
+        z = pose[2] - self.transforms["orientation_offset"]
         requests.post(
-            f"{self.prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={pose[2]}"
+            f"{self.prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}"
         )
         return True
 
