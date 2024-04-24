@@ -1,0 +1,9 @@
+name: robot_apps_flutter
+
+packages:
+  - packages/*
+  - apps/*
+    
+scripts:
+  analyze:
+    exec: dart analyze .  
