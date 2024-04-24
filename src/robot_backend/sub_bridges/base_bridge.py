@@ -7,15 +7,18 @@ class BaseBridge:
         self.context = ThreadSafeDict()
         self.ros = ros
 
+    def _create_on_msg_callback(self, topic):
+        def on_msg_callback(message):
+            self.context[topic] = message
+
+        return on_msg_callback
+
     def start_subscriber(self, topic, msg_type, on_msg_callback=None) -> Topic:
         listener = Topic(self.ros, topic, msg_type)
         if on_msg_callback:
             listener.subscribe(on_msg_callback)
         else:
-            def on_msg_callback(message, topic=topic):
-                self.context[topic] = message
-
-            listener.subscribe(on_msg_callback)
+            listener.subscribe(self._create_on_msg_callback(topic))
         return listener
 
     def start_publisher(self, topic, msg_type) -> Topic:

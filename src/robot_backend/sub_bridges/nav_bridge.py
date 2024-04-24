@@ -50,15 +50,14 @@ class NavBridge(BaseBridge):
         return True
 
     def is_navigating(self):
-        is_navigating = self.context["/is_navigating"]
-        if is_navigating is None:
+        try:
+            return self.context["/is_navigating"]["data"]
+        except KeyError:
             return False
-        else:
-            return is_navigating["data"]
 
     def get_remaining_nav_time(self):
-        remaining_time = self.context["/navigation_remaining_time"]
-        if remaining_time is None:
+        try:
+            return self.context["/navigation_remaining_time"]["sec"]
+        except KeyError:
             return 0
-        else:
-            return remaining_time["sec"]
+

@@ -41,13 +41,16 @@ class Drawer:
     @classmethod
     def drawers_as_json(cls):
         return [
-            drawer.to_json() for drawer in cls.instances.values()
+            drawer._to_json() for drawer in cls.instances.values()
         ]
 
     @classmethod
     def get_drawer(cls, module_id, drawer_id) -> Drawer | None:
         concatenated_id = f"{module_id}_{drawer_id}"
         return cls.instances.get(concatenated_id)
+
+    def set_is_open(self, is_open):
+        self._is_open = is_open
 
     def _to_json(self):
         return {
