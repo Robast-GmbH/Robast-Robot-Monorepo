@@ -7,6 +7,7 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 from nav_msgs.msg import OccupancyGrid
 from lightglue.lightglue import LightGlue
+from lightglue.utils import numpy_image_to_torch
 from lightglue.superpoint import SuperPoint
 
 
@@ -19,14 +20,14 @@ class MinimalSubscriber(Node):
             '/global_costmap/feuerplan_image_topic',
             self.listener_callback_feuerplan,
             qos_profile = self.get_qos_profile())
-        self.subscription_feuerplan  # prevent unused variable warning
+        self.subscription_feuerplan  
 
         self.subscription_map = self.create_subscription(
             OccupancyGrid,
             'map',
             self.listener_callback_map,
             10)
-        self.subscription_map  # prevent unused variable warning
+        self.subscription_map  
 
         self.map_msg = self.feuerplan_msg = None
     
@@ -36,30 +37,50 @@ class MinimalSubscriber(Node):
         return qos_profile    
 
     def listener_callback_map(self, msg):
-        self.map_msg = msg.data
+        self.map_msg = msg
         self.get_logger().info('I heard map ')
         self.create_transform()
     
     def listener_callback_feuerplan(self, msg):
-        self.feuerplan_msg = msg.data
+        self.feuerplan_msg = msg
         self.get_logger().info('I heard feuerplan ')
         self.create_transform()
 
+    def ros_msg_to_image(self, ros_msg):
+        image = np.zeros((self.map_msg.info.height,self.map_msg.info.width), dtype=np.uint8)
+        data = ros_msg.data
+        index = 0
+        for y in range(self.map_msg.info.height):
+            for x in range(self.map_msg.info.width):
+                image[y,x] = data[index]
+
+                if data[index] == 0 or data[index] == -1:
+                    image[y,x] = 255
+                else:
+                    image[y,x] = data[index]
+                index += 1
+        return image
+
     def create_transform(self):
+        image1 = self.ros_msg_to_image(self.map_msg)
+        #image2 = ros_msg_to_image(self.feuerplan_msg)
 
-        if self.map_msg and self.feuerplan_msg is not None:
-            image1 = torch.from_numpy(np.array(self.map_msg))
-            image2 = torch.from_numpy(np.array(self.feuerplan_msg))
-
+        if image1 is not None:
             device = "cpu" 
-            print(image1.type())
             extractor = SuperPoint(max_num_keypoints = 2048).eval().to(device)
             matcher = LightGlue(features = "superpoint").eval().to(device)
 
-            #feats1 = extractor.extract(image1)
-            #feats2 = extractor.extract(image2)
+            feats1 = extractor.extract(numpy_image_to_torch(image1))
+            #feats2 = extractor.extract(numpy_image_to_torch(image2))
 
-            print(image1.shape)
+            #matches12 = matcher({'image1': feats1, 'image2': feats2})
+            #feats1, feats2, matches12 = [rbd(x) for x in [feats1, feats2, matches12]]
+            #matches = matches12['matches']
+            #points1 = feats1['keypoints'][matches[..., 0]]
+            #points2 = feats2['keypoints'][matches[..., 1]] 
+
+            #transformation_matrix, _ = cv2.estimateAffinePartial2D(points1, points2)
+            print(feats1)
 
 def main(args=None):
     rclpy.init(args=args)
@@ -67,11 +88,6 @@ def main(args=None):
     minimal_subscriber = MinimalSubscriber()
 
     rclpy.spin(minimal_subscriber)
-
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
-    minimal_subscriber.destroy_node()
     rclpy.shutdown()
 
 

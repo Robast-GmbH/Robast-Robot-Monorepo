@@ -26,13 +26,6 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-ament_python_install_package(${PROJECT_NAME})
-
-install(PROGRAMS
-  scripts/create_transform.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-
 install(DIRECTORY
   resources
   launch

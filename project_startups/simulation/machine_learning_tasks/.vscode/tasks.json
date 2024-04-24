@@ -5,14 +5,14 @@
             "label": "build",
             "detail": "Symlink Build",
             "type": "shell",
-            "command": "colcon build --symlink-install --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Release' -Wall -Wextra -Wpedantic",
+            "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip lightglue_robast",
             "problemMatcher": []
         },
         {
             "label": "debug-build",
             "detail": "build used for debugging purposes",
             "type": "shell",
-            "command": "colcon build --mixin debug --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic --packages_skip lightglue_robast",
+            "command": "colcon build --mixin debug --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic --packages-skip lightglue_robast",
             "problemMatcher": []
         },
         {
@@ -31,6 +31,16 @@
             "type": "shell",
             "command": "rm -fr build install log; py3clean .",
             "problemMatcher": []
-        }
+        },
+        {
+            "type": "shell",
+            "label": "run feature_matcher",
+            "command": "source /workspace/install/setup.bash; ros2 run a_node listener",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "focus": true
+            }
+        },
     ]
 }
