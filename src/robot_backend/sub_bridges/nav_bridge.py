@@ -26,7 +26,7 @@ class NavBridge(BaseBridge):
         )
 
     def navigate_to_goal_pose(self, robot_name, goal_pose):
-        self.context.update("/is_navigating", {"data": True})
+        self.context["/is_navigating"] =  {"data": True}
         goal_msg = Message(
             {
                 "position": {
@@ -50,14 +50,14 @@ class NavBridge(BaseBridge):
         return True
 
     def is_navigating(self):
-        is_navigating = self.context.get("/is_navigating")
+        is_navigating = self.context["/is_navigating"]
         if is_navigating is None:
             return False
         else:
             return is_navigating["data"]
 
     def get_remaining_nav_time(self):
-        remaining_time = self.context.get("/navigation_remaining_time")
+        remaining_time = self.context["/navigation_remaining_time"]
         if remaining_time is None:
             return 0
         else:

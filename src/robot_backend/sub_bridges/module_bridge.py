@@ -28,7 +28,7 @@ class ModuleBridge(BaseBridge):
         drawer_id = msg["drawer_address"]["drawer_id"]
         is_open = msg["drawer_is_open"]
         concatenated_id = f"{module_id}_{drawer_id}"
-        Drawer.instances.get(concatenated_id).is_open = is_open
+        Drawer.instances[concatenated_id].is_open = is_open
 
     def open_drawer(self, module_id, drawer_id):
         drawer = Drawer.get_drawer(module_id, drawer_id)
@@ -36,7 +36,7 @@ class ModuleBridge(BaseBridge):
             print("Module not found")
             return False
 
-        if drawer.type == TYPE_ELECTRIC_DRAWER:
+        if drawer._type == TYPE_ELECTRIC_DRAWER:
             self.electric_drawer_tree_publisher.publish(
                 {"module_id": module_id, "drawer_id": drawer_id}
             )
@@ -51,7 +51,7 @@ class ModuleBridge(BaseBridge):
         if drawer is None:
             print("Module not found")
             return False
-        if drawer.type == TYPE_ELECTRIC_DRAWER:
+        if drawer._type == TYPE_ELECTRIC_DRAWER:
             self.close_drawer_publisher.publish(
                 {"module_id": module_id, "drawer_id": drawer_id}
             )
