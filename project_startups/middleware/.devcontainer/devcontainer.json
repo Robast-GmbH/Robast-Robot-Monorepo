@@ -6,6 +6,6 @@
 	"mounts":[
 		"source=${localWorkspaceFolder}/../../src/web/middleware,target=/workspace/middleware,type=bind"
 	],
-	"forwardPorts": [8001,8003],
+	"forwardPorts": [8003,8005],
 	"remoteUser": "robast"
 }

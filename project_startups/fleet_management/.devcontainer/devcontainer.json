@@ -1,7 +1,7 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {	
 	"name": "open_rmf",
-	"dockerFile": "Dockerfile",
+	"dockerFile": "../../../src/ros2/fleet_management/Dockerfile",
 	"remoteUser": "robast",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [

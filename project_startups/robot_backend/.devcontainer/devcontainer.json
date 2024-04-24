@@ -1,7 +1,7 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {	
 	"name": "robot_backend",
-	"dockerFile": "Dockerfile",
+	"dockerFile": "../../../src/robot_backend/Dockerfile",
 	"remoteUser": "robast",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
@@ -9,7 +9,7 @@
 		"source=${localWorkspaceFolder}/../../src/ros2/communication_interfaces,target=/workspace/src/communication_interfaces,type=bind",
 	],
 	"workspaceFolder": "/workspace",
-	"runArgs": [ "--network=host"],
+	"forwardPorts": [8001],
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
