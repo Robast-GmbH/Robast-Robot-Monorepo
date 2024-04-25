@@ -14,7 +14,9 @@ ARG DEBIAN_FRONTEND=
 
 WORKDIR /workspace
 
-COPY . /workspace/src
+COPY main.py /workspace/src
+COPY requirements.txt /workspace/src
+
 USER robast
 RUN pip install --no-cache-dir -r /workspace/src/requirements.txt
 
