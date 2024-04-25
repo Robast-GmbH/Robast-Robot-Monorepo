@@ -1,23 +1,12 @@
 from fastapi import FastAPI, Depends, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import requests
 
 
 app = FastAPI()
 
-# TODO: Correct origins
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=["*"],
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-# 10.10.23.11
-# 10.10.23.7
-name_to_ip = {"rb_theron": "10.10.13.7"}
+name_to_ip = {"rb_theron": "10.10.23.7"}
 robot_api_port = 8001
-
 
 
 def get_robot_ip(robot_name: str):

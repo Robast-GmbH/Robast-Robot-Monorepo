@@ -8,58 +8,58 @@ from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
 
-class FrameListener(Node):
-
+class RobotPosePublisher(Node):
     def __init__(self):
         super().__init__("robot_pose_publisher")
 
-        # Declare and acquire `target_frame` parameter
-        self.target_frame = (
-            self.declare_parameter("target_frame", "base_link")
+        self._use_robot_source_frame = (
+            self.get_parameter("use_robot_source_frame")
             .get_parameter_value()
-            .string_value
+            .bool_value
         )
+        self._source_frame = (
+            "robot_base_link" if self._use_robot_source_frame else "base_link"
+        )
+        self._target_frame = "map"
 
-        self.tf_buffer = Buffer()
-        self.tf_listener = TransformListener(self.tf_buffer, self,spin_thread=True)
+        self._tf_buffer = Buffer()
+        self._tf_listener = TransformListener(self._tf_buffer, self, spin_thread=True)
 
         # Call on_timer function every second
-        self.timer = self.create_timer(1.0, self.on_timer)
+        self._timer = self.create_timer(1.0, self._on_timer)
 
-        self.robot_position_publisher = self.create_publisher(
+        self._robot_position_publisher = self.create_publisher(
             Point, "robot_position", 10
         )
 
-    def on_timer(self):
-        # Store frame names in variables that will be used to
-        # compute transformations
-        from_frame_rel = self.target_frame
-        to_frame_rel = "map"
-
+    def _on_timer(self):
         try:
-            t = self.tf_buffer.lookup_transform(
-                to_frame_rel, from_frame_rel, rclpy.time.Time()
+            t = self._tf_buffer.lookup_transform(
+                self._target_frame, self._source_frame, rclpy.time.Time()
             )
+
+            self.get_logger().debug(
+                "Publishing robot position: %f, %f, %f",
+                t.transform.translation.x,
+                t.transform.translation.y,
+                t.transform.rotation.z,
+            )
+            # Publish the robot position
+            msg = Point()
+            msg.x = t.transform.translation.x
+            msg.y = t.transform.translation.y
+            msg.z = t.transform.rotation.z
+            self._robot_position_publisher.publish(msg)
+
         except TransformException as ex:
             self.get_logger().info(
                 f"Could not transform {to_frame_rel} to {from_frame_rel}: {ex}"
             )
-            return
-        print(
-            t.transform.translation.x, t.transform.translation.y, t.transform.rotation.z
-        )
-
-        # Publish the robot position
-        msg = Point()
-        msg.x = t.transform.translation.x
-        msg.y = t.transform.translation.y
-        msg.z = t.transform.rotation.z
-        self.robot_position_publisher.publish(msg)
 
 
 def main():
     rclpy.init()
-    node = FrameListener()
+    node = RobotPosePublisher()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:

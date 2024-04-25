@@ -37,8 +37,6 @@ RUN apt-get update && apt-get install -y \
   python3-autopep8 \
   ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
   ros-${ROS_DISTRO}-diagnostic-updater \
-  ros-${ROS_DISTRO}-rosbridge-server \
-  ros-${ROS_DISTRO}-nav2-msgs \
   && rm -rf /var/lib/apt/lists/*
   
 WORKDIR /rmf-web-workspace
@@ -48,8 +46,8 @@ RUN chown -Rf robast .
 WORKDIR /workspace
 USER robast
 
-RUN echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
-  && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
+RUN echo "source /usr/share/bash-completion/completions/git" >> /home/${USER}/.bashrc \
+  && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc \
   && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/${USER}/.bashrc
 
 
