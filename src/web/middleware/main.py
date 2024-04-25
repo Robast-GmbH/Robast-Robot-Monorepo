@@ -2,9 +2,10 @@ from fastapi import FastAPI, Depends, HTTPException
 import uvicorn
 import requests
 
+
 app = FastAPI()
 
-name_to_ip = {"rb_theron": "10.10.23.11"}
+name_to_ip = {"rb_theron": "10.10.23.7"}
 robot_api_port = 8001
 
 
@@ -126,4 +127,5 @@ def post_close_drawer(
     return response
 
 
-uvicorn.run(app, port=8003, host='0.0.0.0')
+if __name__ == "__main__":
+    uvicorn.run(app, port=8003, host="0.0.0.0")
