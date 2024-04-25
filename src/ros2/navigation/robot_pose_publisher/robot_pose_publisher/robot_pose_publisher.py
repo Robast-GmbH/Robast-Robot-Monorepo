@@ -36,8 +36,6 @@ class FrameListener(Node):
         from_frame_rel = self.target_frame
         to_frame_rel = "map"
 
-        # Look up for the transformation between target_frame and turtle2 frames
-        # and send velocity commands for turtle2 to reach target_frame
         try:
             t = self.tf_buffer.lookup_transform(
                 to_frame_rel, from_frame_rel, rclpy.time.Time()

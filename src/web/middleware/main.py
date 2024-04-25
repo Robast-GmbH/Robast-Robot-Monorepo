@@ -3,6 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import requests
 
+
 app = FastAPI()
 
 # TODO: Correct origins
@@ -15,7 +16,8 @@ app.add_middleware(
 # 10.10.23.11
 # 10.10.23.7
 name_to_ip = {"rb_theron": "10.10.13.7"}
-robot_api_port = 8005
+robot_api_port = 8001
+
 
 
 def get_robot_ip(robot_name: str):
@@ -136,4 +138,5 @@ def post_close_drawer(
     return response
 
 
-uvicorn.run(app, port=8003, host='0.0.0.0')
+if __name__ == "__main__":
+    uvicorn.run(app, port=8003, host="0.0.0.0")

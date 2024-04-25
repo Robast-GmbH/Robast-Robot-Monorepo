@@ -9,8 +9,7 @@ class RobotPosBridge(BaseBridge):
         self.start_subscriber("/robot_position", "geometry_msgs/msg/Point")
 
     def get_robot_pos(self):
-        robot_pos = self.context.get("/robot_position")
-        if robot_pos is None:
-            robot_pos = {"x": 0.0, "y": 0.0, "z": 0.0}
-
-        return robot_pos
+        try:
+            return self.context["/robot_position"]
+        except KeyError:
+            return {"x": 0.0, "y": 0.0, "z": 0.0}

@@ -51,7 +51,7 @@ class NavigateToPoseActionClient(Node):
 
             self._send_goal_future.add_done_callback(self.goal_response_callback)
         else:
-            self.get_logger().info("Action server not available")
+            self.get_logger().warn("Action server not available")
 
     def cancel_goal(self, unused):
         if self.goal_handle is None:
@@ -77,10 +77,10 @@ class NavigateToPoseActionClient(Node):
 
     def feedback_callback(self, feedback_msg):
         feedback = feedback_msg.feedback
-        self.get_logger().info(
+        self.get_logger().debug(
             "Received feedback: {0}".format(feedback.estimated_time_remaining)
         )
-        self.get_logger().info(
+        self.get_logger().debug(
             "Received feedback distance: {0}".format(feedback.distance_remaining)
         )
         self.remaining_time = feedback.estimated_time_remaining
