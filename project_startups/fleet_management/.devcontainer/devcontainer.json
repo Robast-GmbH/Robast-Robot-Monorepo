@@ -1,7 +1,7 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {	
 	"name": "fleet_management",
-	"dockerFile": "../../../src/ros2/fleet_management/Dockerfile",
+	"dockerFile": "ghcr.io/robast-gmbh/monorepo/fleet_management:devel",
 	"remoteUser": "robast",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
