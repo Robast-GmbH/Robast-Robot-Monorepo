@@ -31,7 +31,7 @@ class _ManualMoveMapState extends State<ManualMoveMap> {
 
               final navPos = controller.positionsAsNavPoints().first;
               await APIService.moveRobot(
-                robotName: "RB0",
+                robotName: "rb_theron",
                 x: navPos.dx,
                 y: navPos.dy,
                 yaw: controller.yaws.first,

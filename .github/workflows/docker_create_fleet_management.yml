@@ -6,7 +6,7 @@ on:
     branches:
         - main
     paths:
-        - src/ros2/fleetmanagement/Dockerfile
+        - src/ros2/fleet_management/Dockerfile
   workflow_dispatch:
 
 jobs:
@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       Ros-Distro: humble
-      Project-Name: simple_fleetmanagement
+      Project-Name: fleet_management
 
     steps:
       - name: Checkout repository and submodules

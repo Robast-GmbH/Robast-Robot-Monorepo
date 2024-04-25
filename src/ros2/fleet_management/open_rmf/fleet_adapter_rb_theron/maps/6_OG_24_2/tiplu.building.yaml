@@ -1,0 +1,81 @@
+coordinate_system: reference_image
+crowd_sim:
+  agent_groups:
+    - {agents_name: [rb_theron], agents_number: 1, group_id: 0, profile_selector: external_agent, state_selector: external_static, x: 0, y: 0}
+  agent_profiles:
+    - {ORCA_tau: 1, ORCA_tauObst: 0.40000000000000002, class: 1, max_accel: 0, max_angle_vel: 0, max_neighbors: 10, max_speed: 0, name: external_agent, neighbor_dist: 5, obstacle_set: 1, pref_speed: 0, r: 0.25}
+  enable: 0
+  goal_sets: []
+  model_types: []
+  obstacle_set: {class: 1, file_name: Tiplu_navmesh.nav, type: nav_mesh}
+  states:
+    - {final: 1, goal_set: -1, name: external_static, navmesh_file_name: ""}
+  transitions: []
+  update_time_step: 0.10000000000000001
+graphs:
+  {}
+levels:
+  Tiplu:
+    drawing:
+      filename: 6_OG_24_2.png
+    elevation: 0
+    floors:
+      - parameters: {ceiling_scale: [3, 1], ceiling_texture: [1, blue_linoleum], indoor: [2, 0], texture_name: [1, blue_linoleum], texture_rotation: [3, 0], texture_scale: [3, 1]}
+        vertices: [27, 28, 29, 18, 19, 20, 21, 22, 23, 24, 25, 26]
+    lanes:
+      - [13, 12, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [12, 11, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [11, 10, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [10, 9, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [9, 8, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [8, 14, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [14, 7, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [7, 6, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [6, 0, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [0, 1, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [1, 2, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [2, 3, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [3, 4, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [4, 5, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+      - [5, 6, {bidirectional: [4, true], demo_mock_floor_name: [1, ""], demo_mock_lift_name: [1, ""], graph_idx: [2, 0], orientation: [1, ""], speed_limit: [3, 0]}]
+    layers:
+      {}
+    measurements:
+      - [15, 16, {distance: [3, 9.25]}]
+    vertices:
+      - [217.66200000000001, 451.52499999999998, 0, printer, {is_charger: [4, true], spawn_robot_name: [1, rb_theron],pickup_dispenser: [1, coke_dispenser]}]
+      - [224.32599999999999, 542.16099999999994, 0, storage,{dropoff_ingestor: [1, coke_ingestor]}]
+      - [230.99100000000001, 635.46400000000006, 0, tt]
+      - [196.33600000000001, 639.46299999999997, 0, mensa_main]
+      - [148.351, 638.79600000000005, 0, mensa_side]
+      - [151.017, 579.48299999999995, 0, kitchen]
+      - [145.01900000000001, 458.85599999999999, 0, floor]
+      - [124.35899999999999, 184.946, 0, shower]
+      - [147.018, 128.298, 0, marketing]
+      - [188.33799999999999, 126.965, 0, jo]
+      - [205.666, 147.625, 0, kenny]
+      - [210.33099999999999, 182.946, 0, robast_2]
+      - [214.33000000000001, 324.233, 0, robast_1]
+      - [196.851, 327.37599999999998, 0, darts]
+      - [125.803, 148.071, 0, sales, {is_parking_spot: [4, false]}]
+      - [260.95100000000002, 159.023, 0, ""]
+      - [265.93299999999999, 345.25299999999999, 0, ""]
+      - [184.30500000000001, 109.64400000000001, 0, ""]
+      - [199.15199999999999, 116.00700000000001, 0, ""]
+      - [216.827, 134.38800000000001, 0, ""]
+      - [223.18899999999999, 147.114, 0, ""]
+      - [231.673, 321.03399999999999, 0, ""]
+      - [240.864, 496.36799999999999, 0, ""]
+      - [253.59, 655.44000000000005, 0, ""]
+      - [132.69499999999999, 663.21699999999998, 0, ""]
+      - [116.434, 275.78699999999998, 0, ""]
+      - [110.77800000000001, 165.49600000000001, 0, ""]
+      - [118.55500000000001, 130.14699999999999, 0, ""]
+      - [128.453, 121.663, 0, ""]
+      - [153.197, 111.765, 0, ""]
+    walls:
+      - [20, 21, {alpha: [3, 1], texture_height: [3, 2.5], texture_name: [1, default], texture_scale: [3, 1], texture_width: [3, 1]}]
+lifts: {}
+name: tiplu
+parameters:
+  generate_crs: [1, EPSG:4326]
