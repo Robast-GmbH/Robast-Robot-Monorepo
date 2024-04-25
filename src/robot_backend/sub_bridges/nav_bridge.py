@@ -26,6 +26,10 @@ class NavBridge(BaseBridge):
             "std_msgs/msg/Bool",
         )
 
+        self.lookup_table_resolution = 5
+        self._sin_lookup = [np.sin(np.radians(x / 2)) for x in range(0, 360, self.lookup_table_resolution)]
+        self._cos_lookup = [np.cos(np.radians(x / 2)) for x in range(0, 360, self.lookup_table_resolution)]
+
     def get_quaternion_from_euler(self, yaw):
         """
         Convert an Euler angle to a quaternion.
@@ -38,8 +42,10 @@ class NavBridge(BaseBridge):
         """
         qx = 0
         qy = 0
-        qz = np.sin(yaw / 2)
-        qw = np.cos(yaw / 2)
+        yaw_degrees = int(np.degrees(yaw)) % 360
+        index = yaw_degrees // self.lookup_table_resolution
+        qz = self._sin_lookup[index]
+        qw = self._cos_lookup[index]
 
         return {"x": qx, "y": qy, "z": qz, "w": qw}
 
