@@ -11,25 +11,24 @@ from dispenser_ingestor_mock.robot_drawer_api import (
 
 
 class DispenserIngestorMock(Node):
-
     def __init__(self):
         super().__init__("dispenser_ingestor_mock")
-        
-        self.declare_parameter("api_url",'http://localhost:8003')
+
+        self.declare_parameter("api_url", "http://localhost:8003")
         api_url = self.get_parameter("api_url").value
         self.robot_drawer_api = RobotDrawerAPI(api_url=api_url)
 
-        self.dispenser_publisher_ = self.create_publisher(
+        self._dispenser_publisher = self.create_publisher(
             DispenserResult, "/dispenser_results", 10
         )
-        self.dispenser_subscriber_ = self.create_subscription(
+        self._dispenser_subscriber = self.create_subscription(
             DispenserRequest, "/dispenser_requests", self.on_request_callback, 10
         )
 
-        self.ingestor_publisher_ = self.create_publisher(
+        self._ingestor_publisher = self.create_publisher(
             IngestorResult, "/ingestor_results", 10
         )
-        self.ingestor_subscriber_ = self.create_subscription(
+        self._ingestor_subscriber = self.create_subscription(
             IngestorRequest, "/ingestor_requests", self.on_request_callback, 10
         )
 
@@ -71,9 +70,9 @@ class DispenserIngestorMock(Node):
 
     def publish_result_with_delay(self, msg):
         if isinstance(self.current_request, DispenserRequest):
-            self.dispenser_publisher_.publish(msg)
+            self._dispenser_publisher.publish(msg)
         else:
-            self.ingestor_publisher_.publish(msg)
+            self._ingestor_publisher.publish(msg)
         self.timer = self.create_timer(
             self.process_finish_delay, lambda: self.finish_process_callback()
         )
@@ -98,10 +97,9 @@ class DispenserIngestorMock(Node):
             )
 
 
-
 def main(args=None):
     rclpy.init(args=args)
-    
+
     dispenser_ingestor_mock = DispenserIngestorMock()
 
     rclpy.spin(dispenser_ingestor_mock)
