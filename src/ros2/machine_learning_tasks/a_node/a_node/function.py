@@ -7,7 +7,7 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 from nav_msgs.msg import OccupancyGrid
 from lightglue.lightglue import LightGlue
-from lightglue.utils import numpy_image_to_torch
+from lightglue.utils import numpy_image_to_torch, rbd
 from lightglue.superpoint import SuperPoint
 
 
@@ -47,11 +47,11 @@ class MinimalSubscriber(Node):
         self.create_transform()
 
     def ros_msg_to_image(self, ros_msg):
-        image = np.zeros((self.map_msg.info.height,self.map_msg.info.width), dtype=np.uint8)
+        image = np.zeros((ros_msg.info.height,ros_msg.info.width), dtype=np.uint8)
         data = ros_msg.data
         index = 0
-        for y in range(self.map_msg.info.height):
-            for x in range(self.map_msg.info.width):
+        for y in range(ros_msg.info.height):
+            for x in range(ros_msg.info.width):
                 image[y,x] = data[index]
 
                 if data[index] == 0 or data[index] == -1:
@@ -62,25 +62,28 @@ class MinimalSubscriber(Node):
         return image
 
     def create_transform(self):
-        image1 = self.ros_msg_to_image(self.map_msg)
-        #image2 = ros_msg_to_image(self.feuerplan_msg)
+        if self.map_msg and self.feuerplan_msg is not None:
+            
+            image0 = self.ros_msg_to_image(self.map_msg)
+            image1 = self.ros_msg_to_image(self.feuerplan_msg)
 
-        if image1 is not None:
+
             device = "cpu" 
             extractor = SuperPoint(max_num_keypoints = 2048).eval().to(device)
             matcher = LightGlue(features = "superpoint").eval().to(device)
 
-            feats1 = extractor.extract(numpy_image_to_torch(image1))
-            #feats2 = extractor.extract(numpy_image_to_torch(image2))
+            feats1 = extractor.extract(numpy_image_to_torch(image0))
+            feats2 = extractor.extract(numpy_image_to_torch(image1))
 
-            #matches12 = matcher({'image1': feats1, 'image2': feats2})
-            #feats1, feats2, matches12 = [rbd(x) for x in [feats1, feats2, matches12]]
-            #matches = matches12['matches']
-            #points1 = feats1['keypoints'][matches[..., 0]]
-            #points2 = feats2['keypoints'][matches[..., 1]] 
+            matches12 = matcher({'image0': feats1, 'image1': feats2})
+            feats1, feats2, matches12 = [rbd(x) for x in [feats1, feats2, matches12]]
+            matches = matches12['matches']
+            points1 = feats1['keypoints'][matches[..., 0]]
+            points2 = feats2['keypoints'][matches[..., 1]]
 
-            #transformation_matrix, _ = cv2.estimateAffinePartial2D(points1, points2)
-            print(feats1)
+            transformation_matrix, _ = cv.estimateAffinePartial2D(points1.numpy(), points2.numpy())
+
+            print(transformation_matrix)
 
 def main(args=None):
     rclpy.init(args=args)
