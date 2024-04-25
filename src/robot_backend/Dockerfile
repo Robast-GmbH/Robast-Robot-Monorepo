@@ -45,8 +45,8 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /workspace
 USER robast
 
-RUN echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
-  && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
+RUN echo "source /usr/share/bash-completion/completions/git" >> /home/${USER}/.bashrc \
+  && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc \
   && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/${USER}/.bashrc
 
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
