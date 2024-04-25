@@ -8,12 +8,12 @@ def generate_launch_description():
 
     config_file = LaunchConfiguration(
         "config_file",
-        default="/workspace/src/open_rmf/fleet_adapter_rb_theron/map/tiplu.building.yaml",
+        default="/workspace/src/open_rmf/fleet_adapter_rb_theron/maps/6OG_bp/tiplu.building.yaml",
     )
 
     bidding_time_window = LaunchConfiguration("bidding_time_window", default="2.0")
 
-    #Traffic Schedule
+    # Traffic Schedule
     rmf_traffic_schedule_primary = Node(
         package="rmf_traffic_ros2",
         executable="rmf_traffic_schedule",
@@ -46,25 +46,25 @@ def generate_launch_description():
         parameters=[use_sim_time, bidding_time_window],
     )
 
-    # fleet_adapter = Node(
-    #     package="fleet_adapter_rb_theron",
-    #     executable="fleet_adapter",
-    #     name="fleet_adapter",
-    #     arguments=[
-    #         "--config_file",
-    #         "/workspace/src/open_rmf/fleet_adapter_rb_theron/config.yaml",
-    #         "--nav_graph",
-    #         "/workspace/src/open_rmf/fleet_adapter_rb_theron/map/0.yaml",
-    #     ],
-    #     parameters=[use_sim_time],
-    # )
+    fleet_adapter = Node(
+        package="fleet_adapter_rb_theron",
+        executable="fleet_adapter",
+        name="fleet_adapter",
+        arguments=[
+            "--config_file",
+            "/workspace/src/open_rmf/fleet_adapter_rb_theron/config.yaml",
+            "--nav_graph",
+            "/workspace/src/open_rmf/fleet_adapter_rb_theron/maps/6OG_bp/0.yaml",
+        ],
+        parameters=[use_sim_time],
+    )
 
     return LaunchDescription(
         [
             rmf_traffic_schedule_primary,
-           rmf_traffic_blockade,
+            rmf_traffic_blockade,
             building_map_server,
-           rmf_task_dispatcher,
-           # fleet_adapter,
+            rmf_task_dispatcher,
+            fleet_adapter,
         ]
     )

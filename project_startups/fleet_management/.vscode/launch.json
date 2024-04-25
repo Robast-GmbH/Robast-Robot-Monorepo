@@ -13,7 +13,7 @@
             "args": [            "--config_file",
                    "/workspace/src/open_rmf/fleet_adapter_rb_theron/config.yaml",
                     "--nav_graph",
-                    "/workspace/src/open_rmf/fleet_adapter_rb_theron/map/0.yaml",]
+                    "/workspace/src/open_rmf/fleet_adapter_rb_theron/maps/6OG_bp/0.yaml",]
         }
     ]
 }
