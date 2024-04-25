@@ -47,7 +47,7 @@ RUN chown -Rf robast .
 WORKDIR /workspace
 USER robast
 
-RUN echo "source /usr/share/bash-completion/completions/git" >> /home/$USER/.bashrc \
+RUN echo "source /usr/share/bash-completion/completions/git" >> /home/${USER}/.bashrc \
   && echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc \
   && echo "if [ -f /workspace/install/setup.bash ]; then source /workspace/install/setup.bash; fi" >> /home/${USER}/.bashrc
 
