@@ -1,6 +1,7 @@
 from sub_bridges.base_bridge import BaseBridge
 from thread_safe_dict import ThreadSafeDict
 from roslibpy import Ros, Message
+import numpy as np
 
 
 class NavBridge(BaseBridge):
@@ -25,6 +26,29 @@ class NavBridge(BaseBridge):
             "std_msgs/msg/Bool",
         )
 
+        self.lookup_table_resolution = 5
+        self._sin_lookup = [np.sin(np.radians(x / 2)) for x in range(0, 360, self.lookup_table_resolution)]
+        self._cos_lookup = [np.cos(np.radians(x / 2)) for x in range(0, 360, self.lookup_table_resolution)]
+
+    def get_quaternion_from_euler(self, yaw):
+        """
+        Convert an Euler angle to a quaternion.
+
+        Input
+            :param yaw: The yaw (rotation around z-axis) angle in radians.
+
+        Output
+            :return qx, qy, qz, qw: The orientation in quaternion [x,y,z,w] format
+        """
+        qx = 0
+        qy = 0
+        yaw_degrees = int(np.degrees(yaw)) % 360
+        index = yaw_degrees // self.lookup_table_resolution
+        qz = self._sin_lookup[index]
+        qw = self._cos_lookup[index]
+
+        return {"x": qx, "y": qy, "z": qz, "w": qw}
+
     def navigate_to_goal_pose(self, robot_name, goal_pose):
         self.context["/is_navigating"] =  {"data": True}
         goal_msg = Message(
@@ -34,12 +58,7 @@ class NavBridge(BaseBridge):
                     "y": goal_pose[1],
                     "z": 0.0,
                 },
-                "orientation": {
-                    "x": 0.0,
-                    "y": 0.0,
-                    "z": 0.0,
-                    "w": 1.0,
-                },
+                "orientation": self.get_quaternion_from_euler(goal_pose[2]),
             }
         )
         self._goal_pose_publisher.publish(goal_msg)
