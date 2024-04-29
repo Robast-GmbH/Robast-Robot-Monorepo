@@ -1,0 +1,68 @@
+from geometry_msgs.msg import Point
+
+import rclpy
+from rclpy.node import Node
+
+from tf2_ros import TransformException
+from tf2_ros.buffer import Buffer
+from tf2_ros.transform_listener import TransformListener
+
+
+class RobotPosePublisher(Node):
+    def __init__(self):
+        super().__init__("robot_pose_publisher")
+
+        self._use_robot_source_frame = (
+            self.get_parameter("use_robot_source_frame")
+            .get_parameter_value()
+            .bool_value
+        )
+        self._source_frame = (
+            "robot_base_link" if self._use_robot_source_frame else "base_link"
+        )
+        self._target_frame = "map"
+
+        self._tf_buffer = Buffer()
+        self._tf_listener = TransformListener(self._tf_buffer, self, spin_thread=True)
+
+        # Call on_timer function every second
+        self._timer = self.create_timer(1.0, self._on_timer)
+
+        self._robot_position_publisher = self.create_publisher(
+            Point, "robot_position", 10
+        )
+
+    def _on_timer(self):
+        try:
+            t = self._tf_buffer.lookup_transform(
+                self._target_frame, self._source_frame, rclpy.time.Time()
+            )
+
+            self.get_logger().debug(
+                "Publishing robot position: %f, %f, %f",
+                t.transform.translation.x,
+                t.transform.translation.y,
+                t.transform.rotation.z,
+            )
+            # Publish the robot position
+            msg = Point()
+            msg.x = t.transform.translation.x
+            msg.y = t.transform.translation.y
+            msg.z = t.transform.rotation.z
+            self._robot_position_publisher.publish(msg)
+
+        except TransformException as ex:
+            self.get_logger().info(
+                f"Could not transform {to_frame_rel} to {from_frame_rel}: {ex}"
+            )
+
+
+def main():
+    rclpy.init()
+    node = RobotPosePublisher()
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        pass
+
+    rclpy.shutdown()

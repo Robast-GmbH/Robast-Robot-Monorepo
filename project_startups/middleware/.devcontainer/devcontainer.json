@@ -1,0 +1,15 @@
+{
+	"name": "Middleware",
+	"dockerFile": "../../../src/web/middleware/Dockerfile",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"workspaceFolder": "/workspace",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../src/web/middleware,target=/workspace/middleware,type=bind"
+	],
+	"forwardPorts": [
+		8001,
+		8003
+	],
+	"remoteUser": "robast",
+	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh"
+}

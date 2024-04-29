@@ -5,5 +5,7 @@ RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group
     echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV USER robast
 
+RUN pip install numpy
+
 USER robast
 WORKDIR /workspace

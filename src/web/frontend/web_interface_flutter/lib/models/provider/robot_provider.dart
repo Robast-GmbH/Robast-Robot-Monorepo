@@ -21,35 +21,15 @@ class RobotProvider extends ChangeNotifier {
   Timer? moduleUpdateTimer;
 
   Future<void> updateProviderData() async {
-    await updateUsers();
     await updateRobots();
     await updateModules();
-    await updateTasks();
   }
 
-  Future<void> updateUsers() async {
-    users.clear();
-    users.addAll(await APIService.getUsers());
-  }
+
 
   Future<void> updateRobots() async {
     robots = await APIService.getRobots();
-    if (robots.isNotEmpty && robots.first.taskID != null) {
-      final currentTask = await APIService.getTaskByID(robots.first.taskID!);
-      isRobotMoving = currentTask?.actions.firstWhere(
-        (element) => !element.isFinished,
-        orElse: () => RobotAction(isFinished: false, step: 0),
-      ) is Waypoint;
-    } else {
-      currentTask = null;
-      isRobotMoving = false;
-    }
     notifyListeners();
-  }
-
-  Future<void> updateTasks() async {
-    tasks.clear();
-    tasks.addAll(await APIService.getTasks());
   }
 
   Future<void> updateModules() async {
