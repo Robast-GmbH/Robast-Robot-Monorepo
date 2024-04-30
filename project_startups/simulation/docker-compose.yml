@@ -22,6 +22,7 @@ services:
       - ../../src/ros2/communication_interfaces:/workspace/src/communication_interfaces:cached
       - /tmp/.X11-unix:/tmp/.X11-unix
       - ../../src/ros2/dds_configs:/workspace/dds_configs:cached
+      - ../../src/robot_backend/:/workspace/src/robot_backend:cached
     deploy:
       resources:
         reservations:
