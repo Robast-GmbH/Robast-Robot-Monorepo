@@ -17,7 +17,7 @@ services:
   statemachine:
     image: ghcr.io/robast-gmbh/monorepo/statemachine:release
     environment:
-      - ROS_DOMAIN_ID=0
+      - ROS_DOMAIN_ID=23
       - UID=1000
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
@@ -30,7 +30,7 @@ services:
   hardware_nodes:
     image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:release
     environment:
-      - ROS_DOMAIN_ID=0
+      - ROS_DOMAIN_ID=23
       - UID=1000
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
