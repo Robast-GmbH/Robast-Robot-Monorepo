@@ -23,11 +23,14 @@ ARG USERNAME
 ARG USER_UID
 ARG USER_GID
 
+# Pass some custom paths to this dockerfile
+ARG ROBAST_SOURCE_DIR
+ARG ROBAST_PROJECT_STARTUP_RELATIVE_DIR
+
 # Copy source code from the workspace's ROS 2 packages to a workspace inside the container
 ARG USER_WS=/home/${USERNAME}/user_ws
 ENV USER_WS=${USER_WS}
 RUN mkdir -p ${USER_WS}/src ${USER_WS}/build ${USER_WS}/install ${USER_WS}/log
-ARG ROBAST_SOURCE_DIR
 COPY ${ROBAST_SOURCE_DIR} ${USER_WS}/src
 
 # Also mkdir with user permission directories which will be mounted later to avoid docker creating them as root
@@ -61,7 +64,20 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     . /opt/overlay_ws/install/setup.sh && \
     apt-get update && \
     rosdep install -r -y \
-    --from-paths ${USER_WS}/src 
+    --from-paths ${USER_WS}/src
+
+# Set up colcon defaults for the new user
+USER ${USERNAME}
+RUN colcon mixin add default \
+    https://raw.githubusercontent.com/colcon/colcon-mixin-repository/master/index.yaml && \
+    colcon mixin update && \
+    colcon metadata add default \
+    https://raw.githubusercontent.com/colcon/colcon-metadata-repository/master/index.yaml && \
+    colcon metadata update
+COPY ${ROBAST_PROJECT_STARTUP_RELATIVE_DIR}/colcon-defaults.yaml /home/${USERNAME}/.colcon/defaults.yaml
+
+# hadolint ignore=DL3002
+USER root
 
 ###################################################################
 # Target for the developer build which does not compile any code. #
