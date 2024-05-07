@@ -15,12 +15,12 @@ hardware:
 
   # If the MoveIt Studio Agent should launch the ros2 controller node.
   # [Optional, default=True]
-  launch_control_node: True
+  launch_control_node: False
 
   # If the MoveIt Studio Agent should launch the robot state publisher.
   # This should be false if you are launching the robot state publisher as part of drivers.
   # [Optional, default=True]
-  launch_robot_state_publisher: True
+  launch_robot_state_publisher: False
 
   # If the MoveIt Studio Agent should launch cameras when simulated.
   # This must be False when using mock hardware, since there are no cameras simulated.
@@ -45,7 +45,7 @@ hardware:
   # [Optional, defaults to a blank launch file if not specified]
   simulated_robot_driver_persist_launch_file:
     package: "rb_theron_config"
-    path: "launch/sim/world_to_odom_launch.py"
+    path: "launch/sim/robot_mock_launch.py"
   simulated_hardware_launch_file:
     package: "moveit_studio_agent"
     path: "launch/blank.launch.py"
@@ -70,7 +70,7 @@ hardware:
     # Many of these are specific to the UR descriptions packages, and can be customized as needed.
     # [Optional]
     urdf_params:
-      - ros_distro: "humble" # mind that if you change this, you also need to chnage ompl_planning.yaml file
+      - ros_distro: "humble" # mind that if you change this, you also need to change ompl_planning.yaml file
       - prefix: ""
       - ros2_control_hardware_type: "mock_components"
       - model_position_joint: "true"
@@ -89,6 +89,11 @@ optional_feature_params:
   # Whether or not to use the Formant bridge for over-the-internet comms.
   # [Optional, default=False]
   use_formant_bridge: False
+  ompl_planning_file: "ompl_iron"
+  launch_moveit_group: False
+  launch_rviz: False
+  launch_robot_state_publisher: False
+
 
 # Configuration files for MoveIt.
 # For more information, refer to https://moveit.picknik.ai/humble/doc/examples/examples.html#configuration
@@ -158,22 +163,17 @@ ros2_control:
   # If not specified, it is up to the user to ensure the appropriate controllers are active and available
   # for running the application.
   # [Optional, default=[]]
-  controllers_active_at_startup:
+  controllers_active_at_startup: []
+
+  controllers_inactive_at_startup: []
+
+  controllers_not_managed:
     - "joint_state_broadcaster"
     - "diff_drive_base_controller"
     - "drawer_joint_trajectory_controller"
     - "mobile_base_controller_cmd_vel"
-
-  # Load but do not start these controllers so they can be activated later if needed.
-  # [Optional, default=[]]
-  controllers_inactive_at_startup:
     - "streaming_controller"
     - "joint_trajectory_controller"
-
-
-  # Any controllers here will not be spawned by MoveIt Studio.
-  # [Optional, default=[]]
-  controllers_not_managed: []
   # Optionally configure remapping rules to let multiple controllers receive commands on the same topic.
   # [Optional, default=[]]
   controller_shared_topics: []
