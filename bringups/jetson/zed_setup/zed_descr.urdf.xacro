@@ -17,21 +17,21 @@
 -->
 
 <robot name="stereolabs_camera" xmlns:xacro="http://ros.org/wiki/xacro">
-  <xacro:arg name="camera_name"   default="zed" />
-  <xacro:arg name="camera_model"  default="zed" />
+  <xacro:arg name="camera_name"   default="zed2" />
+  <xacro:arg name="camera_model"  default="zed2" />
 
   <xacro:include filename="$(find zed_wrapper)/urdf/zed_macro.urdf.xacro" />
   <xacro:zed_camera name="$(arg camera_name)" model="$(arg camera_model)">
   </xacro:zed_camera>
   <!-- Add a joint to connect the ZED Camera to the robot -->
-  <link name="robot_base_link"/>
+  <link name="robot/base_link"/>
   <!-- NO ZED Localization -> '$(arg camera_name)_camera_link' is a child of 'base_link' -->
   <joint name="$(arg camera_name)_joint" type="fixed">
-    <parent link="robot_base_link"/>
+    <parent link="robot/base_link"/>
     <child link="$(arg camera_name)_camera_link"/>
     <origin
-      xyz="0.341 -0.18 1.15"
-      rpy="3.14 0 0"
+      xyz="0.27 0 1.40"
+		  rpy="0 0.436 0"
     />
   </joint>
 
