@@ -18,7 +18,7 @@
 
 <robot name="stereolabs_camera" xmlns:xacro="http://ros.org/wiki/xacro">
   <xacro:arg name="camera_name"   default="robot/zed" />
-  <xacro:arg name="camera_model"  default="zed" />
+  <xacro:arg name="camera_model"  default="zed2i" />
   <xacro:arg name="custom_baseline"  default="0.0" />
 
   <!-- If GNSS fusion is enabled the position of the antenna with respect to the camera mount point is required -->
