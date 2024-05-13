@@ -17,12 +17,12 @@
 ### To let this script beeing executed at startup, we need to do the following once ###
 ## (1) Create a service using:
 # sudo vim /etc/systemd/system/setup_can_bus.service
-## (2) Fill that service file with this content:
+## (2) Fill that service file with this content (remove hashtags and check the correctness of the path to the script in ExecStart!!):
 # [Unit]
 # Description=Setup the can bus
 # After=network.target
 # [Service]
-# ExecStart=/home/robast/devel/Monorepo/Monorepo/bringups/jetson/start_scripts/setup_jetson_can.sh
+# ExecStart=/home/robast/Monorepo/bringups/jetson/start_scripts/setup_jetson_can.sh
 # [Install]
 # WantedBy=multi-user.target
 ## (3) Reload the systemd daemon to load the new service unit file
