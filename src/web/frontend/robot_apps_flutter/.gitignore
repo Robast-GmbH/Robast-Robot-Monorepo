@@ -1,0 +1,5 @@
+.dart_tool
+
+.vscode/*
+!.vscode/tasks.json
+!.vscode/settings.json

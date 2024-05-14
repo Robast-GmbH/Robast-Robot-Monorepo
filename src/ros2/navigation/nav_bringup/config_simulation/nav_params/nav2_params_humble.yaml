@@ -232,7 +232,7 @@ local_costmap:
         transform_tolerance: 0.2
         mapping_mode: false
         map_save_duration: 60.0
-        observation_sources: lidar2d_marking lidar3d
+        observation_sources: lidar2d_marking
         lidar3d:
           data_type: PointCloud2
           topic: /bpearl_laser/scan/points
@@ -377,7 +377,7 @@ global_costmap:
         transform_tolerance: 0.2
         mapping_mode: false
         map_save_duration: 60.0
-        observation_sources: lidar2d_clearing lidar2d_marking lidar3d_clearing lidar3d_marking 
+        observation_sources: lidar2d_clearing lidar2d_marking
         lidar3d_marking:
           enabled: true
           data_type: PointCloud2
