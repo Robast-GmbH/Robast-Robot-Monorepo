@@ -25,8 +25,8 @@ public:
     geometry_msgs::msg::TransformStamped t;
 
     t.header.stamp = this->get_clock()->now();
-    t.header.frame_id = "map";
-    t.child_frame_id = "feuerplan_map";
+    t.header.frame_id = "feuerplan_map";
+    t.child_frame_id = "map";
     t.transform.translation.x = -20.2;
     t.transform.translation.y = -3.3;
     t.transform.translation.z = 0.0;

@@ -62,6 +62,7 @@ class MinimalSubscriber(Node):
         return image
 
     def create_transform(self):
+        #rint(self.map_msg.info.origin.position.x)
         if self.map_msg and self.feuerplan_msg is not None:
             
             image0 = self.ros_msg_to_image(self.map_msg)
@@ -83,7 +84,9 @@ class MinimalSubscriber(Node):
 
             transformation_matrix, _ = cv.estimateAffinePartial2D(points1.numpy(), points2.numpy())
 
-            print(transformation_matrix)
+            map_origin = np.array([self.map_msg.info.origin.position.x,self.map_msg.info.origin.position.y,self.map_msg.info.origin.position.z])
+
+            feuerplan_origin = np.dot(map_origin,transformation_matrix)
 
 def main(args=None):
     rclpy.init(args=args)

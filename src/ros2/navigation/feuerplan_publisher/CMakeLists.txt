@@ -19,14 +19,14 @@ find_package(tf2_ros REQUIRED)
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 add_executable(feuerplan_publisher_node src/publisher.cpp)
-#add_executable(feuerplan_frame_broadcaster src/frame_broadcaster.cpp)
+add_executable(feuerplan_frame_broadcaster src/frame_broadcaster.cpp)
 ament_target_dependencies(feuerplan_publisher_node rclcpp sensor_msgs nav_msgs cv_bridge tf2_ros)
-# ament_target_dependencies(
-#   feuerplan_frame_broadcaster
-#     geometry_msgs
-#     rclcpp
-#     tf2_ros
-# )
+ament_target_dependencies(
+   feuerplan_frame_broadcaster
+     geometry_msgs
+     rclcpp
+     tf2_ros
+)
 
 target_link_libraries(feuerplan_publisher_node ${OpenCV_LIBRARIES})
 
@@ -35,9 +35,9 @@ install(TARGETS
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# install(TARGETS
-# feuerplan_frame_broadcaster
-#     DESTINATION lib/${PROJECT_NAME})
+install(TARGETS
+  feuerplan_frame_broadcaster
+  DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY
   resources
