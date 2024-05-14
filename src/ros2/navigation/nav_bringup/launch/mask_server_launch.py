@@ -29,7 +29,7 @@ def generate_launch_description():
             costmap_filters_dir, "masks", "RL_Tiplu", "keepout_params.yaml"
         )
         no_go_mask_file_dir = os.path.join(
-            costmap_filters_dir, "masks", "RL_Tiplu", "keepout_mask.yaml"
+            costmap_filters_dir, "masks", "RL_Tiplu", "6_OG_24_5_keepout.yaml"
         )
 
     # Create our own temporary YAML files that include substitutions
