@@ -27,13 +27,7 @@ class RobotAPI:
     # The constructor below accepts parameters typically required to submit
     # http requests. Users should modify the constructor as per the
     # requirements of their robot's API
-    def __init__(
-        self,
-        prefix: str,
-        user: str,
-        password: str,
-        reference_coordinates
-    ):
+    def __init__(self, prefix: str, user: str, password: str, reference_coordinates):
         self.prefix = prefix
         self.user = user
         self.password = password
@@ -52,16 +46,24 @@ class RobotAPI:
 
     def check_connection(self):
         """Return True if connection to the robot API server is successful"""
-        response = requests.get(f"{self.prefix}/")
-        return response.status_code == 200
+        try:
+            response = requests.get(f"{self.prefix}/")
+            return response.status_code == 200
+        except Exception as e:
+            return False
 
     def position(self, robot_name: str):
         """Return [x, y, theta] expressed in the robot's coordinate frame or
         None if any errors are encountered"""
-        pose = requests.get(f"{self.prefix}/robot_pos?robot_name={robot_name}").json()
-        x, y = self.transforms["robot_to_rmf"].transform([pose["x"], pose["y"]])
-        z = pose["z"] + self.transforms["orientation_offset"]
-        return [x, y, z]
+        try:
+            pose = requests.get(
+                f"{self.prefix}/robot_pos?robot_name={robot_name}"
+            ).json()
+            x, y = self.transforms["robot_to_rmf"].transform([pose["x"], pose["y"]])
+            z = pose["z"] - self.transforms["orientation_offset"]
+            return [x, y, z]
+        except Exception as e:
+            return None
 
     def navigate(
         self, robot_name: str, cmd_id: int, pose, map_name: str, speed_limit=0.0
@@ -70,12 +72,15 @@ class RobotAPI:
         and theta are in the robot's coordinate convention. This function
         should return True if the robot has accepted the request,
         else False"""
-        x, y = self.transforms["rmf_to_robot"].transform([pose[0], pose[1]])
-        z = pose[2] - self.transforms["orientation_offset"]
-        requests.post(
-            f"{self.prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}"
-        )
-        return True
+        try:
+            x, y = self.transforms["rmf_to_robot"].transform([pose[0], pose[1]])
+            z = pose[2] + self.transforms["orientation_offset"]
+            requests.post(
+                f"{self.prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}"
+            )
+            return True
+        except Exception as e:
+            return False
 
     def requires_replan(self, robot_name: str):
         return False
@@ -83,26 +88,44 @@ class RobotAPI:
     def stop(self, robot_name: str, cmd_id: int):
         """Command the robot to stop.
         Return True if robot has successfully stopped. Else False"""
-        requests.post(f"{self.prefix}/cancel_goal?robot_name={robot_name}")
-        return True
+        try:
+            requests.post(f"{self.prefix}/stop?robot_name={robot_name}")
+            return True
+        except Exception as e:
+            return False
 
     def navigation_remaining_duration(self, robot_name: str, cmd_id: int):
         """Return the number of seconds remaining for the robot to reach its
         destination"""
-        response = requests.get(f"{self.prefix}/remaining_nav_time?robot_name={robot_name}").json()
-        return response["remaining_seconds"]
+        try:
+            response = requests.get(
+                f"{self.prefix}/remaining_nav_time?robot_name={robot_name}"
+            ).json()
+            return response["remaining_seconds"]
+        except Exception as e:
+            return None
 
     def navigation_completed(self, robot_name: str, cmd_id: int):
         """Return True if the robot has successfully completed its previous
         navigation request. Else False."""
-        response = requests.get(f"{self.prefix}/is_navigating?robot_name={robot_name}").json()
-        return not response["is_navigating"]
+        try:
+            response = requests.get(
+                f"{self.prefix}/is_navigating?robot_name={robot_name}"
+            ).json()
+            return not response["is_navigating"]
+        except Exception as e:
+            return False
 
     def battery_soc(self, robot_name: str):
         """Return the state of charge of the robot as a value between 0.0
         and 1.0. Else return None if any errors are encountered"""
-        response = requests.get(f"{self.prefix}/battery_level?robot_name={robot_name}").json()
-        return response["battery_level"]
+        try:
+            response = requests.get(
+                f"{self.prefix}/battery_level?robot_name={robot_name}"
+            ).json()
+            return response["battery_level"]
+        except Exception as e:
+            return None
 
     def start_process(self, robot_name: str, process: str, map_name: str):
         """Request the robot to begin a process. This is specific to the robot
