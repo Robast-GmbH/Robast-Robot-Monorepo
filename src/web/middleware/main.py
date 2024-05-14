@@ -1,9 +1,17 @@
 from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import requests
 
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 name_to_ip = {"rb_theron": "10.10.23.7"}
 robot_api_port = 8001
@@ -76,7 +84,7 @@ def post_goal_pose(x: float, y: float, z: float, robot_ip: str = Depends(get_rob
 
 @app.post("/cancel_goal", tags=["Navigation"])
 def post_cancel_goal(robot_ip: str = Depends(get_robot_ip)):
-    response = requests.get(f"http://{robot_ip}:{robot_api_port}/cancel_goal").content
+    response = requests.post(f"http://{robot_ip}:{robot_api_port}/cancel_goal").content
     return response
 
 
@@ -93,6 +101,22 @@ def read_remaining_nav_time(robot_ip: str = Depends(get_robot_ip)):
     ).json()
     return response
 
+@app.post("/block_navigation", tags=["Navigation"])
+def post_block_nav(robot_ip: str = Depends(get_robot_ip)):
+    response = requests.post(f"http://{robot_ip}:{robot_api_port}/block_navigation").json()
+    return response
+
+
+@app.post("/unblock_navigation", tags=["Navigation"])
+def post_unblock_nav(robot_ip: str = Depends(get_robot_ip)):
+    response = requests.post(f"http://{robot_ip}:{robot_api_port}/unblock_navigation").json()
+    return response
+
+
+@app.get("/is_navigation_blocked", tags=["Navigation"])
+def read_is_nav_blocked(robot_ip: str = Depends(get_robot_ip)):
+    response = requests.get(f"http://{robot_ip}:{robot_api_port}/is_navigation_blocked").json()
+    return response
 
 """
 ======================
@@ -125,6 +149,33 @@ def post_close_drawer(
         f"http://{robot_ip}:{robot_api_port}/close_drawer?module_id={module_id}&drawer_id={drawer_id}"
     ).json()
     return response
+
+
+"""
+======================
+Doors API Endpoints
+======================
+"""
+
+@app.post("/open_door", tags=["Doors"])
+def post_open_drawer(
+ robot_ip: str = Depends(get_robot_ip)
+):
+    response = requests.post(
+        f"http://{robot_ip}:{robot_api_port}/open_door"
+    ).json()
+    return response
+
+
+@app.post("/close_door", tags=["Doors"])
+def post_close_drawer(
+    robot_ip: str = Depends(get_robot_ip)
+):
+    response = requests.post(
+        f"http://{robot_ip}:{robot_api_port}/close_door"
+    ).json()
+    return response
+
 
 
 if __name__ == "__main__":
