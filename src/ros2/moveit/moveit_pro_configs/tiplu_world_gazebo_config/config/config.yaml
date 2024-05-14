@@ -34,9 +34,12 @@ hardware:
   ip: "0.0.0.0"
 
   # The following launch file is started when hardware.simulated is True
+  simulated_robot_driver_persist_launch_file:
+    package: "tiplu_world_gazebo_config"
+    path: "launch/rviz_launch.py"
   simulated_hardware_launch_file:
     package: "tiplu_world_gazebo_config"
-    path: "launch/sim/hardware_sim.launch.py"
+    path: "launch/sim/hardware_sim_launch.py"
 
   # Override other parameters from the base config package, including
   # the camera configuration and the robot description model.
