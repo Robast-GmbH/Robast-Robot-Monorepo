@@ -244,6 +244,18 @@ levels:
           },
         ]
       - [
+          14,
+          15,
+          {
+            bidirectional: [4, true],
+            demo_mock_floor_name: [1, ""],
+            demo_mock_lift_name: [1, ""],
+            graph_idx: [2, 0],
+            orientation: [1, ""],
+            speed_limit: [3, 0],
+          },
+        ]
+      - [
           15,
           16,
           {
@@ -270,18 +282,6 @@ levels:
       - [
           15,
           8,
-          {
-            bidirectional: [4, true],
-            demo_mock_floor_name: [1, ""],
-            demo_mock_lift_name: [1, ""],
-            graph_idx: [2, 0],
-            orientation: [1, ""],
-            speed_limit: [3, 0],
-          },
-        ]
-      - [
-          14,
-          15,
           {
             bidirectional: [4, true],
             demo_mock_floor_name: [1, ""],

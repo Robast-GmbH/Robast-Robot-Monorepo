@@ -65,11 +65,11 @@ def generate_launch_description():
     else:
         param_substitutions = {
             'use_sim_time': use_sim_time,
-            "odom_frame": "robot_odom",
-            "base_link_frame":"robot_base_footprint",
-            "world_frame":"robot_odom",
+            "odom_frame": "robot/odom",
+            "base_link_frame":"robot/base_footprint",
+            "world_frame":"robot/odom",
             "odom0": "/robot/robotnik_base_control/odom",
-            "imu0": "/robot/imu/data"        
+            "imu0": "robot/imu/data",
         }
         configured_params = RewrittenYaml(
             source_file=params_file,
