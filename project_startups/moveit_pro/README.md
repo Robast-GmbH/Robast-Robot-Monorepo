@@ -42,4 +42,5 @@ Host Jacob_Office_Desktop_PC
   User jacob
   ForwardX11 yes
 ```
+**Additional hint**: It might be necessary to log in at the target device. This was at least one observation from the past to get this to run, which might be due to my system setup where I have two displays connected to my target device and the OS properly "assigns" the displays not before loggin in?
 
