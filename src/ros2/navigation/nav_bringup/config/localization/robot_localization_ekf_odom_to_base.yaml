@@ -5,7 +5,7 @@ ekf_filter_node:
 # The frequency, in Hz, at which the filter will output a position estimate. Note that the filter will not begin
 # computation until it receives at least one message from one of the inputs. It will then run continuously at the
 # frequency specified here, regardless of whether it receives more measurements. Defaults to 30 if unspecified.
-        frequency: 30.0
+        frequency: 100.0
 
 # The period, in seconds, after which we consider a sensor to have timed out. In this event, we carry out a predict
 # cycle on the EKF without correcting it. This parameter can be thought of as the minimum frequency with which the
@@ -68,9 +68,9 @@ ekf_filter_node:
 #     3b. MAKE SURE something else is generating the odom->base_link transform. Note that this can even be another state
 #         estimation node from robot_localization! However, that instance should *not* fuse the global data.
         map_frame: map              # Defaults to "map" if unspecified
-        odom_frame: robot_odom            # Defaults to "odom" if unspecified
-        base_link_frame: robot_base_footprint  # Defaults to "base_link" if unspecified
-        world_frame: robot_odom           # Defaults to the value of odom_frame if unspecified
+        odom_frame: robot/odom            # Defaults to "odom" if unspecified
+        base_link_frame: robot/base_footprint  # Defaults to "base_link" if unspecified
+        world_frame: robot/odom           # Defaults to the value of odom_frame if unspecified
 
 # The filter accepts an arbitrary number of inputs from each input message type (nav_msgs/Odometry,
 # geometry_msgs/PoseWithCovarianceStamped, geometry_msgs/TwistWithCovarianceStamped,
@@ -133,7 +133,17 @@ ekf_filter_node:
         odom0_pose_rejection_threshold: 5.0
         odom0_twist_rejection_threshold: 1.0
 
-# Further input parameter examples
+        # odom1: /zed/zed_node/odom 
+        # odom1_config: [ true,  true, true,  # X, Y, Z
+        #                 true, true, true,  # Roll, Pitch, Yaw
+        #                 false, false, false, # Vx, Vy, Vz
+        #                 false, false, false,  # Vroll, Vpitch, Vyaw
+        #                 false, false, false] # Ax, Ay, Az
+        # odom1_differential: false
+        # odom1_relative: true
+        # odom1_queue_size: 2
+
+# Further input parameter 
         imu0: /robot/imu/data
         imu0_config: [false, false, false,
                       true, true, true, # roll, pitch, yaw (yaw comes from Magnetometer)
@@ -151,6 +161,23 @@ ekf_filter_node:
 # [ADVANCED] Some IMUs automatically remove acceleration due to gravity, and others don't. If yours doesn't, please set
 # this to true, and *make sure* your data conforms to REP-103, specifically, that the data is in ENU frame.
         imu0_remove_gravitational_acceleration: true
+
+# # Further input parameter
+        # imu1: /robot/zed/zed_node/imu/data
+        # imu1_config: [false, false, false,
+        #               true, true, true, # roll, pitch, yaw (yaw comes from Magnetometer)
+        #               false, false, false,
+        #               false, false, true, # vroll, vpitch, vyaw (vyaw comes from Gyroscope)
+        #               true, false, false] # ax, ay, az (ax comes from Accelerometer)
+        # imu1_nodelay: false
+        # imu1_differential: false
+        # imu1_relative: true
+        # imu1_queue_size: 5
+        
+
+# # [ADVANCED] Some IMUs automatically remove acceleration due to gravity, and others don't. If yours doesn't, please set
+# # this to true, and *make sure* your data conforms to REP-103, specifically, that the data is in ENU frame.
+        imu1_remove_gravitational_acceleration: true
 
 # [ADVANCED]  The EKF and UKF models follow a standard predict/correct cycle. During prediction, if there is no
 # acceleration reference, the velocity at time t+1 is simply predicted to be the same as the velocity at time t. During
