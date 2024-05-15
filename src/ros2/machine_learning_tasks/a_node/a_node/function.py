@@ -68,7 +68,6 @@ class MinimalSubscriber(Node):
             image0 = self.ros_msg_to_image(self.map_msg)
             image1 = self.ros_msg_to_image(self.feuerplan_msg)
 
-
             device = "cpu" 
             extractor = SuperPoint(max_num_keypoints = 2048).eval().to(device)
             matcher = LightGlue(features = "superpoint").eval().to(device)
@@ -84,9 +83,12 @@ class MinimalSubscriber(Node):
 
             transformation_matrix, _ = cv.estimateAffinePartial2D(points1.numpy(), points2.numpy())
 
+            
             map_origin = np.array([self.map_msg.info.origin.position.x,self.map_msg.info.origin.position.y,self.map_msg.info.origin.position.z])
 
-            feuerplan_origin = np.dot(map_origin,transformation_matrix)
+            feuerplan_origin = cv.warpAffine(map_origin.reshape((1,3)),transformation_matrix,(1,3))
+
+            print(feuerplan_origin)
 
 def main(args=None):
     rclpy.init(args=args)

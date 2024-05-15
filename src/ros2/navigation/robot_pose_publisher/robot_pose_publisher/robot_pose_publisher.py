@@ -12,13 +12,14 @@ class RobotPosePublisher(Node):
     def __init__(self):
         super().__init__("robot_pose_publisher")
 
+        self.declare_parameter("use_robot_source_frame", True)
         self._use_robot_source_frame = (
             self.get_parameter("use_robot_source_frame")
             .get_parameter_value()
             .bool_value
         )
         self._source_frame = (
-            "robot_base_link" if self._use_robot_source_frame else "base_link"
+            "robot/base_link" if self._use_robot_source_frame else "base_link"
         )
         self._target_frame = "map"
 
@@ -39,10 +40,7 @@ class RobotPosePublisher(Node):
             )
 
             self.get_logger().debug(
-                "Publishing robot position: %f, %f, %f",
-                t.transform.translation.x,
-                t.transform.translation.y,
-                t.transform.rotation.z,
+                f"Publishing robot position: {t.transform.translation.x}, {t.transform.translation.y}, {t.transform.rotation.z}"
             )
             # Publish the robot position
             msg = Point()
@@ -53,7 +51,7 @@ class RobotPosePublisher(Node):
 
         except TransformException as ex:
             self.get_logger().info(
-                f"Could not transform {to_frame_rel} to {from_frame_rel}: {ex}"
+                f"Could not transform {self._source_frame} to {self._target_frame}: {ex}"
             )
 
 
