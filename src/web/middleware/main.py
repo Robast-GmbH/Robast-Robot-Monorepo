@@ -13,7 +13,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-name_to_ip = {"rb_theron": "10.10.23.7"}
+name_to_ip = {"rb_theron": "192.168.0.200"}
 robot_api_port = 8001
 
 
@@ -157,21 +157,21 @@ Doors API Endpoints
 ======================
 """
 
-@app.post("/open_door", tags=["Doors"])
-def post_open_drawer(
+@app.get("/open_door", tags=["Doors"])
+def get_open_drawer(
  robot_ip: str = Depends(get_robot_ip)
 ):
-    response = requests.post(
+    response = requests.get(
         f"http://{robot_ip}:{robot_api_port}/open_door"
     ).json()
     return response
 
 
-@app.post("/close_door", tags=["Doors"])
-def post_close_drawer(
+@app.get("/close_door", tags=["Doors"])
+def get_close_drawer(
     robot_ip: str = Depends(get_robot_ip)
 ):
-    response = requests.post(
+    response = requests.get(
         f"http://{robot_ip}:{robot_api_port}/close_door"
     ).json()
     return response
