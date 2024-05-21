@@ -44,14 +44,6 @@ RUN git clone -b humble-devel https://github.com/RobotnikAutomation/robotnik_msg
 colcon build --packages-select robotnik_msgs --install-base /robast/${ROS_DISTRO}/ --cmake-args -DCMAKE_BUILD_TYPE=Release \
  && echo "if [ -f /robast/humble/setup.bash ]; then source /robast/humble/setup.bash; fi" >> /home/${USER}/.bashrc
 
-# WORKDIR /openvdb
-# # openvdb install for stvl (nav2)
-# RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
-#   && tar -xvzf v8.2.0.tar.gz \
-#   && cd openvdb-8.2.0/ \
-#   && mkdir builds && cd builds && cmake .. \
-#   && make && make install
-
 WORKDIR /workspace
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
