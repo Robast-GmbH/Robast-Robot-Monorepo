@@ -5,7 +5,7 @@ import 'package:test/test.dart';
 void main() {
   group('MiddlewareApiUtilities', () {
     test('can be instantiated', () {
-      expect(MiddlewareApiUtilities(), isNotNull);
+      expect(MiddlewareApiUtilities(prefix: ''), isNotNull);
     });
   });
 }
