@@ -9,7 +9,7 @@ door:
   header_value: "example_header_value"
   door_id: "example_door_id"
   door_signal_period: 3.0 # Seconds
-  door_close_feature: False 
+  door_close_feature: True 
 
 door_subscriber:
   topic_name: "adapter_door_requests"
