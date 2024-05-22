@@ -13,6 +13,7 @@ class DoorClientAPI:
         self._data = {"id": door_id}
         self._mode = DoorMode.MODE_CLOSED
         self._timer = None
+        self.door_delay = 2 # seconds
 
         count = 0
         self.connected = True
@@ -70,5 +71,5 @@ class DoorClientAPI:
             self._mode = target_door_mode
 
         if self._timer is None or not self._timer.is_alive():
-            self._timer = threading.Timer(2, set_mode, [target_door_mode])
+            self._timer = threading.Timer(self.door_delay, set_mode, [target_door_mode])
             self._timer.start()
