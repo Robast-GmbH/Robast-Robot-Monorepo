@@ -89,7 +89,7 @@ class RobotAPI:
         """Command the robot to stop.
         Return True if robot has successfully stopped. Else False"""
         try:
-            requests.post(f"{self.prefix}/stop?robot_name={robot_name}")
+            requests.post(f"{self.prefix}/cancel_goal?robot_name={robot_name}")
             return True
         except Exception as e:
             return False
