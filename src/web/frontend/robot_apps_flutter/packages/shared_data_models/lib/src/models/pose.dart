@@ -2,7 +2,7 @@ class Pose {
   Pose({
     required this.x,
     required this.y,
-    required this.yaw,
+    this.yaw = 0.0,
   });
 
   final double x;

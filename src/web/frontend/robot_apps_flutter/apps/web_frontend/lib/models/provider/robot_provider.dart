@@ -7,14 +7,12 @@ import 'package:shared_data_models/shared_data_models.dart';
 class RobotProvider extends ChangeNotifier {
   List<Robot> robots = [];
   Map<String, List<DrawerModule>> modules = {};
-  // TODO(anyone): Change for multiple robots.
   bool isNavigationBlocked = false;
-  bool isNavigating = false;
   Timer? _robotUpdateTimer;
   Timer? _moduleUpdateTimer;
-  Timer? _isRobotNavigatingUpdateTimer;
+  Timer? _isRobotNavigationBlockedUpdateTimer;
 
-  final _middlewareApi = const MiddlewareApiUtilities(prefix: 'http://192.168.0.26:8003');
+  final _middlewareApi = const MiddlewareApiUtilities(prefix: 'http://10.10.23.6:8003');
 
   List<String> getIDsOfModules({required String robotName}) {
     return modules[robotName]?.map((e) => '${e.moduleID}_${e.drawerID}').toList() ?? [];
@@ -58,13 +56,10 @@ class RobotProvider extends ChangeNotifier {
     });
   }
 
-  void startPeriodicIsNavigatingUpdate() {
-    _isRobotNavigatingUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
+  void startPeriodicIsNavigationBlockedUpdate() {
+    _isRobotNavigationBlockedUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
       for (final robot in robots) {
-        isNavigating = await _middlewareApi.isRobotNavigating(robotName: robot.name);
-        if (isNavigating) {
-          isNavigationBlocked = await _middlewareApi.isNavigationBlocked(robotName: robot.name);
-        }
+        isNavigationBlocked = await _middlewareApi.isNavigationBlocked(robotName: robot.name);
       }
       notifyListeners();
     });
@@ -73,7 +68,7 @@ class RobotProvider extends ChangeNotifier {
   void stopPeriodicUpdates() {
     _robotUpdateTimer?.cancel();
     _moduleUpdateTimer?.cancel();
-    _isRobotNavigatingUpdateTimer?.cancel();
+    _isRobotNavigationBlockedUpdateTimer?.cancel();
   }
 
   void stopPeriodicModuleUpdate() {

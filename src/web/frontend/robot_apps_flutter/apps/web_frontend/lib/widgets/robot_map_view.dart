@@ -19,7 +19,7 @@ class _RobotMapViewState extends State<RobotMapView> {
   @override
   void initState() {
     Provider.of<RobotProvider>(context, listen: false).startPeriodicRobotUpdate();
-    Provider.of<RobotProvider>(context, listen: false).startPeriodicIsNavigatingUpdate();
+    Provider.of<RobotProvider>(context, listen: false).startPeriodicIsNavigationBlockedUpdate();
     super.initState();
   }
 
@@ -42,35 +42,33 @@ class _RobotMapViewState extends State<RobotMapView> {
               controller: controller,
               robots: robots,
             ),
-            if (robotProvider.isNavigating) ...[
-              GestureDetector(
-                onTap: () {
-                  if (robotProvider.isNavigationBlocked) {
-                    robotProvider
-                      ..isNavigationBlocked = false
-                      ..resumeRobot(robotName: widget.robotName);
-                  } else {
-                    robotProvider
-                      ..isNavigationBlocked = true
-                      ..stopRobot(robotName: widget.robotName);
-                  }
-                  setState(() {});
-                },
-                child: ColoredBox(
-                  color: Colors.red,
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: 50,
-                    child: Center(
-                      child: Text(
-                        robotProvider.isNavigationBlocked ? 'Navigation Blocked - Tap to Resume' : 'Navigating - Tap to Stop',
-                        style: const TextStyle(color: Colors.white),
-                      ),
+            GestureDetector(
+              onTap: () {
+                if (robotProvider.isNavigationBlocked) {
+                  robotProvider
+                    ..isNavigationBlocked = false
+                    ..resumeRobot(robotName: widget.robotName);
+                } else {
+                  robotProvider
+                    ..isNavigationBlocked = true
+                    ..stopRobot(robotName: widget.robotName);
+                }
+                setState(() {});
+              },
+              child: ColoredBox(
+                color: Colors.red,
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: Center(
+                    child: Text(
+                      robotProvider.isNavigationBlocked ? 'Navigation Blocked - Tap to Unblock' : 'Navigation Unblocked - Tap to Block',
+                      style: const TextStyle(color: Colors.white),
                     ),
                   ),
                 ),
               ),
-            ],
+            ),
           ],
         );
       },

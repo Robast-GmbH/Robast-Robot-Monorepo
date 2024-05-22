@@ -32,11 +32,6 @@ flutter:
   uses-material-design: true
   generate: true
   assets:
-    - assets/beyond.svg
-    - assets/relaxed.svg
     - assets/happy.svg
     - assets/logo.svg
     - assets/logo_blink.svg
-    - assets/logo_happy.png
-    - assets/logo.png
-    - assets/logo_blink.png

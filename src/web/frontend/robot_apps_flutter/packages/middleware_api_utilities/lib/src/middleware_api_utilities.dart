@@ -135,13 +135,13 @@ class MiddlewareApiUtilities {
     }
   }
 
-  Future<bool> isRobotNavigating({required String robotName}) async {
+  Future<bool> isRobotNavigationBlocked({required String robotName}) async {
     try {
       final response = await http.get(
-        Uri.parse('$prefix/is_navigating?robot_name=$robotName'),
+        Uri.parse('$prefix/is_navigation_blocked?robot_name=$robotName'),
       );
       if (response.statusCode == 200) {
-        return (jsonDecode(response.body) as Map<String, dynamic>)['is_navigating'] as bool;
+        return (jsonDecode(response.body) as Map<String, dynamic>)['is_nav_blocked'] as bool;
       } else {
         return false;
       }

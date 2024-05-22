@@ -25,15 +25,6 @@ class _FleetManagementViewState extends State<FleetManagementView> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fleet Management'),
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: IconButton(
-              onPressed: () {},
-              icon: const Icon(Icons.settings),
-            ),
-          ),
-        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

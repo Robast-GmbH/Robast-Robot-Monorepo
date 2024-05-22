@@ -11,10 +11,13 @@ class RoboMap extends StatefulWidget {
     required this.controller,
     required this.robots,
     super.key,
+    this.isViewOnly = true,
     this.isMultiTarget = false,
   });
+
   final MapController controller;
   final bool isMultiTarget;
+  final bool isViewOnly;
   final List<Robot> robots;
 
   @override
@@ -31,7 +34,6 @@ class _RoboMapState extends State<RoboMap> {
 
   @override
   Widget build(BuildContext context) {
-    final robotOrigin = widget.controller.getRobotOriginAsOffset();
     return Zoom(
       maxScale: 5,
       initTotalZoomOut: true,
@@ -39,111 +41,117 @@ class _RoboMapState extends State<RoboMap> {
       child: SizedBox(
         width: widget.controller.mapWidth.toDouble(),
         height: widget.controller.mapHeight.toDouble(),
-        child: GestureDetector(
-          onTapDown: (details) {
-            tempPos = details.localPosition;
-          },
-          onLongPressStart: (details) {
-            showDirectionIndicator = true;
-            startPosDirection = details.localPosition;
-            endPosDirection = details.localPosition;
-            setState(() {});
-          },
-          onLongPressUp: () {
-            showDirectionIndicator = false;
-            setState(() {});
-          },
-          onLongPressMoveUpdate: (details) {
-            endPosDirection = details.localPosition;
-            final vectorA = [
-              startPosDirection!.dx - endPosDirection!.dx,
-              startPosDirection!.dy - endPosDirection!.dy,
-            ];
-            final vectorB = [1, 0];
-
-            final angle = acos(vectorA[0] * vectorB[0] / (sqrt(pow(vectorA[0], 2) + pow(vectorA[1], 2))));
-            if (!angle.isNaN) {
-              widget.controller.yaws.last = (startPosDirection!.dy > endPosDirection!.dy ? -1.0 * angle : angle) + pi;
+        child: AbsorbPointer(
+          absorbing: widget.isViewOnly,
+          child: GestureDetector(
+            onTapDown: (details) {
+              tempPos = details.localPosition;
+            },
+            onLongPressStart: (details) {
+              showDirectionIndicator = true;
+              startPosDirection = details.localPosition;
+              endPosDirection = details.localPosition;
               setState(() {});
-            }
-          },
-          onLongPressCancel: () {
-            showDirectionIndicator = false;
-            setState(() {});
-          },
-          onLongPressEnd: (details) {
-            showDirectionIndicator = false;
-            setState(() {});
-          },
-          onLongPress: () {
-            if (!widget.isMultiTarget) {
-              widget.controller.points.clear();
-              widget.controller.yaws.clear();
-            }
-            widget.controller.points.add(tempPos);
+            },
+            onLongPressUp: () {
+              showDirectionIndicator = false;
+              setState(() {});
+            },
+            onLongPressMoveUpdate: (details) {
+              endPosDirection = details.localPosition;
+              final vectorA = [
+                startPosDirection!.dx - endPosDirection!.dx,
+                startPosDirection!.dy - endPosDirection!.dy,
+              ];
+              final vectorB = [1, 0];
 
-            widget.controller.yaws.add(0);
-            setState(() {});
-          },
-          child: Stack(
-            alignment: Alignment.center,
-            children: [
-              Image.asset(widget.controller.mapPath),
-              ...List.generate(
-                widget.controller.points.length,
-                (index) => Positioned(
-                  left: widget.controller.points[index].dx - 24,
-                  top: widget.controller.points[index].dy - 24,
-                  child: Transform.rotate(
-                    angle: -widget.controller.yaws[index],
-                    child: GestureDetector(
-                      onLongPress: () {
-                        if (widget.isMultiTarget) {
-                          widget.controller.points.removeAt(index);
-                          widget.controller.yaws.removeAt(index);
-                        }
-                        setState(() {});
-                      },
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          borderRadius: BorderRadius.all(
-                            Radius.circular(4),
+              final angle = acos(vectorA[0] * vectorB[0] / (sqrt(pow(vectorA[0], 2) + pow(vectorA[1], 2))));
+              if (!angle.isNaN) {
+                widget.controller.yaws.last = (startPosDirection!.dy > endPosDirection!.dy ? -1.0 * angle : angle) + pi;
+                setState(() {});
+              }
+            },
+            onLongPressCancel: () {
+              showDirectionIndicator = false;
+              setState(() {});
+            },
+            onLongPressEnd: (details) {
+              showDirectionIndicator = false;
+              setState(() {});
+            },
+            onLongPress: () {
+              if (!widget.isMultiTarget) {
+                widget.controller.poses.clear();
+                widget.controller.yaws.clear();
+              }
+              widget.controller.poses.add(tempPos);
+
+              widget.controller.yaws.add(0);
+              setState(() {});
+            },
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                Image.asset(widget.controller.mapPath),
+                ...List.generate(
+                  widget.controller.poses.length,
+                  (index) => Positioned(
+                    left: widget.controller.poses[index].dx - 24,
+                    top: widget.controller.poses[index].dy - 24,
+                    child: Transform.rotate(
+                      angle: -widget.controller.yaws[index],
+                      child: GestureDetector(
+                        onLongPress: () {
+                          if (widget.isMultiTarget) {
+                            widget.controller.poses.removeAt(index);
+                            widget.controller.yaws.removeAt(index);
+                          }
+                          setState(() {});
+                        },
+                        child: Container(
+                          decoration: const BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.circular(4),
+                            ),
+                            color: Colors.orange,
                           ),
-                          color: Colors.orange,
+                          child: widget.isMultiTarget
+                              ? Padding(
+                                  padding: const EdgeInsets.all(4),
+                                  child: Text("${index < 10 ? 0 : ''}$index"),
+                                )
+                              : const Icon(
+                                  Icons.arrow_forward,
+                                  size: 48,
+                                ),
                         ),
-                        child: widget.isMultiTarget
-                            ? Padding(
-                                padding: const EdgeInsets.all(4),
-                                child: Text("${index < 10 ? 0 : ''}$index"),
-                              )
-                            : const Icon(
-                                Icons.arrow_forward,
-                                size: 48,
-                              ),
                       ),
                     ),
                   ),
                 ),
-              ),
-              ...widget.robots.map(
-                (robot) => Positioned(
-                  left: robotOrigin.dx, //- 12 + robot.pose.x,
-                  top: robotOrigin.dy, //- 12 - robot.pose.y,
-                  child: Transform.rotate(
-                    angle: -robot.pose.yaw,
-                    child: const RobotMarker(),
+                ...widget.robots.map(
+                  (robot) {
+                    final transformedRobotPose = widget.controller.calculateMapPosition(pose: robot.pose);
+                    return Positioned(
+                      left: -12 + transformedRobotPose.x,
+                      top: -12 - transformedRobotPose.y,
+                      child: Transform.rotate(
+                        angle: -transformedRobotPose.yaw,
+                        child: const RobotMarker(),
+                      ),
+                    );
+                  },
+                ),
+                if (showDirectionIndicator) ...[
+                  PositionedLine(
+                    from: startPosDirection!,
+                    to: endPosDirection!,
+                    color: Colors.red,
+                    strokeWidth: 2,
                   ),
-                ),
-              ),
-              if (showDirectionIndicator) ...[
-                PositionedLine(
-                  from: startPosDirection!,
-                  to: endPosDirection!,
-                  color: Colors.red,
-                  strokeWidth: 2,
-                ),
+                ],
               ],
-            ],
+            ),
           ),
         ),
       ),

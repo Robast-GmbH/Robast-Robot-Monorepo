@@ -9,7 +9,7 @@ class RMFProvider extends ChangeNotifier {
   final Map<String, String> _interruptTokens = {};
   Timer? _tasksUpdateTimer;
 
-  final _rmfApi = const RmfApi(prefix: 'http://192.168.0.26:8000');
+  final _rmfApi = const RmfApi(prefix: 'http://10.10.23.6:8000');
 
   Future<void> updateBuildingMap() async {
     try {
