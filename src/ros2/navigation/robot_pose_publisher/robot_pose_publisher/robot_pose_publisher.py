@@ -7,6 +7,8 @@ from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
+import numpy as np
+
 
 class RobotPosePublisher(Node):
     def __init__(self):
@@ -33,6 +35,19 @@ class RobotPosePublisher(Node):
             Point, "robot_position", 10
         )
 
+    def _get_yaw_from_quaternion(self, qz, qw):
+        """
+        Convert a quaternion to a yaw angle.
+
+        Input
+            :param qz: The z component of the quaternion.
+            :param qw: The w component of the quaternion.
+
+        Output
+            :return yaw: The yaw (rotation around z-axis) angle in radians.
+        """
+        return 2 * np.arctan2(qz, qw)
+
     def _on_timer(self):
         try:
             t = self._tf_buffer.lookup_transform(
@@ -46,7 +61,9 @@ class RobotPosePublisher(Node):
             msg = Point()
             msg.x = t.transform.translation.x
             msg.y = t.transform.translation.y
-            msg.z = t.transform.rotation.z
+            msg.z = self._get_yaw_from_quaternion(
+                t.transform.rotation.z, t.transform.rotation.w
+            )
             self._robot_position_publisher.publish(msg)
 
         except TransformException as ex:
