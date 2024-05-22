@@ -46,7 +46,11 @@ def generate_launch_description():
         parameters=[use_sim_time, bidding_time_window],
     )
 
-    door_supervisor = Node(package='rmf_fleet_adapter', executable='door_supervisor',parameters=[use_sim_time],)
+    door_supervisor = Node(
+        package="rmf_fleet_adapter",
+        executable="door_supervisor",
+        parameters=[use_sim_time],
+    )
 
     fleet_adapter = Node(
         package="fleet_adapter_rb_theron",

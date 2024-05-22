@@ -61,6 +61,8 @@ class RobotAPI:
             ).json()
             x, y = self.transforms["robot_to_rmf"].transform([pose["x"], pose["y"]])
             z = pose["z"] - self.transforms["orientation_offset"]
+            if z > math.pi:
+                z -= 2 * math.pi
             return [x, y, z]
         except Exception as e:
             return None
