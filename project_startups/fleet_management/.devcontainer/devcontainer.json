@@ -11,7 +11,6 @@
 	"workspaceFolder": "/workspace",
 	//"runArgs": [ "--network=host"],
 	"forwardPorts": [
-		8003,
 		8000,
 		3000
 	],
