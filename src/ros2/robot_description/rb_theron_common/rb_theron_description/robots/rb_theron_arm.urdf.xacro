@@ -51,6 +51,7 @@
     <xacro:include filename="$(find rb_theron_description)/urdf/bases/theron_base.urdf.xacro" />
     <xacro:include filename="$(find rb_theron_description)/urdf/inertia.urdf.xacro" />
 
+	<xacro:include filename="$(find robotnik_sensors)/urdf/all_sensors.urdf.xacro" />
 	<xacro:arg name="back_oak_d_camera_model" default="OAK-D" />
 	<xacro:arg name="back_oak_d_base_frame" default="oak-d_frame" />
 	<xacro:arg name="back_oak_d_pos_x" default="0.13721" />
