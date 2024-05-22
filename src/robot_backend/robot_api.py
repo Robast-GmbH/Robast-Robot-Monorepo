@@ -1,8 +1,17 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from ros_bridge import RosBridge
 
-ros_bridge = RosBridge(ip="localhost", port=9090)
+door_available = False
+ros_bridge = RosBridge(ip="localhost", port=9090, door_available=door_available)
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 """
@@ -96,3 +105,20 @@ def post_open_drawer(module_id: int, drawer_id: int):
 @app.post("/close_drawer", tags=["Modules"])
 def post_close_drawer(module_id: int, drawer_id: int):
     return {"success": ros_bridge.module_bridge.close_drawer(module_id, drawer_id)}
+
+
+"""
+======================
+Doors API Endpoints
+======================
+"""
+
+if door_available:
+
+    @app.post("/open_door", tags=["Doors"])
+    def post_open_drawer():
+        return {"success": ros_bridge.door_bridge.open_door()}
+
+    @app.post("/close_door", tags=["Doors"])
+    def post_close_drawer():
+        return {"success": ros_bridge.door_bridge.close_door()}
