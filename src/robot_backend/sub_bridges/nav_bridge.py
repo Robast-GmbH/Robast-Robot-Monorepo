@@ -26,9 +26,19 @@ class NavBridge(BaseBridge):
             "std_msgs/msg/Bool",
         )
 
-        self.lookup_table_resolution = 5
-        self._sin_lookup = [np.sin(np.radians(x / 2)) for x in range(0, 360, self.lookup_table_resolution)]
-        self._cos_lookup = [np.cos(np.radians(x / 2)) for x in range(0, 360, self.lookup_table_resolution)]
+        self.lookup_table_resolution = 2
+        self._sin_lookup = [
+            np.sin(np.radians(x / 2))
+            for x in range(0, 360, self.lookup_table_resolution)
+        ]
+        self._cos_lookup = [
+            np.cos(np.radians(x / 2))
+            for x in range(0, 360, self.lookup_table_resolution)
+        ]
+
+        # Navigation is blocked by canceling the current goal and pretending the robot is still navigating
+        self.is_nav_blocked = False
+        self.goal_pose = None
 
     def get_quaternion_from_euler(self, yaw):
         """
@@ -49,19 +59,21 @@ class NavBridge(BaseBridge):
 
         return {"x": qx, "y": qy, "z": qz, "w": qw}
 
-    def navigate_to_goal_pose(self, robot_name, goal_pose):
-        self.context["/is_navigating"] =  {"data": True}
-        goal_msg = Message(
-            {
-                "position": {
-                    "x": goal_pose[0],
-                    "y": goal_pose[1],
-                    "z": 0.0,
-                },
-                "orientation": self.get_quaternion_from_euler(goal_pose[2]),
-            }
-        )
-        self._goal_pose_publisher.publish(goal_msg)
+    def navigate_to_goal_pose(self, goal_pose):
+        self.goal_pose = goal_pose
+        if not self.is_nav_blocked:
+            self.context["/is_navigating"] = {"data": True}
+            goal_msg = Message(
+                {
+                    "position": {
+                        "x": goal_pose[0],
+                        "y": goal_pose[1],
+                        "z": 0.0,
+                    },
+                    "orientation": self.get_quaternion_from_euler(goal_pose[2]),
+                }
+            )
+            self._goal_pose_publisher.publish(goal_msg)
         return True
 
     def cancel_navigate_to_goal_pose(self):
@@ -69,6 +81,8 @@ class NavBridge(BaseBridge):
         return True
 
     def is_navigating(self):
+        if self.is_nav_blocked:
+            return True
         try:
             return self.context["/is_navigating"]["data"]
         except KeyError:
@@ -80,3 +94,13 @@ class NavBridge(BaseBridge):
         except KeyError:
             return 0
 
+    def block_nav(self):
+        self.is_nav_blocked = True
+        self.cancel_navigate_to_goal_pose()
+        return True
+
+    def unblock_nav(self):
+        self.is_nav_blocked = False
+        if self.goal_pose is not None:
+            self.navigate_to_goal_pose(self.goal_pose)
+        return True

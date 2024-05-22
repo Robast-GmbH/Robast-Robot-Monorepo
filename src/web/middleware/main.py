@@ -101,22 +101,30 @@ def read_remaining_nav_time(robot_ip: str = Depends(get_robot_ip)):
     ).json()
     return response
 
+
 @app.post("/block_navigation", tags=["Navigation"])
 def post_block_nav(robot_ip: str = Depends(get_robot_ip)):
-    response = requests.post(f"http://{robot_ip}:{robot_api_port}/block_navigation").json()
+    response = requests.post(
+        f"http://{robot_ip}:{robot_api_port}/block_navigation"
+    ).json()
     return response
 
 
 @app.post("/unblock_navigation", tags=["Navigation"])
 def post_unblock_nav(robot_ip: str = Depends(get_robot_ip)):
-    response = requests.post(f"http://{robot_ip}:{robot_api_port}/unblock_navigation").json()
+    response = requests.post(
+        f"http://{robot_ip}:{robot_api_port}/unblock_navigation"
+    ).json()
     return response
 
 
 @app.get("/is_navigation_blocked", tags=["Navigation"])
 def read_is_nav_blocked(robot_ip: str = Depends(get_robot_ip)):
-    response = requests.get(f"http://{robot_ip}:{robot_api_port}/is_navigation_blocked").json()
+    response = requests.get(
+        f"http://{robot_ip}:{robot_api_port}/is_navigation_blocked"
+    ).json()
     return response
+
 
 """
 ======================

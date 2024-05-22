@@ -43,7 +43,7 @@ Navigation API Endpoints
 
 @app.post("/goal_pose", tags=["Navigation"])
 def post_goal_pose(x: float, y: float, z: float):
-    return {"success": ros_bridge.nav_bridge.navigate_to_goal_pose("robot", (x, y, z))}
+    return {"success": ros_bridge.nav_bridge.navigate_to_goal_pose((x, y, z))}
 
 
 @app.post("/cancel_goal", tags=["Navigation"])
@@ -59,6 +59,21 @@ def read_is_navigating():
 @app.get("/remaining_nav_time", tags=["Navigation"])
 def read_remaining_nav_time():
     return {"remaining_seconds": ros_bridge.nav_bridge.get_remaining_nav_time()}
+
+
+@app.post("/block_navigation", tags=["Navigation"])
+def post_block_nav():
+    return {"success": ros_bridge.nav_bridge.block_nav()}
+
+
+@app.post("/unblock_navigation", tags=["Navigation"])
+def post_unblock_nav():
+    return {"success": ros_bridge.nav_bridge.unblock_nav()}
+
+
+@app.get("/is_navigation_blocked", tags=["Navigation"])
+def read_is_nav_blocked():
+    return {"is_nav_blocked": ros_bridge.nav_bridge.is_nav_blocked}
 
 
 """
