@@ -157,16 +157,16 @@
 
 	<xacro:arg name="back_oak_d_camera_model" default="OAK-D" />
 	<xacro:arg name="back_oak_d_base_frame" default="oak-d_frame" />
-	<xacro:arg name="back_oak_d_pos_x" default="0.13721" />
-	<xacro:arg name="back_oak_d_pos_y" default="0.103" />
-	<xacro:arg name="back_oak_d_pos_z" default="0.15" />
-	<xacro:arg name="back_oak_d_roll" default="1.57079632679" />
-	<xacro:arg name="back_oak_d_pitch" default="0.0" />
-	<xacro:arg name="back_oak_d_yaw" default="2.094395127" />
+	<xacro:arg name="back_oak_d_pos_x" default="-0.103" />
+	<xacro:arg name="back_oak_d_pos_y" default="0.0" />
+	<xacro:arg name="back_oak_d_pos_z" default="0.13721" />
+	<xacro:arg name="back_oak_d_roll" default="0.0" />
+	<xacro:arg name="back_oak_d_pitch" default="2.617993927" />
+	<xacro:arg name="back_oak_d_yaw" default="0.0" />
 	<xacro:depthai_camera
 		prefix="$(arg prefix)back_top_oak_d_camera"
-		parent="$(arg prefix)door_opening_mechanism_link_x_axis_slide"
-		sensor_base_frame="door_opening_mechanism_link_x_axis_slide"
+		parent="$(arg prefix)door_opening_mechanism_link_y_axis_slide"
+		sensor_base_frame="door_opening_mechanism_link_y_axis_slide"
 		robot_name="${robot_name}"
 		prefix_topic="back_top_oak_d_camera"
 		camera_model="$(arg back_oak_d_camera_model)"
