@@ -87,10 +87,10 @@ def generate_launch_description():
     TF_TOPIC = "/tf"
     TF_STATIC_TOPIC = "/tf_static"
     remappings_move_group = [
-        (TF_TOPIC, "/tf_dump"),
-        (TF_STATIC_TOPIC, "/tf_static_dump"),
-        ("/" + namespace_arm + TF_TOPIC, TF_TOPIC),
-        ("/" + namespace_arm + TF_STATIC_TOPIC, TF_STATIC_TOPIC),
+        (TF_TOPIC, "/" + namespace_arm + TF_TOPIC),
+        (TF_STATIC_TOPIC, "/" + namespace_arm + TF_STATIC_TOPIC),
+        ("/" + namespace_arm + TF_TOPIC, TF_TOPIC), # TODO@Jacob: Why do we need this?
+        ("/" + namespace_arm + TF_STATIC_TOPIC, TF_STATIC_TOPIC), # TODO@Jacob: Why do we need this?
     ]
 
     # Start the actual move_group node/action server
