@@ -21,16 +21,16 @@ def generate_launch_description():
     ]
 
     camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D')
-    tf_prefix  = LaunchConfiguration('tf_prefix',   default = 'oak')
+    tf_prefix  = LaunchConfiguration('tf_prefix',       default = 'oak')
     base_frame   = LaunchConfiguration('base_frame',    default = 'back_top_oak_d_camera')
     parent_frame = LaunchConfiguration('parent_frame',  default = 'door_opening_mechanism_link_y_axis_slide')
 
-    cam_pos_x  = LaunchConfiguration('cam_pos_x',     default = '-0.103')
-    cam_pos_y  = LaunchConfiguration('cam_pos_y',     default = '0.1')
+    cam_pos_x  = LaunchConfiguration('cam_pos_x',     default = '0.103')
+    cam_pos_y  = LaunchConfiguration('cam_pos_y',     default = '0.0')
     cam_pos_z  = LaunchConfiguration('cam_pos_z',     default = '0.13721')
-    cam_roll   = LaunchConfiguration('cam_roll',      default = '1.5708')
-    cam_pitch  = LaunchConfiguration('cam_pitch',     default = '2.617993927')
-    cam_yaw    = LaunchConfiguration('cam_yaw',       default = '0.0')
+    cam_roll   = LaunchConfiguration('cam_roll',      default = '0')
+    cam_pitch  = LaunchConfiguration('cam_pitch',     default = '0.5235988')
+    cam_yaw    = LaunchConfiguration('cam_yaw',       default = '3.14159')
 
     mode           = LaunchConfiguration('mode', default = 'depth')
     lrcheck        = LaunchConfiguration('lrcheck', default = True)
