@@ -23,7 +23,7 @@ def generate_launch_description():
     camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D')
     tf_prefix  = LaunchConfiguration('tf_prefix',   default = 'oak')
     base_frame   = LaunchConfiguration('base_frame',    default = 'back_top_oak_d_camera')
-    parent_frame = LaunchConfiguration('parent_frame',  default = 'door_opening_mechanism_link_x_axis_slide')
+    parent_frame = LaunchConfiguration('parent_frame',  default = 'door_opening_mechanism_link_y_axis_slide')
 
     cam_pos_x  = LaunchConfiguration('cam_pos_x',     default = '-0.103')
     cam_pos_y  = LaunchConfiguration('cam_pos_y',     default = '0.1')
