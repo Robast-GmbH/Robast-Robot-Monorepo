@@ -86,11 +86,9 @@ def generate_launch_description():
     # tf tree used for the arm. This is done by remapping the tf topics.
     TF_TOPIC = "/tf"
     TF_STATIC_TOPIC = "/tf_static"
-    remappings_move_group = [
+    tf_remapping = [
         (TF_TOPIC, "/" + namespace_arm + TF_TOPIC),
         (TF_STATIC_TOPIC, "/" + namespace_arm + TF_STATIC_TOPIC),
-        ("/" + namespace_arm + TF_TOPIC, TF_TOPIC), # TODO@Jacob: Why do we need this?
-        ("/" + namespace_arm + TF_STATIC_TOPIC, TF_STATIC_TOPIC), # TODO@Jacob: Why do we need this?
     ]
 
     # Start the actual move_group node/action server
@@ -99,7 +97,7 @@ def generate_launch_description():
         executable="move_group",
         output="screen",
         namespace=namespace_arm,
-        remappings=remappings_move_group,
+        remappings=tf_remapping,
         parameters=[
             moveit_config.to_dict(),
             move_group_capabilities,
@@ -125,11 +123,6 @@ def generate_launch_description():
         ],
     )
 
-    remappings_state_publisher = [
-        (TF_TOPIC, "/" + namespace_arm + TF_TOPIC),
-        (TF_STATIC_TOPIC, "/" + namespace_arm + TF_STATIC_TOPIC),
-    ]
-
     # State Publisher
     robot_state_publisher_cmd = Node(
         package="robot_state_publisher",
@@ -137,7 +130,7 @@ def generate_launch_description():
         name="robot_state_publisher",
         output="both",
         namespace=namespace_arm,
-        remappings=remappings_state_publisher,
+        remappings=tf_remapping,
         parameters=[
             moveit_config.robot_description,
         ],
