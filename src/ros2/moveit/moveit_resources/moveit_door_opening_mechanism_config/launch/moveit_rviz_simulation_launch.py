@@ -58,7 +58,7 @@ def generate_launch_description():
         .planning_pipelines(pipelines=planning_pipelines)
         .to_moveit_configs()
     )
-    namespace_arm = "arm"
+    NAMESPACE_ARM = "arm"
 
     ld = LaunchDescription()
 
@@ -86,13 +86,13 @@ def generate_launch_description():
 
     JOINT_STATES_TOPIC = "/joint_states"
     remappings = [
-        ("/" + namespace_arm + JOINT_STATES_TOPIC, JOINT_STATES_TOPIC),
+        ("/" + NAMESPACE_ARM + JOINT_STATES_TOPIC, JOINT_STATES_TOPIC),
     ]
     move_group_cmd = Node(
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
-        namespace=namespace_arm,
+        namespace=NAMESPACE_ARM,
         remappings=remappings,
         parameters=[
             moveit_config.to_dict(),
@@ -179,18 +179,18 @@ def generate_launch_description():
     )
 
     # Second controller manager for the arm
-    controller_manager_name = "/" + namespace_arm + "/controller_manager"
+    CONTROLLER_MANAGER_NAME = "/" + NAMESPACE_ARM + "/controller_manager"
     remappings_controller_manager_arm = [
         (
-            "/" + namespace_arm + "/diff_drive_base_controller/cmd_vel",
+            "/" + NAMESPACE_ARM + "/diff_drive_base_controller/cmd_vel",
             "/diff_drive_base_controller/cmd_vel",
         ),
-        ("/" + namespace_arm + JOINT_STATES_TOPIC, JOINT_STATES_TOPIC),
+        ("/" + NAMESPACE_ARM + JOINT_STATES_TOPIC, JOINT_STATES_TOPIC),
     ]
     ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        namespace=namespace_arm,
+        namespace=NAMESPACE_ARM,
         remappings=remappings_controller_manager_arm,
         parameters=[
             moveit_config.robot_description,
@@ -209,7 +209,7 @@ def generate_launch_description():
             "active",
             "mobile_base_controller_cmd_vel",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
@@ -222,7 +222,7 @@ def generate_launch_description():
             "active",
             "joint_trajectory_controller",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
@@ -235,7 +235,7 @@ def generate_launch_description():
             "active",
             "joint_state_broadcaster",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
@@ -247,7 +247,7 @@ def generate_launch_description():
     # is published by the controller_manager.
     # TODO@all: This is not a perfect solution, maybe someone finds something better at some point
     trigger_message = "update rate is"
-    node_name = namespace_arm + ".controller_manager"
+    node_name = NAMESPACE_ARM + ".controller_manager"
     rosout_listener_trigger = Node(
         package="launch_manager",
         executable="rosout_listener",

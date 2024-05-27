@@ -59,7 +59,7 @@ def generate_launch_description():
         .planning_pipelines(pipelines=planning_pipelines)
         .to_moveit_configs()
     )
-    namespace_arm = "arm"
+    NAMESPACE_ARM = "arm"
 
     ld = LaunchDescription()
 
@@ -87,8 +87,8 @@ def generate_launch_description():
     TF_TOPIC = "/tf"
     TF_STATIC_TOPIC = "/tf_static"
     tf_remapping = [
-        (TF_TOPIC, "/" + namespace_arm + TF_TOPIC),
-        (TF_STATIC_TOPIC, "/" + namespace_arm + TF_STATIC_TOPIC),
+        (TF_TOPIC, "/" + NAMESPACE_ARM + TF_TOPIC),
+        (TF_STATIC_TOPIC, "/" + NAMESPACE_ARM + TF_STATIC_TOPIC),
     ]
 
     # Start the actual move_group node/action server
@@ -96,7 +96,7 @@ def generate_launch_description():
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
-        namespace=namespace_arm,
+        namespace=NAMESPACE_ARM,
         remappings=tf_remapping,
         parameters=[
             moveit_config.to_dict(),
@@ -129,7 +129,7 @@ def generate_launch_description():
         executable="robot_state_publisher",
         name="robot_state_publisher",
         output="both",
-        namespace=namespace_arm,
+        namespace=NAMESPACE_ARM,
         remappings=tf_remapping,
         parameters=[
             moveit_config.robot_description,
@@ -142,17 +142,17 @@ def generate_launch_description():
         "config",
         "ros2_controllers_real_world_arm.yaml",
     )
-    controller_manager_name = "/" + namespace_arm + "/controller_manager"
+    CONTROLLER_MANAGER_NAME = "/" + NAMESPACE_ARM + "/controller_manager"
     remappings_controller_manager_arm = [
         (
-            "/" + namespace_arm + "/robot/robotnik_base_control/cmd_vel",
+            "/" + NAMESPACE_ARM + "/robot/robotnik_base_control/cmd_vel",
             "/robot/robotnik_base_control/cmd_vel",
         ),
     ]
     ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        namespace=namespace_arm,
+        namespace=NAMESPACE_ARM,
         remappings=remappings_controller_manager_arm,
         parameters=[
             moveit_config.robot_description,
@@ -167,15 +167,15 @@ def generate_launch_description():
     # By some testing I found out that the homing is finished when the message "update rate is xHz"
     # is published by the controller_manager.
     # TODO@all: This is not a perfect solution, maybe someone finds something better at some point
-    trigger_message = "update rate is"
-    node_name = namespace_arm + ".controller_manager"
+    TRIGGER_MESSAGE = "update rate is"
+    node_name = NAMESPACE_ARM + ".controller_manager"
     rosout_listener_trigger = Node(
         package="launch_manager",
         executable="rosout_listener",
         name="rosout_listener_trigger",
         output="log",
         parameters=[
-            {"trigger_message": trigger_message, "node_name": node_name},
+            {"trigger_message": TRIGGER_MESSAGE, "node_name": node_name},
         ],
     )
 
@@ -188,7 +188,7 @@ def generate_launch_description():
             "active",
             "mobile_base_controller_cmd_vel",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
@@ -201,7 +201,7 @@ def generate_launch_description():
             "active",
             "joint_state_broadcaster",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
@@ -214,7 +214,7 @@ def generate_launch_description():
             "active",
             "joint_trajectory_controller",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
