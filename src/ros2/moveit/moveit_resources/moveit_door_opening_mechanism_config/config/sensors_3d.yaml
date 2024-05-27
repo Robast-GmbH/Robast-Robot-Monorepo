@@ -1,17 +1,17 @@
 sensors:
-  - default_sensor
-default_sensor:
+  - oak_d_sensor
+oak_d_sensor:
   filtered_cloud_topic: filtered_cloud
-  max_range: 3.0  # I don't know yet how to switch of obstacle detection, so I put this to 0.0 (default: 5.0)
-  max_update_rate: 1.0
+  max_range: 2.0
+  max_update_rate: 5.0
   padding_offset: 0.1
   padding_scale: 1.0
-  point_cloud_topic: /back_top_oak_d_camera/depth/points
+  point_cloud_topic: /arm/stereo/points
   point_subsample: 1
   sensor_plugin: occupancy_map_monitor/RobastPointCloudOctomapUpdater
 
 # Specifies the resolution at which the octomap is maintained (in meters).
-octomap_resolution: 0.02
+octomap_resolution: 0.01
 # Specifies the coordinate frame in which the Octomap representation will be stored.
 # Note! When an OccupancyMonitor instance is initialized by the PlanningSceneMonitor,
 # this frame parameter will not be used. Instead, the frame defaults to the planning frame.
