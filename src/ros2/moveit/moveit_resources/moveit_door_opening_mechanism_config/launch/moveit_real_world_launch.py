@@ -104,25 +104,6 @@ def generate_launch_description():
         ],
     )
 
-    rviz_config_file = (
-        get_package_share_directory("moveit_door_opening_mechanism_config")
-        + "/config/moveit.rviz"
-    )
-    rviz2_cmd = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="log",
-        arguments=["-d", rviz_config_file],
-        parameters=[
-            moveit_config.robot_description,
-            moveit_config.robot_description_semantic,
-            moveit_config.robot_description_kinematics,
-            moveit_config.planning_pipelines,
-            moveit_config.joint_limits,
-        ],
-    )
-
     # State Publisher
     robot_state_publisher_cmd = Node(
         package="robot_state_publisher",
@@ -253,14 +234,6 @@ def generate_launch_description():
             event_handler=OnProcessExit(
                 target_action=load_mobile_base_controller,
                 on_exit=[load_joint_trajectory_controller],
-            )
-        )
-    )
-    ld.add_action(
-        RegisterEventHandler(
-            event_handler=OnProcessExit(
-                target_action=load_joint_trajectory_controller,
-                on_exit=[rviz2_cmd],
             )
         )
     )
