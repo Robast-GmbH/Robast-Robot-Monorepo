@@ -261,6 +261,9 @@ namespace occupancy_map_monitor
 
     tree_->lockRead();
 
+    // TODO: I have no clue if it is goo to clear the tree, but this solves the issue of old occupancy data for now
+    tree_->clear();
+
     try
     {
       /* do ray tracing to find which cells this point cloud indicates should be free, and which it indicates
