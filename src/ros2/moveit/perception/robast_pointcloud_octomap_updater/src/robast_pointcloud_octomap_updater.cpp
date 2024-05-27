@@ -363,7 +363,8 @@ namespace occupancy_map_monitor
       RCLCPP_ERROR(LOGGER, "Internal error while updating octree");
     }
     tree_->unlockWrite();
-    RCLCPP_DEBUG(LOGGER, "Processed point cloud in %lf ms", (node_->now() - start).seconds() * 1000.0);
+    RCLCPP_DEBUG(
+      LOGGER, "Processed point cloud in %lf ms", (rclcpp::Clock(RCL_ROS_TIME).now() - start).seconds() * 1000.0);
     tree_->triggerUpdateCallback();
 
     if (filtered_cloud)
