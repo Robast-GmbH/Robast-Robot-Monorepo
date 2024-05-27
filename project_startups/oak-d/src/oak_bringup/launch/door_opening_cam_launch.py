@@ -34,11 +34,11 @@ def generate_launch_description():
 
     mode           = LaunchConfiguration('mode', default = 'depth')
     lrcheck        = LaunchConfiguration('lrcheck', default = True)
-    extended       = LaunchConfiguration('extended', default = False)
-    subpixel       = LaunchConfiguration('subpixel', default = True)
+    extended       = LaunchConfiguration('extended', default = True)
+    subpixel       = LaunchConfiguration('subpixel', default = False)
     confidence     = LaunchConfiguration('confidence', default = 120)
     LRchecktresh   = LaunchConfiguration('LRchecktresh', default = 5)
-    monoResolution = LaunchConfiguration('monoResolution',  default = '720p')
+    monoResolution = LaunchConfiguration('monoResolution',  default = '400p')
 
     declare_camera_model_cmd = DeclareLaunchArgument(
         'camera_model',
