@@ -4,6 +4,7 @@ oak_d_sensor:
   filtered_cloud_topic: filtered_cloud
   max_range: 1.5
   max_update_rate: 5.0
+  clear_tree_intervall: 10 # specifies the interval in num of updates after which the octomap is cleared
   padding_offset: 0.1
   padding_scale: 1.0
   point_cloud_topic: /arm/stereo/points

@@ -76,6 +76,7 @@ namespace occupancy_map_monitor
            node_->get_parameter(name_space + ".padding_scale", scale_) &&
            node_->get_parameter(name_space + ".point_subsample", point_subsample_) &&
            node_->get_parameter(name_space + ".max_update_rate", max_update_rate_) &&
+           node_->get_parameter(name_space + ".clear_tree_intervall", clear_tree_intervall_) &&
            node_->get_parameter(name_space + ".filtered_cloud_topic", filtered_cloud_topic_);
   }
 
@@ -259,11 +260,21 @@ namespace occupancy_map_monitor
     }
     size_t filtered_cloud_size = 0;
 
-    tree_->lockRead();
-
     // TODO: I have no clue if it is goo to clear the tree, but this solves the issue of old occupancy data for now
-    tree_->clear();
+    static uint16_t clear_tree_counter = 0;
+    if (clear_tree_counter >= clear_tree_intervall_)
+    {
+      tree_->lockWrite();
+      tree_->clear();
+      tree_->unlockWrite();
+      clear_tree_counter = 0;
+    }
+    else
+    {
+      clear_tree_counter++;
+    }
 
+    tree_->lockRead();
     try
     {
       /* do ray tracing to find which cells this point cloud indicates should be free, and which it indicates

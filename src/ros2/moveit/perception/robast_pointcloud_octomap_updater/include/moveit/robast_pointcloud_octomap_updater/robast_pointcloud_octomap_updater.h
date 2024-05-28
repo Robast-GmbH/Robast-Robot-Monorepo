@@ -90,6 +90,7 @@ namespace occupancy_map_monitor
     double max_range_;
     unsigned int point_subsample_;
     double max_update_rate_;
+    unsigned int clear_tree_intervall_;
     std::string filtered_cloud_topic_;
     std::string ns_;
     rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr filtered_cloud_publisher_;
