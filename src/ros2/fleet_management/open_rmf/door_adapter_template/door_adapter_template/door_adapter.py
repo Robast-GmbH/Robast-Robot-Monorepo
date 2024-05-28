@@ -29,14 +29,11 @@ class DoorAdapter(Node):
         ]
 
         url = config_yaml["door"]["api_endpoint"]
-        api_key = config_yaml["door"]["header_key"]
-        api_value = config_yaml["door"]["header_value"]
-        door_id = config_yaml["door"]["door_id"]
 
         door_pub = config_yaml["door_publisher"]
         door_sub = config_yaml["door_subscriber"]
 
-        self.__api = DoorClientAPI(url, api_key, api_value, door_id)
+        self.__api = DoorClientAPI(url)
 
         assert self.__api.connected, "Unable to establish connection with door"
 
@@ -50,7 +47,7 @@ class DoorAdapter(Node):
             DoorState, door_pub["topic_name"], 10
         )
 
-        self.__door_request_sub = self.create_subscription(
+        self.create_subscription(
             DoorRequest, door_sub["topic_name"], self.__door_request_cb, 10
         )
 

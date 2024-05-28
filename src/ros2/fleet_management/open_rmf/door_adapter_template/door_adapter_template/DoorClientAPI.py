@@ -5,12 +5,10 @@ import requests
 
 
 class DoorClientAPI:
-    def __init__(self, url, api_key, api_value, door_id):
+    def __init__(self, url):
         self.__url = url
         self.__open_url = f"{self.__url}/open_door?robot_name=rb_theron"
         self.__close_url = f"{self.__url}/close_door?robot_name=rb_theron"
-        self.__header = {api_key: api_value}
-        self.__data = {"id": door_id}
         self.__mode = DoorMode.MODE_CLOSED
         self.__timer = None
         self.__door_delay_in_sec = 2
@@ -34,6 +32,7 @@ class DoorClientAPI:
         try:
             response = requests.get(f"{self.__url}/")
             return response.status_code == 200
+        # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             return False
 
@@ -61,6 +60,7 @@ class DoorClientAPI:
             if response.status_code == 200 and response.json()["success"]:
                 self.__start_timer(target_door_mode=target_door_mode)
                 triggered_successfully = True
+        # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             self.__mode = DoorMode.MODE_OFFLINE
 

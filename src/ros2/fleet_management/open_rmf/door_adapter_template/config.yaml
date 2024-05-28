@@ -4,8 +4,6 @@
 door:
   name: "example_door"
   api_endpoint: "http://127.0.0.1:8888/"
-  header_key: "example_key"
-  header_value: "example_header_value"
   door_id: "example_door_id"
   door_signal_period_in_sec: 3.0
   door_close_feature: True

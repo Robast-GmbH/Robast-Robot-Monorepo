@@ -96,6 +96,7 @@ class RobotAPI:
         try:
             requests.post(f"{self.prefix}/cancel_goal?robot_name={robot_name}")
             return True
+        # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             return False
 
@@ -107,6 +108,7 @@ class RobotAPI:
                 f"{self.prefix}/remaining_nav_time?robot_name={robot_name}"
             ).json()
             return response["remaining_seconds"]
+        # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             return None
 
@@ -118,6 +120,7 @@ class RobotAPI:
                 f"{self.prefix}/is_navigating?robot_name={robot_name}"
             ).json()
             return not response["is_navigating"]
+        # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             return False
 
@@ -129,6 +132,7 @@ class RobotAPI:
                 f"{self.prefix}/battery_level?robot_name={robot_name}"
             ).json()
             return response["battery_level"]
+        # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             return None
 
