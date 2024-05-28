@@ -1,7 +1,9 @@
 from sub_bridges.base_bridge import BaseBridge
-from thread_safe_dict import ThreadSafeDict
 from roslibpy import Ros, Message
 import numpy as np
+
+
+LOOKUP_TABLE_RESOLUTION = 2
 
 
 class NavBridge(BaseBridge):
@@ -26,14 +28,11 @@ class NavBridge(BaseBridge):
             "std_msgs/msg/Bool",
         )
 
-        self.lookup_table_resolution = 2
         self._sin_lookup = [
-            np.sin(np.radians(x / 2))
-            for x in range(0, 360, self.lookup_table_resolution)
+            np.sin(np.radians(x / 2)) for x in range(0, 360, LOOKUP_TABLE_RESOLUTION)
         ]
         self._cos_lookup = [
-            np.cos(np.radians(x / 2))
-            for x in range(0, 360, self.lookup_table_resolution)
+            np.cos(np.radians(x / 2)) for x in range(0, 360, LOOKUP_TABLE_RESOLUTION)
         ]
 
         # Navigation is blocked by canceling the current goal and pretending the robot is still navigating
@@ -81,6 +80,7 @@ class NavBridge(BaseBridge):
         return True
 
     def is_navigating(self):
+        # Return True if nav_is_blocked so rmf won't evalauate the current rmf nav goal as reached
         if self.is_nav_blocked:
             return True
         try:

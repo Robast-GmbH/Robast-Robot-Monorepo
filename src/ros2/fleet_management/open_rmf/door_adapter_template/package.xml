@@ -4,7 +4,7 @@
   <name>door_adapter</name>
   <version>0.0.0</version>
   <description>A template for an RMF door adapter</description>
-  <maintainer email="mail@robast.de"></maintainer>
+  <maintainer email="a.neumann@robast.de"></maintainer>
   <license>Apache License 2.0</license>
 
   <exec_depend>rmf_door_msgs</exec_depend>

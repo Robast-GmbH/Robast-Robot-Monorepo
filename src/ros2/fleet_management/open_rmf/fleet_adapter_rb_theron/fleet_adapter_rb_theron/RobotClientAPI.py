@@ -65,6 +65,7 @@ class RobotAPI:
             if z > math.pi:
                 z -= 2 * math.pi
             return [x, y, z]
+        # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             return None
 
@@ -82,6 +83,7 @@ class RobotAPI:
                 f"{self.prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}"
             )
             return True
+        # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
             return False
 

@@ -1,4 +1,3 @@
- 
 # RMF door parameters
 
 ### template ###
@@ -8,12 +7,12 @@ door:
   header_key: "example_key"
   header_value: "example_header_value"
   door_id: "example_door_id"
-  door_signal_period: 3.0 # Seconds
-  door_close_feature: True 
+  door_signal_period_in_sec: 3.0
+  door_close_feature: True
 
 door_subscriber:
   topic_name: "adapter_door_requests"
 
 door_publisher:
   topic_name: "door_states"
-  door_state_publish_period: 1.0 # Seconds
+  door_state_publish_period_in_sec: 1.0
