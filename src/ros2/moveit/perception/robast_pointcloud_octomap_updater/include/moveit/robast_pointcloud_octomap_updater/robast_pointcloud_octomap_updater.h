@@ -71,6 +71,7 @@ namespace occupancy_map_monitor
     bool getShapeTransform(ShapeHandle h, Eigen::Isometry3d& transform) const;
     void cloudMsgCallback(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& cloud_msg);
     void stopHelper();
+    void clear_tree();
 
     // TODO: Enable private node for publishing filtered point cloud
     // ros::NodeHandle root_nh_;
