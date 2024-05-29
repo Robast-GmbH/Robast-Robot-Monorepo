@@ -23,7 +23,6 @@ ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
 
-
 RUN apt-get update && apt-get install -y \
   cmake \
   gdb \
@@ -52,12 +51,6 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libx11-6 \
     && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
-  && tar -xvzf v8.2.0.tar.gz \
-  && cd openvdb-8.2.0/ \
-  && mkdir builds && cd builds && cmake .. \
-  && make && make install
 
 RUN apt-get update && apt-get install -y \
   # Install ros distro testing packages
@@ -133,13 +126,6 @@ RUN apt-get update && apt-get install -y \
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
-
-RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
-  && tar -xvzf v8.2.0.tar.gz \
-  && cd openvdb-8.2.0/ \
-  && mkdir builds && cd builds && cmake .. \
-  && make && make install
-
 
 RUN apt-get update && apt-get upgrade -y\
     && apt-get install -y \

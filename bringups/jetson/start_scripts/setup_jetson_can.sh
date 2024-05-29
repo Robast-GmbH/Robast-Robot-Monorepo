@@ -8,11 +8,6 @@
 ### https://docs.nvidia.com/jetson/archives/r35.3.1/DeveloperGuide/text/HR/ControllerAreaNetworkCan.html?#jetson-platform-details ###
 ## Install busybox
 #   sudo apt-get install busybox
-## Pinmux for can0_din:
-#   busybox devmem 0x0c303018 w 0xc458
-## Pinmux for can0_dout:
-#   busybox devmem 0x0c303010 w 0xc400
-
 
 ### To let this script beeing executed at startup, we need to do the following once ###
 ## (1) Create a service using:
@@ -36,6 +31,10 @@
 
 
 ### The following commands need to be executed every time the jetson board is rebooted ###
+# Pinmux for can0_din:
+sudo busybox devmem 0x0c303018 w 0xc458
+# Pinmux for can0_dout:
+sudo busybox devmem 0x0c303010 w 0xc400
 # Load CAN kernel module
 sudo modprobe can
 # Load CAN raw protocol kernel module
