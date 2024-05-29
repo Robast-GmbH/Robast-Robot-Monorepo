@@ -10,7 +10,7 @@ import launch_ros.actions
 import launch_ros.descriptions
 
 sys.path.append(os.path.join(get_package_share_directory('oak_bringup'), 'launch'))
-from utils.oak_launch_arguments import *
+from utils.oak_launch_arguments import add_launch_arguments
 
 def generate_launch_description():
     urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
@@ -113,26 +113,8 @@ def generate_launch_description():
             output='screen',)
 
     ld = LaunchDescription()
-    ld.add_action(declare_tf_prefix_cmd)
-    ld.add_action(declare_camera_model_cmd)
-    
-    ld.add_action(declare_base_frame_cmd)
-    ld.add_action(declare_parent_frame_cmd)
-    
-    ld.add_action(declare_pos_x_cmd)
-    ld.add_action(declare_pos_y_cmd)
-    ld.add_action(declare_pos_z_cmd)
-    ld.add_action(declare_roll_cmd)
-    ld.add_action(declare_pitch_cmd)
-    ld.add_action(declare_yaw_cmd)
-    
-    ld.add_action(declare_mode_cmd)
-    ld.add_action(declare_lrcheck_cmd)
-    ld.add_action(declare_extended_cmd)
-    ld.add_action(declare_subpixel_cmd)
-    ld.add_action(declare_confidence_cmd)
-    ld.add_action(declare_LRchecktresh_cmd)
-    ld.add_action(declare_monoResolution_cmd)
+
+    add_launch_arguments(ld)
 
     ld.add_action(stereo_node)
     ld.add_action(urdf_launch)
