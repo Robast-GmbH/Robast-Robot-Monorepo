@@ -52,7 +52,7 @@ class NavBridge(BaseBridge):
         qx = 0
         qy = 0
         yaw_degrees = int(np.degrees(yaw)) % 360
-        index = yaw_degrees // self.lookup_table_resolution
+        index = yaw_degrees // LOOKUP_TABLE_RESOLUTION
         qz = self._sin_lookup[index]
         qw = self._cos_lookup[index]
 
