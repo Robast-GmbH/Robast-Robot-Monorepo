@@ -183,6 +183,22 @@ namespace occupancy_map_monitor
   {
   }
 
+  void RobastPointCloudOctomapUpdater::clear_tree()
+  {
+    static uint16_t clear_tree_counter = 0;
+    if (clear_tree_counter >= clear_tree_intervall_)
+    {
+      tree_->lockWrite();
+      tree_->clear();
+      tree_->unlockWrite();
+      clear_tree_counter = 0;
+    }
+    else
+    {
+      clear_tree_counter++;
+    }
+  }
+
   void RobastPointCloudOctomapUpdater::cloudMsgCallback(const sensor_msgs::msg::PointCloud2::ConstSharedPtr& cloud_msg)
   {
     RCLCPP_DEBUG(LOGGER, "Received a new point cloud message");
@@ -261,18 +277,8 @@ namespace occupancy_map_monitor
     size_t filtered_cloud_size = 0;
 
     // TODO: I have no clue if it is goo to clear the tree, but this solves the issue of old occupancy data for now
-    static uint16_t clear_tree_counter = 0;
-    if (clear_tree_counter >= clear_tree_intervall_)
-    {
-      tree_->lockWrite();
-      tree_->clear();
-      tree_->unlockWrite();
-      clear_tree_counter = 0;
-    }
-    else
-    {
-      clear_tree_counter++;
-    }
+    if (clear_tree_intervall_ > 0)
+      clear_tree();
 
     tree_->lockRead();
     try
@@ -377,7 +383,7 @@ namespace occupancy_map_monitor
       RCLCPP_ERROR(LOGGER, "Internal error while updating octree");
     }
     tree_->unlockWrite();
-    RCLCPP_DEBUG(
+    RCLCPP_INFO(
       LOGGER, "Processed point cloud in %lf ms", (rclcpp::Clock(RCL_ROS_TIME).now() - start).seconds() * 1000.0);
     tree_->triggerUpdateCallback();
 
