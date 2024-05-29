@@ -80,7 +80,7 @@ class NavBridge(BaseBridge):
         return True
 
     def is_navigating(self):
-        # Return True if nav_is_blocked so rmf won't evalauate the current rmf nav goal as reached
+        # Return True if nav_is_blocked so rmf won't evaluate the current rmf nav goal as reached
         if self.is_nav_blocked:
             return True
         try:
