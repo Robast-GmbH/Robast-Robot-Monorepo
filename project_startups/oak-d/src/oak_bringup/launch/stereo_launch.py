@@ -1,17 +1,18 @@
 import os
+import sys
 
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription, launch_description_sources
 from launch.actions import IncludeLaunchDescription
-from launch.actions import DeclareLaunchArgument
-from launch.substitutions import LaunchConfiguration
 import launch_ros.actions
 import launch_ros.descriptions
+
+sys.path.append(os.path.join(get_package_share_directory('oak_bringup'), 'launch'))
+from utils.oak_launch_arguments import *
 
 
 def generate_launch_description():
     urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
-    
 
     camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D')
     tf_prefix  = LaunchConfiguration('tf_prefix',   default = 'oak_s')
@@ -32,91 +33,6 @@ def generate_launch_description():
     confidence     = LaunchConfiguration('confidence', default = 120)
     LRchecktresh   = LaunchConfiguration('LRchecktresh', default = 5)
     monoResolution = LaunchConfiguration('monoResolution',  default = '720p')
-
-    declare_camera_model_cmd = DeclareLaunchArgument(
-        'camera_model',
-        default_value=camera_model,
-        description='The model of the camera. Using a wrong camera model can disable camera features. Valid models: `OAK-D, OAK-D-LITE`.')
-
-    declare_tf_prefix_cmd = DeclareLaunchArgument(
-        'tf_prefix',
-        default_value=tf_prefix,
-        description='The name of the camera. It can be different from the camera model and it will be used in naming TF.')
-
-    declare_base_frame_cmd = DeclareLaunchArgument(
-        'base_frame',
-        default_value=base_frame,
-        description='Name of the base link.')
-
-    declare_parent_frame_cmd = DeclareLaunchArgument(
-        'parent_frame',
-        default_value=parent_frame,
-        description='Name of the parent link from other a robot TF for example that can be connected to the base of the OAK.')
-
-    declare_pos_x_cmd = DeclareLaunchArgument(
-        'cam_pos_x',
-        default_value=cam_pos_x,
-        description='Position X of the camera with respect to the base frame.')
-
-    declare_pos_y_cmd = DeclareLaunchArgument(
-        'cam_pos_y',
-        default_value=cam_pos_y,
-        description='Position Y of the camera with respect to the base frame.')
-
-    declare_pos_z_cmd = DeclareLaunchArgument(
-        'cam_pos_z',
-        default_value=cam_pos_z,
-        description='Position Z of the camera with respect to the base frame.')
-
-    declare_roll_cmd = DeclareLaunchArgument(
-        'cam_roll',
-        default_value=cam_roll,
-        description='Roll orientation of the camera with respect to the base frame.')
-
-    declare_pitch_cmd = DeclareLaunchArgument(
-        'cam_pitch',
-        default_value=cam_pitch,
-        description='Pitch orientation of the camera with respect to the base frame.')
-
-    declare_yaw_cmd = DeclareLaunchArgument(
-        'cam_yaw',
-        default_value=cam_yaw,
-        description='Yaw orientation of the camera with respect to the base frame.')
-
-    declare_mode_cmd = DeclareLaunchArgument(
-        'mode',
-        default_value=mode,
-        description='set to depth or disparity. Setting to depth will publish depth or else will publish disparity.')
-
-    declare_lrcheck_cmd = DeclareLaunchArgument(
-        'lrcheck',
-        default_value=lrcheck,
-        description='The name of the camera. It can be different from the camera model and it will be used as node `namespace`.')
-
-    declare_extended_cmd = DeclareLaunchArgument(
-        'extended',
-        default_value=extended,
-        description='The name of the camera. It can be different from the camera model and it will be used as node `namespace`.')
-
-    declare_subpixel_cmd = DeclareLaunchArgument(
-        'subpixel',
-        default_value=subpixel,
-        description='The name of the camera. It can be different from the camera model and it will be used as node `namespace`.')
-    
-    declare_confidence_cmd = DeclareLaunchArgument(
-        'confidence',
-        default_value=confidence,
-        description='The name of the camera. It can be different from the camera model and it will be used as node `namespace`.')
-    
-    declare_LRchecktresh_cmd = DeclareLaunchArgument(
-        'LRchecktresh',
-        default_value=LRchecktresh,
-        description='The name of the camera. It can be different from the camera model and it will be used as node `namespace`.')
-    
-    declare_monoResolution_cmd = DeclareLaunchArgument(
-        'monoResolution',
-        default_value=monoResolution,
-        description='Contains the resolution of the Mono Cameras. Available resolutions are 800p, 720p & 400p for OAK-D & 480p for OAK-D-Lite.')
 
     urdf_launch = IncludeLaunchDescription(
                             launch_description_sources.PythonLaunchDescriptionSource(
