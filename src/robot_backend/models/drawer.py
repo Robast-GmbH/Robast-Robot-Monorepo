@@ -7,12 +7,13 @@ TYPE_ELECTRIC_DRAWER = "electric_drawer"
 
 
 class Drawer:
-    def __init__(self, module_id, drawer_id, pos, size, type):
+    def __init__(self, module_id, drawer_id, pos, size, type, label):
         self._module_id = module_id
         self._drawer_id = drawer_id
         self._pos = pos
         self._size = size
         self._type = type
+        self._label = label
         self._is_open = False
 
     instances = ThreadSafeDict()
@@ -44,6 +45,7 @@ class Drawer:
             json["pos"],
             json["size"],
             json["type"],
+            json["label"],
         )
         concatenated_id = f"{drawer._module_id}_{drawer._drawer_id}"
         cls.instances[concatenated_id] = drawer
@@ -60,5 +62,6 @@ class Drawer:
             "pos": self._pos,
             "size": self._size,
             "type": self._type,
+            "label": self._label,
             "is_open": self._is_open,
         }

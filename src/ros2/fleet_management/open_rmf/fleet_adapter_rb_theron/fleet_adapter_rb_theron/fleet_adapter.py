@@ -209,8 +209,6 @@ def initialize_fleet(config_yaml, nav_graph_path, node, use_sim_time):
     )
     api = RobotAPI(
         prefix,
-        fleet_config["fleet_manager"]["user"],
-        fleet_config["fleet_manager"]["password"],
         config_yaml["reference_coordinates"],
     )
 

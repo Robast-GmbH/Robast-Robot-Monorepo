@@ -86,12 +86,6 @@ levels:
     - - 14
       - 13
       - {speed_limit: 0}
-    - - 14
-      - 15
-      - {speed_limit: 0}
-    - - 15
-      - 14
-      - {speed_limit: 0}
     - - 15
       - 16
       - {speed_limit: 0}
@@ -110,58 +104,64 @@ levels:
     - - 8
       - 15
       - {speed_limit: 0}
+    - - 14
+      - 15
+      - {door_name: example_door, speed_limit: 0}
+    - - 15
+      - 14
+      - {door_name: example_door, speed_limit: 0}
     vertices:
     - - 24.836841915748135
       - -10.605865245320512
       - {is_charger: true, is_parking_spot: true, name: darts, spawn_robot_name: rb_theron}
     - - 24.844348319894305
       - -11.774175662894303
-      - {name: robast_door_1}
+      - {dropoff_ingestor: drawer_ingestor, name: robast_door_1, pickup_dispenser: drawer_dispenser}
     - - 31.658702410929617
       - -11.774175662894303
-      - {name: robast_door_2}
+      - {dropoff_ingestor: drawer_ingestor, name: robast_door_2, pickup_dispenser: drawer_dispenser}
     - - 33.40303221416294
       - -11.714870407776756
-      - {name: kenny}
+      - {dropoff_ingestor: drawer_ingestor, name: kenny, pickup_dispenser: drawer_dispenser}
     - - 34.71410418139862
       - -10.775808370244615
-      - {name: jo}
+      - {dropoff_ingestor: drawer_ingestor, name: jo, pickup_dispenser: drawer_dispenser}
     - - 34.704826079379444
       - -8.417010229265603
-      - {name: marketing}
+      - {dropoff_ingestor: drawer_ingestor, name: marketing, pickup_dispenser: drawer_dispenser}
     - - 33.6034982743729
       - -7.52273795725987
-      - {name: sales}
+      - {dropoff_ingestor: drawer_ingestor, name: sales, pickup_dispenser: drawer_dispenser}
     - - 31.89873639030344
       - -7.4045004360506725
-      - {name: showers}
+      - {dropoff_ingestor: drawer_ingestor, name: showers, pickup_dispenser: drawer_dispenser}
     - - 18.406837474689773
       - -7.586394751012876
-      - {name: floor}
+      - {dropoff_ingestor: drawer_ingestor, name: floor, pickup_dispenser: drawer_dispenser}
     - - 14.111091781020718
       - -7.690116782630934
-      - {name: toilets}
+      - {dropoff_ingestor: drawer_ingestor, name: toilets, pickup_dispenser: drawer_dispenser}
     - - 12.491588971787436
       - -7.7265142950746695
-      - {name: kitchen}
+      - {dropoff_ingestor: drawer_ingestor, name: kitchen, pickup_dispenser: drawer_dispenser}
     - - 9.305407924113467
       - -7.69378450805225
-      - {name: mensa_side_entry}
+      - {dropoff_ingestor: drawer_ingestor, name: mensa_side_entry, pickup_dispenser: drawer_dispenser}
     - - 9.218610269545465
       - -9.660944171839914
-      - {name: mensa_main_entry}
+      - {dropoff_ingestor: drawer_ingestor, name: mensa_main_entry, pickup_dispenser: drawer_dispenser}
     - - 9.218610269545465
       - -11.628088294418166
-      - {name: tt}
+      - {dropoff_ingestor: drawer_ingestor, name: tt, pickup_dispenser: drawer_dispenser}
     - - 13.702560009198141
       - -11.628088294418166
-      - {name: storage}
+      - {dropoff_ingestor: drawer_ingestor, name: storage, pickup_dispenser: drawer_dispenser}
     - - 18.389011707493804
       - -11.714870407776756
-      - {name: printer}
+      - {dropoff_ingestor: drawer_ingestor, name: printer, pickup_dispenser: drawer_dispenser}
     - - 21.426137015693875
       - -11.711575671381336
-      - {name: server}
+      - {dropoff_ingestor: drawer_ingestor, name: server, pickup_dispenser: drawer_dispenser}
     - - 6.920609339787586
       - -9.580549495549802
-      - {name: mensa}
+      - {dropoff_ingestor: drawer_ingestor, name: mensa, pickup_dispenser: drawer_dispenser}

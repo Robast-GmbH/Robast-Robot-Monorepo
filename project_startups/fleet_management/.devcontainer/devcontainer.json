@@ -1,7 +1,7 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
-{	
+{
 	"name": "fleet_management",
-	"dockerFile": "ghcr.io/robast-gmbh/monorepo/fleet_management",
+	"image": "ghcr.io/robast-gmbh/monorepo/fleet_management:latest",
 	"remoteUser": "robast",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
@@ -10,7 +10,10 @@
 	],
 	"workspaceFolder": "/workspace",
 	//"runArgs": [ "--network=host"],
-	"forwardPorts": [8003,8000,3000],
+	"forwardPorts": [
+		8000,
+		3000
+	],
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
