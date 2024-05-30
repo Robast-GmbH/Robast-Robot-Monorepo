@@ -2,6 +2,12 @@ This folder contains the implementation of Open-RMF which enables our fleet to m
 
 To run the fleet_management:
 
+- Adapt ips to your setup
+  - middleware: in main.py name_to_ip = {"rb_theron": "ip of device where robot_backend is running (if sim your pc ip else robot ip)"} 
+  - fleet_management:
+    - fleet_adapter_rb_theron/config.yaml ip: ip of device where middleware is running
+    - door_adapter_template/config.yaml: api_endpoint: http://ip_of_device_where_middleware_is_running:8003
+    - dispenser_ingestor_mock.py: in class init self.declare_parameter("api_url", "http://ip_of_device_where_middleware_is_running:8003")
 - Start Simulation (optional)
 - Start Navigation
 - Start nav_action_node and robot_pose_publisher in nav container
