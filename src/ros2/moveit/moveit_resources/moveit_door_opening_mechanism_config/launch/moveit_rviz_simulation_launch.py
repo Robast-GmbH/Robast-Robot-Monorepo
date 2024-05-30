@@ -84,6 +84,8 @@ def launch_setup(context, *args, **settings):
         .to_moveit_configs()
     )
 
+    NAMESPACE_ARM = "arm"
+
     # If there are virtual joints, broadcast static tf by including virtual_joints launch
     actions_to_launch.append(generate_static_virtual_joint_tfs_launch(moveit_config))
 
@@ -193,7 +195,7 @@ def launch_setup(context, *args, **settings):
     )
 
     # Second controller manager for the arm
-    controller_manager_name = "/" + NAMESPACE_ARM + "/controller_manager"
+    CONTROLLER_MANAGER_NAME = "/" + NAMESPACE_ARM + "/controller_manager"
     remappings_controller_manager_arm = [
         (
             "/" + NAMESPACE_ARM + "/diff_drive_base_controller/cmd_vel",
@@ -223,7 +225,7 @@ def launch_setup(context, *args, **settings):
             "active",
             "mobile_base_controller_cmd_vel",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
@@ -236,7 +238,7 @@ def launch_setup(context, *args, **settings):
             "active",
             "joint_trajectory_controller",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
@@ -249,7 +251,7 @@ def launch_setup(context, *args, **settings):
             "active",
             "joint_state_broadcaster",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
