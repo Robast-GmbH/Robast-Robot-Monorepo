@@ -7,11 +7,18 @@ from geometry_msgs.msg import Pose, PoseStamped
 from std_msgs.msg import Bool
 from builtin_interfaces.msg import Duration
 
+import os
+
 
 class NavigateToPoseActionClient(Node):
 
     def __init__(self):
         super().__init__("navigate_to_pose_action_client")
+
+        self.behavior_tree = "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_w_recovery_and_replanning_only_if_path_becomes_invalid.xml"
+        if not os.path.isfile(self.behavior_tree):
+            raise FileNotFoundError(f"No such file: '{self.behavior_tree}'")
+
         self._action_client = ActionClient(self, NavigateToPose, "navigate_to_pose")
         self._goal_subscriber = self.create_subscription(
             Pose, "set_goal_pose", self.send_goal, 10
@@ -42,7 +49,7 @@ class NavigateToPoseActionClient(Node):
         goal_pose_stamped.header.stamp = now.to_msg()
         goal_msg.pose = goal_pose_stamped
 
-        goal_msg.behavior_tree = "/workspace/src/navigation/nav_bringup/behavior_trees/humble/navigate_w_recovery_and_replanning_only_if_path_becomes_invalid.xml"
+        goal_msg.behavior_tree = self.behavior_tree
         success = self._action_client.wait_for_server(timeout_sec=2.0)
         if success:
             self._send_goal_future = self._action_client.send_goal_async(

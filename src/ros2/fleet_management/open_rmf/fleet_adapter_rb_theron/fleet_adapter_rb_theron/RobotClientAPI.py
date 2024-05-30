@@ -28,27 +28,24 @@ class RobotAPI:
     # The constructor below accepts parameters typically required to submit
     # http requests. Users should modify the constructor as per the
     # requirements of their robot's API
-    def __init__(self, prefix: str, user: str, password: str, reference_coordinates):
-        self.prefix = prefix
-        self.user = user
-        self.password = password
-        self.connected = False
+    def __init__(self, prefix: str, reference_coordinates):
+        self.__prefix = prefix
 
         rmf_coordinates = reference_coordinates["rmf"]
         robot_coordinates = reference_coordinates["robot"]
 
-        self.transforms = {
+        self.__transforms = {
             "rmf_to_robot": nudged.estimate(rmf_coordinates, robot_coordinates),
             "robot_to_rmf": nudged.estimate(robot_coordinates, rmf_coordinates),
         }
-        self.transforms["orientation_offset"] = self.transforms[
+        self.__transforms["orientation_offset"] = self.__transforms[
             "rmf_to_robot"
         ].get_rotation()
 
     def check_connection(self):
         """Return True if connection to the robot API server is successful"""
         try:
-            response = requests.get(f"{self.prefix}/")
+            response = requests.get(f"{self.__prefix}/")
             return response.status_code == 200
         except Exception as e:
             return False
@@ -58,10 +55,10 @@ class RobotAPI:
         None if any errors are encountered"""
         try:
             pose = requests.get(
-                f"{self.prefix}/robot_pos?robot_name={robot_name}"
+                f"{self.__prefix}/robot_pos?robot_name={robot_name}"
             ).json()
-            x, y = self.transforms["robot_to_rmf"].transform([pose["x"], pose["y"]])
-            z = pose["z"] - self.transforms["orientation_offset"]
+            x, y = self.__transforms["robot_to_rmf"].transform([pose["x"], pose["y"]])
+            z = pose["z"] - self.__transforms["orientation_offset"]
             if z > math.pi:
                 z -= 2 * math.pi
             return [x, y, z]
@@ -77,10 +74,10 @@ class RobotAPI:
         should return True if the robot has accepted the request,
         else False"""
         try:
-            x, y = self.transforms["rmf_to_robot"].transform([pose[0], pose[1]])
-            z = pose[2] + self.transforms["orientation_offset"]
+            x, y = self.__transforms["rmf_to_robot"].transform([pose[0], pose[1]])
+            z = pose[2] + self.__transforms["orientation_offset"]
             requests.post(
-                f"{self.prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}"
+                f"{self.__prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}"
             )
             return True
         # TODO(ane-robast): Add proper error handling -> RE-2187
@@ -94,7 +91,7 @@ class RobotAPI:
         """Command the robot to stop.
         Return True if robot has successfully stopped. Else False"""
         try:
-            requests.post(f"{self.prefix}/cancel_goal?robot_name={robot_name}")
+            requests.post(f"{self.__prefix}/cancel_goal?robot_name={robot_name}")
             return True
         # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
@@ -105,7 +102,7 @@ class RobotAPI:
         destination"""
         try:
             response = requests.get(
-                f"{self.prefix}/remaining_nav_time?robot_name={robot_name}"
+                f"{self.__prefix}/remaining_nav_time?robot_name={robot_name}"
             ).json()
             return response["remaining_seconds"]
         # TODO(ane-robast): Add proper error handling -> RE-2187
@@ -117,7 +114,7 @@ class RobotAPI:
         navigation request. Else False."""
         try:
             response = requests.get(
-                f"{self.prefix}/is_navigating?robot_name={robot_name}"
+                f"{self.__prefix}/is_navigating?robot_name={robot_name}"
             ).json()
             return not response["is_navigating"]
         # TODO(ane-robast): Add proper error handling -> RE-2187
@@ -129,7 +126,7 @@ class RobotAPI:
         and 1.0. Else return None if any errors are encountered"""
         try:
             response = requests.get(
-                f"{self.prefix}/battery_level?robot_name={robot_name}"
+                f"{self.__prefix}/battery_level?robot_name={robot_name}"
             ).json()
             return response["battery_level"]
         # TODO(ane-robast): Add proper error handling -> RE-2187
