@@ -8,7 +8,7 @@ sys.path.append(os.path.join(get_package_share_directory('oak_bringup'), 'launch
 from utils.oak_launch_helper import generate_stereo_launch_description
 
 def generate_launch_description():
-    urdf_launch_dir = os.path.join(os.path.join(get_package_share_directory('oak_bringup'), 'launch'), 'door_opening_cam_urdf_launch.py')
+    urdf_launch_dir = os.path.join(os.path.join(get_package_share_directory('oak_bringup_door_opening'), 'launch'), 'door_opening_cam_urdf_launch.py')
 
     launch_configurations_oak_d = {
         'camera_model': 'OAK-D',
