@@ -14,10 +14,10 @@ ARG DEBIAN_FRONTEND=
 
 WORKDIR /workspace
 
-COPY main.py /workspace/middleware
-COPY requirements.txt /workspace/middleware
+COPY main.py /workspace/middleware/main.py
+COPY requirements.txt /workspace/middleware/requirements.txt
 
 USER robast
 
-# RUN pip install --no-cache-dir -r /workspace/middleware/requirements.txt
-# CMD [ "python", "/workspace/middleware/main.py" ]
+#RUN pip install --no-cache-dir -r /workspace/middleware/requirements.txt
+#CMD [ "python", "/workspace/middleware/main.py" ]

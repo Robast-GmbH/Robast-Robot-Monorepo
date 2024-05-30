@@ -11,11 +11,17 @@ dependencies:
   flutter:
     sdk: flutter
   flutter_bloc: ^8.1.4
+  flutter_gen: any
   flutter_localizations:
     sdk: flutter
-  intl: ^0.18.1
+  http: ^1.2.1
+  intl: ^0.19.0
   middleware_api_utilities: ^0.1.0+1
+  provider: ^6.1.2
+  rmf_api: ^0.1.0+1
+  shared_data_models: ^0.1.0+1
   shared_widgets: ^0.1.0+1
+  zoom_widget: ^2.0.1
 
 dev_dependencies:
   bloc_test: ^9.1.6
@@ -27,3 +33,6 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   generate: true
+
+  assets:
+    - assets/6OG_bp.png

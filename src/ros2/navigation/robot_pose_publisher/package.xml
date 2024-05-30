@@ -4,7 +4,7 @@
   <name>robot_pose_publisher</name>
   <version>0.0.0</version>
   <description>TODO: Package description</description>
-  <maintainer email="a.neumann@robast.de">robast</maintainer>
+  <maintainer email="a.neumann@robast.de">Andreas Neumann</maintainer>
   <license>TODO: License declaration</license>
 
   <test_depend>ament_copyright</test_depend>

@@ -304,6 +304,53 @@
                         }
                 },
                 {
+                        "label": "start nav_action_node and robot_pose_publisher (open-rmf)",
+                        "detail": "Starts the nav nodes that are required to run open-rmf",
+                        "dependsOn": [
+                                "start nav_action_node",
+                                "start robot_pose_publisher"
+                        ]
+                },
+                {
+                        "label": "start nav_action_node and robot_pose_publisher for sim (open-rmf)",
+                        "detail": "Starts the nav nodes that are required to run open-rmf",
+                        "dependsOn": [
+                                "start nav_action_node",
+                                "start robot_pose_publisher sim"
+                        ]
+                },
+                {
+                        "type": "shell",
+                        "label": "start nav_action_node",
+                        "command": "source /workspace/install/setup.bash; ros2 launch nav_action_node nav_action_node.launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true,
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start robot_pose_publisher",
+                        "command": "source /workspace/install/setup.bash; ros2 launch robot_pose_publisher robot_pose_publisher.launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true,
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start robot_pose_publisher sim",
+                        "command": "source /workspace/install/setup.bash; ros2 launch robot_pose_publisher robot_pose_publisher.launch.py use_robot_source_frame:=False",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true,
+                        }
+                },
+
+                {
                         "type": "shell",
                         "label": "build tests",
                         "command": "source /workspace/install/setup.bash; colcon build --symlink-install --packages-select testing_tools",

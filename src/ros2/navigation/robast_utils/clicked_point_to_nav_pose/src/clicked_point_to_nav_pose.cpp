@@ -38,7 +38,7 @@ namespace robast_utils
     goal_msg.pose.pose.position = clicked_point_msg.point;
     goal_msg.behavior_tree =
       "/workspace/src/navigation/nav_bringup/behavior_trees/humble/"
-      "navigate_to_pose_w_replanning_goal_patience_and_recovery.xml";
+      "navigate_w_recovery_and_replanning_only_if_path_becomes_invalid.xml";
 
     RCLCPP_INFO(this->get_logger(), "Sending goal");
 

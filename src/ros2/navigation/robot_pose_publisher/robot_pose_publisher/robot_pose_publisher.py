@@ -7,53 +7,68 @@ from tf2_ros import TransformException
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
 
+import numpy as np
+
 
 class RobotPosePublisher(Node):
     def __init__(self):
         super().__init__("robot_pose_publisher")
 
-        self._use_robot_source_frame = (
+        self.declare_parameter("use_robot_source_frame", True)
+        self.__use_robot_source_frame = (
             self.get_parameter("use_robot_source_frame")
             .get_parameter_value()
             .bool_value
         )
-        self._source_frame = (
-            "robot_base_link" if self._use_robot_source_frame else "base_link"
+        self.__source_frame = (
+            "robot/base_link" if self.__use_robot_source_frame else "base_link"
         )
-        self._target_frame = "map"
+        self.__target_frame = "map"
 
-        self._tf_buffer = Buffer()
-        self._tf_listener = TransformListener(self._tf_buffer, self, spin_thread=True)
+        self.__tf_buffer = Buffer()
+        self.__tf_listener = TransformListener(self.__tf_buffer, self, spin_thread=True)
 
         # Call on_timer function every second
-        self._timer = self.create_timer(1.0, self._on_timer)
+        self.__timer = self.create_timer(1.0, self.__on_timer)
 
-        self._robot_position_publisher = self.create_publisher(
+        self.__robot_position_publisher = self.create_publisher(
             Point, "robot_position", 10
         )
 
-    def _on_timer(self):
+    def __get_yaw_from_quaternion(self, qz, qw):
+        """
+        Convert a quaternion to a yaw angle.
+
+        Input
+            :param qz: The z component of the quaternion.
+            :param qw: The w component of the quaternion.
+
+        Output
+            :return yaw: The yaw (rotation around z-axis) angle in radians.
+        """
+        return 2 * np.arctan2(qz, qw)
+
+    def __on_timer(self):
         try:
-            t = self._tf_buffer.lookup_transform(
-                self._target_frame, self._source_frame, rclpy.time.Time()
+            t = self.__tf_buffer.lookup_transform(
+                self.__target_frame, self.__source_frame, rclpy.time.Time()
             )
 
             self.get_logger().debug(
-                "Publishing robot position: %f, %f, %f",
-                t.transform.translation.x,
-                t.transform.translation.y,
-                t.transform.rotation.z,
+                f"Publishing robot position: {t.transform.translation.x}, {t.transform.translation.y}, {t.transform.rotation.z}"
             )
             # Publish the robot position
             msg = Point()
             msg.x = t.transform.translation.x
             msg.y = t.transform.translation.y
-            msg.z = t.transform.rotation.z
-            self._robot_position_publisher.publish(msg)
+            msg.z = self.__get_yaw_from_quaternion(
+                t.transform.rotation.z, t.transform.rotation.w
+            )
+            self.__robot_position_publisher.publish(msg)
 
         except TransformException as ex:
             self.get_logger().info(
-                f"Could not transform {to_frame_rel} to {from_frame_rel}: {ex}"
+                f"Could not transform {self.__source_frame} to {self.__target_frame}: {ex}"
             )
 
 

@@ -285,6 +285,7 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
                         return
                     # State machine
                     if self.state == RobotState.IDLE or target_pose is None:
+                        self.state = RobotState.MOVING
                         # Assign the next waypoint
                         self.target_waypoint = self.remaining_waypoints[0]
                         path_index = self.remaining_waypoints[0].index
@@ -303,8 +304,8 @@ class RobotCommandHandle(adpt.RobotCommandHandle):
 
                         if response:
                             self.remaining_waypoints = self.remaining_waypoints[1:]
-                            self.state = RobotState.MOVING
                         else:
+                            self.state = RobotState.IDLE
                             self.node.get_logger().info(
                                 f"Robot {self.name} failed to request "
                                 f"navigation to "

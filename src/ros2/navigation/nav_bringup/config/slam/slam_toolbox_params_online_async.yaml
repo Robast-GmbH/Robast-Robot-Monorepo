@@ -10,18 +10,19 @@ slam_toolbox:
     ceres_loss_function: None
 
     # ROS Parameters
-    odom_frame: odom
+    map_name: /map 
+    odom_frame: robot/odom
     map_frame: map
-    base_frame: base_footprint
-    scan_topic: /front_laser/scan
+    base_frame: robot/base_footprint
+    scan_topic: /robot/front_laser/scan
     mode: mapping #localization
 
     # if you'd like to immediately start continuing a map at a given pose
     # or at the dock, but they are mutually exclusive, if pose is given
     # will use pose
-    #map_file_name: test_steve
+    # map_file_name: test_steve
     # map_start_pose: [0.0, 0.0, 0.0]
-    #map_start_at_dock: true
+    # map_start_at_dock: true
 
     debug_logging: false
     throttle_scans: 1

@@ -2,8 +2,8 @@ coordinate_system: reference_image
 crowd_sim:
   agent_groups:
     - {
-        agents_name: [],
-        agents_number: 0,
+        agents_name: [rb_theron],
+        agents_number: 1,
         group_id: 0,
         profile_selector: external_agent,
         state_selector: external_static,
@@ -36,6 +36,20 @@ crowd_sim:
 graphs: {}
 levels:
   Tiplu:
+    doors:
+      - [
+          60,
+          61,
+          {
+            motion_axis: [1, start],
+            motion_degrees: [3, 90],
+            motion_direction: [2, 1],
+            name: [1, "example_door"],
+            plugin: [1, normal],
+            right_left_ratio: [3, 1],
+            type: [1, hinged],
+          },
+        ]
     drawing:
       filename: 6OG_bp.png
     elevation: 0
@@ -504,6 +518,8 @@ levels:
       - [1486.682, 531.86800000000005, 0, ""]
       - [2109.4490000000001, 526.70699999999999, 0, ""]
       - [2185.145, 551.65200000000004, 0, ""]
+      - [1037.181, 723.62300000000005, 0, ""]
+      - [1037.2360000000001, 781.55899999999997, 0, ""]
     walls:
       - [
           20,

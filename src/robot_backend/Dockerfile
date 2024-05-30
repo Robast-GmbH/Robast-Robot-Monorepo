@@ -4,19 +4,19 @@ ARG ROS_DISTRO
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
-    apt-get upgrade -yq && \
-    apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu && \
-    rm -rf /var/lib/apt/lists/*
+  apt-get upgrade -yq && \
+  apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu && \
+  rm -rf /var/lib/apt/lists/*
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+  echo robast:robast | chpasswd && \
+  echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV USER robast
 ARG DEBIAN_FRONTEND=
 
 ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-ENV ROS_DOMAIN_ID=0
+ENV ROS_DOMAIN_ID=23
 
 
 RUN apt-get update && apt-get install -y \
@@ -41,7 +41,7 @@ RUN apt-get update && apt-get install -y \
   ros-${ROS_DISTRO}-diagnostic-updater \
   ros-${ROS_DISTRO}-rosbridge-server \
   && rm -rf /var/lib/apt/lists/*
-  
+
 WORKDIR /workspace
 USER robast
 
