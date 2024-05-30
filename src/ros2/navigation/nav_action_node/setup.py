@@ -13,7 +13,7 @@ setup(
     ],
     install_requires=["setuptools"],
     zip_safe=True,
-    maintainer="robast",
+    maintainer="Andreas Neumann",
     maintainer_email="a.neumann@robast.de",
     description="TODO: Package description",
     license="TODO: License declaration",

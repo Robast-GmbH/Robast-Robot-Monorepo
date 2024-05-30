@@ -12,7 +12,7 @@ setup(
     ],
     install_requires=["setuptools"],
     zip_safe=True,
-    maintainer="ane-robast",
+    maintainer="Andreas Neumann",
     maintainer_email="a.neumann@robast.de",
     description="Door adapter for RMF",
     license="TODO: License declaration",
