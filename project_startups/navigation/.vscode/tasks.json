@@ -15,7 +15,7 @@
                         "label": "build-ros-theron",
                         "detail": "Symlink Build for Ros-Theron.",
                         "type": "shell",
-                        "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip robast_map_update_module",
+                        "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip robast_map_update_module openvdb_vendor spatio_temporal_voxel_layer",
                         "problemMatcher": []
                 },
                 {

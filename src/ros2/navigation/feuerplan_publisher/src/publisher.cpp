@@ -23,7 +23,7 @@ class FeuerplanPublisher : public rclcpp::Node
       map_qos.reliable();
       map_qos.keep_last(1);
 
-      publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("global_costmap/feuerplan_image_topic",map_qos);
+      publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("/global_costmap/feuerplan_image_topic",map_qos);
       cv::Mat feuerplan_image = cv::imread(feuerplan_path,cv::IMREAD_GRAYSCALE);
       preprocessImage(feuerplan_image);
       publishOccupancyGrid(feuerplan_image);
@@ -59,19 +59,19 @@ class FeuerplanPublisher : public rclcpp::Node
         // TODO the origin's orientation and positon should be obtained from the transformation between feuerplan and map.
         auto ros_image_msg = nav_msgs::msg::OccupancyGrid();
         ros_image_msg.header.stamp = this->now();
-        ros_image_msg.header.frame_id = "feuerplan_map";
+        ros_image_msg.header.frame_id = "map";
         ros_image_msg.info.map_load_time.sec = 0;
         ros_image_msg.info.map_load_time.nanosec = 0;
         ros_image_msg.info.resolution = 0.05;
         ros_image_msg.info.width = feuerplan_image.cols;
         ros_image_msg.info.height = feuerplan_image.rows;
-        ros_image_msg.info.origin.position.x = -20.2;
-        ros_image_msg.info.origin.position.y = -3.3;
+        ros_image_msg.info.origin.position.x = -5.27;
+        ros_image_msg.info.origin.position.y = 13.2;
         ros_image_msg.info.origin.position.z = 0.0;
-        ros_image_msg.info.origin.orientation.x = 1.0;
+        ros_image_msg.info.origin.orientation.x = 0.0;
         ros_image_msg.info.origin.orientation.y = 0.0;
-        ros_image_msg.info.origin.orientation.z = 0.0;
-        ros_image_msg.info.origin.orientation.w = 0.0;
+        ros_image_msg.info.origin.orientation.z = -0.7071068;
+        ros_image_msg.info.origin.orientation.w = 0.7071068;
         ros_image_msg.data = data;
 
         RCLCPP_INFO(this->get_logger(), "Feuerplan published");

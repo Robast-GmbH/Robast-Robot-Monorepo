@@ -27,10 +27,10 @@ def generate_launch_description():
         ]
     )
 
-    start_feuerplan_broadcaster = Node(
-         package='feuerplan_publisher',
-         executable='feuerplan_frame_broadcaster'
-    )
+    # start_feuerplan_broadcaster = Node(
+    #      package='feuerplan_publisher',
+    #      executable='feuerplan_frame_broadcaster'
+    # )
 
     ld = LaunchDescription()
 
@@ -38,7 +38,7 @@ def generate_launch_description():
 
     ld.add_action(start_feuerplan_publisher)
 
-    ld.add_action(start_feuerplan_broadcaster)
+    #ld.add_action(start_feuerplan_broadcaster)
 
     return ld
 
