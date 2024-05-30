@@ -1,6 +1,7 @@
 This folder contains the implementation of Open-RMF which enables our fleet to manage it's traffic (including door opening/closing) and assign tasks to the fleets robots
 
 To run the fleet_management:
+- In VSCode set "remote.localPortHost": "allInterfaces" so Servers get bound to the hosts ip
 
 - Adapt ips to your setup
   - middleware: in main.py name_to_ip = {"rb_theron": "ip of device where robot_backend is running (if sim your pc ip else robot ip)"} 
