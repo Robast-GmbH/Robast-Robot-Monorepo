@@ -25,8 +25,8 @@ class RobotPosePublisher(Node):
         )
         self.__target_frame = "map"
 
-        self._tf_buffer = Buffer()
-        self.__tf_listener = TransformListener(self._tf_buffer, self, spin_thread=True)
+        self.__tf_buffer = Buffer()
+        self.__tf_listener = TransformListener(self.__tf_buffer, self, spin_thread=True)
 
         # Call on_timer function every second
         self.__timer = self.create_timer(1.0, self.__on_timer)
@@ -50,7 +50,7 @@ class RobotPosePublisher(Node):
 
     def __on_timer(self):
         try:
-            t = self._tf_buffer.lookup_transform(
+            t = self.__tf_buffer.lookup_transform(
                 self.__target_frame, self.__source_frame, rclpy.time.Time()
             )
 
