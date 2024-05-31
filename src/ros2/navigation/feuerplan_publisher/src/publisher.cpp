@@ -25,6 +25,7 @@ class FeuerplanPublisher : public rclcpp::Node
 
       publisher_ = this->create_publisher<nav_msgs::msg::OccupancyGrid>("/global_costmap/feuerplan_image_topic",map_qos);
       cv::Mat feuerplan_image = cv::imread(feuerplan_path,cv::IMREAD_GRAYSCALE);
+      cv::rotate(feuerplan_image, feuerplan_image, cv::ROTATE_90_COUNTERCLOCKWISE);
       preprocessImage(feuerplan_image);
       publishOccupancyGrid(feuerplan_image);
     }
@@ -65,13 +66,13 @@ class FeuerplanPublisher : public rclcpp::Node
         ros_image_msg.info.resolution = 0.05;
         ros_image_msg.info.width = feuerplan_image.cols;
         ros_image_msg.info.height = feuerplan_image.rows;
-        ros_image_msg.info.origin.position.x = -5.27;
-        ros_image_msg.info.origin.position.y = 13.2;
+        ros_image_msg.info.origin.position.x = -5.26;
+        ros_image_msg.info.origin.position.y = -19.74;
         ros_image_msg.info.origin.position.z = 0.0;
         ros_image_msg.info.origin.orientation.x = 0.0;
         ros_image_msg.info.origin.orientation.y = 0.0;
-        ros_image_msg.info.origin.orientation.z = -0.7071068;
-        ros_image_msg.info.origin.orientation.w = 0.7071068;
+        ros_image_msg.info.origin.orientation.z = 0.0;
+        ros_image_msg.info.origin.orientation.w = 1.0;
         ros_image_msg.data = data;
 
         RCLCPP_INFO(this->get_logger(), "Feuerplan published");

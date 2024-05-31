@@ -62,7 +62,6 @@ class MinimalSubscriber(Node):
         return image
 
     def create_transform(self):
-        #rint(self.map_msg.info.origin.position.x)
         if self.map_msg and self.feuerplan_msg is not None:
             
             image0 = self.ros_msg_to_image(self.map_msg)
