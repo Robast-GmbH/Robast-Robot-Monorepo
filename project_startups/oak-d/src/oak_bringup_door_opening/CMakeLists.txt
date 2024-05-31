@@ -22,8 +22,9 @@ find_package(depthai_examples REQUIRED)
 find_package(oak_bringup REQUIRED)
 
 install(DIRECTORY
-launch
-DESTINATION share/${PROJECT_NAME}/
+  config
+  launch
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 if(BUILD_TESTING)

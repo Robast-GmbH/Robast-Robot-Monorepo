@@ -22,8 +22,9 @@ find_package(depthai_examples REQUIRED)
 
 
 install(DIRECTORY
-launch
-DESTINATION share/${PROJECT_NAME}/
+  config
+  launch
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 if(BUILD_TESTING)
