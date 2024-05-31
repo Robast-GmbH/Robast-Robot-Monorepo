@@ -3,7 +3,7 @@ from launch.substitutions import LaunchConfiguration
 from launch.actions import IncludeLaunchDescription
 import launch_ros.actions
 
-def generate_stereo_launch_description(default_values, urdf_launch_dir, namespace, remappings):
+def generate_stereo_launch_description(default_values, urdf_launch_file, namespace, remappings):
     camera_model = LaunchConfiguration('camera_model',  default = default_values['camera_model'])
     tf_prefix    = LaunchConfiguration('tf_prefix',       default = default_values['tf_prefix'])
     base_frame   = LaunchConfiguration('base_frame',    default = default_values['base_frame'])
@@ -110,7 +110,7 @@ def generate_stereo_launch_description(default_values, urdf_launch_dir, namespac
         description='Contains the resolution of the Mono Cameras. Available resolutions are 800p, 720p & 400p for OAK-D & 480p for OAK-D-Lite.')
 
     urdf_launch = IncludeLaunchDescription(
-                            urdf_launch_dir,
+                            urdf_launch_file,
                             launch_arguments={'tf_prefix' : tf_prefix,
                                               'camera_model': camera_model,
                                               'base_frame'  : base_frame,

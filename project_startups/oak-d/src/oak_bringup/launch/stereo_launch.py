@@ -9,7 +9,7 @@ from utils.oak_launch_helper import generate_stereo_launch_description
 
 
 def generate_launch_description():
-    urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch', 'urdf_launch.py')
+    urdf_launch_file = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch', 'urdf_launch.py')
 
     launch_configurations_oak_d = {
         'camera_model': 'OAK-D',
@@ -34,6 +34,6 @@ def generate_launch_description():
     namespace = ''
     remappings = []
 
-    actions_to_launch = generate_stereo_launch_description(launch_configurations_oak_d, urdf_launch_dir, namespace, remappings)
+    actions_to_launch = generate_stereo_launch_description(launch_configurations_oak_d, urdf_launch_file, namespace, remappings)
 
     return LaunchDescription(actions_to_launch)
