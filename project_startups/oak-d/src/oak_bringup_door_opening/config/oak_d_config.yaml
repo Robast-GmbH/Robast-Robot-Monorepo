@@ -1,0 +1,19 @@
+camera_model: 'OAK-D'
+tf_prefix: 'oak'
+base_frame: 'back_top_oak_d_camera'
+parent_frame: 'door_opening_mechanism_link_y_axis_slide'
+
+cam_pos_x: '-0.05'
+cam_pos_y: '0.0'
+cam_pos_z: '0.13721'
+cam_roll: '0'
+cam_pitch: '0.5235988'
+cam_yaw: '3.14159'
+
+mode: 'depth'
+lrcheck: true
+extended: true
+subpixel: false
+confidence: 120
+LRchecktresh: 5
+monoResolution: '400p'

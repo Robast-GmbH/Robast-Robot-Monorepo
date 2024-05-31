@@ -1,28 +1,34 @@
+import yaml
+
 from launch.actions import DeclareLaunchArgument
 from launch.substitutions import LaunchConfiguration
 from launch.actions import IncludeLaunchDescription
 import launch_ros.actions
 
-def generate_stereo_launch_description(default_values, urdf_launch_file, namespace, remappings):
-    camera_model = LaunchConfiguration('camera_model',  default = default_values['camera_model'])
-    tf_prefix    = LaunchConfiguration('tf_prefix',       default = default_values['tf_prefix'])
-    base_frame   = LaunchConfiguration('base_frame',    default = default_values['base_frame'])
-    parent_frame = LaunchConfiguration('parent_frame',  default = default_values['parent_frame'])
+def generate_stereo_launch_description(oak_d_config_file, urdf_launch_file, namespace, remappings):
 
-    cam_pos_x  = LaunchConfiguration('cam_pos_x',     default = default_values['cam_pos_x'])
-    cam_pos_y  = LaunchConfiguration('cam_pos_y',     default = default_values['cam_pos_y'])
-    cam_pos_z  = LaunchConfiguration('cam_pos_z',     default = default_values['cam_pos_z'])
-    cam_roll   = LaunchConfiguration('cam_roll',      default = default_values['cam_roll'])
-    cam_pitch  = LaunchConfiguration('cam_pitch',     default = default_values['cam_pitch'])
-    cam_yaw    = LaunchConfiguration('cam_yaw',       default = default_values['cam_yaw'])
+    with open(oak_d_config_file, 'r') as file:
+        oak_d_config = yaml.safe_load(file)
 
-    mode           = LaunchConfiguration('mode', default = default_values['mode'])
-    lrcheck        = LaunchConfiguration('lrcheck', default = default_values['lrcheck'])
-    extended       = LaunchConfiguration('extended', default = default_values['extended'])
-    subpixel       = LaunchConfiguration('subpixel', default = default_values['subpixel'])
-    confidence     = LaunchConfiguration('confidence', default = default_values['confidence'])
-    LRchecktresh   = LaunchConfiguration('LRchecktresh', default = default_values['LRchecktresh'])
-    monoResolution = LaunchConfiguration('monoResolution',  default = default_values['monoResolution'])
+    camera_model = LaunchConfiguration('camera_model',  default = oak_d_config['camera_model'])
+    tf_prefix    = LaunchConfiguration('tf_prefix',       default = oak_d_config['tf_prefix'])
+    base_frame   = LaunchConfiguration('base_frame',    default = oak_d_config['base_frame'])
+    parent_frame = LaunchConfiguration('parent_frame',  default = oak_d_config['parent_frame'])
+
+    cam_pos_x  = LaunchConfiguration('cam_pos_x',     default = oak_d_config['cam_pos_x'])
+    cam_pos_y  = LaunchConfiguration('cam_pos_y',     default = oak_d_config['cam_pos_y'])
+    cam_pos_z  = LaunchConfiguration('cam_pos_z',     default = oak_d_config['cam_pos_z'])
+    cam_roll   = LaunchConfiguration('cam_roll',      default = oak_d_config['cam_roll'])
+    cam_pitch  = LaunchConfiguration('cam_pitch',     default = oak_d_config['cam_pitch'])
+    cam_yaw    = LaunchConfiguration('cam_yaw',       default = oak_d_config['cam_yaw'])
+
+    mode           = LaunchConfiguration('mode', default = oak_d_config['mode'])
+    lrcheck        = LaunchConfiguration('lrcheck', default = oak_d_config['lrcheck'])
+    extended       = LaunchConfiguration('extended', default = oak_d_config['extended'])
+    subpixel       = LaunchConfiguration('subpixel', default = oak_d_config['subpixel'])
+    confidence     = LaunchConfiguration('confidence', default = oak_d_config['confidence'])
+    LRchecktresh   = LaunchConfiguration('LRchecktresh', default = oak_d_config['LRchecktresh'])
+    monoResolution = LaunchConfiguration('monoResolution',  default = oak_d_config['monoResolution'])
 
     declare_camera_model_cmd = DeclareLaunchArgument(
         'camera_model',
