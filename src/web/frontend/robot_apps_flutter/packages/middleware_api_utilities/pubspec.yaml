@@ -6,8 +6,10 @@ publish_to: none
 environment:
   sdk: "^3.3.0"
 
-dependencies: 
+dependencies:
   http: ^1.2.1
+  shared_data_models:
+    path: ../shared_data_models
 
 dev_dependencies:
   mocktail: ^1.0.3

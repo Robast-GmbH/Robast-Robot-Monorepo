@@ -5,7 +5,13 @@ import 'package:test/test.dart';
 void main() {
   group('RobotApiUtilities', () {
     test('can be instantiated', () {
-      expect(RobotApiUtilities(), isNotNull);
+      expect(RobotApiUtilities(prefix: ''), isNotNull);
+    });
+
+    test('can get is_navigation_blocked', () async {
+      final robotApiUtilities = RobotApiUtilities(prefix: 'http://10.10.23.7:8001');
+      final isNavigationBlocked = await robotApiUtilities.isNavigationBlocked();
+      expect(isNavigationBlocked, isNotNull);
     });
   });
 }
