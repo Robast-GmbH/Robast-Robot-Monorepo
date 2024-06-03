@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(oak_bringup)
+project(oak_bringup_door_opening)
 
 # Default to C99
 if(NOT CMAKE_C_STANDARD)
@@ -19,7 +19,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(depthai_descriptions REQUIRED)
 find_package(depthai_examples REQUIRED)
-
+find_package(oak_bringup REQUIRED)
 
 install(DIRECTORY
   config

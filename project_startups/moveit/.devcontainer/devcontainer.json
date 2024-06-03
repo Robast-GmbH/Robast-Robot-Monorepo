@@ -26,7 +26,7 @@
 		"DISPLAY": "${localEnv:DISPLAY}"
 	},
 	"containerEnv": {
-		"ROS_DOMAIN_ID": "0",
+		"ROS_DOMAIN_ID": "23",
 		"robot": "rb_theron",
 		"prefix": "",
 	},

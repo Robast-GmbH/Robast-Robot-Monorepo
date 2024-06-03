@@ -49,6 +49,7 @@ def generate_launch_description():
         )
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
+        .sensors_3d(file_path="config/sensors_3d_simulation.yaml")
         .to_moveit_configs()
     )
 
