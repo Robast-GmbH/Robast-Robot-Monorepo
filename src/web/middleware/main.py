@@ -3,6 +3,8 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import requests
 
+from task_assignment_system.task_assignment_system import TaskAssignmentSystem
+
 
 app = FastAPI()
 app.add_middleware(
@@ -15,6 +17,13 @@ app.add_middleware(
 
 name_to_ip = {"rb_theron": "10.10.23.6"}
 robot_api_port = 8001
+fleet_management_address = "http://10.10.23.6:8000"
+
+task_assigment_system = TaskAssignmentSystem(
+    fleet_ip_config=name_to_ip,
+    robot_api_port=robot_api_port,
+    fleet_management_address=fleet_management_address,
+)
 
 
 def get_robot_ip(robot_name: str):
@@ -200,6 +209,20 @@ def get_open_door(robot_ip: str = Depends(get_robot_ip)):
 def get_close_door(robot_ip: str = Depends(get_robot_ip)):
     response = requests.get(f"http://{robot_ip}:{robot_api_port}/close_door").json()
     return response
+
+
+"""
+======================
+Tasks API Endpoints
+======================
+"""
+
+
+@app.post("/task_assignment", tags=["Tasks"])
+def post_task_assignment(
+    required_drawer_type: int, target_id: str, start_id: str = None
+):
+    return task_assigment_system.receive_task(required_drawer_type, start_id, target_id)
 
 
 if __name__ == "__main__":
