@@ -21,7 +21,11 @@
 		"--volume=/dev/shm:/dev/shm" //needed if you use the fast dds on the host network with multiple docker containers running on the same host
 		//needed if you use the fast dds on the host network with multiple docker containers running on the same host
 	],
-	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
+	"remoteEnv": {
+		"DISPLAY": "${localEnv:DISPLAY}",
+		"RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp",
+		"ROS_DOMAIN_ID": "23"
+	},
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"

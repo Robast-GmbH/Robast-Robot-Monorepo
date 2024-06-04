@@ -26,7 +26,7 @@
             link_origin_y="0.0"
             link_origin_z="0.0"
             m="0.2"
-            x="0.03"
+            x="0.01"
             y="0.03"
             z="0.03"
             r="1"
@@ -38,7 +38,7 @@
 
         <xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/components/hook.urdf.xacro" />
         <xacro:hook prefix="${prefix}" suffix="" parent="door_opening_mechanism_link_freely_rotating_hook" r="1" g="0" b="1">
-            <origin xyz="0.01 0.0 0.0" rpy="0 0 -1.57079632679"/>
+            <origin xyz="0.0 0.0 0.0" rpy="0 0 -1.57079632679"/>
         </xacro:hook>
 
     </xacro:macro>
