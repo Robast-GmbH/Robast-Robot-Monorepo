@@ -174,6 +174,39 @@ class _StoppedViewState extends State<StoppedView> {
                   );
                 },
               ),
+              Selector<RobotProvider, ModuleProcess?>(
+                  selector: (_, provider) => provider.moduleProcess,
+                  builder: (context, moduleProcess, child) {
+                    if (moduleProcess?.state != ModuleProcessState.finished) {
+                      return TextButton.icon(
+                        icon: Icon(Icons.error, color: Colors.red),
+                        label: Text(
+                          "${moduleProcess?.state} ${moduleProcess?.payload}",
+                          style: TextStyle(color: Colors.white, fontSize: 24),
+                        ),
+                        onPressed: () {
+                          final module = Provider.of<RobotProvider>(context, listen: false).modules?.firstWhere(
+                                (module) => module.moduleID == moduleProcess?.moduleID,
+                              );
+                          switch (moduleProcess?.state) {
+                            case ModuleProcessState.waitingForOpeningCommand:
+                              Provider.of<RobotProvider>(context, listen: false).openDrawer(module!);
+                              break;
+                            case ModuleProcessState.open:
+                              Provider.of<RobotProvider>(context, listen: false).closeDrawer(module!);
+                              break;
+                            case ModuleProcessState.closed:
+                              Provider.of<RobotProvider>(context, listen: false).finishModuleProcess();
+                              break;
+                            default:
+                              break;
+                          }
+                        },
+                      );
+                    } else {
+                      return Text("");
+                    }
+                  }),
             ],
           ),
         ),

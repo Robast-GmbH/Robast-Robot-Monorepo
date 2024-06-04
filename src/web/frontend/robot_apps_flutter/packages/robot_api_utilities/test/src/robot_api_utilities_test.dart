@@ -13,5 +13,10 @@ void main() {
       final isNavigationBlocked = await robotApiUtilities.isNavigationBlocked();
       expect(isNavigationBlocked, isNotNull);
     });
+    test('can get module_process_status', () async {
+      final robotApiUtilities = RobotApiUtilities(prefix: 'http://10.10.23.7:8001');
+      final moduleProcess = await robotApiUtilities.getModuleProcess();
+      expect(moduleProcess, isNotNull);
+    });
   });
 }

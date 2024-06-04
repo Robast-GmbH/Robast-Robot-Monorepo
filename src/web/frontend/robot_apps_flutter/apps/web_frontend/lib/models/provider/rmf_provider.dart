@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:rmf_api/rmf_api.dart';
+import 'package:web_frontend/models/controller/task_creation_controller.dart';
 
 class RMFProvider extends ChangeNotifier {
   List<Task> tasks = [];
@@ -53,6 +54,29 @@ class RMFProvider extends ChangeNotifier {
     return getVertices().where((element) => element.isIngestor).map((e) => e.name).toList();
   }
 
+  Future<void> dispatchTask({required String taskType, required TaskCreationController controller}) async {
+    if (taskType == 'Patrol') {
+      await dispatchPatrolTask(
+        places: controller.places,
+        rounds: controller.rounds!,
+      );
+    } else if (taskType == 'Delivery') {
+      await dispatchDeliveryTask(
+        pickup: controller.pickupNode!,
+        dropoff: controller.dropoffNode!,
+        drawerID: controller.drawerID!,
+      );
+    } else if (taskType == 'Multi Dropoff') {
+      await dispatchPatrolTask(places: ['floor'], rounds: 1);
+      for (final dropoffNodeDrawerAssignment in controller.dropoffNodeDrawerAssignments) {
+        await dispatchDropOffTask(
+          dropoff: dropoffNodeDrawerAssignment[0]!,
+          drawerID: dropoffNodeDrawerAssignment[1]!,
+        );
+      }
+    }
+  }
+
   Future<void> dispatchDeliveryTask({
     required String pickup,
     required String dropoff,
@@ -66,6 +90,20 @@ class RMFProvider extends ChangeNotifier {
       );
     } catch (e) {
       debugPrint('Error dispatching delivery task: $e');
+    }
+  }
+
+  Future<void> dispatchDropOffTask({
+    required String dropoff,
+    required String drawerID,
+  }) async {
+    try {
+      await _rmfApi.dispatchDropOffTask(
+        dropoff: dropoff,
+        drawerID: drawerID,
+      );
+    } catch (e) {
+      debugPrint('Error dispatching dropoff task: $e');
     }
   }
 

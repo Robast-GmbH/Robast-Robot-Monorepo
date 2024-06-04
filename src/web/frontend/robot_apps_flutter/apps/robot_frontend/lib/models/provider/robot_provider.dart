@@ -7,12 +7,13 @@ import 'package:shared_data_models/shared_data_models.dart';
 class RobotProvider extends ChangeNotifier {
   Pose? robotPose;
   List<DrawerModule>? modules;
+  ModuleProcess? moduleProcess;
   bool isNavigationBlocked = false;
 
   Timer? _robotPoseUpdateTimer;
   Timer? _modulesUpdateTimer;
 
-  final _robotAPI = const RobotApiUtilities(prefix: 'http://192.168.0.200:8001');
+  final _robotAPI = const RobotApiUtilities(prefix: 'http://10.10.23.7:8001');
 
   Future<void> updateIsNavigationBlocked() async {
     isNavigationBlocked = await _robotAPI.isNavigationBlocked();
@@ -26,6 +27,7 @@ class RobotProvider extends ChangeNotifier {
 
   Future<void> updateModules() async {
     modules = await _robotAPI.getModules();
+    moduleProcess = await _robotAPI.getModuleProcess();
     notifyListeners();
   }
 
@@ -82,5 +84,9 @@ class RobotProvider extends ChangeNotifier {
 
   Future<void> unblockNavigation() async {
     await _robotAPI.unblockNavigation();
+  }
+
+  Future<void> finishModuleProcess() async {
+    await _robotAPI.finishModuleProcess();
   }
 }

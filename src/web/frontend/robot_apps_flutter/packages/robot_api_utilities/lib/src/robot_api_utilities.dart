@@ -112,4 +112,39 @@ class RobotApiUtilities {
       return false;
     }
   }
+
+  Future<ModuleProcess?> getModuleProcess() async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/module_process_status'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return ModuleProcess.fromJson(data["success"]);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
+  }
+
+  Future<bool> finishModuleProcess() async {
+    try {
+      final response = await http.post(
+        Uri.parse('$prefix/finish_module_process'),
+      );
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }
