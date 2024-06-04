@@ -4,33 +4,35 @@ DRAWER_IDLE = 0
 DRAWER_OPEN = 1
 
 
-class RobotDrawerAPI:
+class RobotModulesAPI:
     def __init__(self, api_url) -> None:
-        self.api_url = api_url
+        self.api_url = "http://10.10.23.6:8001"
         self.robot_name = "rb_theron"
         self.module_id = 0
         self.drawer_id = 0
 
-    def open_drawer(self, drawer_address):
+    def start_module_process(self,drawer_address,process_type):
         try:
             module_and_drawer_id = drawer_address.split("_")
             self.module_id = int(module_and_drawer_id[0])
             self.drawer_id = int(module_and_drawer_id[1])
+            self.payload = module_and_drawer_id[2]
             response = requests.post(
-                f"{self.api_url}/open_drawer?robot_name={self.robot_name}&module_id={self.module_id}&drawer_id={self.drawer_id}"
+                f"{self.api_url}/start_module_process?module_id={self.module_id}&drawer_id={self.drawer_id}&process_name={process_type}&payload={self.payload}"
             )
             response.raise_for_status()
         except Exception as e:
-            print(f"Open drawer failed: {e}")
+            print(f"Start module process failed: {e}")
+        pass
 
-    def is_drawer_open(self):
+    def update_module_process_status(self):
         try:
             response = requests.get(
-                f"{self.api_url}/modules?robot_name={self.robot_name}"
+                f"{self.api_url}/module_process_status"
             )
             response.raise_for_status()
-            is_open = response.json()[self.module_id - 1]["is_open"]
-            return is_open
+            return response.json()["success"]["state"]
         except Exception as e:
-            print(f"Request for drawer open status failed: {e}")
+            print(f"Request for module process status failed: {e}")
             return None
+

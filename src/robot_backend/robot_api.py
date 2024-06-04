@@ -107,6 +107,29 @@ def post_close_drawer(module_id: int, drawer_id: int):
     return {"success": ros_bridge.module_bridge.close_drawer(module_id, drawer_id)}
 
 
+@app.post("/start_module_process", tags=["Modules"])
+def post_start_module_process(
+    module_id: int,
+    drawer_id: int,
+    process_name: str,
+):
+    return {
+        "success": ros_bridge.module_bridge.start_module_process(
+            module_id, drawer_id, process_name
+        )
+    }
+
+
+@app.post("/finish_module_process", tags=["Modules"])
+def post_finish_module_process():
+    return ros_bridge.module_bridge.finish_module_process()
+
+
+@app.get("/module_process_status", tags=["Modules"])
+def get_module_process_status():
+    return {"success": ros_bridge.module_bridge.current_module_process}
+
+
 """
 ======================
 Doors API Endpoints

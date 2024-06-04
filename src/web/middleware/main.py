@@ -159,6 +159,30 @@ def post_close_drawer(
     return response
 
 
+@app.post("/start_module_process", tags=["Modules"])
+def post_start_module_process(
+    module_id: int,
+    drawer_id: int,
+    process_name: str,
+    payload: str,
+    robot_ip: str = Depends(get_robot_ip),
+):
+    response = requests.post(
+        f"http://{robot_ip}:{robot_api_port}/start_module_process?module_id={module_id}&drawer_id={drawer_id}&process_name={process_name}&payload={payload}"
+    ).json()
+    return response
+
+
+@app.get("/module_process_status", tags=["Modules"])
+def get_module_process_state(
+    robot_ip: str = Depends(get_robot_ip),
+):
+    response = requests.get(
+        f"http://{robot_ip}:{robot_api_port}/module_process_status"
+    ).json()
+    return response
+
+
 """
 ======================
 Doors API Endpoints
