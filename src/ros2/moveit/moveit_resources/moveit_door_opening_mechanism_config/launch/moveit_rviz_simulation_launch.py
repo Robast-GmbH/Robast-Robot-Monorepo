@@ -84,8 +84,6 @@ def launch_setup(context, *args, **settings):
         .to_moveit_configs()
     )
 
-    NAMESPACE_ARM = "arm"
-
     # If there are virtual joints, broadcast static tf by including virtual_joints launch
     actions_to_launch.append(generate_static_virtual_joint_tfs_launch(moveit_config))
 
