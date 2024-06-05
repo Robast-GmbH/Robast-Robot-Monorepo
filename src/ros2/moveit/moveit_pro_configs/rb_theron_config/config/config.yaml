@@ -43,12 +43,20 @@ hardware:
   # Specify any additional launch files for running the robot in simulation mode.
   # Used when hardware.simulated is True.
   # [Optional, defaults to a blank launch file if not specified]
+  # Please mind:
+  # Currently it does not really work to launch our robot with mock_components
+  # as we are launching it with the arm stuff being in a namespace (to simulate the real robot)
+  # Unfortunately so far I don't see a way to launch the moveit pro stuff in a namespace
+  # but I already reported this issue to the moveit pro team
+  # To get this kind of running you need to comment out `move_group` launch in the
+  # `studio_agent.launch.py` file which can be found in ther moveit-studio-overlay docker under
+  # `/opt/overlay_ws/install/moveit_studio_agent/share/moveit_studio_agent/launch/studio_agent.launch.py`
   simulated_robot_driver_persist_launch_file:
-    package: "rb_theron_config"
-    path: "launch/sim/robot_mock_launch.py"
-  simulated_hardware_launch_file:
     package: "moveit_studio_agent"
     path: "launch/blank.launch.py"
+  simulated_hardware_launch_file:
+    package: "rb_theron_config"
+    path: "launch/sim/robot_mock_launch.py"
 
   # Configuration details for cameras and scene planning.
   # [Required]
@@ -90,9 +98,9 @@ optional_feature_params:
   # [Optional, default=False]
   use_formant_bridge: False
   ompl_planning_file: "ompl_iron"
-  launch_moveit_group: False
-  launch_rviz: False
-  launch_robot_state_publisher: False
+  launch_moveit_group: True
+  launch_rviz: True
+  launch_robot_state_publisher: True
 
 
 # Configuration files for MoveIt.
