@@ -3,14 +3,11 @@ from launch_ros.actions import Node
 
 
 def generate_launch_description():
-
-    start_nav_action_node = Node(
-        package="nav_action_node",
-        executable="nav_action_node",
+    drawer_mock = Node(
+        package="drawer_mock",
+        executable="drawer_mock",
     )
 
     ld = LaunchDescription()
-
-    ld.add_action(start_nav_action_node)
-
+    ld.add_action(drawer_mock)
     return ld
