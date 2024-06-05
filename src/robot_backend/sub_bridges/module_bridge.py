@@ -12,18 +12,18 @@ class ModuleBridge(BaseBridge):
             "communication_interfaces/msg/DrawerStatus",
             on_msg_callback=self.__on_drawer_is_open_msg_callback,
         )
-        self.drawer_tree_publisher = self.start_publisher(
+        self.__drawer_tree_publisher = self.start_publisher(
             "/trigger_drawer_tree", "communication_interfaces/msg/DrawerAddress"
         )
-        self.electric_drawer_tree_publisher = self.start_publisher(
+        self.__electric_drawer_tree_publisher = self.start_publisher(
             "/trigger_electric_drawer_tree",
             "communication_interfaces/msg/DrawerAddress",
         )
-        self.close_drawer_publisher = self.start_publisher(
+        self.__ = self.start_publisher(
             "/close_drawer", "communication_interfaces/msg/DrawerAddress"
         )
 
-        self.current_module_process = {}
+        self.__current_module_process = {}
 
     def open_drawer(self, module_id, drawer_id):
         drawer = Drawer.get_drawer(module_id, drawer_id)
@@ -31,14 +31,14 @@ class ModuleBridge(BaseBridge):
             print("Module not found")
             return False
 
-        self.current_module_process["state"] = "opening"
+        self.__current_module_process["state"] = "opening"
 
         if drawer._type == TYPE_ELECTRIC_DRAWER:
-            self.electric_drawer_tree_publisher.publish(
+            self.__electric_drawer_tree_publisher.publish(
                 {"module_id": module_id, "drawer_id": drawer_id}
             )
         else:
-            self.drawer_tree_publisher.publish(
+            self.__drawer_tree_publisher.publish(
                 {"module_id": module_id, "drawer_id": drawer_id}
             )
         return True
@@ -49,22 +49,20 @@ class ModuleBridge(BaseBridge):
             print("Module not found")
             return False
         if drawer._type == TYPE_ELECTRIC_DRAWER:
-            self.close_drawer_publisher.publish(
-                {"module_id": module_id, "drawer_id": drawer_id}
-            )
-            self.current_module_process["state"] = "closing"
+            self.__.publish({"module_id": module_id, "drawer_id": drawer_id})
+            self.__current_module_process["state"] = "closing"
             return True
         else:
             print("Tried closing a manual drawer.")
             return False
 
     def start_module_process(self, module_id, drawer_id, process_name):
-        current_module_process_state = self.current_module_process.get("state")
+        current_module_process_state = self.__current_module_process.get("state")
         if (
             current_module_process_state is None
             or current_module_process_state == "finished"
         ):
-            self.current_module_process = {
+            self.__current_module_process = {
                 "module_id": module_id,
                 "drawer_id": drawer_id,
                 "process_name": process_name,
@@ -72,14 +70,17 @@ class ModuleBridge(BaseBridge):
             }
 
     def finish_module_process(self):
-        if self.current_module_process["state"] != "closed":
+        if self.__current_module_process["state"] != "closed":
             return f"Module process has to be in closed state to be finished."
         else:
-            self.current_module_process["state"] = "finished"
+            self.__current_module_process["state"] = "finished"
             return "Module process finished."
 
     def get_modules(self):
         return Drawer.drawers_as_json()
+
+    def get_current_module_process(self):
+        return self.__current_module_process
 
     def __on_drawer_is_open_msg_callback(self, msg):
         module_id = msg["drawer_address"]["module_id"]
@@ -88,4 +89,4 @@ class ModuleBridge(BaseBridge):
         concatenated_id = f"{module_id}_{drawer_id}"
         Drawer.instances[concatenated_id].set_is_open(is_open)
 
-        self.current_module_process["state"] = "open" if is_open else "closed"
+        self.__current_module_process["state"] = "open" if is_open else "closed"

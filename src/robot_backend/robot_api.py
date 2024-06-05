@@ -127,7 +127,7 @@ def post_finish_module_process():
 
 @app.get("/module_process_status", tags=["Modules"])
 def get_module_process_status():
-    return {"success": ros_bridge.module_bridge.current_module_process}
+    return {"success": ros_bridge.module_bridge.get_current_module_process()}
 
 
 """
