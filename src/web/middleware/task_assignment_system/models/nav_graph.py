@@ -1,5 +1,4 @@
 import heapq
-import json
 from task_assignment_system.models.node import Node
 from task_assignment_system.models.edge import Edge
 
@@ -14,24 +13,16 @@ class NavGraph:
             self.min_distances[node] = self.__dijkstra(self.nodes, node)
 
     @classmethod
-    def from_json(cls, path="task_assignment_system/configs/nav_config.json"):
-        # Open the file and load the JSON data
-        with open(path, "r") as file:
-            data = json.load(file)["levels"][0]["nav_graphs"][0]
-
+    def from_json(cls, data):
         # Extract the vertices and edges
         vertices = data["vertices"]
         edges = data["edges"]
         nodes = []
-        # Print the vertices
-        for i, vertex in enumerate(vertices):
-            # print(f"Vertex {i}: {vertex}")
-            nodes.append(Node(i, vertex["name"], vertex["x"], vertex["y"]))
 
-        # Print the edges
+        for index, vertex in enumerate(vertices):
+            nodes.append(Node(index, vertex["name"], vertex["x"], vertex["y"]))
+
         for edge in edges:
-            # print(f"Edge from {edge["v1_idx"]} to {edge["v2_idx"]}")
-            # TODO: Handle monodirectional edges
             nodes[edge["v1_idx"]].edges.append(
                 Edge(nodes[edge["v1_idx"]], nodes[edge["v2_idx"]])
             )
@@ -39,6 +30,12 @@ class NavGraph:
                 Edge(nodes[edge["v2_idx"]], nodes[edge["v1_idx"]])
             )
         return cls(nodes)
+
+    def get_node_by_id(self, id):
+        for node in self.nodes:
+            if node.id == id:
+                return node
+        return None
 
     def __dijkstra(self, graph, start):
         # Initialize the distance dictionary with infinite distances for all nodes except the start node
@@ -66,9 +63,3 @@ class NavGraph:
                     heapq.heappush(queue, (distance, edge.node2))
 
         return distances
-
-    def get_node_by_id(self, id):
-        for node in self.nodes:
-            if node.id == id:
-                return node
-        return None

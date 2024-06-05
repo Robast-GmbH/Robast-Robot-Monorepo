@@ -56,6 +56,9 @@ class Task:
                         }
                     ],
                 },
-                "requester": "python_script",
+                "requester": "task_assignment_system",
             },
         }
+
+    def __str__(self) -> str:
+        return f"Task {self.id} - {self.task_type} - {self.drawer} - {self.target}"
