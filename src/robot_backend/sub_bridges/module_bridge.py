@@ -10,7 +10,7 @@ class ModuleBridge(BaseBridge):
         self.start_subscriber(
             "/bt_drawer_open",
             "communication_interfaces/msg/DrawerStatus",
-            on_msg_callback=self.on_drawer_is_open_msg_callback,
+            on_msg_callback=self.__on_drawer_is_open_msg_callback,
         )
         self.drawer_tree_publisher = self.start_publisher(
             "/trigger_drawer_tree", "communication_interfaces/msg/DrawerAddress"
@@ -24,15 +24,6 @@ class ModuleBridge(BaseBridge):
         )
 
         self.current_module_process = {}
-
-    def on_drawer_is_open_msg_callback(self, msg):
-        module_id = msg["drawer_address"]["module_id"]
-        drawer_id = msg["drawer_address"]["drawer_id"]
-        is_open = msg["drawer_is_open"]
-        concatenated_id = f"{module_id}_{drawer_id}"
-        Drawer.instances[concatenated_id].set_is_open(is_open)
-
-        self.current_module_process["state"] = "open" if is_open else "closed"
 
     def open_drawer(self, module_id, drawer_id):
         drawer = Drawer.get_drawer(module_id, drawer_id)
@@ -89,3 +80,12 @@ class ModuleBridge(BaseBridge):
 
     def get_modules(self):
         return Drawer.drawers_as_json()
+
+    def __on_drawer_is_open_msg_callback(self, msg):
+        module_id = msg["drawer_address"]["module_id"]
+        drawer_id = msg["drawer_address"]["drawer_id"]
+        is_open = msg["drawer_is_open"]
+        concatenated_id = f"{module_id}_{drawer_id}"
+        Drawer.instances[concatenated_id].set_is_open(is_open)
+
+        self.current_module_process["state"] = "open" if is_open else "closed"
