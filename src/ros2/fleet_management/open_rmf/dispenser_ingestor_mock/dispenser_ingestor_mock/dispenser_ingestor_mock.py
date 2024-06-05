@@ -14,30 +14,30 @@ class DispenserIngestorMock(Node):
 
         self.declare_parameter("api_url", "http://10.10.23.6:8003")
         api_url = self.get_parameter("api_url").value
-        self.robot_drawer_api = RobotModulesAPI(api_url=api_url)
+        self.__robot_drawer_api = RobotModulesAPI(api_url=api_url)
 
-        self._dispenser_publisher = self.create_publisher(
+        self.__dispenser_publisher = self.create_publisher(
             DispenserResult, "/dispenser_results", 10
         )
-        self._dispenser_subscriber = self.create_subscription(
-            DispenserRequest, "/dispenser_requests", self.on_request_callback, 10
+        self.__dispenser_subscriber = self.create_subscription(
+            DispenserRequest, "/dispenser_requests", self.__on_request_callback, 10
         )
 
-        self._ingestor_publisher = self.create_publisher(
+        self.__ingestor_publisher = self.create_publisher(
             IngestorResult, "/ingestor_results", 10
         )
-        self._ingestor_subscriber = self.create_subscription(
-            IngestorRequest, "/ingestor_requests", self.on_request_callback, 10
+        self.__ingestor_subscriber = self.create_subscription(
+            IngestorRequest, "/ingestor_requests", self.__on_request_callback, 10
         )
 
-        self.update_timer_period = 1.0  # seconds
-        self.process_finish_delay = 5  # seconds
-        self.request_guid = ""
-        self.target_guid = ""
-        self.timer = None
-        self.is_in_process = False
+        self.__update_timer_period_in_seconds = 1
+        self.__process_finish_delay_in_seconds = 5 
+        self.__request_guid = ""
+        self.__target_guid = ""
+        self.__timer = None
+        self.__is_in_process = False
 
-    def create_result_msg(self):
+    def __create_result_msg(self):
         if isinstance(self.current_request, DispenserRequest):
             msg = DispenserResult()
             msg.status = DispenserResult.SUCCESS
@@ -48,49 +48,48 @@ class DispenserIngestorMock(Node):
             self.get_logger().error("Unknown request type")
             return
         msg.time = self.get_clock().now().to_msg()
-        msg.request_guid = self.request_guid
-        msg.source_guid = self.target_guid
+        msg.request_guid = self.__request_guid
+        msg.source_guid = self.__target_guid
         return msg
 
-    def update_drawer_status(self):
-        self.get_logger().info("Updating drawer status")
-        module_process_status = self.robot_drawer_api.update_module_process_status()
+    def __update_drawer_status(self):
+        module_process_status = self.__robot_drawer_api.update_module_process_status()
         if module_process_status is not None and module_process_status == "finished":
-            self.timer.cancel()
-            msg = self.create_result_msg()
-            self.publish_result_with_delay(msg)
+            self.__timer.cancel()
+            msg = self.__create_result_msg()
+            self.__publish_result_with_delay(msg)
 
-    def publish_result_with_delay(self, msg):
+    def __publish_result_with_delay(self, msg):
         if isinstance(self.current_request, DispenserRequest):
-            self._dispenser_publisher.publish(msg)
+            self.__dispenser_publisher.publish(msg)
         else:
-            self._ingestor_publisher.publish(msg)
-        self.timer = self.create_timer(
-            self.process_finish_delay, lambda: self.finish_process_callback()
+            self.__ingestor_publisher.publish(msg)
+        self.__timer = self.create_timer(
+            self.__process_finish_delay_in_seconds, lambda: self.__finish_process_callback()
         )
 
-    def finish_process_callback(self):
-        self.is_in_process = False
+    def __finish_process_callback(self):
+        self.__is_in_process = False
         self.get_logger().info("Finished pick-up/drop-off process")
-        self.timer.cancel()
+        self.__timer.cancel()
 
-    def on_request_callback(self, msg):
-        if not self.is_in_process:
+    def __on_request_callback(self, msg):
+        if not self.__is_in_process:
             self.get_logger().info("Started pick-up/drop-off process")
-            self.is_in_process = True
-            self.request_guid = msg.request_guid
-            self.target_guid = msg.target_guid
+            self.__is_in_process = True
+            self.__request_guid = msg.request_guid
+            self.__target_guid = msg.target_guid
             process_name = (
                 "pick_up" if isinstance(msg, DispenserRequest) else "drop_off"
             )
             # For now the drawer_address is derived from the entered item type
             # Example: 2_0_item_type for module 2 drawer 0
-            self.robot_drawer_api.start_module_process(
+            self.__robot_drawer_api.start_module_process(
                 msg.items[0].type_guid, process_type=process_name
             )
             self.current_request = msg
-            self.timer = self.create_timer(
-                self.update_timer_period, lambda: self.update_drawer_status()
+            self.__timer = self.create_timer(
+                self.__update_timer_period_in_seconds, lambda: self.__update_drawer_status()
             )
 
 
