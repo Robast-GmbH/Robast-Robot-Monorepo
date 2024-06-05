@@ -155,31 +155,6 @@
 		hq="${hq}">
 	</xacro:depthai_camera>
 
-	<xacro:arg name="back_oak_d_camera_model" default="OAK-D" />
-	<xacro:arg name="back_oak_d_base_frame" default="oak-d_frame" />
-	<xacro:arg name="back_oak_d_pos_x" default="-0.103" />
-	<xacro:arg name="back_oak_d_pos_y" default="0.0" />
-	<xacro:arg name="back_oak_d_pos_z" default="0.13721" />
-	<xacro:arg name="back_oak_d_roll" default="0.0" />
-	<xacro:arg name="back_oak_d_pitch" default="2.617993927" />
-	<xacro:arg name="back_oak_d_yaw" default="0.0" />
-	<xacro:depthai_camera
-		prefix="$(arg prefix)back_top_oak_d_camera"
-		parent="$(arg prefix)door_opening_mechanism_link_y_axis_slide"
-		sensor_base_frame="door_opening_mechanism_link_y_axis_slide"
-		robot_name="${robot_name}"
-		prefix_topic="back_top_oak_d_camera"
-		camera_model="$(arg back_oak_d_camera_model)"
-		base_frame="$(arg back_oak_d_base_frame)"
-		cam_pos_x="$(arg back_oak_d_pos_x)"
-		cam_pos_y="$(arg back_oak_d_pos_y)"
-		cam_pos_z="$(arg back_oak_d_pos_z)"
-		cam_roll="$(arg back_oak_d_roll)"
-		cam_pitch="$(arg back_oak_d_pitch)"
-		cam_yaw="$(arg back_oak_d_yaw)"
-		hq="${hq}">
-	</xacro:depthai_camera>
-
 	<!-- ROBAST Module Cage -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
 	<xacro:module_cage prefix="$(arg prefix)" parent="$(arg prefix)base_link" hq="${hq}">
@@ -246,6 +221,31 @@
 			hq="${hq}">
 			<origin xyz="-0.3 0 0.225" rpy="0 0 0"/>
 		</xacro:door_opening_mechanism>
+
+		<xacro:arg name="back_oak_d_camera_model" default="OAK-D" />
+		<xacro:arg name="back_oak_d_base_frame" default="oak-d_frame" />
+		<xacro:arg name="back_oak_d_pos_x" default="-0.103" />
+		<xacro:arg name="back_oak_d_pos_y" default="0.0" />
+		<xacro:arg name="back_oak_d_pos_z" default="0.13721" />
+		<xacro:arg name="back_oak_d_roll" default="0.0" />
+		<xacro:arg name="back_oak_d_pitch" default="2.617993927" />
+		<xacro:arg name="back_oak_d_yaw" default="0.0" />
+		<xacro:depthai_camera
+			prefix="$(arg prefix)back_top_oak_d_camera"
+			parent="$(arg prefix)door_opening_mechanism_link_y_axis_slide"
+			sensor_base_frame="door_opening_mechanism_link_y_axis_slide"
+			robot_name="${robot_name}"
+			prefix_topic="back_top_oak_d_camera"
+			camera_model="$(arg back_oak_d_camera_model)"
+			base_frame="$(arg back_oak_d_base_frame)"
+			cam_pos_x="$(arg back_oak_d_pos_x)"
+			cam_pos_y="$(arg back_oak_d_pos_y)"
+			cam_pos_z="$(arg back_oak_d_pos_z)"
+			cam_roll="$(arg back_oak_d_roll)"
+			cam_pitch="$(arg back_oak_d_pitch)"
+			cam_yaw="$(arg back_oak_d_yaw)"
+			hq="${hq}">
+		</xacro:depthai_camera>
 	</xacro:if>
 
 	<!-- Gazebo plugins -->
