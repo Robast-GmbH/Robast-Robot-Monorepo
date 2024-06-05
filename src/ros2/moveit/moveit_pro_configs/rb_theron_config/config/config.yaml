@@ -129,6 +129,9 @@ moveit_params:
   pilz_cartesian_limits:
     package: "moveit_door_opening_mechanism_config"
     path: "config/pilz_cartesian_limits.yaml"
+  sensors_3d:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/sensors_3d_simulation.yaml"
 
   publish:
     planning_scene: True
