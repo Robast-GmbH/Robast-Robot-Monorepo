@@ -119,6 +119,13 @@ services:
     # Making a separate profile prevents this service from being built when using `docker compose build`
     # and launched when using `docker compose up`.
     profiles: ["dev"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
 volumes:
   ignition_resources:

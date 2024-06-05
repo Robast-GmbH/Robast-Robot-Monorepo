@@ -88,6 +88,20 @@ ARG USERNAME
 ARG USER_WS=/home/${USERNAME}/user_ws
 ENV USER_WS=${USER_WS}
 
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES graphics,compute,utility
+
+#install to use the nvidia gpu in the docker
+RUN apt-get update && apt-get install -y \
+    libglvnd0 \
+    libgl1 \
+    libglx0 \
+    libegl1 \
+    libxext6 \
+    libx11-6 \
+    && rm -rf /var/lib/apt/lists/* \
+    && rosdep init || echo "rosdep already initialized"
+
 # Install any additional packages for development work
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
