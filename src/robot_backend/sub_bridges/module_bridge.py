@@ -2,6 +2,13 @@ from sub_bridges.base_bridge import BaseBridge
 from models.drawer import Drawer, TYPE_ELECTRIC_DRAWER
 from roslibpy import Ros
 
+MODULE_PROCESS_STATE_WAITING_FOR_OPENING_COMMAND = "waiting_for_opening_command"
+MODULE_PROCESS_STATE_OPENING = "opening"
+MODULE_PROCESS_STATE_OPEN = "open"
+MODULE_PROCESS_STATE_CLOSING = "closing"
+MODULE_PROCESS_STATE_CLOSED = "closed"
+MODULE_PROCESS_STATE_FINISHED = "finished"
+
 
 class ModuleBridge(BaseBridge):
     def __init__(self, ros: Ros) -> None:
@@ -31,7 +38,7 @@ class ModuleBridge(BaseBridge):
             print("Module not found")
             return False
 
-        self.__current_module_process["state"] = "opening"
+        self.__current_module_process["state"] = MODULE_PROCESS_STATE_OPENING
 
         if drawer.get_type() == TYPE_ELECTRIC_DRAWER:
             self.__electric_drawer_tree_publisher.publish(
@@ -52,7 +59,7 @@ class ModuleBridge(BaseBridge):
             self.__close_drawer_publisher.publish(
                 {"module_id": module_id, "drawer_id": drawer_id}
             )
-            self.__current_module_process["state"] = "closing"
+            self.__current_module_process["state"] = MODULE_PROCESS_STATE_CLOSING
             return True
         else:
             print("Tried closing a manual drawer.")
@@ -62,22 +69,22 @@ class ModuleBridge(BaseBridge):
         current_module_process_state = self.__current_module_process.get("state")
         if (
             current_module_process_state is None
-            or current_module_process_state == "finished"
+            or current_module_process_state == MODULE_PROCESS_STATE_FINISHED
         ):
             self.__current_module_process = {
                 "module_id": module_id,
                 "drawer_id": drawer_id,
                 "process_name": process_name,
-                "state": "waiting_for_opening_command",
+                "state": MODULE_PROCESS_STATE_WAITING_FOR_OPENING_COMMAND,
             }
             return "Module process started."
         return f"Module process has to be in finished state to start a new one."
 
     def finish_module_process(self):
-        if self.__current_module_process["state"] != "closed":
+        if self.__current_module_process["state"] != MODULE_PROCESS_STATE_CLOSED:
             return f"Module process has to be in closed state to be finished."
         else:
-            self.__current_module_process["state"] = "finished"
+            self.__current_module_process["state"] = MODULE_PROCESS_STATE_FINISHED
             return "Module process finished."
 
     def get_modules(self):
@@ -93,4 +100,6 @@ class ModuleBridge(BaseBridge):
 
         Drawer.get_drawer(module_id, drawer_id).set_is_open(is_open)
 
-        self.__current_module_process["state"] = "open" if is_open else "closed"
+        self.__current_module_process["state"] = (
+            MODULE_PROCESS_STATE_OPEN if is_open else MODULE_PROCESS_STATE_CLOSED
+        )
