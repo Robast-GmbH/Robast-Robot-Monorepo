@@ -70,7 +70,8 @@ class ModuleBridge(BaseBridge):
                 "process_name": process_name,
                 "state": "waiting_for_opening_command",
             }
-            return True
+            return "Module process started."
+        return f"Module process has to be in finished state to start a new one."
 
     def finish_module_process(self):
         if self.__current_module_process["state"] != "closed":
