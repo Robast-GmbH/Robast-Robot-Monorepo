@@ -24,6 +24,7 @@ class TaskAssignmentSystem:
         )
 
         self.request_queue = []
+        self.timer = None
 
     def receive_request(
         self, required_drawer_type: int, start_id: str = None, target_id: str = None
@@ -63,18 +64,22 @@ class TaskAssignmentSystem:
         ).start()
 
     def __find_cheapest_assignment(self, delivery_request):
-        costs = []
-        for robot in self.robots:
-            costs.append(robot.get_request_cost(delivery_request))
-        min_cost = min(costs)
+        min_cost = float("inf")
+        min_cost_robot = None
+
+        for robot in self.robots.values():
+            cost = robot.get_request_cost(delivery_request)
+            if cost < min_cost:
+                min_cost = cost
+                min_cost_robot = robot
 
         if min_cost != float("inf"):
-            return self.robots[costs.index(min_cost)]
+            return min_cost_robot
         else:
             return None
 
     def __init_robots(self, fleet_ip_config, robot_api_port, fleet_management_address):
-        robots = []
+        robots = {}
         for robot_name in fleet_ip_config.keys():
             modules_json = None
             while modules_json is None:
@@ -89,13 +94,12 @@ class TaskAssignmentSystem:
             modules = [Drawer.from_dict(module_dict) for module_dict in modules_json]
             self.available_drawer_types.update([drawer.size for drawer in modules])
 
-            robots.append(
-                Robot(
-                    name=robot_name,
-                    api_endpoint=fleet_management_address,
-                    modules=modules,
-                    initial_node=self.nav_graph.nodes[15],
-                    nav_graph=self.nav_graph,
-                )
+            robots[robot_name] = Robot(
+                name=robot_name,
+                api_endpoint=fleet_management_address,
+                modules=modules,
+                initial_node=self.nav_graph.nodes[15],
+                nav_graph=self.nav_graph,
             )
+
         return robots

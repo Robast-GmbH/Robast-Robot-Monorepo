@@ -215,8 +215,8 @@ def post_task_assignment(
 
 
 @app.get("/robot_tasks", tags=["Tasks"])
-def get_robot_tasks(robot_index: int):
-    return task_assigment_system.robots[robot_index].get_robot_tasks()
+def get_robot_tasks(robot_name: str):
+    return task_assigment_system.robots[robot_name].get_robot_tasks()
 
 
 if __name__ == "__main__":
