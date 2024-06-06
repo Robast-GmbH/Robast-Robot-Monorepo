@@ -8,37 +8,37 @@ TYPE_ELECTRIC_DRAWER = "electric_drawer"
 
 class Drawer:
     def __init__(self, module_id, drawer_id, pos, size, type, label):
-        self._module_id = module_id
-        self._drawer_id = drawer_id
-        self._pos = pos
-        self._size = size
-        self.type = type
-        self._label = label
-        self._is_open = False
+        self.__module_id = module_id
+        self.__drawer_id = drawer_id
+        self.__pos = pos
+        self.__size = size
+        self.__type = type
+        self.__label = label
+        self.__is_open = False
 
-    instances = ThreadSafeDict()
+    __instances = ThreadSafeDict()
 
     @classmethod
     def load_drawers(cls, path):
         with open(path, "r") as file:
             data = yaml.safe_load(file)
         for drawer in data["modules"]:
-            cls._create_drawer_from_json(drawer)
+            cls.create_drawer_from_json(drawer)
 
     @classmethod
     def drawers_as_json(cls):
-        return [drawer._to_json() for drawer in cls.instances.values()]
+        return [drawer.to_json() for drawer in cls.__instances.values()]
 
     @classmethod
     def get_drawer(cls, module_id, drawer_id) -> Drawer | None:
         concatenated_id = f"{module_id}_{drawer_id}"
         try:
-            return cls.instances[concatenated_id]
+            return cls.__instances[concatenated_id]
         except KeyError:
             return None
 
     @classmethod
-    def _create_drawer_from_json(cls, json):
+    def create_drawer_from_json(cls, json):
         drawer = Drawer(
             json["module_id"],
             json["drawer_id"],
@@ -47,21 +47,24 @@ class Drawer:
             json["type"],
             json["label"],
         )
-        concatenated_id = f"{drawer._module_id}_{drawer._drawer_id}"
-        cls.instances[concatenated_id] = drawer
+        concatenated_id = f"{drawer.__module_id}_{drawer.__drawer_id}"
+        cls.__instances[concatenated_id] = drawer
 
         return drawer
 
     def set_is_open(self, is_open):
-        self._is_open = is_open
+        self.__is_open = is_open
 
-    def _to_json(self):
+    def get_type(self):
+        return self.__type
+
+    def to_json(self):
         return {
-            "module_id": self._module_id,
-            "drawer_id": self._drawer_id,
-            "pos": self._pos,
-            "size": self._size,
-            "type": self.type,
-            "label": self._label,
-            "is_open": self._is_open,
+            "module_id": self.__module_id,
+            "drawer_id": self.__drawer_id,
+            "pos": self.__pos,
+            "size": self.__size,
+            "type": self.__type,
+            "label": self.__label,
+            "is_open": self.__is_open,
         }
