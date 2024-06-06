@@ -1,5 +1,5 @@
 from sub_bridges.base_bridge import BaseBridge
-from models.drawer import Drawer, TYPE_ELECTRIC_DRAWER, TYPE_MANUAL_DRAWER
+from models.drawer import Drawer, TYPE_ELECTRIC_DRAWER
 from roslibpy import Ros
 
 
@@ -19,7 +19,7 @@ class ModuleBridge(BaseBridge):
             "/trigger_electric_drawer_tree",
             "communication_interfaces/msg/DrawerAddress",
         )
-        self.__ = self.start_publisher(
+        self.__close_drawer_publisher = self.start_publisher(
             "/close_drawer", "communication_interfaces/msg/DrawerAddress"
         )
 
@@ -33,7 +33,7 @@ class ModuleBridge(BaseBridge):
 
         self.__current_module_process["state"] = "opening"
 
-        if drawer._type == TYPE_ELECTRIC_DRAWER:
+        if drawer.type == TYPE_ELECTRIC_DRAWER:
             self.__electric_drawer_tree_publisher.publish(
                 {"module_id": module_id, "drawer_id": drawer_id}
             )
@@ -48,8 +48,10 @@ class ModuleBridge(BaseBridge):
         if drawer is None:
             print("Module not found")
             return False
-        if drawer._type == TYPE_ELECTRIC_DRAWER:
-            self.__.publish({"module_id": module_id, "drawer_id": drawer_id})
+        if drawer.type == TYPE_ELECTRIC_DRAWER:
+            self.__close_drawer_publisher.publish(
+                {"module_id": module_id, "drawer_id": drawer_id}
+            )
             self.__current_module_process["state"] = "closing"
             return True
         else:

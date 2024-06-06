@@ -12,7 +12,7 @@ class Drawer:
         self._drawer_id = drawer_id
         self._pos = pos
         self._size = size
-        self._type = type
+        self.type = type
         self._label = label
         self._is_open = False
 
@@ -61,7 +61,7 @@ class Drawer:
             "drawer_id": self._drawer_id,
             "pos": self._pos,
             "size": self._size,
-            "type": self._type,
+            "type": self.type,
             "label": self._label,
             "is_open": self._is_open,
         }
