@@ -5,16 +5,17 @@ from rmf_dispenser_msgs.msg import DispenserRequest, DispenserResult
 from rmf_ingestor_msgs.msg import IngestorRequest, IngestorResult
 from dispenser_ingestor_mock.robot_modules_api import RobotModulesAPI
 
-import random
-
 
 class DispenserIngestorMock(Node):
     def __init__(self):
         super().__init__("dispenser_ingestor_mock")
 
-        self.declare_parameter("api_url", "http://10.10.23.6:8003")
-        api_url = self.get_parameter("api_url").value
-        self.__robot_drawer_api = RobotModulesAPI(api_url=api_url)
+        self.declare_parameter("middleware_url", "http://10.10.23.6:8003")
+        middleware_url = self.get_parameter("middleware_url").value
+        self.__robot_drawer_api = RobotModulesAPI(
+            middleware_url == middleware_url,
+            robot_name="rb_theron",
+        )
 
         self.__dispenser_publisher = self.create_publisher(
             DispenserResult, "/dispenser_results", 10
@@ -31,7 +32,7 @@ class DispenserIngestorMock(Node):
         )
 
         self.__update_timer_period_in_seconds = 1
-        self.__process_finish_delay_in_seconds = 5 
+        self.__process_finish_delay_in_seconds = 5
         self.__request_guid = ""
         self.__target_guid = ""
         self.__timer = None
@@ -65,7 +66,8 @@ class DispenserIngestorMock(Node):
         else:
             self.__ingestor_publisher.publish(msg)
         self.__timer = self.create_timer(
-            self.__process_finish_delay_in_seconds, lambda: self.__finish_process_callback()
+            self.__process_finish_delay_in_seconds,
+            lambda: self.__finish_process_callback(),
         )
 
     def __finish_process_callback(self):
@@ -89,7 +91,8 @@ class DispenserIngestorMock(Node):
             )
             self.current_request = msg
             self.__timer = self.create_timer(
-                self.__update_timer_period_in_seconds, lambda: self.__update_drawer_status()
+                self.__update_timer_period_in_seconds,
+                lambda: self.__update_drawer_status(),
             )
 
 

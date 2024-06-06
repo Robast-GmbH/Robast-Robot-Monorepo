@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from ros_bridge import RosBridge
+from models.module_process_data import ModuleProcessData
 
 door_available = False
 ros_bridge = RosBridge(ip="localhost", port=9090, door_available=door_available)
@@ -109,13 +110,11 @@ def post_close_drawer(module_id: int, drawer_id: int):
 
 @app.post("/start_module_process", tags=["Modules"])
 def post_start_module_process(
-    module_id: int,
-    drawer_id: int,
-    process_name: str,
+    data: ModuleProcessData,
 ):
     return {
         "success": ros_bridge.module_bridge.start_module_process(
-            module_id, drawer_id, process_name
+            data.module_id, data.drawer_id, data.process_name
         )
     }
 
