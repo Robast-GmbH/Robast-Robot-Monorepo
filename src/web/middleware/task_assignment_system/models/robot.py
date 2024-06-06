@@ -77,24 +77,16 @@ class Robot:
 
     def __start_task_status_update_timer(self):
         self.timer = threading.Timer(
-            UPDATE_TIMER_INTERVAL_IN_SECONDS, self.__update_task_status_callback
+            UPDATE_TIMER_INTERVAL_IN_SECONDS, self.__task_status_update_callback
         )
         self.timer.start()
 
-    def __update_task_status_callback(self):
+    def __task_status_update_callback(self):
         with self.task_queue_lock:
             if self.current_task is None:
                 self.__start_next_task()
-            else:
-                data = self.__request_task_status()
-                if data is not None:
-                    completed_phases = data["completed"]
-                    active_phase = data["active"]
-                    if active_phase in completed_phases:
-                        self.done_tasks_ids.append(self.current_task.id)
-                        if self.current_task.task_type == "dropoff":
-                            self.current_task.drawer.is_available = True
-                        self.current_task = None
+            elif self.__is_task_completed():
+                self.__finish_task()
 
         self.__start_task_status_update_timer()
 
@@ -108,6 +100,20 @@ class Robot:
             return None
         data = response.json()
         return data
+
+    def __is_task_completed(self):
+        data = self.__request_task_status()
+        if data is None:
+            return False
+        completed_phases = data["completed"]
+        active_phase = data["active"]
+        return active_phase in completed_phases
+
+    def __finish_task(self):
+        self.done_tasks_ids.append(self.current_task.id)
+        if self.current_task.task_type == "dropoff":
+            self.current_task.drawer.is_available = True
+        self.current_task = None
 
     def __start_next_task(self):
         if len(self.task_queue) > 0:
