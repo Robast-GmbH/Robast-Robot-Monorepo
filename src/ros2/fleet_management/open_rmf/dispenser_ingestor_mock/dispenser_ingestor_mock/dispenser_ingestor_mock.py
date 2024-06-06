@@ -13,7 +13,7 @@ class DispenserIngestorMock(Node):
         self.declare_parameter("middleware_url", "http://10.10.23.6:8003")
         middleware_url = self.get_parameter("middleware_url").value
         self.__robot_drawer_api = RobotModulesAPI(
-            middleware_url == middleware_url,
+            middleware_url=middleware_url,
             robot_name="rb_theron",
         )
 
