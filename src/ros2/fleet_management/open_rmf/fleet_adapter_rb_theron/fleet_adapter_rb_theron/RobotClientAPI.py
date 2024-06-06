@@ -23,6 +23,8 @@ import requests
 import nudged
 import math
 
+TIMEOUT_DURATION_IN_SECONDS = 3
+
 
 class RobotAPI:
     # The constructor below accepts parameters typically required to submit
@@ -45,7 +47,10 @@ class RobotAPI:
     def check_connection(self):
         """Return True if connection to the robot API server is successful"""
         try:
-            response = requests.get(f"{self.__prefix}/")
+            response = requests.get(
+                f"{self.__prefix}/",
+                timeout=TIMEOUT_DURATION_IN_SECONDS,
+            )
             return response.status_code == 200
         except Exception as e:
             return False
@@ -55,7 +60,8 @@ class RobotAPI:
         None if any errors are encountered"""
         try:
             pose = requests.get(
-                f"{self.__prefix}/robot_pos?robot_name={robot_name}"
+                f"{self.__prefix}/robot_pos?robot_name={robot_name}",
+                timeout=TIMEOUT_DURATION_IN_SECONDS,
             ).json()
             x, y = self.__transforms["robot_to_rmf"].transform([pose["x"], pose["y"]])
             z = pose["z"] - self.__transforms["orientation_offset"]
@@ -77,7 +83,8 @@ class RobotAPI:
             x, y = self.__transforms["rmf_to_robot"].transform([pose[0], pose[1]])
             z = pose[2] + self.__transforms["orientation_offset"]
             requests.post(
-                f"{self.__prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}"
+                f"{self.__prefix}/goal_pose?robot_name={robot_name}&x={x}&y={y}&z={z}",
+                timeout=TIMEOUT_DURATION_IN_SECONDS,
             )
             return True
         # TODO(ane-robast): Add proper error handling -> RE-2187
@@ -91,7 +98,10 @@ class RobotAPI:
         """Command the robot to stop.
         Return True if robot has successfully stopped. Else False"""
         try:
-            requests.post(f"{self.__prefix}/cancel_goal?robot_name={robot_name}")
+            requests.post(
+                f"{self.__prefix}/cancel_goal?robot_name={robot_name}",
+                timeout=TIMEOUT_DURATION_IN_SECONDS,
+            )
             return True
         # TODO(ane-robast): Add proper error handling -> RE-2187
         except Exception as e:
@@ -102,7 +112,8 @@ class RobotAPI:
         destination"""
         try:
             response = requests.get(
-                f"{self.__prefix}/remaining_nav_time?robot_name={robot_name}"
+                f"{self.__prefix}/remaining_nav_time?robot_name={robot_name}",
+                timeout=TIMEOUT_DURATION_IN_SECONDS,
             ).json()
             return response["remaining_seconds"]
         # TODO(ane-robast): Add proper error handling -> RE-2187
@@ -114,7 +125,8 @@ class RobotAPI:
         navigation request. Else False."""
         try:
             response = requests.get(
-                f"{self.__prefix}/is_navigating?robot_name={robot_name}"
+                f"{self.__prefix}/is_navigating?robot_name={robot_name}",
+                timeout=TIMEOUT_DURATION_IN_SECONDS,
             ).json()
             return not response["is_navigating"]
         # TODO(ane-robast): Add proper error handling -> RE-2187
@@ -126,7 +138,8 @@ class RobotAPI:
         and 1.0. Else return None if any errors are encountered"""
         try:
             response = requests.get(
-                f"{self.__prefix}/battery_level?robot_name={robot_name}"
+                f"{self.__prefix}/battery_level?robot_name={robot_name}",
+                timeout=TIMEOUT_DURATION_IN_SECONDS,
             ).json()
             return response["battery_level"]
         # TODO(ane-robast): Add proper error handling -> RE-2187
