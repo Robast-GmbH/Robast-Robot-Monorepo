@@ -18,13 +18,11 @@ def generate_launch_description():
         get_package_share_directory("moveit_door_opening_mechanism_config"), "launch", "moveit_rviz_simulation_launch.py"
     )
 
-    launch_arguments = {
-        "ompl_planning_file": ompl_planning_file,
-    }
-
-    launch_arguments["launch_moveit_group"] = "true" if launch_moveit_group else "false"
-    launch_arguments["launch_rviz"] = "true" if launch_rviz else "false"
-    launch_arguments["launch_robot_state_publisher"] = "true" if launch_robot_state_publisher else "false"
+    launch_arguments = {}
+    launch_arguments["ompl_planning_file"] = ompl_planning_file
+    launch_arguments["launch_moveit_group"] = str(launch_moveit_group).lower()
+    launch_arguments["launch_rviz"] = str(launch_rviz).lower()
+    launch_arguments["launch_robot_state_publisher"] = str(launch_robot_state_publisher).lower()
 
     launch_moveit_rviz_simulation = IncludeLaunchDescription(
         PythonLaunchDescriptionSource(moveit_rviz_simulation_launch_file), launch_arguments=launch_arguments.items()

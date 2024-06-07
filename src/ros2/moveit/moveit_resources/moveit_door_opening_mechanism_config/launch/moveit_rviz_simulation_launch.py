@@ -31,7 +31,6 @@ from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
      * ros2_control_node + controller spawners
 """
 
-planning_pipelines = ["ompl_iron"]
 JOINT_STATES_TOPIC = "/joint_states"
 NAMESPACE_ARM = "arm"
 
@@ -40,14 +39,15 @@ def get_planning_pipelines(context):
 
     if ompl_planning_file is None:
         ros_distro = os.environ["ROS_DISTRO"]
-        if ros_distro == "humble":
-            planning_pipelines = ["ompl_humble"]
-        elif ros_distro == "iron":
-            planning_pipelines = ["ompl_iron"]
+        supported_ros_distros = ["humble", "iron"]
+        if ros_distro in supported_ros_distros:
+            planning_pipelines =  [f"ompl_{ros_distro}"]
         else:
             raise Exception("Unknown ROS distro: " + ros_distro)
     else:
         planning_pipelines = [ompl_planning_file]
+
+    return planning_pipelines
 
 def launch_setup(context, *args, **settings):
     launch_moveit_group = LaunchConfiguration("launch_moveit_group").perform(context)
@@ -57,7 +57,7 @@ def launch_setup(context, *args, **settings):
     launch_rviz = LaunchConfiguration("launch_rviz").perform(context)
     launch_robot_state_publisher = LaunchConfiguration("launch_robot_state_publisher").perform(context)
 
-    get_planning_pipelines(context)
+    planning_pipelines = get_planning_pipelines(context)
     actions_to_launch = []
 
     rviz_config_file = (
