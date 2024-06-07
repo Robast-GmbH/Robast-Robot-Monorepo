@@ -15,12 +15,12 @@ hardware:
 
   # If the MoveIt Studio Agent should launch the ros2 controller node.
   # [Optional, default=True]
-  launch_control_node: True
+  launch_control_node: False
 
   # If the MoveIt Studio Agent should launch the robot state publisher.
   # This should be false if you are launching the robot state publisher as part of drivers.
   # [Optional, default=True]
-  launch_robot_state_publisher: True
+  launch_robot_state_publisher: False
 
   # If the MoveIt Studio Agent should launch cameras when simulated.
   # This must be False when using mock hardware, since there are no cameras simulated.
@@ -35,7 +35,7 @@ hardware:
   # [Optional, defaults to a blank launch file if not specified]
   robot_driver_persist_launch_file:
     package: "rb_theron_config"
-    path: "launch/robot_drivers_to_persist.launch.py"
+    path: "launch/robot_drivers_to_persist_launch.py"
   hardware_launch_file:
     package: "moveit_studio_agent"
     path: "launch/blank.launch.py"
@@ -43,12 +43,20 @@ hardware:
   # Specify any additional launch files for running the robot in simulation mode.
   # Used when hardware.simulated is True.
   # [Optional, defaults to a blank launch file if not specified]
+  # Please mind:
+  # Currently it does not really work to launch our robot with mock_components
+  # as we are launching it with the arm stuff being in a namespace (to simulate the real robot)
+  # Unfortunately so far I don't see a way to launch the moveit pro stuff in a namespace
+  # but I already reported this issue to the moveit pro team
+  # To get this kind of running you need to comment out `move_group` launch in the
+  # `studio_agent.launch.py` file which can be found in ther moveit-studio-overlay docker under
+  # `/opt/overlay_ws/install/moveit_studio_agent/share/moveit_studio_agent/launch/studio_agent.launch.py`
   simulated_robot_driver_persist_launch_file:
-    package: "rb_theron_config"
-    path: "launch/sim/world_to_odom_launch.py"
-  simulated_hardware_launch_file:
     package: "moveit_studio_agent"
     path: "launch/blank.launch.py"
+  simulated_hardware_launch_file:
+    package: "rb_theron_config"
+    path: "launch/sim/robot_mock_launch.py"
 
   # Configuration details for cameras and scene planning.
   # [Required]
@@ -70,7 +78,7 @@ hardware:
     # Many of these are specific to the UR descriptions packages, and can be customized as needed.
     # [Optional]
     urdf_params:
-      - ros_distro: "humble" # mind that if you change this, you also need to chnage ompl_planning.yaml file
+      - ros_distro: "humble" # mind that if you change this, you also need to change ompl_planning.yaml file
       - prefix: ""
       - ros2_control_hardware_type: "mock_components"
       - model_position_joint: "true"
@@ -89,6 +97,11 @@ optional_feature_params:
   # Whether or not to use the Formant bridge for over-the-internet comms.
   # [Optional, default=False]
   use_formant_bridge: False
+  ompl_planning_file: "ompl_iron"
+  launch_moveit_group: True
+  launch_rviz: True
+  launch_robot_state_publisher: True
+
 
 # Configuration files for MoveIt.
 # For more information, refer to https://moveit.picknik.ai/humble/doc/examples/examples.html#configuration
@@ -124,6 +137,9 @@ moveit_params:
   pilz_cartesian_limits:
     package: "moveit_door_opening_mechanism_config"
     path: "config/pilz_cartesian_limits.yaml"
+  sensors_3d:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/sensors_3d_simulation.yaml"
 
   publish:
     planning_scene: True
@@ -158,22 +174,17 @@ ros2_control:
   # If not specified, it is up to the user to ensure the appropriate controllers are active and available
   # for running the application.
   # [Optional, default=[]]
-  controllers_active_at_startup:
+  controllers_active_at_startup: []
+
+  controllers_inactive_at_startup: []
+
+  controllers_not_managed:
     - "joint_state_broadcaster"
     - "diff_drive_base_controller"
     - "drawer_joint_trajectory_controller"
     - "mobile_base_controller_cmd_vel"
-
-  # Load but do not start these controllers so they can be activated later if needed.
-  # [Optional, default=[]]
-  controllers_inactive_at_startup:
     - "streaming_controller"
     - "joint_trajectory_controller"
-
-
-  # Any controllers here will not be spawned by MoveIt Studio.
-  # [Optional, default=[]]
-  controllers_not_managed: []
   # Optionally configure remapping rules to let multiple controllers receive commands on the same topic.
   # [Optional, default=[]]
   controller_shared_topics: []
@@ -190,10 +201,13 @@ objectives:
   # List of plugins for loading custom behaviors.
   # [Required]
   behavior_loader_plugins:
-    # This plugin will load the core MoveIt Studio behaviors.
+    # This plugin will load the core MoveIt Pro behaviors.
     # Add additional plugin loaders as needed.
     core:
       - "moveit_studio::behaviors::CoreBehaviorsLoader"
+      - "moveit_studio::behaviors::MTCCoreBehaviorsLoader"
+      - "moveit_studio::behaviors::ServoBehaviorsLoader"
+      - "moveit_studio::behaviors::VisionBehaviorsLoader"
   # Specify source folder for objectives
   # [Required]
   objective_library_paths:
