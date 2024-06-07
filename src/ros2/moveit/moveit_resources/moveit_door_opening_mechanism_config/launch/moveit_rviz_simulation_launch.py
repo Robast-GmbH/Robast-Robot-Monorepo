@@ -31,7 +31,6 @@ from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
      * ros2_control_node + controller spawners
 """
 
-planning_pipelines = ["ompl_iron"]
 JOINT_STATES_TOPIC = "/joint_states"
 NAMESPACE_ARM = "arm"
 
@@ -49,6 +48,8 @@ def get_planning_pipelines(context):
     else:
         planning_pipelines = [ompl_planning_file]
 
+    return planning_pipelines
+
 def launch_setup(context, *args, **settings):
     launch_moveit_group = LaunchConfiguration("launch_moveit_group").perform(context)
     use_sim_time_str = LaunchConfiguration("use_sim_time").perform(context)
@@ -57,7 +58,7 @@ def launch_setup(context, *args, **settings):
     launch_rviz = LaunchConfiguration("launch_rviz").perform(context)
     launch_robot_state_publisher = LaunchConfiguration("launch_robot_state_publisher").perform(context)
 
-    get_planning_pipelines(context)
+    planning_pipelines = get_planning_pipelines(context)
     actions_to_launch = []
 
     rviz_config_file = (
