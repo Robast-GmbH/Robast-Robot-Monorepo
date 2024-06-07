@@ -15,7 +15,7 @@ setup(
     zip_safe=True,
     maintainer="Andreas Neumann",
     maintainer_email="a.neumann@robast.de",
-    description="TODO: Package description",
+    description="Simple mock which imitates the behaviour of our drawer_trees",
     license="TODO: License declaration",
     tests_require=["pytest"],
     entry_points={
