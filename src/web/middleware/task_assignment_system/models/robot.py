@@ -96,7 +96,7 @@ class Robot:
                 f"{self.api_endpoint}/tasks/{self.current_task_id}/state"
             )
             response.raise_for_status()
-        except:
+        except requests.exceptions.HTTPError:
             return None
         data = response.json()
         return data

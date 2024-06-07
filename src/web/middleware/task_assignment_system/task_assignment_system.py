@@ -60,8 +60,10 @@ class TaskAssignmentSystem:
                 self.request_queue.append(delivery_request)
 
         self.timer = Timer(
-            TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_SECONDS, self.__trigger_task_assignment
-        ).start()
+            TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_SECONDS,
+            self.__trigger_task_assignment,
+        )
+        self.timer.start()
 
     def __find_cheapest_assignment(self, delivery_request):
         min_cost = float("inf")
@@ -87,7 +89,7 @@ class TaskAssignmentSystem:
                     modules_json = requests.get(
                         f"http://{fleet_ip_config[robot_name]}:{robot_api_port}/modules?robot_name={robot_name}"
                     ).json()
-                except:
+                except requests.exceptions.ConnectionError:
                     time.sleep(1)
                     print("Retrying to get modules")
 
