@@ -69,7 +69,7 @@ def generate_launch_description():
         .robot_description(
             file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments
         )
-        .trajectory_execution(file_path="config/moveit_controllers.yaml")
+        .trajectory_execution(file_path="config/moveit_simple_controller_manager.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .to_moveit_configs()
     )
