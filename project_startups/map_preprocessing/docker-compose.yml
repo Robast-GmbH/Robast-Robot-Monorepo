@@ -3,8 +3,6 @@ version: '3.9'
 services:
  map_preprocessing:
     image: ghcr.io/robast-gmbh/monorepo/map_preprocessing:devel
-    environment:
-      - NVIDIA_VISIBLE_DEVICES=all
   
     volumes:
       - .:/workspace/:cached

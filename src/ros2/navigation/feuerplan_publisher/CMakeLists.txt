@@ -7,36 +7,20 @@ endif()
 
 # find dependencies
 find_package(ament_cmake REQUIRED)
-find_package(ament_cmake_python REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclpy REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(cv_bridge REQUIRED)
-find_package(tf2_ros REQUIRED)
 # uncomment the following section in order to fill in
 #include_directories(${OpenCV_INCLUDE_DIRS})
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
 add_executable(feuerplan_publisher_node src/publisher.cpp)
-add_executable(feuerplan_frame_broadcaster src/frame_broadcaster.cpp)
-ament_target_dependencies(feuerplan_publisher_node rclcpp sensor_msgs nav_msgs cv_bridge tf2_ros)
-ament_target_dependencies(
-   feuerplan_frame_broadcaster
-     geometry_msgs
-     rclcpp
-     tf2_ros
-)
-
+ament_target_dependencies(feuerplan_publisher_node rclcpp sensor_msgs nav_msgs cv_bridge)
 target_link_libraries(feuerplan_publisher_node ${OpenCV_LIBRARIES})
 
 install(TARGETS
   feuerplan_publisher_node
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-install(TARGETS
-  feuerplan_frame_broadcaster
   DESTINATION lib/${PROJECT_NAME})
 
 install(DIRECTORY

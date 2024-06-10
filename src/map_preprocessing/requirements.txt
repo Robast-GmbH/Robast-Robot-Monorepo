@@ -1,4 +1,1 @@
 numpy
-ultralytics
-kornia
-iopaint

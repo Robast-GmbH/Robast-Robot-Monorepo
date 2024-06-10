@@ -6,18 +6,14 @@
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
 	"remoteUser": "robast",
-	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"runArgs": [
-                "--name=map_preprocessing",
-				"--gpus=all"
-        ],
+		"--name=map_preprocessing",
+		"--gpus=all"
+	],
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
-	},
-	"remoteEnv": {
-		//"PATH": "/home/robast/.local/bin/"
 	},
 	"extensions": [
 		"dotjoshjohnson.xml",

@@ -1,1 +1,0 @@
-from .cleaning_mechnaism import segment_image, inpaint_image 
