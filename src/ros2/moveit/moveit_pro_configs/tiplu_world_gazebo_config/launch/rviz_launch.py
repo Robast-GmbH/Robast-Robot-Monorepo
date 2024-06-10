@@ -30,6 +30,7 @@ def generate_launch_description():
         .robot_description(
             file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments
         )
+        .robot_description_semantic(file_path="config/rb_theron.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .to_moveit_configs()
