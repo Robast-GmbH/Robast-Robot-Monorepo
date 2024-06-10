@@ -52,7 +52,7 @@ def generate_launch_description():
 
     rviz_config_file = (
         get_package_share_directory("moveit_door_opening_mechanism_config")
-        + "/config/moveit.rviz"
+        + "/config/moveit_planar_base.rviz"
     )
 
     launch_arguments = {
