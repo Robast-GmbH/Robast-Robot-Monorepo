@@ -72,6 +72,7 @@ def generate_launch_description():
         .robot_description_semantic(file_path="config/rb_theron_planar_base.srdf")
         .trajectory_execution(file_path="config/moveit_simple_controller_manager_planar_base.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
+        .robot_description_kinematics(file_path="config/kinematics_planar_base.yaml")
         .to_moveit_configs()
     )
 
