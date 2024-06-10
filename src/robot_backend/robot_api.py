@@ -114,7 +114,10 @@ def post_start_module_process(
 ):
     return {
         "success": ros_bridge.module_bridge.start_module_process(
-            data.module_id, data.drawer_id, data.process_name
+            data.module_id,
+            data.drawer_id,
+            data.process_name,
+            data.payload,
         )
     }
 

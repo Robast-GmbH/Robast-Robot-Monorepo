@@ -65,7 +65,7 @@ class ModuleBridge(BaseBridge):
             print("Tried closing a manual drawer.")
             return False
 
-    def start_module_process(self, module_id, drawer_id, process_name):
+    def start_module_process(self, module_id, drawer_id, process_name, payload):
         current_module_process_state = self.__current_module_process.get("state")
         if (
             current_module_process_state is None
@@ -75,6 +75,7 @@ class ModuleBridge(BaseBridge):
                 "module_id": module_id,
                 "drawer_id": drawer_id,
                 "process_name": process_name,
+                "payload": payload,
                 "state": MODULE_PROCESS_STATE_WAITING_FOR_OPENING_COMMAND,
             }
             return "Module process started."
