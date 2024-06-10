@@ -124,7 +124,7 @@ moveit_params:
     path: "config/kinematics_planar_base.yaml"
   moveit_simple_controller_manager:
     package: "moveit_door_opening_mechanism_config"
-    path: "config/moveit_simple_controller_manager.yaml"
+    path: "config/moveit_simple_controller_manager_planar_base.yaml"
   servo:
     package: "moveit_door_opening_mechanism_config"
     path: "config/rb_theron_servo.yaml"
