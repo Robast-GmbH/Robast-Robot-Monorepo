@@ -38,13 +38,13 @@ class MinimalSubscriber(Node):
 
     def listener_callback_map(self, msg):
         self.map_msg = msg
-        self.get_logger().info('I heard map ')
-        self.create_transform()
+        self.get_logger().info('Map recieved')
+        self.transform_point_on_image()
     
     def listener_callback_feuerplan(self, msg):
         self.feuerplan_msg = msg
-        self.get_logger().info('I heard feuerplan ')
-        self.create_transform()
+        self.get_logger().info('Feuerplan recieved')
+        self.transform_point_on_image()
 
     def ros_msg_to_image(self, ros_msg):
         image = np.zeros((ros_msg.info.height,ros_msg.info.width), dtype=np.uint8)
@@ -60,35 +60,40 @@ class MinimalSubscriber(Node):
                     image[y,x] = data[index]
                 index += 1
         return image
-
-    def create_transform(self):
-        if self.map_msg and self.feuerplan_msg is not None:
-            
-            image0 = self.ros_msg_to_image(self.map_msg)
-            image1 = self.ros_msg_to_image(self.feuerplan_msg)
-
+    
+    def get_three_best_matches(self, confidence_values, matches, keypoints1, keypoints2):
+        _, top_indices = torch.topk(confidence_values, k=3)
+        top_matches = matches[top_indices]
+        points1, points2 = keypoints1[top_matches[..., 0]], keypoints2[top_matches[..., 1]]
+        return points1, points2
+    
+    def create_transform_matrix(self, image1, image2):
+            # Initialize feature extractor and matcher
             device = "cpu" 
             extractor = SuperPoint(max_num_keypoints = 2048).eval().to(device)
             matcher = LightGlue(features = "superpoint").eval().to(device)
-
-            feats1 = extractor.extract(numpy_image_to_torch(image0))
-            feats2 = extractor.extract(numpy_image_to_torch(image1))
-
+            # Extract features from images
+            self.get_logger().info(f'Extracting features...')
+            feats1 = extractor.extract(numpy_image_to_torch(image1))
+            feats2 = extractor.extract(numpy_image_to_torch(image2))
+            # Match features between images
+            self.get_logger().info(f'Obtaining matches...')
             matches12 = matcher({'image0': feats1, 'image1': feats2})
+            # Refine features and matches
             feats1, feats2, matches12 = [rbd(x) for x in [feats1, feats2, matches12]]
-            matches = matches12['matches']
-            points1 = feats1['keypoints'][matches[..., 0]]
-            points2 = feats2['keypoints'][matches[..., 1]]
-
-            transformation_matrix, _ = cv.estimateAffinePartial2D(points1.numpy(), points2.numpy())
-
-            
-            map_origin = np.array([self.map_msg.info.origin.position.x,self.map_msg.info.origin.position.y,self.map_msg.info.origin.position.z])
-
-            feuerplan_origin = cv.warpAffine(map_origin.reshape((1,3)),transformation_matrix,(1,3))
-
-            print(feuerplan_origin)
-
+            # Get the three best matches according to confidence values
+            points1, points2 = self.get_three_best_matches(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
+            # Compute the transformation matrix
+            transformation_matrix = cv.getAffineTransform(np.round(points1.numpy()), np.round(points2.numpy()))
+            return transformation_matrix
+    
+    def transform_point_on_image(self):
+        if self.map_msg and self.feuerplan_msg:
+            image1 = self.ros_msg_to_image(self.map_msg)
+            image2 = self.ros_msg_to_image(self.feuerplan_msg)
+            transformation_matrix = self.create_transform_matrix(image1, image2)
+            self.get_logger().info(f'Created transformation matrix')
+    
 def main(args=None):
     rclpy.init(args=args)
 

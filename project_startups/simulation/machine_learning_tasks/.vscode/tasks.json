@@ -12,7 +12,7 @@
             "label": "debug-build",
             "detail": "build used for debugging purposes",
             "type": "shell",
-            "command": "colcon build --mixin debug --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic --packages-skip lightglue_robast",
+            "command": "colcon build --mixin debug --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic --packages-skip lightglue",
             "problemMatcher": []
         },
         {
@@ -34,8 +34,8 @@
         },
         {
             "type": "shell",
-            "label": "run feature_matcher",
-            "command": "source /workspace/install/setup.bash; ros2 run a_node listener",
+            "label": "run image_transformer",
+            "command": "source /workspace/install/setup.bash; ros2 launch image_transformer image_transformer.launch.py",
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
