@@ -15,7 +15,7 @@ from moveit_configs_utils import MoveItConfigsBuilder
 urdf_launch_arguments = {
     "ros2_control_hardware_type": "dryve_d1",
     "ros2_control_hardware_type_positon_joint": "real_life",
-    "model_position_joint": "true",
+    "model_position_joint": "prismatic",
 }
 
 

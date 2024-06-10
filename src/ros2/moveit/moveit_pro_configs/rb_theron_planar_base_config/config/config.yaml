@@ -15,12 +15,12 @@ hardware:
 
   # If the MoveIt Studio Agent should launch the ros2 controller node.
   # [Optional, default=True]
-  launch_control_node: False
+  launch_control_node: True
 
   # If the MoveIt Studio Agent should launch the robot state publisher.
   # This should be false if you are launching the robot state publisher as part of drivers.
   # [Optional, default=True]
-  launch_robot_state_publisher: False
+  launch_robot_state_publisher: True
 
   # If the MoveIt Studio Agent should launch cameras when simulated.
   # This must be False when using mock hardware, since there are no cameras simulated.
@@ -34,7 +34,7 @@ hardware:
   # Specify additional launch files for running the robot with real hardware.
   # [Optional, defaults to a blank launch file if not specified]
   robot_driver_persist_launch_file:
-    package: "rb_theron_config"
+    package: "rb_theron_planar_base_config"
     path: "launch/robot_drivers_to_persist_launch.py"
   hardware_launch_file:
     package: "moveit_studio_agent"
@@ -52,16 +52,16 @@ hardware:
   # `studio_agent.launch.py` file which can be found in ther moveit-studio-overlay docker under
   # `/opt/overlay_ws/install/moveit_studio_agent/share/moveit_studio_agent/launch/studio_agent.launch.py`
   simulated_robot_driver_persist_launch_file:
-    package: "moveit_studio_agent"
-    path: "launch/blank.launch.py"
-  simulated_hardware_launch_file:
-    package: "rb_theron_config"
+    package: "rb_theron_planar_base_config"
     path: "launch/sim/robot_mock_launch.py"
+  # simulated_hardware_launch_file:
+  #   package: "rb_theron_planar_base_config"
+  #   path: "launch/sim/robot_mock_launch.py"
 
   # Configuration details for cameras and scene planning.
   # [Required]
   camera_config_file:
-    package: "rb_theron_config"
+    package: "rb_theron_planar_base_config"
     path: "config/cameras.yaml"
 
   # Parameters used to configure the robot description through XACRO.
@@ -73,7 +73,7 @@ hardware:
       path: "robots/rb_theron.urdf.xacro"
     srdf:
       package: "moveit_door_opening_mechanism_config"
-      path: "config/rb_theron.srdf"
+      path: "config/rb_theron_planar_base.srdf"
     # Specify any additional parameters required for the URDF.
     # Many of these are specific to the UR descriptions packages, and can be customized as needed.
     # [Optional]
@@ -81,7 +81,7 @@ hardware:
       - ros_distro: "humble" # mind that if you change this, you also need to change ompl_planning.yaml file
       - prefix: ""
       - ros2_control_hardware_type: "mock_components"
-      - model_position_joint: "prismatic"
+      - model_position_joint: "planar"
       - ros2_control_hardware_type_positon_joint: "mock_components"
 
 # Sets ROS global params for launch.
@@ -121,17 +121,23 @@ moveit_params:
     path: "config/ompl_iron_planning.yaml" # check above comment
   kinematics:
     package: "moveit_door_opening_mechanism_config"
-    path: "config/kinematics.yaml"
+    path: "config/kinematics_planar_base.yaml"
+  moveit_simple_controller_manager:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/moveit_simple_controller_manager.yaml"
   servo:
     package: "moveit_door_opening_mechanism_config"
-    path: "config/ur_servo.yaml"
+    path: "config/rb_theron_servo.yaml"
   sensors_3d:
     package: "moveit_door_opening_mechanism_config"
     path: "config/sensors_3d.yaml"
   servo_kinematics:
     package: "moveit_door_opening_mechanism_config"
-    path: "config/kinematics.yaml"
+    path: "config/kinematics_planar_base.yaml"
   joint_limits:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/joint_limits.yaml"
+  servo_joint_limits:
     package: "moveit_door_opening_mechanism_config"
     path: "config/joint_limits.yaml"
   pilz_cartesian_limits:
@@ -152,9 +158,7 @@ moveit_params:
     allowed_execution_duration_scaling: 2.0
     allowed_goal_duration_margin: 0.5
     allowed_start_tolerance: 0.01
-
-  # According to Henning this should be supported soon but is not yet (as of 09.11.2023)
-  moveit_controller_manager: moveit_ros_control_interface/Ros2ControlManager
+    control_multi_dof_joint_variables: True
 
 # Additional configurable parameters for the MoveIt Studio user interface.
 # [Required]
@@ -174,17 +178,15 @@ ros2_control:
   # If not specified, it is up to the user to ensure the appropriate controllers are active and available
   # for running the application.
   # [Optional, default=[]]
-  controllers_active_at_startup: []
-
-  controllers_inactive_at_startup: []
-
-  controllers_not_managed:
+  controllers_active_at_startup:
     - "joint_state_broadcaster"
-    - "diff_drive_base_controller"
-    - "drawer_joint_trajectory_controller"
-    - "mobile_base_controller_cmd_vel"
-    - "streaming_controller"
+    - "diff_drive_controller"
     - "joint_trajectory_controller"
+
+  controllers_inactive_at_startup: 
+    - "stretch_base_controller"
+
+  controllers_not_managed: []
   # Optionally configure remapping rules to let multiple controllers receive commands on the same topic.
   # [Optional, default=[]]
   controller_shared_topics: []
@@ -212,10 +214,11 @@ objectives:
   # [Required]
   objective_library_paths:
     core:
-      package_name: "rb_theron_config"
+      package_name: "rb_theron_planar_base_config"
       relative_path: "objectives"
   # Specify the location of the saved waypoints file.
   # [Required]
   waypoints_file:
-    package_name: "rb_theron_config"
+    package_name: "rb_theron_planar_base_config"
     relative_path: "waypoints/waypoints.yaml"
+
