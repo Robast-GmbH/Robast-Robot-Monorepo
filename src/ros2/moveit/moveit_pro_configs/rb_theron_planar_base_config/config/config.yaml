@@ -173,7 +173,7 @@ ui_params:
 ros2_control:
   config:
     package: "rb_theron_description"
-    path: "config/rb_theron_gz_ros2_controller.yaml"
+    path: "config/rb_theron_planar_base_gz_ros2_control.yaml"
   # MoveIt Studio will load and activate these controllers at start up to ensure they are available.
   # If not specified, it is up to the user to ensure the appropriate controllers are active and available
   # for running the application.
