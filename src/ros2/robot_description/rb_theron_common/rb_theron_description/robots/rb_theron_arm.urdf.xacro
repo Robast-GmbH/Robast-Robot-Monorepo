@@ -32,21 +32,22 @@
 	<xacro:arg name="ros_distro" default="humble" />
 
 	<!-- Whether the position joint should be modeled as a prismatic joint or just as a fixed joint -->
-	<xacro:arg name="model_position_joint" default="false" />
+	<xacro:arg name="model_position_joint" default="fixed" />
+	<xacro:property name="model_position_joint_prop" value="$(arg model_position_joint)"/>
 
 	<!-- If we model the position joint, the sensors need be placed in the base_link frame,
 	otherwise they should be placed in the base_footprint frame -->
-	<xacro:if value="$(arg model_position_joint)">
+	<xacro:if value="${model_position_joint_prop == 'prismatic'}">
 		<xacro:property name="sensor_base_frame" value="base_link" />
 	</xacro:if>
-	<xacro:unless value="$(arg model_position_joint)">
+	<xacro:if value="${model_position_joint_prop == 'fixed'}">
 		<xacro:if value="${publish_bf}">
 			<xacro:property name="sensor_base_frame" value="base_footprint" />
 		</xacro:if>
 		<xacro:unless value="${publish_bf}">
 			<xacro:property name="sensor_base_frame" value="base_link" />
 		</xacro:unless>
-	</xacro:unless>
+	</xacro:if>
 
     <xacro:include filename="$(find rb_theron_description)/urdf/bases/theron_base.urdf.xacro" />
     <xacro:include filename="$(find rb_theron_description)/urdf/inertia.urdf.xacro" />

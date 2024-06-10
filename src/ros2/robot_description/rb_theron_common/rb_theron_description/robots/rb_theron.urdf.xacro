@@ -61,7 +61,7 @@
 	<xacro:if value="${model_position_joint_prop == 'prismatic' or model_position_joint_prop == 'planar'}">
 		<xacro:property name="sensor_base_frame" value="base_link"/>
 	</xacro:if>
-	<xacro:if value="${model_position_joint_prop == 'prismatic'}">
+	<xacro:if value="${model_position_joint_prop == 'fixed'}">
 		<xacro:if value="${publish_bf}">
 			<xacro:property name="sensor_base_frame" value="base_footprint"/>
 		</xacro:if>

@@ -100,12 +100,6 @@ def path_pattern_change_for_gazebo(urdf_string):
 
 
 def generate_launch_description():
-    declare_model_position_joint_cmd = DeclareLaunchArgument(
-        "model_position_joint",
-        default_value="false",
-        description="whether to model the position joint or not",
-    )
-
     ros_distro = os.environ["ROS_DISTRO"]
     gz_version = os.environ["GZ_VERSION"]
 
@@ -214,8 +208,8 @@ def generate_launch_description():
 
     declare_model_position_joint_cmd = DeclareLaunchArgument(
         "model_position_joint",
-        default_value="False",
-        description="whether to model the position joint or not",
+        default_value="fixed",
+        description="whether to model the position joint as fixed, prismatic or planar",
     )
 
     # As far as I understand, to get the value of a launch argument
@@ -331,7 +325,9 @@ def generate_launch_description():
     )
 
     spawn_ros2_controller_without_arm = GroupAction(
-        condition=UnlessCondition(model_position_joint),
+        condition=IfCondition(
+            PythonExpression(["'", model_position_joint, "' == 'fixed'"])
+        ),
         actions=[
             RegisterEventHandler(
                 event_handler=OnProcessExit(
@@ -355,7 +351,9 @@ def generate_launch_description():
     )
 
     spawn_ros2_controller_with_arm = GroupAction(
-        condition=IfCondition(PythonExpression([model_position_joint])),
+        condition=IfCondition(
+            PythonExpression(["'", model_position_joint, "' == 'prismatic'"])
+        ),
         actions=[
             RegisterEventHandler(
                 event_handler=OnProcessExit(
@@ -399,7 +397,6 @@ def generate_launch_description():
     ld.add_action(declare_world_model_cmd)
     ld.add_action(declare_robot_model_cmd)
     ld.add_action(declare_headless_cmd)
-    ld.add_action(declare_model_position_joint_cmd)
 
     # opaque functions
     ld.add_action(launch_gazebo_opaque_func)
