@@ -27,22 +27,22 @@ class _DeliveryTaskCreationViewState extends State<DeliveryTaskCreationView> {
       child: ListView(
         children: [
           CustomDropdownView(
-            value: widget.controller.pickupNode,
+            value: widget.controller.pickupPlaceID,
             items: rmfProvider.getPickupLocations(),
             hint: 'Start auswählen',
             onChanged: (value) {
               setState(() {
-                widget.controller.pickupNode = value;
+                widget.controller.pickupPlaceID = value;
               });
             },
           ),
           CustomDropdownView(
-            value: widget.controller.dropoffNode,
+            value: widget.controller.dropoffPlaceID,
             items: rmfProvider.getDropoffLocations(),
             hint: 'Ziel auswählen',
             onChanged: (value) {
               setState(() {
-                widget.controller.dropoffNode = value;
+                widget.controller.dropoffPlaceID = value;
               });
             },
           ),

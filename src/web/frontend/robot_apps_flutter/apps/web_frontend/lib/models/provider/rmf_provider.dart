@@ -62,16 +62,16 @@ class RMFProvider extends ChangeNotifier {
       );
     } else if (taskType == 'Delivery') {
       await dispatchDeliveryTask(
-        pickup: controller.pickupNode!,
-        dropoff: controller.dropoffNode!,
+        pickup: controller.pickupPlaceID!,
+        dropoff: controller.dropoffPlaceID!,
         drawerID: controller.drawerID!,
       );
     } else if (taskType == 'Multi Dropoff') {
       await dispatchPatrolTask(places: ['floor'], rounds: 1);
-      for (final dropoffNodeDrawerAssignment in controller.dropoffNodeDrawerAssignments) {
+      for (final dropoffPlaceDrawerAssignment in controller.dropoffPlaceDrawerAssignments) {
         await dispatchDropOffTask(
-          dropoff: dropoffNodeDrawerAssignment[0]!,
-          drawerID: dropoffNodeDrawerAssignment[1]!,
+          dropoff: dropoffPlaceDrawerAssignment.dropoffPlaceID!,
+          drawerID: dropoffPlaceDrawerAssignment.drawerID!,
         );
       }
     }

@@ -1,16 +1,18 @@
+import 'package:web_frontend/models/dropoff_place_drawer_assignment.dart';
+
 class TaskCreationController {
   // Fields for Patrol Task
   int? rounds;
   final List<String> places = [];
 
   // Fields for Delivery Task
-  String? pickupNode;
-  String? dropoffNode;
+  String? pickupPlaceID;
+  String? dropoffPlaceID;
   String? drawerID;
 
   // Fields for Multi Dropoff Task
-  final List<List<String?>> dropoffNodeDrawerAssignments = [
-    [null, null]
+  final List<DropoffPlaceDrawerAssignment> dropoffPlaceDrawerAssignments = [
+    DropoffPlaceDrawerAssignment(),
   ];
 
   bool validateTask({required String type}) {
@@ -29,10 +31,10 @@ class TaskCreationController {
   }
 
   bool _validateDeliveryTask() {
-    return pickupNode != null && dropoffNode != null && drawerID != null;
+    return pickupPlaceID != null && dropoffPlaceID != null && drawerID != null;
   }
 
   bool _validateMultiDropOffTask() {
-    return dropoffNodeDrawerAssignments.isNotEmpty && dropoffNodeDrawerAssignments.every((element) => element[0] != null && element[1] != null);
+    return dropoffPlaceDrawerAssignments.isNotEmpty && dropoffPlaceDrawerAssignments.every((assignment) => assignment.isValid());
   }
 }
