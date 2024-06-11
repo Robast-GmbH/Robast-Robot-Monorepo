@@ -70,7 +70,7 @@ def search_text_in_image(image_path:str, search_term:str, language:str):
     Input:
         image_path: Path to input image.
         search_term: Text to search for in the image.
-        language: Language to use for text detection.
+        language: Language to use for text detection. (eg. 'german')
 
     Output:
         (center_x, center_y): Center coordinates of the bounding box around the `search_term`.    
@@ -80,5 +80,4 @@ def search_text_in_image(image_path:str, search_term:str, language:str):
     index_of_interest = detection_result["text detections"].index(search_term)
     # Uncomment this line to visualise the bounding box around the text
     #visualise_bounding_box(image_path=image_path,box=detection_result["bounding boxes"][index_of_interest])
-    print(detection_result["bounding boxes"][index_of_interest].type())
     return find_center_of_bounding_box(detection_result["bounding boxes"][index_of_interest])
