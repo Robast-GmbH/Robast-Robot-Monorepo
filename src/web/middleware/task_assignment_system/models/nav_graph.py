@@ -1,19 +1,24 @@
 import heapq
+from __future__ import annotations
 from task_assignment_system.models.node import Node
 from task_assignment_system.models.edge import Edge
+from dataclasses import dataclass, field
+from typing import Any
 
 
+@dataclass
 class NavGraph:
-    def __init__(self, nodes):
-        self.nodes = nodes
+    nodes: list[Node]
+    min_distances: dict[Node, dict[Node, float]] = field(init=False)
 
+    def __post_init__(self) -> None:
         # Minimal distances between all nodes, accessed by min_distances[node1][node2]
         self.min_distances = {}
         for node in self.nodes:
             self.min_distances[node] = self.__dijkstra(self.nodes, node)
 
     @classmethod
-    def from_json(cls, data):
+    def from_json(cls, data: dict[str, Any]) -> NavGraph:
         # Extract the vertices and edges
         vertices = data["vertices"]
         edges = data["edges"]
@@ -31,13 +36,13 @@ class NavGraph:
             )
         return cls(nodes)
 
-    def get_node_by_id(self, id):
+    def get_node_by_id(self, id: str) -> Node | None:
         for node in self.nodes:
             if node.id == id:
                 return node
         return None
 
-    def __dijkstra(self, graph, start):
+    def __dijkstra(self, graph: list[Node], start: Node) -> dict[Node, float]:
         # Initialize the distance dictionary with infinite distances for all nodes except the start node
         distances = {node: float("infinity") for node in graph}
         distances[start] = 0

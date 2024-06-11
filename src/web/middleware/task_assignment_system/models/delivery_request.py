@@ -1,10 +1,9 @@
 from task_assignment_system.models.node import Node
+from dataclasses import dataclass
 
 
+@dataclass
 class DeliveryRequest:
-    def __init__(
-        self, required_drawer_type: int, target: Node, start: Node = None
-    ) -> None:
-        self.required_drawer_type = required_drawer_type
-        self.target = target
-        self.start = start
+    required_drawer_type: int
+    target: Node
+    start: Node = None

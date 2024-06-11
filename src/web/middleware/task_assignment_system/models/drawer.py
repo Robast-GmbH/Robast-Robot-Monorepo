@@ -1,12 +1,18 @@
+from __future__ import annotations
+from typing import Any
+from dataclasses import dataclass
+
+@dataclass
 class Drawer:
-    def __init__(self, size: int, id: str):
-        self.size = size
-        self.id = id
-        self.is_available = True
+    id: str
+    size: int
+    is_available: bool = True
 
     @classmethod
-    def from_dict(cls, drawer_dict):
-        return cls(drawer_dict["size"], f"{drawer_dict["module_id"]}_{drawer_dict["drawer_id"]}")
+    def from_dict(cls, drawer_dict: dict[str,Any])-> Drawer:
+        return cls(id=f"{drawer_dict["module_id"]}_{drawer_dict["drawer_id"]}",
+                   size=drawer_dict["size"],
+                   )
 
     def __str__(self) -> str:
         return self.id

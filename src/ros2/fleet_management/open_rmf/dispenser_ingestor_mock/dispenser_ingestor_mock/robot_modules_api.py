@@ -5,13 +5,13 @@ DRAWER_OPEN = 1
 
 
 class RobotModulesAPI:
-    def __init__(self, middleware_url, robot_name) -> None:
+    def __init__(self, middleware_url: str, robot_name: str) -> None:
         self.__middleware_url = middleware_url
         self.__robot_name = robot_name
         self.__module_id = 0
         self.__drawer_id = 0
 
-    def start_module_process(self, drawer_address, process_type):
+    def start_module_process(self, drawer_address: str, process_type: str) -> None:
         try:
             module_and_drawer_id = drawer_address.split("_")
             self.__module_id = int(module_and_drawer_id[0])
@@ -31,7 +31,7 @@ class RobotModulesAPI:
         except Exception as e:
             print(f"Start module process failed: {e}")
 
-    def update_module_process_status(self):
+    def update_module_process_status(self) -> str | None:
         try:
             response = requests.get(
                 f"{self.__middleware_url}/module_process_status?robot_name={self.__robot_name}"

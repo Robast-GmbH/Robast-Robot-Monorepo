@@ -1,3 +1,4 @@
+from typing import Optional, Callable
 from roslibpy import Topic, Ros
 from thread_safe_dict import ThreadSafeDict
 
@@ -7,13 +8,15 @@ class BaseBridge:
         self.context = ThreadSafeDict()
         self.ros = ros
 
-    def _create_on_msg_callback(self, topic):
-        def on_msg_callback(message):
+    def _create_on_msg_callback(self, topic: str) -> Callable:
+        def on_msg_callback(message: dict):
             self.context[topic] = message
 
         return on_msg_callback
 
-    def start_subscriber(self, topic, msg_type, on_msg_callback=None) -> Topic:
+    def start_subscriber(
+        self, topic: str, msg_type: str, on_msg_callback: Optional[Callable] = None
+    ) -> Topic:
         listener = Topic(self.ros, topic, msg_type)
         if on_msg_callback:
             listener.subscribe(on_msg_callback)
@@ -21,6 +24,6 @@ class BaseBridge:
             listener.subscribe(self._create_on_msg_callback(topic))
         return listener
 
-    def start_publisher(self, topic, msg_type) -> Topic:
+    def start_publisher(self, topic: str, msg_type: str) -> Topic:
         publisher = Topic(self.ros, topic, msg_type)
         return publisher

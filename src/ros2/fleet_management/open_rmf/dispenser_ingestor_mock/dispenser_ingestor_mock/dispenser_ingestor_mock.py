@@ -7,7 +7,7 @@ from dispenser_ingestor_mock.robot_modules_api import RobotModulesAPI
 
 
 class DispenserIngestorMock(Node):
-    def __init__(self):
+    def __init__(self) -> None:
         super().__init__("dispenser_ingestor_mock")
 
         self.declare_parameter("middleware_url", "http://10.10.23.6:8003")
@@ -38,7 +38,7 @@ class DispenserIngestorMock(Node):
         self.__timer = None
         self.__is_in_process = False
 
-    def __create_result_msg(self):
+    def __create_result_msg(self) -> None:
         if isinstance(self.current_request, DispenserRequest):
             msg = DispenserResult()
             msg.status = DispenserResult.SUCCESS
@@ -53,14 +53,16 @@ class DispenserIngestorMock(Node):
         msg.source_guid = self.__target_guid
         return msg
 
-    def __update_drawer_status(self):
+    def __update_drawer_status(self) -> None:
         module_process_status = self.__robot_drawer_api.update_module_process_status()
         if module_process_status is not None and module_process_status == "finished":
             self.__timer.cancel()
             msg = self.__create_result_msg()
             self.__publish_result_with_delay(msg)
 
-    def __publish_result_with_delay(self, msg):
+    def __publish_result_with_delay(
+        self, msg: DispenserResult | IngestorResult
+    ) -> None:
         if isinstance(self.current_request, DispenserRequest):
             self.__dispenser_publisher.publish(msg)
         else:
@@ -70,12 +72,12 @@ class DispenserIngestorMock(Node):
             lambda: self.__finish_process_callback(),
         )
 
-    def __finish_process_callback(self):
+    def __finish_process_callback(self) -> None:
         self.__is_in_process = False
         self.get_logger().info("Finished pick-up/drop-off process")
         self.__timer.cancel()
 
-    def __on_request_callback(self, msg):
+    def __on_request_callback(self, msg: DispenserRequest | IngestorRequest) -> None:
         if not self.__is_in_process:
             self.get_logger().info("Started pick-up/drop-off process")
             self.__is_in_process = True

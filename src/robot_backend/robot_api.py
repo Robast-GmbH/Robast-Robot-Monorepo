@@ -83,7 +83,7 @@ def post_unblock_nav():
 
 @app.get("/is_navigation_blocked", tags=["Navigation"])
 def read_is_nav_blocked():
-    return {"is_nav_blocked": ros_bridge.nav_bridge.is_nav_blocked}
+    return {"is_nav_blocked": ros_bridge.nav_bridge.get_is_nav_blocked()}
 
 
 """
@@ -109,17 +109,8 @@ def post_close_drawer(module_id: int, drawer_id: int):
 
 
 @app.post("/start_module_process", tags=["Modules"])
-def post_start_module_process(
-    data: ModuleProcessData,
-):
-    return {
-        "success": ros_bridge.module_bridge.start_module_process(
-            data.module_id,
-            data.drawer_id,
-            data.process_name,
-            data.payload,
-        )
-    }
+def post_start_module_process(data: ModuleProcessData):
+    return {"success": ros_bridge.module_bridge.start_module_process(data)}
 
 
 @app.post("/finish_module_process", tags=["Modules"])
@@ -141,9 +132,9 @@ Doors API Endpoints
 if door_available:
 
     @app.post("/open_door", tags=["Doors"])
-    def post_open_drawer():
+    def post_open_door():
         return {"success": ros_bridge.door_bridge.open_door()}
 
     @app.post("/close_door", tags=["Doors"])
-    def post_close_drawer():
+    def post_close_door():
         return {"success": ros_bridge.door_bridge.close_door()}

@@ -12,7 +12,12 @@ TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_SECONDS = 10
 
 
 class TaskAssignmentSystem:
-    def __init__(self, fleet_ip_config, robot_api_port, fleet_management_address):
+    def __init__(
+        self,
+        fleet_ip_config: dict[str, str],
+        robot_api_port: str,
+        fleet_management_address: str,
+    ) -> None:
         path = "task_assignment_system/configs/nav_config.json"
         with open(path, "r") as file:
             data = json.load(file)["levels"][0]["nav_graphs"][0]
@@ -27,8 +32,11 @@ class TaskAssignmentSystem:
         self.timer = None
 
     def receive_request(
-        self, required_drawer_type: int, start_id: str = None, target_id: str = None
-    ):
+        self,
+        required_drawer_type: int,
+        start_id: str = None,
+        target_id: str = None,
+    ) -> str:
         if self.timer is not None:
             self.timer.cancel()
         start = self.nav_graph.get_node_by_id(start_id)
@@ -48,7 +56,7 @@ class TaskAssignmentSystem:
         self.__trigger_task_assignment()
         return "Request added to queue."
 
-    def __trigger_task_assignment(self):
+    def __trigger_task_assignment(self) -> None:
         if len(self.request_queue) > 0:
             delivery_request = self.request_queue.pop(0)
 
@@ -65,7 +73,9 @@ class TaskAssignmentSystem:
         )
         self.timer.start()
 
-    def __find_cheapest_assignment(self, delivery_request):
+    def __find_cheapest_assignment(
+        self, delivery_request: DeliveryRequest
+    ) -> Robot | None:
         min_cost = float("inf")
         min_cost_robot = None
 
@@ -80,7 +90,12 @@ class TaskAssignmentSystem:
         else:
             return None
 
-    def __init_robots(self, fleet_ip_config, robot_api_port, fleet_management_address):
+    def __init_robots(
+        self,
+        fleet_ip_config: dict[str, str],
+        robot_api_port: str,
+        fleet_management_address: str,
+    ) -> list[Robot]:
         robots = {}
         for robot_name in fleet_ip_config.keys():
             modules_json = None

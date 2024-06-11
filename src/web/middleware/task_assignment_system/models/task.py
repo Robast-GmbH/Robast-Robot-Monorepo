@@ -1,23 +1,19 @@
 from task_assignment_system.models.node import Node
+from task_assignment_system.models.drawer import Drawer
+from dataclasses import dataclass
+from typing import Any
 import time
 
 
+@dataclass
 class Task:
-    def __init__(
-        self,
-        id,
-        task_type,
-        requires_task_id,
-        drawer,
-        target: Node,
-    ):
-        self.id = id
-        self.task_type = task_type
-        self.requires_task_id = requires_task_id
-        self.drawer = drawer
-        self.target = target
+    id: str
+    task_type: str
+    requires_task_id: str | None
+    drawer: Drawer
+    target: Node
 
-    def to_json(self):
+    def to_json(self) -> dict[str, Any]:
         return {
             "type": "robot_task_request",
             "robot": "rb_theron",
