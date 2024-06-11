@@ -1,5 +1,3 @@
-version: '3.9'
-
 services:
   simulation:
     image: ghcr.io/robast-gmbh/monorepo/simulation:devel-humble
@@ -35,7 +33,7 @@ services:
       - "8001:8001"
     
   navigation:
-    image: ghcr.io/robast-gmbh/monorepo/navigation:devel
+    image: ghcr.io/robast-gmbh/monorepo/navigation:devel-jazzy
     environment:
       - ROS_DOMAIN_ID=1
       - is_simulation=True

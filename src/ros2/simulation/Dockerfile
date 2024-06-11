@@ -1,6 +1,6 @@
-ARG ROS_VERSION=humble
+ARG ROS_VERSION=jazzy
 FROM ros:${ROS_VERSION} as base
-ARG GAZEBO_VERSION=fortress
+ARG GAZEBO_VERSION=harmonic
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
