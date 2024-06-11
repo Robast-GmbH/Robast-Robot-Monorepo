@@ -1,9 +1,9 @@
-import heapq
 from __future__ import annotations
 from task_assignment_system.models.node import Node
 from task_assignment_system.models.edge import Edge
 from dataclasses import dataclass, field
 from typing import Any
+import heapq
 
 
 @dataclass

@@ -1,5 +1,4 @@
-from task_assignment_system.models.edge import Edge
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 
 @dataclass
@@ -8,7 +7,10 @@ class Node:
     id: str
     x: float
     y: float
-    edges: list[Edge] = []
+    edges: list = field(default_factory=list)
 
     def __str__(self) -> str:
         return self.id
+
+    def __hash__(self) -> int:
+        return hash(self.id)
