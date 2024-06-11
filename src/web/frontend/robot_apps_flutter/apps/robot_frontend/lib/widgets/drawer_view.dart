@@ -9,11 +9,15 @@ class DrawerView extends StatelessWidget {
     required this.module,
     required this.isAnyDrawerOpen,
     required this.onOpening,
+    this.label,
+    this.isEnabled = true,
   });
 
   final DrawerModule module;
   final bool isAnyDrawerOpen;
   final VoidCallback onOpening;
+  final bool isEnabled;
+  final String? label;
 
   @override
   Widget build(BuildContext context) {
@@ -21,6 +25,7 @@ class DrawerView extends StatelessWidget {
       flex: module.size,
       child: GestureDetector(
         onTap: () {
+          if (!isEnabled) return;
           if (module.isOpen && module.type == ModuleType.electric_drawer) {
             Provider.of<RobotProvider>(context, listen: false).closeDrawer(module);
           } else if (!module.isOpen) {
@@ -56,7 +61,7 @@ class DrawerView extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          module.label,
+                          label ?? module.label,
                           textAlign: TextAlign.center,
                           style: TextStyle(
                             height: 0,
