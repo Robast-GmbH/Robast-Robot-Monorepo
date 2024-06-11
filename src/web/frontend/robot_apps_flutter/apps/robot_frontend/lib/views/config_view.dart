@@ -51,7 +51,7 @@ class _ConfigViewState extends State<ConfigView> {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.data!.getString('robotBackendAddress') != null && widget.autoClose) {
                       WidgetsBinding.instance.addPostFrameCallback((_) async {
-                        await finishConfiguration(robotBackendAddress: robotBackendAddress);
+                        await finishConfiguration(robotBackendAddress: snapshot.data!.getString('robotBackendAddress') ?? "");
                       });
                       return SizedBox();
                     }

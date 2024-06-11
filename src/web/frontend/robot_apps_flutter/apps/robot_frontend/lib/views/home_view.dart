@@ -5,6 +5,7 @@ import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 
 import 'package:robot_frontend/widgets/driving_view.dart';
+import 'package:robot_frontend/widgets/module_process_view.dart';
 import 'package:robot_frontend/widgets/status_indicator_view.dart';
 import 'package:robot_frontend/widgets/stopped_view.dart';
 import 'package:shared_data_models/shared_data_models.dart';
@@ -68,24 +69,28 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
           return BackgroundView(
             child: Stack(
               children: [
-                SlideTransition(
-                  position: _offsetAnimation2,
-                  child: StoppedView(
-                    onContinue: () async {
-                      await Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
-                      await _controller.reverse();
-                    },
+                if (moduleProcess?.state != null && moduleProcess?.state != ModuleProcessState.finished) ...[
+                  ModuleProcessView()
+                ] else ...[
+                  SlideTransition(
+                    position: _offsetAnimation2,
+                    child: StoppedView(
+                      onContinue: () async {
+                        await Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
+                        await _controller.reverse();
+                      },
+                    ),
                   ),
-                ),
-                SlideTransition(
-                  position: _offsetAnimation,
-                  child: DrivingView(
-                    onPressed: () async {
-                      await Provider.of<RobotProvider>(context, listen: false).blockNavigation();
-                      await _controller.forward();
-                    },
+                  SlideTransition(
+                    position: _offsetAnimation,
+                    child: DrivingView(
+                      onPressed: () async {
+                        await Provider.of<RobotProvider>(context, listen: false).blockNavigation();
+                        await _controller.forward();
+                      },
+                    ),
                   ),
-                ),
+                ],
                 Padding(
                   padding: const EdgeInsets.only(left: 24, top: 12),
                   child: ClockView(),

@@ -42,7 +42,7 @@ class ModuleBridge(BaseBridge):
             print("Module not found")
             return False
 
-        self.__current_module_process["state"] = MODULE_PROCESS_STATE_OPENING
+        self.__update_module_process_state(MODULE_PROCESS_STATE_OPENING)
 
         if drawer.get_type() == TYPE_ELECTRIC_DRAWER:
             self.__electric_drawer_tree_publisher.publish(
@@ -63,7 +63,7 @@ class ModuleBridge(BaseBridge):
             self.__close_drawer_publisher.publish(
                 {"module_id": module_id, "drawer_id": drawer_id}
             )
-            self.__current_module_process["state"] = MODULE_PROCESS_STATE_CLOSING
+            self.__update_module_process_state(MODULE_PROCESS_STATE_CLOSING)
             return True
         else:
             print("Tried closing a manual drawer.")
@@ -89,7 +89,7 @@ class ModuleBridge(BaseBridge):
         if self.__current_module_process["state"] != MODULE_PROCESS_STATE_CLOSED:
             return "Module process has to be in closed state to be finished."
         else:
-            self.__current_module_process["state"] = MODULE_PROCESS_STATE_FINISHED
+            self.__update_module_process_state(MODULE_PROCESS_STATE_FINISHED)
             return "Module process finished."
 
     def get_modules(self) -> List[Dict[str, Any]]:
@@ -105,6 +105,11 @@ class ModuleBridge(BaseBridge):
 
         Drawer.get_drawer(module_id, drawer_id).set_is_open(is_open)
 
-        self.__current_module_process["state"] = (
+        self.__update_module_process_state(
             MODULE_PROCESS_STATE_OPEN if is_open else MODULE_PROCESS_STATE_CLOSED
         )
+
+    def __update_module_process_state(self, state: str) -> None:
+        current_state = self.__current_module_process.get("state")
+        if current_state is not None and current_state != MODULE_PROCESS_STATE_FINISHED:
+            self.__current_module_process["state"] = state
