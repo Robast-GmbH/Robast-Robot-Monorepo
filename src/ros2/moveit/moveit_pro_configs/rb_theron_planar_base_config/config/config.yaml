@@ -127,7 +127,7 @@ moveit_params:
     path: "config/moveit_simple_controller_manager_planar_base.yaml"
   servo:
     package: "moveit_door_opening_mechanism_config"
-    path: "config/rb_theron_servo.yaml"
+    path: "config/rb_theron_servo_planar_base.yaml"
   sensors_3d:
     package: "moveit_door_opening_mechanism_config"
     path: "config/sensors_3d.yaml"
