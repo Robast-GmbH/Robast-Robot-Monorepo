@@ -124,11 +124,13 @@ class RobotApiUtilities {
       );
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
+        if ((data["success"] as Map<String, dynamic>).isEmpty) return null;
         return ModuleProcess.fromJson(data["success"]);
       } else {
         return null;
       }
     } catch (e) {
+      print(e);
       return null;
     }
   }
