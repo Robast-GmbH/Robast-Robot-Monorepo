@@ -6,7 +6,7 @@
 enable_parameter_update: true
 
 ## Properties of incoming commands
-command_in_type: "unitless" # "unitless"> in the range [-1:1], as if from joystick. "speed_units"> cmds are in m/s and rad/s
+command_in_type: "speed_units" # "unitless"> in the range [-1:1], as if from joystick. "speed_units"> cmds are in m/s and rad/s
 scale:
   # Scale parameters are only used if command_in_type=="unitless"
   linear: 2.0  # Max linear velocity. Meters per publish_period. Unit is [m/s]. Only used for Cartesian commands.
@@ -22,7 +22,7 @@ publish_period: 0.002  # 1/Nominal publish rate [seconds]
 
 # What type of topic does your robot driver expect?
 # Currently supported are std_msgs/Float64MultiArray or trajectory_msgs/JointTrajectory
-command_out_type: std_msgs/Float64MultiArray
+command_out_type: trajectory_msgs/JointTrajectory
 
 # What to publish? Can save some bandwidth as most robots only require positions or velocities
 publish_joint_positions: true
@@ -33,10 +33,12 @@ publish_joint_accelerations: false
 use_smoothing: true
 smoothing_filter_plugin_name: "online_signal_smoothing::ButterworthFilterPlugin"
 low_pass_filter_coeff: 1.5  # Larger --> trust the filtered data more, trust the measurements less.
+acceleration_filter_update_period: 0.01 # [seconds] Must match the publish_period parameter
 
 ## MoveIt properties
 move_group_name: mobile_base_arm  # Often 'manipulator' or 'arm'
-planning_frame: base_link  # The MoveIt planning frame. Often 'base_link' or 'world'
+acceleration_filter_planning_group_name: mobile_base_arm  # Often 'manipulator' or 'arm'
+# planning_frame: base_link  # The MoveIt planning frame. Often 'base_link' or 'world'
 is_primary_planning_scene_monitor: false  # The MoveGroup node maintains the planning scene, so Servo needs to get its world info from there.
 
 ## Other frames
@@ -49,14 +51,14 @@ incoming_command_timeout: 0.1  # Stop servoing if X seconds elapse without a new
 ## Configure handling of singularities and joint limits
 lower_singularity_threshold: 30.0  # Start decelerating when the condition number hits this (close to singularity)
 hard_stop_singularity_threshold: 50.0 # Stop when the condition number hits this
-joint_limit_margins: [0.1, 0.1, 0.1, 0.1, 0.1] # added as a buffer to joint limits [radians]. If moving quickly, make this larger.
+joint_limit_margins: [0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1] # added as a buffer to joint limits [radians]. If moving quickly, make this larger.
 
 ## Topic names
 cartesian_command_in_topic: ~/delta_twist_cmds  # Topic for incoming Cartesian twist commands
 joint_command_in_topic: ~/delta_joint_cmds # Topic for incoming joint angle commands
 joint_topic: /joint_states
 status_topic: ~/status # Publish status to this topic
-command_out_topic: /streaming_controller/commands # Publish outgoing commands here
+command_out_topic: /stretch_controller/joint_trajectory # Publish outgoing commands here
 
 ## Collision checking for the entire robot body
 check_collisions: true # Check collisions?
