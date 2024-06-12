@@ -175,7 +175,7 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_activate(const rclcpp_lif
   }
 
   _subscriber_odom = _node->create_subscription<nav_msgs::msg::Odometry>(
-      _odom_topic, 10, std::bind(&BaseMovementSystemHardware::odom_callback, this, std::placeholders::_1));
+      _odom_topic, 10, std::bind(&SimBaseMovement<SimSystemInterface>::odom_callback, this, std::placeholders::_1));
 
   RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Successfully activated!");
 
