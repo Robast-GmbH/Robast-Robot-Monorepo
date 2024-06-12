@@ -4,6 +4,9 @@ from models.module_process_data import ModuleProcessData
 from roslibpy import Ros
 from typing import Dict, List, Any
 
+DRAWER_STATUS_MSG = "communication_interfaces/msg/DrawerStatus"
+DRAWER_ADDRESS_MSG = "communication_interfaces/msg/DrawerAddress"
+
 MODULE_PROCESS_STATE_WAITING_FOR_OPENING_COMMAND = "waiting_for_opening_command"
 MODULE_PROCESS_STATE_OPENING = "opening"
 MODULE_PROCESS_STATE_OPEN = "open"
@@ -18,20 +21,20 @@ class ModuleBridge(BaseBridge):
         Drawer.load_drawers("/workspace/src/robot_backend/configs/module_config.yaml")
         self.__drawer_open_subscriber = self.start_subscriber(
             "/bt_drawer_open",
-            "communication_interfaces/msg/DrawerStatus",
+            DRAWER_STATUS_MSG,
             on_msg_callback=self.__on_drawer_is_open_msg_callback,
         )
         self.__drawer_tree_publisher = self.start_publisher(
             "/trigger_drawer_tree",
-            "communication_interfaces/msg/DrawerAddress",
+            DRAWER_ADDRESS_MSG,
         )
         self.__electric_drawer_tree_publisher = self.start_publisher(
             "/trigger_electric_drawer_tree",
-            "communication_interfaces/msg/DrawerAddress",
+            DRAWER_ADDRESS_MSG,
         )
         self.__close_drawer_publisher = self.start_publisher(
             "/close_drawer",
-            "communication_interfaces/msg/DrawerAddress",
+            DRAWER_ADDRESS_MSG,
         )
 
         self.__current_module_process: Dict[str, Any] = {}

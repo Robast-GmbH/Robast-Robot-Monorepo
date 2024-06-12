@@ -95,7 +95,7 @@ class TaskAssignmentSystem:
         fleet_ip_config: dict[str, str],
         robot_api_port: str,
         fleet_management_address: str,
-    ) -> list[Robot]:
+    ) -> dict[str, Robot]:
         robots = {}
         for robot_name in fleet_ip_config.keys():
             modules_json = None
