@@ -40,7 +40,7 @@ services:
   #  stop_signal: SIGINT
   #  restart: unless-stopped
   #  network_mode: "host"
-
+  
   # sick_safevisionary:
   #   image: ghcr.io/robast-gmbh/monorepo/sick_safevisionary:release
   #   environment:

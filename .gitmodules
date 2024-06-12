@@ -1,6 +1,3 @@
 [submodule "BehaviorTree.CPP.git"]
 	path = src/ros2/statemachine/BehaviorTree.CPP
 	url = git@github.com:BehaviorTree/BehaviorTree.CPP.git
-[submodule "LightGlue"]
-	path = src/ros2/machine_learning_tasks/external_packages/LightGlue
-	url = https://github.com/Robast-GmbH/LightGlue.git
