@@ -19,27 +19,27 @@ class NavBridge(BaseBridge):
             "std_msgs/msg/Bool",
         )
 
-        self._goal_pose_publisher = self.start_publisher(
+        self.__goal_pose_publisher = self.start_publisher(
             "/set_goal_pose",
             "geometry_msgs/msg/Pose",
         )
-        self._cancel_goal_publisher = self.start_publisher(
+        self.__cancel_goal_publisher = self.start_publisher(
             "/cancel_goal",
             "std_msgs/msg/Bool",
         )
 
-        self._sin_lookup = [
+        self.__sin_lookup: list[float] = [
             np.sin(np.radians(x / 2)) for x in range(0, 360, LOOKUP_TABLE_RESOLUTION)
         ]
-        self._cos_lookup = [
+        self.__cos_lookup: list[float] = [
             np.cos(np.radians(x / 2)) for x in range(0, 360, LOOKUP_TABLE_RESOLUTION)
         ]
 
         # Navigation is blocked by canceling the current goal and pretending the robot is still navigating
-        self.is_nav_blocked = False
-        self.goal_pose = None
+        self.__is_nav_blocked = False
+        self.__goal_pose = None
 
-    def get_quaternion_from_euler(self, yaw):
+    def __get_quaternion_from_euler(self, yaw: float) -> dict[str, float]:
         """
         Convert an Euler angle to a quaternion.
 
@@ -53,14 +53,14 @@ class NavBridge(BaseBridge):
         qy = 0
         yaw_degrees = int(np.degrees(yaw)) % 360
         index = yaw_degrees // LOOKUP_TABLE_RESOLUTION
-        qz = self._sin_lookup[index]
-        qw = self._cos_lookup[index]
+        qz = self.__sin_lookup[index]
+        qw = self.__cos_lookup[index]
 
         return {"x": qx, "y": qy, "z": qz, "w": qw}
 
-    def navigate_to_goal_pose(self, goal_pose):
-        self.goal_pose = goal_pose
-        if not self.is_nav_blocked:
+    def navigate_to_goal_pose(self, goal_pose: tuple[float, float, float]) -> bool:
+        self.__goal_pose = goal_pose
+        if not self.__is_nav_blocked:
             self.context["/is_navigating"] = {"data": True}
             goal_msg = Message(
                 {
@@ -69,38 +69,41 @@ class NavBridge(BaseBridge):
                         "y": goal_pose[1],
                         "z": 0.0,
                     },
-                    "orientation": self.get_quaternion_from_euler(goal_pose[2]),
+                    "orientation": self.__get_quaternion_from_euler(goal_pose[2]),
                 }
             )
-            self._goal_pose_publisher.publish(goal_msg)
+            self.__goal_pose_publisher.publish(goal_msg)
         return True
 
-    def cancel_navigate_to_goal_pose(self):
-        self._cancel_goal_publisher.publish(Message({"data": True}))
+    def cancel_navigate_to_goal_pose(self) -> bool:
+        self.__cancel_goal_publisher.publish(Message({"data": True}))
         return True
 
-    def is_navigating(self):
+    def is_navigating(self) -> bool:
         # Return True if nav_is_blocked so rmf won't evaluate the current rmf nav goal as reached
-        if self.is_nav_blocked:
+        if self.__is_nav_blocked:
             return True
         try:
             return self.context["/is_navigating"]["data"]
         except KeyError:
             return False
 
-    def get_remaining_nav_time(self):
+    def get_remaining_nav_time(self) -> int:
         try:
             return self.context["/navigation_remaining_time"]["sec"]
         except KeyError:
             return 0
 
-    def block_nav(self):
-        self.is_nav_blocked = True
+    def get_is_nav_blocked(self) -> bool:
+        return self.__is_nav_blocked
+
+    def block_nav(self) -> bool:
+        self.__is_nav_blocked = True
         self.cancel_navigate_to_goal_pose()
         return True
 
-    def unblock_nav(self):
-        self.is_nav_blocked = False
-        if self.goal_pose is not None:
-            self.navigate_to_goal_pose(self.goal_pose)
+    def unblock_nav(self) -> bool:
+        self.__is_nav_blocked = False
+        if self.__goal_pose is not None:
+            self.navigate_to_goal_pose(self.__goal_pose)
         return True
