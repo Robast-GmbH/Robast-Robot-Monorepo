@@ -52,8 +52,8 @@ class DispenserIngestorMock(Node):
         )
         if (
             current_module_process is None
-            or not current_module_process.request_guid
-            == module_process_request.request_guid
+            or current_module_process.request_guid
+            != module_process_request.request_guid
         ):
             self.get_logger().info("Started pick-up/drop-off process")
             self.__module_processes[module_process_request.robot_name] = (
