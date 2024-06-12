@@ -4,4 +4,4 @@ numpy
 opencv-python
 matplotlib
 kornia
-src/machine_learning_tasks/external_packages/LightGlue/dist/lightglue-0.0-py3-none-any.whl
+src/machine_learning_tasks/lightglue_robast-0.0-py3-none-any.whl
