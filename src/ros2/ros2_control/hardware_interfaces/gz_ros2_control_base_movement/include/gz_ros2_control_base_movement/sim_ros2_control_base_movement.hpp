@@ -196,11 +196,10 @@ hardware_interface::return_type SimBaseMovement<SimSystemInterface>::write(const
   {
     // When we receive a velocity command, we know the trajectory execution has started, so the robot is in motion
     // and we want to track the position and velocity of the robot
-    _prismatic_joint_state_monitor->set_trigger_trajectory_execution(true);
+    _prismatic_joint_state_monitor->set_is_trajectory_execution_in_motion(true);
   }
   else
   {
-    _prismatic_joint_state_monitor->set_trigger_trajectory_execution(false);
     _prismatic_joint_state_monitor->set_is_trajectory_execution_in_motion(false);
   }
 

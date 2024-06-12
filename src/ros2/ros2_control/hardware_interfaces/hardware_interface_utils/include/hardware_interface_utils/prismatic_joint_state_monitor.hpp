@@ -4,6 +4,7 @@
 #include "geometry_msgs/msg/point.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "std_msgs/msg/empty.hpp"
 
 namespace hardware_interface_utils
 {
@@ -14,12 +15,13 @@ namespace hardware_interface_utils
 
     void update_state(std::vector<double>& hw_position_states, std::vector<double>& hw_velocity_states);
 
-    void set_trigger_trajectory_execution(bool trigger_trajectory_execution);
+    void set_initial_position_initialized(bool trigger_trajectory_execution);
 
     void set_is_trajectory_execution_in_motion(bool is_trajectory_execution_in_motion);
 
    private:
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr _subscriber_odom;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr _odom_subscriber;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _reset_initial_position_subscriber;
 
     void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
 
@@ -29,14 +31,17 @@ namespace hardware_interface_utils
 
     geometry_msgs::msg::Point _initial_position;
 
-    bool _trigger_trajectory_execution;
+    bool _initial_position_initialized;
     bool _is_trajectory_execution_in_motion;
+    bool _reset_initial_position;
 
     double get_velocity_state() const;
 
     float compute_prismatic_joint_state();
 
     void set_initial_position();
+
+    void reset_initial_position(const std_msgs::msg::Empty::SharedPtr msg);
   };
 }   // namespace hardware_interface_utils
 

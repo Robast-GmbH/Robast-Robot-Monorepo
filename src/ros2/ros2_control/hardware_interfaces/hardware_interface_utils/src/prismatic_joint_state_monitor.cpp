@@ -4,12 +4,18 @@ namespace hardware_interface_utils
 {
   PrismaticJointStateMonitor::PrismaticJointStateMonitor(const std::string& odom_topic)
       : _odom_topic(odom_topic),
-        _trigger_trajectory_execution(false),
+        _initial_position_initialized(false),
         _is_trajectory_execution_in_motion(false),
+        _reset_initial_position(false),
         Node("prismatic_joint_state_monitor")
   {
-    _subscriber_odom = this->create_subscription<nav_msgs::msg::Odometry>(
+    _odom_subscriber = this->create_subscription<nav_msgs::msg::Odometry>(
         _odom_topic, 10, std::bind(&PrismaticJointStateMonitor::odom_callback, this, std::placeholders::_1));
+
+    _reset_initial_position_subscriber = this->create_subscription<std_msgs::msg::Empty>(
+        "reset_initial_position_for_mobile_base",
+        10,
+        std::bind(&PrismaticJointStateMonitor::reset_initial_position, this, std::placeholders::_1));
   }
 
   void PrismaticJointStateMonitor::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
@@ -39,27 +45,42 @@ namespace hardware_interface_utils
   void PrismaticJointStateMonitor::update_state(std::vector<double>& hw_position_states,
                                                 std::vector<double>& hw_velocity_states)
   {
-    if (_trigger_trajectory_execution && !_is_trajectory_execution_in_motion)
-    {
-      set_initial_position();
-      _is_trajectory_execution_in_motion = true;
-    }
-
     if (_is_trajectory_execution_in_motion)
     {
+      if (!_initial_position_initialized)
+      {
+        set_initial_position();
+        _initial_position_initialized = true;
+      }
+
       hw_position_states[0] = compute_prismatic_joint_state();
       hw_velocity_states[0] = get_velocity_state();
     }
+    else
+    {
+      if (_reset_initial_position)
+      {
+        _reset_initial_position = false;
+        hw_position_states[0] = 0.0;
+        hw_velocity_states[0] = 0.0;
+      }
+    }
   }
 
-  void PrismaticJointStateMonitor::set_trigger_trajectory_execution(bool trigger_trajectory_execution)
+  void PrismaticJointStateMonitor::set_initial_position_initialized(bool initial_position_initialized)
   {
-    _trigger_trajectory_execution = trigger_trajectory_execution;
+    _initial_position_initialized = initial_position_initialized;
   }
 
   void PrismaticJointStateMonitor::set_is_trajectory_execution_in_motion(bool is_trajectory_execution_in_motion)
   {
     _is_trajectory_execution_in_motion = is_trajectory_execution_in_motion;
+  }
+
+  void PrismaticJointStateMonitor::reset_initial_position(const std_msgs::msg::Empty::SharedPtr msg)
+  {
+    _initial_position_initialized = false;
+    _reset_initial_position = true;
   }
 
 }   // namespace hardware_interface_utils

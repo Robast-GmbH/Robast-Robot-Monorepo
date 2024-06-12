@@ -17,6 +17,7 @@ find_package(hardware_interface REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
 find_package(nav_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 add_library(library_hardware_interface_utils SHARED
     ${CMAKE_CURRENT_LIST_DIR}/src/hardware_interface_utils.cpp
@@ -38,6 +39,7 @@ ament_target_dependencies(library_prismatic_joint_state_monitor
     rclcpp
     nav_msgs
     geometry_msgs
+    std_msgs
 )
 
 target_include_directories(library_hardware_interface_utils
