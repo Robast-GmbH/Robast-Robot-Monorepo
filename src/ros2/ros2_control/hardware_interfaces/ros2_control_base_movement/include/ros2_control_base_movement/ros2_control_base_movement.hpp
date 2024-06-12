@@ -18,6 +18,8 @@
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "ros2_control_base_movement/visibility_control.h"
+#include "nav_msgs/msg/odometry.hpp"
+#include "geometry_msgs/msg/point.hpp"
 
 namespace ros2_control_base_movement
 {
@@ -66,7 +68,22 @@ namespace ros2_control_base_movement
     std::vector<double> _hw_velocity_commands;
     std::vector<double> _hw_velocity_states;
 
-    std::string _logger = "BaseMovementSystemHardware";
+    std::string _LOGGER = "BaseMovementSystemHardware";
+
+    std::string _odom_topic;
+    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr _subscriber_odom;
+
+    rclcpp::Node::SharedPtr _node;
+
+    nav_msgs::msg::Odometry _latest_odometry_msg;
+
+    bool _is_trajectory_execution_in_motion;
+    bool _trigger_trajectory_execution;
+
+    geometry_msgs::msg::Point _initial_position;
+
+    void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+    float compute_prismatic_joint_state(const geometry_msgs::msg::Point current_odom_positon);
   };
 
 }   // namespace ros2_control_base_movement
