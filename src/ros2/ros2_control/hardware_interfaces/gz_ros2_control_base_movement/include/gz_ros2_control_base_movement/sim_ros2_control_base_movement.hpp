@@ -7,15 +7,15 @@
 #include <utility>
 #include <vector>
 
+#include "geometry_msgs/msg/point.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "hardware_interface_utils/hardware_interface_utils.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
-#include "nav_msgs/msg/odometry.hpp"
-#include "geometry_msgs/msg/point.hpp"
 
 using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface::CallbackReturn;
 
@@ -103,7 +103,7 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_init(const hardware_inter
   }
 
   rclcpp::NodeOptions options;
-  options.arguments({ "--ros-args", "-r", "__node:=topic_based_ros2_control_" + SimSystemInterface::info_.name });
+  options.arguments({"--ros-args", "-r", "__node:=topic_based_ros2_control_" + SimSystemInterface::info_.name});
   _node = rclcpp::Node::make_shared("_", options);
 
   return hardware_interface_utils::configure_joints(SimSystemInterface::info_.joints, _LOGGER);
@@ -174,6 +174,9 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_activate(const rclcpp_lif
     _hw_velocity_commands[i] = _hw_velocity_states[i];
   }
 
+  _subscriber_odom = _node->create_subscription<nav_msgs::msg::Odometry>(
+      _odom_topic, 10, std::bind(&BaseMovementSystemHardware::odom_callback, this, std::placeholders::_1));
+
   RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -223,7 +226,7 @@ hardware_interface::return_type SimBaseMovement<SimSystemInterface>::write(const
   {
     // When we receive a velocity command, we know the trajectory execution has started, so the robot is in motion
     // and we want to track the position and velocity of the robot
-    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Velocity command: %f", _hw_velocity_commands[0]); //TODO: Remove this
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Velocity command: %f", _hw_velocity_commands[0]);   // TODO: Remove this
     _trigger_trajectory_execution = true;
   }
   else
@@ -245,7 +248,8 @@ void SimBaseMovement<SimSystemInterface>::odom_callback(const nav_msgs::msg::Odo
 }
 
 template <typename SimSystemInterface>
-float SimBaseMovement<SimSystemInterface>::compute_prismatic_joint_state(const geometry_msgs::msg::Point current_odom_positon)
+float SimBaseMovement<SimSystemInterface>::compute_prismatic_joint_state(
+    const geometry_msgs::msg::Point current_odom_positon)
 {
   float delta_x = current_odom_positon.x - _initial_position.x;
   float delta_y = current_odom_positon.y - _initial_position.y;
