@@ -10,7 +10,7 @@ class Drawer:
 
     @classmethod
     def from_dict(cls, drawer_dict: dict[str,Any])-> Drawer:
-        return cls(id=f"{drawer_dict["module_id"]}_{drawer_dict["drawer_id"]}",
+        return cls(id=f"{drawer_dict["module_id"]},{drawer_dict["drawer_id"]}",
                    size=drawer_dict["size"],
                    )
 

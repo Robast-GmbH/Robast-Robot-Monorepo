@@ -58,6 +58,7 @@ class Robot:
 
             pick_up_task = Task(
                 f"{unique_id}_pick_up",
+                self.name,
                 "pickup",
                 None,
                 drawer,
@@ -65,6 +66,7 @@ class Robot:
             )
             drop_off_task = Task(
                 f"{unique_id}_drop_off",
+                self.name,
                 "dropoff",
                 pick_up_task.id,
                 drawer,

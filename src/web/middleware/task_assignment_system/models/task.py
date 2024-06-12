@@ -8,6 +8,7 @@ import time
 @dataclass
 class Task:
     id: str
+    assignee_name: str
     task_type: str
     requires_task_id: str | None
     drawer: Drawer
@@ -41,7 +42,7 @@ class Task:
                                                     else "drawer_dispenser"
                                                 ),
                                                 "payload": {
-                                                    "sku": f"{self.drawer.id}_some_stuff",
+                                                    "sku": f"{self.drawer.id},some_stuff,{self.assignee_name}",
                                                     "quantity": 1,
                                                 },
                                             },
