@@ -12,7 +12,7 @@ class TextDetectionResult:
     scores: list[float]
 
 class OCRTextDetector:
-    def __init__(self, image_path:str, language:str):
+    def __init__(self, image_path:str, language = 'german'):
         self.image_path = image_path
         self.language = language
         self.ocr_model = PaddleOCR(use_angle_cls=True, lang=self.language, show_log=False)
