@@ -41,7 +41,7 @@ class FeuerplanPublisher(Node):
             self.get_logger().info('Map recieved')
             self.broadcast_frame_and_message()
 
-    def preprocess_image(self, feuerplan_image):
+    def preprocess_image(self, feuerplan_image) -> np.ndarray:
         processed_image = cv.GaussianBlur(feuerplan_image, (3, 3), 3, 3)
         processed_image = cv.Canny(processed_image, 50, 150, 3)
         dilation_size = 1
@@ -51,7 +51,7 @@ class FeuerplanPublisher(Node):
         _, preprocessed_feuerplan = cv.threshold(feuerplan_image, 150, 127, cv.THRESH_BINARY)
         return preprocessed_feuerplan
 
-    def ros_msg_to_image(self, ros_msg):
+    def ros_msg_to_image(self, ros_msg) -> np.ndarray:
         image = np.zeros((ros_msg.info.height,ros_msg.info.width), dtype=np.uint8)
         data = ros_msg.data
         index = 0
@@ -66,18 +66,18 @@ class FeuerplanPublisher(Node):
                 index += 1
         return image
     
-    def get_best_match(self, confidence_values, matches, keypoints1, keypoints2):
+    def get_best_match(self, confidence_values, matches, keypoints1, keypoints2) -> tuple[float,float]:
         max_value = max(confidence_values.tolist())
         top_matches = matches[confidence_values.tolist().index(max_value)]
         points1, points2 = keypoints1[top_matches[..., 0]], keypoints2[top_matches[..., 1]]
         return points1, points2
 
-    def pixel_coord_to_world_coord(self, pixel, resolution, origin):
+    def pixel_coord_to_world_coord(self, pixel, resolution, origin) -> tuple[float,float]:
         world_x = pixel[0] * resolution + origin[0]
         world_y = pixel[1] * resolution + origin[1]
         return (world_x, world_y)
     
-    def find_matching_keypoints(self, image1, image2):
+    def find_matching_keypoints(self, image1, image2) -> tuple[float,float]:
             # Initialize feature extractor and matcher
             device = "cpu" 
             extractor = SuperPoint(max_num_keypoints = 2048).eval().to(device)
@@ -95,7 +95,7 @@ class FeuerplanPublisher(Node):
             points1, points2 = self.get_best_match(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
             return points1, points2
     
-    def transform_feuerplan_origin(self, map_msg, feuerplan_image):
+    def transform_feuerplan_origin(self, map_msg, feuerplan_image) -> tuple[float,float]:
         map_image = self.ros_msg_to_image(map_msg)
         points1, points2 = self.find_matching_keypoints(map_image, feuerplan_image)
         world1x, world1y = self.pixel_coord_to_world_coord(points1.numpy(), map_msg.info.resolution,(map_msg.info.origin.position.x, map_msg.info.origin.position.y))
@@ -104,7 +104,7 @@ class FeuerplanPublisher(Node):
         translation_y = world1y - world2y
         return translation_x, translation_y
 
-    def publish_occupancy_grid(self, feuerplan_image, translation_x, translation_y):
+    def publish_occupancy_grid(self, feuerplan_image, translation_x, translation_y) -> None:
         data = feuerplan_image.flatten().tolist()
 
         ros_image_msg = OccupancyGrid()
@@ -141,7 +141,7 @@ class FeuerplanPublisher(Node):
         self.get_logger().info(f'true')
 
 
-    def broadcast_frame_and_message(self):
+    def broadcast_frame_and_message(self)  -> None:
         feuerplan_image = cv.imread(self.feuerplan_path, cv.IMREAD_GRAYSCALE)
         preprocessed_feuerplan = self.preprocess_image(feuerplan_image)
         translation_x, translation_y = self.transform_feuerplan_origin(self.map_msg, preprocessed_feuerplan)
