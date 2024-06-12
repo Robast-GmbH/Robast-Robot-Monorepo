@@ -1,4 +1,4 @@
-from typing import Optional, Callable
+from typing import Optional, Callable, Any
 from roslibpy import Topic, Ros
 from thread_safe_dict import ThreadSafeDict
 
@@ -9,7 +9,7 @@ class BaseBridge:
         self.ros = ros
 
     def _create_on_msg_callback(self, topic: str) -> Callable:
-        def on_msg_callback(message: dict):
+        def on_msg_callback(message: dict[str, Any]):
             self.context[topic] = message
 
         return on_msg_callback
