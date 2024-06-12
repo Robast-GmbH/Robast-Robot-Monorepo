@@ -15,9 +15,15 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(hardware_interface REQUIRED)
 find_package(rclcpp_lifecycle REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 add_library(library_hardware_interface_utils SHARED
     ${CMAKE_CURRENT_LIST_DIR}/src/hardware_interface_utils.cpp
+)
+
+add_library(library_prismatic_joint_state_monitor SHARED
+    ${CMAKE_CURRENT_LIST_DIR}/src/prismatic_joint_state_monitor.cpp
 )
 
 ament_target_dependencies(library_hardware_interface_utils
@@ -26,12 +32,25 @@ ament_target_dependencies(library_hardware_interface_utils
     rclcpp
 )
 
+ament_target_dependencies(library_prismatic_joint_state_monitor
+    rclcpp_lifecycle
+    hardware_interface
+    rclcpp
+    nav_msgs
+    geometry_msgs
+)
+
 target_include_directories(library_hardware_interface_utils
     PUBLIC 
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
     $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
 )
 
+target_include_directories(library_prismatic_joint_state_monitor
+    PUBLIC 
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include> 
+    $<INSTALL_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+)
 
 if(BUILD_TESTING)   
     find_package(ament_cmake_flake8 REQUIRED)
@@ -46,6 +65,7 @@ endif()
 
 install(TARGETS
 library_hardware_interface_utils
+library_prismatic_joint_state_monitor
     ARCHIVE DESTINATION lib
     LIBRARY DESTINATION lib
     RUNTIME DESTINATION bin
@@ -58,5 +78,6 @@ install(DIRECTORY include/
 ament_export_include_directories(include)
 
 ament_export_libraries(library_hardware_interface_utils)
+ament_export_libraries(library_prismatic_joint_state_monitor)
 
 ament_package()

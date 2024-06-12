@@ -7,19 +7,20 @@
 #include <memory>
 #include <vector>
 
+#include "geometry_msgs/msg/point.hpp"
 #include "hardware_interface/handle.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_return_values.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "hardware_interface_utils/hardware_interface_utils.hpp"
+#include "hardware_interface_utils/prismatic_joint_state_monitor.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 #include "rclcpp/macros.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
 #include "ros2_control_base_movement/visibility_control.h"
-#include "nav_msgs/msg/odometry.hpp"
-#include "geometry_msgs/msg/point.hpp"
 
 namespace ros2_control_base_movement
 {
@@ -70,20 +71,7 @@ namespace ros2_control_base_movement
 
     std::string _LOGGER = "BaseMovementSystemHardware";
 
-    std::string _odom_topic;
-    rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr _subscriber_odom;
-
-    rclcpp::Node::SharedPtr _node;
-
-    nav_msgs::msg::Odometry _latest_odometry_msg;
-
-    bool _is_trajectory_execution_in_motion;
-    bool _trigger_trajectory_execution;
-
-    geometry_msgs::msg::Point _initial_position;
-
-    void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
-    float compute_prismatic_joint_state(const geometry_msgs::msg::Point current_odom_positon);
+    std::shared_ptr<hardware_interface_utils::PrismaticJointStateMonitor> _prismatic_joint_state_monitor;
   };
 
 }   // namespace ros2_control_base_movement

@@ -12,6 +12,7 @@
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "hardware_interface_utils/hardware_interface_utils.hpp"
+#include "hardware_interface_utils/prismatic_joint_state_monitor.hpp"
 #include "nav_msgs/msg/odometry.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
@@ -56,20 +57,10 @@ class SimBaseMovement : public SimSystemInterface
 
   std::string _LOGGER = "SimBaseMovement";
 
-  std::string _odom_topic;
-  rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr _subscriber_odom;
-
-  rclcpp::Node::SharedPtr _node;
-
-  nav_msgs::msg::Odometry _latest_odometry_msg;
+  std::shared_ptr<hardware_interface_utils::PrismaticJointStateMonitor> _prismatic_joint_state_monitor;
 
   bool _is_trajectory_execution_in_motion;
   bool _trigger_trajectory_execution;
-
-  geometry_msgs::msg::Point _initial_position;
-
-  void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
-  float compute_prismatic_joint_state(const geometry_msgs::msg::Point current_odom_positon);
 };
 
 // Please mind:
@@ -93,18 +84,16 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_init(const hardware_inter
   _hw_velocity_states.resize(SimSystemInterface::info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
   _hw_velocity_commands.resize(SimSystemInterface::info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
+  std::string odom_topic = SimSystemInterface::info_.hardware_parameters["odom_topic"];
+  if (odom_topic.empty())
+  {
+    odom_topic = "/odom";
+  }
+
   _is_trajectory_execution_in_motion = false;
   _trigger_trajectory_execution = false;
 
-  _odom_topic = SimSystemInterface::info_.hardware_parameters["odom_topic"];
-  if (_odom_topic.empty())
-  {
-    _odom_topic = "/odom";
-  }
-
-  rclcpp::NodeOptions options;
-  options.arguments({"--ros-args", "-r", "__node:=topic_based_ros2_control_" + SimSystemInterface::info_.name});
-  _node = rclcpp::Node::make_shared("_", options);
+  _prismatic_joint_state_monitor = std::make_shared<hardware_interface_utils::PrismaticJointStateMonitor>(odom_topic);
 
   return hardware_interface_utils::configure_joints(SimSystemInterface::info_.joints, _LOGGER);
 }
@@ -174,9 +163,6 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_activate(const rclcpp_lif
     _hw_velocity_commands[i] = _hw_velocity_states[i];
   }
 
-  _subscriber_odom = _node->create_subscription<nav_msgs::msg::Odometry>(
-      _odom_topic, 10, std::bind(&SimBaseMovement<SimSystemInterface>::odom_callback, this, std::placeholders::_1));
-
   RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
@@ -200,20 +186,10 @@ hardware_interface::return_type SimBaseMovement<SimSystemInterface>::read(const 
 {
   if (rclcpp::ok())
   {
-    rclcpp::spin_some(_node);
+    rclcpp::spin_some(_prismatic_joint_state_monitor);
   }
 
-  if (_trigger_trajectory_execution && !_is_trajectory_execution_in_motion)
-  {
-    _initial_position = _latest_odometry_msg.pose.pose.position;
-    _is_trajectory_execution_in_motion = true;
-  }
-
-  if (_is_trajectory_execution_in_motion)
-  {
-    _hw_position_states[0] = compute_prismatic_joint_state(_latest_odometry_msg.pose.pose.position);
-    _hw_velocity_states[0] = _latest_odometry_msg.twist.twist.linear.x;
-  }
+  _prismatic_joint_state_monitor->update_state(_hw_position_states, _hw_velocity_states);
 
   return hardware_interface::return_type::OK;
 }
@@ -226,35 +202,17 @@ hardware_interface::return_type SimBaseMovement<SimSystemInterface>::write(const
   {
     // When we receive a velocity command, we know the trajectory execution has started, so the robot is in motion
     // and we want to track the position and velocity of the robot
-    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Velocity command: %f", _hw_velocity_commands[0]);   // TODO: Remove this
-    _trigger_trajectory_execution = true;
+    _prismatic_joint_state_monitor->set_trigger_trajectory_execution(true);
   }
   else
   {
-    _trigger_trajectory_execution = false;
-    _is_trajectory_execution_in_motion = false;
+    _prismatic_joint_state_monitor->set_trigger_trajectory_execution(false);
+    _prismatic_joint_state_monitor->set_is_trajectory_execution_in_motion(false);
   }
 
   // We don't do anything with the commands here, because we have a chained controller that is responsible for taking
   // the command values of this joint and translating them into the commands for the wheels, so the cmd_vel topic
   return hardware_interface::return_type::OK;
-}
-
-template <typename SimSystemInterface>
-void SimBaseMovement<SimSystemInterface>::odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg)
-{
-  // TODO: Do we need some kind of real time buffer here?
-  _latest_odometry_msg = *msg;
-}
-
-template <typename SimSystemInterface>
-float SimBaseMovement<SimSystemInterface>::compute_prismatic_joint_state(
-    const geometry_msgs::msg::Point current_odom_positon)
-{
-  float delta_x = current_odom_positon.x - _initial_position.x;
-  float delta_y = current_odom_positon.y - _initial_position.y;
-
-  return std::sqrt(delta_x * delta_x + delta_y * delta_y);
 }
 
 #endif   // ROS2_CONTROL_BASE_MOVEMENT__GZ_SYSTEM_HPP_
