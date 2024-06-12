@@ -58,9 +58,6 @@ class SimBaseMovement : public SimSystemInterface
   std::string _LOGGER = "SimBaseMovement";
 
   std::shared_ptr<hardware_interface_utils::PrismaticJointStateMonitor> _prismatic_joint_state_monitor;
-
-  bool _is_trajectory_execution_in_motion;
-  bool _trigger_trajectory_execution;
 };
 
 // Please mind:
@@ -89,9 +86,6 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_init(const hardware_inter
   {
     odom_topic = "/odom";
   }
-
-  _is_trajectory_execution_in_motion = false;
-  _trigger_trajectory_execution = false;
 
   _prismatic_joint_state_monitor = std::make_shared<hardware_interface_utils::PrismaticJointStateMonitor>(odom_topic);
 
