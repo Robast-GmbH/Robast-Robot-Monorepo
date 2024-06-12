@@ -26,15 +26,14 @@ class _DrivingViewState extends State<DrivingView> {
     if (blinkSteps == 0) {
       animationTimer = Timer(const Duration(milliseconds: 6000), () {
         isEyeClosed = true;
-
-        setState(() {});
+        if (mounted) setState(() {});
         blinkSteps = 1;
         blinking();
       });
     } else if (blinkSteps == 1) {
       animationTimer = Timer(const Duration(milliseconds: 100), () {
         isEyeClosed = false;
-        setState(() {});
+        if (mounted) setState(() {});
         blinkSteps = 0;
         blinking();
       });

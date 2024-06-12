@@ -68,9 +68,9 @@ class _PatrolTaskCreationViewState extends State<PatrolTaskCreationView> {
   }
 
   Dismissible _buildPatrolRouteDropdown(int index) {
-    String? selectedNode;
+    String? selectedPlaceID;
     if (widget.controller.places[index].isNotEmpty) {
-      selectedNode = widget.controller.places[index];
+      selectedPlaceID = widget.controller.places[index];
     }
 
     return Dismissible(
@@ -92,13 +92,13 @@ class _PatrolTaskCreationViewState extends State<PatrolTaskCreationView> {
       child: ListTile(
         title: DropdownButton<String>(
           isExpanded: true,
-          value: selectedNode,
+          value: selectedPlaceID,
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          hint: const Text('Select Node'),
+          hint: const Text('Select Place'),
           onChanged: (String? newValue) {
             if (newValue != null) {
               widget.controller.places[index] = newValue;
-              selectedNode = newValue;
+              selectedPlaceID = newValue;
               setState(() {});
             }
           },
