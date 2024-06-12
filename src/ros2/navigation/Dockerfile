@@ -82,10 +82,11 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 WORKDIR /nav_ws/src
 RUN git clone https://github.com/SteveMacenski/slam_toolbox.git
 RUN git clone https://github.com/ros-navigation/navigation2.git
+RUN git clone https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
 RUN rm -rf navigation2/nav2_bringup/ navigation2/nav2_system_tests/
 WORKDIR /nav_ws
 RUN rosdep update && rosdep install --from-paths src --ignore-src -y
-RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --cmake-args '-DCMAKE_BUILD_TYPE=Release'
+RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --packages-skip spatio_temporal_voxel_layer --cmake-args '-DCMAKE_BUILD_TYPE=Release'
 
 RUN echo "if [ -f /nav_ws/install/setup.bash ]; then source /nav_ws/install/setup.bash; fi" >> /home/$USER/.bashrc
 
