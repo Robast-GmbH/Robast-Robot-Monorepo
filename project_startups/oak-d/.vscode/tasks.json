@@ -7,7 +7,7 @@
             "label": "build",
             "detail": "Symlink Build of the project",
             "type": "shell",
-            "command": "clear; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "command": "source /opt/ros/$ROS_DISTRO/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
             "problemMatcher": []
         },
         {

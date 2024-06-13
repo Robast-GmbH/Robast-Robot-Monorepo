@@ -14,6 +14,8 @@
 
   <depend>rb_theron_config</depend>
   <depend>tiplu_world</depend>
+  <depend>moveit_studio_plugins</depend>
+
 
   <test_depend>ament_lint_auto</test_depend>
 

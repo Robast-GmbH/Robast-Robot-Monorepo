@@ -8,11 +8,11 @@ services:
     # Extend the installed MoveIt Pro docker compose file.
     # Change this to match your environment, if MoveIt Pro was installed to a different location.
     extends:
-      file: ${HOME}/moveit_pro/docker-compose.yaml
+      file: /opt/moveit_pro/docker-compose.yaml
       service: base
     image: moveit-studio-overlay
     build:
-      dockerfile: ${STUDIO_HOST_USER_WORKSPACE?error}${ROBAST_PROJECT_STARTUP_RELATIVE_DIR?error}/Dockerfile
+      dockerfile: ${STUDIO_HOST_USER_WORKSPACE?error}/${ROBAST_PROJECT_STARTUP_RELATIVE_DIR?error}/Dockerfile
       context: ${STUDIO_HOST_USER_WORKSPACE}
       target: user-overlay
       args:
@@ -20,10 +20,10 @@ services:
         - USER_GID=${STUDIO_USER_UID:-1000}
         - USERNAME=${STUDIO_USERNAME:-studio-user}
         - MOVEIT_STUDIO_BASE_IMAGE=picknikciuser/moveit-studio:${STUDIO_DOCKER_TAG:-main}
-        - ROBAST_SOURCE_DIR=../../
+        - ROBAST_SOURCE_DIR=src/Monorepo/src/ros2
+        - ROBAST_PROJECT_STARTUP_RELATIVE_DIR=${ROBAST_PROJECT_STARTUP_RELATIVE_DIR?error}
         - GZ_VERSION_ARG=${GZ_VERSION:-fortress}
     environment:
-      - USER_WS=/home/${STUDIO_USERNAME:-studio-user}/user_ws
       - init_x=${init_x:-0.0}
       - init_y=${init_y:-0.0}
       - init_yaw=${init_yaw:-0.0}
@@ -119,6 +119,13 @@ services:
     # Making a separate profile prevents this service from being built when using `docker compose build`
     # and launched when using `docker compose up`.
     profiles: ["dev"]
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
 
 volumes:
   ignition_resources:

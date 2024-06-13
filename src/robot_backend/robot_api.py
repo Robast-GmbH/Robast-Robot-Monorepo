@@ -1,6 +1,7 @@
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from ros_bridge import RosBridge
+from models.module_process_data import ModuleProcessData
 
 door_available = False
 ros_bridge = RosBridge(ip="localhost", port=9090, door_available=door_available)
@@ -82,7 +83,7 @@ def post_unblock_nav():
 
 @app.get("/is_navigation_blocked", tags=["Navigation"])
 def read_is_nav_blocked():
-    return {"is_nav_blocked": ros_bridge.nav_bridge.is_nav_blocked}
+    return {"is_nav_blocked": ros_bridge.nav_bridge.get_is_nav_blocked()}
 
 
 """
@@ -107,6 +108,21 @@ def post_close_drawer(module_id: int, drawer_id: int):
     return {"success": ros_bridge.module_bridge.close_drawer(module_id, drawer_id)}
 
 
+@app.post("/start_module_process", tags=["Modules"])
+def post_start_module_process(data: ModuleProcessData):
+    return {"success": ros_bridge.module_bridge.start_module_process(data)}
+
+
+@app.post("/finish_module_process", tags=["Modules"])
+def post_finish_module_process():
+    return ros_bridge.module_bridge.finish_module_process()
+
+
+@app.get("/module_process_status", tags=["Modules"])
+def get_module_process_status():
+    return {"success": ros_bridge.module_bridge.get_current_module_process()}
+
+
 """
 ======================
 Doors API Endpoints
@@ -116,9 +132,9 @@ Doors API Endpoints
 if door_available:
 
     @app.post("/open_door", tags=["Doors"])
-    def post_open_drawer():
+    def post_open_door():
         return {"success": ros_bridge.door_bridge.open_door()}
 
     @app.post("/close_door", tags=["Doors"])
-    def post_close_drawer():
+    def post_close_door():
         return {"success": ros_bridge.door_bridge.close_door()}

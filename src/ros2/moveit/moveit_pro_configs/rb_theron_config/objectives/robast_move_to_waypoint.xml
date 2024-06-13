@@ -1,10 +1,10 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <root BTCPP_format="4" main_tree_to_execute="Robast Move to Target Joint State">
-  <!-- ////////// -->
+  <!--//////////-->
   <BehaviorTree ID="Robast Move to Target Joint State" _description="Moving to a target joint state for testing purposes." _favorite="false" _hardcoded="false">
     <Control ID="Sequence" name="TopLevelSequence">
       <Action ID="CreateStampedPose" reference_frame="rb_theron/base_link/back_top_realsense_camera_color_link" position_xyz="0.2;0.4;0.35" orientation_xyzw="0.0;0.0;0.0;1.0" stamped_pose="{stamped_pose}"/>
-      <Action ID="AddPoseStampedToVector" input_pose="{stamped_pose}" pose_stamped_vector="{pose_stamped_vector}"/>
+      <Action ID="AddPoseStampedToVector" input="{stamped_pose}" vector="{pose_stamped_vector}"/>
       <Action ID="PlanCartesianPath" path="{pose_stamped_vector}" planning_group_name="mobile_base_arm" tip_link="door_opening_mechanism_link_freely_rotating_hook" tip_offset="0.0;0.0;0.0" position_only="true" blending_radius="0.02" velocity_scale_factor="1.0" acceleration_scale_factor="1.0" trajectory_sampling_rate="100" joint_trajectory_msg="{joint_trajectory_msg}" debug_solution="{debug_solution}"/>
       <Action ID="GetCurrentPlanningScene" planning_scene_msg="{planning_scene_msg}"/>
       <Action ID="ValidateTrajectory" planning_scene_msg="{planning_scene_msg}" planning_group_name="mobile_base_arm" joint_trajectory_msg="{joint_trajectory_msg}" joint_space_step="0.05" cartesian_space_step="0.02" debug_solution="{debug_solution}"/>

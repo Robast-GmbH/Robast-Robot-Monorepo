@@ -8,6 +8,7 @@ from launch.actions import (
     DeclareLaunchArgument,
     RegisterEventHandler,
     TimerAction,
+    OpaqueFunction,
 )
 from launch_ros.actions import Node
 from launch.substitutions import LaunchConfiguration
@@ -30,21 +31,45 @@ from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
      * ros2_control_node + controller spawners
 """
 
+JOINT_STATES_TOPIC = "/joint_states"
+NAMESPACE_ARM = "arm"
 
-def generate_launch_description():
+def get_planning_pipelines(context):
+    ompl_planning_file = LaunchConfiguration("ompl_planning_file").perform(context)
+
+    if ompl_planning_file is None:
+        ros_distro = os.environ["ROS_DISTRO"]
+        supported_ros_distros = ["humble", "iron"]
+        if ros_distro in supported_ros_distros:
+            planning_pipelines =  [f"ompl_{ros_distro}"]
+        else:
+            raise Exception("Unknown ROS distro: " + ros_distro)
+    else:
+        planning_pipelines = [ompl_planning_file]
+
+    return planning_pipelines
+
+def launch_setup(context, *args, **settings):
+    launch_moveit_group = LaunchConfiguration("launch_moveit_group").perform(context)
+    use_sim_time_str = LaunchConfiguration("use_sim_time").perform(context)
+    use_sim_time = use_sim_time_str.lower() == "true"
+
+    launch_rviz = LaunchConfiguration("launch_rviz").perform(context)
+    launch_robot_state_publisher = LaunchConfiguration("launch_robot_state_publisher").perform(context)
+
+    planning_pipelines = get_planning_pipelines(context)
+    actions_to_launch = []
+
+    rviz_config_file = (
+        get_package_share_directory("moveit_door_opening_mechanism_config")
+        + "/config/moveit.rviz"
+    )
+
     launch_arguments = {
         "ros2_control_hardware_type": "mock_components",
         "ros2_control_hardware_type_positon_joint": "real_life",
         "model_position_joint": "true",
     }
-
-    ros_distro = os.environ["ROS_DISTRO"]
-    if ros_distro == "humble":
-        planning_pipelines = ["ompl_humble"]
-    elif ros_distro == "iron":
-        planning_pipelines = ["ompl_iron"]
-    else:
-        raise Exception("Unknown ROS distro: " + ros_distro)
 
     moveit_config = (
         MoveItConfigsBuilder(
@@ -58,78 +83,65 @@ def generate_launch_description():
         .planning_pipelines(pipelines=planning_pipelines)
         .to_moveit_configs()
     )
-    namespace_arm = "arm"
-
-    ld = LaunchDescription()
-
-    use_sim_time = LaunchConfiguration("use_sim_time")
-
-    declare_use_sim_time_cmd = DeclareLaunchArgument(
-        "use_sim_time",
-        default_value="false",
-        description="whether to use sim time or not",
-    )
-
-    declare_debug_cmd = DeclareBooleanLaunchArg(
-        "debug",
-        default_value=False,
-        description="By default, we are not in debug mode",
-    )
 
     # If there are virtual joints, broadcast static tf by including virtual_joints launch
-    static_virtual_joint_cmd = generate_static_virtual_joint_tfs_launch(moveit_config)
+    actions_to_launch.append(generate_static_virtual_joint_tfs_launch(moveit_config))
 
-    # Load ExecuteTaskSolutionCapability so we can execute found solutions in simulation
-    move_group_capabilities = {
-        "capabilities": "move_group/ExecuteTaskSolutionCapability"
-    }
-
-    JOINT_STATES_TOPIC = "/joint_states"
-    remappings = [
-        ("/" + namespace_arm + JOINT_STATES_TOPIC, JOINT_STATES_TOPIC),
-    ]
-    move_group_cmd = Node(
-        package="moveit_ros_move_group",
-        executable="move_group",
-        output="screen",
-        namespace=namespace_arm,
-        remappings=remappings,
-        parameters=[
-            moveit_config.to_dict(),
-            move_group_capabilities,
-        ],
-    )
-
-    rviz_config_file = (
-        get_package_share_directory("moveit_door_opening_mechanism_config")
-        + "/config/moveit.rviz"
-    )
-
-    rviz2_cmd = Node(
-        package="rviz2",
-        executable="rviz2",
-        name="rviz2",
-        output="log",
-        arguments=["-d", rviz_config_file],
-        parameters=[
-            moveit_config.robot_description,
-            moveit_config.robot_description_semantic,
-            moveit_config.robot_description_kinematics,
-            moveit_config.planning_pipelines,
-            moveit_config.joint_limits,
-        ],
-    )
+    # Rviz
+    if launch_rviz == "true":
+        actions_to_launch.append(
+            Node(
+                package="rviz2",
+                executable="rviz2",
+                name="rviz2",
+                output="log",
+                arguments=["-d", rviz_config_file],
+                parameters=[
+                    moveit_config.robot_description,
+                    moveit_config.robot_description_semantic,
+                    moveit_config.robot_description_kinematics,
+                    moveit_config.planning_pipelines,
+                    moveit_config.joint_limits,
+                ],
+            )
+        )
 
     # State Publisher
-    robot_state_publisher_cmd = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        name="robot_state_publisher",
-        output="both",
-        parameters=[
-            moveit_config.robot_description,
-        ],
-    )
+    if launch_robot_state_publisher == "true":
+        actions_to_launch.append(
+                Node(
+                package="robot_state_publisher",
+                executable="robot_state_publisher",
+                name="robot_state_publisher",
+                output="both",
+                parameters=[
+                    moveit_config.robot_description,
+                ],
+            )
+        )
+
+    if launch_moveit_group == "true":
+         # Load ExecuteTaskSolutionCapability so we can execute found solutions in simulation
+        move_group_capabilities = {
+            "capabilities": "move_group/ExecuteTaskSolutionCapability"
+        }
+        remappings = [
+            ("/" + NAMESPACE_ARM + JOINT_STATES_TOPIC, JOINT_STATES_TOPIC),
+        ]
+
+        actions_to_launch.append(
+            Node(
+                package="moveit_ros_move_group",
+                executable="move_group",
+                output="screen",
+                namespace=NAMESPACE_ARM,
+                remappings=remappings,
+                parameters=[
+                    moveit_config.to_dict(),
+                    move_group_capabilities,
+                ],
+            )
+        )
 
     ros2_controllers_path_base = os.path.join(
         get_package_share_directory("moveit_door_opening_mechanism_config"),
@@ -154,15 +166,17 @@ def generate_launch_description():
     # controller manager here.
 
     # First controller manager for the robot base
-    ros2_controller_manager_robot_cmd = Node(
-        package="controller_manager",
-        executable="ros2_control_node",
-        parameters=[
-            moveit_config.robot_description,
-            ros2_controllers_path_base,
-            {"use_sim_time": use_sim_time},
-        ],
-        output="both",
+    actions_to_launch.append(
+        Node(
+            package="controller_manager",
+            executable="ros2_control_node",
+            parameters=[
+                moveit_config.robot_description,
+                ros2_controllers_path_base,
+                {"use_sim_time": use_sim_time},
+            ],
+            output="both",
+        )
     )
     load_diff_drive_base_controller = ExecuteProcess(
         cmd=[
@@ -179,18 +193,18 @@ def generate_launch_description():
     )
 
     # Second controller manager for the arm
-    controller_manager_name = "/" + namespace_arm + "/controller_manager"
+    CONTROLLER_MANAGER_NAME = "/" + NAMESPACE_ARM + "/controller_manager"
     remappings_controller_manager_arm = [
         (
-            "/" + namespace_arm + "/diff_drive_base_controller/cmd_vel",
+            "/" + NAMESPACE_ARM + "/diff_drive_base_controller/cmd_vel",
             "/diff_drive_base_controller/cmd_vel",
         ),
-        ("/" + namespace_arm + JOINT_STATES_TOPIC, JOINT_STATES_TOPIC),
+        ("/" + NAMESPACE_ARM + JOINT_STATES_TOPIC, JOINT_STATES_TOPIC),
     ]
     ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        namespace=namespace_arm,
+        namespace=NAMESPACE_ARM,
         remappings=remappings_controller_manager_arm,
         parameters=[
             moveit_config.robot_description,
@@ -209,7 +223,7 @@ def generate_launch_description():
             "active",
             "mobile_base_controller_cmd_vel",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
@@ -222,7 +236,7 @@ def generate_launch_description():
             "active",
             "joint_trajectory_controller",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
@@ -235,7 +249,7 @@ def generate_launch_description():
             "active",
             "joint_state_broadcaster",
             "-c",
-            controller_manager_name,
+            CONTROLLER_MANAGER_NAME,
         ],
         output="screen",
     )
@@ -247,7 +261,7 @@ def generate_launch_description():
     # is published by the controller_manager.
     # TODO@all: This is not a perfect solution, maybe someone finds something better at some point
     trigger_message = "update rate is"
-    node_name = namespace_arm + ".controller_manager"
+    node_name = NAMESPACE_ARM + ".controller_manager"
     rosout_listener_trigger = Node(
         package="launch_manager",
         executable="rosout_listener",
@@ -255,26 +269,18 @@ def generate_launch_description():
         output="log",
         parameters=[
             {"trigger_message": trigger_message, "node_name": node_name},
-        ],
+        ]
     )
 
-    ld.add_action(declare_use_sim_time_cmd)
-    ld.add_action(declare_debug_cmd)
+    actions_to_launch.append(rosout_listener_trigger)
 
-    ld.add_action(rosout_listener_trigger)
-    ld.add_action(static_virtual_joint_cmd)
-    ld.add_action(rviz2_cmd)
-    ld.add_action(move_group_cmd)
-    ld.add_action(robot_state_publisher_cmd)
-    ld.add_action(ros2_controller_manager_robot_cmd)
-
-    # Make sure that the rosout_listener_trigger is started before the arm controller manager is
+     # Make sure that the rosout_listener_trigger is started before the arm controller manager is
     # started because the rosout_listener_trigger should listen to the content of the arm
     # controller manager
-    ld.add_action(TimerAction(period=1.0, actions=[ros2_controller_manager_arm_cmd]))
+    actions_to_launch.append(TimerAction(period=1.0, actions=[ros2_controller_manager_arm_cmd]))
 
     # spawning ros2_control controller for robot base
-    ld.add_action(
+    actions_to_launch.append(
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=rosout_listener_trigger,
@@ -284,7 +290,7 @@ def generate_launch_description():
     )
 
     # spawning ros2_control controller for arm
-    ld.add_action(
+    actions_to_launch.append(
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=rosout_listener_trigger,
@@ -292,7 +298,7 @@ def generate_launch_description():
             )
         )
     )
-    ld.add_action(
+    actions_to_launch.append(
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_joint_state_broadcaster,
@@ -300,7 +306,7 @@ def generate_launch_description():
             )
         )
     )
-    ld.add_action(
+    actions_to_launch.append(
         RegisterEventHandler(
             event_handler=OnProcessExit(
                 target_action=load_mobile_base_controller,
@@ -308,5 +314,61 @@ def generate_launch_description():
             )
         )
     )
+    
+    return actions_to_launch
+        
+
+def generate_launch_description():
+    ld = LaunchDescription()
+
+    declare_use_sim_time_cmd = DeclareLaunchArgument(
+        "use_sim_time",
+        default_value="false",
+        description="whether to use sim time or not",
+    )
+
+    declare_debug_cmd = DeclareBooleanLaunchArg(
+        "debug",
+        default_value=False,
+        description="By default, we are not in debug mode",
+    )
+
+    declare_ompl_planning_file_cmd = DeclareLaunchArgument(
+        "ompl_planning_file",
+        default_value="ompl_iron",
+        description="Prefix of the ompl_planning file to use for planning. Syntax is <ompl_planning_file>_planning.yaml",
+    )
+
+    declare_launch_moveit_group_cmd = DeclareLaunchArgument(
+        "launch_moveit_group",
+        default_value="true",
+        description="Whether to launch the moveit group or not",
+    )
+
+    declare_launch_rviz_cmd = DeclareLaunchArgument(
+        "launch_rviz",
+        default_value="true",
+        description="Whether to start rviz or not",
+    )
+
+    declare_launch_robot_state_publisher_cmd = DeclareLaunchArgument(
+        "launch_robot_state_publisher",
+        default_value="true",
+        description="Whether to start robot state publisher or not",
+    )
+
+    launch_setup_opaque_func = OpaqueFunction(
+        function=launch_setup
+    )
+    
+   
+    ld.add_action(declare_use_sim_time_cmd)
+    ld.add_action(declare_debug_cmd)
+    ld.add_action(declare_ompl_planning_file_cmd)
+    ld.add_action(declare_launch_moveit_group_cmd)
+    ld.add_action(declare_launch_rviz_cmd)
+    ld.add_action(declare_launch_robot_state_publisher_cmd)
+
+    ld.add_action(launch_setup_opaque_func)
 
     return ld

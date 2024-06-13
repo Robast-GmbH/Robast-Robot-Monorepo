@@ -5,27 +5,37 @@ import 'package:robot_api_utilities/robot_api_utilities.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
 class RobotProvider extends ChangeNotifier {
-  Pose? robotPose;
-  List<DrawerModule>? modules;
-  bool isNavigationBlocked = false;
+  Pose? _robotPose;
+  List<DrawerModule>? _modules;
+  ModuleProcess? _moduleProcess;
+  bool _isNavigationBlocked = false;
 
   Timer? _robotPoseUpdateTimer;
   Timer? _modulesUpdateTimer;
 
-  final _robotAPI = const RobotApiUtilities(prefix: 'http://192.168.0.200:8001');
+  late RobotApiUtilities _robotAPI;
+
+  Pose? get robotPose => _robotPose;
+  List<DrawerModule>? get modules => _modules;
+  ModuleProcess? get moduleProcess => _moduleProcess;
+
+  Future<void> initRobotAPI({required String prefix}) async {
+    _robotAPI = RobotApiUtilities(prefix: prefix);
+  }
 
   Future<void> updateIsNavigationBlocked() async {
-    isNavigationBlocked = await _robotAPI.isNavigationBlocked();
+    _isNavigationBlocked = await _robotAPI.isNavigationBlocked();
     notifyListeners();
   }
 
   Future<void> updateRobotPose() async {
-    robotPose = await _robotAPI.getRobotPose();
+    _robotPose = await _robotAPI.getRobotPose();
     notifyListeners();
   }
 
   Future<void> updateModules() async {
-    modules = await _robotAPI.getModules();
+    _modules = await _robotAPI.getModules();
+    _moduleProcess = await _robotAPI.getModuleProcess();
     notifyListeners();
   }
 
@@ -33,7 +43,7 @@ class RobotProvider extends ChangeNotifier {
     _robotPoseUpdateTimer = startPeriodicUpdate(
       () {
         updateIsNavigationBlocked();
-        onIsNavigationBlockedUpdate(isBlocked: isNavigationBlocked);
+        onIsNavigationBlockedUpdate(isBlocked: _isNavigationBlocked);
       },
       const Duration(milliseconds: 100),
     );
@@ -82,5 +92,9 @@ class RobotProvider extends ChangeNotifier {
 
   Future<void> unblockNavigation() async {
     await _robotAPI.unblockNavigation();
+  }
+
+  Future<void> finishModuleProcess() async {
+    await _robotAPI.finishModuleProcess();
   }
 }

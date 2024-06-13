@@ -34,4 +34,3 @@ def generate_launch_description():
     ld.add_action(start_image_transformer)
 
     return ld
-
