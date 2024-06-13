@@ -7,7 +7,7 @@
               izz="${m*(x*x+y*y)/12}" />
   </xacro:macro>
 
-  <xacro:macro name="theron_base" params="prefix publish_bf model_position_joint ros2_control_hardware_type_positon_joint hq">
+  <xacro:macro name="theron_base" params="prefix publish_bf model_position_joint model_door_opening_mechanism ros2_control_hardware_type_positon_joint hq">
 
     <xacro:property name="PI" value="3.1415926535897931"/>
     <!-- xacro:property name="wheel_width" value="0.150" / -->
@@ -29,74 +29,20 @@
         </collision>
       </link>
 
+      <!-- Prismatic position joint -->
       <xacro:if value="${model_position_joint == 'prismatic'}">
-
-        <joint name="${prefix}base_footprint_joint" type="fixed">
-          <origin xyz="0 0 ${wheel_radius - wheel_offset_z}" rpy="0 0 0" />
-          <parent link="${prefix}base_footprint"/>
-          <child link="${prefix}position_link"/>
-        </joint>
-
-        <link name="${prefix}position_link">
-          <inertial>
-            <mass value="0.01" />
-            <origin xyz="0.0 0.0 0.0" />
-            <xacro:solid_cuboid_inertia m="0.01" w="0.001" h="0.001" d="0.001" />
-          </inertial>
-          <visual>
-            <origin xyz="0 0 0.01" rpy="0 0 0" />
-            <geometry>
-              <box size="0.001 0.001 0.001" />
-            </geometry>
-          </visual>
-          <collision>
-            <origin xyz="0 0 0.01" rpy="0 0 0" />
-            <geometry>
-              <box size="0.001 0.001 0.001" />
-            </geometry>
-          </collision>
-        </link>
 
         <joint name="position_joint" type="prismatic">
           <axis xyz="-1 0 0" />
           <origin xyz="0 0 0" rpy="0 0 0" />
-          <parent link="${prefix}position_link"/>
+          <parent link="base_footprint"/>
           <child link="${prefix}base_link"/>
           <limit lower="-1" upper="1" effort="1000" velocity="100" />
-          <!-- <dynamics damping="${damping}" friction="${friction}"/> -->
         </joint>
 
-        <ros2_control name="position_ros2_control" type="system">
-          <hardware>
-            <xacro:if value="${ros2_control_hardware_type_positon_joint == 'mock_components'}">
-              <plugin>mock_components/GenericSystem</plugin>
-              <param name="calculate_dynamics">true</param>
-            </xacro:if>
-            <xacro:if value="${ros2_control_hardware_type_positon_joint == 'gz_ros2_control'}">
-              <xacro:if value="${ros_distro == 'humble'}">
-                <plugin>ign_ros2_control_base_movement/IgnBaseMovementSystemHardware</plugin>
-                <param name="odom_topic">/diff_drive_base_controller/odom</param>
-              </xacro:if>
-              <xacro:unless value="${ros_distro == 'humble'}">
-                <plugin>gz_ros2_control_base_movement/GzBaseMovementSystemHardware</plugin>
-                <param name="odom_topic">/diff_drive_base_controller/odom</param>
-              </xacro:unless>
-            </xacro:if>
-            <xacro:if value="${ros2_control_hardware_type_positon_joint == 'real_life'}">
-              <plugin>ros2_control_base_movement/BaseMovementSystemHardware</plugin>
-              <param name="odom_topic">/diff_drive_base_controller/odom</param>
-            </xacro:if>
-          </hardware>
-          <joint name="position_joint" type="prismatic">
-              <param name="initial_position">0.0</param>
-              <command_interface name="position" />
-              <command_interface name="velocity" />
-              <state_interface name="position"/>
-              <state_interface name="velocity"/>
-          </joint>
-        </ros2_control>
       </xacro:if>
 
+      <!-- Planar position joint -->
       <xacro:if value="${model_position_joint == 'planar'}">
 
         <link name="odom">
@@ -192,12 +138,51 @@
 
       </xacro:if>
 
+      <!-- Fixed position joint -->
       <xacro:if value="${model_position_joint == 'fixed'}">
         <joint name="${prefix}base_footprint_joint" type="fixed">
           <origin xyz="0 0 ${wheel_radius - wheel_offset_z}" rpy="0 0 0" />
           <parent link="${prefix}base_footprint"/>
           <child link="${prefix}base_link"/>
         </joint>
+      </xacro:if>
+
+      <xacro:if value="${model_door_opening_mechanism}">
+        <ros2_control name="position_ros2_control" type="system">
+          <hardware>
+            <xacro:if value="${ros2_control_hardware_type_positon_joint == 'mock_components'}">
+              <plugin>mock_components/GenericSystem</plugin>
+              <param name="calculate_dynamics">true</param>
+            </xacro:if>
+            <xacro:if value="${ros2_control_hardware_type_positon_joint == 'gz_ros2_control'}">
+              <xacro:if value="${ros_distro == 'humble'}">
+                <plugin>ign_ros2_control_base_movement/IgnBaseMovementSystemHardware</plugin>
+                <param name="odom_topic">/diff_drive_base_controller/odom</param>
+                <param name="enable_state_feedback">false</param>
+                <param name="reset_position_state_after_each_trajectory">true</param>
+              </xacro:if>
+              <xacro:unless value="${ros_distro == 'humble'}">
+                <plugin>gz_ros2_control_base_movement/GzBaseMovementSystemHardware</plugin>
+                <param name="odom_topic">/diff_drive_base_controller/odom</param>
+                <param name="enable_state_feedback">false</param>
+                <param name="reset_position_state_after_each_trajectory">true</param>
+              </xacro:unless>
+            </xacro:if>
+            <xacro:if value="${ros2_control_hardware_type_positon_joint == 'real_life'}">
+              <plugin>ros2_control_base_movement/BaseMovementSystemHardware</plugin>
+              <param name="odom_topic">/diff_drive_base_controller/odom</param>
+              <param name="enable_state_feedback">false</param>
+              <param name="reset_position_state_after_each_trajectory">true</param>
+            </xacro:if>
+          </hardware>
+          <joint name="position_joint" type="prismatic">
+              <param name="initial_position">0.0</param>
+              <command_interface name="position" />
+              <command_interface name="velocity" />
+              <state_interface name="position"/>
+              <state_interface name="velocity"/>
+          </joint>
+        </ros2_control>
       </xacro:if>
 
     </xacro:if>

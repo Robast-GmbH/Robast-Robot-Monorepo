@@ -38,12 +38,14 @@
       ros2_control_hardware_type
       ros2_control_hardware_type_positon_joint
       ros_distro
-      model_position_joint">
+      model_position_joint
+      model_door_opening_mechanism">
     
     <xacro:theron_base
       prefix="${prefix}"
       publish_bf="${publish_bf}"
       model_position_joint="${model_position_joint}"
+      model_door_opening_mechanism="${model_door_opening_mechanism}"
       ros2_control_hardware_type_positon_joint="${ros2_control_hardware_type_positon_joint}"
       hq="${hq}"
     />

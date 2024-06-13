@@ -52,23 +52,19 @@
 
 	<xacro:arg name="ros_distro" default="humble" />
 
+	<!-- Whether the robot should have a door opening mechanism -->
+	<xacro:arg name="model_door_opening_mechanism" default="false" />
+
 	<!-- Whether the position joint should be modeled as a fixed joint, a prismatic joint or a planar joint -->
 	<xacro:arg name="model_position_joint" default="fixed" />
 	<xacro:property name="model_position_joint_prop" value="$(arg model_position_joint)"/>
 
-	<!-- If we model the position joint, the sensors need be placed in the base_link frame,
-	otherwise they should be placed in the base_footprint frame -->
-	<xacro:if value="${model_position_joint_prop == 'prismatic' or model_position_joint_prop == 'planar'}">
+	<xacro:if value="${publish_bf}">
+		<xacro:property name="sensor_base_frame" value="base_footprint"/>
+	</xacro:if>
+	<xacro:unless value="${publish_bf}">
 		<xacro:property name="sensor_base_frame" value="base_link"/>
-	</xacro:if>
-	<xacro:if value="${model_position_joint_prop == 'fixed'}">
-		<xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_base_frame" value="base_footprint"/>
-		</xacro:if>
-		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_base_frame" value="base_link"/>
-		</xacro:unless>
-	</xacro:if>
+	</xacro:unless>
 
 	<!-- *************** -->
 	<!-- Robots Elements -->
@@ -82,7 +78,8 @@
 	  ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
 	  ros2_control_hardware_type_positon_joint="$(arg ros2_control_hardware_type_positon_joint)"
 	  ros_distro="$(arg ros_distro)"
-	  model_position_joint="$(arg model_position_joint)">
+	  model_position_joint="$(arg model_position_joint)"
+	  model_door_opening_mechanism="$(arg model_door_opening_mechanism)">
 	</xacro:rb_theron_base>
 
 	<!-- Gazebo ros control pluggins -->
@@ -212,7 +209,7 @@
 
 	<!-- ROBAST Door Opening Mechanism -->
 	<!-- The door opening mechanism should NOT be included when used for normal navigation simulations. -->
-	<xacro:if value="${model_position_joint_prop == 'prismatic' or model_position_joint_prop == 'planar'}">
+	<xacro:if value="$(arg model_door_opening_mechanism)">
 		<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
 		<xacro:door_opening_mechanism
 			prefix="$(arg prefix)"
