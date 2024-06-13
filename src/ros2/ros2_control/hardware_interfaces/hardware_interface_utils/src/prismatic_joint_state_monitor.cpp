@@ -2,8 +2,10 @@
 
 namespace hardware_interface_utils
 {
-  PrismaticJointStateMonitor::PrismaticJointStateMonitor(const std::string& odom_topic)
+  PrismaticJointStateMonitor::PrismaticJointStateMonitor(const std::string& odom_topic,
+                                                         const bool reset_position_state_after_each_trajectory)
       : _odom_topic(odom_topic),
+        _reset_position_state_after_each_trajectory(reset_position_state_after_each_trajectory),
         _initial_position_initialized(false),
         _is_trajectory_execution_in_motion(false),
         _reset_initial_position(false),
@@ -71,7 +73,7 @@ namespace hardware_interface_utils
     }
     else
     {
-      if (_reset_initial_position)
+      if (_reset_initial_position || _reset_position_state_after_each_trajectory)
       {
         _reset_initial_position = false;
         hw_position_states[0] = 0.0;

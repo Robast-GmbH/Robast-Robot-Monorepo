@@ -11,7 +11,7 @@ namespace hardware_interface_utils
   class PrismaticJointStateMonitor : public rclcpp::Node
   {
    public:
-    PrismaticJointStateMonitor(const std::string& odom_topic);
+    PrismaticJointStateMonitor(const std::string& odom_topic, const bool reset_position_state_after_each_trajectory);
 
     void update_state(std::vector<double>& hw_position_states, std::vector<double>& hw_velocity_states);
 
@@ -26,6 +26,7 @@ namespace hardware_interface_utils
     void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
 
     std::string _odom_topic;
+    bool _reset_position_state_after_each_trajectory;
 
     nav_msgs::msg::Odometry _latest_odom_msg;
     double _summed_up_vx;

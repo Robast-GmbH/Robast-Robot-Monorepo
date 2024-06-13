@@ -55,6 +55,8 @@ class SimBaseMovement : public SimSystemInterface
   std::vector<double> _hw_velocity_commands;
   std::vector<double> _hw_velocity_states;
 
+  bool _enable_state_feedback;
+
   std::string _LOGGER = "SimBaseMovement";
 
   std::shared_ptr<hardware_interface_utils::PrismaticJointStateMonitor> _prismatic_joint_state_monitor;
@@ -81,13 +83,30 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_init(const hardware_inter
   _hw_velocity_states.resize(SimSystemInterface::info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
   _hw_velocity_commands.resize(SimSystemInterface::info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
-  std::string odom_topic = SimSystemInterface::info_.hardware_parameters["odom_topic"];
-  if (odom_topic.empty())
-  {
-    odom_topic = "/odom";
-  }
+  _enable_state_feedback = SimSystemInterface::info_.hardware_parameters["enable_state_feedback"] == "true" ||
+                           SimSystemInterface::info_.hardware_parameters["enable_state_feedback"] == "True";
 
-  _prismatic_joint_state_monitor = std::make_shared<hardware_interface_utils::PrismaticJointStateMonitor>(odom_topic);
+  if (_enable_state_feedback)
+  {
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Position state feedback is enabled!");
+    bool reset_position_state_after_each_trajectory =
+        SimSystemInterface::info_.hardware_parameters["reset_position_state_after_each_trajectory"] == "true" ||
+        SimSystemInterface::info_.hardware_parameters["reset_position_state_after_each_trajectory"] == "True";
+    std::string odom_topic = SimSystemInterface::info_.hardware_parameters["odom_topic"];
+    if (odom_topic.empty())
+    {
+      odom_topic = "/odom";
+    }
+
+    _prismatic_joint_state_monitor = std::make_shared<hardware_interface_utils::PrismaticJointStateMonitor>(
+        odom_topic, reset_position_state_after_each_trajectory);
+  }
+  else
+  {
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER),
+                "Position state feedback is disabled! To enable it, set "
+                "enable_state_feedback to true in the hardware configuration.");
+  }
 
   return hardware_interface_utils::configure_joints(SimSystemInterface::info_.joints, _LOGGER);
 }
@@ -178,6 +197,11 @@ template <typename SimSystemInterface>
 hardware_interface::return_type SimBaseMovement<SimSystemInterface>::read(const rclcpp::Time& /*time*/,
                                                                           const rclcpp::Duration& /*period*/)
 {
+  if (!_enable_state_feedback)
+  {
+    return hardware_interface::return_type::OK;
+  }
+
   if (rclcpp::ok())
   {
     rclcpp::spin_some(_prismatic_joint_state_monitor);
@@ -192,6 +216,11 @@ template <typename SimSystemInterface>
 hardware_interface::return_type SimBaseMovement<SimSystemInterface>::write(const rclcpp::Time& /*time*/,
                                                                            const rclcpp::Duration& /*period*/)
 {
+  if (!_enable_state_feedback)
+  {
+    return hardware_interface::return_type::OK;
+  }
+
   if (std::abs(_hw_velocity_commands[0]) > 0.00001)
   {
     // When we receive a velocity command, we know the trajectory execution has started, so the robot is in motion

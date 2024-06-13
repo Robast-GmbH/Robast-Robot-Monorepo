@@ -69,6 +69,8 @@ namespace ros2_control_base_movement
     std::vector<double> _hw_velocity_commands;
     std::vector<double> _hw_velocity_states;
 
+    bool _enable_state_feedback;
+
     std::string _LOGGER = "BaseMovementSystemHardware";
 
     std::shared_ptr<hardware_interface_utils::PrismaticJointStateMonitor> _prismatic_joint_state_monitor;

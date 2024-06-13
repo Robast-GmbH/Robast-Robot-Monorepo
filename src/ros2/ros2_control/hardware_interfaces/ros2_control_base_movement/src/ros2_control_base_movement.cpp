@@ -14,13 +14,32 @@ namespace ros2_control_base_movement
     _hw_velocity_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_velocity_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
-    std::string odom_topic = info_.hardware_parameters["odom_topic"];
-    if (odom_topic.empty())
-    {
-      odom_topic = "/odom";
-    }
+    _enable_state_feedback = info_.hardware_parameters["enable_state_feedback"] == "true" ||
+                             info_.hardware_parameters["enable_state_feedback"] == "True";
 
-    _prismatic_joint_state_monitor = std::make_shared<hardware_interface_utils::PrismaticJointStateMonitor>(odom_topic);
+    if (_enable_state_feedback)
+    {
+      RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Position state feedback is enabled!");
+
+      bool reset_position_state_after_each_trajectory =
+          info_.hardware_parameters["reset_position_state_after_each_trajectory"] == "true" ||
+          info_.hardware_parameters["reset_position_state_after_each_trajectory"] == "True";
+
+      std::string odom_topic = info_.hardware_parameters["odom_topic"];
+      if (odom_topic.empty())
+      {
+        odom_topic = "/odom";
+      }
+
+      _prismatic_joint_state_monitor = std::make_shared<hardware_interface_utils::PrismaticJointStateMonitor>(
+          odom_topic, reset_position_state_after_each_trajectory);
+    }
+    else
+    {
+      RCLCPP_INFO(rclcpp::get_logger(_LOGGER),
+                  "Position state feedback is disabled! To enable it, set "
+                  "enable_state_feedback to true in the hardware configuration.");
+    }
 
     return hardware_interface_utils::configure_joints(info.joints, _LOGGER);
   }
@@ -144,6 +163,11 @@ namespace ros2_control_base_movement
   hardware_interface::return_type BaseMovementSystemHardware::read(const rclcpp::Time& /*time*/,
                                                                    const rclcpp::Duration& /*period*/)
   {
+    if (!_enable_state_feedback)
+    {
+      return hardware_interface::return_type::OK;
+    }
+
     if (rclcpp::ok())
     {
       rclcpp::spin_some(_prismatic_joint_state_monitor);
@@ -157,6 +181,11 @@ namespace ros2_control_base_movement
   hardware_interface::return_type BaseMovementSystemHardware::write(const rclcpp::Time& /*time*/,
                                                                     const rclcpp::Duration& /*period*/)
   {
+    if (!_enable_state_feedback)
+    {
+      return hardware_interface::return_type::OK;
+    }
+
     if (std::abs(_hw_velocity_commands[0]) > 0.00001)
     {
       // When we receive a velocity command, we know the trajectory execution has started, so the robot is in motion
