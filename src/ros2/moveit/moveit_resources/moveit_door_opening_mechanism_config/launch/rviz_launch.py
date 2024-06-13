@@ -16,6 +16,7 @@ urdf_launch_arguments = {
     "ros2_control_hardware_type": "dryve_d1",
     "ros2_control_hardware_type_positon_joint": "real_life",
     "model_position_joint": "prismatic",
+    "model_door_opening_mechanism": "true",
 }
 
 
@@ -29,6 +30,9 @@ def get_urdf_launch_arguments(context):
     )
     urdf_launch_arguments["model_position_joint"] = str(
         LaunchConfiguration("model_position_joint").perform(context)
+    )
+    urdf_launch_arguments["model_door_opening_mechanism"] = str(
+        LaunchConfiguration("model_door_opening_mechanism").perform(context)
     )
 
 

@@ -36,6 +36,7 @@ def generate_launch_description():
         "ros2_control_hardware_type": "dryve_d1",
         "ros2_control_hardware_type_positon_joint": "real_life",
         "model_position_joint": "prismatic",
+        "model_door_opening_mechanism": "true",
     }
 
     ros_distro = os.environ["ROS_DISTRO"]

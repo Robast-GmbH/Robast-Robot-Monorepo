@@ -61,6 +61,7 @@ hardware:
       - prefix: ""
       - ros2_control_hardware_type: "gz_ros2_control"
       - model_position_joint: "prismatic"
+      - model_door_opening_mechanism: "true"
       - ros2_control_hardware_type_positon_joint: "gz_ros2_control"
 
 # Override MoveIt parameters
