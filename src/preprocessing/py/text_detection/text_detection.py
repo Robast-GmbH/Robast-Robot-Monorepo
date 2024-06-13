@@ -61,7 +61,7 @@ class OCRTextDetector:
             scores=confidence_scores
         )
     
-    def visualise_bounding_box(image_path:str, output_path:str, box:list[list[float, float]], color=(0, 0, 255), thickness=2) -> None:
+    def visualise_bounding_box(self, output_path:str, box:list[list[float, float]], color=(0, 0, 255), thickness=2) -> None:
         """
         Visualizes a bounding box on an image. Stores the image with bounding box on it at `output_path`
 
@@ -72,7 +72,7 @@ class OCRTextDetector:
                 color (optional): The color of the bounding box. Defaults to red (0, 0, 255).
                 thickness (optional): The thickness of the bounding box lines. Defaults to 2.
         """
-        image = cv2.imread(image_path)
+        image = cv2.imread(self.image_path)
         pts = np.array(box, np.int32)
         pts = pts.reshape((-1, 1, 2))
         cv2.polylines(image, [pts], isClosed=True, color=color, thickness=thickness)
