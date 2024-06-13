@@ -6,14 +6,14 @@ import 'package:web_frontend/widgets/delivery_task_creation_view.dart';
 import 'package:web_frontend/widgets/multi_drop_off_task_creation_view.dart';
 import 'package:web_frontend/widgets/patrol_task_creation_view.dart';
 
-class TaskCreationView extends StatefulWidget {
-  const TaskCreationView({super.key});
+class TaskCreationPage extends StatefulWidget {
+  const TaskCreationPage({super.key});
 
   @override
-  State<TaskCreationView> createState() => _TaskCreationViewState();
+  State<TaskCreationPage> createState() => _TaskCreationPageState();
 }
 
-class _TaskCreationViewState extends State<TaskCreationView> {
+class _TaskCreationPageState extends State<TaskCreationPage> {
   String? dropdownValue = 'Patrol';
   final _taskCreationController = TaskCreationController();
 

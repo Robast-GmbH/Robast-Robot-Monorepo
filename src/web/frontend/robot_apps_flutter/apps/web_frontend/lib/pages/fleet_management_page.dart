@@ -2,17 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_frontend/models/provider/rmf_provider.dart';
 import 'package:web_frontend/models/provider/robot_provider.dart';
-import 'package:web_frontend/views/task_creation_view.dart';
+import 'package:web_frontend/pages/task_creation_page.dart';
 import 'package:web_frontend/widgets/robot_list_view.dart';
 
-class FleetManagementView extends StatefulWidget {
-  const FleetManagementView({super.key});
+class FleetManagementPage extends StatefulWidget {
+  const FleetManagementPage({super.key});
 
   @override
-  State<FleetManagementView> createState() => _FleetManagementViewState();
+  State<FleetManagementPage> createState() => _FleetManagementPageState();
 }
 
-class _FleetManagementViewState extends State<FleetManagementView> {
+class _FleetManagementPageState extends State<FleetManagementPage> {
   @override
   void initState() {
     super.initState();
@@ -30,8 +30,8 @@ class _FleetManagementViewState extends State<FleetManagementView> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute<TaskCreationView>(
-              builder: (context) => const TaskCreationView(),
+            MaterialPageRoute<TaskCreationPage>(
+              builder: (context) => const TaskCreationPage(),
             ),
           );
         },

@@ -4,16 +4,16 @@ import 'package:web_frontend/widgets/modules_view.dart';
 import 'package:web_frontend/widgets/robot_map_view.dart';
 import 'package:web_frontend/widgets/robot_task_view.dart';
 
-class RobotView extends StatefulWidget {
-  const RobotView({required this.robot, super.key});
+class RobotPage extends StatefulWidget {
+  const RobotPage({required this.robot, super.key});
 
   final Robot robot;
 
   @override
-  State<RobotView> createState() => _RobotViewState();
+  State<RobotPage> createState() => _RobotPageState();
 }
 
-class _RobotViewState extends State<RobotView> {
+class _RobotPageState extends State<RobotPage> {
   int _selectedIndex = 1;
 
   void _onItemTapped(int index) {

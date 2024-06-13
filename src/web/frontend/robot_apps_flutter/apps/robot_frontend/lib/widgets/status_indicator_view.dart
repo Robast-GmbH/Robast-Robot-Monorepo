@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:robot_frontend/views/config_view.dart';
+import 'package:robot_frontend/pages/config_page.dart';
 import 'package:robot_frontend/widgets/developer_button_view.dart';
 
 class StatusIndicatorView extends StatelessWidget {
@@ -31,7 +31,7 @@ class StatusIndicatorView extends StatelessWidget {
         SizedBox(width: 8),
         DeveloperButtonView(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ConfigView()));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => const ConfigPage()));
           },
           child: Container(
             margin: const EdgeInsets.all(4),

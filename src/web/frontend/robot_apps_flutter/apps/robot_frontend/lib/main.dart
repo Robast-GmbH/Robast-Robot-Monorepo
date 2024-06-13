@@ -3,7 +3,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
-import 'package:robot_frontend/views/config_view.dart';
+import 'package:robot_frontend/pages/config_page.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   // Override behavior methods and getters like dragDevices
@@ -35,7 +35,7 @@ class RobotFrontend extends StatelessWidget {
       theme: ThemeData.dark(
         useMaterial3: true,
       ),
-      home: const ConfigView(
+      home: const ConfigPage(
         autoClose: true,
       ),
     );

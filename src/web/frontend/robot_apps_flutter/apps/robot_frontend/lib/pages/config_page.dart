@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
-import 'package:robot_frontend/views/home_view.dart';
+import 'package:robot_frontend/pages/home_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class ConfigView extends StatefulWidget {
-  const ConfigView({super.key, this.autoClose = false});
+class ConfigPage extends StatefulWidget {
+  const ConfigPage({super.key, this.autoClose = false});
 
   final bool autoClose;
 
   @override
-  State<ConfigView> createState() => _ConfigViewState();
+  State<ConfigPage> createState() => _ConfigPageState();
 }
 
-class _ConfigViewState extends State<ConfigView> {
+class _ConfigPageState extends State<ConfigPage> {
   final _formKey = GlobalKey<FormState>();
   String robotBackendAddress = '';
   Future<SharedPreferences>? getSharedPreferencesFuture;
@@ -27,7 +27,7 @@ class _ConfigViewState extends State<ConfigView> {
     await Provider.of<RobotProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
     await Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => HomeView()),
+      MaterialPageRoute(builder: (context) => HomePage()),
     );
   }
 

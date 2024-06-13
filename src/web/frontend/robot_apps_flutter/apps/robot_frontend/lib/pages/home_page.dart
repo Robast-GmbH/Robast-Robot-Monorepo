@@ -10,14 +10,14 @@ import 'package:robot_frontend/widgets/status_indicator_view.dart';
 import 'package:robot_frontend/widgets/stopped_view.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
-class HomeView extends StatefulWidget {
-  const HomeView({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<HomeView> createState() => _HomeViewState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin {
+class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   late final AnimationController _controller = AnimationController(
     duration: const Duration(milliseconds: 800),
     vsync: this,
