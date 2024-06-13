@@ -83,11 +83,11 @@ class FeuerplanPublisher(Node):
             extractor = SuperPoint(max_num_keypoints = 2048).eval().to(device)
             matcher = LightGlue(features = "superpoint").eval().to(device)
             # Extract features from images
-            self.get_logger().info(f'Extracting features...')
+            self.get_logger().info('Extracting features...')
             feats1 = extractor.extract(numpy_image_to_torch(image1))
             feats2 = extractor.extract(numpy_image_to_torch(image2))
             # Match features between images
-            self.get_logger().info(f'Obtaining best match...')
+            self.get_logger().info('Obtaining best match...')
             matches12 = matcher({'image0': feats1, 'image1': feats2})
             # Refine features and matches
             feats1, feats2, matches12 = [rbd(x) for x in [feats1, feats2, matches12]]
@@ -106,7 +106,7 @@ class FeuerplanPublisher(Node):
 
     def publish_occupancy_grid(self, feuerplan_image, translation_x, translation_y) -> None:
         data = feuerplan_image.flatten().tolist()
-
+        is_valid_data(data)
         ros_image_msg = OccupancyGrid()
         ros_image_msg.header.stamp = self.get_clock().now().to_msg()
         ros_image_msg.header.frame_id = 'feuerplan'
@@ -128,17 +128,17 @@ class FeuerplanPublisher(Node):
         self.publisher_.publish(ros_image_msg)
         self.is_message_published = True
 
-    def is_valid_data(self, data):
+    def is_valid_data(self, data) -> None:
         if not isinstance(data, (list, tuple)):
-            self.get_logger().info(f'list')
+            self.get_logger().info('list')
         
         for item in data:
             if not isinstance(item, int):
-                self.get_logger().info(f'int')
+                self.get_logger().info('int')
             elif not (-128 <= item <= 127):
-                self.get_logger().info(f'range')
+                self.get_logger().info('range')
         
-        self.get_logger().info(f'true')
+        self.get_logger().info('true')
 
 
     def broadcast_frame_and_message(self)  -> None:
