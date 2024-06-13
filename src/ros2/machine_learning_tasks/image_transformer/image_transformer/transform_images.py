@@ -106,7 +106,7 @@ class FeuerplanPublisher(Node):
 
     def publish_occupancy_grid(self, feuerplan_image, translation_x, translation_y) -> None:
         data = feuerplan_image.flatten().tolist()
-        is_valid_data(data)
+        self.is_valid_data(data)
         ros_image_msg = OccupancyGrid()
         ros_image_msg.header.stamp = self.get_clock().now().to_msg()
         ros_image_msg.header.frame_id = 'feuerplan'
