@@ -7,6 +7,7 @@ namespace hardware_interface_utils
         _initial_position_initialized(false),
         _is_trajectory_execution_in_motion(false),
         _reset_initial_position(false),
+        _summed_up_vx(0.0),
         Node("prismatic_joint_state_monitor")
   {
     _odom_subscriber = this->create_subscription<nav_msgs::msg::Odometry>(
@@ -24,12 +25,14 @@ namespace hardware_interface_utils
     _latest_odom_msg = *msg;
   }
 
-  float PrismaticJointStateMonitor::compute_prismatic_joint_state()
+  double PrismaticJointStateMonitor::compute_prismatic_joint_state()
   {
-    float delta_x = _latest_odom_msg.pose.pose.position.x - _initial_position.x;
-    float delta_y = _latest_odom_msg.pose.pose.position.y - _initial_position.y;
+    double delta_x = _latest_odom_msg.pose.pose.position.x - _initial_position.x;
+    double delta_y = _latest_odom_msg.pose.pose.position.y - _initial_position.y;
 
-    return std::sqrt(delta_x * delta_x + delta_y * delta_y);
+    double joint_state = std::hypot(delta_x, delta_y);
+
+    return is_moving_forward() ? joint_state : -joint_state;
   }
 
   double PrismaticJointStateMonitor::get_velocity_state() const
@@ -40,6 +43,16 @@ namespace hardware_interface_utils
   void PrismaticJointStateMonitor::set_initial_position()
   {
     _initial_position = _latest_odom_msg.pose.pose.position;
+  }
+
+  bool PrismaticJointStateMonitor::is_moving_forward()
+  {
+    // Trying to detect if the robot is moving forward or backward by summing up the linear velocities
+    // and checking if the sum is negative or positive.
+    // This is kept very simple for now, could be improved by integrating the velocities over time.
+    _summed_up_vx = _summed_up_vx + _latest_odom_msg.twist.twist.linear.x;
+
+    return _summed_up_vx < 0;   // empirically determined that robot is moving forward when < 0
   }
 
   void PrismaticJointStateMonitor::update_state(std::vector<double>& hw_position_states,
@@ -63,6 +76,7 @@ namespace hardware_interface_utils
         _reset_initial_position = false;
         hw_position_states[0] = 0.0;
         hw_velocity_states[0] = 0.0;
+        _summed_up_vx = 0.0;
       }
     }
   }

@@ -28,6 +28,7 @@ namespace hardware_interface_utils
     std::string _odom_topic;
 
     nav_msgs::msg::Odometry _latest_odom_msg;
+    double _summed_up_vx;
 
     geometry_msgs::msg::Point _initial_position;
 
@@ -37,11 +38,13 @@ namespace hardware_interface_utils
 
     double get_velocity_state() const;
 
-    float compute_prismatic_joint_state();
+    double compute_prismatic_joint_state();
 
     void set_initial_position();
 
     void reset_initial_position(const std_msgs::msg::Empty::SharedPtr msg);
+
+    bool is_moving_forward();
   };
 }   // namespace hardware_interface_utils
 
