@@ -7,7 +7,8 @@
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
 	"remoteUser": "robast",
-	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
+	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}",
+					"X11_FORWARDING":"1"},
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"
