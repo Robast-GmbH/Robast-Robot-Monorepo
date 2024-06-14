@@ -26,6 +26,8 @@ from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
      * ros2_control_node + controller spawners
 """
 
+PREFIX = "robot/"
+
 
 def shutdown_dryve_d1():
     print("Shutting down dryve d1 motor controller now!")
@@ -43,6 +45,7 @@ def launch_robot_state_publisher():
             "ros2_control_hardware_type": "dryve_d1",
             "ros2_control_hardware_type_positon_joint": "real_life",
             "ros_distro": os.environ["ROS_DISTRO"],
+            "prefix": PREFIX,
         },
     ).toxml()
 
@@ -66,6 +69,7 @@ def generate_launch_description():
         "model_position_joint": "prismatic",
         "model_door_opening_mechanism": "true",
         "ros2_control_hardware_type_positon_joint": "real_life",
+        "prefix": PREFIX,
     }
 
     ros_distro = os.environ["ROS_DISTRO"]

@@ -5,9 +5,6 @@
 	<!-- This is only used for MoveitStudio -->
 	<xacro:attribute name="web_ui_gripper" value="package://rb_theron_description/urdf/door_opening_mechanism/components/hook.urdf" />
 
-	<!-- Import differential base elements -->
-	<xacro:include filename="$(find rb_theron_description)/robots/rb_theron_base.urdf.xacro" />
-
 	<xacro:property name="PI" value="3.1415926535897931"/>
 	<!-- Flag to determine if the base_footprint should be published or not -->
 	<xacro:property name="publish_bf" value="true"/>
@@ -31,25 +28,16 @@
 
 	<xacro:arg name="ros_distro" default="humble" />
 
-    <xacro:include filename="$(find rb_theron_description)/urdf/bases/theron_base.urdf.xacro" />
     <xacro:include filename="$(find rb_theron_description)/urdf/inertia.urdf.xacro" />
 
-    <!-- <xacro:theron_base
-      prefix="$(arg prefix)"
-      publish_bf="${publish_bf}"
-      model_position_joint="$(arg model_position_joint)"
-	  model_door_opening_mechanism="$(arg model_door_opening_mechanism)"
-      ros2_control_hardware_type_positon_joint="$(arg ros2_control_hardware_type_positon_joint)"
-      hq="${hq}"
-    /> -->
-
+	<!-- We add the ros2_control for the position joint here to launch the hardware interface for the position joint -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/ros2_control/position_ros2_control.urdf.xacro" />
 	<xacro:position_ros2_control 
 		ros2_control_hardware_type_positon_joint="$(arg ros2_control_hardware_type_positon_joint)"
 		ros_distro="$(arg ros_distro)">
 	</xacro:position_ros2_control>
 
-	<link name="$(arg prefix)robot/base_link">
+	<link name="$(arg prefix)base_link">
 		<inertial>
 		<mass value="0.01" />
 		<origin xyz="0.0 0.0 0.0" />
@@ -73,7 +61,7 @@
 	<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
 	<xacro:door_opening_mechanism
 	    prefix="$(arg prefix)"
-		parent="$(arg prefix)robot/base_link"
+		parent="$(arg prefix)base_link"
 		ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
 		ros_distro="$(arg ros_distro)"
 		hq="${hq}">

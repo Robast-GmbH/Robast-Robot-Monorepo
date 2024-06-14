@@ -15,10 +15,10 @@ controller_manager:
 joint_trajectory_controller:
   ros__parameters:
     joints:
-      - door_opening_mechanism_joint_y_axis_slide
-      - door_opening_mechanism_joint_x_axis_slide
-      - door_opening_mechanism_joint_rotating_arm
-      - door_opening_mechanism_joint_freely_rotating_hook
+      - robot/door_opening_mechanism_joint_y_axis_slide
+      - robot/door_opening_mechanism_joint_x_axis_slide
+      - robot/door_opening_mechanism_joint_rotating_arm
+      - robot/door_opening_mechanism_joint_freely_rotating_hook
       - position_joint
     command_interfaces:
       - velocity
@@ -26,10 +26,10 @@ joint_trajectory_controller:
       - position
       - velocity
     command_joints:
-      - door_opening_mechanism_joint_y_axis_slide
-      - door_opening_mechanism_joint_x_axis_slide
-      - door_opening_mechanism_joint_rotating_arm
-      - door_opening_mechanism_joint_freely_rotating_hook
+      - robot/door_opening_mechanism_joint_y_axis_slide
+      - robot/door_opening_mechanism_joint_x_axis_slide
+      - robot/door_opening_mechanism_joint_rotating_arm
+      - robot/door_opening_mechanism_joint_freely_rotating_hook
       - mobile_base_controller_cmd_vel/position_joint
 
     state_publish_rate: 50.0 # Defaults to 50
@@ -37,19 +37,19 @@ joint_trajectory_controller:
     open_loop_control: false
 
     gains:
-      door_opening_mechanism_joint_y_axis_slide:
+      robot/door_opening_mechanism_joint_y_axis_slide:
         p: 1.0
         i: 0.0
         d: 0.0
         i_clamp: 0.0
         ff_velocity_scale: 10.0
-      door_opening_mechanism_joint_x_axis_slide:
+      robot/door_opening_mechanism_joint_x_axis_slide:
         p: 0.0
         i: 0.0
         d: 0.0
         i_clamp: 0.0
         ff_velocity_scale: 10.0
-      door_opening_mechanism_joint_rotating_arm:
+      robot/door_opening_mechanism_joint_rotating_arm:
         p: 1.5
         i: 0.0
         d: 0.5

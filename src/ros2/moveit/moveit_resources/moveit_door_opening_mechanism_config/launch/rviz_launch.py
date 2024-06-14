@@ -17,6 +17,7 @@ urdf_launch_arguments = {
     "ros2_control_hardware_type_positon_joint": "real_life",
     "model_position_joint": "prismatic",
     "model_door_opening_mechanism": "true",
+    "prefix": "robot",
 }
 
 
@@ -33,6 +34,9 @@ def get_urdf_launch_arguments(context):
     )
     urdf_launch_arguments["model_door_opening_mechanism"] = str(
         LaunchConfiguration("model_door_opening_mechanism").perform(context)
+    )
+    urdf_launch_arguments["prefix"] = str(
+        LaunchConfiguration("prefix").perform(context)
     )
 
 
@@ -61,6 +65,12 @@ def generate_launch_description():
         "model_door_opening_mechanism",
         default_value="true",
         description="Whether to model door opening mechanism or not",
+    )
+
+    declare_prefix_cmd = DeclareLaunchArgument(
+        "prefix",
+        default_value="",
+        description="Prefix to add to all link names in URDF file",
     )
 
     ros_distro = os.environ["ROS_DISTRO"]
@@ -114,6 +124,7 @@ def generate_launch_description():
     ld.add_action(declare_ros2_control_hardware_type_positon_joint_cmd)
     ld.add_action(declare_model_position_joint_cmd)
     ld.add_action(declare_model_door_opening_mechanism_cmd)
+    ld.add_action(declare_prefix_cmd)
 
     ld.add_action(get_urdf_launch_arguments_opaque_func)
 
