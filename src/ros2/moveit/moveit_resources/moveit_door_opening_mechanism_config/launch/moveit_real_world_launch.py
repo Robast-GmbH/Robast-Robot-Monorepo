@@ -91,9 +91,10 @@ def generate_launch_description():
             file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments
         )
         .robot_description_semantic(file_path="config/rb_theron_real_world.srdf")
-        .trajectory_execution(file_path="config/moveit_controllers.yaml")
+        .trajectory_execution(file_path="config/moveit_controllers_real_world.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .sensors_3d(file_path="config/sensors_3d_real_world.yaml")
+        .joint_limits(file_path="config/joint_limits_real_world.yaml")
         .to_moveit_configs()
     )
 
