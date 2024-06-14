@@ -81,10 +81,10 @@ def generate_launch_description():
             package_name="moveit_door_opening_mechanism_config",
         )
         .robot_description(
-            file_path="config/rb_theron_arm.urdf.xacro",
+            file_path="config/rb_theron.urdf.xacro",
             mappings=urdf_launch_arguments,
         )
-        .robot_description_semantic(file_path="config/rb_theron_arm.srdf")
+        .robot_description_semantic(file_path="config/rb_theron.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .sensors_3d(file_path="config/sensors_3d_real_world.yaml")
