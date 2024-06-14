@@ -68,6 +68,8 @@ def generate_launch_description():
         "ros2_control_hardware_type": "dryve_d1",
         "model_position_joint": "prismatic",
         "model_door_opening_mechanism": "true",
+        "model_module_cage": "false",
+        "model_sensors": "false",
         "ros2_control_hardware_type_positon_joint": "real_life",
         "prefix": PREFIX,
     }
@@ -88,7 +90,7 @@ def generate_launch_description():
         .robot_description(
             file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments
         )
-        .robot_description_semantic(file_path="config/rb_theron.srdf")
+        .robot_description_semantic(file_path="config/rb_theron_real_world.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .sensors_3d(file_path="config/sensors_3d_real_world.yaml")
@@ -121,18 +123,6 @@ def generate_launch_description():
             move_group_capabilities,
         ],
     )
-
-    # State Publisher
-    # TODO: This state publisher might need a different robot_description without the position joint
-    # robot_state_publisher_cmd = Node(
-    #     package="robot_state_publisher",
-    #     executable="robot_state_publisher",
-    #     name="robot_state_publisher",
-    #     output="both",
-    #     parameters=[
-    #         moveit_config.robot_description,
-    #     ],
-    # )
 
     # ros2_control
     ros2_controllers_path_arm = os.path.join(
