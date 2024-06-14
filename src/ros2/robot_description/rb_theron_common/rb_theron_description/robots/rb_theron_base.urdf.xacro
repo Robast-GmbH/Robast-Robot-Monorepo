@@ -40,7 +40,6 @@
       ros_distro
       model_position_joint
       model_door_opening_mechanism">
-    
     <xacro:theron_base
       prefix="${prefix}"
       publish_bf="${publish_bf}"

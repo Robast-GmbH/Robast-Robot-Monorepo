@@ -31,23 +31,19 @@
 
 	<xacro:arg name="ros_distro" default="humble" />
 
-	<!-- Whether the position joint should be modeled as a prismatic joint or just as a fixed joint -->
+	<!-- Whether the robot should have a door opening mechanism -->
+	<xacro:arg name="model_door_opening_mechanism" default="true" />
+
+	<!-- Whether the position joint should be modeled as a fixed joint, a prismatic joint or a planar joint -->
 	<xacro:arg name="model_position_joint" default="fixed" />
 	<xacro:property name="model_position_joint_prop" value="$(arg model_position_joint)"/>
 
-	<!-- If we model the position joint, the sensors need be placed in the base_link frame,
-	otherwise they should be placed in the base_footprint frame -->
-	<xacro:if value="${model_position_joint_prop == 'prismatic'}">
-		<xacro:property name="sensor_base_frame" value="base_link" />
+	<xacro:if value="${publish_bf}">
+		<xacro:property name="sensor_base_frame" value="base_footprint"/>
 	</xacro:if>
-	<xacro:if value="${model_position_joint_prop == 'fixed'}">
-		<xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_base_frame" value="base_footprint" />
-		</xacro:if>
-		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_base_frame" value="base_link" />
-		</xacro:unless>
-	</xacro:if>
+	<xacro:unless value="${publish_bf}">
+		<xacro:property name="sensor_base_frame" value="base_link"/>
+	</xacro:unless>
 
     <xacro:include filename="$(find rb_theron_description)/urdf/bases/theron_base.urdf.xacro" />
     <xacro:include filename="$(find rb_theron_description)/urdf/inertia.urdf.xacro" />
@@ -56,6 +52,7 @@
       prefix="$(arg prefix)"
       publish_bf="${publish_bf}"
       model_position_joint="$(arg model_position_joint)"
+	  model_door_opening_mechanism="$(arg model_door_opening_mechanism)"
       ros2_control_hardware_type_positon_joint="$(arg ros2_control_hardware_type_positon_joint)"
       hq="${hq}"
     />
