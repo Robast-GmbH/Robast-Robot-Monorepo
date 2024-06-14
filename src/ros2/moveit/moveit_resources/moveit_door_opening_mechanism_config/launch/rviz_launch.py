@@ -57,6 +57,12 @@ def generate_launch_description():
         description="Whether to use position joint (between base_link and base_footprint) or not",
     )
 
+    declare_model_door_opening_mechanism_cmd = DeclareLaunchArgument(
+        "model_door_opening_mechanism",
+        default_value="true",
+        description="Whether to model door opening mechanism or not",
+    )
+
     ros_distro = os.environ["ROS_DISTRO"]
     if ros_distro == "humble":
         planning_pipelines = ["ompl_humble"]
@@ -107,6 +113,7 @@ def generate_launch_description():
     ld.add_action(declare_ros2_control_hardware_type_cmd)
     ld.add_action(declare_ros2_control_hardware_type_positon_joint_cmd)
     ld.add_action(declare_model_position_joint_cmd)
+    ld.add_action(declare_model_door_opening_mechanism_cmd)
 
     ld.add_action(get_urdf_launch_arguments_opaque_func)
 
