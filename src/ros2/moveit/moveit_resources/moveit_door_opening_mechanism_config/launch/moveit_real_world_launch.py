@@ -57,14 +57,15 @@ def launch_robot_state_publisher():
         output="screen",
     )
 
-    return [start_robot_state_publisher_cmd]
+    return start_robot_state_publisher_cmd
 
 
 def generate_launch_description():
     launch_arguments = {
-        "ros2_control_hardware_type": "gz_ros2_control",
+        "ros2_control_hardware_type": "dryve_d1",
         "model_position_joint": "prismatic",
         "model_door_opening_mechanism": "true",
+        "ros2_control_hardware_type_positon_joint": "real_life",
     }
 
     ros_distro = os.environ["ROS_DISTRO"]

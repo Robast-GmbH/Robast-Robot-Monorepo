@@ -45,9 +45,29 @@
 
 	<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/ros2_control/position_ros2_control.urdf.xacro" />
 	<xacro:position_ros2_control 
-		ros2_control_hardware_type_positon_joint="${ros2_control_hardware_type_positon_joint}"
-		ros_distro="${ros_distro}">
+		ros2_control_hardware_type_positon_joint="$(arg ros2_control_hardware_type_positon_joint)"
+		ros_distro="$(arg ros_distro)">
 	</xacro:position_ros2_control>
+
+	<link name="$(arg prefix)robot/base_link">
+		<inertial>
+		<mass value="0.01" />
+		<origin xyz="0.0 0.0 0.0" />
+		<xacro:solid_cuboid_inertia m="0.01" w="0.001" h="0.001" d="0.001" />
+		</inertial>
+		<visual>
+		<origin xyz="0 0 0.01" rpy="0 0 0" />
+		<geometry>
+			<box size="0.001 0.001 0.001" />
+		</geometry>
+		</visual>
+		<collision>
+		<origin xyz="0 0 0.01" rpy="0 0 0" />
+		<geometry>
+			<box size="0.001 0.001 0.001" />
+		</geometry>
+		</collision>
+	</link>
 
 	<!-- ROBAST Door Opening Mechanism -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
