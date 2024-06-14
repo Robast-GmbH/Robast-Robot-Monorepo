@@ -1,5 +1,6 @@
 import os
 import atexit
+import xacro
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -31,10 +32,37 @@ def shutdown_dryve_d1():
     os.system("ros2 run dryve_d1_bridge shutdown_dryve_d1")
 
 
+def launch_robot_state_publisher():
+    robot_xml = xacro.process_file(
+        os.path.join(
+            get_package_share_directory("rb_theron_description"),
+            "robots",
+            "rb_theron_arm.urdf.xacro",
+        ),
+        mappings={
+            "ros2_control_hardware_type": "dryve_d1",
+            "ros2_control_hardware_type_positon_joint": "real_life",
+            "ros_distro": os.environ["ROS_DISTRO"],
+        },
+    ).toxml()
+
+    start_robot_state_publisher_cmd = Node(
+        package="robot_state_publisher",
+        executable="robot_state_publisher",
+        name="robot_state_publisher",
+        parameters=[
+            {"use_sim_time": False},
+            {"robot_description": robot_xml},
+        ],
+        output="screen",
+    )
+
+    return [start_robot_state_publisher_cmd]
+
+
 def generate_launch_description():
     launch_arguments = {
-        "ros2_control_hardware_type": "dryve_d1",
-        "ros2_control_hardware_type_positon_joint": "real_life",
+        "ros2_control_hardware_type": "gz_ros2_control",
         "model_position_joint": "prismatic",
         "model_door_opening_mechanism": "true",
     }
@@ -53,15 +81,14 @@ def generate_launch_description():
             package_name="moveit_door_opening_mechanism_config",
         )
         .robot_description(
-            file_path="config/rb_theron_arm.urdf.xacro", mappings=launch_arguments
+            file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments
         )
-        .robot_description_semantic(file_path="config/rb_theron_arm.srdf")
+        .robot_description_semantic(file_path="config/rb_theron.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .sensors_3d(file_path="config/sensors_3d_real_world.yaml")
         .to_moveit_configs()
     )
-    NAMESPACE_ARM = "arm"
 
     ld = LaunchDescription()
 
@@ -79,27 +106,11 @@ def generate_launch_description():
         "capabilities": "move_group/ExecuteTaskSolutionCapability"
     }
 
-    # For our door opening mechanism the current idea is to have two separate tf trees.
-    # (1) The "normal" tf tree used for navigation
-    # (2) The "arm" tf tree used for the door opening mechanism
-    # The reason we need to separate this is that we have put a position joint between the
-    # base_footprint and the base_link in order to plan for the motion of the base.
-    # However, this joint is not part of the real robot and therefore we need to remove it from the
-    # tf tree used for the arm. This is done by remapping the tf topics.
-    TF_TOPIC = "/tf"
-    TF_STATIC_TOPIC = "/tf_static"
-    tf_remapping = [
-        (TF_TOPIC, "/" + NAMESPACE_ARM + TF_TOPIC),
-        (TF_STATIC_TOPIC, "/" + NAMESPACE_ARM + TF_STATIC_TOPIC),
-    ]
-
     # Start the actual move_group node/action server
     move_group_cmd = Node(
         package="moveit_ros_move_group",
         executable="move_group",
         output="screen",
-        namespace=NAMESPACE_ARM,
-        remappings=tf_remapping,
         parameters=[
             moveit_config.to_dict(),
             move_group_capabilities,
@@ -107,17 +118,16 @@ def generate_launch_description():
     )
 
     # State Publisher
-    robot_state_publisher_cmd = Node(
-        package="robot_state_publisher",
-        executable="robot_state_publisher",
-        name="robot_state_publisher",
-        output="both",
-        namespace=NAMESPACE_ARM,
-        remappings=tf_remapping,
-        parameters=[
-            moveit_config.robot_description,
-        ],
-    )
+    # TODO: This state publisher might need a different robot_description without the position joint
+    # robot_state_publisher_cmd = Node(
+    #     package="robot_state_publisher",
+    #     executable="robot_state_publisher",
+    #     name="robot_state_publisher",
+    #     output="both",
+    #     parameters=[
+    #         moveit_config.robot_description,
+    #     ],
+    # )
 
     # ros2_control
     ros2_controllers_path_arm = os.path.join(
@@ -125,18 +135,10 @@ def generate_launch_description():
         "config",
         "ros2_controllers_real_world_arm.yaml",
     )
-    CONTROLLER_MANAGER_NAME = "/" + NAMESPACE_ARM + "/controller_manager"
-    remappings_controller_manager_arm = [
-        (
-            "/" + NAMESPACE_ARM + "/robot/robotnik_base_control/cmd_vel",
-            "/robot/robotnik_base_control/cmd_vel",
-        ),
-    ]
+    CONTROLLER_MANAGER_NAME = "/controller_manager"
     ros2_controller_manager_arm_cmd = Node(
         package="controller_manager",
         executable="ros2_control_node",
-        namespace=NAMESPACE_ARM,
-        remappings=remappings_controller_manager_arm,
         parameters=[
             moveit_config.robot_description,
             ros2_controllers_path_arm,
@@ -151,7 +153,7 @@ def generate_launch_description():
     # is published by the controller_manager.
     # TODO@all: This is not a perfect solution, maybe someone finds something better at some point
     TRIGGER_MESSAGE = "update rate is"
-    node_name = NAMESPACE_ARM + ".controller_manager"
+    node_name = "controller_manager"
     rosout_listener_trigger = Node(
         package="launch_manager",
         executable="rosout_listener",
@@ -207,7 +209,7 @@ def generate_launch_description():
     ld.add_action(rosout_listener_trigger)
     ld.add_action(static_virtual_joint_cmd)
     ld.add_action(move_group_cmd)
-    ld.add_action(robot_state_publisher_cmd)
+    ld.add_action(launch_robot_state_publisher())
 
     # Make sure that the rosout_listener_trigger is started before the arm controller manager is
     # started because the rosout_listener_trigger should listen to the content of the arm
