@@ -764,7 +764,7 @@ Visualization Manager:
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_footprint
+    Fixed Frame: robot/base_footprint
     Frame Rate: 30
   Name: root
   Tools:
@@ -795,7 +795,7 @@ Visualization Manager:
       Name: Current View
       Near Clip Distance: 0.009999999776482582
       Pitch: 0.5349999666213989
-      Target Frame: base_footprint
+      Target Frame: robot/base_footprint
       Value: Orbit (rviz_default_plugins)
       Yaw: 4.150152683258057
     Saved: ~
