@@ -63,7 +63,6 @@
 
 	<!-- Whether the position joint should be modeled as a fixed joint, a prismatic joint or a planar joint -->
 	<xacro:arg name="model_position_joint" default="fixed" />
-	<xacro:property name="model_position_joint_prop" value="$(arg model_position_joint)"/>
 
 	<xacro:if value="${publish_bf}">
 		<xacro:property name="sensor_base_frame" value="base_footprint"/>
