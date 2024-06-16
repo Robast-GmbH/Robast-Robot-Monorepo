@@ -20,28 +20,27 @@ class FeuerplanPublisher(Node):
 
         self.declare_parameter('feuerplan_path', '')
 
-        self.feuerplan_path = self.get_parameter('feuerplan_path').get_parameter_value().string_value 
+        self.__feuerplan_path = self.get_parameter('feuerplan_path').get_parameter_value().string_value 
 
         map_qos = QoSProfile(depth=1)
         map_qos.durability = QoSDurabilityPolicy.TRANSIENT_LOCAL
         map_qos.reliability = rclpy.qos.ReliabilityPolicy.RELIABLE
         map_qos.history = rclpy.qos.HistoryPolicy.KEEP_LAST
 
-        self.publisher_ = self.create_publisher(OccupancyGrid, 'global_costmap/feuerplan_image_topic', qos_profile=map_qos)
-        self.subscription_map = self.create_subscription(OccupancyGrid, 'map', self.listener_callback_map, 10)
-        self.tf_broadcaster = TransformBroadcaster(self)
+        self.__publisher = self.create_publisher(OccupancyGrid, 'global_costmap/feuerplan_image_topic', qos_profile=map_qos)
+        self.__map_subscriber = self.create_subscription(OccupancyGrid, 'map', self.__listener_callback_map, 10)
+        self.__tf_broadcaster = TransformBroadcaster(self)
 
-        self.subscription_map  
-        self.is_message_published = False
-        self.map_msg = None
+        self.__is_message_published = False
+        self.__map_msg = None
 
-    def listener_callback_map(self, msg):
-        self.map_msg = msg
-        if not self.is_message_published:
+    def __listener_callback_map(self, msg:OccupancyGrid) -> None:
+        self.__map_msg = msg
+        if not self.__is_message_published:
             self.get_logger().info('Map recieved')
-            self.broadcast_frame_and_message()
+            self.__broadcast_frame_and_message()
 
-    def preprocess_image(self, feuerplan_image) -> np.ndarray:
+    def __preprocess_image(self, feuerplan_image:np.ndarray) -> np.ndarray:
         processed_image = cv.GaussianBlur(feuerplan_image, (3, 3), 3, 3)
         processed_image = cv.Canny(processed_image, 50, 150, 3)
         dilation_size = 1
@@ -51,7 +50,7 @@ class FeuerplanPublisher(Node):
         _, preprocessed_feuerplan = cv.threshold(feuerplan_image, 150, 127, cv.THRESH_BINARY)
         return preprocessed_feuerplan
 
-    def ros_msg_to_image(self, ros_msg) -> np.ndarray:
+    def __ros_msg_to_image(self, ros_msg:OccupancyGrid) -> np.ndarray:
         image = np.zeros((ros_msg.info.height,ros_msg.info.width), dtype=np.uint8)
         data = ros_msg.data
         index = 0
@@ -66,18 +65,18 @@ class FeuerplanPublisher(Node):
                 index += 1
         return image
     
-    def get_best_match(self, confidence_values, matches, keypoints1, keypoints2) -> tuple[float,float]:
+    def __get_best_match(self, confidence_values:torch.tensor, matches:torch.tensor, keypoints1:torch.tensor, keypoints2:torch.tensor) -> tuple[float,float]:
         max_value = max(confidence_values.tolist())
         top_matches = matches[confidence_values.tolist().index(max_value)]
         points1, points2 = keypoints1[top_matches[..., 0]], keypoints2[top_matches[..., 1]]
         return points1, points2
 
-    def pixel_coord_to_world_coord(self, pixel, resolution, origin) -> tuple[float,float]:
+    def __pixel_coord_to_world_coord(self, pixel, resolution, origin) -> tuple[float,float]:
         world_x = pixel[0] * resolution + origin[0]
         world_y = pixel[1] * resolution + origin[1]
         return (world_x, world_y)
     
-    def find_matching_keypoints(self, image1, image2) -> tuple[float,float]:
+    def __find_matching_keypoints(self, image1:np.ndarray, image2:np.ndarray) -> tuple[float,float]:
             # Initialize feature extractor and matcher
             device = "cpu" 
             extractor = SuperPoint(max_num_keypoints = 2048).eval().to(device)
@@ -92,21 +91,20 @@ class FeuerplanPublisher(Node):
             # Refine features and matches
             feats1, feats2, matches12 = [rbd(x) for x in [feats1, feats2, matches12]]
             # Get the three best matches according to confidence values
-            points1, points2 = self.get_best_match(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
+            points1, points2 = self.__get_best_match(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
             return points1, points2
     
-    def transform_feuerplan_origin(self, map_msg, feuerplan_image) -> tuple[float,float]:
-        map_image = self.ros_msg_to_image(map_msg)
-        points1, points2 = self.find_matching_keypoints(map_image, feuerplan_image)
-        world1x, world1y = self.pixel_coord_to_world_coord(points1.numpy(), map_msg.info.resolution,(map_msg.info.origin.position.x, map_msg.info.origin.position.y))
-        world2x, world2y = self.pixel_coord_to_world_coord(points2.numpy(), map_msg.info.resolution,(0,0))            
+    def __transform_feuerplan_origin(self, map_msg:OccupancyGrid, feuerplan_image:np.ndarray) -> tuple[float,float]:
+        map_image = self.__ros_msg_to_image(map_msg)
+        points1, points2 = self.__find_matching_keypoints(map_image, feuerplan_image)
+        world1x, world1y = self.__pixel_coord_to_world_coord(points1.numpy(), map_msg.info.resolution,(map_msg.info.origin.position.x, map_msg.info.origin.position.y))
+        world2x, world2y = self.__pixel_coord_to_world_coord(points2.numpy(), map_msg.info.resolution,(0,0))            
         translation_x = world1x - world2x
         translation_y = world1y - world2y
         return translation_x, translation_y
 
-    def publish_occupancy_grid(self, feuerplan_image, translation_x, translation_y) -> None:
+    def __publish_occupancy_grid(self, feuerplan_image:np.ndarray, translation_x:float, translation_y:float) -> None:
         data = feuerplan_image.flatten().tolist()
-        self.is_valid_data(data)
         ros_image_msg = OccupancyGrid()
         ros_image_msg.header.stamp = self.get_clock().now().to_msg()
         ros_image_msg.header.frame_id = 'feuerplan'
@@ -125,27 +123,10 @@ class FeuerplanPublisher(Node):
         ros_image_msg.data = data
 
         self.get_logger().info('Feuerplan published')
-        self.publisher_.publish(ros_image_msg)
-        self.is_message_published = True
+        self.__publisher_.publish(ros_image_msg)
+        self.__is_message_published = True
 
-    def is_valid_data(self, data) -> None:
-        if not isinstance(data, (list, tuple)):
-            self.get_logger().info('list')
-        
-        for item in data:
-            if not isinstance(item, int):
-                self.get_logger().info('int')
-            elif not (-128 <= item <= 127):
-                self.get_logger().info('range')
-        
-        self.get_logger().info('true')
-
-
-    def broadcast_frame_and_message(self)  -> None:
-        feuerplan_image = cv.imread(self.feuerplan_path, cv.IMREAD_GRAYSCALE)
-        preprocessed_feuerplan = self.preprocess_image(feuerplan_image)
-        translation_x, translation_y = self.transform_feuerplan_origin(self.map_msg, preprocessed_feuerplan)
-        self.get_logger().info(f'{translation_x, translation_y}')
+    def __create_feuerplan_frame(self, translation_x:float, translation_y:float) -> None:
         transform = TransformStamped()
 
         transform.header.stamp = self.get_clock().now().to_msg()
@@ -154,22 +135,27 @@ class FeuerplanPublisher(Node):
 
         transform.transform.translation.x = translation_x
         transform.transform.translation.y = translation_y
-        transform.transform.translation.z = self.map_msg.info.origin.position.z
+        transform.transform.translation.z = self.__map_msg.info.origin.position.z
 
-        transform.transform.rotation.x = self.map_msg.info.origin.orientation.x
-        transform.transform.rotation.y = self.map_msg.info.origin.orientation.y
-        transform.transform.rotation.z = self.map_msg.info.origin.orientation.z
-        transform.transform.rotation.w = self.map_msg.info.origin.orientation.w
+        transform.transform.rotation.x = self.__map_msg.info.origin.orientation.x
+        transform.transform.rotation.y = self.__map_msg.info.origin.orientation.y
+        transform.transform.rotation.z = self.__map_msg.info.origin.orientation.z
+        transform.transform.rotation.w = self.__map_msg.info.origin.orientation.w
+        self.__tf_broadcaster.sendTransform(transform)
 
-        self.tf_broadcaster.sendTransform(transform)
-        self.publish_occupancy_grid(preprocessed_feuerplan, translation_x, translation_y)
+    def __broadcast_frame_and_message(self)  -> None:
+        feuerplan_image = cv.imread(self.__feuerplan_path, cv.IMREAD_GRAYSCALE)
+        preprocessed_feuerplan = self.__preprocess_image(feuerplan_image)
+        translation_x, translation_y = self.__transform_feuerplan_origin(self.__map_msg, preprocessed_feuerplan)
+        self.__create_feuerplan_frame(translation_x,translation_y)
+        self.__publish_occupancy_grid(preprocessed_feuerplan, translation_x, translation_y)
 
 def main(args=None):
     rclpy.init(args=args)
 
-    minimal_subscriber = FeuerplanPublisher()
+    feuerplan_publisher = FeuerplanPublisher()
 
-    rclpy.spin(minimal_subscriber)
+    rclpy.spin(feuerplan_publisher)
     rclpy.shutdown()
 
 
