@@ -21,8 +21,8 @@ def generate_launch_description():
     )
 
     launch_arguments = {
-        "model_position_joint": "prismatic",
-        "model_door_opening_mechanism": "true",
+        "model_position_joint": "fixed",
+        "model_door_opening_mechanism": "True",
         "world_model": world_model,
     }
 
