@@ -34,9 +34,11 @@ hardware:
   ip: "0.0.0.0"
 
   # The following launch file is started when hardware.simulated is True
+  # This is run when running robot.app
   simulated_robot_driver_persist_launch_file:
     package: "tiplu_world_gazebo_config"
     path: "launch/rviz_launch.py"
+  # This is run when running agent.app
   simulated_hardware_launch_file:
     package: "tiplu_world_gazebo_config"
     path: "launch/sim/hardware_sim_launch.py"

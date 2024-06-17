@@ -33,9 +33,11 @@ hardware:
 
   # Specify additional launch files for running the robot with real hardware.
   # [Optional, defaults to a blank launch file if not specified]
+  # This is run when running robot.app
   robot_driver_persist_launch_file:
     package: "rb_theron_config"
     path: "launch/robot_drivers_to_persist_launch.py"
+    # This is run when running agent.app
   hardware_launch_file:
     package: "moveit_studio_agent"
     path: "launch/blank.launch.py"
