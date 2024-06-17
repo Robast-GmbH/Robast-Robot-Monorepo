@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:web_frontend/models/controller/task_creation_controller.dart';
 import 'package:web_frontend/models/provider/rmf_provider.dart';
 import 'package:web_frontend/widgets/delivery_task_creation_view.dart';
+import 'package:web_frontend/widgets/multi_drop_off_task_creation_view.dart';
 import 'package:web_frontend/widgets/patrol_task_creation_view.dart';
 
 class TaskCreationView extends StatefulWidget {
@@ -16,18 +17,21 @@ class _TaskCreationViewState extends State<TaskCreationView> {
   String? dropdownValue = 'Patrol';
   final _taskCreationController = TaskCreationController();
 
-  Future<void> dispatchTask() async {
+  Widget buildTaskCreationWidget() {
     if (dropdownValue == 'Patrol') {
-      await Provider.of<RMFProvider>(context, listen: false).dispatchPatrolTask(
-        places: _taskCreationController.places,
-        rounds: _taskCreationController.rounds!,
+      return PatrolTaskCreationView(
+        controller: _taskCreationController,
+      );
+    } else if (dropdownValue == 'Delivery') {
+      return DeliveryTaskCreationView(
+        controller: _taskCreationController,
+      );
+    } else if (dropdownValue == 'Multi Dropoff') {
+      return MultiDropOffTaskCreationView(
+        controller: _taskCreationController,
       );
     } else {
-      await Provider.of<RMFProvider>(context, listen: false).dispatchDeliveryTask(
-        pickup: _taskCreationController.pickupNode!,
-        dropoff: _taskCreationController.dropoffNode!,
-        drawerID: _taskCreationController.drawerID!,
-      );
+      return const Placeholder();
     }
   }
 
@@ -39,58 +43,63 @@ class _TaskCreationViewState extends State<TaskCreationView> {
       ),
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.send),
-        onPressed: () async {
-          if (_taskCreationController.validateTask(type: dropdownValue!)) {
-            await showDialog<AlertDialog>(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('Nice!'),
-                  content: Text('${dropdownValue ?? ''} task has been created.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () async {
-                        await dispatchTask();
-                        if (context.mounted) {
-                          Navigator.pop(context);
-                        }
-                      },
-                      child: const Text('Dispatch'),
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('Cancel'),
-                    ),
-                  ],
-                );
-              },
-            );
+        onPressed: dropdownValue == null
+            ? null
+            : () async {
+                if (_taskCreationController.validateTask(type: dropdownValue!)) {
+                  await showDialog<AlertDialog>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Nice!'),
+                        content: Text('${dropdownValue ?? ''} task has been created.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () async {
+                              await Provider.of<RMFProvider>(context, listen: false).dispatchTask(
+                                taskType: dropdownValue!,
+                                controller: _taskCreationController,
+                              );
+                              if (context.mounted) {
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: const Text('Dispatch'),
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('Cancel'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
 
-            if (context.mounted) {
-              Navigator.pop(context);
-            }
-          } else {
-            await showDialog<AlertDialog>(
-              context: context,
-              builder: (context) {
-                return AlertDialog(
-                  title: const Text('Invalid Task'),
-                  content: const Text('Please check task data.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text('OK'),
-                    ),
-                  ],
-                );
+                  if (context.mounted) {
+                    Navigator.pop(context);
+                  }
+                } else {
+                  await showDialog<AlertDialog>(
+                    context: context,
+                    builder: (context) {
+                      return AlertDialog(
+                        title: const Text('Invalid Task'),
+                        content: const Text('Please check task data.'),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text('OK'),
+                          ),
+                        ],
+                      );
+                    },
+                  );
+                }
               },
-            );
-          }
-        },
       ),
       body: Column(
         children: [
@@ -112,7 +121,7 @@ class _TaskCreationViewState extends State<TaskCreationView> {
                       dropdownValue = newValue;
                     });
                   },
-                  items: <String>['Patrol', 'Delivery'].map<DropdownMenuItem<String>>((String value) {
+                  items: <String>['Patrol', 'Delivery', 'Multi Dropoff'].map<DropdownMenuItem<String>>((String value) {
                     return DropdownMenuItem<String>(
                       value: value,
                       child: Text(value),
@@ -123,15 +132,7 @@ class _TaskCreationViewState extends State<TaskCreationView> {
             ],
           ),
           const Divider(color: Colors.grey),
-          Expanded(
-            child: dropdownValue == 'Patrol'
-                ? PatrolTaskCreationView(
-                    controller: _taskCreationController,
-                  )
-                : DeliveryTaskCreationView(
-                    controller: _taskCreationController,
-                  ),
-          ),
+          Expanded(child: buildTaskCreationWidget()),
         ],
       ),
     );

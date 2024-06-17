@@ -1,0 +1,1 @@
+This project contains code for text detection in an image.

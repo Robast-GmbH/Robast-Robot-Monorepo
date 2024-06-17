@@ -1,7 +1,7 @@
 torch
 torchvision
-numpy
+numpy==1.26.4
 opencv-python
 matplotlib
 kornia
-src/machine_learning_tasks/external_packages/LightGlue/dist/lightglue-0.0-py3-none-any.whl
+/ws/lightglue_robast-0.0-py3-none-any.whl 

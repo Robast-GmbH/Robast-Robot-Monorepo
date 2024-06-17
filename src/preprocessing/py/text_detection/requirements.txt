@@ -1,0 +1,4 @@
+paddlepaddle
+paddleocr>=2.0.1
+opencv-python>=4.6.0.66
+opencv-contrib-python>=4.6.0.66

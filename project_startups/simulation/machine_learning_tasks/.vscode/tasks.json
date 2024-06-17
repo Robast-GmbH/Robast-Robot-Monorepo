@@ -35,7 +35,7 @@
         {
             "type": "shell",
             "label": "run image_transformer",
-            "command": "source /workspace/install/setup.bash; ros2 launch image_transformer image_transformer.launch.py",
+            "command": "source /workspace/install/setup.bash; ros2 launch feuerplan_publisher feuerplan_publisher.launch.py",
             "problemMatcher": [],
             "presentation": {
                 "echo": false,
