@@ -8,7 +8,7 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
-    feuerplan_publisher_dir = get_package_share_directory('image_transformer')
+    feuerplan_publisher_dir = get_package_share_directory('feuerplan_publisher')
 
     default_feuerplan_image_path = os.path.join(feuerplan_publisher_dir, 'images','slide1.jpg')
 
@@ -19,9 +19,9 @@ def generate_launch_description():
         default_value=feuerplan_path,
         description='Path to the feuerplan image')
     
-    start_image_transformer = Node(
-        package='image_transformer',
-        executable='image_transformer_node',
+    start_feuerplan_publisher = Node(
+        package='feuerplan_publisher',
+        executable='feuerplan_publisher_node',
         parameters=[
                     {'feuerplan_path': feuerplan_path}
         ]
@@ -31,6 +31,6 @@ def generate_launch_description():
 
     ld.add_action(declare_feuerplan_image_cmd)
 
-    ld.add_action(start_image_transformer)
+    ld.add_action(start_feuerplan_publisher)
 
     return ld

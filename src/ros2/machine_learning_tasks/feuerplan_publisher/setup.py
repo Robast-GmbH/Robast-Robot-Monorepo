@@ -3,7 +3,7 @@ import os
 from glob import glob
 from setuptools import find_packages, setup
 
-package_name = 'image_transformer'
+package_name = 'feuerplan_publisher'
 
 setup(
     name=package_name,
@@ -18,14 +18,14 @@ setup(
     ],
     install_requires=['setuptools'],
     zip_safe=True,
-    maintainer='robast',
+    maintainer='Sagar V Lingaraj',
     maintainer_email='s.lingaraj@robast.de',
-    description='TODO: Package description',
+    description='Publishes feuerplan as an occupancy grid',
     license='TODO: License declaration',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'image_transformer_node = image_transformer.transform_images:main'
+            'feuerplan_publisher_node = feuerplan_publisher.publish_feuerplan:main'
         ],
     },
 )

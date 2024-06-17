@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>image_transformer</name>
+  <name>feuerplan_publisher</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="s.lingaraj@robast.de">robast</maintainer>
+  <description>Publishes feuerplan as an occupancy grid</description>
+  <maintainer email="s.lingaraj@robast.de">Sagar V Lingaraj</maintainer>
   <license>TODO: License declaration</license>
 
   <test_depend>ament_copyright</test_depend>

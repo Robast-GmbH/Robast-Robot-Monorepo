@@ -39,6 +39,7 @@ class FeuerplanPublisher(Node):
         if not self.__is_message_published:
             self.get_logger().info('Map recieved')
             self.__broadcast_frame_and_message()
+            self.destroy_subscription(self.__map_subscriber)
 
     def __preprocess_image(self, feuerplan_image:np.ndarray) -> np.ndarray:
         processed_image = cv.GaussianBlur(feuerplan_image, (3, 3), 3, 3)
@@ -123,7 +124,7 @@ class FeuerplanPublisher(Node):
         ros_image_msg.data = data
 
         self.get_logger().info('Feuerplan published')
-        self.__publisher_.publish(ros_image_msg)
+        self.__publisher.publish(ros_image_msg)
         self.__is_message_published = True
 
     def __create_feuerplan_frame(self, translation_x:float, translation_y:float) -> None:
@@ -143,7 +144,7 @@ class FeuerplanPublisher(Node):
         transform.transform.rotation.w = self.__map_msg.info.origin.orientation.w
         self.__tf_broadcaster.sendTransform(transform)
 
-    def __broadcast_frame_and_message(self)  -> None:
+    def __broadcast_frame_and_message(self) -> None:
         feuerplan_image = cv.imread(self.__feuerplan_path, cv.IMREAD_GRAYSCALE)
         preprocessed_feuerplan = self.__preprocess_image(feuerplan_image)
         translation_x, translation_y = self.__transform_feuerplan_origin(self.__map_msg, preprocessed_feuerplan)
