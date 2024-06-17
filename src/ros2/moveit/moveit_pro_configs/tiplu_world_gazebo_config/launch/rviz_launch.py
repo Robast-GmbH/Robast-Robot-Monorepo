@@ -72,4 +72,10 @@ def generate_launch_description():
         )
     )
 
+    ld.add_action(Node(package='tf2_ros',
+                        executable='static_transform_publisher',
+                        name='static_transform_publisher',
+                        output='log',
+                        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'world', 'odom']))
+
     return ld
