@@ -23,12 +23,12 @@ def generate_launch_description():
     base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d-s2-usb-base-frame')
     parent_frame = LaunchConfiguration('parent_frame',  default = 'robot_base_link')
 
-    cam_pos_x    = LaunchConfiguration('cam_pos_x',     default = '0.317')
-    cam_pos_y    = LaunchConfiguration('cam_pos_y',     default = '-0,197')
-    cam_pos_z    = LaunchConfiguration('cam_pos_z',     default = '1.3044')
+    cam_pos_x    = LaunchConfiguration('cam_pos_x',     default = '-0.05')
+    cam_pos_y    = LaunchConfiguration('cam_pos_y',     default = '0.0')
+    cam_pos_z    = LaunchConfiguration('cam_pos_z',     default = '0.13721')
     cam_roll     = LaunchConfiguration('cam_roll',      default = '0.0')
-    cam_pitch    = LaunchConfiguration('cam_pitch',     default = '0.0')
-    cam_yaw      = LaunchConfiguration('cam_yaw',       default = '0.0')
+    cam_pitch    = LaunchConfiguration('cam_pitch',     default = '0.5235988')
+    cam_yaw      = LaunchConfiguration('cam_yaw',       default = '3.14159')
     lrcheck        = LaunchConfiguration('lrcheck', default = True)
     extended       = LaunchConfiguration('extended', default = False)
     subpixel       = LaunchConfiguration('subpixel', default = True)
@@ -39,6 +39,7 @@ def generate_launch_description():
     sensIso        = LaunchConfiguration('sensIso', default = 800)
 
     syncNN                  = LaunchConfiguration('syncNN', default = True)
+    
     detectionClassesCount   = LaunchConfiguration('detectionClassesCount', default = 2)
     nnName                  = LaunchConfiguration('nnName', default = 'yolov5.blob')
     resourceBaseFolder      = LaunchConfiguration('resourceBaseFolder', default = default_resources_path)
@@ -51,7 +52,7 @@ def generate_launch_description():
     rgbResolution           = LaunchConfiguration('rgbResolution', default = '1080p')
     rgbScaleNumerator       = LaunchConfiguration('rgbScaleNumerator', default = 2)
     rgbScaleDenominator     = LaunchConfiguration('rgbScaleDenominator', default = 3)
-    previewWidth            = LaunchConfiguration('previewWidth', default = 640)
+    previewWidth            = LaunchConfiguration('previewWidth', default = 480)
     previewHeight           = LaunchConfiguration('previewHeight', default = 640)
 
     enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)

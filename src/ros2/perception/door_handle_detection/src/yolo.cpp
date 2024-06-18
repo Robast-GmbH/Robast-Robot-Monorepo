@@ -211,8 +211,8 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
     // yolo specific parameters
     spatialDetectionNetwork->setNumClasses(detectionClassesCount);
     spatialDetectionNetwork->setCoordinateSize(4);
-    spatialDetectionNetwork->setAnchors({110, 13, 16, 30, 33, 23, 30, 61, 62, 45, 59, 119, 116, 90, 156, 198, 373, 326});
-    spatialDetectionNetwork->setAnchorMasks({{"side80", {0, 1, 2}},{"side40", {3, 4, 5}},{"side20", {6, 7, 8}}});
+    spatialDetectionNetwork->setAnchors({10, 13, 16, 30, 33, 23, 30, 61, 62, 45, 59, 119, 116, 90, 156, 198, 373, 326});
+    spatialDetectionNetwork->setAnchorMasks({{"side60", {0, 1, 2}},{"side30", {3, 4, 5}},{"side15", {6, 7, 8}}});
     spatialDetectionNetwork->setIouThreshold(0.5f);
 
     // Link plugins CAM -> NN -> XLINK
@@ -466,7 +466,7 @@ int main(int argc, char** argv) {
             "stereo");
     depthPublish.addPublisherCallback();
 
-    if(depth_aligned) {
+   
         
         auto rgbCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, width, height);
         
@@ -499,12 +499,11 @@ int main(int argc, char** argv) {
         dai::rosBridge::BridgePublisher<depthai_ros_msgs::msg::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(
                     detectionQueue,
                     node,
-                    std::string("color/yolov4_Spatial_detections"),
+                    std::string("stereo/door_handle_position"),
                     std::bind(&dai::rosBridge::SpatialDetectionConverter::toRosMsg, &detConverter, std::placeholders::_1, std::placeholders::_2),
                     30);
         detectionPublish.addPublisherCallback();
         
-    }
 
     rclcpp::spin(node);
        
