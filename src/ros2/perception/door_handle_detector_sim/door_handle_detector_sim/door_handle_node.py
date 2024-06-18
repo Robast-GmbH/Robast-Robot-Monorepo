@@ -35,11 +35,16 @@ class Door_Handle_Detection(Node):
 
         self.depth_camera_image_subscription_
         self.rgb_camera_image_subscription_
+        self.cv_depth_image = None
 
     def depth_img_callback(self, data):
         self.cv_depth_image = self.bridge.imgmsg_to_cv2(data, desired_encoding="32FC1")
 
     def rgb_camera_callback(self, data):
+
+        if (self.cv_depth_image is None):
+            self.get_logger().info("Depth image not received yet")
+            return
 
         # Convert ROS message to BGR image
         img_from_msg = self.bridge.imgmsg_to_cv2(data, desired_encoding="bgr8")
