@@ -12,7 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      Project-Name: map_preprocessing
+      Project-Name: machine_learning_tasks
 
     steps:
       - name: Checkout repository and submodules
@@ -37,5 +37,5 @@ jobs:
           context: src/${{ env.Project-Name }}
           target: devel
           push: true
-          file: src/${{ env.Project-Name }}/Dockerfile
+          file: src/ros2/${{ env.Project-Name }}/Dockerfile
           tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel

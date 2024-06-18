@@ -2,18 +2,18 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "label": "build-ros-theron",
+            "label": "build",
             "detail": "Symlink Build for Ros-Theron.",
             "type": "shell",
-            "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip lightglue_robast communication_interfaces",
+            "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
             "problemMatcher": []
         },
         {
-            "label": "clean-build-ros-theron",
+            "label": "clean-build",
             "detail": "Purges and symlink builds for Ros-Theron.",
             "dependsOn": [
                 "purge",
-                "build-ros-theron"
+                "build"
             ],
             "dependsOrder": "sequence",
             "problemMatcher": []

@@ -5,14 +5,7 @@
             "label": "build",
             "detail": "Symlink Build",
             "type": "shell",
-            "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic --packages-skip lightglue_robast",
-            "problemMatcher": []
-        },
-        {
-            "label": "debug-build",
-            "detail": "build used for debugging purposes",
-            "type": "shell",
-            "command": "colcon build --mixin debug --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic --packages-skip lightglue",
+            "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
             "problemMatcher": []
         },
         {
