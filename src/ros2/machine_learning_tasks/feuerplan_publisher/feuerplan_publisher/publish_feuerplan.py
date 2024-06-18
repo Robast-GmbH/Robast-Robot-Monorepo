@@ -66,11 +66,12 @@ class FeuerplanPublisher(Node):
                 index += 1
         return image
     
-    def __get_best_match(self, confidence_values:torch.tensor, matches:torch.tensor, keypoints1:torch.tensor, keypoints2:torch.tensor) -> tuple[float,float]:
-        max_value = max(confidence_values.tolist())
-        top_matches = matches[confidence_values.tolist().index(max_value)]
+    def __get_three_best_matches(self, confidence_values:torch.tensor, matches:torch.tensor, keypoints1:torch.tensor, keypoints2:torch.tensor) -> tuple[float,float]:
+        _, top_indices = torch.topk(confidence_values, k=3)
+        top_matches = matches[top_indices]
         points1, points2 = keypoints1[top_matches[..., 0]], keypoints2[top_matches[..., 1]]
         return points1, points2
+    
 
     def __pixel_coord_to_world_coord(self, pixel, resolution, origin) -> tuple[float,float]:
         world_x = pixel[0] * resolution + origin[0]
@@ -92,7 +93,9 @@ class FeuerplanPublisher(Node):
             # Refine features and matches
             feats1, feats2, matches12 = [rbd(x) for x in [feats1, feats2, matches12]]
             # Get the three best matches according to confidence values
-            points1, points2 = self.__get_best_match(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
+            points1, points2 = self.__get_three_best_matches(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
+            self.get_logger().info(f'{points1,points2}')
+            
             return points1, points2
     
     def __transform_feuerplan_origin(self, map_msg:OccupancyGrid, feuerplan_image:np.ndarray) -> tuple[float,float]:

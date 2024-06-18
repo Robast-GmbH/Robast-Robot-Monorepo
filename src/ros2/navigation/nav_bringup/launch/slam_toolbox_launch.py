@@ -36,7 +36,7 @@ def generate_launch_description():
         nav_bringup_dir,
         config_directory,
         "slam",
-        "slam_mapper_params_localization.yaml",
+        "slam_toolbox_params_offline.yaml",
     )
     slam_launch_file = os.path.join(
         nav_bringup_dir, "launch", "slam_toolbox_base_launch.py"
