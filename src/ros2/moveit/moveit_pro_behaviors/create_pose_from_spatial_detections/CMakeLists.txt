@@ -6,12 +6,18 @@ moveit_studio_package()
 
 find_package(moveit_studio_behavior_interface REQUIRED)
 find_package(pluginlib REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_ros REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
 find_package(depthai_ros_msgs REQUIRED)
 find_package(geometry_msgs REQUIRED)
 
 set(THIS_PACKAGE_INCLUDE_DEPENDS
 moveit_studio_behavior_interface
 pluginlib
+tf2
+tf2_ros
+tf2_geometry_msgs
 depthai_ros_msgs
 geometry_msgs)
 

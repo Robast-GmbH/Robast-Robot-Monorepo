@@ -3,9 +3,13 @@
 #include <behaviortree_cpp/action_node.h>
 #include <depthai_ros_msgs/msg/spatial_detection_array.hpp>
 #include <geometry_msgs/msg/pose_stamped.hpp>
+#include <tf2_geometry_msgs/tf2_geometry_msgs.hpp>
+#include "tf2_ros/transform_listener.h"
+#include "tf2_ros/buffer.h"
 
 // This header includes the SharedResourcesNode type
 #include <moveit_studio_behavior_interface/shared_resources_node.hpp>
+#include <moveit_studio_behavior_interface/async_behavior_base.hpp>
 
 #include <moveit_studio_behavior_interface/check_for_error.hpp>
 
@@ -14,7 +18,7 @@ namespace create_pose_from_spatial_detections
 /**
  * @brief TODO(...)
  */
-class CreatePoseFromSpatialDetections : public moveit_studio::behaviors::SharedResourcesNode<BT::StatefulActionNode>
+class CreatePoseFromSpatialDetections : public moveit_studio::behaviors::AsyncBehaviorBase
 {
 public:
   /**
@@ -41,23 +45,28 @@ public:
    */
   static BT::KeyValueVector metadata();
 
-  /**
-   * @brief Implementation of onStart(). Runs when the Behavior is ticked for the first time.
-   * @return Always returns BT::NodeStatus::RUNNING, since the success of Behavior's initialization is checked in @ref
-   * onRunning().
-   */
-  BT::NodeStatus onStart() override;
 
-  /**
-   * @brief Implementation of onRunning(). Checks the status of the Behavior when it is ticked after it starts running.
-   * @return TODO(...)
-   */
-  BT::NodeStatus onRunning() override;
-
-  void onHalted() override;
+protected:
+  tl::expected<bool, std::string> doWork() override;
 
 private:
-  depthai_ros_msgs::msg::SpatialDetectionArray _spatial_detections;
+  /** @brief Classes derived from AsyncBehaviorBase must implement getFuture() so that it returns a shared_future class member */
+  std::shared_future<tl::expected<bool, std::string>>& getFuture() override
+  {
+    return future_;
+  }
+
+  geometry_msgs::msg::PoseStamped transform_pose(const geometry_msgs::msg::PoseStamped &pose_stamped, const std::string &target_frame);
+
+  /** @brief Classes derived from AsyncBehaviorBase must have this shared_future as a class member */
+  std::shared_future<tl::expected<bool, std::string>> future_;
+  
+  // Pose stamped publisher
+  std::shared_ptr<rclcpp::Publisher<geometry_msgs::msg::PoseStamped>> _pose_stamped_publisher;
+  bool _publish_pose;
+
+  std::shared_ptr<tf2_ros::Buffer> _tf_buffer;
+  std::shared_ptr<tf2_ros::TransformListener> _transform_listener;
   
 };
 }  // namespace create_pose_from_spatial_detections

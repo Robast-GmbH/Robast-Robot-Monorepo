@@ -14,8 +14,12 @@
   <build_depend>moveit_studio_common</build_depend>
 
   <depend>moveit_studio_behavior_interface</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
   <depend>depthai_ros_msgs</depend>
   <depend>geometry_msgs</depend>
+  <depend>tf2_geometry_msgs</depend>
+
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_cmake_gtest</test_depend>
