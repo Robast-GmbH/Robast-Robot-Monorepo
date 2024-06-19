@@ -47,6 +47,9 @@ private:
 
   /** @brief Classes derived from AsyncBehaviorBase must have this shared_future as a class member */
   std::shared_future<tl::expected<bool, std::string>> future_;
+
+  /** @brief Override getWaitForMessageTimeout to allow failing if no image is received within the expected duration. */
+  tl::expected<std::chrono::duration<double>, std::string> getWaitForMessageTimeout() override;
   
 };
 }  // namespace get_spatial_detections_from_topic
