@@ -4,6 +4,7 @@ import torch
 import os
 import numpy as np
 from rclpy.node import Node
+from rclpy.parameter import Parameter
 from sensor_msgs.msg import Image
 from vision_msgs.msg import ObjectHypothesis
 from depthai_ros_msgs.msg import SpatialDetectionArray, SpatialDetection
@@ -15,6 +16,8 @@ class Door_Handle_Detection(Node):
 
     def __init__(self):
         super().__init__('door_handle_detection')
+
+        self.set_parameters([Parameter('use_sim_time', Parameter.Type.BOOL, True)])
 
         self.bridge = CvBridge()
 
