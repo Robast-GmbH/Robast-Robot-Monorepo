@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<root BTCPP_format="4" main_tree_to_execute="Robast Move to Target Joint State">
+<root BTCPP_format="4" main_tree_to_execute="Open door by pushing">
   <!--//////////-->
-  <BehaviorTree ID="Robast Move to Target Joint State" _description="Moving to a target joint state for testing purposes." _favorite="false" _hardcoded="false">
+  <BehaviorTree ID="Open door by pushing" _description="Opens a door by pushing it open." _favorite="false" _hardcoded="false">
     <Control ID="Sequence" name="TopLevelSequence">
       <Decorator ID="RetryUntilSuccessful" num_attempts="20">
         <Decorator ID="Delay" delay_msec="1000">
