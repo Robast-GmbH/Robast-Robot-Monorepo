@@ -20,8 +20,8 @@ def generate_launch_description():
     camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D')
     tf_prefix    = LaunchConfiguration('tf_prefix',     default = 'oak')
     mode         = LaunchConfiguration('mode', default = 'depth')
-    base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d-s2-usb-base-frame')
-    parent_frame = LaunchConfiguration('parent_frame',  default = 'robot_base_link')
+    base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d_frame')
+    parent_frame = LaunchConfiguration('parent_frame',  default = 'robot/door_opening_mechanism_link_y_axis_slide')
 
     cam_pos_x    = LaunchConfiguration('cam_pos_x',     default = '-0.05')
     cam_pos_y    = LaunchConfiguration('cam_pos_y',     default = '0.0')
@@ -31,7 +31,7 @@ def generate_launch_description():
     cam_yaw      = LaunchConfiguration('cam_yaw',       default = '3.14159')
     lrcheck        = LaunchConfiguration('lrcheck', default = True)
     extended       = LaunchConfiguration('extended', default = False)
-    subpixel       = LaunchConfiguration('subpixel', default = True)
+    subpixel       = LaunchConfiguration('subpixel', default = False)
     rectify        = LaunchConfiguration('rectify', default = True)
     depth_aligned  = LaunchConfiguration('depth_aligned', default = True)
     manualExposure = LaunchConfiguration('manualExposure', default = False)
@@ -45,7 +45,7 @@ def generate_launch_description():
     resourceBaseFolder      = LaunchConfiguration('resourceBaseFolder', default = default_resources_path)
 
     stereo_fps            = LaunchConfiguration('stereo_fps', default = 30)
-    confidence            = LaunchConfiguration('confidence', default = 200)
+    confidence            = LaunchConfiguration('confidence', default = 120)
     LRchecktresh          = LaunchConfiguration('LRchecktresh', default = 5)
     monoResolution        = LaunchConfiguration('monoResolution', default = '400p')
     

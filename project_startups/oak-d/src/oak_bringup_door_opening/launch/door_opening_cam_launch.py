@@ -14,7 +14,7 @@ def generate_launch_description():
 
     TF_TOPIC = "/tf"
     TF_STATIC_TOPIC = "/tf_static"
-    NAMESPACE_ARM = "arm"
+    NAMESPACE_ARM = ""
     remappings_tf = [
         (TF_TOPIC, "/" + NAMESPACE_ARM + TF_TOPIC),
         (TF_STATIC_TOPIC, "/" + NAMESPACE_ARM + TF_STATIC_TOPIC),

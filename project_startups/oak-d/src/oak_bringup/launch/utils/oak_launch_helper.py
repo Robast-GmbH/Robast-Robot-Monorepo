@@ -115,34 +115,34 @@ def generate_stereo_launch_description(oak_d_config_file, urdf_launch_file, name
         default_value=monoResolution,
         description='Contains the resolution of the Mono Cameras. Available resolutions are 800p, 720p & 400p for OAK-D & 480p for OAK-D-Lite.')
 
-    urdf_launch = IncludeLaunchDescription(
-                            urdf_launch_file,
-                            launch_arguments={'tf_prefix' : tf_prefix,
-                                              'camera_model': camera_model,
-                                              'base_frame'  : base_frame,
-                                              'parent_frame': parent_frame,
-                                              'cam_pos_x'   : cam_pos_x,
-                                              'cam_pos_y'   : cam_pos_y,
-                                              'cam_pos_z'   : cam_pos_z,
-                                              'cam_roll'    : cam_roll,
-                                              'cam_pitch'   : cam_pitch,
-                                              'cam_yaw'     : cam_yaw,
-                                              'namespace'   : namespace}.items())
+    # urdf_launch = IncludeLaunchDescription(
+    #                         urdf_launch_file,
+    #                         launch_arguments={'tf_prefix' : tf_prefix,
+    #                                           'camera_model': camera_model,
+    #                                           'base_frame'  : base_frame,
+    #                                           'parent_frame': parent_frame,
+    #                                           'cam_pos_x'   : cam_pos_x,
+    #                                           'cam_pos_y'   : cam_pos_y,
+    #                                           'cam_pos_z'   : cam_pos_z,
+    #                                           'cam_roll'    : cam_roll,
+    #                                           'cam_pitch'   : cam_pitch,
+    #                                           'cam_yaw'     : cam_yaw,
+    #                                           'namespace'   : namespace}.items())
 
-    stereo_node = launch_ros.actions.Node(
-            package='depthai_examples',
-            executable='stereo_node',
-            output='screen',
-            remappings=remappings,
-            namespace=namespace,
-            parameters=[{'tf_prefix': tf_prefix},
-                        {'mode': mode},
-                        {'lrcheck': lrcheck},
-                        {'extended': extended},
-                        {'subpixel': subpixel},
-                        {'confidence': confidence},
-                        {'LRchecktresh': LRchecktresh},
-                        {'monoResolution': monoResolution}])
+    # stereo_node = launch_ros.actions.Node(
+    #         package='depthai_examples',
+    #         executable='stereo_node',
+    #         output='screen',
+    #         remappings=remappings,
+    #         namespace=namespace,
+    #         parameters=[{'tf_prefix': tf_prefix},
+    #                     {'mode': mode},
+    #                     {'lrcheck': lrcheck},
+    #                     {'extended': extended},
+    #                     {'subpixel': subpixel},
+    #                     {'confidence': confidence},
+    #                     {'LRchecktresh': LRchecktresh},
+    #                     {'monoResolution': monoResolution}])
 
 
     metric_converter_node = launch_ros.actions.ComposableNodeContainer(
@@ -202,8 +202,8 @@ def generate_stereo_launch_description(oak_d_config_file, urdf_launch_file, name
         declare_confidence_cmd,
         declare_LRchecktresh_cmd,
         declare_monoResolution_cmd,
-        stereo_node,
-        urdf_launch,
+        #stereo_node,
+        #urdf_launch,
         metric_converter_node,
         point_cloud_node
     ]

@@ -10,3 +10,11 @@ To launch the Oak-d for the default use case, run (don't forget to build and sou
 
 To launch the Oak-d for the door opening mechanism, run (don't forget to build and source):
 - `ros2 launch oak_bringup_door_opening door_opening_cam_launch.py`
+
+## Door Handle Detection
+
+To launch the Oak-d for the door handle detection, run (don't forget to build and source):
+- `ros2 launch door_handle_detection yolo.launch.py`
+
+Note:
+    Launch the door handle detection and then the door opening mechanism

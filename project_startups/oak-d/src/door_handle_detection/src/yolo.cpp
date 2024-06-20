@@ -50,11 +50,12 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
     auto monoRight = pipeline.create<dai::node::MonoCamera>();
     auto stereo = pipeline.create<dai::node::StereoDepth>();
     auto xoutDepth = pipeline.create<dai::node::XLinkOut>();
+    auto xoutRight = pipeline.create<dai::node::XLinkOut>();
 
     controlIn->setStreamName("control");
     controlIn->out.link(monoRight->inputControl);
     controlIn->out.link(monoLeft->inputControl);
-
+    xoutRight->setStreamName("right");
     xoutDepth->setStreamName("depth");
 
     dai::node::MonoCamera::Properties::SensorResolution monoResolution;
@@ -232,7 +233,8 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
     stereo->setRectifyEdgeFillColor(0);
     monoLeft->out.link(stereo->left);
     monoRight->out.link(stereo->right);
-
+    
+    stereo->rectifiedRight.link(xoutRight->input);
     stereo->depth.link(xoutDepth->input);
     
     std::cout << stereoWidth << " " << stereoHeight << " " << rgbWidth << " " << rgbHeight << std::endl;
@@ -408,7 +410,7 @@ int main(int argc, char** argv) {
         ctrl.setManualExposure(expTime, sensIso);
         controlQueue->send(ctrl);
     }
-
+    auto rightQueue = device->getOutputQueue("right", 30, false);
     std::shared_ptr<dai::DataOutputQueue> stereoQueue;
     
     stereoQueue = device->getOutputQueue("depth", 30, false);
@@ -452,12 +454,22 @@ int main(int argc, char** argv) {
             depth_aligned ? rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, width, height) : rightCameraInfo;
     auto depthConverter = depth_aligned ? rgbConverter : rightConverter;
 
+    dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rightPublish(
+                rightQueue,
+                node,
+                rightPubName,
+                std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rightConverter, std::placeholders::_1, std::placeholders::_2),
+                30,
+                rightCameraInfo,
+                "right");
+    rightPublish.addPublisherCallback();
+
     dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> depthPublish(
             stereoQueue,
             node,
             std::string("stereo/depth"),
             std::bind(&dai::rosBridge::ImageConverter::toRosMsg,
-                      &depthConverter,  // since the converter has the same frame name
+                      &rightConverter,  // since the converter has the same frame name
                                         // and image type is also same we can reuse it
                       std::placeholders::_1,
                       std::placeholders::_2),
