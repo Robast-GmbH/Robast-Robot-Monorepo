@@ -1,0 +1,25 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root BTCPP_format="4" main_tree_to_execute="Robast Move to Target Joint State">
+  <!--//////////-->
+  <BehaviorTree ID="Robast Move to Target Joint State" _description="Moving to a target joint state for testing purposes." _favorite="false" _hardcoded="false">
+    <Control ID="Sequence" name="TopLevelSequence">
+      <Decorator ID="RetryUntilSuccessful" num_attempts="20">
+        <Decorator ID="Delay" delay_msec="1000">
+          <Control ID="Sequence">
+            <Action ID="GetSpatialDetectionsFromTopic"/>
+            <Action ID="CreatePoseFromSpatialDetections" pose_stamped_out="{door_handle_pose}" publish_pose="true"/>
+          </Control>
+        </Decorator>
+      </Decorator>
+      <Action ID="CreateStampedPose" stamped_pose="{transform_pose}" orientation_xyzw="0;0;0;0" reference_frame="rb_theron/base_footprint/back_top_realsense_camera_color_link" position_xyz="0;0;-0.5"/>
+      <Action ID="TransformPoseWithPose" input_pose="{door_handle_pose}" output_pose="{pose_in_front_of_door_handle}"/>
+      <Action ID="InitializeMTCTask" controller_names="joint_trajectory_controller"/>
+      <Action ID="SetupMTCCurrentState"/>
+      <Action ID="SetupMTCUpdateGroupCollisionRule" allow_collision="true" group_name="rotating_arm"/>
+      <Action ID="SetupMTCMoveToPose" target_pose="{pose_in_front_of_door_handle}" planning_group_name="mobile_base_arm" ik_frame="door_opening_mechanism_link_freely_rotating_hook"/>
+      <Action ID="PlanMTCTask"/>
+      <Action ID="WaitForUserTrajectoryApproval"/>
+      <Action ID="ExecuteMTCTask"/>
+    </Control>
+  </BehaviorTree>
+</root>
