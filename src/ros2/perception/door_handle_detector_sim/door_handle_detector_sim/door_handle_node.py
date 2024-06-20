@@ -64,10 +64,10 @@ class Door_Handle_Detection(Node):
         spatial_detection_array.header.frame_id = 'rb_theron/base_footprint/back_top_realsense_camera_color_link'
 
         # Camera characteristics
-        fx = 1007.03765
-        fy = 1007.59267
-        cx = 693.05655
-        cy = 356.9163
+        fx = 347.99732208251953 # k[0] from the camera_info topic
+        fy = 347.9973793029785 # k[4] from the camera_info topic
+        cx = 320.0 # k[2] from the camera_info topic
+        cy = 240.0 # k[5] from the camera_info topic
 
         for i, detection in enumerate(prediction):
             # Extract bounding box coordinates, class_id and confidence of each detection
@@ -77,7 +77,7 @@ class Door_Handle_Detection(Node):
                 xywh = yolov5.utils.general.xyxy2xywh(torch.tensor(xyxy).view(1, 4)).view(-1).tolist()
                 
                 # Coordinates of center of bounding box in depth image
-                dist = float(self.cv_depth_image[int(xywh[1]), int(xywh[0])])
+                dist = float(self.cv_depth_image[int(xywh[1]+1), int(xywh[0])])
 
                 # Fill ´SpatialDetection´ msg    
                 spatial_detection = SpatialDetection()
