@@ -1,12 +1,5 @@
 FROM ros:humble-perception as devel
 
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
-
-RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
-
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -21,7 +14,6 @@ RUN apt-get update && apt-get install -y \
     && rosdep init || echo "rosdep already initialized"
 
 COPY door_handle_detector_sim/requirements.txt /tmp/requirements.txt
-# RUN pip install -r /tmp/requirements.txt
 
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp

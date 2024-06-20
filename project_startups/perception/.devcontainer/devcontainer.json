@@ -2,6 +2,7 @@
 {
 	"image": "ghcr.io/robast-gmbh/monorepo/perception:devel",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	//"remoteUser": "robast",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/perception/,target=/workspace/src/perception,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind",
@@ -14,7 +15,7 @@
 		"--security-opt=seccomp:unconfined",
 		"--security-opt=apparmor:unconfined",
 		"--network=host",
-		"--volume=/dev/shm:/dev/shm",
+		//"--volume=/dev/shm:/dev/shm",
 		"--privileged",
 		"--device-cgroup-rule=c 189:* rmw"
 	],
