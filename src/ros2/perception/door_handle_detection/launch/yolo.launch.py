@@ -39,7 +39,7 @@ def generate_launch_description():
     syncNN                  = LaunchConfiguration('syncNN', default = True)
     detectionClassesCount   = LaunchConfiguration('detectionClassesCount', default = 2)
     nnName                  = LaunchConfiguration('nnName', default = 'yolov5.blob')
-    resourceBaseFolder      = LaunchConfiguration('resourceBaseFolder', default = resources_path)
+    resource_base_folder      = LaunchConfiguration('resourceBaseFolder', default = resources_path)
     stereo_fps            = LaunchConfiguration('stereo_fps', default = 30)
     confidence            = LaunchConfiguration('confidence', default = 120)
     LRchecktresh          = LaunchConfiguration('LRchecktresh', default = 5)
@@ -47,7 +47,7 @@ def generate_launch_description():
     rgbResolution           = LaunchConfiguration('rgbResolution', default = '1080p')
     rgbScaleNumerator       = LaunchConfiguration('rgbScaleNumerator', default = 2)
     rgbScaleDenominator     = LaunchConfiguration('rgbScaleDenominator', default = 3)
-    previewWidth            = LaunchConfiguration('previewWidth', default = 480)
+    preview_width            = LaunchConfiguration('previewWidth', default = 480)
     previewHeight           = LaunchConfiguration('previewHeight', default = 640)
     enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)
     
@@ -179,7 +179,7 @@ def generate_launch_description():
     
     declare_resourceBaseFolder_cmd = DeclareLaunchArgument(
         'resourceBaseFolder',
-        default_value=resourceBaseFolder,
+        default_value=resource_base_folder,
         description='Path to the folder where NN Blob is stored.')
     
     declare_stereo_fps_cmd = DeclareLaunchArgument(
@@ -219,7 +219,7 @@ def generate_launch_description():
     
     declare_previewWidth_cmd = DeclareLaunchArgument(
         'previewWidth',
-        default_value=previewWidth,
+        default_value=preview_width,
         description='Set the width of the preview window used for the NN detection.')
     
     declare_previewHeight_cmd = DeclareLaunchArgument(
@@ -252,7 +252,7 @@ def generate_launch_description():
             parameters=[{'mxId':                    mxId},
                         {'usb2Mode':                usb2Mode},
                         {'poeMode':                 poeMode},
-                        {'resourceBaseFolder':      resourceBaseFolder},
+                        {'resourceBaseFolder':      resource_base_folder},
                         {'tf_prefix':               tf_prefix},
                         {'mode':                    mode},
                         {'lrcheck':                 lrcheck},
@@ -270,7 +270,7 @@ def generate_launch_description():
                         {'rgbResolution':           rgbResolution},
                         {'rgbScaleNumerator':       rgbScaleNumerator},
                         {'rgbScaleDenominator':     rgbScaleDenominator},
-                        {'previewWidth':            previewWidth},
+                        {'previewWidth':            preview_width},
                         {'previewHeight':           previewHeight},
                         {'detectionClassesCount':   detectionClassesCount},
                         {'syncNN':                  syncNN},

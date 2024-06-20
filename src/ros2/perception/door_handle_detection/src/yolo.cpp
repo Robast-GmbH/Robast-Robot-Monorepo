@@ -245,7 +245,13 @@ int main(int argc, char** argv) {
     rclcpp::init(argc, argv);
     auto node = rclcpp::Node::make_shared("door_handle_node");
 
-    std::string tfPrefix, mode, mxId, resourceBaseFolder, nnPath, monoResolution, rgbResolution;
+    std::string tfPrefix;
+    std::string mode;
+    std::string mxId;
+    std::string resourceBaseFolder;
+    std::string nnPath;
+    std::string monoResolution;
+    std::string rgbResolution;
     int badParams = 0, stereo_fps, confidence, LRchecktresh, detectionClassesCount, expTime, sensIso;
     int rgbScaleNumerator, rgbScaleDenominator, previewWidth, previewHeight;
     bool lrcheck, extended, subpixel, rectify, depth_aligned, manualExposure;
