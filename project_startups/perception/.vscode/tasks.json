@@ -15,7 +15,7 @@
                         "label": "build",
                         "detail": "Symlink Build",
                         "type": "shell",
-                        "command": "colcon build --symlink-install --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Release' -Wall -Wextra -Wpedantic",
+                        "command": "source /opt/ros/humble/setup.bash; colcon build --symlink-install --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Release' -Wall -Wextra -Wpedantic",
                         "problemMatcher": []
                 },
                 {
@@ -39,13 +39,23 @@
                         "label": "purge",
                         "detail": "Purge workspace by deleting all generated files.",
                         "type": "shell",
-                        "command": "rm -fr build install log; py3clean .",
+                        "command": "sudo rm -fr build install log; py3clean .",
                         "problemMatcher": []
                 },
                 {
                         "type": "shell",
                         "label": "start door_handle_detection",
                         "command": "source install/setup.bash; ros2 launch door_handle_detection yolo.launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start oak_for_pointcloud",
+                        "command": "source install/setup.bash; ros2 launch oak_bringup_door_opening oak_stereo_points.launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

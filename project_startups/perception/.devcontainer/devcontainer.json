@@ -2,7 +2,7 @@
 {
 	"image": "ghcr.io/robast-gmbh/monorepo/perception:devel",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
-	//"remoteUser": "robast",
+	"remoteUser": "robast",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/perception/,target=/workspace/src/perception,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind",

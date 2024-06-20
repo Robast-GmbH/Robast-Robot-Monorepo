@@ -12,7 +12,7 @@ def generate_launch_description():
 
     door_handle_detection_path = get_package_share_directory('door_handle_detection')
     urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
-    default_resources_path = os.path.join(door_handle_detection_path, 'resources')
+    resources_path = os.path.join(door_handle_detection_path, 'resources')
 
     mxId         = LaunchConfiguration('mxId',      default = 'x')
     usb2Mode     = LaunchConfiguration('usb2Mode',  default = False)
@@ -20,9 +20,8 @@ def generate_launch_description():
     camera_model = LaunchConfiguration('camera_model',  default = 'OAK-D')
     tf_prefix    = LaunchConfiguration('tf_prefix',     default = 'oak')
     mode         = LaunchConfiguration('mode', default = 'depth')
-    base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d-s2-usb-base-frame')
-    parent_frame = LaunchConfiguration('parent_frame',  default = 'robot_base_link')
-
+    base_frame   = LaunchConfiguration('base_frame',    default = 'oak-d_frame')
+    parent_frame = LaunchConfiguration('parent_frame',  default = 'robot/door_opening_mechanism_link_y_axis_slide')
     cam_pos_x    = LaunchConfiguration('cam_pos_x',     default = '-0.05')
     cam_pos_y    = LaunchConfiguration('cam_pos_y',     default = '0.0')
     cam_pos_z    = LaunchConfiguration('cam_pos_z',     default = '0.13721')
@@ -31,30 +30,25 @@ def generate_launch_description():
     cam_yaw      = LaunchConfiguration('cam_yaw',       default = '3.14159')
     lrcheck        = LaunchConfiguration('lrcheck', default = True)
     extended       = LaunchConfiguration('extended', default = False)
-    subpixel       = LaunchConfiguration('subpixel', default = True)
+    subpixel       = LaunchConfiguration('subpixel', default = False)
     rectify        = LaunchConfiguration('rectify', default = True)
     depth_aligned  = LaunchConfiguration('depth_aligned', default = True)
     manualExposure = LaunchConfiguration('manualExposure', default = False)
     expTime        = LaunchConfiguration('expTime', default = 20000)
     sensIso        = LaunchConfiguration('sensIso', default = 800)
-
     syncNN                  = LaunchConfiguration('syncNN', default = True)
-    
     detectionClassesCount   = LaunchConfiguration('detectionClassesCount', default = 2)
     nnName                  = LaunchConfiguration('nnName', default = 'yolov5.blob')
-    resourceBaseFolder      = LaunchConfiguration('resourceBaseFolder', default = default_resources_path)
-
+    resourceBaseFolder      = LaunchConfiguration('resourceBaseFolder', default = resources_path)
     stereo_fps            = LaunchConfiguration('stereo_fps', default = 30)
-    confidence            = LaunchConfiguration('confidence', default = 200)
+    confidence            = LaunchConfiguration('confidence', default = 120)
     LRchecktresh          = LaunchConfiguration('LRchecktresh', default = 5)
     monoResolution        = LaunchConfiguration('monoResolution', default = '400p')
-    
     rgbResolution           = LaunchConfiguration('rgbResolution', default = '1080p')
     rgbScaleNumerator       = LaunchConfiguration('rgbScaleNumerator', default = 2)
     rgbScaleDenominator     = LaunchConfiguration('rgbScaleDenominator', default = 3)
     previewWidth            = LaunchConfiguration('previewWidth', default = 480)
     previewHeight           = LaunchConfiguration('previewHeight', default = 640)
-
     enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)
     
 
@@ -198,30 +192,30 @@ def generate_launch_description():
         default_value=confidence,
         description='Set the confidence of the depth from 0-255. Max value means allow depth of all confidence. Default is set to 200')
     
-    declare_LRchecktresh_cmd = DeclareLaunchArgument(
-        'LRchecktresh',
-        default_value=LRchecktresh,
-        description='Set the LR threshold from 1-10 to get more accurate depth. Default value is 5.')
-    
-    declare_monoResolution_cmd = DeclareLaunchArgument(
-        'monoResolution',
-        default_value=monoResolution,
-        description='Set the resolution of the mono/Stereo setup. Choose between 720p, 400p, 480p, 800p.')
- 
-    declare_rgbResolution_cmd = DeclareLaunchArgument(
-        'rgbResolution',
-        default_value=rgbResolution,
-        description='Set the resolution of the RGB setup. Choose between 1080p, 4k, 12MP.')
-    
     declare_rgbScaleNumerator_cmd = DeclareLaunchArgument(
         'rgbScaleNumerator',
         default_value=rgbScaleNumerator,
-        description='Number of the scale Factor Numberator on top of RGB resolution selection.')
+        description='Number of the scale Factor Numerator on top of RGB resolution selection.')
     
     declare_rgbScaleDenominator_cmd = DeclareLaunchArgument(
         'rgbScaleDenominator',
         default_value=rgbScaleDenominator,
         description='Number of the scale Factor Dinominator on top of RGB resolution selection.')
+    
+    declare_rgbResolution_cmd = DeclareLaunchArgument(
+        'declare_rgbResolution_cmd',
+        default_value=rgbResolution,
+        description='Set the resolution of the RGB setup. Choose between 1080p, 4k, 12MP.')
+    
+    declare_monoResolution_cmd = DeclareLaunchArgument(
+        'declare_monoResolution_cmd',
+        default_value=monoResolution,
+        description='Set the resolution of the mono/Stereo setup. Choose between 720p, 400p, 480p, 800p.')
+    
+    declare_LRchecktresh_cmd = DeclareLaunchArgument(
+        'declare_LRchecktresh_cmd',
+        default_value=LRchecktresh,
+        description='Set the LR threshold from 1-10 to get more accurate depth. Default value is 5.')
     
     declare_previewWidth_cmd = DeclareLaunchArgument(
         'previewWidth',
@@ -238,8 +232,6 @@ def generate_launch_description():
         default_value=enableRosBaseTimeUpdate,
         description='Whether to update ROS time on each message.')
 
-
-
     urdf_launch = IncludeLaunchDescription(
                             launch_description_sources.PythonLaunchDescriptionSource(
                                     os.path.join(urdf_launch_dir, 'urdf_launch.py')),
@@ -254,8 +246,7 @@ def generate_launch_description():
                                               'cam_pitch'   : cam_pitch,
                                               'cam_yaw'     : cam_yaw}.items())
 
-
-    stereo_node = launch_ros.actions.Node(
+    door_handle_node = launch_ros.actions.Node(
             package='door_handle_detection', executable='yolov5_door_node',
             output='screen',
             parameters=[{'mxId':                    mxId},
@@ -284,13 +275,7 @@ def generate_launch_description():
                         {'detectionClassesCount':   detectionClassesCount},
                         {'syncNN':                  syncNN},
                         {'nnName':                  nnName},
-
-                        #{'enableDotProjector':      enableDotProjector},
-                        #{'enableFloodLight':        enableFloodLight},
-                        #{'dotProjectormA':          dotProjectormA},
-                        #{'floodLightmA':            floodLightmA},
-                        {'enableRosBaseTimeUpdate': enableRosBaseTimeUpdate}
-                        ])
+                        {'enableRosBaseTimeUpdate': enableRosBaseTimeUpdate}])
 
     ld = LaunchDescription()
     ld.add_action(declare_mxId_cmd)
@@ -307,7 +292,6 @@ def generate_launch_description():
     ld.add_action(declare_roll_cmd)
     ld.add_action(declare_pitch_cmd)
     ld.add_action(declare_yaw_cmd)
-    
     ld.add_action(declare_lrcheck_cmd)
     ld.add_action(declare_extended_cmd)
     ld.add_action(declare_subpixel_cmd)
@@ -332,5 +316,6 @@ def generate_launch_description():
     ld.add_action(declare_enableRosBaseTimeUpdate_cmd)
 
     ld.add_action(urdf_launch)
-    ld.add_action(stereo_node)
+    ld.add_action(door_handle_node)
+    
     return ld
