@@ -3,14 +3,14 @@
     "tasks": [
         {
             "label": "build",
-            "detail": "Symlink Build for Ros-Theron.",
+            "detail": "Symlink Build",
             "type": "shell",
             "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
             "problemMatcher": []
         },
         {
             "label": "clean-build",
-            "detail": "Purges and symlink builds for Ros-Theron.",
+            "detail": "Purges and symlink builds",
             "dependsOn": [
                 "purge",
                 "build"

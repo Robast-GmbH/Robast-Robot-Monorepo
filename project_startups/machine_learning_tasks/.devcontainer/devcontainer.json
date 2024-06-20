@@ -11,9 +11,7 @@
 	"workspaceFolder": "/workspace",
 	"runArgs": [
 		"--name=machine_learning_tasks",
-		"--network=host",
-		"--privileged",
-		"--volume=/dev:/dev"
+		"--network=host"
 	],
 	"remoteEnv": {
 		"RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp",
