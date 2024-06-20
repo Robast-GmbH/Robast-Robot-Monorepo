@@ -5,7 +5,12 @@ This directory contains all packages that are only required when running machine
 ## door_handle_detection
 
 This package contains the code for door handle detection on the robot via the OAK-D.
+Start with task `start door_handle_detection` or via ros2 cmd (after sourcing setup file): `ros2 launch door_handle_detection yolo.launch.py`
 
+## oak_bringup_door_opening
+
+This package contains the code for generating pointcloud from the topics published by the OAK-D camera.
+Start with task `start oak_for_pointcloud` or via ros2 cmd (after sourcing setup file): `ros2 launch oak_bringup_door_opening oak_stereo_points.launch.py`
 
 ## door_handle_detection_sim
 
