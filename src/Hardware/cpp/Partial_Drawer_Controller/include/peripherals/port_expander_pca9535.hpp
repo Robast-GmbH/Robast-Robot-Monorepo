@@ -1,0 +1,9 @@
+#ifndef DRAWER_CONTROLLER_PORT_EXPANDER_PCA9535_HPP
+#define DRAWER_CONTROLLER_PORT_EXPANDER_PCA9535_HPP
+
+namespace port_expander
+{
+
+}   // namespace port_expander
+
+#endif   // DRAWER_CONTROLLER_PORT_EXPANDER_PCA9535_HPP
