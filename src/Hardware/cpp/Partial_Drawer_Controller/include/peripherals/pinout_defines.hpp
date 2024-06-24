@@ -15,9 +15,6 @@
 #define SPI_CLK  GPIO_NUM_18
 #define SPI_CS   GPIO_NUM_33
 
-#define I2C_SCL GPIO_NUM_21   // TODO: Usally this should be 22
-#define I2C_SDA GPIO_NUM_22   // TODO: Usally this should be 21
-
 // #define DRAWER_1_STEP_PIN      GPIO_NUM_14
 // #define DRAWER_1_INDEX_PIN     GPIO_NUM_15
 #define DRAWER_1_ENCODER_A_PIN GPIO_NUM_26
@@ -30,5 +27,18 @@
 #define PORT_EXPANDER_0_INTERRUPT_PIN GPIO_NUM_36
 #define PORT_EXPANDER_1_INTERRUPT_PIN GPIO_NUM_34
 #define PORT_EXPANDER_2_INTERRUPT_PIN GPIO_NUM_39
+
+/*********************************************************************************************************
+ I2C
+*********************************************************************************************************/
+
+// TODO: In the hardware design of v1 the pins of SDA and SCL are mixed up unfortunately for the port expander
+// TODO: In order to use the hardware anyway, we need to create two instances of the bus with different pin init
+
+#define I2C_SDA GPIO_NUM_21
+#define I2C_SCL GPIO_NUM_22
+
+#define I2C_SDA_PORT_EXPANDER GPIO_NUM_22
+#define I2C_SCL_PORT_EXPANDER GPIO_NUM_21
 
 #endif /* DRAWER_CONTROLLER_PINOUT_DEFINES_HPP */
