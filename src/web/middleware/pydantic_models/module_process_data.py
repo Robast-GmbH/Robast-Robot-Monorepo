@@ -5,4 +5,4 @@ class ModuleProcessData(BaseModel):
     module_id: int
     drawer_id: int
     process_name: str
-    payload: str
+    payload: dict[str, int]

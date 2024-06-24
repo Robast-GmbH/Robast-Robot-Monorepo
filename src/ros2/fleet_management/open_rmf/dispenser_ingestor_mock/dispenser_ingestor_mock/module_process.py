@@ -22,6 +22,8 @@ class ModuleProcess:
     def from_request_msg(
         cls, request_msg: DispenserRequest | IngestorRequest
     ) -> ModuleProcess:
+        # For now the drawer_address and robot_name is derived from the entered item type
+        # Example: 2,0,item_type,rb_theron for module 2 drawer 0 on rb_theron
         module_id, drawer_id, payload, robot_name = request_msg.items[
             0
         ].type_guid.split(",")

@@ -1,12 +1,11 @@
 from task_assignment_system.models.node import Node
-from task_assignment_system.models.task import Task
-from task_assignment_system.models.drawer import Drawer
+from task_assignment_system.models.task_models.task import Task
+from task_assignment_system.models.fleet_management_api import FleetManagementAPI
 from task_assignment_system.models.nav_graph import NavGraph
-from task_assignment_system.models.delivery_request import DeliveryRequest
+from pydantic_models.delivery_request import DeliveryRequest
+from module_manager.module_manager import ModuleManager
 from typing import Any
-import uuid
 import threading
-import requests
 
 UPDATE_TIMER_INTERVAL_IN_SECONDS = 1
 
@@ -15,14 +14,14 @@ class Robot:
     def __init__(
         self,
         name: str,
-        api_endpoint: str,
-        modules: list[Drawer],
+        fleet_management_api: FleetManagementAPI,
+        module_manager: ModuleManager,
         initial_node: Node,
         nav_graph: NavGraph,
     ) -> None:
         self.name = name
-        self.api_endpoint = api_endpoint
-        self.modules = modules
+        self.fleet_management_api = fleet_management_api
+        self.module_manager = module_manager
         self.current_task = None
         self.current_task_id = None
         self.task_queue: list[Task] = []
@@ -37,14 +36,9 @@ class Robot:
 
     def get_request_cost(self, delivery_request: DeliveryRequest) -> float:
         # check if any drawer of required drawer_type is available
-        is_drawer_available = False
-        for drawer in self.modules:
-            if (
-                drawer.size == delivery_request.required_drawer_type
-                and drawer.is_available
-            ):
-                is_drawer_available = True
-                break
+        is_drawer_available = self.module_manager.is_module_size_available(
+            self.name, delivery_request.required_drawer_type
+        )
 
         if not is_drawer_available:
             return float("inf")
@@ -53,34 +47,18 @@ class Robot:
 
     def accept_request(self, delivery_request: DeliveryRequest) -> None:
         with self.task_queue_lock:
-            unique_id = str(uuid.uuid4())
-            drawer = self.__reserve_drawer(delivery_request.required_drawer_type)
-
-            pick_up_task = Task(
-                f"{unique_id}_pick_up",
-                self.name,
-                "pickup",
-                None,
-                drawer,
-                delivery_request.start,
+            drawer = self.module_manager.try_reserve_module_type(
+                self.name, delivery_request.required_drawer_type, [], []
             )
-            drop_off_task = Task(
-                f"{unique_id}_drop_off",
-                self.name,
-                "dropoff",
-                pick_up_task.id,
-                drawer,
-                delivery_request.target,
-            )
+            if drawer is not None:
+                tasks = Task.from_delivery_request(self.name, delivery_request, drawer)
+                self.task_queue.extend(tasks)
+                self.__optimize_task_queue()
 
-            self.task_queue.append(pick_up_task)
-            self.task_queue.append(drop_off_task)
-            self.__optimize_task_queue()
-
-    def get_robot_tasks(self) -> dict[str, list[str]]:
+    def get_robot_tasks(self) -> dict[str, Any]:
         return {
-            "active": str(self.current_task),
-            "queued": [str(task) for task in self.task_queue],
+            "active": self.current_task.to_json() if self.current_task else None,
+            "queued": [task.to_json() for task in self.task_queue],
         }
 
     def __start_task_status_update_timer(self) -> None:
@@ -91,26 +69,17 @@ class Robot:
 
     def __task_status_update_callback(self) -> None:
         with self.task_queue_lock:
-            if self.current_task is None:
+            if self.current_task is None and self.task_queue:
                 self.__start_next_task()
             elif self.__is_task_completed():
                 self.__finish_task()
 
         self.__start_task_status_update_timer()
 
-    def __request_task_status(self) -> dict[str, Any] | None:
-        try:
-            response = requests.get(
-                f"{self.api_endpoint}/tasks/{self.current_task_id}/state"
-            )
-            response.raise_for_status()
-        except requests.exceptions.HTTPError:
-            return None
-        data = response.json()
-        return data
-
     def __is_task_completed(self) -> bool:
-        data = self.__request_task_status()
+        if self.current_task_id is None:
+            return True
+        data = self.fleet_management_api.request_task_status(self.current_task_id)
         if data is None:
             return False
         completed_phases = data["completed"]
@@ -118,21 +87,31 @@ class Robot:
         return active_phase in completed_phases
 
     def __finish_task(self) -> None:
+        if self.current_task is None:
+            return
         self.done_tasks_ids.append(self.current_task.id)
         if self.current_task.task_type == "dropoff":
-            self.current_task.drawer.is_available = True
+            self.module_manager.free_module(
+                self.name,
+                int(self.current_task.module_id),
+                int(self.current_task.drawer_id),
+            )
+        self.current_task.status = "completed"
         self.current_task = None
 
     def __start_next_task(self) -> None:
-        if len(self.task_queue) > 0:
-            self.current_task = self.task_queue.pop(0)
-            result = requests.post(
-                f"{self.api_endpoint}/tasks/robot_task",
-                json=self.current_task.to_json(),
-            )
-            print(result.json())
-            assigned_id = result.json()["state"]["booking"]["id"]
+        self.current_task = self.task_queue.pop(0)
+        self.current_task.status = "active"
+        result = self.fleet_management_api.dispatch_robot_task(
+            self.current_task.to_robot_task_request()
+        )
+        if result is not None:
+            print(result)
+            assigned_id = result["state"]["booking"]["id"]
             self.current_task_id = assigned_id
+        else:
+            self.current_task.status = "pending"
+            self.task_queue.insert(0, self.current_task)
 
     def __optimize_task_queue(self) -> None:
         eligible_tasks = [
@@ -153,13 +132,14 @@ class Robot:
         if self.current_task is None:
             start = self.current_node
         else:
-            start = self.current_task.target
+            start = self.nav_graph.get_node_by_id(self.current_task.target_id)
 
         while len(eligible_tasks) > 0:
             min_distance = float("inf")
             closest_tasks = []
             for task in eligible_tasks:
-                distance = self.nav_graph.min_distances[start][task.target]
+                task_target = self.nav_graph.get_node_by_id(task.target_id)
+                distance = self.nav_graph.min_distances[start][task_target]
 
                 if distance < min_distance:
                     min_distance = distance
@@ -171,7 +151,7 @@ class Robot:
                 task for task in eligible_tasks if task not in closest_tasks
             ]
 
-            def sort_drop_off_first(task):
+            def sort_drop_off_first(task: Task):
                 return task.task_type != "dropoff"
 
             closest_tasks.sort(key=sort_drop_off_first)
@@ -187,10 +167,4 @@ class Robot:
                 non_eligible_tasks.remove(task)
                 eligible_tasks.append(task)
 
-            start = closest_tasks[0].target
-
-    def __reserve_drawer(self, drawer_type: int) -> Drawer | None:
-        for drawer in self.modules:
-            if drawer.size == drawer_type and drawer.is_available:
-                drawer.is_available = False
-                return drawer
+            start = self.nav_graph.get_node_by_id(closest_tasks[0].target_id)
