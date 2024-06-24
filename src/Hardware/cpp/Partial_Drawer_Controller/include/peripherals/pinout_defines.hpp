@@ -15,8 +15,8 @@
 #define SPI_CLK  GPIO_NUM_18
 #define SPI_CS   GPIO_NUM_33
 
-#define I2C_SCL GPIO_NUM_22
-#define I2C_SDA GPIO_NUM_21
+#define I2C_SCL GPIO_NUM_21   // TODO: Usally this should be 22
+#define I2C_SDA GPIO_NUM_22   // TODO: Usally this should be 21
 
 // #define DRAWER_1_STEP_PIN      GPIO_NUM_14
 // #define DRAWER_1_INDEX_PIN     GPIO_NUM_15
