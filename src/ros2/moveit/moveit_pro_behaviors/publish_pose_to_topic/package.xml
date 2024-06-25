@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="3">
-  <name>create_pose_from_spatial_detections</name>
+  <name>publish_pose_to_topic</name>
   <version>0.0.0</version>
-  <description>Creates a pose from a given spatial detection.</description>
+  <description>Takes a pose from the blackboard and publishes that pose to a topic. The target frame id can be configured.</description>
 
   <maintainer email="john@doe.com">John Doe</maintainer>
   <author email="john@doe.com">John Doe</author>
@@ -14,7 +14,9 @@
   <build_depend>moveit_studio_common</build_depend>
 
   <depend>moveit_studio_behavior_interface</depend>
-  <depend>depthai_ros_msgs</depend>
+  <depend>tf2</depend>
+  <depend>tf2_ros</depend>
+  <depend>tf2_geometry_msgs</depend>
   <depend>geometry_msgs</depend>
 
 

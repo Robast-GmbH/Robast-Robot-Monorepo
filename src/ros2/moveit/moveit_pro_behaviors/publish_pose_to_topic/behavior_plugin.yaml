@@ -1,0 +1,4 @@
+objectives:
+  behavior_loader_plugins:
+    publish_pose_to_topic:
+      - "publish_pose_to_topic::PublishPoseToTopicBehaviorsLoader"

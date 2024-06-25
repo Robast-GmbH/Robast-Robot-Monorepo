@@ -1,0 +1,5 @@
+<library path="publish_pose_to_topic">
+  <class type="publish_pose_to_topic::PublishPoseToTopicBehaviorsLoader"
+         base_class_type="moveit_studio::behaviors::SharedResourcesNodeLoaderBase">
+  </class>
+</library>
