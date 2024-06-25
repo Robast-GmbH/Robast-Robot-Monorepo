@@ -29,23 +29,27 @@ class ModuleRepository:
         """
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
-        cursor.execute(
-            sql,
-            (
-                drawer.robot_name,
-                drawer.module_id,
-                drawer.drawer_id,
-                drawer.size,
-                drawer.module_process_status,
-                drawer.module_process_type,
-                json.dumps(drawer.module_process_payload),
-                json.dumps(drawer.content),
-                json.dumps(drawer.reserved_for_ids),
-                json.dumps(drawer.reserved_for_groups),
-            ),
-        )
-        db_connection.commit()
-        db_connection.close()
+        try:
+            cursor.execute(
+                sql,
+                (
+                    drawer.robot_name,
+                    drawer.module_id,
+                    drawer.drawer_id,
+                    drawer.size,
+                    drawer.module_process_status,
+                    drawer.module_process_type,
+                    json.dumps(drawer.module_process_payload),
+                    json.dumps(drawer.content),
+                    json.dumps(drawer.reserved_for_ids),
+                    json.dumps(drawer.reserved_for_groups),
+                ),
+            )
+        except Exception as e:
+            return None
+        finally:
+            db_connection.commit()
+            db_connection.close()
         return cursor.lastrowid
 
     def read_drawer(
