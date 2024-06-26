@@ -80,78 +80,16 @@ namespace drawer_controller
   class GPIO : public IGpioWrapper
   {
    public:
-    GPIO()
+    GPIO(std::shared_ptr<TwoWire> wire) : _wire{wire}
     {
-      I2COne.begin(I2C_SDA, I2C_SCL);
-      I2CTwo.begin(I2C_SCL, I2C_SDA);
-
       for (auto& it : _port_expanders)
       {
         std::shared_ptr<PCA9535> port_expander = it.second;
         uint8_t slave_address = it.first;
 
-        port_expander->attach(I2COne, slave_address);
+        port_expander->attach(*_wire, slave_address);
         port_expander->polarity(PCA95x5::Polarity::ORIGINAL_ALL);
       }
-    }
-
-    bool set_i2c_pins(uint8_t sda_pin, uint8_t scl_pin)
-    {
-      // I2COne.end();
-      delay(1000);   // TODO: This is a workaround to prevent the I2C bus from hanging
-      I2COne.begin(sda_pin, scl_pin);
-      Serial.println("I2C initialized with custom pins in Master mode");
-      return true;
-    }
-
-    bool check_for_i2c_devices(uint8_t bus_number)
-    {
-      byte error, address;
-      int nDevices;
-
-      Serial.println("Scanning i2c bus...");
-
-      nDevices = 0;
-
-      Serial.println("Starting for loop...");
-      for (address = 1; address < 127; address++)
-      {
-        if (bus_number == 1)
-        {
-          I2COne.beginTransmission(address);
-          error = I2COne.endTransmission();
-        }
-        else if (bus_number == 2)
-        {
-          I2CTwo.beginTransmission(address);
-          error = I2CTwo.endTransmission();
-        }
-
-        if (error == 0)
-        {
-          Serial.print("I2C device found at address 0x");
-          if (address < 16)
-            Serial.print("0");
-          Serial.print(address, HEX);
-          Serial.println("  !");
-
-          nDevices++;
-        }
-        else if (error == 4)
-        {
-          Serial.print("Unknown error at address 0x");
-          if (address < 16)
-            Serial.print("0");
-          Serial.println(address, HEX);
-        }
-      }
-
-      if (nDevices == 0)
-        Serial.println("No I2C devices found\n");
-      else
-        Serial.println("done\n");
-
-      return true;
     }
 
     /**
@@ -218,9 +156,7 @@ namespace drawer_controller
     }
 
    private:
-    // Define two I2COne instances for two I2C buses
-    TwoWire I2COne = TwoWire(0);
-    TwoWire I2CTwo = TwoWire(1);
+    std::shared_ptr<TwoWire> _wire;
 
     const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> _port_expanders = {
       {SLAVE_ADDRESS_PORT_EXPANDER_1, std::make_shared<PCA9535>()},

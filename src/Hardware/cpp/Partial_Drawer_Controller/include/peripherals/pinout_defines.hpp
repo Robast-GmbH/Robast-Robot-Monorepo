@@ -29,7 +29,7 @@
 #define PORT_EXPANDER_2_INTERRUPT_PIN GPIO_NUM_39
 
 /*********************************************************************************************************
- I2C
+  I2C
 *********************************************************************************************************/
 
 // TODO: In the hardware design of v1 the pins of SDA and SCL are mixed up unfortunately for the port expander
