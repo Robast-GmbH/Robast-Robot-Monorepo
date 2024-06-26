@@ -48,7 +48,7 @@ BT::NodeStatus PublishPoseToTopic::onStart()
     // check if the publisher was already created
   if (!_pose_stamped_publisher)
   {    
-    _pose_stamped_publisher = shared_resources_->node->create_publisher<geometry_msgs::msg::PoseStamped>(topic_name, rclcpp::QoS(1));
+    _pose_stamped_publisher = shared_resources_->node->create_publisher<geometry_msgs::msg::PoseStamped>(topic_name.value(), rclcpp::QoS(1));
     _tf_buffer = std::make_shared<tf2_ros::Buffer>(this->shared_resources_->node->get_clock());
     _transform_listener = std::make_shared<tf2_ros::TransformListener>(*_tf_buffer);
   }
