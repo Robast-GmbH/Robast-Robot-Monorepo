@@ -19,13 +19,17 @@ class ModuleManager:
         robot_name: str,
         module_id: int,
         drawer_id: int,
+        postion: int,
         size: int,
+        variant: str,
     ) -> bool:
         drawer = Drawer(
             robot_name,
             module_id,
             drawer_id,
+            postion,
             size,
+            variant,
             "idle",
             "",
             {},

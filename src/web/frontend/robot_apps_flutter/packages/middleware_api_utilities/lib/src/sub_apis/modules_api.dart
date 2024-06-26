@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:middleware_api_utilities/src/models/drawer.dart';
+import 'package:middleware_api_utilities/src/models/robot_drawer.dart';
 import 'package:http/http.dart' as http;
 
 class ModulesApi {
@@ -47,26 +47,26 @@ class ModulesApi {
     }
   }
 
-  bool wasRequestSuccessful({
+  bool _wasRequestSuccessful({
     required http.Response? response,
   }) {
     if (response != null) {
       final data = jsonDecode(response.body);
-      return data["status"] == "success";
+      return data['status'] == 'success';
     } else {
       return false;
     }
   }
 
-  Future<List<Drawer>> getModules({
+  Future<List<RobotDrawer>> getModules({
     required String robotName,
   }) async {
-    final drawers = <Drawer>[];
-    final response = await tryGet(uri: Uri.parse('$prefix/modules/?robot_name=$robotName'));
+    final drawers = <RobotDrawer>[];
+    final response = await tryGet(uri: Uri.parse('$prefix/modules?robot_name=$robotName'));
     if (response != null) {
       final jsonData = jsonDecode(response.body) as List<dynamic>;
       for (final drawer in jsonData) {
-        drawers.add(Drawer.fromJson(drawer as Map<String, dynamic>));
+        drawers.add(RobotDrawer.fromJson(drawer as Map<String, dynamic>));
       }
     }
     return drawers;
@@ -76,20 +76,24 @@ class ModulesApi {
     required String robotName,
     required int moduleID,
     required int drawerID,
+    required int position,
     required int size,
+    required String variant,
   }) async {
     final response = await tryPost(
       uri: Uri.parse('$prefix/modules/create_module'),
       data: {
-        "drawer_address": {
+        'drawer_address': {
           'robot_name': robotName,
           'module_id': moduleID,
           'drawer_id': drawerID,
         },
+        'position': position,
         'size': size,
+        'variant': variant,
       },
     );
-    return wasRequestSuccessful(response: response);
+    return _wasRequestSuccessful(response: response);
   }
 
   Future<bool> deleteModule({
@@ -105,7 +109,7 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return wasRequestSuccessful(response: response);
+    return _wasRequestSuccessful(response: response);
   }
 
   Future<bool> emptyModule({
@@ -121,7 +125,7 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return wasRequestSuccessful(response: response);
+    return _wasRequestSuccessful(response: response);
   }
 
   Future<bool> updateModuleContent({
@@ -134,7 +138,7 @@ class ModulesApi {
     final response = await tryPost(
       uri: Uri.parse('$prefix/modules/update_module_content'),
       data: {
-        "drawer_address": {
+        'drawer_address': {
           'robot_name': robotName,
           'module_id': moduleID,
           'drawer_id': drawerID,
@@ -143,7 +147,7 @@ class ModulesApi {
         'quantity': quantity,
       },
     );
-    return wasRequestSuccessful(response: response);
+    return _wasRequestSuccessful(response: response);
   }
 
   Future<bool> freeModule({
@@ -159,7 +163,7 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return wasRequestSuccessful(response: response);
+    return _wasRequestSuccessful(response: response);
   }
 
   Future<bool> reserveModule({
@@ -172,16 +176,16 @@ class ModulesApi {
     final response = await tryPost(
       uri: Uri.parse('$prefix/modules/reserve_module'),
       data: {
-        "drawer_address": {
+        'drawer_address': {
           'robot_name': robotName,
           'module_id': moduleID,
           'drawer_id': drawerID,
         },
-        "user_ids": userIDs,
-        "user_groups": userGroups,
+        'user_ids': userIDs,
+        'user_groups': userGroups,
       },
     );
-    return wasRequestSuccessful(response: response);
+    return _wasRequestSuccessful(response: response);
   }
 
   Future<bool> startModuleProcess({
@@ -198,12 +202,12 @@ class ModulesApi {
         'module_process_data': {
           'module_id': moduleID,
           'drawer_id': drawerID,
-          "process_name": processName,
-          "payload": payload,
+          'process_name': processName,
+          'payload': payload,
         }
       },
     );
-    return wasRequestSuccessful(response: response);
+    return _wasRequestSuccessful(response: response);
   }
 
   Future<bool> openDrawer({
@@ -219,7 +223,7 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return wasRequestSuccessful(response: response);
+    return _wasRequestSuccessful(response: response);
   }
 
   Future<bool> closeDrawer({
@@ -235,7 +239,7 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return wasRequestSuccessful(response: response);
+    return _wasRequestSuccessful(response: response);
   }
 
   Future<bool> finishModuleProcess({
@@ -251,6 +255,6 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return wasRequestSuccessful(response: response);
+    return _wasRequestSuccessful(response: response);
   }
 }

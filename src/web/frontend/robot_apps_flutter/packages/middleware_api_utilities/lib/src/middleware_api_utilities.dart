@@ -2,12 +2,16 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:shared_data_models/shared_data_models.dart';
+import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
 
 /// Helper class to access the middleware API.
 class MiddlewareApiUtilities {
-  const MiddlewareApiUtilities({required this.prefix});
+  MiddlewareApiUtilities({required this.prefix}) {
+    modules = ModulesApi(prefix: prefix);
+  }
 
   final String prefix;
+  late final ModulesApi modules;
 
   Future<bool> testConnection({
     required String url,
@@ -162,6 +166,22 @@ class MiddlewareApiUtilities {
       }
     } catch (e) {
       return false;
+    }
+  }
+
+  Future<List<Task>> getTasks({required String robotName}) async {
+    try {
+      final response = await http.get(Uri.parse('$prefix/tasks?robot_name=$robotName'));
+      final tasks = <Task>[];
+      if (response.statusCode == 200) {
+        final jsonData = jsonDecode(response.body) as List<dynamic>;
+        for (final task in jsonData) {
+          tasks.add(Task.fromJson(task as Map<String, dynamic>));
+        }
+      }
+      return tasks;
+    } catch (e) {
+      return [];
     }
   }
 

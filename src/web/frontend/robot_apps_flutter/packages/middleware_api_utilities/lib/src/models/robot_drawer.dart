@@ -1,7 +1,8 @@
-class Drawer {
+class RobotDrawer {
   final String robotName;
-  final int moduleId;
-  final int drawerId;
+  final int moduleID;
+  final int drawerID;
+  final int position;
   final int size;
 
   final Map<String, int> content;
@@ -10,10 +11,11 @@ class Drawer {
   final String moduleProcessStatus;
   final String moduleProcessType;
   final Map<String, int> moduleProcessPayload;
-  Drawer({
+  RobotDrawer({
     required this.robotName,
-    required this.moduleId,
-    required this.drawerId,
+    required this.moduleID,
+    required this.drawerID,
+    required this.position,
     required this.size,
     required this.content,
     required this.reservedForIds,
@@ -24,11 +26,12 @@ class Drawer {
   });
 
   // Factory method to create a Drawer instance from a JSON object
-  factory Drawer.fromJson(Map<String, dynamic> json) {
-    return Drawer(
+  factory RobotDrawer.fromJson(Map<String, dynamic> json) {
+    return RobotDrawer(
       robotName: json['robot_name'],
-      moduleId: json['module_id'],
-      drawerId: json['drawer_id'],
+      moduleID: json['module_id'],
+      drawerID: json['drawer_id'],
+      position: json['position'],
       size: json['size'],
       content: Map<String, int>.from(json['content']),
       reservedForIds: List<String>.from(json['reserved_for_ids']),
@@ -43,8 +46,8 @@ class Drawer {
   Map<String, dynamic> toJson() {
     return {
       'robot_name': robotName,
-      'module_id': moduleId,
-      'drawer_id': drawerId,
+      'module_id': moduleID,
+      'drawer_id': drawerID,
       'size': size,
       'content': content,
       'reserved_for_ids': reservedForIds,

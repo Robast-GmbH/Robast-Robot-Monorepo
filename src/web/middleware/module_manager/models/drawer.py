@@ -7,7 +7,9 @@ class Drawer:
     robot_name: str
     module_id: int
     drawer_id: int
+    position: int
     size: int
+    variant: str
     module_process_status: str
     module_process_type: str
     module_process_payload: Dict[str, int]
@@ -22,6 +24,8 @@ class Drawer:
             module_id=json_data["module_id"],
             drawer_id=json_data["drawer_id"],
             size=json_data["size"],
+            position=json_data["position"],
+            variant=json_data["variant"],
             module_process_status=json_data["module_process_status"],
             module_process_type=json_data["module_process_type"],
             module_process_payload=json_data["module_process_payload"],

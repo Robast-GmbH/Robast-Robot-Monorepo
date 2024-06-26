@@ -15,7 +15,7 @@ def create_status_response(status: bool):
     return {"status": "success" if status else "failed"}
 
 
-@module_manager_router.get("/", tags=["Modules"])
+@module_manager_router.get("", tags=["Modules"])
 def get_modules(robot_name: str):
     return module_manager.get_modules(robot_name)
 
@@ -23,13 +23,17 @@ def get_modules(robot_name: str):
 @module_manager_router.post("/create_module", tags=["Modules"])
 def create_module(
     drawer_address: DrawerAddress,
+    position: int = Body(...),
     size: int = Body(...),
+    variant: str = Body(...),
 ):
     has_been_created = module_manager.create_module(
         drawer_address.robot_name,
         drawer_address.module_id,
         drawer_address.drawer_id,
+        position,
         size,
+        variant,
     )
     return create_status_response(has_been_created)
 
