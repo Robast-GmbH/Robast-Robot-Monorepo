@@ -13,11 +13,11 @@
         </Decorator>
       </Decorator>
       <Control ID="Sequence">
-        <Action ID="CreateStampedPose" stamped_pose="{transform_pose}" orientation_xyzw="0;0;0;0" reference_frame="rb_theron/base_footprint/back_top_realsense_camera_color_link" position_xyz="0;0;-0.5"/>
+        <Action ID="CreateStampedPose" stamped_pose="{transform_pose}" reference_frame="rb_theron/base_footprint/back_top_realsense_camera_color_link" position_xyz="0;-0.15;-0.15"/>
         <Action ID="TransformPoseWithPose" input_pose="{door_handle_pose}" output_pose="{pose_in_front_of_door_handle}"/>
         <Action ID="PublishPoseToTopic" pose_stamped_in="{pose_in_front_of_door_handle}"/>
       </Control>
-      <Action ID="AddPoseStampedToVector" input="{door_handle_pose}" vector="{pose_stamped_vector}"/>
+      <Action ID="AddPoseStampedToVector" input="{pose_in_front_of_door_handle}" vector="{pose_stamped_vector}"/>
       <Action ID="PlanCartesianPath" path="{pose_stamped_vector}" planning_group_name="mobile_base_arm" tip_link="door_opening_mechanism_link_freely_rotating_hook" tip_offset="0.0;0.0;0.0" position_only="true" blending_radius="0.02" velocity_scale_factor="1.0" acceleration_scale_factor="1.0" trajectory_sampling_rate="100" joint_trajectory_msg="{joint_trajectory_msg}" debug_solution="{debug_solution}"/>
       <Action ID="GetCurrentPlanningScene" planning_scene_msg="{planning_scene_msg}"/>
       <Action ID="ValidateTrajectory" planning_scene_msg="{planning_scene_msg}" planning_group_name="mobile_base_arm" joint_trajectory_msg="{joint_trajectory_msg}" joint_space_step="0.05" cartesian_space_step="0.02" debug_solution="{debug_solution}"/>
