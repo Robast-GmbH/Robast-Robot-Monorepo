@@ -56,7 +56,7 @@
                 {
                         "type": "shell",
                         "label": "start tiplu_sim with position joint modeled",
-                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py model_position_joint:=prismatic",
+                        "command": "source /workspace/install/setup.bash; ros2 launch tiplu_world tiplu_world_launch.py position_joint_type:=prismatic",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,

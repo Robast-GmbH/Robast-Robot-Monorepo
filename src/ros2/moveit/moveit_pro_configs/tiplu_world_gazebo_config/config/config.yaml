@@ -60,7 +60,7 @@ hardware:
       - ros_distro: "humble"
       - prefix: ""
       - ros2_control_hardware_type: "gz_ros2_control"
-      - model_position_joint: "prismatic"
+      - position_joint_type: "prismatic"
       - ros2_control_hardware_type_positon_joint: "gz_ros2_control"
 
 # Override MoveIt parameters

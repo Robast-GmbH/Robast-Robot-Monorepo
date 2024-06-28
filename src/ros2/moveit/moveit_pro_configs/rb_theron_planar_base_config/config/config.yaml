@@ -81,7 +81,7 @@ hardware:
       - ros_distro: "humble" # mind that if you change this, you also need to change ompl_planning.yaml file
       - prefix: ""
       - ros2_control_hardware_type: "mock_components"
-      - model_position_joint: "planar"
+      - position_joint_type: "planar"
       - ros2_control_hardware_type_positon_joint: "mock_components"
 
 # Sets ROS global params for launch.

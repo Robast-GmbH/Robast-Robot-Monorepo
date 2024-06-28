@@ -32,15 +32,15 @@
 	<xacro:arg name="ros_distro" default="humble" />
 
 	<!-- Whether the position joint should be modeled as a prismatic joint or just as a fixed joint -->
-	<xacro:arg name="model_position_joint" default="fixed" />
-	<xacro:property name="model_position_joint_prop" value="$(arg model_position_joint)"/>
+	<xacro:arg name="position_joint_type" default="fixed" />
+	<xacro:property name="position_joint_type_prop" value="$(arg position_joint_type)"/>
 
 	<!-- If we model the position joint, the sensors need be placed in the base_link frame,
 	otherwise they should be placed in the base_footprint frame -->
-	<xacro:if value="${model_position_joint_prop == 'prismatic'}">
+	<xacro:if value="${position_joint_type_prop == 'prismatic'}">
 		<xacro:property name="sensor_base_frame" value="base_link" />
 	</xacro:if>
-	<xacro:if value="${model_position_joint_prop == 'fixed'}">
+	<xacro:if value="${position_joint_type_prop == 'fixed'}">
 		<xacro:if value="${publish_bf}">
 			<xacro:property name="sensor_base_frame" value="base_footprint" />
 		</xacro:if>
@@ -55,7 +55,7 @@
     <xacro:theron_base
       prefix="$(arg prefix)"
       publish_bf="${publish_bf}"
-      model_position_joint="$(arg model_position_joint)"
+      position_joint_type="$(arg position_joint_type)"
       ros2_control_hardware_type_positon_joint="$(arg ros2_control_hardware_type_positon_joint)"
       hq="${hq}"
     />

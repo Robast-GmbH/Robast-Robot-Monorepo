@@ -58,7 +58,7 @@ def generate_launch_description():
     launch_arguments = {
         "ros2_control_hardware_type": "mock_components",
         "ros2_control_hardware_type_positon_joint": "real_life",
-        "model_position_joint": "planar",
+        "position_joint_type": "planar",
     }
 
     moveit_config = (

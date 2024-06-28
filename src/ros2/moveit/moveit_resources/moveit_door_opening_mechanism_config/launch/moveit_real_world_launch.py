@@ -35,7 +35,7 @@ def generate_launch_description():
     launch_arguments = {
         "ros2_control_hardware_type": "dryve_d1",
         "ros2_control_hardware_type_positon_joint": "real_life",
-        "model_position_joint": "prismatic",
+        "position_joint_type": "prismatic",
     }
 
     ros_distro = os.environ["ROS_DISTRO"]

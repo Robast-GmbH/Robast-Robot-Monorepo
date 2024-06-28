@@ -24,7 +24,7 @@ from launch.conditions import IfCondition, UnlessCondition
 
 
 def launch_robot_state_publisher(context, *args, **settings):
-    model_position_joint = LaunchConfiguration("model_position_joint").perform(context)
+    position_joint_type = LaunchConfiguration("position_joint_type").perform(context)
 
     robot_xml = xacro.process_file(
         os.path.join(
@@ -37,7 +37,7 @@ def launch_robot_state_publisher(context, *args, **settings):
             "ros2_control_hardware_type": "gz_ros2_control",
             "ros2_control_hardware_type_positon_joint": "gz_ros2_control",
             "ros_distro": settings["ros_distro"],
-            "model_position_joint": model_position_joint,
+            "position_joint_type": position_joint_type,
         },
     ).toxml()
 
@@ -106,7 +106,7 @@ def generate_launch_description():
     use_sim_time = LaunchConfiguration("use_sim_time")
     headless = LaunchConfiguration("headless")
     robot_name = LaunchConfiguration("robot_name")
-    model_position_joint = LaunchConfiguration("model_position_joint")
+    position_joint_type = LaunchConfiguration("position_joint_type")
     init_x = os.environ["init_x"]
     init_y = os.environ["init_y"]
     init_yaw = os.environ["init_yaw"]
@@ -206,8 +206,8 @@ def generate_launch_description():
         description="whether to use sim time or not",
     )
 
-    declare_model_position_joint_cmd = DeclareLaunchArgument(
-        "model_position_joint",
+    declare_position_joint_type_cmd = DeclareLaunchArgument(
+        "position_joint_type",
         default_value="fixed",
         description="whether to model the position joint as fixed, prismatic or planar",
     )
@@ -326,7 +326,7 @@ def generate_launch_description():
 
     spawn_ros2_controller_without_arm = GroupAction(
         condition=IfCondition(
-            PythonExpression(["'", model_position_joint, "' == 'fixed'"])
+            PythonExpression(["'", position_joint_type, "' == 'fixed'"])
         ),
         actions=[
             RegisterEventHandler(
@@ -352,7 +352,7 @@ def generate_launch_description():
 
     spawn_ros2_controller_with_arm = GroupAction(
         condition=IfCondition(
-            PythonExpression(["'", model_position_joint, "' == 'prismatic'"])
+            PythonExpression(["'", position_joint_type, "' == 'prismatic'"])
         ),
         actions=[
             RegisterEventHandler(
@@ -393,7 +393,7 @@ def generate_launch_description():
     # arguments
     ld.add_action(declare_namespace_cmd)
     ld.add_action(declare_use_sim_time_cmd)
-    ld.add_action(declare_model_position_joint_cmd)
+    ld.add_action(declare_position_joint_type_cmd)
     ld.add_action(declare_world_model_cmd)
     ld.add_action(declare_robot_model_cmd)
     ld.add_action(declare_headless_cmd)
