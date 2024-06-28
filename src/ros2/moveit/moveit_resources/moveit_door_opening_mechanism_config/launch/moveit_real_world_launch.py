@@ -66,7 +66,7 @@ def launch_robot_state_publisher():
 def generate_launch_description():
     launch_arguments = {
         "ros2_control_hardware_type": "dryve_d1",
-        "model_position_joint": "prismatic",
+        "position_joint_type": "prismatic",
         "model_door_opening_mechanism": "true",
         "model_module_cage": "false",
         "model_sensors": "false",

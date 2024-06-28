@@ -7,7 +7,7 @@
               izz="${m*(x*x+y*y)/12}" />
   </xacro:macro>
 
-  <xacro:macro name="theron_base" params="prefix publish_bf model_position_joint model_door_opening_mechanism ros2_control_hardware_type_positon_joint hq">
+  <xacro:macro name="theron_base" params="prefix publish_bf position_joint_type model_door_opening_mechanism ros2_control_hardware_type_positon_joint hq">
 
     <xacro:property name="PI" value="3.1415926535897931"/>
     <!-- xacro:property name="wheel_width" value="0.150" / -->
@@ -30,7 +30,7 @@
       </link>
 
       <!-- Prismatic position joint -->
-      <xacro:if value="${model_position_joint == 'prismatic'}">
+      <xacro:if value="${position_joint_type == 'prismatic'}">
 
         <joint name="position_joint" type="prismatic">
           <axis xyz="-1 0 0" />
@@ -43,7 +43,7 @@
       </xacro:if>
 
       <!-- Planar position joint -->
-      <xacro:if value="${model_position_joint == 'planar'}">
+      <xacro:if value="${position_joint_type == 'planar'}">
 
         <link name="${prefix}odom">
           <inertial>
@@ -139,7 +139,7 @@
       </xacro:if>
 
       <!-- Fixed position joint -->
-      <xacro:if value="${model_position_joint == 'fixed'}">
+      <xacro:if value="${position_joint_type == 'fixed'}">
         <joint name="${prefix}base_footprint_joint" type="fixed">
           <origin xyz="0 0 ${wheel_radius - wheel_offset_z}" rpy="0 0 0" />
           <parent link="${prefix}base_footprint"/>

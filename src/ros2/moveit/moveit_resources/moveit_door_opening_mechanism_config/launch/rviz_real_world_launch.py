@@ -15,7 +15,7 @@ from moveit_configs_utils import MoveItConfigsBuilder
 urdf_launch_arguments = {
     "ros2_control_hardware_type": "dryve_d1",
     "ros2_control_hardware_type_positon_joint": "real_life",
-    "model_position_joint": "prismatic",
+    "position_joint_type": "prismatic",
     "model_door_opening_mechanism": "true",
     "model_sensors": "false",
     "model_module_cage": "false",
@@ -31,8 +31,8 @@ def get_urdf_launch_arguments(context):
     urdf_launch_arguments["ros2_control_hardware_type_positon_joint"] = str(
         LaunchConfiguration("ros2_control_hardware_type_positon_joint").perform(context)
     )
-    urdf_launch_arguments["model_position_joint"] = str(
-        LaunchConfiguration("model_position_joint").perform(context)
+    urdf_launch_arguments["position_joint_type"] = str(
+        LaunchConfiguration("position_joint_type").perform(context)
     )
     urdf_launch_arguments["model_door_opening_mechanism"] = str(
         LaunchConfiguration("model_door_opening_mechanism").perform(context)
@@ -63,8 +63,8 @@ def generate_launch_description():
         description="The hardware type to use for ros2 control for position joint",
     )
 
-    declare_model_position_joint_cmd = DeclareLaunchArgument(
-        "model_position_joint",
+    declare_position_joint_type_cmd = DeclareLaunchArgument(
+        "position_joint_type",
         default_value="true",
         description="Whether to use position joint (between base_link and base_footprint) or not",
     )
@@ -142,7 +142,7 @@ def generate_launch_description():
 
     ld.add_action(declare_ros2_control_hardware_type_cmd)
     ld.add_action(declare_ros2_control_hardware_type_positon_joint_cmd)
-    ld.add_action(declare_model_position_joint_cmd)
+    ld.add_action(declare_position_joint_type_cmd)
     ld.add_action(declare_model_door_opening_mechanism_cmd)
     ld.add_action(declare_model_sensors_cmd)
     ld.add_action(declare_model_module_cage_cmd)

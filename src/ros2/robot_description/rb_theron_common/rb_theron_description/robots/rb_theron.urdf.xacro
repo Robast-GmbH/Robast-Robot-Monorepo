@@ -62,7 +62,7 @@
 	<xacro:arg name="model_door_opening_mechanism" default="false" />
 
 	<!-- Whether the position joint should be modeled as a fixed joint, a prismatic joint or a planar joint -->
-	<xacro:arg name="model_position_joint" default="fixed" />
+	<xacro:arg name="position_joint_type" default="fixed" />
 
 	<xacro:if value="${publish_bf}">
 		<xacro:property name="sensor_base_frame" value="base_footprint"/>
@@ -83,7 +83,7 @@
 	  ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
 	  ros2_control_hardware_type_positon_joint="$(arg ros2_control_hardware_type_positon_joint)"
 	  ros_distro="$(arg ros_distro)"
-	  model_position_joint="$(arg model_position_joint)"
+	  position_joint_type="$(arg position_joint_type)"
 	  model_door_opening_mechanism="$(arg model_door_opening_mechanism)">
 	</xacro:rb_theron_base>
 
@@ -256,7 +256,7 @@
 	</xacro:if>
 
 	<!-- Gazebo plugins -->
-	<xacro:ros_control ros_distro="$(arg ros_distro)" model_position_joint="$(arg model_position_joint)"/>
+	<xacro:ros_control ros_distro="$(arg ros_distro)" position_joint_type="$(arg position_joint_type)"/>
 	<xacro:gazebo_sensor_plugins ros_distro="$(arg ros_distro)"/>
 	
 </robot>

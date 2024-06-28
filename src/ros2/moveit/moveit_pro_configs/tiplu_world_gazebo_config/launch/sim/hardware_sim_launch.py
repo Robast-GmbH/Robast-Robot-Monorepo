@@ -21,7 +21,7 @@ def generate_launch_description():
     )
 
     launch_arguments = {
-        "model_position_joint": "fixed",
+        "position_joint_type": "fixed",
         "model_door_opening_mechanism": "True",
         "world_model": world_model,
     }

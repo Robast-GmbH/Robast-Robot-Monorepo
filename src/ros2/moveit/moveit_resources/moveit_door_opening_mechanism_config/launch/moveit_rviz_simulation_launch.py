@@ -72,7 +72,7 @@ def launch_setup(context, *args, **settings):
     launch_arguments = {
         "ros2_control_hardware_type": "mock_components",
         "ros2_control_hardware_type_positon_joint": "real_life",
-        "model_position_joint": "prismatic",
+        "position_joint_type": "prismatic",
         "model_door_opening_mechanism": "true",
     }
 
