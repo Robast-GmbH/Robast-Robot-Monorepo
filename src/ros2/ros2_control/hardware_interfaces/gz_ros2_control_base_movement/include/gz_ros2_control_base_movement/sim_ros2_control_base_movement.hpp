@@ -24,11 +24,11 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 template <typename SimSystemInterface>
 class SimBaseMovement : public SimSystemInterface
 {
- public:
+public:
   // Documentation Inherited
-  CallbackReturn on_init(const hardware_interface::HardwareInfo& system_info) override;
+  CallbackReturn on_init(const hardware_interface::HardwareInfo &system_info) override;
 
-  CallbackReturn on_configure(const rclcpp_lifecycle::State& previous_state) override;
+  CallbackReturn on_configure(const rclcpp_lifecycle::State &previous_state) override;
 
   // Documentation Inherited
   std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
@@ -37,18 +37,18 @@ class SimBaseMovement : public SimSystemInterface
   std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
   // Documentation Inherited
-  CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) override;
+  CallbackReturn on_activate(const rclcpp_lifecycle::State &previous_state) override;
 
   // Documentation Inherited
-  CallbackReturn on_deactivate(const rclcpp_lifecycle::State& previous_state) override;
+  CallbackReturn on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
   // Documentation Inherited
-  hardware_interface::return_type read(const rclcpp::Time& time, const rclcpp::Duration& period) override;
+  hardware_interface::return_type read(const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
   // Documentation Inherited
-  hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) override;
+  hardware_interface::return_type write(const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
- private:
+private:
   std::vector<double> _hw_position_commands;
   std::vector<double> _hw_position_states;
 
@@ -57,7 +57,7 @@ class SimBaseMovement : public SimSystemInterface
 
   bool _enable_state_feedback;
 
-  std::string _LOGGER = "SimBaseMovement";
+  const std::string _LOGGER = "SimBaseMovement";
 
   std::shared_ptr<hardware_interface_utils::PrismaticJointStateMonitor> _prismatic_joint_state_monitor;
 };
@@ -69,7 +69,7 @@ class SimBaseMovement : public SimSystemInterface
 // error everytime I launch it.
 
 template <typename SimSystemInterface>
-CallbackReturn SimBaseMovement<SimSystemInterface>::on_init(const hardware_interface::HardwareInfo& actuator_info)
+CallbackReturn SimBaseMovement<SimSystemInterface>::on_init(const hardware_interface::HardwareInfo &actuator_info)
 {
   RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "SimBaseMovement on_init()");
 
@@ -112,7 +112,7 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_init(const hardware_inter
 }
 
 template <typename SimSystemInterface>
-CallbackReturn SimBaseMovement<SimSystemInterface>::on_configure(const rclcpp_lifecycle::State& /*previous_state*/)
+CallbackReturn SimBaseMovement<SimSystemInterface>::on_configure(const rclcpp_lifecycle::State & /*previous_state*/)
 {
   // reset values always when configuring hardware
   for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -162,7 +162,7 @@ std::vector<hardware_interface::CommandInterface> SimBaseMovement<SimSystemInter
 }
 
 template <typename SimSystemInterface>
-CallbackReturn SimBaseMovement<SimSystemInterface>::on_activate(const rclcpp_lifecycle::State& previous_state)
+CallbackReturn SimBaseMovement<SimSystemInterface>::on_activate(const rclcpp_lifecycle::State &previous_state)
 {
   RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Activating ...please wait...");
 
@@ -182,7 +182,7 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_activate(const rclcpp_lif
 }
 
 template <typename SimSystemInterface>
-CallbackReturn SimBaseMovement<SimSystemInterface>::on_deactivate(const rclcpp_lifecycle::State& previous_state)
+CallbackReturn SimBaseMovement<SimSystemInterface>::on_deactivate(const rclcpp_lifecycle::State &previous_state)
 {
   // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
   // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
@@ -194,8 +194,8 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_deactivate(const rclcpp_l
 }
 
 template <typename SimSystemInterface>
-hardware_interface::return_type SimBaseMovement<SimSystemInterface>::read(const rclcpp::Time& /*time*/,
-                                                                          const rclcpp::Duration& /*period*/)
+hardware_interface::return_type SimBaseMovement<SimSystemInterface>::read(const rclcpp::Time & /*time*/,
+                                                                          const rclcpp::Duration & /*period*/)
 {
   if (!_enable_state_feedback)
   {
@@ -213,8 +213,8 @@ hardware_interface::return_type SimBaseMovement<SimSystemInterface>::read(const 
 }
 
 template <typename SimSystemInterface>
-hardware_interface::return_type SimBaseMovement<SimSystemInterface>::write(const rclcpp::Time& /*time*/,
-                                                                           const rclcpp::Duration& /*period*/)
+hardware_interface::return_type SimBaseMovement<SimSystemInterface>::write(const rclcpp::Time & /*time*/,
+                                                                           const rclcpp::Duration & /*period*/)
 {
   if (!_enable_state_feedback)
   {
@@ -237,4 +237,4 @@ hardware_interface::return_type SimBaseMovement<SimSystemInterface>::write(const
   return hardware_interface::return_type::OK;
 }
 
-#endif   // ROS2_CONTROL_BASE_MOVEMENT__GZ_SYSTEM_HPP_
+#endif // ROS2_CONTROL_BASE_MOVEMENT__GZ_SYSTEM_HPP_
