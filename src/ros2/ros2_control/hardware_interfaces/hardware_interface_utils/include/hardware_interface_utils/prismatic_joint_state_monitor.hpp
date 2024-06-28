@@ -10,20 +10,18 @@ namespace hardware_interface_utils
 {
   class PrismaticJointStateMonitor : public rclcpp::Node
   {
-   public:
-    PrismaticJointStateMonitor(const std::string& odom_topic, const bool reset_position_state_after_each_trajectory);
+  public:
+    PrismaticJointStateMonitor(const std::string &odom_topic, const bool reset_position_state_after_each_trajectory);
 
-    void update_state(std::vector<double>& hw_position_states, std::vector<double>& hw_velocity_states);
+    void update_state(std::vector<double> &hw_position_states, std::vector<double> &hw_velocity_states);
 
     void set_initial_position_initialized(bool trigger_trajectory_execution);
 
     void set_is_trajectory_execution_in_motion(bool is_trajectory_execution_in_motion);
 
-   private:
+  private:
     rclcpp::Subscription<nav_msgs::msg::Odometry>::SharedPtr _odom_subscriber;
     rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _reset_initial_position_subscriber;
-
-    void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
 
     std::string _odom_topic;
     bool _reset_position_state_after_each_trajectory;
@@ -37,6 +35,8 @@ namespace hardware_interface_utils
     bool _is_trajectory_execution_in_motion;
     bool _reset_initial_position;
 
+    void odom_callback(const nav_msgs::msg::Odometry::SharedPtr msg);
+
     double get_velocity_state() const;
 
     double compute_prismatic_joint_state();
@@ -47,6 +47,6 @@ namespace hardware_interface_utils
 
     bool is_moving_forward();
   };
-}   // namespace hardware_interface_utils
+} // namespace hardware_interface_utils
 
-#endif   // HARDWARE_INTERFACE_UTILS__PRISMATIC_JOINT_STATE_MONITOR_HPP_
+#endif // HARDWARE_INTERFACE_UTILS__PRISMATIC_JOINT_STATE_MONITOR_HPP_
