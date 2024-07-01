@@ -3,7 +3,52 @@
 
   <xacro:macro name="depth_camera"
     params="prefix fps baseline hfov width height format near far  prefix_topic:='zed_node'">
+    <gazebo reference="${base_frame}">
+      <sensor name="${prefix}_rgb_camera_optical_frame" type="camera">
+				<topic>${prefix_topic}/color</topic>
+        <camera name="oak-d">
+            <horizontal_fov>1.2112585008840648</horizontal_fov>
+            <image>
+                <width>640</width>
+                <height>480</height>
+                <format>RGB_INT8</format>
+            </image>
+            <clip>
+                <near>0.1</near>
+                <far>100</far>
+            </clip>
+              <noise>
+                <type>gaussian</type>
+                <mean>0.0</mean>
+                <stddev>0.007</stddev>
+            </noise>
+        </camera>
+      </sensor>
 
+      <sensor name="${prefix}_right_camera_optical_frame" type="depth">
+        <topic>${prefix_topic}/${prefix}/depth</topic>
+        <camera name="oak-d">
+          <horizontal_fov>${85.2*M_PI/180.0}</horizontal_fov>
+          <image>
+            <width>640</width>
+            <height>480</height>
+          </image>
+          <clip>
+            <near>0.3</near>
+            <far>10.0</far>
+          </clip>
+          <noise>
+            <type>gaussian</type>
+            <mean>0.0</mean>
+            <stddev>0.010</stddev>
+          </noise>
+        </camera>
+        <always_on>1</always_on>
+        <update_rate>15</update_rate>
+        <visualize>1</visualize>
+      </sensor>
+    </gazebo>
+    
     <gazebo reference="${prefix}_base_link">
       <visual>  
         <material>  
