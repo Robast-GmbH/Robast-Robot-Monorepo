@@ -67,15 +67,13 @@ def empty_module(
 @module_manager_router.post("/update_module_content", tags=["Modules"])
 def update_module_content(
     drawer_address: DrawerAddress,
-    item_id: str = Body(...),
-    quantity: int = Body(...),
+    content: dict[str, int] = Body(...),
 ):
     has_been_updated = module_manager.update_module_content(
         drawer_address.robot_name,
         drawer_address.module_id,
         drawer_address.drawer_id,
-        item_id,
-        quantity,
+        content,
     )
     return create_status_response(has_been_updated)
 

@@ -64,13 +64,16 @@ class ModuleManager:
         robot_name: str,
         module_id: int,
         drawer_id: int,
-        item_id: str,
-        quantity: int,
+        content: dict[str, int],
     ) -> bool:
         drawer = self.repository.read_drawer(robot_name, module_id, drawer_id)
         if drawer:
-            drawer.content[item_id] = quantity
-            self.repository.update_drawer(drawer)
+            for item_id, quantity in content.items():
+                if quantity <= 0:
+                    drawer.content.pop(item_id, None)
+                else:
+                    drawer.content[item_id] = quantity
+                self.repository.update_drawer(drawer)
             return True
         return False
 
