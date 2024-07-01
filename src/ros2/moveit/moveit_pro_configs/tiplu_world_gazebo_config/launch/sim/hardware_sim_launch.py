@@ -21,7 +21,7 @@ def generate_launch_description():
     )
 
     launch_arguments = {
-        "model_position_joint": "True",
+        "position_joint_type": "prismatic",
         "world_model": world_model,
     }
 

@@ -225,6 +225,7 @@ namespace mobile_base_controller
       if (std::abs(reference_interfaces_[0]) > _min_velocity)
       {
         publish_cmd_vel(reference_interfaces_[0]);
+        command_interfaces_[0].set_value(reference_interfaces_[0]);
         _zero_cmd_vel_published_last = false;
       }
       else
@@ -233,6 +234,7 @@ namespace mobile_base_controller
         if (!_zero_cmd_vel_published_last)
         {
           publish_cmd_vel(0.0);
+          command_interfaces_[0].set_value(0.0);
           _zero_cmd_vel_published_last = true;
         }
       }

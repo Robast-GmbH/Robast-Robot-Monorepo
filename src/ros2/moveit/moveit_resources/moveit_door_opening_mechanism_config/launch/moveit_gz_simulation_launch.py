@@ -28,7 +28,7 @@ from moveit_configs_utils.launch_utils import (
 def generate_launch_description():
     launch_arguments = {
         "ros2_control_hardware_type": "gz_ros2_control",
-        "model_position_joint": "true",
+        "position_joint_type": "prismatic",
     }
 
     ros_distro = os.environ["ROS_DISTRO"]
@@ -47,6 +47,7 @@ def generate_launch_description():
         .robot_description(
             file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments
         )
+        .robot_description_semantic(file_path="config/rb_theron.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .sensors_3d(file_path="config/sensors_3d_simulation.yaml")

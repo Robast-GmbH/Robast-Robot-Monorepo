@@ -23,6 +23,8 @@ find_package(hardware_interface REQUIRED)
 find_package(pluginlib REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(hardware_interface_utils REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
 
 if("$ENV{GZ_VERSION}" STREQUAL "garden" OR "$ENV{GZ_VERSION}" STREQUAL "harmonic")
   find_package(gz_ros2_control REQUIRED)
@@ -81,6 +83,8 @@ if("$ENV{GZ_VERSION}" STREQUAL "garden" OR "$ENV{GZ_VERSION}" STREQUAL "harmonic
     hardware_interface
     rclcpp
     hardware_interface_utils
+    nav_msgs
+    geometry_msgs
   )
 
   target_link_libraries(gz_ros2_control_base_movement
@@ -105,6 +109,8 @@ else() ## FORTRESS
     hardware_interface
     rclcpp
     hardware_interface_utils
+    nav_msgs
+    geometry_msgs
   )
 
   target_link_libraries(ign_ros2_control_base_movement
