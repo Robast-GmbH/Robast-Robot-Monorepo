@@ -21,7 +21,11 @@
       <Action ID="SetupMTCUpdateGroupCollisionRule" allow_collision="true" group_name="rotating_arm"/>
       <Action ID="RetrieveWaypoint" waypoint_name="starting_position_right"/>
       <Action ID="SetupMTCMoveToJointState" joint_state="{target_joint_state}" planning_group_name="{joint_group_name}"/>
-      <Action ID="SetupMTCMoveToPose" target_pose="{pose_in_front_of_door_handle}" planning_group_name="mobile_base_arm" ik_frame="door_opening_mechanism_link_freely_rotating_hook"/>
+      <Control ID="Sequence" name="TopLevelSequence">
+        <Action ID="InitializeMotionConstraints" constraints_name="arm_stretched_out"/>
+        <Action ID="AppendOrientationConstraint" config_file_name="mobile_base_constraints.yaml" constraints="{constraints}"/>
+        <Action ID="SetupMTCMoveToPose" target_pose="{pose_in_front_of_door_handle}" planning_group_name="mobile_base_arm" ik_frame="door_opening_mechanism_link_freely_rotating_hook"/>
+      </Control>
       <Action ID="PlanMTCTask"/>
       <Action ID="WaitForUserTrajectoryApproval"/>
       <Action ID="ExecuteMTCTask"/>

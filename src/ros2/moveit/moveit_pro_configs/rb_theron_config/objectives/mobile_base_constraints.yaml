@@ -1,0 +1,11 @@
+AppendOrientationConstraint:
+  constraint_frame: "door_opening_mechanism_link_x_axis_slide"
+  link_frame: "door_opening_mechanism_link_rotating_arm"
+  orientation:  # radians
+    x: 1.57079632679
+    y: 0.0
+    z: 0.0
+  tolerance:    # radians
+    x: 0.2
+    y: 0.1
+    z: 0.1
