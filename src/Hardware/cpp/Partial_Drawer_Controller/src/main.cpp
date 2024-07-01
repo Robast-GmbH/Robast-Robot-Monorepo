@@ -97,11 +97,12 @@ void setup()
   // e_drawer_0->init_motor();
   // drawers.push_back(e_drawer_0);
 
-  led_driver->initialize(
-    []()
-    {
-      gpio_wrapper->set_pin_mode(ENABLE_ONBOARD_LED_VDD_PIN_ID, gpio_wrapper->get_gpio_output_pin_mode());
-    });
+  auto set_led_driver_enable_pin_high = []()
+  {
+    gpio_wrapper->set_pin_mode(ENABLE_ONBOARD_LED_VDD_PIN_ID, gpio_wrapper->get_gpio_output_pin_mode());
+    gpio_wrapper->digital_write(ENABLE_ONBOARD_LED_VDD_PIN_ID, true);
+  };
+  led_driver->initialize(set_led_driver_enable_pin_high);
 
   gpio_wrapper->set_pin_mode(SENSE_INPUT_LID_7_CLOSED_PIN_ID, gpio_wrapper->get_gpio_input_pin_mode());
   gpio_wrapper->set_pin_mode(LOCK_7_OPEN_CONTROL_PIN_ID, gpio_wrapper->get_gpio_output_pin_mode());
