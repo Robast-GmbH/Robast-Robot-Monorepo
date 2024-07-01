@@ -1,12 +1,11 @@
 import 'dart:convert';
 
-import 'package:middleware_api_utilities/src/models/robot_drawer.dart';
 import 'package:http/http.dart' as http;
+import 'package:middleware_api_utilities/src/models/robot_drawer.dart';
 
 class ModulesApi {
-  final String prefix;
-
   ModulesApi({required this.prefix});
+  final String prefix;
 
   Future<http.Response?> tryGet({
     required Uri uri,
@@ -51,7 +50,7 @@ class ModulesApi {
     required http.Response? response,
   }) {
     if (response != null) {
-      final data = jsonDecode(response.body);
+      final data = jsonDecode(response.body) as Map<String, dynamic>;
       return data['status'] == 'success';
     } else {
       return false;
@@ -132,8 +131,7 @@ class ModulesApi {
     required String robotName,
     required int moduleID,
     required int drawerID,
-    required String itemID,
-    required int quantity,
+    required Map<String, int> content,
   }) async {
     final response = await tryPost(
       uri: Uri.parse('$prefix/modules/update_module_content'),
@@ -143,8 +141,7 @@ class ModulesApi {
           'module_id': moduleID,
           'drawer_id': drawerID,
         },
-        'item_id': itemID,
-        'quantity': quantity,
+        'content': content,
       },
     );
     return _wasRequestSuccessful(response: response);
@@ -204,7 +201,7 @@ class ModulesApi {
           'drawer_id': drawerID,
           'process_name': processName,
           'payload': payload,
-        }
+        },
       },
     );
     return _wasRequestSuccessful(response: response);

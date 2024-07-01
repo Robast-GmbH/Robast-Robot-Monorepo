@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_frontend/models/controller/task_creation_controller.dart';
-import 'package:web_frontend/models/provider/rmf_provider.dart';
+import 'package:web_frontend/models/provider/task_provider.dart';
 import 'package:web_frontend/widgets/delivery_task_creation_view.dart';
 import 'package:web_frontend/widgets/multi_drop_off_task_creation_view.dart';
 import 'package:web_frontend/widgets/patrol_task_creation_view.dart';
@@ -42,7 +42,6 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
         title: const Text('Task Creation'),
       ),
       floatingActionButton: FloatingActionButton(
-        child: const Icon(Icons.send),
         onPressed: dropdownValue == null
             ? null
             : () async {
@@ -100,6 +99,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                   );
                 }
               },
+        child: const Icon(Icons.send),
       ),
       body: Column(
         children: [

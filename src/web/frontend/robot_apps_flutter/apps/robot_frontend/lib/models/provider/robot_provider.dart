@@ -19,7 +19,7 @@ class RobotProvider extends ChangeNotifier {
   List<DrawerModule>? get modules => _modules;
   ModuleProcess? get moduleProcess => _moduleProcess;
 
-  Future<void> initRobotAPI({required String prefix}) async {
+  void initRobotAPI({required String prefix}) {
     _robotAPI = RobotApiUtilities(prefix: prefix);
   }
 
@@ -35,7 +35,6 @@ class RobotProvider extends ChangeNotifier {
 
   Future<void> updateModules() async {
     _modules = await _robotAPI.getModules();
-    _moduleProcess = await _robotAPI.getModuleProcess();
     notifyListeners();
   }
 
@@ -92,9 +91,5 @@ class RobotProvider extends ChangeNotifier {
 
   Future<void> unblockNavigation() async {
     await _robotAPI.unblockNavigation();
-  }
-
-  Future<void> finishModuleProcess() async {
-    await _robotAPI.finishModuleProcess();
   }
 }

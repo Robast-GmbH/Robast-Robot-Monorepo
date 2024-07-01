@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_frontend/models/controller/task_creation_controller.dart';
-import 'package:web_frontend/models/provider/rmf_provider.dart';
-import 'package:web_frontend/models/provider/robot_provider.dart';
+import 'package:web_frontend/models/provider/fleet_provider.dart';
+import 'package:web_frontend/models/provider/task_provider.dart';
 import 'package:web_frontend/widgets/custom_dropdown_view.dart';
 
 class DeliveryTaskCreationView extends StatefulWidget {
@@ -21,7 +21,7 @@ class _DeliveryTaskCreationViewState extends State<DeliveryTaskCreationView> {
   @override
   Widget build(BuildContext context) {
     final rmfProvider = Provider.of<RMFProvider>(context, listen: false);
-    final robotProvider = Provider.of<RobotProvider>(context, listen: false);
+    final robotProvider = Provider.of<FleetProvider>(context, listen: false);
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: ListView(

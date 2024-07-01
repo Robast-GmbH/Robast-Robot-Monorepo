@@ -14,7 +14,6 @@ class Robot {
         pose = Pose(
           x: 1.46,
           y: -2.87,
-          yaw: 0,
         );
 
   Robot.fromJson({required Map<String, dynamic> data})

@@ -3,11 +3,11 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
+import 'package:robot_frontend/widgets/disinfection_view.dart';
 
 import 'package:robot_frontend/widgets/driving_view.dart';
 import 'package:robot_frontend/widgets/module_process_view.dart';
 import 'package:robot_frontend/widgets/status_indicator_view.dart';
-import 'package:robot_frontend/widgets/stopped_view.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
 class HomePage extends StatefulWidget {
@@ -24,7 +24,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   );
   late final Animation<Offset> _offsetAnimation = Tween<Offset>(
     begin: Offset.zero,
-    end: const Offset(0, -1.0),
+    end: const Offset(0, -1),
   ).animate(
     CurvedAnimation(
       parent: _controller,
@@ -33,7 +33,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   );
 
   late final Animation<Offset> _offsetAnimation2 = Tween<Offset>(
-    begin: const Offset(0, 1.0),
+    begin: const Offset(0, 1),
     end: Offset.zero,
   ).animate(
     CurvedAnimation(
@@ -70,12 +70,12 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
             child: Stack(
               children: [
                 if (moduleProcess?.state != null && moduleProcess?.state != ModuleProcessState.finished) ...[
-                  ModuleProcessView()
+                  const ModuleProcessView(),
                 ] else ...[
                   SlideTransition(
                     position: _offsetAnimation2,
-                    child: StoppedView(
-                      onContinue: () async {
+                    child: DisinfectionView(
+                      onTimeout: () async {
                         await Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
                         await _controller.reverse();
                       },
@@ -91,14 +91,14 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                     ),
                   ),
                 ],
-                Padding(
-                  padding: const EdgeInsets.only(left: 24, top: 12),
+                const Padding(
+                  padding: EdgeInsets.only(left: 24, top: 12),
                   child: ClockView(),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(right: 24, top: 12),
+                const Padding(
+                  padding: EdgeInsets.only(right: 24, top: 12),
                   child: StatusIndicatorView(),
-                )
+                ),
               ],
             ),
           );

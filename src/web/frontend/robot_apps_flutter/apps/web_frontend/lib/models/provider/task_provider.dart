@@ -1,7 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/foundation.dart';
-import 'package:rmf_api/rmf_api.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/models/controller/task_creation_controller.dart';
 
 class RMFProvider extends ChangeNotifier {
@@ -10,11 +11,11 @@ class RMFProvider extends ChangeNotifier {
   final Map<String, String> _interruptTokens = {};
   Timer? _tasksUpdateTimer;
 
-  final _rmfApi = const RmfApi(prefix: 'http://10.10.23.6:8000');
+  final _middlewareApi = MiddlewareApiUtilities(prefix: 'http://10.10.23.6:8000');
 
   Future<void> updateBuildingMap() async {
     try {
-      _buildingMap = await _rmfApi.getBuildingMap();
+      // _buildingMap = await _rmfApi.getBuildingMap();
       notifyListeners();
     } catch (e) {
       debugPrint('Error getting building map: $e');
@@ -23,7 +24,7 @@ class RMFProvider extends ChangeNotifier {
 
   Future<void> updateTasks() async {
     try {
-      tasks = await _rmfApi.getTasks();
+      //  tasks = await _rmfApi.getTasks();
       notifyListeners();
     } catch (e) {
       debugPrint('Error getting tasks: $e');
@@ -83,11 +84,11 @@ class RMFProvider extends ChangeNotifier {
     required String drawerID,
   }) async {
     try {
-      await _rmfApi.dispatchDeliveryTask(
-        pickup: pickup,
-        dropoff: dropoff,
-        drawerID: drawerID,
-      );
+      // await _rmfApi.dispatchDeliveryTask(
+      //   pickup: pickup,
+      //   dropoff: dropoff,
+      //   drawerID: drawerID,
+      // );
     } catch (e) {
       debugPrint('Error dispatching delivery task: $e');
     }
@@ -98,10 +99,10 @@ class RMFProvider extends ChangeNotifier {
     required String drawerID,
   }) async {
     try {
-      await _rmfApi.dispatchDropOffTask(
-        dropoff: dropoff,
-        drawerID: drawerID,
-      );
+      // await _rmfApi.dispatchDropOffTask(
+      //   dropoff: dropoff,
+      //   drawerID: drawerID,
+      // );
     } catch (e) {
       debugPrint('Error dispatching dropoff task: $e');
     }
@@ -112,10 +113,10 @@ class RMFProvider extends ChangeNotifier {
     required int rounds,
   }) async {
     try {
-      await _rmfApi.dispatchPatrolTask(
-        places: places,
-        rounds: rounds,
-      );
+      // await _rmfApi.dispatchPatrolTask(
+      //   places: places,
+      //   rounds: rounds,
+      // );
     } catch (e) {
       debugPrint('Error dispatching patrol task: $e');
     }
@@ -125,9 +126,9 @@ class RMFProvider extends ChangeNotifier {
     required String taskID,
   }) async {
     try {
-      final token = await _rmfApi.interruptTask(taskID: taskID);
-      debugPrint('Interrupt token: $token');
-      _interruptTokens[taskID] = token;
+      // final token = await _rmfApi.interruptTask(taskID: taskID);
+      // debugPrint('Interrupt token: $token');
+      // _interruptTokens[taskID] = token;
     } catch (e) {
       debugPrint('Error interrupting task: $e');
     }
@@ -137,7 +138,8 @@ class RMFProvider extends ChangeNotifier {
     required String taskID,
   }) async {
     try {
-      return await _rmfApi.resumeTask(taskID: taskID, token: _interruptTokens[taskID]!);
+      // return await _rmfApi.resumeTask(taskID: taskID, token: _interruptTokens[taskID]!);
+      return true;
     } catch (e) {
       debugPrint('Error resuming task: $e');
       return false;

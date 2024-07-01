@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:shared_data_models/shared_data_models.dart';
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 /// Helper class to access the middleware API.
 class MiddlewareApiUtilities {

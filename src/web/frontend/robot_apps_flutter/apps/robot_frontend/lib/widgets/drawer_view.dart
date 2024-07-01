@@ -5,10 +5,7 @@ import 'package:shared_data_models/shared_data_models.dart';
 
 class DrawerView extends StatelessWidget {
   const DrawerView({
-    super.key,
-    required this.module,
-    required this.isAnyDrawerOpen,
-    required this.onOpening,
+    required this.module, required this.isAnyDrawerOpen, required this.onOpening, super.key,
     this.label,
     this.isEnabled = true,
   });
@@ -47,8 +44,8 @@ class DrawerView extends StatelessWidget {
                         end: Alignment.topCenter,
                         colors: module.isOpen
                             ? [
-                                Color(0xCCBBFF33),
-                                Color(0x7FA8E52D),
+                                const Color(0xCCBBFF33),
+                                const Color(0x7FA8E52D),
                               ]
                             : [
                                 Colors.white.withOpacity(0.5),
@@ -59,11 +56,10 @@ class DrawerView extends StatelessWidget {
                     ),
                     child: SizedBox.expand(
                       child: Align(
-                        alignment: Alignment.center,
                         child: Text(
                           label ?? module.label,
                           textAlign: TextAlign.center,
-                          style: TextStyle(
+                          style: const TextStyle(
                             height: 0,
                             color: Colors.white,
                             fontSize: 40,

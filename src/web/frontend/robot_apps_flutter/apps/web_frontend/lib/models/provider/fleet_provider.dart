@@ -4,15 +4,20 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
-class RobotProvider extends ChangeNotifier {
+class FleetProvider extends ChangeNotifier {
   List<Robot> robots = [];
   Map<String, List<DrawerModule>> modules = {};
+  Map<String, List<Task>> tasks = {};
   bool isNavigationBlocked = false;
   Timer? _robotUpdateTimer;
   Timer? _moduleUpdateTimer;
   Timer? _isRobotNavigationBlockedUpdateTimer;
 
-  final _middlewareApi = const MiddlewareApiUtilities(prefix: 'http://10.10.23.6:8003');
+  late MiddlewareApiUtilities _middlewareApi;
+
+  Future<void> initMiddlewarAPI({required String prefix}) async {
+    _middlewareApi = MiddlewareApiUtilities(prefix: prefix);
+  }
 
   List<String> getIDsOfModules({required String robotName}) {
     return modules[robotName]?.map((e) => '${e.moduleID}_${e.drawerID}').toList() ?? [];
@@ -37,6 +42,18 @@ class RobotProvider extends ChangeNotifier {
       }
     }
     modules = updatedModules;
+    notifyListeners();
+  }
+
+  Future<void> updataTasks() async {
+    final updatedTasks = <String, List<Task>>{};
+    for (final robot in robots) {
+      if (robot.name.isNotEmpty) {
+        final robotTasks = await _middlewareApi.getTasks(robotName: robot.name);
+        updatedTasks[robot.name] = robotTasks;
+      }
+    }
+    tasks = updatedTasks;
     notifyListeners();
   }
 

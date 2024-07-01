@@ -5,13 +5,14 @@ import 'package:test/test.dart';
 
 void main() {
   group('MiddlewareApiUtilities', () {
-    final robotName = 'rb_theron';
-    final moduleID = 7;
-    final drawerID = 0;
-    final position = 9;
-    final size = 1;
-    final itemID = 'Stifte';
-    final quantity = 3;
+    const robotName = 'rb_theron';
+    const moduleID = 7;
+    const drawerID = 0;
+    const position = 9;
+    const size = 1;
+    const itemID = 'Stifte';
+    const quantity = 3;
+    const variant = 'manual';
     final modulesApi = ModulesApi(prefix: 'http://localhost:8003');
     test('can be instantiated', () {
       expect(MiddlewareApiUtilities(prefix: ''), isNotNull);
@@ -23,11 +24,25 @@ void main() {
     });
 
     test('can create and delete module', () async {
-      final creationResult = await modulesApi.createModule(robotName: robotName, moduleID: moduleID, drawerID: drawerID, position: position, size: size);
+      final creationResult = await modulesApi.createModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+        position: position,
+        size: size,
+        variant: variant,
+      );
       expect(creationResult, isTrue);
       final modules = await modulesApi.getModules(robotName: robotName);
-      expect(modules.where((drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID), isNotEmpty);
-      final deletionResult = await modulesApi.deleteModule(robotName: robotName, moduleID: moduleID, drawerID: drawerID);
+      expect(
+        modules.where((drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID),
+        isNotEmpty,
+      );
+      final deletionResult = await modulesApi.deleteModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+      );
       expect(deletionResult, isTrue);
     });
 
@@ -38,14 +53,14 @@ void main() {
         drawerID: drawerID,
         position: position,
         size: size,
+        variant: variant,
       );
       expect(creationResult, isTrue);
       final fillModuleResult = await modulesApi.updateModuleContent(
         robotName: robotName,
         moduleID: moduleID,
         drawerID: drawerID,
-        itemID: itemID,
-        quantity: quantity,
+        content: {itemID: quantity},
       );
       expect(fillModuleResult, isTrue);
       final modules = await modulesApi.getModules(robotName: robotName);
@@ -74,13 +89,14 @@ void main() {
       expect(deletionResult, isTrue);
     });
 
-    test("can reserve and free drawer", () async {
+    test('can reserve and free drawer', () async {
       final creationResult = await modulesApi.createModule(
         robotName: robotName,
         moduleID: moduleID,
         drawerID: drawerID,
         position: position,
         size: size,
+        variant: variant,
       );
       expect(creationResult, isTrue);
       final reserveResult = await modulesApi.reserveModule(

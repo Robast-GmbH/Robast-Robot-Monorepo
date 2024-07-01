@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:web_frontend/models/provider/rmf_provider.dart';
-import 'package:web_frontend/models/provider/robot_provider.dart';
+import 'package:web_frontend/models/provider/fleet_provider.dart';
+import 'package:web_frontend/pages/config_page.dart';
 import 'package:web_frontend/pages/task_creation_page.dart';
 import 'package:web_frontend/widgets/robot_list_view.dart';
 
@@ -16,8 +16,7 @@ class _FleetManagementPageState extends State<FleetManagementPage> {
   @override
   void initState() {
     super.initState();
-    Provider.of<RobotProvider>(context, listen: false).updateProviderData();
-    Provider.of<RMFProvider>(context, listen: false).updateBuildingMap();
+    Provider.of<FleetProvider>(context, listen: false).updateProviderData();
   }
 
   @override
@@ -25,6 +24,18 @@ class _FleetManagementPageState extends State<FleetManagementPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Fleet Management'),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<ConfigPage>(
+                    builder: (context) => const ConfigPage(),
+                  ),
+                );
+              },
+              icon: const Icon(Icons.settings),),
+        ],
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {

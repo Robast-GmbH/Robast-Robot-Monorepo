@@ -5,7 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:robot_frontend/data/svgs.dart';
 
 class DrivingView extends StatefulWidget {
-  DrivingView({super.key, required this.onPressed});
+  const DrivingView({required this.onPressed, super.key});
 
   final Future<void> Function() onPressed;
 
@@ -99,7 +99,7 @@ class _DrivingViewState extends State<DrivingView> {
                                   logoHappy,
                                   width: double.infinity,
                                   color: Colors.white,
-                                )
+                                ),
                             ],
                           ),
                         ],
@@ -111,7 +111,7 @@ class _DrivingViewState extends State<DrivingView> {
                       children: [
                         ShaderMask(
                           blendMode: BlendMode.srcOut,
-                          child: Text(
+                          child: const Text(
                             'Bitte berühren',
                             style: TextStyle(
                               letterSpacing: 1.5,
@@ -120,13 +120,13 @@ class _DrivingViewState extends State<DrivingView> {
                               fontWeight: FontWeight.w300,
                             ),
                           ),
-                          shaderCallback: (bounds) => LinearGradient(colors: [Colors.white], stops: [0.0]).createShader(bounds),
+                          shaderCallback: (bounds) => const LinearGradient(colors: [Colors.white], stops: [0.0]).createShader(bounds),
                         ),
                         Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
                             Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.horizontal(left: Radius.circular(64)),
                               ),
@@ -135,9 +135,8 @@ class _DrivingViewState extends State<DrivingView> {
                             ),
                             Column(
                               mainAxisSize: MainAxisSize.min,
-                              mainAxisAlignment: MainAxisAlignment.start,
                               children: [
-                                Text(
+                                const Text(
                                   'Bitteberühren',
                                   style: TextStyle(
                                     letterSpacing: 1.9,
@@ -150,11 +149,11 @@ class _DrivingViewState extends State<DrivingView> {
                                   color: Colors.white,
                                   width: 480,
                                   height: 2,
-                                )
+                                ),
                               ],
                             ),
                             Container(
-                              decoration: BoxDecoration(
+                              decoration: const BoxDecoration(
                                 color: Colors.white,
                                 borderRadius: BorderRadius.horizontal(right: Radius.circular(64)),
                               ),
@@ -162,7 +161,7 @@ class _DrivingViewState extends State<DrivingView> {
                               height: 85,
                             ),
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ],

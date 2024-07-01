@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/models/provider/modules_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/home_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
@@ -17,24 +18,24 @@ class ConfigPage extends StatefulWidget {
 class _ConfigPageState extends State<ConfigPage> {
   final _formKey = GlobalKey<FormState>();
   String robotBackendAddress = '';
-  Future<SharedPreferences>? getSharedPreferencesFuture;
+  String middlewareAddress = '';
+  late Future<SharedPreferences> getSharedPreferencesFuture;
 
-  Future<SharedPreferences> getSharedPreferences() async {
-    return await SharedPreferences.getInstance();
-  }
+  Future<void> finishConfiguration({required String robotBackendAddress, required String middlewareAddress}) async {
+    Provider.of<RobotProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
+    Provider.of<ModulesProvider>(context, listen: false).initMiddlewareApiUtilities(prefix: middlewareAddress);
 
-  Future<void> finishConfiguration({required String robotBackendAddress}) async {
-    await Provider.of<RobotProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
-    await Navigator.pushReplacement(
+    Navigator.popUntil(context, ModalRoute.withName('/root'));
+    await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => HomePage()),
+      MaterialPageRoute<HomePage>(builder: (context) => const HomePage()),
     );
   }
 
   @override
   void initState() {
     super.initState();
-    getSharedPreferencesFuture = getSharedPreferences();
+    getSharedPreferencesFuture = SharedPreferences.getInstance();
   }
 
   @override
@@ -43,17 +44,20 @@ class _ConfigPageState extends State<ConfigPage> {
       body: BackgroundView(
         child: Row(
           children: [
-            Expanded(child: SizedBox()),
+            const Expanded(child: SizedBox()),
             Expanded(
               child: FutureBuilder<SharedPreferences>(
                 future: getSharedPreferencesFuture,
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.data!.getString('robotBackendAddress') != null && widget.autoClose) {
+                    if (snapshot.data!.getString('robotBackendAddress') != null && snapshot.data!.getString('middlewareAddress') != null && widget.autoClose) {
                       WidgetsBinding.instance.addPostFrameCallback((_) async {
-                        await finishConfiguration(robotBackendAddress: snapshot.data!.getString('robotBackendAddress') ?? "");
+                        await finishConfiguration(
+                          robotBackendAddress: snapshot.data!.getString('robotBackendAddress') ?? '',
+                          middlewareAddress: snapshot.data!.getString('middlewareAddress') ?? '',
+                        );
                       });
-                      return SizedBox();
+                      return const SizedBox();
                     }
                     return Form(
                       key: _formKey,
@@ -61,16 +65,17 @@ class _ConfigPageState extends State<ConfigPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: <Widget>[
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8),
                             child: TextFormField(
                               initialValue: snapshot.data!.getString('robotBackendAddress') ?? '',
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Enter the address of the robot backend',
                                 hintText: 'http://ip:port',
                               ),
                               validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter some text';
+                                final ipPattern = RegExp(r'^http://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$');
+                                if (!ipPattern.hasMatch(value!)) {
+                                  return 'Please enter a valid URL in the format http://ip:port';
                                 }
                                 return null;
                               },
@@ -80,19 +85,41 @@ class _ConfigPageState extends State<ConfigPage> {
                             ),
                           ),
                           Padding(
-                            padding: const EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8),
+                            child: TextFormField(
+                              initialValue: snapshot.data!.getString('middlewareAddress') ?? '',
+                              decoration: const InputDecoration(
+                                labelText: 'Enter the address of the middleware',
+                                hintText: 'http://ip:port',
+                              ),
+                              validator: (value) {
+                                final ipPattern = RegExp(r'^http://\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{1,5}$');
+                                if (!ipPattern.hasMatch(value!)) {
+                                  return 'Please enter a valid URL in the format http://ip:port';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                middlewareAddress = value!;
+                              },
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8),
                             child: ElevatedButton(
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   _formKey.currentState!.save();
-                                  snapshot.data!.setString('robotBackendAddress', robotBackendAddress);
+                                  await snapshot.data!.setString('robotBackendAddress', robotBackendAddress);
+                                  await snapshot.data!.setString('middlewareAddress', middlewareAddress);
                                 }
-                                if (!widget.autoClose) {
-                                  await finishConfiguration(robotBackendAddress: robotBackendAddress);
-                                }
+                                await finishConfiguration(
+                                  robotBackendAddress: robotBackendAddress,
+                                  middlewareAddress: middlewareAddress,
+                                );
                               },
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 32),
+                              child: const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 8, horizontal: 32),
                                 child: Text('Submit'),
                               ),
                             ),
@@ -101,12 +128,12 @@ class _ConfigPageState extends State<ConfigPage> {
                       ),
                     );
                   } else {
-                    return Center(child: CircularProgressIndicator());
+                    return const Center(child: CircularProgressIndicator());
                   }
                 },
               ),
             ),
-            Expanded(child: SizedBox()),
+            const Expanded(child: SizedBox()),
           ],
         ),
       ),
