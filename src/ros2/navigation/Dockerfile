@@ -1,18 +1,12 @@
-
 ARG ROS_BUILD_DISTRO=jazzy
 FROM ros:${ROS_BUILD_DISTRO}-perception as devel
 
-ARG ROS_BUILD_DISTRO
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
     apt-get upgrade -yq && \
     apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu gnupg2 && \
     rm -rf /var/lib/apt/lists/*
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
 ARG DEBIAN_FRONTEND=
 
 ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
@@ -90,7 +84,10 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --packages-skip spatio_tem
 
 RUN echo "if [ -f /nav_ws/install/setup.bash ]; then source /nav_ws/install/setup.bash; fi" >> /home/$USER/.bashrc
 
+RUN echo "ubuntu:ubuntu" | chpasswd 
+
 WORKDIR /workspace
+USER ubuntu
 
 ############################## Build ##################################
 FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as build
