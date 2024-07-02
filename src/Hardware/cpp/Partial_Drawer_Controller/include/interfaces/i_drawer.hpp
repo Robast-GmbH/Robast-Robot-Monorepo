@@ -44,20 +44,7 @@ namespace drawer_controller
     /**
      * Handle the control of the lock of the drawer.
      */
-    virtual void handle_electrical_lock_control() = 0;
-
-    /**
-     * Initialize the electrical lock.
-     *
-     * @param pwr_open_lock_pin_id pin id of the power open lock pin
-     * @param pwr_close_lock_pin_id pin id of the power close lock pin
-     * @param sensor_lock_pin_id pin id of the sensor lock pin
-     * @param sensor_drawer_closed_pin_id pin id of the sensor drawer closed pin
-     */
-    virtual void init_electrical_lock(uint8_t pwr_open_lock_pin_id,
-                                      uint8_t pwr_close_lock_pin_id,
-                                      uint8_t sensor_lock_pin_id,
-                                      uint8_t sensor_drawer_closed_pin_id) = 0;
+    virtual void handle_electrical_drawer_lock_control() = 0;
   };
 }   // namespace drawer_controller
 #endif

@@ -31,6 +31,7 @@ namespace drawer_controller
     {
       _electrical_drawer_lock.value()->initialize_lock();
     }
+    init_motor();
   }
 
   void ElectricalDrawer::stop_motor()

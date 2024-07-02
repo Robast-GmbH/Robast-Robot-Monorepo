@@ -54,8 +54,6 @@ namespace drawer_controller
 
     void start_motor();
 
-    void init_motor();
-
    private:
     uint32_t _module_id;
     uint8_t _id;
@@ -89,6 +87,8 @@ namespace drawer_controller
 
     /* FUNCTIONS */
 
+    void init_motor();
+
     void handle_drawer_idle_state();
 
     void handle_drawer_active_state();
@@ -96,6 +96,8 @@ namespace drawer_controller
     void handle_drawer_just_opened() override;
 
     void handle_drawer_just_closed() override;
+
+    void handle_electrical_drawer_lock_control() override;
 
     void handle_drawer_moving_in();
 
@@ -126,8 +128,6 @@ namespace drawer_controller
     float get_moving_average_drawer_closed_pin();
 
     bool is_endstop_switch_pushed();
-
-    void handle_electrical_drawer_lock_control();
   };
 }   // namespace drawer_controller
 
