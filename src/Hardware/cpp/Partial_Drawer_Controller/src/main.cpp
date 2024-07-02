@@ -7,7 +7,6 @@
 #include "led/led_strip.hpp"
 #include "lock/tray_manager.hpp"
 #include "peripherals/gpio.hpp"
-#include "peripherals/led_driver.hpp"
 #include "utils/data_mapper.hpp"
 
 #define MODULE_ID               1
@@ -40,8 +39,6 @@ std::unique_ptr<drawer_controller::LedStrip> led_strip;
 
 // std::unique_ptr<drawer_controller::DataMapper> data_mapper;
 
-std::unique_ptr<drawer_controller::LedDriver> led_driver;
-
 // TODO@Jacob: This is kind of a temporary hack to ensure that the can messages are read from the
 // controller fast enough
 // TODO@Jacob: A much better solution would be to create paralle tasks for that like I suggested in
@@ -57,13 +54,32 @@ void setup()
 
   // TODO: In the hardware design of v1 the pins of SDA and SCL are mixed up unfortunately for the port expander
   // TODO: In order to use the hardware anyway, we need to create two instances of the bus with different pin init
-  std::shared_ptr<TwoWire> wire_led_driver = std::make_shared<TwoWire>(1);
+  std::shared_ptr<TwoWire> wire_onboard_led_driver = std::make_shared<TwoWire>(1);
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(2);
-  wire_led_driver->begin(I2C_SDA, I2C_SCL);
+  wire_onboard_led_driver->begin(I2C_SDA, I2C_SCL);
   wire_port_expander->begin(I2C_SDA_PORT_EXPANDER, I2C_SCL_PORT_EXPANDER);
 
-  led_driver = std::make_unique<drawer_controller::LedDriver>(wire_led_driver);
   gpio_wrapper = std::make_shared<drawer_controller::GPIO>(wire_port_expander);
+
+  std::vector<partial_drawer_controller::TrayPinConfig> tray_pin_configs = {
+    {LOCK_1_OPEN_CONTROL_PIN_ID, LOCK_1_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_1_CLOSED_PIN_ID},
+    {LOCK_2_OPEN_CONTROL_PIN_ID, LOCK_2_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_2_CLOSED_PIN_ID},
+    {LOCK_3_OPEN_CONTROL_PIN_ID, LOCK_3_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_3_CLOSED_PIN_ID},
+    {LOCK_4_OPEN_CONTROL_PIN_ID, LOCK_4_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_4_CLOSED_PIN_ID},
+    {LOCK_5_OPEN_CONTROL_PIN_ID, LOCK_5_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_5_CLOSED_PIN_ID},
+    {LOCK_6_OPEN_CONTROL_PIN_ID, LOCK_6_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_6_CLOSED_PIN_ID},
+    {LOCK_7_OPEN_CONTROL_PIN_ID, LOCK_7_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_7_CLOSED_PIN_ID},
+    {LOCK_8_OPEN_CONTROL_PIN_ID, LOCK_8_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_8_CLOSED_PIN_ID}};
+
+  tray_manager =
+    std::make_shared<partial_drawer_controller::TrayManager>(tray_pin_configs, gpio_wrapper, wire_onboard_led_driver);
+
+  auto set_led_driver_enable_pin_high = []()
+  {
+    gpio_wrapper->set_pin_mode(ENABLE_ONBOARD_LED_VDD_PIN_ID, gpio_wrapper->get_gpio_output_pin_mode());
+    gpio_wrapper->digital_write(ENABLE_ONBOARD_LED_VDD_PIN_ID, true);
+  };
+  tray_manager->init(set_led_driver_enable_pin_high);
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   // data_mapper = std::make_unique<drawer_controller::DataMapper>();
@@ -84,20 +100,6 @@ void setup()
   e_drawer_0->init();
 
   drawers.push_back(e_drawer_0);
-
-  auto set_led_driver_enable_pin_high = []()
-  {
-    gpio_wrapper->set_pin_mode(ENABLE_ONBOARD_LED_VDD_PIN_ID, gpio_wrapper->get_gpio_output_pin_mode());
-    gpio_wrapper->digital_write(ENABLE_ONBOARD_LED_VDD_PIN_ID, true);
-  };
-  led_driver->initialize(set_led_driver_enable_pin_high);
-
-  gpio_wrapper->set_pin_mode(SENSE_INPUT_LID_7_CLOSED_PIN_ID, gpio_wrapper->get_gpio_input_pin_mode());
-  gpio_wrapper->set_pin_mode(LOCK_7_OPEN_CONTROL_PIN_ID, gpio_wrapper->get_gpio_output_pin_mode());
-  gpio_wrapper->set_pin_mode(LOCK_7_CLOSE_CONTROL_PIN_ID, gpio_wrapper->get_gpio_output_pin_mode());
-
-  gpio_wrapper->digital_write(LOCK_7_CLOSE_CONTROL_PIN_ID, false);
-  gpio_wrapper->digital_write(LOCK_7_OPEN_CONTROL_PIN_ID, false);
 
   debug_println("Finished setup()!");
 }
@@ -144,69 +146,6 @@ void loop()
       gpio_wrapper->digital_write(LOCK_7_OPEN_CONTROL_PIN_ID, false);
       delay(100);
       gpio_wrapper->digital_write(LOCK_7_CLOSE_CONTROL_PIN_ID, true);
-    }
-    else if (c == 'l')
-    {
-      debug_println("Set led output color");
-      led_driver->set_tray_led_brightness(counter, counter);
-    }
-    else if (c == 'k')
-    {
-      debug_println("Set led output color");
-      led_driver->set_tray_led_brightness(counter, 0);
-    }
-    else if (c == 'j')
-    {
-      debug_println("Set led output brightness");
-      led_driver->set_led_brigthness(1, counter);
-    }
-    else if (c == 'h')
-    {
-      debug_println("Set led output brightness");
-      led_driver->set_led_brigthness(1, 0);
-    }
-    else if (c == 'r')
-    {
-      debug_println("Read registers");
-      // loop throw all registers and print result
-      for (int i = 0; i < 0x37; i++)
-      {
-        byte data_read;
-        led_driver->read_register(i, data_read);
-        debug_print("Register: ");
-        debug_print(i);
-        debug_print(" Data: ");
-        debug_println(data_read);
-      }
-
-      debug_println("Finished reading register");
-    }
-    else if (c == 't')
-    {
-      debug_println("Reset registers");
-      led_driver->reset_registers();
-    }
-    else if (c == 'u')
-    {
-      debug_println("Enable chip");
-      led_driver->enable_chip();
-    }
-    else if (c == '+')
-    {
-      counter++;
-      debug_print("Counter: ");
-      debug_println(counter);
-    }
-    else if (c == '-')
-    {
-      counter--;
-      debug_print("Counter: ");
-      debug_println(counter);
-    }
-    else if (c == 'q')
-    {
-      debug_println("Set color of led 1");
-      led_driver->set_led_output_color_by_number(1, counter);
     }
   }
 }

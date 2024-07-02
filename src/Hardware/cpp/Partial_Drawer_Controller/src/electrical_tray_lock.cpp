@@ -20,7 +20,6 @@ namespace partial_drawer_controller
     _open_lock_previous_step = false;
     set_open_lock_current_step(false);
     set_drawer_opening_is_in_progress(false);
-    set_drawer_auto_close_timeout_triggered(false);
   }
 
   void ElectricalTrayLock::handle_lock_control()

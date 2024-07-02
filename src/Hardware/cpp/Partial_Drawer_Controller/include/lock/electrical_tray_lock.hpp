@@ -43,8 +43,6 @@ namespace partial_drawer_controller
 
     void unlock(uint8_t id);
 
-    void set_drawer_auto_close_timeout_triggered(bool state);
-
     bool is_drawer_auto_close_timeout_triggered();
 
    private:

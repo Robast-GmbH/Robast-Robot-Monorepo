@@ -6,10 +6,10 @@
 
 #include <memory>
 
-#include "peripherals/LP503x.hpp"
+#include "led/LP503x.hpp"
 #include "peripherals/pinout_defines.hpp"
 
-namespace drawer_controller
+namespace partial_drawer_controller
 {
 
   /*********************************************************************************************************
@@ -40,10 +40,10 @@ namespace drawer_controller
     uint8_t register_row_3;
   };
 
-  class LedDriver
+  class OnboardLedDriver
   {
    public:
-    LedDriver(std::shared_ptr<TwoWire> wire)
+    OnboardLedDriver(std::shared_ptr<TwoWire> wire)
     {
       _lp5030rjvr = std::make_shared<lp503x::LP503x>(SLAVE_ADDRESS_LP5030RJVR, wire);
     }
@@ -80,7 +80,6 @@ namespace drawer_controller
 
     void initialize(std::function<void()> set_enable_pin_high)
     {
-      // TODO: Discuss this with the team. In this way we don't need the GPIO dependency here
       set_enable_pin_high();
       reset_registers();
       enable_chip();
@@ -109,5 +108,5 @@ namespace drawer_controller
     };
   };
 
-}   // namespace drawer_controller
+}   // namespace partial_drawer_controller
 #endif   // DRAWER_CONTROLLER_LED_DRIVER_HPP
