@@ -17,24 +17,25 @@ namespace db_helper
   {
    private:
     const std::string connection_parameter;
-    std::vector<std::vector<std::string>> perform_query(std::string sql_statment);
+    std::vector<std::vector<std::string>> perform_query(std::string sql_statment, std::shared_ptr<std::string> error_message);
 
-    int perform_transaction(std::string sql_statement);
-    std::vector<std::vector<std::string>> perform_transaction_with_return(std::string sql_statement);
+    int perform_transaction(std::string sql_statement, std::shared_ptr<std::string> error_message);
+    std::vector<std::vector<std::string>> perform_transaction_with_return(std::string sql_statement,std::shared_ptr<std::string> error_message);
 
    public:
-    PostgreSqlHelper(std::string username, std::string password, std::string host, std::string db_name);
+    PostgreSqlHelper(std::string username, std::string password, std::string host, int port, std::string db_name);
     ~PostgreSqlHelper();
 
     std::string test_connection();
 
-    std::string createUser(std::string first_name, std::string last_name);
-    int createNfcCode(std::string user_id, int max_ID);
+    int createUser(std::string first_name, std::string last_name);
+    bool createNfcCode(std::string user_id, std::string card_uid);
     bool checkUserTag(std::string tag,
-                      std::vector<std::string> lookup_scope,
                       std::shared_ptr<std::string> user_name,
-                      std::shared_ptr<int> id);
-    bool checkUser(std::string id, std::string first_name, std::string last_name);
+                      std::shared_ptr<int> id,
+                      std::shared_ptr<std::string> error_msg,
+                      std::vector<std::string> lookup_scope= std::vector<std::string>());
+    bool checkUser(int id, std::shared_ptr<std::string> error_msg);
   };
 }   // namespace db_helper
 #endif /* HARDWARE_NODES__POSTGRESQL_CONNECTOR_HPP_ */
