@@ -22,7 +22,7 @@ namespace partial_drawer_controller
     set_drawer_opening_is_in_progress(false);
   }
 
-  void ElectricalTrayLock::handle_lock_control()
+  void ElectricalTrayLock::update_state()
   {
     // Mind that the state for open_lock_current_step_ is changed in the handle_lock_status function when a CAN msg is
     // received
@@ -84,11 +84,11 @@ namespace partial_drawer_controller
     return _moving_average_sensor_lock_pin;
   }
 
-  void ElectricalTrayLock::unlock(uint8_t id)
+  void ElectricalTrayLock::unlock()
   {
     if (is_drawer_opening_in_progress())
     {
-      debug_printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", id);
+      debug_printf("Drawer opening is already in progress, so lock won't be opened again!\n");
     }
     else
     {

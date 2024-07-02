@@ -25,8 +25,21 @@ namespace partial_drawer_controller
     _onboard_led_driver->initialize(set_enable_pin_high);
   }
 
-  void TrayManager::handle_electrical_lock_control()
+  void TrayManager::unlock_lock(uint8_t tray_id)
   {
-    // TODO: Implement this function
+    _electrical_tray_locks[tray_id]->unlock();
+  }
+
+  void TrayManager::set_tray_led_brightness(uint8_t tray_id, uint8_t brightness)
+  {
+    _onboard_led_driver->set_tray_led_brightness(tray_id, brightness);
+  }
+
+  void TrayManager::update_states()
+  {
+    for (const auto& electrical_tray_lock : _electrical_tray_locks)
+    {
+      electrical_tray_lock->update_state();
+    }
   }
 }   // namespace partial_drawer_controller

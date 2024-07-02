@@ -23,7 +23,7 @@ namespace partial_drawer_controller
 
     void initialize_lock();
 
-    void handle_lock_control();
+    void update_state();
 
     void set_open_lock_current_step(bool open_lock_current_step);
 
@@ -41,7 +41,7 @@ namespace partial_drawer_controller
 
     float get_moving_average_sensor_lock_pin();
 
-    void unlock(uint8_t id);
+    void unlock();
 
     bool is_drawer_auto_close_timeout_triggered();
 

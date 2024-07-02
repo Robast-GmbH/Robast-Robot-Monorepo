@@ -19,7 +19,11 @@ namespace partial_drawer_controller
 
     void init(std::function<void()> set_enable_pin_high);
 
-    void handle_electrical_lock_control();
+    void unlock_lock(uint8_t tray_id);
+
+    void update_states();
+
+    void set_tray_led_brightness(uint8_t tray_id, uint8_t brightness);
 
    private:
     std::vector<std::unique_ptr<ElectricalTrayLock>> _electrical_tray_locks;

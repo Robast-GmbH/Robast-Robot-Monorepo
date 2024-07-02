@@ -37,7 +37,7 @@ std::shared_ptr<partial_drawer_controller::TrayManager> tray_manager;
 
 std::unique_ptr<drawer_controller::LedStrip> led_strip;
 
-// std::unique_ptr<drawer_controller::DataMapper> data_mapper;
+std::unique_ptr<drawer_controller::DataMapper> data_mapper;
 
 std::unique_ptr<drawer_controller::CanController> can_controller;
 
@@ -87,7 +87,7 @@ void setup()
   tray_manager->init(set_led_driver_enable_pin_high);
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
-  // data_mapper = std::make_unique<drawer_controller::DataMapper>();
+  data_mapper = std::make_unique<drawer_controller::DataMapper>();
 
   led_strip = std::make_unique<drawer_controller::LedStrip>();
 
@@ -114,70 +114,66 @@ void setup()
 
 void loop()
 {
-  std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
-
-  if (received_message.has_value())
+  for (uint8_t i = 1; i <= num_of_can_readings_per_cycle; ++i)
   {
-    debug_println("Main.cpp: Received CAN message!");
-  }
+    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
 
-  // led_strip->handle_led_control();
-
-  // uint8_t value;
-  // gpio_wrapper->digital_read(SENSE_INPUT_LID_7_CLOSED_PIN_ID, value);
-
-  // if (value == 1)
-  // {
-  //   if (counter == 400)
-  //   {
-  //     debug_println("Lid 7 is open!");
-  //     counter = 0;
-  //   }
-  // }
-  // else
-  // {
-  //   if (counter == 400)
-  //   {
-  //     debug_println("Lid 7 is closed!");
-  //     counter = 0;
-  //   }
-  // }
-  // counter++;
-
-  // if keyboard input toggle lock
-  if (Serial.available() > 0)
-  {
-    char c = Serial.read();
-    if (c == 'o')
+    if (received_message.has_value())
     {
-      debug_println("Open lock 8");
-      gpio_wrapper->digital_write(LOCK_7_CLOSE_CONTROL_PIN_ID, false);
-      delay(100);
-      gpio_wrapper->digital_write(LOCK_7_OPEN_CONTROL_PIN_ID, true);
-    }
-    else if (c == 'c')
-    {
-      debug_println("Close lock 8");
-      gpio_wrapper->digital_write(LOCK_7_OPEN_CONTROL_PIN_ID, false);
-      delay(100);
-      gpio_wrapper->digital_write(LOCK_7_CLOSE_CONTROL_PIN_ID, true);
+      switch (received_message->get_id())
+      {
+        case CAN_ID_ELECTRICAL_DRAWER_TASK:
+        {
+          uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
+          // TODO@Jacob: remove can_in function and put this into the data_mapper to remove can dependency from drawer
+          drawers.at(drawer_id)->can_in(received_message.value());
+        }
+        break;
+        case CAN_ID_LED_HEADER:
+        {
+          drawer_controller::LedHeader led_header = data_mapper->create_led_header(received_message.value());
+          num_of_can_readings_per_cycle = led_header.num_of_led_states_to_change + LED_HEADER_CAN_MSG_COUNT;
+          led_strip->initialize_led_state_change(led_header);
+        }
+        break;
+        case CAN_ID_SINGLE_LED_STATE:
+        {
+          drawer_controller::LedState led_state = data_mapper->create_led_state(received_message.value());
+          led_strip->set_led_state(led_state);
+        }
+        break;
+        case CAN_ID_TRAY_TASK:
+        {
+          uint8_t tray_id = received_message->get_can_signals().at(CAN_SIGNAL_TRAY_ID).get_data();
+          if (received_message->get_can_signals().at(CAN_SIGNAL_UNLOCK_TRAY).get_data() == 1)
+          {
+            tray_manager->unlock_lock(tray_id);
+          }
+
+          tray_manager->set_tray_led_brightness(
+            tray_id, received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS).get_data());
+        }
+        default:
+          debug_println("Received unsupported CAN message.");
+          break;
+      }
     }
   }
+  num_of_can_readings_per_cycle = 1;
 
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousMillis >= interval)
+  led_strip->handle_led_control();
+
+  for (drawer_ptr drawer : drawers)
   {
-    previousMillis = currentMillis;
-    debug_println("Sending CAN message!");
-    robast_can_msgs::CanMessage can_msg_error_feedback = can_db->can_messages.at(CAN_MSG_ERROR_FEEDBACK);
-    std::vector can_signals_error_feedback = can_msg_error_feedback.get_can_signals();
+    drawer->update_state();
 
-    can_signals_error_feedback.at(CAN_SIGNAL_MODULE_ID).set_data(1);
-    can_signals_error_feedback.at(CAN_SIGNAL_DRAWER_ID).set_data(2);
-    can_signals_error_feedback.at(CAN_SIGNAL_ERROR_CODE).set_data(3);
+    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = drawer->can_out();
 
-    can_msg_error_feedback.set_can_signals(can_signals_error_feedback);
-
-    can_controller->send_can_message(can_msg_error_feedback);
+    if (to_be_sent_message.has_value())
+    {
+      can_controller->send_can_message(to_be_sent_message.value());
+    }
   }
+
+  tray_manager->update_states();
 }

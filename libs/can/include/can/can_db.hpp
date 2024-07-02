@@ -82,7 +82,10 @@ namespace robast_can_msgs
             CAN_ID_TRAY_TASK,
             CAN_DLC_TRAY_TASK,
             {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
-             CanSignal(CAN_SIGNAL_TRAY_ID_BIT_START, CAN_SIGNAL_TRAY_ID_BIT_LENGTH, 0)})};
+             CanSignal(CAN_SIGNAL_TRAY_ID_BIT_START, CAN_SIGNAL_TRAY_ID_BIT_LENGTH, 0),
+             CanSignal(CAN_SIGNAL_UNLOCK_TRAY_BIT_START, CAN_SINGAL_UNLOCK_TRAY_BIT_LENGTH, 0),
+             CanSignal(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS_BIT_START, CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS_BIT_LENGTH, 0)}),
+    };
   };
 } // namespace robast_can_msgs
 
