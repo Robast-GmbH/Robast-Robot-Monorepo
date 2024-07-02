@@ -102,26 +102,26 @@ if(BUILD_TESTING)
 
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
 
-  # add_executable(
-  #   nfc_bridge_unit_test test/unit_tests/main.cpp test/unit_tests/test_cases.cpp ${test_srcs} ${unit_test_srcs}
-  # )
+  add_executable(
+    nfc_bridge_unit_test test/unit_tests/main.cpp test/unit_tests/test_cases.cpp ${test_srcs} ${unit_test_srcs}
+  )
 
-  # ament_target_dependencies(nfc_bridge_unit_test
-  #   ${dependencies}
-  # )
+  ament_target_dependencies(nfc_bridge_unit_test
+    ${dependencies}
+  )
 
-  # target_link_libraries(nfc_bridge_unit_test
-  #   ${library_nfc_bridge}
-  #   ${library_nfc_bridge_test}
-  #   rclcpp::rclcpp
-  #   rclcpp_action::rclcpp_action
-  #   Catch2::Catch2
-  # )
+  target_link_libraries(nfc_bridge_unit_test
+    ${library_nfc_bridge}
+    ${library_nfc_bridge_test}
+    rclcpp::rclcpp
+    rclcpp_action::rclcpp_action
+    Catch2::Catch2
+  )
   
-  # target_include_directories(nfc_bridge_unit_test
-  #   PRIVATE
-  #   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
-  # )
+  target_include_directories(nfc_bridge_unit_test
+    PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
+  )
   find_package(ament_cmake_flake8 REQUIRED)
   ament_flake8()
   find_package(ament_cmake_xmllint REQUIRED)

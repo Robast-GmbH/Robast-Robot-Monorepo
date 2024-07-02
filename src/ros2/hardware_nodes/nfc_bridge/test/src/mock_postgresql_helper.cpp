@@ -2,19 +2,22 @@
 
 namespace db_helper
 {
-  MockPostgreSqlHelper::MockPostgreSqlHelper(std::map<std::string, std::string> valid_user_list)
+  MockPostgreSqlHelper::MockPostgreSqlHelper(std::map<std::string, std::pair<int, std::string>> valid_user_list)
   {
-    user_list_ = valid_user_list;
+    id_by_name_of_valid_db_user = valid_user_list;
   }
 
   bool MockPostgreSqlHelper::checkUserTag(std::string scanned_key,
-                                          std::vector<std::string> lookup_scope __attribute__((unused)),
-                                          std::shared_ptr<std::string> related_username,
-                                          std::shared_ptr<int> id)
+                      std::shared_ptr<std::string> related_username,
+                      std::shared_ptr<int> id,
+                      std::shared_ptr<std::string> ,
+                      std::vector<std::string>)
   {
-    if (user_list_.count(scanned_key))
+    if (id_by_name_of_valid_db_user.find(scanned_key) != id_by_name_of_valid_db_user.end())
     {
-      *related_username = user_list_[scanned_key];
+      std::pair<int, std::string> found_user = id_by_name_of_valid_db_user[scanned_key];
+      *related_username = found_user.second;
+      *id = found_user.first;
 
       return true;
     }
@@ -26,22 +29,22 @@ namespace db_helper
     return "Dummy";
   }
 
-  int MockPostgreSqlHelper::createNfcCode(std::string user_id, int max_id)
+  bool MockPostgreSqlHelper::createNfcCode(std::string, std::string)
   {
-    return 222;
+    return true;
   }
 
-  std::string MockPostgreSqlHelper::createUser(std::string first_name, std::string last_name)
+  int MockPostgreSqlHelper::createUser(std::string, std::string)
   {
-    return "Dummy";
+    return -1;
   }
 
-  bool MockPostgreSqlHelper::checkUser(std::string id, std::string first_name, std::string last_name)
+  bool MockPostgreSqlHelper::checkUser(int, std::shared_ptr<std::string>)
   {
     return false;
   }
 
-  std::vector<std::vector<std::string>> MockPostgreSqlHelper::perform_query(std::string sql_statment)
+  std::vector<std::vector<std::string>> MockPostgreSqlHelper::perform_query(std::string, std::shared_ptr<std::string>)
   {
     return std::vector<std::vector<std::string>>();
   }

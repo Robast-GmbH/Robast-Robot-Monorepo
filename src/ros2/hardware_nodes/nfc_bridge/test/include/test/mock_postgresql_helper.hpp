@@ -12,20 +12,22 @@ namespace db_helper
   class MockPostgreSqlHelper : public IDBHelper
   {
    public:
-    MockPostgreSqlHelper(std::map<std::string, std::string> validUserList);
+    MockPostgreSqlHelper(std::map<std::string, std::pair<int, std::string>> id_by_name_of_valid_db_user);
 
     std::string test_connection();
-    std::string createUser(std::string first_name, std::string last_name);
-    int createNfcCode(std::string user_id, int max_ID);
-    bool checkUser(std::string id, std::string first_name, std::string last_name);
+    int createUser(std::string first_name, std::string last_name);
+    bool createNfcCode(std::string user_id, std::string card_id);
+    bool checkUser(int id, std::shared_ptr<std::string> error_msg);
     bool checkUserTag(std::string tag,
-                      std::vector<std::string> lookup_scope,
                       std::shared_ptr<std::string> user_name,
-                      std::shared_ptr<int> id);
-    std::vector<std::vector<std::string>> perform_query(std::string sql_statment);
+                      std::shared_ptr<int> id,
+                      std::shared_ptr<std::string> error_msg,
+                      std::vector<std::string> lookup_scope);
+    std::vector<std::vector<std::string>> perform_query(std::string sql_statment,
+                                                        std::shared_ptr<std::string> error_message);
 
    private:
-    std::map<std::string, std::string> user_list_;
+    std::map<std::string, std::pair<int, std::string>> id_by_name_of_valid_db_user;
   };
 }   // namespace db_helper
 

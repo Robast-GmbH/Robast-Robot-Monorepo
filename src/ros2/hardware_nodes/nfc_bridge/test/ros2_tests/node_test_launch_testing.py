@@ -1,7 +1,7 @@
 
 import os
 import unittest
-from std_msgs.msg import String
+from std_msgs.msg import Int64, Bool
 import ament_index_python
 import launch
 import launch_testing
@@ -34,7 +34,8 @@ def generate_test_description():
         parameters=[{
                         "key": input_data['nfc']['card_content'],
                         "User1_key": input_data['nfc']['card_content'],
-                        "User1_name": input_data['nfc']['authorised_user']
+                        "User1_name": input_data['nfc']['authorised_user'],
+                        "User1_id": input_data['nfc']['authorised_user_id']
                     }]
     )
     context = {'dut': dut}
@@ -73,8 +74,10 @@ class TestProcessOutput(unittest.TestCase):
 
     def test_read_nfc(self, dut, proc_output):
         self.start_subscriber()
+        self.nfc_reader_on_off(True)
         while not self.received_nfc_status_topic:
             rclpy.spin_once(self.node, timeout_sec=99)
+        self.nfc_reader_on_off(False)
 
         # Read data of expected result
         EXPECTED_DATA_PATH = os.path.join(
@@ -91,12 +94,22 @@ class TestProcessOutput(unittest.TestCase):
         self.received_nfc_status_topic = False
         # Create a subscriber
         self.subscription = self.node.create_subscription(
-            String,
+            Int64,
             '/authenticated_user',
             self.subscriber_callback,
             qos_profile=self.qos_profile
         )
 
+    def nfc_reader_on_off(self, on):
+        self.NFC_toogler_publischer = self.node.create_publisher(
+            Bool,
+            "/nfc_switch",
+            self.qos_profile)
+        msg = Bool()
+        msg.data = on
+        self.NFC_toogler_publischer.publish(msg)
+
     def subscriber_callback(self, msg):
         self.recived_chatter_message = msg.data
         self.received_nfc_status_topic = True
+        print("data_recived"+str(msg.data))
