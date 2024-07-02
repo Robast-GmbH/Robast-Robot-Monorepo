@@ -1,6 +1,6 @@
 #include <memory>
 
-// #include "can/can_controller.hpp"
+#include "can/can_controller.hpp"
 #include "debug/debug.hpp"
 #include "drawer/electrical_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
@@ -39,13 +39,18 @@ std::unique_ptr<drawer_controller::LedStrip> led_strip;
 
 // std::unique_ptr<drawer_controller::DataMapper> data_mapper;
 
+std::unique_ptr<drawer_controller::CanController> can_controller;
+
 // TODO@Jacob: This is kind of a temporary hack to ensure that the can messages are read from the
 // controller fast enough
 // TODO@Jacob: A much better solution would be to create paralle tasks for that like I suggested in
 // this story: https://robast.atlassian.net/browse/RE-1775
 uint16_t num_of_can_readings_per_cycle = 1;
 
+// TODO: REMOVE THIS
 uint16_t counter = 0;
+const int interval = 1000;          // interval at which send CAN Messages (milliseconds)
+unsigned long previousMillis = 0;   // will store last time a CAN Message was send
 
 void setup()
 {
@@ -86,6 +91,9 @@ void setup()
 
   led_strip = std::make_unique<drawer_controller::LedStrip>();
 
+  can_controller = std::make_unique<drawer_controller::CanController>(MODULE_ID, can_db, gpio_wrapper);
+  can_controller->initialize_can_controller();
+
   e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(MODULE_ID,
                                                                      LOCK_ID,
                                                                      can_db,
@@ -106,6 +114,13 @@ void setup()
 
 void loop()
 {
+  std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
+
+  if (received_message.has_value())
+  {
+    debug_println("Main.cpp: Received CAN message!");
+  }
+
   // led_strip->handle_led_control();
 
   // uint8_t value;
@@ -147,5 +162,22 @@ void loop()
       delay(100);
       gpio_wrapper->digital_write(LOCK_7_CLOSE_CONTROL_PIN_ID, true);
     }
+  }
+
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillis >= interval)
+  {
+    previousMillis = currentMillis;
+    debug_println("Sending CAN message!");
+    robast_can_msgs::CanMessage can_msg_error_feedback = can_db->can_messages.at(CAN_MSG_ERROR_FEEDBACK);
+    std::vector can_signals_error_feedback = can_msg_error_feedback.get_can_signals();
+
+    can_signals_error_feedback.at(CAN_SIGNAL_MODULE_ID).set_data(1);
+    can_signals_error_feedback.at(CAN_SIGNAL_DRAWER_ID).set_data(2);
+    can_signals_error_feedback.at(CAN_SIGNAL_ERROR_CODE).set_data(3);
+
+    can_msg_error_feedback.set_can_signals(can_signals_error_feedback);
+
+    can_controller->send_can_message(can_msg_error_feedback);
   }
 }

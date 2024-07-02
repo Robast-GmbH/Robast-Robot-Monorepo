@@ -1,8 +1,9 @@
 #ifndef DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
 #define DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
 
-#include <ACAN2515.h>
 #include <Arduino.h>
+#include <CAN_config.h>
+#include <ESP32CAN.h>
 
 #include <memory>
 #include <optional>
@@ -20,9 +21,7 @@ namespace drawer_controller
    public:
     CanController(uint32_t module_id,
                   std::shared_ptr<robast_can_msgs::CanDb> can_db,
-                  std::shared_ptr<IGpioWrapper> gpio_wrapper,
-                  uint8_t oe_txb0104_pin_id,
-                  bool gpio_output_state);
+                  std::shared_ptr<IGpioWrapper> gpio_wrapper);
 
     void initialize_can_controller(void);
 
@@ -30,24 +29,12 @@ namespace drawer_controller
 
     void send_can_message(robast_can_msgs::CanMessage can_msg);
 
-    bool is_message_available();
-
    private:
     uint32_t _module_id;
     std::shared_ptr<robast_can_msgs::CanDb> _can_db;
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
-    uint8_t _oe_txb0104_pin_id;
-    bool _gpio_output_state;
 
-    static const uint32_t _CAN_BIT_RATE = 250 * 1000;
-
-    static const uint32_t _QUARTZ_FREQUENCY = 8 * 1000 * 1000;   // 8 MHz
-
-    uint64_t _rx_msg_id;
-    uint8_t _rx_msg_dlc = 0;
-    uint8_t _rx_data_buf[8];
-
-    void initialize_voltage_translator(void);
+    static const uint8_t _RX_QUEUE_SIZE = 10;   // Receive Queue size
   };
 }   // namespace drawer_controller
 #endif   // DRAWER_CONTROLLER_CAN_CONTROLLER_HPP

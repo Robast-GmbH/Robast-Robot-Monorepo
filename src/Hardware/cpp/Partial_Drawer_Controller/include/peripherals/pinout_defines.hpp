@@ -5,10 +5,8 @@
   PINOUT DEFINES
 *********************************************************************************************************/
 
-#define MCP2515_INT GPIO_NUM_4   // TODO: Remove this
-
-#define TWAI_RX_PIN GPIO_NUM_04
-#define TWAI_TX_PIN GPIO_NUM_05
+#define TWAI_RX_PIN GPIO_NUM_4
+#define TWAI_TX_PIN GPIO_NUM_5
 
 #define SPI_MOSI GPIO_NUM_23
 #define SPI_MISO GPIO_NUM_19
