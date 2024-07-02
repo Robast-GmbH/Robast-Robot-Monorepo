@@ -11,6 +11,13 @@
             "problemMatcher": []
         },
         {
+            "label": "debug_build",
+            "detail": "Symlink Build for debugging",
+            "type": "shell",
+            "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic",
+            "problemMatcher": []
+        },
+        {
             "label": "Launch Dryve D1 Gate",
             "detail": "Launch the drawer gate node",
             "type": "shell",
