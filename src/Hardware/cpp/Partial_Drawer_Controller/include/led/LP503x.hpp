@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_LP503x_HPP
-#define DRAWER_CONTROLLER_LP503x_HPP
+#ifndef PARTIAL_DRAWER_CONTROLLER_LP503x_HPP
+#define PARTIAL_DRAWER_CONTROLLER_LP503x_HPP
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -151,4 +151,4 @@ namespace lp503x
   };
 }   // namespace lp503x
 
-#endif   // DRAWER_CONTROLLER_LP503x_HPP
+#endif   // PARTIAL_DRAWER_CONTROLLER_LP503x_HPP

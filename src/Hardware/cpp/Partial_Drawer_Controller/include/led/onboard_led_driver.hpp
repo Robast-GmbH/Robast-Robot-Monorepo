@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_LED_DRIVER_HPP
-#define DRAWER_CONTROLLER_LED_DRIVER_HPP
+#ifndef PARTIAL_DRAWER_CONTROLLER_LED_DRIVER_HPP
+#define PARTIAL_DRAWER_CONTROLLER_LED_DRIVER_HPP
 
 #include <Arduino.h>
 #include <Wire.h>
@@ -109,4 +109,4 @@ namespace partial_drawer_controller
   };
 
 }   // namespace partial_drawer_controller
-#endif   // DRAWER_CONTROLLER_LED_DRIVER_HPP
+#endif   // PARTIAL_DRAWER_CONTROLLER_LED_DRIVER_HPP
