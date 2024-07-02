@@ -1,21 +1,22 @@
-#include "peripherals/electrical_lock.hpp"
+#include "lock/electrical_drawer_lock.hpp"
 
 namespace drawer_controller
 {
-  ElectricalLock::ElectricalLock(std::shared_ptr<IGpioWrapper> gpio_wrapper) : _gpio_wrapper{gpio_wrapper}
+  ElectricalDrawerLock::ElectricalDrawerLock(std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                                             uint8_t power_open_pin_id,
+                                             uint8_t power_close_pin_id,
+                                             uint8_t sensor_lock_pin_id,
+                                             uint8_t sensor_drawer_closed_pin_id)
+      : _gpio_wrapper{gpio_wrapper},
+        _power_open_pin_id{power_open_pin_id},
+        _power_close_pin_id{power_close_pin_id},
+        _sensor_lock_pin_id{sensor_lock_pin_id},
+        _sensor_drawer_closed_pin{sensor_drawer_closed_pin_id}
   {
   }
 
-  void ElectricalLock::initialize_lock(uint8_t power_open_pin_id,
-                                       uint8_t power_close_pin_id,
-                                       uint8_t sensor_lock_pin_id,
-                                       uint8_t sensor_drawer_closed_pin_id)
+  void ElectricalDrawerLock::initialize_lock()
   {
-    _power_open_pin_id = power_open_pin_id;
-    _power_close_pin_id = power_close_pin_id;
-    _sensor_lock_pin_id = sensor_lock_pin_id;
-    _sensor_drawer_closed_pin = sensor_drawer_closed_pin_id;
-
     // It is important to set this to low before configuring the pin mode, because the default output state is high
     set_lock_output_low();
 
@@ -30,7 +31,7 @@ namespace drawer_controller
     set_drawer_auto_close_timeout_triggered(false);
   }
 
-  void ElectricalLock::handle_lock_control()
+  void ElectricalDrawerLock::handle_lock_control()
   {
     // Mind that the state for open_lock_current_step_ is changed in the handle_lock_status function when a CAN msg is
     // received
@@ -65,69 +66,55 @@ namespace drawer_controller
     }
   }
 
-  void ElectricalLock::set_drawer_auto_close_timeout_triggered(bool state)
+  void ElectricalDrawerLock::set_drawer_auto_close_timeout_triggered(bool state)
   {
     _is_drawer_auto_close_timeout_triggered = state;
   }
 
-  bool ElectricalLock::is_drawer_auto_close_timeout_triggered()
+  bool ElectricalDrawerLock::is_drawer_auto_close_timeout_triggered()
   {
     return _is_drawer_auto_close_timeout_triggered;
   }
 
-  void ElectricalLock::set_open_lock_current_step(bool open_lock_current_step)
+  void ElectricalDrawerLock::set_open_lock_current_step(bool open_lock_current_step)
   {
     _open_lock_current_step = open_lock_current_step;
   }
 
-  void ElectricalLock::set_timestamp_last_lock_change()
+  void ElectricalDrawerLock::set_timestamp_last_lock_change()
   {
     _timestamp_last_lock_opening = millis();
   }
 
-  void ElectricalLock::set_drawer_opening_is_in_progress(bool drawer_opening_is_in_progress)
+  void ElectricalDrawerLock::set_drawer_opening_is_in_progress(bool drawer_opening_is_in_progress)
   {
     _drawer_opening_is_in_progress = drawer_opening_is_in_progress;
   }
 
-  bool ElectricalLock::is_drawer_opening_in_progress()
+  bool ElectricalDrawerLock::is_drawer_opening_in_progress()
   {
     return _drawer_opening_is_in_progress;
   }
 
-  bool ElectricalLock::is_lock_switch_pushed()
+  bool ElectricalDrawerLock::is_lock_switch_pushed()
   {
     return get_moving_average_sensor_lock_pin() > 0.9;
   }
 
-  bool ElectricalLock::is_endstop_switch_pushed()
-  {
-    return get_moving_average_drawer_closed_pin() > 0.9;
-  }
-
-  void ElectricalLock::update_sensor_values()
+  void ElectricalDrawerLock::update_sensor_values()
   {
     // Tracking the moving average for the sensor pins helps to debounce them a little bit
     byte digital_read_sensor_lock_pin;
     _gpio_wrapper->digital_read(_sensor_lock_pin_id, digital_read_sensor_lock_pin);
     _moving_average_sensor_lock_pin = 0.2 * digital_read_sensor_lock_pin + 0.8 * _moving_average_sensor_lock_pin;
-
-    byte digital_drawer_closed_pin;
-    _gpio_wrapper->digital_read(_sensor_drawer_closed_pin, digital_drawer_closed_pin);
-    _moving_average_drawer_closed_pin = 0.2 * digital_drawer_closed_pin + 0.8 * _moving_average_drawer_closed_pin;
   }
 
-  float ElectricalLock::get_moving_average_sensor_lock_pin()
+  float ElectricalDrawerLock::get_moving_average_sensor_lock_pin()
   {
     return _moving_average_sensor_lock_pin;
   }
 
-  float ElectricalLock::get_moving_average_drawer_closed_pin()
-  {
-    return _moving_average_drawer_closed_pin;
-  }
-
-  void ElectricalLock::unlock(uint8_t id)
+  void ElectricalDrawerLock::unlock(uint8_t id)
   {
     if (is_drawer_opening_in_progress())
     {
@@ -141,19 +128,19 @@ namespace drawer_controller
     }
   }
 
-  void ElectricalLock::open_lock()
+  void ElectricalDrawerLock::open_lock()
   {
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_open_pin_id, HIGH);
   }
 
-  void ElectricalLock::close_lock()
+  void ElectricalDrawerLock::close_lock()
   {
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, HIGH);
   }
 
-  void ElectricalLock::set_lock_output_low()
+  void ElectricalDrawerLock::set_lock_output_low()
   {
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);

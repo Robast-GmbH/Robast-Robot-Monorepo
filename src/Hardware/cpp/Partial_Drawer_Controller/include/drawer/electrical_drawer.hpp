@@ -9,7 +9,7 @@
 #include "can/can_utils.hpp"
 #include "interfaces/i_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
-#include "peripherals/electrical_lock.hpp"
+#include "lock/electrical_drawer_lock.hpp"
 #include "peripherals/encoder.hpp"
 #include "peripherals/motor.hpp"
 
@@ -38,14 +38,11 @@ namespace drawer_controller
                      bool use_encoder,
                      uint8_t encoder_pin_a,
                      uint8_t encoder_pin_b,
-                     uint8_t motor_driver_address);
+                     uint8_t motor_driver_address,
+                     uint8_t sense_input_drawer_closed_pin_id,
+                     std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock);
 
-    void init_electrical_lock(uint8_t pwr_open_lock_pin_id,
-                              uint8_t pwr_close_lock_pin_id,
-                              uint8_t sensor_lock_pin_id,
-                              uint8_t sensor_drawer_closed_pin_id) override;
-
-    void handle_electrical_lock_control() override;
+    void init();
 
     void can_in(robast_can_msgs::CanMessage msg) override;
 
@@ -69,7 +66,8 @@ namespace drawer_controller
 
     std::unique_ptr<Encoder> _encoder;
 
-    std::unique_ptr<ElectricalLock> _electrical_lock;
+    // optional because the lock is not always installed (e.g. in the partial drawer)
+    std::optional<std::shared_ptr<ElectricalDrawerLock>> _electrical_drawer_lock;
 
     std::unique_ptr<CanUtils> _can_utils;
 
@@ -85,6 +83,9 @@ namespace drawer_controller
     std::unique_ptr<stepper_motor::Motor> _motor;
 
     bool _triggered_closing_lock_after_opening = false;
+
+    uint8_t _sense_drawer_closed_pin_id;
+    float _moving_average_drawer_closed_pin = 0;
 
     /* FUNCTIONS */
 
@@ -110,8 +111,6 @@ namespace drawer_controller
 
     void set_target_speed_and_direction(uint8_t target_speed);
 
-    void unlock();
-
     void check_if_drawer_is_homed();
 
     void handle_electrical_drawer_task_msg(robast_can_msgs::CanMessage can_message);
@@ -121,6 +120,14 @@ namespace drawer_controller
     void debug_prints_electric_drawer_task(robast_can_msgs::CanMessage can_message);
 
     void debug_prints_drawer_lock(robast_can_msgs::CanMessage& can_message);
+
+    void update_sensor_values();
+
+    float get_moving_average_drawer_closed_pin();
+
+    bool is_endstop_switch_pushed();
+
+    void handle_electrical_drawer_lock_control();
   };
 }   // namespace drawer_controller
 

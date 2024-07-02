@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_ELECTRICAL_LOCK_HPP
-#define DRAWER_CONTROLLER_ELECTRICAL_LOCK_HPP
+#ifndef PARTIAL_DRAWER_CONTROLLER_ELECTRICAL_TRAY_LOCK_HPP
+#define PARTIAL_DRAWER_CONTROLLER_ELECTRICAL_TRAY_LOCK_HPP
 
 #include <Arduino.h>
 
@@ -12,17 +12,16 @@
 #define ELECTRICAL_LOCK_MECHANISM_TIME                         700   // according to the datasheet a minimum of 600ms is required
 #define ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED 10000   // milliseconds
 
-namespace drawer_controller
+namespace partial_drawer_controller
 {
-  class ElectricalLock
+  class ElectricalTrayLock
   {
    public:
-    ElectricalLock(std::shared_ptr<IGpioWrapper> gpio_wrapper);
+    ElectricalTrayLock(std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+                       uint8_t power_open_pin_id,
+                       uint8_t power_close_pin_id);
 
-    void initialize_lock(uint8_t power_open_pin_id,
-                         uint8_t power_close_pin_id,
-                         uint8_t sensor_lock_pin_id,
-                         uint8_t sensor_drawer_closed_pin_id);
+    void initialize_lock();
 
     void handle_lock_control();
 
@@ -42,8 +41,6 @@ namespace drawer_controller
 
     float get_moving_average_sensor_lock_pin();
 
-    float get_moving_average_drawer_closed_pin();
-
     void unlock(uint8_t id);
 
     void set_drawer_auto_close_timeout_triggered(bool state);
@@ -56,20 +53,17 @@ namespace drawer_controller
     uint8_t _sensor_lock_pin_id;
     uint8_t _sensor_drawer_closed_pin;
 
-    std::shared_ptr<IGpioWrapper> _gpio_wrapper;
+    std::shared_ptr<drawer_controller::IGpioWrapper> _gpio_wrapper;
 
     bool _open_lock_current_step;    // flag to store which state the locks should have
     bool _open_lock_previous_step;   // flag to store state of the lock of the previous step
 
     bool _drawer_opening_is_in_progress = false;
 
-    bool _is_drawer_auto_close_timeout_triggered = false;
-
     unsigned long _timestamp_last_lock_change = 0;
     unsigned long _timestamp_last_lock_opening = 0;
 
     float _moving_average_sensor_lock_pin = 0;
-    float _moving_average_drawer_closed_pin = 0;
 
     void open_lock();
 
@@ -77,5 +71,5 @@ namespace drawer_controller
 
     void set_lock_output_low();
   };
-}   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_ELECTRICAL_LOCK_HPP
+}   // namespace partial_drawer_controller
+#endif   // PARTIAL_DRAWER_CONTROLLER_ELECTRICAL_TRAY_LOCK_HPP

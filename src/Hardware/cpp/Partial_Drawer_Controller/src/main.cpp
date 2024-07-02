@@ -2,7 +2,6 @@
 
 // #include "can/can_controller.hpp"
 #include "debug/debug.hpp"
-#include "drawer/drawer.hpp"
 #include "drawer/electrical_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "led/led_strip.hpp"
