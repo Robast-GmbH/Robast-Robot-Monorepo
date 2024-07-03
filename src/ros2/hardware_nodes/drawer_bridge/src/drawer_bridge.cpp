@@ -26,6 +26,11 @@ namespace drawer_bridge
                                         _qos_config.get_qos_led_cmd(),
                                         std::bind(&DrawerBridge::led_cmd_topic_callback, this, std::placeholders::_1));
 
+    _tray_task_subscription = this->create_subscription<TrayTask>(
+      "tray_task",
+      _qos_config.get_qos_open_drawer(),
+      std::bind(&DrawerBridge::tray_task_topic_callback, this, std::placeholders::_1));
+
     _can_messages_subscription = this->create_subscription<CanMessage>(
       "from_can_bus",
       _qos_config.get_qos_can_messages(),
@@ -105,6 +110,18 @@ namespace drawer_bridge
     {
       const CanMessage can_msg =
         _can_message_creator.create_can_msg_set_single_led_state(msg.leds[i], msg.drawer_address);
+      send_can_msg(can_msg);
+    }
+  }
+
+  void DrawerBridge::tray_task_topic_callback(const TrayTask& msg)
+  {
+    uint8_t num_of_leds = msg.led_brightness.size();
+
+    for (uint8_t i = 1; i <= num_of_leds; i++)
+    {
+      const CanMessage can_msg =
+        _can_message_creator.create_can_msg_tray_led_brightness(msg.drawer_address, i, msg.led_brightness[i]);
       send_can_msg(can_msg);
     }
   }
