@@ -148,7 +148,7 @@ void loop()
           led_strip->set_led_state(led_state);
         }
         break;
-        case CAN_ID_TRAY_TASK:
+        case CAN_ID_TRAY_LED_BRIGHTNESS:
         {
           tray_manager->set_tray_led_brightness(
             received_message->get_can_signals().at(CAN_SIGNAL_TRAY_ID).get_data(),
