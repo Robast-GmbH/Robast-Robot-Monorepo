@@ -27,7 +27,7 @@ namespace partial_drawer_controller
 
   void TrayManager::unlock_lock(uint8_t tray_id)
   {
-    _electrical_tray_locks[tray_id]->unlock();
+    _electrical_tray_locks[tray_id - 1]->unlock();
   }
 
   void TrayManager::set_tray_led_brightness(uint8_t tray_id, uint8_t brightness)
