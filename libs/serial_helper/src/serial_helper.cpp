@@ -1,5 +1,5 @@
 #include "serial_helper/serial_helper.h"
-#define DEBUG_LOG true
+#define DEBUG_LOG false
 namespace serial_helper
 {
 

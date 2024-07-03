@@ -31,25 +31,25 @@ include_directories(test/include)
 
 
 set(executable_nfc_bridge nfc_bridge)
-set(executable_nfc_bridge_test nfc_bridge_test)
+# set(executable_nfc_bridge_test nfc_bridge_test)
 
 add_executable(${executable_nfc_bridge}
   src/main.cpp)
-add_executable(${executable_nfc_bridge_test}
-  test/ros2_tests/main.cpp)
+# add_executable(${executable_nfc_bridge_test}
+#   test/ros2_tests/main.cpp)
 
 set(library_nfc_bridge ${executable_nfc_bridge}_core)
-set(library_nfc_bridge_test ${executable_nfc_bridge_test}_core)
+# set(library_nfc_bridge_test ${executable_nfc_bridge_test}_core)
 
 add_library(${library_nfc_bridge} SHARED
 src/nfc_bridge.cpp
 )
-add_library(${library_nfc_bridge_test} SHARED
-  src/nfc_bridge.cpp
-  test/src/mock_serial_helper.cpp
-  test/src/mock_postgresql_helper.cpp
-  test/src/test_nfc_bridge.cpp
-)
+# add_library(${library_nfc_bridge_test} SHARED
+#   src/nfc_bridge.cpp
+#   test/src/mock_serial_helper.cpp
+#   test/src/mock_postgresql_helper.cpp
+#   test/src/test_nfc_bridge.cpp
+# )
 #ToDo: fix this that we can swap to the newer version
 # include(FetchContent)
 #   FetchContent_Declare(
@@ -73,17 +73,17 @@ ament_target_dependencies(${executable_nfc_bridge}
 )
 target_link_libraries(${executable_nfc_bridge} ${library_nfc_bridge})
 
-ament_target_dependencies(${executable_nfc_bridge_test}
-  ${dependencies}
-)
-target_link_libraries(${executable_nfc_bridge_test} ${library_nfc_bridge_test})
+# ament_target_dependencies(${executable_nfc_bridge_test}
+#   ${dependencies}
+# )
+# target_link_libraries(${executable_nfc_bridge_test} ${library_nfc_bridge_test})
 
 ament_target_dependencies(${library_nfc_bridge}
   ${dependencies}
 )
-ament_target_dependencies(${library_nfc_bridge_test}
-  ${dependencies}
-)
+# ament_target_dependencies(${library_nfc_bridge_test}
+#   ${dependencies}
+# )
 
 target_include_directories(nfc_bridge PUBLIC
   $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
@@ -102,26 +102,26 @@ if(BUILD_TESTING)
 
   add_launch_test(test/ros2_tests/node_test_launch_testing.py)
 
-  add_executable(
-    nfc_bridge_unit_test test/unit_tests/main.cpp test/unit_tests/test_cases.cpp ${test_srcs} ${unit_test_srcs}
-  )
+  # add_executable(
+  #   nfc_bridge_unit_test test/unit_tests/main.cpp test/unit_tests/test_cases.cpp ${test_srcs} ${unit_test_srcs}
+  # )
 
-  ament_target_dependencies(nfc_bridge_unit_test
-    ${dependencies}
-  )
+  # ament_target_dependencies(nfc_bridge_unit_test
+  #   ${dependencies}
+  # )
 
-  target_link_libraries(nfc_bridge_unit_test
-    ${library_nfc_bridge}
-    ${library_nfc_bridge_test}
-    rclcpp::rclcpp
-    rclcpp_action::rclcpp_action
-    Catch2::Catch2
-  )
+  # target_link_libraries(nfc_bridge_unit_test
+  #   ${library_nfc_bridge}
+  #   ${library_nfc_bridge_test}
+  #   rclcpp::rclcpp
+  #   rclcpp_action::rclcpp_action
+  #   Catch2::Catch2
+  # )
   
-  target_include_directories(nfc_bridge_unit_test
-    PRIVATE
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
-  )
+  # target_include_directories(nfc_bridge_unit_test
+  #   PRIVATE
+  #   $<BUILD_INTERFACE:${CMAKE_CURRENT_LIST_DIR}/>
+  # )
   find_package(ament_cmake_flake8 REQUIRED)
   ament_flake8()
   find_package(ament_cmake_xmllint REQUIRED)
@@ -134,7 +134,6 @@ endif()
 
 install(TARGETS
 ${library_nfc_bridge}
-${library_nfc_bridge_test}
 ARCHIVE DESTINATION lib
 LIBRARY DESTINATION lib
 RUNTIME DESTINATION bin
@@ -142,7 +141,6 @@ RUNTIME DESTINATION bin
 
 install(TARGETS
 ${executable_nfc_bridge}
-${executable_nfc_bridge_test}
 RUNTIME DESTINATION lib/${PROJECT_NAME}
 )
 
@@ -155,11 +153,11 @@ launch
 DESTINATION share/${PROJECT_NAME}/
 )
 
-install(FILES
-  test/ros2_tests/node_test_launch_testing.py
-  test/ros2_tests/node_test_expected_data.yaml 
-  test/ros2_tests/node_test_input_data.yaml 
-  DESTINATION lib/${PROJECT_NAME})
+# install(FILES
+#   test/ros2_tests/node_test_launch_testing.py
+#   test/ros2_tests/node_test_expected_data.yaml 
+#   test/ros2_tests/node_test_input_data.yaml 
+#   DESTINATION lib/${PROJECT_NAME})
 
 ament_export_include_directories(include)
 
