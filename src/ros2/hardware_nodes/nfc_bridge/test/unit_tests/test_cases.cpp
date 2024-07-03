@@ -37,10 +37,11 @@ namespace nfc_bridge
 
       fakeit::When(Method(db_helper_mock, checkUserTag))
           .AlwaysDo(
-              [=](  std::string sqlStatment, 
-                    std::shared_ptr<std::string> result_data,
-                    std::shared_ptr<int>, std::shared_ptr<std::string>,
-                    std::vector<std::string>) -> bool
+              [=](std::string sqlStatment,
+                  std::shared_ptr<std::string> result_data,
+                  std::shared_ptr<int>,
+                  std::shared_ptr<std::string>,
+                  std::vector<std::string>) -> bool
               {
                 if (sqlStatment.find("12bab1cc5b867068c127a6c8299e3f61") != std::string::npos)
                 {
@@ -180,7 +181,7 @@ namespace nfc_bridge
       //         REQUIRE(nfc_reader->scan_tag(std::make_shared<std::string>(key)));
       //         REQUIRE(key == key_from_card);
       //         REQUIRE(fakeit::Verify(
-      //             Method(serial_helper_mock, ascii_interaction).Using(NFC_LOGIN_MC_STANDART("00"), fakeit::_,
+      //             Method(serial_helper_mock, ascii_interaction).Using(NFC_LOGIN_MC_STANDARD("00"), fakeit::_,
       //             fakeit::_), Method(serial_helper_mock, ascii_interaction).Using(NFC_READ_MC("02"), fakeit::_,
       //             fakeit::_)));
       //       }

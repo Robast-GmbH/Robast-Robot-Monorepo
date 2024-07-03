@@ -9,7 +9,7 @@
 
 #define NFC_LOGIN_MC(KEY, KEY_TYPE, SECTOR) \
   std::string("0B00") + std::string(KEY) + std::string(KEY_TYPE) + std::string(SECTOR)
-#define NFC_LOGIN_MC_STANDART(SECTOR) std::string("0B00FFFFFFFFFFFF00") + std::string(SECTOR)
+#define NFC_LOGIN_MC_STANDARD(SECTOR) std::string("0B00FFFFFFFFFFFF00") + std::string(SECTOR)
 #define NFC_READ_MC(BLOCK)            std::string("0B01") + std::string(BLOCK)
 #define NFC_WRITE_MC(BLOCK, DATA) \
   std::string("0B02") + std::string(BLOCK) + std::string(DATA)   // Data ist als HEX string of 16Byte
