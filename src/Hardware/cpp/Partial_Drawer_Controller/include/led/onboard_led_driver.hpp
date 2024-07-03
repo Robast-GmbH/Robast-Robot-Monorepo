@@ -75,14 +75,27 @@ namespace partial_drawer_controller
       enable_chip();
     }
 
-    void set_tray_led_brightness(uint8_t tray, uint8_t brightness)
+    void set_tray_led_brightness(uint8_t tray, uint8_t led_row, uint8_t brightness)
     {
       const tray_led_register_config& led_config = _tray_to_led_config.at(tray);
       // For now I did not understand why setting the color register instead of the brightness register is resulting
       // in changing the brightness, but it is working
-      _lp5030rjvr->set_led_output_color_by_register(led_config.register_row_1, brightness);
-      _lp5030rjvr->set_led_output_color_by_register(led_config.register_row_2, brightness);
-      _lp5030rjvr->set_led_output_color_by_register(led_config.register_row_3, brightness);
+
+      switch (led_row)
+      {
+        case 1:
+          set_led_brigthness(led_config.register_row_1, brightness);
+          break;
+        case 2:
+          set_led_brigthness(led_config.register_row_2, brightness);
+          break;
+        case 3:
+          set_led_brigthness(led_config.register_row_3, brightness);
+          break;
+        default:
+          Serial.printf("Warning! Trying to set led brightness for tray %d with invalid row %d!\n", tray, led_row);
+          break;
+      }
     }
 
    private:

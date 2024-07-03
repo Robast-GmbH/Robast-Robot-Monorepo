@@ -150,10 +150,10 @@ void loop()
         break;
         case CAN_ID_TRAY_TASK:
         {
-          uint8_t tray_id = received_message->get_can_signals().at(CAN_SIGNAL_TRAY_ID).get_data();
-
           tray_manager->set_tray_led_brightness(
-            tray_id, received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS).get_data());
+            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_ID).get_data(),
+            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_ROW_INDEX).get_data(),
+            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS).get_data());
         }
         default:
           debug_println("Received unsupported CAN message.");

@@ -23,7 +23,7 @@ namespace partial_drawer_controller
 
     void update_states();
 
-    void set_tray_led_brightness(uint8_t tray_id, uint8_t brightness);
+    void set_tray_led_brightness(uint8_t tray_id, uint8_t led_row, uint8_t brightness);
 
    private:
     std::vector<std::unique_ptr<ElectricalTrayLock>> _electrical_tray_locks;

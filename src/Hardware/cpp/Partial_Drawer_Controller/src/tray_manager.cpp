@@ -30,9 +30,9 @@ namespace partial_drawer_controller
     _electrical_tray_locks[tray_id - 1]->unlock();
   }
 
-  void TrayManager::set_tray_led_brightness(uint8_t tray_id, uint8_t brightness)
+  void TrayManager::set_tray_led_brightness(uint8_t tray_id, uint8_t led_row, uint8_t brightness)
   {
-    _onboard_led_driver->set_tray_led_brightness(tray_id, brightness);
+    _onboard_led_driver->set_tray_led_brightness(tray_id, led_row, brightness);
   }
 
   void TrayManager::update_states()
