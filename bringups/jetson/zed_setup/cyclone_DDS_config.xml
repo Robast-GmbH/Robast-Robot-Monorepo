@@ -7,8 +7,9 @@
         <Discovery>
             <ParticipantIndex>auto</ParticipantIndex>
             <Peers>
-                <Peer Address="192.0.0.200" />
-                <Peer Address="192.0.0.50" />
+                <Peer Address="192.168.0.200" />
+                <Peer Address="192.168.0.50" />
+                <Peer Address="192.168.0.47" />
                 <Peer Address="127.0.0.1" />
             </Peers>
             <MaxAutoParticipantIndex>50</MaxAutoParticipantIndex>
