@@ -18,7 +18,7 @@ namespace robast_can_msgs
 #define CAN_ID_ERROR_FEEDBACK 0x005
 #define CAN_ID_LED_HEADER 0x006
 #define CAN_ID_SINGLE_LED_STATE 0x007
-#define CAN_ID_TRAY_TASK 0x008
+#define CAN_ID_TRAY_LED_BRIGHTNESS 0x008
 
 #define CAN_DLC_DRAWER_UNLOCK 4
 #define CAN_DLC_DRAWER_FEEDBACK 4
@@ -27,7 +27,7 @@ namespace robast_can_msgs
 #define CAN_DLC_ERROR_FEEDBACK 4
 #define CAN_DLC_LED_HEADER 8
 #define CAN_DLC_SINGLE_LED_STATE 7
-#define CAN_DLC_TRAY_TASK 6
+#define CAN_DLC_TRAY_LED_BRIGHTNESS 6
 
   /*********************************************************************************************************
    CAN msg index and can signal index to access the msg and signals in our can_db vector
@@ -40,7 +40,7 @@ namespace robast_can_msgs
 #define CAN_MSG_ERROR_FEEDBACK 4
 #define CAN_MSG_LED_HEADER 5
 #define CAN_MSG_SINGLE_LED_STATE 6
-#define CAN_MSG_TRAY_TASK 7
+#define CAN_MSG_TRAY_LED_BRIGHTNESS 7
 
 // DRAWER_UNLOCK
 #define CAN_SIGNAL_MODULE_ID 0
@@ -85,7 +85,7 @@ namespace robast_can_msgs
 #define CAN_SIGNAL_SINGLE_LED_STATE_BLUE 3
 #define CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS 4
 
-// TRAY_TASK
+// TRAY_LED_BRIGHTNESS
 #define CAN_SIGNAL_MODULE_ID 0
 #define CAN_SIGNAL_TRAY_ID 1
 #define CAN_SIGNAL_TRAY_LED_ROW_INDEX 2
@@ -167,7 +167,7 @@ namespace robast_can_msgs
 #define CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_START 48
 #define CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_LENGTH 8
 
-// TRAY_TASK
+// TRAY_LED_BRIGHTNESS
 #define CAN_SIGNAL_MODULE_ID_BIT_START 0
 #define CAN_SIGNAL_MODULE_ID_BIT_LENGTH 24
 #define CAN_SIGNAL_TRAY_ID_BIT_START 24
