@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/models/provider/modules_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/widgets/drawer_view.dart';
 import 'package:robot_frontend/widgets/hint_view.dart';
@@ -31,17 +33,19 @@ class _StoppedViewState extends State<StoppedView> {
             child: SizedBox(),
           ),
           Expanded(
-            child: Selector<RobotProvider, List<DrawerModule>?>(
+            child: Selector<ModulesProvider, List<RobotDrawer>>(
               selector: (_, provider) => provider.modules,
               builder: (context, modules, child) {
-                if (modules == null) {
+                if (modules.isEmpty) {
                   return const Center(child: Text('Loading...'));
                 }
-                final isAnyDrawerOpen = modules.any((module) => module.isOpen);
+                RobotDrawer? openedModule;
+                final isAnyDrawerOpen = modules.any((module) => module.moduleProcess.status == ModuleProcessStatus.open);
                 if (isAnyDrawerOpen) {
                   for (var i = 0; i < modules.length; i++) {
                     isOpening[i] = false;
                   }
+                  openedModule = modules.firstWhere((module) => module.moduleProcess.status == ModuleProcessStatus.open);
                 } else {
                   for (var i = 0; i < modules.length; i++) {
                     isClosing[i] = false;
@@ -77,18 +81,18 @@ class _StoppedViewState extends State<StoppedView> {
                               ),
                               if (isOpening.any((e) => e)) ...[
                                 HintView(
-                                  text: modules[isOpening.indexOf(true)].type == ModuleType.electric_drawer
+                                  text: modules[isOpening.indexOf(true)].variant == DrawerVariant.electric
                                       ? 'Gewählte Schublade öffnet sich'
                                       : 'Bitte gewählte Schublade öffnen',
-                                  moduleLabel: modules[isOpening.indexOf(true)].label,
+                                  moduleLabel: modules[isOpening.indexOf(true)].content.toString(),
                                 ),
                               ],
                               if (isAnyDrawerOpen) ...[
                                 GestureDetector(
                                   onTap: () {
-                                    final module = modules.firstWhere((module) => module.isOpen);
-                                    if (module.type == ModuleType.electric_drawer) {
-                                      Provider.of<RobotProvider>(context, listen: false).closeDrawer(module);
+                                    final module = openedModule!;
+                                    if (module.variant == DrawerVariant.electric) {
+                                      Provider.of<ModulesProvider>(context, listen: false).closeDrawer(module);
                                       isClosing[modules.indexOf(module)] = true;
                                     }
                                   },
@@ -112,7 +116,7 @@ class _StoppedViewState extends State<StoppedView> {
                                           Padding(
                                             padding: const EdgeInsets.only(top: 8),
                                             child: Text(
-                                              modules.firstWhere((module) => module.isOpen).label,
+                                              openedModule!.content.toString(),
                                               style: const TextStyle(
                                                 height: 0,
                                                 color: Colors.white,
@@ -124,7 +128,7 @@ class _StoppedViewState extends State<StoppedView> {
                                           Padding(
                                             padding: const EdgeInsets.symmetric(horizontal: 48),
                                             child: Text(
-                                              modules.firstWhere((module) => module.isOpen).type == ModuleType.electric_drawer
+                                              openedModule.variant == DrawerVariant.electric
                                                   ? 'Zum Schließen der Schublade bitte hier berühren'
                                                   : 'Zum Fortfahren Schublade bitte wieder schließen',
                                               textAlign: TextAlign.center,
@@ -138,9 +142,7 @@ class _StoppedViewState extends State<StoppedView> {
                                           Padding(
                                             padding: const EdgeInsets.only(bottom: 64),
                                             child: Icon(
-                                              modules.firstWhere((module) => module.isOpen).type == ModuleType.manual_drawer
-                                                  ? Icons.arrow_downward
-                                                  : Icons.touch_app,
+                                              openedModule.variant == DrawerVariant.manual ? Icons.arrow_downward : Icons.touch_app,
                                               size: 100,
                                               color: Colors.white,
                                             ),
@@ -154,7 +156,7 @@ class _StoppedViewState extends State<StoppedView> {
                               if (isClosing.any((e) => e)) ...[
                                 HintView(
                                   text: 'Schublade schließt sich, bitte warten',
-                                  moduleLabel: modules[isClosing.indexOf(true)].label,
+                                  moduleLabel: modules[isClosing.indexOf(true)].content.toString(),
                                 ),
                               ],
                             ],

@@ -1,12 +1,10 @@
-from dataclasses import dataclass
+from pydantic import BaseModel
 from typing import Dict, Any
+from pydantic_models.drawer_address import DrawerAddress
 
 
-@dataclass
-class Drawer:
-    robot_name: str
-    module_id: int
-    drawer_id: int
+class Drawer(BaseModel):
+    address: DrawerAddress
     position: int
     size: int
     variant: str
@@ -20,9 +18,7 @@ class Drawer:
     @classmethod
     def from_json(cls, json_data: dict[str, Any]) -> "Drawer":
         return cls(
-            robot_name=json_data["robot_name"],
-            module_id=json_data["module_id"],
-            drawer_id=json_data["drawer_id"],
+            address=DrawerAddress.from_json(json_data["address"]),
             size=json_data["size"],
             position=json_data["position"],
             variant=json_data["variant"],

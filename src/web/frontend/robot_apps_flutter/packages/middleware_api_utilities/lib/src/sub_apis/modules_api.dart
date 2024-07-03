@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
+import 'package:middleware_api_utilities/src/models/drawer_address.dart';
 import 'package:middleware_api_utilities/src/models/robot_drawer.dart';
 
 class ModulesApi {
@@ -187,21 +188,20 @@ class ModulesApi {
 
   Future<bool> startModuleProcess({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
     required String processName,
     required Map<String, int> payload,
   }) async {
     final response = await tryPost(
       uri: Uri.parse('$prefix/modules/start_module_process'),
       data: {
-        'robot_name': robotName,
-        'module_process_data': {
-          'module_id': moduleID,
-          'drawer_id': drawerID,
-          'process_name': processName,
-          'payload': payload,
+        'drawer_address': {
+          'robot_name': robotName,
+          'module_id': drawerAddress.moduleID,
+          'drawer_id': drawerAddress.drawerID,
         },
+        'process_name': processName,
+        'payload': payload,
       },
     );
     return _wasRequestSuccessful(response: response);

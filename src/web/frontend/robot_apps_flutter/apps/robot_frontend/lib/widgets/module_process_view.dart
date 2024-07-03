@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/models/provider/robot_provider.dart';
+import 'package:robot_frontend/models/provider/modules_provider.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/drawer_view.dart';
 import 'package:robot_frontend/widgets/hint_view.dart';
-import 'package:shared_data_models/shared_data_models.dart';
 
 class ModuleProcessView extends StatefulWidget {
   const ModuleProcessView({super.key});
@@ -20,91 +20,83 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
       children: [
         const Expanded(child: SizedBox()),
         Expanded(
-          child: Selector<RobotProvider, ModuleProcess?>(
-            selector: (_, provider) => provider.moduleProcess,
-            builder: (context, moduleProcess, child) {
-              final modules = Provider.of<RobotProvider>(context, listen: false).modules;
-              if (modules == null) {
+          child: Selector<ModulesProvider, List<RobotDrawer>>(
+            selector: (_, provider) => provider.modules,
+            builder: (context, modules, child) {
+              if (modules.isEmpty || modules.every((module) => module.moduleProcess.status == ModuleProcessStatus.idle)) {
                 return const Center(child: CircularProgressIndicator());
               }
-              if (moduleProcess?.state != ModuleProcessState.closed && moduleProcess?.state != ModuleProcessState.finished) {
+              final moduleInProcess = Provider.of<ModulesProvider>(context).modules.firstWhere(
+                    (element) => element.moduleProcess.status != ModuleProcessStatus.idle,
+                  );
+              if (moduleInProcess.moduleProcess.status != ModuleProcessStatus.closed && moduleInProcess.moduleProcess.status != ModuleProcessStatus.finished) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 64),
                   child: Stack(
                     children: [
                       Column(
-                        children: Provider.of<RobotProvider>(context, listen: false).modules?.map((module) {
-                              return DrawerView(
-                                module: module,
-                                label: moduleProcess?.moduleID == module.moduleID ? moduleProcess?.payload : '',
-                                isAnyDrawerOpen: moduleProcess?.moduleID != module.moduleID,
-                                isEnabled: moduleProcess?.moduleID == module.moduleID,
-                                onOpening: () {
-                                  Provider.of<RobotProvider>(context, listen: false).openDrawer(module);
-                                },
-                              );
-                            }).toList() ??
-                            [],
+                        children: modules.map((module) {
+                          return DrawerView(
+                            module: module,
+                            isAnyDrawerOpen: moduleInProcess.moduleID != module.moduleID,
+                            isEnabled: moduleInProcess.moduleID == module.moduleID,
+                            onOpening: () {
+                              Provider.of<ModulesProvider>(context, listen: false).openDrawer(module);
+                            },
+                            label: moduleInProcess == module ? 'Zum Öffnen tippen' : '',
+                          );
+                        }).toList(),
                       ),
-                      if (moduleProcess?.state == ModuleProcessState.opening) ...[
+                      if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.opening) ...[
                         HintView(
-                          text: modules[moduleProcess!.moduleID].type == ModuleType.electric_drawer
+                          text: modules[moduleInProcess.moduleID].variant == DrawerVariant.electric
                               ? 'Gewählte Schublade öffnet sich'
                               : 'Bitte gewählte Schublade öffnen',
-                          moduleLabel: moduleProcess.payload,
+                          moduleLabel: moduleInProcess.moduleProcess.payload.toString(),
                         ),
                       ],
-                      if (moduleProcess?.state == ModuleProcessState.closing) ...[
+                      if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.open) ...[
+                        HintView(
+                          text: moduleInProcess.moduleProcess.payloadToString(),
+                          moduleLabel: moduleInProcess.moduleProcess.payload.toString(),
+                        ),
+                      ],
+                      if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.closing) ...[
                         HintView(
                           text: 'Schublade schließt sich, bitte warten',
-                          moduleLabel: moduleProcess!.payload,
+                          moduleLabel: moduleInProcess.moduleProcess.payload.toString(),
                         ),
                       ],
                     ],
                   ),
                 );
               }
-              if (moduleProcess?.state == ModuleProcessState.closed) {
-                return GestureDetector(
-                  onTap: () {
-                    final module = Provider.of<RobotProvider>(context, listen: false).modules?.firstWhere(
-                          (module) => module.moduleID == moduleProcess?.moduleID,
-                        );
-                    switch (moduleProcess?.state) {
-                      case ModuleProcessState.waitingForOpeningCommand:
-                        Provider.of<RobotProvider>(context, listen: false).openDrawer(module!);
-                      case ModuleProcessState.open:
-                        Provider.of<RobotProvider>(context, listen: false).closeDrawer(module!);
-                      case ModuleProcessState.closed:
-                        break;
-                      default:
-                        break;
-                    }
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 196),
-                    child: Column(
-                      children: [
-                        Expanded(
-                          flex: 2,
-                          child: CustomButtonView(text: 'Finish', onPressed: () async {}),
+              if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.closed) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 196),
+                  child: Column(
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: CustomButtonView(
+                            text: 'Finish',
+                            onPressed: () async {
+                              Provider.of<ModulesProvider>(context, listen: false).finishModuleProcess(moduleInProcess);
+                              Navigator.popUntil(context, (route) => route.isFirst);
+                            }),
+                      ),
+                      const SizedBox(
+                        height: 8,
+                      ),
+                      Expanded(
+                        child: CustomButtonView(
+                          text: 'Reopen',
+                          onPressed: () {
+                            Provider.of<ModulesProvider>(context, listen: false).openDrawer(moduleInProcess);
+                          },
                         ),
-                        const SizedBox(
-                          height: 8,
-                        ),
-                        Expanded(
-                          child: CustomButtonView(
-                            text: 'Reopen',
-                            onPressed: () {
-                              final module = Provider.of<RobotProvider>(context, listen: false).modules?.firstWhere(
-                                    (module) => module.moduleID == moduleProcess?.moduleID,
-                                  );
-                              Provider.of<RobotProvider>(context, listen: false).openDrawer(module!);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
                 );
               } else {

@@ -63,4 +63,41 @@ class ModulesProvider extends ChangeNotifier {
     );
     return wasSuccessful;
   }
+
+  Future<bool> startModuleProcess({
+    required DrawerAddress drawerAddress,
+    required String processName,
+    required Map<String, int> payload,
+  }) async {
+    return _middlewareApiUtilities.modules.startModuleProcess(
+      robotName: 'rb_theron',
+      drawerAddress: drawerAddress,
+      processName: processName,
+      payload: payload,
+    );
+  }
+
+  void closeDrawer(RobotDrawer module) {
+    _middlewareApiUtilities.modules.closeDrawer(
+      robotName: module.robotName,
+      moduleID: module.moduleID,
+      drawerID: module.drawerID,
+    );
+  }
+
+  void openDrawer(RobotDrawer module) {
+    _middlewareApiUtilities.modules.openDrawer(
+      robotName: module.robotName,
+      moduleID: module.moduleID,
+      drawerID: module.drawerID,
+    );
+  }
+
+  void finishModuleProcess(RobotDrawer moduleInProcess) {
+    _middlewareApiUtilities.modules.finishModuleProcess(
+      robotName: moduleInProcess.robotName,
+      moduleID: moduleInProcess.moduleID,
+      drawerID: moduleInProcess.drawerID,
+    );
+  }
 }

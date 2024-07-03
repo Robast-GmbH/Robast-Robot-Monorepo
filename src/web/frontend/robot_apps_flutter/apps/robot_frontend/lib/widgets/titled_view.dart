@@ -2,12 +2,16 @@ import 'package:flutter/material.dart';
 
 class TitledView extends StatelessWidget {
   const TitledView({
-    required this.title, required this.child, super.key,
+    required this.title,
+    required this.child,
+    super.key,
     this.showBackButton = false,
+    this.onBackButtonPressed,
   });
   final String title;
   final Widget child;
   final bool showBackButton;
+  final VoidCallback? onBackButtonPressed;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -24,9 +28,10 @@ class TitledView extends StatelessWidget {
                     color: Colors.white,
                     iconSize: 32,
                     icon: const Icon(Icons.arrow_back),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
+                    onPressed: onBackButtonPressed ??
+                        () {
+                          Navigator.of(context).pop();
+                        },
                   ),
                 ),
               ),

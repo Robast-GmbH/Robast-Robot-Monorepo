@@ -7,11 +7,13 @@ class CustomScaffold extends StatelessWidget {
     super.key,
     this.child = const SizedBox(),
     this.showBackButton = true,
+    this.onBackButtonPressed,
     this.title = '',
   });
 
   final Widget child;
   final bool showBackButton;
+  final VoidCallback? onBackButtonPressed;
   final String title;
 
   @override
@@ -21,6 +23,7 @@ class CustomScaffold extends StatelessWidget {
         child: TitledView(
           title: title,
           showBackButton: showBackButton,
+          onBackButtonPressed: onBackButtonPressed,
           child: child,
         ),
       ),

@@ -7,7 +7,6 @@ import 'package:shared_data_models/shared_data_models.dart';
 class RobotProvider extends ChangeNotifier {
   Pose? _robotPose;
   List<DrawerModule>? _modules;
-  ModuleProcess? _moduleProcess;
   bool _isNavigationBlocked = false;
 
   Timer? _robotPoseUpdateTimer;
@@ -17,7 +16,6 @@ class RobotProvider extends ChangeNotifier {
 
   Pose? get robotPose => _robotPose;
   List<DrawerModule>? get modules => _modules;
-  ModuleProcess? get moduleProcess => _moduleProcess;
 
   void initRobotAPI({required String prefix}) {
     _robotAPI = RobotApiUtilities(prefix: prefix);
@@ -38,12 +36,9 @@ class RobotProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void startPeriodicIsNavigationBlockedUpdate(void Function({bool isBlocked}) onIsNavigationBlockedUpdate) {
+  void startPeriodicIsNavigationBlockedUpdate() {
     _robotPoseUpdateTimer = startPeriodicUpdate(
-      () {
-        updateIsNavigationBlocked();
-        onIsNavigationBlockedUpdate(isBlocked: _isNavigationBlocked);
-      },
+      updateIsNavigationBlocked,
       const Duration(milliseconds: 100),
     );
   }

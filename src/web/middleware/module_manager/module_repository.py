@@ -1,7 +1,8 @@
 import sqlite3
 import json
 from typing import List
-from module_manager.models.drawer import Drawer
+from pydantic_models.drawer import Drawer
+from pydantic_models.drawer_address import DrawerAddress
 
 DB_PATH = "modules.db"
 
@@ -32,9 +33,9 @@ class ModuleRepository:
             cursor.execute(
                 sql,
                 (
-                    drawer.robot_name,
-                    drawer.module_id,
-                    drawer.drawer_id,
+                    drawer.address.robot_name,
+                    drawer.address.module_id,
+                    drawer.address.drawer_id,
                     drawer.position,
                     drawer.size,
                     drawer.variant,
@@ -53,20 +54,20 @@ class ModuleRepository:
             db_connection.close()
         return cursor.lastrowid
 
-    def read_drawer(
-        self, robot_name: str, module_id: int, drawer_id: int
-    ) -> Drawer | None:
+    def read_drawer(self, address: DrawerAddress) -> Drawer | None:
         sql = "SELECT * FROM drawers WHERE robot_name = ? AND module_id = ? AND drawer_id = ?"
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
-        cursor.execute(sql, (robot_name, module_id, drawer_id))
+        cursor.execute(sql, (address.robot_name, address.module_id, address.drawer_id))
         row = cursor.fetchone()
         db_connection.close()
         if row:
             return Drawer(
-                robot_name=row[0],
-                module_id=row[1],
-                drawer_id=row[2],
+                address=DrawerAddress(
+                    robot_name=row[0],
+                    module_id=row[1],
+                    drawer_id=row[2],
+                ),
                 position=row[3],
                 size=row[4],
                 variant=row[5],
@@ -90,9 +91,11 @@ class ModuleRepository:
         for row in rows:
             drawers.append(
                 Drawer(
-                    robot_name=row[0],
-                    module_id=row[1],
-                    drawer_id=row[2],
+                    address=DrawerAddress(
+                        robot_name=row[0],
+                        module_id=row[1],
+                        drawer_id=row[2],
+                    ),
                     position=row[3],
                     size=row[4],
                     variant=row[5],
@@ -126,19 +129,26 @@ class ModuleRepository:
                 drawer.module_process_status,
                 drawer.module_process_type,
                 json.dumps(drawer.module_process_payload),
-                drawer.robot_name,
-                drawer.module_id,
-                drawer.drawer_id,
+                drawer.address.robot_name,
+                drawer.address.module_id,
+                drawer.address.drawer_id,
             ),
         )
         db_connection.commit()
         db_connection.close()
 
-    def delete_drawer(self, robot_name: str, module_id: int, drawer_id: int):
+    def delete_drawer(self, address: DrawerAddress):
         sql = "DELETE FROM drawers WHERE robot_name = ? AND module_id = ? AND drawer_id = ?"
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
-        cursor.execute(sql, (robot_name, module_id, drawer_id))
+        cursor.execute(
+            sql,
+            (
+                address.robot_name,
+                address.module_id,
+                address.drawer_id,
+            ),
+        )
         db_connection.commit()
         db_connection.close()
 

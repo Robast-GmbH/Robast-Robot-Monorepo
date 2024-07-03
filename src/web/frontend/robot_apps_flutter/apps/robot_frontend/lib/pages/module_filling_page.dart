@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/modules_provider.dart';
+import 'package:robot_frontend/pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 
 class ModuleFillingPage extends StatefulWidget {
@@ -12,8 +13,12 @@ class ModuleFillingPage extends StatefulWidget {
 }
 
 class _ModuleFillingPageState extends State<ModuleFillingPage> {
-  final selectedDrawerAddress = <int>[];
-  final payload = <String, int>{};
+  DrawerAddress? selectedDrawerAddress;
+  final payloadDifferences = <String, int>{};
+  final createdPayloads = <String, int>{};
+  final textController = TextEditingController();
+  final amountController = TextEditingController();
+  bool isCreatingNewPayload = false;
 
   @override
   void initState() {
@@ -37,14 +42,15 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
             child: Selector<ModulesProvider, List<RobotDrawer>>(
               selector: (context, provider) => provider.modules,
               builder: (context, modules, child) {
-                if (selectedDrawerAddress.isEmpty) {
+                if (selectedDrawerAddress == null) {
                   return buildModulesOverview(modules);
-                } else {
+                } else if (modules.isNotEmpty) {
                   final module = modules.firstWhere(
-                    (element) => element.moduleID == selectedDrawerAddress[0] && element.drawerID == selectedDrawerAddress[1],
+                    (element) => element.moduleID == selectedDrawerAddress?.moduleID && element.drawerID == selectedDrawerAddress?.drawerID,
                   );
                   return buildModuleContentUpdateView(module);
                 }
+                return const Center(child: CircularProgressIndicator());
               },
             ),
           ),
@@ -61,68 +67,124 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
           Expanded(
             child: ListView(
               children: module.content.entries
-                      .map(
-                        (e) => Card(
-                          color: Colors.white.withOpacity(0.5),
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                _buildListTileText(e.key),
-                                Row(
-                                  children: [
-                                    IconButton(
-                                      onPressed: () {
-                                        if (payload.containsKey(e.key)) {
-                                          setState(() {
-                                            payload[e.key] = payload[e.key]! - 1;
-                                          });
-                                        }
-                                      },
-                                      icon: const Icon(Icons.remove),
-                                    ),
-                                    _buildListTileText((e.value + (payload.containsKey(e.key) ? payload[e.key]! : 0)).toString()),
-                                    IconButton(
-                                      onPressed: () {
-                                        if (payload.containsKey(e.key)) {
-                                          setState(() {
-                                            payload[e.key] = payload[e.key]! + 1;
-                                          });
-                                        } else {
-                                          setState(() {
-                                            payload[e.key] = 1;
-                                          });
-                                        }
-                                      },
-                                      icon: const Icon(Icons.add),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
+                      .map<Widget>(
+                        buildContentListTile,
                       )
                       .toList() +
+                  createdPayloads.entries.map(buildContentListTile).toList() +
                   [
-                    Card(
-                      color: Colors.white.withOpacity(0.7),
-                      child: IconButton(
-                        color: Colors.white,
-                        iconSize: 64,
-                        onPressed: () {},
-                        icon: const Icon(Icons.add),
+                    buildPayloadCreationView(),
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 32),
+                      child: Card(
+                        color: Colors.white.withOpacity(0.7),
+                        child: IconButton(
+                          color: Colors.white,
+                          iconSize: 64,
+                          onPressed: () {
+                            setState(() {
+                              createdPayloads[textController.text] = int.tryParse(amountController.text) ?? 0;
+                              textController.clear();
+                              amountController.clear();
+                            });
+                          },
+                          icon: const Icon(Icons.add),
+                        ),
                       ),
                     ),
                   ],
             ),
           ),
-          TextButton(
-            onPressed: () {
-              setState(selectedDrawerAddress.clear);
-            },
-            child: const Text('Zurück'),
+          const SizedBox(
+            height: 16,
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              TextButton(
+                onPressed: () {
+                  createdPayloads.clear();
+                  payloadDifferences.clear();
+                  selectedDrawerAddress = null;
+                  setState(() {});
+                },
+                child: const Text('Abbrechen'),
+              ),
+              TextButton(
+                onPressed: () {
+                  final payload = <String, int>{}
+                    ..addAll(payloadDifferences)
+                    ..addAll(createdPayloads);
+                  Provider.of<ModulesProvider>(context, listen: false).startModuleProcess(
+                    drawerAddress: selectedDrawerAddress!,
+                    processName: 'fill',
+                    payload: payload,
+                  );
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<ModuleProcessPage>(
+                      builder: (context) => const ModuleProcessPage(),
+                    ),
+                  );
+                },
+                child: const Text('Bestätigen'),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Card buildContentListTile(MapEntry<String, int> entry) {
+    return Card(
+      color: Colors.white.withOpacity(0.5),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(16),
+            child: _buildListTileText(entry.key),
+          ),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Row(
+              children: [
+                IconButton(
+                  iconSize: 32,
+                  onPressed: () {
+                    if (payloadDifferences.containsKey(entry.key)) {
+                      setState(() {
+                        payloadDifferences[entry.key] = payloadDifferences[entry.key]! - 1;
+                      });
+                    } else {
+                      setState(() {
+                        payloadDifferences[entry.key] = -1;
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.remove),
+                ),
+                _buildListTileText(
+                  (entry.value + (payloadDifferences.containsKey(entry.key) ? payloadDifferences[entry.key]! : 0)).toString(),
+                ),
+                IconButton(
+                  iconSize: 32,
+                  onPressed: () {
+                    if (payloadDifferences.containsKey(entry.key)) {
+                      setState(() {
+                        payloadDifferences[entry.key] = payloadDifferences[entry.key]! + 1;
+                      });
+                    } else {
+                      setState(() {
+                        payloadDifferences[entry.key] = 1;
+                      });
+                    }
+                  },
+                  icon: const Icon(Icons.add),
+                ),
+              ],
+            ),
           ),
         ],
       ),
@@ -138,10 +200,10 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
               (e) => GestureDetector(
                 onTap: () {
                   setState(() {
-                    selectedDrawerAddress
-                      ..clear()
-                      ..add(e.moduleID)
-                      ..add(e.drawerID);
+                    selectedDrawerAddress = DrawerAddress(
+                      moduleID: e.moduleID,
+                      drawerID: e.drawerID,
+                    );
                   });
                 },
                 child: Card(
@@ -167,6 +229,37 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
               ),
             )
             .toList(),
+      ),
+    );
+  }
+
+  Card buildPayloadCreationView() {
+    return Card(
+      color: Colors.white.withOpacity(0.5),
+      child: Padding(
+        padding: const EdgeInsets.all(8),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Expanded(
+              flex: 8,
+              child: TextField(
+                controller: textController,
+                style: const TextStyle(fontSize: 24),
+              ),
+            ),
+            const SizedBox(
+              width: 32,
+            ),
+            Expanded(
+              child: TextField(
+                textAlign: TextAlign.center,
+                controller: amountController,
+                style: const TextStyle(fontSize: 24),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

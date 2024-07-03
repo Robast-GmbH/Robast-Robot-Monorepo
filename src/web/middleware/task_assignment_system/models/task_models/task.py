@@ -4,7 +4,7 @@ import time
 import uuid
 from task_assignment_system.models.task_models.task_phase import TaskPhase
 from pydantic_models.delivery_request import DeliveryRequest
-from module_manager.models.drawer import Drawer
+from pydantic_models.drawer import Drawer
 
 
 @dataclass
@@ -42,8 +42,8 @@ class Task:
             pick_up_task_phase = TaskPhase.create_pickup_phase(
                 delivery_request.start_id,
                 delivery_request.payload,
-                drawer.module_id,
-                drawer.drawer_id,
+                drawer.address.module_id,
+                drawer.address.drawer_id,
                 assignee_name,
             )
             pick_up_task = Task(
@@ -54,8 +54,8 @@ class Task:
                 int(time.time()),
                 None,
                 assignee_name,
-                drawer.module_id,
-                drawer.drawer_id,
+                drawer.address.module_id,
+                drawer.address.drawer_id,
                 drawer.size,
                 0,
                 delivery_request.start_id,
@@ -69,8 +69,8 @@ class Task:
             drop_off_task_phase = TaskPhase.create_dropoff_phase(
                 delivery_request.target_id,
                 delivery_request.payload,
-                drawer.module_id,
-                drawer.drawer_id,
+                drawer.address.module_id,
+                drawer.address.drawer_id,
                 assignee_name,
             )
             drop_off_task = Task(
@@ -81,8 +81,8 @@ class Task:
                 int(time.time()),
                 pick_up_id if delivery_request.start_id else None,
                 assignee_name,
-                drawer.module_id,
-                drawer.drawer_id,
+                drawer.address.module_id,
+                drawer.address.drawer_id,
                 drawer.size,
                 0,
                 delivery_request.target_id,
