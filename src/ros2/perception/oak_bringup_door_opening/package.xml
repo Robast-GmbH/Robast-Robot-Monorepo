@@ -3,7 +3,7 @@
 <package format="3">
   <name>oak_bringup_door_opening</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>Contains launch file for needed to launch nodes for door opening mechanism</description>
   <maintainer email="s.lingaraj@robast.de">Sagar V. Lingaraj</maintainer>
   <license>TODO: License declaration</license>
 

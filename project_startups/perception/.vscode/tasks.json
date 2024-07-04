@@ -15,7 +15,7 @@
                         "label": "build",
                         "detail": "Symlink Build",
                         "type": "shell",
-                        "command": "source /opt/ros/humble/setup.bash; colcon build --symlink-install --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Release' -Wall -Wextra -Wpedantic",
+                        "command": "source /opt/ros/$ROS_DISTRO/setup.bash; colcon build --symlink-install --parallel-workers 8 --cmake-args '-DCMAKE_BUILD_TYPE=Release' -Wall -Wextra -Wpedantic",
                         "problemMatcher": []
                 },
                 {

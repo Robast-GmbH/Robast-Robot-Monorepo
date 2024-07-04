@@ -4,7 +4,7 @@ from launch import LaunchDescription
 
 def generate_launch_description():
 
-    metric_converter_node = launch_ros.actions.ComposableNodeContainer(
+    metric_converter_node_container = launch_ros.actions.ComposableNodeContainer(
             name='container',
             namespace="",
             package='rclcpp_components',
@@ -23,7 +23,7 @@ def generate_launch_description():
             ],
             output='screen',)
 
-    point_cloud_node = launch_ros.actions.ComposableNodeContainer(
+    point_cloud_node_container = launch_ros.actions.ComposableNodeContainer(
             name='container2',
             namespace="",
             package='rclcpp_components',
