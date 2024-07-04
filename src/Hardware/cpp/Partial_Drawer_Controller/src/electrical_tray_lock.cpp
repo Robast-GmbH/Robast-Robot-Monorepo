@@ -17,7 +17,9 @@ namespace partial_drawer_controller
     _gpio_wrapper->set_pin_mode(_power_open_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
     _gpio_wrapper->set_pin_mode(_power_close_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
 
-    _open_lock_previous_step = false;
+    // on startup we assume the lock was open in the previous step to make sure the
+    // lock will be closed when the set the lock to closed in the current step
+    _open_lock_previous_step = true;
     set_open_lock_current_step(false);
     set_drawer_opening_is_in_progress(false);
   }
@@ -30,7 +32,6 @@ namespace partial_drawer_controller
 
     unsigned long current_timestamp = millis();
     unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
-    unsigned long time_since_lock_was_opened = current_timestamp - _timestamp_last_lock_opening;
 
     if (change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME))
     {
