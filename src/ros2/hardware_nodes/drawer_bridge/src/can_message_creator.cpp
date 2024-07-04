@@ -74,7 +74,7 @@ namespace drawer_bridge
                                                                              const uint8_t led_row,
                                                                              const uint8_t brightness) const
   {
-    robast_can_msgs::CanMessage can_msg_tray_led_brightness = _can_db.can_messages.at(CAN_ID_TRAY_LED_BRIGHTNESS);
+    robast_can_msgs::CanMessage can_msg_tray_led_brightness = _can_db.can_messages.at(CAN_MSG_TRAY_LED_BRIGHTNESS);
 
     std::vector<robast_can_msgs::CanSignal> can_signals_tray_led_brightness =
       can_msg_tray_led_brightness.get_can_signals();
