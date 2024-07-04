@@ -118,10 +118,10 @@ namespace drawer_bridge
   {
     uint8_t num_of_leds = msg.led_brightness.size();
 
-    for (uint8_t i = 1; i <= num_of_leds; i++)
+    for (uint8_t i = 0; i < num_of_leds; i++)
     {
       const CanMessage can_msg =
-        _can_message_creator.create_can_msg_tray_led_brightness(msg.drawer_address, i, msg.led_brightness[i]);
+        _can_message_creator.create_can_msg_tray_led_brightness(msg.drawer_address, i + 1, msg.led_brightness[i]);
       send_can_msg(can_msg);
     }
   }
