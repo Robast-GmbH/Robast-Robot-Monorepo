@@ -92,7 +92,7 @@ namespace drawer_controller
   void ElectricalDrawer::handle_drawer_idle_state()
   {
     // updating the sensor values needs to be done all the time because of the moving average calculation
-    update_sensor_values();
+    _endstop_switch->update_sensor_value();
   }
 
   void ElectricalDrawer::handle_drawer_active_state()
@@ -114,13 +114,6 @@ namespace drawer_controller
     _is_drawer_moving_out ? handle_drawer_moving_out() : handle_drawer_moving_in();
 
     debug_prints_moving_electrical_drawer();
-  }
-
-  void ElectricalDrawer::update_sensor_values()
-  {
-    byte digital_drawer_closed_pin;
-    _gpio_wrapper->digital_read(_sense_drawer_closed_pin_id, digital_drawer_closed_pin);
-    _moving_average_drawer_closed_pin = 0.2 * digital_drawer_closed_pin + 0.8 * _moving_average_drawer_closed_pin;
   }
 
   float ElectricalDrawer::get_moving_average_drawer_closed_pin()
