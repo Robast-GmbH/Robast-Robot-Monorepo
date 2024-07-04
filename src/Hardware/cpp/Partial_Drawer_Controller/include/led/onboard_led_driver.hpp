@@ -88,15 +88,12 @@ namespace partial_drawer_controller
       switch (led_row)
       {
         case 1:
-          set_led_brigthness(led_config.register_row_1, brightness);
           set_led_brightness_by_register(led_config.register_row_1, brightness);
           break;
         case 2:
-          set_led_brigthness(led_config.register_row_2, brightness);
           set_led_brightness_by_register(led_config.register_row_2, brightness);
           break;
         case 3:
-          set_led_brigthness(led_config.register_row_3, brightness);
           set_led_brightness_by_register(led_config.register_row_3, brightness);
           break;
         default:
