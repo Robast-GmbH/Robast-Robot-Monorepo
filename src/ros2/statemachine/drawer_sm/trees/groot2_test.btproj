@@ -3,6 +3,7 @@
     <include path="default_electrical_drawer.xml"/>
     <include path="drawer_nfc_bt.xml"/>
     <include path="drawer_sequence.xml"/>
+    <include path="partial_drawer.xml"/>
     <include path="robo_base.xml"/>
     <include path="subtrees/drawer_close_animation.xml"/>
     <!-- Description of Node Models (used by Groot) -->
@@ -80,6 +81,13 @@
             <input_port name="red" default="0">uint8</input_port>
             <input_port name="upper_bound" default="0.0">double</input_port>
             <output_port name="LEDs_colored" default="{leds}"/>
+        </Action>
+        <Action ID="PartialDrawerLED" editable="true">
+            <input_port name="drawer_address" default="{drawer_address}">Adress of the module and drawer</input_port>
+            <input_port name="led_brightness_top" default="255"/>
+            <input_port name="led_brightness_mid" default="255"/>
+            <input_port name="led_brightness_bot" default="255"/>
+            <input_port name="topic" default="/tray_task"/>
         </Action>
         <Action ID="PublishDrawerStatus" editable="true">
             <input_port name="topic_name" default="/bt_drawer_open"/>
