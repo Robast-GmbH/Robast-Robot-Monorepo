@@ -110,6 +110,9 @@ list(APPEND plugin_libs get_blackboard_value_action_bt_node)
 add_library(publish_drawer_status_action_bt_node SHARED src/action/publish_drawer_status_action.cpp)
 list(APPEND plugin_libs publish_drawer_status_action_bt_node)
 
+add_library(partial_drawer_leds_action_bt_node SHARED src/action/partial_drawer_leds_action.cpp)
+list(APPEND plugin_libs partial_drawer_leds_action_bt_node)
+
 add_library(bool_topic_condition_node SHARED src/condition/bool_topic_condition.cpp)
 list(APPEND plugin_libs bool_topic_condition_node)
 

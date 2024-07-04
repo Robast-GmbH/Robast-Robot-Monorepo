@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root BTCPP_format="4">
+<root BTCPP_format="4"
+      main_tree_to_execute="partial_bt">
   <BehaviorTree ID="LED_Close">
     <Sequence>
       <InitLEDVector size="18"
@@ -17,10 +18,11 @@
 
   <BehaviorTree ID="LED_Closing">
     <Sequence>
-      <partial_drawer_leds DrawerAdress="{DrawerAddress}"
-                           LEDBrightnessTop="0"
-                           LEDBrightnessMid="0"
-                           LEDBrightnessBot="0"/>
+      <PartialDrawerLED drawer_address="{drawer_address}"
+                        led_brightness_top="0"
+                        led_brightness_mid="0"
+                        led_brightness_bot="0"
+                        topic="/tray_task"/>
       <InitLEDVector size="18"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
@@ -61,10 +63,11 @@
                           red="0"
                           upper_bound="100.0"
                           LEDs_colored="{leds}"/>
-      <partial_drawer_leds DrawerAdress="{DrawerAddress}"
-                           LEDBrightnessTop="255"
-                           LEDBrightnessMid="255"
-                           LEDBrightnessBot="255"/>
+      <PartialDrawerLED drawer_address="{drawer_address}"
+                        led_brightness_top="255"
+                        led_brightness_mid="255"
+                        led_brightness_bot="255"
+                        topic="/tray_task"/>
     </Sequence>
   </BehaviorTree>
 
@@ -251,6 +254,19 @@
       <output_port name="LEDs_colored"
                    default="{leds}"/>
     </Action>
+    <Action ID="PartialDrawerLED"
+            editable="true">
+      <input_port name="drawer_address"
+                  default="{drawer_address}">Adress of the module and drawer</input_port>
+      <input_port name="led_brightness_top"
+                  default="255"/>
+      <input_port name="led_brightness_mid"
+                  default="255"/>
+      <input_port name="led_brightness_bot"
+                  default="255"/>
+      <input_port name="topic"
+                  default="/tray_task"/>
+    </Action>
     <Action ID="PublishDrawerStatus"
             editable="true">
       <input_port name="topic_name"
@@ -259,17 +275,6 @@
                   default="false"/>
       <input_port name="drawer_address"
                   default="{drawer}"/>
-    </Action>
-    <Action ID="partial_drawer_leds"
-            editable="true">
-      <input_port name="DrawerAdress"
-                  default="{DrawerAddress}">Adress of the module and drawer</input_port>
-      <input_port name="LEDBrightnessTop"
-                  default="255"/>
-      <input_port name="LEDBrightnessMid"
-                  default="255"/>
-      <input_port name="LEDBrightnessBot"
-                  default="255"/>
     </Action>
   </TreeNodesModel>
 
