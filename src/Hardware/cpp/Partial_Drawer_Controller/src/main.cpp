@@ -1,6 +1,7 @@
 #include <memory>
 
 #include "can/can_controller.hpp"
+#include "can/can_msg_queue.hpp"
 #include "debug/debug.hpp"
 #include "drawer/electrical_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
@@ -16,6 +17,9 @@
 #define USE_ENCODER             0
 
 #define SWITCH_PRESSED_THRESHOLD 0.9
+
+TaskHandle_t Task1;
+TaskHandle_t Task2;
 
 using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
 
@@ -46,16 +50,90 @@ std::unique_ptr<drawer_controller::DataMapper> data_mapper;
 
 std::unique_ptr<drawer_controller::CanController> can_controller;
 
-// TODO@Jacob: This is kind of a temporary hack to ensure that the can messages are read from the
-// controller fast enough
-// TODO@Jacob: A much better solution would be to create paralle tasks for that like I suggested in
-// this story: https://robast.atlassian.net/browse/RE-1775
-uint16_t num_of_can_readings_per_cycle = 1;
+std::unique_ptr<drawer_controller::CanMsgQueue> can_msg_queue;
 
-// TODO: REMOVE THIS
-uint16_t counter = 0;
-const int interval = 1000;          // interval at which send CAN Messages (milliseconds)
-unsigned long previousMillis = 0;   // will store last time a CAN Message was send
+void task_1_loop(void* pvParameters)
+{
+  Serial.print("Task1 running on core ");
+  Serial.println(xPortGetCoreID());
+  for (;;)
+  {
+    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
+    if (received_message.has_value())
+    {
+      can_msg_queue->add_element_to_msg_queue(received_message.value());
+    }
+  }
+}
+
+void task_2_loop(void* pvParameters)
+{
+  Serial.print("Task2 running on core ");
+  Serial.println(xPortGetCoreID());
+  for (;;)
+  {
+    std::optional<robast_can_msgs::CanMessage> received_message = can_msg_queue->get_element_from_msg_queue();
+
+    if (received_message.has_value())
+    {
+      switch (received_message->get_id())
+      {
+        case CAN_ID_DRAWER_UNLOCK:
+        {
+          uint8_t tray_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
+          tray_manager->unlock_lock(tray_id);
+        }
+        break;
+        case CAN_ID_ELECTRICAL_DRAWER_TASK:
+        {
+          uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
+          // TODO@Jacob: remove can_in function and put this into the data_mapper to remove can dependency from drawer
+          drawers.at(drawer_id)->can_in(received_message.value());
+        }
+        break;
+        case CAN_ID_LED_HEADER:
+        {
+          drawer_controller::LedHeader led_header = data_mapper->create_led_header(received_message.value());
+          led_strip->initialize_led_state_change(led_header);
+        }
+        break;
+        case CAN_ID_SINGLE_LED_STATE:
+        {
+          drawer_controller::LedState led_state = data_mapper->create_led_state(received_message.value());
+          led_strip->set_led_state(led_state);
+        }
+        break;
+        case CAN_ID_TRAY_LED_BRIGHTNESS:
+        {
+          tray_manager->set_tray_led_brightness(
+            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_ID).get_data(),
+            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_ROW_INDEX).get_data(),
+            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS).get_data());
+        }
+        break;
+        default:
+          debug_println("Received unsupported CAN message.");
+          break;
+      }
+    }
+
+    led_strip->handle_led_control();
+
+    for (drawer_ptr drawer : drawers)
+    {
+      drawer->update_state();
+
+      std::optional<robast_can_msgs::CanMessage> to_be_sent_message = drawer->can_out();
+
+      if (to_be_sent_message.has_value())
+      {
+        can_controller->send_can_message(to_be_sent_message.value());
+      }
+    }
+
+    tray_manager->update_states();
+  }
+}
 
 void setup()
 {
@@ -104,6 +182,8 @@ void setup()
   can_controller = std::make_unique<drawer_controller::CanController>(MODULE_ID, can_db, gpio_wrapper);
   can_controller->initialize_can_controller();
 
+  can_msg_queue = std::make_unique<drawer_controller::CanMsgQueue>();
+
   e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(MODULE_ID,
                                                                      LOCK_ID,
                                                                      can_db,
@@ -120,73 +200,27 @@ void setup()
   drawers.push_back(e_drawer_0);
 
   debug_println("Finished setup()!");
+
+  // create a task that will be executed in the Task1code() function, with priority 1 and executed on core 0
+  xTaskCreatePinnedToCore(task_1_loop, /* Task function. */
+                          "Task1",     /* name of task. */
+                          10000,       /* Stack size of task */
+                          NULL,        /* parameter of the task */
+                          1,           /* priority of the task */
+                          &Task1,      /* Task handle to keep track of created task */
+                          0);          /* pin task to core 0 */
+
+  delay(100);
+
+  xTaskCreatePinnedToCore(task_2_loop, /* Task function. */
+                          "Task2",     /* name of task. */
+                          10000,       /* Stack size of task */
+                          NULL,        /* parameter of the task */
+                          1,           /* priority of the task */
+                          &Task2,      /* Task handle to keep track of created task */
+                          1);          /* pin task to core 1 */
 }
 
 void loop()
 {
-  for (uint8_t i = 1; i <= num_of_can_readings_per_cycle; ++i)
-  {
-    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
-
-    if (received_message.has_value())
-    {
-      switch (received_message->get_id())
-      {
-        case CAN_ID_DRAWER_UNLOCK:
-        {
-          uint8_t tray_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
-          tray_manager->unlock_lock(tray_id);
-        }
-        break;
-        case CAN_ID_ELECTRICAL_DRAWER_TASK:
-        {
-          uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
-          // TODO@Jacob: remove can_in function and put this into the data_mapper to remove can dependency from drawer
-          drawers.at(drawer_id)->can_in(received_message.value());
-        }
-        break;
-        case CAN_ID_LED_HEADER:
-        {
-          drawer_controller::LedHeader led_header = data_mapper->create_led_header(received_message.value());
-          num_of_can_readings_per_cycle = led_header.num_of_led_states_to_change + LED_HEADER_CAN_MSG_COUNT;
-          led_strip->initialize_led_state_change(led_header);
-        }
-        break;
-        case CAN_ID_SINGLE_LED_STATE:
-        {
-          drawer_controller::LedState led_state = data_mapper->create_led_state(received_message.value());
-          led_strip->set_led_state(led_state);
-        }
-        break;
-        case CAN_ID_TRAY_LED_BRIGHTNESS:
-        {
-          tray_manager->set_tray_led_brightness(
-            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_ID).get_data(),
-            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_ROW_INDEX).get_data(),
-            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS).get_data());
-        }
-        break;
-        default:
-          debug_println("Received unsupported CAN message.");
-          break;
-      }
-    }
-  }
-  num_of_can_readings_per_cycle = 1;
-
-  led_strip->handle_led_control();
-
-  for (drawer_ptr drawer : drawers)
-  {
-    drawer->update_state();
-
-    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = drawer->can_out();
-
-    if (to_be_sent_message.has_value())
-    {
-      can_controller->send_can_message(to_be_sent_message.value());
-    }
-  }
-
-  tray_manager->update_states();
 }
