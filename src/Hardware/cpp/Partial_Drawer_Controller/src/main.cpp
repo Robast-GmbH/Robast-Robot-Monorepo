@@ -7,9 +7,10 @@
 #include "led/led_strip.hpp"
 #include "lock/tray_manager.hpp"
 #include "peripherals/gpio.hpp"
+#include "peripherals/switch.hpp"
 #include "utils/data_mapper.hpp"
 
-#define MODULE_ID               1
+#define MODULE_ID               6
 #define LOCK_ID                 0
 #define STEPPER_MOTOR_1_ADDRESS 0
 #define USE_ENCODER             0
@@ -32,6 +33,8 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_diag_pin_id = STEPPER_1_DIAG_PIN_ID,
   .stepper_index_pin_id = STEPPER_1_INDEX_PIN_ID,
   .stepper_step_pin_id = STEPPER_1_STEP_PIN_ID};
+
+std::shared_ptr<drawer_controller::Switch> endstop_switch;
 
 std::shared_ptr<partial_drawer_controller::TrayManager> tray_manager;
 
@@ -65,6 +68,8 @@ void setup()
   wire_port_expander->begin(I2C_SDA_PORT_EXPANDER, I2C_SCL_PORT_EXPANDER);
 
   gpio_wrapper = std::make_shared<drawer_controller::GPIO>(wire_port_expander);
+
+  endstop_switch = std::make_shared<drawer_controller::Switch>(gpio_wrapper, SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID, 0.9);
 
   std::vector<partial_drawer_controller::TrayPinConfig> tray_pin_configs = {
     {LOCK_1_OPEN_CONTROL_PIN_ID, LOCK_1_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_1_CLOSED_PIN_ID},
@@ -103,7 +108,7 @@ void setup()
                                                                      DRAWER_1_ENCODER_A_PIN,
                                                                      DRAWER_1_ENCODER_B_PIN,
                                                                      STEPPER_MOTOR_1_ADDRESS,
-                                                                     SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
+                                                                     endstop_switch,
                                                                      std::nullopt);
   e_drawer_0->init();
 

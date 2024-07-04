@@ -13,6 +13,7 @@
 #include "lock/electrical_drawer_lock.hpp"
 #include "peripherals/encoder.hpp"
 #include "peripherals/motor.hpp"
+#include "peripherals/switch.hpp"
 
 #define DRAWER_MAX_SPEED    35000
 #define DRAWER_HOMING_SPEED 300
@@ -40,7 +41,7 @@ namespace drawer_controller
                      uint8_t encoder_pin_a,
                      uint8_t encoder_pin_b,
                      uint8_t motor_driver_address,
-                     uint8_t sense_input_drawer_closed_pin_id,
+                     std::shared_ptr<Switch> endstop_switch,
                      std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock);
 
     void init();
@@ -64,6 +65,8 @@ namespace drawer_controller
     stepper_motor::StepperPinIdConfig _stepper_pin_id_config;
 
     std::unique_ptr<Encoder> _encoder;
+
+    std::shared_ptr<Switch> _endstop_switch;
 
     // optional because the lock is not always installed (e.g. in the partial drawer)
     std::optional<std::shared_ptr<ElectricalDrawerLock>> _electrical_drawer_lock;
@@ -127,8 +130,6 @@ namespace drawer_controller
     void update_sensor_values();
 
     float get_moving_average_drawer_closed_pin();
-
-    bool is_endstop_switch_pushed();
   };
 }   // namespace drawer_controller
 
