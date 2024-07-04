@@ -91,7 +91,11 @@ class FeuerplanPublisher(Node):
             # Refine features and matches
             feats1, feats2, matches12 = [rbd(x) for x in [feats1, feats2, matches12]]
             # Get the three best matches according to confidence values
-            if matches12['matches'].size() >= 3:
+            matches = matches12['matches']
+            size = (matches12['matches']).size(0)
+            self.get_logger().info(f'{matches}')
+            self.get_logger().info(f'{size}')
+            if matches12['matches'].size(0) >= 3:
                 points1, points2, matches, scores = self.__get_three_best_matches(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
                 world_points1 = [(x * map_resolution + map_origin_x, y * map_resolution + map_origin_y) for x, y in points1]
                 self.get_logger().info(f'{scores}')
@@ -128,12 +132,12 @@ class FeuerplanPublisher(Node):
             else:
                 return None
     
-    def __determine_origin_in_world(affine_transformation, feuerplan_origin):
-        affine_matrix = affine_transformation['affine_matrix']
+    def __determine_origin_in_world(self,affine_transformation, feuerplan_origin):
+        affine_matrix = affine_transformation['transformation_matrix']
         translation_vector = affine_transformation['translation_vector']
 
         # Apply the affine transformation to the image origin
-        world_origin = affine_matrix @ image_origin + translation_vector
+        world_origin = affine_matrix @ feuerplan_origin + translation_vector
 
         return world_origin
     
@@ -141,24 +145,27 @@ class FeuerplanPublisher(Node):
         map_image = self.__ros_msg_to_image(map_msg)
         if not self.__is_message_published_once:
             origin_feuerplan = (0.0,0.0)
-            self.__publish_occupancy_grid(image = feuerplan_image, origin_feuerplan)
-            self.__is_message_published = True
-        transformation = self.__create_transformation_matrix(map_image, feuerplan_image, map_msg.info.resolution, map_msg.info.origin.position.x, map_msg.info.origin.position.y)    
-        origin_feuerplan = self.__determine_origin_in_world(transformation, origin_feuerplan)
-        return translation_x, translation_y
+            #self.__publish_occupancy_grid_from_image(feuerplan_image, origin_feuerplan[0], origin_feuerplan[1])
+            self.__origin_feuerplan_prev = origin_feuerplan
+            self.__is_message_published_once = True
+        else:
+            transformation = self.__create_transformation_matrix(map_image, feuerplan_image, map_msg.info.resolution, map_msg.info.origin.position.x, map_msg.info.origin.position.y)    
+            if transformation is not None:
+                origin_feuerplan_updated = self.__determine_origin_in_world(transformation, self.__origin_feuerplan_prev)
+                self.__origin_feuerplan_prev = origin_feuerplan_updated
 
-    def __publish_occupancy_grid_from_image(self, image:np.ndarray, origin) -> None:
-        data = feuerplan_image.flatten().tolist()
+    def __publish_occupancy_grid_from_image(self, image:np.ndarray, translation_x, translation_y) -> None:
+        data = image.flatten().tolist()
         ros_image_msg = OccupancyGrid()
         ros_image_msg.header.stamp = self.get_clock().now().to_msg()
         ros_image_msg.header.frame_id = 'feuerplan'
         ros_image_msg.info.map_load_time.sec = 0
         ros_image_msg.info.map_load_time.nanosec = 0
         ros_image_msg.info.resolution = 0.05
-        ros_image_msg.info.width = feuerplan_image.shape[1]
-        ros_image_msg.info.height = feuerplan_image.shape[0]
-        ros_image_msg.info.origin.position.x = origin[0]
-        ros_image_msg.info.origin.position.y = origin[1]
+        ros_image_msg.info.width = image.shape[1]
+        ros_image_msg.info.height = image.shape[0]
+        ros_image_msg.info.origin.position.x = translation_x
+        ros_image_msg.info.origin.position.y = translation_y
         ros_image_msg.info.origin.position.z = 0.0
         ros_image_msg.info.origin.orientation.x = 1.0
         ros_image_msg.info.origin.orientation.y = 0.0
@@ -168,7 +175,7 @@ class FeuerplanPublisher(Node):
 
         self.get_logger().info('Feuerplan published')
         self.__publisher.publish(ros_image_msg)
-        self.__is_message_published = True
+        #self.__is_message_published = True
 
     def __create_feuerplan_frame(self, translation_x:float, translation_y:float) -> None:
         transform = TransformStamped()
@@ -190,9 +197,9 @@ class FeuerplanPublisher(Node):
     def __broadcast_frame_and_message(self) -> None:
         feuerplan_image = cv.imread(self.__feuerplan_path, cv.IMREAD_GRAYSCALE)
         preprocessed_feuerplan = self.__preprocess_image(feuerplan_image)
-        translation_x, translation_y = self.__transform_feuerplan_origin(self.__map_msg, preprocessed_feuerplan)
-        self.__create_feuerplan_frame(translation_x,translation_y)
-        self.__publish_occupancy_grid(preprocessed_feuerplan, translation_x, translation_y)
+        self.__transform_between_map_and_feuerplan(self.__map_msg, preprocessed_feuerplan)
+        self.__create_feuerplan_frame(self.__origin_feuerplan_prev[0],self.__origin_feuerplan_prev[1])
+        self.__publish_occupancy_grid_from_image(preprocessed_feuerplan, self.__origin_feuerplan_prev[0], self.__origin_feuerplan_prev[1])
 
 def main(args=None):
     rclpy.init(args=args)
