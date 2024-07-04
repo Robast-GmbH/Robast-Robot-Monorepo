@@ -155,6 +155,7 @@ void loop()
             received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_ROW_INDEX).get_data(),
             received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS).get_data());
         }
+        break;
         default:
           debug_println("Received unsupported CAN message.");
           break;
