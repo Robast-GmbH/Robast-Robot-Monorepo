@@ -77,6 +77,12 @@ namespace partial_drawer_controller
 
     void set_tray_led_brightness(uint8_t tray, uint8_t led_row, uint8_t brightness)
     {
+      if (tray < TRAY_1 || tray > TRAY_8)
+      {
+        Serial.printf("Warning! Trying to set led brightness for invalid tray %d!\n", tray);
+        return;
+      }
+
       const tray_led_register_config& led_config = _tray_to_led_config.at(tray);
       // For now I did not understand why setting the color register instead of the brightness register is resulting
       // in changing the brightness, but it is working
