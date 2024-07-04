@@ -3,6 +3,7 @@
     <include path="default_electrical_drawer.xml"/>
     <include path="drawer_nfc_bt.xml"/>
     <include path="drawer_sequence.xml"/>
+    <include path="partial_drawer.xml"/>
     <include path="robo_base.xml"/>
     <include path="subtrees/drawer_close_animation.xml"/>
     <!-- Description of Node Models (used by Groot) -->
