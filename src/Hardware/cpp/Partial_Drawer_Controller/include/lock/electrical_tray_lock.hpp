@@ -33,14 +33,6 @@ namespace partial_drawer_controller
 
     bool is_drawer_opening_in_progress();
 
-    bool is_lock_switch_pushed();
-
-    bool is_endstop_switch_pushed();
-
-    void update_sensor_values();
-
-    float get_moving_average_sensor_lock_pin();
-
     void unlock();
 
     bool is_drawer_auto_close_timeout_triggered();

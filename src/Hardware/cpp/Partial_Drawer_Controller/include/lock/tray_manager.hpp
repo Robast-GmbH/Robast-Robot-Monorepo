@@ -6,6 +6,7 @@
 #include "led/onboard_led_driver.hpp"
 #include "lock/electrical_tray_lock.hpp"
 #include "lock/tray_pin_config.hpp"
+#include "peripherals/switch.hpp"
 
 namespace partial_drawer_controller
 {
@@ -15,7 +16,8 @@ namespace partial_drawer_controller
    public:
     TrayManager(const std::vector<TrayPinConfig>& tray_pin_configs,
                 std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
-                std::shared_ptr<TwoWire> wire);
+                std::shared_ptr<TwoWire> wire,
+                float switch_pressed_threshold);
 
     void init(std::function<void()> set_enable_pin_high);
 
@@ -28,7 +30,13 @@ namespace partial_drawer_controller
    private:
     std::vector<std::unique_ptr<ElectricalTrayLock>> _electrical_tray_locks;
 
+    std::vector<std::unique_ptr<drawer_controller::Switch>> _tray_switches;
+
     std::unique_ptr<OnboardLedDriver> _onboard_led_driver;
+
+    bool _triggered_closing_lock_after_opening = false;
+
+    void handle_tray_just_opened(uint8_t vector_id);
   };
 
 }   // namespace partial_drawer_controller

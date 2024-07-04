@@ -67,24 +67,6 @@ namespace partial_drawer_controller
     return _drawer_opening_is_in_progress;
   }
 
-  bool ElectricalTrayLock::is_lock_switch_pushed()
-  {
-    return get_moving_average_sensor_lock_pin() > 0.9;
-  }
-
-  void ElectricalTrayLock::update_sensor_values()
-  {
-    // Tracking the moving average for the sensor pins helps to debounce them a little bit
-    byte digital_read_sensor_lock_pin;
-    _gpio_wrapper->digital_read(_sensor_lock_pin_id, digital_read_sensor_lock_pin);
-    _moving_average_sensor_lock_pin = 0.2 * digital_read_sensor_lock_pin + 0.8 * _moving_average_sensor_lock_pin;
-  }
-
-  float ElectricalTrayLock::get_moving_average_sensor_lock_pin()
-  {
-    return _moving_average_sensor_lock_pin;
-  }
-
   void ElectricalTrayLock::unlock()
   {
     if (is_drawer_opening_in_progress())

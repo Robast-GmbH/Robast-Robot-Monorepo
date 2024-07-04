@@ -2,13 +2,24 @@
 
 namespace drawer_controller
 {
-  Switch::Switch(std::shared_ptr<IGpioWrapper> gpio_wrapper, uint8_t switch_pin_id, float switch_pressed_threshold)
-      : _gpio_wrapper{gpio_wrapper}, _switch_pin{switch_pin_id}, _switch_pressed_threshold{switch_pressed_threshold}
+  Switch::Switch(std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                 uint8_t switch_pin_id,
+                 float switch_pressed_threshold,
+                 SwitchType switch_type)
+      : _gpio_wrapper{gpio_wrapper},
+        _switch_pin{switch_pin_id},
+        _switch_pressed_threshold{switch_pressed_threshold},
+        _switch_type{switch_type},
+        _moving_average{0.0}
   {
   }
 
   bool Switch::is_switch_pressed()
   {
+    if (_switch_type == normally_open)
+    {
+      return _moving_average < (1 - _switch_pressed_threshold);
+    }
     return _moving_average > _switch_pressed_threshold;
   }
 

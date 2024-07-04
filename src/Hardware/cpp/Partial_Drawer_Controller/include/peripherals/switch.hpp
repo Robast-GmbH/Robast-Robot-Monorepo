@@ -10,7 +10,17 @@ namespace drawer_controller
   class Switch
   {
    public:
-    Switch(std::shared_ptr<IGpioWrapper> gpio_wrapper, uint8_t switch_pin_id, float switch_pressed_threshold);
+    enum SwitchType
+    {
+      normally_open,
+      normally_closed
+    };
+
+   public:
+    Switch(std::shared_ptr<IGpioWrapper> gpio_wrapper,
+           uint8_t switch_pin_id,
+           float switch_pressed_threshold,
+           SwitchType switch_type);
 
     bool is_switch_pressed();
 
@@ -18,6 +28,7 @@ namespace drawer_controller
 
    private:
     uint8_t _switch_pin;
+    SwitchType _switch_type;
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
     float _switch_pressed_threshold;
     float _moving_average;

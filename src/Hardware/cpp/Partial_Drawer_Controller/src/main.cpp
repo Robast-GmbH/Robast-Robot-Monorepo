@@ -15,6 +15,8 @@
 #define STEPPER_MOTOR_1_ADDRESS 0
 #define USE_ENCODER             0
 
+#define SWITCH_PRESSED_THRESHOLD 0.9
+
 using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
 
 std::shared_ptr<robast_can_msgs::CanDb> can_db;
@@ -69,7 +71,10 @@ void setup()
 
   gpio_wrapper = std::make_shared<drawer_controller::GPIO>(wire_port_expander);
 
-  endstop_switch = std::make_shared<drawer_controller::Switch>(gpio_wrapper, SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID, 0.9);
+  endstop_switch = std::make_shared<drawer_controller::Switch>(gpio_wrapper,
+                                                               SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
+                                                               SWITCH_PRESSED_THRESHOLD,
+                                                               drawer_controller::Switch::normally_closed);
 
   std::vector<partial_drawer_controller::TrayPinConfig> tray_pin_configs = {
     {LOCK_1_OPEN_CONTROL_PIN_ID, LOCK_1_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_1_CLOSED_PIN_ID},
@@ -81,8 +86,8 @@ void setup()
     {LOCK_7_OPEN_CONTROL_PIN_ID, LOCK_7_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_7_CLOSED_PIN_ID},
     {LOCK_8_OPEN_CONTROL_PIN_ID, LOCK_8_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_8_CLOSED_PIN_ID}};
 
-  tray_manager =
-    std::make_shared<partial_drawer_controller::TrayManager>(tray_pin_configs, gpio_wrapper, wire_onboard_led_driver);
+  tray_manager = std::make_shared<partial_drawer_controller::TrayManager>(
+    tray_pin_configs, gpio_wrapper, wire_onboard_led_driver, SWITCH_PRESSED_THRESHOLD);
 
   auto set_led_driver_enable_pin_high = []()
   {
