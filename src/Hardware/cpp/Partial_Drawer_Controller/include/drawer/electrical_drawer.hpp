@@ -127,8 +127,6 @@ namespace drawer_controller
 
     void debug_prints_drawer_lock(robast_can_msgs::CanMessage& can_message);
 
-    void update_sensor_values();
-
     float get_moving_average_drawer_closed_pin();
   };
 }   // namespace drawer_controller
