@@ -6,6 +6,7 @@
 #include <Wire.h>
 
 #include "interfaces/i_gpio_wrapper.hpp"
+#include "peripherals/gpio_info.hpp"
 #include "peripherals/pinout_defines.hpp"
 
 namespace drawer_controller
@@ -101,11 +102,30 @@ namespace drawer_controller
      */
     bool set_pin_mode(byte pin_mapping_id, bool is_input)
     {
+      if (_pin_mapping_id_to_port.find(pin_mapping_id) == _pin_mapping_id_to_port.end())
+      {
+        if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) == _pin_mapping_id_to_gpio_info.end())
+        {
+          Serial.printf("Error! Pin mapping ID %d not found when setting pin mode!\n", pin_mapping_id);
+          return false;
+        }
+
+        if (_pin_mapping_id_to_gpio_info.at(pin_mapping_id).is_input && !is_input)
+        {
+          Serial.printf("Error! Trying to set pin mode for pin id %d to input, but it is input only!\n",
+                        pin_mapping_id);
+          return false;
+        }
+
+        pinMode(_pin_mapping_id_to_gpio_info.at(pin_mapping_id).pin_number, is_input ? INPUT : OUTPUT);
+        return true;
+      }
+
       port_info port_info = _pin_mapping_id_to_port.at(pin_mapping_id);
+
       uint8_t port_expander_id = std::get<0>(port_info);
       PCA95x5::Port::Port port_id = std::get<1>(port_info);
 
-      // TODO@Jacob: What happens when the value cannot be found in the map?
       return _port_expanders.at(port_expander_id)
         ->direction(port_id, (is_input == PCA95x5::Direction::IN) ? PCA95x5::Direction::IN : PCA95x5::Direction::OUT);
     }
@@ -119,11 +139,22 @@ namespace drawer_controller
      */
     bool digital_read(byte pin_mapping_id, byte& value)
     {
+      if (_pin_mapping_id_to_port.find(pin_mapping_id) == _pin_mapping_id_to_port.end())
+      {
+        if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) == _pin_mapping_id_to_gpio_info.end())
+        {
+          Serial.printf("Error! Pin mapping ID %d not found when trying to digital_read!\n", pin_mapping_id);
+          return false;
+        }
+
+        value = digitalRead(_pin_mapping_id_to_gpio_info.at(pin_mapping_id).pin_number);
+        return true;
+      }
+
       port_info port_info = _pin_mapping_id_to_port.at(pin_mapping_id);
       uint8_t port_expander_id = std::get<0>(port_info);
       PCA95x5::Port::Port port_id = std::get<1>(port_info);
 
-      // TODO@Jacob: What happens when the value cannot be found in the map?
       value = _port_expanders.at(port_expander_id)->read(port_id);
       return true;
     }
@@ -137,11 +168,22 @@ namespace drawer_controller
      */
     bool digital_write(byte pin_mapping_id, bool state)
     {
+      if (_pin_mapping_id_to_port.find(pin_mapping_id) == _pin_mapping_id_to_port.end())
+      {
+        if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) == _pin_mapping_id_to_gpio_info.end())
+        {
+          Serial.printf("Error! Pin mapping ID %d not found when trying to digital_write!\n", pin_mapping_id);
+          return false;
+        }
+
+        digitalWrite(_pin_mapping_id_to_gpio_info.at(pin_mapping_id).pin_number, state);
+        return true;
+      }
+
       port_info port_info = _pin_mapping_id_to_port.at(pin_mapping_id);
       uint8_t port_expander_id = std::get<0>(port_info);
       PCA95x5::Port::Port port_id = std::get<1>(port_info);
 
-      // TODO@Jacob: What happens when the value cannot be found in the map?
       return _port_expanders.at(port_expander_id)->write(port_id, state ? PCA95x5::Level::H : PCA95x5::Level::L);
     }
 
@@ -157,6 +199,9 @@ namespace drawer_controller
 
    private:
     std::shared_ptr<TwoWire> _wire;
+
+    const std::unordered_map<uint8_t, GpioInfo> _pin_mapping_id_to_gpio_info = {
+      {SENSE_INPUT_LID_8_CLOSED_PIN_ID, GpioInfo{GPIO_NUM_0, IS_INPUT}}};
 
     const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> _port_expanders = {
       {SLAVE_ADDRESS_PORT_EXPANDER_1, std::make_shared<PCA9535>()},
