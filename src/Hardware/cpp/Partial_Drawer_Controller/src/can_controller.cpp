@@ -111,8 +111,8 @@ namespace drawer_controller
     }
     catch (const std::invalid_argument &exception)
     {
-      debug_print("Exception accurred while encoding CAN message into can frame. Exception message: ");
-      debug_println(exception.what());
+      Serial.print("Exception accurred while encoding CAN message into can frame. Exception message: ");
+      Serial.println(exception.what());
     }
   }
 
