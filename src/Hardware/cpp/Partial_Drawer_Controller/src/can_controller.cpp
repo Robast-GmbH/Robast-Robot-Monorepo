@@ -13,7 +13,8 @@ namespace drawer_controller
 
   void CanController::initialize_can_controller(void)
   {
-    CAN_cfg.speed = CAN_SPEED_250KBPS;
+    // Important note: No idea why - when setting CAN rate to 250kbps at the jetson, we need to set it to 500kbps here
+    CAN_cfg.speed = CAN_SPEED_500KBPS;
     CAN_cfg.tx_pin_id = TWAI_TX_PIN;
     CAN_cfg.rx_pin_id = TWAI_RX_PIN;
     CAN_cfg.rx_queue = xQueueCreate(_RX_QUEUE_SIZE, sizeof(CAN_frame_t));
