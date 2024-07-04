@@ -24,9 +24,6 @@ namespace BT
 
 namespace statemachine
 {
-
-    using std::placeholders::_1;
-
     PartialDrawerLED::PartialDrawerLED(
         const std::string &name,
         const BT::NodeConfig &config)
