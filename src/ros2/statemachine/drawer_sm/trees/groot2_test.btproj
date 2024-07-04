@@ -82,6 +82,13 @@
             <input_port name="upper_bound" default="0.0">double</input_port>
             <output_port name="LEDs_colored" default="{leds}"/>
         </Action>
+        <Action ID="PartialDrawerLED" editable="true">
+            <input_port name="drawer_address" default="{drawer_address}">Adress of the module and drawer</input_port>
+            <input_port name="led_brightness_top" default="255"/>
+            <input_port name="led_brightness_mid" default="255"/>
+            <input_port name="led_brightness_bot" default="255"/>
+            <input_port name="topic" default="/tray_task"/>
+        </Action>
         <Action ID="PublishDrawerStatus" editable="true">
             <input_port name="topic_name" default="/bt_drawer_open"/>
             <input_port name="status" default="false"/>
