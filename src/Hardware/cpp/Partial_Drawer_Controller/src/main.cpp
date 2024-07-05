@@ -21,6 +21,8 @@
 TaskHandle_t Task1;
 TaskHandle_t Task2;
 
+SemaphoreHandle_t can_queue_mutex = NULL;   // Create a mutex object
+
 using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
 
 std::shared_ptr<robast_can_msgs::CanDb> can_db;
@@ -50,7 +52,7 @@ std::unique_ptr<drawer_controller::DataMapper> data_mapper;
 
 std::unique_ptr<drawer_controller::CanController> can_controller;
 
-std::unique_ptr<drawer_controller::CanMsgQueue> can_msg_queue;
+std::unique_ptr<drawer_controller::CanMsgQueue> can_msg_queue;   // shared resource, so we need a mutex for this
 
 void task_1_loop(void* pvParameters)
 {
@@ -61,7 +63,15 @@ void task_1_loop(void* pvParameters)
     std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
     if (received_message.has_value())
     {
-      can_msg_queue->add_element_to_msg_queue(received_message.value());
+      if (xSemaphoreTake(can_queue_mutex, portMAX_DELAY) == pdTRUE)
+      {
+        can_msg_queue->add_element_to_msg_queue(received_message.value());
+        xSemaphoreGive(can_queue_mutex);
+      }
+      else
+      {
+        Serial.println("Error: Could not take the mutex. This should not occur.");
+      }
     }
   }
 }
@@ -72,7 +82,16 @@ void task_2_loop(void* pvParameters)
   Serial.println(xPortGetCoreID());
   for (;;)
   {
-    std::optional<robast_can_msgs::CanMessage> received_message = can_msg_queue->get_element_from_msg_queue();
+    std::optional<robast_can_msgs::CanMessage> received_message;
+    if (xSemaphoreTake(can_queue_mutex, portMAX_DELAY) == pdTRUE)
+    {
+      received_message = can_msg_queue->get_element_from_msg_queue();
+      xSemaphoreGive(can_queue_mutex);
+    }
+    else
+    {
+      Serial.println("Error: Could not take the mutex. This should not occur.");
+    }
 
     if (received_message.has_value())
     {
@@ -182,6 +201,7 @@ void setup()
   can_controller = std::make_unique<drawer_controller::CanController>(MODULE_ID, can_db, gpio_wrapper);
   can_controller->initialize_can_controller();
 
+  can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<drawer_controller::CanMsgQueue>();
 
   e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(MODULE_ID,
