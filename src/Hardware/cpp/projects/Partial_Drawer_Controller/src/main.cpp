@@ -7,7 +7,7 @@
 #include "led/led_strip.hpp"
 #include "lock/tray_manager.hpp"
 #include "peripherals/gpio.hpp"
-#include "peripherals/switch.hpp"
+#include "switch/switch.hpp"
 #include "utils/data_mapper.hpp"
 #include "utils/queue.hpp"
 

@@ -11,9 +11,9 @@
 #include "interfaces/i_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "lock/electrical_drawer_lock.hpp"
-#include "peripherals/encoder.hpp"
-#include "peripherals/motor.hpp"
-#include "peripherals/switch.hpp"
+#include "motor/encoder.hpp"
+#include "motor/motor.hpp"
+#include "switch/switch.hpp"
 
 #define DRAWER_MAX_SPEED    35000
 #define DRAWER_HOMING_SPEED 300

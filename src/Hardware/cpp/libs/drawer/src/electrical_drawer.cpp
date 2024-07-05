@@ -17,7 +17,7 @@ namespace drawer_controller
         _id{id},
         _gpio_wrapper{gpio_wrapper},
         _stepper_pin_id_config{stepper_pin_id_config},
-        _encoder{std::make_unique<drawer_controller::Encoder>(use_encoder, encoder_pin_a, encoder_pin_b)},
+        _encoder{std::make_unique<Encoder>(use_encoder, encoder_pin_a, encoder_pin_b)},
         _can_utils{std::make_unique<CanUtils>(can_db)},
         _motor{std::make_unique<stepper_motor::Motor>(motor_driver_address, _gpio_wrapper, _stepper_pin_id_config)},
         _endstop_switch{endstop_switch},

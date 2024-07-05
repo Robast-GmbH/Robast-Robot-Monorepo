@@ -1,4 +1,4 @@
-#include "peripherals/encoder.hpp"
+#include "motor/encoder.hpp"
 
 namespace drawer_controller
 {

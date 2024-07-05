@@ -1,4 +1,4 @@
-#include "peripherals/switch.hpp"
+#include "switch/switch.hpp"
 
 namespace drawer_controller
 {

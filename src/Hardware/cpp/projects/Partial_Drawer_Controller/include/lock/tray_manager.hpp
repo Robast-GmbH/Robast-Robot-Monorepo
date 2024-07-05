@@ -6,7 +6,7 @@
 #include "led/onboard_led_driver.hpp"
 #include "lock/electrical_tray_lock.hpp"
 #include "lock/tray_pin_config.hpp"
-#include "peripherals/switch.hpp"
+#include "switch/switch.hpp"
 
 namespace partial_drawer_controller
 {
