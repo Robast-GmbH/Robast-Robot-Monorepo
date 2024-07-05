@@ -14,6 +14,7 @@
 #include "led/led_header.hpp"
 #include "led/led_state.hpp"
 #include "timer/timer.hpp"
+#include "utils/queue.hpp"
 
 #define MAX_NUM_OF_LED_MODES_IN_QUEUE 3
 
@@ -48,18 +49,7 @@ namespace drawer_controller
 
     LedAnimation _target_led_animation;   // the current target led animation, which is applied withing fading time
 
-    // this queue makes sure, that a requested led modes gets its time to finish the animation before the next led
-    // mode is started
-    // Please mind: Normaly you would not built a queue yourself and use xQueue from FreeRTOS or std::queue
-    // But: std:queue did not work and just permanently threw expections that made the ESP32 reboot
-    // To use xQueue you need to use xQueueCreate to create a queue and you need to specify the size, in bytes, required
-    // to hold each item in the queue, which is not possible for the CanMessage class because it contains a vector of
-    // CanSignals which has a different length depending on the CanMessage.
-    // Therefore we built a queue with a vector, which should be fine in this case as the queue usually only contains
-    // one or two feedback messages and is rarely used. Furthermore we try to keep it as efficient as possible and try
-    // to follow what is explained here: https://youtu.be/fHNmRkzxHWs?t=2541
-    std::vector<LedAnimation> _led_animations_queue;
-    uint8_t _head_of_led_animations_queue = 0;
+    std::unique_ptr<Queue<LedAnimation>> _led_animations_queue;
 
     LedAnimation _new_target_led_animation;   // the new target led animation that is successively filled by can msgs
 
@@ -81,16 +71,8 @@ namespace drawer_controller
 
     void handle_fading();
 
-    void initialize_queue();
-
     void set_num_of_leds_to_change_to_value_within_bounds(const uint16_t num_of_led_states,
                                                           const uint16_t start_index_led_states);
-
-    // TODO@Jacob: We have the same queue in can_utils. Make one class out of it
-    std::optional<LedAnimation> get_element_from_led_animation_queue();
-
-    // TODO@Jacob: We have the same queue in can_utils. Make one class out of it
-    void add_element_to_led_animation_queue(LedAnimation led_animation);
 
     void initialize_led_strip();
   };
@@ -106,42 +88,10 @@ namespace drawer_controller
       : _starting_led_states(num_of_leds),
         _current_led_states(num_of_leds),
         _target_led_animation(std::vector<LedState>(num_of_leds), 0, num_of_leds, 0),
-        _new_target_led_animation(std::vector<LedState>(num_of_leds), 0, num_of_leds, 0)
+        _new_target_led_animation(std::vector<LedState>(num_of_leds), 0, num_of_leds, 0),
+        _led_animations_queue(std::make_unique<Queue<LedAnimation>>())
   {
     initialize_led_strip();
-  }
-
-  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
-  void LedStrip<led_pixel_pin, num_of_leds>::add_element_to_led_animation_queue(LedAnimation led_animation)
-  {
-    _led_animations_queue.push_back(led_animation);
-  }
-
-  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
-  std::optional<LedAnimation> LedStrip<led_pixel_pin, num_of_leds>::get_element_from_led_animation_queue()
-  {
-    uint8_t num_of_msgs_in_queue = _led_animations_queue.size();
-    if (num_of_msgs_in_queue == 0)
-    {
-      return {};
-    }
-    // TODO@Jacob: This can probably be removed once we are 100% sure that the queue is not infinetly growing
-    debug_printf(
-      "get_element_from_led_animation_queue! num_of_msgs_in_queue = %d, _led_animations_queue.capacity() = %d\n",
-      num_of_msgs_in_queue,
-      _led_animations_queue.capacity());
-
-    if (_head_of_led_animations_queue == (num_of_msgs_in_queue - 1))
-    {
-      LedAnimation led_animation = _led_animations_queue[_head_of_led_animations_queue];
-      _led_animations_queue.clear();
-      _head_of_led_animations_queue = 0;
-      return led_animation;
-    }
-    else
-    {
-      return _led_animations_queue[_head_of_led_animations_queue++];
-    }
   }
 
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
@@ -154,7 +104,7 @@ namespace drawer_controller
     }
     else
     {
-      std::optional<LedAnimation> new_led_animation = get_element_from_led_animation_queue();
+      std::optional<LedAnimation> new_led_animation = _led_animations_queue->get_element_from_queue();
       if (new_led_animation.has_value())
       {
         _target_led_animation = new_led_animation.value();
@@ -176,7 +126,7 @@ namespace drawer_controller
                                                       LED_INIT_ANIMATION_FADE_TIME_IN_MS / 100,
                                                       num_of_leds,
                                                       LED_INIT_ANIMATION_START_INDEX);
-    add_element_to_led_animation_queue(initial_led_animation);
+    _led_animations_queue->add_element_to_queue(initial_led_animation);
   }
 
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
@@ -274,16 +224,8 @@ namespace drawer_controller
   }
 
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
-  void LedStrip<led_pixel_pin, num_of_leds>::initialize_queue()
-  {
-    _head_of_led_animations_queue = 0;
-  }
-
-  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   void LedStrip<led_pixel_pin, num_of_leds>::initialize_led_strip()
   {
-    initialize_queue();
-
     FastLED.addLeds<NEOPIXEL, led_pixel_pin>(_leds, num_of_leds);
 
     led_init_mode();
@@ -339,7 +281,7 @@ namespace drawer_controller
     if (all_led_states_set)
     {
       LedAnimation led_animation = _new_target_led_animation;   // deep copy (see "=" operator definition in struct)
-      add_element_to_led_animation_queue(led_animation);
+      _led_animations_queue->add_element_to_queue(led_animation);
     }
   }
 
