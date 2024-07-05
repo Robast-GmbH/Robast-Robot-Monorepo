@@ -8,14 +8,14 @@
 
 #include "can/can_db.hpp"
 #include "can/can_message.h"
-#include "can/can_msg_queue.hpp"
+#include "can_toolbox/can_msg_queue.hpp"
 #include "debug/debug.hpp"
 
 namespace drawer_controller
 {
   class CanUtils
   {
-   public:
+  public:
     CanUtils(std::shared_ptr<robast_can_msgs::CanDb> can_db);
 
     std::optional<robast_can_msgs::CanMessage> get_element_from_feedback_msg_queue();
@@ -34,7 +34,7 @@ namespace drawer_controller
                                                const bool is_drawer_stall_guard_triggered,
                                                uint8_t normed_current_position);
 
-   private:
+  private:
     std::unique_ptr<CanMsgQueue> _feedback_can_msg_queue;
 
     std::shared_ptr<robast_can_msgs::CanDb> _can_db;
@@ -55,5 +55,5 @@ namespace drawer_controller
                                                                       const bool is_drawer_stall_guard_triggered,
                                                                       uint8_t normed_current_position);
   };
-}   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_CAN_UTILS_HPP
+} // namespace drawer_controller
+#endif // DRAWER_CONTROLLER_CAN_UTILS_HPP

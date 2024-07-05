@@ -1,0 +1,23 @@
+{
+    "name": "led",
+    "version": "1.0.0",
+    "description": "A library that contains functions and classes for led action.",
+    "keywords": "can",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/Robast-GmbH/Monorepo.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Jacob Ritterbach",
+        "email": "j.ritterbach@robast.de",
+        "maintainer": true
+      }
+    ],
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*",
+    "headers": ["led_strip.hpp", "led_header.hpp", "led_animation.hpp", "led_state.hpp"]
+  }

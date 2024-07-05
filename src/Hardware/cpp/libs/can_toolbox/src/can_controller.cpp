@@ -1,4 +1,4 @@
-#include "can/can_controller.hpp"
+#include "can_toolbox/can_controller.hpp"
 
 // had a lot of linking errors when this was in the class, put it here and it works, no idea why
 CAN_device_t CAN_cfg;
@@ -8,15 +8,21 @@ namespace drawer_controller
 
   CanController::CanController(uint32_t module_id,
                                std::shared_ptr<robast_can_msgs::CanDb> can_db,
-                               std::shared_ptr<IGpioWrapper> gpio_wrapper)
-      : _module_id{module_id}, _can_db{can_db}, _gpio_wrapper{gpio_wrapper} {};
+                               std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                               gpio_num_t twai_tx_pin,
+                               gpio_num_t twai_rx_pin)
+      : _module_id{module_id},
+        _can_db{can_db},
+        _gpio_wrapper{gpio_wrapper},
+        _twai_tx_pin{twai_tx_pin},
+        _twai_rx_pin{twai_rx_pin} {};
 
   void CanController::initialize_can_controller(void)
   {
     // Important note: No idea why - when setting CAN rate to 250kbps at the jetson, we need to set it to 500kbps here
     CAN_cfg.speed = CAN_SPEED_500KBPS;
-    CAN_cfg.tx_pin_id = TWAI_TX_PIN;
-    CAN_cfg.rx_pin_id = TWAI_RX_PIN;
+    CAN_cfg.tx_pin_id = _twai_tx_pin;
+    CAN_cfg.rx_pin_id = _twai_rx_pin;
     CAN_cfg.rx_queue = xQueueCreate(_RX_QUEUE_SIZE, sizeof(CAN_frame_t));
 
     ESP32Can.CANInit();
@@ -56,7 +62,7 @@ namespace drawer_controller
         debug_println("\n");
 
         can_message = robast_can_msgs::decode_can_message(
-          rx_frame.MsgID, rx_frame.data.u8, rx_frame.FIR.B.DLC, this->_can_db->can_messages);
+            rx_frame.MsgID, rx_frame.data.u8, rx_frame.FIR.B.DLC, this->_can_db->can_messages);
 
         if (can_message.has_value() &&
             can_message.value().get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data() == _module_id)
@@ -86,7 +92,7 @@ namespace drawer_controller
     try
     {
       robast_can_msgs::CanFrame can_frame =
-        robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
+          robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
 
       CAN_frame_t tx_frame;
       tx_frame.FIR.B.FF = CAN_frame_std;
@@ -116,4 +122,4 @@ namespace drawer_controller
     }
   }
 
-}   // namespace drawer_controller
+} // namespace drawer_controller

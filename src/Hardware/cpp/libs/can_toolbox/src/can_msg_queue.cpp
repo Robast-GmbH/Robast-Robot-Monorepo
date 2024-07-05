@@ -1,4 +1,4 @@
-#include "can/can_msg_queue.hpp"
+#include "can_toolbox/can_msg_queue.hpp"
 
 namespace drawer_controller
 {
@@ -37,4 +37,4 @@ namespace drawer_controller
       return _msg_queue[_head_of_msg_queue++];
     }
   }
-}   // namespace drawer_controller
+} // namespace drawer_controller

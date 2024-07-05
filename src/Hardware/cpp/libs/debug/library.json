@@ -1,0 +1,23 @@
+{
+    "name": "can_toolbox",
+    "version": "1.0.0",
+    "description": "A library that contains functions used for debugging.",
+    "keywords": "can",
+    "repository":
+    {
+      "type": "git",
+      "url": "https://github.com/Robast-GmbH/Monorepo.git"
+    },
+    "authors":
+    [
+      {
+        "name": "Jacob Ritterbach",
+        "email": "j.ritterbach@robast.de",
+        "maintainer": true
+      }
+    ],
+    "license": "MIT",
+    "frameworks": "*",
+    "platforms": "*",
+    "headers": ["debug.hpp"]
+  }

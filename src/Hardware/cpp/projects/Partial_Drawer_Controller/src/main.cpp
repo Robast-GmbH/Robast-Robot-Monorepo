@@ -1,7 +1,6 @@
 #include <memory>
 
-#include "can/can_controller.hpp"
-#include "can/can_msg_queue.hpp"
+#include "can_toolbox/can_controller.hpp"
 #include "debug/debug.hpp"
 #include "drawer/electrical_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
@@ -10,11 +9,14 @@
 #include "peripherals/gpio.hpp"
 #include "peripherals/switch.hpp"
 #include "utils/data_mapper.hpp"
+#include "utils/queue.hpp"
 
 #define MODULE_ID               6
 #define LOCK_ID                 0
 #define STEPPER_MOTOR_1_ADDRESS 0
 #define USE_ENCODER             0
+
+#define NUM_OF_LEDS 18
 
 #define SWITCH_PRESSED_THRESHOLD 0.9
 
@@ -46,13 +48,14 @@ std::shared_ptr<drawer_controller::Switch> endstop_switch;
 
 std::shared_ptr<partial_drawer_controller::TrayManager> tray_manager;
 
-std::unique_ptr<drawer_controller::LedStrip> led_strip;
+std::unique_ptr<drawer_controller::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
 std::unique_ptr<drawer_controller::DataMapper> data_mapper;
 
 std::unique_ptr<drawer_controller::CanController> can_controller;
 
-std::unique_ptr<drawer_controller::CanMsgQueue> can_msg_queue;   // shared resource, so we need a mutex for this
+// shared resource, so we need a mutex for this
+std::unique_ptr<drawer_controller::Queue<robast_can_msgs::CanMessage>> can_msg_queue;
 
 void task_1_loop(void* pvParameters)
 {
@@ -63,7 +66,7 @@ void task_1_loop(void* pvParameters)
     {
       if (xSemaphoreTake(can_queue_mutex, portMAX_DELAY) == pdTRUE)
       {
-        can_msg_queue->add_element_to_msg_queue(received_message.value());
+        can_msg_queue->add_element_to_queue(received_message.value());
         xSemaphoreGive(can_queue_mutex);
       }
       else
@@ -81,7 +84,7 @@ void task_2_loop(void* pvParameters)
     std::optional<robast_can_msgs::CanMessage> received_message;
     if (xSemaphoreTake(can_queue_mutex, portMAX_DELAY) == pdTRUE)
     {
-      received_message = can_msg_queue->get_element_from_msg_queue();
+      received_message = can_msg_queue->get_element_from_queue();
       xSemaphoreGive(can_queue_mutex);
     }
     else
@@ -192,13 +195,14 @@ void setup()
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   data_mapper = std::make_unique<drawer_controller::DataMapper>();
 
-  led_strip = std::make_unique<drawer_controller::LedStrip>();
+  led_strip = std::make_unique<drawer_controller::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>>();
 
-  can_controller = std::make_unique<drawer_controller::CanController>(MODULE_ID, can_db, gpio_wrapper);
+  can_controller =
+    std::make_unique<drawer_controller::CanController>(MODULE_ID, can_db, gpio_wrapper, TWAI_TX_PIN, TWAI_RX_PIN);
   can_controller->initialize_can_controller();
 
   can_queue_mutex = xSemaphoreCreateMutex();
-  can_msg_queue = std::make_unique<drawer_controller::CanMsgQueue>();
+  can_msg_queue = std::make_unique<drawer_controller::Queue<robast_can_msgs::CanMessage>>();
 
   e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(MODULE_ID,
                                                                      LOCK_ID,

@@ -1,22 +1,124 @@
-#include "led/led_strip.hpp"
+#ifndef DRAWER_CONTROLLER_LED_STRIP_HPP
+#define DRAWER_CONTROLLER_LED_STRIP_HPP
+
+#include <Arduino.h>
+#include <FastLED.h>
+
+#include <algorithm>
+#include <optional>
+
+#include "can/can_db.hpp"
+#include "can/can_helper.h"
+#include "debug/debug.hpp"
+#include "led/led_animation.hpp"
+#include "led/led_header.hpp"
+#include "led/led_state.hpp"
+#include "timer/timer.hpp"
+
+#define MAX_NUM_OF_LED_MODES_IN_QUEUE 3
+
+#define LED_INIT_ANIMATION_FADE_TIME_IN_MS 3000
+#define LED_INIT_ANIMATION_START_INDEX     0
+#define LED_INIT_RED                       0
+#define LED_INIT_GREEN                     155
+#define LED_INIT_BLUE                      155
+#define LED_INIT_BRIGHTNESS                25
+#define LED_MAX_BRIGHTNESS                 255
+
+#define FULL_PROGRESS_LED_FADING 1.0
 
 namespace drawer_controller
 {
-  LedStrip::LedStrip()
-      : _starting_led_states(NUM_OF_LEDS),
-        _current_led_states(NUM_OF_LEDS),
-        _target_led_animation(std::vector<LedState>(NUM_OF_LEDS), 0, NUM_OF_LEDS, 0),
-        _new_target_led_animation(std::vector<LedState>(NUM_OF_LEDS), 0, NUM_OF_LEDS, 0)
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  class LedStrip
+  {
+   public:
+    LedStrip();
+
+    void handle_led_control();
+
+    void initialize_led_state_change(const LedHeader led_header);
+
+    void set_led_state(LedState state);
+
+   private:
+    bool _is_fading_in_progress = false;
+    std::vector<LedState> _starting_led_states;   // used for fading from starting to target led state
+    std::vector<LedState> _current_led_states;    // used to apply current led state to led strip
+
+    LedAnimation _target_led_animation;   // the current target led animation, which is applied withing fading time
+
+    // this queue makes sure, that a requested led modes gets its time to finish the animation before the next led
+    // mode is started
+    // Please mind: Normaly you would not built a queue yourself and use xQueue from FreeRTOS or std::queue
+    // But: std:queue did not work and just permanently threw expections that made the ESP32 reboot
+    // To use xQueue you need to use xQueueCreate to create a queue and you need to specify the size, in bytes, required
+    // to hold each item in the queue, which is not possible for the CanMessage class because it contains a vector of
+    // CanSignals which has a different length depending on the CanMessage.
+    // Therefore we built a queue with a vector, which should be fine in this case as the queue usually only contains
+    // one or two feedback messages and is rarely used. Furthermore we try to keep it as efficient as possible and try
+    // to follow what is explained here: https://youtu.be/fHNmRkzxHWs?t=2541
+    std::vector<LedAnimation> _led_animations_queue;
+    uint8_t _head_of_led_animations_queue = 0;
+
+    LedAnimation _new_target_led_animation;   // the new target led animation that is successively filled by can msgs
+
+    uint16_t _current_index_led_states = 0;
+
+    CRGBArray<num_of_leds> _leds;
+
+    unsigned long _previous_millis = 0;   // makes sure that applying led animations is not done more then required
+
+    void led_init_mode();
+
+    void init_fading(const uint8_t new_fade_time_in_hundreds_of_ms);
+
+    void apply_led_states_to_led_strip();
+
+    float linear_interpolation(const float a, const float b, const float t);
+
+    void set_current_led_states_to_target_led_states();
+
+    void handle_fading();
+
+    void initialize_queue();
+
+    void set_num_of_leds_to_change_to_value_within_bounds(const uint16_t num_of_led_states,
+                                                          const uint16_t start_index_led_states);
+
+    // TODO@Jacob: We have the same queue in can_utils. Make one class out of it
+    std::optional<LedAnimation> get_element_from_led_animation_queue();
+
+    // TODO@Jacob: We have the same queue in can_utils. Make one class out of it
+    void add_element_to_led_animation_queue(LedAnimation led_animation);
+
+    void initialize_led_strip();
+  };
+
+  /*********************************************************************************************************
+   Implementations
+   In C++ you need to include the implementation of the template class in the header file because the
+   compiler needs to know the implementation of the template class when it is used in another file
+  *********************************************************************************************************/
+
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  LedStrip<led_pixel_pin, num_of_leds>::LedStrip()
+      : _starting_led_states(num_of_leds),
+        _current_led_states(num_of_leds),
+        _target_led_animation(std::vector<LedState>(num_of_leds), 0, num_of_leds, 0),
+        _new_target_led_animation(std::vector<LedState>(num_of_leds), 0, num_of_leds, 0)
   {
     initialize_led_strip();
   }
 
-  void LedStrip::add_element_to_led_animation_queue(LedAnimation led_animation)
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::add_element_to_led_animation_queue(LedAnimation led_animation)
   {
     _led_animations_queue.push_back(led_animation);
   }
 
-  std::optional<LedAnimation> LedStrip::get_element_from_led_animation_queue()
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  std::optional<LedAnimation> LedStrip<led_pixel_pin, num_of_leds>::get_element_from_led_animation_queue()
   {
     uint8_t num_of_msgs_in_queue = _led_animations_queue.size();
     if (num_of_msgs_in_queue == 0)
@@ -42,7 +144,8 @@ namespace drawer_controller
     }
   }
 
-  void LedStrip::handle_led_control()
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::handle_led_control()
   {
     if (_is_fading_in_progress)
     {
@@ -60,22 +163,24 @@ namespace drawer_controller
     }
   }
 
-  void LedStrip::led_init_mode()
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::led_init_mode()
   {
     _new_target_led_animation.target_led_states.clear();
-    for (uint8_t i = 0; i < NUM_OF_LEDS; ++i)
+    for (uint8_t i = 0; i < num_of_leds; ++i)
     {
       _new_target_led_animation.target_led_states.push_back(
         LedState(LED_INIT_RED, LED_INIT_GREEN, LED_INIT_BLUE, LED_INIT_BRIGHTNESS));
     }
     LedAnimation initial_led_animation = LedAnimation(_new_target_led_animation.target_led_states,
                                                       LED_INIT_ANIMATION_FADE_TIME_IN_MS / 100,
-                                                      NUM_OF_LEDS,
+                                                      num_of_leds,
                                                       LED_INIT_ANIMATION_START_INDEX);
     add_element_to_led_animation_queue(initial_led_animation);
   }
 
-  void LedStrip::init_fading(const uint8_t new_fade_time_in_hundreds_of_ms)
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::init_fading(const uint8_t new_fade_time_in_hundreds_of_ms)
   {
     debug_printf("Init fading with new_fade_time_in_hundreds_of_ms = %d \n", new_fade_time_in_hundreds_of_ms);
     _is_fading_in_progress = true;
@@ -83,7 +188,8 @@ namespace drawer_controller
     timer::enable_timer();
   }
 
-  void LedStrip::apply_led_states_to_led_strip()
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::apply_led_states_to_led_strip()
   {
     FastLED.setBrightness(LED_MAX_BRIGHTNESS);   // individual led brightness will be scaled down in the for loop
     for (uint16_t i = _target_led_animation.start_index_led_states;
@@ -102,17 +208,19 @@ namespace drawer_controller
     FastLED.show();
   }
 
-  float LedStrip::linear_interpolation(const float a, const float b, const float t)
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  float LedStrip<led_pixel_pin, num_of_leds>::linear_interpolation(const float a, const float b, const float t)
   {
     return a + t * (b - a);
   }
 
-  void LedStrip::set_current_led_states_to_target_led_states()
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::set_current_led_states_to_target_led_states()
   {
     debug_println("Setting current led states to target led states...");
     timer::disable_timer();
     _is_fading_in_progress = false;
-    for (uint16_t i = 0; i < NUM_OF_LEDS; ++i)
+    for (uint16_t i = 0; i < num_of_leds; ++i)
     {
       _current_led_states[i].red = _target_led_animation.target_led_states[i].red;
       _current_led_states[i].green = _target_led_animation.target_led_states[i].green;
@@ -127,7 +235,8 @@ namespace drawer_controller
     }
   }
 
-  void LedStrip::handle_fading(void)
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::handle_fading(void)
   {
     if (timer::get_max_fade_counter_value == 0)
     {
@@ -138,7 +247,7 @@ namespace drawer_controller
       const float progress = timer::get_fade_counter_value() / timer::get_max_fade_counter_value();
       if (progress < FULL_PROGRESS_LED_FADING)
       {
-        for (uint16_t i = 0; i < NUM_OF_LEDS; ++i)
+        for (uint16_t i = 0; i < num_of_leds; ++i)
         {
           // TODO@Jacob: For the leds at the base it seems that all these interpolation computations disturb the change
           // TODO@Jacob: of the correct leds. At least when i comment this out the correct leds are changed.
@@ -164,29 +273,33 @@ namespace drawer_controller
     }
   }
 
-  void LedStrip::initialize_queue()
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::initialize_queue()
   {
     _head_of_led_animations_queue = 0;
   }
 
-  void LedStrip::initialize_led_strip()
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::initialize_led_strip()
   {
     initialize_queue();
 
-    FastLED.addLeds<NEOPIXEL, LED_PIXEL_PIN>(_leds, NUM_OF_LEDS);
+    FastLED.addLeds<NEOPIXEL, led_pixel_pin>(_leds, num_of_leds);
 
     led_init_mode();
     timer::initialize_timer();
   }
 
-  void LedStrip::set_num_of_leds_to_change_to_value_within_bounds(const uint16_t num_of_led_states,
-                                                                  const uint16_t start_index_led_states)
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::set_num_of_leds_to_change_to_value_within_bounds(
+    const uint16_t num_of_led_states, const uint16_t start_index_led_states)
   {
     _new_target_led_animation.num_of_led_states_to_change =
-      std::min(num_of_led_states, (uint16_t) (NUM_OF_LEDS - start_index_led_states));
+      std::min(num_of_led_states, (uint16_t) (num_of_leds - start_index_led_states));
   }
 
-  void LedStrip::initialize_led_state_change(LedHeader led_header)
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::initialize_led_state_change(LedHeader led_header)
   {
     debug_printf(
       "Initialized led state change for %d num of leds with start index %d and fade_time_in_hundreds_of_ms %d!\n",
@@ -201,7 +314,8 @@ namespace drawer_controller
     _current_index_led_states = led_header.start_index_of_leds_to_change;
   }
 
-  void LedStrip::set_led_state(LedState state)
+  template <uint8_t led_pixel_pin, uint8_t num_of_leds>
+  void LedStrip<led_pixel_pin, num_of_leds>::set_led_state(LedState state)
   {
     bool all_leds_already_set = (_new_target_led_animation.num_of_led_states_to_change -
                                  _new_target_led_animation.start_index_led_states) <= _current_index_led_states;
@@ -230,3 +344,5 @@ namespace drawer_controller
   }
 
 }   // namespace drawer_controller
+
+#endif   // DRAWER_CONTROLLER_LED_STRIP_HPP
