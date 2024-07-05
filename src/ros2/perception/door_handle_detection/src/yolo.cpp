@@ -249,6 +249,8 @@ int main(int argc, char** argv) {
     std::string mode;
     std::string mxId;
     std::string resourceBaseFolder;
+    std::string door_handle_position_topic;
+    std::string color_image_topic;
     std::string nnPath;
     std::string monoResolution;
     std::string rgbResolution;
@@ -302,6 +304,8 @@ int main(int argc, char** argv) {
     node->declare_parameter("dotProjectormA", 200.0);
     node->declare_parameter("floodLightmA", 200.0);
     node->declare_parameter("enableRosBaseTimeUpdate", false);
+    node->declare_parameter("door_handle_position_topic","");
+    node->declare_parameter("color_image_topic","");
 
     // updating parameters if defined in launch file.
 
@@ -343,6 +347,8 @@ int main(int argc, char** argv) {
     node->get_parameter("dotProjectormA", dotProjectormA);
     node->get_parameter("floodLightmA", floodLightmA);
     node->get_parameter("enableRosBaseTimeUpdate", enableRosBaseTimeUpdate);
+    node->get_parameter("door_handle_position_topic",door_handle_position_topic);
+    node->get_parameter("color_image_topic",color_image_topic);
 
     if(resourceBaseFolder.empty()) {
         throw std::runtime_error("Send the path to the resouce folder containing NNBlob in \'resourceBaseFolder\' ");
@@ -491,7 +497,7 @@ int main(int argc, char** argv) {
     dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rgbPublish(
                 imgQueue,
                 node,
-                std::string("color/image"),
+                color_image_topic,
                 std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rgbConverter, std::placeholders::_1, std::placeholders::_2),
                 30,
                 rgbCameraInfo,
@@ -516,7 +522,7 @@ int main(int argc, char** argv) {
     dai::rosBridge::BridgePublisher<depthai_ros_msgs::msg::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(
                     detectionQueue,
                     node,
-                    std::string("stereo/door_handle_position"),
+                    door_handle_position_topic,
                     std::bind(&dai::rosBridge::SpatialDetectionConverter::toRosMsg, &detConverter, std::placeholders::_1, std::placeholders::_2),
                     30);
     detectionPublish.addPublisherCallback();
