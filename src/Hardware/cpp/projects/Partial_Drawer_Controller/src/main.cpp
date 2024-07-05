@@ -197,8 +197,7 @@ void setup()
 
   led_strip = std::make_unique<drawer_controller::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>>();
 
-  can_controller =
-    std::make_unique<drawer_controller::CanController>(MODULE_ID, can_db, gpio_wrapper, TWAI_TX_PIN, TWAI_RX_PIN);
+  can_controller = std::make_unique<drawer_controller::CanController>(MODULE_ID, can_db, TWAI_TX_PIN, TWAI_RX_PIN);
   can_controller->initialize_can_controller();
 
   can_queue_mutex = xSemaphoreCreateMutex();
