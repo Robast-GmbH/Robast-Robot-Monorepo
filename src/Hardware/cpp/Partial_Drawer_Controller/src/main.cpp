@@ -56,8 +56,6 @@ std::unique_ptr<drawer_controller::CanMsgQueue> can_msg_queue;   // shared resou
 
 void task_1_loop(void* pvParameters)
 {
-  Serial.print("Task1 running on core ");
-  Serial.println(xPortGetCoreID());
   for (;;)
   {
     std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
@@ -78,8 +76,6 @@ void task_1_loop(void* pvParameters)
 
 void task_2_loop(void* pvParameters)
 {
-  Serial.print("Task2 running on core ");
-  Serial.println(xPortGetCoreID());
   for (;;)
   {
     std::optional<robast_can_msgs::CanMessage> received_message;
