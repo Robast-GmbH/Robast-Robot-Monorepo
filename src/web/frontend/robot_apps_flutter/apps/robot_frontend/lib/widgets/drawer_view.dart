@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/modules_provider.dart';
-import 'package:robot_frontend/models/provider/robot_provider.dart';
-import 'package:shared_data_models/shared_data_models.dart';
 
 class DrawerView extends StatelessWidget {
   const DrawerView({
@@ -32,7 +30,7 @@ class DrawerView extends StatelessWidget {
           if (!isEnabled) return;
           if (isOpen && module.variant == DrawerVariant.electric) {
             Provider.of<ModulesProvider>(context, listen: false).closeDrawer(module);
-          } else if (moduleProcess.status == ModuleProcessStatus.waitingForOpeningCommand || moduleProcess.status == ModuleProcessStatus.closed) {
+          } else if (moduleProcess.status == ModuleProcessStatus.waitingForOpening || moduleProcess.status == ModuleProcessStatus.closed) {
             Provider.of<ModulesProvider>(context, listen: false).openDrawer(module);
             onOpening();
           }

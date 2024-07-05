@@ -1,5 +1,5 @@
 from user_system.user_repository import UserRepository
-from user_system.models.user import User
+from pydantic_models.user import User
 from models.periodic_timer import PeriodicTimer
 from configs.url_config import robot_name_to_ip, robot_api_port
 import requests
@@ -42,7 +42,7 @@ class AuthSessionManager:
         )
         if response.status_code == 200:
             nfc_id = response.json()["nfc_tag"]["data"]
-            user = self.__user_repository.get_user_by_nfc_id(nfc_id)
+            user = self.__user_repository.get_user(nfc_id)
             if user and user != self.__sessions[robot_name]:
                 self.__start_session(robot_name, user)
 

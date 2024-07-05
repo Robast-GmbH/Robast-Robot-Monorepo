@@ -1,7 +1,7 @@
 // moduleProcessStatus: json['module_process_status'] as String,
 // moduleProcessType: json['module_process_type'] as String,
 // moduleProcessPayload: Map<String, int>.from(json['module_process_payload'] as Map<String, dynamic>),
-enum ModuleProcessStatus { idle, auth, waitingForOpeningCommand, opening, open, closing, closed, finished }
+enum ModuleProcessStatus { idle, auth, waitingForOpening, opening, open, closing, closed }
 
 class ModuleProcess {
   ModuleProcess({
@@ -55,7 +55,7 @@ class ModuleProcess {
       case 'auth':
         return ModuleProcessStatus.auth;
       case 'waiting_for_opening':
-        return ModuleProcessStatus.waitingForOpeningCommand;
+        return ModuleProcessStatus.waitingForOpening;
       case 'opening':
         return ModuleProcessStatus.opening;
       case 'open':
@@ -64,8 +64,6 @@ class ModuleProcess {
         return ModuleProcessStatus.closing;
       case 'closed':
         return ModuleProcessStatus.closed;
-      case 'finished':
-        return ModuleProcessStatus.finished;
       default:
         throw ArgumentError('Invalid enum value for ModuleProcessState');
     }

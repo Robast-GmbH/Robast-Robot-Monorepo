@@ -6,7 +6,7 @@ import 'package:shared_data_models/shared_data_models.dart';
 
 class FleetProvider extends ChangeNotifier {
   List<Robot> robots = [];
-  Map<String, List<DrawerModule>> modules = {};
+  Map<String, List<RobotDrawer>> modules = {};
   Map<String, List<Task>> tasks = {};
   bool isNavigationBlocked = false;
   Timer? _robotUpdateTimer;
@@ -34,10 +34,10 @@ class FleetProvider extends ChangeNotifier {
   }
 
   Future<void> updateModules() async {
-    final updatedModules = <String, List<DrawerModule>>{};
+    final updatedModules = <String, List<RobotDrawer>>{};
     for (final robot in robots) {
       if (robot.name.isNotEmpty) {
-        final robotModules = await _middlewareApi.getModules(robotName: robot.name);
+        final robotModules = await _middlewareApi.modules.getModules(robotName: robot.name);
         updatedModules[robot.name] = robotModules;
       }
     }

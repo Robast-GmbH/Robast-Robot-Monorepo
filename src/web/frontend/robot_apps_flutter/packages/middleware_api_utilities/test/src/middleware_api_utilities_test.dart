@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
+import 'package:middleware_api_utilities/src/sub_apis/users_api.dart';
 import 'package:test/test.dart';
 
 void main() {
@@ -14,6 +15,31 @@ void main() {
     const quantity = 3;
     const variant = 'manual';
     final modulesApi = ModulesApi(prefix: 'http://localhost:8003');
+
+    const userID = '';
+    const title = 'Prof. Dr. med.';
+    const firstName = 'Max';
+    const lastName = 'Mustermann';
+    const station = 'HNO';
+    const room = 'Raum 3';
+    const userGroups = ['group1', 'group2'];
+    final testUser = User(
+      id: userID,
+      title: title,
+      firstName: firstName,
+      lastName: lastName,
+      station: station,
+      room: room,
+      userGroups: userGroups,
+    );
+    const updatedTitle = 'Dr. med.';
+    const updatedFirstName = 'Maximilian';
+    const updatedLastName = 'Musterfrau';
+    const updatedStation = 'Orthopädie';
+    const updatedRoom = 'Raum 4';
+    const updatedUserGroups = ['group3', 'group4'];
+
+    final usersApi = UsersApi(prefix: 'http://localhost:8003');
     test('can be instantiated', () {
       expect(MiddlewareApiUtilities(prefix: ''), isNotNull);
     });
@@ -132,6 +158,52 @@ void main() {
         moduleID: moduleID,
         drawerID: drawerID,
       );
+      expect(deletionResult, isTrue);
+    });
+
+    test('can get users', () async {
+      final users = await usersApi.getUsers();
+      expect(users, isNotEmpty);
+    });
+    test('can create and delete user', () async {
+      final creationResult = await usersApi.createUser(
+        newUser: testUser,
+      );
+      expect(creationResult, isNotNull);
+      final users = await usersApi.getUsers();
+      expect(
+        users.where((user) => user.id == creationResult!.id),
+        isNotEmpty,
+      );
+      final deletionResult = await usersApi.deleteUser(id: creationResult!.id);
+      expect(deletionResult, isTrue);
+    });
+
+    test('can update user', () async {
+      final creationResult = await usersApi.createUser(
+        newUser: testUser,
+      );
+      expect(creationResult, isNotNull);
+      final updatedUser = User(
+        id: creationResult!.id,
+        title: updatedTitle,
+        firstName: updatedFirstName,
+        lastName: updatedLastName,
+        station: updatedStation,
+        room: updatedRoom,
+        userGroups: updatedUserGroups,
+      );
+      final updatedUserResult = await usersApi.updateUser(updatedUser: updatedUser);
+      expect(updatedUserResult, isNotNull);
+      final user = await usersApi.getUser(id: updatedUserResult!.id);
+      expect(user, isNotNull);
+      expect(user!.title, equals(updatedTitle));
+      expect(user.firstName, equals(updatedFirstName));
+      expect(user.lastName, equals(updatedLastName));
+      expect(user.station, equals(updatedStation));
+      expect(user.room, equals(updatedRoom));
+      expect(user.userGroups, equals(updatedUserGroups));
+      final deletionResult = await usersApi.deleteUser(id: creationResult.id);
       expect(deletionResult, isTrue);
     });
   });

@@ -1,7 +1,7 @@
 from os import read
 import sqlite3
 import uuid
-from user_system.models.user import User
+from pydantic_models.user import User
 
 DB_PATH = "users.db"
 AVAILABLE_USER_GROUPS = [
@@ -26,17 +26,19 @@ class UserRepository:
             self.db_path = db_path
             self.__create_table()
 
-    def auth_user(self, user_id: str, nfc_id: str) -> bool:
+    def auth_user(self, user_id: str) -> bool:
         user = self.get_user(user_id)
-        if user and user.nfc_id == nfc_id:
+        if user:
             return True
         return False
 
     def create_user(
         self,
-        nfc_id: str,
+        title: str,
         first_name: str,
         last_name: str,
+        station: str,
+        room: str,
         user_groups: list[str],
     ) -> User | None:
         user_id = str(uuid.uuid4())
@@ -45,9 +47,9 @@ class UserRepository:
         cursor = db_connection.cursor()
         cursor.execute(
             """
-            INSERT INTO users (user_id, nfc_id, first_name, last_name, user_groups) VALUES (?, ?, ?, ?, ?)
+            INSERT INTO users (user_id, title, first_name, last_name, station, room, user_groups) VALUES (?, ?, ?, ?, ?, ?, ?)
         """,
-            (user_id, nfc_id, first_name, last_name, user_groups_str),
+            (user_id, title, first_name, last_name, station, room, user_groups_str),
         )
         db_connection.commit()
         db_connection.close()
@@ -61,14 +63,16 @@ class UserRepository:
         db_connection.close()
         users = []
         for row in rows:
-            user_id, nfc_id, first_name, last_name, user_groups_str = row
+            user_id, title, first_name, last_name, station, room, user_groups_str = row
             user_groups = user_groups_str.split(",")
             users.append(
                 User(
                     id=user_id,
-                    nfc_id=nfc_id,
+                    title=title,
                     first_name=first_name,
                     last_name=last_name,
+                    station=station,
+                    room=room,
                     user_groups=user_groups,
                 )
             )
@@ -81,31 +85,15 @@ class UserRepository:
         row = cursor.fetchone()
         db_connection.close()
         if row:
-            user_id, nfc_id, first_name, last_name, user_groups_str = row
+            user_id, title, first_name, last_name, station, room, user_groups_str = row
             user_groups = user_groups_str.split(",")
             return User(
                 id=user_id,
-                nfc_id=nfc_id,
+                title=title,
                 first_name=first_name,
                 last_name=last_name,
-                user_groups=user_groups,
-            )
-        return None
-
-    def get_user_by_nfc_id(self, nfc_id: str) -> User | None:
-        db_connection = sqlite3.connect(self.db_path)
-        cursor = db_connection.cursor()
-        cursor.execute("SELECT * FROM users WHERE nfc_id = ?", (nfc_id,))
-        row = cursor.fetchone()
-        db_connection.close()
-        if row:
-            user_id, nfc_id, first_name, last_name, user_groups_str = row
-            user_groups = user_groups_str.split(",")
-            return User(
-                id=user_id,
-                nfc_id=nfc_id,
-                first_name=first_name,
-                last_name=last_name,
+                station=station,
+                room=room,
                 user_groups=user_groups,
             )
         return None
@@ -113,16 +101,20 @@ class UserRepository:
     def update_user(
         self,
         user_id: str,
-        nfc_id: str | None = None,
+        title: str | None = None,
         first_name: str | None = None,
         last_name: str | None = None,
+        station: str | None = None,
+        room: str | None = None,
         user_groups: list[str] | None = None,
     ) -> User | None:
         if not any(
             [
-                nfc_id,
+                title is not None,
                 first_name,
                 last_name,
+                station,
+                room,
                 user_groups,
             ]
         ):
@@ -131,9 +123,9 @@ class UserRepository:
         query = "UPDATE users SET "
         params = []
 
-        if nfc_id:
-            query += "nfc_id = ?, "
-            params.append(nfc_id)
+        if title is not None:
+            query += "title = ?, "
+            params.append(title)
 
         if first_name:
             query += "first_name = ?, "
@@ -142,6 +134,14 @@ class UserRepository:
         if last_name:
             query += "last_name = ?, "
             params.append(last_name)
+
+        if station:
+            query += "station = ?, "
+            params.append(station)
+
+        if room:
+            query += "room = ?, "
+            params.append(room)
 
         if user_groups:
             query += "user_groups = ?, "
@@ -175,9 +175,11 @@ class UserRepository:
             """
             CREATE TABLE IF NOT EXISTS users (
                 user_id TEXT PRIMARY KEY,
-                nfc_id TEXT,
+                title TEXT,
                 first_name TEXT,
                 last_name TEXT,
+                station TEXT,
+                room TEXT,
                 user_groups TEXT
             )
         """

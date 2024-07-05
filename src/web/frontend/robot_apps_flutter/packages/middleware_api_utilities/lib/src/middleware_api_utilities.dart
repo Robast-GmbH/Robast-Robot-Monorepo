@@ -2,16 +2,19 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
+import 'package:middleware_api_utilities/src/sub_apis/users_api.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 
 /// Helper class to access the middleware API.
 class MiddlewareApiUtilities {
   MiddlewareApiUtilities({required this.prefix}) {
     modules = ModulesApi(prefix: prefix);
+    users = UsersApi(prefix: prefix);
   }
 
   final String prefix;
   late final ModulesApi modules;
+  late final UsersApi users;
 
   Future<bool> testConnection({
     required String url,
@@ -48,23 +51,6 @@ class MiddlewareApiUtilities {
       return [];
     }
     return robots;
-  }
-
-  Future<List<DrawerModule>> getModules({required String robotName}) async {
-    try {
-      final response = await http.get(Uri.parse('$prefix/modules?robot_name=$robotName'));
-      final modules = <DrawerModule>[];
-      if (response.statusCode == 200) {
-        final jsonData = jsonDecode(response.body) as List<dynamic>;
-
-        for (final module in jsonData) {
-          modules.add(DrawerModule.fromJson(data: module as Map<String, dynamic>));
-        }
-      }
-      return modules;
-    } catch (e) {
-      return [];
-    }
   }
 
   Future<bool> openDrawer({

@@ -16,6 +16,7 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
   final List<bool> slotOccupancy = List.generate(8, (index) => false);
   final List<bool> selectedSlots = List.generate(8, (index) => false);
   final controller = TextEditingController();
+  bool isElectric = false;
 
   @override
   void initState() {
@@ -60,19 +61,19 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BackgroundView(
-          child: TitledView(
-        showBackButton: true,
-        title: 'Drawer Setup',
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const Expanded(
-              child: SizedBox(),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.only(top: 16, bottom: 32),
-                child: Selector<ModulesProvider, List<RobotDrawer>>(
+        child: TitledView(
+          showBackButton: true,
+          title: 'Drawer Setup',
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              const Expanded(
+                child: SizedBox(),
+              ),
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 16, bottom: 32),
+                  child: Selector<ModulesProvider, List<RobotDrawer>>(
                     selector: (_, provider) => provider.modules,
                     builder: (context, modules, child) {
                       updateSlots(modules);
@@ -113,39 +114,58 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                           ),
                         ),
                       );
-                    },),
+                    },
+                  ),
+                ),
               ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    TextField(
-                      controller: controller,
-                      decoration: const InputDecoration(
-                        hintText: 'Module ID',
+              Expanded(
+                child: Padding(
+                  padding: const EdgeInsets.all(32),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Checkbox(
+                            value: isElectric,
+                            onChanged: (value) {
+                              setState(() {
+                                isElectric = value ?? false;
+                              });
+                            },
+                          ),
+                          const Text('Ist elektrisch'),
+                        ],
                       ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        TextButton.icon(
+                      TextField(
+                        controller: controller,
+                        decoration: const InputDecoration(
+                          hintText: 'Module ID',
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          TextButton.icon(
                             onPressed: () async {
                               if (selectedSlots.every((slot) => !slot)) return;
                               await Provider.of<ModulesProvider>(context, listen: false).createModule(
-                                  robotName: 'rb_theron',
-                                  moduleID: int.tryParse(controller.text) ?? 0,
-                                  drawerID: 0,
-                                  position: selectedSlots.indexWhere((slot) => slot) + 1,
-                                  size: selectedSlots.where((slot) => slot).length,
-                                  variant: 'manual',);
+                                robotName: 'rb_theron',
+                                moduleID: int.tryParse(controller.text) ?? 0,
+                                drawerID: 0,
+                                position: selectedSlots.indexWhere((slot) => slot) + 1,
+                                size: selectedSlots.where((slot) => slot).length,
+                                variant: isElectric ? 'electric' : 'manual',
+                              );
                               selectedSlots.fillRange(0, selectedSlots.length, false);
+                              isElectric = false;
+                              setState(() {});
                             },
                             label: const Text('Add'),
-                            icon: const Icon(Icons.add),),
-                        TextButton.icon(
+                            icon: const Icon(Icons.add),
+                          ),
+                          TextButton.icon(
                             onPressed: () async {
                               final modulesProvider = Provider.of<ModulesProvider>(context, listen: false);
                               for (final drawer in modulesProvider.modules) {
@@ -158,16 +178,18 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                               selectedSlots.fillRange(0, selectedSlots.length, false);
                             },
                             label: const Text('Delete all'),
-                            icon: const Icon(Icons.delete),),
-                      ],
-                    ),
-                  ],
+                            icon: const Icon(Icons.delete),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
-      ),),
+      ),
     );
   }
 }

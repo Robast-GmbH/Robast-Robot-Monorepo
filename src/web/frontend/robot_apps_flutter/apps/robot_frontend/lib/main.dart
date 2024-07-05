@@ -2,8 +2,10 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:robot_frontend/models/provider/map_provider.dart';
 import 'package:robot_frontend/models/provider/modules_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
+import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/config_page.dart';
 
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
@@ -22,7 +24,13 @@ void main() {
       create: (_) => RobotProvider(),
       child: ChangeNotifierProvider(
         create: (_) => ModulesProvider(),
-        child: const RobotFrontend(),
+        child: ChangeNotifierProvider(
+          create: (_) => UserProvider(),
+          child: ChangeNotifierProvider(
+            create: (_) => MapProvider(),
+            child: const RobotFrontend(),
+          ),
+        ),
       ),
     ),
   );

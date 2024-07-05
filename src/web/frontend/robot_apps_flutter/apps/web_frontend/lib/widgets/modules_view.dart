@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/models/provider/fleet_provider.dart';
 
 class ModulesView extends StatefulWidget {
@@ -27,7 +27,7 @@ class _ModulesViewState extends State<ModulesView> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<FleetProvider, Map<String, List<DrawerModule>>>(
+    return Selector<FleetProvider, Map<String, List<RobotDrawer>>>(
       selector: (_, provider) => provider.modules,
       builder: (context, modules, child) {
         final robotModules = modules[widget.robotName];
@@ -35,18 +35,19 @@ class _ModulesViewState extends State<ModulesView> {
           itemCount: robotModules?.length ?? 0,
           separatorBuilder: (context, index) => const Divider(color: Colors.grey),
           itemBuilder: (context, index) {
+            final isOpen = robotModules![index].moduleProcess.status == ModuleProcessStatus.open;
             return ListTile(
-              title: Text(robotModules![index].label),
-              subtitle: Text(robotModules[index].isOpen ? 'Opened' : 'Closed'),
+              title: Text('${robotModules[index].moduleID}_${robotModules[index].drawerID}'),
+              subtitle: Text(isOpen ? 'Opened' : 'Closed'),
               style: ListTileStyle.list,
               onTap: () {
-                if (robotModules[index].isOpen && robotModules[index].type == ModuleType.electric_drawer) {
+                if (isOpen && robotModules[index].variant == DrawerVariant.electric) {
                   Provider.of<FleetProvider>(context, listen: false).closeDrawer(
                     robotName: widget.robotName,
                     moduleID: robotModules[index].moduleID,
                     drawerID: robotModules[index].drawerID,
                   );
-                } else if (!robotModules[index].isOpen) {
+                } else if (!isOpen) {
                   Provider.of<FleetProvider>(context, listen: false).openDrawer(
                     robotName: widget.robotName,
                     moduleID: robotModules[index].moduleID,

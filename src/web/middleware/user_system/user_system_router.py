@@ -1,12 +1,13 @@
+from turtle import title
 from fastapi import APIRouter, HTTPException
 
 from user_system.user_repository import UserRepository
-from user_system.models.request_models import (
+from pydantic_models.user_request_models import (
     CreateUserRequest,
     DeleteUserRequest,
     UpdateUserRequest,
 )
-from user_system.models.user import User
+from pydantic_models.user import User
 from user_system.auth_session_manager import AuthSessionManager
 
 user_system_router = APIRouter()
@@ -27,21 +28,15 @@ def get_user(user_id: str):
     return user
 
 
-@user_system_router.get("/user_by_nfc_id", tags=["Users"], response_model=User)
-def get_user_by_nfc_id(nfc_id: str):
-    user = user_repository.get_user_by_nfc_id(nfc_id)
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-    return user
-
-
 @user_system_router.put("/update_user", tags=["Users"], response_model=User)
 def update_user(request: UpdateUserRequest):
     user = user_repository.update_user(
         user_id=request.id,
+        title=request.title,
         first_name=request.first_name,
         last_name=request.last_name,
-        nfc_id=request.nfc_id,
+        station=request.station,
+        room=request.room,
         user_groups=request.user_groups,
     )
     if not user:
@@ -54,9 +49,11 @@ def update_user(request: UpdateUserRequest):
 @user_system_router.post("/create_user", tags=["Users"], response_model=User)
 def create_user(request: CreateUserRequest):
     user = user_repository.create_user(
+        title=request.title,
         first_name=request.first_name,
         last_name=request.last_name,
-        nfc_id=request.nfc_id,
+        station=request.station,
+        room=request.room,
         user_groups=request.user_groups,
     )
     if not user:
@@ -71,7 +68,7 @@ def delete_user(request: DeleteUserRequest):
         raise HTTPException(
             status_code=404, detail="User not found or could not be deleted"
         )
-    return {"message": "User deleted successfully"}
+    return {"message": "User deleted successfully", "status": "success"}
 
 
 @user_system_router.get("/session", tags=["Auth"])

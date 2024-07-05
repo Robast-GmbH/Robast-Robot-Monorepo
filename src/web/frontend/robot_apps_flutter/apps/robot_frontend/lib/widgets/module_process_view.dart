@@ -29,7 +29,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
               final moduleInProcess = Provider.of<ModulesProvider>(context).modules.firstWhere(
                     (element) => element.moduleProcess.status != ModuleProcessStatus.idle,
                   );
-              if (moduleInProcess.moduleProcess.status != ModuleProcessStatus.closed && moduleInProcess.moduleProcess.status != ModuleProcessStatus.finished) {
+              if (moduleInProcess.moduleProcess.status != ModuleProcessStatus.closed) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 64),
                   child: Stack(
@@ -56,9 +56,16 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                         ),
                       ],
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.open) ...[
-                        HintView(
-                          text: moduleInProcess.moduleProcess.payloadToString(),
-                          moduleLabel: moduleInProcess.moduleProcess.payload.toString(),
+                        GestureDetector(
+                          onTap: () {
+                            if (moduleInProcess.variant == DrawerVariant.electric) {
+                              Provider.of<ModulesProvider>(context, listen: false).closeDrawer(moduleInProcess);
+                            }
+                          },
+                          child: HintView(
+                            text: moduleInProcess.moduleProcess.payloadToString(),
+                            moduleLabel: moduleInProcess.moduleProcess.payload.toString(),
+                          ),
                         ),
                       ],
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.closing) ...[
@@ -79,11 +86,12 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                       Expanded(
                         flex: 2,
                         child: CustomButtonView(
-                            text: 'Finish',
-                            onPressed: () async {
-                              Provider.of<ModulesProvider>(context, listen: false).finishModuleProcess(moduleInProcess);
-                              Navigator.popUntil(context, (route) => route.isFirst);
-                            }),
+                          text: 'Finish',
+                          onPressed: () async {
+                            Provider.of<ModulesProvider>(context, listen: false).finishModuleProcess(moduleInProcess);
+                            Navigator.popUntil(context, (route) => route.isFirst);
+                          },
+                        ),
                       ),
                       const SizedBox(
                         height: 8,

@@ -1,71 +1,19 @@
-import 'dart:convert';
-
-import 'package:http/http.dart' as http;
 import 'package:middleware_api_utilities/src/models/drawer_address.dart';
 import 'package:middleware_api_utilities/src/models/robot_drawer.dart';
+import 'package:middleware_api_utilities/src/services/request_service.dart';
 
 class ModulesApi {
   ModulesApi({required this.prefix});
   final String prefix;
 
-  Future<http.Response?> tryGet({
-    required Uri uri,
-  }) async {
-    try {
-      final response = await http.get(uri);
-      if (response.statusCode == 200) {
-        return response;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      return null;
-    }
-  }
-
-  Future<http.Response?> tryPost({
-    required Uri uri,
-    Map<String, dynamic>? data,
-  }) async {
-    final headers = {
-      'accept': 'application/json',
-      'Content-Type': 'application/json',
-    };
-    try {
-      final response = await http.post(
-        uri,
-        headers: headers,
-        body: data != null ? jsonEncode(data) : null,
-      );
-      if (response.statusCode == 200) {
-        return response;
-      } else {
-        return null;
-      }
-    } catch (e) {
-      return null;
-    }
-  }
-
-  bool _wasRequestSuccessful({
-    required http.Response? response,
-  }) {
-    if (response != null) {
-      final data = jsonDecode(response.body) as Map<String, dynamic>;
-      return data['status'] == 'success';
-    } else {
-      return false;
-    }
-  }
-
   Future<List<RobotDrawer>> getModules({
     required String robotName,
   }) async {
     final drawers = <RobotDrawer>[];
-    final response = await tryGet(uri: Uri.parse('$prefix/modules?robot_name=$robotName'));
+    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/modules?robot_name=$robotName'));
     if (response != null) {
-      final jsonData = jsonDecode(response.body) as List<dynamic>;
-      for (final drawer in jsonData) {
+      final data = RequestService.responseToList(response: response);
+      for (final drawer in data) {
         drawers.add(RobotDrawer.fromJson(drawer as Map<String, dynamic>));
       }
     }
@@ -80,7 +28,7 @@ class ModulesApi {
     required int size,
     required String variant,
   }) async {
-    final response = await tryPost(
+    final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/create_module'),
       data: {
         'drawer_address': {
@@ -93,7 +41,7 @@ class ModulesApi {
         'variant': variant,
       },
     );
-    return _wasRequestSuccessful(response: response);
+    return RequestService.wasRequestSuccessful(response: response);
   }
 
   Future<bool> deleteModule({
@@ -101,7 +49,7 @@ class ModulesApi {
     required int moduleID,
     required int drawerID,
   }) async {
-    final response = await tryPost(
+    final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/delete_module'),
       data: {
         'robot_name': robotName,
@@ -109,7 +57,7 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return _wasRequestSuccessful(response: response);
+    return RequestService.wasRequestSuccessful(response: response);
   }
 
   Future<bool> emptyModule({
@@ -117,7 +65,7 @@ class ModulesApi {
     required int moduleID,
     required int drawerID,
   }) async {
-    final response = await tryPost(
+    final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/empty_module'),
       data: {
         'robot_name': robotName,
@@ -125,7 +73,7 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return _wasRequestSuccessful(response: response);
+    return RequestService.wasRequestSuccessful(response: response);
   }
 
   Future<bool> updateModuleContent({
@@ -134,7 +82,7 @@ class ModulesApi {
     required int drawerID,
     required Map<String, int> content,
   }) async {
-    final response = await tryPost(
+    final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/update_module_content'),
       data: {
         'drawer_address': {
@@ -145,7 +93,7 @@ class ModulesApi {
         'content': content,
       },
     );
-    return _wasRequestSuccessful(response: response);
+    return RequestService.wasRequestSuccessful(response: response);
   }
 
   Future<bool> freeModule({
@@ -153,7 +101,7 @@ class ModulesApi {
     required int moduleID,
     required int drawerID,
   }) async {
-    final response = await tryPost(
+    final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/free_module'),
       data: {
         'robot_name': robotName,
@@ -161,7 +109,7 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return _wasRequestSuccessful(response: response);
+    return RequestService.wasRequestSuccessful(response: response);
   }
 
   Future<bool> reserveModule({
@@ -171,7 +119,7 @@ class ModulesApi {
     required List<String> userIDs,
     required List<String> userGroups,
   }) async {
-    final response = await tryPost(
+    final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/reserve_module'),
       data: {
         'drawer_address': {
@@ -183,7 +131,7 @@ class ModulesApi {
         'user_groups': userGroups,
       },
     );
-    return _wasRequestSuccessful(response: response);
+    return RequestService.wasRequestSuccessful(response: response);
   }
 
   Future<bool> startModuleProcess({
@@ -192,7 +140,7 @@ class ModulesApi {
     required String processName,
     required Map<String, int> payload,
   }) async {
-    final response = await tryPost(
+    final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/start_module_process'),
       data: {
         'drawer_address': {
@@ -204,7 +152,7 @@ class ModulesApi {
         'payload': payload,
       },
     );
-    return _wasRequestSuccessful(response: response);
+    return RequestService.wasRequestSuccessful(response: response);
   }
 
   Future<bool> openDrawer({
@@ -212,7 +160,7 @@ class ModulesApi {
     required int moduleID,
     required int drawerID,
   }) async {
-    final response = await tryPost(
+    final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/open_drawer'),
       data: {
         'robot_name': robotName,
@@ -220,7 +168,7 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return _wasRequestSuccessful(response: response);
+    return RequestService.wasRequestSuccessful(response: response);
   }
 
   Future<bool> closeDrawer({
@@ -228,7 +176,7 @@ class ModulesApi {
     required int moduleID,
     required int drawerID,
   }) async {
-    final response = await tryPost(
+    final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/close_drawer'),
       data: {
         'robot_name': robotName,
@@ -236,7 +184,7 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return _wasRequestSuccessful(response: response);
+    return RequestService.wasRequestSuccessful(response: response);
   }
 
   Future<bool> finishModuleProcess({
@@ -244,7 +192,7 @@ class ModulesApi {
     required int moduleID,
     required int drawerID,
   }) async {
-    final response = await tryPost(
+    final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/finish_module_process'),
       data: {
         'robot_name': robotName,
@@ -252,6 +200,6 @@ class ModulesApi {
         'drawer_id': drawerID,
       },
     );
-    return _wasRequestSuccessful(response: response);
+    return RequestService.wasRequestSuccessful(response: response);
   }
 }
