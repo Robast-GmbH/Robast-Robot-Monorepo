@@ -3,10 +3,11 @@
 #include "can_toolbox/can_controller.hpp"
 #include "debug/debug.hpp"
 #include "drawer/electrical_drawer.hpp"
+#include "gpio/gpio_wrapper_pca9535.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "led/led_strip.hpp"
 #include "lock/tray_manager.hpp"
-#include "peripherals/gpio.hpp"
+#include "peripherals/gpio_defines.hpp"
 #include "switch/switch.hpp"
 #include "utils/data_mapper.hpp"
 #include "utils/queue.hpp"
@@ -165,7 +166,11 @@ void setup()
   wire_onboard_led_driver->begin(I2C_SDA, I2C_SCL);
   wire_port_expander->begin(I2C_SDA_PORT_EXPANDER, I2C_SCL_PORT_EXPANDER);
 
-  gpio_wrapper = std::make_shared<drawer_controller::GPIO>(wire_port_expander);
+  gpio_wrapper =
+    std::make_shared<drawer_controller::GpioWrapperPca9535>(wire_port_expander,
+                                                            partial_drawer_controller::port_expanders,
+                                                            partial_drawer_controller::pin_mapping_id_to_gpio_info,
+                                                            partial_drawer_controller::pin_mapping_id_to_port);
 
   endstop_switch = std::make_shared<drawer_controller::Switch>(gpio_wrapper,
                                                                SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
