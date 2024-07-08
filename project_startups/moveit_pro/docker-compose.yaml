@@ -30,6 +30,7 @@ services:
       - robot=${robot:-rb_theron}
       - prefix=${prefix:-}
       - GZ_VERSION=${GZ_VERSION:-fortress}
+      - CYCLONEDDS_URI=${CYCLONEDDS_URI:-/home/${STUDIO_USERNAME:-studio-user}/user_ws/src/dds_configs/cyclone_DDS_config.xml}
 
   # Starts the MoveIt Pro Agent and the Bridge between the Agent and the Web UI
   agent_bridge:
