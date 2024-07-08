@@ -33,7 +33,7 @@ hardware:
     path: "launch/rviz_real_world_launch.py"
   # This is run when running agent.app
   hardware_launch_file:
-    package: "tiplu_world_gazebo_config"
+    package: "rb_theron_real_world_config"
     path: "launch/hardware_launch.py"
 
   # Override other parameters from the base config package, including
