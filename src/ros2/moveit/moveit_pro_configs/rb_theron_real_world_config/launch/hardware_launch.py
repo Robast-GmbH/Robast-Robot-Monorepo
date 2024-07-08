@@ -8,7 +8,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     common_launch_arguments = {
-        "prefix": "/robot",
+        "prefix": "robot/",
         "ros2_control_hardware_type": "dryve_d1",
         "ros2_control_hardware_type_positon_joint": "real_life",
         "position_joint_type": "prismatic",
