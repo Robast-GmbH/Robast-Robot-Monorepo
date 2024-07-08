@@ -95,7 +95,7 @@ class FeuerplanPublisher(Node):
             size = (matches12['matches']).size(0)
             self.get_logger().info(f'{matches}')
             self.get_logger().info(f'{size}')
-            if matches12['matches'].size(0) >= 3:
+            if matches12['matches'].size(0) > 3:
                 points1, points2, matches, scores = self.__get_three_best_matches(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
                 world_points1 = [(x * map_resolution + map_origin_x, y * map_resolution + map_origin_y) for x, y in points1]
                 self.get_logger().info(f'{scores}')
@@ -149,7 +149,9 @@ class FeuerplanPublisher(Node):
             self.__origin_feuerplan_prev = origin_feuerplan
             self.__is_message_published_once = True
         else:
+            self.get_logger().info('Feuerplan published once already')
             transformation = self.__create_transformation_matrix(map_image, feuerplan_image, map_msg.info.resolution, map_msg.info.origin.position.x, map_msg.info.origin.position.y)    
+            self.get_logger().info(f'{transformation}')
             if transformation is not None:
                 origin_feuerplan_updated = self.__determine_origin_in_world(transformation, self.__origin_feuerplan_prev)
                 self.__origin_feuerplan_prev = origin_feuerplan_updated
@@ -198,6 +200,8 @@ class FeuerplanPublisher(Node):
         feuerplan_image = cv.imread(self.__feuerplan_path, cv.IMREAD_GRAYSCALE)
         preprocessed_feuerplan = self.__preprocess_image(feuerplan_image)
         self.__transform_between_map_and_feuerplan(self.__map_msg, preprocessed_feuerplan)
+        self.get_logger().info(f'{self.__origin_feuerplan_prev}')
+        self.get_logger().info(f'{(self.__map_msg.info.origin.position.x,self.__map_msg.info.origin.position.y)}')
         self.__create_feuerplan_frame(self.__origin_feuerplan_prev[0],self.__origin_feuerplan_prev[1])
         self.__publish_occupancy_grid_from_image(preprocessed_feuerplan, self.__origin_feuerplan_prev[0], self.__origin_feuerplan_prev[1])
 
