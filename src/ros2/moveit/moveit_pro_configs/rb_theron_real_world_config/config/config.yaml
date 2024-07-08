@@ -91,3 +91,6 @@ ros2_control:
     - "streaming_controller"
     - "joint_trajectory_controller"
 
+waypoints_file:
+  package_name: "rb_theron_config"
+  relative_path: "waypoints/waypoints.yaml"
