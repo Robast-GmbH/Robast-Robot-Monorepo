@@ -13,6 +13,13 @@
         <chain base_link="alu_profile_link_right" tip_link="door_opening_mechanism_link_freely_rotating_hook"/>
         <joint name="position_joint" />
     </group>
+    
+    <group name="rotating_arm">
+        <chain base_link="door_opening_mechanism_link_rotating_arm" tip_link="hook_base_link"/>
+        <link name="hook_link_back_side" />
+        <link name="hook_link_front_side" />
+    </group>
+
     <group_state name="starting_position_right" group="mobile_base_arm">
         <joint name="door_opening_mechanism_joint_y_axis_slide" value="0.4"/>
         <joint name="door_opening_mechanism_joint_x_axis_slide" value="0.0"/>
