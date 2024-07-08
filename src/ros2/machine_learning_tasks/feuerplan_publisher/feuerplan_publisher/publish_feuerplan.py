@@ -31,15 +31,13 @@ class FeuerplanPublisher(Node):
         self.__map_subscriber = self.create_subscription(OccupancyGrid, 'map', self.__listener_callback_map, 10)
         self.__tf_broadcaster = TransformBroadcaster(self)
 
-        self.__is_message_published = False
+        self.__is_message_published_once = False
         self.__map_msg = None
 
     def __listener_callback_map(self, msg:OccupancyGrid) -> None:
         self.__map_msg = msg
-        if not self.__is_message_published:
-            self.get_logger().info('Map recieved')
-            self.__broadcast_frame_and_message()
-            self.destroy_subscription(self.__map_subscriber)
+        self.get_logger().info('Map recieved')
+        self.__broadcast_frame_and_message()
 
     def __preprocess_image(self, feuerplan_image:np.ndarray) -> np.ndarray:
         processed_image = cv.GaussianBlur(feuerplan_image, (3, 3), 3, 3)
@@ -67,10 +65,10 @@ class FeuerplanPublisher(Node):
         return image
     
     def __get_three_best_matches(self, confidence_values:torch.tensor, matches:torch.tensor, keypoints1:torch.tensor, keypoints2:torch.tensor) -> tuple[float,float]:
-        _, top_indices = torch.topk(confidence_values, k=3)
+        top_values, top_indices = torch.topk(confidence_values, k=3)
         top_matches = matches[top_indices]
         points1, points2 = keypoints1[top_matches[..., 0]], keypoints2[top_matches[..., 1]]
-        return points1, points2, matches, confidence_values
+        return points1, points2, matches, top_values
     
 
     def __pixel_coord_to_world_coord(self, pixel, resolution, origin) -> tuple[float,float]:
@@ -78,7 +76,7 @@ class FeuerplanPublisher(Node):
         world_y = pixel[1] * resolution + origin[1]
         return (world_x, world_y)
     
-    def __create_transformation_matrix(self, image1:np.ndarray, image2:np.ndarray) -> tuple[float,float]:
+    def __create_transformation_matrix(self, image1:np.ndarray, image2:np.ndarray, map_resolution:float, map_origin_x:float,map_origin_y:float) -> tuple[float,float]:
             # Initialize feature extractor and matcher
             device = "cpu" 
             extractor = SuperPoint(max_num_keypoints = 2048).eval().to(device)
@@ -93,36 +91,79 @@ class FeuerplanPublisher(Node):
             # Refine features and matches
             feats1, feats2, matches12 = [rbd(x) for x in [feats1, feats2, matches12]]
             # Get the three best matches according to confidence values
-            points1, points2, matches, scores = self.__get_three_best_matches(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
-            matched_keypoints1, matched_keypoints2 = feats1['keypoints'][matches[..., 0]], feats2['keypoints'][matches[..., 1]]
-            self.get_logger().info(f'{matched_keypoints1, matched_keypoints2}')
-            point = np.float32([matched_keypoints1.numpy()[0][0],matched_keypoints1.numpy()[0][1],1])
-            transformation_matrix = cv.getAffineTransform(points1.numpy(),points2.numpy())
-            transformed = transformation_matrix @ point
-            self.get_logger().info(f'{point}')
-            self.get_logger().info(f'{transformation_matrix}')
-            self.get_logger().info(f'{transformed}')
-            return transformation_matrix
-   
-    def __transform_points_between_map_and_feuerplan(self, map_msg:OccupancyGrid, feuerplan_image:np.ndarray) -> tuple[float,float]:
-        map_image = self.__ros_msg_to_image(map_msg)
-        transformation_matrix = self.__create_transformation_matrix(map_image, feuerplan_image)
-        inital_translation_x, inital_translation_y = 0.0
-        self.__publish_occupancy_grid(image = feuerplan_image, translation_x = inital_translation_x, translation_y = inital_translation_y)
-        
-        
-        return translation_x, translation_y
+            matches = matches12['matches']
+            size = (matches12['matches']).size(0)
+            self.get_logger().info(f'{matches}')
+            self.get_logger().info(f'{size}')
+            if matches12['matches'].size(0) >= 3:
+                points1, points2, matches, scores = self.__get_three_best_matches(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
+                world_points1 = [(x * map_resolution + map_origin_x, y * map_resolution + map_origin_y) for x, y in points1]
+                self.get_logger().info(f'{scores}')
+                A = np.array([
+                    [points2[0][0], points2[0][1], 1, 0, 0, 0],
+                    [0, 0, 0, points2[0][0], points2[0][1], 1],
+                    [points2[1][0], points2[1][1], 1, 0, 0, 0],
+                    [0, 0, 0, points2[1][0], points2[1][1], 1],
+                    [points2[2][0], points2[2][1], 1, 0, 0, 0],
+                    [0, 0, 0, points2[2][0], points2[2][1], 1]
+                ])
 
-    def __publish_occupancy_grid_from_image(self, image:np.ndarray, translation_x:float, translation_y:float) -> None:
-        data = feuerplan_image.flatten().tolist()
+                B = np.array([
+                    world_points1[0][0], world_points1[0][1],
+                    world_points1[1][0], world_points1[1][1],
+                    world_points1[2][0], world_points1[2][1]
+                ])
+                affine_params, _, _, _ = np.linalg.lstsq(A, B, rcond=None)
+                transformation_matrix = np.array([
+                    [affine_params[0], affine_params[1]],
+                    [affine_params[3], affine_params[4]]
+                ])
+                translation_vector = np.array([affine_params[2], affine_params[5]])
+                #point = np.float32([matched_keypoints1.numpy()[0][0],matched_keypoints1.numpy()[0][1],1])
+                #transformation_matrix = cv.getAffineTransform(points1.numpy(),points2.numpy())
+                #transformed = transformation_matrix @ point
+                #self.get_logger().info(f'{point}')
+                #self.get_logger().info(f'{transformation_matrix}')
+                #self.get_logger().info(f'{transformed}')
+                return {
+                    "transformation_matrix": transformation_matrix,
+                    "translation_vector": translation_vector
+                }
+            else:
+                return None
+    
+    def __determine_origin_in_world(self,affine_transformation, feuerplan_origin):
+        affine_matrix = affine_transformation['transformation_matrix']
+        translation_vector = affine_transformation['translation_vector']
+
+        # Apply the affine transformation to the image origin
+        world_origin = affine_matrix @ feuerplan_origin + translation_vector
+
+        return world_origin
+    
+    def __transform_between_map_and_feuerplan(self, map_msg:OccupancyGrid, feuerplan_image:np.ndarray) -> tuple[float,float]:
+        map_image = self.__ros_msg_to_image(map_msg)
+        if not self.__is_message_published_once:
+            origin_feuerplan = (0.0,0.0)
+            #self.__publish_occupancy_grid_from_image(feuerplan_image, origin_feuerplan[0], origin_feuerplan[1])
+            self.__origin_feuerplan_prev = origin_feuerplan
+            self.__is_message_published_once = True
+        else:
+            transformation = self.__create_transformation_matrix(map_image, feuerplan_image, map_msg.info.resolution, map_msg.info.origin.position.x, map_msg.info.origin.position.y)    
+            if transformation is not None:
+                origin_feuerplan_updated = self.__determine_origin_in_world(transformation, self.__origin_feuerplan_prev)
+                self.__origin_feuerplan_prev = origin_feuerplan_updated
+
+    def __publish_occupancy_grid_from_image(self, image:np.ndarray, translation_x, translation_y) -> None:
+        data = image.flatten().tolist()
         ros_image_msg = OccupancyGrid()
         ros_image_msg.header.stamp = self.get_clock().now().to_msg()
         ros_image_msg.header.frame_id = 'feuerplan'
         ros_image_msg.info.map_load_time.sec = 0
         ros_image_msg.info.map_load_time.nanosec = 0
         ros_image_msg.info.resolution = 0.05
-        ros_image_msg.info.width = feuerplan_image.shape[1]
-        ros_image_msg.info.height = feuerplan_image.shape[0]
+        ros_image_msg.info.width = image.shape[1]
+        ros_image_msg.info.height = image.shape[0]
         ros_image_msg.info.origin.position.x = translation_x
         ros_image_msg.info.origin.position.y = translation_y
         ros_image_msg.info.origin.position.z = 0.0
@@ -134,7 +175,7 @@ class FeuerplanPublisher(Node):
 
         self.get_logger().info('Feuerplan published')
         self.__publisher.publish(ros_image_msg)
-        self.__is_message_published = True
+        #self.__is_message_published = True
 
     def __create_feuerplan_frame(self, translation_x:float, translation_y:float) -> None:
         transform = TransformStamped()
@@ -156,9 +197,9 @@ class FeuerplanPublisher(Node):
     def __broadcast_frame_and_message(self) -> None:
         feuerplan_image = cv.imread(self.__feuerplan_path, cv.IMREAD_GRAYSCALE)
         preprocessed_feuerplan = self.__preprocess_image(feuerplan_image)
-        translation_x, translation_y = self.__transform_feuerplan_origin(self.__map_msg, preprocessed_feuerplan)
-        self.__create_feuerplan_frame(translation_x,translation_y)
-        self.__publish_occupancy_grid(preprocessed_feuerplan, translation_x, translation_y)
+        self.__transform_between_map_and_feuerplan(self.__map_msg, preprocessed_feuerplan)
+        self.__create_feuerplan_frame(self.__origin_feuerplan_prev[0],self.__origin_feuerplan_prev[1])
+        self.__publish_occupancy_grid_from_image(preprocessed_feuerplan, self.__origin_feuerplan_prev[0], self.__origin_feuerplan_prev[1])
 
 def main(args=None):
     rclpy.init(args=args)
