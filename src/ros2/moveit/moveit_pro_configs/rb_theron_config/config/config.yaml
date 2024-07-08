@@ -137,9 +137,6 @@ moveit_params:
   servo:
     package: "moveit_door_opening_mechanism_config"
     path: "config/rb_theron_servo.yaml"
-  sensors_3d:
-    package: "moveit_door_opening_mechanism_config"
-    path: "config/sensors_3d.yaml"
   servo_kinematics:
     package: "moveit_door_opening_mechanism_config"
     path: "config/kinematics.yaml"
