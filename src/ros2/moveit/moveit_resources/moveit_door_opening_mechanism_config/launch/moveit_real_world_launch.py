@@ -35,7 +35,7 @@ def generate_launch_description():
     launch_arguments = {
         "ros2_control_hardware_type": "dryve_d1",
         "ros2_control_hardware_type_positon_joint": "real_life",
-        "model_position_joint": "true",
+        "position_joint_type": "prismatic",
     }
 
     ros_distro = os.environ["ROS_DISTRO"]
@@ -51,10 +51,10 @@ def generate_launch_description():
             "rb_theron",
             package_name="moveit_door_opening_mechanism_config",
         )
-        .robot_description_semantic(file_path="config/rb_theron_arm.srdf")
         .robot_description(
             file_path="config/rb_theron_arm.urdf.xacro", mappings=launch_arguments
         )
+        .robot_description_semantic(file_path="config/rb_theron_arm.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .sensors_3d(file_path="config/sensors_3d_real_world.yaml")

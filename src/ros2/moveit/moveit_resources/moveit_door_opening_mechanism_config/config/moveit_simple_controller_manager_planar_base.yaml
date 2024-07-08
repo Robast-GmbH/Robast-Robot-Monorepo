@@ -1,0 +1,22 @@
+controller_names:
+  - joint_trajectory_controller
+  - base_controller
+
+joint_trajectory_controller:
+    action_ns: follow_joint_trajectory
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - door_opening_mechanism_joint_y_axis_slide
+      - door_opening_mechanism_joint_x_axis_slide
+      - door_opening_mechanism_joint_rotating_arm
+      - door_opening_mechanism_joint_freely_rotating_hook
+
+base_controller:
+    action_ns: follow_joint_trajectory
+    default: True
+    type: FollowJointTrajectory
+    joints:
+      - position/x
+      - position/y
+      - position/theta

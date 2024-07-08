@@ -1,0 +1,829 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--This does not replace URDF, and is not an extension of URDF.
+    This is a format for representing semantic information about the robot structure.
+    A URDF file must exist for this robot as well, where the joints and the links that are referenced are defined
+-->
+<robot name="rb_theron">
+    <!--GROUPS: Representation of a set of joints and links. This can be useful for specifying DOF to plan for, defining arms, end effectors, etc-->
+    <!--LINKS: When a link is specified, the parent joint of that link (if it exists) is automatically included-->
+    <!--JOINTS: When a joint is specified, the child link of that joint (which will always exist) is automatically included-->
+    <!--CHAINS: When a chain is specified, all the links along the chain (including endpoints) are included in the group. Additionally, all the joints that are parents to included links are also included. This means that joints along the chain and the parent joint of the base link are included in the group-->
+    <!--SUBGROUPS: Groups can also be formed by referencing to already defined group names-->
+
+    <group name="arm">
+        <chain base_link="alu_profile_link_right" tip_link="door_opening_mechanism_link_freely_rotating_hook"/>
+    </group> 
+
+    <group name="position">
+        <joint name="position" />
+    </group>
+
+    <group name="mobile_base_arm">
+        <group name="arm" />
+        <group name="position" />
+    </group>
+
+    <group_state name="starting_position" group="mobile_base_arm">
+        <joint name="door_opening_mechanism_joint_y_axis_slide" value="0.2"/>
+        <joint name="door_opening_mechanism_joint_x_axis_slide" value="0.1"/>
+        <joint name="door_opening_mechanism_joint_rotating_arm" value="0.1"/>
+        <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position" value="0 0 0"/>
+    </group_state>
+
+    <group_state name="home_base" group="mobile_base_arm">
+        <joint name="door_opening_mechanism_joint_y_axis_slide" value="0"/>
+        <joint name="door_opening_mechanism_joint_x_axis_slide" value="0"/>
+        <joint name="door_opening_mechanism_joint_rotating_arm" value="0"/>
+        <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position" value="0 0 0"/>
+    </group_state>
+
+    <group_state name="forward_base" group="mobile_base_arm">
+        <joint name="door_opening_mechanism_joint_y_axis_slide" value="0"/>
+        <joint name="door_opening_mechanism_joint_x_axis_slide" value="0"/>
+        <joint name="door_opening_mechanism_joint_rotating_arm" value="0"/>
+        <joint name="door_opening_mechanism_joint_freely_rotating_hook" value="0.0"/>
+        <joint name="position" value="1 0 0"/>
+    </group_state>
+    <!--END EFFECTOR: Purpose: Represent information about an end effector.-->
+    <end_effector name="door_opening_end_effector" parent_link="door_opening_mechanism_link_freely_rotating_hook" group="mobile_base_arm"/>
+    <!--VIRTUAL JOINT: Purpose: this element defines a virtual joint between a robot link and an external frame of reference (considered fixed with respect to the robot)-->
+    <!-- <virtual_joint name="FixedBase" type="fixed" parent_frame="world" child_link="base_footprint" /> -->
+    <virtual_joint name="position" type="planar" parent_frame="odom" child_link="base_footprint"/>
+    <joint_property joint_name="position" property_name="motion_model" value="diff_drive" />
+    <joint_property joint_name="position" property_name="min_translational_distance" value="0.01" />
+    <joint_property joint_name="position" property_name="angular_distance_weight" value="0.5" />
+    <!--PASSIVE JOINT: Purpose: this element is used to mark joints that are not actuated-->
+    <passive_joint name="drawer_1_joint"/>
+    <passive_joint name="drawer_2_joint"/>
+    <passive_joint name="drawer_3_joint"/>
+    <passive_joint name="drawer_4_joint"/>
+    <passive_joint name="drawer_5_joint"/>
+    <passive_joint name="front_leftjoint_support"/>
+    <passive_joint name="front_leftjoint_wheel"/>
+    <passive_joint name="front_rightjoint_support"/>
+    <passive_joint name="front_rightjoint_wheel"/>
+    <passive_joint name="left_wheel_joint"/>
+    <passive_joint name="rear_leftjoint_support"/>
+    <passive_joint name="rear_leftjoint_wheel"/>
+    <passive_joint name="rear_rightjoint_support"/>
+    <passive_joint name="rear_rightjoint_wheel"/>
+    <passive_joint name="right_wheel_joint"/>
+
+    <disable_default_collisions link="rear_leftwheel" />
+    <disable_default_collisions link="rear_rightwheel" />
+    <disable_default_collisions link="front_leftwheel" />
+    <disable_default_collisions link="front_rightwheel" />
+    <disable_default_collisions link="left_wheel_link" />
+    <disable_default_collisions link="right_wheel_link" />
+    <disable_default_collisions link="rear_leftsupport" />
+    <disable_default_collisions link="rear_rightsupport" />
+    <disable_default_collisions link="front_leftsupport" />
+    <disable_default_collisions link="front_rightsupport" />
+    <disable_default_collisions link="left_wheel_tire_link" />
+    <disable_default_collisions link="right_wheel_tire_link" />
+    <disable_default_collisions link="base_link" />
+
+     <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
+    <disable_collisions link1="alu_profile_link_bottom" link2="alu_profile_link_left" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="alu_profile_link_right" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="alu_profile_link_top" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="back_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="back_top_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="base_footprint" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="bottom_sheet_link" reason="Default"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_base_link" reason="Adjacent"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_bottom" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="alu_profile_link_right" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="alu_profile_link_top" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="back_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="back_top_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="base_footprint" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="bottom_sheet_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_base_link" reason="Adjacent"/>
+    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_left" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="alu_profile_link_top" reason="Default"/>
+    <disable_collisions link1="alu_profile_link_right" link2="back_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="back_top_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="base_footprint" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="bottom_sheet_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_base_link" reason="Adjacent"/>
+    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_y_axis_rail" reason="Default"/>
+    <disable_collisions link1="alu_profile_link_right" link2="door_opening_mechanism_link_y_axis_slide" reason="Adjacent"/>
+    <disable_collisions link1="alu_profile_link_right" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_right" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="back_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="back_top_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="base_footprint" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="bottom_sheet_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_base_link" reason="Adjacent"/>
+    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="alu_profile_link_top" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="back_top_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="base_footprint" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="base_link" reason="Adjacent"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="bottom_sheet_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_base_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="back_realsense_camera_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="base_footprint" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="base_link" reason="Adjacent"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="bottom_sheet_link" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="door_opening_mechanism_base_link" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="back_top_realsense_camera_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="base_link" reason="Adjacent"/>
+    <disable_collisions link1="base_footprint" link2="bottom_sheet_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_base_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="base_footprint" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="base_link" link2="bottom_sheet_link" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="door_opening_mechanism_base_link" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="base_link" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="base_link" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="base_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="base_link" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="base_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="base_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="base_link" link2="drawer_1" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="drawer_2" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="drawer_3" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="drawer_4" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="drawer_5" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="front_laser_base_link" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="front_leftsupport" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="base_link" link2="front_realsense_camera_link" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="front_rightsupport" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="base_link" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="base_link" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="base_link" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="base_link" link2="left_wheel_link" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="module_cage_link" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="rear_leftsupport" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="base_link" link2="rear_rightsupport" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="base_link" link2="right_wheel_link" reason="Adjacent"/>
+    <disable_collisions link1="base_link" link2="top_laser_base_link" reason="Adjacent"/>
+    <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_base_link" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="front_laser_base_link" reason="Default"/>
+    <disable_collisions link1="bottom_sheet_link" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="module_cage_link" reason="Default"/>
+    <disable_collisions link1="bottom_sheet_link" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="bottom_sheet_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_freely_rotating_hook" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_gripper_adapter" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Adjacent"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_base_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_link_gripper_adapter" reason="Adjacent"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_link_rotating_arm" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="hook_base_link" reason="Adjacent"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_freely_rotating_hook" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_link_rotating_arm" reason="Adjacent"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_gripper_adapter" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="door_opening_mechanism_link_x_axis_slide" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Adjacent"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_rotating_arm" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="door_opening_mechanism_rotating_arm_mounting_plate_link" reason="Adjacent"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="door_opening_mechanism_link_y_axis_slide" reason="Adjacent"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_x_axis_slide" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="door_opening_mechanism_link_y_axis_rail" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="door_opening_mechanism_link_y_axis_slide" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_rotating_arm_mounting_plate_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="door_opening_mechanism_link_y_axis_slide" reason="Default"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_rail" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="drawer_1" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="door_opening_mechanism_link_y_axis_slide" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="drawer_2" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="drawer_1" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="drawer_3" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="drawer_2" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="drawer_4" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="drawer_3" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="drawer_5" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="drawer_4" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="front_laser_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="drawer_5" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="front_leftsupport" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="front_leftwheel" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_laser_base_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="front_leftwheel" reason="Adjacent"/>
+    <disable_collisions link1="front_leftsupport" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_leftsupport" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="front_realsense_camera_link" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_leftwheel" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="front_rightsupport" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="front_rightwheel" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_realsense_camera_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="front_rightwheel" reason="Adjacent"/>
+    <disable_collisions link1="front_rightsupport" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_rightsupport" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="hook_base_link" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="hook_link_back_side" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="front_rightwheel" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="hook_base_link" link2="hook_link_back_side" reason="Adjacent"/>
+    <disable_collisions link1="hook_base_link" link2="hook_link_front_side" reason="Adjacent"/>
+    <disable_collisions link1="hook_base_link" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="hook_base_link" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="hook_base_link" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="hook_base_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="hook_base_link" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="hook_base_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="hook_base_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="hook_base_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="hook_link_back_side" link2="hook_link_front_side" reason="Never"/>
+    <disable_collisions link1="hook_link_back_side" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="hook_link_back_side" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="hook_link_back_side" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="hook_link_back_side" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="hook_link_back_side" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="hook_link_back_side" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="hook_link_back_side" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="hook_link_back_side" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="hook_link_front_side" link2="left_wheel_link" reason="Never"/>
+    <disable_collisions link1="hook_link_front_side" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="hook_link_front_side" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="hook_link_front_side" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="hook_link_front_side" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="hook_link_front_side" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="hook_link_front_side" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="hook_link_front_side" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="left_wheel_link" link2="module_cage_link" reason="Never"/>
+    <disable_collisions link1="left_wheel_link" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="left_wheel_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="left_wheel_link" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="left_wheel_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="left_wheel_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="left_wheel_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="left_wheel_link" link2="left_wheel_tire_link" reason="Never"/>
+    <disable_collisions link1="module_cage_link" link2="rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="module_cage_link" link2="rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="module_cage_link" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="module_cage_link" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="module_cage_link" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="module_cage_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="rear_leftsupport" link2="rear_leftwheel" reason="Adjacent"/>
+    <disable_collisions link1="rear_leftsupport" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="rear_leftsupport" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="rear_leftsupport" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="rear_leftsupport" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="rear_leftwheel" link2="rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="rear_leftwheel" link2="rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="rear_leftwheel" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="rear_leftwheel" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="rear_rightsupport" link2="rear_rightwheel" reason="Adjacent"/>
+    <disable_collisions link1="rear_rightsupport" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="rear_rightsupport" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="rear_rightwheel" link2="right_wheel_link" reason="Never"/>
+    <disable_collisions link1="rear_rightwheel" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="right_wheel_link" link2="top_laser_base_link" reason="Never"/>
+    <disable_collisions link1="right_wheel_link" link2="right_wheel_tire_link" reason="Never"/>
+</robot>

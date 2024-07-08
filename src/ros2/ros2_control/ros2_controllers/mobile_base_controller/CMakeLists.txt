@@ -17,6 +17,7 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   control_msgs
   std_msgs
   geometry_msgs
+  nav_msgs
 )
 
 find_package(ament_cmake REQUIRED)

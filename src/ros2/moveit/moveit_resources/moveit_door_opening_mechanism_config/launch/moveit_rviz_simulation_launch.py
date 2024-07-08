@@ -34,14 +34,15 @@ from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
 JOINT_STATES_TOPIC = "/joint_states"
 NAMESPACE_ARM = "arm"
 
+
 def get_planning_pipelines(context):
     ompl_planning_file = LaunchConfiguration("ompl_planning_file").perform(context)
 
-    if ompl_planning_file is None:
+    if ompl_planning_file is None or ompl_planning_file == "":
         ros_distro = os.environ["ROS_DISTRO"]
         supported_ros_distros = ["humble", "iron"]
         if ros_distro in supported_ros_distros:
-            planning_pipelines =  [f"ompl_{ros_distro}"]
+            planning_pipelines = [f"ompl_{ros_distro}"]
         else:
             raise Exception("Unknown ROS distro: " + ros_distro)
     else:
@@ -49,13 +50,16 @@ def get_planning_pipelines(context):
 
     return planning_pipelines
 
+
 def launch_setup(context, *args, **settings):
     launch_moveit_group = LaunchConfiguration("launch_moveit_group").perform(context)
     use_sim_time_str = LaunchConfiguration("use_sim_time").perform(context)
     use_sim_time = use_sim_time_str.lower() == "true"
 
     launch_rviz = LaunchConfiguration("launch_rviz").perform(context)
-    launch_robot_state_publisher = LaunchConfiguration("launch_robot_state_publisher").perform(context)
+    launch_robot_state_publisher = LaunchConfiguration(
+        "launch_robot_state_publisher"
+    ).perform(context)
 
     planning_pipelines = get_planning_pipelines(context)
     actions_to_launch = []
@@ -68,7 +72,7 @@ def launch_setup(context, *args, **settings):
     launch_arguments = {
         "ros2_control_hardware_type": "mock_components",
         "ros2_control_hardware_type_positon_joint": "real_life",
-        "model_position_joint": "true",
+        "position_joint_type": "prismatic",
     }
 
     moveit_config = (
@@ -79,6 +83,7 @@ def launch_setup(context, *args, **settings):
         .robot_description(
             file_path="config/rb_theron.urdf.xacro", mappings=launch_arguments
         )
+        .robot_description_semantic(file_path="config/rb_theron.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .to_moveit_configs()
@@ -109,7 +114,7 @@ def launch_setup(context, *args, **settings):
     # State Publisher
     if launch_robot_state_publisher == "true":
         actions_to_launch.append(
-                Node(
+            Node(
                 package="robot_state_publisher",
                 executable="robot_state_publisher",
                 name="robot_state_publisher",
@@ -121,7 +126,7 @@ def launch_setup(context, *args, **settings):
         )
 
     if launch_moveit_group == "true":
-         # Load ExecuteTaskSolutionCapability so we can execute found solutions in simulation
+        # Load ExecuteTaskSolutionCapability so we can execute found solutions in simulation
         move_group_capabilities = {
             "capabilities": "move_group/ExecuteTaskSolutionCapability"
         }
@@ -269,15 +274,17 @@ def launch_setup(context, *args, **settings):
         output="log",
         parameters=[
             {"trigger_message": trigger_message, "node_name": node_name},
-        ]
+        ],
     )
 
     actions_to_launch.append(rosout_listener_trigger)
 
-     # Make sure that the rosout_listener_trigger is started before the arm controller manager is
+    # Make sure that the rosout_listener_trigger is started before the arm controller manager is
     # started because the rosout_listener_trigger should listen to the content of the arm
     # controller manager
-    actions_to_launch.append(TimerAction(period=1.0, actions=[ros2_controller_manager_arm_cmd]))
+    actions_to_launch.append(
+        TimerAction(period=1.0, actions=[ros2_controller_manager_arm_cmd])
+    )
 
     # spawning ros2_control controller for robot base
     actions_to_launch.append(
@@ -314,9 +321,9 @@ def launch_setup(context, *args, **settings):
             )
         )
     )
-    
+
     return actions_to_launch
-        
+
 
 def generate_launch_description():
     ld = LaunchDescription()
@@ -335,7 +342,7 @@ def generate_launch_description():
 
     declare_ompl_planning_file_cmd = DeclareLaunchArgument(
         "ompl_planning_file",
-        default_value="ompl_iron",
+        default_value="",
         description="Prefix of the ompl_planning file to use for planning. Syntax is <ompl_planning_file>_planning.yaml",
     )
 
@@ -357,11 +364,8 @@ def generate_launch_description():
         description="Whether to start robot state publisher or not",
     )
 
-    launch_setup_opaque_func = OpaqueFunction(
-        function=launch_setup
-    )
-    
-   
+    launch_setup_opaque_func = OpaqueFunction(function=launch_setup)
+
     ld.add_action(declare_use_sim_time_cmd)
     ld.add_action(declare_debug_cmd)
     ld.add_action(declare_ompl_planning_file_cmd)

@@ -15,7 +15,7 @@ from moveit_configs_utils import MoveItConfigsBuilder
 urdf_launch_arguments = {
     "ros2_control_hardware_type": "dryve_d1",
     "ros2_control_hardware_type_positon_joint": "real_life",
-    "model_position_joint": "true",
+    "position_joint_type": "prismatic",
 }
 
 
@@ -27,8 +27,8 @@ def get_urdf_launch_arguments(context):
     urdf_launch_arguments["ros2_control_hardware_type_positon_joint"] = str(
         LaunchConfiguration("ros2_control_hardware_type_positon_joint").perform(context)
     )
-    urdf_launch_arguments["model_position_joint"] = str(
-        LaunchConfiguration("model_position_joint").perform(context)
+    urdf_launch_arguments["position_joint_type"] = str(
+        LaunchConfiguration("position_joint_type").perform(context)
     )
 
 
@@ -47,8 +47,8 @@ def generate_launch_description():
         description="The hardware type to use for ros2 control for position joint",
     )
 
-    declare_model_position_joint_cmd = DeclareLaunchArgument(
-        "model_position_joint",
+    declare_position_joint_type_cmd = DeclareLaunchArgument(
+        "position_joint_type",
         default_value="true",
         description="Whether to use position joint (between base_link and base_footprint) or not",
     )
@@ -70,11 +70,11 @@ def generate_launch_description():
             "rb_theron",
             package_name="moveit_door_opening_mechanism_config",
         )
-        .robot_description_semantic(file_path="config/rb_theron_arm.srdf")
         .robot_description(
             file_path="config/rb_theron_arm.urdf.xacro",
             mappings=urdf_launch_arguments,
         )
+        .robot_description_semantic(file_path="config/rb_theron_arm.srdf")
         .trajectory_execution(file_path="config/moveit_controllers.yaml")
         .planning_pipelines(pipelines=planning_pipelines)
         .sensors_3d(file_path="config/sensors_3d_real_world.yaml")
@@ -102,7 +102,7 @@ def generate_launch_description():
 
     ld.add_action(declare_ros2_control_hardware_type_cmd)
     ld.add_action(declare_ros2_control_hardware_type_positon_joint_cmd)
-    ld.add_action(declare_model_position_joint_cmd)
+    ld.add_action(declare_position_joint_type_cmd)
 
     ld.add_action(get_urdf_launch_arguments_opaque_func)
 
