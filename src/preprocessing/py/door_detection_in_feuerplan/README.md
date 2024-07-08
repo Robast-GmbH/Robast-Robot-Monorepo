@@ -1,0 +1,1 @@
+This project contains code for door detection and finding nav points in a feuerplan.
