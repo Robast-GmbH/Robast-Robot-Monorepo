@@ -29,10 +29,6 @@ hardware:
   # The following launch file is started when hardware.simulated is True
   # This is run when running robot.app
   robot_driver_persist_launch_file:
-    package: "moveit_door_opening_mechanism_config"
-    path: "launch/rviz_real_world_launch.py"
-  # This is run when running agent.app
-  hardware_launch_file:
     package: "rb_theron_real_world_config"
     path: "launch/hardware_launch.py"
 
