@@ -5,15 +5,14 @@ import xacro
 from ament_index_python.packages import get_package_share_directory
 
 from launch import LaunchDescription
-from launch.actions import ExecuteProcess, RegisterEventHandler, TimerAction
-from launch.event_handlers import OnProcessExit
 
 from moveit_configs_utils.launches import generate_static_virtual_joint_tfs_launch
 
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch_ros.actions import Node
+from launch.actions import IncludeLaunchDescription
 from moveit_configs_utils import MoveItConfigsBuilder
 
-from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
 
 """
     Launches a self contained demo
@@ -40,7 +39,7 @@ def generate_launch_description():
     }
 
     launch_arguments_ros2_control = {
-        common_launch_arguments.items(),
+        **common_launch_arguments,
         "robot_description_path": "config/rb_theron.urdf.xacro",
         "robot_description_semantic_file_path": "config/rb_theron_real_world.srdf",
         "trajectory_execution_file_path": "config/moveit_controllers_real_world.yaml",
@@ -49,7 +48,7 @@ def generate_launch_description():
     }
 
     launch_arguments_robot_state_publisher = {
-        common_launch_arguments.items(),
+        **common_launch_arguments,
         "use_sim_time": "false",
     }
     launch_arguments_robot_state_publisher["robot_description_path"] = os.path.join(

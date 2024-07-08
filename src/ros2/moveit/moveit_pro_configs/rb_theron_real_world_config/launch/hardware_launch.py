@@ -8,7 +8,7 @@ from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 def generate_launch_description():
     common_launch_arguments = {
-        "prefix": PREFIX,
+        "prefix": "/robot",
         "ros2_control_hardware_type": "dryve_d1",
         "ros2_control_hardware_type_positon_joint": "real_life",
         "position_joint_type": "prismatic",
@@ -18,16 +18,17 @@ def generate_launch_description():
     }
 
     launch_arguments_ros2_control = {
-        common_launch_arguments.items(),
+        **common_launch_arguments,
         "robot_description_path": "config/rb_theron.urdf.xacro",
         "robot_description_semantic_file_path": "config/rb_theron_real_world.srdf",
         "trajectory_execution_file_path": "config/moveit_controllers_real_world.yaml",
         "sensor_3d_file_path": "config/sensors_3d_real_world.yaml",
         "joint_limits_file_path": "config/joint_limits_real_world.yaml",
+        "ompl_planning_file": "ompl_iron",
     }
 
     launch_arguments_robot_state_publisher = {
-        common_launch_arguments.items(),
+        **common_launch_arguments,
         "use_sim_time": "false",
     }
     launch_arguments_robot_state_publisher["robot_description_path"] = os.path.join(

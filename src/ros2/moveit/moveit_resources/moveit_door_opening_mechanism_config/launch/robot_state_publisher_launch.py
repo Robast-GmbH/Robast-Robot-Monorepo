@@ -1,15 +1,12 @@
 import os
-import atexit
 import xacro
 
-from ament_index_python.packages import get_package_share_directory
-
 from launch import LaunchDescription
-from launch.actions import OpaqueFunction
+from launch.actions import OpaqueFunction, DeclareLaunchArgument
+from launch.substitutions import LaunchConfiguration
 
 from launch_ros.actions import Node
 
-from moveit_configs_utils.launch_utils import DeclareBooleanLaunchArg
 
 def launch_robot_state_publisher(context, *args, **settings):
     use_sim_time_str = LaunchConfiguration("use_sim_time").perform(context)
@@ -41,7 +38,7 @@ def launch_robot_state_publisher(context, *args, **settings):
         output="screen",
     )
 
-    return start_robot_state_publisher_cmd
+    return [start_robot_state_publisher_cmd]
 
 
 def generate_launch_description():
