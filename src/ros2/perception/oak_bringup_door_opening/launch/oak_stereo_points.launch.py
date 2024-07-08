@@ -37,7 +37,7 @@ def generate_launch_description():
                     namespace="",
                     remappings=[('depth/image_rect', '/stereo/converted_depth'),
                                 ('intensity/image_rect', '/right/image_rect'),
-                                ('intensity/camera_info', '/right/camera_info'),
+                                ('intensity/camera_info', '/right/image_rect/camera_info'),
                                 ('points', '/stereo/points')]
                 ),
             ],
@@ -45,6 +45,6 @@ def generate_launch_description():
 
     ld = LaunchDescription()
 
-    ld.add_action(metric_converter_node)
-    ld.add_action(point_cloud_node)
+    ld.add_action(metric_converter_node_container)
+    ld.add_action(point_cloud_node_container)
     return ld

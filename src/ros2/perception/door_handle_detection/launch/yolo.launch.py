@@ -277,7 +277,8 @@ def generate_launch_description():
                         {'nnName':                  nnName},
                         {'enableRosBaseTimeUpdate': enableRosBaseTimeUpdate},
                         {'door_handle_position_topic': 'stereo/door_handle_position'},
-                        {'color_image_topic': 'color/image'}])
+                        {'stereo_depth_topic': 'stereo/depth'},
+                        {'right_rectified_image_topic': '/right/image_rect'}])
 
     ld = LaunchDescription()
     ld.add_action(declare_mxId_cmd)

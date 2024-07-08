@@ -250,7 +250,9 @@ int main(int argc, char** argv) {
     std::string mxId;
     std::string resourceBaseFolder;
     std::string door_handle_position_topic;
-    std::string color_image_topic;
+    std::string stereo_depth_topic;
+    std::string right_rectified_image_topic;
+    //std::string color_image_topic;
     std::string nnPath;
     std::string monoResolution;
     std::string rgbResolution;
@@ -262,7 +264,7 @@ int main(int argc, char** argv) {
     double angularVelCovariance, linearAccelCovariance;
     double dotProjectormA, floodLightmA;
     bool enableRosBaseTimeUpdate;
-    std::string nnName(BLOB_NAME);  // Set your blob name for the model here
+    std::string nnName(BLOB_NAME); 
 
     node->declare_parameter("mxId", "");
     node->declare_parameter("usb2Mode", false);
@@ -305,7 +307,9 @@ int main(int argc, char** argv) {
     node->declare_parameter("floodLightmA", 200.0);
     node->declare_parameter("enableRosBaseTimeUpdate", false);
     node->declare_parameter("door_handle_position_topic","");
-    node->declare_parameter("color_image_topic","");
+    node->declare_parameter("stereo_depth_topic","");
+    node->declare_parameter("right_rectified_image_topic","");
+    //node->declare_parameter("color_image_topic","");
 
     // updating parameters if defined in launch file.
 
@@ -348,7 +352,9 @@ int main(int argc, char** argv) {
     node->get_parameter("floodLightmA", floodLightmA);
     node->get_parameter("enableRosBaseTimeUpdate", enableRosBaseTimeUpdate);
     node->get_parameter("door_handle_position_topic",door_handle_position_topic);
-    node->get_parameter("color_image_topic",color_image_topic);
+    node->get_parameter("stereo_depth_topic",stereo_depth_topic);
+    node->get_parameter("right_rectified_image_topic",right_rectified_image_topic);
+    //node->get_parameter("color_image_topic",color_image_topic);
 
     if(resourceBaseFolder.empty()) {
         throw std::runtime_error("Send the path to the resouce folder containing NNBlob in \'resourceBaseFolder\' ");
@@ -453,7 +459,7 @@ int main(int argc, char** argv) {
         rightConverter.setUpdateRosBaseTimeOnToRosMsg();
     }
 
-    const std::string rightPubName = rectify ? std::string("right/image_rect") : std::string("right/image_raw");
+    const std::string rightPubName = rectify ? right_rectified_image_topic : std::string("right/image_raw");
 
     dai::rosBridge::ImageConverter rgbConverter(tfPrefix + "_rgb_camera_optical_frame", false);
     if(enableRosBaseTimeUpdate) {
@@ -472,13 +478,13 @@ int main(int argc, char** argv) {
                 std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rightConverter, std::placeholders::_1, std::placeholders::_2),
                 30,
                 rightCameraInfo,
-                "right");
+                rightPubName);
     rightPublish.addPublisherCallback();
 
     dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> depthPublish(
             stereoQueue,
             node,
-            std::string("stereo/depth"),
+            stereo_depth_topic,
             std::bind(&dai::rosBridge::ImageConverter::toRosMsg,
                       &rightConverter,  // since the converter has the same frame name
                                         // and image type is also same we can reuse it
@@ -486,37 +492,37 @@ int main(int argc, char** argv) {
                       std::placeholders::_2),
             30,
             depthCameraInfo,
-            "stereo");
+            stereo_depth_topic);
     depthPublish.addPublisherCallback();
 
    
         
     auto rgbCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, width, height);
         
-    auto imgQueue = device->getOutputQueue("rgb", 30, false);
-    dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rgbPublish(
-                imgQueue,
-                node,
-                color_image_topic,
-                std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rgbConverter, std::placeholders::_1, std::placeholders::_2),
-                30,
-                rgbCameraInfo,
-                "color");
-    rgbPublish.addPublisherCallback();
+    // auto imgQueue = device->getOutputQueue("rgb", 30, false);
+    // dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rgbPublish(
+    //             imgQueue,
+    //             node,
+    //             color_image_topic,
+    //             std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rgbConverter, std::placeholders::_1, std::placeholders::_2),
+    //             30,
+    //             rgbCameraInfo,
+    //             color_image_topic);
+    // rgbPublish.addPublisherCallback();
 
     auto previewQueue = device->getOutputQueue("preview", 30, false);
     auto detectionQueue = device->getOutputQueue("detections", 30, false);
     auto previewCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, previewWidth, previewHeight);
 
-    dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> previewPublish(
-                    previewQueue,
-                    node,
-                    std::string("color/preview/image"),
-                    std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rgbConverter, std::placeholders::_1, std::placeholders::_2),
-                    30,
-                    previewCameraInfo,
-                    "color/preview");
-    previewPublish.addPublisherCallback();
+    // dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> previewPublish(
+    //                 previewQueue,
+    //                 node,
+    //                 std::string("color/preview/image"),
+    //                 std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rgbConverter, std::placeholders::_1, std::placeholders::_2),
+    //                 30,
+    //                 previewCameraInfo,
+    //                 "color/preview");
+    // previewPublish.addPublisherCallback();
 
         dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 416, 416, false);
     dai::rosBridge::BridgePublisher<depthai_ros_msgs::msg::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(
