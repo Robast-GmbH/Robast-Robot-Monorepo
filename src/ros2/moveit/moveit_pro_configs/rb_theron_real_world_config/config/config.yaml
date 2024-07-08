@@ -92,5 +92,5 @@ ros2_control:
     - "joint_trajectory_controller"
 
 waypoints_file:
-  package_name: "rb_theron_config"
+  package_name: "rb_theron_real_world_config"
   relative_path: "waypoints/waypoints.yaml"
