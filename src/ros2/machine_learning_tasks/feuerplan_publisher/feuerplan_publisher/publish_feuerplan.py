@@ -8,6 +8,7 @@ from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 from nav_msgs.msg import OccupancyGrid
 from tf2_ros import TransformBroadcaster
 from geometry_msgs.msg import TransformStamped
+from lightglue import viz2d
 from lightglue.lightglue import LightGlue
 from lightglue.utils import numpy_image_to_torch, rbd
 from lightglue.superpoint import SuperPoint
@@ -97,38 +98,44 @@ class FeuerplanPublisher(Node):
             self.get_logger().info(f'{size}')
             if matches12['matches'].size(0) > 3:
                 points1, points2, matches, scores = self.__get_three_best_matches(matches12['scores'], matches12['matches'], feats1["keypoints"], feats2["keypoints"])
-                world_points1 = [(x * map_resolution + map_origin_x, y * map_resolution + map_origin_y) for x, y in points1]
-                self.get_logger().info(f'{scores}')
-                A = np.array([
-                    [points2[0][0], points2[0][1], 1, 0, 0, 0],
-                    [0, 0, 0, points2[0][0], points2[0][1], 1],
-                    [points2[1][0], points2[1][1], 1, 0, 0, 0],
-                    [0, 0, 0, points2[1][0], points2[1][1], 1],
-                    [points2[2][0], points2[2][1], 1, 0, 0, 0],
-                    [0, 0, 0, points2[2][0], points2[2][1], 1]
-                ])
+                if (scores > 0.5).all():
+                    axes = viz2d.plot_images([image1, image2])
+                    viz2d.plot_matches(points1, points2, color="lime", lw=0.2)
+                    viz2d.save_plot("out.png")
+                    world_points1 = [(x * map_resolution + map_origin_x, y * map_resolution + map_origin_y) for x, y in points1]
+                    self.get_logger().info(f'{scores}')
+                    A = np.array([
+                        [points2[0][0], points2[0][1], 1, 0, 0, 0],
+                        [0, 0, 0, points2[0][0], points2[0][1], 1],
+                        [points2[1][0], points2[1][1], 1, 0, 0, 0],
+                        [0, 0, 0, points2[1][0], points2[1][1], 1],
+                        [points2[2][0], points2[2][1], 1, 0, 0, 0],
+                        [0, 0, 0, points2[2][0], points2[2][1], 1]
+                    ])
 
-                B = np.array([
-                    world_points1[0][0], world_points1[0][1],
-                    world_points1[1][0], world_points1[1][1],
-                    world_points1[2][0], world_points1[2][1]
-                ])
-                affine_params, _, _, _ = np.linalg.lstsq(A, B, rcond=None)
-                transformation_matrix = np.array([
-                    [affine_params[0], affine_params[1]],
-                    [affine_params[3], affine_params[4]]
-                ])
-                translation_vector = np.array([affine_params[2], affine_params[5]])
-                #point = np.float32([matched_keypoints1.numpy()[0][0],matched_keypoints1.numpy()[0][1],1])
-                #transformation_matrix = cv.getAffineTransform(points1.numpy(),points2.numpy())
-                #transformed = transformation_matrix @ point
-                #self.get_logger().info(f'{point}')
-                #self.get_logger().info(f'{transformation_matrix}')
-                #self.get_logger().info(f'{transformed}')
-                return {
-                    "transformation_matrix": transformation_matrix,
-                    "translation_vector": translation_vector
-                }
+                    B = np.array([
+                        world_points1[0][0], world_points1[0][1],
+                        world_points1[1][0], world_points1[1][1],
+                        world_points1[2][0], world_points1[2][1]
+                    ])
+                    affine_params, _, _, _ = np.linalg.lstsq(A, B, rcond=None)
+                    transformation_matrix = np.array([
+                        [affine_params[0], affine_params[1]],
+                        [affine_params[3], affine_params[4]]
+                    ])
+                    translation_vector = np.array([affine_params[2], affine_params[5]])
+                    #point = np.float32([matched_keypoints1.numpy()[0][0],matched_keypoints1.numpy()[0][1],1])
+                    #transformation_matrix = cv.getAffineTransform(points1.numpy(),points2.numpy())
+                    #transformed = transformation_matrix @ point
+                    #self.get_logger().info(f'{point}')
+                    #self.get_logger().info(f'{transformation_matrix}')
+                    #self.get_logger().info(f'{transformed}')
+                    return {
+                        "transformation_matrix": transformation_matrix,
+                        "translation_vector": translation_vector
+                    }
+                else:
+                    return None
             else:
                 return None
     
@@ -143,6 +150,7 @@ class FeuerplanPublisher(Node):
     
     def __transform_between_map_and_feuerplan(self, map_msg:OccupancyGrid, feuerplan_image:np.ndarray) -> tuple[float,float]:
         map_image = self.__ros_msg_to_image(map_msg)
+        cv.imwrite('output_image_opencv.png', map_image)
         if not self.__is_message_published_once:
             origin_feuerplan = (0.0,0.0)
             #self.__publish_occupancy_grid_from_image(feuerplan_image, origin_feuerplan[0], origin_feuerplan[1])
@@ -166,8 +174,8 @@ class FeuerplanPublisher(Node):
         ros_image_msg.info.resolution = 0.05
         ros_image_msg.info.width = image.shape[1]
         ros_image_msg.info.height = image.shape[0]
-        ros_image_msg.info.origin.position.x = translation_x
-        ros_image_msg.info.origin.position.y = translation_y
+        ros_image_msg.info.origin.position.x = -19.4
+        ros_image_msg.info.origin.position.y = -3.0
         ros_image_msg.info.origin.position.z = 0.0
         ros_image_msg.info.origin.orientation.x = 1.0
         ros_image_msg.info.origin.orientation.y = 0.0
@@ -186,8 +194,8 @@ class FeuerplanPublisher(Node):
         transform.header.frame_id = 'map'
         transform.child_frame_id = 'feuerplan'
 
-        transform.transform.translation.x = translation_x
-        transform.transform.translation.y = translation_y
+        transform.transform.translation.x = -20.2
+        transform.transform.translation.y = -3.3
         transform.transform.translation.z = self.__map_msg.info.origin.position.z
 
         transform.transform.rotation.x = self.__map_msg.info.origin.orientation.x
@@ -198,12 +206,13 @@ class FeuerplanPublisher(Node):
 
     def __broadcast_frame_and_message(self) -> None:
         feuerplan_image = cv.imread(self.__feuerplan_path, cv.IMREAD_GRAYSCALE)
-        preprocessed_feuerplan = self.__preprocess_image(feuerplan_image)
-        self.__transform_between_map_and_feuerplan(self.__map_msg, preprocessed_feuerplan)
+        normalized_image = np.clip(feuerplan_image.astype(np.int16) - 128, -128, 127)
+        #preprocessed_feuerplan = self.__preprocess_image(feuerplan_image)
+        self.__transform_between_map_and_feuerplan(self.__map_msg, feuerplan_image)
         self.get_logger().info(f'{self.__origin_feuerplan_prev}')
         self.get_logger().info(f'{(self.__map_msg.info.origin.position.x,self.__map_msg.info.origin.position.y)}')
         self.__create_feuerplan_frame(self.__origin_feuerplan_prev[0],self.__origin_feuerplan_prev[1])
-        self.__publish_occupancy_grid_from_image(preprocessed_feuerplan, self.__origin_feuerplan_prev[0], self.__origin_feuerplan_prev[1])
+        self.__publish_occupancy_grid_from_image(normalized_image, self.__origin_feuerplan_prev[0], self.__origin_feuerplan_prev[1])
 
 def main(args=None):
     rclpy.init(args=args)

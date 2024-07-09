@@ -370,7 +370,7 @@ global_costmap:
       static_layer:
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
-        #map_topic: /global_costmap/feuerplan_image_topic
+        map_topic: /global_costmap/feuerplan_image_topic
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"
         enabled: true
