@@ -31,10 +31,6 @@ namespace drawer_controller
 #define STEPPER_1_ENCODER_B_PIN_ID     9
 #define STEPPER_1_ENCODER_N_PIN_ID     10
 
-#define ENCODER_1_A_PIN_ID 11
-#define ENCODER_1_B_PIN_ID 12
-#define ENCODER_1_N_PIN_ID 13
-
 #define CAN_EN_HIGH_SPEED_MODE_PIN_ID 20
 
 #define LOCK_1_OPEN_CONTROL_PIN_ID  30
@@ -51,9 +47,9 @@ namespace drawer_controller
 #define PE_0_IO0_7_PIN_ID 54
 
   const std::unordered_map<uint8_t, drawer_controller::GpioInfo> pin_mapping_id_to_gpio_info = {
-    {ENCODER_1_B_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_2, IS_INPUT}},
-    {ENCODER_1_A_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_26, IS_INPUT}},
-    {ENCODER_1_N_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_34, IS_INPUT}},
+    {STEPPER_1_ENCODER_B_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_2, IS_INPUT}},
+    {STEPPER_1_ENCODER_A_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_26, IS_INPUT}},
+    {STEPPER_1_ENCODER_N_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_34, IS_INPUT}},
     {SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_35, IS_INPUT}},
     {PE_0_NINT, drawer_controller::GpioInfo{GPIO_NUM_36, IS_INPUT}},
     {LOCK_1_SENSE_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_39, IS_INPUT}}};
