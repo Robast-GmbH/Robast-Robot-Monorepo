@@ -2,10 +2,10 @@
 
 namespace drawer_controller
 {
-  Switch::Switch(std::shared_ptr<IGpioWrapper> gpio_wrapper,
-                 uint8_t switch_pin_id,
-                 float switch_pressed_threshold,
-                 SwitchType switch_type)
+  Switch::Switch(const std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                 const uint8_t switch_pin_id,
+                 const float switch_pressed_threshold,
+                 const SwitchType switch_type)
       : _gpio_wrapper{gpio_wrapper},
         _switch_pin{switch_pin_id},
         _switch_pressed_threshold{switch_pressed_threshold},
@@ -25,7 +25,7 @@ namespace drawer_controller
 
   void Switch::update_sensor_value()
   {
-    byte digital_read_result;
+    uint8_t digital_read_result;
     _gpio_wrapper->digital_read(_switch_pin, digital_read_result);
     _moving_average = 0.2 * digital_read_result + 0.8 * _moving_average;
   }

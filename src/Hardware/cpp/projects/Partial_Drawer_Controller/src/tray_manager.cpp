@@ -3,9 +3,9 @@
 namespace partial_drawer_controller
 {
   TrayManager::TrayManager(const std::vector<TrayPinConfig>& tray_pin_configs,
-                           std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
-                           std::shared_ptr<TwoWire> wire,
-                           float switch_pressed_threshold)
+                           const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+                           const std::shared_ptr<TwoWire> wire,
+                           const float switch_pressed_threshold)
       : _onboard_led_driver{std::make_unique<OnboardLedDriver>(wire)}
   {
     _electrical_tray_locks.reserve(tray_pin_configs.size());
@@ -36,7 +36,7 @@ namespace partial_drawer_controller
     _electrical_tray_locks[tray_id - 1]->unlock();
   }
 
-  void TrayManager::set_tray_led_brightness(uint8_t tray_id, uint8_t led_row, uint8_t brightness)
+  void TrayManager::set_tray_led_brightness(const uint8_t tray_id, const uint8_t led_row, const uint8_t brightness)
   {
     _onboard_led_driver->set_tray_led_brightness(tray_id, led_row, brightness);
   }

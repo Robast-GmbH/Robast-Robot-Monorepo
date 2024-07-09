@@ -16,10 +16,10 @@ namespace drawer_controller
   class GpioWrapperPca9535 : public IGpioWrapper
   {
   public:
-    GpioWrapperPca9535(std::shared_ptr<TwoWire> wire,
-                       std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> port_expanders,
-                       std::unordered_map<uint8_t, GpioInfo> pin_mapping_id_to_gpio_info,
-                       std::unordered_map<uint8_t, port_info> pin_mapping_id_to_port)
+    GpioWrapperPca9535(const std::shared_ptr<TwoWire> wire,
+                       const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> port_expanders,
+                       const std::unordered_map<uint8_t, GpioInfo> pin_mapping_id_to_gpio_info,
+                       const std::unordered_map<uint8_t, port_info> pin_mapping_id_to_port)
         : _wire{wire},
           _port_expanders{port_expanders},
           _pin_mapping_id_to_gpio_info{pin_mapping_id_to_gpio_info},
@@ -42,7 +42,7 @@ namespace drawer_controller
      * @param is_input defines whether the pin should be an input or an output pin
      * @return if the digital_read was successfull
      */
-    bool set_pin_mode(byte pin_mapping_id, bool is_input)
+    bool set_pin_mode(const byte pin_mapping_id, const bool is_input) const
     {
       if (_pin_mapping_id_to_port.find(pin_mapping_id) == _pin_mapping_id_to_port.end())
       {
@@ -79,7 +79,7 @@ namespace drawer_controller
      * @param value pointer to the value which will contain the result of the digital read
      * @return if the digital_read was successfull
      */
-    bool digital_read(byte pin_mapping_id, byte &value)
+    bool digital_read(const byte pin_mapping_id, byte &value) const
     {
       if (_pin_mapping_id_to_port.find(pin_mapping_id) == _pin_mapping_id_to_port.end())
       {
@@ -108,7 +108,7 @@ namespace drawer_controller
      * @param state target state value of the output
      * @return if the digital_write was successfull
      */
-    bool digital_write(byte pin_mapping_id, bool state)
+    bool digital_write(const byte pin_mapping_id, const bool state) const
     {
       if (_pin_mapping_id_to_port.find(pin_mapping_id) == _pin_mapping_id_to_port.end())
       {
@@ -129,17 +129,17 @@ namespace drawer_controller
       return _port_expanders.at(port_expander_id)->write(port_id, state ? PCA95x5::Level::H : PCA95x5::Level::L);
     }
 
-    bool get_gpio_output_pin_mode()
+    bool get_gpio_output_pin_mode() const
     {
       return PCA95x5::Direction::OUT;
     }
 
-    bool get_gpio_input_pin_mode()
+    bool get_gpio_input_pin_mode() const
     {
       return PCA95x5::Direction::IN;
     }
 
-    uint8_t get_gpio_num_for_pin_id(uint8_t pin_id)
+    uint8_t get_gpio_num_for_pin_id(const uint8_t pin_id) const
     {
       if (_pin_mapping_id_to_gpio_info.find(pin_id) == _pin_mapping_id_to_gpio_info.end())
       {
@@ -151,11 +151,11 @@ namespace drawer_controller
     }
 
   private:
-    std::shared_ptr<TwoWire> _wire;
+    const std::shared_ptr<TwoWire> _wire;
 
     const std::unordered_map<uint8_t, GpioInfo> _pin_mapping_id_to_gpio_info;
 
-    std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> _port_expanders;
+    const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> _port_expanders;
 
     const std::unordered_map<uint8_t, port_info> _pin_mapping_id_to_port;
   };

@@ -5,9 +5,9 @@ namespace drawer_controller
 {
   struct LedHeader
   {
-    uint16_t num_of_led_states_to_change;
-    uint16_t start_index_of_leds_to_change;
-    uint8_t fade_time_in_hundreds_of_ms;
+    const uint16_t num_of_led_states_to_change;
+    const uint16_t start_index_of_leds_to_change;
+    const uint8_t fade_time_in_hundreds_of_ms;
 
     // Default Constructor
     LedHeader() : num_of_led_states_to_change(0), start_index_of_leds_to_change(0), fade_time_in_hundreds_of_ms(0)

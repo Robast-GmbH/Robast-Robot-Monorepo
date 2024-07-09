@@ -10,16 +10,16 @@ namespace drawer_controller
   struct LedAnimation
   {
     std::vector<LedState> target_led_states;
-    uint8_t fade_time_in_hundreds_of_ms;    // this will be set by the LED_HEADER CAN message
-    uint16_t num_of_led_states_to_change;   // this will be set by the LED_HEADER CAN message
-    uint16_t start_index_led_states;        // this will be set by the LED_HEADER CAN message
+    uint8_t fade_time_in_hundreds_of_ms;  // this will be set by the LED_HEADER CAN message
+    uint16_t num_of_led_states_to_change; // this will be set by the LED_HEADER CAN message
+    uint16_t start_index_led_states;      // this will be set by the LED_HEADER CAN message
 
     // Default Constructor
     LedAnimation()
         : target_led_states({}),
           fade_time_in_hundreds_of_ms(0),
           num_of_led_states_to_change(0),
-          start_index_led_states(0)   // Initialize members to default values
+          start_index_led_states(0) // Initialize members to default values
     {
     }
 
@@ -36,11 +36,11 @@ namespace drawer_controller
     }
 
     // Deep copy assignment operator
-    LedAnimation& operator=(const LedAnimation& other)
+    LedAnimation &operator=(const LedAnimation &other)
     {
       if (this == &other)
       {
-        return *this;   // Handle self-assignment
+        return *this; // Handle self-assignment
       }
 
       // Copy all the non-vector members
@@ -49,16 +49,16 @@ namespace drawer_controller
       start_index_led_states = other.start_index_led_states;
 
       // Deep copy the vector member 'target_led_states'
-      target_led_states.clear();   // Clear existing data
+      target_led_states.clear(); // Clear existing data
       target_led_states.reserve(other.target_led_states.size());
-      for (const LedState& state : other.target_led_states)
+      for (const LedState &state : other.target_led_states)
       {
-        target_led_states.push_back(state);   // You can create a deep copy of LedState if needed
+        target_led_states.push_back(state); // You can create a deep copy of LedState if needed
       }
 
       return *this;
     }
   };
-}   // namespace drawer_controller
+} // namespace drawer_controller
 
-#endif   // DRAWER_CONTROLLER_LED_ANIMATION_HPP
+#endif // DRAWER_CONTROLLER_LED_ANIMATION_HPP

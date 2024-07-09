@@ -10,16 +10,16 @@ namespace drawer_controller
 {
   class DataMapper
   {
-  public:
+   public:
     DataMapper() = default;
 
-    LedState create_led_state(const robast_can_msgs::CanMessage msg);
+    LedState create_led_state(const robast_can_msgs::CanMessage msg) const;
 
-    LedHeader create_led_header(const robast_can_msgs::CanMessage msg);
+    LedHeader create_led_header(const robast_can_msgs::CanMessage msg) const;
 
-    EDrawerTask create_e_drawer_task(const robast_can_msgs::CanMessage msg);
+    EDrawerTask create_e_drawer_task(const robast_can_msgs::CanMessage msg) const;
   };
 
-} // namespace drawer_controller
+}   // namespace drawer_controller
 
-#endif // DRAWER_CONTROLLER_DATA_MAPPER_HPP
+#endif   // DRAWER_CONTROLLER_DATA_MAPPER_HPP

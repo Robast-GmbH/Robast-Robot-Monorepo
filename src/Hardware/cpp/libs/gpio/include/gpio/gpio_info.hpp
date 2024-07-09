@@ -8,8 +8,8 @@ namespace drawer_controller
 
   struct GpioInfo
   {
-    uint8_t pin_number;
-    bool is_input;
+    const uint8_t pin_number;
+    const bool is_input;
 
     GpioInfo(const uint8_t pin_number_arg, const bool is_input_arg) : pin_number(pin_number_arg), is_input(is_input_arg)
     {

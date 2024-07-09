@@ -14,7 +14,7 @@ namespace drawer_controller
    public:
     Queue<T>();
 
-    void add_element_to_queue(T element);
+    void add_element_to_queue(const T element);
 
     std::optional<T> get_element_from_queue();
 
@@ -42,7 +42,7 @@ namespace drawer_controller
   }
 
   template <typename T>
-  void Queue<T>::add_element_to_queue(T element)
+  void Queue<T>::add_element_to_queue(const T element)
   {
     _queue.push_back(element);
   }

@@ -6,10 +6,10 @@ CAN_device_t CAN_cfg;
 namespace drawer_controller
 {
 
-  CanController::CanController(uint32_t module_id,
-                               std::shared_ptr<robast_can_msgs::CanDb> can_db,
-                               gpio_num_t twai_tx_pin,
-                               gpio_num_t twai_rx_pin)
+  CanController::CanController(const uint32_t module_id,
+                               const std::shared_ptr<robast_can_msgs::CanDb> can_db,
+                               const gpio_num_t twai_tx_pin,
+                               const gpio_num_t twai_rx_pin)
       : _module_id{module_id}, _can_db{can_db}, _twai_tx_pin{twai_tx_pin}, _twai_rx_pin{twai_rx_pin} {};
 
   void CanController::initialize_can_controller(void)
@@ -57,7 +57,7 @@ namespace drawer_controller
         debug_println("\n");
 
         can_message = robast_can_msgs::decode_can_message(
-          rx_frame.MsgID, rx_frame.data.u8, rx_frame.FIR.B.DLC, this->_can_db->can_messages);
+            rx_frame.MsgID, rx_frame.data.u8, rx_frame.FIR.B.DLC, this->_can_db->can_messages);
 
         if (can_message.has_value() &&
             can_message.value().get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data() == _module_id)
@@ -87,7 +87,7 @@ namespace drawer_controller
     try
     {
       robast_can_msgs::CanFrame can_frame =
-        robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
+          robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
 
       CAN_frame_t tx_frame;
       tx_frame.FIR.B.FF = CAN_frame_std;
@@ -117,4 +117,4 @@ namespace drawer_controller
     }
   }
 
-}   // namespace drawer_controller
+} // namespace drawer_controller

@@ -2,7 +2,8 @@
 
 namespace drawer_controller
 {
-  Encoder::Encoder(bool use_encoder, uint8_t encoder_pin_a, uint8_t encoder_pin_b) : _use_encoder(use_encoder)
+  Encoder::Encoder(const bool use_encoder, const uint8_t encoder_pin_a, const uint8_t encoder_pin_b)
+      : _use_encoder(use_encoder)
   {
     if (use_encoder)
     {

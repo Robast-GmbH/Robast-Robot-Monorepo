@@ -2,16 +2,14 @@
 
 namespace drawer_controller
 {
-  ElectricalDrawerLock::ElectricalDrawerLock(std::shared_ptr<IGpioWrapper> gpio_wrapper,
-                                             uint8_t power_open_pin_id,
-                                             uint8_t power_close_pin_id,
-                                             uint8_t sensor_lock_pin_id,
-                                             uint8_t sensor_drawer_closed_pin_id)
+  ElectricalDrawerLock::ElectricalDrawerLock(const std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                                             const uint8_t power_open_pin_id,
+                                             const uint8_t power_close_pin_id,
+                                             const uint8_t sensor_lock_pin_id)
       : _gpio_wrapper{gpio_wrapper},
         _power_open_pin_id{power_open_pin_id},
         _power_close_pin_id{power_close_pin_id},
-        _sensor_lock_pin_id{sensor_lock_pin_id},
-        _sensor_drawer_closed_pin{sensor_drawer_closed_pin_id}
+        _sensor_lock_pin_id{sensor_lock_pin_id}
   {
   }
 
@@ -23,7 +21,6 @@ namespace drawer_controller
     _gpio_wrapper->set_pin_mode(_power_open_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
     _gpio_wrapper->set_pin_mode(_power_close_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
     _gpio_wrapper->set_pin_mode(_sensor_lock_pin_id, _gpio_wrapper->get_gpio_input_pin_mode());
-    _gpio_wrapper->set_pin_mode(_sensor_drawer_closed_pin, _gpio_wrapper->get_gpio_input_pin_mode());
 
     _open_lock_previous_step = false;
     set_open_lock_current_step(false);
@@ -66,7 +63,7 @@ namespace drawer_controller
     }
   }
 
-  void ElectricalDrawerLock::set_drawer_auto_close_timeout_triggered(bool state)
+  void ElectricalDrawerLock::set_drawer_auto_close_timeout_triggered(const bool state)
   {
     _is_drawer_auto_close_timeout_triggered = state;
   }
@@ -76,7 +73,7 @@ namespace drawer_controller
     return _is_drawer_auto_close_timeout_triggered;
   }
 
-  void ElectricalDrawerLock::set_open_lock_current_step(bool open_lock_current_step)
+  void ElectricalDrawerLock::set_open_lock_current_step(const bool open_lock_current_step)
   {
     _open_lock_current_step = open_lock_current_step;
   }
@@ -86,17 +83,17 @@ namespace drawer_controller
     _timestamp_last_lock_opening = millis();
   }
 
-  void ElectricalDrawerLock::set_drawer_opening_is_in_progress(bool drawer_opening_is_in_progress)
+  void ElectricalDrawerLock::set_drawer_opening_is_in_progress(const bool drawer_opening_is_in_progress)
   {
     _drawer_opening_is_in_progress = drawer_opening_is_in_progress;
   }
 
-  bool ElectricalDrawerLock::is_drawer_opening_in_progress()
+  bool ElectricalDrawerLock::is_drawer_opening_in_progress() const
   {
     return _drawer_opening_is_in_progress;
   }
 
-  bool ElectricalDrawerLock::is_lock_switch_pushed()
+  bool ElectricalDrawerLock::is_lock_switch_pushed() const
   {
     return get_moving_average_sensor_lock_pin() > 0.9;
   }
@@ -109,7 +106,7 @@ namespace drawer_controller
     _moving_average_sensor_lock_pin = 0.2 * digital_read_sensor_lock_pin + 0.8 * _moving_average_sensor_lock_pin;
   }
 
-  float ElectricalDrawerLock::get_moving_average_sensor_lock_pin()
+  float ElectricalDrawerLock::get_moving_average_sensor_lock_pin() const
   {
     return _moving_average_sensor_lock_pin;
   }
@@ -128,21 +125,21 @@ namespace drawer_controller
     }
   }
 
-  void ElectricalDrawerLock::open_lock()
+  void ElectricalDrawerLock::open_lock() const
   {
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_open_pin_id, HIGH);
   }
 
-  void ElectricalDrawerLock::close_lock()
+  void ElectricalDrawerLock::close_lock() const
   {
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, HIGH);
   }
 
-  void ElectricalDrawerLock::set_lock_output_low()
+  void ElectricalDrawerLock::set_lock_output_low() const
   {
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
   }
-} // namespace drawer_controller
+}   // namespace drawer_controller

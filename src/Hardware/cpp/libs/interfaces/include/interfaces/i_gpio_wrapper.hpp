@@ -1,8 +1,6 @@
 #ifndef DRAWER_CONTROLLER_I_GPIO_WRAPPER_HPP
 #define DRAWER_CONTROLLER_I_GPIO_WRAPPER_HPP
 
-#include <Arduino.h>
-
 namespace drawer_controller
 {
   class IGpioWrapper
@@ -17,7 +15,7 @@ namespace drawer_controller
      * @param state defines whether the pin should be an input or an output pin
      * @return if the digital_read was successfull
      */
-    virtual bool set_pin_mode(byte pin_mapping_id, bool state) = 0;
+    virtual bool set_pin_mode(const uint8_t pin_mapping_id, const bool state) const = 0;
 
     /**
      * Read the digital input on a Input pin.
@@ -26,7 +24,7 @@ namespace drawer_controller
      * @param value pointer to the value which will contain the result of the digital read
      * @return if the digital_read was successfull
      */
-    virtual bool digital_read(byte pin_mapping_id, byte &value) = 0;
+    virtual bool digital_read(const uint8_t pin_mapping_id, uint8_t &value) const = 0;
 
     /**
      * Write the digital output on a output pin.
@@ -35,21 +33,21 @@ namespace drawer_controller
      * @param state target state value of the output
      * @return if the digital_write was successfull
      */
-    virtual bool digital_write(byte pin_mapping_id, bool state) = 0;
+    virtual bool digital_write(const uint8_t pin_mapping_id, const bool state) const = 0;
 
     /**
      * If you want to set the pin mode of a GPIO, this function returns the OUTPUT pin mode value for it
      *
      * @return OUTPUT pin mode value
      */
-    virtual bool get_gpio_output_pin_mode() = 0;
+    virtual bool get_gpio_output_pin_mode() const = 0;
 
     /**
      * If you want to set the pin mode of a GPIO, this function returns the INPUT pin mode value for it
      *
      * @return INPUT pin mode value
      */
-    virtual bool get_gpio_input_pin_mode() = 0;
+    virtual bool get_gpio_input_pin_mode() const = 0;
 
     /**
      * Returns the GPIO number for the given pin ID
@@ -57,7 +55,7 @@ namespace drawer_controller
      * @param pin_id the pin ID for which the GPIO number should be returned
      * @return the GPIO number for the given pin ID
      */
-    virtual uint8_t get_gpio_num_for_pin_id(uint8_t pin_id) = 0;
+    virtual uint8_t get_gpio_num_for_pin_id(const uint8_t pin_id) const = 0;
   };
 
 } // namespace drawer_controller

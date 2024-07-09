@@ -2,17 +2,17 @@
 
 namespace drawer_controller
 {
-  ElectricalDrawer::ElectricalDrawer(uint32_t module_id,
-                                     uint8_t id,
-                                     std::shared_ptr<robast_can_msgs::CanDb> can_db,
-                                     std::shared_ptr<IGpioWrapper> gpio_wrapper,
+  ElectricalDrawer::ElectricalDrawer(const uint32_t module_id,
+                                     const uint8_t id,
+                                     const std::shared_ptr<robast_can_msgs::CanDb> can_db,
+                                     const std::shared_ptr<IGpioWrapper> gpio_wrapper,
                                      const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
-                                     bool use_encoder,
-                                     uint8_t encoder_pin_a,
-                                     uint8_t encoder_pin_b,
-                                     uint8_t motor_driver_address,
-                                     std::shared_ptr<Switch> endstop_switch,
-                                     std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock)
+                                     const bool use_encoder,
+                                     const uint8_t encoder_pin_a,
+                                     const uint8_t encoder_pin_b,
+                                     const uint8_t motor_driver_address,
+                                     const std::shared_ptr<Switch> endstop_switch,
+                                     const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock)
       : _module_id{module_id},
         _id{id},
         _gpio_wrapper{gpio_wrapper},
@@ -25,7 +25,7 @@ namespace drawer_controller
   {
   }
 
-  void ElectricalDrawer::init()
+  void ElectricalDrawer::init() const
   {
     if (_electrical_drawer_lock.has_value())
     {
@@ -34,17 +34,17 @@ namespace drawer_controller
     init_motor();
   }
 
-  void ElectricalDrawer::stop_motor()
+  void ElectricalDrawer::stop_motor() const
   {
     _motor->set_target_speed_instantly(0);
   }
 
-  void ElectricalDrawer::start_motor()
+  void ElectricalDrawer::start_motor() const
   {
     _motor->set_target_speed_instantly(1000);
   }
 
-  void ElectricalDrawer::init_motor()
+  void ElectricalDrawer::init_motor() const
   {
     _motor->init();
   }

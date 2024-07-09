@@ -12,12 +12,12 @@
 // diag pin pulsed HIGH when SG_RESULT falls below 2*STALL_VALUE
 // must be in StealthChop Mode for stallguard to work
 // Value of TCOOLTHRS must be greater than TSTEP & TPWMTHRS
-#define STALL_VALUE                50   // [0..255]
-#define TOFF_VALUE                 2
-#define SERIAL_PORT                Serial2
-#define R_SENSE                    0.33f   // Match to your driver
+#define STALL_VALUE 50 // [0..255]
+#define TOFF_VALUE 2
+#define SERIAL_PORT Serial2
+#define R_SENSE 0.33f // Match to your driver
 #define DEFAULT_MOTOR_ACCELERATION 10
-#define INSTANT_ACCELERATION       0
+#define INSTANT_ACCELERATION 0
 
 namespace stepper_motor
 {
@@ -41,10 +41,10 @@ namespace stepper_motor
 
   class Motor
   {
-   public:
-    Motor(uint8_t driver_address,
-          std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
-          const StepperPinIdConfig& stepper_pin_id_config);
+  public:
+    Motor(const uint8_t driver_address,
+          const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+          const StepperPinIdConfig &stepper_pin_id_config);
 
     void init();
 
@@ -74,18 +74,18 @@ namespace stepper_motor
 
     void print_status();
 
-   private:
-    std::unique_ptr<TMC2209Stepper> _driver;
+  private:
+    const std::unique_ptr<TMC2209Stepper> _driver;
 
-    std::shared_ptr<drawer_controller::IGpioWrapper> _gpio_wrapper;
+    const std::shared_ptr<drawer_controller::IGpioWrapper> _gpio_wrapper;
 
-    uint8_t _stepper_enn_tmc2209_pin_id;
-    uint8_t _stepper_stdby_tmc2209_pin_id;
-    uint8_t _stepper_spread_pin_id;
-    uint8_t _stepper_dir_pin_id;
-    uint8_t _stepper_diag_pin_id;
-    uint8_t _stepper_index_pin_id;
-    uint8_t _stepper_step_pin_id;
+    const uint8_t _stepper_enn_tmc2209_pin_id;
+    const uint8_t _stepper_stdby_tmc2209_pin_id;
+    const uint8_t _stepper_spread_pin_id;
+    const uint8_t _stepper_dir_pin_id;
+    const uint8_t _stepper_diag_pin_id;
+    const uint8_t _stepper_index_pin_id;
+    const uint8_t _stepper_step_pin_id;
 
     uint32_t _active_speed = 0;
     uint32_t _target_speed = 0;
@@ -119,6 +119,6 @@ namespace stepper_motor
 
     int32_t calculate_new_active_speed(int32_t current_position_int32) const;
   };
-}   // namespace stepper_motor
+} // namespace stepper_motor
 
-#endif   // DRAWER_CONTROLLER_MOTOR_HPP
+#endif // DRAWER_CONTROLLER_MOTOR_HPP

@@ -32,19 +32,19 @@ namespace drawer_controller
   class ElectricalDrawer : public IDrawer
   {
   public:
-    ElectricalDrawer(uint32_t module_id,
-                     uint8_t id,
-                     std::shared_ptr<robast_can_msgs::CanDb> can_db,
-                     std::shared_ptr<IGpioWrapper> gpio_wrapper,
+    ElectricalDrawer(const uint32_t module_id,
+                     const uint8_t id,
+                     const std::shared_ptr<robast_can_msgs::CanDb> can_db,
+                     const std::shared_ptr<IGpioWrapper> gpio_wrapper,
                      const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
-                     bool use_encoder,
-                     uint8_t encoder_pin_a,
-                     uint8_t encoder_pin_b,
-                     uint8_t motor_driver_address,
-                     std::shared_ptr<Switch> endstop_switch,
-                     std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock);
+                     const bool use_encoder,
+                     const uint8_t encoder_pin_a,
+                     const uint8_t encoder_pin_b,
+                     const uint8_t motor_driver_address,
+                     const std::shared_ptr<Switch> endstop_switch,
+                     const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock);
 
-    void init();
+    void init() const;
 
     std::optional<robast_can_msgs::CanMessage> can_out() override;
 
@@ -54,26 +54,28 @@ namespace drawer_controller
 
     void handle_electrical_drawer_task(const EDrawerTask &e_drawer_task);
 
-    void stop_motor();
+    void stop_motor() const;
 
-    void start_motor();
+    void start_motor() const;
 
   private:
-    uint32_t _module_id;
-    uint8_t _id;
+    const uint32_t _module_id;
+    const uint8_t _id;
 
-    std::shared_ptr<IGpioWrapper> _gpio_wrapper;
+    const std::shared_ptr<IGpioWrapper> _gpio_wrapper;
 
-    stepper_motor::StepperPinIdConfig _stepper_pin_id_config;
+    const stepper_motor::StepperPinIdConfig _stepper_pin_id_config;
 
-    std::unique_ptr<Encoder> _encoder;
+    const std::unique_ptr<Encoder> _encoder;
 
-    std::shared_ptr<Switch> _endstop_switch;
+    const std::shared_ptr<Switch> _endstop_switch;
 
     // optional because the lock is not always installed (e.g. in the partial drawer)
-    std::optional<std::shared_ptr<ElectricalDrawerLock>> _electrical_drawer_lock;
+    const std::optional<std::shared_ptr<ElectricalDrawerLock>> _electrical_drawer_lock;
 
-    std::unique_ptr<CanUtils> _can_utils;
+    const std::unique_ptr<CanUtils> _can_utils;
+
+    const std::unique_ptr<stepper_motor::Motor> _motor;
 
     bool _is_drawer_moving_out;
     bool _triggered_deceleration_for_drawer_moving_out = false;
@@ -84,15 +86,11 @@ namespace drawer_controller
 
     bool _stall_guard_enabled = false;
 
-    std::unique_ptr<stepper_motor::Motor> _motor;
-
     bool _triggered_closing_lock_after_opening = false;
-
-    uint8_t _sense_drawer_closed_pin_id;
 
     /* FUNCTIONS */
 
-    void init_motor();
+    void init_motor() const;
 
     void handle_drawer_idle_state();
 

@@ -54,7 +54,7 @@ namespace timer
     }
   }
 
-  void set_max_counter_value(uint8_t new_fade_time_in_hundreds_of_ms, uint8_t factor)
+  void set_max_counter_value(const uint8_t new_fade_time_in_hundreds_of_ms, const uint8_t factor)
   {
     // check comment in initialize_timer() function for derivation of this calculation
     max_fade_counter = new_fade_time_in_hundreds_of_ms * (UINT8_MAX / factor);

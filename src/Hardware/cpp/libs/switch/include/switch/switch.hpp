@@ -17,20 +17,20 @@ namespace drawer_controller
     };
 
    public:
-    Switch(std::shared_ptr<IGpioWrapper> gpio_wrapper,
-           uint8_t switch_pin_id,
-           float switch_pressed_threshold,
-           SwitchType switch_type);
+    Switch(const std::shared_ptr<IGpioWrapper> gpio_wrapper,
+           const uint8_t switch_pin_id,
+           const float switch_pressed_threshold,
+           const SwitchType switch_type);
 
     bool is_switch_pressed();
 
     void update_sensor_value();
 
    private:
-    uint8_t _switch_pin;
-    SwitchType _switch_type;
-    std::shared_ptr<IGpioWrapper> _gpio_wrapper;
-    float _switch_pressed_threshold;
+    const uint8_t _switch_pin;
+    const SwitchType _switch_type;
+    const std::shared_ptr<IGpioWrapper> _gpio_wrapper;
+    const float _switch_pressed_threshold;
     float _moving_average;
   };
 }   // namespace drawer_controller

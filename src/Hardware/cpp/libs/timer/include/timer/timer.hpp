@@ -23,7 +23,7 @@ namespace timer
 
   void enable_timer();
 
-  void set_max_counter_value(uint8_t new_fade_time_in_hundreds_of_ms, uint8_t factor);
+  void set_max_counter_value(const uint8_t new_fade_time_in_hundreds_of_ms, const uint8_t factor);
 
   float get_max_fade_counter_value();
 

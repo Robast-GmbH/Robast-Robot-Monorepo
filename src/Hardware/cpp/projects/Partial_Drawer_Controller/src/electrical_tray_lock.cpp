@@ -2,9 +2,9 @@
 
 namespace partial_drawer_controller
 {
-  ElectricalTrayLock::ElectricalTrayLock(std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
-                                         uint8_t power_open_pin_id,
-                                         uint8_t power_close_pin_id)
+  ElectricalTrayLock::ElectricalTrayLock(const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+                                         const uint8_t power_open_pin_id,
+                                         const uint8_t power_close_pin_id)
       : _gpio_wrapper{gpio_wrapper}, _power_open_pin_id{power_open_pin_id}, _power_close_pin_id{power_close_pin_id}
   {
   }
@@ -28,10 +28,10 @@ namespace partial_drawer_controller
   {
     // Mind that the state for open_lock_current_step_ is changed in the handle_lock_status function when a CAN msg is
     // received
-    bool change_lock_state = !(_open_lock_current_step == _open_lock_previous_step);
+    const bool change_lock_state = !(_open_lock_current_step == _open_lock_previous_step);
 
-    unsigned long current_timestamp = millis();
-    unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
+    const unsigned long current_timestamp = millis();
+    const unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
 
     if (change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME))
     {
@@ -47,17 +47,12 @@ namespace partial_drawer_controller
     }
   }
 
-  void ElectricalTrayLock::set_open_lock_current_step(bool open_lock_current_step)
+  void ElectricalTrayLock::set_open_lock_current_step(const bool open_lock_current_step)
   {
     _open_lock_current_step = open_lock_current_step;
   }
 
-  void ElectricalTrayLock::set_timestamp_last_lock_change()
-  {
-    _timestamp_last_lock_opening = millis();
-  }
-
-  void ElectricalTrayLock::set_drawer_opening_is_in_progress(bool drawer_opening_is_in_progress)
+  void ElectricalTrayLock::set_drawer_opening_is_in_progress(const bool drawer_opening_is_in_progress)
   {
     _drawer_opening_is_in_progress = drawer_opening_is_in_progress;
   }
@@ -76,7 +71,6 @@ namespace partial_drawer_controller
     else
     {
       set_open_lock_current_step(true);
-      set_timestamp_last_lock_change();
       set_drawer_opening_is_in_progress(true);
     }
   }

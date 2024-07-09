@@ -24,6 +24,6 @@ namespace drawer_controller
     {
     }
   };
-}   // namespace drawer_controller
+} // namespace drawer_controller
 
-#endif   // DRAWER_CONTROLLER_LED_STATE_HPP
+#endif // DRAWER_CONTROLLER_LED_STATE_HPP

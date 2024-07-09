@@ -15,9 +15,9 @@ namespace partial_drawer_controller
   {
    public:
     TrayManager(const std::vector<TrayPinConfig>& tray_pin_configs,
-                std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
-                std::shared_ptr<TwoWire> wire,
-                float switch_pressed_threshold);
+                const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+                const std::shared_ptr<TwoWire> wire,
+                const float switch_pressed_threshold);
 
     void init(std::function<void()> set_enable_pin_high);
 
@@ -25,14 +25,14 @@ namespace partial_drawer_controller
 
     void update_states();
 
-    void set_tray_led_brightness(uint8_t tray_id, uint8_t led_row, uint8_t brightness);
+    void set_tray_led_brightness(const uint8_t tray_id, const uint8_t led_row, const uint8_t brightness);
 
    private:
     std::vector<std::unique_ptr<ElectricalTrayLock>> _electrical_tray_locks;
 
     std::vector<std::unique_ptr<drawer_controller::Switch>> _tray_switches;
 
-    std::unique_ptr<OnboardLedDriver> _onboard_led_driver;
+    const std::unique_ptr<OnboardLedDriver> _onboard_led_driver;
 
     bool _triggered_closing_lock_after_opening = false;
 
