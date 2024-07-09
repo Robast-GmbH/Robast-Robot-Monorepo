@@ -14,35 +14,8 @@ namespace nfc_bridge
     qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
     qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
 
-    _nfc_key_publisher = this->create_publisher<std_msgs::msg::String>("/nfc_key", qos);
-    _timer_subscriber = this->create_subscription<std_msgs::msg::Bool>(
-        "/nfc_switch", qos, std::bind(&NFCBridge::toggle_NFC_Reader_State, this, std::placeholders::_1));
-  }
-
-  void NFCBridge::toggle_NFC_Reader_State(const std_msgs::msg::Bool::SharedPtr msg)
-  {
-    if (msg->data)
-    {
-      this->timer_start();
-    }
-    else
-    {
-      this->timer_stop();
-    }
-  }
-
-  void NFCBridge::timer_start()
-  {
-    _timer = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL),
-                                     std::bind(&NFCBridge::reading_procedure, this));
-  }
-
-  void NFCBridge::timer_stop()
-  {
-    if (this->_timer)
-    {
-      this->_timer->cancel();
-    }
+    _nfc_key_publisher = create_publisher<std_msgs::msg::String>("/nfc_key", qos);
+    setup_subscriber();
   }
 
   NFCBridge::~NFCBridge()
@@ -50,32 +23,91 @@ namespace nfc_bridge
     shutdown_scanner();
   }
 
+  void NFCBridge::trigger_callback(const std_msgs::msg::Empty::SharedPtr msg)
+  {
+    read_nfc_code();
+  }
+
+  void NFCBridge::setup_subscriber()
+  {
+    _trigger_subscriber = this->create_subscription<std_msgs::msg::Empty>(
+        "trigger_topic", 10, std::bind(&NFCBridge::trigger_callback, this, std::placeholders::_1));
+    start_up_scanner();
+    _serial_connector->send_ascii_cmd(Twn4Elatec::BeepReq(0x10, 0x6009, 0xF401, 0xF401));
+    // _serial_connector->send_ascii_cmd("0407646009F401F401");
+    shutdown_scanner();
+  }
+
   void NFCBridge::start_up_scanner()
   {
-    this->_serial_connector->open_serial();
+    _serial_connector->open_serial();
   }
 
   void NFCBridge::shutdown_scanner()
   {
-    this->_serial_connector->close_serial();
+    _serial_connector->close_serial();
   }
 
-  bool NFCBridge::read_nfc_code(std::shared_ptr<std::string> scanned_key)
+  bool NFCBridge::wait_for_tag()
   {
-    int size_of_received_data = _serial_connector->read_serial(scanned_key.get(), 100);
-    return size_of_received_data > 0;
+    std::string response = "";
+    int length = 0;
+    while (length < 6)
+    {
+      //"00 01 80 20 04 DEAB9B03"
+      //"00 01 80 38 07 04D03501700703"
+      length = _serial_connector->ascii_interaction(Twn4Elatec::SearchTagReq(0x10), response);
+      if (length < 6)
+      {
+        rclcpp::sleep_for(std::chrono::milliseconds(100));
+        response = "";
+        length = _serial_connector->read_serial(response, 100);
+        rclcpp::sleep_for(std::chrono::milliseconds(100));
+      }
+    }
+    return true;
   }
 
-  void NFCBridge::reading_procedure()
+  bool NFCBridge::read_nfc_code()
   {
     start_up_scanner();
-    std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
-    if (read_nfc_code(scanned_key))
+    if (wait_for_tag())
     {
-      std_msgs::msg::String nfc_msg;
-      nfc_msg.data = *scanned_key;
-      _nfc_key_publisher->publish(nfc_msg);
+      std::array<uint8_t, 16> data;
+      std::string response = "";
+      int length = 0;
+      while (length < 6)
+      {
+        length = _serial_connector->ascii_interaction(Twn4Elatec::NTAGReadReq(0x04), response);
+        if (length < 6)
+        {
+          rclcpp::sleep_for(std::chrono::milliseconds(100));
+          response = "";
+          length = _serial_connector->read_serial(response, 100);
+        }
+      }
+      if (length > 5)
+      {
+        //"00010102030401020304", '0' <repeats 16 times>, "\r"
+        uint8_t result;
+        Twn4Elatec::NTAGReadResp(response, result, data);
+        if (result == 1)
+        {
+          std::string nfc_key = "";
+          for (auto byte : data)
+          {
+            nfc_key += byte;
+          }
+          std_msgs::msg::String msg;
+          msg.data = nfc_key;
+          _nfc_key_publisher->publish(msg);
+          shutdown_scanner();
+          return true;
+        }
+      }
     }
     shutdown_scanner();
+    return false;
   }
+
 }   // namespace nfc_bridge

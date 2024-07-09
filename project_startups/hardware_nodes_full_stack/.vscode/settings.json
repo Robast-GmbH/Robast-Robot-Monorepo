@@ -107,13 +107,14 @@
         "cassert": "cpp",
         "cerrno": "cpp",
         "cfloat": "cpp",
-        "climits": "cpp"
+        "climits": "cpp",
+        "format": "cpp"
     },
     "files.autoSave": "onFocusChange",
     "editor.tabSize": 4,
     "editor.codeActionsOnSave": {
-        "source.fixAll": false,
-        "source.organizeImports": true
+        "source.fixAll": "never",
+        "source.organizeImports": "explicit"
     },
     "editor.minimap.autohide": true,
     "c-cpp-flylint.clang.defines": [],

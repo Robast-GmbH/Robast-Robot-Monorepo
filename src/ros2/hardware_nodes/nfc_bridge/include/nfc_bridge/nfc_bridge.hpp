@@ -11,8 +11,10 @@
 #include <thread>
 
 #include "rclcpp/rclcpp.hpp"
-#include "serial_helper/serial_helper.h"
-#include "std_msgs/msg/bool.hpp"
+#include "serial_helper/serial_helper.hpp"
+#include "twn4.hpp"
+// #include "std_msgs/msg/bool.hpp"
+#include "std_msgs/msg/empty.hpp"
 #include "std_msgs/msg/string.hpp"
 
 namespace nfc_bridge
@@ -27,20 +29,20 @@ namespace nfc_bridge
 
    private:
     std::unique_ptr<serial_helper::ISerialHelper> _serial_connector;
-    rclcpp::TimerBase::SharedPtr _timer;
     rclcpp::Publisher<std_msgs::msg::String>::SharedPtr _nfc_key_publisher;
-    rclcpp::Subscription<std_msgs::msg::Bool>::SharedPtr _timer_subscriber;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _trigger_subscriber;
 
+    static const Twn4Elatec _twn4_msg_converter;
+
+    void trigger_callback(const std_msgs::msg::Empty::SharedPtr msg);
+    void setup_subscriber();
     void start_up_scanner();
     void shutdown_scanner();
+    bool wait_for_tag();
+    bool read_nfc_code();
 
-    void reading_procedure();
-    bool read_nfc_code(std::shared_ptr<std::string> scanned_key);
-    // void createUser(const std::shared_ptr<GoalHandleCreateUser> goal_handle);
-
-    void toggle_NFC_Reader_State(const std_msgs::msg::Bool::SharedPtr msg);
-    void timer_start();
-    void timer_stop();
+    // void publish_nfc_key(std::string nfc_key);
+    // void send_cmd(std::string cmd);
   };
 
 }   // namespace nfc_bridge

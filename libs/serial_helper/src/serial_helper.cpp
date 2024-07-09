@@ -1,4 +1,4 @@
-#include "serial_helper/serial_helper.h"
+#include "serial_helper/serial_helper.hpp"
 #define DEBUG_LOG false
 namespace serial_helper
 {
@@ -81,7 +81,7 @@ namespace serial_helper
     this->serial_port_ = -1;
   }
 
-  uint16_t SerialHelper::read_serial(std::string* result, uint16_t max_num_bytes)
+  uint16_t SerialHelper::read_serial(std::string& result, uint16_t max_num_bytes)
   {
     char read_buf[256];
     memset(&read_buf, '\0', sizeof(read_buf));
@@ -89,17 +89,17 @@ namespace serial_helper
     num_bytes = read(this->serial_port_, &read_buf, sizeof(read_buf));
     if (num_bytes > max_num_bytes)
     {
-      *result = "Error reading: ";
-      result->append(strerror(errno));
-      result->append("/n");
+      result = "Error reading: ";
+      result.append(strerror(errno));
+      result.append("/n");
       return 0;
     }
-    *result = std::string(read_buf, num_bytes);
+    result = std::string(read_buf, num_bytes);
     if (DEBUG_LOG)
     {
       std::ofstream logfile;
       logfile.open("Communication.log", std::ios_base::app);
-      logfile << "recived: " + *result << std::endl;
+      logfile << "recived: " + result << std::endl;
       logfile.close();
     }
     return num_bytes;
@@ -130,18 +130,19 @@ namespace serial_helper
     return this->write_serial(cmd + "\r");
   }
 
-  std::string SerialHelper::ascii_interaction(std::string cmd, std::string* response, uint16_t response_size)
+  uint16_t SerialHelper::ascii_interaction(const std::string cmd, std::string& response, uint16_t response_max_size)
   {
-    this->read_serial(response, response_size);
+    uint16_t response_length = 0;
+    response_length = this->read_serial(response, response_max_size);
     std::string request_result = this->send_ascii_cmd(cmd);
     if (request_result != "")
     {
-      return request_result;
+      return 0;
     }
     std::this_thread::sleep_for(std::chrono::milliseconds(250));
 
-    this->read_serial(response, response_size);
-    *response = std::regex_replace(*response, std::regex("\r"), "");
-    return *response;
+    response_length = this->read_serial(response, response_max_size);
+    response = std::regex_replace(response, std::regex("\r"), "");
+    return response_length;
   }
 }   // namespace serial_helper

@@ -24,7 +24,7 @@ namespace nfc_bridge
     static std::string NTAGWriteReq(uint8_t page, const std::array<uint8_t, 4>& data);
 
     // Static response functions
-    static void NTAGReadResp(std::string response, uint8_t& result, std::array<uint8_t, 16>& data);
+    static void NTAGReadResp(const std::string& response, uint8_t& result, std::array<uint8_t, 16>& data);
     static void NTAGWriteResp(std::string response, uint8_t& result);
   };
 
@@ -52,14 +52,14 @@ namespace nfc_bridge
   std::string Twn4Elatec::NTAGReadReq(uint8_t page)
   {
     std::ostringstream command;
-    command << "0501" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<int>(page);
+    command << "2000" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<int>(page);
     return command.str();
   }
 
   std::string Twn4Elatec::NTAGWriteReq(uint8_t page, const std::array<uint8_t, 4>& data)
   {
     std::ostringstream command;
-    command << "0502" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<int>(page);
+    command << "2001" << std::hex << std::uppercase << std::setfill('0') << std::setw(2) << static_cast<int>(page);
     for (auto byte : data)
     {
       command << std::setw(2) << static_cast<int>(byte);
@@ -67,26 +67,26 @@ namespace nfc_bridge
     return command.str();
   }
 
-  void Twn4Elatec::NTAGReadResp(std::string response, uint8_t& result, std::array<uint8_t, 16>& data)
+  void Twn4Elatec::NTAGReadResp(const std::string& response, uint8_t& result, std::array<uint8_t, 16>& data)
   {
-    if (response.size() != 34)
+    if (response.size() != 36)
     {
-      throw std::runtime_error("Response must have a length of 34");
+      throw std::runtime_error("Response must have a length of 36");
     }
-    result = std::stoi(response.substr(4, 2), nullptr, 16);
+    result = std::stoi(response.substr(2, 2), nullptr, 16);
     for (int i = 0; i < 16; i++)
     {
-      data[i] = std::stoi(response.substr(6 + i * 2, 2), nullptr, 16);
+      data[i] = std::stoi(response.substr(4 + i * 2, 2), nullptr, 16);
     }
   }
 
   void Twn4Elatec::NTAGWriteResp(std::string response, uint8_t& result)
   {
-    if (response.size() != 6)
+    if (response.size() != 4)
     {
-      throw std::runtime_error("Response must have a length of 6");
+      throw std::runtime_error("Response must have a length of 4");
     }
-    result = std::stoi(response.substr(4, 2), nullptr, 16);
+    result = std::stoi(response.substr(2, 2), nullptr, 16);
   }
 }   // namespace nfc_bridge
 
