@@ -17,4 +17,11 @@ namespace drawer_controller
                      msg.get_can_signals().at(CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS).get_data());
   }
 
-}   // namespace drawer_controller
+  EDrawerTask DataMapper::create_e_drawer_task(const robast_can_msgs::CanMessage msg)
+  {
+    return EDrawerTask(msg.get_can_signals().at(CAN_SIGNAL_DRAWER_TARGET_POSITION).get_data(),
+                       msg.get_can_signals().at(CAN_SIGNAL_DRAWER_SPEED).get_data(),
+                       msg.get_can_signals().at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).get_data());
+  }
+
+} // namespace drawer_controller

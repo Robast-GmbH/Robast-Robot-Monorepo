@@ -24,7 +24,7 @@
 TaskHandle_t Task1;
 TaskHandle_t Task2;
 
-SemaphoreHandle_t can_queue_mutex = NULL;   // Create a mutex object
+SemaphoreHandle_t can_queue_mutex = NULL;
 
 using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
 
@@ -32,9 +32,7 @@ std::shared_ptr<robast_can_msgs::CanDb> can_db;
 
 std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper;
 
-std::vector<drawer_ptr> drawers = std::vector<drawer_ptr>();
-
-std::shared_ptr<drawer_controller::ElectricalDrawer> e_drawer_0;
+std::shared_ptr<drawer_controller::ElectricalDrawer> drawer;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_enn_tmc2209_pin_id = STEPPER_1_ENN_TMC2209_PIN_ID,
@@ -105,9 +103,8 @@ void task_2_loop(void* pvParameters)
         break;
         case CAN_ID_ELECTRICAL_DRAWER_TASK:
         {
-          uint8_t drawer_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
-          // TODO@Jacob: remove can_in function and put this into the data_mapper to remove can dependency from drawer
-          drawers.at(drawer_id)->can_in(received_message.value());
+          drawer_controller::EDrawerTask e_drawer_task = data_mapper->create_e_drawer_task(received_message.value());
+          drawer->handle_electrical_drawer_task(e_drawer_task);
         }
         break;
         case CAN_ID_LED_HEADER:
@@ -138,16 +135,13 @@ void task_2_loop(void* pvParameters)
 
     led_strip->handle_led_control();
 
-    for (drawer_ptr drawer : drawers)
+    drawer->update_state();
+
+    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = drawer->can_out();
+
+    if (to_be_sent_message.has_value())
     {
-      drawer->update_state();
-
-      std::optional<robast_can_msgs::CanMessage> to_be_sent_message = drawer->can_out();
-
-      if (to_be_sent_message.has_value())
-      {
-        can_controller->send_can_message(to_be_sent_message.value());
-      }
+      can_controller->send_can_message(to_be_sent_message.value());
     }
 
     tray_manager->update_states();
@@ -208,7 +202,7 @@ void setup()
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<drawer_controller::Queue<robast_can_msgs::CanMessage>>();
 
-  e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(
+  drawer = std::make_shared<drawer_controller::ElectricalDrawer>(
     MODULE_ID,
     LOCK_ID,
     can_db,
@@ -220,9 +214,7 @@ void setup()
     STEPPER_MOTOR_1_ADDRESS,
     endstop_switch,
     std::nullopt);
-  e_drawer_0->init();
-
-  drawers.push_back(e_drawer_0);
+  drawer->init();
 
   debug_println("Finished setup()!");
 

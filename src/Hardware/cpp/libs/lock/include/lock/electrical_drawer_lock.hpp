@@ -9,14 +9,14 @@
 #include "interfaces/i_gpio_wrapper.hpp"
 
 // the time in ms the lock mechanism needs to open resp. close the lock
-#define ELECTRICAL_LOCK_MECHANISM_TIME                         700   // according to the datasheet a minimum of 600ms is required
-#define ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED 10000   // milliseconds
+#define ELECTRICAL_LOCK_MECHANISM_TIME 700                           // according to the datasheet a minimum of 600ms is required
+#define ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED 10000 // milliseconds
 
 namespace drawer_controller
 {
   class ElectricalDrawerLock
   {
-   public:
+  public:
     ElectricalDrawerLock(std::shared_ptr<IGpioWrapper> gpio_wrapper,
                          uint8_t power_open_pin_id,
                          uint8_t power_close_pin_id,
@@ -41,13 +41,13 @@ namespace drawer_controller
 
     float get_moving_average_sensor_lock_pin();
 
-    void unlock(uint8_t id);
+    void unlock();
 
     void set_drawer_auto_close_timeout_triggered(bool state);
 
     bool is_drawer_auto_close_timeout_triggered();
 
-   private:
+  private:
     uint8_t _power_open_pin_id;
     uint8_t _power_close_pin_id;
     uint8_t _sensor_lock_pin_id;
@@ -55,8 +55,8 @@ namespace drawer_controller
 
     std::shared_ptr<IGpioWrapper> _gpio_wrapper;
 
-    bool _open_lock_current_step;    // flag to store which state the locks should have
-    bool _open_lock_previous_step;   // flag to store state of the lock of the previous step
+    bool _open_lock_current_step;  // flag to store which state the locks should have
+    bool _open_lock_previous_step; // flag to store state of the lock of the previous step
 
     bool _drawer_opening_is_in_progress = false;
 
@@ -73,5 +73,5 @@ namespace drawer_controller
 
     void set_lock_output_low();
   };
-}   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_LOCK_HPP
+} // namespace drawer_controller
+#endif // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_LOCK_HPP

@@ -4,6 +4,7 @@
 #include "can/can_db.hpp"
 #include "led/led_header.hpp"
 #include "led/led_state.hpp"
+#include "utils/e_drawer_task.hpp"
 
 namespace drawer_controller
 {
@@ -16,7 +17,7 @@ namespace drawer_controller
 
     LedHeader create_led_header(const robast_can_msgs::CanMessage msg);
 
-    // TODO@Jacob: add more data mapping here and remove can_in functions from drawer.hpp and electrical_drawer.hpp
+    EDrawerTask create_e_drawer_task(const robast_can_msgs::CanMessage msg);
   };
 
 } // namespace drawer_controller

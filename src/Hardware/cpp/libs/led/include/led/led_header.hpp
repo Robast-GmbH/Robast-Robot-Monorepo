@@ -1,7 +1,6 @@
 #ifndef DRAWER_CONTROLLER_LED_HEADER_HPP
 #define DRAWER_CONTROLLER_LED_HEADER_HPP
 
-#define LED_HEADER_CAN_MSG_COUNT 1
 namespace drawer_controller
 {
   struct LedHeader
@@ -25,6 +24,6 @@ namespace drawer_controller
     {
     }
   };
-}   // namespace drawer_controller
+} // namespace drawer_controller
 
-#endif   // DRAWER_CONTROLLER_LED_HEADER_HPP
+#endif // DRAWER_CONTROLLER_LED_HEADER_HPP

@@ -6,7 +6,7 @@ namespace drawer_controller
                                      uint8_t id,
                                      std::shared_ptr<robast_can_msgs::CanDb> can_db,
                                      std::shared_ptr<IGpioWrapper> gpio_wrapper,
-                                     const stepper_motor::StepperPinIdConfig& stepper_pin_id_config,
+                                     const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
                                      bool use_encoder,
                                      uint8_t encoder_pin_a,
                                      uint8_t encoder_pin_b,
@@ -49,26 +49,17 @@ namespace drawer_controller
     _motor->init();
   }
 
-  void ElectricalDrawer::can_in(robast_can_msgs::CanMessage msg)
+  void ElectricalDrawer::unlock()
   {
-    if (msg.get_id() == CAN_ID_ELECTRICAL_DRAWER_TASK)
+    if (_electrical_drawer_lock.has_value())
     {
-      handle_electrical_drawer_task_msg(msg);
-      debug_prints_electric_drawer_task(msg);
+      debug_println("Received request to unlock the lock!");
+      _electrical_drawer_lock.value()->unlock();
+      _is_idling = false;
     }
-    if (msg.get_id() == CAN_ID_DRAWER_UNLOCK)
+    else
     {
-      if (_electrical_drawer_lock.has_value())
-      {
-        debug_println("Received request to unlock the lock!");
-        _electrical_drawer_lock.value()->unlock(_id);
-        debug_prints_drawer_lock(msg);
-        _is_idling = false;
-      }
-      else
-      {
-        Serial.println("Warning! Received request to unlock the lock, but no lock is installed!");
-      }
+      Serial.println("Warning! Received request to unlock the lock, but no lock is installed!");
     }
   }
 
@@ -116,11 +107,6 @@ namespace drawer_controller
     debug_prints_moving_electrical_drawer();
   }
 
-  float ElectricalDrawer::get_moving_average_drawer_closed_pin()
-  {
-    return _moving_average_drawer_closed_pin;
-  }
-
   void ElectricalDrawer::handle_electrical_drawer_lock_control()
   {
     _electrical_drawer_lock.value()->update_sensor_values();
@@ -144,14 +130,11 @@ namespace drawer_controller
     }
   }
 
-  void ElectricalDrawer::handle_electrical_drawer_task_msg(robast_can_msgs::CanMessage can_message)
+  void ElectricalDrawer::handle_electrical_drawer_task(const EDrawerTask &e_drawer_task)
   {
-    _target_position_uint8 = can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_TARGET_POSITION).get_data();
-    uint8_t target_speed = can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_SPEED).get_data();
-    _stall_guard_enabled = can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).get_data() ==
-                               CAN_DATA_ELECTRICAL_DRAWER_STALL_GUARD_ENABLED
-                             ? true
-                             : false;
+    _target_position_uint8 = e_drawer_task.target_position;
+    uint8_t target_speed = e_drawer_task.target_speed;
+    _stall_guard_enabled = e_drawer_task.stall_guard_enabled;
 
     // motor_->setStallGuard(stall_guard_enabled_);
 
@@ -188,9 +171,9 @@ namespace drawer_controller
     _triggered_deceleration_for_drawer_moving_in = true;
 
     _motor->set_target_speed_with_decelerating_ramp(
-      DRAWER_HOMING_SPEED,
-      _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_IN_DECELERATION_DISTANCE),
-      _encoder->get_current_position());
+        DRAWER_HOMING_SPEED,
+        _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_IN_DECELERATION_DISTANCE),
+        _encoder->get_current_position());
   }
 
   void ElectricalDrawer::handle_decelerating_for_moving_out_drawer()
@@ -199,15 +182,15 @@ namespace drawer_controller
         (_encoder->get_normed_current_position() + DRAWER_MOVING_OUT_DECELERATION_DISTANCE) >= _target_position_uint8)
     {
       debug_printf(
-        "E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = %d, "
-        "_target_position_uint8 = %d\n",
-        _encoder->get_normed_current_position(),
-        _target_position_uint8);
+          "E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = %d, "
+          "_target_position_uint8 = %d\n",
+          _encoder->get_normed_current_position(),
+          _target_position_uint8);
       _triggered_deceleration_for_drawer_moving_out = true;
       _motor->set_target_speed_with_decelerating_ramp(
-        0,
-        _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_OUT_DECELERATION_DISTANCE),
-        _encoder->get_current_position());
+          0,
+          _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_OUT_DECELERATION_DISTANCE),
+          _encoder->get_current_position());
     }
   }
 
@@ -217,7 +200,7 @@ namespace drawer_controller
     if (_electrical_drawer_lock.has_value())
     {
       is_drawer_closed =
-        _endstop_switch->is_switch_pressed() && !_electrical_drawer_lock.value()->is_lock_switch_pushed();
+          _endstop_switch->is_switch_pressed() && !_electrical_drawer_lock.value()->is_lock_switch_pushed();
     }
     else
     {
@@ -279,9 +262,9 @@ namespace drawer_controller
         !_triggered_closing_lock_after_opening)
     {
       _electrical_drawer_lock.value()->set_open_lock_current_step(
-        false);   // this makes sure the lock automatically closes as soon as the drawer is opened
+          false); // this makes sure the lock automatically closes as soon as the drawer is opened
       _triggered_closing_lock_after_opening =
-        true;   // this makes sure, closing the lock is only triggered once and not permanently
+          true; // this makes sure, closing the lock is only triggered once and not permanently
       debug_println("Triggered closing the lock because drawer is not retracted anymore!");
     }
   }
@@ -311,17 +294,17 @@ namespace drawer_controller
     _triggered_deceleration_for_drawer_moving_in = false;
 
     _can_utils->handle_electrical_drawer_feedback_msg(
-      _module_id,
-      _id,
-      _endstop_switch->is_switch_pressed(),
-      _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
-      _motor->get_is_stalled(),
-      _encoder->get_normed_current_position());
+        _module_id,
+        _id,
+        _endstop_switch->is_switch_pressed(),
+        _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
+        _motor->get_is_stalled(),
+        _encoder->get_normed_current_position());
     _can_utils->handle_drawer_feedback_msg(
-      _module_id,
-      _id,
-      _endstop_switch->is_switch_pressed(),
-      _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false);
+        _module_id,
+        _id,
+        _endstop_switch->is_switch_pressed(),
+        _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false);
   }
 
   void ElectricalDrawer::debug_prints_moving_electrical_drawer()
@@ -334,34 +317,4 @@ namespace drawer_controller
                  _motor->get_target_speed());
   }
 
-  void ElectricalDrawer::debug_prints_electric_drawer_task(robast_can_msgs::CanMessage can_message)
-  {
-    debug_print("Standard ID: ");
-    debug_print_with_base(can_message.get_id(), HEX);
-    debug_print(" rx_dlc: ");
-    debug_print_with_base(can_message.get_dlc(), DEC);
-    debug_print(" MODULE ID: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data(), HEX);
-    debug_print(" DRAWER ID: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
-    debug_print(" GOTO POSITION: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_TARGET_POSITION).get_data(), DEC);
-    debug_print(" SPEED: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_SPEED).get_data(), DEC);
-    debug_print(" STALL GUARD ENABLE: ");
-    debug_println_with_base(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).get_data(), DEC);
-  }
-
-  void ElectricalDrawer::debug_prints_drawer_lock(robast_can_msgs::CanMessage& can_message)
-  {
-    debug_print("Standard ID: ");
-    debug_print_with_base(can_message.get_id(), HEX);
-    debug_print(" rx_dlc: ");
-    debug_print_with_base(can_message.get_dlc(), DEC);
-    debug_print(" MODULE ID: ");
-    debug_print_with_base(can_message.get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data(), HEX);
-    debug_print(" DRAWER ID: ");
-    debug_println_with_base(can_message.get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data(), HEX);
-  }
-
-}   // namespace drawer_controller
+} // namespace drawer_controller

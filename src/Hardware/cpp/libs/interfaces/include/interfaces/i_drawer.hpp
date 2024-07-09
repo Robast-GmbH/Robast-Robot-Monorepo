@@ -9,15 +9,8 @@ namespace drawer_controller
 {
   class IDrawer
   {
-   public:
+  public:
     virtual ~IDrawer(){};
-
-    /**
-     * Handle the procressing of incoming CAN messages.
-     *
-     * @param msg Incoming CAN message containing commands for the drawer
-     */
-    virtual void can_in(robast_can_msgs::CanMessage msg) = 0;
 
     /**
      * Returns CAN messages of the drawer that should be sent via the CAN bus.
@@ -46,5 +39,5 @@ namespace drawer_controller
      */
     virtual void handle_electrical_drawer_lock_control() = 0;
   };
-}   // namespace drawer_controller
+} // namespace drawer_controller
 #endif

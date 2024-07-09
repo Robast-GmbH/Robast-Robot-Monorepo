@@ -6,7 +6,6 @@
 #include <memory>
 #include <optional>
 
-#include "can/can_db.hpp"
 #include "can_toolbox/can_utils.hpp"
 #include "interfaces/i_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
@@ -14,14 +13,15 @@
 #include "motor/encoder.hpp"
 #include "motor/motor.hpp"
 #include "switch/switch.hpp"
+#include "utils/e_drawer_task.hpp"
 
-#define DRAWER_MAX_SPEED    35000
+#define DRAWER_MAX_SPEED 35000
 #define DRAWER_HOMING_SPEED 300
 
 // The drawer starts to decelerate in dependency of the traveled distance
-#define DRAWER_MOVING_IN_DECELERATION_DISTANCE  50   // distance to the target position to start deceleration (max 255)
-#define DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE  1    // the end of the distance when moving in where speed is super slow
-#define DRAWER_MOVING_OUT_DECELERATION_DISTANCE 70   // distance to the target position to start deceleration (max 255)
+#define DRAWER_MOVING_IN_DECELERATION_DISTANCE 50  // distance to the target position to start deceleration (max 255)
+#define DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE 1   // the end of the distance when moving in where speed is super slow
+#define DRAWER_MOVING_OUT_DECELERATION_DISTANCE 70 // distance to the target position to start deceleration (max 255)
 
 // The drawer accelerates in dependency of the time
 #define DEFAULT_DRAWER_ACCELERATION 10
@@ -31,12 +31,12 @@ namespace drawer_controller
 
   class ElectricalDrawer : public IDrawer
   {
-   public:
+  public:
     ElectricalDrawer(uint32_t module_id,
                      uint8_t id,
                      std::shared_ptr<robast_can_msgs::CanDb> can_db,
                      std::shared_ptr<IGpioWrapper> gpio_wrapper,
-                     const stepper_motor::StepperPinIdConfig& stepper_pin_id_config,
+                     const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
                      bool use_encoder,
                      uint8_t encoder_pin_a,
                      uint8_t encoder_pin_b,
@@ -46,17 +46,19 @@ namespace drawer_controller
 
     void init();
 
-    void can_in(robast_can_msgs::CanMessage msg) override;
-
     std::optional<robast_can_msgs::CanMessage> can_out() override;
 
     void update_state() override;
+
+    void unlock();
+
+    void handle_electrical_drawer_task(const EDrawerTask &e_drawer_task);
 
     void stop_motor();
 
     void start_motor();
 
-   private:
+  private:
     uint32_t _module_id;
     uint8_t _id;
 
@@ -87,7 +89,6 @@ namespace drawer_controller
     bool _triggered_closing_lock_after_opening = false;
 
     uint8_t _sense_drawer_closed_pin_id;
-    float _moving_average_drawer_closed_pin = 0;
 
     /* FUNCTIONS */
 
@@ -119,16 +120,8 @@ namespace drawer_controller
 
     void check_if_drawer_is_homed();
 
-    void handle_electrical_drawer_task_msg(robast_can_msgs::CanMessage can_message);
-
     void debug_prints_moving_electrical_drawer();
-
-    void debug_prints_electric_drawer_task(robast_can_msgs::CanMessage can_message);
-
-    void debug_prints_drawer_lock(robast_can_msgs::CanMessage& can_message);
-
-    float get_moving_average_drawer_closed_pin();
   };
-}   // namespace drawer_controller
+} // namespace drawer_controller
 
-#endif   // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP
+#endif // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP

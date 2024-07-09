@@ -114,11 +114,11 @@ namespace drawer_controller
     return _moving_average_sensor_lock_pin;
   }
 
-  void ElectricalDrawerLock::unlock(uint8_t id)
+  void ElectricalDrawerLock::unlock()
   {
     if (is_drawer_opening_in_progress())
     {
-      debug_printf("Drawer%d opening is already in progress, so lock won't be opened again!\n", id);
+      debug_printf("Drawer opening is already in progress, so lock won't be opened again!\n");
     }
     else
     {
@@ -145,4 +145,4 @@ namespace drawer_controller
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
   }
-}   // namespace drawer_controller
+} // namespace drawer_controller
