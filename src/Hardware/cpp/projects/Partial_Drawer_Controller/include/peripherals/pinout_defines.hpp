@@ -13,18 +13,7 @@
 #define SPI_CLK  GPIO_NUM_18
 #define SPI_CS   GPIO_NUM_33
 
-// #define DRAWER_1_STEP_PIN      GPIO_NUM_14
-// #define DRAWER_1_INDEX_PIN     GPIO_NUM_15
-#define DRAWER_1_ENCODER_A_PIN GPIO_NUM_26
-#define DRAWER_1_ENCODER_B_PIN GPIO_NUM_2
-// #define DRAWER_1_ENCODER_N_PIN GPIO_NUM_25
-#define DRAWER_1_DAC_VREF_PIN GPIO_NUM_25
-
 #define LED_PIXEL_PIN GPIO_NUM_32
-
-#define PORT_EXPANDER_0_INTERRUPT_PIN GPIO_NUM_36
-#define PORT_EXPANDER_1_INTERRUPT_PIN GPIO_NUM_34
-#define PORT_EXPANDER_2_INTERRUPT_PIN GPIO_NUM_39
 
 /*********************************************************************************************************
   I2C

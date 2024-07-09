@@ -15,7 +15,7 @@ namespace drawer_controller
 
   class GpioWrapperPca9535 : public IGpioWrapper
   {
-   public:
+  public:
     GpioWrapperPca9535(std::shared_ptr<TwoWire> wire,
                        std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> port_expanders,
                        std::unordered_map<uint8_t, GpioInfo> pin_mapping_id_to_gpio_info,
@@ -25,7 +25,7 @@ namespace drawer_controller
           _pin_mapping_id_to_gpio_info{pin_mapping_id_to_gpio_info},
           _pin_mapping_id_to_port{pin_mapping_id_to_port}
     {
-      for (auto& it : _port_expanders)
+      for (auto &it : _port_expanders)
       {
         std::shared_ptr<PCA9535> port_expander = it.second;
         uint8_t slave_address = it.first;
@@ -69,7 +69,7 @@ namespace drawer_controller
       PCA95x5::Port::Port port_id = std::get<1>(port_info);
 
       return _port_expanders.at(port_expander_id)
-        ->direction(port_id, (is_input == PCA95x5::Direction::IN) ? PCA95x5::Direction::IN : PCA95x5::Direction::OUT);
+          ->direction(port_id, (is_input == PCA95x5::Direction::IN) ? PCA95x5::Direction::IN : PCA95x5::Direction::OUT);
     }
 
     /**
@@ -79,7 +79,7 @@ namespace drawer_controller
      * @param value pointer to the value which will contain the result of the digital read
      * @return if the digital_read was successfull
      */
-    bool digital_read(byte pin_mapping_id, byte& value)
+    bool digital_read(byte pin_mapping_id, byte &value)
     {
       if (_pin_mapping_id_to_port.find(pin_mapping_id) == _pin_mapping_id_to_port.end())
       {
@@ -139,7 +139,18 @@ namespace drawer_controller
       return PCA95x5::Direction::IN;
     }
 
-   private:
+    uint8_t get_gpio_num_for_pin_id(uint8_t pin_id)
+    {
+      if (_pin_mapping_id_to_gpio_info.find(pin_id) == _pin_mapping_id_to_gpio_info.end())
+      {
+        Serial.printf("Error! Pin mapping ID %d not found when trying to get GPIO number!\n", pin_id);
+        return 0;
+      }
+
+      return _pin_mapping_id_to_gpio_info.at(pin_id).pin_number;
+    }
+
+  private:
     std::shared_ptr<TwoWire> _wire;
 
     const std::unordered_map<uint8_t, GpioInfo> _pin_mapping_id_to_gpio_info;
@@ -149,5 +160,5 @@ namespace drawer_controller
     const std::unordered_map<uint8_t, port_info> _pin_mapping_id_to_port;
   };
 
-}   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_GPIO_WRAPPER_PCA9535_HPP
+} // namespace drawer_controller
+#endif // DRAWER_CONTROLLER_GPIO_WRAPPER_PCA9535_HPP

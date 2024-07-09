@@ -208,17 +208,18 @@ void setup()
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<drawer_controller::Queue<robast_can_msgs::CanMessage>>();
 
-  e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(MODULE_ID,
-                                                                     LOCK_ID,
-                                                                     can_db,
-                                                                     gpio_wrapper,
-                                                                     stepper_1_pin_id_config,
-                                                                     USE_ENCODER,
-                                                                     DRAWER_1_ENCODER_A_PIN,
-                                                                     DRAWER_1_ENCODER_B_PIN,
-                                                                     STEPPER_MOTOR_1_ADDRESS,
-                                                                     endstop_switch,
-                                                                     std::nullopt);
+  e_drawer_0 = std::make_shared<drawer_controller::ElectricalDrawer>(
+    MODULE_ID,
+    LOCK_ID,
+    can_db,
+    gpio_wrapper,
+    stepper_1_pin_id_config,
+    USE_ENCODER,
+    gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_A_PIN_ID),
+    gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_B_PIN_ID),
+    STEPPER_MOTOR_1_ADDRESS,
+    endstop_switch,
+    std::nullopt);
   e_drawer_0->init();
 
   drawers.push_back(e_drawer_0);

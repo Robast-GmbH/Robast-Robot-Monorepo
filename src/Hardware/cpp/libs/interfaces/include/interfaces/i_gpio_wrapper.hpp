@@ -7,7 +7,7 @@ namespace drawer_controller
 {
   class IGpioWrapper
   {
-   public:
+  public:
     virtual ~IGpioWrapper() = default;
 
     /**
@@ -50,8 +50,16 @@ namespace drawer_controller
      * @return INPUT pin mode value
      */
     virtual bool get_gpio_input_pin_mode() = 0;
+
+    /**
+     * Returns the GPIO number for the given pin ID
+     *
+     * @param pin_id the pin ID for which the GPIO number should be returned
+     * @return the GPIO number for the given pin ID
+     */
+    virtual uint8_t get_gpio_num_for_pin_id(uint8_t pin_id) = 0;
   };
 
-}   // namespace drawer_controller
+} // namespace drawer_controller
 
-#endif   // DRAWER_CONTROLLER_I_GPIO_WRAPPER_HPP
+#endif // DRAWER_CONTROLLER_I_GPIO_WRAPPER_HPP
