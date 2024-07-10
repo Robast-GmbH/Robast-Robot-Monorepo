@@ -53,8 +53,17 @@
                         }
                 },
                 {
-                        "type": "shell",
                         "label": "start oak_for_pointcloud",
+                        "detail": "Starts door handle detection and pointcloud generation node",
+                        "dependsOn": [
+                                "start door_handle_detection",
+                                "start pointcloud_generation_node"
+                        ],
+                        "problemMatcher": []
+                },
+                {
+                        "type": "shell",
+                        "label": "start pointcloud_generation_node",
                         "command": "source install/setup.bash; ros2 launch oak_bringup_door_opening oak_stereo_points.launch.py",
                         "problemMatcher": [],
                         "presentation": {

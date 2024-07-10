@@ -252,7 +252,7 @@ int main(int argc, char** argv) {
     std::string door_handle_position_topic;
     std::string stereo_depth_topic;
     std::string right_rectified_image_topic;
-    //std::string color_image_topic;
+    std::string color_image_topic;
     std::string nnPath;
     std::string monoResolution;
     std::string rgbResolution;
@@ -309,7 +309,7 @@ int main(int argc, char** argv) {
     node->declare_parameter("door_handle_position_topic","");
     node->declare_parameter("stereo_depth_topic","");
     node->declare_parameter("right_rectified_image_topic","");
-    //node->declare_parameter("color_image_topic","");
+    node->declare_parameter("color_image_topic","");
 
     // updating parameters if defined in launch file.
 
@@ -354,7 +354,7 @@ int main(int argc, char** argv) {
     node->get_parameter("door_handle_position_topic",door_handle_position_topic);
     node->get_parameter("stereo_depth_topic",stereo_depth_topic);
     node->get_parameter("right_rectified_image_topic",right_rectified_image_topic);
-    //node->get_parameter("color_image_topic",color_image_topic);
+    node->get_parameter("color_image_topic",color_image_topic);
 
     if(resourceBaseFolder.empty()) {
         throw std::runtime_error("Send the path to the resouce folder containing NNBlob in \'resourceBaseFolder\' ");
@@ -499,16 +499,16 @@ int main(int argc, char** argv) {
         
     auto rgbCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, width, height);
         
-    // auto imgQueue = device->getOutputQueue("rgb", 30, false);
-    // dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rgbPublish(
-    //             imgQueue,
-    //             node,
-    //             color_image_topic,
-    //             std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rgbConverter, std::placeholders::_1, std::placeholders::_2),
-    //             30,
-    //             rgbCameraInfo,
-    //             color_image_topic);
-    // rgbPublish.addPublisherCallback();
+    auto imgQueue = device->getOutputQueue("rgb", 30, false);
+    dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rgbPublish(
+                imgQueue,
+                node,
+                color_image_topic,
+                std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rgbConverter, std::placeholders::_1, std::placeholders::_2),
+                30,
+                rgbCameraInfo,
+                color_image_topic);
+    rgbPublish.addPublisherCallback();
 
     auto previewQueue = device->getOutputQueue("preview", 30, false);
     auto detectionQueue = device->getOutputQueue("detections", 30, false);

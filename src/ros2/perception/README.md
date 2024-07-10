@@ -10,7 +10,7 @@ Start with task `start door_handle_detection` or via ros2 cmd (after sourcing se
 ## oak_bringup_door_opening
 
 This package contains the code for generating pointcloud from the topics published by the OAK-D camera.
-Start with task `start oak_for_pointcloud` or via ros2 cmd (after sourcing setup file): `ros2 launch oak_bringup_door_opening oak_stereo_points.launch.py`
+Start with task `start oak_for_pointcloud` 
 
 ## door_handle_detection_sim
 
