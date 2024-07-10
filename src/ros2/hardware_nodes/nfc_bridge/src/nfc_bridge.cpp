@@ -10,7 +10,7 @@ namespace nfc_bridge
 
     _serial_connector = std::make_unique<serial_helper::SerialHelper>(serial_helper::SerialHelper(serial_port_path));
 
-    setup_subscriber();
+    liveliness_ckeck();
     _write_service = this->create_service<communication_interfaces::srv::WriteNfcTag>(
         "write_nfc", std::bind(&NFCBridge::write_nfc_callback, this, std::placeholders::_1, std::placeholders::_2));
     _read_service = this->create_service<communication_interfaces::srv::ReadNfcTag>(
@@ -22,18 +22,11 @@ namespace nfc_bridge
     shutdown_scanner();
   }
 
-  // void NFCBridge::trigger_callback(const std_msgs::msg::Empty::SharedPtr msg)
-  // {
-  //   // write_nfc_code("55667788112233446677889911223344", "NTAG213");
-  //   read_nfc_code();
-  // }
-
-  void NFCBridge::setup_subscriber()
+  void NFCBridge::liveliness_ckeck()
   {
     start_up_scanner();
     std::string response = "";
     _serial_connector->ascii_interaction(Twn4Elatec::BeepReq(0x10, 0x6009, 0xF401, 0xF401), response);
-    // _serial_connector->send_ascii_cmd("0407646009F401F401");
     shutdown_scanner();
   }
 

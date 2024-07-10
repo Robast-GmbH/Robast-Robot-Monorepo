@@ -34,7 +34,7 @@ namespace nfc_bridge
 
     static const Twn4Elatec _twn4_msg_converter;
 
-    void setup_subscriber();
+    void liveliness_ckeck();
     void start_up_scanner();
     void shutdown_scanner();
     bool wait_for_tag();

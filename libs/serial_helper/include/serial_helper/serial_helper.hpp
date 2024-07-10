@@ -29,13 +29,13 @@ namespace serial_helper
     explicit SerialHelper(std::string serial_path);
     ~SerialHelper();
 
-    std::string open_serial();
-    void close_serial();
+    std::string open_serial() override;
+    void close_serial() override;
 
-    uint16_t read_serial(std::string& result, uint16_t max_num_bytes);
-    std::string write_serial(std::string msg);
-    std::string send_ascii_cmd(std::string cmd);
-    uint16_t ascii_interaction(const std::string cmd, std::string& response, uint16_t response_max_size = 100);
+    uint16_t read_serial(std::string& result, uint16_t max_num_bytes) override;
+    std::string write_serial(std::string msg) override;
+    std::string send_ascii_cmd(std::string cmd) override;
+    uint16_t ascii_interaction(const std::string cmd, std::string& response, uint16_t response_max_size = 100) override;
   };
 }   // namespace serial_helper
 
