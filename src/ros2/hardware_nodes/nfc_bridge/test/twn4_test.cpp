@@ -49,16 +49,6 @@ TEST_CASE("NTAGReadResp - Valid response")
   }
 }
 
-// TEST_CASE("NTAGReadResp - Invalid response")
-// {
-//   std::string response = "000103B691028C537091016855016E78";   // Invalid length
-//   uint8_t result;
-//   std::array<uint8_t, 16> data;
-//   std::string nfc_key;
-
-//   REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::NTAGReadResp(response, result, data, nfc_key), std::runtime_error);
-// }
-
 TEST_CASE("NTAGReadResp - Invalid response format")
 {
   std::string response = "20ZZ";
@@ -112,7 +102,7 @@ TEST_CASE("NTAGWriteResp - Invalid response format")
 
 TEST_CASE("SearchTagResp - Valid response")
 {
-  std::string response = "0001FF";
+  std::string response = "0001FF123456789";
   uint8_t result;
   std::string tagType;
 

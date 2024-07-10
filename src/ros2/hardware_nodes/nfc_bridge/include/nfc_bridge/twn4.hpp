@@ -1,6 +1,10 @@
 #ifndef NFC_BRIDGE_TWN4_HPP
 #define NFC_BRIDGE_TWN4_HPP
 
+/// TWN4 Elatec class for NFC communication with the TWN4 RFID reader
+/// This class contains static functions for generating commands and parsing responses
+/// You can find more details regarding the commands in the TWN4 Simple Protocol DocRev25.pdf
+
 #include <array>
 #include <iomanip>   // Include for std::setfill and std::setw
 #include <iostream>
@@ -35,7 +39,7 @@ namespace nfc_bridge
 
   // Initialize constants
   const std::string Twn4Elatec::FlagLEDOn = "0408";
-  const std::string Twn4Elatec::SearchTagCmd = "";   // Initialize with the actual command if available
+  const std::string Twn4Elatec::SearchTagCmd = "";
 
   // Implement static function using std::ostringstream for formatting
   std::string Twn4Elatec::BeepReq(uint8_t volume, uint16_t frequency, uint16_t onTime, uint16_t offTime)
