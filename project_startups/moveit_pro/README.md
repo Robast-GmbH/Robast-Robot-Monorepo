@@ -25,7 +25,7 @@ Use one terminal to do a `colcon build`.
 
 Then use the 4 terminals to run (you might need to `source install/setup.bash`):
 
-`agent.app`
+`agent.app` or `ros2 launch rb_theron_config studio_agent_launch.py`
 
 `robot.app` (not sure if this is always required)
 
