@@ -243,7 +243,7 @@ local_costmap:
         transform_tolerance: 0.2
         mapping_mode: false
         map_save_duration: 60.0
-        observation_sources: lidar2d_marking zed_marking zed_clearing
+        observation_sources: lidar2d_marking
         lidar2d_marking:
           enabled: true
           data_type: LaserScan
@@ -375,8 +375,8 @@ local_costmap:
 global_costmap:
   global_costmap:
     ros__parameters:
-      update_frequency: 1.0
-      publish_frequency: 1.0
+      update_frequency: 10.0
+      publish_frequency: 10.0
       global_frame: map
       robot_base_frame: robot/base_footprint
       map_topic: /map
@@ -407,11 +407,12 @@ global_costmap:
           obstacle_min_range: 0.0
           inf_is_valid: false
       static_layer:
-        #enabled: True
+        enabled: True
         plugin: "nav2_costmap_2d::StaticLayer"
         map_subscribe_transient_local: True
-        subscribe_to_updates: false
-        transform_tolerance: 0.1
+        subscribe_to_updates: False
+        transform_tolerance: 0.5
+        map_topic: /global_costmap/feuerplan_image_topic
       stvl_layer:
         plugin: "spatio_temporal_voxel_layer/SpatioTemporalVoxelLayer"
         enabled: true
