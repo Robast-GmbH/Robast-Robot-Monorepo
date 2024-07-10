@@ -64,7 +64,7 @@ moveit_params:
     path: "config/sensors_3d_real_world.yaml"
   moveit_simple_controller_manager:
     package: "moveit_door_opening_mechanism_config"
-    path: "config/moveit_controllers_real_world.yaml"
+    path: "config/moveit_simple_controller_manager_real_world.yaml"
   sensors_3d:
     package: "moveit_door_opening_mechanism_config"
     path: "config/sensors_3d_real_world.yaml"
