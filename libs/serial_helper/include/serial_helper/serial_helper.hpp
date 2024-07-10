@@ -26,7 +26,7 @@ namespace serial_helper
     int serial_port_;
 
    public:
-    SerialHelper(std::string serial_path);
+    explicit SerialHelper(std::string serial_path);
     ~SerialHelper();
 
     std::string open_serial();
