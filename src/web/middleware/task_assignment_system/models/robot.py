@@ -1,3 +1,4 @@
+from pydantic_models.drawer_address import DrawerAddress
 from task_assignment_system.models.node import Node
 from task_assignment_system.models.task_models.task import Task
 from task_assignment_system.models.fleet_management_api import FleetManagementAPI
@@ -92,9 +93,11 @@ class Robot:
         self.done_tasks_ids.append(self.current_task.id)
         if self.current_task.task_type == "dropoff":
             self.module_manager.free_module(
-                self.name,
-                int(self.current_task.module_id),
-                int(self.current_task.drawer_id),
+                DrawerAddress(
+                    robot_name=self.name,
+                    module_id=int(self.current_task.module_id),
+                    drawer_id=int(self.current_task.drawer_id),
+                ),
             )
         self.current_task.status = "completed"
         self.current_task = None

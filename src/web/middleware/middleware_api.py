@@ -1,3 +1,4 @@
+from email import message
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import requests
@@ -32,7 +33,7 @@ task_assigment_system = TaskAssignmentSystem()
 def get_robot_url(robot_name: str):
     robot_ip = name_to_ip.get(robot_name, None)
     if robot_ip is None:
-        raise HTTPException(status_code=404, detail="Robot name not found")
+        raise HTTPException(404, detail="Robot name not found")
     return f"http://{robot_ip}:{robot_api_port}"
 
 
@@ -156,7 +157,8 @@ Tasks API Endpoints
 
 @app.post("/task_assignment", tags=["Tasks"])
 def post_task_assignment(request: DeliveryRequest):
-    return task_assigment_system.receive_request(request)
+    success, message = task_assigment_system.receive_request(request)
+    return {"success": success, "message": message}
 
 
 @app.get("/tasks", tags=["Tasks"])

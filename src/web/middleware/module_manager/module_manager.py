@@ -97,7 +97,7 @@ class ModuleManager:
         size: int,
         user_ids: list[str],
         user_groups: list[str],
-    ) -> dict[str, Any] | None:
+    ) -> Drawer | None:
         drawers = self.repository.read_robot_drawers(robot_name)
         for drawer in drawers:
             if (
@@ -110,7 +110,7 @@ class ModuleManager:
                     user_ids,
                     user_groups,
                 )
-                return drawer.to_json()
+                return drawer
 
     def reserve_module(
         self,

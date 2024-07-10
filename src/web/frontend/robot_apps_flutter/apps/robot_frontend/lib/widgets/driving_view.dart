@@ -137,7 +137,7 @@ class _DrivingViewState extends State<DrivingView> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 const Text(
-                                  'Bitteberühren',
+                                  'Bitte berühren',
                                   style: TextStyle(
                                     letterSpacing: 1.9,
                                     color: Colors.transparent,

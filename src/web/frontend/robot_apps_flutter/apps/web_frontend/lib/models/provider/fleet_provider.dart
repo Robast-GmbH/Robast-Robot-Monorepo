@@ -7,7 +7,7 @@ import 'package:shared_data_models/shared_data_models.dart';
 class FleetProvider extends ChangeNotifier {
   List<Robot> robots = [];
   Map<String, List<RobotDrawer>> modules = {};
-  Map<String, List<Task>> tasks = {};
+  Map<String, RobotTaskStatus?> tasks = {};
   bool isNavigationBlocked = false;
   Timer? _robotUpdateTimer;
   Timer? _moduleUpdateTimer;
@@ -16,7 +16,7 @@ class FleetProvider extends ChangeNotifier {
   late MiddlewareApiUtilities _middlewareApi;
 
   Future<void> initMiddlewarAPI({required String prefix}) async {
-    _middlewareApi = MiddlewareApiUtilities(prefix: prefix);
+    _middlewareApi = MiddlewareApiUtilities();
   }
 
   List<String> getIDsOfModules({required String robotName}) {
@@ -46,10 +46,10 @@ class FleetProvider extends ChangeNotifier {
   }
 
   Future<void> updataTasks() async {
-    final updatedTasks = <String, List<Task>>{};
+    final updatedTasks = <String, RobotTaskStatus?>{};
     for (final robot in robots) {
       if (robot.name.isNotEmpty) {
-        final robotTasks = await _middlewareApi.getTasks(robotName: robot.name);
+        final robotTasks = await _middlewareApi.tasks.getRobotTasks(robotName: robot.name);
         updatedTasks[robot.name] = robotTasks;
       }
     }
@@ -97,7 +97,7 @@ class FleetProvider extends ChangeNotifier {
     required int moduleID,
     required int drawerID,
   }) async {
-    await _middlewareApi.openDrawer(
+    await _middlewareApi.modules.openDrawer(
       robotName: robotName,
       moduleID: moduleID,
       drawerID: drawerID,
@@ -110,7 +110,7 @@ class FleetProvider extends ChangeNotifier {
     required int moduleID,
     required int drawerID,
   }) async {
-    await _middlewareApi.closeDrawer(
+    await _middlewareApi.modules.closeDrawer(
       robotName: robotName,
       moduleID: moduleID,
       drawerID: drawerID,

@@ -33,10 +33,10 @@ class Task:
         cls,
         assignee_name: str,
         delivery_request: DeliveryRequest,
-        drawer_data: dict[str, Any],
+        drawer: Drawer,
     ) -> list["Task"]:
         tasks = []
-        drawer = Drawer.from_json(drawer_data)
+        drawer = drawer
         pick_up_id = str(uuid.uuid4())
         if delivery_request.start_id is not None:
             pick_up_task_phase = TaskPhase.create_pickup_phase(
@@ -66,18 +66,22 @@ class Task:
             tasks.append(pick_up_task)
 
         if delivery_request.target_id is not None:
+            drop_off_payload = {
+                key: -value for key, value in delivery_request.payload.items()
+            }
             drop_off_task_phase = TaskPhase.create_dropoff_phase(
                 delivery_request.target_id,
-                delivery_request.payload,
+                drop_off_payload,
                 drawer.address.module_id,
                 drawer.address.drawer_id,
                 assignee_name,
             )
+
             drop_off_task = Task(
                 str(uuid.uuid4()),
                 "dropoff",
                 "pending",
-                delivery_request.payload,
+                drop_off_payload,
                 int(time.time()),
                 pick_up_id if delivery_request.start_id else None,
                 assignee_name,

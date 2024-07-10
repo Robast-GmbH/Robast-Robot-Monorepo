@@ -9,6 +9,7 @@ from configs.url_config import (
 )
 
 from threading import Timer
+from typing import Tuple
 import json
 
 TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_SECONDS = 10
@@ -36,21 +37,21 @@ class TaskAssignmentSystem:
     def receive_request(
         self,
         delivery_request: DeliveryRequest,
-    ) -> str:
+    ) -> Tuple[bool, str]:
         if self.timer is not None:
             self.timer.cancel()
 
         # TODO taskvalidation
         if delivery_request.target_id is None and delivery_request.start_id is None:
-            return "Invalid request, target node not found."
+            return False, "Invalid request, target node not found."
         if not self.module_manager.is_module_size_available(
             "rb_theron", delivery_request.required_drawer_type
         ):
-            return "Invalid request, drawer type not available."
+            return False, "Invalid request, drawer type not available."
 
         self.request_queue.append(delivery_request)
         self.__trigger_task_assignment()
-        return "Request added to queue."
+        return True, "Request added to queue."
 
     def __trigger_task_assignment(self) -> None:
         if len(self.request_queue) > 0:

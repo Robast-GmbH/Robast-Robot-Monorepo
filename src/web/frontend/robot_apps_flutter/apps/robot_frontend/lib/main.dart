@@ -3,8 +3,9 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
-import 'package:robot_frontend/models/provider/modules_provider.dart';
+import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
+import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/config_page.dart';
 
@@ -14,24 +15,30 @@ class MyCustomScrollBehavior extends MaterialScrollBehavior {
   Set<PointerDeviceKind> get dragDevices => {
         PointerDeviceKind.touch,
         PointerDeviceKind.mouse,
-        // etc.
       };
 }
 
 void main() {
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => RobotProvider(),
-      child: ChangeNotifierProvider(
-        create: (_) => ModulesProvider(),
-        child: ChangeNotifierProvider(
-          create: (_) => UserProvider(),
-          child: ChangeNotifierProvider(
-            create: (_) => MapProvider(),
-            child: const RobotFrontend(),
-          ),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (_) => RobotProvider(),
         ),
-      ),
+        ChangeNotifierProvider(
+          create: (_) => ModuleProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => UserProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => TaskProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (_) => MapProvider(),
+        ),
+      ],
+      child: const RobotFrontend(),
     ),
   );
 }

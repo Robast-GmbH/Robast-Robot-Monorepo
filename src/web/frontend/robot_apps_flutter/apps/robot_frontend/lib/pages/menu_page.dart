@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/module_filling_page.dart';
 import 'package:robot_frontend/pages/settings_page.dart';
-import 'package:robot_frontend/pages/task_creation_page.dart';
+import 'package:robot_frontend/pages/task_creation_menu_page.dart';
 import 'package:robot_frontend/pages/tasks_overview_page.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
@@ -32,8 +32,8 @@ class MenuPage extends StatelessWidget {
                       text: 'Auftrag erstellen',
                       onPressed: () => Navigator.push(
                         context,
-                        MaterialPageRoute<TaskCreationPage>(
-                          builder: (context) => const TaskCreationPage(),
+                        MaterialPageRoute<TaskCreationMenuPage>(
+                          builder: (context) => const TaskCreationMenuPage(),
                         ),
                       ),
                     ),

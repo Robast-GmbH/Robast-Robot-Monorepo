@@ -4,11 +4,7 @@ import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 class UserProvider extends ChangeNotifier {
   final availableTitles = ['', 'Dr.', 'Prof.', 'Prof. Dr.', 'PD Dr.', 'PD Dr. Dr.'];
 
-  late MiddlewareApiUtilities _middlewareApiUtilities;
-
-  void initMiddlewareApiUtilities({required String prefix}) {
-    _middlewareApiUtilities = MiddlewareApiUtilities(prefix: prefix);
-  }
+  final _middlewareApiUtilities = MiddlewareApiUtilities();
 
   Future<List<User>> getUsers() async {
     return _middlewareApiUtilities.users.getUsers();

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/models/provider/modules_provider.dart';
+import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/drawer_view.dart';
 import 'package:robot_frontend/widgets/hint_view.dart';
@@ -20,13 +20,13 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
       children: [
         const Expanded(child: SizedBox()),
         Expanded(
-          child: Selector<ModulesProvider, List<RobotDrawer>>(
+          child: Selector<ModuleProvider, List<RobotDrawer>>(
             selector: (_, provider) => provider.modules,
             builder: (context, modules, child) {
               if (modules.isEmpty || modules.every((module) => module.moduleProcess.status == ModuleProcessStatus.idle)) {
                 return const Center(child: CircularProgressIndicator());
               }
-              final moduleInProcess = Provider.of<ModulesProvider>(context).modules.firstWhere(
+              final moduleInProcess = Provider.of<ModuleProvider>(context).modules.firstWhere(
                     (element) => element.moduleProcess.status != ModuleProcessStatus.idle,
                   );
               if (moduleInProcess.moduleProcess.status != ModuleProcessStatus.closed) {
@@ -41,7 +41,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                             isAnyDrawerOpen: moduleInProcess.moduleID != module.moduleID,
                             isEnabled: moduleInProcess.moduleID == module.moduleID,
                             onOpening: () {
-                              Provider.of<ModulesProvider>(context, listen: false).openDrawer(module);
+                              Provider.of<ModuleProvider>(context, listen: false).openDrawer(module);
                             },
                             label: moduleInProcess == module ? 'Zum Öffnen tippen' : '',
                           );
@@ -59,7 +59,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                         GestureDetector(
                           onTap: () {
                             if (moduleInProcess.variant == DrawerVariant.electric) {
-                              Provider.of<ModulesProvider>(context, listen: false).closeDrawer(moduleInProcess);
+                              Provider.of<ModuleProvider>(context, listen: false).closeDrawer(moduleInProcess);
                             }
                           },
                           child: HintView(
@@ -88,8 +88,13 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                         child: CustomButtonView(
                           text: 'Finish',
                           onPressed: () async {
-                            Provider.of<ModulesProvider>(context, listen: false).finishModuleProcess(moduleInProcess);
-                            Navigator.popUntil(context, (route) => route.isFirst);
+                            await Provider.of<ModuleProvider>(context, listen: false).finishModuleProcess(moduleInProcess);
+                            if (context.mounted) {
+                              await Provider.of<ModuleProvider>(context, listen: false).fetchModules();
+                            }
+                            if (context.mounted) {
+                              Navigator.pop(context);
+                            }
                           },
                         ),
                       ),
@@ -100,7 +105,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                         child: CustomButtonView(
                           text: 'Reopen',
                           onPressed: () {
-                            Provider.of<ModulesProvider>(context, listen: false).openDrawer(moduleInProcess);
+                            Provider.of<ModuleProvider>(context, listen: false).openDrawer(moduleInProcess);
                           },
                         ),
                       ),

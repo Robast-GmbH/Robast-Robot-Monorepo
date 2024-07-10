@@ -41,7 +41,7 @@ void main() {
 
     final usersApi = UsersApi(prefix: 'http://localhost:8003');
     test('can be instantiated', () {
-      expect(MiddlewareApiUtilities(prefix: ''), isNotNull);
+      expect(MiddlewareApiUtilities(), isNotNull);
     });
 
     test('can get modules', () async {

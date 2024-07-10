@@ -15,16 +15,19 @@ class RobotModulesAPI:
         module_process_request: ModuleProcess,
     ) -> None:
         try:
-
+            robot_name = module_process_request.robot_name
             module_id = module_process_request.module_id
             drawer_id = module_process_request.drawer_id
             process_name = module_process_request.process_name
-            payload = module_process_request.payload.replace("'", '\"')
+            payload = module_process_request.payload
             data = {
-                "module_id": module_id,
-                "drawer_id": drawer_id,
+                "drawer_address":{
+                    "robot_name": robot_name,
+                    "module_id": module_id,
+                "drawer_id": drawer_id,},
+                
                 "process_name": process_name,
-                "payload": json.loads(payload),
+                "payload": payload,
             }
             print(data)
             response = requests.post(

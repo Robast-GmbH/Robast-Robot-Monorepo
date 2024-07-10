@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/models/provider/modules_provider.dart';
+import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/titled_view.dart';
 
@@ -17,18 +17,6 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
   final List<bool> selectedSlots = List.generate(8, (index) => false);
   final controller = TextEditingController();
   bool isElectric = false;
-
-  @override
-  void initState() {
-    super.initState();
-    Provider.of<ModulesProvider>(context, listen: false).startModulesUpdateTimer();
-  }
-
-  @override
-  void deactivate() {
-    Provider.of<ModulesProvider>(context, listen: false).stopModulesUpdateTimer();
-    super.deactivate();
-  }
 
   void updateSlots(List<RobotDrawer> drawers) {
     slotOccupancy.fillRange(0, slotOccupancy.length, false);
@@ -73,7 +61,7 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 16, bottom: 32),
-                  child: Selector<ModulesProvider, List<RobotDrawer>>(
+                  child: Selector<ModuleProvider, List<RobotDrawer>>(
                     selector: (_, provider) => provider.modules,
                     builder: (context, modules, child) {
                       updateSlots(modules);
@@ -150,7 +138,7 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                           TextButton.icon(
                             onPressed: () async {
                               if (selectedSlots.every((slot) => !slot)) return;
-                              await Provider.of<ModulesProvider>(context, listen: false).createModule(
+                              await Provider.of<ModuleProvider>(context, listen: false).createModule(
                                 robotName: 'rb_theron',
                                 moduleID: int.tryParse(controller.text) ?? 0,
                                 drawerID: 0,
@@ -160,14 +148,16 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                               );
                               selectedSlots.fillRange(0, selectedSlots.length, false);
                               isElectric = false;
-                              setState(() {});
+                              if (context.mounted) {
+                                await Provider.of<ModuleProvider>(context, listen: false).fetchModules();
+                              }
                             },
                             label: const Text('Add'),
                             icon: const Icon(Icons.add),
                           ),
                           TextButton.icon(
                             onPressed: () async {
-                              final modulesProvider = Provider.of<ModulesProvider>(context, listen: false);
+                              final modulesProvider = Provider.of<ModuleProvider>(context, listen: false);
                               for (final drawer in modulesProvider.modules) {
                                 await modulesProvider.deleteModule(
                                   robotName: 'rb_theron',

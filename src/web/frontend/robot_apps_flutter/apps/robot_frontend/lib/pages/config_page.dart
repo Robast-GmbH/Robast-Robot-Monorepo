@@ -1,14 +1,20 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/models/provider/modules_provider.dart';
+import 'package:robot_frontend/models/provider/map_provider.dart';
+
 import 'package:robot_frontend/models/provider/robot_provider.dart';
-import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/home_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ConfigPage extends StatefulWidget {
-  const ConfigPage({super.key, this.autoClose = false});
+  const ConfigPage({
+    super.key,
+    this.autoClose = false,
+  });
 
   final bool autoClose;
 
@@ -22,11 +28,13 @@ class _ConfigPageState extends State<ConfigPage> {
   String middlewareAddress = '';
   late Future<SharedPreferences> getSharedPreferencesFuture;
 
-  Future<void> finishConfiguration({required String robotBackendAddress, required String middlewareAddress}) async {
+  Future<void> finishConfiguration({
+    required String robotBackendAddress,
+    required String middlewareAddress,
+  }) async {
     Provider.of<RobotProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
-    Provider.of<ModulesProvider>(context, listen: false).initMiddlewareApiUtilities(prefix: middlewareAddress);
-    Provider.of<UserProvider>(context, listen: false).initMiddlewareApiUtilities(prefix: middlewareAddress);
-
+    MiddlewareApiUtilities().setPrefix(prefix: middlewareAddress);
+    unawaited(Provider.of<MapProvider>(context, listen: false).fetchBuildingMap());
     Navigator.popUntil(context, ModalRoute.withName('/root'));
     await Navigator.push(
       context,

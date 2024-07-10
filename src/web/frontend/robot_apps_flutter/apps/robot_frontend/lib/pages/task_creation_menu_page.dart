@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/pages/delivery_task_creation_page.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 
-class TaskCreationPage extends StatelessWidget {
-  const TaskCreationPage({super.key});
+class TaskCreationMenuPage extends StatelessWidget {
+  const TaskCreationMenuPage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -19,7 +20,12 @@ class TaskCreationPage extends StatelessWidget {
                   Expanded(
                     child: CustomButtonView(
                       text: 'Lieferung',
-                      onPressed: () {},
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute<DeliveryTaskCreationPage>(
+                          builder: (context) => const DeliveryTaskCreationPage(),
+                        ),
+                      ),
                     ),
                   ),
                   Expanded(

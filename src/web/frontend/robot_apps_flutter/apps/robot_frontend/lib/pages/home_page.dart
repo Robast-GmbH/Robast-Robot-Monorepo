@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:robot_frontend/models/provider/modules_provider.dart';
+import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/disinfection_page.dart';
+import 'package:robot_frontend/pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 
@@ -17,10 +18,30 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
+  bool isInModuleProcess = false;
+
   @override
   void initState() {
     super.initState();
-    Provider.of<ModulesProvider>(context, listen: false).startModulesUpdateTimer();
+    Provider.of<ModuleProvider>(context, listen: false).startModulesUpdateTimer(onModuleProcess: startModuleProcess);
+  }
+
+  @override
+  void deactivate() {
+    Provider.of<ModuleProvider>(context, listen: false).stopModulesUpdateTimer();
+    super.deactivate();
+  }
+
+  Future<void> startModuleProcess() async {
+    final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
+    if (moduleProvider.isInModuleProcess) {
+      return;
+    }
+    if (context.mounted) {
+      moduleProvider.isInModuleProcess = true;
+      await Navigator.push(context, MaterialPageRoute<ModuleProcessPage>(builder: (context) => const ModuleProcessPage()));
+      moduleProvider.isInModuleProcess = false;
+    }
   }
 
   @override

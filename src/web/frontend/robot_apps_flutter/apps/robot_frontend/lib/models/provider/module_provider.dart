@@ -3,23 +3,23 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
-class ModulesProvider extends ChangeNotifier {
+class ModuleProvider extends ChangeNotifier {
   List<RobotDrawer> _modules = [];
   List<RobotDrawer> get modules => _modules;
   Timer? _modulesUpdateTimer;
+  bool isInModuleProcess = false;
 
-  late MiddlewareApiUtilities _middlewareApiUtilities;
+  final _middlewareApiUtilities = MiddlewareApiUtilities();
 
-  void initMiddlewareApiUtilities({required String prefix}) {
-    _middlewareApiUtilities = MiddlewareApiUtilities(prefix: prefix);
-  }
-
-  Future<void> startModulesUpdateTimer() async {
+  Future<void> startModulesUpdateTimer({VoidCallback? onModuleProcess}) async {
     final modules = await _middlewareApiUtilities.modules.getModules(robotName: 'rb_theron');
     setModules(modules);
-    _modulesUpdateTimer = Timer.periodic(const Duration(seconds: 1), (timer) async {
+    _modulesUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
       final modules = await _middlewareApiUtilities.modules.getModules(robotName: 'rb_theron');
       setModules(modules);
+      if (modules.any((element) => element.moduleProcess.status != ModuleProcessStatus.idle)) {
+        onModuleProcess?.call();
+      }
     });
   }
 
@@ -30,6 +30,11 @@ class ModulesProvider extends ChangeNotifier {
   void setModules(List<RobotDrawer> modules) {
     _modules = modules;
     notifyListeners();
+  }
+
+  Future<void> fetchModules() async {
+    final modules = await _middlewareApiUtilities.modules.getModules(robotName: 'rb_theron');
+    setModules(modules);
   }
 
   Future<bool> createModule({
@@ -77,24 +82,24 @@ class ModulesProvider extends ChangeNotifier {
     );
   }
 
-  void closeDrawer(RobotDrawer module) {
-    _middlewareApiUtilities.modules.closeDrawer(
+  Future<void> closeDrawer(RobotDrawer module) async {
+    await _middlewareApiUtilities.modules.closeDrawer(
       robotName: module.robotName,
       moduleID: module.moduleID,
       drawerID: module.drawerID,
     );
   }
 
-  void openDrawer(RobotDrawer module) {
-    _middlewareApiUtilities.modules.openDrawer(
+  Future<void> openDrawer(RobotDrawer module) async {
+    await _middlewareApiUtilities.modules.openDrawer(
       robotName: module.robotName,
       moduleID: module.moduleID,
       drawerID: module.drawerID,
     );
   }
 
-  void finishModuleProcess(RobotDrawer moduleInProcess) {
-    _middlewareApiUtilities.modules.finishModuleProcess(
+  Future<void> finishModuleProcess(RobotDrawer moduleInProcess) async {
+    await _middlewareApiUtilities.modules.finishModuleProcess(
       robotName: moduleInProcess.robotName,
       moduleID: moduleInProcess.moduleID,
       drawerID: moduleInProcess.drawerID,

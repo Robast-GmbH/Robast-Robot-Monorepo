@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
-import 'package:shared_data_models/shared_data_models.dart';
 import 'package:web_frontend/models/controller/task_creation_controller.dart';
 
 class RMFProvider extends ChangeNotifier {
@@ -11,7 +10,7 @@ class RMFProvider extends ChangeNotifier {
   final Map<String, String> _interruptTokens = {};
   Timer? _tasksUpdateTimer;
 
-  final _middlewareApi = MiddlewareApiUtilities(prefix: 'http://10.10.23.6:8000');
+  final _middlewareApi = MiddlewareApiUtilities();
 
   Future<void> updateBuildingMap() async {
     try {
