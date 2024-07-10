@@ -75,7 +75,7 @@ moveit_params:
 octomap_manager:
 #   # Input point cloud topic name. The *output* point cloud topic published by
 #   # the Octomap manager node is defined in the respective sensors_3d.yaml.
-  input_point_cloud_topic: "/arm/stereo/points" #TODO: I think this is the wrong topic
+  input_point_cloud_topic: "/stereo/points"
 
 # This configures what controllers gets run at startup
 ros2_control:
