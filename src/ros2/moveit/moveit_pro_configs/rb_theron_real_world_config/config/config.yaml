@@ -95,3 +95,10 @@ objectives:
   waypoints_file:
     package_name: "rb_theron_real_world_config"
     relative_path: "waypoints/waypoints.yaml"
+
+  objective_library_paths:
+    # You must use a unique key for each package.
+    # The ase_config uses "core"
+    real_life_objectives:
+      package_name: "rb_theron_real_world_config"
+      relative_path: "objectives"
