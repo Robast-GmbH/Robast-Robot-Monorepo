@@ -98,8 +98,6 @@ WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
 
-RUN rm -r /ws/src/navigation/external_plugins;
-
 
 RUN rosdep update && \
   rosdep install --from-paths /ws/src --ignore-src -r -y && \
