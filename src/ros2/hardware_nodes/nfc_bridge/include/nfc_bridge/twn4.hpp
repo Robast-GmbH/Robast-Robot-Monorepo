@@ -29,12 +29,12 @@ namespace nfc_bridge
     static std::string NTAGWriteReq(uint8_t page, const std::array<uint8_t, 4>& data);
 
     // Static response functions
-    static void NTAGReadResp(std::string& response,
+    static void NTAGReadResp(const std::string& response,
                              uint8_t& result,
                              std::array<uint8_t, 16>& data,
                              std::string& nfc_key);
-    static void NTAGWriteResp(std::string response, uint8_t& result);
-    static void SearchTagResp(std::string response, uint8_t& result, std::string& tagID);
+    static void NTAGWriteResp(const std::string& response, uint8_t& result);
+    static void SearchTagResp(const std::string& response, uint8_t& result, std::string& tagID);
   };
 
   // Initialize constants
@@ -76,7 +76,7 @@ namespace nfc_bridge
     return command.str();
   }
 
-  void Twn4Elatec::NTAGReadResp(std::string& response,
+  void Twn4Elatec::NTAGReadResp(const std::string& response,
                                 uint8_t& result,
                                 std::array<uint8_t, 16>& data,
                                 std::string& nfc_key)
@@ -95,7 +95,7 @@ namespace nfc_bridge
     nfc_key = response.substr(4, 32);
   }
 
-  void Twn4Elatec::NTAGWriteResp(std::string response, uint8_t& result)
+  void Twn4Elatec::NTAGWriteResp(const std::string& response, uint8_t& result)
   {
     if (response.size() != 4)
     {
@@ -104,7 +104,7 @@ namespace nfc_bridge
     result = std::stoi(response.substr(2, 2), nullptr, 16);
   }
 
-  void Twn4Elatec::SearchTagResp(std::string response, uint8_t& result, std::string& tagType)
+  void Twn4Elatec::SearchTagResp(const std::string& response, uint8_t& result, std::string& tagType)
   {
     if (response.size() < 10)
     {
