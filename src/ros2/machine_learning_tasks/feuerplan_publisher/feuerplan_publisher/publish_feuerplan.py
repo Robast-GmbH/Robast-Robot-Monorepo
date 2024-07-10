@@ -168,14 +168,14 @@ class FeuerplanPublisher(Node):
         data = image.flatten().tolist()
         ros_image_msg = OccupancyGrid()
         ros_image_msg.header.stamp = self.get_clock().now().to_msg()
-        ros_image_msg.header.frame_id = 'feuerplan'
+        ros_image_msg.header.frame_id = 'map'
         ros_image_msg.info.map_load_time.sec = 0
         ros_image_msg.info.map_load_time.nanosec = 0
         ros_image_msg.info.resolution = 0.05
         ros_image_msg.info.width = image.shape[1]
         ros_image_msg.info.height = image.shape[0]
-        ros_image_msg.info.origin.position.x = -19.4
-        ros_image_msg.info.origin.position.y = -3.0
+        ros_image_msg.info.origin.position.x = -19.2
+        ros_image_msg.info.origin.position.y = -3.3
         ros_image_msg.info.origin.position.z = 0.0
         ros_image_msg.info.origin.orientation.x = 1.0
         ros_image_msg.info.origin.orientation.y = 0.0
@@ -211,7 +211,7 @@ class FeuerplanPublisher(Node):
         self.__transform_between_map_and_feuerplan(self.__map_msg, feuerplan_image)
         self.get_logger().info(f'{self.__origin_feuerplan_prev}')
         self.get_logger().info(f'{(self.__map_msg.info.origin.position.x,self.__map_msg.info.origin.position.y)}')
-        self.__create_feuerplan_frame(self.__origin_feuerplan_prev[0],self.__origin_feuerplan_prev[1])
+        #self.__create_feuerplan_frame(self.__origin_feuerplan_prev[0],self.__origin_feuerplan_prev[1])
         self.__publish_occupancy_grid_from_image(normalized_image, self.__origin_feuerplan_prev[0], self.__origin_feuerplan_prev[1])
 
 def main(args=None):

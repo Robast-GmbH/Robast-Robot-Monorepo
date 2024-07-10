@@ -43,10 +43,10 @@ def generate_launch_description():
     )
 
     slam_arguments = {
-        "slam_executable": "localization_slam_toolbox_node",
+        "slam_executable": "async_slam_toolbox_node",
         "slam_params_file": slam_toolbox_params_yaml,
         "slam_posegraph": world_posegraph,
-        "slam_mode": "localization",
+        "slam_mode": "mapping",
         "slam_map_topic": "/map",
         "namespace": namespace,
     }.items()
