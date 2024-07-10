@@ -10,12 +10,12 @@
 #include <memory>
 #include <thread>
 
+#include "communication_interfaces/srv/read_nfc_tag.hpp"
+#include "communication_interfaces/srv/write_nfc_tag.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "serial_helper/serial_helper.hpp"
-#include "twn4.hpp"
-// #include "std_msgs/msg/bool.hpp"
-#include "std_msgs/msg/empty.hpp"
 #include "std_msgs/msg/string.hpp"
+#include "twn4.hpp"
 
 namespace nfc_bridge
 {
@@ -29,20 +29,23 @@ namespace nfc_bridge
 
    private:
     std::unique_ptr<serial_helper::ISerialHelper> _serial_connector;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr _nfc_key_publisher;
-    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _trigger_subscriber;
+    rclcpp::Service<communication_interfaces::srv::WriteNfcTag>::SharedPtr _write_service;
+    rclcpp::Service<communication_interfaces::srv::ReadNfcTag>::SharedPtr _read_service;
 
     static const Twn4Elatec _twn4_msg_converter;
 
-    void trigger_callback(const std_msgs::msg::Empty::SharedPtr msg);
     void setup_subscriber();
     void start_up_scanner();
     void shutdown_scanner();
     bool wait_for_tag();
-    bool read_nfc_code();
+    bool read_nfc_code(std::string& nfc_code);
+    bool write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type = "");
 
-    // void publish_nfc_key(std::string nfc_key);
-    // void send_cmd(std::string cmd);
+    void write_nfc_callback(const std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Request> request,
+                            std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Response> response);
+
+    void read_nfc_callback(const std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Request> request_header,
+                           std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Response> response);
   };
 
 }   // namespace nfc_bridge

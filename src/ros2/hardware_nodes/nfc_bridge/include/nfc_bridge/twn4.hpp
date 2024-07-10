@@ -2,7 +2,8 @@
 #define NFC_BRIDGE_TWN4_HPP
 
 #include <array>
-#include <iomanip>     // Include for std::setfill and std::setw
+#include <iomanip>   // Include for std::setfill and std::setw
+#include <iostream>
 #include <sstream>     // Include for std::ostringstream
 #include <stdexcept>   // Include for std::runtime_error
 #include <string>
@@ -24,8 +25,12 @@ namespace nfc_bridge
     static std::string NTAGWriteReq(uint8_t page, const std::array<uint8_t, 4>& data);
 
     // Static response functions
-    static void NTAGReadResp(const std::string& response, uint8_t& result, std::array<uint8_t, 16>& data);
+    static void NTAGReadResp(std::string& response,
+                             uint8_t& result,
+                             std::array<uint8_t, 16>& data,
+                             std::string& nfc_key);
     static void NTAGWriteResp(std::string response, uint8_t& result);
+    static void SearchTagResp(std::string response, uint8_t& result, std::string& tagID);
   };
 
   // Initialize constants
@@ -67,17 +72,23 @@ namespace nfc_bridge
     return command.str();
   }
 
-  void Twn4Elatec::NTAGReadResp(const std::string& response, uint8_t& result, std::array<uint8_t, 16>& data)
+  void Twn4Elatec::NTAGReadResp(std::string& response,
+                                uint8_t& result,
+                                std::array<uint8_t, 16>& data,
+                                std::string& nfc_key)
   {
     if (response.size() != 36)
     {
-      throw std::runtime_error("Response must have a length of 36");
+      std::cout << "error, length of the response is not 36. The response was:" << response << std::endl;
+      result = 0;
+      return;
     }
     result = std::stoi(response.substr(2, 2), nullptr, 16);
     for (int i = 0; i < 16; i++)
     {
       data[i] = std::stoi(response.substr(4 + i * 2, 2), nullptr, 16);
     }
+    nfc_key = response.substr(4, 32);
   }
 
   void Twn4Elatec::NTAGWriteResp(std::string response, uint8_t& result)
@@ -87,6 +98,18 @@ namespace nfc_bridge
       throw std::runtime_error("Response must have a length of 4");
     }
     result = std::stoi(response.substr(2, 2), nullptr, 16);
+  }
+
+  void Twn4Elatec::SearchTagResp(std::string response, uint8_t& result, std::string& tagType)
+  {
+    if (response.size() < 10)
+    {
+      std::cout << "Response is too short to be a valid SearchTag response" << response << std::endl;
+      result = 0;
+      return;
+    }
+    result = std::stoi(response.substr(2, 2), nullptr, 16);
+    tagType = response.substr(4, 2);
   }
 }   // namespace nfc_bridge
 

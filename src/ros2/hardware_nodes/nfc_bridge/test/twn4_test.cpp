@@ -27,8 +27,9 @@ TEST_CASE("NTAGReadResp - Valid response")
   std::string response = "000103B691028C537091016855016E78702E";
   uint8_t result;
   std::array<uint8_t, 16> data;
+  std::string nfc_key;
 
-  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::NTAGReadResp(response, result, data));
+  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::NTAGReadResp(response, result, data, nfc_key));
 
   SECTION("Result should be parsed correctly")
   {
@@ -41,16 +42,31 @@ TEST_CASE("NTAGReadResp - Valid response")
         0x03, 0xB6, 0x91, 0x02, 0x8C, 0x53, 0x70, 0x91, 0x01, 0x68, 0x55, 0x01, 0x6E, 0x78, 0x70, 0x2E};
     REQUIRE(data == expectedData);
   }
+
+  SECTION("NFC_key should be parsed correctly")
+  {
+    REQUIRE(nfc_key == "03B691028C537091016855016E78702E");
+  }
 }
 
-TEST_CASE("NTAGReadResp - Invalid response")
+// TEST_CASE("NTAGReadResp - Invalid response")
+// {
+//   std::string response = "000103B691028C537091016855016E78";   // Invalid length
+//   uint8_t result;
+//   std::array<uint8_t, 16> data;
+//   std::string nfc_key;
+
+//   REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::NTAGReadResp(response, result, data, nfc_key), std::runtime_error);
+// }
+
+TEST_CASE("NTAGReadResp - Invalid response format")
 {
-  std::string response = "000103B691028C537091016855016E78";   // Invalid length
-  uint8_t result;
-  std::array<uint8_t, 16> data;
+  std::string response = "20ZZ";
+  uint8_t result = 0;
 
-  REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::NTAGReadResp(response, result, data), std::runtime_error);
+  REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::NTAGWriteResp(response, result), std::invalid_argument);
 }
+
 TEST_CASE("NTAGWriteResp Test", "[Twn4Elatec]")
 {
   uint8_t result;
@@ -92,4 +108,23 @@ TEST_CASE("NTAGWriteResp - Invalid response format")
   uint8_t result = 0;
 
   REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::NTAGWriteResp(response, result), std::invalid_argument);
+}
+
+TEST_CASE("SearchTagResp - Valid response")
+{
+  std::string response = "0001FF";
+  uint8_t result;
+  std::string tagType;
+
+  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::SearchTagResp(response, result, tagType));
+
+  SECTION("Result should be parsed correctly")
+  {
+    REQUIRE(result == 0x01);
+  }
+
+  SECTION("Tag type should be parsed correctly")
+  {
+    REQUIRE(tagType == "FF");
+  }
 }

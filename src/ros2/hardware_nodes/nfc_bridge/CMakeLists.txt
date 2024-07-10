@@ -18,19 +18,17 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclcpp_action REQUIRED)
 find_package(communication_interfaces REQUIRED)
-find_package(ament_cmake_uncrustify REQUIRED)
 find_package(serial_helper REQUIRED)
-find_package(launch_testing_ament_cmake REQUIRED) 
+find_package(std_srvs REQUIRED)
 
 include_directories(include)
 
 set(dependencies
   rclcpp
-  rclcpp_action
   communication_interfaces
   serial_helper  
+  std_srvs
 )
 
 set(executable_nfc_bridge nfc_bridge)
