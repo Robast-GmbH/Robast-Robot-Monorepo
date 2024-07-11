@@ -1,0 +1,39 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root BTCPP_format="4" main_tree_to_execute="Open door by pushing with constraints">
+  <!--//////////-->
+  <BehaviorTree ID="Open door by pushing with constraints" _description="Opens a door by pushing it open." _favorite="false" _hardcoded="false">
+    <Control ID="Sequence" name="TopLevelSequence">
+      <Action ID="SetBlackboard" value="mobile_base_arm" output_key="joint_group_name"/>
+      <Decorator ID="RetryUntilSuccessful" num_attempts="20">
+        <Decorator ID="Delay" delay_msec="1000">
+          <Control ID="Sequence">
+            <Action ID="GetSpatialDetectionsFromTopic"/>
+            <Action ID="CreatePoseFromSpatialDetections" pose_stamped_out="{door_handle_pose}" target_orientation="0.0; 0.0; 1.57079632679"/>
+            <Action ID="PublishPoseToTopic" pose_stamped_in="{door_handle_pose}" topic_name="/debug/pose_door_handle"/>
+            <Action ID="TransformPose" input_pose="{door_handle_pose}" output_pose="{pose_in_front_of_door_handle}" translation_xyz="-0.12;0.1;-0.5"/>
+            <Action ID="PublishPoseToTopic" pose_stamped_in="{pose_in_front_of_door_handle}" topic_name="/debug/pose_in_front_of_door_handle"/>
+            <SubTree ID="Take Snapshot" _collapsed="true"/>
+          </Control>
+        </Decorator>
+      </Decorator>
+      <Action ID="InitializeMTCTask" controller_names="joint_trajectory_controller"/>
+      <Action ID="SetupMTCCurrentState"/>
+      <Action ID="SetupMTCUpdateGroupCollisionRule" allow_collision="true" group_name="rotating_arm"/>
+      <Action ID="RetrieveWaypoint" waypoint_name="starting_position_right"/>
+      <Action ID="SetupMTCMoveToJointState" joint_state="{target_joint_state}" planning_group_name="{joint_group_name}"/>
+      <Control ID="Sequence" name="TopLevelSequence">
+        <Action ID="InitializeMotionConstraints" constraints_name="arm_stretched_out"/>
+        <Action ID="AppendOrientationConstraint" config_file_name="mobile_base_constraints.yaml" constraints="{constraints}"/>
+        <Action ID="SetupMtcMoveToPoseWithConstraints" target_pose="{pose_in_front_of_door_handle}" planning_group_name="{joint_group_name}" ik_frame="door_opening_mechanism_link_freely_rotating_hook" constraints="{constraints}"/>
+      </Control>
+      <Control ID="Sequence" name="TopLevelSequence">
+        <Action ID="SetupMTCMoveAlongFrameAxis" hand_frame="hook_base_link" planning_group_name="{joint_group_name}" axis_frame="base_footprint" min_distance="0.195" axis_z="-1.0" max_distance="0.205" axis_x="0.0" velocity_scale="1.0"/>
+        <Action ID="SetupMTCMoveAlongFrameAxis" hand_frame="hook_base_link" planning_group_name="{joint_group_name}" axis_frame="base_footprint" min_distance="0.045" axis_z="0.0" max_distance="0.055" axis_x="-1.0" velocity_scale="1.0"/>
+        <Action ID="SetupMTCMoveAlongFrameAxis" hand_frame="hook_base_link" planning_group_name="{joint_group_name}" axis_frame="base_footprint" min_distance="0.095" axis_z="1.0" max_distance="0.105" axis_x="0.0" velocity_scale="1.0"/>
+      </Control>
+      <Action ID="PlanMTCTask"/>
+      <Action ID="WaitForUserTrajectoryApproval"/>
+      <Action ID="ExecuteMTCTask"/>
+    </Control>
+  </BehaviorTree>
+</root>

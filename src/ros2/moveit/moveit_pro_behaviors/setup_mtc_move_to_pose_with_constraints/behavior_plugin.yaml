@@ -1,0 +1,4 @@
+objectives:
+  behavior_loader_plugins:
+    setup_mtc_move_to_pose_with_constraints:
+      - "moveit_studio::behaviors::SetupMtcMoveToPoseWithConstraintsBehaviorsLoader"
