@@ -33,6 +33,10 @@ Then use the 4 terminals to run (you might need to `source install/setup.bash`):
 
 `rest_api.app`
 
+If you want to run door handle detection open another terminal and run:
+
+`ros2 launch door_handle_detector_sim door_handle_detection_sim.launch.py` (you might need to run `pip install yolov5` before)
+
 # How to run MoveIt Pro over ssh
 
 In order to connect via ssh to a host maschine, where you want to run MoveIt Pro, you have to get access to the display. This can be done by setting the DISPLAY environment variable at the host system (so where MoveIt Pro runs) with `export DISPLAY=:0` or `export DISPLAY=:1` (in my case it was `:1`). Furthermore you need to connect with the argument `ssh -X`. When doing this with vs code you need to add `ForwardX11 yes` to your `config` file in the .ssh directory, so it looks something like this:
