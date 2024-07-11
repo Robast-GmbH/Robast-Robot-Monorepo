@@ -36,7 +36,7 @@ class FeuerplanPublisher(Node):
         self.__map_msg = None
 
     def __listener_callback_map(self, msg:OccupancyGrid) -> None:
-        self.__map_msg = msg
+        self.__map_msg = msg 
         self.get_logger().info('Map recieved')
         self.__broadcast_frame_and_message()
 
@@ -101,7 +101,7 @@ class FeuerplanPublisher(Node):
                 if (scores > 0.5).all():
                     axes = viz2d.plot_images([image1, image2])
                     viz2d.plot_matches(points1, points2, color="lime", lw=0.2)
-                    viz2d.save_plot("out.png")
+                    viz2d.save_plot('compare' + str(self.__i) + '.png')
                     world_points1 = [(x * map_resolution + map_origin_x, y * map_resolution + map_origin_y) for x, y in points1]
                     self.get_logger().info(f'{scores}')
                     A = np.array([
@@ -150,14 +150,17 @@ class FeuerplanPublisher(Node):
     
     def __transform_between_map_and_feuerplan(self, map_msg:OccupancyGrid, feuerplan_image:np.ndarray) -> tuple[float,float]:
         map_image = self.__ros_msg_to_image(map_msg)
-        cv.imwrite('output_image_opencv.png', map_image)
         if not self.__is_message_published_once:
             origin_feuerplan = (0.0,0.0)
             #self.__publish_occupancy_grid_from_image(feuerplan_image, origin_feuerplan[0], origin_feuerplan[1])
             self.__origin_feuerplan_prev = origin_feuerplan
+            self.__i = 0
+            cv.imwrite('output_image_opencv' + str(self.__i)+'.png', map_image)
             self.__is_message_published_once = True
         else:
             self.get_logger().info('Feuerplan published once already')
+            self.__i = self.__i+1
+            cv.imwrite('output_image_opencv' + str(self.__i)+'.png', map_image)
             transformation = self.__create_transformation_matrix(map_image, feuerplan_image, map_msg.info.resolution, map_msg.info.origin.position.x, map_msg.info.origin.position.y)    
             self.get_logger().info(f'{transformation}')
             if transformation is not None:
@@ -208,6 +211,7 @@ class FeuerplanPublisher(Node):
         feuerplan_image = cv.imread(self.__feuerplan_path, cv.IMREAD_GRAYSCALE)
         normalized_image = np.clip(feuerplan_image.astype(np.int16) - 128, -128, 127)
         #preprocessed_feuerplan = self.__preprocess_image(feuerplan_image)
+
         self.__transform_between_map_and_feuerplan(self.__map_msg, feuerplan_image)
         self.get_logger().info(f'{self.__origin_feuerplan_prev}')
         self.get_logger().info(f'{(self.__map_msg.info.origin.position.x,self.__map_msg.info.origin.position.y)}')
