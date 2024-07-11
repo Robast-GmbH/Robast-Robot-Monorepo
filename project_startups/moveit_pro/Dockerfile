@@ -102,24 +102,6 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && rosdep init || echo "rosdep already initialized"
 
-ARG MOVEIT2_TUTORIALS_VERSION=humble
-ARG ROS_DISTRO=humble
-# Adding moveit2_tutorials as separate workspace which can be used for learning and testing purposes
-# Can be removed once there is enough moveit2 skill and knowledge archieved
-# TODO: Currently we use the rolling branch of moveit2, because we need iron (an there is no separate iron branch)
-# TODO: We should regularly check if there is a dedicated branch for the ros version we are using
-RUN mkdir -p /workspace_moveit2/src && cd /workspace_moveit2/src && git clone https://github.com/ros-planning/moveit2_tutorials -b ${MOVEIT2_TUTORIALS_VERSION} --depth 1 \
-  && git clone https://github.com/moveit/moveit_msgs.git -b ${ROS_DISTRO} \
-  && apt-get update && apt-get install -y python3-vcstool \
-  && vcs import < moveit2_tutorials/moveit2_tutorials.repos \
-  && apt update \
-  && apt upgrade -y \
-  && . /opt/overlay_ws/install/setup.sh \
-  && rosdep update \
-  && rosdep install --from-paths /workspace_moveit2/src --ignore-src -r -y \
-  && colcon build --parallel-workers 2 --build-base /workspace_moveit2/build --install-base /workspace_moveit2/install \
-  && echo "if [ -f /workspace_moveit2/install/setup.bash ]; then source /workspace_moveit2/install/setup.bash; fi" >> /home/${USER}/.bashrc
-
 # Install any additional packages for development work
 # hadolint ignore=DL3008
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
