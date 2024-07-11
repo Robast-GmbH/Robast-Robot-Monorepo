@@ -11,7 +11,7 @@ from launch.conditions import LaunchConfigurationEquals
 def generate_launch_description():
 
     door_handle_detection_path = get_package_share_directory('door_handle_detection')
-    urdf_launch_dir = os.path.join(get_package_share_directory('depthai_descriptions'), 'launch')
+    urdf_launch_dir = os.path.join(get_package_share_directory('door_handle_detection'), 'launch')
     resources_path = os.path.join(door_handle_detection_path, 'resources')
 
     mxId         = LaunchConfiguration('mxId',      default = 'x')
@@ -50,6 +50,8 @@ def generate_launch_description():
     preview_width            = LaunchConfiguration('previewWidth', default = 480)
     previewHeight           = LaunchConfiguration('previewHeight', default = 640)
     enableRosBaseTimeUpdate       = LaunchConfiguration('enableRosBaseTimeUpdate', default = False)
+
+    robot_description_remapping = LaunchConfiguration('robot_description_remapping', default = 'oak/robot_description')
     
 
     declare_mxId_cmd = DeclareLaunchArgument(
@@ -231,6 +233,11 @@ def generate_launch_description():
         'enableRosBaseTimeUpdate',
         default_value=enableRosBaseTimeUpdate,
         description='Whether to update ROS time on each message.')
+    
+    declare_robot_description_remapping_cmd = DeclareLaunchArgument(
+        'robot_description_remapping',
+        default_value='oak/robot_description',
+        description='Remap the robot_description topic to another topic. Default value will be `oak/robot_description`')
 
     urdf_launch = IncludeLaunchDescription(
                             launch_description_sources.PythonLaunchDescriptionSource(
@@ -244,7 +251,8 @@ def generate_launch_description():
                                               'cam_pos_z'   : cam_pos_z,
                                               'cam_roll'    : cam_roll,
                                               'cam_pitch'   : cam_pitch,
-                                              'cam_yaw'     : cam_yaw}.items())
+                                              'cam_yaw'     : cam_yaw,
+                                              'robot_description_remapping': robot_description_remapping}.items())
 
     door_handle_node = launch_ros.actions.Node(
             package='door_handle_detection', executable='yolov5_door_node',
@@ -318,6 +326,7 @@ def generate_launch_description():
     ld.add_action(declare_previewWidth_cmd)
     ld.add_action(declare_previewHeight_cmd)
     ld.add_action(declare_enableRosBaseTimeUpdate_cmd)
+    ld.add_action(declare_robot_description_remapping_cmd)
 
     ld.add_action(urdf_launch)
     ld.add_action(door_handle_node)
