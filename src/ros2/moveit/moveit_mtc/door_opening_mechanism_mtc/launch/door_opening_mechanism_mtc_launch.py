@@ -8,7 +8,7 @@ from moveit_configs_utils import MoveItConfigsBuilder
 def generate_launch_description():
     launch_arguments = {
         "ros2_control_hardware_type": "gz_ros2_control",
-        "model_position_joint": "true",
+        "position_joint_type": "prismatic",
     }
 
     ros_distro = os.environ["ROS_DISTRO"]
