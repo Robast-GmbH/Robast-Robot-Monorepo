@@ -11,7 +11,7 @@ from launch.conditions import LaunchConfigurationEquals
 def generate_launch_description():
 
     door_handle_detection_path = get_package_share_directory('door_handle_detection')
-    urdf_launch_dir = os.path.join(get_package_share_directory('door_handle_detection'), 'launch')
+    urdf_launch_dir = os.path.join(get_package_share_directory('oak_bringup_door_opening'), 'launch')
     resources_path = os.path.join(door_handle_detection_path, 'resources')
 
     mxId         = LaunchConfiguration('mxId',      default = 'x')

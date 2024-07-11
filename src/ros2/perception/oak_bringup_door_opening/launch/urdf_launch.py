@@ -148,7 +148,7 @@ def generate_launch_description():
             'use_base_descr',
             default_value='false',
             description='Launch base description. Default value will be false'
-        )
+        ),
         DeclareLaunchArgument(
             'robot_description_remapping',
             default_value='oak/robot_description',
