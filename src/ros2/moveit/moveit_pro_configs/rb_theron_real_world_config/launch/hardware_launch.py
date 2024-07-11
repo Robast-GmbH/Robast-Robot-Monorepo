@@ -55,7 +55,18 @@ def generate_launch_description():
         launch_arguments=launch_arguments_robot_state_publisher.items(),
     )
 
+    # Static transform publisher
+    launch_static_transform_publisher_cmd =Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_transform_publisher',
+        output='log',
+        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'world', 'robot/robot_description']
+    )
+
+
     ld = LaunchDescription()
+    ld.add_action(launch_static_transform_publisher_cmd)
     ld.add_action(launch_ros2_control_cmd)
     ld.add_action(launch_robot_state_publisher_cmd)
 
