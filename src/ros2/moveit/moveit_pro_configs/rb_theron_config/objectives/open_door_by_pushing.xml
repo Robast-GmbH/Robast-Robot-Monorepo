@@ -24,7 +24,7 @@
       <Control ID="Sequence" name="TopLevelSequence">
         <Action ID="InitializeMotionConstraints" constraints_name="arm_stretched_out"/>
         <Action ID="AppendOrientationConstraint" config_file_name="mobile_base_constraints.yaml" constraints="{constraints}"/>
-        <Action ID="SetupMTCMoveToPose" target_pose="{pose_in_front_of_door_handle}" planning_group_name="mobile_base_arm" ik_frame="door_opening_mechanism_link_freely_rotating_hook"/>
+        <Action ID="SetupMTCMoveToPose" target_pose="{pose_in_front_of_door_handle}" planning_group_name="{joint_group_name}" ik_frame="door_opening_mechanism_link_freely_rotating_hook"/>
       </Control>
       <Control ID="Sequence" name="TopLevelSequence">
         <Action ID="SetupMTCMoveAlongFrameAxis" hand_frame="hook_base_link" planning_group_name="{joint_group_name}" axis_frame="base_footprint" min_distance="0.195" axis_z="-1.0" max_distance="0.205" axis_x="0.0" velocity_scale="1.0"/>
