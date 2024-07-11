@@ -62,7 +62,7 @@ def generate_launch_description():
         executable='static_transform_publisher',
         name='static_transform_publisher',
         output='log',
-        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'world', 'robot/robot_description']
+        arguments=['0.0', '0.0', '0.0', '0.0', '0.0', '0.0', 'world', 'robot/base_footprint']
     )
 
 
