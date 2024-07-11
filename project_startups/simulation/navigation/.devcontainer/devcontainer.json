@@ -6,7 +6,7 @@
 	"service": "navigation",
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
-	"remoteUser": "robast",
+	"remoteUser": "ubuntu",
 	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}",
 					"X11_FORWARDING":"1"},
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
