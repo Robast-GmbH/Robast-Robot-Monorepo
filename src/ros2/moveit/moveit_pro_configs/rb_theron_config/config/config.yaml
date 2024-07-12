@@ -81,7 +81,7 @@ hardware:
       - ros_distro: "humble" # mind that if you change this, you also need to change ompl_planning.yaml file
       - prefix: ""
       - ros2_control_hardware_type: "mock_components"
-      - model_position_joint: "true"
+      - position_joint_type: "prismatic"
       - ros2_control_hardware_type_positon_joint: "mock_components"
 
 # Sets ROS global params for launch.
@@ -124,7 +124,7 @@ moveit_params:
     path: "config/kinematics.yaml"
   servo:
     package: "moveit_door_opening_mechanism_config"
-    path: "config/ur_servo.yaml"
+    path: "config/rb_theron_servo.yaml"
   sensors_3d:
     package: "moveit_door_opening_mechanism_config"
     path: "config/sensors_3d.yaml"

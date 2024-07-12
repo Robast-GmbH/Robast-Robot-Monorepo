@@ -1,0 +1,224 @@
+###############################################################
+#
+#  This configures the robot to work with moveit studio
+#
+###############################################################
+
+# Baseline hardware configuration parameters for MoveIt Studio.
+# [Required]
+hardware:
+  # Set simulated to false if you are using this as a configuration for real hardware.
+  # Override-able by setting the $MOCK_HARDWARE environment variable to 'True'.
+  # This allows users to switch between mock and real hardware using the same configuration.
+  # [Required]
+  simulated: ${MOCK_HARDWARE:-true}
+
+  # If the MoveIt Studio Agent should launch the ros2 controller node.
+  # [Optional, default=True]
+  launch_control_node: True
+
+  # If the MoveIt Studio Agent should launch the robot state publisher.
+  # This should be false if you are launching the robot state publisher as part of drivers.
+  # [Optional, default=True]
+  launch_robot_state_publisher: True
+
+  # If the MoveIt Studio Agent should launch cameras when simulated.
+  # This must be False when using mock hardware, since there are no cameras simulated.
+  # [Optional, default=True]
+  launch_cameras_when_simulated: False
+
+  # The robot's IP address.
+  # [Required]
+  ip: "0.0.0.0"
+
+  # Specify additional launch files for running the robot with real hardware.
+  # [Optional, defaults to a blank launch file if not specified]
+  robot_driver_persist_launch_file:
+    package: "rb_theron_config"
+    path: "launch/robot_drivers_to_persist_launch.py"
+  hardware_launch_file:
+    package: "moveit_studio_agent"
+    path: "launch/blank.launch.py"
+
+  # Specify any additional launch files for running the robot in simulation mode.
+  # Used when hardware.simulated is True.
+  # [Optional, defaults to a blank launch file if not specified]
+  # Please mind:
+  # Currently it does not really work to launch our robot with mock_components
+  # as we are launching it with the arm stuff being in a namespace (to simulate the real robot)
+  # Unfortunately so far I don't see a way to launch the moveit pro stuff in a namespace
+  # but I already reported this issue to the moveit pro team
+  # To get this kind of running you need to comment out `move_group` launch in the
+  # `studio_agent.launch.py` file which can be found in ther moveit-studio-overlay docker under
+  # `/opt/overlay_ws/install/moveit_studio_agent/share/moveit_studio_agent/launch/studio_agent.launch.py`
+  simulated_robot_driver_persist_launch_file:
+    package: "rb_theron_planar_base_config"
+    path: "launch/sim/robot_mock_launch.py"
+  # simulated_hardware_launch_file:
+  #   package: "rb_theron_planar_base_config"
+  #   path: "launch/sim/robot_mock_launch.py"
+
+  # Configuration details for cameras and scene planning.
+  # [Required]
+  camera_config_file:
+    package: "rb_theron_planar_base_config"
+    path: "config/cameras.yaml"
+
+  # Parameters used to configure the robot description through XACRO.
+  # A URDF and SRDF are both required.
+  # [Required]
+  robot_description:
+    urdf:
+      package: "rb_theron_description"
+      path: "robots/rb_theron.urdf.xacro"
+    srdf:
+      package: "moveit_door_opening_mechanism_config"
+      path: "config/rb_theron_planar_base.srdf"
+    # Specify any additional parameters required for the URDF.
+    # Many of these are specific to the UR descriptions packages, and can be customized as needed.
+    # [Optional]
+    urdf_params:
+      - ros_distro: "humble" # mind that if you change this, you also need to change ompl_planning.yaml file
+      - prefix: ""
+      - ros2_control_hardware_type: "mock_components"
+      - position_joint_type: "planar"
+      - ros2_control_hardware_type_positon_joint: "mock_components"
+
+# Sets ROS global params for launch.
+# [Optional]
+ros_global_params:
+  # Whether or not to use simulated time.
+  # [Optional, default=False]
+  use_sim_time: False
+
+# Configure additional, optional features in MoveIt Studio.
+# [Optional]
+optional_feature_params:
+  # Whether or not to use the Formant bridge for over-the-internet comms.
+  # [Optional, default=False]
+  use_formant_bridge: False
+  ompl_planning_file: "ompl_iron"
+  launch_moveit_group: True
+  launch_rviz: True
+  launch_robot_state_publisher: True
+
+
+# Configuration files for MoveIt.
+# For more information, refer to https://moveit.picknik.ai/humble/doc/examples/examples.html#configuration
+# [Required]
+moveit_params:
+  joint_group_name: "mobile_base_arm"
+
+  # The config file for the planning pipeline has changed in 10/2023
+  # according to https://github.com/ros-planning/moveit2/blob/main/MIGRATION.md
+  # As far as I can see this, the config has only changed for iron, not for humble
+  # Altough moveit pro runs with humble, I need to change the config file to iron
+  # otherwise I get the error that the config format does not fit. Maybe moveit pro
+  # already merged this change into their codebase, with the "normal" moveit stuff
+  # in rviz I still need to use the omp_humble_planning.yaml file
+  ompl_planning:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/ompl_iron_planning.yaml" # check above comment
+  kinematics:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/kinematics_planar_base.yaml"
+  moveit_simple_controller_manager:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/moveit_simple_controller_manager_planar_base.yaml"
+  servo:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/rb_theron_servo_planar_base.yaml"
+  sensors_3d:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/sensors_3d.yaml"
+  servo_kinematics:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/kinematics_planar_base.yaml"
+  joint_limits:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/joint_limits.yaml"
+  servo_joint_limits:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/joint_limits.yaml"
+  pilz_cartesian_limits:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/pilz_cartesian_limits.yaml"
+  sensors_3d:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/sensors_3d_simulation.yaml"
+
+  publish:
+    planning_scene: True
+    geometry_updates: True
+    state_updates: True
+    transforms_updates: True
+
+  trajectory_execution:
+    manage_controllers: True
+    allowed_execution_duration_scaling: 2.0
+    allowed_goal_duration_margin: 0.5
+    allowed_start_tolerance: 0.01
+    control_multi_dof_joint_variables: True
+
+# Additional configurable parameters for the MoveIt Studio user interface.
+# [Required]
+ui_params:
+  # By default, MoveIt Studio uses a frame called "manual_grasp_link" for tool grasp pose rendering
+  # and planning.
+  # [Required]
+  servo_endpoint_frame_id: "door_opening_mechanism_link_freely_rotating_hook"
+
+# Configuration for launching ros2_control processes.
+# [Required, if using ros2_control]
+ros2_control:
+  config:
+    package: "rb_theron_description"
+    path: "config/rb_theron_planar_base_gz_ros2_control.yaml"
+  # MoveIt Studio will load and activate these controllers at start up to ensure they are available.
+  # If not specified, it is up to the user to ensure the appropriate controllers are active and available
+  # for running the application.
+  # [Optional, default=[]]
+  controllers_active_at_startup:
+    - "joint_state_broadcaster"
+    - "diff_drive_controller"
+    - "joint_trajectory_controller"
+
+  controllers_inactive_at_startup: 
+    - "stretch_base_controller"
+
+  controllers_not_managed: []
+  # Optionally configure remapping rules to let multiple controllers receive commands on the same topic.
+  # [Optional, default=[]]
+  controller_shared_topics: []
+
+# Octomap manager configuration parameters
+octomap_manager:
+  # Input point cloud topic name. The *output* point cloud topic published by
+  # the Octomap manager node is defined in sensors_3d.yaml.
+  input_point_cloud_topic: "/wrist_mounted_camera/depth/color/points"
+
+# Configuration for loading behaviors and objectives.
+# [Required]
+objectives:
+  # List of plugins for loading custom behaviors.
+  # [Required]
+  behavior_loader_plugins:
+    # This plugin will load the core MoveIt Pro behaviors.
+    # Add additional plugin loaders as needed.
+    core:
+      - "moveit_studio::behaviors::CoreBehaviorsLoader"
+      - "moveit_studio::behaviors::MTCCoreBehaviorsLoader"
+      - "moveit_studio::behaviors::ServoBehaviorsLoader"
+      - "moveit_studio::behaviors::VisionBehaviorsLoader"
+  # Specify source folder for objectives
+  # [Required]
+  objective_library_paths:
+    core:
+      package_name: "rb_theron_planar_base_config"
+      relative_path: "objectives"
+  # Specify the location of the saved waypoints file.
+  # [Required]
+  waypoints_file:
+    package_name: "rb_theron_planar_base_config"
+    relative_path: "waypoints/waypoints.yaml"
+

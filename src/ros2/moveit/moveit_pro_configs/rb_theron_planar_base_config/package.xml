@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<package format="3">
+  <name>rb_theron_planar_base_config</name>
+  <version>1.0.0</version>
+
+  <description>Configuration package for the RB Theron of robast with a mobile base modeled as planar joint</description>
+
+  <maintainer email="j.ritterbach@robast.de">MoveIt Studio Maintainer</maintainer>
+
+  <!-- TODO@Jacob: What license? -->
+  <license>BSD-3-Clause</license>
+
+  <buildtool_depend>ament_cmake</buildtool_depend>
+
+  <exec_depend>moveit_door_opening_mechanism_config</exec_depend>
+  <exec_depend>rb_theron_description</exec_depend>
+
+  <exec_depend>kinematics_interface_kdl</exec_depend>
+  <exec_depend>moveit_planners_stomp</exec_depend>
+  <exec_depend>moveit_ros_perception</exec_depend>
+  <exec_depend>moveit_studio_agent</exec_depend>
+  <exec_depend>moveit_studio_behavior</exec_depend>
+  <exec_depend>moveit_studio_ur_pstop_manager</exec_depend>
+  <exec_depend>pick_ik</exec_depend>
+  <exec_depend>picknik_accessories</exec_depend>
+  <exec_depend>realsense2_description</exec_depend>
+  <exec_depend>robotiq_description</exec_depend>
+  <exec_depend>trac_ik_kinematics_plugin</exec_depend>
+
+  <test_depend>ament_lint_auto</test_depend>
+
+  <test_depend>ament_clang_format</test_depend>
+  <test_depend>ament_clang_tidy</test_depend>
+  <test_depend>ament_cmake_lint_cmake</test_depend>
+  <test_depend>ament_flake8</test_depend>
+
+  <export>
+    <build_type>ament_cmake</build_type>
+  </export>
+</package>

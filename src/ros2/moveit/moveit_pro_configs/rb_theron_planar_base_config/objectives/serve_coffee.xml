@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<root BTCPP_format="4" main_tree_to_execute="Serve Coffee">
+  <!--//////////-->
+  <BehaviorTree ID="Serve Coffee" _description="" _favorite="true" _hardcoded="false">
+    <Control ID="Sequence" name="TopLevelSequence">
+      <Action ID="InitializeMTCTask" task="{mtc_task}" controller_names="stretch_base_controller stretch_controller"/>
+      <Action ID="SetupMTCCurrentState" task="{mtc_task}"/>
+      <Action ID="SetupMTCMoveToNamedState" task="{mtc_task}" use_all_planners="false" goal_state_name="closed" planning_group_name="gripper"/>
+      <Action ID="CreateStampedPose" stamped_pose="{target_pose}" reference_frame="coffee_shop" orientation_xyzw="0;0;0.707107;0.707107" position_xyz="-0.835354;4.90836;1.02"/>
+      <Action ID="SetupMTCMoveToPose" task="{mtc_task}" use_all_planners="false" target_pose="{target_pose}" planning_group_name="mobile_base_arm" ik_frame="link_grasp_center"/>
+      <Action ID="SetupMTCMoveToNamedState" task="{mtc_task}" use_all_planners="false" goal_state_name="closed" planning_group_name="gripper"/>
+      <Action ID="CreateStampedPose" stamped_pose="{target_pose_2}" reference_frame="coffee_shop" orientation_xyzw="0;0;-0.707107;0.707107" position_xyz="1.53989;0.073977;0.879106"/>
+      <Action ID="SetupMTCMoveToPose" task="{mtc_task}" use_all_planners="false" target_pose="{target_pose_2}" planning_group_name="mobile_base_arm" ik_frame="link_grasp_center"/>
+      <Action ID="SetupMTCMoveToNamedState" task="{mtc_task}" use_all_planners="false" goal_state_name="open" planning_group_name="gripper"/>
+      <Action ID="PlanMTCTask" solution="{mtc_solution}" task="{mtc_task}"/>
+      <Action ID="ExecuteMTCTask" solution="{mtc_solution}"/>
+    </Control>
+  </BehaviorTree>
+</root>

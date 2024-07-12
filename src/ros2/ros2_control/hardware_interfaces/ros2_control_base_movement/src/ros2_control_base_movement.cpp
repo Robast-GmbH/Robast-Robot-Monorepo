@@ -14,7 +14,34 @@ namespace ros2_control_base_movement
     _hw_velocity_states.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
     _hw_velocity_commands.resize(info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
-    return hardware_interface_utils::configure_joints(info.joints, _logger);
+    _enable_state_feedback = info_.hardware_parameters["enable_state_feedback"] == "true" ||
+                             info_.hardware_parameters["enable_state_feedback"] == "True";
+
+    if (_enable_state_feedback)
+    {
+      RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Position state feedback is enabled!");
+
+      bool reset_position_state_after_each_trajectory =
+          info_.hardware_parameters["reset_position_state_after_each_trajectory"] == "true" ||
+          info_.hardware_parameters["reset_position_state_after_each_trajectory"] == "True";
+
+      std::string odom_topic = info_.hardware_parameters["odom_topic"];
+      if (odom_topic.empty())
+      {
+        odom_topic = "/odom";
+      }
+
+      _prismatic_joint_state_monitor = std::make_shared<hardware_interface_utils::PrismaticJointStateMonitor>(
+          odom_topic, reset_position_state_after_each_trajectory);
+    }
+    else
+    {
+      RCLCPP_INFO(rclcpp::get_logger(_LOGGER),
+                  "Position state feedback is disabled! To enable it, set "
+                  "enable_state_feedback to true in the hardware configuration.");
+    }
+
+    return hardware_interface_utils::configure_joints(info.joints, _LOGGER);
   }
 
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_configure(
@@ -32,7 +59,7 @@ namespace ros2_control_base_movement
       _hw_velocity_commands[i] = 0;
     }
 
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully configured!");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Successfully configured!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -68,7 +95,7 @@ namespace ros2_control_base_movement
   hardware_interface::CallbackReturn BaseMovementSystemHardware::on_activate(
       const rclcpp_lifecycle::State& /*previous_state*/)
   {
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "Activating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Activating ...please wait...");
 
     // command and state should be equal when starting
     for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -80,7 +107,7 @@ namespace ros2_control_base_movement
       _hw_velocity_commands[i] = _hw_velocity_states[i];
     }
 
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully activated!");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Successfully activated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -90,9 +117,9 @@ namespace ros2_control_base_movement
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "Deactivating ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Deactivating ...please wait...");
 
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully deactivated!");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Successfully deactivated!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -102,9 +129,9 @@ namespace ros2_control_base_movement
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "Shutting down ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Shutting down ...please wait...");
 
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "Successful shutdown!");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Successful shutdown!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -114,9 +141,9 @@ namespace ros2_control_base_movement
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Cleaning up ...please wait...");
 
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "Cleaned up successfully!");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Cleaned up successfully!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -126,9 +153,9 @@ namespace ros2_control_base_movement
   {
     // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
     // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "On Error: Cleaning up ...please wait...");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "On Error: Cleaning up ...please wait...");
 
-    RCLCPP_INFO(rclcpp::get_logger(_logger), "On Error: Cleaned up successfully!");
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "On Error: Cleaned up successfully!");
 
     return hardware_interface::CallbackReturn::SUCCESS;
   }
@@ -136,15 +163,40 @@ namespace ros2_control_base_movement
   hardware_interface::return_type BaseMovementSystemHardware::read(const rclcpp::Time& /*time*/,
                                                                    const rclcpp::Duration& /*period*/)
   {
-    // Right now, this is kind of a mocked implementation. Right now, I am not sure if we need the feedback for the
-    // mobile_base joint. It might be enough that we have this joint for planning and executing the base movement open
-    // loop. If we need the feedback, we need to implement this here.
+    if (!_enable_state_feedback)
+    {
+      return hardware_interface::return_type::OK;
+    }
+
+    if (rclcpp::ok())
+    {
+      rclcpp::spin_some(_prismatic_joint_state_monitor);
+    }
+
+    _prismatic_joint_state_monitor->update_state(_hw_position_states, _hw_velocity_states);
+
     return hardware_interface::return_type::OK;
   }
 
   hardware_interface::return_type BaseMovementSystemHardware::write(const rclcpp::Time& /*time*/,
                                                                     const rclcpp::Duration& /*period*/)
   {
+    if (!_enable_state_feedback)
+    {
+      return hardware_interface::return_type::OK;
+    }
+
+    if (std::abs(_hw_velocity_commands[0]) > 0.00001)
+    {
+      // When we receive a velocity command, we know the trajectory execution has started, so the robot is in motion
+      // and we want to track the position and velocity of the robot
+      _prismatic_joint_state_monitor->set_is_trajectory_execution_in_motion(true);
+    }
+    else
+    {
+      _prismatic_joint_state_monitor->set_is_trajectory_execution_in_motion(false);
+    }
+
     // We don't do anything with the commands here, because we have a chained controller that is responsible for taking
     // the command values of this joint and translating them into the commands for the wheels, so the cmd_vel topic
     return hardware_interface::return_type::OK;
