@@ -88,13 +88,6 @@
 	<!-- Gazebo ros control pluggins -->
 	<!-- <xacro:ros_control/> -->
 	<xacro:gazebo_colors prefix="$(arg prefix)"/>
-	<!--Zed added more or less manually TODO why robot everywhere-->
-	<xacro:stereolabs_zed2 prefix="$(arg prefix)zed2" parent="base_link" model="zed2" near="0.3" far="20">
-	    <origin
-		xyz="0.27 0 1.43"
-		rpy="0 0.416 0"
-		/>
-  	</xacro:stereolabs_zed2>
 
 	<!-- SENSORS  DEBUGG-->
 	<!-- TODO: Should be sensor_intel_d435, but this one isn't migrated to ros2 yet -->

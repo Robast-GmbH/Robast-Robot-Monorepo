@@ -27,11 +27,6 @@ RUN apt-get update && apt-get install -y \
   python3-rosdep \
   python3-vcstool \
   libusb-1.0-0-dev\
-  #groot qt
-  qtbase5-dev \
-  libqt5svg5-dev \
-  libzmq3-dev \
-  libdw-dev \
   wget \
   && rm -rf /var/lib/apt/lists/* \
   && rosdep init || echo "rosdep already initialized"
@@ -76,7 +71,7 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 WORKDIR /nav_ws/src
 RUN git clone https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
 WORKDIR /nav_ws
-RUN rosdep update && rosdep install --from-paths src --ignore-src -y
+RUN rosdep update && rosdep install --from-paths src/spatio_temporal_voxel_layer/openvdb_vendor --ignore-src -y
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --packages-skip spatio_temporal_voxel_layer --cmake-args '-DCMAKE_BUILD_TYPE=Release'
 
 RUN echo "if [ -f /nav_ws/install/setup.bash ]; then source /nav_ws/install/setup.bash; fi" >> /home/$USER/.bashrc
