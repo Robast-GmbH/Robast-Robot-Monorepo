@@ -1,5 +1,5 @@
 ARG ROS_BUILD_DISTRO=jazzy
-FROM ros:${ROS_BUILD_DISTRO}-perception as devel
+FROM ros:${ROS_BUILD_DISTRO}-perception AS devel
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
@@ -82,7 +82,7 @@ WORKDIR /workspace
 USER ubuntu
 
 ############################## Build ##################################
-FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as build
+FROM ros:${ROS_BUILD_DISTRO}-ros-base AS build
 ARG ROS_BUILD_DISTRO
 ARG GIT_TOKEN
 ARG GIT_BRANCH=main
@@ -96,7 +96,7 @@ RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs && mv /tmp/spatio_temporal_voxel_layer /ws/src/ros2/spatio_temporal_voxel_layer
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
 
 
 
@@ -106,7 +106,7 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
 ############################## Release ##################################
-FROM ros:${ROS_BUILD_DISTRO}-perception as release
+FROM ros:${ROS_BUILD_DISTRO}-perception AS release
 ARG ROS_BUILD_DISTRO
 RUN apt-get update && apt-get install -y \
   cmake \
@@ -130,8 +130,7 @@ RUN apt-get update && apt-get upgrade -y\
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     libzmq3-dev \
     ros-${ROS_DISTRO}-slam-toolbox \
-    ros-${ROS_DISTRO}-robot-localization \
-    ros-${ROS_DISTRO}-spatio-temporal-voxel-layer
+    ros-${ROS_DISTRO}-robot-localization
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
@@ -141,52 +140,6 @@ ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
 RUN apt-get update \
   && echo "if [ -f /robast/${ROS_DISTRO}/setup.bash ]; then source /robast/${ROS_DISTRO}/setup.bash; fi" >> ~root/.bashrc
-
-ENV is_simulation=False
-ENV config_directory=config
-ENV robot_name=rb_theron
-ENV init_x=1.46
-ENV init_y=-2.89
-ENV init_z=0.0
-ENV init_yaw=1.57
-ENV prefix=''
-
-############################## DEBUG ##################################
-FROM ros:${ROS_BUILD_DISTRO}-ros-base-jammy as debug
-ARG ROS_BUILD_DISTRO
-COPY --from=release / /
-
-RUN apt update -y && apt upgrade -y && apt install -y \
-    ros-${ROS_DISTRO}-foxglove-bridge \
-    ros-${ROS_DISTRO}-rosbag2 \
-    ros-${ROS_DISTRO}-nav-msgs \
-    ros-${ROS_DISTRO}-depthai-ros-msgs \
-    ros-${ROS_DISTRO}-geographic-msgs \
-    ros-${ROS_DISTRO}-geometry-msgs \
-    ros-${ROS_DISTRO}-lifecycle-msgs \
-    ros-${ROS_DISTRO}-rosbridge-msgs \
-    ros-${ROS_DISTRO}-rviz2 \
-    ros-${ROS_DISTRO}-navigation2 \
-    ros-${ROS_DISTRO}-slam-toolbox
-
-ARG DEBIAN_FRONTEND=noninteractive
-RUN apt-get update -q && \
-    apt-get upgrade -yq && \
-    apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu gnupg2 && \
-    rm -rf /var/lib/apt/lists/*
-RUN echo "Set disable_coredump false" >> /etc/sudo.conf
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER=robast
-ARG DEBIAN_FRONTEND=
-
-ENV ROS_DOMAIN_ID=0
-# dds setup / configuration
-ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
-# rmw_cyclonedds_cpp #rmw_fastrtps_cpp
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
-ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
 
 ENV is_simulation=False
 ENV config_directory=config
