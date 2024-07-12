@@ -241,31 +241,7 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
     return std::make_tuple(pipeline, stereoWidth, stereoHeight);
 }
 
-int main(int argc, char** argv) {
-    rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("door_handle_node");
-
-    std::string tfPrefix;
-    std::string mode;
-    std::string mxId;
-    std::string resourceBaseFolder;
-    std::string door_handle_position_topic;
-    std::string stereo_depth_topic;
-    std::string right_rectified_image_topic;
-    std::string color_image_topic;
-    std::string nnPath;
-    std::string monoResolution;
-    std::string rgbResolution;
-    int badParams = 0, stereo_fps, confidence, LRchecktresh, detectionClassesCount, expTime, sensIso;
-    int rgbScaleNumerator, rgbScaleDenominator, previewWidth, previewHeight;
-    bool lrcheck, extended, subpixel, rectify, depth_aligned, manualExposure;
-    bool enableDotProjector, enableFloodLight;
-    bool usb2Mode, poeMode, syncNN;
-    double angularVelCovariance, linearAccelCovariance;
-    double dotProjectormA, floodLightmA;
-    bool enableRosBaseTimeUpdate;
-    std::string nnName(BLOB_NAME); 
-
+void declareParameters(rclcpp::Node::SharedPtr node) {
     node->declare_parameter("mxId", "");
     node->declare_parameter("usb2Mode", false);
     node->declare_parameter("poeMode", false);
@@ -306,13 +282,22 @@ int main(int argc, char** argv) {
     node->declare_parameter("dotProjectormA", 200.0);
     node->declare_parameter("floodLightmA", 200.0);
     node->declare_parameter("enableRosBaseTimeUpdate", false);
-    node->declare_parameter("door_handle_position_topic","");
-    node->declare_parameter("stereo_depth_topic","");
-    node->declare_parameter("right_rectified_image_topic","");
-    node->declare_parameter("color_image_topic","");
+    node->declare_parameter("door_handle_position_topic", "");
+    node->declare_parameter("stereo_depth_topic", "");
+    node->declare_parameter("right_rectified_image_topic", "");
+    node->declare_parameter("color_image_topic", "");
+}
 
-    // updating parameters if defined in launch file.
-
+void getParameters(rclcpp::Node::SharedPtr node,
+                   std::string &mxId, bool &usb2Mode, bool &poeMode, std::string &resourceBaseFolder,
+                   std::string &tfPrefix, std::string &mode, bool &lrcheck, bool &extended, bool &subpixel,
+                   bool &rectify, bool &depth_aligned, int &stereo_fps, int &confidence, int &LRchecktresh,
+                   std::string &monoResolution, std::string &rgbResolution, bool &manualExposure, int &expTime,
+                   int &sensIso, int &rgbScaleNumerator, int &rgbScaleDenominator, int &previewWidth, int &previewHeight,
+                   double &angularVelCovariance, double &linearAccelCovariance, int &detectionClassesCount, bool &syncNN,
+                   bool &enableDotProjector, bool &enableFloodLight, double &dotProjectormA, double &floodLightmA,
+                   bool &enableRosBaseTimeUpdate, std::string &door_handle_position_topic, std::string &stereo_depth_topic,
+                   std::string &right_rectified_image_topic, std::string &color_image_topic, std::string &nnName) {
     node->get_parameter("mxId", mxId);
     node->get_parameter("usb2Mode", usb2Mode);
     node->get_parameter("poeMode", poeMode);
@@ -351,10 +336,48 @@ int main(int argc, char** argv) {
     node->get_parameter("dotProjectormA", dotProjectormA);
     node->get_parameter("floodLightmA", floodLightmA);
     node->get_parameter("enableRosBaseTimeUpdate", enableRosBaseTimeUpdate);
-    node->get_parameter("door_handle_position_topic",door_handle_position_topic);
-    node->get_parameter("stereo_depth_topic",stereo_depth_topic);
-    node->get_parameter("right_rectified_image_topic",right_rectified_image_topic);
-    node->get_parameter("color_image_topic",color_image_topic);
+    node->get_parameter("door_handle_position_topic", door_handle_position_topic);
+    node->get_parameter("stereo_depth_topic", stereo_depth_topic);
+    node->get_parameter("right_rectified_image_topic", right_rectified_image_topic);
+    node->get_parameter("color_image_topic", color_image_topic);
+    node->get_parameter("nnName", nnName);
+}
+
+int main(int argc, char** argv) {
+    rclcpp::init(argc, argv);
+    auto node = rclcpp::Node::make_shared("door_handle_node");
+
+    std::string tfPrefix;
+    std::string mode;
+    std::string mxId;
+    std::string resourceBaseFolder;
+    std::string door_handle_position_topic;
+    std::string stereo_depth_topic;
+    std::string right_rectified_image_topic;
+    std::string color_image_topic;
+    std::string nnPath;
+    std::string monoResolution;
+    std::string rgbResolution;
+    int badParams = 0, stereo_fps, confidence, LRchecktresh, detectionClassesCount, expTime, sensIso;
+    int rgbScaleNumerator, rgbScaleDenominator, previewWidth, previewHeight;
+    bool lrcheck, extended, subpixel, rectify, depth_aligned, manualExposure;
+    bool enableDotProjector, enableFloodLight;
+    bool usb2Mode, poeMode, syncNN;
+    double angularVelCovariance, linearAccelCovariance;
+    double dotProjectormA, floodLightmA;
+    bool enableRosBaseTimeUpdate;
+    std::string nnName(BLOB_NAME); 
+
+    declareParameters(node);
+
+    // updating parameters if defined in launch file.
+
+    getParameters(node, mxId, usb2Mode, poeMode, resourceBaseFolder, tfPrefix, mode, lrcheck, extended, subpixel, rectify,
+                  depth_aligned, stereo_fps, confidence, LRchecktresh, monoResolution, rgbResolution, manualExposure,
+                  expTime, sensIso, rgbScaleNumerator, rgbScaleDenominator, previewWidth, previewHeight, angularVelCovariance,
+                  linearAccelCovariance, detectionClassesCount, syncNN, enableDotProjector, enableFloodLight, dotProjectormA,
+                  floodLightmA, enableRosBaseTimeUpdate, door_handle_position_topic, stereo_depth_topic, right_rectified_image_topic,
+                  color_image_topic, nnName);
 
     if(resourceBaseFolder.empty()) {
         throw std::runtime_error("Send the path to the resouce folder containing NNBlob in \'resourceBaseFolder\' ");
@@ -514,17 +537,7 @@ int main(int argc, char** argv) {
     auto detectionQueue = device->getOutputQueue("detections", 30, false);
     auto previewCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, previewWidth, previewHeight);
 
-    // dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> previewPublish(
-    //                 previewQueue,
-    //                 node,
-    //                 std::string("color/preview/image"),
-    //                 std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rgbConverter, std::placeholders::_1, std::placeholders::_2),
-    //                 30,
-    //                 previewCameraInfo,
-    //                 "color/preview");
-    // previewPublish.addPublisherCallback();
-
-        dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 416, 416, false);
+    dai::rosBridge::SpatialDetectionConverter detConverter(tfPrefix + "_rgb_camera_optical_frame", 416, 416, false);
     dai::rosBridge::BridgePublisher<depthai_ros_msgs::msg::SpatialDetectionArray, dai::SpatialImgDetections> detectionPublish(
                     detectionQueue,
                     node,
