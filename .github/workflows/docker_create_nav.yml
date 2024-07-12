@@ -45,7 +45,7 @@ jobs:
         build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }} #TODO @TAlscher find a smarter way then using this token
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel-jazzy
 
     - name: Build ${{ env.Project-Name }} release docker
       uses: docker/build-push-action@v4
@@ -55,4 +55,4 @@ jobs:
         build-args: GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
         push: true
         file: src/ros2/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release
+        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release-jazzy
