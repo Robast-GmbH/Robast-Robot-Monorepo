@@ -1,5 +1,5 @@
 name: Create Docker Image Map Preprocessing
-
+#trigger workflow every day at 00:00
 on:
   push:
     branches:
