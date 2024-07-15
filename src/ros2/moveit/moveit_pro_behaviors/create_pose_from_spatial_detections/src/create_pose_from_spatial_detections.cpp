@@ -6,6 +6,7 @@ namespace create_pose_from_spatial_detections
 {
 constexpr auto PORT_ID_SPATIAL_DETECTIONS = "spatial_detections";
 constexpr auto PORT_ID_POSE_STAMPED_OUT = "pose_stamped_out";
+constexpr auto PORT_ID_USE_CONFIDENCE_THRESHOLD = "use_confidence_threshold";
 constexpr auto PORT_ID_CONFIDENCE_THRESHOLD = "confidence_threshold";
 constexpr auto PORT_ID_ORIENTATION = "target_orientation";
 
@@ -21,6 +22,7 @@ CreatePoseFromSpatialDetections::CreatePoseFromSpatialDetections(
 BT::PortsList CreatePoseFromSpatialDetections::providedPorts()
 {
   return BT::PortsList({
+      BT::InputPort<bool>(PORT_ID_USE_CONFIDENCE_THRESHOLD, false, "Whether to use the confidence threshold."),
       BT::InputPort<double>(PORT_ID_CONFIDENCE_THRESHOLD, 0.5, "The confidence threshold to consider a detection."),
       BT::InputPort<depthai_ros_msgs::msg::SpatialDetectionArray>(PORT_ID_SPATIAL_DETECTIONS, "{spatial_detections}", "The spatial detections to create a pose from."),
       BT::InputPort<std::vector<double>>(PORT_ID_ORIENTATION, {0.0, 0.0, 1.57079632679}, "The target orientation of the pose (optional) in euler (rad)."),
@@ -40,6 +42,7 @@ tl::expected<bool, std::string> CreatePoseFromSpatialDetections::doWork()
 {
 
   const auto spatial_detections = getInput<depthai_ros_msgs::msg::SpatialDetectionArray>(PORT_ID_SPATIAL_DETECTIONS);
+  const auto use_confidence_threshold = getInput<bool>(PORT_ID_USE_CONFIDENCE_THRESHOLD);
   const auto confidence_threshold = getInput<double>(PORT_ID_CONFIDENCE_THRESHOLD);
   const auto target_orientation_in_euler = getInput<std::vector<double>>(PORT_ID_ORIENTATION);
 
@@ -50,7 +53,7 @@ tl::expected<bool, std::string> CreatePoseFromSpatialDetections::doWork()
   }
 
   // Check that the confidence threshold is valid
-  if (confidence_threshold.value() < 0 || confidence_threshold.value() > 1)
+  if (use_confidence_threshold.value() && (confidence_threshold.value() < 0 || confidence_threshold.value() > 1))
   {
     return tl::make_unexpected("Confidence threshold must be between 0 and 1.");
   }
