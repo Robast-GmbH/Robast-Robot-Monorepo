@@ -78,7 +78,7 @@ tl::expected<bool, std::string> CreatePoseFromSpatialDetections::doWork()
       });
 
   // Check if the highest confidence detection is above the threshold
-  if (highest_confidence_detection.results[0].score < confidence_threshold.value())
+  if (use_confidence_threshold.value() && (highest_confidence_detection.results[0].score < confidence_threshold.value()))
   {
     return tl::make_unexpected("No detections above the confidence threshold.");
   }
