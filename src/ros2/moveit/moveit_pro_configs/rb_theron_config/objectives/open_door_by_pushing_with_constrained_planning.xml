@@ -10,7 +10,7 @@
             <Action ID="GetSpatialDetectionsFromTopic"/>
             <Action ID="CreatePoseFromSpatialDetections" pose_stamped_out="{door_handle_pose}" target_orientation="0.0; 0.0; 1.57079632679"/>
             <Action ID="PublishPoseToTopic" pose_stamped_in="{door_handle_pose}" topic_name="/debug/pose_door_handle"/>
-            <Action ID="TransformPose" input_pose="{door_handle_pose}" output_pose="{pose_in_front_of_door_handle}" translation_xyz="-0.12;0.1;-0.5"/>
+            <Action ID="TransformPose" input_pose="{door_handle_pose}" output_pose="{pose_in_front_of_door_handle}" translation_xyz="-0.12;0.1;-0.1"/>
             <Action ID="PublishPoseToTopic" pose_stamped_in="{pose_in_front_of_door_handle}" topic_name="/debug/pose_in_front_of_door_handle"/>
             <SubTree ID="Take Snapshot" _collapsed="true"/>
           </Control>
