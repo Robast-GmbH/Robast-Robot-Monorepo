@@ -1,7 +1,7 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<root BTCPP_format="4" main_tree_to_execute="Open door by pushing with constraints">
+<root BTCPP_format="4" main_tree_to_execute="Open a door in real life">
   <!--//////////-->
-  <BehaviorTree ID="Open door by pushing with constraints" _description="Opens a door by pushing it open." _favorite="false" _hardcoded="false">
+  <BehaviorTree ID="Open a door in real life" _description="Opens a door in real life by using MTC" _favorite="false" _hardcoded="false">
     <Control ID="Sequence" name="TopLevelSequence">
       <Action ID="SetBlackboard" value="mobile_base_arm" output_key="joint_group_name"/>
       <Decorator ID="RetryUntilSuccessful" num_attempts="20">
