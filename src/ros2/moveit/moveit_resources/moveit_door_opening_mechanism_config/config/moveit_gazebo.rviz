@@ -983,6 +983,438 @@ Visualization Manager:
         Reliability Policy: Reliable
         Value: /debug/pose_in_front_of_door_handle
       Value: true
+    - Class: moveit_task_constructor/Motion Planning Tasks
+      Enabled: true
+      Interrupt Display: false
+      Loop Animation: false
+      Markers:
+        All at once?: false
+        Value: true
+      Name: Motion Planning Tasks
+      Robot:
+        Fixed Robot Color: 150; 50; 150
+        Links:
+          All Links Enabled: true
+          Expand Joint Details: false
+          Expand Link Details: false
+          Expand Tree: false
+          Link Tree Style: Links in Alphabetic Order
+          alu_profile_link_bottom:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          alu_profile_link_left:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          alu_profile_link_right:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          alu_profile_link_top:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          back_realsense_camera_camera_depth_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_realsense_camera_camera_fisheye_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_realsense_camera_camera_fisheye_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_realsense_camera_camera_left_ir_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_realsense_camera_camera_left_ir_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_realsense_camera_camera_right_ir_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_realsense_camera_camera_right_ir_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_realsense_camera_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          back_top_oak_d_camera_imu_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_oak_d_camera_left_camera_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_oak_d_camera_left_camera_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_oak_d_camera_model_origin:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          back_top_oak_d_camera_rgb_camera_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_oak_d_camera_right_camera_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_realsense_camera_camera_depth_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_realsense_camera_camera_fisheye_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_realsense_camera_camera_fisheye_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_realsense_camera_camera_left_ir_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_realsense_camera_camera_left_ir_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_realsense_camera_camera_right_ir_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_realsense_camera_camera_right_ir_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          back_top_realsense_camera_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          base_footprint:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          bottom_sheet_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          door_opening_mechanism_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          door_opening_mechanism_link_freely_rotating_hook:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          door_opening_mechanism_link_gripper_adapter:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          door_opening_mechanism_link_rotating_arm:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          door_opening_mechanism_link_x_axis_slide:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          door_opening_mechanism_link_y_axis_rail:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          door_opening_mechanism_link_y_axis_slide:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          door_opening_mechanism_rotating_arm_mounting_plate_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          drawer_1:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          drawer_2:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          drawer_3:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          drawer_4:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          drawer_5:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_laser_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_leftsupport:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_leftwheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_realsense_camera_camera_depth_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_realsense_camera_camera_fisheye_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_realsense_camera_camera_fisheye_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_realsense_camera_camera_left_ir_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_realsense_camera_camera_left_ir_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_realsense_camera_camera_right_ir_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_realsense_camera_camera_right_ir_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_realsense_camera_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_rightsupport:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_rightwheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_top_oak_d_camera_left_camera_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_top_oak_d_camera_left_camera_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_top_oak_d_camera_model_origin:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          front_top_oak_d_camera_rgb_camera_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          front_top_oak_d_camera_right_camera_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          hook_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          hook_link_back_side:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          hook_link_front_side:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          left_wheel_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          left_wheel_tire_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          module_cage_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          oak-d-s2-usb-base--frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          oak-d_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/base_footprint/back_realsense_camera_color_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/base_footprint/back_realsense_camera_depth_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/base_footprint/back_top_realsense_camera_color_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/base_footprint/back_top_realsense_camera_depth_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/base_footprint/front_laser_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/base_footprint/front_realsense_camera_color_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/base_footprint/front_realsense_camera_depth_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/base_footprint/front_top_oak_d_camera_rgb_camera_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/base_footprint/front_top_oak_d_camera_right_camera_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/base_footprint/imu_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rb_theron/base_footprint/top_laser_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/door_opening_mechanism_link_y_axis_slide/back_top_oak_d_camera_rgb_camera_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rb_theron/door_opening_mechanism_link_y_axis_slide/back_top_oak_d_camera_right_camera_optical_frame:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+          rear_leftsupport:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rear_leftwheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rear_rightsupport:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          rear_rightwheel:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          right_wheel_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          right_wheel_tire_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+          top_laser_base_link:
+            Alpha: 1
+            Show Axes: false
+            Show Trail: false
+            Value: true
+        Robot Alpha: 0.5
+        Show Robot Collision: false
+        Show Robot Visual: true
+        Use Fixed Robot Color: false
+        Value: ""
+      Robot Description: robot_description
+      Scene:
+        Attached Body Color: 150; 50; 150
+        Scene Alpha: 0.8999999761581421
+        Scene Color: 50; 230; 50
+        Value: true
+        Voxel Coloring: Z-Axis
+        Voxel Rendering: Occupied Voxels
+      Show Trail: false
+      State Display Time: 0.05 s
+      Task Solution Topic: /solution
+      Tasks:
+        {}
+      Trail Step Size: 1
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
