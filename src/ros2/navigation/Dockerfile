@@ -76,7 +76,8 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --packages-skip spatio_tem
 
 RUN echo "if [ -f /nav_ws/install/setup.bash ]; then source /nav_ws/install/setup.bash; fi" >> /home/$USER/.bashrc
 
-RUN echo "ubuntu:ubuntu" | chpasswd 
+RUN echo "ubuntu:ubuntu" | chpasswd && \
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 WORKDIR /workspace
 USER ubuntu
