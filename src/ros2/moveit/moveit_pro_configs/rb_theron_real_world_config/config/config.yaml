@@ -71,6 +71,9 @@ moveit_params:
   joint_limits:
     package: "moveit_door_opening_mechanism_config"
     path: "config/joint_limits_real_world.yaml"
+  ompl_planning:
+    package: "moveit_door_opening_mechanism_config"
+    path: "config/ompl_iron_planning_real_life.yaml"
 
 octomap_manager:
 #   # Input point cloud topic name. The *output* point cloud topic published by
