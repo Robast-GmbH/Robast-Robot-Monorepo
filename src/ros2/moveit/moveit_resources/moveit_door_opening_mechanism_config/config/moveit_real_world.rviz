@@ -92,12 +92,12 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame:
-            Alpha: 1
+          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame
+          : Alpha: 1
             Show Axes: false
             Show Trail: false
-          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame:
-            Alpha: 1
+          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame
+          : Alpha: 1
             Show Axes: false
             Show Trail: false
           robot/alu_profile_link_bottom:
@@ -325,12 +325,12 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame:
-            Alpha: 1
+          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame
+          : Alpha: 1
             Show Axes: false
             Show Trail: false
-          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame:
-            Alpha: 1
+          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame
+          : Alpha: 1
             Show Axes: false
             Show Trail: false
           robot/alu_profile_link_bottom:
@@ -516,14 +516,53 @@ Visualization Manager:
     - Class: rviz_default_plugins/MarkerArray
       Enabled: true
       Name: MarkerArray
-      Namespaces:
-        {}
+      Namespaces: {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
         History Policy: Keep Last
         Reliability Policy: Reliable
         Value: move_group_tutorial
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz_default_plugins/Pose
+      Color: 255; 25; 0
+      Enabled: true
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /debug/pose_door_handle
+      Value: true
+    - Alpha: 1
+      Axes Length: 1
+      Axes Radius: 0.10000000149011612
+      Class: rviz_default_plugins/Pose
+      Color: 0; 255; 0
+      Enabled: true
+      Head Length: 0.30000001192092896
+      Head Radius: 0.10000000149011612
+      Name: Pose
+      Shaft Length: 1
+      Shaft Radius: 0.05000000074505806
+      Shape: Arrow
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /debug/pose_in_front_of_door_handle
       Value: true
     - Class: moveit_task_constructor/Motion Planning Tasks
       Enabled: true
@@ -545,12 +584,12 @@ Visualization Manager:
             Alpha: 1
             Show Axes: false
             Show Trail: false
-          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame:
-            Alpha: 1
+          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_rgb_camera_optical_frame
+          : Alpha: 1
             Show Axes: false
             Show Trail: false
-          rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame:
-            Alpha: 1
+          ? rb_theron/door_opening_mechanism_link_y_axis_slide/robot/back_top_oak_d_camera_right_camera_optical_frame
+          : Alpha: 1
             Show Axes: false
             Show Trail: false
           robot/alu_profile_link_bottom:
@@ -744,8 +783,7 @@ Visualization Manager:
       Show Trail: false
       State Display Time: 0.05 s
       Task Solution Topic: /solution
-      Tasks:
-        {}
+      Tasks: {}
       Trail Step Size: 1
       Value: true
   Enabled: true
