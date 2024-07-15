@@ -87,6 +87,19 @@
     <disable_default_collisions link="robot/base_footprint" />
     <disable_default_collisions link="robot/base_link" />
 
+    <!-- This is what I found out through trial and error and checking the content of the planning scene: -->
+    <!-- To make the links named in disable_default_collisions appear in the planning scene, they need
+    to be named at least once with disable_collisions like this: -->
+    <disable_collisions link1="robot/base_link" link2="robot/rear_leftwheel" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/rear_rightwheel" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/left_wheel_link" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/right_wheel_link" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/rear_leftsupport" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/rear_rightsupport" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/left_wheel_tire_link" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/right_wheel_tire_link" reason="Never"/>
+    <disable_collisions link1="robot/base_link" link2="robot/odom" reason="Never"/>
+
      <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/alu_profile_link_left" reason="Never"/>
     <disable_collisions link1="robot/alu_profile_link_bottom" link2="robot/alu_profile_link_right" reason="Never"/>
