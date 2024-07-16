@@ -3,12 +3,17 @@ FROM ros:${ROS_BUILD_DISTRO}-perception AS devel
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
-    apt-get upgrade -yq && \
-    apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu gnupg2 && \
-    rm -rf /var/lib/apt/lists/*
+apt-get upgrade -yq && \
+apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu gnupg2 && \
+rm -rf /var/lib/apt/lists/*
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 ARG DEBIAN_FRONTEND=
 
+RUN echo "ubuntu:ubuntu" | chpasswd && \
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+
+ENV USER=ubuntu
 ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
 ENV COLCON_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
 ENV LD_LIBRARY_PATH=/opt/ros/${ROS_DISTRO}/lib
@@ -76,8 +81,6 @@ RUN . /opt/ros/${ROS_DISTRO}/setup.sh && colcon build --packages-skip spatio_tem
 
 RUN echo "if [ -f /nav_ws/install/setup.bash ]; then source /nav_ws/install/setup.bash; fi" >> /home/$USER/.bashrc
 
-RUN echo "ubuntu:ubuntu" | chpasswd && \
-    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 WORKDIR /workspace
 USER ubuntu
