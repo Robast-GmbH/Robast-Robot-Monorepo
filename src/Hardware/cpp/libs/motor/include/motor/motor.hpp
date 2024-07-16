@@ -12,12 +12,12 @@
 // diag pin pulsed HIGH when SG_RESULT falls below 2*STALL_VALUE
 // must be in StealthChop Mode for stallguard to work
 // Value of TCOOLTHRS must be greater than TSTEP & TPWMTHRS
-#define STALL_VALUE 50 // [0..255]
-#define TOFF_VALUE 2
-#define SERIAL_PORT Serial2
-#define R_SENSE 0.33f // Match to your driver
+#define STALL_VALUE                50   // [0..255]
+#define TOFF_VALUE                 2
+#define SERIAL_PORT                Serial2
+#define R_SENSE                    0.33f   // Match to your driver
 #define DEFAULT_MOTOR_ACCELERATION 10
-#define INSTANT_ACCELERATION 0
+#define INSTANT_ACCELERATION       0
 
 namespace stepper_motor
 {
@@ -41,10 +41,11 @@ namespace stepper_motor
 
   class Motor
   {
-  public:
+   public:
     Motor(const uint8_t driver_address,
           const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
-          const StepperPinIdConfig &stepper_pin_id_config);
+          const StepperPinIdConfig &stepper_pin_id_config,
+          const bool shaft_direction_is_inverted);
 
     void init();
 
@@ -74,7 +75,7 @@ namespace stepper_motor
 
     void print_status();
 
-  private:
+   private:
     const std::unique_ptr<TMC2209Stepper> _driver;
 
     const std::shared_ptr<drawer_controller::IGpioWrapper> _gpio_wrapper;
@@ -99,11 +100,12 @@ namespace stepper_motor
 
     static bool _is_stalled;
     bool _is_stall_guard_enabled = false;
+    const bool _shaft_direction_is_inverted;
     Direction _shaft_direction = clockwise;
 
     static void stall_ISR();
 
-    bool direction_to_shaft_bool();
+    bool direction_to_shaft_bool(Direction direction);
 
     void set_active_speed(uint32_t speed);
 
@@ -119,6 +121,6 @@ namespace stepper_motor
 
     int32_t calculate_new_active_speed(int32_t current_position_int32) const;
   };
-} // namespace stepper_motor
+}   // namespace stepper_motor
 
-#endif // DRAWER_CONTROLLER_MOTOR_HPP
+#endif   // DRAWER_CONTROLLER_MOTOR_HPP

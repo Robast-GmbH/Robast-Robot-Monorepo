@@ -6,7 +6,8 @@ namespace stepper_motor
 
   Motor::Motor(const uint8_t driver_address,
                const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
-               const StepperPinIdConfig &stepper_pin_id_config)
+               const StepperPinIdConfig &stepper_pin_id_config,
+               const bool shaft_direction_is_inverted)
       : _gpio_wrapper{gpio_wrapper},
         _driver{std::make_unique<TMC2209Stepper>(&SERIAL_PORT, R_SENSE, driver_address)},
         _stepper_enn_tmc2209_pin_id{stepper_pin_id_config.stepper_enn_tmc2209_pin_id},
@@ -15,7 +16,8 @@ namespace stepper_motor
         _stepper_dir_pin_id{stepper_pin_id_config.stepper_dir_pin_id},
         _stepper_diag_pin_id{stepper_pin_id_config.stepper_diag_pin_id},
         _stepper_index_pin_id{stepper_pin_id_config.stepper_index_pin_id},
-        _stepper_step_pin_id{stepper_pin_id_config.stepper_step_pin_id}
+        _stepper_step_pin_id{stepper_pin_id_config.stepper_step_pin_id},
+        _shaft_direction_is_inverted{shaft_direction_is_inverted}
   {
     _gpio_wrapper->set_pin_mode(_stepper_enn_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
     _gpio_wrapper->set_pin_mode(_stepper_stdby_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
@@ -82,7 +84,7 @@ namespace stepper_motor
     // The stall output becomes active if SG_RESULT fall below this value.
     _driver->SGTHRS(STALL_VALUE);
 
-    _driver->shaft(direction_to_shaft_bool());
+    _driver->shaft(direction_to_shaft_bool(Direction::clockwise));
 
     debug_println("\nTesting connection...");
     uint8_t result = _driver->test_connection();
@@ -275,16 +277,15 @@ namespace stepper_motor
     return _target_speed;
   }
 
-  bool Motor::direction_to_shaft_bool()
+  bool Motor::direction_to_shaft_bool(Direction direction)
   {
-    // TODO(andreas): Check if it's correct.
-    if (_shaft_direction == clockwise)
+    if (_shaft_direction_is_inverted)
     {
-      return true;
+      return direction == Direction::counter_clockwise;
     }
     else
     {
-      return false;
+      return direction == Direction::clockwise;
     }
   }
 
@@ -293,8 +294,7 @@ namespace stepper_motor
     // When the direction is changing, the stall guard could be accidentally triggered therefore detach interrupt
     // detachInterrupt(STEPPER_DIAG_PIN);
     _shaft_direction = direction;
-    bool shaft_direction_as_bool = direction_to_shaft_bool();
-    _driver->shaft(shaft_direction_as_bool);
+    _driver->shaft(direction_to_shaft_bool(direction));
     // delay(500);
     // attachInterrupt(STEPPER_DIAG_PIN, stall_ISR, RISING);
   }
