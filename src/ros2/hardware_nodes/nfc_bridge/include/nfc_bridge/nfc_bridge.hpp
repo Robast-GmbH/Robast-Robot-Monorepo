@@ -34,7 +34,7 @@ namespace nfc_bridge
 
     static const Twn4Elatec _twn4_msg_converter;
 
-    void liveliness_ckeck();
+    void boot_beep();
     void start_up_scanner();
     void shutdown_scanner();
     bool wait_for_tag();
@@ -44,7 +44,7 @@ namespace nfc_bridge
     void write_nfc_callback(const std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Request> request,
                             std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Response> response);
 
-    void read_nfc_callback(const std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Request> request_header,
+    void read_nfc_callback(const std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Request> request,
                            std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Response> response);
   };
 

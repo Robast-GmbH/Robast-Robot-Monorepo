@@ -10,7 +10,7 @@ namespace nfc_bridge
 
     _serial_connector = std::make_unique<serial_helper::SerialHelper>(serial_helper::SerialHelper(serial_port_path));
 
-    liveliness_ckeck();
+    boot_beep();
     _write_service = this->create_service<communication_interfaces::srv::WriteNfcTag>(
         "write_nfc", std::bind(&NFCBridge::write_nfc_callback, this, std::placeholders::_1, std::placeholders::_2));
     _read_service = this->create_service<communication_interfaces::srv::ReadNfcTag>(
@@ -22,11 +22,11 @@ namespace nfc_bridge
     shutdown_scanner();
   }
 
-  void NFCBridge::liveliness_ckeck()
+  void NFCBridge::boot_beep()
   {
     start_up_scanner();
     std::string response = "";
-    _serial_connector->ascii_interaction(Twn4Elatec::BeepReq(0x10, 0x6009, 0xF401, 0xF401), response);
+    _serial_connector->ascii_interaction(Twn4Elatec::beep_req(0x10, 0x6009, 0xF401, 0xF401), response);
     shutdown_scanner();
   }
 
@@ -45,18 +45,14 @@ namespace nfc_bridge
     std::string response = "";
     u_int8_t result = 0;
     int max_iterations = 100;
-    while (result != 1)
+    while (result != 1 && max_iterations-- <= 1)
     {
       std::string tmp = "";
-      _serial_connector->ascii_interaction(Twn4Elatec::SearchTagReq(0x10), response);
-      Twn4Elatec::SearchTagResp(response, result, tmp);
+      _serial_connector->ascii_interaction(Twn4Elatec::search_tag_req(0x10), response);
+      Twn4Elatec::seatch_tag_resp(response, result, tmp);
       rclcpp::sleep_for(std::chrono::milliseconds(300));
-      if (max_iterations-- <= 1)
-      {
-        return false;
-      }
     }
-    return true;
+    return result == Twn4Elatec::ResultOK;
   }
 
   bool NFCBridge::read_nfc_code(std::string& nfc_key)
@@ -70,21 +66,16 @@ namespace nfc_bridge
 
     std::array<uint8_t, 16> data;
     std::string response = "";
-    u_int8_t result = 0;
+    uint8_t result = 0;
     int max_iterations = 100;
 
-    while (result != 1)
+    while (result != 1 && max_iterations-- <= 1)
     {
-      _serial_connector->ascii_interaction(Twn4Elatec::NTAGReadReq(0x04), response);
-      Twn4Elatec::NTAGReadResp(response, result, data, nfc_key);
-      if (max_iterations-- <= 1)
-      {
-        shutdown_scanner();
-        return false;
-      }
+      _serial_connector->ascii_interaction(Twn4Elatec::ntag_read_req(0x04), response);
+      Twn4Elatec::ntag_read_resp(response, result, data, nfc_key);
     }
     shutdown_scanner();
-    return true;
+    return result == Twn4Elatec::ResultOK;
   }
 
   bool NFCBridge::write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type)
@@ -109,8 +100,8 @@ namespace nfc_bridge
 
       while (result != 1)
       {
-        _serial_connector->ascii_interaction(Twn4Elatec::NTAGWriteReq(0x04 + j, data), response);
-        Twn4Elatec::NTAGWriteResp(response, result);
+        _serial_connector->ascii_interaction(Twn4Elatec::ntag_write_req(0x04 + j, data), response);
+        Twn4Elatec::ntag_write_resp(response, result);
         if (max_iterations-- <= 1)
         {
           shutdown_scanner();
@@ -130,9 +121,8 @@ namespace nfc_bridge
     response->success = write_nfc_code(request->nfc_tag_id, "");
   }
 
-  void NFCBridge::read_nfc_callback(
-      const std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Request> request_header,
-      std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Response> response)
+  void NFCBridge::read_nfc_callback(const std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Request> request,
+                                    std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Response> response)
   {
     std::string nfc_key = "";
     if (read_nfc_code(nfc_key))

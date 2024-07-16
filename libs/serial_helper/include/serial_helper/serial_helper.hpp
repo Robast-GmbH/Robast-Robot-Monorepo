@@ -1,5 +1,5 @@
-#ifndef HARDWARE_NODES__SERIAL_HELPER_H_
-#define HARDWARE_NODES__SERIAL_HELPER_H_
+#ifndef HARDWARE_NODES__SERIAL_HELPER_HPP_
+#define HARDWARE_NODES__SERIAL_HELPER_HPP_
 
 #include <chrono>
 #include <cstring>
@@ -21,7 +21,6 @@ namespace serial_helper
   class SerialHelper : public ISerialHelper
   {
    private:
-    /* data */
     std::string serial_path_;
     int serial_port_;
 
@@ -39,4 +38,4 @@ namespace serial_helper
   };
 }   // namespace serial_helper
 
-#endif /* HARDWARE_NODES__SERIAL_HELPER_H_ */
+#endif /* HARDWARE_NODES__SERIAL_HELPER_HPP_ */
