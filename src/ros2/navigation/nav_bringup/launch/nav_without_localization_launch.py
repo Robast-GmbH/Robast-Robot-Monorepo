@@ -27,9 +27,9 @@ def generate_launch_description():
             ("/odom", "diff_drive_base_controller/odom"),
             ("/tf", "tf"),
             ("/tf_static", "tf_static"),
-            ("/cmd_vel_smoothed", "diff_drive_base_controller/cmd_vel_unstamped")
+            ("/cmd_vel_smoothed", "diff_drive_base_controller/cmd_vel")
         ]
-        cmd_vel_remapping_behavior_server = [("/cmd_vel", "diff_drive_base_controller/cmd_vel_unstamped")]
+        cmd_vel_remapping_behavior_server = [("/cmd_vel", "diff_drive_base_controller/cmd_vel")]
     else:
         use_sim_time_default = "false"
         remappings = [
