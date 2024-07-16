@@ -7,7 +7,19 @@ from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch.actions import DeclareLaunchArgument, SetEnvironmentVariable
 from launch.substitutions import LaunchConfiguration
-from launch_ros.actions import Node
+from launch.events import matches_action
+from launch.conditions import IfCondition
+from launch.substitutions import (AndSubstitution, LaunchConfiguration,
+                                  NotSubstitution)
+
+
+from launch.actions import (DeclareLaunchArgument, EmitEvent, LogInfo,
+                            RegisterEventHandler)
+from launch_ros.actions import LifecycleNode
+from launch_ros.event_handlers import OnStateTransition
+from launch_ros.events.lifecycle import ChangeState
+from lifecycle_msgs.msg import Transition
+
 from nav2_common.launch import RewrittenYaml
 
 # ros2 run nav2_map_server map_saver_cli -t slam_map -f test
@@ -24,6 +36,8 @@ def generate_launch_description():
     namespace = LaunchConfiguration("namespace")
     use_sim_time = LaunchConfiguration("use_sim_time")
     autostart = LaunchConfiguration("autostart")
+    use_lifecycle_manager = LaunchConfiguration("use_lifecycle_manager")
+
     slam_params_file = LaunchConfiguration("slam_params_file")
     slam_posegraph = LaunchConfiguration("slam_posegraph")
     # robot_start_pose = LaunchConfiguration('map_start_pose')
@@ -41,6 +55,10 @@ def generate_launch_description():
         default_value="false",
         description="Use simulation (Gazebo) clock if true",
     )
+    
+    declare_use_lifecycle_manager = DeclareLaunchArgument(
+        'use_lifecycle_manager', default_value='false',
+        description='Enable bond connection during node activation')
 
     declare_autostart_cmd = DeclareLaunchArgument(
         "autostart",
@@ -107,8 +125,9 @@ def generate_launch_description():
     remappings_amcl = [("/map", "map"), ("/map_metadata", "map_metadata")]
 
     remappings_map_server = remappings_amcl
+    
 
-    start_slam_toolbox_cmd = Node(
+    start_slam_toolbox_cmd = LifecycleNode(
         package="slam_toolbox",
         executable=slam_executable,
         namespace=namespace,
@@ -116,11 +135,36 @@ def generate_launch_description():
         output="screen",
         parameters=[
             configured_params,
+            {'use_lifecycle_manager': use_lifecycle_manager},
             {"map_file_name": slam_posegraph},
             {"use_sim_time": use_sim_time},
             {"map_start_pose": [float(init_x), float(init_y), float(init_yaw)]},
         ],
         remappings=remappings_map_server,
+    )
+    
+    configure_event = EmitEvent(
+        event=ChangeState(
+            lifecycle_node_matcher=matches_action(start_slam_toolbox_cmd),
+            transition_id=Transition.TRANSITION_CONFIGURE
+        ),
+        condition=IfCondition(AndSubstitution(autostart, NotSubstitution(use_lifecycle_manager)))
+    )
+    
+    activate_event = RegisterEventHandler(
+        OnStateTransition(
+            target_lifecycle_node=start_slam_toolbox_cmd,
+            start_state="configuring",
+            goal_state="inactive",
+            entities=[
+                LogInfo(msg="[LifecycleLaunch] Slamtoolbox node is activating."),
+                EmitEvent(event=ChangeState(
+                    lifecycle_node_matcher=matches_action(start_slam_toolbox_cmd),
+                    transition_id=Transition.TRANSITION_ACTIVATE
+                ))
+            ]
+        ),
+        condition=IfCondition(AndSubstitution(autostart, NotSubstitution(use_lifecycle_manager)))
     )
 
     ld = LaunchDescription()
@@ -137,6 +181,10 @@ def generate_launch_description():
     ld.add_action(declare_slam_map_topic_cmd)
     ld.add_action(declare_transform_publish_period_cmd)
     ld.add_action(declare_slam_executable_cmd)
+    ld.add_action(declare_use_lifecycle_manager)
+    ld.add_action(configure_event)
+    ld.add_action(activate_event)
+
     # ld.add_action(declare_robot_start_pose_cmd)
 
     # nodes
