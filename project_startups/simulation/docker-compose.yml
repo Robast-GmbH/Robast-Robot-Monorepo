@@ -1,6 +1,6 @@
 services:
   simulation:
-    image: ghcr.io/robast-gmbh/monorepo/simulation:devel-humble
+    image: ghcr.io/robast-gmbh/monorepo/simulation:devel-jazzy
     environment:
       - ROS_DOMAIN_ID=1
       - is_simulation=True
