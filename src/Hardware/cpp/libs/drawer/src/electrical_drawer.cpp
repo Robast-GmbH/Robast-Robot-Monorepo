@@ -138,6 +138,12 @@ namespace drawer_controller
     uint8_t target_speed = e_drawer_task.target_speed;
     _stall_guard_enabled = e_drawer_task.stall_guard_enabled;
 
+    if (!_electrical_drawer_lock.has_value())
+    {
+      // In case we do not have an electrical drawer lock, we can directly start moving the drawer
+      _is_idling = false;
+    }
+
     // motor_->setStallGuard(stall_guard_enabled_);
 
     check_if_drawer_is_homed();
