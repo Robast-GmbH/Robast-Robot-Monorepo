@@ -15,6 +15,8 @@
 #define LOCK_ID                 0
 #define STEPPER_MOTOR_1_ADDRESS 0
 #define USE_ENCODER             0
+// TODO@Jacob: This could be automatically detected in the future
+#define SHAFT_DIRECTION_IS_INVERTED true   // depends on how the motor is wired to the driver
 
 #define NUM_OF_LEDS 18
 
@@ -181,6 +183,7 @@ void setup()
     gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_A_PIN_ID),
     gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_B_PIN_ID),
     STEPPER_MOTOR_1_ADDRESS,
+    SHAFT_DIRECTION_IS_INVERTED,
     endstop_switch,
     drawer_lock);
   drawer->init();
