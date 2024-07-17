@@ -57,7 +57,15 @@ std::unique_ptr<drawer_controller::CanController> can_controller;
 // shared resource, so we need a mutex for this
 std::unique_ptr<drawer_controller::Queue<robast_can_msgs::CanMessage>> can_msg_queue;
 
-void task_1_loop(void* pvParameters)
+/**********************************************************************************************************************
+ * The program flow is organized as follows:
+ * (1) setup() is called once at the beginning of the program
+ * (2) The task loops contain a loop and run in parallel, whereby
+ *    - receive_can_msg_task_loop() is responsible for receiving CAN messages and adding them to the queue
+ *    - process_can_msgs_task_loop() is responsible for processing the CAN messages from the queue
+ **********************************************************************************************************************/
+
+void receive_can_msg_task_loop(void* pvParameters)
 {
   for (;;)
   {
@@ -77,7 +85,7 @@ void task_1_loop(void* pvParameters)
   }
 }
 
-void task_2_loop(void* pvParameters)
+void process_can_msgs_task_loop(void* pvParameters)
 {
   for (;;)
   {
@@ -188,23 +196,23 @@ void setup()
   debug_println("Finished setup()!");
 
   // create a task that will be executed in the Task1code() function, with priority 1 and executed on core 0
-  xTaskCreatePinnedToCore(task_1_loop, /* Task function. */
-                          "Task1",     /* name of task. */
-                          10000,       /* Stack size of task */
-                          NULL,        /* parameter of the task */
-                          1,           /* priority of the task */
-                          &Task1,      /* Task handle to keep track of created task */
-                          0);          /* pin task to core 0 */
+  xTaskCreatePinnedToCore(receive_can_msg_task_loop, /* Task function. */
+                          "Task1",                   /* name of task. */
+                          10000,                     /* Stack size of task */
+                          NULL,                      /* parameter of the task */
+                          1,                         /* priority of the task */
+                          &Task1,                    /* Task handle to keep track of created task */
+                          0);                        /* pin task to core 0 */
 
   delay(100);
 
-  xTaskCreatePinnedToCore(task_2_loop, /* Task function. */
-                          "Task2",     /* name of task. */
-                          10000,       /* Stack size of task */
-                          NULL,        /* parameter of the task */
-                          1,           /* priority of the task */
-                          &Task2,      /* Task handle to keep track of created task */
-                          1);          /* pin task to core 1 */
+  xTaskCreatePinnedToCore(process_can_msgs_task_loop, /* Task function. */
+                          "Task2",                    /* name of task. */
+                          10000,                      /* Stack size of task */
+                          NULL,                       /* parameter of the task */
+                          1,                          /* priority of the task */
+                          &Task2,                     /* Task handle to keep track of created task */
+                          1);                         /* pin task to core 1 */
 }
 
 void loop()
