@@ -167,11 +167,8 @@ void setup()
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<drawer_controller::Queue<robast_can_msgs::CanMessage>>();
 
-  drawer_lock = std::make_shared<drawer_controller::ElectricalDrawerLock>(gpio_wrapper,
-                                                                          LOCK_1_OPEN_CONTROL_PIN_ID,
-                                                                          LOCK_1_CLOSE_CONTROL_PIN_ID,
-                                                                          LOCK_1_SENSE_PIN_ID,
-                                                                          SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID);
+  drawer_lock = std::make_shared<drawer_controller::ElectricalDrawerLock>(
+    gpio_wrapper, LOCK_1_OPEN_CONTROL_PIN_ID, LOCK_1_CLOSE_CONTROL_PIN_ID, LOCK_1_SENSE_PIN_ID);
 
   drawer = std::make_shared<drawer_controller::ElectricalDrawer>(
     MODULE_ID,
