@@ -103,6 +103,7 @@ namespace drawer_controller
     }
 
     _encoder->update_position(_motor->get_active_speed());
+    _endstop_switch->update_sensor_value();
 
     _is_drawer_moving_out ? handle_drawer_moving_out() : handle_drawer_moving_in();
 
