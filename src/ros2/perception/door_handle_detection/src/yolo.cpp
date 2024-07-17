@@ -97,7 +97,7 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
     stereo->setExtendedDisparity(extended);
     stereo->setSubpixel(subpixel);
     stereo->setDepthAlign(dai::CameraBoardSocket::CAM_A);
-
+    stereo->setOutputSize(stereoWidth, stereoHeight);
 
     auto camRgb = pipeline.create<dai::node::ColorCamera>();
     auto xoutRgb = pipeline.create<dai::node::XLinkOut>();
