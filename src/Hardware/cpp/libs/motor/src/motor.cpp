@@ -143,18 +143,17 @@ namespace stepper_motor
     }
   }
 
-  // void Motor::reset_stall_guard()
-  // {
-  //   setSpeed(0, 0);
-  //   _driver->VACTUAL(_speed);
-  //   detachInterrupt(STEPPER_DIAG_PIN);   // TODO@Jacob: Use interrup from port expander
-  //   _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, HIGH);
-  //   delay(100);
-  //   _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
-  //   delay(500);
-  //   attachInterrupt(STEPPER_DIAG_PIN, stall_ISR, RISING);
-  //   _is_stalled = false;
-  // }
+  void Motor::reset_stall_guard()
+  {
+    set_target_speed_instantly(0);
+    detachInterrupt(_gpio_wrapper->get_gpio_num_for_pin_id(_port_expander_ninterrupt_pin_id));
+    _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, HIGH);
+    delay(100);
+    _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
+    delay(500);
+    _is_stalled = false;
+    attachInterrupt(_gpio_wrapper->get_gpio_num_for_pin_id(_port_expander_ninterrupt_pin_id), Motor::stall_ISR, FALLING);
+  }
 
   void Motor::handle_motor_control(int32_t current_position_int32)
   {
