@@ -69,7 +69,8 @@ class ModuleProcessManager:
                 drawer.module_process_status = "waiting_for_opening"
                 self.repository.update_drawer(drawer)
             else:
-                Timer(0.5, self.wait_for_auth, args=(address)).start()
+                timer_cb = partial(self.wait_for_auth, address)
+                Timer(0.5, timer_cb).start()
 
     def open_drawer(self, address: DrawerAddress) -> bool:
         drawer = self.repository.read_drawer(address)
@@ -139,6 +140,9 @@ class ModuleProcessManager:
         drawer.module_process_payload = {}
         drawer.module_process_type = ""
         drawer.module_process_status = "idle"
+        if not drawer.content:
+            drawer.reserved_for_ids = []
+            drawer.reserved_for_groups = []
         self.repository.update_drawer(drawer)
         return True
 
