@@ -15,7 +15,7 @@
 #define MODULE_ID               6
 #define LOCK_ID                 0
 #define STEPPER_MOTOR_1_ADDRESS 0
-#define USE_ENCODER             0
+#define USE_ENCODER             true
 // TODO@Jacob: This could be automatically detected in the future
 #define SHAFT_DIRECTION_IS_INVERTED true   // depends on how the motor is wired to the driver
 

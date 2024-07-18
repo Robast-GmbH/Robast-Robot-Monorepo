@@ -135,6 +135,11 @@ namespace drawer_controller
 
   void ElectricalDrawer::handle_electrical_drawer_task(const EDrawerTask &e_drawer_task)
   {
+    debug_printf("Received e-drawer task! Target position: %d, Target speed: %d, Stall guard enabled: %d\n",
+                 e_drawer_task.target_position,
+                 e_drawer_task.target_speed,
+                 e_drawer_task.stall_guard_enabled);
+
     _target_position_uint8 = e_drawer_task.target_position;
     uint8_t target_speed = e_drawer_task.target_speed;
     _stall_guard_enabled = e_drawer_task.stall_guard_enabled;
@@ -180,9 +185,9 @@ namespace drawer_controller
     _triggered_deceleration_for_drawer_moving_in = true;
 
     _motor->set_target_speed_with_decelerating_ramp(
-        DRAWER_HOMING_SPEED,
-        _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_IN_DECELERATION_DISTANCE),
-        _encoder->get_current_position());
+      DRAWER_HOMING_SPEED,
+      _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_IN_DECELERATION_DISTANCE),
+      _encoder->get_current_position());
   }
 
   void ElectricalDrawer::handle_decelerating_for_moving_out_drawer()
@@ -191,15 +196,15 @@ namespace drawer_controller
         (_encoder->get_normed_current_position() + DRAWER_MOVING_OUT_DECELERATION_DISTANCE) >= _target_position_uint8)
     {
       debug_printf(
-          "E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = %d, "
-          "_target_position_uint8 = %d\n",
-          _encoder->get_normed_current_position(),
-          _target_position_uint8);
+        "E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = %d, "
+        "_target_position_uint8 = %d\n",
+        _encoder->get_normed_current_position(),
+        _target_position_uint8);
       _triggered_deceleration_for_drawer_moving_out = true;
       _motor->set_target_speed_with_decelerating_ramp(
-          0,
-          _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_OUT_DECELERATION_DISTANCE),
-          _encoder->get_current_position());
+        0,
+        _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_OUT_DECELERATION_DISTANCE),
+        _encoder->get_current_position());
     }
   }
 
@@ -209,7 +214,7 @@ namespace drawer_controller
     if (_electrical_drawer_lock.has_value())
     {
       is_drawer_closed =
-          _endstop_switch->is_switch_pressed() && !_electrical_drawer_lock.value()->is_lock_switch_pushed();
+        _endstop_switch->is_switch_pressed() && !_electrical_drawer_lock.value()->is_lock_switch_pushed();
     }
     else
     {
@@ -271,9 +276,9 @@ namespace drawer_controller
         !_triggered_closing_lock_after_opening)
     {
       _electrical_drawer_lock.value()->set_open_lock_current_step(
-          false); // this makes sure the lock automatically closes as soon as the drawer is opened
+        false);   // this makes sure the lock automatically closes as soon as the drawer is opened
       _triggered_closing_lock_after_opening =
-          true; // this makes sure, closing the lock is only triggered once and not permanently
+        true;   // this makes sure, closing the lock is only triggered once and not permanently
       debug_println("Triggered closing the lock because drawer is not retracted anymore!");
     }
   }
@@ -303,22 +308,22 @@ namespace drawer_controller
     _triggered_deceleration_for_drawer_moving_in = false;
 
     _can_utils->handle_electrical_drawer_feedback_msg(
-        _module_id,
-        _id,
-        _endstop_switch->is_switch_pressed(),
-        _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
-        _motor->get_is_stalled(),
-        _encoder->get_normed_current_position());
+      _module_id,
+      _id,
+      _endstop_switch->is_switch_pressed(),
+      _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
+      _motor->get_is_stalled(),
+      _encoder->get_normed_current_position());
     _can_utils->handle_drawer_feedback_msg(
-        _module_id,
-        _id,
-        _endstop_switch->is_switch_pressed(),
-        _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false);
+      _module_id,
+      _id,
+      _endstop_switch->is_switch_pressed(),
+      _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false);
   }
 
   void ElectricalDrawer::debug_prints_moving_electrical_drawer()
   {
-    int normed_target_position = (_target_position_uint8 / 255.0) * DRAWER_MAX_EXTENT;
+    int normed_target_position = (_target_position_uint8 / 255.0) * _encoder->get_count_drawer_max_extent();
     debug_printf("Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: %d\n",
                  _encoder->get_current_position(),
                  normed_target_position,
@@ -326,4 +331,4 @@ namespace drawer_controller
                  _motor->get_target_speed());
   }
 
-} // namespace drawer_controller
+}   // namespace drawer_controller

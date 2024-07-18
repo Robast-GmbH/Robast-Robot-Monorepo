@@ -6,7 +6,8 @@
 
 #include <memory>
 
-#define DRAWER_MAX_EXTENT                       85000
+#define OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT       85000
+#define ENCODER_COUNT_DRAWER_MAX_EXTENT         76500
 #define DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN 1000
 
 namespace drawer_controller
@@ -27,6 +28,8 @@ namespace drawer_controller
     void set_current_position(int32_t position);
 
     void init_encoder_before_next_movement(bool is_drawer_moving_out);
+
+    uint32_t get_count_drawer_max_extent() const;
 
    private:
     const bool _use_encoder;
