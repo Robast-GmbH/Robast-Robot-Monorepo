@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/pages/content_distribution_task_creation_page.dart';
 import 'package:robot_frontend/pages/delivery_task_creation_page.dart';
+import 'package:robot_frontend/pages/patrol_task_creation_page.dart';
+import 'package:robot_frontend/pages/pickup_task_creation_page.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 
@@ -31,7 +34,12 @@ class TaskCreationMenuPage extends StatelessWidget {
                   Expanded(
                     child: CustomButtonView(
                       text: 'Abholung',
-                      onPressed: () {},
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute<PickupTaskCreationPage>(
+                          builder: (context) => const PickupTaskCreationPage(),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -43,13 +51,23 @@ class TaskCreationMenuPage extends StatelessWidget {
                   Expanded(
                     child: CustomButtonView(
                       text: 'Zielort anfahren',
-                      onPressed: () {},
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute<PatrolTaskCreationPage>(
+                          builder: (context) => const PatrolTaskCreationPage(),
+                        ),
+                      ),
                     ),
                   ),
                   Expanded(
                     child: CustomButtonView(
                       text: 'Inhalte verteilen',
-                      onPressed: () {},
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute<ContentDistributionTaskCreationPage>(
+                          builder: (context) => const ContentDistributionTaskCreationPage(),
+                        ),
+                      ),
                     ),
                   ),
                 ],

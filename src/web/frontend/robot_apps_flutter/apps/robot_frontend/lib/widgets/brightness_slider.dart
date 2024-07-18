@@ -10,11 +10,12 @@ class BrightnessSlider extends StatefulWidget {
 }
 
 class _BrightnessSliderState extends State<BrightnessSlider> {
+  final minBrigthness = 0.4;
   double _brightness = 0.5; // Initial brightness value
   late Future<void> loadInitialBrightness;
 
   Future<void> _setBrightness(double value) async {
-    _brightness = value < 0.4 ? 0.4 : value;
+    _brightness = value < minBrigthness ? minBrigthness : value;
     await setDisplayBrigthness();
     setState(() {});
   }
@@ -32,11 +33,11 @@ class _BrightnessSliderState extends State<BrightnessSlider> {
 
   Future<void> initDisplayBrightness() async {
     try {
-      final screenInfo = await Process.run('bash', ['-c', 'xrandr --verbose | awk "/Brightness/ { print \$2; exit }"']);
+      final screenInfo = await Process.run('bash', ['-c', r'xrandr --verbose | awk "/Brightness/ { print $2; exit }"']);
       final infos = screenInfo.stdout.toString().split(' ');
       _brightness = double.parse(infos.last);
     } catch (e) {
-      _brightness = 0.0;
+      _brightness = minBrigthness;
     }
     setState(() {});
   }
@@ -61,7 +62,7 @@ class _BrightnessSliderState extends State<BrightnessSlider> {
             children: <Widget>[
               const Text(
                 'Adjust Brightness:',
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 24),
               ),
               Slider(
                 value: _brightness,
@@ -72,7 +73,7 @@ class _BrightnessSliderState extends State<BrightnessSlider> {
               const SizedBox(height: 16),
               Text(
                 'Current Brightness: ${_brightness.toStringAsFixed(1)}',
-                style: const TextStyle(fontSize: 16),
+                style: const TextStyle(fontSize: 20),
               ),
             ],
           );

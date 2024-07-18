@@ -24,7 +24,10 @@ class _LocationSelectorState extends State<LocationSelector> {
         Expanded(
           child: DropdownButton<String>(
             isExpanded: true,
-            hint: const Text('Station auswählen'),
+            hint: const Text(
+              'Station auswählen',
+              style: TextStyle(fontSize: 24),
+            ),
             value: controller.station,
             onChanged: (value) {
               if (controller.station == value) return;
@@ -39,7 +42,10 @@ class _LocationSelectorState extends State<LocationSelector> {
                   (availableStation) => DropdownMenuItem<String>(
                     value: availableStation,
                     alignment: Alignment.center,
-                    child: Text(availableStation),
+                    child: Text(
+                      availableStation,
+                      style: const TextStyle(fontSize: 24),
+                    ),
                   ),
                 )
                 .toList(),
@@ -52,8 +58,14 @@ class _LocationSelectorState extends State<LocationSelector> {
           child: DropdownButton<String>(
             isExpanded: true,
             value: controller.room,
-            hint: const Text('Raum auswählen'),
-            disabledHint: const Text(''),
+            hint: const Text(
+              'Raum auswählen',
+              style: TextStyle(fontSize: 24),
+            ),
+            disabledHint: const Text(
+              '',
+              style: TextStyle(fontSize: 24),
+            ),
             onChanged: (value) => setState(() => controller.setRoom(value ?? '')),
             items: controller.station?.isEmpty ?? true
                 ? []
@@ -63,7 +75,10 @@ class _LocationSelectorState extends State<LocationSelector> {
                       (availableRoom) => DropdownMenuItem<String>(
                         value: availableRoom,
                         alignment: Alignment.center,
-                        child: Text(availableRoom),
+                        child: Text(
+                          availableRoom,
+                          style: const TextStyle(fontSize: 24),
+                        ),
                       ),
                     )
                     .toList(),
