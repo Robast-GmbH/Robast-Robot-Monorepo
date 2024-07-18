@@ -86,7 +86,9 @@ tl::expected<bool, std::string> CreatePoseFromSpatialDetections::doWork()
   // Create the pose from the highest confidence detection
   geometry_msgs::msg::PoseStamped pose_stamped;
   pose_stamped.header = spatial_detections.value().header;
-  pose_stamped.pose.position = highest_confidence_detection.position;
+  pose_stamped.pose.position.x = highest_confidence_detection.position.x;
+  pose_stamped.pose.position.y = (-1) * highest_confidence_detection.position.y; // Invert y-axis to match frame of reference
+  pose_stamped.pose.position.z = highest_confidence_detection.position.z;
   
   // Set the orientation to the target orientation if provided
   if (target_orientation_in_euler.value() != std::vector<double>{0.0, 0.0, 0.0})
@@ -103,8 +105,5 @@ tl::expected<bool, std::string> CreatePoseFromSpatialDetections::doWork()
 
   return true;
 }
-
-
-
 
 }  // namespace create_pose_from_spatial_detections
