@@ -26,7 +26,7 @@ def generate_launch_description():
     cam_pos_y    = LaunchConfiguration('cam_pos_y',     default = '0.0')
     cam_pos_z    = LaunchConfiguration('cam_pos_z',     default = '0.13721')
     cam_roll     = LaunchConfiguration('cam_roll',      default = '0.0')
-    cam_pitch    = LaunchConfiguration('cam_pitch',     default = '0.5235988')
+    cam_pitch    = LaunchConfiguration('cam_pitch',     default = '0.4')
     cam_yaw      = LaunchConfiguration('cam_yaw',       default = '-3.14159')
     lrcheck        = LaunchConfiguration('lrcheck', default = True)
     extended       = LaunchConfiguration('extended', default = False)
