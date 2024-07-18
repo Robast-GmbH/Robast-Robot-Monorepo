@@ -63,7 +63,7 @@ namespace drawer_bridge
 
     can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_TARGET_POSITION).set_data(msg.target_position);
     can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_SPEED).set_data(msg.speed);
-    can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).set_data(msg.stall_guard_enable);
+    can_signals_drawer_task.at(CAN_SIGNAL_DRAWER_STALL_GUARD_VALUE).set_data(msg.stall_guard_value);
 
     can_msg_drawer_task.set_can_signals(can_signals_drawer_task);
 

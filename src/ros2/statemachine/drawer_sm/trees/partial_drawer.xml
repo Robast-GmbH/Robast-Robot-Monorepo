@@ -116,7 +116,7 @@
           <MoveElectricDrawer drawer_address="{drawer}"
                               move_electric_drawer_topic="/electrical_drawer_task"
                               speed="255"
-                              stall_guard_enable="0"
+                              stall_guard_value="0"
                               target_position="251"/>
         </Delay>
         <Delay delay_msec="1000">
@@ -145,7 +145,7 @@
         <MoveElectricDrawer drawer_address="{drawer}"
                             move_electric_drawer_topic="/electrical_drawer_task"
                             speed="150"
-                            stall_guard_enable="0"
+                            stall_guard_value="0"
                             target_position="0"/>
         <SubTree ID="LED_Closing"
                  _autoremap="true"/>
@@ -225,7 +225,7 @@
                   default="/move_electric_drawer"/>
       <input_port name="speed"
                   default="0">uint8</input_port>
-      <input_port name="stall_guard_enable"
+      <input_port name="stall_guard_value"
                   default="0">uint8</input_port>
       <input_port name="target_position"
                   default="0">uint8</input_port>

@@ -64,7 +64,7 @@
             <input_port name="drawer_address" default="{drawer}"/>
             <input_port name="move_electric_drawer_topic" default="/move_electric_drawer"/>
             <input_port name="speed" default="0">uint8</input_port>
-            <input_port name="stall_guard_enable" default="0">uint8</input_port>
+            <input_port name="stall_guard_value" default="0">uint8</input_port>
             <input_port name="target_position" default="0">uint8</input_port>
         </Action>
         <Action ID="NFCToDrawer" editable="true"/>

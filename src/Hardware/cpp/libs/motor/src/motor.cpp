@@ -2,7 +2,7 @@
 
 namespace stepper_motor
 {
-  bool Motor::_is_stalled = false;
+  volatile bool Motor::_port_expander_interrupt_pending = false; // Initialization of the static member variable
 
   Motor::Motor(const uint8_t driver_address,
                const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
@@ -17,7 +17,10 @@ namespace stepper_motor
         _stepper_diag_pin_id{stepper_pin_id_config.stepper_diag_pin_id},
         _stepper_index_pin_id{stepper_pin_id_config.stepper_index_pin_id},
         _stepper_step_pin_id{stepper_pin_id_config.stepper_step_pin_id},
-        _shaft_direction_is_inverted{shaft_direction_is_inverted}
+        _port_expander_ninterrupt_pin_id{stepper_pin_id_config.port_expander_ninterrupt_pin_id},
+        _shaft_direction_is_inverted{shaft_direction_is_inverted},
+        _is_stall_guard_enabled{false},
+        _is_stalled{false}
   {
     _gpio_wrapper->set_pin_mode(_stepper_enn_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
     _gpio_wrapper->set_pin_mode(_stepper_stdby_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
@@ -57,11 +60,11 @@ namespace stepper_motor
     // loads, a setting of 32 or 40 will be required.
     _driver->blank_time(24);
 
-    _driver->rms_current(670);   // mA
+    _driver->rms_current(670); // mA
     _driver->microsteps(16);
 
     // Lower threshold velocity for switching on smart energy CoolStep and StallGuard to DIAG output
-    _driver->TCOOLTHRS(0xFFFFF);   // 20bit max
+    _driver->TCOOLTHRS(0xFFFFF); // 20bit max
 
     // CoolStep lower threshold [0... 15].
     // If SG_RESULT goes below this threshold, CoolStep increases the current to both coils.
@@ -82,7 +85,7 @@ namespace stepper_motor
     // sensitivity. A higher value makes StallGuard4 more sensitive and requires less torque to
     // indicate a stall. The double of this value is compared to SG_RESULT.
     // The stall output becomes active if SG_RESULT fall below this value.
-    _driver->SGTHRS(STALL_VALUE);
+    _driver->SGTHRS(STALL_DEFAULT_VALUE);
 
     _driver->shaft(direction_to_shaft_bool(Direction::clockwise));
 
@@ -96,12 +99,12 @@ namespace stepper_motor
 
       switch (result)
       {
-        case 1:
-          debug_println("loose connection");
-          break;
-        case 2:
-          debug_println("no power");
-          break;
+      case 1:
+        debug_println("loose connection");
+        break;
+      case 2:
+        debug_println("no power");
+        break;
       }
 
       debug_println("Fix the problem and reset board.");
@@ -111,14 +114,12 @@ namespace stepper_motor
       abort();
     }
 
-    // set_stall_guard(true);
-
     debug_println("Stepper initialized");
   }
 
   void Motor::stall_ISR()
   {
-    _is_stalled = true;
+    _port_expander_interrupt_pending = true;
   }
 
   bool Motor::get_is_stalled() const
@@ -127,18 +128,20 @@ namespace stepper_motor
   }
 
   // TODO@Jacob: implement Stall guard with ticket: https://robast.atlassian.net/browse/RE-1446
-  //  void Motor::set_stall_guard(bool enable)
-  //  {
-  //    if (_is_stall_guard_enabled && !enable)
-  //    {
-  //      detachInterrupt(STEPPER_DIAG_PIN);   // TODO@Jacob: Use interrup from port expander
-  //      _is_stall_guard_enabled = false;
-  //    }
-  //    else if (enable)
-  //    {
-  //      attachInterrupt(STEPPER_DIAG_PIN, Motor::stall_ISR, RISING);   // TODO@Jacob: Use interrup from port expander
-  //    }
-  //  }
+  void Motor::set_stall_guard(uint8_t stall_guard_value)
+  {
+    if (_is_stall_guard_enabled && (stall_guard_value == 0))
+    {
+      detachInterrupt(_gpio_wrapper->get_gpio_num_for_pin_id(_port_expander_ninterrupt_pin_id));
+      _is_stall_guard_enabled = false;
+    }
+    else if (stall_guard_value != 0)
+    {
+      _driver->SGTHRS(stall_guard_value);
+      attachInterrupt(_gpio_wrapper->get_gpio_num_for_pin_id(_port_expander_ninterrupt_pin_id), Motor::stall_ISR, FALLING);
+      _is_stall_guard_enabled = true;
+    }
+  }
 
   // void Motor::reset_stall_guard()
   // {
@@ -155,18 +158,25 @@ namespace stepper_motor
 
   void Motor::handle_motor_control(int32_t current_position_int32)
   {
+    read_diag_pin();
+
     if (!_speed_ramp_in_progress)
     {
       return;
     }
 
-    if (get_active_speed() < get_target_speed())
+    (get_active_speed() < get_target_speed()) ? handle_time_dependent_acceleration()
+                                              : handle_position_dependent_deceleration(current_position_int32);
+  }
+
+  void Motor::read_diag_pin()
+  {
+    if (_port_expander_interrupt_pending)
     {
-      handle_time_dependent_acceleration();
-    }
-    if (get_active_speed() > get_target_speed())
-    {
-      handle_position_dependent_deceleration(current_position_int32);
+      byte digital_read_result;
+      _gpio_wrapper->digital_read(_stepper_diag_pin_id, digital_read_result);
+      _is_stalled = (digital_read_result == HIGH) ? true : false;
+      _port_expander_interrupt_pending = false;
     }
   }
 
@@ -199,11 +209,11 @@ namespace stepper_motor
     uint32_t distance_travelled_uint32 = abs(current_position_int32 - _starting_position_int32);
 
     uint32_t total_delta_speed_uint32 =
-      abs((int32_t) get_target_speed() - (int32_t) _starting_speed_before_ramp_uint32);
+        abs((int32_t)get_target_speed() - (int32_t)_starting_speed_before_ramp_uint32);
 
     uint32_t delta_speed_uint32 = (total_delta_speed_uint32 * distance_travelled_uint32) / _ramp_distance_uint32;
 
-    int32_t new_active_speed_int32 = (int32_t) _starting_speed_before_ramp_uint32 - (int32_t) delta_speed_uint32;
+    int32_t new_active_speed_int32 = (int32_t)_starting_speed_before_ramp_uint32 - (int32_t)delta_speed_uint32;
 
     return new_active_speed_int32;
   }
@@ -261,7 +271,7 @@ namespace stepper_motor
       _target_speed = target_speed;
       _starting_speed_before_ramp_uint32 = _active_speed;
       _acceleration = acceleration;
-      _start_ramp_timestamp = millis();   // TODO@Jacob: How to handle overflow?
+      _start_ramp_timestamp = millis(); // TODO@Jacob: How to handle overflow?
       _speed_ramp_in_progress = true;
     }
   }
@@ -309,7 +319,7 @@ namespace stepper_motor
     debug_print("Status: ");
     debug_print_with_base(_driver->SG_RESULT(), DEC);
     debug_print(" ");
-    debug_print_with_base(_driver->SG_RESULT() < STALL_VALUE, DEC);
+    debug_print_with_base(_driver->SG_RESULT() < STALL_DEFAULT_VALUE, DEC);
     debug_print(" ");
     byte drawer_diag_state;
     _gpio_wrapper->digital_read(_stepper_diag_pin_id, drawer_diag_state);
@@ -318,4 +328,4 @@ namespace stepper_motor
     debug_println_with_base(_driver->cs2rms(_driver->cs_actual()), DEC);
   }
 
-}   // namespace stepper_motor
+} // namespace stepper_motor

@@ -43,7 +43,8 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_dir_pin_id = STEPPER_1_DIR_PIN_ID,
   .stepper_diag_pin_id = STEPPER_1_DIAG_PIN_ID,
   .stepper_index_pin_id = STEPPER_1_INDEX_PIN_ID,
-  .stepper_step_pin_id = STEPPER_1_STEP_PIN_ID};
+  .stepper_step_pin_id = STEPPER_1_STEP_PIN_ID,
+  .port_expander_ninterrupt_pin_id = PE_0_NINTERRUPT_PIN_ID};
 
 std::shared_ptr<drawer_controller::Switch> endstop_switch;
 

@@ -21,7 +21,7 @@ namespace drawer_controller
   {
     return EDrawerTask(msg.get_can_signals().at(CAN_SIGNAL_DRAWER_TARGET_POSITION).get_data(),
                        msg.get_can_signals().at(CAN_SIGNAL_DRAWER_SPEED).get_data(),
-                       msg.get_can_signals().at(CAN_SIGNAL_DRAWER_STALL_GUARD_ENABLE).get_data());
+                       msg.get_can_signals().at(CAN_SIGNAL_DRAWER_STALL_GUARD_VALUE).get_data());
   }
 
 }   // namespace drawer_controller

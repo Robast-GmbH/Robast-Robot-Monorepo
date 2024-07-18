@@ -15,13 +15,13 @@
 #include "switch/switch.hpp"
 #include "utils/e_drawer_task.hpp"
 
-#define DRAWER_MAX_SPEED    35000
+#define DRAWER_MAX_SPEED 35000
 #define DRAWER_HOMING_SPEED 300
 
 // The drawer starts to decelerate in dependency of the traveled distance
-#define DRAWER_MOVING_IN_DECELERATION_DISTANCE  50   // distance to the target position to start deceleration (max 255)
-#define DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE  1    // the end of the distance when moving in where speed is super slow
-#define DRAWER_MOVING_OUT_DECELERATION_DISTANCE 70   // distance to the target position to start deceleration (max 255)
+#define DRAWER_MOVING_IN_DECELERATION_DISTANCE 50  // distance to the target position to start deceleration (max 255)
+#define DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE 1   // the end of the distance when moving in where speed is super slow
+#define DRAWER_MOVING_OUT_DECELERATION_DISTANCE 70 // distance to the target position to start deceleration (max 255)
 
 // The drawer accelerates in dependency of the time
 #define DEFAULT_DRAWER_ACCELERATION 10
@@ -31,7 +31,7 @@ namespace drawer_controller
 
   class ElectricalDrawer : public IDrawer
   {
-   public:
+  public:
     ElectricalDrawer(const uint32_t module_id,
                      const uint8_t id,
                      const std::shared_ptr<robast_can_msgs::CanDb> can_db,
@@ -59,7 +59,7 @@ namespace drawer_controller
 
     void start_motor() const;
 
-   private:
+  private:
     const uint32_t _module_id;
     const uint8_t _id;
 
@@ -84,8 +84,6 @@ namespace drawer_controller
     bool _triggered_deceleration_for_drawer_moving_in = false;
 
     uint8_t _target_position_uint8 = 0;
-
-    bool _stall_guard_enabled = false;
 
     bool _triggered_closing_lock_after_opening = false;
 
@@ -121,6 +119,6 @@ namespace drawer_controller
 
     void debug_prints_moving_electrical_drawer();
   };
-}   // namespace drawer_controller
+} // namespace drawer_controller
 
-#endif   // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP
+#endif // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP
