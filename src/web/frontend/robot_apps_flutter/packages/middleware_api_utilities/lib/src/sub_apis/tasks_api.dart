@@ -6,7 +6,7 @@ class TasksApi {
   final String prefix;
 
   Future<RobotTaskStatus?> getRobotTasks({required String robotName}) async {
-    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/tasks/robot_tasks?robot_name=$robotName'));
+    final response = await RequestService.tryGet(uri: Uri.parse('$prefix/robot_tasks?robot_name=$robotName'));
     if (response != null) {
       final data = RequestService.responseToMap(response: response);
       return RobotTaskStatus.fromJson(data);
@@ -28,8 +28,8 @@ class TasksApi {
       data: {
         'required_drawer_type': requiredDrawerType,
         'payload': payload,
-        'auth_users': authUsers,
-        'auth_user_groups': authUserGroups,
+        'user_ids': authUsers,
+        'user_groups': authUserGroups,
         'target_id': targetID,
         'start_id': startID,
       },

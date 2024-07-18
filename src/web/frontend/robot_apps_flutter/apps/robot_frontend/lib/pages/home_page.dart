@@ -33,15 +33,22 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   }
 
   Future<void> startModuleProcess() async {
+    if (!context.mounted) {
+      return;
+    }
     final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
     if (moduleProvider.isInModuleProcess) {
       return;
     }
-    if (context.mounted) {
-      moduleProvider.isInModuleProcess = true;
-      await Navigator.push(context, MaterialPageRoute<ModuleProcessPage>(builder: (context) => const ModuleProcessPage()));
-      moduleProvider.isInModuleProcess = false;
-    }
+
+    moduleProvider.isInModuleProcess = true;
+    await Navigator.push(
+      context,
+      MaterialPageRoute<ModuleProcessPage>(
+        builder: (context) => const ModuleProcessPage(),
+      ),
+    );
+    moduleProvider.isInModuleProcess = false;
   }
 
   @override

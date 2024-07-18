@@ -4,10 +4,12 @@ class CustomButtonView extends StatelessWidget {
   const CustomButtonView({
     required this.text,
     required this.onPressed,
+    this.padding = EdgeInsets.zero,
     super.key,
   });
   final String text;
   final VoidCallback onPressed;
+  final EdgeInsets padding;
   @override
   Widget build(BuildContext context) {
     return InkWell(
@@ -26,8 +28,9 @@ class CustomButtonView extends StatelessWidget {
             ),
             borderRadius: BorderRadius.circular(12),
           ),
-          child: SizedBox.expand(
-            child: Align(
+          child: Padding(
+            padding: padding,
+            child: Center(
               child: Text(
                 text,
                 textAlign: TextAlign.center,

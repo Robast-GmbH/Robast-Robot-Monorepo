@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/pages/config_page.dart';
 import 'package:robot_frontend/pages/drawer_setup_page.dart';
+import 'package:robot_frontend/pages/more_settings_page.dart';
 import 'package:robot_frontend/pages/user_management_page.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
@@ -65,7 +66,12 @@ class SettingsPage extends StatelessWidget {
                   Expanded(
                     child: CustomButtonView(
                       text: 'Weitere Einstellungen',
-                      onPressed: () {},
+                      onPressed: () => Navigator.push(
+                        context,
+                        MaterialPageRoute<MoreSettingsPage>(
+                          builder: (context) => const MoreSettingsPage(),
+                        ),
+                      ),
                     ),
                   ),
                 ],

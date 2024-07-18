@@ -6,6 +6,7 @@ import 'package:robot_frontend/models/controller/module_content_controller.dart'
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
+import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_view.dart';
@@ -21,6 +22,7 @@ class DeliveryTaskCreationPage extends StatefulWidget {
 class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
   final moduleContentController = ModuleContentController();
   int requiredDrawerType = 1;
+
   final startController = LocationSelectionController();
   final targetController = LocationSelectionController();
 
@@ -38,7 +40,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
-      title: 'Lieferungsauftrag erstellen',
+      title: 'Lieferauftrag erstellen',
       child: Padding(
         padding: const EdgeInsets.all(64),
         child: Column(
@@ -48,7 +50,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
               child: Card(
                 color: Colors.white.withOpacity(0.4),
                 child: Padding(
-                  padding: const EdgeInsets.all(4) + const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -185,18 +187,24 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
             const SizedBox(
               height: 16,
             ),
-            ElevatedButton(
+            CustomButtonView(
+              padding: const EdgeInsets.all(16),
               onPressed: () async {
                 await Provider.of<TaskProvider>(context, listen: false).createTaskRequest(
                   startID: startController.room,
                   targetID: targetController.room,
                   requiredDrawerType: requiredDrawerType,
                   payload: moduleContentController.createPayload(),
-                  authUsers: [],
-                  authUserGroups: [],
+                  authUsers: [
+                    if (authUser != null) authUser!.id,
+                  ],
+                  authUserGroups: userGroupsSelectionController.selectionAsStringList(),
                 );
+                if (context.mounted) {
+                  Navigator.of(context).pop();
+                }
               },
-              child: const Text('Auftrag erstellen'),
+              text: 'Auftrag erstellen',
             ),
           ],
         ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
+import 'package:robot_frontend/widgets/auth_view.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/drawer_view.dart';
 import 'package:robot_frontend/widgets/hint_view.dart';
@@ -29,6 +30,12 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
               final moduleInProcess = Provider.of<ModuleProvider>(context).modules.firstWhere(
                     (element) => element.moduleProcess.status != ModuleProcessStatus.idle,
                   );
+              if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.auth) {
+                return AuthView(
+                  requestedUserIDs: moduleInProcess.reservedForIds,
+                  requestedUserGroups: moduleInProcess.reservedForGroups,
+                );
+              }
               if (moduleInProcess.moduleProcess.status != ModuleProcessStatus.closed) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 64),
@@ -49,7 +56,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                       ),
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.opening) ...[
                         HintView(
-                          text: modules[moduleInProcess.moduleID].variant == DrawerVariant.electric
+                          text: modules[moduleInProcess.moduleID - 1].variant == DrawerVariant.electric
                               ? 'Gewählte Schublade öffnet sich'
                               : 'Bitte gewählte Schublade öffnen',
                           moduleLabel: moduleInProcess.moduleProcess.payload.toString(),
