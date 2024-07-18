@@ -49,7 +49,10 @@ class Robot:
     def accept_request(self, delivery_request: DeliveryRequest) -> None:
         with self.task_queue_lock:
             drawer = self.module_manager.try_reserve_module_type(
-                self.name, delivery_request.required_drawer_type, [], []
+                self.name,
+                delivery_request.required_drawer_type,
+                delivery_request.user_ids,
+                delivery_request.user_groups,
             )
             if drawer is not None:
                 tasks = Task.from_delivery_request(self.name, delivery_request, drawer)

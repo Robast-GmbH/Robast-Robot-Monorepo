@@ -59,8 +59,8 @@ class Task:
                 drawer.size,
                 0,
                 delivery_request.start_id,
-                [],
-                [],
+                delivery_request.user_ids,
+                delivery_request.user_groups,
                 [pick_up_task_phase],
             )
             tasks.append(pick_up_task)
@@ -90,8 +90,8 @@ class Task:
                 drawer.size,
                 0,
                 delivery_request.target_id,
-                [],
-                [],
+                delivery_request.user_ids,
+                delivery_request.user_groups,
                 [drop_off_task_phase],
             )
             tasks.append(drop_off_task)
