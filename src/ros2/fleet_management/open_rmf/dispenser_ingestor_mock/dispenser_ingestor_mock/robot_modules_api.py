@@ -1,5 +1,4 @@
 import requests
-import json
 from dispenser_ingestor_mock.module_process import ModuleProcess
 
 DRAWER_IDLE = 0
