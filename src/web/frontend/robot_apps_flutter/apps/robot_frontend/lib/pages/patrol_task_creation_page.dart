@@ -29,17 +29,9 @@ class _PatrolTaskCreationPageState extends State<PatrolTaskCreationPage> {
             const SizedBox(
               height: 32,
             ),
-            Row(
-              children: [
-                const Text(
-                  'Zielort:',
-                  style: TextStyle(fontSize: 27),
-                ),
-                const SizedBox(
-                  width: 16,
-                ),
-                Expanded(child: LocationSelector(controller: controller)),
-              ],
+            LocationSelector(
+              controller: controller,
+              label: 'Zielort',
             ),
             const SizedBox(
               height: 32,

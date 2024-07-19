@@ -16,18 +16,22 @@ class TaskProvider extends ChangeNotifier {
   Future<bool> createTaskRequest({
     required int requiredDrawerType,
     required Map<String, int> payload,
-    required List<String> authUsers,
-    required List<String> authUserGroups,
+    required List<String> senderAuthUsers,
+    required List<String> senderAuthUserGroups,
+    required List<String> recipientAuthUsers,
+    required List<String> recipientAuthUserGroups,
     String? startID,
     String? targetID,
   }) async {
     final wasSuccessful = await _middlewareApiUtilities.tasks.postTaskRequest(
       requiredDrawerType: requiredDrawerType,
       payload: payload,
-      authUsers: authUsers,
-      authUserGroups: authUserGroups,
       startID: startID,
       targetID: targetID,
+      senderAuthUsers: senderAuthUsers,
+      senderAuthUserGroups: senderAuthUserGroups,
+      recipientAuthUsers: recipientAuthUsers,
+      recipientAuthUserGroups: recipientAuthUserGroups,
     );
     return wasSuccessful;
   }

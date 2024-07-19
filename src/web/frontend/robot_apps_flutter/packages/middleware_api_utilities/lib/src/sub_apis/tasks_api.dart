@@ -18,8 +18,10 @@ class TasksApi {
   Future<bool> postTaskRequest({
     required int requiredDrawerType,
     required Map<String, int> payload,
-    required List<String> authUsers,
-    required List<String> authUserGroups,
+    required List<String> senderAuthUsers,
+    required List<String> senderAuthUserGroups,
+    required List<String> recipientAuthUsers,
+    required List<String> recipientAuthUserGroups,
     String? targetID,
     String? startID,
   }) async {
@@ -28,10 +30,12 @@ class TasksApi {
       data: {
         'required_drawer_type': requiredDrawerType,
         'payload': payload,
-        'user_ids': authUsers,
-        'user_groups': authUserGroups,
         'target_id': targetID,
         'start_id': startID,
+        'sender_user_ids': senderAuthUsers,
+        'sender_user_groups': senderAuthUserGroups,
+        'recipient_user_ids': recipientAuthUsers,
+        'recipient_user_groups': recipientAuthUserGroups,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);

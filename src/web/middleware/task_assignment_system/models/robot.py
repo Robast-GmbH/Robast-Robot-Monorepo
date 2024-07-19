@@ -38,7 +38,8 @@ class Robot:
     def get_request_cost(self, delivery_request: DeliveryRequest) -> float:
         # check if any drawer of required drawer_type is available
         is_drawer_available = self.module_manager.is_module_size_available(
-            self.name, delivery_request.required_drawer_type
+            self.name,
+            delivery_request.required_drawer_type,
         )
 
         if not is_drawer_available:
@@ -51,8 +52,8 @@ class Robot:
             drawer = self.module_manager.try_reserve_module_type(
                 self.name,
                 delivery_request.required_drawer_type,
-                delivery_request.user_ids,
-                delivery_request.user_groups,
+                delivery_request.sender_user_ids,
+                delivery_request.sender_user_groups,
             )
             if drawer is not None:
                 tasks = Task.from_delivery_request(self.name, delivery_request, drawer)
@@ -102,6 +103,23 @@ class Robot:
                     drawer_id=int(self.current_task.drawer_id),
                 ),
             )
+        elif self.current_task.task_type == "pickup":
+            dropoff_task = [
+                task
+                for task in self.task_queue
+                if task.requires_task_id == self.current_task.id
+            ]
+            if dropoff_task:
+                dropoff_task = dropoff_task[0]
+                self.module_manager.reserve_module(
+                    DrawerAddress(
+                        robot_name=self.name,
+                        module_id=dropoff_task.module_id,
+                        drawer_id=dropoff_task.drawer_id,
+                    ),
+                    dropoff_task.auth_users,
+                    dropoff_task.auth_user_groups,
+                )
         self.current_task.status = "completed"
         self.current_task = None
 

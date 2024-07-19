@@ -95,10 +95,10 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                         child: CustomButtonView(
                           text: 'Finish',
                           onPressed: () async {
-                            await Provider.of<ModuleProvider>(context, listen: false).finishModuleProcess(moduleInProcess);
-                            if (context.mounted) {
-                              await Provider.of<ModuleProvider>(context, listen: false).fetchModules();
-                            }
+                            final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
+                            await moduleProvider.finishModuleProcess(moduleInProcess);
+                            await moduleProvider.fetchModules();
+
                             if (context.mounted) {
                               Navigator.pop(context);
                             }

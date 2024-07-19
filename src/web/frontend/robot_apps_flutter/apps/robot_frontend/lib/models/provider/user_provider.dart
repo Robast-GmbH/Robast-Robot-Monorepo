@@ -2,7 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
 class UserProvider extends ChangeNotifier {
-  final availableTitles = ['', 'Dr.', 'Prof.', 'Prof. Dr.', 'PD Dr.', 'PD Dr. Dr.'];
+  final availableTitles = [
+    '',
+    'Dr.',
+    'Prof.',
+    'Prof. Dr.',
+  ];
 
   final _middlewareApiUtilities = MiddlewareApiUtilities();
 
@@ -24,5 +29,9 @@ class UserProvider extends ChangeNotifier {
 
   Future<bool> deleteUser({required String id}) async {
     return _middlewareApiUtilities.users.deleteUser(id: id);
+  }
+
+  Future<bool> endUserSession({required String robotName}) async {
+    return _middlewareApiUtilities.users.endUserSession(robotName: robotName);
   }
 }

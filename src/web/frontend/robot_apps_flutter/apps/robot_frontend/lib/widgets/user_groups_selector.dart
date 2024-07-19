@@ -12,30 +12,55 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.controller;
-    return Row(
-      children: [
-        buildUserGroupSelector(
-          label: 'Patient',
-          value: controller.isPatient,
-          onChanged: ({required bool newValue}) => setState(() => controller.isPatient = newValue),
+    return Card(
+      color: Colors.white.withOpacity(0.4),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 15),
+        child: Row(
+          children: [
+            const Text(
+              'Autorisierte Gruppen',
+              textAlign: TextAlign.end,
+              style: TextStyle(
+                fontSize: 24,
+              ),
+            ),
+            const SizedBox(
+              width: 16,
+            ),
+            Expanded(
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    buildUserGroupSelector(
+                      label: 'Patient',
+                      value: controller.isPatient,
+                      onChanged: ({required bool newValue}) => setState(() => controller.isPatient = newValue),
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    buildUserGroupSelector(
+                      label: 'Angestellte/r',
+                      value: controller.isStaff,
+                      onChanged: ({required bool newValue}) => setState(() => controller.isStaff = newValue),
+                    ),
+                    const SizedBox(
+                      width: 16,
+                    ),
+                    buildUserGroupSelector(
+                      label: 'Admin',
+                      value: controller.isAdmin,
+                      onChanged: ({required bool newValue}) => setState(() => controller.isAdmin = newValue),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(
-          width: 16,
-        ),
-        buildUserGroupSelector(
-          label: 'Angestellte/r',
-          value: controller.isStaff,
-          onChanged: ({required bool newValue}) => setState(() => controller.isStaff = newValue),
-        ),
-        const SizedBox(
-          width: 16,
-        ),
-        buildUserGroupSelector(
-          label: 'Admin',
-          value: controller.isAdmin,
-          onChanged: ({required bool newValue}) => setState(() => controller.isAdmin = newValue),
-        ),
-      ],
+      ),
     );
   }
 
@@ -50,9 +75,7 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
           ),
           Text(
             label,
-            style: const TextStyle(
-              color: Colors.white70,
-            ),
+            style: const TextStyle(color: Colors.white70, fontSize: 24),
           ),
         ],
       ),

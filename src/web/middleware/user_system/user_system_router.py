@@ -1,4 +1,3 @@
-from turtle import title
 from fastapi import APIRouter, HTTPException
 
 from user_system.user_repository import UserRepository
@@ -82,4 +81,4 @@ def get_session(robot_name: str):
 @user_system_router.post("/end_session", tags=["Auth"])
 def post_end_session(robot_name: str):
     auth_session_manager.end_session(robot_name)
-    return {"message": "Session ended successfully"}
+    return {"message": "Session ended successfully", "status": "success"}

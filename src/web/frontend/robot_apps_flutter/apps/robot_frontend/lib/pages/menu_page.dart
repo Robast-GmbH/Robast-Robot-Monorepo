@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
+import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/module_filling_page.dart';
 import 'package:robot_frontend/pages/settings_page.dart';
 import 'package:robot_frontend/pages/task_creation_menu_page.dart';
@@ -16,6 +17,7 @@ class MenuPage extends StatelessWidget {
     return CustomScaffold(
       onBackButtonPressed: () {
         Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
+        Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
         Navigator.pop(context);
         Navigator.pop(context);
       },

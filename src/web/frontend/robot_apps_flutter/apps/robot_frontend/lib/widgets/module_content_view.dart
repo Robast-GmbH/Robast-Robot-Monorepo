@@ -2,8 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:robot_frontend/models/controller/module_content_controller.dart';
 
 class ModuleContentView extends StatefulWidget {
-  const ModuleContentView({required this.moduleContentController, super.key});
+  const ModuleContentView({
+    required this.moduleContentController,
+    this.label = 'Fracht',
+    super.key,
+  });
 
+  final String label;
   final ModuleContentController moduleContentController;
 
   @override
@@ -17,13 +22,38 @@ class _ModuleContentViewState extends State<ModuleContentView> {
   @override
   Widget build(BuildContext context) {
     final controller = widget.moduleContentController;
-    return ListView(
-      children: widget.moduleContentController.initialContent.entries.map<Widget>(buildContentListTile).toList() +
-          controller.createdContent.entries.map(buildContentListTile).toList() +
-          [
-            buildPayloadCreationView(),
-            buildPayloadCreationButton(),
-          ],
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.only(
+            left: 8,
+          ),
+          child: Text('Fracht', style: TextStyle(fontSize: 28)),
+        ),
+        Expanded(
+          child: Card(
+            color: Colors.white.withOpacity(0.4),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView(
+                      children: widget.moduleContentController.initialContent.entries.map<Widget>(buildContentListTile).toList() +
+                          controller.createdContent.entries.map(buildContentListTile).toList() +
+                          [
+                            buildPayloadCreationView(),
+                            buildPayloadCreationButton(),
+                          ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

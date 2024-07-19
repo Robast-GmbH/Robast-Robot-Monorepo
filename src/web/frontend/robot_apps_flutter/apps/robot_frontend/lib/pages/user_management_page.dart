@@ -33,53 +33,60 @@ class _UserManagementPageState extends State<UserManagementPage> {
           }
           return Center(
             child: Padding(
-              padding: const EdgeInsets.all(128),
-              child: ListView(
-                children: snapshot.data!
-                        .map<Widget>(
-                          (user) => UserManagementListTile(
-                            user: user,
-                            onDeletePressed: () async {
-                              await Provider.of<UserProvider>(context, listen: false).deleteUser(id: user.id);
-                              setState(() {
-                                loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
-                              });
-                            },
-                          ),
-                        )
-                        .toList() +
-                    [
-                      GestureDetector(
-                        onTap: () async {
-                          await Provider.of<UserProvider>(context, listen: false).createUser(
-                            newUser: User(
-                              id: '',
-                              title: '',
-                              firstName: '',
-                              lastName: '',
-                              station: '',
-                              room: '',
-                              userGroups: [],
+              padding: const EdgeInsets.all(64),
+              child: Column(
+                children: [
+                  Expanded(
+                    child: ListView(
+                      children: snapshot.data!
+                          .map<Widget>(
+                            (user) => UserManagementListTile(
+                              user: user,
+                              onDeletePressed: () async {
+                                await Provider.of<UserProvider>(context, listen: false).deleteUser(id: user.id);
+                                setState(() {
+                                  loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
+                                });
+                              },
                             ),
-                          );
-                          setState(() {
-                            loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
-                          });
-                        },
-                        child: Card(
-                          color: Colors.white.withOpacity(0.7),
-                          child: const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(8),
-                              child: Icon(
-                                Icons.add,
-                                size: 48,
-                              ),
-                            ),
+                          )
+                          .toList(),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 4,
+                  ),
+                  GestureDetector(
+                    onTap: () async {
+                      await Provider.of<UserProvider>(context, listen: false).createUser(
+                        newUser: User(
+                          id: '',
+                          title: '',
+                          firstName: '',
+                          lastName: '',
+                          station: '',
+                          room: '',
+                          userGroups: [],
+                        ),
+                      );
+                      setState(() {
+                        loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
+                      });
+                    },
+                    child: Card(
+                      color: Colors.white.withOpacity(0.7),
+                      child: const Center(
+                        child: Padding(
+                          padding: EdgeInsets.all(8),
+                          child: Icon(
+                            Icons.add,
+                            size: 48,
                           ),
                         ),
                       ),
-                    ],
+                    ),
+                  ),
+                ],
               ),
             ),
           );

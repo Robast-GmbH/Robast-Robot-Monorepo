@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
+import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/pages/disinfection_page.dart';
 import 'package:robot_frontend/pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
@@ -49,6 +50,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       ),
     );
     moduleProvider.isInModuleProcess = false;
+    if (mounted) {
+      await Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
+    }
   }
 
   @override

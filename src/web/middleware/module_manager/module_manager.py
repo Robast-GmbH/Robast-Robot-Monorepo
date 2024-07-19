@@ -8,9 +8,18 @@ class ModuleManager:
     def __init__(self):
         self.repository = ModuleRepository()
 
-    def is_module_size_available(self, robot_name: str, size: int) -> bool:
+    def is_module_size_mounted(self, robot_name: str, size: int) -> bool:
         drawers = self.repository.read_robot_drawers(robot_name)
         return any(drawer.size == size for drawer in drawers)
+
+    def is_module_size_available(self, robot_name: str, size: int) -> bool:
+        drawers = self.repository.read_robot_drawers(robot_name)
+        return any(
+            drawer.size == size
+            and not drawer.reserved_for_ids
+            and not drawer.reserved_for_groups
+            for drawer in drawers
+        )
 
     def get_modules(self, robot_name: str) -> list[dict[str, Any]]:
         drawers = self.repository.read_robot_drawers(robot_name)

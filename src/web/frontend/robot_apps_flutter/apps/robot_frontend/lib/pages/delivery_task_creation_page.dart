@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/controller/module_content_controller.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
+import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
@@ -11,6 +12,7 @@ import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_view.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
+import 'package:robot_frontend/widgets/user_selector.dart';
 
 class DeliveryTaskCreationPage extends StatefulWidget {
   const DeliveryTaskCreationPage({super.key});
@@ -26,8 +28,10 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
   final startController = LocationSelectionController();
   final targetController = LocationSelectionController();
 
-  User? authUser;
-  final userGroupsSelectionController = UserGroupsSelectionController();
+  final senderUserController = UserSelectionController();
+  final recipientUserController = UserSelectionController();
+  final senderUserGroupsSelectionController = UserGroupsSelectionController();
+  final recipientUserGroupsSelectionController = UserGroupsSelectionController();
 
   late Future<List<User>> loadUsersFuture;
 
@@ -42,30 +46,12 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
     return CustomScaffold(
       title: 'Lieferauftrag erstellen',
       child: Padding(
-        padding: const EdgeInsets.all(64),
+        padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 32),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Expanded(
-              child: Card(
-                color: Colors.white.withOpacity(0.4),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Padding(
-                        padding: EdgeInsets.only(left: 8, bottom: 8),
-                        child: Text('Fracht', style: TextStyle(fontSize: 26)),
-                      ),
-                      Expanded(
-                        child: ModuleContentView(
-                          moduleContentController: moduleContentController,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
+              child: ModuleContentView(
+                moduleContentController: moduleContentController,
               ),
             ),
             Card(
@@ -107,80 +93,63 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
               ),
             ),
             Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                buildLabeledLocationSelector(controller: startController, label: 'Start'),
-                buildLabeledLocationSelector(controller: targetController, label: 'Ziel'),
-                Card(
-                  color: Colors.white.withOpacity(0.4),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                    child: Row(
-                      children: [
-                        const Text(
-                          'Autorisierte Person',
-                          textAlign: TextAlign.end,
-                          style: TextStyle(
-                            fontSize: 24,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 16,
-                        ),
-                        Expanded(
-                          child: FutureBuilder<List<User>>(
-                            future: loadUsersFuture,
-                            builder: (context, snapshot) {
-                              return DropdownButton<User>(
-                                disabledHint: const Text(''),
-                                isExpanded: true,
-                                value: authUser,
-                                items: snapshot.connectionState != ConnectionState.done
-                                    ? []
-                                    : snapshot.data!
-                                        .map(
-                                          (e) => DropdownMenuItem<User>(
-                                            value: e,
-                                            child: Text('${e.firstName} ${e.lastName}'),
-                                          ),
-                                        )
-                                        .toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    authUser = value;
-                                  });
-                                },
-                              );
-                            },
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 8,
-                        ),
-                        IconButton(
-                          onPressed: () {
-                            setState(() {
-                              authUser = null;
-                            });
-                          },
-                          icon: const Icon(Icons.delete),
-                        ),
-                        const SizedBox(
-                          width: 32,
-                        ),
-                        const Text(
-                          'Autorisierte Gruppen',
-                          textAlign: TextAlign.end,
-                          style: TextStyle(
-                            fontSize: 24,
-                          ),
-                        ),
-                        const SizedBox(
-                          width: 16,
-                        ),
-                        UserGroupsSelector(controller: userGroupsSelectionController),
-                      ],
-                    ),
+                const Padding(
+                  padding: EdgeInsets.only(
+                    left: 8,
+                    top: 4,
                   ),
+                  child: Text(
+                    'Sender',
+                    style: TextStyle(fontSize: 28),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: UserSelector(
+                        controller: senderUserController,
+                      ),
+                    ),
+                    Expanded(
+                      child: UserGroupsSelector(
+                        controller: senderUserGroupsSelectionController,
+                      ),
+                    ),
+                  ],
+                ),
+                LocationSelector(
+                  controller: startController,
+                  label: 'Start',
+                ),
+                const Padding(
+                  padding: EdgeInsets.only(
+                    top: 4,
+                    left: 8,
+                  ),
+                  child: Text(
+                    'Empfänger',
+                    style: TextStyle(fontSize: 28),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: UserSelector(
+                        controller: recipientUserController,
+                      ),
+                    ),
+                    Expanded(
+                      child: UserGroupsSelector(
+                        controller: recipientUserGroupsSelectionController,
+                      ),
+                    ),
+                  ],
+                ),
+                LocationSelector(
+                  controller: targetController,
+                  label: 'Ziel',
                 ),
               ],
             ),
@@ -195,44 +164,20 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                   targetID: targetController.room,
                   requiredDrawerType: requiredDrawerType,
                   payload: moduleContentController.createPayload(),
-                  authUsers: [
-                    if (authUser != null) authUser!.id,
+                  senderAuthUsers: [
+                    if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
                   ],
-                  authUserGroups: userGroupsSelectionController.selectionAsStringList(),
+                  senderAuthUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
+                  recipientAuthUsers: [
+                    if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
+                  ],
+                  recipientAuthUserGroups: recipientUserGroupsSelectionController.selectionAsStringList(),
                 );
                 if (context.mounted) {
                   Navigator.of(context).pop();
                 }
               },
               text: 'Auftrag erstellen',
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Card buildLabeledLocationSelector({required LocationSelectionController controller, required String label}) {
-    return Card(
-      color: Colors.white.withOpacity(0.4),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Row(
-          children: [
-            Text(
-              label,
-              textAlign: TextAlign.end,
-              style: const TextStyle(
-                fontSize: 24,
-              ),
-            ),
-            const SizedBox(
-              width: 16,
-            ),
-            Expanded(
-              child: LocationSelector(
-                controller: controller,
-              ),
             ),
           ],
         ),

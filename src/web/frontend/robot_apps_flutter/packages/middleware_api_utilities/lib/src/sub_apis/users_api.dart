@@ -56,4 +56,11 @@ class UsersApi {
     final response = await RequestService.tryPost(uri: Uri.parse('$prefix/users/delete_user'), data: {'id': id});
     return RequestService.wasRequestSuccessful(response: response);
   }
+
+  Future<bool> endUserSession({required String robotName}) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/end_session?robot_name=$robotName'),
+    );
+    return RequestService.wasRequestSuccessful(response: response);
+  }
 }

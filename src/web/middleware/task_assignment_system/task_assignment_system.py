@@ -44,7 +44,7 @@ class TaskAssignmentSystem:
         # TODO taskvalidation
         if delivery_request.target_id is None and delivery_request.start_id is None:
             return False, "Invalid request, target node not found."
-        if not self.module_manager.is_module_size_available(
+        if not self.module_manager.is_module_size_mounted(
             "rb_theron", delivery_request.required_drawer_type
         ):
             return False, "Invalid request, drawer type not available."

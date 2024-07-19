@@ -7,5 +7,7 @@ class DeliveryRequest(BaseModel):
     payload: Dict[str, int]
     target_id: Optional[str] = None
     start_id: Optional[str] = None
-    user_ids: List[str] = Field(default_factory=list)
-    user_groups: List[str] = Field(default_factory=list)
+    sender_user_ids: List[str] = Field(default_factory=list)
+    sender_user_groups: List[str] = Field(default_factory=list)
+    recipient_user_ids: List[str] = Field(default_factory=list)
+    recipient_user_groups: List[str] = Field(default_factory=list)

@@ -13,6 +13,7 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
   Widget build(BuildContext context) {
     return const CustomScaffold(
       title: 'Inhalte verteilen',
+      child: Column(),
     );
   }
 }

@@ -18,7 +18,7 @@ class _ExpandableTaskTileState extends State<ExpandableTaskTile> {
 
   String unixTimeStampToFormattedString({required int unixTimeStamp}) {
     final date = DateTime.fromMillisecondsSinceEpoch(unixTimeStamp * 1000);
-    return '${date.day}.${date.month}.${date.year} ${date.hour}:${date.minute}:${date.second}';
+    return '${date.day}.${date.month}.${date.year} um ${date.hour}:${date.minute < 10 ? '0${date.minute}' : date.minute}:${date.second < 10 ? '0${date.second}' : date.second} Uhr';
   }
 
   @override
