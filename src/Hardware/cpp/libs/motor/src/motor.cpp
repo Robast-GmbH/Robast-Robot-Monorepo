@@ -156,6 +156,7 @@ namespace stepper_motor
     _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
     delay(500);
     _is_stalled = false;
+    _is_stall_guard_enabled = false;
     attachInterrupt(_gpio_wrapper->get_gpio_num_for_pin_id(_port_expander_ninterrupt_pin_id), Motor::stall_ISR, FALLING);
   }
 
