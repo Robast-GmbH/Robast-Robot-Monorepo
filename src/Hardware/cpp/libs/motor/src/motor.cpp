@@ -130,13 +130,17 @@ namespace stepper_motor
   // TODO@Jacob: implement Stall guard with ticket: https://robast.atlassian.net/browse/RE-1446
   void Motor::set_stall_guard(uint8_t stall_guard_value)
   {
-    if (_is_stall_guard_enabled && (stall_guard_value == 0))
+    if (_is_stall_guard_enabled)
     {
-      detachInterrupt(_gpio_wrapper->get_gpio_num_for_pin_id(_port_expander_ninterrupt_pin_id));
-      _is_stall_guard_enabled = false;
+      if (stall_guard_value == 0)
+      {
+        detachInterrupt(_gpio_wrapper->get_gpio_num_for_pin_id(_port_expander_ninterrupt_pin_id));
+        _is_stall_guard_enabled = false;
+      }
     }
     else if (stall_guard_value != 0)
     {
+      debug_printf("Setting stall guard value to: %d\n", stall_guard_value);
       _driver->SGTHRS(stall_guard_value);
       attachInterrupt(_gpio_wrapper->get_gpio_num_for_pin_id(_port_expander_ninterrupt_pin_id), Motor::stall_ISR, FALLING);
       _is_stall_guard_enabled = true;
