@@ -41,6 +41,9 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
                                                    int rgbScaleDenominator,
                                                    int previewWidth,
                                                    int previewHeight,
+                                                   int coordinateSize,
+                                                   int depthLowerThreshold,
+                                                   int depthUpperThreshold,
                                                    bool syncNN,
                                                    std::string nnPath) {
     dai::Pipeline pipeline;
@@ -92,7 +95,7 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
     // StereoDepth
     stereo->initialConfig.setConfidenceThreshold(confidence);        
     stereo->setRectifyEdgeFillColor(0);                              
-    stereo->initialConfig.setLeftRightCheckThreshold(LRchecktresh);  
+    stereo->initialConfig.setLeftRightCheckThreshold(LRchecktresh);
     stereo->setLeftRightCheck(lrcheck);
     stereo->setExtendedDisparity(extended);
     stereo->setSubpixel(subpixel);
@@ -203,15 +206,16 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
     xoutNN->setStreamName("detections");
 
     spatialDetectionNetwork->setBlobPath(nnPath);
-    spatialDetectionNetwork->setConfidenceThreshold(0.5f);
+    spatialDetectionNetwork->setConfidenceThreshold(0.3f);
     spatialDetectionNetwork->input.setBlocking(false);
     spatialDetectionNetwork->setBoundingBoxScaleFactor(0.5);
-    spatialDetectionNetwork->setDepthLowerThreshold(100);
-    spatialDetectionNetwork->setDepthUpperThreshold(10000);
+    spatialDetectionNetwork->setDepthLowerThreshold(depthLowerThreshold);
+    spatialDetectionNetwork->setDepthUpperThreshold(depthUpperThreshold);
+
 
     // Yolo specific parameters
     spatialDetectionNetwork->setNumClasses(detectionClassesCount);
-    spatialDetectionNetwork->setCoordinateSize(4);
+    spatialDetectionNetwork->setCoordinateSize(coordinateSize);
     spatialDetectionNetwork->setAnchors({10, 13, 16, 30, 33, 23, 30, 61, 62, 45, 59, 119, 116, 90, 156, 198, 373, 326});
     spatialDetectionNetwork->setAnchorMasks({{"side60", {0, 1, 2}},{"side30", {3, 4, 5}},{"side15", {6, 7, 8}}});
     spatialDetectionNetwork->setIouThreshold(0.5f);
@@ -237,7 +241,6 @@ std::tuple<dai::Pipeline, int, int> createPipeline(bool lrcheck,
     stereo->rectifiedRight.link(xoutRight->input);
     stereo->depth.link(xoutDepth->input);
     
-    std::cout << stereoWidth << " " << stereoHeight << " " << rgbWidth << " " << rgbHeight << std::endl;
     return std::make_tuple(pipeline, stereoWidth, stereoHeight);
 }
 
@@ -276,6 +279,9 @@ void declareParameters(rclcpp::Node::SharedPtr node) {
     node->declare_parameter("detectionClassesCount", 80);
     node->declare_parameter("syncNN", true);
     node->declare_parameter("nnName", "x");
+    node->declare_parameter("coordinate_size", 4);
+    node->declare_parameter("depth_lower_threshold",100);
+    node->declare_parameter("depth_upper_threshold",5000);
 
     node->declare_parameter("enableDotProjector", false);
     node->declare_parameter("enableFloodLight", false);
@@ -291,13 +297,12 @@ void declareParameters(rclcpp::Node::SharedPtr node) {
 void getParameters(rclcpp::Node::SharedPtr node,
                    std::string &mxId, bool &usb2Mode, bool &poeMode, std::string &resourceBaseFolder,
                    std::string &tfPrefix, std::string &mode, bool &lrcheck, bool &extended, bool &subpixel,
-                   bool &rectify, bool &depth_aligned, int &stereo_fps, int &confidence, int &LRchecktresh,
-                   std::string &monoResolution, std::string &rgbResolution, bool &manualExposure, int &expTime,
+                   bool &rectify, bool &depth_aligned, int &stereo_fps, int &coordinateSize, int &confidence, int &LRchecktresh, std::string &monoResolution, std::string &rgbResolution, bool &manualExposure, int &expTime,
                    int &sensIso, int &rgbScaleNumerator, int &rgbScaleDenominator, int &previewWidth, int &previewHeight,
                    double &angularVelCovariance, double &linearAccelCovariance, int &detectionClassesCount, bool &syncNN,
                    bool &enableDotProjector, bool &enableFloodLight, double &dotProjectormA, double &floodLightmA,
                    bool &enableRosBaseTimeUpdate, std::string &door_handle_position_topic, std::string &stereo_depth_topic,
-                   std::string &right_rectified_image_topic, std::string &color_image_topic, std::string &nnName) {
+                   std::string &right_rectified_image_topic, std::string &color_image_topic, std::string &nnName, int &depthLowerThreshold, int &depthUpperThreshold) {
     node->get_parameter("mxId", mxId);
     node->get_parameter("usb2Mode", usb2Mode);
     node->get_parameter("poeMode", poeMode);
@@ -341,12 +346,17 @@ void getParameters(rclcpp::Node::SharedPtr node,
     node->get_parameter("right_rectified_image_topic", right_rectified_image_topic);
     node->get_parameter("color_image_topic", color_image_topic);
     node->get_parameter("nnName", nnName);
+    node->get_parameter("coordinate_size",coordinateSize);
+    node->get_parameter("depth_lower_threshold",depthLowerThreshold);
+    node->get_parameter("depth_upper_threshold",depthUpperThreshold);
 }
 
 int main(int argc, char** argv) {
+    // Initialize the ROS 2 node
     rclcpp::init(argc, argv);
     auto node = rclcpp::Node::make_shared("door_handle_node");
 
+    // Variable declarations for various parameters
     std::string tfPrefix;
     std::string mode;
     std::string mxId;
@@ -358,31 +368,29 @@ int main(int argc, char** argv) {
     std::string nnPath;
     std::string monoResolution;
     std::string rgbResolution;
-    int badParams = 0, stereo_fps, confidence, LRchecktresh, detectionClassesCount, expTime, sensIso;
-    int rgbScaleNumerator, rgbScaleDenominator, previewWidth, previewHeight;
+    int badParams = 0, stereo_fps, confidence, LRchecktresh, detectionClassesCount, expTime, sensIso, coordinateSize;
+    int rgbScaleNumerator, rgbScaleDenominator, previewWidth, previewHeight, depthLowerThreshold, depthUpperThreshold;
     bool lrcheck, extended, subpixel, rectify, depth_aligned, manualExposure;
     bool enableDotProjector, enableFloodLight;
     bool usb2Mode, poeMode, syncNN;
     double angularVelCovariance, linearAccelCovariance;
     double dotProjectormA, floodLightmA;
     bool enableRosBaseTimeUpdate;
-    std::string nnName(BLOB_NAME); 
+    std::string nnName(BLOB_NAME);
 
+    // Declare and get parameters from the node
     declareParameters(node);
 
-    // updating parameters if defined in launch file.
-
+    // Updating parameters if defined in launch file
     getParameters(node, mxId, usb2Mode, poeMode, resourceBaseFolder, tfPrefix, mode, lrcheck, extended, subpixel, rectify,
-                  depth_aligned, stereo_fps, confidence, LRchecktresh, monoResolution, rgbResolution, manualExposure,
-                  expTime, sensIso, rgbScaleNumerator, rgbScaleDenominator, previewWidth, previewHeight, angularVelCovariance,
-                  linearAccelCovariance, detectionClassesCount, syncNN, enableDotProjector, enableFloodLight, dotProjectormA,
-                  floodLightmA, enableRosBaseTimeUpdate, door_handle_position_topic, stereo_depth_topic, right_rectified_image_topic,
-                  color_image_topic, nnName);
+                  depth_aligned, stereo_fps, coordinateSize, confidence, LRchecktresh, monoResolution, rgbResolution, manualExposure, expTime, sensIso, rgbScaleNumerator, rgbScaleDenominator, previewWidth, previewHeight, angularVelCovariance, linearAccelCovariance, detectionClassesCount, syncNN, enableDotProjector, enableFloodLight, dotProjectormA, floodLightmA, enableRosBaseTimeUpdate, door_handle_position_topic, stereo_depth_topic, right_rectified_image_topic, color_image_topic, nnName, depthLowerThreshold, depthUpperThreshold);
 
+    // Check if the resource folder path is provided
     if(resourceBaseFolder.empty()) {
-        throw std::runtime_error("Send the path to the resouce folder containing NNBlob in \'resourceBaseFolder\' ");
+        throw std::runtime_error("Send the path to the resource folder containing NNBlob in 'resourceBaseFolder'");
     }
 
+    // Get the NN model name if specified
     std::string nnParam;
     node->get_parameter("nnName", nnParam);
     if(nnParam != "x") {
@@ -390,6 +398,7 @@ int main(int argc, char** argv) {
     }
     nnPath = resourceBaseFolder + "/" + nnName;
 
+    // Create the pipeline
     dai::Pipeline pipeline;
     int width, height;
     bool isDeviceFound = false;
@@ -407,12 +416,17 @@ int main(int argc, char** argv) {
                                                        rgbScaleDenominator,
                                                        previewWidth,
                                                        previewHeight,
+                                                       coordinateSize,
+                                                       depthLowerThreshold,
+                                                       depthUpperThreshold,
                                                        syncNN,
                                                        nnPath);
 
+    // Get available DepthAI devices
     std::shared_ptr<dai::Device> device;
     std::vector<dai::DeviceInfo> availableDevices = dai::Device::getAllAvailableDevices();
 
+    // List and check available devices
     std::cout << "Listing available devices..." << std::endl;
     for(auto deviceInfo : availableDevices) {
         std::cout << "Device Mx ID: " << deviceInfo.getMxId() << std::endl;
@@ -426,7 +440,7 @@ int main(int argc, char** argv) {
                 }
                 break;
             } else if(deviceInfo.state == X_LINK_BOOTED) {
-                throw std::runtime_error("\" DepthAI Device with MxId  \"" + mxId + "\" is already booted on different process.  \"");
+                throw std::runtime_error("DepthAI Device with MxId '" + mxId + "' is already booted on a different process.");
             }
         } else if(mxId == "x") {
             isDeviceFound = true;
@@ -434,9 +448,10 @@ int main(int argc, char** argv) {
         }
     }
     if(!isDeviceFound) {
-        throw std::runtime_error("\" DepthAI Device with MxId  \"" + mxId + "\" not found.  \"");
+        throw std::runtime_error("DepthAI Device with MxId '" + mxId + "' not found.");
     }
 
+    // Print USB status if not using PoE
     if(!poeMode) {
         std::cout << "Device USB status: " << usbStrings[static_cast<int32_t>(device->getUsbSpeed())] << std::endl;
     }
@@ -444,39 +459,45 @@ int main(int argc, char** argv) {
     // Apply camera controls
     auto controlQueue = device->getInputQueue("control");
 
-    // Set manual exposure
+    // Set manual exposure if enabled
     if(manualExposure) {
         dai::CameraControl ctrl;
         ctrl.setManualExposure(expTime, sensIso);
         controlQueue->send(ctrl);
     }
+
+    // Setup output queues for various streams
     auto rightQueue = device->getOutputQueue("right", 30, false);
     std::shared_ptr<dai::DataOutputQueue> stereoQueue;
-    
     stereoQueue = device->getOutputQueue("depth", 30, false);
 
+    // Read calibration data
     auto calibrationHandler = device->readCalibration();
-
     auto boardName = calibrationHandler.getEepromData().boardName;
+
+    // Adjust resolution for specific boards
     if(height > 480 && boardName == "OAK-D-LITE" && depth_aligned == false) {
         width = 640;
         height = 480;
     }
+
+    // Configure IR drivers if available
     std::vector<std::tuple<std::string, int, int>> irDrivers = device->getIrDrivers();
     if(!irDrivers.empty()) {
         if(enableDotProjector) {
             device->setIrLaserDotProjectorBrightness(dotProjectormA);
         }
-
         if(enableFloodLight) {
             device->setIrFloodLightBrightness(floodLightmA);
         }
     }
 
+    // Setup image converters and publishers for various streams
     dai::rosBridge::ImageConverter converter(tfPrefix + "_left_camera_optical_frame", true);
     if(enableRosBaseTimeUpdate) {
         converter.setUpdateRosBaseTimeOnToRosMsg();
     }
+
     dai::rosBridge::ImageConverter rightConverter(tfPrefix + "_right_camera_optical_frame", true);
     if(enableRosBaseTimeUpdate) {
         rightConverter.setUpdateRosBaseTimeOnToRosMsg();
@@ -490,10 +511,10 @@ int main(int argc, char** argv) {
     }
 
     auto rightCameraInfo = converter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_C, width, height);
-    auto depthCameraInfo =
-            depth_aligned ? rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, width, height) : rightCameraInfo;
+    auto depthCameraInfo = depth_aligned ? rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, width, height) : rightCameraInfo;
     auto depthConverter = depth_aligned ? rgbConverter : rightConverter;
 
+    // Publish right camera images
     dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rightPublish(
                 rightQueue,
                 node,
@@ -504,24 +525,19 @@ int main(int argc, char** argv) {
                 rightPubName);
     rightPublish.addPublisherCallback();
 
+    // Publish depth images
     dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> depthPublish(
             stereoQueue,
             node,
             stereo_depth_topic,
-            std::bind(&dai::rosBridge::ImageConverter::toRosMsg,
-                      &rightConverter,  // since the converter has the same frame name
-                                        // and image type is also same we can reuse it
-                      std::placeholders::_1,
-                      std::placeholders::_2),
+            std::bind(&dai::rosBridge::ImageConverter::toRosMsg, &rightConverter, std::placeholders::_1, std::placeholders::_2),
             30,
             depthCameraInfo,
             stereo_depth_topic);
     depthPublish.addPublisherCallback();
 
-   
-        
+    // Publish RGB images
     auto rgbCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, width, height);
-        
     auto imgQueue = device->getOutputQueue("rgb", 30, false);
     dai::rosBridge::BridgePublisher<sensor_msgs::msg::Image, dai::ImgFrame> rgbPublish(
                 imgQueue,
@@ -533,6 +549,7 @@ int main(int argc, char** argv) {
                 color_image_topic);
     rgbPublish.addPublisherCallback();
 
+    // Publish detection data
     auto previewQueue = device->getOutputQueue("preview", 30, false);
     auto detectionQueue = device->getOutputQueue("detections", 30, false);
     auto previewCameraInfo = rgbConverter.calibrationToCameraInfo(calibrationHandler, dai::CameraBoardSocket::CAM_A, previewWidth, previewHeight);
@@ -545,10 +562,9 @@ int main(int argc, char** argv) {
                     std::bind(&dai::rosBridge::SpatialDetectionConverter::toRosMsg, &detConverter, std::placeholders::_1, std::placeholders::_2),
                     30);
     detectionPublish.addPublisherCallback();
-        
 
+    // Spin the node to process callbacks
     rclcpp::spin(node);
-       
 
     return 0;
 }
