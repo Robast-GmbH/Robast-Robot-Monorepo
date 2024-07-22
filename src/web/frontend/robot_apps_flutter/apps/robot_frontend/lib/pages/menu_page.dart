@@ -19,7 +19,6 @@ class MenuPage extends StatelessWidget {
         Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
         Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
         Navigator.pop(context);
-        Navigator.pop(context);
       },
       title: 'Hauptmenü',
       child: Padding(

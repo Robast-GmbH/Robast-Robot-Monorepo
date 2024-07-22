@@ -3,7 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
-import 'package:robot_frontend/pages/disinfection_page.dart';
+import 'package:robot_frontend/pages/auth_page.dart';
 import 'package:robot_frontend/pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
@@ -46,7 +46,9 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
     await Navigator.push(
       context,
       MaterialPageRoute<ModuleProcessPage>(
-        builder: (context) => const ModuleProcessPage(),
+        builder: (context) => const ModuleProcessPage(
+          requireDisinfection: true,
+        ),
       ),
     );
     moduleProvider.isInModuleProcess = false;
@@ -67,8 +69,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
                 if (context.mounted) {
                   await Navigator.push(
                     context,
-                    MaterialPageRoute<DisinfectionPage>(
-                      builder: (context) => const DisinfectionPage(),
+                    MaterialPageRoute<AuthPage>(
+                      builder: (context) => const AuthPage(),
                     ),
                   );
                 }

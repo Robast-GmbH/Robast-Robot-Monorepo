@@ -4,17 +4,31 @@ import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/auth_view.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
+import 'package:robot_frontend/widgets/disinfection_view.dart';
 import 'package:robot_frontend/widgets/drawer_view.dart';
 import 'package:robot_frontend/widgets/hint_view.dart';
 
 class ModuleProcessView extends StatefulWidget {
-  const ModuleProcessView({super.key});
+  const ModuleProcessView({
+    this.requireDesinfection = false,
+    super.key,
+  });
+
+  final bool requireDesinfection;
 
   @override
   State<ModuleProcessView> createState() => _ModuleProcessViewState();
 }
 
 class _ModuleProcessViewState extends State<ModuleProcessView> {
+  bool isDisinfected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    isDisinfected = !widget.requireDesinfection;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -36,6 +50,16 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                   requestedUserGroups: moduleInProcess.reservedForGroups,
                 );
               }
+              if (!isDisinfected) {
+                return DisinfectionView(
+                  onDisinfection: () {
+                    setState(() {
+                      isDisinfected = true;
+                    });
+                  },
+                );
+              }
+
               if (moduleInProcess.moduleProcess.status != ModuleProcessStatus.closed) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 64),

@@ -31,6 +31,10 @@ class UserProvider extends ChangeNotifier {
     return _middlewareApiUtilities.users.deleteUser(id: id);
   }
 
+  Future<User?> getUserSession({required String robotName}) async {
+    return _middlewareApiUtilities.users.getUserSession(robotName: robotName);
+  }
+
   Future<bool> endUserSession({required String robotName}) async {
     return _middlewareApiUtilities.users.endUserSession(robotName: robotName);
   }

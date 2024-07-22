@@ -3,7 +3,12 @@ import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/module_process_view.dart';
 
 class ModuleProcessPage extends StatefulWidget {
-  const ModuleProcessPage({super.key});
+  const ModuleProcessPage({
+    this.requireDisinfection = false,
+    super.key,
+  });
+
+  final bool requireDisinfection;
 
   @override
   State<ModuleProcessPage> createState() => _ModuleProcessPageState();
@@ -12,9 +17,11 @@ class ModuleProcessPage extends StatefulWidget {
 class _ModuleProcessPageState extends State<ModuleProcessPage> {
   @override
   Widget build(BuildContext context) {
-    return const CustomScaffold(
+    return CustomScaffold(
       showBackButton: false,
-      child: ModuleProcessView(),
+      child: ModuleProcessView(
+        requireDesinfection: widget.requireDisinfection,
+      ),
     );
   }
 }

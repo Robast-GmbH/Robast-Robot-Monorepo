@@ -73,9 +73,7 @@ def delete_user(request: DeleteUserRequest):
 @user_system_router.get("/session", tags=["Auth"])
 def get_session(robot_name: str):
     session = auth_session_manager.get_session(robot_name)
-    if not session:
-        raise HTTPException(status_code=404, detail="Session not found")
-    return session
+    return {"user": session, "status": "success" if session else "failed"}
 
 
 @user_system_router.post("/end_session", tags=["Auth"])

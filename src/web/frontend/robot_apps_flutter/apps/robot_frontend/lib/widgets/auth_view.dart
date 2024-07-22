@@ -22,11 +22,22 @@ class _AuthViewState extends State<AuthView> {
   @override
   void initState() {
     super.initState();
-    loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
+    if (widget.requestedUserIDs.isNotEmpty || widget.requestedUserGroups.isNotEmpty) {
+      loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    if (widget.requestedUserIDs.isEmpty && widget.requestedUserGroups.isEmpty) {
+      return const Text(
+        'Bitte authentifizieren Sie sich mit Ihrem NFC-Tag',
+        style: TextStyle(
+          fontSize: 50,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    }
     return Center(
       child: FutureBuilder<List<User>>(
         future: loadUsers,
@@ -35,20 +46,21 @@ class _AuthViewState extends State<AuthView> {
             return const CircularProgressIndicator();
           }
 
-          if (widget.requestedUserIDs.isEmpty) {
+          if (widget.requestedUserIDs.isEmpty && widget.requestedUserGroups.isNotEmpty) {
             return Text(
               'Bitte melden Sie sich an ${widget.requestedUserGroups.join(', ')}',
               style: const TextStyle(
-                fontSize: 24,
+                fontSize: 50,
                 fontWeight: FontWeight.bold,
               ),
             );
           }
+
           final requiredUser = snapshot.data!.firstWhere((element) => widget.requestedUserIDs.contains(element.id));
           return Text(
             '${requiredUser.title} ${requiredUser.firstName} ${requiredUser.lastName} bitte melden Sie sich an',
             style: const TextStyle(
-              fontSize: 24,
+              fontSize: 50,
               fontWeight: FontWeight.bold,
             ),
           );
