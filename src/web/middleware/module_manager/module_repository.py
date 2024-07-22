@@ -47,7 +47,7 @@ class ModuleRepository:
                     json.dumps(drawer.reserved_for_groups),
                 ),
             )
-        except Exception as e:
+        except Exception:
             return None
         finally:
             db_connection.commit()

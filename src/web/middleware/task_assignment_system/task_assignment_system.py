@@ -41,7 +41,6 @@ class TaskAssignmentSystem:
         if self.timer is not None:
             self.timer.cancel()
 
-        # TODO taskvalidation
         if delivery_request.target_id is None and delivery_request.start_id is None:
             return False, "Invalid request, target node not found."
         if not self.module_manager.is_module_size_mounted(
@@ -98,7 +97,6 @@ class TaskAssignmentSystem:
                 name=robot_name,
                 fleet_management_api=fleet_management_api,
                 module_manager=module_manager,
-                # TODO: Find a clever way to dynamically initialize the robots at different nodes
                 initial_node=self.nav_graph.nodes[15],
                 nav_graph=self.nav_graph,
             )

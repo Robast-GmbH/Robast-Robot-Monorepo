@@ -36,7 +36,6 @@ class Task:
         drawer: Drawer,
     ) -> list["Task"]:
         tasks = []
-        drawer = drawer
         pick_up_id = str(uuid.uuid4())
         if delivery_request.start_id is not None:
             pick_up_task_phase = TaskPhase.create_pickup_phase(

@@ -28,8 +28,11 @@ class AuthSessionManager:
             self.__start_nfc_polling()
 
     def __start_nfc_polling(self) -> None:
-        for key in self.__fleet_ip_config:
-            timer_cb = lambda: self.__nfc_polling_callback(key)
+        for robot_name in self.__fleet_ip_config:
+
+            def timer_cb(name=robot_name):
+                self.__nfc_polling_callback(robot_name=name)
+
             timer = PeriodicTimer(
                 1,
                 timer_cb,
