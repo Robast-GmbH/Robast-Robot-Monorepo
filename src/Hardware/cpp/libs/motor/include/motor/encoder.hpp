@@ -7,7 +7,7 @@
 #include <memory>
 
 #define OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT       85000
-#define ENCODER_COUNT_DRAWER_MAX_EXTENT         76500
+#define ENCODER_COUNT_DRAWER_MAX_EXTENT         87000
 #define DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN 1000
 
 namespace drawer_controller
