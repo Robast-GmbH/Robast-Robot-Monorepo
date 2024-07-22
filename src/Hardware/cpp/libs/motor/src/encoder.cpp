@@ -21,12 +21,7 @@ namespace drawer_controller
   {
     if (_use_encoder)
     {
-      _current_position_int32 = -_esp32_encoder->getCount();
-      if (_current_position_int32 < 0)
-      {
-        _current_position_int32 = 0;
-        _esp32_encoder->setCount(0);
-      }
+      update_position_from_encoder();
     }
     else
     {
@@ -38,13 +33,32 @@ namespace drawer_controller
     }
   }
 
-  int32_t Encoder::get_current_position() const
+  void Encoder::update_position_from_encoder()
   {
+    _current_position_int32 = -_esp32_encoder->getCount();
+    if (_current_position_int32 < 0)
+    {
+      _current_position_int32 = 0;
+      _esp32_encoder->setCount(0);
+    }
+  }
+
+  int32_t Encoder::get_current_position()
+  {
+    if (_use_encoder)
+    {
+      update_position_from_encoder();
+    }
     return _current_position_int32;
   }
 
-  uint8_t Encoder::get_normed_current_position() const
+  uint8_t Encoder::get_normed_current_position()
   {
+    if (_use_encoder)
+    {
+      update_position_from_encoder();
+    }
+
     uint32_t scale = _use_encoder ? ENCODER_COUNT_DRAWER_MAX_EXTENT : OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT;
 
     uint32_t normed_current_position_uint32 = (_current_position_int32 * UINT8_MAX) / scale;

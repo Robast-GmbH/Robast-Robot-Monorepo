@@ -11,6 +11,7 @@
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "lock/electrical_drawer_lock.hpp"
 #include "motor/encoder.hpp"
+#include "motor/encoder_monitor.hpp"
 #include "motor/motor.hpp"
 #include "switch/switch.hpp"
 #include "utils/e_drawer_task.hpp"
@@ -18,9 +19,15 @@
 
 #define DRAWER_MAX_SPEED              35000
 #define DRAWER_HOMING_SPEED           300
+#define DRAWER_INITIAL_HOMING_SPEED   1000
 #define DRAWER_TARGET_HOMING_POSITION 0
 #define STALL_GUARD_DISABLED          0
 #define IS_HOMING                     true
+
+#define DRAWER_PUSH_IN_AUTO_CLOSE_SPEED                   150     // TODO: Make this configurable via CAN
+#define DRAWER_PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE       75      // TODO: Make this configurable via CAN
+#define DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT 0.005   // TODO: Make this configurable via CAN
+#define DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS          200
 
 // The drawer starts to decelerate in dependency of the traveled distance
 #define DRAWER_MOVING_IN_DECELERATION_DISTANCE  50   // distance to the target position to start deceleration (max 255)
@@ -71,7 +78,7 @@ namespace drawer_controller
 
     const stepper_motor::StepperPinIdConfig _stepper_pin_id_config;
 
-    const std::unique_ptr<Encoder> _encoder;
+    const std::shared_ptr<Encoder> _encoder;
 
     const std::shared_ptr<Switch> _endstop_switch;
 
@@ -83,6 +90,8 @@ namespace drawer_controller
     const std::unique_ptr<stepper_motor::Motor> _motor;
 
     std::unique_ptr<Queue<EDrawerTask>> _e_drawer_task_queue;
+
+    const std::unique_ptr<EncoderMonitor> _encoder_monitor;
 
     bool _drawer_was_homed_once = false;
 
@@ -103,7 +112,7 @@ namespace drawer_controller
 
     void handle_drawer_active_state();
 
-    void start_normal_drawer_movement(const uint8_t target_speed);
+    void start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp);
 
     void start_homing_movement(const uint8_t target_speed);
 
@@ -129,7 +138,7 @@ namespace drawer_controller
 
     bool handle_motor_stall_guard_and_return_status();
 
-    void set_target_speed_and_direction(uint8_t target_speed);
+    void set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp);
 
     void check_if_drawer_is_homed();
 

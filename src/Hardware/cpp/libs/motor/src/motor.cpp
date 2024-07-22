@@ -109,10 +109,10 @@ namespace stepper_motor
     // Mind that TCOOLTHRS is compared with TSTEP and TSTEP is scaling INVERSELY with the velocity.
     // So the higher the velocity, the lower the TSTEP and the higher the TCOOLTHRS has to be.
     // TCOOLTHRS >= TSTEP >= TPWMTHRS
-    _driver->TCOOLTHRS(150);   // 20bit max
+    _driver->TCOOLTHRS(TCOOLTHRS_VALUE);   // 20bit max
 
     // Upper threshold velocity for switching off smart energy CoolStep and StallGuard to DIAG output
-    _driver->TPWMTHRS(10);
+    _driver->TPWMTHRS(TPWMTHRS_VALUE);
 
     // CoolStep lower threshold [0... 15].
     // If SG_RESULT goes below this threshold, CoolStep increases the current to both coils.

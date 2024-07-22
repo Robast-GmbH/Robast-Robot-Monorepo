@@ -19,9 +19,9 @@ namespace drawer_controller
 
     void update_position(uint32_t active_speed);
 
-    int32_t get_current_position() const;
+    int32_t get_current_position();
 
-    uint8_t get_normed_current_position() const;
+    uint8_t get_normed_current_position();
 
     uint32_t convert_uint8_position_to_drawer_position_scale(uint8_t position) const;
 
@@ -42,6 +42,8 @@ namespace drawer_controller
     uint32_t _last_timestamp;
 
     int32_t get_integrated_drawer_position(uint32_t active_speed);
+
+    void update_position_from_encoder();
   };
 }   // namespace drawer_controller
 

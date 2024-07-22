@@ -23,6 +23,9 @@
 #define STALL_GUARD_READER_THRESHOLD           0.9
 #define STALL_GUARD_READER_WEIGHT_NEW_READINGS 1.0
 
+#define TCOOLTHRS_VALUE 120   // TODO: Make this configurable via CAN
+#define TPWMTHRS_VALUE  10    // TODO: Make this configurable via CAN
+
 namespace stepper_motor
 {
 

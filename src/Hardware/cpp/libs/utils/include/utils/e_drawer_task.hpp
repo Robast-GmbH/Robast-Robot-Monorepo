@@ -9,9 +9,11 @@ namespace drawer_controller
     uint8_t target_speed;
     uint8_t stall_guard_value;
     bool is_homing;
+    bool use_acceleration_ramp;
 
     // Default Constructor
-    EDrawerTask() : target_position(0), target_speed(0), stall_guard_value(0), is_homing(false)
+    EDrawerTask()
+        : target_position(0), target_speed(0), stall_guard_value(0), is_homing(false), use_acceleration_ramp(true)
     {
     }
 
@@ -22,7 +24,8 @@ namespace drawer_controller
         : target_position(target_position_input),
           target_speed(target_speed_input),
           stall_guard_value(stall_guard_value_input),
-          is_homing(false)
+          is_homing(false),
+          use_acceleration_ramp(true)
     {
     }
 
@@ -30,11 +33,13 @@ namespace drawer_controller
     EDrawerTask(const uint8_t target_position_input,
                 const uint8_t target_speed_input,
                 const uint8_t stall_guard_value_input,
-                const bool is_homing_input)
+                const bool is_homing_input,
+                const bool use_acceleration_ramp_input)
         : target_position(target_position_input),
           target_speed(target_speed_input),
           stall_guard_value(stall_guard_value_input),
-          is_homing(is_homing_input)
+          is_homing(is_homing_input),
+          use_acceleration_ramp(use_acceleration_ramp_input)
     {
     }
   };
