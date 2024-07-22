@@ -10,10 +10,10 @@ def generate_launch_description():
 
     feuerplan_publisher_dir = get_package_share_directory('feuerplan_publisher')
 
-    default_feuerplan_image_path = os.path.join(feuerplan_publisher_dir, 'resources','slide1.jpg')
+    default_feuerplan_image_path = os.path.join(feuerplan_publisher_dir, 'images','slide1.jpg')
 
     feuerplan_path = LaunchConfiguration('feuerplan_path',  default = default_feuerplan_image_path)
-    
+
     declare_feuerplan_image_cmd = DeclareLaunchArgument(
         'feuerplan_path',
         default_value=feuerplan_path,
