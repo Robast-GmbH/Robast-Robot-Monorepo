@@ -19,7 +19,7 @@
 // TODO@Jacob: This could be automatically detected in the future
 #define SHAFT_DIRECTION_IS_INVERTED true   // depends on how the motor is wired to the driver
 
-#define NUM_OF_LEDS 18
+#define NUM_OF_LEDS 21
 
 #define SWITCH_PRESSED_THRESHOLD 0.9
 #define SWITCH_WEIGHT_NEW_VALUES 0.2
@@ -116,7 +116,7 @@ void process_can_msgs_task_loop(void* pvParameters)
         case CAN_ID_ELECTRICAL_DRAWER_TASK:
         {
           drawer_controller::EDrawerTask e_drawer_task = data_mapper->create_e_drawer_task(received_message.value());
-          drawer->handle_electrical_drawer_task(e_drawer_task);
+          drawer->add_e_drawer_task_to_queue(e_drawer_task);
         }
         break;
         case CAN_ID_LED_HEADER:

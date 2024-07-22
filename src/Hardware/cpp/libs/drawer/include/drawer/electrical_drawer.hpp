@@ -14,14 +14,18 @@
 #include "motor/motor.hpp"
 #include "switch/switch.hpp"
 #include "utils/e_drawer_task.hpp"
+#include "utils/queue.hpp"
 
-#define DRAWER_MAX_SPEED 35000
-#define DRAWER_HOMING_SPEED 300
+#define DRAWER_MAX_SPEED              35000
+#define DRAWER_HOMING_SPEED           300
+#define DRAWER_TARGET_HOMING_POSITION 0
+#define STALL_GUARD_DISABLED          0
+#define IS_HOMING                     true
 
 // The drawer starts to decelerate in dependency of the traveled distance
-#define DRAWER_MOVING_IN_DECELERATION_DISTANCE 50  // distance to the target position to start deceleration (max 255)
-#define DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE 1   // the end of the distance when moving in where speed is super slow
-#define DRAWER_MOVING_OUT_DECELERATION_DISTANCE 70 // distance to the target position to start deceleration (max 255)
+#define DRAWER_MOVING_IN_DECELERATION_DISTANCE  50   // distance to the target position to start deceleration (max 255)
+#define DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE  1    // the end of the distance when moving in where speed is super slow
+#define DRAWER_MOVING_OUT_DECELERATION_DISTANCE 70   // distance to the target position to start deceleration (max 255)
 
 // The drawer accelerates in dependency of the time
 #define DEFAULT_DRAWER_ACCELERATION 10
@@ -31,7 +35,7 @@ namespace drawer_controller
 
   class ElectricalDrawer : public IDrawer
   {
-  public:
+   public:
     ElectricalDrawer(const uint32_t module_id,
                      const uint8_t id,
                      const std::shared_ptr<robast_can_msgs::CanDb> can_db,
@@ -53,13 +57,13 @@ namespace drawer_controller
 
     void unlock();
 
-    void handle_electrical_drawer_task(const EDrawerTask &e_drawer_task);
+    void add_e_drawer_task_to_queue(const EDrawerTask &e_drawer_task);
 
     void stop_motor() const;
 
     void start_motor() const;
 
-  private:
+   private:
     const uint32_t _module_id;
     const uint8_t _id;
 
@@ -78,6 +82,10 @@ namespace drawer_controller
 
     const std::unique_ptr<stepper_motor::Motor> _motor;
 
+    std::unique_ptr<Queue<EDrawerTask>> _e_drawer_task_queue;
+
+    bool _drawer_was_homed_once = false;
+
     bool _is_drawer_moving_out;
     bool _triggered_deceleration_for_drawer_moving_out = false;
     bool _is_idling = true;
@@ -94,6 +102,12 @@ namespace drawer_controller
     void handle_drawer_idle_state();
 
     void handle_drawer_active_state();
+
+    void start_normal_drawer_movement(const uint8_t target_speed);
+
+    void start_homing_movement(const uint8_t target_speed);
+
+    bool check_and_handle_initial_drawer_homing();
 
     void handle_drawer_just_opened() override;
 
@@ -120,7 +134,11 @@ namespace drawer_controller
     void check_if_drawer_is_homed();
 
     void debug_prints_moving_electrical_drawer();
-  };
-} // namespace drawer_controller
 
-#endif // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP
+    uint32_t get_normed_target_speed_uint32(const uint8_t target_speed) const;
+
+    uint8_t get_normed_target_speed_uint8(const uint32_t target_speed) const;
+  };
+}   // namespace drawer_controller
+
+#endif   // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP

@@ -113,7 +113,7 @@ void process_can_msgs_task_loop(void* pvParameters)
         case CAN_ID_ELECTRICAL_DRAWER_TASK:
         {
           drawer_controller::EDrawerTask e_drawer_task = data_mapper->create_e_drawer_task(received_message.value());
-          drawer->handle_electrical_drawer_task(e_drawer_task);
+          drawer->add_e_drawer_task_to_queue(e_drawer_task);
         }
         break;
         case CAN_ID_LED_HEADER:

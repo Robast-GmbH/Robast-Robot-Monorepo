@@ -10,7 +10,7 @@ namespace drawer_controller
     if (use_encoder)
     {
       _esp32_encoder = std::make_unique<ESP32Encoder>(true);
-      ESP32Encoder::isrServiceCpuCore = 0; // Use core 0
+      ESP32Encoder::isrServiceCpuCore = 0;   // Use core 0
       ESP32Encoder::useInternalWeakPullResistors = UP;
       _esp32_encoder->attachFullQuad(encoder_pin_a, encoder_pin_b);
       _esp32_encoder->setCount(0);
@@ -21,7 +21,12 @@ namespace drawer_controller
   {
     if (_use_encoder)
     {
-      _current_position_int32 = abs(_esp32_encoder->getCount());
+      _current_position_int32 = -_esp32_encoder->getCount();
+      if (_current_position_int32 < 0)
+      {
+        _current_position_int32 = 0;
+        _esp32_encoder->setCount(0);
+      }
     }
     else
     {
@@ -85,7 +90,7 @@ namespace drawer_controller
     uint32_t current_timestemp = millis();
 
     integrated_position =
-        ((current_timestemp - _last_timestemp) * active_speed) / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
+      ((current_timestemp - _last_timestemp) * active_speed) / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
 
     if (!_is_drawer_moving_out)
     {
@@ -101,4 +106,4 @@ namespace drawer_controller
     return _use_encoder ? ENCODER_COUNT_DRAWER_MAX_EXTENT : OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT;
   }
 
-} // namespace drawer_controller
+}   // namespace drawer_controller

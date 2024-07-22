@@ -21,9 +21,10 @@ namespace drawer_controller
         _encoder{std::make_unique<Encoder>(use_encoder, encoder_pin_a, encoder_pin_b)},
         _can_utils{std::make_unique<CanUtils>(can_db)},
         _motor{std::make_unique<stepper_motor::Motor>(
-            motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, shaft_direction_is_inverted)},
+          motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, shaft_direction_is_inverted)},
         _endstop_switch{endstop_switch},
-        _electrical_drawer_lock{electrical_drawer_lock}
+        _electrical_drawer_lock{electrical_drawer_lock},
+        _e_drawer_task_queue{std::make_unique<Queue<EDrawerTask>>()}
   {
   }
 
@@ -57,7 +58,6 @@ namespace drawer_controller
     {
       debug_println("[ElectricalDrawer]: Received request to unlock the lock!");
       _electrical_drawer_lock.value()->unlock();
-      _is_idling = false;
     }
     else
     {
@@ -86,6 +86,49 @@ namespace drawer_controller
   {
     // updating the sensor values needs to be done all the time because of the moving average calculation
     _endstop_switch->update_sensor_value();
+
+    std::optional<EDrawerTask> e_drawer_task = _e_drawer_task_queue->get_element_from_queue();
+    if (e_drawer_task.has_value())
+    {
+      _is_idling = false;
+
+      _target_position_uint8 = e_drawer_task.value().target_position;
+
+      _motor->set_stall_guard(e_drawer_task.value().stall_guard_value);
+
+      if (e_drawer_task.value().is_homing)
+      {
+        start_homing_movement(e_drawer_task.value().target_speed);
+      }
+      else
+      {
+        start_normal_drawer_movement(e_drawer_task.value().target_speed);
+      }
+    }
+  }
+
+  void ElectricalDrawer::start_normal_drawer_movement(const uint8_t target_speed)
+  {
+    check_if_drawer_is_homed();
+
+    if (_target_position_uint8 == _encoder->get_current_position())
+    {
+      _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
+                                                        _id,
+                                                        _endstop_switch->is_switch_pressed(),
+                                                        false,
+                                                        _motor->get_is_stalled(),
+                                                        _encoder->get_normed_current_position());
+      return;
+    }
+
+    set_target_speed_and_direction(target_speed);
+  }
+
+  void ElectricalDrawer::start_homing_movement(const uint8_t target_speed)
+  {
+    _motor->set_direction(stepper_motor::clockwise);
+    _motor->set_target_speed_instantly(get_normed_target_speed_uint32(target_speed));
   }
 
   void ElectricalDrawer::handle_drawer_active_state()
@@ -100,14 +143,38 @@ namespace drawer_controller
       return;
     }
 
+    _endstop_switch->update_sensor_value();
+
+    if (check_and_handle_initial_drawer_homing())
+    {
+      return;
+    }
+
     _motor->handle_motor_control(_encoder->get_current_position());
 
     _encoder->update_position(_motor->get_active_speed());
-    _endstop_switch->update_sensor_value();
 
     _is_drawer_moving_out ? handle_drawer_moving_out() : handle_drawer_moving_in();
 
     debug_prints_moving_electrical_drawer();
+  }
+
+  bool ElectricalDrawer::check_and_handle_initial_drawer_homing()
+  {
+    if (_drawer_was_homed_once)
+    {
+      return false;
+    }
+
+    if (_endstop_switch->is_switch_pressed())
+    {
+      _motor->set_target_speed_instantly(0);
+      _encoder->set_current_position(0);
+      _drawer_was_homed_once = true;
+      _is_idling = true;
+      debug_println("[ElectricalDrawer]: Drawer was homed successfully!");
+    }
+    return true;
   }
 
   void ElectricalDrawer::handle_electrical_drawer_lock_control()
@@ -139,12 +206,12 @@ namespace drawer_controller
     _is_idling = true;
 
     _can_utils->handle_electrical_drawer_feedback_msg(
-        _module_id,
-        _id,
-        _endstop_switch->is_switch_pressed(),
-        _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
-        _motor->get_is_stalled(),
-        _encoder->get_normed_current_position());
+      _module_id,
+      _id,
+      _endstop_switch->is_switch_pressed(),
+      _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
+      _motor->get_is_stalled(),
+      _encoder->get_normed_current_position());
 
     _motor->reset_stall_guard();
 
@@ -159,45 +226,42 @@ namespace drawer_controller
     }
   }
 
-  void ElectricalDrawer::handle_electrical_drawer_task(const EDrawerTask &e_drawer_task)
+  void ElectricalDrawer::add_e_drawer_task_to_queue(const EDrawerTask &e_drawer_task)
   {
-    debug_printf("[ElectricalDrawer]: Received e-drawer task! Current position: %d, Target position: %d, Target speed: %d, Stall guard value: %d\n",
-                 _encoder->get_normed_current_position(),
-                 e_drawer_task.target_position,
-                 e_drawer_task.target_speed,
-                 e_drawer_task.stall_guard_value);
-
-    _target_position_uint8 = e_drawer_task.target_position;
-    uint8_t target_speed = e_drawer_task.target_speed;
-    uint8_t stall_guard_value = e_drawer_task.stall_guard_value;
-
-    if (!_electrical_drawer_lock.has_value())
+    // Before we add a new task to the queue, we need to check if the drawer was homed once
+    if (!_drawer_was_homed_once)
     {
-      // In case we do not have an electrical drawer lock, we can directly start moving the drawer
-      _is_idling = false;
+      debug_println("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!");
+      _e_drawer_task_queue->add_element_to_queue({DRAWER_TARGET_HOMING_POSITION,
+                                                  get_normed_target_speed_uint8(DRAWER_HOMING_SPEED),
+                                                  STALL_GUARD_DISABLED,
+                                                  IS_HOMING});
     }
 
-    _motor->set_stall_guard(stall_guard_value);
+    debug_printf(
+      "[ElectricalDrawer]: Adding new e-drawer task to queue! Current position: %d, Target position: %d, Target "
+      "speed: %d, Stall guard value: %d\n",
+      _encoder->get_normed_current_position(),
+      e_drawer_task.target_position,
+      e_drawer_task.target_speed,
+      e_drawer_task.stall_guard_value);
 
-    check_if_drawer_is_homed();
+    _e_drawer_task_queue->add_element_to_queue(e_drawer_task);
+  }
 
-    if (_target_position_uint8 == _encoder->get_current_position())
-    {
-      _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
-                                                        _id,
-                                                        _endstop_switch->is_switch_pressed(),
-                                                        false,
-                                                        _motor->get_is_stalled(),
-                                                        _encoder->get_normed_current_position());
-      return;
-    }
+  uint32_t ElectricalDrawer::get_normed_target_speed_uint32(const uint8_t target_speed) const
+  {
+    return (target_speed * DRAWER_MAX_SPEED) / UINT8_MAX;
+  }
 
-    set_target_speed_and_direction(target_speed);
+  uint8_t ElectricalDrawer::get_normed_target_speed_uint8(const uint32_t target_speed) const
+  {
+    return (target_speed * UINT8_MAX) / DRAWER_MAX_SPEED;
   }
 
   void ElectricalDrawer::set_target_speed_and_direction(uint8_t target_speed)
   {
-    uint32_t normed_target_speed_uint32 = (target_speed * DRAWER_MAX_SPEED) / UINT8_MAX;
+    uint32_t normed_target_speed_uint32 = get_normed_target_speed_uint32(target_speed);
     _is_drawer_moving_out = _target_position_uint8 > _encoder->get_normed_current_position();
     _is_drawer_moving_out ? _motor->set_direction(stepper_motor::counter_clockwise)
                           : _motor->set_direction(stepper_motor::clockwise);
@@ -212,9 +276,9 @@ namespace drawer_controller
     _triggered_deceleration_for_drawer_moving_in = true;
 
     _motor->set_target_speed_with_decelerating_ramp(
-        DRAWER_HOMING_SPEED,
-        _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_IN_DECELERATION_DISTANCE),
-        _encoder->get_current_position());
+      DRAWER_HOMING_SPEED,
+      _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_IN_DECELERATION_DISTANCE),
+      _encoder->get_current_position());
   }
 
   void ElectricalDrawer::handle_decelerating_for_moving_out_drawer()
@@ -223,15 +287,15 @@ namespace drawer_controller
         (_encoder->get_normed_current_position() + DRAWER_MOVING_OUT_DECELERATION_DISTANCE) >= _target_position_uint8)
     {
       debug_printf(
-          "[ElectricalDrawer]: E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = %d, "
-          "_target_position_uint8 = %d\n",
-          _encoder->get_normed_current_position(),
-          _target_position_uint8);
+        "[ElectricalDrawer]: E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = %d, "
+        "_target_position_uint8 = %d\n",
+        _encoder->get_normed_current_position(),
+        _target_position_uint8);
       _triggered_deceleration_for_drawer_moving_out = true;
       _motor->set_target_speed_with_decelerating_ramp(
-          0,
-          _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_OUT_DECELERATION_DISTANCE),
-          _encoder->get_current_position());
+        0,
+        _encoder->convert_uint8_position_to_drawer_position_scale(DRAWER_MOVING_OUT_DECELERATION_DISTANCE),
+        _encoder->get_current_position());
     }
   }
 
@@ -241,7 +305,7 @@ namespace drawer_controller
     if (_electrical_drawer_lock.has_value())
     {
       is_drawer_closed =
-          _endstop_switch->is_switch_pressed() && !_electrical_drawer_lock.value()->is_lock_switch_pushed();
+        _endstop_switch->is_switch_pressed() && !_electrical_drawer_lock.value()->is_lock_switch_pushed();
     }
     else
     {
@@ -258,9 +322,11 @@ namespace drawer_controller
   {
     if (_encoder->get_normed_current_position() >= _target_position_uint8)
     {
-      debug_printf("[ElectricalDrawer]: Moving e-drawer out is finished! normed_current_position_uint8: %d, _target_position_uint8: %d\n",
-                   _encoder->get_normed_current_position(),
-                   _target_position_uint8);
+      debug_printf(
+        "[ElectricalDrawer]: Moving e-drawer out is finished! normed_current_position_uint8: %d, "
+        "_target_position_uint8: %d\n",
+        _encoder->get_normed_current_position(),
+        _target_position_uint8);
       _motor->set_target_speed_instantly(0);
       _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
                                                         _id,
@@ -304,9 +370,9 @@ namespace drawer_controller
         !_triggered_closing_lock_after_opening)
     {
       _electrical_drawer_lock.value()->set_open_lock_current_step(
-          false); // this makes sure the lock automatically closes as soon as the drawer is opened
+        false);   // this makes sure the lock automatically closes as soon as the drawer is opened
       _triggered_closing_lock_after_opening =
-          true; // this makes sure, closing the lock is only triggered once and not permanently
+        true;   // this makes sure, closing the lock is only triggered once and not permanently
       debug_println("[ElectricalDrawer]: Triggered closing the lock because drawer is not retracted anymore!");
     }
   }
@@ -336,27 +402,28 @@ namespace drawer_controller
     _triggered_deceleration_for_drawer_moving_in = false;
 
     _can_utils->handle_electrical_drawer_feedback_msg(
-        _module_id,
-        _id,
-        _endstop_switch->is_switch_pressed(),
-        _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
-        _motor->get_is_stalled(),
-        _encoder->get_normed_current_position());
+      _module_id,
+      _id,
+      _endstop_switch->is_switch_pressed(),
+      _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
+      _motor->get_is_stalled(),
+      _encoder->get_normed_current_position());
     _can_utils->handle_drawer_feedback_msg(
-        _module_id,
-        _id,
-        _endstop_switch->is_switch_pressed(),
-        _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false);
+      _module_id,
+      _id,
+      _endstop_switch->is_switch_pressed(),
+      _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false);
   }
 
   void ElectricalDrawer::debug_prints_moving_electrical_drawer()
   {
     int normed_target_position = (_target_position_uint8 / 255.0) * _encoder->get_count_drawer_max_extent();
-    // debug_printf("[ElectricalDrawer]: Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: %d\n",
+    // debug_printf("[ElectricalDrawer]: Current position: % d, Target Position: %d, Current Speed: %d, Target Speed:
+    // %d\n",
     //              _encoder->get_current_position(),
     //              normed_target_position,
     //              _motor->get_active_speed(),
     //              _motor->get_target_speed());
   }
 
-} // namespace drawer_controller
+}   // namespace drawer_controller
