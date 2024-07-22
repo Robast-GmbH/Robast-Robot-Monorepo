@@ -21,6 +21,7 @@
 #define NUM_OF_LEDS 18
 
 #define SWITCH_PRESSED_THRESHOLD 0.9
+#define SWITCH_WEIGHT_NEW_VALUES 0.2
 
 TaskHandle_t Task1;
 TaskHandle_t Task2;
@@ -162,7 +163,8 @@ void setup()
   endstop_switch = std::make_shared<drawer_controller::Switch>(gpio_wrapper,
                                                                SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
                                                                SWITCH_PRESSED_THRESHOLD,
-                                                               drawer_controller::Switch::normally_closed);
+                                                               drawer_controller::Switch::normally_closed,
+                                                               SWITCH_WEIGHT_NEW_VALUES);
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   data_mapper = std::make_unique<drawer_controller::DataMapper>();
@@ -175,8 +177,12 @@ void setup()
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<drawer_controller::Queue<robast_can_msgs::CanMessage>>();
 
-  drawer_lock = std::make_shared<drawer_controller::ElectricalDrawerLock>(
-    gpio_wrapper, LOCK_1_OPEN_CONTROL_PIN_ID, LOCK_1_CLOSE_CONTROL_PIN_ID, LOCK_1_SENSE_PIN_ID);
+  drawer_lock = std::make_shared<drawer_controller::ElectricalDrawerLock>(gpio_wrapper,
+                                                                          LOCK_1_OPEN_CONTROL_PIN_ID,
+                                                                          LOCK_1_CLOSE_CONTROL_PIN_ID,
+                                                                          LOCK_1_SENSE_PIN_ID,
+                                                                          SWITCH_PRESSED_THRESHOLD,
+                                                                          SWITCH_WEIGHT_NEW_VALUES);
 
   drawer = std::make_shared<drawer_controller::ElectricalDrawer>(
     MODULE_ID,

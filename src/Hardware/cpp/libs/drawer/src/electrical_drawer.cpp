@@ -95,6 +95,11 @@ namespace drawer_controller
       handle_electrical_drawer_lock_control();
     }
 
+    if (handle_motor_stall_guard_and_return_status())
+    {
+      return;
+    }
+
     _motor->handle_motor_control(_encoder->get_current_position());
 
     _encoder->update_position(_motor->get_active_speed());
@@ -118,6 +123,32 @@ namespace drawer_controller
     }
 
     handle_drawer_just_opened();
+  }
+
+  bool ElectricalDrawer::handle_motor_stall_guard_and_return_status()
+  {
+    if (!_motor->get_is_stalled())
+    {
+      return false;
+    }
+
+    debug_println("[ElectricalDrawer]: Motor is stalled! Setting speed to 0 and creating feedback messages!");
+
+    _motor->set_target_speed_instantly(0);
+
+    _is_idling = true;
+
+    _can_utils->handle_electrical_drawer_feedback_msg(
+        _module_id,
+        _id,
+        _endstop_switch->is_switch_pressed(),
+        _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
+        _motor->get_is_stalled(),
+        _encoder->get_normed_current_position());
+
+    _motor->reset_stall_guard();
+
+    return true;
   }
 
   void ElectricalDrawer::check_if_drawer_is_homed()
@@ -321,11 +352,11 @@ namespace drawer_controller
   void ElectricalDrawer::debug_prints_moving_electrical_drawer()
   {
     int normed_target_position = (_target_position_uint8 / 255.0) * _encoder->get_count_drawer_max_extent();
-    debug_printf("Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: %d\n",
-                 _encoder->get_current_position(),
-                 normed_target_position,
-                 _motor->get_active_speed(),
-                 _motor->get_target_speed());
+    // debug_printf("[ElectricalDrawer]: Current position: % d, Target Position: %d, Current Speed: %d, Target Speed: %d\n",
+    //              _encoder->get_current_position(),
+    //              normed_target_position,
+    //              _motor->get_active_speed(),
+    //              _motor->get_target_speed());
   }
 
 } // namespace drawer_controller

@@ -22,6 +22,7 @@
 #define NUM_OF_LEDS 18
 
 #define SWITCH_PRESSED_THRESHOLD 0.9
+#define SWITCH_WEIGHT_NEW_VALUES 0.2
 
 TaskHandle_t Task1;
 TaskHandle_t Task2;
@@ -180,7 +181,8 @@ void setup()
   endstop_switch = std::make_shared<drawer_controller::Switch>(gpio_wrapper,
                                                                SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
                                                                SWITCH_PRESSED_THRESHOLD,
-                                                               drawer_controller::Switch::normally_closed);
+                                                               drawer_controller::Switch::normally_open,
+                                                               SWITCH_WEIGHT_NEW_VALUES);
 
   std::vector<partial_drawer_controller::TrayPinConfig> tray_pin_configs = {
     {LOCK_1_OPEN_CONTROL_PIN_ID, LOCK_1_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_1_CLOSED_PIN_ID},
@@ -193,7 +195,7 @@ void setup()
     {LOCK_8_OPEN_CONTROL_PIN_ID, LOCK_8_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_8_CLOSED_PIN_ID}};
 
   tray_manager = std::make_shared<partial_drawer_controller::TrayManager>(
-    tray_pin_configs, gpio_wrapper, wire_onboard_led_driver, SWITCH_PRESSED_THRESHOLD);
+    tray_pin_configs, gpio_wrapper, wire_onboard_led_driver, SWITCH_PRESSED_THRESHOLD, SWITCH_WEIGHT_NEW_VALUES);
 
   auto set_led_driver_enable_pin_high = []()
   {

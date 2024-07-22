@@ -20,7 +20,9 @@ namespace drawer_controller
     ElectricalDrawerLock(const std::shared_ptr<IGpioWrapper> gpio_wrapper,
                          const uint8_t power_open_pin_id,
                          const uint8_t power_close_pin_id,
-                         const uint8_t sensor_lock_pin_id);
+                         const uint8_t sensor_lock_pin_id,
+                         const float switch_pressed_threshold,
+                         const float switch_weight_new_values);
 
     void initialize_lock();
 
@@ -50,6 +52,8 @@ namespace drawer_controller
     const uint8_t _power_open_pin_id;
     const uint8_t _power_close_pin_id;
     const uint8_t _sensor_lock_pin_id;
+    const float _switch_pressed_threshold;
+    const float _switch_weight_new_values;
 
     const std::shared_ptr<IGpioWrapper> _gpio_wrapper;
 

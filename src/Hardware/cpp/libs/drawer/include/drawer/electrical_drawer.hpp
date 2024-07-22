@@ -113,6 +113,8 @@ namespace drawer_controller
 
     void handle_finished_moving_out_drawer();
 
+    bool handle_motor_stall_guard_and_return_status();
+
     void set_target_speed_and_direction(uint8_t target_speed);
 
     void check_if_drawer_is_homed();

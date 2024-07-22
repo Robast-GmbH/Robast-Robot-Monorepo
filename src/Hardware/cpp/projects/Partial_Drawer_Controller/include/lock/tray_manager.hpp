@@ -17,7 +17,8 @@ namespace partial_drawer_controller
     TrayManager(const std::vector<TrayPinConfig>& tray_pin_configs,
                 const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
                 const std::shared_ptr<TwoWire> wire,
-                const float switch_pressed_threshold);
+                const float switch_pressed_threshold,
+                const float switch_weight_new_value);
 
     void init(std::function<void()> set_enable_pin_high);
 
