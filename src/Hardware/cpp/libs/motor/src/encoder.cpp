@@ -80,7 +80,7 @@ namespace drawer_controller
     _is_drawer_moving_out = is_drawer_moving_out;
     if (!_use_encoder)
     {
-      _last_timestemp = millis();
+      _last_timestamp = millis();
     }
   }
 
@@ -90,13 +90,13 @@ namespace drawer_controller
     uint32_t current_timestemp = millis();
 
     integrated_position =
-      ((current_timestemp - _last_timestemp) * active_speed) / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
+      ((current_timestemp - _last_timestamp) * active_speed) / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
 
     if (!_is_drawer_moving_out)
     {
       integrated_position *= -1;
     }
-    _last_timestemp = current_timestemp;
+    _last_timestamp = current_timestemp;
 
     return integrated_position;
   }

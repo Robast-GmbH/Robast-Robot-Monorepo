@@ -39,7 +39,7 @@ namespace drawer_controller
 
     bool _is_drawer_moving_out;
 
-    uint32_t _last_timestemp;
+    uint32_t _last_timestamp;
 
     int32_t get_integrated_drawer_position(uint32_t active_speed);
   };
