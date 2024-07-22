@@ -9,8 +9,8 @@
             <Peers>
                 <Peer Address="127.0.0.1" />
                 <Peer Address="192.168.0.47" />
+                <Peer Address="192.168.0.50" />
                 <Peer Address="192.168.0.200" />
-                <Peer Address="192.168.0.56" /> 
             </Peers>
             <MaxAutoParticipantIndex>50</MaxAutoParticipantIndex>
         </Discovery>
