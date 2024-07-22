@@ -11,9 +11,7 @@
     ],
     "workspaceFolder": "/workspace",
     // TODO (Tobi): Update network setup for this docker
-    "runArgs": [
-        "--network=host"
-    ],
+    "runArgs": ["--network=host"],
     "postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
     // Set *default* container specific settings.json values on container create.
     "settings": {
