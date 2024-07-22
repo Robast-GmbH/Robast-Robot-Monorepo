@@ -8,6 +8,10 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
 
+    is_simulation = os.environ["is_simulation"]
+
+    if is_simulation == 'True':
+        use_sim_time = True
     feuerplan_publisher_dir = get_package_share_directory('feuerplan_publisher')
 
     default_feuerplan_image_path = os.path.join(feuerplan_publisher_dir, 'images','slide5.jpg')
@@ -29,7 +33,9 @@ def generate_launch_description():
         package='feuerplan_publisher',
         executable='feuerplan_publisher_node',
         parameters=[
-                    {'feuerplan_path': feuerplan_path}
+                    {'feuerplan_path': feuerplan_path},
+                    {'confidence_threshold': confidence_threshold},
+                    {'use_sim_time': use_sim_time}
         ]
     )
 
