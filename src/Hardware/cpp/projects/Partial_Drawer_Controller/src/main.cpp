@@ -139,7 +139,7 @@ void process_can_msgs_task_loop(void* pvParameters)
         }
         break;
         default:
-          debug_println("Received unsupported CAN message.");
+          debug_println("[Main]: Received unsupported CAN message.");
           break;
       }
     }
@@ -162,7 +162,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 void setup()
 {
   debug_setup(115200);
-  debug_println("\nStart...");
+  debug_println("[Main] Start...");
 
   // TODO: In the hardware design of v1 the pins of SDA and SCL are mixed up unfortunately for the port expander
   // TODO: In order to use the hardware anyway, we need to create two instances of the bus with different pin init
@@ -228,7 +228,7 @@ void setup()
     std::nullopt);
   drawer->init();
 
-  debug_println("Finished setup()!");
+  debug_println("[Main]: Finished setup()!");
 
   // create a task that will be executed in the Task1code() function, with priority 1 and executed on core 0
   xTaskCreatePinnedToCore(receive_can_msg_task_loop, /* Task function. */

@@ -66,7 +66,7 @@ namespace partial_drawer_controller
   {
     if (is_drawer_opening_in_progress())
     {
-      debug_printf("Drawer opening is already in progress, so lock won't be opened again!\n");
+      debug_printf("[ElectricalTrayLock]: Drawer opening is already in progress, so lock won't be opened again!\n");
     }
     else
     {

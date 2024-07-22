@@ -128,7 +128,7 @@ void process_can_msgs_task_loop(void* pvParameters)
         }
         break;
         default:
-          debug_println("Received unsupported CAN message.");
+          debug_println("[Main]: Received unsupported CAN message.");
           break;
       }
     }
@@ -149,7 +149,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 void setup()
 {
   debug_setup(115200);
-  debug_println("\nStart...");
+  debug_println("[Main]: Start...");
 
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(2);
   wire_port_expander->begin(I2C_SDA, I2C_SCL);
@@ -193,7 +193,7 @@ void setup()
     drawer_lock);
   drawer->init();
 
-  debug_println("Finished setup()!");
+  debug_println("[Main]: Finished setup()!");
 
   // create a task that will be executed in the Task1code() function, with priority 1 and executed on core 0
   xTaskCreatePinnedToCore(receive_can_msg_task_loop, /* Task function. */

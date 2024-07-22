@@ -28,7 +28,7 @@ namespace stepper_motor
 
   void Motor::init()
   {
-    debug_println("Starting Motor init!");
+    debug_println("[Motor]: Starting Motor init!");
 
     _gpio_wrapper->digital_write(_stepper_enn_tmc2209_pin_id, LOW);
     _gpio_wrapper->digital_write(_stepper_stdby_tmc2209_pin_id, LOW);

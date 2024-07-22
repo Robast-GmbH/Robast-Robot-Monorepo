@@ -32,15 +32,15 @@ namespace drawer_controller
     // Receive next CAN frame from queue
     if (xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 3 * portTICK_PERIOD_MS) == pdTRUE)
     {
-      debug_println("Received CAN message!");
+      debug_println("[CanController]: Received CAN message!");
 
       if (rx_frame.FIR.B.FF == CAN_frame_std)
       {
-        debug_println("New standard frame");
+        debug_println("[CanController]: New standard frame");
       }
       else
       {
-        debug_println("New extended frame");
+        debug_println("[CanController]: New extended frame");
       }
 
       if (rx_frame.FIR.B.RTR == CAN_RTR)
@@ -67,7 +67,7 @@ namespace drawer_controller
 
         if (!can_message.has_value())
         {
-          debug_println("There is no CAN Message available in the CAN Database that corresponds to the msg id: ");
+          debug_println("[CanController]: There is no CAN Message available in the CAN Database that corresponds to the msg id: ");
           debug_print_with_base(rx_frame.MsgID, HEX);
           return can_message;
         }
@@ -103,11 +103,11 @@ namespace drawer_controller
 
       if (result == 0)
       {
-        debug_println("Message Sent Successfully!");
+        debug_println("[CanController]: Message Sent Successfully!");
       }
       else
       {
-        debug_println("Error accured while sending CAN message!");
+        Serial.println("[CanController]: Error accured while sending CAN message!");
       }
     }
     catch (const std::invalid_argument &exception)

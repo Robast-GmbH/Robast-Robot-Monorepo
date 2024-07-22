@@ -132,7 +132,7 @@ namespace drawer_controller
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   void LedStrip<led_pixel_pin, num_of_leds>::init_fading(const uint8_t new_fade_time_in_hundreds_of_ms)
   {
-    debug_printf("Init fading with new_fade_time_in_hundreds_of_ms = %d \n", new_fade_time_in_hundreds_of_ms);
+    debug_printf("[LedStrip]: Init fading with new_fade_time_in_hundreds_of_ms = %d \n", new_fade_time_in_hundreds_of_ms);
     _is_fading_in_progress = true;
     timer::set_max_counter_value(new_fade_time_in_hundreds_of_ms, TIMER_FACTOR);
     timer::enable_timer();
@@ -167,7 +167,7 @@ namespace drawer_controller
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   void LedStrip<led_pixel_pin, num_of_leds>::set_current_led_states_to_target_led_states()
   {
-    debug_println("Setting current led states to target led states...");
+    debug_println("[LedStrip]: Setting current led states to target led states...");
     timer::disable_timer();
     _is_fading_in_progress = false;
     for (uint16_t i = 0; i < num_of_leds; ++i)
@@ -244,7 +244,7 @@ namespace drawer_controller
   void LedStrip<led_pixel_pin, num_of_leds>::initialize_led_state_change(LedHeader led_header)
   {
     debug_printf(
-      "Initialized led state change for %d num of leds with start index %d and fade_time_in_hundreds_of_ms %d!\n",
+      "[LedStrip]: Initialized led state change for %d num of leds with start index %d and fade_time_in_hundreds_of_ms %d!\n",
       led_header.num_of_led_states_to_change,
       led_header.start_index_of_leds_to_change,
       led_header.fade_time_in_hundreds_of_ms);
@@ -267,7 +267,7 @@ namespace drawer_controller
       Serial.println("Warning! I received more led states then the header specified!");
       return;
     }
-    debug_printf("Adding requested led state (red = %d, green = %d, blue = %d) change with index %d!\n",
+    debug_printf("[LedStrip]: Adding requested led state (red = %d, green = %d, blue = %d) change with index %d!\n",
                  state.red,
                  state.green,
                  state.blue,

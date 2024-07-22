@@ -59,7 +59,7 @@ namespace partial_drawer_controller
       // this makes sure the lock automatically closes as soon as the drawer is opened
       _electrical_tray_locks[vector_id]->set_open_lock_current_step(false);
 
-      debug_println("Triggered closing the lock because tray just openend!");
+      debug_println("[TrayManager]: Triggered closing the lock because tray just openend!");
       _electrical_tray_locks[vector_id]->set_drawer_opening_is_in_progress(false);
     }
   }

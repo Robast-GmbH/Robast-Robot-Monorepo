@@ -58,7 +58,7 @@ namespace drawer_controller
       set_open_lock_current_step(false);
       set_drawer_opening_is_in_progress(false);
       set_drawer_auto_close_timeout_triggered(true);
-      debug_println("Lock was automatically closed due to timeout! time_since_lock_was_opened: ");
+      debug_println("[ElectricalDrawerLock]: Lock was automatically closed due to timeout! time_since_lock_was_opened: ");
       debug_println_with_base(time_since_lock_was_opened, DEC);
     }
   }
@@ -115,7 +115,7 @@ namespace drawer_controller
   {
     if (is_drawer_opening_in_progress())
     {
-      debug_printf("Drawer opening is already in progress, so lock won't be opened again!\n");
+      debug_printf("[ElectricalDrawerLock]: Drawer opening is already in progress, so lock won't be opened again!\n");
     }
     else
     {

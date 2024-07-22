@@ -55,13 +55,13 @@ namespace drawer_controller
   {
     if (_electrical_drawer_lock.has_value())
     {
-      debug_println("Received request to unlock the lock!");
+      debug_println("[ElectricalDrawer]: Received request to unlock the lock!");
       _electrical_drawer_lock.value()->unlock();
       _is_idling = false;
     }
     else
     {
-      Serial.println("Warning! Received request to unlock the lock, but no lock is installed!");
+      Serial.println("[ElectricalDrawer]: Warning! Received request to unlock the lock, but no lock is installed!");
     }
   }
 
@@ -130,7 +130,8 @@ namespace drawer_controller
 
   void ElectricalDrawer::handle_electrical_drawer_task(const EDrawerTask &e_drawer_task)
   {
-    debug_printf("Received e-drawer task! Target position: %d, Target speed: %d, Stall guard value: %d\n",
+    debug_printf("[ElectricalDrawer]: Received e-drawer task! Current position: %d, Target position: %d, Target speed: %d, Stall guard value: %d\n",
+                 _encoder->get_normed_current_position(),
                  e_drawer_task.target_position,
                  e_drawer_task.target_speed,
                  e_drawer_task.stall_guard_value);
@@ -191,7 +192,7 @@ namespace drawer_controller
         (_encoder->get_normed_current_position() + DRAWER_MOVING_OUT_DECELERATION_DISTANCE) >= _target_position_uint8)
     {
       debug_printf(
-          "E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = %d, "
+          "[ElectricalDrawer]: E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = %d, "
           "_target_position_uint8 = %d\n",
           _encoder->get_normed_current_position(),
           _target_position_uint8);
@@ -226,7 +227,7 @@ namespace drawer_controller
   {
     if (_encoder->get_normed_current_position() >= _target_position_uint8)
     {
-      debug_printf("Moving e-drawer out is finished! normed_current_position_uint8: %d, _target_position_uint8: %d\n",
+      debug_printf("[ElectricalDrawer]: Moving e-drawer out is finished! normed_current_position_uint8: %d, _target_position_uint8: %d\n",
                    _encoder->get_normed_current_position(),
                    _target_position_uint8);
       _motor->set_target_speed_instantly(0);
@@ -275,7 +276,7 @@ namespace drawer_controller
           false); // this makes sure the lock automatically closes as soon as the drawer is opened
       _triggered_closing_lock_after_opening =
           true; // this makes sure, closing the lock is only triggered once and not permanently
-      debug_println("Triggered closing the lock because drawer is not retracted anymore!");
+      debug_println("[ElectricalDrawer]: Triggered closing the lock because drawer is not retracted anymore!");
     }
   }
 
@@ -290,12 +291,12 @@ namespace drawer_controller
       }
       else
       {
-        debug_println("Drawer is closed, but no opening was in progress!");
+        debug_println("[ElectricalDrawer]: Drawer is closed, but no opening was in progress!");
         return;
       }
     }
 
-    debug_println("Drawer is closed! Setting speed to 0 and creating feedback messages!");
+    debug_println("[ElectricalDrawer]: Drawer is closed! Setting speed to 0 and creating feedback messages!");
     _motor->set_target_speed_instantly(0);
     _encoder->set_current_position(0);
 
