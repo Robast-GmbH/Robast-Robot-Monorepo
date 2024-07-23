@@ -46,6 +46,11 @@ class RmfApi {
     await _dispatchTask(task: task);
   }
 
+  Future<void> dispatchDropOffTask({required String dropoff, required String drawerID}) async {
+    final task = DropOffTaskRequest(dropoff: dropoff, drawerID: drawerID);
+    await _dispatchTask(task: task);
+  }
+
   Future<void> dispatchPatrolTask({required List<String> places, required int rounds}) async {
     final task = PatrolTaskRequest(places: places, rounds: rounds);
     await _dispatchTask(task: task);

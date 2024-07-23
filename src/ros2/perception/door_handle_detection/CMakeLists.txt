@@ -79,10 +79,7 @@ if($ENV{ROS_DISTRO} STREQUAL "galactic")
   target_compile_definitions(rgb_stereo_node PRIVATE IS_GALACTIC)
 endif()
 
-
-#install(DIRECTORY params DESTINATION share/${PROJECT_NAME})
-install(DIRECTORY resources DESTINATION share/${PROJECT_NAME})
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME})
+install(DIRECTORY config resources launch DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
         yolov5_door_node

@@ -94,13 +94,16 @@
             <xacro:if value="${ros2_control_hardware_type_positon_joint == 'gz_ros2_control'}">
               <xacro:if value="${ros_distro == 'humble'}">
                 <plugin>ign_ros2_control_base_movement/IgnBaseMovementSystemHardware</plugin>
+                <param name="odom_topic">/diff_drive_base_controller/odom</param>
               </xacro:if>
               <xacro:unless value="${ros_distro == 'humble'}">
                 <plugin>gz_ros2_control_base_movement/GzBaseMovementSystemHardware</plugin>
+                <param name="odom_topic">/diff_drive_base_controller/odom</param>
               </xacro:unless>
             </xacro:if>
             <xacro:if value="${ros2_control_hardware_type_positon_joint == 'real_life'}">
               <plugin>ros2_control_base_movement/BaseMovementSystemHardware</plugin>
+              <param name="odom_topic">/diff_drive_base_controller/odom</param>
             </xacro:if>
           </hardware>
           <!-- Virtual position joint for supporting MoveIt's planar joint type in joint trajectories -->

@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
+import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 
 import 'package:robot_frontend/widgets/driving_view.dart';
+import 'package:robot_frontend/widgets/module_process_view.dart';
+import 'package:robot_frontend/widgets/status_indicator_view.dart';
 import 'package:robot_frontend/widgets/stopped_view.dart';
+import 'package:shared_data_models/shared_data_models.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -14,10 +18,8 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin {
-  bool isPressed = false;
-
   late final AnimationController _controller = AnimationController(
-    duration: const Duration(milliseconds: 8000),
+    duration: const Duration(milliseconds: 800),
     vsync: this,
   );
   late final Animation<Offset> _offsetAnimation = Tween<Offset>(
@@ -61,80 +63,46 @@ class _HomeViewState extends State<HomeView> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF00DB9E), Color(0xFF8F44F2)],
-          ),
-        ),
-        child: Stack(
-          children: [
-            SlideTransition(
-              position: _offsetAnimation2,
-              child: StoppedView(
-                onContinue: () async {
-                  await Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
-                  await _controller.reverse();
-                },
-              ),
-            ),
-            SlideTransition(
-              position: _offsetAnimation,
-              child: DrivingView(
-                onPressed: () async {
-                  await Provider.of<RobotProvider>(context, listen: false).blockNavigation();
-                  await _controller.forward();
-                },
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(left: 24, top: 12),
-              child: ClockView(),
-            ),
-            Padding(
-              padding: const EdgeInsets.only(right: 24, top: 12),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Icon(
-                    Icons.icecream,
-                    size: 48,
-                  ),
-                  SizedBox(width: 8),
-                  Icon(
-                    Icons.link,
-                    size: 48,
-                  ),
-                  SizedBox(width: 8),
-                  RotatedBox(
-                    quarterTurns: 1,
-                    child: Icon(
-                      Icons.battery_5_bar,
-                      size: 48,
+      body: Selector<RobotProvider, ModuleProcess?>(
+        selector: (_, provider) => provider.moduleProcess,
+        builder: (context, moduleProcess, child) {
+          return BackgroundView(
+            child: Stack(
+              children: [
+                if (moduleProcess?.state != null && moduleProcess?.state != ModuleProcessState.finished) ...[
+                  ModuleProcessView()
+                ] else ...[
+                  SlideTransition(
+                    position: _offsetAnimation2,
+                    child: StoppedView(
+                      onContinue: () async {
+                        await Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
+                        await _controller.reverse();
+                      },
                     ),
                   ),
-                  SizedBox(width: 8),
-                  Container(
-                    margin: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Color(0xFF00FF00),
-                      border: Border.all(
-                        color: Colors.white,
-                        width: 4,
-                      ),
+                  SlideTransition(
+                    position: _offsetAnimation,
+                    child: DrivingView(
+                      onPressed: () async {
+                        await Provider.of<RobotProvider>(context, listen: false).blockNavigation();
+                        await _controller.forward();
+                      },
                     ),
-                    width: 38,
-                    height: 38,
-                  )
+                  ),
                 ],
-              ),
-            )
-          ],
-        ),
+                Padding(
+                  padding: const EdgeInsets.only(left: 24, top: 12),
+                  child: ClockView(),
+                ),
+                Padding(
+                  padding: const EdgeInsets.only(right: 24, top: 12),
+                  child: StatusIndicatorView(),
+                )
+              ],
+            ),
+          );
+        },
       ),
     );
   }

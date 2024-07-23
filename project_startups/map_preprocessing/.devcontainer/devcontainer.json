@@ -8,9 +8,9 @@
 	"remoteUser": "robast",
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"runArgs": [
-                "--name=map_preprocessing",
-				"--gpus=all"
-        ],
+		"--name=map_preprocessing",
+		"--gpus=all"
+	],
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"terminal.integrated.shell.linux": "/bin/bash"

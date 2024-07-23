@@ -33,6 +33,41 @@ class DeliveryTaskRequest extends TaskRequest {
         );
 }
 
+class DropOffTaskRequest extends TaskRequest {
+  DropOffTaskRequest({
+    required String dropoff,
+    required String drawerID,
+  }) : super(
+          category: 'compose',
+          description: {
+            'category': 'custom_action',
+            'phases': [
+              {
+                'activity': {
+                  'category': 'sequence',
+                  'description': {
+                    'activities': [
+                      // {
+                      //   'category': 'go_to_place',
+                      //   'description': dropoff,
+                      // },
+                      {
+                        'category': 'dropoff',
+                        'description': {
+                          'handler': 'drawer_ingestor',
+                          'payload': {'quantity': 1, 'sku': drawerID},
+                          'place': dropoff,
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ],
+          },
+        );
+}
+
 class TaskRequest {
   TaskRequest({
     required this.category,
@@ -49,10 +84,13 @@ class TaskRequest {
         'description': description,
         'priority': {'value': 0, 'type': 'binary'},
         'requester': 'dart_package',
-        'unix_millis_earliest_start_time': 0,
+        'unix_millis_earliest_start_time': DateTime.now().millisecondsSinceEpoch,
         'unix_millis_request_time': DateTime.now().millisecondsSinceEpoch,
       },
-      'type': 'dispatch_task_request',
+      //'type': 'dispatch_task_request',
+      'type': 'robot_task_request',
+      'robot': 'rb_theron',
+      'fleet': 'deliveryRobot',
     };
   }
 }
