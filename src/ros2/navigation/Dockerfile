@@ -12,7 +12,7 @@ RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group --groups adm,sudo ubuntu && \
     echo ubuntu:ubuntu | chpasswd && \
     echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER ubuntu
+ENV USER=ubuntu
 ARG DEBIAN_FRONTEND=
 
 ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
@@ -92,14 +92,11 @@ RUN apt-get update && apt-get install -y git
 
 WORKDIR /tmp
 RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
-RUN git clone https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
 
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs && mv /tmp/spatio_temporal_voxel_layer /ws/src/ros2/navigation
-
-RUN rm -r /ws/src/navigation/external_plugins;
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
 
 
 RUN rosdep update && \
@@ -132,7 +129,8 @@ RUN apt-get update && apt-get upgrade -y\
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     libzmq3-dev \
     ros-${ROS_DISTRO}-slam-toolbox \
-    ros-${ROS_DISTRO}-robot-localization
+    ros-${ROS_DISTRO}-robot-localization \
+    ros-${ROS_DISTRO}-spatio-temporal-voxel-layer
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
@@ -179,7 +177,7 @@ RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
     echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
+ENV USER=robast
 ARG DEBIAN_FRONTEND=
 
 ENV ROS_DOMAIN_ID=0

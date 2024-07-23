@@ -10,18 +10,11 @@ def generate_launch_description():
         package='nfc_bridge',
         executable='nfc_bridge',
         output='screen',
-        emulate_tty=True,  # https://github.com/ros2/launch/issues/188
-    )
-
-    start_bridge_web_nfc_cmd = launch_ros.actions.Node(
-        package='web_bridge_nfc',
-        executable='web_api',
-        output='screen',
+        name='reader_1',
         emulate_tty=True,  # https://github.com/ros2/launch/issues/188
     )
 
     ld = LaunchDescription()
 
     ld.add_action(start_nfc_bridge_cmd)
-    ld.add_action(start_bridge_web_nfc_cmd)
     return ld
