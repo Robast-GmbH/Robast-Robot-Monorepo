@@ -32,11 +32,11 @@ std::tuple<dai::Pipeline, int, int> createPipeline(const bool lrcheck,
                                                    const bool subpixel,
                                                    const bool rectify,
                                                    const int stereo_fps,
-                                                   int confidence,
-                                                   int LRchecktresh,
+                                                   const int confidence,
+                                                   const int LRchecktresh,
                                                    const int detectionClassesCount,
-                                                   std::string stereoResolution,
-                                                   std::string rgbResolutionStr,
+                                                   const std::string stereoResolution,
+                                                   const std::string rgbResolutionStr,
                                                    const int rgbScaleNumerator,
                                                    const int rgbScaleDenominator,
                                                    const int previewWidth,
@@ -44,8 +44,8 @@ std::tuple<dai::Pipeline, int, int> createPipeline(const bool lrcheck,
                                                    const int coordinateSize,
                                                    const int depthLowerThreshold,
                                                    const int depthUpperThreshold,
-                                                   bool syncNN,
-                                                   std::string nnPath)
+                                                   const bool syncNN,
+                                                   const std::string nnPath)
 {
   dai::Pipeline pipeline;
 
