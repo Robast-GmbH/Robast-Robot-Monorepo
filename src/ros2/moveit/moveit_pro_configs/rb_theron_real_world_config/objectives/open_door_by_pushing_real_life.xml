@@ -10,8 +10,6 @@
             <Action ID="GetSpatialDetectionsFromTopic"/>
             <Action ID="CreatePoseFromSpatialDetections" pose_stamped_out="{door_handle_pose}" target_orientation="0.0; 0.0; 1.57079632679" use_confidence_threshold="false"/>
             <Action ID="PublishPoseToTopic" pose_stamped_in="{door_handle_pose}" topic_name="/debug/pose_door_handle" target_frame_pose_stamped="robot/base_footprint"/>
-            <Action ID="TransformPose" input_pose="{door_handle_pose}" output_pose="{pose_in_front_of_door_handle}" translation_xyz="-0.12;0.1;-0.1"/>
-            <Action ID="PublishPoseToTopic" pose_stamped_in="{pose_in_front_of_door_handle}" topic_name="/debug/pose_in_front_of_door_handle" target_frame_pose_stamped="robot/base_footprint"/>
             <SubTree ID="Take Snapshot Real Life" _collapsed="true"/>
           </Control>
         </Decorator>
@@ -24,7 +22,7 @@
       <Control ID="Sequence" name="TopLevelSequence">
         <Action ID="InitializeMotionConstraints" constraints_name="arm_stretched_out"/>
         <Action ID="AppendOrientationConstraint" config_file_name="mobile_base_constraints.yaml" constraints="{constraints}"/>
-        <Action ID="SetupMtcMoveToPoseWithConstraints" target_pose="{pose_in_front_of_door_handle}" planning_group_name="{joint_group_name}" ik_frame="robot/door_opening_mechanism_link_freely_rotating_hook" constraints="{constraints}"/>
+        <Action ID="SetupMtcMoveToPoseWithConstraints" target_pose="{door_handle_pose}" planning_group_name="{joint_group_name}" ik_frame="robot/door_opening_mechanism_link_freely_rotating_hook" constraints="{constraints}"/>
       </Control>
       <Control ID="Sequence" name="TopLevelSequence">
         <Action ID="SetupMTCMoveAlongFrameAxis" hand_frame="robot/hook_base_link" planning_group_name="{joint_group_name}" axis_frame="robot/base_footprint" min_distance="0.195" axis_z="-1.0" max_distance="0.205" axis_x="0.0" velocity_scale="1.0"/>
