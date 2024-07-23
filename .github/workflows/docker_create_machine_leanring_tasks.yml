@@ -12,6 +12,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
+      Ros-Distro: humble
       Project-Name: machine_learning_tasks
 
     steps:
@@ -34,7 +35,7 @@ jobs:
       - name: Build ${{ env.Project-Name }} devel docker
         uses: docker/build-push-action@v4
         with:
-          context: src/${{ env.Project-Name }}
+          context: src/ros2/${{ env.Project-Name }}
           target: devel
           push: true
           file: src/ros2/${{ env.Project-Name }}/Dockerfile
