@@ -1,0 +1,70 @@
+# Device configuration
+mxId: 'x'  # Select the device by passing the MxID of the device. It will connect to the first available device if left empty.
+usb2Mode: False  # Set to true to use USB2 mode.
+poeMode: False  # Set to true to use Power over Ethernet (PoE) mode.
+
+# Camera model configuration
+camera_model: 'OAK-D'  # The model of the camera. Valid models: `OAK-D, OAK-D-LITE`.
+
+# Transform (TF) configuration
+tf_prefix: 'oak'  # Custom name for the prefix of camera TF frames.
+base_frame: 'oak-d_frame'  # Name of the base link in the TF Tree.
+parent_frame: 'robot/door_opening_mechanism_link_y_axis_slide'  # Name of the parent link in the TF Tree.
+
+# Camera position and orientation configuration
+cam_pos_x: '-0.05'  # Position X of the camera with respect to the base frame.
+cam_pos_y: '0.0'  # Position Y of the camera with respect to the base frame.
+cam_pos_z: '0.13721'  # Position Z of the camera with respect to the base frame.
+cam_roll: '0.0'  # Roll orientation of the camera with respect to the base frame.
+cam_pitch: '0.4'  # Pitch orientation of the camera with respect to the base frame.
+cam_yaw: '-3.14159'  # Yaw orientation of the camera with respect to the base frame.
+
+# Depth and disparity configuration
+mode: 'depth'  # Set to "depth" or "disparity". Setting to "depth" will publish depth; otherwise, it will publish disparity.
+lrcheck: True  # LR-Check is used to remove incorrectly calculated disparity pixels due to occlusions at object borders.
+extended: False  # Extended disparity mode allows detecting closer distance objects for the given baseline.
+subpixel: True  # Subpixel mode improves precision, especially for long-range measurements.
+rectify: True  # Enable this to publish rectified images used for depth estimation.
+depth_aligned: True  # Align depth map from stereo to the RGB camera in the center.
+
+# Manual exposure configuration
+manualExposure: False  # Enable manual exposure to set exposure time (expTime) and ISO (sensIso) of the stereo camera.
+expTime: 20000  # Exposure time of the stereo camera.
+sensIso: 800  # ISO sensitivity of the stereo camera.
+
+# Neural network synchronization
+syncNN: True  # Synchronize preview image with detections.
+
+# Neural network configuration
+detectionClassesCount: 1  # Number of classes the neural network contains.
+nnName: 'yolov5_v3.blob'  # Name of the neural network blob being used to load.
+
+# Stereo camera configuration
+stereo_fps: 30  # Frames per second of the cameras used in the stereo setup.
+coordinate_size: 4  # Size of the coordinate vector for spatial detections.
+depth_lower_threshold: 100  # Lower threshold for depth values.
+depth_upper_threshold: 5000  # Upper threshold for depth values.
+confidence: 120  # Confidence level for depth, from 0 to 255. Max value allows depth of all confidence levels.
+LRchecktresh: 5  # LR threshold from 1 to 10 for more accurate depth. Default is 5.
+
+# Camera resolution configuration
+monoResolution: '720p'  # Resolution of the mono/stereo camera setup. Options: 720p, 400p, 480p, 800p.
+rgbResolution: '1080p'  # Resolution of the RGB setup. Options: 1080p, 4k, 12MP.
+rgbScaleNumerator: 2  # Scale factor numerator for RGB resolution.
+rgbScaleDenominator: 3  # Scale factor denominator for RGB resolution.
+
+# Preview window configuration
+previewWidth: 480  # Width of the preview window used for neural network detection.
+previewHeight: 640  # Height of the preview window used for neural network detection.
+
+# ROS time configuration
+enableRosBaseTimeUpdate: false  # Whether to update ROS time on each message.
+
+# Topic remapping
+robot_description_remapping: 'oak/robot_description'  # Remap the robot_description topic to another topic.
+
+# Topic names
+color_image_topic: 'color/image'  # Topic name for color image.
+door_handle_position_topic: 'stereo/door_handle_position'  # Topic name for door handle position.
+stereo_depth_topic: 'stereo/depth'  # Topic name for stereo depth.
+right_rectified_image_topic: 'right/image_rect'  # Topic name for right rectified image.

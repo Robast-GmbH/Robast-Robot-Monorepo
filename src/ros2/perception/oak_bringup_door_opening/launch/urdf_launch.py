@@ -22,24 +22,18 @@ def launch_setup(context, *args, **kwargs):
     base_frame = LaunchConfiguration('base_frame',    default='oak-d_frame')
     parent_frame = LaunchConfiguration(
         'parent_frame',  default='oak-d-base-frame')
-    cam_pos_x = LaunchConfiguration('cam_pos_x',     default='-0.103')
+    cam_pos_x = LaunchConfiguration('cam_pos_x',     default='0.0')
     cam_pos_y = LaunchConfiguration('cam_pos_y',     default='0.0')
-    cam_pos_z = LaunchConfiguration('cam_pos_z',     default='0.13721')
+    cam_pos_z = LaunchConfiguration('cam_pos_z',     default='0.0')
     cam_roll = LaunchConfiguration('cam_roll',      default='1.5708')
-    cam_pitch = LaunchConfiguration('cam_pitch',     default='2.617993927')
-    cam_yaw = LaunchConfiguration('cam_yaw',       default='0.0')
+    cam_pitch = LaunchConfiguration('cam_pitch',     default='0.0')
+    cam_yaw = LaunchConfiguration('cam_yaw',       default='1.5708')
     namespace = LaunchConfiguration('namespace',     default='')
     use_composition = LaunchConfiguration('use_composition', default='false')
 
     name = LaunchConfiguration('tf_prefix').perform(context)
 
-    TF_TOPIC = "/tf"
-    TF_STATIC_TOPIC = "/tf_static"
-    namespace_arm = "arm"
-    remappings_tf = [
-        (TF_TOPIC, "/" + namespace_arm + TF_TOPIC),
-        (TF_STATIC_TOPIC, "/" + namespace_arm + TF_STATIC_TOPIC),
-    ]
+    robot_description_remapping = LaunchConfiguration('robot_description_remapping').perform(context)
 
     return [
         Node(
@@ -48,7 +42,6 @@ def launch_setup(context, *args, **kwargs):
             executable='robot_state_publisher',
             name=name+'_state_publisher',
             namespace=namespace,
-            remappings=remappings_tf,
             parameters=[{'robot_description': Command(
                 [
                     'xacro', ' ', xacro_path, ' ',
@@ -62,32 +55,34 @@ def launch_setup(context, *args, **kwargs):
                     'cam_roll:=', cam_roll, ' ',
                     'cam_pitch:=', cam_pitch, ' ',
                     'cam_yaw:=', cam_yaw
-                ])}]
+                ])}],
+            remappings=[('robot_description', robot_description_remapping)]
             ),
-            LoadComposableNodes(
-            target_container=name+"_container",
-            condition=IfCondition(use_composition),
-            composable_node_descriptions=[
-                ComposableNode(
-                    package='robot_state_publisher',
-                    plugin='robot_state_publisher::RobotStatePublisher',
-                    name=name+'_state_publisher',
-                    parameters=[{'robot_description': Command(
-                        [
-                            'xacro', ' ', xacro_path, ' ',
-                            'camera_name:=', tf_prefix, ' ',
-                            'camera_model:=', camera_model, ' ',
-                            'base_frame:=', base_frame, ' ',
-                            'parent_frame:=', parent_frame, ' ',
-                            'cam_pos_x:=', cam_pos_x, ' ',
-                            'cam_pos_y:=', cam_pos_y, ' ',
-                            'cam_pos_z:=', cam_pos_z, ' ',
-                            'cam_roll:=', cam_roll, ' ',
-                            'cam_pitch:=', cam_pitch, ' ',
-                            'cam_yaw:=', cam_yaw
-                        ])}]
-                )])
-            ]
+        LoadComposableNodes(
+        target_container=name+"_container",
+        condition=IfCondition(use_composition),
+        composable_node_descriptions=[
+            ComposableNode(
+                package='robot_state_publisher',
+                plugin='robot_state_publisher::RobotStatePublisher',
+                name=name+'_state_publisher',
+                parameters=[{'robot_description': Command(
+                    [
+                        'xacro', ' ', xacro_path, ' ',
+                        'camera_name:=', tf_prefix, ' ',
+                        'camera_model:=', camera_model, ' ',
+                        'base_frame:=', base_frame, ' ',
+                        'parent_frame:=', parent_frame, ' ',
+                        'cam_pos_x:=', cam_pos_x, ' ',
+                        'cam_pos_y:=', cam_pos_y, ' ',
+                        'cam_pos_z:=', cam_pos_z, ' ',
+                        'cam_roll:=', cam_roll, ' ',
+                        'cam_pitch:=', cam_pitch, ' ',
+                        'cam_yaw:=', cam_yaw
+                    ])}],
+                remappings=[('robot_description', robot_description_remapping)]
+            )])
+        ]
 
 
 def generate_launch_description():
@@ -153,6 +148,11 @@ def generate_launch_description():
             'use_base_descr',
             default_value='false',
             description='Launch base description. Default value will be false'
+        ),
+        DeclareLaunchArgument(
+            'robot_description_remapping',
+            default_value='oak/robot_description',
+            description='Remap the robot_description topic to another topic. Default value will be `oak/robot_description`'
         )
     ]
 
