@@ -36,8 +36,8 @@ sensIso: 800  # ISO sensitivity of the stereo camera.
 syncNN: True  # Synchronize preview image with detections.
 
 # Neural network configuration
-detectionClassesCount: 2  # Number of classes the neural network contains.
-nnName: 'yolov5.blob'  # Name of the neural network blob being used to load.
+detectionClassesCount: 1  # Number of classes the neural network contains.
+nnName: 'yolov5_v3.blob'  # Name of the neural network blob being used to load.
 
 # Stereo camera configuration
 stereo_fps: 30  # Frames per second of the cameras used in the stereo setup.
