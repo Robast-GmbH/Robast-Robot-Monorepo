@@ -8,7 +8,7 @@
         <Decorator ID="Delay" delay_msec="1000">
           <Control ID="Sequence">
             <Action ID="GetSpatialDetectionsFromTopic"/>
-            <Action ID="CreatePoseFromSpatialDetections" pose_stamped_out="{door_handle_pose}" target_orientation="0.0; 0.0; 0.0" use_confidence_threshold="false"/>
+            <Action ID="CreatePoseFromSpatialDetections" pose_stamped_out="{door_handle_pose}" target_orientation="0.0; 0.0; 0.0" use_confidence_threshold="false" invert_y_axis="true"/>
             <Action ID="PublishPoseToTopic" pose_stamped_in="{door_handle_pose}" topic_name="/debug/pose_door_handle" target_frame_pose_stamped="robot/base_footprint"/>
             <SubTree ID="Take Snapshot Real Life" _collapsed="true"/>
           </Control>
