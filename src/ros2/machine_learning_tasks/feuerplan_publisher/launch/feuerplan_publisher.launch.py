@@ -12,12 +12,15 @@ def generate_launch_description():
 
     if is_simulation == 'True':
         use_sim_time = True
+    else:
+        use_sim_time = False
+        
     feuerplan_publisher_dir = get_package_share_directory('feuerplan_publisher')
 
     default_feuerplan_image_path = os.path.join(feuerplan_publisher_dir, 'images','slide5.jpg')
 
     feuerplan_path = LaunchConfiguration('feuerplan_path',  default = default_feuerplan_image_path)
-    confidence_threshold = LaunchConfiguration('confidence_threshold',  default = 0.7)
+    confidence_threshold = LaunchConfiguration('confidence_threshold',  default = 0.5)
 
     declare_feuerplan_image_cmd = DeclareLaunchArgument(
         'feuerplan_path',
