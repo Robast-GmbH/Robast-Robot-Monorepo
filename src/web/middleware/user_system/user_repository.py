@@ -1,4 +1,3 @@
-from os import read
 import sqlite3
 import uuid
 from pydantic_models.user import User
@@ -12,6 +11,10 @@ AVAILABLE_USER_GROUPS = [
 
 
 class UserRepository:
+    """
+    Singleton class for handling the database operations related to users.
+    """
+
     __instance = None
     __initialized = False
 
@@ -23,7 +26,7 @@ class UserRepository:
     def __init__(self, db_path: str = DB_PATH) -> None:
         if not self.__initialized:
             self.__initialized = True
-            self.db_path = db_path
+            self.__db_path = db_path
             self.__create_table()
 
     def auth_user(self, user_id: str) -> bool:
@@ -43,7 +46,7 @@ class UserRepository:
     ) -> User | None:
         user_id = str(uuid.uuid4())
         user_groups_str = ",".join(user_groups)
-        db_connection = sqlite3.connect(self.db_path)
+        db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute(
             """
@@ -56,7 +59,7 @@ class UserRepository:
         return self.get_user(user_id)
 
     def get_all_users(self) -> list[User]:
-        db_connection = sqlite3.connect(self.db_path)
+        db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute("SELECT * FROM users")
         rows = cursor.fetchall()
@@ -79,7 +82,7 @@ class UserRepository:
         return users
 
     def get_user(self, user_id: str) -> User | None:
-        db_connection = sqlite3.connect(self.db_path)
+        db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute("SELECT * FROM users WHERE user_id = ?", (user_id,))
         row = cursor.fetchone()
@@ -152,7 +155,7 @@ class UserRepository:
 
         query += " WHERE user_id = ?"
         params.append(user_id)
-        db_connection = sqlite3.connect(self.db_path)
+        db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute(query, params)
         db_connection.commit()
@@ -160,7 +163,7 @@ class UserRepository:
         return self.get_user(user_id)
 
     def delete_user(self, user_id: str) -> bool:
-        db_connection = sqlite3.connect(self.db_path)
+        db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute("DELETE FROM users WHERE user_id = ?", (user_id,))
         db_connection.commit()
@@ -168,7 +171,7 @@ class UserRepository:
         return self.get_user(user_id) is None
 
     def __create_table(self) -> None:
-        db_connection = sqlite3.connect(self.db_path)
+        db_connection = sqlite3.connect(self.__db_path)
         # Create users table if not exists
         cursor = db_connection.cursor()
         cursor.execute(

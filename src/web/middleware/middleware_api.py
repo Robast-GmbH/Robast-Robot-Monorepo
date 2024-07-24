@@ -1,4 +1,3 @@
-from email import message
 from fastapi import FastAPI, Depends, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import requests
@@ -22,9 +21,9 @@ app.include_router(user_system_router, prefix="/users")
 app.include_router(module_manager_router, prefix="/modules")
 
 
-name_to_ip = url_config.robot_name_to_ip
-robot_api_port = url_config.robot_api_port
-fleet_management_address = url_config.fleet_management_address
+name_to_ip = url_config.ROBOT_NAME_TO_IP
+robot_api_port = url_config.ROBOT_API_PORT
+fleet_management_address = url_config.FLEET_MANAGEMENT_ADDRESS
 
 
 task_assigment_system = TaskAssignmentSystem()

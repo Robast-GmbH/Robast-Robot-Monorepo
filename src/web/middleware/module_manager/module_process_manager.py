@@ -1,18 +1,21 @@
-# start module process needs external signal
-# auth periodic timer
-# wait for opening periodic timer
-# opening external signal -> open_drawer call
-# open periodic timer polling module is open
-# closing external signal -> close_drawer call
-# closed periodic timer polling module is closed
-# idle external signal -> finish module process
+"""
+start module process needs external signal,
+auth periodic timer,
+wait for opening periodic timer,
+opening external signal -> open_drawer call,
+open periodic timer polling module is open,
+closing external signal -> close_drawer call,
+closed periodic timer polling module is closed,
+idle external signal -> finish module process,
+"""
+
 from functools import partial
 from pydantic_models.drawer_address import DrawerAddress
 from module_manager.module_manager import ModuleManager
 from module_manager.module_repository import ModuleRepository
 from user_system.auth_session_manager import AuthSessionManager
 from pydantic_models.module_process_request import ModuleProcessRequest
-from configs.url_config import robot_name_to_ip, robot_api_port
+from configs.url_config import ROBOT_NAME_TO_IP, ROBOT_API_PORT
 from threading import Timer
 import requests
 
@@ -22,15 +25,12 @@ class ModuleProcessManager:
         self,
     ):
         self.auth_session_manager = AuthSessionManager()
-        self.fleet_ip_config = robot_name_to_ip
-        self.robot_api_port = robot_api_port
+        self.fleet_ip_config = ROBOT_NAME_TO_IP
+        self.robot_api_port = ROBOT_API_PORT
         self.repository = ModuleRepository()
         self.module_manager = ModuleManager()
 
-    def start_module_process(
-        self,
-        module_process_data: ModuleProcessRequest,
-    ) -> bool:
+    def start_module_process(self, module_process_data: ModuleProcessRequest) -> bool:
         drawer_address = module_process_data.drawer_address
         drawer = self.repository.read_drawer(drawer_address)
         if not drawer:
@@ -38,12 +38,12 @@ class ModuleProcessManager:
         drawer.module_process_type = module_process_data.process_name
         drawer.module_process_payload = module_process_data.payload
         is_auth_required = drawer.reserved_for_ids or drawer.reserved_for_groups
-        is_authenicated = self.auth_session_manager.check_auth_status(
+        is_authenticated = self.auth_session_manager.check_auth_status(
             drawer_address.robot_name,
             drawer.reserved_for_ids,
             drawer.reserved_for_groups,
         )
-        if is_auth_required and not is_authenicated:
+        if is_auth_required and not is_authenticated:
             drawer.module_process_status = "auth"
             self.repository.update_drawer(drawer)
             self.wait_for_auth(drawer_address)

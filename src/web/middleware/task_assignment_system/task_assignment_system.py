@@ -3,10 +3,7 @@ from task_assignment_system.models.nav_graph import NavGraph
 from pydantic_models.delivery_request import DeliveryRequest
 from task_assignment_system.models.fleet_management_api import FleetManagementAPI
 from module_manager.module_manager import ModuleManager
-from configs.url_config import (
-    fleet_management_address,
-    robot_name_to_ip,
-)
+from configs.url_config import FLEET_MANAGEMENT_ADDRESS, ROBOT_NAME_TO_IP
 
 from threading import Timer
 from typing import Tuple
@@ -24,7 +21,7 @@ class TaskAssignmentSystem:
             data = json.load(file)["levels"][0]["nav_graphs"][0]
         self.nav_graph = NavGraph.from_json(data=data)
         self.available_drawer_types = set()
-        self.fleet_management_api = FleetManagementAPI(fleet_management_address)
+        self.fleet_management_api = FleetManagementAPI(FLEET_MANAGEMENT_ADDRESS)
         self.module_manager = ModuleManager()
         self.robots = self.__init_robots(
             self.fleet_management_api,
@@ -92,7 +89,7 @@ class TaskAssignmentSystem:
         module_manager: ModuleManager,
     ) -> dict[str, Robot]:
         robots = {}
-        for robot_name in robot_name_to_ip.keys():
+        for robot_name in ROBOT_NAME_TO_IP.keys():
             robots[robot_name] = Robot(
                 name=robot_name,
                 fleet_management_api=fleet_management_api,

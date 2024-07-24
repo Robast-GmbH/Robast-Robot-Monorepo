@@ -14,7 +14,7 @@ class ModuleProcess:
     module_id: int
     drawer_id: int
     process_name: str
-    payload: dict[str,int]
+    payload: dict[str, int]
     request_guid: str
     target_guid: str
     is_in_process: bool
@@ -25,15 +25,13 @@ class ModuleProcess:
     ) -> ModuleProcess:
         # For now the drawer_address and robot_name is derived from the entered item type
         # Example: 2,0,item_type,rb_theron for module 2 drawer 0 on rb_theron
-        input_str = request_msg.items[
-            0
-        ].type_guid
-        parts = input_str.split(',')
+        input_str = request_msg.items[0].type_guid
+        parts = input_str.split(",")
 
         # Extracting the components
         module_id = parts[0].strip()
         drawer_id = parts[1].strip()
-        json_str = ','.join(parts[2:-1]).strip()
+        json_str = ",".join(parts[2:-1]).strip()
         robot_name = parts[-1].strip()
 
         # Step 2: Replace single quotes with double quotes in the JSON string
@@ -41,7 +39,7 @@ class ModuleProcess:
 
         # Step 3: Parse the JSON string
         payload = json.loads(json_str)
-       
+
         process_name = (
             PICK_UP_PROCESS
             if isinstance(request_msg, DispenserRequest)

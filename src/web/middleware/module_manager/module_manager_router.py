@@ -39,9 +39,7 @@ def create_module(
 
 
 @module_manager_router.post("/delete_module", tags=["Modules"])
-def delete_module(
-    drawer_address: DrawerAddress,
-):
+def delete_module(drawer_address: DrawerAddress):
     has_been_deleted = module_manager.delete_module(drawer_address)
     return create_status_response(has_been_deleted)
 
@@ -59,17 +57,14 @@ def update_module(
 
 
 @module_manager_router.post("/empty_module", tags=["Modules"])
-def empty_module(
-    drawer_address: DrawerAddress,
-):
+def empty_module(drawer_address: DrawerAddress):
     has_been_emptied = module_manager.empty_module(drawer_address)
     return create_status_response(has_been_emptied)
 
 
 @module_manager_router.post("/update_module_content", tags=["Modules"])
 def update_module_content(
-    drawer_address: DrawerAddress,
-    content: dict[str, int] = Body(...),
+    drawer_address: DrawerAddress, content: dict[str, int] = Body(...)
 ):
     has_been_updated = module_manager.update_module_content(
         drawer_address,
@@ -79,9 +74,7 @@ def update_module_content(
 
 
 @module_manager_router.post("/free_module", tags=["Modules"])
-def free_module(
-    drawer_address: DrawerAddress,
-):
+def free_module(drawer_address: DrawerAddress):
     has_been_freed = module_manager.free_module(drawer_address)
     return create_status_response(has_been_freed)
 
@@ -101,7 +94,11 @@ def reserve_module(
 
 
 @module_manager_router.get("/module_process_status", tags=["Modules"])
-def module_process_status(robot_name: str, module_id: int, drawer_id: int):
+def module_process_status(
+    robot_name: str,
+    module_id: int,
+    drawer_id: int,
+):
     return {
         "status": module_process_manager.get_module_process_status(
             DrawerAddress(
@@ -114,9 +111,7 @@ def module_process_status(robot_name: str, module_id: int, drawer_id: int):
 
 
 @module_manager_router.post("/start_module_process", tags=["Modules"])
-def start_module_process(
-    module_process_data: ModuleProcessRequest = Body(...),
-):
+def start_module_process(module_process_data: ModuleProcessRequest = Body(...)):
     has_been_started = module_process_manager.start_module_process(module_process_data)
     return create_status_response(has_been_started)
 

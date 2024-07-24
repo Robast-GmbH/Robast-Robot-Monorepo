@@ -8,6 +8,10 @@ DB_PATH = "modules.db"
 
 
 class ModuleRepository:
+    """
+    Singleton class for handling the database operations related to modules.
+    """
+
     __instance = None
     __initialized = False
 
@@ -47,7 +51,8 @@ class ModuleRepository:
                     json.dumps(drawer.reserved_for_groups),
                 ),
             )
-        except Exception:
+        except Exception as e:
+            print(f"Warning: {e}")
             return None
         finally:
             db_connection.commit()

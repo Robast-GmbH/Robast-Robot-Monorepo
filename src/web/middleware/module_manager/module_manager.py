@@ -67,10 +67,7 @@ class ModuleManager:
             return True
         return False
 
-    def empty_module(
-        self,
-        address: DrawerAddress,
-    ) -> bool:
+    def empty_module(self, address: DrawerAddress) -> bool:
         drawer = self.repository.read_drawer(address)
         if drawer:
             drawer.content = {}
@@ -79,9 +76,7 @@ class ModuleManager:
         return False
 
     def update_module_content(
-        self,
-        address: DrawerAddress,
-        content: dict[str, int],
+        self, address: DrawerAddress, content: dict[str, int]
     ) -> bool:
         drawer = self.repository.read_drawer(address)
         if drawer:
@@ -94,18 +89,11 @@ class ModuleManager:
             return True
         return False
 
-    def free_module(
-        self,
-        address: DrawerAddress,
-    ) -> bool:
+    def free_module(self, address: DrawerAddress) -> bool:
         return self.__update_module_reservation(address, [], [])
 
     def try_reserve_module_type(
-        self,
-        robot_name: str,
-        size: int,
-        user_ids: list[str],
-        user_groups: list[str],
+        self, robot_name: str, size: int, user_ids: list[str], user_groups: list[str]
     ) -> Drawer | None:
         drawers = self.repository.read_robot_drawers(robot_name)
         for drawer in drawers:
@@ -122,10 +110,7 @@ class ModuleManager:
                 return drawer
 
     def reserve_module(
-        self,
-        drawer_address: DrawerAddress,
-        user_ids: list[str],
-        user_groups: list[str],
+        self, drawer_address: DrawerAddress, user_ids: list[str], user_groups: list[str]
     ) -> bool:
         return self.__update_module_reservation(
             drawer_address,
@@ -134,10 +119,7 @@ class ModuleManager:
         )
 
     def __update_module_reservation(
-        self,
-        address: DrawerAddress,
-        user_ids: list[str],
-        user_groups: list[str],
+        self, address: DrawerAddress, user_ids: list[str], user_groups: list[str]
     ) -> bool:
         drawer = self.repository.read_drawer(address)
         if drawer:

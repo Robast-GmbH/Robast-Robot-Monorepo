@@ -56,7 +56,7 @@ class _PickupTaskCreationPageState extends State<PickupTaskCreationPage> {
                   child: UserGroupsSelector(
                     controller: userGroupsSelectionController,
                   ),
-                )
+                ),
               ],
             ),
             const SizedBox(

@@ -52,7 +52,7 @@ class _LocationSelectorState extends State<LocationSelector> {
                   });
                 },
                 items: Provider.of<MapProvider>(context)
-                    .locations
+                    .roomsByStations
                     .keys
                     .map(
                       (availableStation) => DropdownMenuItem<String>(
@@ -86,7 +86,7 @@ class _LocationSelectorState extends State<LocationSelector> {
                 items: controller.station?.isEmpty ?? true
                     ? []
                     : Provider.of<MapProvider>(context)
-                        .locations[controller.station]!
+                        .roomsByStations[controller.station]!
                         .map(
                           (availableRoom) => DropdownMenuItem<String>(
                             value: availableRoom,
