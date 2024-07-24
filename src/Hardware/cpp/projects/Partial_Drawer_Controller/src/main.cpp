@@ -9,6 +9,7 @@
 #include "lock/tray_manager.hpp"
 #include "peripherals/gpio_defines.hpp"
 #include "switch/switch.hpp"
+#include "utils/config_manager.hpp"
 #include "utils/data_mapper.hpp"
 #include "utils/queue.hpp"
 
@@ -37,6 +38,8 @@ std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper;
 
 std::shared_ptr<drawer_controller::ElectricalDrawer> drawer;
 
+std::shared_ptr<drawer_controller::ElectricalDrawerConfigs> drawer_configs;
+
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_enn_tmc2209_pin_id = STEPPER_1_ENN_TMC2209_PIN_ID,
   .stepper_stdby_tmc2209_pin_id = STEPPER_1_STDBY_TMC2209_PIN_ID,
@@ -54,6 +57,8 @@ std::shared_ptr<partial_drawer_controller::TrayManager> tray_manager;
 std::unique_ptr<drawer_controller::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
 std::unique_ptr<drawer_controller::DataMapper> data_mapper;
+
+std::unique_ptr<drawer_controller::ConfigManager> config_manager;
 
 std::unique_ptr<drawer_controller::CanController> can_controller;
 
@@ -139,6 +144,11 @@ void process_can_msgs_task_loop(void* pvParameters)
             received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS).get_data());
         }
         break;
+        case CAN_ID_MODULE_CONFIG:
+        {
+          config_manager->set_config(received_message->get_can_signals().at(CAN_SIGNAL_CONFIG_ID).get_data(),
+                                     received_message->get_can_signals().at(CAN_SIGNAL_CONFIG_VALUE).get_data());
+        }
         default:
           debug_println("[Main]: Received unsupported CAN message.");
           break;
@@ -215,6 +225,10 @@ void setup()
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<drawer_controller::Queue<robast_can_msgs::CanMessage>>();
 
+  drawer_configs = std::make_shared<drawer_controller::ElectricalDrawerConfigs>();
+
+  config_manager = std::make_unique<drawer_controller::ConfigManager>(drawer_configs);
+
   drawer = std::make_shared<drawer_controller::ElectricalDrawer>(
     MODULE_ID,
     LOCK_ID,
@@ -227,7 +241,8 @@ void setup()
     STEPPER_MOTOR_1_ADDRESS,
     SHAFT_DIRECTION_IS_INVERTED,
     endstop_switch,
-    std::nullopt);
+    std::nullopt,
+    drawer_configs);
   drawer->init();
 
   debug_println("[Main]: Finished setup()!");

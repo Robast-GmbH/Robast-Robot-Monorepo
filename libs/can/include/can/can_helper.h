@@ -6,6 +6,7 @@
 #include <optional>
 #include <string>
 #include <vector>
+#include <array>
 
 #include "can/can_frame.h"
 #include "can/can_message.h"
@@ -72,7 +73,7 @@ namespace robast_can_msgs
    * @param input The uint64 to be converted
    * @param result Pointer to the 8 byte array for the result
    */
-  void u64_to_eight_bytes(uint64_t input, uint8_t* result);
+  void u64_to_eight_bytes(uint64_t input, uint8_t *result);
 
   /**
    * @brief Convert hex data contained in a string to an unsigned integer
@@ -97,7 +98,7 @@ namespace robast_can_msgs
    * @param val The value that's supposed to be swapped
    */
   template <typename T>
-  void SwapEndian(T& val)
+  void SwapEndian(T &val)
   {
     // Mind that defining templates functions within the cpp file makes problems
     // when building with -DCMAKE_BUILD_TYPE=RelWithDebInfo because of the optimization
@@ -125,6 +126,6 @@ namespace robast_can_msgs
                                                     std::vector<CanMessage> can_db_messages,
                                                     uint16_t can_msgs_index);
 
-}   // namespace robast_can_msgs
+} // namespace robast_can_msgs
 
-#endif   // CAN__CAN_HELPER_H_
+#endif // CAN__CAN_HELPER_H_

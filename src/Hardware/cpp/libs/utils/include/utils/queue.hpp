@@ -12,7 +12,7 @@ namespace drawer_controller
   class Queue
   {
    public:
-    Queue<T>();
+    Queue();
 
     void add_element_to_queue(const T element);
 

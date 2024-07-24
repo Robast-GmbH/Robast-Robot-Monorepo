@@ -7,6 +7,7 @@
 #include <optional>
 
 #include "can_toolbox/can_utils.hpp"
+#include "drawer/electrical_drawer_configs.hpp"
 #include "interfaces/i_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "lock/electrical_drawer_lock.hpp"
@@ -17,22 +18,12 @@
 #include "utils/e_drawer_task.hpp"
 #include "utils/queue.hpp"
 
-#define DRAWER_MAX_SPEED              35000
-#define DRAWER_HOMING_SPEED           300
-#define DRAWER_INITIAL_HOMING_SPEED   1000
 #define DRAWER_TARGET_HOMING_POSITION 0
 #define STALL_GUARD_DISABLED          0
 #define IS_HOMING                     true
 
-#define DRAWER_PUSH_IN_AUTO_CLOSE_SPEED                   150     // TODO: Make this configurable via CAN
-#define DRAWER_PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE       75      // TODO: Make this configurable via CAN
 #define DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT 0.005   // TODO: Make this configurable via CAN
 #define DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS          200
-
-// The drawer starts to decelerate in dependency of the traveled distance
-#define DRAWER_MOVING_IN_DECELERATION_DISTANCE  50   // distance to the target position to start deceleration (max 255)
-#define DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE  1    // the end of the distance when moving in where speed is super slow
-#define DRAWER_MOVING_OUT_DECELERATION_DISTANCE 70   // distance to the target position to start deceleration (max 255)
 
 // The drawer accelerates in dependency of the time
 #define DEFAULT_DRAWER_ACCELERATION 10
@@ -54,7 +45,8 @@ namespace drawer_controller
                      const uint8_t motor_driver_address,
                      const bool shaft_direction_is_inverted,
                      const std::shared_ptr<Switch> endstop_switch,
-                     const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock);
+                     const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock,
+                     const std::shared_ptr<ElectricalDrawerConfigs> configs);
 
     void init() const;
 
@@ -103,6 +95,8 @@ namespace drawer_controller
     uint8_t _target_position_uint8 = 0;
 
     bool _triggered_closing_lock_after_opening = false;
+
+    const std::shared_ptr<ElectricalDrawerConfigs> _configs;
 
     /* FUNCTIONS */
 

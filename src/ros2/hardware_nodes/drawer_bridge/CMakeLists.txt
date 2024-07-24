@@ -23,6 +23,7 @@ find_package(rclcpp_action REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(communication_interfaces REQUIRED)
 find_package(can REQUIRED)
+find_package(module_config REQUIRED)
 find_package(launch_testing_ament_cmake REQUIRED) 
 find_package(can_msgs REQUIRED)
 find_package(error_utils REQUIRED)
@@ -59,6 +60,7 @@ set(dependencies
   communication_interfaces
   can
   can_msgs
+  module_config
   error_utils
 )
 
