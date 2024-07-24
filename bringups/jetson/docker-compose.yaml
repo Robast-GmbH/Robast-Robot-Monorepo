@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   zed_camera:
-    image: ghcr.io/robast-gmbh/monorepo/zed_camera:release424
+    image: ghcr.io/robast-gmbh/monorepo/zed_camera:release431
     build: 
       context: ./zed_setup
       dockerfile: Dockerfile.Zed
@@ -22,56 +22,56 @@ services:
     network_mode: "host"
     command: /bin/sh -c "/start_scripts/jetson_start.sh"
 
-  hardware_nodes:
-    image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:release
-    environment:
-      - ROS_DOMAIN_ID=23
-      - UID=1000
-      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-    volumes:
-      - ./start_scripts/:/start_scripts/:cached
-      - /dev/shm:/dev/shm
-    command: /bin/sh -c "./start_scripts/hardware_nodes_start.sh"
-    stop_signal: SIGINT
-    restart: unless-stopped
-    network_mode: "host"
+  # hardware_nodes:
+  #   image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:release
+  #   environment:
+  #     - ROS_DOMAIN_ID=23
+  #     - UID=1000
+  #     - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+  #   volumes:
+  #     - ./start_scripts/:/start_scripts/:cached
+  #     - /dev/shm:/dev/shm
+  #   command: /bin/sh -c "./start_scripts/hardware_nodes_start.sh"
+  #   stop_signal: SIGINT
+  #   restart: unless-stopped
+  #   network_mode: "host"
   
-  statemachine:
-    image: ghcr.io/robast-gmbh/monorepo/statemachine:release
-    environment:
-      - ROS_DOMAIN_ID=23
-      - UID=1000
-      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-    volumes:
-      - ./start_scripts/:/start_scripts/:cached
-    command: /bin/sh -c "./start_scripts/statemachine_start.sh"
-    stop_signal: SIGINT
-    restart: unless-stopped
-    network_mode: "host"
+  # statemachine:
+  #   image: ghcr.io/robast-gmbh/monorepo/statemachine:release
+  #   environment:
+  #     - ROS_DOMAIN_ID=23
+  #     - UID=1000
+  #     - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+  #   volumes:
+  #     - ./start_scripts/:/start_scripts/:cached
+  #   command: /bin/sh -c "./start_scripts/statemachine_start.sh"
+  #   stop_signal: SIGINT
+  #   restart: unless-stopped
+  #   network_mode: "host"
 
-  hardware_nodes:
-    image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:release
-    environment:
-      - ROS_DOMAIN_ID=23
-      - UID=1000
-      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-    volumes:
-      - ./start_scripts/:/start_scripts/:cached
-      - /dev/shm:/dev/shm
-    command: /bin/sh -c "./start_scripts/hardware_nodes_start.sh"
-    stop_signal: SIGINT
-    restart: unless-stopped
-    network_mode: "host"
+  # hardware_nodes:
+  #   image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:release
+  #   environment:
+  #     - ROS_DOMAIN_ID=23
+  #     - UID=1000
+  #     - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+  #   volumes:
+  #     - ./start_scripts/:/start_scripts/:cached
+  #     - /dev/shm:/dev/shm
+  #   command: /bin/sh -c "./start_scripts/hardware_nodes_start.sh"
+  #   stop_signal: SIGINT
+  #   restart: unless-stopped
+  #   network_mode: "host"
   
-  statemachine:
-    image: ghcr.io/robast-gmbh/monorepo/statemachine:release
-    environment:
-      - ROS_DOMAIN_ID=23
-      - UID=1000
-      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-    volumes:
-      - ./start_scripts/:/start_scripts/:cached
-    command: /bin/sh -c "./start_scripts/statemachine_start.sh"
-    stop_signal: SIGINT
-    restart: unless-stopped
-    network_mode: "host"
+  # statemachine:
+  #   image: ghcr.io/robast-gmbh/monorepo/statemachine:release
+  #   environment:
+  #     - ROS_DOMAIN_ID=23
+  #     - UID=1000
+  #     - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+  #   volumes:
+  #     - ./start_scripts/:/start_scripts/:cached
+  #   command: /bin/sh -c "./start_scripts/statemachine_start.sh"
+  #   stop_signal: SIGINT
+  #   restart: unless-stopped
+  #   network_mode: "host"
