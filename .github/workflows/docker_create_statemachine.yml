@@ -16,7 +16,7 @@ jobs:
   create_ros2_devel_docker:
       uses: ./.github/workflows/create_ros2_docker.yml
       with:
-        ros_distro: humble
+        ros_distro: jazzy
         project_name: statemachine
         tag: dev
         target: devel
@@ -25,7 +25,7 @@ jobs:
   create_ros2_release_docker:
       uses: ./.github/workflows/create_ros2_docker.yml
       with:
-        ros_distro: humble
+        ros_distro: jazzy
         project_name: statemachine
         tag: release
         target: release

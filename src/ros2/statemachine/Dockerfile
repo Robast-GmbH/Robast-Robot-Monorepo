@@ -1,4 +1,6 @@
-FROM ros:jazzy-ros-base as devel
+ARG ROS_DISTRO=jazzy
+FROM ros:${ROS_DISTRO}-ros-base as devel
+ARG ROS_DISTRO
 
 RUN echo ubuntu:ubuntu | chpasswd && \
     echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
@@ -46,9 +48,10 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 USER ubuntu
 
 ############################## Build ##################################
-FROM ros:humble-ros-base-jammy as build
+FROM ros:${ROS_DISTRO}-ros-base as build
 ARG GIT_TOKEN
 ARG GIT_BRANCH=main
+ARG ROS_DISTRO
 COPY --from=devel / /
 COPY . /ws/src/statemachine
 RUN apt-get update && apt-get install -y git
@@ -80,7 +83,8 @@ RUN rosdep update && \
 
 
 ############################## Release ##################################
-FROM ros:humble-ros-base-jammy as release
+FROM ros:${ROS_DISTRO}-ros-base as release
+ARG ROS_DISTRO
 
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
