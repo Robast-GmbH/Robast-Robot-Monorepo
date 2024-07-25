@@ -66,7 +66,6 @@ controller_server:
       gamma: 0.015
       motion_model: "DiffDrive"
       visualize: false
-      reset_period: 1.0 # (only in Humble)
       TrajectoryVisualizer:
         trajectory_step: 5
         time_step: 3
@@ -149,8 +148,11 @@ local_costmap:
       footprint_padding: 0.05
       # robot_radius: 0.22
       footprint: "[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
-      plugins: ["obstacle_layer", "inflation_layer"]
-      filters: ["keepout_filter"]
+      plugins: ["obstacle_layer", "denoise_layer", "inflation_layer"]
+      # filters: ["keepout_filter"]
+      denoise_layer:
+        plugin: "nav2_costmap_2d::DenoiseLayer"
+        enabled: True
       keepout_filter:
         plugin: "nav2_costmap_2d::KeepoutFilter"
         enabled: True
@@ -248,8 +250,8 @@ global_costmap:
       footprint: "[ [0.35, 0.30], [0.35, -0.3], [-0.35, -0.30], [-0.35, 0.3] ]" # rb_theron footprint
       resolution: 0.05
       track_unknown_space: true
-      plugins: ["static_layer","obstacle_layer", "inflation_layer"]
-      filters: ["keepout_filter"]
+      plugins: ["static_layer", "obstacle_layer", "inflation_layer"]
+      # filters: ["keepout_filter"]
       keepout_filter:
         plugin: "nav2_costmap_2d::KeepoutFilter"
         enabled: True
