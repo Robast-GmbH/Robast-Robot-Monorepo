@@ -20,7 +20,7 @@ services:
     stop_signal: SIGINT
     restart: unless-stopped
     network_mode: "host"
-    command: /bin/sh -c "./start_scripts/jetson_start.sh"
+    command: /bin/sh -c "/start_scripts/jetson_start.sh"
 
   hardware_nodes:
     image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:release
