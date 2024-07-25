@@ -1,12 +1,12 @@
 #ifndef DRAWER_CONTROLLER_CONFIG_MANAGER_HPP
 #define DRAWER_CONTROLLER_CONFIG_MANAGER_HPP
 
+#include <Arduino.h>
+
 #include <bit>
 #include <memory>
 
 #include "drawer/electrical_drawer_configs.hpp"
-#include "module_config/default_values_e_drawer.hpp"
-#include "module_config/default_values_encoder.hpp"
 #include "module_config/module_config_defines.hpp"
 #include "motor/enconder_configs.hpp"
 

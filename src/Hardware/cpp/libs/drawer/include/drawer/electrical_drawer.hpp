@@ -23,9 +23,6 @@
 #define STALL_GUARD_DISABLED          0
 #define IS_HOMING                     true
 
-#define DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT 0.005   // TODO: Make this configurable via CAN
-#define DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS          200
-
 // The drawer accelerates in dependency of the time
 #define DEFAULT_DRAWER_ACCELERATION 10
 

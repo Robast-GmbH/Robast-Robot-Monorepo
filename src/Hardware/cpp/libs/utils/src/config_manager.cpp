@@ -99,6 +99,7 @@ namespace drawer_controller
         break;
 
       default:
+        Serial.println("[ConfigManager]: Warning - Trying to set config for invalid config id");
         break;
     }
   }
@@ -113,47 +114,68 @@ namespace drawer_controller
   void ConfigManager::set_default_drawer_configs()
   {
     // go trough module_config_id_to_default_value map and set default values
-    set_config(MODULE_CONFIG_ID_DRAWER_MAX_SPEED,
-               module_config_e_drawer::module_config_id_to_default_value.at(MODULE_CONFIG_ID_DRAWER_MAX_SPEED));
+    set_config(
+      MODULE_CONFIG_ID_DRAWER_MAX_SPEED,
+      std::bit_cast<uint32_t>(module_config::ModuleConfigDataType<MODULE_CONFIG_ID_DRAWER_MAX_SPEED>::default_value));
+
     set_config(MODULE_CONFIG_ID_DRAWER_HOMING_SPEED,
-               module_config_e_drawer::module_config_id_to_default_value.at(MODULE_CONFIG_ID_DRAWER_HOMING_SPEED));
+               std::bit_cast<uint32_t>(
+                 module_config::ModuleConfigDataType<MODULE_CONFIG_ID_DRAWER_HOMING_SPEED>::default_value));
+
+    set_config(MODULE_CONFIG_ID_DRAWER_INITIAL_HOMING_SPEED,
+               std::bit_cast<uint32_t>(
+                 module_config::ModuleConfigDataType<MODULE_CONFIG_ID_DRAWER_INITIAL_HOMING_SPEED>::default_value));
+
     set_config(
-      MODULE_CONFIG_ID_DRAWER_INITIAL_HOMING_SPEED,
-      module_config_e_drawer::module_config_id_to_default_value.at(MODULE_CONFIG_ID_DRAWER_INITIAL_HOMING_SPEED));
-    set_config(MODULE_CONFIG_ID_DRAWER_MOVING_IN_DECELERATION_DISTANCE,
-               module_config_e_drawer::module_config_id_to_default_value.at(
-                 MODULE_CONFIG_ID_DRAWER_MOVING_IN_DECELERATION_DISTANCE));
-    set_config(MODULE_CONFIG_ID_DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE,
-               module_config_e_drawer::module_config_id_to_default_value.at(
-                 MODULE_CONFIG_ID_DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE));
-    set_config(MODULE_CONFIG_ID_DRAWER_MOVING_OUT_DECELERATION_DISTANCE,
-               module_config_e_drawer::module_config_id_to_default_value.at(
-                 MODULE_CONFIG_ID_DRAWER_MOVING_OUT_DECELERATION_DISTANCE));
+      MODULE_CONFIG_ID_DRAWER_MOVING_IN_DECELERATION_DISTANCE,
+      static_cast<uint32_t>(
+        module_config::ModuleConfigDataType<MODULE_CONFIG_ID_DRAWER_MOVING_IN_DECELERATION_DISTANCE>::default_value));
+
     set_config(
-      MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_SPEED,
-      module_config_e_drawer::module_config_id_to_default_value.at(MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_SPEED));
+      MODULE_CONFIG_ID_DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE,
+      static_cast<uint32_t>(
+        module_config::ModuleConfigDataType<MODULE_CONFIG_ID_DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE>::default_value));
+
+    set_config(
+      MODULE_CONFIG_ID_DRAWER_MOVING_OUT_DECELERATION_DISTANCE,
+      static_cast<uint32_t>(
+        module_config::ModuleConfigDataType<MODULE_CONFIG_ID_DRAWER_MOVING_OUT_DECELERATION_DISTANCE>::default_value));
+
+    set_config(MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_SPEED,
+               static_cast<uint32_t>(
+                 module_config::ModuleConfigDataType<MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_SPEED>::default_value));
+
     set_config(MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE,
-               module_config_e_drawer::module_config_id_to_default_value.at(
-                 MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE));
+               static_cast<uint32_t>(module_config::ModuleConfigDataType<
+                                     MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE>::default_value));
   }
 
   void ConfigManager::set_default_encoder_configs()
   {
+    // go trough module_config_id_to_default_value map and set default values
     set_config(
       MODULE_CONFIG_ID_OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT,
-      module_config_encoder::module_config_id_to_default_value.at(MODULE_CONFIG_ID_OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT));
+      std::bit_cast<uint32_t>(
+        module_config::ModuleConfigDataType<MODULE_CONFIG_ID_OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT>::default_value));
+
+    set_config(MODULE_CONFIG_ID_ENCODER_COUNT_DRAWER_MAX_EXTENT,
+               std::bit_cast<uint32_t>(
+                 module_config::ModuleConfigDataType<MODULE_CONFIG_ID_ENCODER_COUNT_DRAWER_MAX_EXTENT>::default_value));
+
     set_config(
-      MODULE_CONFIG_ID_ENCODER_COUNT_DRAWER_MAX_EXTENT,
-      module_config_encoder::module_config_id_to_default_value.at(MODULE_CONFIG_ID_ENCODER_COUNT_DRAWER_MAX_EXTENT));
-    set_config(MODULE_CONFIG_ID_DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN,
-               module_config_encoder::module_config_id_to_default_value.at(
-                 MODULE_CONFIG_ID_DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN));
-    set_config(MODULE_CONFIG_ID_DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT,
-               module_config_encoder::module_config_id_to_default_value.at(
-                 MODULE_CONFIG_ID_DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT));
-    set_config(MODULE_CONFIG_ID_DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS,
-               module_config_encoder::module_config_id_to_default_value.at(
-                 MODULE_CONFIG_ID_DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS));
+      MODULE_CONFIG_ID_DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN,
+      std::bit_cast<uint32_t>(
+        module_config::ModuleConfigDataType<MODULE_CONFIG_ID_DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN>::default_value));
+
+    set_config(
+      MODULE_CONFIG_ID_DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT,
+      std::bit_cast<uint32_t>(module_config::ModuleConfigDataType<
+                              MODULE_CONFIG_ID_DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value));
+
+    set_config(
+      MODULE_CONFIG_ID_DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS,
+      std::bit_cast<uint32_t>(
+        module_config::ModuleConfigDataType<MODULE_CONFIG_ID_DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>::default_value));
   }
 
 }   // namespace drawer_controller
