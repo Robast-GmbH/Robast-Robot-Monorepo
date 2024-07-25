@@ -1,7 +1,7 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
 
-	"image": "ghcr.io/robast-gmbh/monorepo/statemachine:devel",
+	"image": "ghcr.io/robast-gmbh/monorepo/statemachine:devel-jazzy",
 	"name": "Robast Drawer Statemachine",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
@@ -17,7 +17,7 @@
 		"--volume=/dev/shm:/dev/shm" //needed if you use the fast dds on the host network with multiple docker containers running on the same host
 		//needed if you use the fast dds on the host network with multiple docker containers running on the same host
 	],
-	"remoteUser": "robast",
+	"remoteUser": "ubuntu",
 	"remoteEnv": {"DISPLAY": "${localEnv:DISPLAY}"},
 	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
 	"settings": {
