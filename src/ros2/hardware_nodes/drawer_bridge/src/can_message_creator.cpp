@@ -89,4 +89,21 @@ namespace drawer_bridge
     return _can_encoder_decoder.encode_msg(can_msg_tray_led_brightness);
   }
 
+  can_msgs::msg::Frame CanMessageCreator::create_can_msg_set_module_config(const DrawerAddress& drawer_address,
+                                                                           const uint8_t config_id,
+                                                                           const uint32_t config_value) const
+  {
+    robast_can_msgs::CanMessage can_msg_set_module_config = _can_db.can_messages.at(CAN_MSG_MODULE_CONFIG);
+
+    std::vector<robast_can_msgs::CanSignal> can_signals_set_module_config = can_msg_set_module_config.get_can_signals();
+
+    can_signals_set_module_config.at(CAN_SIGNAL_MODULE_ID).set_data(drawer_address.module_id);
+    can_signals_set_module_config.at(CAN_SIGNAL_CONFIG_ID).set_data(config_id);
+    can_signals_set_module_config.at(CAN_SIGNAL_CONFIG_VALUE).set_data(config_value);
+
+    can_msg_set_module_config.set_can_signals(can_signals_set_module_config);
+
+    return _can_encoder_decoder.encode_msg(can_msg_set_module_config);
+  }
+
 }   // namespace drawer_bridge

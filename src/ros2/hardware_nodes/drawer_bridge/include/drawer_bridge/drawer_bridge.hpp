@@ -33,6 +33,7 @@
 #include "communication_interfaces/msg/led.hpp"
 #include "communication_interfaces/msg/led_cmd.hpp"
 #include "communication_interfaces/msg/module.hpp"
+#include "communication_interfaces/msg/module_config.hpp"
 #include "communication_interfaces/msg/tray_task.hpp"
 #include "communication_interfaces/srv/shelf_setup_info.hpp"
 #include "drawer_bridge/can_encoder_decoder.hpp"
@@ -41,6 +42,7 @@
 #include "drawer_bridge/qos_config.hpp"
 #include "error_utils/error_definitions.hpp"
 #include "error_utils/generic_error_converter.hpp"
+#include "module_config/module_config_defines.hpp"
 #include "shelf_setup.hpp"
 
 using namespace std::chrono_literals;
@@ -80,6 +82,7 @@ namespace drawer_bridge
     using ErrorBaseMsg = communication_interfaces::msg::ErrorBaseMsg;
     using ShelfSetupInfo = communication_interfaces::srv::ShelfSetupInfo;
     using TrayTask = communication_interfaces::msg::TrayTask;
+    using ModuleConfig = communication_interfaces::msg::ModuleConfig;
     using CanMessage = can_msgs::msg::Frame;
 
     /**
@@ -89,6 +92,8 @@ namespace drawer_bridge
 
     friend class TestDrawerBridge;   // this class has full access to all private and protected parts of this class
 
+    void set_module_config(const uint32_t module_id, const uint8_t config_id, const uint32_t config_value);
+
    private:
     /* VARIABLES */
     rclcpp::Service<ShelfSetupInfo>::SharedPtr _shelf_setup_info_service;
@@ -96,6 +101,7 @@ namespace drawer_bridge
     rclcpp::Subscription<DrawerTask>::SharedPtr _drawer_task_subscription;
     rclcpp::Subscription<LedCmd>::SharedPtr _led_cmd_subscription;
     rclcpp::Subscription<TrayTask>::SharedPtr _tray_task_subscription;
+    rclcpp::Subscription<ModuleConfig>::SharedPtr _module_config_subscription;
     rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
     rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
     rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr _electrical_drawer_status_publisher;
@@ -117,6 +123,8 @@ namespace drawer_bridge
     void led_cmd_topic_callback(const LedCmd& msg);
 
     void tray_task_topic_callback(const TrayTask& msg);
+
+    void module_config_topic_callback(const ModuleConfig& msg);
 
     void setup_publishers();
 

@@ -35,6 +35,11 @@ namespace drawer_bridge
       "from_can_bus",
       _qos_config.get_qos_can_messages(),
       std::bind(&DrawerBridge::receive_can_msg_callback, this, std::placeholders::_1));
+
+    _module_config_subscription = this->create_subscription<ModuleConfig>(
+      "module_config",
+      _qos_config.get_qos_open_drawer(),
+      std::bind(&DrawerBridge::module_config_topic_callback, this, std::placeholders::_1));
   }
 
   void DrawerBridge::setup_publishers()
@@ -239,6 +244,27 @@ namespace drawer_bridge
     RCLCPP_INFO(this->get_logger(), "Sending can message with id '%d'!\n ", can_msg.id);
 
     _can_msg_publisher->publish(can_msg);
+  }
+
+  void DrawerBridge::module_config_topic_callback(const ModuleConfig& msg)
+  {
+    set_module_config(msg.module_address.module_id, msg.config_id, msg.config_value);
+  }
+
+  void DrawerBridge::set_module_config(const uint32_t module_id, const uint8_t config_id, const uint32_t config_value)
+  {
+    RCLCPP_INFO(this->get_logger(),
+                "Setting module config with module_id: '%i', config_id: '%d' and config_value: '%d'",
+                module_id,
+                config_id,
+                config_value);
+
+    DrawerAddress drawer_address = DrawerAddress();
+    drawer_address.module_id = module_id;
+
+    const CanMessage can_msg =
+      _can_message_creator.create_can_msg_set_module_config(drawer_address, config_id, config_value);
+    send_can_msg(can_msg);
   }
 
 }   // namespace drawer_bridge

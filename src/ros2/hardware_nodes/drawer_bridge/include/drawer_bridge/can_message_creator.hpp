@@ -31,6 +31,10 @@ namespace drawer_bridge
                                                             const uint8_t led_row,
                                                             const uint8_t brightness) const;
 
+    can_msgs::msg::Frame create_can_msg_set_module_config(const DrawerAddress& drawer_address,
+                                                          const uint8_t config_id,
+                                                          const uint32_t config_value) const;
+
    private:
     CanEncoderDecoder _can_encoder_decoder = CanEncoderDecoder();
     robast_can_msgs::CanDb _can_db = robast_can_msgs::CanDb();

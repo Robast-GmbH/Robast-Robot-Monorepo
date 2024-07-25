@@ -45,6 +45,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Led.msg"
   "msg/LedCmd.msg"
   "msg/Module.msg"
+  "msg/ModuleConfig.msg"
   "msg/NfcReadStatus.msg"
   "msg/NfcWriteStatus.msg"
   "msg/Task.msg"
