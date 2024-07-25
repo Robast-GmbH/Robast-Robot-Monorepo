@@ -114,6 +114,7 @@
         "rclpy",
         "repos",
         "rosidl",
+        "roslibpy",
         "uncrustify",
         "xmllint"
     ],
@@ -123,8 +124,8 @@
         120
     ],
     "editor.codeActionsOnSave": {
-        "source.fixAll": true,
-        "source.organizeImports": true
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
     },
     "editor.minimap.autohide": true,
     "c-cpp-flylint.clang.defines": [
@@ -142,7 +143,7 @@
     },
     "[python]": {
         "editor.tabSize": 4,
-        "editor.defaultFormatter": "ms-python.python"
+        "editor.defaultFormatter": "ms-python.black-formatter",
     },
     "python.formatting.provider": "black",
     "[xml]": {

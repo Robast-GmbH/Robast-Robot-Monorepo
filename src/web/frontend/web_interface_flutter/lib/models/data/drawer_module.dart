@@ -1,5 +1,5 @@
 // ignore: constant_identifier_names
-enum ModuleType { Manual, Electrical }
+enum ModuleType { manual_drawer, electric_drawer }
 
 class DrawerModule {
   final int moduleID;
@@ -26,11 +26,12 @@ class DrawerModule {
     return DrawerModule(
         moduleID: data["module_id"],
         drawerID: data["drawer_id"],
-        type: ModuleType.values.firstWhere((element) => element.name == data["type"]),
+        type: ModuleType.values
+            .firstWhere((element) => element.name == data["type"]),
         size: data["size"],
-        robotName: data["robot_name"],
-        position: data["position"],
-        status: data["status"],
+        robotName: data["robot_name"] ?? "rb_theron",
+        position: data["pos"],
+        status: data["is_open"] ? "Opened" : "Closed",
         label: data["label"] ?? "Dinge");
   }
 }

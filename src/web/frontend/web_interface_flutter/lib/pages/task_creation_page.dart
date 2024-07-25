@@ -217,18 +217,7 @@ class _TaskCreationPageState extends State<TaskCreationPage> {
                 final targetUserName = robotProvider.users.firstWhere((element) => element.fullName == recipientController.text).fullName;
                 final navPoint = mapController.positionsAsNavPoints().first;
                 Navigator.pop(context);
-                await APIService.postTask(
-                  taskID: robotProvider.generateTaskID(),
-                  ownerID: ownerID,
-                  targetUser: targetUserName,
-                  moduleID: selectedModuleID!,
-                  drawerID: 0,
-                  xPose: navPoint.dx,
-                  yPose: navPoint.dy,
-                  yawPose: mapController.yaws.first,
-                  robotName: "RB0",
-                  fleetName: "ROBAST",
-                );
+                // TODO: Implement API call to create task
               } catch (e) {
                 await showDialog(
                   context: context,

@@ -64,7 +64,7 @@
             parent="door_opening_mechanism_link_gripper_adapter"
             ros2_control_hardware_type="${ros2_control_hardware_type}"
             ros_distro="${ros_distro}">
-            <origin xyz="0.020 0.0 0.0" rpy="0 0 0"/>
+            <origin xyz="0.010 0.0 0.0" rpy="0 0 0"/>
         </xacro:freely_rotating_hook>
 
     </xacro:macro>

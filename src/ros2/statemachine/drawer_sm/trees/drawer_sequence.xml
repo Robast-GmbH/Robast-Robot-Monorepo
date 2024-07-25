@@ -16,6 +16,9 @@
                                 leds="{leds}"/>
             <DrawerStatusCondition target_value="true"
                                    topic="/drawer_is_open"/>
+            <PublishDrawerStatus topic_name="/bt_drawer_open"
+                                 status="true"
+                                 drawer_address="{drawer}"/>
             <SubTree ID="LED_Open"
                      _autoremap="true"/>
             <LEDPublisherAction drawer_address="{drawer}"
@@ -36,6 +39,9 @@
                                 fading_time_ms="500"
                                 led_topic="/led_cmd"
                                 leds="{leds}"/>
+            <PublishDrawerStatus topic_name="/bt_drawer_open"
+                                 status="false"
+                                 drawer_address="{drawer}"/>
           </Sequence>
         </BaseErrorDecorator>
         <Sequence>
@@ -192,6 +198,15 @@
                   default="0.0">double</input_port>
       <output_port name="LEDs_colored"
                    default="{leds}"/>
+    </Action>
+    <Action ID="PublishDrawerStatus"
+            editable="true">
+      <input_port name="topic_name"
+                  default="/bt_drawer_open"/>
+      <input_port name="status"
+                  default="false"/>
+      <input_port name="drawer_address"
+                  default="{drawer}"/>
     </Action>
     <Decorator ID="ResetDecorator">
       <input_port name="topic"

@@ -1,9 +1,3 @@
-[submodule "spatio_temporal_voxel_layer.git"]
-	path = src/ros2/navigation/external_plugins/spatio_temporal_voxel_layer
-	url = https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
-[submodule "rosboard.git"]
-	path = src/ros2/test_and_debug/rosboard
-	url = https://github.com/TAlscher/rosboard.git
 [submodule "BehaviorTree.CPP.git"]
 	path = src/ros2/statemachine/BehaviorTree.CPP
 	url = git@github.com:BehaviorTree/BehaviorTree.CPP.git

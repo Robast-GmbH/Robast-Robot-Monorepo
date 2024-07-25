@@ -1,0 +1,102 @@
+- name: ExtendedFullGroup
+  favorite: true
+  joint_group_names:
+    - mobile_base_arm
+  joint_state:
+    effort: []
+    header:
+      frame_id: world
+      stamp:
+        nanosec: 0
+        sec: 0
+    name: [door_opening_mechanism_joint_y_axis_slide, door_opening_mechanism_joint_x_axis_slide, door_opening_mechanism_joint_rotating_arm, door_opening_mechanism_joint_freely_rotating_hook]
+    position: [0.1033, 0.05, 0.05, 0.0]
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: world
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names:
+    - position
+    transforms:
+    - translation:
+        x: 0.1
+        y: 0.0
+        z: 0.0
+      rotation:
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+    twist: []
+    wrench: []
+- name: PositionForward10CM
+  favorite: true
+  joint_group_names:
+    - position
+  joint_state:
+    effort: []
+    header:
+      frame_id: world
+      stamp:
+        nanosec: 0
+        sec: 0
+    name: []
+    position: []
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: world
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names:
+    - position
+    transforms:
+    - translation:
+        x: 0.1
+        y: 0.0
+        z: 0.0
+      rotation:
+        x: 0.0
+        y: 0.0
+        z: 0.0
+        w: 1.0
+    twist: []
+    wrench: []
+- name: PositionLeft45Degrees
+  favorite: true
+  joint_group_names:
+    - position
+  joint_state:
+    effort: []
+    header:
+      frame_id: world
+      stamp:
+        nanosec: 0
+        sec: 0
+    name: []
+    position: []
+    velocity: []
+  multi_dof_joint_state:
+    header:
+      frame_id: world
+      stamp:
+        nanosec: 0
+        sec: 0
+    joint_names:
+    - position
+    transforms:
+    - translation:
+        x: 1.0
+        y: 0.0
+        z: 0.0
+      rotation:
+        x: 0.0
+        y: 0.0
+        z: 0.3824995
+        w: 0.9239557
+    twist: []
+    wrench: []

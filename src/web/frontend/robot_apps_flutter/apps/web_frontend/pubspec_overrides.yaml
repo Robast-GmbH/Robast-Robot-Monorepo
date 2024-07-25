@@ -1,0 +1,10 @@
+# melos_managed_dependency_overrides: middleware_api_utilities,shared_widgets,rmf_api
+dependency_overrides:
+  middleware_api_utilities:
+    path: ../../packages/middleware_api_utilities
+  shared_data_models:
+    path: ../../packages/shared_data_models
+  shared_widgets:
+    path: ../../packages/shared_widgets
+  rmf_api:
+    path: ../../packages/rmf_api

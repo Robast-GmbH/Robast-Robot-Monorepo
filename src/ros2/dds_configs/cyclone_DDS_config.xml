@@ -8,6 +8,7 @@
             <ParticipantIndex>auto</ParticipantIndex>
             <Peers>
                 <Peer Address="127.0.0.1" />
+                <Peer Address="192.168.0.47" />
                 <Peer Address="192.168.0.50" />
                 <Peer Address="192.168.0.200" />
             </Peers>
@@ -16,5 +17,5 @@
         <Internal>
             <SocketReceiveBufferSize min="10MB"/>
         </Internal>
-  </Domain>
+    </Domain>
 </CycloneDDS>

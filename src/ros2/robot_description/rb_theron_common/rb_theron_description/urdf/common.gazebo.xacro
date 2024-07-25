@@ -2,17 +2,31 @@
 <robot xmlns:xacro="http://www.ros.org/wiki/xacro">
 
     <!-- ROS CONTROL GAZEBO PLUGIN -->
-    <xacro:macro name="ros_control" params="ros_distro">
+    <xacro:macro name="ros_control" params="ros_distro position_joint_type">
         <gazebo>
             <xacro:if value="${ros_distro == 'humble'}">
-                <plugin name="ign_ros2_control::IgnitionROS2ControlPlugin" filename="libign_ros2_control-system.so">
-                    <parameters>$(find rb_theron_description)/config/rb_theron_gz_ros2_controller.yaml</parameters>
-                </plugin>
+                <xacro:if value="${position_joint_type == 'fixed' or position_joint_type == 'prismatic'}">
+                    <plugin name="ign_ros2_control::IgnitionROS2ControlPlugin" filename="libign_ros2_control-system.so">
+                        <parameters>$(find rb_theron_description)/config/rb_theron_gz_ros2_controller.yaml</parameters>
+                    </plugin>
+                </xacro:if>
+                <xacro:if value="${position_joint_type == 'planar'}">
+                    <plugin name="ign_ros2_control::IgnitionROS2ControlPlugin" filename="libign_ros2_control-system.so">
+                        <parameters>$(find rb_theron_description)/config/rb_theron_planar_base_gz_ros2_control.yaml</parameters>
+                    </plugin>
+                </xacro:if>
             </xacro:if>
             <xacro:unless value="${ros_distro == 'humble'}">
-                <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
-                    <parameters>$(find rb_theron_description)/config/rb_theron_gz_ros2_controller.yaml</parameters>
-                </plugin>
+                <xacro:if value="${position_joint_type == 'fixed' or position_joint_type == 'prismatic'}">
+                    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
+                        <parameters>$(find rb_theron_description)/config/rb_theron_gz_ros2_controller.yaml</parameters>
+                    </plugin>
+                </xacro:if>
+                <xacro:if value="${position_joint_type == 'planar'}">
+                    <plugin name="gz_ros2_control::GazeboSimROS2ControlPlugin" filename="gz_ros2_control-system">
+                        <parameters>$(find rb_theron_description)/config/rb_theron_planar_base_gz_ros2_control.yaml</parameters>
+                    </plugin>
+                </xacro:if>
             </xacro:unless>
         </gazebo>
     </xacro:macro>

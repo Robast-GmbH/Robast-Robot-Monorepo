@@ -49,11 +49,12 @@ class _ManualControlPageState extends State<ManualControlPage> {
                   displayStatus: true,
                   onPressed: (moduleID) async {
                     try {
-                      final module = robotProvider.modules["RB0"]?.firstWhere((element) => element.moduleID == moduleID);
-                      if (module!.status == "Opened" && module.type == ModuleType.Electrical) {
-                        await APIService.closeDrawer(robotName: "RB0", moduleID: moduleID, drawerID: module.drawerID);
+                      
+                      final module = robotProvider.modules["rb_theron"]?.firstWhere((element) => element.moduleID == moduleID);
+                      if (module!.status == "Opened" && module.type == ModuleType.electric_drawer) {
+                        await APIService.closeDrawer(robotName: "rb_theron", moduleID: moduleID, drawerID: module.drawerID);
                       } else if (module.status == "Closed") {
-                        await APIService.openDrawer(robotName: "RB0", moduleID: moduleID, drawerID: module.drawerID);
+                        await APIService.openDrawer(robotName: "rb_theron", moduleID: moduleID, drawerID: module.drawerID);
                       } else {
                         return;
                       }

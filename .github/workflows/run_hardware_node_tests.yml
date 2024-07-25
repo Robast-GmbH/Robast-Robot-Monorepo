@@ -6,7 +6,8 @@ on:
     paths:
       - src/ros2/hardware_nodes/**
       - src/ros2/communication_interfaces/**
-      - .github/workflows/**
+      - .github/workflows/run_hardware_node_tests.yml
+      - .github/workflows/docker_create_hardware_nodes.yml
        
 jobs:
   test-run-hardware_nodes:
@@ -50,12 +51,30 @@ jobs:
               -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
               -v $(pwd)/../dds_configs:/workspace/dds_configs
               -v $(pwd)/../../../libs:/workspace/libs 
+              -v /home:/home
               --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:devel
               /bin/sh -c "cd /workspace/ &&
               sudo apt-get update && 
               sudo apt-get upgrade -y &&
+              sudo apt install lcov -y &&
               rosdep update; rosdep install --from-paths src --ignore-src -r -y && 
               export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
-              colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic && 
+              colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic && 
               colcon test --event-handler=console_direct+ &&
-              colcon test-result --all"
+              colcon test-result --all &&
+              lcov --directory . --capture --output-file coverage-${{env.Project}}.info &&
+              lcov --remove coverage-${{env.Project}}.info '/usr/*' --output-file coverage-${{env.Project}}.info &&
+              lcov --list coverage-${{env.Project}}.info &&
+              cp /workspace/coverage-${{env.Project}}.info /home/coverage-${{env.Project}}.info"
+      
+    - name: Wait for coverage report file
+      run: |
+          sleep 5
+          ls /home/coverage-${{env.Project}}.info
+
+
+    - name: Upload coverage report to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: /home/coverage-${{env.Project}}.info

@@ -12,6 +12,8 @@ set(THIS_PACKAGE_INCLUDE_DEPENDS
   rclcpp
   rclcpp_lifecycle
   hardware_interface_utils
+  nav_msgs
+  geometry_msgs
 )
 
 # find dependencies

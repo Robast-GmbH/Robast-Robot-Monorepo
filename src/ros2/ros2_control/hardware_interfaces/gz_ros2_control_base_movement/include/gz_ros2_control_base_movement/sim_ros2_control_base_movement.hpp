@@ -7,10 +7,13 @@
 #include <utility>
 #include <vector>
 
+#include "geometry_msgs/msg/point.hpp"
 #include "hardware_interface/hardware_info.hpp"
 #include "hardware_interface/system_interface.hpp"
 #include "hardware_interface/types/hardware_interface_type_values.hpp"
 #include "hardware_interface_utils/hardware_interface_utils.hpp"
+#include "hardware_interface_utils/prismatic_joint_state_monitor.hpp"
+#include "nav_msgs/msg/odometry.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_lifecycle/node_interfaces/lifecycle_node_interface.hpp"
 #include "rclcpp_lifecycle/state.hpp"
@@ -21,11 +24,11 @@ using CallbackReturn = rclcpp_lifecycle::node_interfaces::LifecycleNodeInterface
 template <typename SimSystemInterface>
 class SimBaseMovement : public SimSystemInterface
 {
- public:
+public:
   // Documentation Inherited
-  CallbackReturn on_init(const hardware_interface::HardwareInfo& system_info) override;
+  CallbackReturn on_init(const hardware_interface::HardwareInfo &system_info) override;
 
-  CallbackReturn on_configure(const rclcpp_lifecycle::State& previous_state) override;
+  CallbackReturn on_configure(const rclcpp_lifecycle::State &previous_state) override;
 
   // Documentation Inherited
   std::vector<hardware_interface::StateInterface> export_state_interfaces() override;
@@ -34,25 +37,29 @@ class SimBaseMovement : public SimSystemInterface
   std::vector<hardware_interface::CommandInterface> export_command_interfaces() override;
 
   // Documentation Inherited
-  CallbackReturn on_activate(const rclcpp_lifecycle::State& previous_state) override;
+  CallbackReturn on_activate(const rclcpp_lifecycle::State &previous_state) override;
 
   // Documentation Inherited
-  CallbackReturn on_deactivate(const rclcpp_lifecycle::State& previous_state) override;
+  CallbackReturn on_deactivate(const rclcpp_lifecycle::State &previous_state) override;
 
   // Documentation Inherited
-  hardware_interface::return_type read(const rclcpp::Time& time, const rclcpp::Duration& period) override;
+  hardware_interface::return_type read(const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
   // Documentation Inherited
-  hardware_interface::return_type write(const rclcpp::Time& time, const rclcpp::Duration& period) override;
+  hardware_interface::return_type write(const rclcpp::Time &time, const rclcpp::Duration &period) override;
 
- private:
+private:
   std::vector<double> _hw_position_commands;
   std::vector<double> _hw_position_states;
 
   std::vector<double> _hw_velocity_commands;
   std::vector<double> _hw_velocity_states;
 
-  std::string _logger = "SimBaseMovement";
+  bool _enable_state_feedback;
+
+  const std::string _LOGGER = "SimBaseMovement";
+
+  std::shared_ptr<hardware_interface_utils::PrismaticJointStateMonitor> _prismatic_joint_state_monitor;
 };
 
 // Please mind:
@@ -62,9 +69,9 @@ class SimBaseMovement : public SimSystemInterface
 // error everytime I launch it.
 
 template <typename SimSystemInterface>
-CallbackReturn SimBaseMovement<SimSystemInterface>::on_init(const hardware_interface::HardwareInfo& actuator_info)
+CallbackReturn SimBaseMovement<SimSystemInterface>::on_init(const hardware_interface::HardwareInfo &actuator_info)
 {
-  RCLCPP_INFO(rclcpp::get_logger(_logger), "SimBaseMovement on_init()");
+  RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "SimBaseMovement on_init()");
 
   if (hardware_interface::SystemInterface::on_init(actuator_info) != hardware_interface::CallbackReturn::SUCCESS)
   {
@@ -76,11 +83,36 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_init(const hardware_inter
   _hw_velocity_states.resize(SimSystemInterface::info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
   _hw_velocity_commands.resize(SimSystemInterface::info_.joints.size(), std::numeric_limits<double>::quiet_NaN());
 
-  return hardware_interface_utils::configure_joints(SimSystemInterface::info_.joints, _logger);
+  _enable_state_feedback = SimSystemInterface::info_.hardware_parameters["enable_state_feedback"] == "true" ||
+                           SimSystemInterface::info_.hardware_parameters["enable_state_feedback"] == "True";
+
+  if (_enable_state_feedback)
+  {
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Position state feedback is enabled!");
+    bool reset_position_state_after_each_trajectory =
+        SimSystemInterface::info_.hardware_parameters["reset_position_state_after_each_trajectory"] == "true" ||
+        SimSystemInterface::info_.hardware_parameters["reset_position_state_after_each_trajectory"] == "True";
+    std::string odom_topic = SimSystemInterface::info_.hardware_parameters["odom_topic"];
+    if (odom_topic.empty())
+    {
+      odom_topic = "/odom";
+    }
+
+    _prismatic_joint_state_monitor = std::make_shared<hardware_interface_utils::PrismaticJointStateMonitor>(
+        odom_topic, reset_position_state_after_each_trajectory);
+  }
+  else
+  {
+    RCLCPP_INFO(rclcpp::get_logger(_LOGGER),
+                "Position state feedback is disabled! To enable it, set "
+                "enable_state_feedback to true in the hardware configuration.");
+  }
+
+  return hardware_interface_utils::configure_joints(SimSystemInterface::info_.joints, _LOGGER);
 }
 
 template <typename SimSystemInterface>
-CallbackReturn SimBaseMovement<SimSystemInterface>::on_configure(const rclcpp_lifecycle::State& /*previous_state*/)
+CallbackReturn SimBaseMovement<SimSystemInterface>::on_configure(const rclcpp_lifecycle::State & /*previous_state*/)
 {
   // reset values always when configuring hardware
   for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -94,7 +126,7 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_configure(const rclcpp_li
     _hw_velocity_commands[i] = 0;
   }
 
-  RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully configured!");
+  RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Successfully configured!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
@@ -130,9 +162,9 @@ std::vector<hardware_interface::CommandInterface> SimBaseMovement<SimSystemInter
 }
 
 template <typename SimSystemInterface>
-CallbackReturn SimBaseMovement<SimSystemInterface>::on_activate(const rclcpp_lifecycle::State& previous_state)
+CallbackReturn SimBaseMovement<SimSystemInterface>::on_activate(const rclcpp_lifecycle::State &previous_state)
 {
-  RCLCPP_INFO(rclcpp::get_logger(_logger), "Activating ...please wait...");
+  RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Activating ...please wait...");
 
   // command and state should be equal when starting
   for (uint i = 0; i < _hw_position_states.size(); i++)
@@ -144,40 +176,65 @@ CallbackReturn SimBaseMovement<SimSystemInterface>::on_activate(const rclcpp_lif
     _hw_velocity_commands[i] = _hw_velocity_states[i];
   }
 
-  RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully activated!");
+  RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Successfully activated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 template <typename SimSystemInterface>
-CallbackReturn SimBaseMovement<SimSystemInterface>::on_deactivate(const rclcpp_lifecycle::State& previous_state)
+CallbackReturn SimBaseMovement<SimSystemInterface>::on_deactivate(const rclcpp_lifecycle::State &previous_state)
 {
   // TODO@Jacob: Check, if this will be triggered some day. Up to the point of working on this, I found no way that
   // TODO@Jacob: on_deactivate, on_cleanup, on_shutdown or on_error are triggered
-  RCLCPP_INFO(rclcpp::get_logger(_logger), "Deactivating ...please wait...");
+  RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Deactivating ...please wait...");
 
-  RCLCPP_INFO(rclcpp::get_logger(_logger), "Successfully deactivated!");
+  RCLCPP_INFO(rclcpp::get_logger(_LOGGER), "Successfully deactivated!");
 
   return hardware_interface::CallbackReturn::SUCCESS;
 }
 
 template <typename SimSystemInterface>
-hardware_interface::return_type SimBaseMovement<SimSystemInterface>::read(const rclcpp::Time& /*time*/,
-                                                                          const rclcpp::Duration& /*period*/)
+hardware_interface::return_type SimBaseMovement<SimSystemInterface>::read(const rclcpp::Time & /*time*/,
+                                                                          const rclcpp::Duration & /*period*/)
 {
-  // Right now, this is kind of a mocked implementation. I am not sure if we need the feedback for the
-  // mobile_base joint. It might be enough that we have this joint for planning and executing the base movement open
-  // loop. If we need the feedback, we need to implement this here.
+  if (!_enable_state_feedback)
+  {
+    return hardware_interface::return_type::OK;
+  }
+
+  if (rclcpp::ok())
+  {
+    rclcpp::spin_some(_prismatic_joint_state_monitor);
+  }
+
+  _prismatic_joint_state_monitor->update_state(_hw_position_states, _hw_velocity_states);
+
   return hardware_interface::return_type::OK;
 }
 
 template <typename SimSystemInterface>
-hardware_interface::return_type SimBaseMovement<SimSystemInterface>::write(const rclcpp::Time& /*time*/,
-                                                                           const rclcpp::Duration& /*period*/)
+hardware_interface::return_type SimBaseMovement<SimSystemInterface>::write(const rclcpp::Time & /*time*/,
+                                                                           const rclcpp::Duration & /*period*/)
 {
+  if (!_enable_state_feedback)
+  {
+    return hardware_interface::return_type::OK;
+  }
+
+  if (std::abs(_hw_velocity_commands[0]) > 0.00001)
+  {
+    // When we receive a velocity command, we know the trajectory execution has started, so the robot is in motion
+    // and we want to track the position and velocity of the robot
+    _prismatic_joint_state_monitor->set_is_trajectory_execution_in_motion(true);
+  }
+  else
+  {
+    _prismatic_joint_state_monitor->set_is_trajectory_execution_in_motion(false);
+  }
+
   // We don't do anything with the commands here, because we have a chained controller that is responsible for taking
   // the command values of this joint and translating them into the commands for the wheels, so the cmd_vel topic
   return hardware_interface::return_type::OK;
 }
 
-#endif   // ROS2_CONTROL_BASE_MOVEMENT__GZ_SYSTEM_HPP_
+#endif // ROS2_CONTROL_BASE_MOVEMENT__GZ_SYSTEM_HPP_

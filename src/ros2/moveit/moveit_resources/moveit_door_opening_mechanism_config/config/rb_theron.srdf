@@ -61,6 +61,21 @@
     <passive_joint name="rear_rightjoint_support"/>
     <passive_joint name="rear_rightjoint_wheel"/>
     <passive_joint name="right_wheel_joint"/>
+
+    <disable_default_collisions link="rear_leftwheel" />
+    <disable_default_collisions link="rear_rightwheel" />
+    <disable_default_collisions link="front_leftwheel" />
+    <disable_default_collisions link="front_rightwheel" />
+    <disable_default_collisions link="left_wheel_link" />
+    <disable_default_collisions link="right_wheel_link" />
+    <disable_default_collisions link="rear_leftsupport" />
+    <disable_default_collisions link="rear_rightsupport" />
+    <disable_default_collisions link="front_leftsupport" />
+    <disable_default_collisions link="front_rightsupport" />
+    <disable_default_collisions link="left_wheel_tire_link" />
+    <disable_default_collisions link="right_wheel_tire_link" />
+    <disable_default_collisions link="base_link" />
+
      <!--DISABLE COLLISIONS: By default it is assumed that any link of the robot could potentially come into collision with any other link in the robot. This tag disables collision checking between a specified pair of links. -->
     <disable_collisions link1="alu_profile_link_bottom" link2="alu_profile_link_left" reason="Never"/>
     <disable_collisions link1="alu_profile_link_bottom" link2="alu_profile_link_right" reason="Never"/>

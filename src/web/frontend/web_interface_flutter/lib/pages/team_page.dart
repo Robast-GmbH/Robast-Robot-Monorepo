@@ -11,7 +11,6 @@ class TeamPage extends StatelessWidget {
   final scrollController = ScrollController();
   final ourTeam = [
     TeamMember(imagePath: "assets/team_members/tobi.png", name: "Tobias", role: "Softwareentwickler/Geschäftsführung"),
-    TeamMember(imagePath: "assets/team_members/torben.png", name: "Torben", role: "Softwareentwickler/Geschäftsführung"),
     TeamMember(imagePath: "assets/team_members/jacob.png", name: "Jacob", role: "Softwareentwickler"),
     TeamMember(imagePath: "assets/team_members/miriam.png", name: "Miriam", role: "Robotik Ingenieurin"),
     TeamMember(imagePath: "assets/team_members/sagar.png", name: "Sagar", role: "Softwareentwickler"),

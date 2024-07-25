@@ -120,7 +120,7 @@ class RobotClone extends StatelessWidget {
                                   .map(
                                     (e) => buildDrawer(
                                       drawer: e,
-                                      height: e.size * 10.45 * size,
+                                      height: e.size * 10.45 * size *10,
                                     ),
                                   )
                                   .toList(),

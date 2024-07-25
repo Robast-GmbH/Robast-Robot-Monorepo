@@ -8,7 +8,7 @@ on:
       - src/ros2/robot_description/**
       - src/ros2/hardware_nodes/dryve_d1_bridge/**
       - /src/ros2/moveit/**
-      - .github/workflows/**
+      - .github/workflows/run_moveit_tests.yml
        
 jobs:
   test-run-moveit:
@@ -34,7 +34,7 @@ jobs:
     - name: Run docker and execute tests on humble
       working-directory: src/ros2/${{ env.Project }}
       run: >
-          docker run -v $(pwd):/workspace/src/${{ env.Project }}
+          docker run -v $(pwd):/workspace/src/${{ env.Project }} -e GZ_VERSION=fortress
           -v $(pwd)/../hardware_nodes/dryve_d1_bridge:/workspace/src/hardware_nodes/dryve_d1_bridge
           -v $(pwd)/../robot_description:/workspace/src/robot_description
           -v $(pwd)/../ros2_control:/workspace/src/ros2_control

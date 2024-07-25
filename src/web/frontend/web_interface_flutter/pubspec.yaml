@@ -59,7 +59,7 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - assets/RL_Tiplu_6.png
+    - assets/small_sim_map.png
     - assets/Logo.png
     - assets/team_members/
 

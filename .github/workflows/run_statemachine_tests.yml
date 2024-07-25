@@ -6,7 +6,8 @@ on:
     paths:
       - src/ros2/statemachine/**
       - src/ros2/communication_interfaces/**
-      - .github/workflows/**
+      - .github/workflows/run_statemachine_test.yml
+      - .github/workflows/docker_create_statemachine.yml
        
 jobs:
   test-run-statemachine:
@@ -17,16 +18,6 @@ jobs:
       Ros-Distro: humble
 
     steps:
-    # - uses: actions/checkout@v3
-    # - uses: dorny/paths-filter@v2.11.1
-    #   id: filter
-    #   with:
-    #     filters: |
-    #       hardware_docker_changed:
-    #         - 'src/ros2/hardware_nodes/Dockerfile'
-    #       statemachine_docker_changed:
-    #         - 'src/ros2/statemachine/Dockerfile'
-
     - name: Checkout repository and submodules
       uses: actions/checkout@v3
       with:
@@ -38,14 +29,15 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-           
-    - name: Run docker and execute tests
+
+    - name: Generate coverage report
       working-directory: src/ros2/${{ env.Project }}
       run: >
           docker run -v $(pwd):/workspace/src/${{ env.Project }}
           -v $(pwd)/../communication_interfaces:/workspace/src/communication_interfaces
           -v $(pwd)/../error_handling/error_utils:/workspace/src/error_handling/error_utils
           -v $(pwd)/../dds_configs:/workspace/dds_configs
+          -v /home:/home
           --name ${{ env.Project }}_container ghcr.io/robast-gmbh/monorepo/${{ env.Project }}:devel
           /bin/sh -c "cd /workspace/ &&
           sudo apt-get update &&
@@ -53,6 +45,7 @@ jobs:
           rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
           export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
           . /robast/${{ env.Ros-Distro }}/setup.sh &&
-          colcon build --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic &&
-          colcon test --event-handler=console_direct+ &&
+          sudo apt install lcov -y &&
+          colcon build --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo -DCMAKE_CXX_FLAGS=\"${CMAKE_CXX_FLAGS} --coverage\" -DCMAKE_C_FLAGS=\"${CMAKE_C_FLAGS} --coverage\" -Wall -Wextra -Wpedantic &&
+          colcon test --packages-skip behaviourtree_cpp &&
           colcon test-result --all"

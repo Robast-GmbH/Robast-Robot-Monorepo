@@ -34,8 +34,6 @@ def generate_launch_description():
         use_sim_time_default = "false"
         remappings = [
             ("/odom", "robot/robotnik_base_control/odom"),
-            ("/robot/tf", "tf"),
-            ("/robot/tf_static", "tf_static"),
             ("/cmd_vel_smoothed", "robot/robotnik_base_control/cmd_vel")
         ]
         cmd_vel_remapping_behavior_server = [("/cmd_vel", "robot/robotnik_base_control/cmd_vel")]
@@ -64,8 +62,7 @@ def generate_launch_description():
     param_substitutions = {
         'use_sim_time': use_sim_time,
         'autostart': autostart,
-        "default_nav_to_pose_bt_xml": nav_to_pose_bt,
-        "map_topic": "/map"}
+        "default_nav_to_pose_bt_xml": nav_to_pose_bt}
 
     configured_params = RewrittenYaml(
         source_file=params_file,

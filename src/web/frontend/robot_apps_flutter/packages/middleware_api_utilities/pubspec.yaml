@@ -1,0 +1,17 @@
+name: middleware_api_utilities
+description: Utilities to communicate with the middleware
+version: 0.1.0+1
+publish_to: none
+
+environment:
+  sdk: "^3.3.0"
+
+dependencies:
+  http: ^1.2.1
+  shared_data_models:
+    path: ../shared_data_models
+
+dev_dependencies:
+  mocktail: ^1.0.3
+  test: ^1.25.2
+  very_good_analysis: ^5.1.0

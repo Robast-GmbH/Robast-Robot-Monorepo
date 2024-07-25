@@ -1,0 +1,140 @@
+building_name: tiplu
+levels:
+  Tiplu:
+    lanes:
+    - - 0
+      - 1
+      - {speed_limit: 0}
+    - - 1
+      - 0
+      - {speed_limit: 0}
+    - - 1
+      - 2
+      - {speed_limit: 0}
+    - - 2
+      - 1
+      - {speed_limit: 0}
+    - - 2
+      - 3
+      - {speed_limit: 0}
+    - - 3
+      - 2
+      - {speed_limit: 0}
+    - - 3
+      - 4
+      - {speed_limit: 0}
+    - - 4
+      - 3
+      - {speed_limit: 0}
+    - - 4
+      - 5
+      - {speed_limit: 0}
+    - - 5
+      - 4
+      - {speed_limit: 0}
+    - - 5
+      - 6
+      - {speed_limit: 0}
+    - - 6
+      - 5
+      - {speed_limit: 0}
+    - - 6
+      - 7
+      - {speed_limit: 0}
+    - - 7
+      - 6
+      - {speed_limit: 0}
+    - - 7
+      - 8
+      - {speed_limit: 0}
+    - - 8
+      - 7
+      - {speed_limit: 0}
+    - - 8
+      - 9
+      - {speed_limit: 0}
+    - - 9
+      - 8
+      - {speed_limit: 0}
+    - - 9
+      - 10
+      - {speed_limit: 0}
+    - - 10
+      - 9
+      - {speed_limit: 0}
+    - - 10
+      - 11
+      - {speed_limit: 0}
+    - - 11
+      - 10
+      - {speed_limit: 0}
+    - - 11
+      - 12
+      - {speed_limit: 0}
+    - - 12
+      - 11
+      - {speed_limit: 0}
+    - - 12
+      - 13
+      - {speed_limit: 0}
+    - - 13
+      - 12
+      - {speed_limit: 0}
+    - - 13
+      - 14
+      - {speed_limit: 0}
+    - - 14
+      - 13
+      - {speed_limit: 0}
+    - - 14
+      - 8
+      - {speed_limit: 0}
+    - - 8
+      - 14
+      - {speed_limit: 0}
+    vertices:
+    - - 9.774045722248998
+      - -16.254872936215655
+      - {name: darts}
+    - - 10.641913018728012
+      - -16.098816702287312
+      - {name: robast_1}
+    - - 10.443354673363885
+      - -9.083634671414243
+      - {name: robast_2}
+    - - 10.21172809643874
+      - -7.329876402695482
+      - {name: kenny}
+    - - 9.351358251860198
+      - -6.304066096313171
+      - {name: jo}
+    - - 7.299737639095576
+      - -6.370252211434547
+      - {name: marketing}
+    - - 6.246370473079083
+      - -7.352021194401509
+      - {is_parking_spot: false, name: sales}
+    - - 6.174672986030871
+      - -9.182938670095977
+      - {name: shower}
+    - - 7.200483292413184
+      - -22.78311780955284
+      - {name: floor}
+    - - 10.80735348053178
+      - -22.419119002384946
+      - {is_charger: true, name: printer, spawn_robot_name: rb_theron}
+    - - 11.138234404139316
+      - -26.919377614643757
+      - {name: storage}
+    - - 11.469164979746196
+      - -31.552058109144674
+      - {name: tt}
+    - - 9.748474942588452
+      - -31.750616454508794
+      - {name: mensa_main}
+    - - 7.365923754216952
+      - -31.71749857094844
+      - {name: mensa_side}
+    - - 7.498295984459703
+      - -28.772489534043594
+      - {name: kitchen}

@@ -1,0 +1,33 @@
+# This is an example/the setup as it currently is (21.05.24)
+
+modules:
+  - module_id: 1
+    drawer_id: 0
+    pos: 1
+    size: 1
+    type: "manual_drawer"
+    label: "Snacks"
+  - module_id: 2
+    drawer_id: 0
+    pos: 2
+    size: 1
+    type: "electric_drawer"
+    label: "Merchandise"
+  - module_id: 3
+    drawer_id: 0
+    pos: 3
+    size: 1
+    type: "manual_drawer"
+    label: "Snacks"
+  - module_id: 4
+    drawer_id: 0
+    pos: 4
+    size: 2
+    type: "manual_drawer"
+    label: "Leer"
+  - module_id: 5
+    drawer_id: 0
+    pos: 5
+    size: 3
+    type: "manual_drawer"
+    label: "Leer"

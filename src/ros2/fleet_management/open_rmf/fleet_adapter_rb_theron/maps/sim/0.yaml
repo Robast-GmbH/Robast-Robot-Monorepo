@@ -1,0 +1,146 @@
+building_name: tiplu
+levels:
+  Tiplu:
+    lanes:
+    - - 0
+      - 1
+      - {speed_limit: 0}
+    - - 1
+      - 0
+      - {speed_limit: 0}
+    - - 1
+      - 2
+      - {speed_limit: 0}
+    - - 2
+      - 1
+      - {speed_limit: 0}
+    - - 2
+      - 3
+      - {speed_limit: 0}
+    - - 3
+      - 2
+      - {speed_limit: 0}
+    - - 3
+      - 4
+      - {speed_limit: 0}
+    - - 4
+      - 3
+      - {speed_limit: 0}
+    - - 3
+      - 5
+      - {speed_limit: 0}
+    - - 5
+      - 3
+      - {speed_limit: 0}
+    - - 5
+      - 6
+      - {speed_limit: 0}
+    - - 6
+      - 5
+      - {speed_limit: 0}
+    - - 6
+      - 7
+      - {speed_limit: 0}
+    - - 7
+      - 6
+      - {speed_limit: 0}
+    - - 7
+      - 8
+      - {speed_limit: 0}
+    - - 8
+      - 7
+      - {speed_limit: 0}
+    - - 8
+      - 9
+      - {speed_limit: 0}
+    - - 9
+      - 8
+      - {speed_limit: 0}
+    - - 9
+      - 10
+      - {speed_limit: 0}
+    - - 10
+      - 9
+      - {speed_limit: 0}
+    - - 10
+      - 11
+      - {speed_limit: 0}
+    - - 11
+      - 10
+      - {speed_limit: 0}
+    - - 11
+      - 12
+      - {speed_limit: 0}
+    - - 12
+      - 11
+      - {speed_limit: 0}
+    - - 12
+      - 13
+      - {speed_limit: 0}
+    - - 13
+      - 12
+      - {speed_limit: 0}
+    - - 13
+      - 14
+      - {speed_limit: 0}
+    - - 14
+      - 13
+      - {speed_limit: 0}
+    - - 0
+      - 10
+      - {speed_limit: 0}
+    - - 10
+      - 0
+      - {speed_limit: 0}
+    - - 1
+      - 14
+      - {speed_limit: 0}
+    - - 14
+      - 1
+      - {speed_limit: 0}
+    vertices:
+    - - 454.464
+      - -174.56
+      - {is_charger: true, name: bar}
+    - - 453.952
+      - -123.36
+      - {name: printer}
+    - - 389.952
+      - -118.752
+      - {name: server}
+    - - 330.048
+      - -121.312
+      - {name: robast_1}
+    - - 331.584
+      - -159.2
+      - {name: darts}
+    - - 185.664
+      - -120.288
+      - {name: robast_2}
+    - - 145.728
+      - -122.336
+      - {name: kenny}
+    - - 123.712
+      - -142.816
+      - {name: jo}
+    - - 124.736
+      - -180.704
+      - {name: marketing}
+    - - 142.144
+      - -197.088
+      - {name: sales}
+    - - 455.488
+      - -196.064
+      - {name: floor}
+    - - 631.104
+      - -192.992
+      - {name: mensa_side_door}
+    - - 631.104
+      - -154.592
+      - {name: mensa_main_door}
+    - - 630.08
+      - -116.704
+      - {name: tt}
+    - - 545.6
+      - -120.288
+      - {name: storage}

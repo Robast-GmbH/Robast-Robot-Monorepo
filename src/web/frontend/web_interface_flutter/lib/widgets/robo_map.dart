@@ -101,7 +101,7 @@ class _RoboMapState extends State<RoboMap> {
                       },
                       child: Stack(
                         children: [
-                          Image.asset("assets/RL_Tiplu_6.png"),
+                          Image.asset("assets/small_sim_map.png"),
                           ...List.generate(
                             widget.controller.points.length,
                             (index) => Positioned(

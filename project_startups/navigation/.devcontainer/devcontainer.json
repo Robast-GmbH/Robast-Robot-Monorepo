@@ -25,7 +25,8 @@
 		"init_y":"0.0",
 		"init_z":"0.0",
 		"init_yaw":"0.0",
-		"RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp"
+		"RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp",
+		"ROS_DOMAIN_ID": "23"
 	},
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.

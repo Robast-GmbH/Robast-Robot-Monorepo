@@ -56,6 +56,11 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/* \
     && rosdep init || echo "rosdep already initialized"
 
+# Install ros bridge for robot_backend manually because robot_backend is not a ros package and does not have a package.xml
+RUN apt-get update && apt-get install -y \
+    ros-${ROS_DISTRO}-rosbridge-server \
+    && rm -rf /var/lib/apt/lists/*
+
 # dds setup / configuration
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp

@@ -1,0 +1,85 @@
+name: Coverage
+
+on: 
+  push:
+    branches:
+        - main
+  workflow_dispatch:
+
+jobs:
+  test-run-statemachine:
+
+    runs-on: ubuntu-latest
+    env:
+      Project: ros2_coverage
+
+    steps:
+    - name: Checkout repository and submodules
+      uses: actions/checkout@v3
+      with:
+          submodules: recursive
+
+    - name: Login to GitHub Container Registry
+      uses: docker/login-action@v2
+      with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: check if sonar-project.properties exists
+      run: |
+          ls ${{ github.workspace }}/sonar-project.properties
+    - name: Install sonar-scanner and build-wrapper
+      uses: SonarSource/sonarcloud-github-c-cpp@v2
+    - name: Generate coverage report
+      working-directory: .
+      run: >
+          docker build -t coverage project_startups/ros_integration_tests/ &&
+          docker run -v $(pwd)/src/ros2:/workspace/src/
+          -v $(pwd)/libs:/workspace/libs 
+          -v /home:/home
+          --name coverage coverage
+          /bin/sh -c " su robast && cd /workspace/ &&
+          sudo apt-get update &&
+          sudo apt-get upgrade -y &&
+          rosdep update && rosdep install --from-paths src --ignore-src -r -y &&
+          export CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_github_config.xml &&
+          . /robast/humble/setup.sh &&
+          . /workspace_moveit2/install/setup.sh &&
+          sudo apt install lcov -y &&
+          colcon build --packages-skip spatio_temporal_voxel_layer --continue-on-error --cmake-args -DCMAKE_BUILD_TYPE=Debug -DCMAKE_CXX_FLAGS=\"-Wall -Wextra -Wpedantic $CXXFLAGS --coverage -O2 -fno-omit-frame-pointer\" -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
+          colcon test --packages-skip spatio_temporal_voxel_layer &&
+          lcov --directory . --capture --output-file coverage-${{env.Project}}.info &&
+          lcov --remove coverage-${{env.Project}}.info '/usr/*' --output-file coverage-${{env.Project}}.info &&
+          lcov --list coverage-${{env.Project}}.info &&
+          cp /workspace/coverage-${{env.Project}}.info /home/coverage-${{env.Project}}.info && 
+          cp /workspace/build/compile_commands.json /home/compile_commands.json"
+
+    - name: Wait for coverage report file
+      run: |
+          sleep 5
+          ls /home/coverage-${{env.Project}}.info
+
+    #TODO @TAlscher fix to get coverage in sonar cloud. But atm I dont know how
+    # - name: Run sonar-scanner
+    #   env:
+    #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #   run: sonar-scanner -X --define project.settings=${{ github.workspace }}/sonar-project.properties
+    #   working-directory: ${{ github.workspace }}
+    # - name: Run SonarCloud Analysis (coverage_ros2 build)
+    #   env:
+    #       SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    #       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    #   run:  sonar-scanner \
+    #         -Dsonar.projectKey=Monorepo \ 
+    #         -Dsonar.organization=robast \ 
+    #         -Dsonar.host.url=https://sonarcloud.io \
+    #         -Dsonar.token=${{ secrets.SONAR_TOKEN }} \
+    #         -Dsonar.coverage.reportPaths=/home/coverage-${{env.Project2}}.info
+
+    - name: Upload coverage report to Codecov
+      uses: codecov/codecov-action@v2
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        file: /home/coverage-${{env.Project}}.info

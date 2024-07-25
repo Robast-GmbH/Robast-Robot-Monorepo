@@ -12,7 +12,7 @@ RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN useradd --create-home --home-dir /home/ubuntu --shell /bin/bash --user-group --groups adm,sudo ubuntu && \
     echo ubuntu:ubuntu | chpasswd && \
     echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER ubuntu
+ENV USER=ubuntu
 ARG DEBIAN_FRONTEND=
 
 ENV AMENT_PREFIX_PATH=/opt/ros/${ROS_DISTRO}
@@ -22,7 +22,6 @@ ENV PATH=/opt/ros/${ROS_DISTRO}/bin:$PATH
 ENV PYTHONPATH=/opt/ros/${ROS_DISTRO}/lib/python3.8/site-packages
 ENV ROS_PYTHON_VERSION=3
 ENV ROS_VERSION=2
-
 
 RUN apt-get update && apt-get install -y \
   cmake \
@@ -52,12 +51,6 @@ RUN apt-get update && apt-get install -y \
     libxext6 \
     libx11-6 \
     && rm -rf /var/lib/apt/lists/*
-
-RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
-  && tar -xvzf v8.2.0.tar.gz \
-  && cd openvdb-8.2.0/ \
-  && mkdir builds && cd builds && cmake .. \
-  && make && make install
 
 RUN apt-get update && apt-get install -y \
   # Install ros distro testing packages
@@ -99,14 +92,11 @@ RUN apt-get update && apt-get install -y git
 
 WORKDIR /tmp
 RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
-RUN git clone https://github.com/SteveMacenski/spatio_temporal_voxel_layer.git
 
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/; mkdir /robast; mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
-  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs && mv /tmp/spatio_temporal_voxel_layer /ws/src/ros2/navigation
-
-RUN rm -r /ws/src/navigation/external_plugins;
+  && mv /tmp/Monorepo/src/ros2/dds_configs /robast/dds_configs
 
 
 RUN rosdep update && \
@@ -134,19 +124,13 @@ RUN apt-get update && apt-get install -y \
 COPY --from=build /opt/ros /opt/ros
 COPY --from=build /robast /robast
 
-RUN mkdir tmps && cd tmps && wget https://github.com/AcademySoftwareFoundation/openvdb/archive/refs/tags/v8.2.0.tar.gz \
-  && tar -xvzf v8.2.0.tar.gz \
-  && cd openvdb-8.2.0/ \
-  && mkdir builds && cd builds && cmake .. \
-  && make && make install
-
-
 RUN apt-get update && apt-get upgrade -y\
     && apt-get install -y \
     ros-${ROS_DISTRO}-rmw-cyclonedds-cpp \
     libzmq3-dev \
     ros-${ROS_DISTRO}-slam-toolbox \
-    ros-${ROS_DISTRO}-robot-localization
+    ros-${ROS_DISTRO}-robot-localization \
+    ros-${ROS_DISTRO}-spatio-temporal-voxel-layer
 
 ENV ROS_DOMAIN_ID=0
 # dds setup / configuration
@@ -193,7 +177,7 @@ RUN echo "Set disable_coredump false" >> /etc/sudo.conf
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
     echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
+ENV USER=robast
 ARG DEBIAN_FRONTEND=
 
 ENV ROS_DOMAIN_ID=0

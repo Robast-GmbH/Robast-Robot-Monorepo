@@ -52,22 +52,23 @@
 
 	<xacro:arg name="ros_distro" default="humble" />
 
-	<!-- Whether the position joint should be modeled as a prismatic joint or just as a fixed joint -->
-	<xacro:arg name="model_position_joint" default="false" />
+	<!-- Whether the position joint should be modeled as a fixed joint, a prismatic joint or a planar joint -->
+	<xacro:arg name="position_joint_type" default="fixed" />
+	<xacro:property name="position_joint_type_prop" value="$(arg position_joint_type)"/>
 
 	<!-- If we model the position joint, the sensors need be placed in the base_link frame,
 	otherwise they should be placed in the base_footprint frame -->
-	<xacro:if value="$(arg model_position_joint)">
-		<xacro:property name="sensor_base_frame" value="base_link" />
+	<xacro:if value="${position_joint_type_prop == 'prismatic' or position_joint_type_prop == 'planar'}">
+		<xacro:property name="sensor_base_frame" value="base_link"/>
 	</xacro:if>
-	<xacro:unless value="$(arg model_position_joint)">
+	<xacro:if value="${position_joint_type_prop == 'fixed'}">
 		<xacro:if value="${publish_bf}">
-			<xacro:property name="sensor_base_frame" value="base_footprint" />
+			<xacro:property name="sensor_base_frame" value="base_footprint"/>
 		</xacro:if>
 		<xacro:unless value="${publish_bf}">
-			<xacro:property name="sensor_base_frame" value="base_link" />
+			<xacro:property name="sensor_base_frame" value="base_link"/>
 		</xacro:unless>
-	</xacro:unless>
+	</xacro:if>
 
 	<!-- *************** -->
 	<!-- Robots Elements -->
@@ -81,7 +82,7 @@
 	  ros2_control_hardware_type="$(arg ros2_control_hardware_type)"
 	  ros2_control_hardware_type_positon_joint="$(arg ros2_control_hardware_type_positon_joint)"
 	  ros_distro="$(arg ros_distro)"
-	  model_position_joint="$(arg model_position_joint)">
+	  position_joint_type="$(arg position_joint_type)">
 	</xacro:rb_theron_base>
 
 	<!-- Gazebo ros control pluggins -->
@@ -211,7 +212,7 @@
 
 	<!-- ROBAST Door Opening Mechanism -->
 	<!-- The door opening mechanism should NOT be included when used for normal navigation simulations. -->
-	<xacro:if value="$(arg model_position_joint)">
+	<xacro:if value="${position_joint_type_prop == 'prismatic' or position_joint_type_prop == 'planar'}">
 		<xacro:include filename="$(find rb_theron_description)/urdf/door_opening_mechanism/door_opening_mechanism.urdf.xacro" />
 		<xacro:door_opening_mechanism
 			prefix="$(arg prefix)"
@@ -221,10 +222,35 @@
 			hq="${hq}">
 			<origin xyz="-0.3 0 0.225" rpy="0 0 0"/>
 		</xacro:door_opening_mechanism>
+
+		<xacro:arg name="back_oak_d_camera_model" default="OAK-D" />
+		<xacro:arg name="back_oak_d_base_frame" default="oak-d_frame" />
+		<xacro:arg name="back_oak_d_pos_x" default="-0.103" />
+		<xacro:arg name="back_oak_d_pos_y" default="0.0" />
+		<xacro:arg name="back_oak_d_pos_z" default="0.13721" />
+		<xacro:arg name="back_oak_d_roll" default="0.0" />
+		<xacro:arg name="back_oak_d_pitch" default="2.617993927" />
+		<xacro:arg name="back_oak_d_yaw" default="0.0" />
+		<xacro:depthai_camera
+			prefix="$(arg prefix)back_top_oak_d_camera"
+			parent="$(arg prefix)door_opening_mechanism_link_y_axis_slide"
+			sensor_base_frame="door_opening_mechanism_link_y_axis_slide"
+			robot_name="${robot_name}"
+			prefix_topic="back_top_oak_d_camera"
+			camera_model="$(arg back_oak_d_camera_model)"
+			base_frame="$(arg back_oak_d_base_frame)"
+			cam_pos_x="$(arg back_oak_d_pos_x)"
+			cam_pos_y="$(arg back_oak_d_pos_y)"
+			cam_pos_z="$(arg back_oak_d_pos_z)"
+			cam_roll="$(arg back_oak_d_roll)"
+			cam_pitch="$(arg back_oak_d_pitch)"
+			cam_yaw="$(arg back_oak_d_yaw)"
+			hq="${hq}">
+		</xacro:depthai_camera>
 	</xacro:if>
 
 	<!-- Gazebo plugins -->
-	<xacro:ros_control ros_distro="$(arg ros_distro)"/>
+	<xacro:ros_control ros_distro="$(arg ros_distro)" position_joint_type="$(arg position_joint_type)"/>
 	<xacro:gazebo_sensor_plugins ros_distro="$(arg ros_distro)"/>
 	
 </robot>

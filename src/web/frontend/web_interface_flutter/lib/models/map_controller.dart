@@ -1,10 +1,10 @@
 import 'dart:ui';
 
 class MapController {
-  final Offset mapOrigin = const Offset(-14.7, -12.8);
+  final Offset mapOrigin = const Offset(-23.3, -7.33);
   final double resolution = 0.05;
-  final int mapHeight = 355;
-  final int mapWidth = 827;
+  final int mapHeight = 326;
+  final int mapWidth = 809;
   final points = <Offset>[];
   final yaws = <double>[];
 

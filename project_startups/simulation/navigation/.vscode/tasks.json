@@ -12,6 +12,13 @@
                         }
                 },
                 {
+                        "label": "debug_build",
+                        "detail": "Symlink Build of the project",
+                        "type": "shell",
+                        "command": "clear; colcon build --symlink-install DCMAKE_BUILD_TYPE=Debug' -Wall -Wextra -Wpedantic --packages-skip robast_map_update_module ndt_omp_ros2 graph_based_slam scanmatcher robast_nav_recoveries robast_nav_interim_goal",
+                        "problemMatcher": []
+                    },
+                {
                         "label": "build-ros-theron",
                         "detail": "Symlink Build for Ros-Theron.",
                         "type": "shell",
@@ -178,12 +185,33 @@
                 {
                         "type": "shell",
                         "label": "start nav_without_localization",
-                        "command": "source /workspace/install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
+                        "command": "clear; source /workspace/install/setup.bash; ros2 launch nav_bringup nav_without_localization_launch.py",
                         "problemMatcher": [],
                         "presentation": {
                                 "echo": false,
                                 "focus": true
                         }
+                },
+                {
+                        "type": "shell",
+                        "label": "publish feuerplan",
+                        "command": "source /workspace/install/setup.bash; ros2 launch feuerplan_publisher feuerplan_publisher.launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true
+                        }
+                },
+                {
+                        "label": "start nav_with_feuerplan_static_layer",
+                        "detail": "Publishes feurplan occupancy grid and starts nav with feuerplan as static layer",
+                        "dependsOn": [
+                                "publish feuerplan",
+                                "start slam_toolbox",
+                                "start nav_without_localization",
+                                "start rviz",
+                                "start robot_localization"
+                        ]
                 },
                 {
                         "type": "shell",
@@ -275,6 +303,53 @@
                                 "focus": true
                         }
                 },
+                {
+                        "label": "start nav_action_node and robot_pose_publisher (open-rmf)",
+                        "detail": "Starts the nav nodes that are required to run open-rmf",
+                        "dependsOn": [
+                                "start nav_action_node",
+                                "start robot_pose_publisher"
+                        ]
+                },
+                {
+                        "label": "start nav_action_node and robot_pose_publisher for sim (open-rmf)",
+                        "detail": "Starts the nav nodes that are required to run open-rmf",
+                        "dependsOn": [
+                                "start nav_action_node",
+                                "start robot_pose_publisher sim"
+                        ]
+                },
+                {
+                        "type": "shell",
+                        "label": "start nav_action_node",
+                        "command": "source /workspace/install/setup.bash; ros2 launch nav_action_node nav_action_node.launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true,
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start robot_pose_publisher",
+                        "command": "source /workspace/install/setup.bash; ros2 launch robot_pose_publisher robot_pose_publisher.launch.py",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true,
+                        }
+                },
+                {
+                        "type": "shell",
+                        "label": "start robot_pose_publisher sim",
+                        "command": "source /workspace/install/setup.bash; ros2 launch robot_pose_publisher robot_pose_publisher.launch.py use_robot_source_frame:=False",
+                        "problemMatcher": [],
+                        "presentation": {
+                                "echo": false,
+                                "focus": true,
+                        }
+                },
+
                 {
                         "type": "shell",
                         "label": "build tests",

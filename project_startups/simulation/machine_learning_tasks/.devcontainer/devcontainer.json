@@ -1,0 +1,31 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"name": "Robast Machine Learning",
+	"dockerComposeFile": "../../docker-compose.yml",
+	"service": "machine-learning-tasks",
+	"workspaceFolder": "/workspace",
+	"shutdownAction": "stopCompose",
+	"remoteUser": "robast",
+	"remoteEnv": {
+		"DISPLAY": "${localEnv:DISPLAY}"
+	},
+	"postStartCommand": ". /workspace/.devcontainer/entrypoint.sh",
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"ms-iot.vscode-ros",
+		"ms-python.python",
+		"ms-vscode.cpptools",
+		"redhat.vscode-yaml",
+		"smilerobotics.urdf",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one",
+		"jaehyunshim.vscode-ros2",
+		"tomoki1207.pdf"
+	]
+}

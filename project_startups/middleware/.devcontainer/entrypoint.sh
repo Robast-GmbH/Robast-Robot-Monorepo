@@ -1,0 +1,1 @@
+pip install --no-cache-dir -r /workspace/middleware/requirements.txt

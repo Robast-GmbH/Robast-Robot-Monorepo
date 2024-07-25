@@ -12,6 +12,11 @@ namespace statemachine
 
     getInput("topic", topic_name_);
 
+    if (topic_name_.empty())
+    {
+      topic_name_ = "/reset";
+    }
+
     rclcpp::QoS qos(rclcpp::KeepLast(10));
     qos.transient_local().best_effort();
 
