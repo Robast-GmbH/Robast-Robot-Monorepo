@@ -6,9 +6,8 @@
 
 #include "module_config/module_config_defines.hpp"
 
-namespace module_config
+namespace module_config_e_drawer
 {
-
     const std::unordered_map<uint8_t, uint32_t> module_config_id_to_default_value = {
         {MODULE_CONFIG_ID_DRAWER_MAX_SPEED, 35000},
         {MODULE_CONFIG_ID_DRAWER_HOMING_SPEED, 300},
@@ -17,10 +16,7 @@ namespace module_config
         {MODULE_CONFIG_ID_DRAWER_MOVING_IN_FINAL_HOMING_DISTANCE, 1},
         {MODULE_CONFIG_ID_DRAWER_MOVING_OUT_DECELERATION_DISTANCE, 70},
         {MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_SPEED, 150},
-        {MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE, 75},
-        {MODULE_CONFIG_ID_DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT, 0.005},
-        {MODULE_CONFIG_ID_DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS, 200}};
-
-} // namespace module_config
+        {MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE, 75}};
+} // namespace module_config_e_drawer
 
 #endif // MODULE_CONFIG__DEFAULT_VALUES_E_DRAWER_HPP

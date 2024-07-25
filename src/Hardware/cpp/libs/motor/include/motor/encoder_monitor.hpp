@@ -5,6 +5,7 @@
 #include <memory>
 
 #include "motor/encoder.hpp"
+#include "motor/enconder_configs.hpp"
 
 #define ENCODER_MONITOR_DEFAULT_CHECK_INTERVAL_MS 200
 
@@ -13,17 +14,13 @@ namespace drawer_controller
   class EncoderMonitor
   {
    public:
-    EncoderMonitor(const std::shared_ptr<Encoder> encoder,
-                   const uint16_t encoder_check_interval_ms,
-                   const float threshold_in_percent_of_max_extent);
+    EncoderMonitor(const std::shared_ptr<Encoder> encoder, std::shared_ptr<EncoderConfigs> configs);
 
     bool check_if_drawer_is_pushed_in();
 
    private:
     const std::shared_ptr<Encoder> _encoder;
-
-    const uint16_t _encoder_check_interval_ms;
-    const float _threshold_in_percent_of_max_extent;
+    const std::shared_ptr<EncoderConfigs> _configs;
 
     int32_t _last_position_int32 = 0;
 

@@ -39,6 +39,7 @@ std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper;
 std::shared_ptr<drawer_controller::ElectricalDrawer> drawer;
 
 std::shared_ptr<drawer_controller::ElectricalDrawerConfigs> drawer_configs;
+std::shared_ptr<drawer_controller::EncoderConfigs> encoder_configs;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_enn_tmc2209_pin_id = STEPPER_1_ENN_TMC2209_PIN_ID,
@@ -173,7 +174,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 void setup()
 {
   debug_setup(115200);
-  debug_println("[Main] Start...");
+  debug_println("[Main]: Start...");
 
   // TODO: In the hardware design of v1 the pins of SDA and SCL are mixed up unfortunately for the port expander
   // TODO: In order to use the hardware anyway, we need to create two instances of the bus with different pin init
@@ -226,8 +227,9 @@ void setup()
   can_msg_queue = std::make_unique<drawer_controller::Queue<robast_can_msgs::CanMessage>>();
 
   drawer_configs = std::make_shared<drawer_controller::ElectricalDrawerConfigs>();
+  encoder_configs = std::make_shared<drawer_controller::EncoderConfigs>();
 
-  config_manager = std::make_unique<drawer_controller::ConfigManager>(drawer_configs);
+  config_manager = std::make_unique<drawer_controller::ConfigManager>(drawer_configs, encoder_configs);
 
   drawer = std::make_shared<drawer_controller::ElectricalDrawer>(
     MODULE_ID,
@@ -242,7 +244,8 @@ void setup()
     SHAFT_DIRECTION_IS_INVERTED,
     endstop_switch,
     std::nullopt,
-    drawer_configs);
+    drawer_configs,
+    encoder_configs);
   drawer->init();
 
   debug_println("[Main]: Finished setup()!");

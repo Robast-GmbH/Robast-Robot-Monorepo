@@ -6,16 +6,17 @@
 
 #include <memory>
 
-#define OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT       85000
-#define ENCODER_COUNT_DRAWER_MAX_EXTENT         86000
-#define DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN 1000
+#include "motor/enconder_configs.hpp"
 
 namespace drawer_controller
 {
   class Encoder
   {
    public:
-    Encoder(const bool use_encoder, const uint8_t encoder_pin_a, uint8_t encoder_pin_b);
+    Encoder(const bool use_encoder,
+            const uint8_t encoder_pin_a,
+            const uint8_t encoder_pin_b,
+            const std::shared_ptr<EncoderConfigs> configs);
 
     void update_position(uint32_t active_speed);
 
@@ -33,6 +34,8 @@ namespace drawer_controller
 
    private:
     const bool _use_encoder;
+    const std::shared_ptr<EncoderConfigs> _configs;
+
     std::unique_ptr<ESP32Encoder> _esp32_encoder;
 
     int32_t _current_position_int32 = 0;

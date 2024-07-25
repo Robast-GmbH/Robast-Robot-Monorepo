@@ -2,12 +2,8 @@
 
 namespace drawer_controller
 {
-  EncoderMonitor::EncoderMonitor(const std::shared_ptr<Encoder> encoder,
-                                 const uint16_t encoder_check_interval_ms,
-                                 const float threshold_in_percent_of_max_extent)
-      : _encoder(encoder),
-        _encoder_check_interval_ms(encoder_check_interval_ms),
-        _threshold_in_percent_of_max_extent(threshold_in_percent_of_max_extent)
+  EncoderMonitor::EncoderMonitor(const std::shared_ptr<Encoder> encoder, const std::shared_ptr<EncoderConfigs> configs)
+      : _encoder(encoder), _configs(configs)
   {
   }
 
@@ -22,10 +18,11 @@ namespace drawer_controller
       return false;
     }
 
-    if (current_timestamp_ms - _last_timestamp_ms > _encoder_check_interval_ms)
+    if (current_timestamp_ms - _last_timestamp_ms > _configs->get_drawer_push_in_encoder_check_interval_ms())
     {
       int32_t position_difference = _last_position_int32 - current_position_int32;
-      int32_t threshold_for_pos_diff = _threshold_in_percent_of_max_extent * _encoder->get_count_drawer_max_extent();
+      int32_t threshold_for_pos_diff =
+        _configs->get_drawer_push_in_threshold_in_percent_of_max_extent() * _encoder->get_count_drawer_max_extent();
 
       if (position_difference > threshold_for_pos_diff)
       {
@@ -51,7 +48,7 @@ namespace drawer_controller
   {
     // In case the postion has not been updated (e.g. when the drawer is intentionally moving)
     if (current_timestamp_ms - _last_timestamp_ms >
-        _encoder_check_interval_ms + ENCODER_MONITOR_DEFAULT_CHECK_INTERVAL_MS)
+        _configs->get_drawer_push_in_encoder_check_interval_ms() + ENCODER_MONITOR_DEFAULT_CHECK_INTERVAL_MS)
     {
       update_position_stamped(current_timestamp_ms, current_position_int32);
       return true;

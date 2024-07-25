@@ -4,8 +4,11 @@
 
 namespace drawer_controller
 {
-  Encoder::Encoder(const bool use_encoder, const uint8_t encoder_pin_a, const uint8_t encoder_pin_b)
-      : _use_encoder(use_encoder)
+  Encoder::Encoder(const bool use_encoder,
+                   const uint8_t encoder_pin_a,
+                   const uint8_t encoder_pin_b,
+                   const std::shared_ptr<EncoderConfigs> _configs)
+      : _use_encoder(use_encoder), _configs(_configs)
   {
     if (use_encoder)
     {
@@ -59,9 +62,7 @@ namespace drawer_controller
       update_position_from_encoder();
     }
 
-    uint32_t scale = _use_encoder ? ENCODER_COUNT_DRAWER_MAX_EXTENT : OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT;
-
-    uint32_t normed_current_position_uint32 = (_current_position_int32 * UINT8_MAX) / scale;
+    uint32_t normed_current_position_uint32 = (_current_position_int32 * UINT8_MAX) / get_count_drawer_max_extent();
 
     if (normed_current_position_uint32 > UINT8_MAX)
     {
@@ -75,9 +76,7 @@ namespace drawer_controller
 
   uint32_t Encoder::convert_uint8_position_to_drawer_position_scale(uint8_t position) const
   {
-    uint32_t scale = _use_encoder ? ENCODER_COUNT_DRAWER_MAX_EXTENT : OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT;
-
-    return (position * scale) / UINT8_MAX;
+    return (position * get_count_drawer_max_extent()) / UINT8_MAX;
   }
 
   void Encoder::set_current_position(int32_t position)
@@ -104,7 +103,7 @@ namespace drawer_controller
     uint32_t current_timestemp = millis();
 
     integrated_position =
-      ((current_timestemp - _last_timestamp) * active_speed) / DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN;
+      ((current_timestemp - _last_timestamp) * active_speed) / _configs->get_drawer_position_open_loop_integral_gain();
 
     if (!_is_drawer_moving_out)
     {
@@ -117,7 +116,8 @@ namespace drawer_controller
 
   uint32_t Encoder::get_count_drawer_max_extent() const
   {
-    return _use_encoder ? ENCODER_COUNT_DRAWER_MAX_EXTENT : OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT;
+    return _use_encoder ? _configs->get_encoder_count_drawer_max_extent()
+                        : _configs->get_open_loop_count_drawer_max_extent();
   }
 
 }   // namespace drawer_controller

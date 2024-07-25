@@ -14,21 +14,21 @@ namespace drawer_controller
                                      const bool shaft_direction_is_inverted,
                                      const std::shared_ptr<Switch> endstop_switch,
                                      const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock,
-                                     const std::shared_ptr<ElectricalDrawerConfigs> configs)
+                                     const std::shared_ptr<ElectricalDrawerConfigs> e_drawer_configs,
+                                     const std::shared_ptr<EncoderConfigs> encoder_configs)
       : _module_id{module_id},
         _id{id},
         _gpio_wrapper{gpio_wrapper},
         _stepper_pin_id_config{stepper_pin_id_config},
-        _encoder{std::make_shared<Encoder>(use_encoder, encoder_pin_a, encoder_pin_b)},
+        _encoder{std::make_shared<Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_configs)},
         _can_utils{std::make_unique<CanUtils>(can_db)},
         _motor{std::make_unique<stepper_motor::Motor>(
           motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, shaft_direction_is_inverted)},
         _endstop_switch{endstop_switch},
         _electrical_drawer_lock{electrical_drawer_lock},
         _e_drawer_task_queue{std::make_unique<Queue<EDrawerTask>>()},
-        _encoder_monitor{std::make_unique<EncoderMonitor>(
-          _encoder, DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS, DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT)},
-        _configs{configs}
+        _encoder_monitor{std::make_unique<EncoderMonitor>(_encoder, encoder_configs)},
+        _configs{e_drawer_configs}
   {
   }
 
