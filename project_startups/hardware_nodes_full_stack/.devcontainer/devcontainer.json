@@ -1,6 +1,6 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"image": "ghcr.io/robast-gmbh/monorepo/hardware_nodes:devel",
+	"image": "ghcr.io/robast-gmbh/monorepo/hardware_nodes:devel-jazzy",
 	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/,target=/workspace/src/hardware_nodes,type=bind",
@@ -10,7 +10,7 @@
 		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind"
 	],
 	"workspaceFolder": "/workspace",
-	"remoteUser": "robast",
+	"remoteUser": "ubuntu",
 	"runArgs": [
 		"--name=hardware_nodes_full_stack",
 		"--network=host",

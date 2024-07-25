@@ -1,5 +1,7 @@
 #include "dryve_d1_bridge/d1.hpp"
 
+#include <functional>
+
 namespace dryve_d1_bridge
 {
   // Initialize the static class variables

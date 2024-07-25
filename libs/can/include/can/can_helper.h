@@ -2,6 +2,7 @@
 #define CAN__CAN_HELPER_H_
 
 #include <algorithm>
+#include <array> 
 #include <iomanip>
 #include <optional>
 #include <string>
