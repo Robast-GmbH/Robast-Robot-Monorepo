@@ -215,3 +215,5 @@ venv
 !src/web/frontend/web_interface_flutter/lib/
 !src/web/frontend/robot_apps_flutter/apps/**/lib/
 !src/web/frontend/robot_apps_flutter/packages/**/lib/
+
+COLCON_IGNORE

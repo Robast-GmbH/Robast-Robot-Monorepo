@@ -1,0 +1,39 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "detail": "Symlink Build",
+            "type": "shell",
+            "command": "colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "problemMatcher": []
+        },
+        {
+            "label": "clean-build",
+            "detail": "Purges and symlink builds.",
+            "dependsOn": [
+                "purge",
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "purge",
+            "detail": "Purge workspace by deleting all generated files.",
+            "type": "shell",
+            "command": "rm -fr build install log; py3clean .",
+            "problemMatcher": []
+        },
+        {
+            "type": "shell",
+            "label": "run image_transformer",
+            "command": "source /workspace/install/setup.bash; ros2 launch feuerplan_publisher feuerplan_publisher.launch.py",
+            "problemMatcher": [],
+            "presentation": {
+                "echo": false,
+                "focus": true
+            }
+        },
+    ]
+}
