@@ -21,7 +21,6 @@ RUN apt-get update && apt-get install -y \
     && rosdep init || echo "rosdep already initialized"
 
 COPY door_handle_detector_sim/requirements.txt /tmp/requirements.txt
-# RUN pip install -r /tmp/requirements.txt
 
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp 
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp

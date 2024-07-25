@@ -1,9 +1,0 @@
-#goal
-string[] permission_keys
----
-#result
-string permission_key_used
-string error_message
----
-#feedback
-communication_interfaces/NfcReadStatus reader_status
