@@ -1,3 +1,4 @@
+name: Create ROS2 Docker
 on:
     workflow_call:
         inputs:
