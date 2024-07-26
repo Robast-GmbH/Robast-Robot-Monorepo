@@ -2,6 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 
+enum NFCWritingStatus {
+  inProgress,
+  success,
+  error,
+}
+
 class NFCWritingDialog extends StatefulWidget {
   const NFCWritingDialog({required this.nfcData, super.key});
 
@@ -12,11 +18,10 @@ class NFCWritingDialog extends StatefulWidget {
 }
 
 class _NFCWritingDialogState extends State<NFCWritingDialog> {
-  bool writeSuccess = false;
-  bool writeInProgress = true;
+  NFCWritingStatus status = NFCWritingStatus.inProgress;
 
   Future<void> writeNFC() async {
-    writeInProgress = true;
+    status = NFCWritingStatus.inProgress;
     setState(() {});
 
     final isSuccess = await Provider.of<UserProvider>(context, listen: false).writeNFC(
@@ -24,11 +29,9 @@ class _NFCWritingDialogState extends State<NFCWritingDialog> {
       nfcData: widget.nfcData,
     );
     if (isSuccess) {
-      writeSuccess = true;
-      writeInProgress = false;
+      status = NFCWritingStatus.success;
     } else {
-      writeSuccess = false;
-      writeInProgress = false;
+      status = NFCWritingStatus.error;
     }
     if (mounted) {
       setState(() {});
@@ -42,21 +45,22 @@ class _NFCWritingDialogState extends State<NFCWritingDialog> {
   }
 
   Widget buildContent() {
-    if (writeInProgress) {
-      return const Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text('Bitte den NFC-Tag an das Gerät halten'),
-          SizedBox(
-            height: 16,
-          ),
-          Center(child: CircularProgressIndicator()),
-        ],
-      );
-    } else if (writeSuccess) {
-      return const Text('NFC Tag erfolgreich beschrieben');
-    } else {
-      return const Text('Fehler beim Beschreiben des NFC Tags');
+    switch (status) {
+      case NFCWritingStatus.inProgress:
+        return const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Bitte den NFC-Tag an das Gerät halten'),
+            SizedBox(
+              height: 16,
+            ),
+            Center(child: CircularProgressIndicator()),
+          ],
+        );
+      case NFCWritingStatus.success:
+        return const Text('NFC Tag erfolgreich beschrieben');
+      case NFCWritingStatus.error:
+        return const Text('Fehler beim Beschreiben des NFC Tags');
     }
   }
 
@@ -66,19 +70,19 @@ class _NFCWritingDialogState extends State<NFCWritingDialog> {
       title: const Text('NFC Tag schreiben'),
       content: buildContent(),
       actions: <Widget>[
-        if (writeSuccess)
+        if (status == NFCWritingStatus.success)
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
             },
             child: const Text('OK'),
           )
-        else if (!writeInProgress && !writeSuccess)
+        else if (status == NFCWritingStatus.error)
           TextButton(
             onPressed: writeNFC,
             child: const Text('Erneut versuchen'),
           ),
-        if (!writeSuccess)
+        if (status != NFCWritingStatus.success)
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
