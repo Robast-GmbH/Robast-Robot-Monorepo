@@ -72,7 +72,7 @@ namespace module_config
     struct ModuleConfigDataType<MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_SPEED>
     {
         using type = uint8_t;
-        static constexpr type default_value = 150;
+        static constexpr type default_value = 100;
     };
 
     template <>
