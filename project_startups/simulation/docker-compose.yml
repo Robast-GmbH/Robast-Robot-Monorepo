@@ -79,14 +79,16 @@ services:
       - ROS_DOMAIN_ID=1
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
-      -  ../../src/ros2/hardware_nodes/:/workspace/src/hardware_nodes:cached
-      - ../../src/ros2/error_handling/error_utils/:/workspace/src/error_utils:cached
-      - ../../src/ros2/communication_interfaces/:/workspace/src/communication_interfaces:cached
-      -  ../../libs/:/workspace/libs:cached
-      -  ../../src/ros2/dds_configs:/workspace/dds_configs:cached
-      - ./hardware_nodes/:/workspace/:cached
-    devices:
-      - /dev/robast/robast_nfc:/dev/robast/robast_nfc
+      - ./machine_learning_tasks/:/workspace/:cached
+      - ../../src/ros2/machine_learning_tasks:/workspace/src/machine_learning_tasks:cached
+      - /tmp/.X11-unix:/tmp/.X11-unix
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: 1
+              capabilities: [gpu]
     command: /bin/sh -c "while sleep 1000; do :; done"   
      
   hardwarenodes:
