@@ -82,6 +82,7 @@ void receive_can_msg_task_loop(void* pvParameters)
     if (received_message.has_value())
     {
       if (xSemaphoreTake(can_queue_mutex, portMAX_DELAY) == pdTRUE)
+      if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
       {
         can_msg_queue->add_element_to_queue(received_message.value());
         xSemaphoreGive(can_queue_mutex);
@@ -99,7 +100,7 @@ void process_can_msgs_task_loop(void* pvParameters)
   for (;;)
   {
     std::optional<robast_can_msgs::CanMessage> received_message;
-    if (xSemaphoreTake(can_queue_mutex, portMAX_DELAY) == pdTRUE)
+    if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
     {
       received_message = can_msg_queue->get_element_from_queue();
       xSemaphoreGive(can_queue_mutex);
