@@ -1,18 +1,19 @@
-name: Create Docker Image Map Preprocessing
+name: Create Docker Image Machine Learning Tasks
 
 on:
   push:
     branches:
       - main
     paths:
-      - src/map_preprocessing/Dockerfile
+      - src/ros2/machine_learning_tasks/Dockerfile
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      Project-Name: map_preprocessing
+      Ros-Distro: humble
+      Project-Name: machine_learning_tasks
 
     steps:
       - name: Checkout repository and submodules
@@ -34,8 +35,8 @@ jobs:
       - name: Build ${{ env.Project-Name }} devel docker
         uses: docker/build-push-action@v4
         with:
-          context: src/${{ env.Project-Name }}
+          context: src/ros2/${{ env.Project-Name }}
           target: devel
           push: true
-          file: src/${{ env.Project-Name }}/Dockerfile
+          file: src/ros2/${{ env.Project-Name }}/Dockerfile
           tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel

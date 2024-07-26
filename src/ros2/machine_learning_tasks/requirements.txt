@@ -1,0 +1,7 @@
+torch
+torchvision
+numpy==1.26.4 # Problems with using latest numpy + opencv versions
+opencv-python
+matplotlib
+kornia
+/ws/lightglue_robast-0.0-py3-none-any.whl 

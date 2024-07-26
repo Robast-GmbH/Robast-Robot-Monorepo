@@ -1,26 +1,18 @@
 // See https://aka.ms/vscode-remote/devcontainer.json for format details.
 {
-	"image": "ghcr.io/robast-gmbh/monorepo/perception:devel",
-	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"image": "ghcr.io/robast-gmbh/monorepo/machine_learning_tasks:devel",
 	"remoteUser": "robast",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
 	"mounts": [
-		"source=${localWorkspaceFolder}/../../src/ros2/perception/,target=/workspace/src/perception,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/machine_learning_tasks/,target=/workspace/src/machine_learning_tasks,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind"
 	],
 	"workspaceFolder": "/workspace",
 	"runArgs": [
-		"--name=perception",
-		"--volume=/dev/bus/usb:/dev/bus/usb",
-		"--cap-add=SYS_PTRACE",
-		"--security-opt=seccomp:unconfined",
-		"--security-opt=apparmor:unconfined",
-		"--network=host",
-		//"--volume=/dev/shm:/dev/shm",
-		"--privileged",
-		"--device-cgroup-rule=c 189:* rmw"
+		"--name=machine_learning_tasks",
+		"--network=host"
 	],
 	"remoteEnv": {
-		"DISPLAY": "${localEnv:DISPLAY}",
 		"RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp",
 		"ROS_DOMAIN_ID": "23"
 	},
