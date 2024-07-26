@@ -13,7 +13,7 @@ namespace statemachine
         static BT::PortsList providedPorts()
         {
             return {
-                BT::InputPort<uint8_t>("target_value", "true"),
+                BT::InputPort<bool>("target_value", "true"),
                 BT::InputPort<std::string>("topic", "/robot/safety_module/safety_stop")};
         }
         BT::NodeStatus tick() override;

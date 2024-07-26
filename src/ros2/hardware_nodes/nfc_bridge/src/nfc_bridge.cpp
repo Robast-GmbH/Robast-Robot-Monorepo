@@ -3,223 +3,136 @@
 namespace nfc_bridge
 {
 
-  NFCBridge::NFCBridge(std::string serial_port_path) : Node("nfc_bridge")
+  NFCBridge::NFCBridge() : Node("nfc_bridge")
   {
-    using namespace std::placeholders;
-    this->serial_connector_ = new serial_helper::SerialHelper(serial_port_path);
-    // this->db_connector_ = new db_helper::PostgreSqlHelper("robot", "123456789", "10.10.23.9", "robast");
-    this->db_connector_ = new db_helper::PostgreSqlHelper("robast", "robast", "127.0.0.1", "RobastDB");
-    auto qos = rclcpp::QoS(rclcpp::QoSInitialization(RMW_QOS_POLICY_HISTORY_KEEP_LAST, 1));
-    qos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
-    qos.durability(RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL);
-    qos.avoid_ros_namespace_conventions(false);
+    declare_parameter("serial_port_path", "/dev/robast/robast_nfc");
+    std::string serial_port_path = get_parameter("serial_port_path").as_string();
 
-    publisher_ = this->create_publisher<std_msgs::msg::String>("/authenticated_user", qos);
+    _serial_connector = std::make_unique<serial_helper::SerialHelper>(serial_helper::SerialHelper(serial_port_path));
 
-    timer_ = this->create_wall_timer(std::chrono::milliseconds(READER_INTEVALL),
-                                     std::bind(&NFCBridge::reader_procedure, this));
-
-    this->action_server_ = rclcpp_action::create_server<CreateUser>(this,
-                                                                    "/create_user",
-                                                                    std::bind(&NFCBridge::handle_goal, this, _1, _2),
-                                                                    std::bind(&NFCBridge::handle_cancel, this, _1),
-                                                                    std::bind(&NFCBridge::handle_accepted, this, _1));
-  }
-
-  rclcpp_action::GoalResponse NFCBridge::handle_goal(const rclcpp_action::GoalUUID& uuid,
-                                                     std::shared_ptr<const CreateUser::Goal> goal)
-  {
-    return rclcpp_action::GoalResponse::ACCEPT_AND_EXECUTE;
-  }
-
-  rclcpp_action::CancelResponse NFCBridge::handle_cancel(const std::shared_ptr<GoalHandleCreateUser> goal_handle)
-  {
-    RCLCPP_INFO(this->get_logger(), "Received request to cancel goal");
-
-    (void) goal_handle;
-    return rclcpp_action::CancelResponse::ACCEPT;
-  }
-
-  void NFCBridge::handle_accepted(const std::shared_ptr<GoalHandleCreateUser> goal_handle)
-  {
-    std::thread{std::bind(&NFCBridge::createUser, this, std::placeholders::_1), goal_handle}.detach();
+    boot_beep();
+    _write_service = this->create_service<communication_interfaces::srv::WriteNfcTag>(
+        "write_nfc", std::bind(&NFCBridge::write_nfc_callback, this, std::placeholders::_1, std::placeholders::_2));
+    _read_service = this->create_service<communication_interfaces::srv::ReadNfcTag>(
+        "read_nfc", std::bind(&NFCBridge::read_nfc_callback, this, std::placeholders::_1, std::placeholders::_2));
   }
 
   NFCBridge::~NFCBridge()
   {
-    turn_off_scanner();
+    shutdown_scanner();
+  }
+
+  void NFCBridge::boot_beep()
+  {
+    start_up_scanner();
+    std::string response = "";
+    _serial_connector->ascii_interaction(Twn4Elatec::beep_req(0x10, 0x6009, 0xF401, 0xF401), response);
+    shutdown_scanner();
   }
 
   void NFCBridge::start_up_scanner()
   {
-    this->serial_connector_->open_serial();
-    std::string response;
+    _serial_connector->open_serial();
+  }
 
-    this->serial_connector_->ascii_interaction(DEVICE_STATE, &response, STANDART_REPLAY_MESSAGE_SIZE);
-    if (response != RESPONCE_DEVICE_STATE_CONFIGURED)
+  void NFCBridge::shutdown_scanner()
+  {
+    _serial_connector->close_serial();
+  }
+
+  bool NFCBridge::wait_for_tag()
+  {
+    std::string response = "";
+    u_int8_t result = 0;
+    int max_iterations = 100;
+    while (result != 1 && max_iterations-- >= 1)
     {
-      return;
+      std::string tmp = "";
+      _serial_connector->ascii_interaction(Twn4Elatec::search_tag_req(0x10), response);
+      Twn4Elatec::seatch_tag_resp(response, result, tmp);
+      rclcpp::sleep_for(std::chrono::milliseconds(300));
     }
-
-    this->serial_connector_->ascii_interaction(SET_SERIAL_TO_ASCII, &response, STANDART_REPLAY_MESSAGE_SIZE);
+    return result == Twn4Elatec::ResultOK;
   }
 
-  void NFCBridge::prepare_scanning()
+  bool NFCBridge::read_nfc_code(std::string& nfc_key)
   {
-    std::string response;
-    this->serial_connector_->ascii_interaction(BOTTOM_LED_ON, &response, STANDART_REPLAY_MESSAGE_SIZE);
-    this->serial_connector_->ascii_interaction(TOP_LEDS_INIT(LED_RED), &response, STANDART_REPLAY_MESSAGE_SIZE);
-    this->serial_connector_->ascii_interaction(TOP_LEDS_ON(LED_RED), &response, STANDART_REPLAY_MESSAGE_SIZE);
-  }
-
-  bool NFCBridge::scan_tag(std::shared_ptr<std::string> scanned_key)
-  {
-    std::string response;
-    std::string replay =
-        this->serial_connector_->ascii_interaction(SEARCH_TAG, &response, STANDART_REPLAY_MESSAGE_SIZE);
-
-    if (replay == RESPONCE_ERROR)
+    start_up_scanner();
+    if (!wait_for_tag())
     {
-      *scanned_key = "";
+      shutdown_scanner();
       return false;
     }
 
-    this->serial_connector_->ascii_interaction(NFC_LOGIN_MC_STANDART("00"), &response, STANDART_REPLAY_MESSAGE_SIZE);
-    replay =
-        this->serial_connector_->ascii_interaction(NFC_READ_MC("02"), scanned_key.get(), STANDART_REPLAY_MESSAGE_SIZE);
+    std::array<uint8_t, 16> data;
+    std::string response = "";
+    uint8_t result = 0;
+    int max_iterations = 100;
 
-    if (replay == RESPONCE_ERROR)
+    while (result != 1 && max_iterations-- >= 1)
     {
+      _serial_connector->ascii_interaction(Twn4Elatec::ntag_read_req(0x04), response);
+      Twn4Elatec::ntag_read_resp(response, result, data, nfc_key);
+    }
+    shutdown_scanner();
+    return result == Twn4Elatec::ResultOK;
+  }
+
+  bool NFCBridge::write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type)
+  {
+    start_up_scanner();
+    if (!wait_for_tag())
+    {
+      shutdown_scanner();
       return false;
     }
-    // this->serial_connector_.send_ascii_cmd(BEEP_STANDART);
-    this->serial_connector_->send_ascii_cmd(TOP_LED_OFF(LED_GREEN));
+    for (int j = 0; j < 4 && j < nfc_key.length() / 8; ++j)
+    {
+      std::array<uint8_t, 4> data;
+      for (int i = 0; i < 4; i++)
+      {
+        std::string byte_str = nfc_key.substr((i + j * 4) * 2, 2);
+        data[i] = std::stoi(byte_str, nullptr, 16);
+      }
+      std::string response = "";
+      u_int8_t result = 0;
+      int max_iterations = 20;
+      // TODO(@TAlscher): Use result for feedback.
+      while (result != 1)
+      {
+        _serial_connector->ascii_interaction(Twn4Elatec::ntag_write_req(0x04 + j, data), response);
+        Twn4Elatec::ntag_write_resp(response, result);
+        if (max_iterations-- <= 1)
+        {
+          shutdown_scanner();
+          return false;
+        }
+      }
+    }
+
+    shutdown_scanner();
     return true;
   }
 
-  void NFCBridge::turn_off_scanner()
+  void NFCBridge::write_nfc_callback(const std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Request> request,
+                                     std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Response> response)
   {
-    this->serial_connector_->send_ascii_cmd(TOP_LED_OFF(LED_RED));
-    this->serial_connector_->send_ascii_cmd(BOTTOM_LED_OFF);
-    this->serial_connector_->close_serial();
+    // Implement your logic to write data to an NFC tag
+    response->success = write_nfc_code(request->nfc_tag_id, "");
   }
 
-  bool NFCBridge::execute_scan(std::shared_ptr<std::string> received_raw_data)
+  void NFCBridge::read_nfc_callback(const std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Request> request,
+                                    std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Response> response)
   {
-    prepare_scanning();
-    return scan_tag(received_raw_data);
-  }
-
-  void NFCBridge::reader_procedure()
-  {
-    std::shared_ptr<std::string> scanned_key = std::make_shared<std::string>();
-    std::shared_ptr<std::string> found_user = std::make_shared<std::string>();
-    std::shared_ptr<int> found_user_id = std::make_shared<int>();
-    bool found = false;
-    start_up_scanner();
-    found = execute_scan(scanned_key);
-    if (found)
+    std::string nfc_key = "";
+    if (read_nfc_code(nfc_key))
     {
-      // RCLCPP_INFO(this->get_logger(), "tag located %s", (*scanned_key).c_str());
-      if (CHECK_ON_DB || db_connector_->test_connection() == "Dummy")
-      {
-        if (db_connector_->checkUserTag(*scanned_key, std::vector<std::string>(), found_user, found_user_id))
-        {
-          RCLCPP_INFO(this->get_logger(), "Found tag");
-          std_msgs::msg::String message = std_msgs::msg::String();
-          message.data = *found_user;
-          RCLCPP_INFO(this->get_logger(), "Publishing authenticated user %s", (*found_user).c_str());
-          publisher_->publish(message);
-        }
-      }
-      else
-      {
-        std_msgs::msg::String message = std_msgs::msg::String();
-        if (nfc_code_to_drawer_.count(*scanned_key) == 1)
-        {
-          *found_user = nfc_code_to_drawer_.at(*scanned_key);
-          message.data = *found_user;
-          RCLCPP_INFO(this->get_logger(), "Publishing Authenticated user %s", (*found_user).c_str());
-          publisher_->publish(message);
-        }
-      }
-    }
-  }
-
-  void NFCBridge::createUser(const std::shared_ptr<GoalHandleCreateUser> goal_handle)
-  {
-    std::string user_id;
-    auto goal = goal_handle->get_goal();
-    auto result = std::make_shared<CreateUser::Result>();
-    auto feedback = std::make_shared<CreateUser::Feedback>();
-
-    feedback->task_status.is_db_user_created = false;
-    feedback->task_status.is_reader_ready_to_write = false;
-    feedback->task_status.is_reader_completed = false;
-    goal_handle->publish_feedback(feedback);
-
-    if (goal->user_id == "")
-    {
-      user_id = db_connector_->createUser(goal->first_name, goal->last_name);
-      feedback->task_status.user_id = user_id;
-    }
-    else if (db_connector_->checkUser(goal->user_id, goal->first_name, goal->last_name))
-    {
-      user_id = goal->user_id;
-      feedback->task_status.user_id = user_id;
+      response->nfc_tag_id = nfc_key;
     }
     else
     {
-      RCLCPP_ERROR(this->get_logger(), "user_id not found");
-      result->task_status = feedback->task_status;
-      result->successful = false;
-      result->error_message = "Der Benutzer konnte nicht gefunden werden.";
-      goal_handle->canceled(result);
-      return;
+      response->nfc_tag_id = "";
     }
-    feedback->task_status.is_db_user_created = true;
-    goal_handle->publish_feedback(feedback);
-
-    int nfc_code = db_connector_->createNfcCode(user_id, std::pow(2, BLOCK_SIZE));
-
-    feedback->task_status.is_reader_ready_to_write = false;
-    goal_handle->publish_feedback(feedback);
-
-    write_tag(nfc_code);
-
-    feedback->task_status.is_reader_completed = true;
-    goal_handle->publish_feedback(feedback);
-    result->successful = true;
-    result->task_status = feedback->task_status;
-    goal_handle->succeed(result);
-  }
-
-  bool NFCBridge::write_tag(int card_data)
-  {
-    start_up_scanner();
-
-    std::string tag;
-    // wait for the Tag and read TAG ID
-    do   // search for a tag with the length of 10
-    {
-      this->serial_connector_->send_ascii_cmd(SEARCH_TAG);
-      if (this->serial_connector_->read_serial(&tag, 50) <= 0)
-      {
-        continue;
-      }
-
-      // RCLCPP_INFO(this->get_logger(),"Received message: %s ", tag.c_str() );
-    } while (tag.length() < 10);
-    this->serial_connector_->send_ascii_cmd(NFC_LOGIN_MC_STANDART("00"));
-    this->serial_connector_->send_ascii_cmd(NFC_WRITE_MC("02", std::bitset<BLOCK_SIZE>(card_data).to_string()));
-
-    if (this->serial_connector_->read_serial(&tag, 50) <= 0)
-    {
-      return false;
-    }
-
-    turn_off_scanner();
-    return true;
   }
 
 }   // namespace nfc_bridge

@@ -1,0 +1,38 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+            {
+                "name": "(gdb) Launch",
+                "type": "cppdbg",
+                "request": "launch",
+                "program": "${workspaceFolder}/install/${input:package}/lib/${input:package}/${input:program}",
+                "args": [],
+                "preLaunchTask": "debug_build",
+                "stopAtEntry": true,
+                "cwd": "${workspaceFolder}",
+                "externalConsole": false,
+                "MIMode": "gdb",
+                "setupCommands": [
+                  {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                  }
+                ]
+              }
+            ],
+            "inputs": [
+              {
+                "id": "package",
+                "type": "promptString",
+                "description": "Package name",
+                "default": "nfc_bridge"
+              },
+              {
+                "id": "program",
+                "type": "promptString",
+                "description": "Program name",
+                "default": "nfc_bridge"
+              }
+    ]
+}

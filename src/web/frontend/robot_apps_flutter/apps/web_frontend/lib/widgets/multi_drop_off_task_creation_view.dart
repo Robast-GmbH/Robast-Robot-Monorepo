@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:web_frontend/models/controller/task_creation_controller.dart';
 import 'package:web_frontend/models/dropoff_place_drawer_assignment.dart';
-import 'package:web_frontend/models/provider/rmf_provider.dart';
-import 'package:web_frontend/models/provider/robot_provider.dart';
+import 'package:web_frontend/models/provider/fleet_provider.dart';
+import 'package:web_frontend/models/provider/task_provider.dart';
 import 'package:web_frontend/widgets/custom_dropdown_view.dart';
 
 class MultiDropOffTaskCreationView extends StatefulWidget {
   const MultiDropOffTaskCreationView({
-    super.key,
-    required this.controller,
+    required this.controller, super.key,
   });
 
   final TaskCreationController controller;
@@ -22,7 +21,7 @@ class _MultiDropOffTaskCreationViewState extends State<MultiDropOffTaskCreationV
   @override
   Widget build(BuildContext context) {
     final rmfProvider = Provider.of<RMFProvider>(context, listen: false);
-    final robotProvider = Provider.of<RobotProvider>(context, listen: false);
+    final robotProvider = Provider.of<FleetProvider>(context, listen: false);
     return ListView(
       children: List<Widget>.generate(widget.controller.dropoffPlaceDrawerAssignments.length, (index) {
             final assignment = widget.controller.dropoffPlaceDrawerAssignments[index];
@@ -80,7 +79,7 @@ class _MultiDropOffTaskCreationViewState extends State<MultiDropOffTaskCreationV
                   ),
                 ),
               ),
-            )
+            ),
           ],
     );
   }

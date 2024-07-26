@@ -2,11 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomDropdownView extends StatelessWidget {
   const CustomDropdownView({
-    super.key,
-    required this.value,
-    required this.items,
-    required this.hint,
-    required this.onChanged,
+    required this.value, required this.items, required this.hint, required this.onChanged, super.key,
   });
 
   final String? value;
