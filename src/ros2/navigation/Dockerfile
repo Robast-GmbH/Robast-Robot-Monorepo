@@ -1,5 +1,5 @@
-ARG ROS_BUILD_DISTRO=jazzy
-FROM ros:${ROS_BUILD_DISTRO}-perception AS devel
+ARG ROS_DISTRO=jazzy
+FROM ros:${ROS_DISTRO}-perception AS devel
 
 ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update -q && \
@@ -86,8 +86,8 @@ WORKDIR /workspace
 USER ubuntu
 
 ############################## Build ##################################
-FROM ros:${ROS_BUILD_DISTRO}-ros-base AS build
-ARG ROS_BUILD_DISTRO
+FROM ros:${ROS_DISTRO}-ros-base AS build
+ARG ROS_DISTRO
 ARG GIT_TOKEN
 ARG GIT_BRANCH=main
 COPY --from=devel / /
@@ -110,8 +110,8 @@ RUN rosdep update && \
   colcon build --install-base /robast/${ROS_DISTRO}/ --packages-skip robast_map_update_module robast_nav_recoveries
 
 ############################## Release ##################################
-FROM ros:${ROS_BUILD_DISTRO}-perception AS release
-ARG ROS_BUILD_DISTRO
+FROM ros:${ROS_DISTRO}-perception AS release
+ARG ROS_DISTRO
 RUN apt-get update && apt-get install -y \
   cmake \
   wget \
