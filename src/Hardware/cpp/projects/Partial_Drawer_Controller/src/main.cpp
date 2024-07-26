@@ -81,7 +81,6 @@ void receive_can_msg_task_loop(void* pvParameters)
     std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
     if (received_message.has_value())
     {
-      if (xSemaphoreTake(can_queue_mutex, portMAX_DELAY) == pdTRUE)
       if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
       {
         can_msg_queue->add_element_to_queue(received_message.value());
