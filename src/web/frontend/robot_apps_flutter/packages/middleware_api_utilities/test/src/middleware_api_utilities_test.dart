@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
+import 'package:middleware_api_utilities/src/sub_apis/nfc_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/users_api.dart';
 import 'package:test/test.dart';
 
@@ -205,6 +206,12 @@ void main() {
       expect(user.userGroups, equals(updatedUserGroups));
       final deletionResult = await usersApi.deleteUser(id: creationResult.id);
       expect(deletionResult, isTrue);
+    });
+
+    test("can read nfc", () async {
+      final nfc = NFCApi(prefix: 'http://localhost:8003');
+      final result = await nfc.readNFC(robotName: robotName);
+      expect(result, isNotNull);
     });
   });
 }

@@ -19,12 +19,36 @@ class AuthView extends StatefulWidget {
 class _AuthViewState extends State<AuthView> {
   late Future<List<User>> loadUsers;
 
+  bool readSuccess = false;
+  bool readInProgress = true;
+
+  Future<void> readNFC() async {
+    readInProgress = true;
+    setState(() {});
+
+    final result = await Provider.of<UserProvider>(context, listen: false).readNFC(
+      robotName: 'rb_theron',
+    );
+    if (result.isNotEmpty) {
+      readSuccess = true;
+      readInProgress = false;
+    } else {
+      readSuccess = false;
+      readInProgress = false;
+    }
+    if (mounted) {
+      setState(() {});
+    }
+  }
+
   @override
   void initState() {
     super.initState();
     if (widget.requestedUserIDs.isNotEmpty || widget.requestedUserGroups.isNotEmpty) {
       loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
+      Provider.of<UserProvider>(context, listen: false).readNFC(robotName: 'rb_theron');
     }
+    readNFC();
   }
 
   @override

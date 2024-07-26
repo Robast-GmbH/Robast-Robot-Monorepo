@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
@@ -20,8 +19,8 @@ class AuthPage extends StatefulWidget {
 class _AuthPageState extends State<AuthPage> {
   final timeout = const Duration(seconds: 5);
   Timer? timeoutTimer;
-  Timer? userSessionUpdateTimer;
-  User? authenticatedUser;
+  Timer? sessionUpdateTimer;
+  bool authCompleted = false;
 
   void startTimeoutTimer() {
     timeoutTimer = Timer(
@@ -34,17 +33,17 @@ class _AuthPageState extends State<AuthPage> {
     );
   }
 
-  void startUserSessionUpdateTimer() {
-    userSessionUpdateTimer = Timer.periodic(
-      const Duration(milliseconds: 300),
+  void startPeriodicSessionUpdateTimer() {
+    sessionUpdateTimer?.cancel();
+    sessionUpdateTimer = Timer.periodic(
+      const Duration(seconds: 1),
       (timer) async {
-        authenticatedUser = await Provider.of<UserProvider>(context, listen: false).getUserSession(robotName: 'rb_theron');
-        if (authenticatedUser != null) {
-          userSessionUpdateTimer?.cancel();
-          timeoutTimer?.cancel();
-          startTimeoutTimer();
+        final sessionUser = await Provider.of<UserProvider>(context, listen: false).getUserSession(robotName: 'rb_theron');
+        if (sessionUser != null) {
+          authCompleted = true;
+          setState(() {});
+          sessionUpdateTimer?.cancel();
         }
-        setState(() {});
       },
     );
   }
@@ -52,14 +51,13 @@ class _AuthPageState extends State<AuthPage> {
   @override
   void initState() {
     super.initState();
-    startTimeoutTimer();
-    startUserSessionUpdateTimer();
+    startPeriodicSessionUpdateTimer();
   }
 
   @override
   void dispose() {
     timeoutTimer?.cancel();
-    userSessionUpdateTimer?.cancel();
+    sessionUpdateTimer?.cancel();
     super.dispose();
   }
 
@@ -67,7 +65,7 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BackgroundView(
-        child: authenticatedUser == null
+        child: !authCompleted
             ? const SizedBox.expand(
                 child: Center(
                   child: AuthView(

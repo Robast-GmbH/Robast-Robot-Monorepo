@@ -38,4 +38,12 @@ class UserProvider extends ChangeNotifier {
   Future<bool> endUserSession({required String robotName}) async {
     return _middlewareApiUtilities.users.endUserSession(robotName: robotName);
   }
+
+  Future<bool> writeNFC({required String robotName, required String nfcData}) async {
+    return _middlewareApiUtilities.nfc.writeNFC(robotName: robotName, nfcData: nfcData);
+  }
+
+  Future<String> readNFC({required String robotName}) async {
+    return _middlewareApiUtilities.nfc.readNFC(robotName: robotName);
+  }
 }

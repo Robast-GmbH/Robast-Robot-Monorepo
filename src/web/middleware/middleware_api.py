@@ -184,3 +184,30 @@ RMF API Endpoints
 def get_building_map():
     response = requests.get(f"{fleet_management_address}/building_map").json()
     return response
+
+
+"""
+======================
+NFC API Endpoints
+======================
+"""
+
+
+@app.get("/nfc_tag", tags=["NFC"])
+def get_nfc_tag(robot_url: str = Depends(get_robot_url)):
+    response = requests.get(f"{robot_url}/nfc_tag").json()
+    return response
+
+
+@app.post("/write_nfc_tag", tags=["NFC"])
+def write_nfc_tag(nfc_tag_id: str, robot_url: str = Depends(get_robot_url)):
+    response = requests.post(
+        f"{robot_url}/write_nfc_tag?nfc_tag_id={nfc_tag_id}"
+    ).json()
+    return response
+
+
+@app.get("/read_nfc_tag", tags=["NFC"])
+def read_nfc_tag(robot_url: str = Depends(get_robot_url)):
+    response = requests.get(f"{robot_url}/read_nfc_tag").json()
+    return response
