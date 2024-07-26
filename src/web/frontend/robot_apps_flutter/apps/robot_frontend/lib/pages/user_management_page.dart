@@ -43,12 +43,10 @@ class _UserManagementPageState extends State<UserManagementPage> {
                             (user) => UserManagementListTile(
                               user: user,
                               onDeletePressed: () async {
-                                final result = await Provider.of<UserProvider>(context, listen: false).writeNFC(robotName: 'rb_theron', nfcData: user.id);
-                                print(result);
-                                // await Provider.of<UserProvider>(context, listen: false).deleteUser(id: user.id);
-                                // setState(() {
-                                //   loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
-                                // });
+                                await Provider.of<UserProvider>(context, listen: false).deleteUser(id: user.id);
+                                setState(() {
+                                  loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
+                                });
                               },
                             ),
                           )
