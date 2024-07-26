@@ -26,15 +26,18 @@ namespace robast_can_msgs
     constexpr uint16_t MODULE_CONFIG = 0x009;
   }
 
-#define CAN_DLC_DRAWER_UNLOCK 4
-#define CAN_DLC_DRAWER_FEEDBACK 5
-#define CAN_DLC_ELECTRIC_DRAWER_TASK 7
-#define CAN_DLC_ELECTRIC_DRAWER_FEEDBACK 6
-#define CAN_DLC_ERROR_FEEDBACK 5
-#define CAN_DLC_LED_HEADER 8
-#define CAN_DLC_SINGLE_LED_STATE 7
-#define CAN_DLC_TRAY_LED_BRIGHTNESS 6
-#define CAN_DLC_MODULE_CONFIG 8
+  namespace can_dlc
+  {
+    constexpr uint8_t DRAWER_UNLOCK = 4;
+    constexpr uint8_t DRAWER_FEEDBACK = 5;
+    constexpr uint8_t ELECTRICAL_DRAWER_TASK = 7;
+    constexpr uint8_t ELECTRICAL_DRAWER_FEEDBACK = 6;
+    constexpr uint8_t ERROR_FEEDBACK = 5;
+    constexpr uint8_t LED_HEADER = 8;
+    constexpr uint8_t SINGLE_LED_STATE = 7;
+    constexpr uint8_t TRAY_LED_BRIGHTNESS = 6;
+    constexpr uint8_t MODULE_CONFIG = 8;
+  }
 
   /*********************************************************************************************************
    CAN msg index and can signal index to access the msg and signals in our can_db vector
