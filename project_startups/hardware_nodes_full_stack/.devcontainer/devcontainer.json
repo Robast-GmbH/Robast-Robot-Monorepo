@@ -11,6 +11,9 @@
 	],
 	"workspaceFolder": "/workspace",
 	"remoteUser": "robast",
+	"remoteEnv": {
+		"ROS_DOMAIN_ID": "23"
+	},
 	"runArgs": [
 		"--name=hardware_nodes_full_stack",
 		"--network=host",
