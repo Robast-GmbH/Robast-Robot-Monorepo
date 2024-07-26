@@ -34,6 +34,6 @@ class _ClockViewState extends State<ClockView> {
               fontSize: 32,
             ),
           );
-        });
+        },);
   }
 }

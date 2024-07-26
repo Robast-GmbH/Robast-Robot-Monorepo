@@ -36,11 +36,11 @@ class NavGraph:
             )
         return cls(nodes)
 
-    def get_node_by_id(self, id: str) -> Node | None:
+    def get_node_by_id(self, id: str) -> Node:
         for node in self.nodes:
             if node.id == id:
                 return node
-        return None
+        raise ValueError(f"Node with id {id} not found.")
 
     def __dijkstra(self, graph: list[Node], start: Node) -> dict[Node, float]:
         # Initialize the distance dictionary with infinite distances for all nodes except the start node

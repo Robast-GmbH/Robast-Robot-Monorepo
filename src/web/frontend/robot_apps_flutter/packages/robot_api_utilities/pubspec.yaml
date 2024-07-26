@@ -7,7 +7,7 @@ environment:
   sdk: "^3.3.0"
 
 dependencies:
-  http: ^0.13.3
+  http: ^1.2.1
   shared_data_models:
     path: ../shared_data_models
 
