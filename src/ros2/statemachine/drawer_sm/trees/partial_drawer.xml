@@ -3,7 +3,7 @@
       main_tree_to_execute="partial_bt">
   <BehaviorTree ID="LED_Close">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="155"
@@ -23,7 +23,7 @@
                         led_brightness_mid="0"
                         led_brightness_bot="0"
                         topic="/tray_task"/>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="155"
@@ -38,7 +38,7 @@
 
   <BehaviorTree ID="LED_Default">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="155"
@@ -53,7 +53,7 @@
 
   <BehaviorTree ID="LED_Open">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="0"
@@ -73,7 +73,7 @@
 
   <BehaviorTree ID="LED_Start">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="105"
@@ -88,7 +88,7 @@
 
   <BehaviorTree ID="LED_unlocked">
     <Sequence>
-      <InitLEDVector size="18"
+      <InitLEDVector size="21"
                      led_vector="{leds}"/>
       <PartialColorizeLED LEDs="{leds}"
                           blue="105"
