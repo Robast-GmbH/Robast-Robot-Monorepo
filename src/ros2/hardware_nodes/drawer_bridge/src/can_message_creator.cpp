@@ -5,7 +5,7 @@ namespace drawer_bridge
 
   can_msgs::msg::Frame CanMessageCreator::create_can_msg_drawer_unlock(const DrawerAddress& msg) const
   {
-    robast_can_msgs::CanMessage can_msg_drawer_lock = _can_db.can_messages.at(CAN_MSG_DRAWER_UNLOCK);
+    robast_can_msgs::CanMessage can_msg_drawer_lock = _can_db.can_messages.at(robast_can_msgs::can_msg::DRAWER_UNLOCK);
 
     std::vector<robast_can_msgs::CanSignal> can_signals_drawer_lock = can_msg_drawer_lock.get_can_signals();
 
@@ -19,7 +19,7 @@ namespace drawer_bridge
 
   can_msgs::msg::Frame CanMessageCreator::create_can_msg_led_header(const LedCmd& msg) const
   {
-    robast_can_msgs::CanMessage can_msg_led_header = _can_db.can_messages.at(CAN_MSG_LED_HEADER);
+    robast_can_msgs::CanMessage can_msg_led_header = _can_db.can_messages.at(robast_can_msgs::can_msg::LED_HEADER);
 
     std::vector<robast_can_msgs::CanSignal> can_signals_led_header = can_msg_led_header.get_can_signals();
 
@@ -36,7 +36,8 @@ namespace drawer_bridge
   can_msgs::msg::Frame CanMessageCreator::create_can_msg_set_single_led_state(const Led& led_state,
                                                                               const DrawerAddress& drawer_address) const
   {
-    robast_can_msgs::CanMessage can_msg_set_single_led_state = _can_db.can_messages.at(CAN_MSG_SINGLE_LED_STATE);
+    robast_can_msgs::CanMessage can_msg_set_single_led_state =
+      _can_db.can_messages.at(robast_can_msgs::can_msg::SINGLE_LED_STATE);
 
     std::vector<robast_can_msgs::CanSignal> can_signals_single_led_state =
       can_msg_set_single_led_state.get_can_signals();
@@ -54,7 +55,8 @@ namespace drawer_bridge
 
   can_msgs::msg::Frame CanMessageCreator::create_can_msg_drawer_task(const DrawerTask& msg) const
   {
-    robast_can_msgs::CanMessage can_msg_drawer_task = _can_db.can_messages.at(CAN_MSG_ELECTRICAL_DRAWER_TASK);
+    robast_can_msgs::CanMessage can_msg_drawer_task =
+      _can_db.can_messages.at(robast_can_msgs::can_msg::ELECTRICAL_DRAWER_TASK);
 
     std::vector<robast_can_msgs::CanSignal> can_signals_drawer_task = can_msg_drawer_task.get_can_signals();
 
@@ -74,7 +76,8 @@ namespace drawer_bridge
                                                                              const uint8_t led_row,
                                                                              const uint8_t brightness) const
   {
-    robast_can_msgs::CanMessage can_msg_tray_led_brightness = _can_db.can_messages.at(CAN_MSG_TRAY_LED_BRIGHTNESS);
+    robast_can_msgs::CanMessage can_msg_tray_led_brightness =
+      _can_db.can_messages.at(robast_can_msgs::can_msg::TRAY_LED_BRIGHTNESS);
 
     std::vector<robast_can_msgs::CanSignal> can_signals_tray_led_brightness =
       can_msg_tray_led_brightness.get_can_signals();
@@ -93,7 +96,8 @@ namespace drawer_bridge
                                                                            const uint8_t config_id,
                                                                            const uint32_t config_value) const
   {
-    robast_can_msgs::CanMessage can_msg_set_module_config = _can_db.can_messages.at(CAN_MSG_MODULE_CONFIG);
+    robast_can_msgs::CanMessage can_msg_set_module_config =
+      _can_db.can_messages.at(robast_can_msgs::can_msg::MODULE_CONFIG);
 
     std::vector<robast_can_msgs::CanSignal> can_signals_set_module_config = can_msg_set_module_config.get_can_signals();
 

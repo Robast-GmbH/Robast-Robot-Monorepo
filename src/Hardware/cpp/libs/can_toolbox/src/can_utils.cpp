@@ -51,7 +51,8 @@ namespace drawer_controller
                                                                   const uint8_t id,
                                                                   const uint8_t error_code) const
   {
-    robast_can_msgs::CanMessage can_msg_error_feedback = _can_db->can_messages.at(CAN_MSG_ERROR_FEEDBACK);
+    robast_can_msgs::CanMessage can_msg_error_feedback =
+      _can_db->can_messages.at(robast_can_msgs::can_msg::ERROR_FEEDBACK);
     std::vector can_signals_error_feedback = can_msg_error_feedback.get_can_signals();
 
     can_signals_error_feedback.at(CAN_SIGNAL_MODULE_ID).set_data(module_id);
@@ -68,7 +69,8 @@ namespace drawer_controller
                                                                    const bool is_endstop_switch_pushed,
                                                                    const bool is_lock_switch_pushed) const
   {
-    robast_can_msgs::CanMessage can_msg_drawer_feedback = _can_db->can_messages.at(CAN_MSG_DRAWER_FEEDBACK);
+    robast_can_msgs::CanMessage can_msg_drawer_feedback =
+      _can_db->can_messages.at(robast_can_msgs::can_msg::DRAWER_FEEDBACK);
     std::vector can_signals_drawer_feedback = can_msg_drawer_feedback.get_can_signals();
 
     can_signals_drawer_feedback.at(CAN_SIGNAL_MODULE_ID).set_data(module_id);
@@ -91,7 +93,7 @@ namespace drawer_controller
     const bool is_push_to_close_triggered) const
   {
     robast_can_msgs::CanMessage can_msg_electrical_drawer_feedback =
-      _can_db->can_messages.at(CAN_MSG_ELECTRICAL_DRAWER_FEEDBACK);
+      _can_db->can_messages.at(robast_can_msgs::can_msg::ELECTRICAL_DRAWER_FEEDBACK);
     std::vector can_signals_electrical_drawer_feedback = can_msg_electrical_drawer_feedback.get_can_signals();
 
     can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_MODULE_ID).set_data(module_id);

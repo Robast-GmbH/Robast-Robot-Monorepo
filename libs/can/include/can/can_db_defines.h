@@ -43,15 +43,18 @@ namespace robast_can_msgs
    CAN msg index and can signal index to access the msg and signals in our can_db vector
   *********************************************************************************************************/
 
-#define CAN_MSG_DRAWER_UNLOCK 0
-#define CAN_MSG_DRAWER_FEEDBACK 1
-#define CAN_MSG_ELECTRICAL_DRAWER_TASK 2
-#define CAN_MSG_ELECTRICAL_DRAWER_FEEDBACK 3
-#define CAN_MSG_ERROR_FEEDBACK 4
-#define CAN_MSG_LED_HEADER 5
-#define CAN_MSG_SINGLE_LED_STATE 6
-#define CAN_MSG_TRAY_LED_BRIGHTNESS 7
-#define CAN_MSG_MODULE_CONFIG 8
+  namespace can_msg
+  {
+    constexpr uint8_t DRAWER_UNLOCK = 0;
+    constexpr uint8_t DRAWER_FEEDBACK = 1;
+    constexpr uint8_t ELECTRICAL_DRAWER_TASK = 2;
+    constexpr uint8_t ELECTRICAL_DRAWER_FEEDBACK = 3;
+    constexpr uint8_t ERROR_FEEDBACK = 4;
+    constexpr uint8_t LED_HEADER = 5;
+    constexpr uint8_t SINGLE_LED_STATE = 6;
+    constexpr uint8_t TRAY_LED_BRIGHTNESS = 7;
+    constexpr uint8_t MODULE_CONFIG = 8;
+  }
 
 // DRAWER_UNLOCK
 #define CAN_SIGNAL_MODULE_ID 0
