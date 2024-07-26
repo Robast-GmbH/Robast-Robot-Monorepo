@@ -15,7 +15,7 @@ class RobotModulesAPI:
             module_id = module_process_request.module_id
             drawer_id = module_process_request.drawer_id
             process_name = module_process_request.process_name
-            payload = module_process_request.payload
+            items_by_change = module_process_request.items_by_change
             data = {
                 "drawer_address": {
                     "robot_name": robot_name,
@@ -23,7 +23,7 @@ class RobotModulesAPI:
                     "drawer_id": drawer_id,
                 },
                 "process_name": process_name,
-                "payload": payload,
+                "items_by_change": items_by_change,
             }
             response = requests.post(
                 f"{self.__middleware_url}/modules/start_module_process?robot_name={module_process_request.robot_name}",

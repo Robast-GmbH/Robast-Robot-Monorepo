@@ -10,7 +10,7 @@ class RobotDrawer {
     required this.position,
     required this.size,
     required this.variant,
-    required this.content,
+    required this.itemsByCount,
     required this.reservedForIds,
     required this.reservedForGroups,
     required this.moduleProcess,
@@ -26,7 +26,7 @@ class RobotDrawer {
       position: json['position'] as int,
       size: json['size'] as int,
       variant: DrawerVariant.values.firstWhere((element) => element.toString() == 'DrawerVariant.${json['variant']}'),
-      content: Map<String, int>.from(json['content'] as Map<String, dynamic>),
+      itemsByCount: Map<String, int>.from(json['items_by_count'] as Map<String, dynamic>),
       reservedForIds: List<String>.from(json['reserved_for_ids'] as List<dynamic>),
       reservedForGroups: List<String>.from(json['reserved_for_groups'] as List<dynamic>),
       moduleProcess: ModuleProcess.fromJson(json),
@@ -39,7 +39,7 @@ class RobotDrawer {
   final int size;
   final DrawerVariant variant;
 
-  final Map<String, int> content;
+  final Map<String, int> itemsByCount;
   final List<String> reservedForIds;
   final List<String> reservedForGroups;
   final ModuleProcess moduleProcess;
@@ -54,12 +54,12 @@ class RobotDrawer {
       },
       'position': position,
       'size': size,
-      'content': content,
+      'items_by_count': itemsByCount,
       'reserved_for_ids': reservedForIds,
       'reserved_for_groups': reservedForGroups,
       'module_process_status': moduleProcess.status,
       'module_process_type': moduleProcess.type,
-      'module_process_payload': moduleProcess.payload,
+      'module_process_items_by_change': moduleProcess.itemsByChange,
     };
   }
 }

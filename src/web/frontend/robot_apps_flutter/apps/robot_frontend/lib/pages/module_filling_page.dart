@@ -71,15 +71,15 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
               ),
               TextButton(
                 onPressed: () async {
-                  if (moduleContentController.contentDifferences.isEmpty && moduleContentController.createdContent.isEmpty) {
+                  if (moduleContentController.contentItemsByChange.isEmpty && moduleContentController.createdItemsByCount.isEmpty) {
                     return;
                   }
-                  final payload = moduleContentController.createPayload();
+                  final itemsByChange = moduleContentController.createItemsByChange();
                   final moduleProvider = Provider.of<ModuleProvider>(context, listen: false)..isInModuleProcess = true;
                   await moduleProvider.startModuleProcess(
                     drawerAddress: selectedDrawerAddress!,
                     processName: 'fill',
-                    payload: payload,
+                    itemsByChange: itemsByChange,
                   );
                   if (mounted) {
                     await Navigator.push(context, MaterialPageRoute<ModuleProcessPage>(builder: (context) => const ModuleProcessPage()));
@@ -110,8 +110,8 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
                       moduleID: e.moduleID,
                       drawerID: e.drawerID,
                     );
-                    moduleContentController.initialContent.clear();
-                    moduleContentController.initialContent.addAll(e.content);
+                    moduleContentController.initialItemsByCount.clear();
+                    moduleContentController.initialItemsByCount.addAll(e.itemsByCount);
                   });
                 },
                 child: Card(
@@ -128,7 +128,7 @@ class _ModuleFillingPageState extends State<ModuleFillingPage> {
                           '${e.moduleID}_${e.drawerID}',
                         ),
                         buildListTileText(
-                          e.content.entries.map((e) => ' ${e.key}: ${e.value}').fold('', (previousValue, element) => previousValue + element),
+                          e.itemsByCount.entries.map((e) => ' ${e.key}: ${e.value}').fold('', (previousValue, element) => previousValue + element),
                         ),
                       ],
                     ),

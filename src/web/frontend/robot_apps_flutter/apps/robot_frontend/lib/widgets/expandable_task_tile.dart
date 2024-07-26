@@ -32,7 +32,7 @@ class _ExpandableTaskTileState extends State<ExpandableTaskTile> {
           child: ExpansionTile(
             title: Row(
               children: [
-                Text(widget.task.payload.keys.map((e) => e).join(', ')),
+                Text(widget.task.itemsByChange.keys.map((e) => e).join(', ')),
                 const SizedBox(
                   width: 4,
                 ),

@@ -14,7 +14,7 @@ class ModuleProcess:
     module_id: int
     drawer_id: int
     process_name: str
-    payload: dict[str, int]
+    items_by_change: dict[str, int]
     request_guid: str
     target_guid: str
     is_in_process: bool
@@ -38,7 +38,7 @@ class ModuleProcess:
         json_str = json_str.replace("''", '"').replace("'", '"')
 
         # Step 3: Parse the JSON string
-        payload = json.loads(json_str)
+        items_by_change = json.loads(json_str)
 
         process_name = (
             PICK_UP_PROCESS
@@ -50,16 +50,8 @@ class ModuleProcess:
             module_id=int(module_id),
             drawer_id=int(drawer_id),
             process_name=process_name,
-            payload=payload,
+            items_by_change=items_by_change,
             request_guid=request_msg.request_guid,
             target_guid=request_msg.target_guid,
             is_in_process=True,
         )
-
-    def to_json(self):
-        return {
-            "module_id": self.module_id,
-            "drawer_id": self.drawer_id,
-            "process_name": self.process_name,
-            "payload": self.payload,
-        }

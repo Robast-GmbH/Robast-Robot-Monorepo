@@ -36,7 +36,7 @@ class ModuleProcessManager:
         if not drawer:
             return False
         drawer.module_process_type = module_process_data.process_name
-        drawer.module_process_payload = module_process_data.payload
+        drawer.module_process_items_by_change = module_process_data.items_by_change
         is_auth_required = drawer.reserved_for_ids or drawer.reserved_for_groups
         is_authenticated = self.auth_session_manager.check_auth_status(
             drawer_address.robot_name,
@@ -130,17 +130,17 @@ class ModuleProcessManager:
         drawer = self.repository.read_drawer(address)
         if not drawer:
             return False
-        for key, value in drawer.module_process_payload.items():
-            if key in drawer.content:
-                drawer.content[key] = drawer.content[key] + value
+        for key, value in drawer.module_process_items_by_change.items():
+            if key in drawer.items_by_count:
+                drawer.items_by_count[key] = drawer.items_by_count[key] + value
             else:
-                drawer.content[key] = value
-            if drawer.content[key] <= 0:
-                drawer.content.pop(key)
-        drawer.module_process_payload = {}
+                drawer.items_by_count[key] = value
+            if drawer.items_by_count[key] <= 0:
+                drawer.items_by_count.pop(key)
+        drawer.module_process_items_by_change = {}
         drawer.module_process_type = ""
         drawer.module_process_status = "idle"
-        if not drawer.content:
+        if not drawer.items_by_count:
             drawer.reserved_for_ids = []
             drawer.reserved_for_groups = []
         self.repository.update_drawer(drawer)

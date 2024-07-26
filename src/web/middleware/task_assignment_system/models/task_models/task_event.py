@@ -15,7 +15,7 @@ class DropOff(TaskEvent):
     def __init__(
         self,
         target_id: str,
-        payload: dict[str, int],
+        items_by_change: dict[str, int],
         module_id: int,
         drawer_id: int,
         assignee_name: str,
@@ -26,7 +26,7 @@ class DropOff(TaskEvent):
                 "place": target_id,
                 "handler": "drawer_ingestor",
                 "payload": {
-                    "sku": f"{module_id},{drawer_id},{payload},{assignee_name}",
+                    "sku": f"{module_id},{drawer_id},{items_by_change},{assignee_name}",
                     "quantity": 1,
                 },
             },
@@ -37,7 +37,7 @@ class PickUp(TaskEvent):
     def __init__(
         self,
         target_id: str,
-        payload: dict[str, int],
+        items_by_change: dict[str, int],
         module_id: int,
         drawer_id: int,
         assignee_name: str,
@@ -48,7 +48,7 @@ class PickUp(TaskEvent):
                 "place": target_id,
                 "handler": "drawer_dispenser",
                 "payload": {
-                    "sku": f"{module_id},{drawer_id},{payload},{assignee_name}",
+                    "sku": f"{module_id},{drawer_id},{items_by_change},{assignee_name}",
                     "quantity": 1,
                 },
             },

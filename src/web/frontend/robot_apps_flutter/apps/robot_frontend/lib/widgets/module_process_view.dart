@@ -83,7 +83,7 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                           text: modules[moduleInProcess.moduleID - 1].variant == DrawerVariant.electric
                               ? 'Gewählte Schublade öffnet sich'
                               : 'Bitte gewählte Schublade öffnen',
-                          moduleLabel: moduleInProcess.moduleProcess.payload.toString(),
+                          moduleLabel: moduleInProcess.moduleProcess.itemsByChange.toString(),
                         ),
                       ],
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.open) ...[
@@ -94,15 +94,15 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                             }
                           },
                           child: HintView(
-                            text: moduleInProcess.moduleProcess.payloadToString(),
-                            moduleLabel: moduleInProcess.moduleProcess.payload.toString(),
+                            text: moduleInProcess.moduleProcess.itemsByChangeToString(),
+                            moduleLabel: moduleInProcess.moduleProcess.itemsByChange.toString(),
                           ),
                         ),
                       ],
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.closing) ...[
                         HintView(
                           text: 'Schublade schließt sich, bitte warten',
-                          moduleLabel: moduleInProcess.moduleProcess.payload.toString(),
+                          moduleLabel: moduleInProcess.moduleProcess.itemsByChange.toString(),
                         ),
                       ],
                     ],

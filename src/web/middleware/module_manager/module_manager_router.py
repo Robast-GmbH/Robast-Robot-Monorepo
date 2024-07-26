@@ -64,11 +64,11 @@ def empty_module(drawer_address: DrawerAddress):
 
 @module_manager_router.post("/update_module_content", tags=["Modules"])
 def update_module_content(
-    drawer_address: DrawerAddress, content: dict[str, int] = Body(...)
+    drawer_address: DrawerAddress, items_by_count: dict[str, int] = Body(...)
 ):
     has_been_updated = module_manager.update_module_content(
         drawer_address,
-        content,
+        items_by_count,
     )
     return create_status_response(has_been_updated)
 

@@ -80,7 +80,7 @@ class ModulesApi {
     required String robotName,
     required int moduleID,
     required int drawerID,
-    required Map<String, int> content,
+    required Map<String, int> itemsByCount,
   }) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/update_module_content'),
@@ -90,7 +90,7 @@ class ModulesApi {
           'module_id': moduleID,
           'drawer_id': drawerID,
         },
-        'content': content,
+        'items_by_count': itemsByCount,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
@@ -138,7 +138,7 @@ class ModulesApi {
     required String robotName,
     required DrawerAddress drawerAddress,
     required String processName,
-    required Map<String, int> payload,
+    required Map<String, int> itemsByChange,
   }) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/start_module_process'),
@@ -149,7 +149,7 @@ class ModulesApi {
           'drawer_id': drawerAddress.drawerID,
         },
         'process_name': processName,
-        'payload': payload,
+        'items_by_change': itemsByChange,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);

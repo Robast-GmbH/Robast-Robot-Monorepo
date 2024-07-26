@@ -1,25 +1,25 @@
 class ModuleContentController {
-  final initialContent = <String, int>{};
-  final createdContent = <String, int>{};
-  final contentDifferences = <String, int>{};
+  final initialItemsByCount = <String, int>{};
+  final createdItemsByCount = <String, int>{};
+  final contentItemsByChange = <String, int>{};
 
   void clear() {
-    createdContent.clear();
-    contentDifferences.clear();
+    createdItemsByCount.clear();
+    contentItemsByChange.clear();
   }
 
-  Map<String, int> createPayload() {
-    final payload = <String, int>{};
-    for (final entry in createdContent.entries) {
-      payload[entry.key] = entry.value;
+  Map<String, int> createItemsByChange() {
+    final itemsByChange = <String, int>{};
+    for (final entry in createdItemsByCount.entries) {
+      itemsByChange[entry.key] = entry.value;
     }
-    for (final entry in contentDifferences.entries) {
-      if (payload.containsKey(entry.key)) {
-        payload[entry.key] = payload[entry.key]! + entry.value;
+    for (final entry in contentItemsByChange.entries) {
+      if (itemsByChange.containsKey(entry.key)) {
+        itemsByChange[entry.key] = itemsByChange[entry.key]! + entry.value;
       } else {
-        payload[entry.key] = entry.value;
+        itemsByChange[entry.key] = entry.value;
       }
     }
-    return payload;
+    return itemsByChange;
   }
 }

@@ -17,7 +17,7 @@ class TasksApi {
 
   Future<bool> postTaskRequest({
     required int requiredDrawerType,
-    required Map<String, int> payload,
+    required Map<String, int> itemsByChange,
     required List<String> senderAuthUsers,
     required List<String> senderAuthUserGroups,
     required List<String> recipientAuthUsers,
@@ -29,7 +29,7 @@ class TasksApi {
       uri: Uri.parse('$prefix/task_assignment'),
       data: {
         'required_drawer_type': requiredDrawerType,
-        'payload': payload,
+        'items_by_change': itemsByChange,
         'target_id': targetID,
         'start_id': startID,
         'sender_user_ids': senderAuthUsers,

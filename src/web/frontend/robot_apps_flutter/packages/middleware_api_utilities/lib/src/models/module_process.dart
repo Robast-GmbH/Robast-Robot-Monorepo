@@ -1,30 +1,27 @@
-// moduleProcessStatus: json['module_process_status'] as String,
-// moduleProcessType: json['module_process_type'] as String,
-// moduleProcessPayload: Map<String, int>.from(json['module_process_payload'] as Map<String, dynamic>),
 enum ModuleProcessStatus { idle, auth, waitingForOpening, opening, open, closing, closed }
 
 class ModuleProcess {
   ModuleProcess({
     required this.status,
     required this.type,
-    required this.payload,
+    required this.itemsByChange,
   });
 
   factory ModuleProcess.fromJson(Map<String, dynamic> json) {
     return ModuleProcess(
       status: moduleProcessStatusFromString(json['module_process_status'] as String),
       type: json['module_process_type'] as String,
-      payload: Map<String, int>.from(json['module_process_payload'] as Map<String, dynamic>),
+      itemsByChange: Map<String, int>.from(json['module_process_items_by_change'] as Map<String, dynamic>),
     );
   }
 
   final ModuleProcessStatus status;
   final String type;
-  final Map<String, int> payload;
+  final Map<String, int> itemsByChange;
 
-  String payloadToString() {
-    final pickupObjects = payload.entries.where((entry) => entry.value > 0).toList();
-    final dropoffObjects = payload.entries.where((entry) => entry.value < 0).toList();
+  String itemsByChangeToString() {
+    final pickupObjects = itemsByChange.entries.where((entry) => entry.value > 0).toList();
+    final dropoffObjects = itemsByChange.entries.where((entry) => entry.value < 0).toList();
 
     var pickupString = '';
     var dropoffString = '';

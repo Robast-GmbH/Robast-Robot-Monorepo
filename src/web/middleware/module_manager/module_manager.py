@@ -45,8 +45,8 @@ class ModuleManager:
             variant=variant,
             module_process_status="idle",
             module_process_type="",
-            module_process_payload={},
-            content={},
+            module_process_items_by_change={},
+            items_by_count={},
             reserved_for_ids=[],
             reserved_for_groups=[],
         )
@@ -70,21 +70,21 @@ class ModuleManager:
     def empty_module(self, address: DrawerAddress) -> bool:
         drawer = self.repository.read_drawer(address)
         if drawer:
-            drawer.content = {}
+            drawer.items_by_count = {}
             self.repository.update_drawer(drawer)
             return True
         return False
 
     def update_module_content(
-        self, address: DrawerAddress, content: dict[str, int]
+        self, address: DrawerAddress, items_by_count: dict[str, int]
     ) -> bool:
         drawer = self.repository.read_drawer(address)
         if drawer:
-            for item_id, quantity in content.items():
+            for item_id, quantity in items_by_count.items():
                 if quantity <= 0:
-                    drawer.content.pop(item_id, None)
+                    drawer.items_by_count.pop(item_id, None)
                 else:
-                    drawer.content[item_id] = quantity
+                    drawer.items_by_count[item_id] = quantity
                 self.repository.update_drawer(drawer)
             return True
         return False

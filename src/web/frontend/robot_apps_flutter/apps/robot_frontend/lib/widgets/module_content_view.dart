@@ -40,11 +40,11 @@ class _ModuleContentViewState extends State<ModuleContentView> {
                 children: [
                   Expanded(
                     child: ListView(
-                      children: widget.moduleContentController.initialContent.entries.map<Widget>(buildContentListTile).toList() +
-                          controller.createdContent.entries.map(buildContentListTile).toList() +
+                      children: widget.moduleContentController.initialItemsByCount.entries.map<Widget>(buildContentListTile).toList() +
+                          controller.createdItemsByCount.entries.map(buildContentListTile).toList() +
                           [
-                            buildPayloadCreationView(),
-                            buildPayloadCreationButton(),
+                            buildItemsByChangeCreationView(),
+                            buildItemsByChangeCreationButton(),
                           ],
                     ),
                   ),
@@ -57,7 +57,7 @@ class _ModuleContentViewState extends State<ModuleContentView> {
     );
   }
 
-  Padding buildPayloadCreationButton() {
+  Padding buildItemsByChangeCreationButton() {
     return Padding(
       padding: const EdgeInsets.only(bottom: 32),
       child: Card(
@@ -67,7 +67,7 @@ class _ModuleContentViewState extends State<ModuleContentView> {
           iconSize: 64,
           onPressed: () {
             setState(() {
-              widget.moduleContentController.createdContent[textController.text] = int.tryParse(amountController.text) ?? 0;
+              widget.moduleContentController.createdItemsByCount[textController.text] = int.tryParse(amountController.text) ?? 0;
               textController.clear();
               amountController.clear();
             });
@@ -96,31 +96,31 @@ class _ModuleContentViewState extends State<ModuleContentView> {
                 IconButton(
                   iconSize: 32,
                   onPressed: () {
-                    if (controller.contentDifferences.containsKey(entry.key)) {
+                    if (controller.contentItemsByChange.containsKey(entry.key)) {
                       setState(() {
-                        controller.contentDifferences[entry.key] = controller.contentDifferences[entry.key]! - 1;
+                        controller.contentItemsByChange[entry.key] = controller.contentItemsByChange[entry.key]! - 1;
                       });
                     } else {
                       setState(() {
-                        controller.contentDifferences[entry.key] = -1;
+                        controller.contentItemsByChange[entry.key] = -1;
                       });
                     }
                   },
                   icon: const Icon(Icons.remove),
                 ),
                 buildListTileText(
-                  (entry.value + (controller.contentDifferences.containsKey(entry.key) ? controller.contentDifferences[entry.key]! : 0)).toString(),
+                  (entry.value + (controller.contentItemsByChange.containsKey(entry.key) ? controller.contentItemsByChange[entry.key]! : 0)).toString(),
                 ),
                 IconButton(
                   iconSize: 32,
                   onPressed: () {
-                    if (controller.contentDifferences.containsKey(entry.key)) {
+                    if (controller.contentItemsByChange.containsKey(entry.key)) {
                       setState(() {
-                        controller.contentDifferences[entry.key] = controller.contentDifferences[entry.key]! + 1;
+                        controller.contentItemsByChange[entry.key] = controller.contentItemsByChange[entry.key]! + 1;
                       });
                     } else {
                       setState(() {
-                        controller.contentDifferences[entry.key] = 1;
+                        controller.contentItemsByChange[entry.key] = 1;
                       });
                     }
                   },
@@ -134,7 +134,7 @@ class _ModuleContentViewState extends State<ModuleContentView> {
     );
   }
 
-  Card buildPayloadCreationView() {
+  Card buildItemsByChangeCreationView() {
     return Card(
       color: Colors.white.withOpacity(0.5),
       child: Padding(

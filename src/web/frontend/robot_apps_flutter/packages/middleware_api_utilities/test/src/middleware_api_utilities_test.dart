@@ -86,7 +86,7 @@ void main() {
         robotName: robotName,
         moduleID: moduleID,
         drawerID: drawerID,
-        content: {itemID: quantity},
+        itemsByCount: {itemID: quantity},
       );
       expect(fillModuleResult, isTrue);
       final modules = await modulesApi.getModules(robotName: robotName);
@@ -94,7 +94,7 @@ void main() {
         (drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID,
         orElse: () => throw Exception('Drawer not found'),
       );
-      expect(filledModule.content, equals({'Stifte': 3}));
+      expect(filledModule.itemsByCount, equals({'Stifte': 3}));
       final emptyResult = await modulesApi.emptyModule(
         robotName: robotName,
         moduleID: moduleID,
@@ -106,7 +106,7 @@ void main() {
         (drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID,
         orElse: () => throw Exception('Drawer not found'),
       );
-      expect(emptiedModule.content, equals({}));
+      expect(emptiedModule.itemsByCount, equals({}));
       final deletionResult = await modulesApi.deleteModule(
         robotName: robotName,
         moduleID: moduleID,

@@ -5,7 +5,7 @@ class Task {
     required this.id,
     required this.taskType,
     required this.status,
-    required this.payload,
+    required this.itemsByChange,
     required this.creationDate,
     required this.requiresTaskID,
     required this.assigneeName,
@@ -23,7 +23,7 @@ class Task {
       id: json['id'] as String,
       taskType: json['task_type'] as String,
       status: json['status'] as String,
-      payload: (json['payload'] as Map<String, dynamic>).map((key, value) => MapEntry(key, value as int)),
+      itemsByChange: (json['items_by_change'] as Map<String, dynamic>).map((key, value) => MapEntry(key, value as int)),
       creationDate: json['creation_date'] as int,
       requiresTaskID: json['requires_task_id'] as String?,
       assigneeName: json['assignee_name'] as String,
@@ -47,7 +47,7 @@ class Task {
   final String id;
   final String taskType;
   final String status;
-  final Map<String, int> payload;
+  final Map<String, int> itemsByChange;
   final int creationDate;
   final String? requiresTaskID;
   final String assigneeName;

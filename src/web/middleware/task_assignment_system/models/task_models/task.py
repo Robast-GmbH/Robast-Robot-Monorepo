@@ -15,7 +15,7 @@ class Task:
     task_type: str
 
     status: str
-    payload: dict[str, int]
+    items_by_change: dict[str, int]
     creation_date: int
     requires_task_id: str | None
     assignee_name: str
@@ -40,7 +40,7 @@ class Task:
         if delivery_request.start_id is not None:
             pick_up_task_phase = TaskPhase.create_pickup_phase(
                 delivery_request.start_id,
-                delivery_request.payload,
+                delivery_request.items_by_change,
                 drawer.address.module_id,
                 drawer.address.drawer_id,
                 assignee_name,
@@ -49,7 +49,7 @@ class Task:
                 pick_up_id,
                 "pickup",
                 "pending",
-                delivery_request.payload,
+                delivery_request.items_by_change,
                 int(time.time()),
                 None,
                 assignee_name,
@@ -65,12 +65,12 @@ class Task:
             tasks.append(pick_up_task)
 
         if delivery_request.target_id is not None:
-            drop_off_payload = {
-                key: -value for key, value in delivery_request.payload.items()
+            drop_off_items_by_change = {
+                key: -value for key, value in delivery_request.items_by_change.items()
             }
             drop_off_task_phase = TaskPhase.create_dropoff_phase(
                 delivery_request.target_id,
-                drop_off_payload,
+                drop_off_items_by_change,
                 drawer.address.module_id,
                 drawer.address.drawer_id,
                 assignee_name,
@@ -80,7 +80,7 @@ class Task:
                 str(uuid.uuid4()),
                 "dropoff",
                 "pending",
-                drop_off_payload,
+                drop_off_items_by_change,
                 int(time.time()),
                 pick_up_id if delivery_request.start_id else None,
                 assignee_name,
@@ -121,7 +121,7 @@ class Task:
                 "id": self.id,
                 "task_type": self.task_type,
                 "status": self.status,
-                "payload": self.payload,
+                "items_by_change": self.items_by_change,
                 "creation_date": self.creation_date,
                 "requires_task_id": self.requires_task_id,
                 "assignee_name": self.assignee_name,

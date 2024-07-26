@@ -163,7 +163,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                   startID: startController.room,
                   targetID: targetController.room,
                   requiredDrawerType: requiredDrawerType,
-                  payload: moduleContentController.createPayload(),
+                  itemsByChange: moduleContentController.createItemsByChange(),
                   senderAuthUsers: [
                     if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
                   ],

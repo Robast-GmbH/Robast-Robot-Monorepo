@@ -72,13 +72,13 @@ class ModuleProvider extends ChangeNotifier {
   Future<bool> startModuleProcess({
     required DrawerAddress drawerAddress,
     required String processName,
-    required Map<String, int> payload,
+    required Map<String, int> itemsByChange,
   }) async {
     return _middlewareApiUtilities.modules.startModuleProcess(
       robotName: 'rb_theron',
       drawerAddress: drawerAddress,
       processName: processName,
-      payload: payload,
+      itemsByChange: itemsByChange,
     );
   }
 
