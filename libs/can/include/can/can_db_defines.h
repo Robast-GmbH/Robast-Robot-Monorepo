@@ -1,6 +1,8 @@
 #ifndef CAN__CAN_DB_DEFINES_H_
 #define CAN__CAN_DB_DEFINES_H_
 
+#include <stdint.h>
+
 namespace robast_can_msgs
 {
 #define CAN_STD_MSG_DLC_MAXIMUM 8
@@ -11,15 +13,18 @@ namespace robast_can_msgs
    CAN IDs and DLCs for the CAN Bus
   *********************************************************************************************************/
 
-#define CAN_ID_DRAWER_UNLOCK 0x001
-#define CAN_ID_DRAWER_FEEDBACK 0x002
-#define CAN_ID_ELECTRICAL_DRAWER_TASK 0x003
-#define CAN_ID_ELECTRICAL_DRAWER_FEEDBACK 0x004
-#define CAN_ID_ERROR_FEEDBACK 0x005
-#define CAN_ID_LED_HEADER 0x006
-#define CAN_ID_SINGLE_LED_STATE 0x007
-#define CAN_ID_TRAY_LED_BRIGHTNESS 0x008
-#define CAN_ID_MODULE_CONFIG 0x009
+  namespace can_id
+  {
+    constexpr uint16_t DRAWER_UNLOCK = 0x001;
+    constexpr uint16_t DRAWER_FEEDBACK = 0x002;
+    constexpr uint16_t ELECTRICAL_DRAWER_TASK = 0x003;
+    constexpr uint16_t ELECTRICAL_DRAWER_FEEDBACK = 0x004;
+    constexpr uint16_t ERROR_FEEDBACK = 0x005;
+    constexpr uint16_t LED_HEADER = 0x006;
+    constexpr uint16_t SINGLE_LED_STATE = 0x007;
+    constexpr uint16_t TRAY_LED_BRIGHTNESS = 0x008;
+    constexpr uint16_t MODULE_CONFIG = 0x009;
+  }
 
 #define CAN_DLC_DRAWER_UNLOCK 4
 #define CAN_DLC_DRAWER_FEEDBACK 5

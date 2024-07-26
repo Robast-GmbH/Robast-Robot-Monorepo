@@ -234,13 +234,13 @@ namespace drawer_bridge
     {
       switch (can_msg.id)
       {
-        case CAN_ID_DRAWER_FEEDBACK:
+        case robast_can_msgs::can_id::DRAWER_FEEDBACK:
           publish_drawer_status(decoded_msg.value());
           break;
-        case CAN_ID_ELECTRICAL_DRAWER_FEEDBACK:
+        case robast_can_msgs::can_id::ELECTRICAL_DRAWER_FEEDBACK:
           publish_electrical_drawer_status(decoded_msg.value());
           break;
-        case CAN_ID_ERROR_FEEDBACK:
+        case robast_can_msgs::can_id::ERROR_FEEDBACK:
           publish_drawer_error_msg(decoded_msg.value());
           break;
       }

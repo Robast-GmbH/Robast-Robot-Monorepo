@@ -25,7 +25,7 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
 {
   GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, LED_red, LED_green, LED_blue, LED_brightness, LED_mode")
   {
-    uint32_t msg_id = CAN_ID_SINGLE_LED_STATE;
+    uint32_t msg_id = robast_can_msgs::can_id::SINGLE_LED_STATE;
     uint8_t dlc = CAN_DLC_SINGLE_LED_STATE;
     uint64_t data_module_id = 0x010203;
     uint8_t data_drawer_id = 0;
@@ -131,7 +131,8 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
             "The created CanDb class should contain the correct id, dlc and CanSignals with the correct bit_start and "
             "bit_length and data should be default 0.")
           {
-            REQUIRE(can_db.can_messages[CAN_MSG_SINGLE_LED_STATE].get_id() == CAN_ID_SINGLE_LED_STATE);
+            REQUIRE(can_db.can_messages[CAN_MSG_SINGLE_LED_STATE].get_id() ==
+                    robast_can_msgs::can_id::SINGLE_LED_STATE);
             REQUIRE(can_db.can_messages[CAN_MSG_SINGLE_LED_STATE].get_dlc() == CAN_DLC_SINGLE_LED_STATE);
             REQUIRE(
               can_db.can_messages[CAN_MSG_SINGLE_LED_STATE].get_can_signals()[CAN_SIGNAL_MODULE_ID].get_bit_start() ==
@@ -200,11 +201,11 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
 {
   GIVEN("A CAN msg_id and dlc as well as data for a drawer_id, LED_red, LED_green, LED_blue")
   {
-    uint32_t msg_id_unlock = CAN_ID_DRAWER_UNLOCK;
+    uint32_t msg_id_unlock = robast_can_msgs::can_id::DRAWER_UNLOCK;
     uint8_t dlc_unlock = CAN_DLC_DRAWER_UNLOCK;
     uint8_t u8_can_data_unlock[8] = {0x01, 0x02, 0x03, 0b00000000};
     uint64_t u64_can_data_expected_unlock = 0x0102030000000000;
-    uint32_t msg_id = CAN_ID_SINGLE_LED_STATE;
+    uint32_t msg_id = robast_can_msgs::can_id::SINGLE_LED_STATE;
     uint8_t dlc = CAN_DLC_SINGLE_LED_STATE;
     uint64_t data_module_id = 0x010203;
     uint8_t data_drawer_id = 0;
@@ -244,7 +245,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
       dlc,
       {can_signal_module_id, can_signal_LED_red, can_signal_LED_green, can_signal_LED_blue, can_signal_LED_brightness});
     robast_can_msgs::CanMessage can_message_drawer_unlock = robast_can_msgs::CanMessage(
-      CAN_ID_DRAWER_UNLOCK,
+      robast_can_msgs::can_id::DRAWER_UNLOCK,
       CAN_DLC_DRAWER_UNLOCK,
       {
         robast_can_msgs::CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, data_module_id),
@@ -339,7 +340,7 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
       THEN("The resulting CanMessage class should contain all the data that was contained in the CanMessage class")
       {
         REQUIRE(decoded_can_message_drawer_unlock.has_value());
-        REQUIRE(decoded_can_message_drawer_unlock.value().get_id() == CAN_ID_DRAWER_UNLOCK);
+        REQUIRE(decoded_can_message_drawer_unlock.value().get_id() == robast_can_msgs::can_id::DRAWER_UNLOCK);
         REQUIRE(decoded_can_message_drawer_unlock.value().get_dlc() == CAN_DLC_DRAWER_UNLOCK);
         REQUIRE(can_signals[CAN_SIGNAL_MODULE_ID].get_bit_start() == CAN_SIGNAL_MODULE_ID_BIT_START);
         REQUIRE(can_signals[CAN_SIGNAL_MODULE_ID].get_bit_length() == CAN_SIGNAL_MODULE_ID_BIT_LENGTH);

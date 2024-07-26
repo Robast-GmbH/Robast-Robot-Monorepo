@@ -23,12 +23,12 @@ namespace robast_can_msgs
 
     // Vector that contains all the CAN messages stored in the CanDb
     const std::vector<CanMessage> can_messages = {
-        CanMessage(CAN_ID_DRAWER_UNLOCK,
+        CanMessage(can_id::DRAWER_UNLOCK,
                    CAN_DLC_DRAWER_UNLOCK,
                    {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
                     CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0)}),
         CanMessage(
-            CAN_ID_DRAWER_FEEDBACK,
+            can_id::DRAWER_FEEDBACK,
             CAN_DLC_DRAWER_FEEDBACK,
             {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
              CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0),
@@ -37,7 +37,7 @@ namespace robast_can_msgs
 
             }),
         CanMessage(
-            CAN_ID_ELECTRICAL_DRAWER_TASK,
+            can_id::ELECTRICAL_DRAWER_TASK,
             CAN_DLC_ELECTRIC_DRAWER_TASK,
             {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
              CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0),
@@ -46,7 +46,7 @@ namespace robast_can_msgs
              CanSignal(
                  CAN_SIGNAL_DRAWER_STALL_GUARD_VALUE_BIT_START, CAN_SIGNAL_DRAWER_STALL_GUARD_VALUE_BIT_LENGTH, 0)}),
         CanMessage(
-            CAN_ID_ELECTRICAL_DRAWER_FEEDBACK,
+            can_id::ELECTRICAL_DRAWER_FEEDBACK,
             CAN_DLC_ELECTRIC_DRAWER_FEEDBACK,
             {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
              CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0),
@@ -57,13 +57,13 @@ namespace robast_can_msgs
                        0),
              CanSignal(CAN_SIGNAL_DRAWER_POSITION_BIT_START, CAN_SIGNAL_DRAWER_POSITION_BIT_LENGTH, 0),
              CanSignal(CAN_SIGNAL_IS_PUSH_TO_CLOSE_TRIGGERED_BIT_START, CAN_SIGNAL_IS_PUSH_TO_CLOSE_TRIGGERED_BIT_LENGTH, 0)}),
-        CanMessage(CAN_ID_ERROR_FEEDBACK,
+        CanMessage(can_id::ERROR_FEEDBACK,
                    CAN_DLC_ERROR_FEEDBACK,
                    {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
                     CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, 0),
                     CanSignal(CAN_SIGNAL_ERROR_CODE_BIT_START, CAN_SIGNAL_ERROR_CODE_BIT_LENGTH, 0)}),
         CanMessage(
-            CAN_ID_LED_HEADER,
+            can_id::LED_HEADER,
             CAN_DLC_LED_HEADER,
             {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
              CanSignal(CAN_SIGNAL_LED_START_INDEX_BIT_START, CAN_SIGNAL_LED_START_INDEX_BIT_LENGTH, 0),
@@ -71,7 +71,7 @@ namespace robast_can_msgs
              CanSignal(
                  CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS_BIT_START, CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS_BIT_LENGTH, 0)}),
         CanMessage(
-            CAN_ID_SINGLE_LED_STATE,
+            can_id::SINGLE_LED_STATE,
             CAN_DLC_SINGLE_LED_STATE,
             {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
              CanSignal(CAN_SIGNAL_SINGLE_LED_STATE_RED_BIT_START, CAN_SIGNAL_SINGLE_LED_STATE_RED_BIT_LENGTH, 0),
@@ -80,14 +80,14 @@ namespace robast_can_msgs
              CanSignal(
                  CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_START, CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_LENGTH, 0)}),
         CanMessage(
-            CAN_ID_TRAY_LED_BRIGHTNESS,
+            can_id::TRAY_LED_BRIGHTNESS,
             CAN_DLC_TRAY_LED_BRIGHTNESS,
             {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
              CanSignal(CAN_SIGNAL_TRAY_ID_BIT_START, CAN_SIGNAL_TRAY_ID_BIT_LENGTH, 0),
              CanSignal(CAN_SIGNAL_TRAY_LED_ROW_INDEX_BIT_START, CAN_SIGNAL_TRAY_LED_ROW_INDEX_BIT_LENGTH, 0),
              CanSignal(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS_BIT_START, CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS_BIT_LENGTH, 0)}),
         CanMessage(
-            CAN_ID_MODULE_CONFIG,
+            can_id::MODULE_CONFIG,
             CAN_DLC_MODULE_CONFIG,
             {CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, 0),
              CanSignal(CAN_SIGNAL_CONFIG_ID_BIT_START, CAN_SIGNAL_CONFIG_ID_BIT_LENGTH, 0),

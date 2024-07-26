@@ -113,31 +113,31 @@ void process_can_msgs_task_loop(void* pvParameters)
     {
       switch (received_message->get_id())
       {
-        case CAN_ID_DRAWER_UNLOCK:
+        case robast_can_msgs::can_id::DRAWER_UNLOCK:
         {
           uint8_t tray_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
           tray_manager->unlock_lock(tray_id);
         }
         break;
-        case CAN_ID_ELECTRICAL_DRAWER_TASK:
+        case robast_can_msgs::can_id::ELECTRICAL_DRAWER_TASK:
         {
           drawer_controller::EDrawerTask e_drawer_task = data_mapper->create_e_drawer_task(received_message.value());
           drawer->add_e_drawer_task_to_queue(e_drawer_task);
         }
         break;
-        case CAN_ID_LED_HEADER:
+        case robast_can_msgs::can_id::LED_HEADER:
         {
           drawer_controller::LedHeader led_header = data_mapper->create_led_header(received_message.value());
           led_strip->initialize_led_state_change(led_header);
         }
         break;
-        case CAN_ID_SINGLE_LED_STATE:
+        case robast_can_msgs::can_id::SINGLE_LED_STATE:
         {
           drawer_controller::LedState led_state = data_mapper->create_led_state(received_message.value());
           led_strip->set_led_state(led_state);
         }
         break;
-        case CAN_ID_TRAY_LED_BRIGHTNESS:
+        case robast_can_msgs::can_id::TRAY_LED_BRIGHTNESS:
         {
           tray_manager->set_tray_led_brightness(
             received_message->get_can_signals().at(CAN_SIGNAL_TRAY_ID).get_data(),
@@ -145,7 +145,7 @@ void process_can_msgs_task_loop(void* pvParameters)
             received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS).get_data());
         }
         break;
-        case CAN_ID_MODULE_CONFIG:
+        case robast_can_msgs::can_id::MODULE_CONFIG:
         {
           config_manager->set_config(received_message->get_can_signals().at(CAN_SIGNAL_CONFIG_ID).get_data(),
                                      received_message->get_can_signals().at(CAN_SIGNAL_CONFIG_VALUE).get_data());
