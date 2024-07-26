@@ -96,9 +96,6 @@ Modules API Endpoints
 def read_modules():
     return ros_bridge.module_bridge.get_modules()
 
-@app.get("/is_drawer_open", tags=["Modules"])
-def read_is_drawer_open(module_id: int, drawer_id: int):
-    return {"is_open":ros_bridge.module_bridge.get_drawer_is_open(module_id, drawer_id)}
 
 @app.get("/is_drawer_open", tags=["Modules"])
 def read_is_drawer_open(module_id: int, drawer_id: int):

@@ -48,4 +48,3 @@ class NfcBridge(BaseBridge):
 
     def __clear_nfc(self):
         self.context["/read_nfc"].clear()
-        print("NFC data cleared")
