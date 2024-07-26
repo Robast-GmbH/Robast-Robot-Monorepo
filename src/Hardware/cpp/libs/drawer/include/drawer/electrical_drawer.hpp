@@ -22,6 +22,8 @@
 #define DRAWER_TARGET_HOMING_POSITION 0
 #define STALL_GUARD_DISABLED          0
 #define IS_HOMING                     true
+#define PUSH_TO_CLOSE_TRIGGERED       true
+#define PUSH_TO_CLOSE_NOT_TRIGGERED   false
 
 // The drawer accelerates in dependency of the time
 #define DEFAULT_DRAWER_ACCELERATION 10

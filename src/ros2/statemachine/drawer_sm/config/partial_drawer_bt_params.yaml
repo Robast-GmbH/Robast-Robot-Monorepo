@@ -15,6 +15,7 @@ partial_drawer_tree_initiator:
       - get_blackboard_value_action_bt_node
       - publish_drawer_status_action_bt_node
       - partial_drawer_leds_action_bt_node
+      - bool_topic_condition_node
     bt_path: "/workspace/install/drawer_sm/trees/trees/partial_drawer.xml"
     trigger_topic: "trigger_partial_drawer_tree"
     main_tree: "partial_bt"

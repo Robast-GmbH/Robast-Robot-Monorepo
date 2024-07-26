@@ -51,6 +51,9 @@ namespace drawer_bridge
     _electrical_drawer_status_publisher =
       create_publisher<ElectricalDrawerStatus>("electrical_drawer_status", _qos_config.get_qos_open_drawer());
 
+    _push_to_close_triggered =
+      create_publisher<std_msgs::msg::Bool>("push_to_close_triggered", _qos_config.get_qos_open_drawer());
+
     _error_msg_publisher = create_publisher<ErrorBaseMsg>("robast_error", _qos_config.get_qos_error_msgs());
   }
 
@@ -171,6 +174,11 @@ namespace drawer_bridge
   void DrawerBridge::publish_electrical_drawer_status(robast_can_msgs::CanMessage electrical_drawer_feedback_can_msg)
   {
     std::vector<robast_can_msgs::CanSignal> can_signals = electrical_drawer_feedback_can_msg.get_can_signals();
+
+    std_msgs::msg::Bool push_to_close_triggered_msg;
+    push_to_close_triggered_msg.data = can_signals.at(CAN_SIGNAL_IS_PUSH_TO_CLOSE_TRIGGERED).get_data() == 1;
+
+    _push_to_close_triggered->publish(push_to_close_triggered_msg);
 
     ElectricalDrawerStatus status = ElectricalDrawerStatus();
 

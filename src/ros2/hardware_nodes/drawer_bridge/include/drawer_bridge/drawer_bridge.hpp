@@ -44,6 +44,7 @@
 #include "error_utils/generic_error_converter.hpp"
 #include "module_config/module_config_defines.hpp"
 #include "shelf_setup.hpp"
+#include "std_msgs/msg/bool.hpp"
 
 using namespace std::chrono_literals;
 
@@ -105,6 +106,7 @@ namespace drawer_bridge
     rclcpp::Subscription<CanMessage>::SharedPtr _can_messages_subscription;
     rclcpp::Publisher<DrawerStatus>::SharedPtr _drawer_status_publisher;
     rclcpp::Publisher<ElectricalDrawerStatus>::SharedPtr _electrical_drawer_status_publisher;
+    rclcpp::Publisher<std_msgs::msg::Bool>::SharedPtr _push_to_close_triggered;
     rclcpp::Publisher<ErrorBaseMsg>::SharedPtr _error_msg_publisher;
     rclcpp::Publisher<can_msgs::msg::Frame>::SharedPtr _can_msg_publisher;
 

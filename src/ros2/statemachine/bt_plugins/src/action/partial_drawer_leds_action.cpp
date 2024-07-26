@@ -56,6 +56,9 @@ namespace statemachine
 
     BT::NodeStatus PartialDrawerLED::tick()
     {
+        communication_interfaces::msg::DrawerAddress drawer_address;
+        getInput("drawer_address", drawer_address);
+        _tray_leds.drawer_address = drawer_address;
         _tray_led_publisher->publish(_tray_leds);
 
         return BT::NodeStatus::SUCCESS;

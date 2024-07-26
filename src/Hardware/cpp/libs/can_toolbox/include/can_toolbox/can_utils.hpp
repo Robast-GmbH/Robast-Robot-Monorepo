@@ -15,7 +15,7 @@ namespace drawer_controller
 {
   class CanUtils
   {
-  public:
+   public:
     CanUtils(const std::shared_ptr<robast_can_msgs::CanDb> can_db);
 
     std::optional<robast_can_msgs::CanMessage> get_element_from_feedback_msg_queue() const;
@@ -32,9 +32,10 @@ namespace drawer_controller
                                                const bool is_endstop_switch_pushed,
                                                const bool is_lock_switch_pushed,
                                                const bool is_drawer_stall_guard_triggered,
-                                               const uint8_t normed_current_position) const;
+                                               const uint8_t normed_current_position,
+                                               const bool is_push_to_close_triggered) const;
 
-  private:
+   private:
     const std::unique_ptr<Queue<robast_can_msgs::CanMessage>> _feedback_can_msg_queue;
 
     const std::shared_ptr<robast_can_msgs::CanDb> _can_db;
@@ -53,7 +54,8 @@ namespace drawer_controller
                                                                       const bool is_endstop_switch_pushed,
                                                                       const bool is_lock_switch_pushed,
                                                                       const bool is_drawer_stall_guard_triggered,
-                                                                      const uint8_t normed_current_position) const;
+                                                                      const uint8_t normed_current_position,
+                                                                      const bool is_push_to_close_triggered) const;
   };
-} // namespace drawer_controller
-#endif // DRAWER_CONTROLLER_CAN_UTILS_HPP
+}   // namespace drawer_controller
+#endif   // DRAWER_CONTROLLER_CAN_UTILS_HPP
