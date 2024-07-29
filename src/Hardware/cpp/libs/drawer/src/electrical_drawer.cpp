@@ -91,21 +91,27 @@ namespace drawer_controller
     // updating the sensor values needs to be done all the time because of the moving average calculation
     _endstop_switch->update_sensor_value();
 
-    if (_encoder_monitor->check_if_drawer_is_pushed_in())
+    // if the drawer is not moving, we need to check if the drawer is pushed in
+    // but make sure to wait a certain amount of time if the stall guard was triggered
+    uint32_t wait_time_in_ms = _configs->get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms();
+    if (millis() - _timestamp_stall_guard_triggered_in_ms > wait_time_in_ms)
     {
-      add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
-                                  _configs->get_drawer_push_in_auto_close_speed(),
-                                  _configs->get_drawer_push_in_auto_close_stall_guard_value(),
-                                  false,
-                                  false});
-      _can_utils->handle_electrical_drawer_feedback_msg(
-        _module_id,
-        _id,
-        _endstop_switch->is_switch_pressed(),
-        _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
-        _motor->get_is_stalled(),
-        _encoder->get_normed_current_position(),
-        PUSH_TO_CLOSE_TRIGGERED);
+      if (_encoder_monitor->check_if_drawer_is_pushed_in())
+      {
+        add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
+                                    _configs->get_drawer_push_in_auto_close_speed(),
+                                    _configs->get_drawer_push_in_auto_close_stall_guard_value(),
+                                    false,
+                                    false});
+        _can_utils->handle_electrical_drawer_feedback_msg(
+          _module_id,
+          _id,
+          _endstop_switch->is_switch_pressed(),
+          _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
+          _motor->get_is_stalled(),
+          _encoder->get_normed_current_position(),
+          PUSH_TO_CLOSE_TRIGGERED);
+      }
     }
 
     std::optional<EDrawerTask> e_drawer_task = _e_drawer_task_queue->get_element_from_queue();
@@ -225,6 +231,8 @@ namespace drawer_controller
 
     _motor->set_target_speed_instantly(0);
 
+    _motor->reset_stall_guard();
+
     _is_idling = true;
 
     _can_utils->handle_electrical_drawer_feedback_msg(
@@ -236,7 +244,7 @@ namespace drawer_controller
       _encoder->get_normed_current_position(),
       PUSH_TO_CLOSE_NOT_TRIGGERED);
 
-    _motor->reset_stall_guard();
+    _timestamp_stall_guard_triggered_in_ms = millis();
 
     return true;
   }

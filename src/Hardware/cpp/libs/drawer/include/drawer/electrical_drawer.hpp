@@ -86,6 +86,8 @@ namespace drawer_controller
 
     const std::unique_ptr<EncoderMonitor> _encoder_monitor;
 
+    const std::shared_ptr<ElectricalDrawerConfigs> _configs;
+
     bool _drawer_was_homed_once = false;
 
     bool _is_drawer_moving_out;
@@ -97,7 +99,7 @@ namespace drawer_controller
 
     bool _triggered_closing_lock_after_opening = false;
 
-    const std::shared_ptr<ElectricalDrawerConfigs> _configs;
+    uint32_t _timestamp_stall_guard_triggered_in_ms = 0;
 
     /* FUNCTIONS */
 

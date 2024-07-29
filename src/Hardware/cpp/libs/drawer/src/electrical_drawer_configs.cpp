@@ -42,6 +42,11 @@ namespace drawer_controller
     _push_in_auto_close_stall_guard_value = stall_guard_value;
   }
 
+  void ElectricalDrawerConfigs::set_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms(const uint32_t wait_time)
+  {
+    _push_in_wait_time_after_stall_guard_triggered_in_ms = wait_time;
+  }
+
   uint32_t ElectricalDrawerConfigs::get_drawer_max_speed() const
   {
     return _max_speed;
@@ -80,5 +85,10 @@ namespace drawer_controller
   uint8_t ElectricalDrawerConfigs::get_drawer_push_in_auto_close_stall_guard_value() const
   {
     return _push_in_auto_close_stall_guard_value;
+  }
+
+  uint32_t ElectricalDrawerConfigs::get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms() const
+  {
+    return _push_in_wait_time_after_stall_guard_triggered_in_ms;
   }
 }   // namespace drawer_controller

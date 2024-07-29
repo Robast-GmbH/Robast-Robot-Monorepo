@@ -179,7 +179,6 @@ namespace stepper_motor
     debug_println("[Motor]: Resetting stall guard!");
     _is_stalled = false;
     disable_driver();
-    delay(100);
   }
 
   void Motor::handle_motor_control(int32_t current_position_int32)

@@ -71,6 +71,12 @@ namespace drawer_controller
             config_value));
         break;
 
+      case MODULE_CONFIG_ID_DRAWER_PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS:
+        _drawer_configs->set_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms(
+          reinterpret_cast<module_config::ModuleConfigDataType<
+            MODULE_CONFIG_ID_DRAWER_PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::type>(config_value));
+        break;
+
       case MODULE_CONFIG_ID_ENCODER_COUNT_DRAWER_MAX_EXTENT:
         _encoder_configs->set_encoder_count_drawer_max_extent(
           reinterpret_cast<module_config::ModuleConfigDataType<MODULE_CONFIG_ID_ENCODER_COUNT_DRAWER_MAX_EXTENT>::type>(
@@ -148,6 +154,11 @@ namespace drawer_controller
     set_config(MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE,
                static_cast<uint32_t>(module_config::ModuleConfigDataType<
                                      MODULE_CONFIG_ID_DRAWER_PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE>::default_value));
+
+    set_config(MODULE_CONFIG_ID_DRAWER_PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS,
+               static_cast<uint32_t>(
+                 module_config::ModuleConfigDataType<
+                   MODULE_CONFIG_ID_DRAWER_PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::default_value));
   }
 
   void ConfigManager::set_default_encoder_configs()
