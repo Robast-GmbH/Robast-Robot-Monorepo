@@ -32,32 +32,14 @@ namespace drawer_controller
     // Receive next CAN frame from queue
     if (xQueueReceive(CAN_cfg.rx_queue, &rx_frame, 3 * portTICK_PERIOD_MS) == pdTRUE)
     {
-      debug_println("[CanController]: Received CAN message!");
-
-      if (rx_frame.FIR.B.FF == CAN_frame_std)
-      {
-        debug_println("[CanController]: New standard frame");
-      }
-      else
-      {
-        debug_println("[CanController]: New extended frame");
-      }
-
       if (rx_frame.FIR.B.RTR == CAN_RTR)
       {
-        debug_printf(" RTR from 0x%08X, DLC %d\r\n", rx_frame.MsgID, rx_frame.FIR.B.DLC);
+        // TODO: Handle RTR messages
       }
       else
       {
-        debug_printf(" from 0x%08X, DLC %d, Data ", rx_frame.MsgID, rx_frame.FIR.B.DLC);
-        for (int i = 0; i < rx_frame.FIR.B.DLC; i++)
-        {
-          debug_printf("0x%02X ", rx_frame.data.u8[i]);
-        }
-        debug_println("\n");
-
         can_message = robast_can_msgs::decode_can_message(
-            rx_frame.MsgID, rx_frame.data.u8, rx_frame.FIR.B.DLC, this->_can_db->can_messages);
+          rx_frame.MsgID, rx_frame.data.u8, rx_frame.FIR.B.DLC, this->_can_db->can_messages);
 
         if (can_message.has_value() &&
             can_message.value().get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data() == _module_id)
@@ -67,8 +49,10 @@ namespace drawer_controller
 
         if (!can_message.has_value())
         {
-          debug_println("[CanController]: There is no CAN Message available in the CAN Database that corresponds to the msg id: ");
-          debug_print_with_base(rx_frame.MsgID, HEX);
+          Serial.printf(
+            "[CanController]: Warning! There is no CAN Message available in the CAN Database that corresponds to the "
+            "msg id: %d\n",
+            rx_frame.MsgID);
           return can_message;
         }
         else
@@ -87,7 +71,7 @@ namespace drawer_controller
     try
     {
       robast_can_msgs::CanFrame can_frame =
-          robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
+        robast_can_msgs::encode_can_message_into_can_frame(can_msg, _can_db->can_messages);
 
       CAN_frame_t tx_frame;
       tx_frame.FIR.B.FF = CAN_frame_std;
@@ -117,4 +101,4 @@ namespace drawer_controller
     }
   }
 
-} // namespace drawer_controller
+}   // namespace drawer_controller
