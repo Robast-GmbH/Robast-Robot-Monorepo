@@ -20,7 +20,7 @@ def generate_launch_description():
     default_feuerplan_image_path = os.path.join(feuerplan_publisher_dir, 'images','slide5.jpg')
 
     feuerplan_path = LaunchConfiguration('feuerplan_path',  default = default_feuerplan_image_path)
-    confidence_threshold = LaunchConfiguration('confidence_threshold',  default = 0.5)
+    confidence_threshold = LaunchConfiguration('confidence_threshold',  default = 0.8)
 
     declare_feuerplan_image_cmd = DeclareLaunchArgument(
         'feuerplan_path',

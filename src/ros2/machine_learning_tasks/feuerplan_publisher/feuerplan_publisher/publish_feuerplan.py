@@ -5,7 +5,7 @@ from rclpy.node import Node
 from rclpy.qos import QoSProfile, QoSDurabilityPolicy
 from nav_msgs.msg import OccupancyGrid
 from tf2_ros import TransformBroadcaster
-from feuerplan_publisher.utils import calculate_translation_and_rotation, publish_occupancy_grid_from_image, create_feuerplan_frame
+from feuerplan_publisher.utils import *
 
 
 class FeuerplanPublisher(Node):
@@ -16,7 +16,8 @@ class FeuerplanPublisher(Node):
         self.declare_parameter('feuerplan_path', '')
         self.declare_parameter('confidence_threshold', 0.7)
 
-        self.__feuerplan_path = self.get_parameter('feuerplan_path').get_parameter_value().string_value 
+        feuerplan_path = self.get_parameter('feuerplan_path').get_parameter_value().string_value 
+        self.__feuerplan_image = cv.imread(feuerplan_path, cv.IMREAD_GRAYSCALE)
         self.__confidence_threshold = self.get_parameter('confidence_threshold').get_parameter_value().double_value
         self.use_sim_time = self.get_parameter('use_sim_time').get_parameter_value().bool_value
 
@@ -26,17 +27,18 @@ class FeuerplanPublisher(Node):
         map_qos.history = rclpy.qos.HistoryPolicy.KEEP_LAST
 
         self.__publisher = self.create_publisher(OccupancyGrid, 'global_costmap/feuerplan_image_topic', qos_profile=map_qos)
-        self.get_logger().info('Waiting for map...')
         self.__map_subscriber = self.create_subscription(OccupancyGrid, 'map', self.__listener_callback_map, 10)
+        self.get_logger().info('Waiting for map...')
         self.__tf_broadcaster = TransformBroadcaster(self)
         self.__map_msg = None
-        self.__has_valid_transform = False
         self.__initial_match_obtained = False
-        self.__throttled_timer = self.create_timer(10.0, self.__throttled_callback)  # 10 seconds interval
+        self.__throttled_timer = self.create_timer(10.0, self.__throttled_callback)  # 10 seconds
         self.__throttled_timer.cancel()
         self.__previous_translation_and_rotation = None
+        self.__best_angle = None
+        self.__rotated_feuerplan_image = None
 
-    def __throttled_callback(self):
+    def __throttled_callback(self) -> None:
         if self.__map_msg:
             self.get_logger().info('Map recieved')
             self.__broadcast_frame_and_message()
@@ -48,19 +50,26 @@ class FeuerplanPublisher(Node):
             self.__broadcast_frame_and_message()
         else:
             self.get_logger().info('Previous matches would be used.')
-            feuerplan_image = cv.imread(self.__feuerplan_path, cv.IMREAD_GRAYSCALE)
             create_feuerplan_frame(self.__tf_broadcaster, self.__previous_translation_and_rotation, self.__map_msg, self.get_clock())
-            publish_occupancy_grid_from_image(self.__publisher, feuerplan_image, self.__previous_translation_and_rotation, self.get_logger(), self.get_clock())
+            publish_occupancy_grid_from_image(self.__publisher, self.__rotated_feuerplan_image, self.__previous_translation_and_rotation, self.get_logger(), self.get_clock())
 
     def __broadcast_frame_and_message(self) -> None:
-        feuerplan_image = cv.imread(self.__feuerplan_path, cv.IMREAD_GRAYSCALE)
-        translation_and_rotation = calculate_translation_and_rotation(self.__map_msg, feuerplan_image, self.__confidence_threshold, self.get_logger())
+        if self.__best_angle is not None:
+            feuerplan_image_to_use = self.__rotated_feuerplan_image
+            translation_and_rotation, _ = calculate_translation_and_rotation(self.__map_msg, feuerplan_image_to_use, self.__confidence_threshold, self.get_logger(), self.__best_angle)
+        else:
+            translation_and_rotation, best_angle = calculate_translation_and_rotation(self.__map_msg, self.__feuerplan_image, self.__confidence_threshold, self.get_logger())
+            if best_angle is not None:
+                self.__best_angle = best_angle
+                self.__rotated_feuerplan_image = rotate_image(self.__feuerplan_image, self.__best_angle)
+
         if translation_and_rotation:
             self.__previous_translation_and_rotation = translation_and_rotation
             create_feuerplan_frame(self.__tf_broadcaster, self.__previous_translation_and_rotation, self.__map_msg, self.get_clock())
-            publish_occupancy_grid_from_image(self.__publisher, feuerplan_image, self.__previous_translation_and_rotation, self.get_logger(), self.get_clock())
+            publish_occupancy_grid_from_image(self.__publisher, self.__rotated_feuerplan_image, self.__previous_translation_and_rotation, self.get_logger(), self.get_clock())
             self.__initial_match_obtained = True
             self.__throttled_timer.reset()
+
 
 def main(args=None):
     rclpy.init(args=args)
