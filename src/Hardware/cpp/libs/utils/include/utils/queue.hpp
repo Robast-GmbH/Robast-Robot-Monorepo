@@ -55,10 +55,6 @@ namespace drawer_controller
     {
       return std::nullopt;
     }
-    // TODO@Jacob: This can probably be removed once we are 100% sure that the queue is not infinetly growing
-    debug_printf("[Queue]: get_element_from_queue! num_of_elements_in_queue = %d, _queue.capacity() = %d\n",
-                 num_of_elements_in_queue,
-                 _queue.capacity());
 
     if (_head_of_queue == (num_of_elements_in_queue - 1))
     {
