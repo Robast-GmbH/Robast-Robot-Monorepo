@@ -15,6 +15,7 @@
 #include "motor/encoder_monitor.hpp"
 #include "motor/enconder_configs.hpp"
 #include "motor/motor.hpp"
+#include "motor/motor_monitor.hpp"
 #include "switch/switch.hpp"
 #include "utils/e_drawer_task.hpp"
 #include "utils/queue.hpp"
@@ -24,6 +25,7 @@
 #define IS_HOMING                     true
 #define PUSH_TO_CLOSE_TRIGGERED       true
 #define PUSH_TO_CLOSE_NOT_TRIGGERED   false
+#define MOTOR_IS_STALLED              true
 
 // The drawer accelerates in dependency of the time
 #define DEFAULT_DRAWER_ACCELERATION 10
@@ -47,7 +49,8 @@ namespace drawer_controller
                      const std::shared_ptr<Switch> endstop_switch,
                      const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock,
                      const std::shared_ptr<ElectricalDrawerConfigs> e_drawer_configs,
-                     const std::shared_ptr<EncoderConfigs> encoder_configs);
+                     const std::shared_ptr<EncoderConfigs> encoder_configs,
+                     const std::shared_ptr<MotorMonitorConfigs> motor_monitor_configs);
 
     void init() const;
 
@@ -80,13 +83,15 @@ namespace drawer_controller
 
     const std::unique_ptr<CanUtils> _can_utils;
 
-    const std::unique_ptr<stepper_motor::Motor> _motor;
+    const std::shared_ptr<stepper_motor::Motor> _motor;
 
     std::unique_ptr<Queue<EDrawerTask>> _e_drawer_task_queue;
 
+    const std::shared_ptr<ElectricalDrawerConfigs> _configs;
+
     const std::unique_ptr<EncoderMonitor> _encoder_monitor;
 
-    const std::shared_ptr<ElectricalDrawerConfigs> _configs;
+    const std::unique_ptr<MotorMonitor> _motor_monitor;
 
     bool _drawer_was_homed_once = false;
 

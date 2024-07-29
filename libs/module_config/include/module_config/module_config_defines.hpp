@@ -26,8 +26,9 @@ namespace module_config
     constexpr uint8_t MOVING_IN_FINAL_HOMING_DISTANCE = 5;
     constexpr uint8_t MOVING_OUT_DECELERATION_DISTANCE = 6;
     constexpr uint8_t PUSH_IN_AUTO_CLOSE_SPEED = 7;
-    constexpr uint8_t PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE = 8;
+    constexpr uint8_t PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE = 8;
     constexpr uint8_t PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS = 9;
+    constexpr uint8_t USE_TMC_STALL_GUARD = 10;
   }   // namespace drawer
 
   namespace encoder
@@ -38,6 +39,13 @@ namespace module_config
     constexpr uint8_t DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT = 23;
     constexpr uint8_t DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS = 24;
   }   // namespace encoder
+
+  namespace motor_monitor
+  {
+    constexpr uint8_t ACTIVE_SPEED_THRESHOLD = 30;
+    constexpr uint8_t MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS = 31;
+    constexpr uint8_t SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL = 32;
+  }   // namespace motor_monitor
 
   template <>
   struct ModuleConfigDataType<drawer::MAX_SPEED>
@@ -89,7 +97,7 @@ namespace module_config
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::PUSH_IN_AUTO_CLOSE_STALL_GUARD_VALUE>
+  struct ModuleConfigDataType<drawer::PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE>
   {
     using type = uint8_t;
     static constexpr type default_value = 75;
@@ -100,6 +108,13 @@ namespace module_config
   {
     using type = uint32_t;
     static constexpr type default_value = 200;
+  };
+
+  template <>
+  struct ModuleConfigDataType<drawer::USE_TMC_STALL_GUARD>
+  {
+    using type = bool;
+    static constexpr type default_value = false;
   };
 
   /********************************************************************************************************
@@ -138,7 +153,33 @@ namespace module_config
   struct ModuleConfigDataType<encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>
   {
     using type = uint32_t;
-    static constexpr type default_value = 200;
+    static constexpr type default_value = 500;
+  };
+
+  /********************************************************************************************************
+   * Configs for the motor monitor
+   *********************************************************************************************************/
+
+  template <>
+  struct ModuleConfigDataType<motor_monitor::ACTIVE_SPEED_THRESHOLD>
+  {
+    using type = uint32_t;
+    static constexpr type default_value = 800;
+  };
+
+  template <>
+  struct ModuleConfigDataType<motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS>
+  {
+    using type = uint32_t;
+    // usually one control loop takes 30-40ms (as of 29.07.2024)
+    static constexpr type default_value = 100;
+  };
+
+  template <>
+  struct ModuleConfigDataType<motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>
+  {
+    using type = float;
+    static constexpr type default_value = 0.25;
   };
 
 }   // namespace module_config

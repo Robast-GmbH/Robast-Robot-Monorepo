@@ -7,6 +7,7 @@
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "led/led_strip.hpp"
 #include "lock/tray_manager.hpp"
+#include "motor/motor_monitor_configs.hpp"
 #include "peripherals/gpio_defines.hpp"
 #include "switch/switch.hpp"
 #include "utils/config_manager.hpp"
@@ -40,6 +41,7 @@ std::shared_ptr<drawer_controller::ElectricalDrawer> drawer;
 
 std::shared_ptr<drawer_controller::ElectricalDrawerConfigs> drawer_configs;
 std::shared_ptr<drawer_controller::EncoderConfigs> encoder_configs;
+std::shared_ptr<drawer_controller::MotorMonitorConfigs> motor_monitor_configs;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_enn_tmc2209_pin_id = STEPPER_1_ENN_TMC2209_PIN_ID,
@@ -228,8 +230,10 @@ void setup()
 
   drawer_configs = std::make_shared<drawer_controller::ElectricalDrawerConfigs>();
   encoder_configs = std::make_shared<drawer_controller::EncoderConfigs>();
+  motor_monitor_configs = std::make_shared<drawer_controller::MotorMonitorConfigs>();
 
-  config_manager = std::make_unique<drawer_controller::ConfigManager>(drawer_configs, encoder_configs);
+  config_manager =
+    std::make_unique<drawer_controller::ConfigManager>(drawer_configs, encoder_configs, motor_monitor_configs);
 
   drawer = std::make_shared<drawer_controller::ElectricalDrawer>(
     MODULE_ID,
@@ -245,7 +249,8 @@ void setup()
     endstop_switch,
     std::nullopt,
     drawer_configs,
-    encoder_configs);
+    encoder_configs,
+    motor_monitor_configs);
   drawer->init();
 
   debug_println("[Main]: Finished setup()!");

@@ -163,7 +163,6 @@ namespace stepper_motor
     return _is_stalled;
   }
 
-  // TODO@Jacob: implement Stall guard with ticket: https://robast.atlassian.net/browse/RE-1446
   void Motor::set_stall_guard(uint8_t stall_guard_value)
   {
     debug_printf("[Motor]: Setting stall guard value to: %d\n", stall_guard_value);

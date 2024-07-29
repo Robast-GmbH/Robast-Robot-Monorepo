@@ -14,7 +14,7 @@ namespace drawer_controller
   class EncoderMonitor
   {
    public:
-    EncoderMonitor(const std::shared_ptr<Encoder> encoder, std::shared_ptr<EncoderConfigs> configs);
+    EncoderMonitor(const std::shared_ptr<Encoder> encoder, const std::shared_ptr<EncoderConfigs> configs);
 
     bool check_if_drawer_is_pushed_in();
 

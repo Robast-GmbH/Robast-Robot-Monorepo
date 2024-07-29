@@ -15,20 +15,22 @@ namespace drawer_controller
                                      const std::shared_ptr<Switch> endstop_switch,
                                      const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock,
                                      const std::shared_ptr<ElectricalDrawerConfigs> e_drawer_configs,
-                                     const std::shared_ptr<EncoderConfigs> encoder_configs)
+                                     const std::shared_ptr<EncoderConfigs> encoder_configs,
+                                     const std::shared_ptr<MotorMonitorConfigs> motor_monitor_configs)
       : _module_id{module_id},
         _id{id},
         _gpio_wrapper{gpio_wrapper},
         _stepper_pin_id_config{stepper_pin_id_config},
         _encoder{std::make_shared<Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_configs)},
         _can_utils{std::make_unique<CanUtils>(can_db)},
-        _motor{std::make_unique<stepper_motor::Motor>(
+        _motor{std::make_shared<stepper_motor::Motor>(
           motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, shaft_direction_is_inverted)},
         _endstop_switch{endstop_switch},
         _electrical_drawer_lock{electrical_drawer_lock},
         _e_drawer_task_queue{std::make_unique<Queue<EDrawerTask>>()},
         _encoder_monitor{std::make_unique<EncoderMonitor>(_encoder, encoder_configs)},
-        _configs{e_drawer_configs}
+        _configs{e_drawer_configs},
+        _motor_monitor{std::make_unique<MotorMonitor>(_encoder, encoder_configs, _motor, motor_monitor_configs)}
   {
   }
 
@@ -222,12 +224,31 @@ namespace drawer_controller
 
   bool ElectricalDrawer::handle_motor_stall_guard_and_return_status()
   {
-    if (!_motor->get_is_stalled())
+    bool is_tmc_stall_guard_triggered = false;
+    if (_configs->get_use_tmc_stall_guard())
+    {
+      is_tmc_stall_guard_triggered = _motor->get_is_stalled();
+    }
+
+    bool is_motor_monitor_stall_guard_triggered = _motor_monitor->is_motor_stalled();
+
+    if (!is_tmc_stall_guard_triggered && !is_motor_monitor_stall_guard_triggered)
     {
       return false;
     }
 
-    debug_println("[ElectricalDrawer]: Motor is stalled! Setting speed to 0 and creating feedback messages!");
+    if (is_tmc_stall_guard_triggered)
+    {
+      debug_println(
+        "[ElectricalDrawer]: Motor stall is detected by TMC stall guard. Setting speed to 0 and creating feedback "
+        "messages!");
+    }
+    if (is_motor_monitor_stall_guard_triggered)
+    {
+      debug_println(
+        "[ElectricalDrawer]: Motor stall is detected by motor monitor. Setting speed to 0 and creating feedback "
+        "messages!");
+    }
 
     _motor->set_target_speed_instantly(0);
 
@@ -240,7 +261,7 @@ namespace drawer_controller
       _id,
       _endstop_switch->is_switch_pressed(),
       _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
-      _motor->get_is_stalled(),
+      MOTOR_IS_STALLED,
       _encoder->get_normed_current_position(),
       PUSH_TO_CLOSE_NOT_TRIGGERED);
 
@@ -328,7 +349,8 @@ namespace drawer_controller
           _target_position_uint8)
     {
       debug_printf(
-        "[ElectricalDrawer]: E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = %d, "
+        "[ElectricalDrawer]: E-drawer is moving out and will now be decelerated! normed_current_position_uint8 = "
+        "%d, "
         "_target_position_uint8 = %d\n",
         _encoder->get_normed_current_position(),
         _target_position_uint8);
@@ -461,8 +483,8 @@ namespace drawer_controller
   void ElectricalDrawer::debug_prints_moving_electrical_drawer()
   {
     int normed_target_position = (_target_position_uint8 / 255.0) * _encoder->get_count_drawer_max_extent();
-    // debug_printf("[ElectricalDrawer]: Current position: % d, Target Position: %d, Current Speed: %d, Target Speed:
-    // %d\n",
+    // debug_printf("[ElectricalDrawer]: Current position: % d, Target Position: %d, Current Speed: %d, Target
+    // Speed: %d\n",
     //              _encoder->get_current_position(),
     //              normed_target_position,
     //              _motor->get_active_speed(),
