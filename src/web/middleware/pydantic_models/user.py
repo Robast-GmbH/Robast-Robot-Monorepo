@@ -3,6 +3,7 @@ from pydantic import BaseModel
 
 class User(BaseModel):
     id: str
+    nfc_id: str
     title: str
     first_name: str
     last_name: str

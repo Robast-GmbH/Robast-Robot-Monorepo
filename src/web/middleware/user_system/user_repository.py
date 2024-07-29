@@ -45,14 +45,24 @@ class UserRepository:
         user_groups: list[str],
     ) -> User | None:
         user_id = str(uuid.uuid4())
+        nfc_id = str(uuid.uuid4())
         user_groups_str = ",".join(user_groups)
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute(
             """
-            INSERT INTO users (user_id, title, first_name, last_name, station, room, user_groups) VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO users (user_id, nfc_id, title, first_name, last_name, station, room, user_groups) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
         """,
-            (user_id, title, first_name, last_name, station, room, user_groups_str),
+            (
+                user_id,
+                nfc_id,
+                title,
+                first_name,
+                last_name,
+                station,
+                room,
+                user_groups_str,
+            ),
         )
         db_connection.commit()
         db_connection.close()
@@ -66,11 +76,21 @@ class UserRepository:
         db_connection.close()
         users = []
         for row in rows:
-            user_id, title, first_name, last_name, station, room, user_groups_str = row
+            (
+                user_id,
+                nfc_id,
+                title,
+                first_name,
+                last_name,
+                station,
+                room,
+                user_groups_str,
+            ) = row
             user_groups = user_groups_str.split(",")
             users.append(
                 User(
                     id=user_id,
+                    nfc_id=nfc_id,
                     title=title,
                     first_name=first_name,
                     last_name=last_name,
@@ -88,10 +108,50 @@ class UserRepository:
         row = cursor.fetchone()
         db_connection.close()
         if row:
-            user_id, title, first_name, last_name, station, room, user_groups_str = row
+            (
+                user_id,
+                nfc_id,
+                title,
+                first_name,
+                last_name,
+                station,
+                room,
+                user_groups_str,
+            ) = row
             user_groups = user_groups_str.split(",")
             return User(
                 id=user_id,
+                nfc_id=nfc_id,
+                title=title,
+                first_name=first_name,
+                last_name=last_name,
+                station=station,
+                room=room,
+                user_groups=user_groups,
+            )
+        return None
+
+    def get_user_by_nfc_id(self, nfc_id: str) -> User | None:
+        db_connection = sqlite3.connect(self.__db_path)
+        cursor = db_connection.cursor()
+        cursor.execute("SELECT * FROM users WHERE nfc_id = ?", (nfc_id,))
+        row = cursor.fetchone()
+        db_connection.close()
+        if row:
+            (
+                user_id,
+                nfc_id,
+                title,
+                first_name,
+                last_name,
+                station,
+                room,
+                user_groups_str,
+            ) = row
+            user_groups = user_groups_str.split(",")
+            return User(
+                id=user_id,
+                nfc_id=nfc_id,
                 title=title,
                 first_name=first_name,
                 last_name=last_name,
@@ -104,6 +164,7 @@ class UserRepository:
     def update_user(
         self,
         user_id: str,
+        nfc_id: str | None = None,
         title: str | None = None,
         first_name: str | None = None,
         last_name: str | None = None,
@@ -113,6 +174,7 @@ class UserRepository:
     ) -> User | None:
         if not any(
             [
+                nfc_id,
                 title is not None,
                 first_name,
                 last_name,
@@ -125,6 +187,10 @@ class UserRepository:
 
         query = "UPDATE users SET "
         params = []
+
+        if nfc_id:
+            query += "nfc_id = ?, "
+            params.append(nfc_id)
 
         if title is not None:
             query += "title = ?, "
@@ -178,6 +244,7 @@ class UserRepository:
             """
             CREATE TABLE IF NOT EXISTS users (
                 user_id TEXT PRIMARY KEY,
+                nfc_id TEXT,
                 title TEXT,
                 first_name TEXT,
                 last_name TEXT,

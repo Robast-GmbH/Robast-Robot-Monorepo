@@ -42,8 +42,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                           .map<Widget>(
                             (user) => UserManagementListTile(
                               user: user,
-                              onDeletePressed: () async {
-                                await Provider.of<UserProvider>(context, listen: false).deleteUser(id: user.id);
+                              onUserUpdate: () {
                                 setState(() {
                                   loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
                                 });
@@ -61,6 +60,7 @@ class _UserManagementPageState extends State<UserManagementPage> {
                       await Provider.of<UserProvider>(context, listen: false).createUser(
                         newUser: User(
                           id: '',
+                          nfcID: '',
                           title: '',
                           firstName: '',
                           lastName: '',

@@ -17,47 +17,22 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  final timeout = const Duration(seconds: 5);
-  Timer? timeoutTimer;
-  Timer? sessionUpdateTimer;
   bool authCompleted = false;
+  Timer? timeoutTimer;
+
+  void onTimeout() {
+    Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
+    Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
+    Navigator.pop(context);
+  }
 
   void startTimeoutTimer() {
-    timeoutTimer = Timer(
-      timeout,
-      () {
-        Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
-        Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
-        Navigator.pop(context);
-      },
-    );
-  }
-
-  void startPeriodicSessionUpdateTimer() {
-    sessionUpdateTimer?.cancel();
-    sessionUpdateTimer = Timer.periodic(
-      const Duration(seconds: 1),
-      (timer) async {
-        final sessionUser = await Provider.of<UserProvider>(context, listen: false).getUserSession(robotName: 'rb_theron');
-        if (sessionUser != null) {
-          authCompleted = true;
-          setState(() {});
-          sessionUpdateTimer?.cancel();
-        }
-      },
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    startPeriodicSessionUpdateTimer();
+    timeoutTimer = Timer(const Duration(seconds: 5), onTimeout);
   }
 
   @override
   void dispose() {
     timeoutTimer?.cancel();
-    sessionUpdateTimer?.cancel();
     super.dispose();
   }
 
@@ -66,11 +41,21 @@ class _AuthPageState extends State<AuthPage> {
     return Scaffold(
       body: BackgroundView(
         child: !authCompleted
-            ? const SizedBox.expand(
+            ? SizedBox.expand(
                 child: Center(
                   child: AuthView(
-                    requestedUserIDs: [],
-                    requestedUserGroups: [],
+                    requiredUserIDs: const [],
+                    requiredUserGroups: const ['PATIENT', 'STAFF', 'ADMIN'],
+                    onAuthCompleted: (wasAuthSuccessful) {
+                      if (wasAuthSuccessful) {
+                        authCompleted = true;
+                        setState(() {});
+                      }
+                      startTimeoutTimer();
+                    },
+                    onRetry: () {
+                      timeoutTimer?.cancel();
+                    },
                   ),
                 ),
               )

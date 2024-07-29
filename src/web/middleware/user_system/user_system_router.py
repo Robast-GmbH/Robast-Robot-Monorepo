@@ -31,6 +31,7 @@ def get_user(user_id: str):
 def update_user(request: UpdateUserRequest):
     user = user_repository.update_user(
         user_id=request.id,
+        nfc_id=request.nfc_id,
         title=request.title,
         first_name=request.first_name,
         last_name=request.last_name,
@@ -74,6 +75,16 @@ def delete_user(request: DeleteUserRequest):
 def get_session(robot_name: str):
     session = auth_session_manager.get_session(robot_name)
     return {"user": session, "status": "success" if session else "failed"}
+
+
+@user_system_router.post("/try_start_session", tags=["Auth"])
+def post_try_start_session(
+    robot_name: str, required_user_ids: list[str], required_user_groups: list[str]
+):
+    result = auth_session_manager.try_start_session(
+        robot_name, required_user_ids, required_user_groups
+    )
+    return result
 
 
 @user_system_router.post("/end_session", tags=["Auth"])

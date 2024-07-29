@@ -7,7 +7,7 @@ class NfcBridge(BaseBridge):
     def __init__(self, ros: Ros) -> None:
         super().__init__(ros)
 
-    def write_nfc_tag(self, nfc_tag_id: str):
+    def write_nfc_tag(self, nfc_tag_id: str) -> dict[str, str]:
         raw_nfc_tag_id = nfc_tag_id.replace("-", "").lower()
         self.start_service(
             name="/write_nfc",
@@ -18,7 +18,7 @@ class NfcBridge(BaseBridge):
             "status": "success" if self.context["/write_nfc"]["success"] else "failure"
         }
 
-    def read_nfc_tag(self):
+    def read_nfc_tag(self) -> dict[str, str]:
         self.start_service(
             name="/read_nfc",
             service_type="communication_interfaces/srv/ReadNfcTag",
@@ -37,7 +37,7 @@ class NfcBridge(BaseBridge):
         except KeyError:
             return {"data": ""}
 
-    def __convert_to_uuid_format(self, hex_string: str):
+    def __convert_to_uuid_format(self, hex_string: str) -> str:
         # Lowercase the string
         hex_string = hex_string.lower()
 
@@ -46,5 +46,5 @@ class NfcBridge(BaseBridge):
 
         return uuid_string
 
-    def __clear_nfc(self):
+    def __clear_nfc(self) -> None:
         self.context["/read_nfc"].clear()

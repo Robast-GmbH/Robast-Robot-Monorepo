@@ -18,6 +18,7 @@ void main() {
     final modulesApi = ModulesApi(prefix: 'http://localhost:8003');
 
     const userID = '';
+    const nfcID = '';
     const title = 'Prof. Dr. med.';
     const firstName = 'Max';
     const lastName = 'Mustermann';
@@ -26,6 +27,7 @@ void main() {
     const userGroups = ['group1', 'group2'];
     final testUser = User(
       id: userID,
+      nfcID: nfcID,
       title: title,
       firstName: firstName,
       lastName: lastName,
@@ -187,6 +189,7 @@ void main() {
       expect(creationResult, isNotNull);
       final updatedUser = User(
         id: creationResult!.id,
+        nfcID: creationResult.nfcID,
         title: updatedTitle,
         firstName: updatedFirstName,
         lastName: updatedLastName,
@@ -208,7 +211,7 @@ void main() {
       expect(deletionResult, isTrue);
     });
 
-    test("can read nfc", () async {
+    test('can read nfc', () async {
       final nfc = NFCApi(prefix: 'http://localhost:8003');
       final result = await nfc.readNFC(robotName: robotName);
       expect(result, isNotNull);

@@ -9,11 +9,12 @@ import 'package:robot_frontend/widgets/location_selector.dart';
 import 'package:robot_frontend/widgets/nfc_writing_dialog.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_name_editor.dart';
+import 'package:uuid/uuid.dart';
 
 class UserManagementListTile extends StatefulWidget {
-  const UserManagementListTile({required this.user, required this.onDeletePressed, super.key});
+  const UserManagementListTile({required this.user, required this.onUserUpdate, super.key});
   final User user;
-  final VoidCallback onDeletePressed;
+  final VoidCallback onUserUpdate;
   @override
   State<UserManagementListTile> createState() => _UserManagementListTileState();
 }
@@ -76,6 +77,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                     Provider.of<UserProvider>(context, listen: false).updateUser(
                       updatedUser: User(
                         id: widget.user.id,
+                        nfcID: widget.user.nfcID,
                         title: userNameController.title,
                         firstName: userNameController.firstName,
                         lastName: userNameController.lastName,
@@ -111,10 +113,11 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                         leading: const Icon(Icons.nfc),
                         title: const Text('NFC beschreiben'),
                         onTap: () async {
+                          Navigator.pop(context);
                           await showDialog<NFCWritingDialog>(
                             context: context,
                             builder: (context) => NFCWritingDialog(
-                              nfcData: widget.user.id,
+                              nfcData: widget.user.nfcID,
                             ),
                           );
                         },
@@ -122,9 +125,36 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                     ),
                     PopupMenuItem(
                       child: ListTile(
+                        leading: const Icon(Icons.refresh),
+                        title: const Text('Neue ID generieren'),
+                        onTap: () async {
+                          final newNfcID = const Uuid().v4();
+                          Navigator.of(context).pop();
+                          await Provider.of<UserProvider>(context, listen: false).updateUser(
+                            updatedUser: User(
+                              id: widget.user.id,
+                              nfcID: newNfcID,
+                              title: widget.user.title,
+                              firstName: widget.user.firstName,
+                              lastName: widget.user.lastName,
+                              station: widget.user.station,
+                              room: widget.user.room,
+                              userGroups: widget.user.userGroups,
+                            ),
+                          );
+                          widget.onUserUpdate();
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
                         leading: const Icon(Icons.delete),
                         title: const Text('Löschen'),
-                        onTap: widget.onDeletePressed,
+                        onTap: () async {
+                          Navigator.pop(context);
+                          await Provider.of<UserProvider>(context, listen: false).deleteUser(id: widget.user.id);
+                          widget.onUserUpdate();
+                        },
                       ),
                     ),
                   ],

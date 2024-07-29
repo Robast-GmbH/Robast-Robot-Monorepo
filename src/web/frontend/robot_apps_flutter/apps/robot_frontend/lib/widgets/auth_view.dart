@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
@@ -5,12 +7,16 @@ import 'package:robot_frontend/models/provider/user_provider.dart';
 
 class AuthView extends StatefulWidget {
   const AuthView({
-    required this.requestedUserIDs,
-    required this.requestedUserGroups,
+    required this.requiredUserIDs,
+    required this.requiredUserGroups,
+    required this.onAuthCompleted,
+    this.onRetry,
     super.key,
   });
-  final List<String> requestedUserIDs;
-  final List<String> requestedUserGroups;
+  final List<String> requiredUserIDs;
+  final List<String> requiredUserGroups;
+  final void Function(bool) onAuthCompleted;
+  final VoidCallback? onRetry;
 
   @override
   State<AuthView> createState() => _AuthViewState();
@@ -18,78 +24,113 @@ class AuthView extends StatefulWidget {
 
 class _AuthViewState extends State<AuthView> {
   late Future<List<User>> loadUsers;
+  late Future<bool> tryStartUserSessionFuture;
+  Timer? timeoutTimer;
 
-  bool readSuccess = false;
-  bool readInProgress = true;
-
-  Future<void> readNFC() async {
-    readInProgress = true;
-    setState(() {});
-
-    final result = await Provider.of<UserProvider>(context, listen: false).readNFC(
+  Future<bool> tryStartUserSession() async {
+    final wasSuccessful = await Provider.of<UserProvider>(context, listen: false).tryStartUserSession(
       robotName: 'rb_theron',
+      requiredUserIDs: widget.requiredUserIDs,
+      requiredUserGroups: widget.requiredUserGroups,
     );
-    if (result.isNotEmpty) {
-      readSuccess = true;
-      readInProgress = false;
-    } else {
-      readSuccess = false;
-      readInProgress = false;
-    }
-    if (mounted) {
-      setState(() {});
-    }
+    widget.onAuthCompleted(wasSuccessful);
+
+    return wasSuccessful;
   }
 
   @override
   void initState() {
     super.initState();
-    if (widget.requestedUserIDs.isNotEmpty || widget.requestedUserGroups.isNotEmpty) {
+    if (widget.requiredUserIDs.isNotEmpty || widget.requiredUserGroups.isNotEmpty) {
       loadUsers = Provider.of<UserProvider>(context, listen: false).getUsers();
-      Provider.of<UserProvider>(context, listen: false).readNFC(robotName: 'rb_theron');
     }
-    readNFC();
+    tryStartUserSessionFuture = tryStartUserSession();
+  }
+
+  @override
+  void dispose() {
+    timeoutTimer?.cancel();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    if (widget.requestedUserIDs.isEmpty && widget.requestedUserGroups.isEmpty) {
-      return const Text(
-        'Bitte authentifizieren Sie sich mit Ihrem NFC-Tag',
-        style: TextStyle(
-          fontSize: 50,
-          fontWeight: FontWeight.bold,
-        ),
-      );
-    }
-    return Center(
-      child: FutureBuilder<List<User>>(
-        future: loadUsers,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState != ConnectionState.done) {
-            return const CircularProgressIndicator();
-          }
-
-          if (widget.requestedUserIDs.isEmpty && widget.requestedUserGroups.isNotEmpty) {
-            return Text(
-              'Bitte melden Sie sich an ${widget.requestedUserGroups.join(', ')}',
-              style: const TextStyle(
-                fontSize: 50,
-                fontWeight: FontWeight.bold,
-              ),
-            );
-          }
-
-          final requiredUser = snapshot.data!.firstWhere((element) => widget.requestedUserIDs.contains(element.id));
-          return Text(
-            '${requiredUser.title} ${requiredUser.firstName} ${requiredUser.lastName} bitte melden Sie sich an',
-            style: const TextStyle(
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        if (widget.requiredUserIDs.isEmpty && (widget.requiredUserGroups.isEmpty || widget.requiredUserGroups.length == 3))
+          const Text(
+            'Bitte authentifizieren Sie sich mit Ihrem NFC-Tag',
+            style: TextStyle(
               fontSize: 50,
               fontWeight: FontWeight.bold,
             ),
-          );
-        },
-      ),
+          )
+        else
+          Center(
+            child: FutureBuilder<List<User>>(
+              future: loadUsers,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState != ConnectionState.done) {
+                  return const CircularProgressIndicator();
+                }
+
+                if (widget.requiredUserIDs.isEmpty && widget.requiredUserGroups.isNotEmpty) {
+                  return Text(
+                    'Bitte melden Sie sich an ${widget.requiredUserGroups.join(', ')}',
+                    style: const TextStyle(
+                      fontSize: 50,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  );
+                }
+
+                final requiredUser = snapshot.data!.firstWhere((element) => widget.requiredUserIDs.contains(element.id));
+                return Text(
+                  '${requiredUser.title} ${requiredUser.firstName} ${requiredUser.lastName} bitte melden Sie sich an',
+                  style: const TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                  ),
+                );
+              },
+            ),
+          ),
+        const SizedBox(
+          height: 32,
+        ),
+        FutureBuilder<bool>(
+          future: tryStartUserSessionFuture,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState != ConnectionState.done) {
+              return const CircularProgressIndicator();
+            } else if (snapshot.data!) {
+              return const Text(
+                'Authentifizierung erfolgreich',
+                style: TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold,
+                ),
+              );
+            } else {
+              return InkWell(
+                onTap: () {
+                  tryStartUserSessionFuture = tryStartUserSessionFuture = tryStartUserSession();
+                  widget.onRetry?.call();
+                  setState(() {});
+                },
+                child: const Text(
+                  'Authentifizierung fehlgeschlagen',
+                  style: TextStyle(
+                    fontSize: 50,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              );
+            }
+          },
+        ),
+      ],
     );
   }
 }

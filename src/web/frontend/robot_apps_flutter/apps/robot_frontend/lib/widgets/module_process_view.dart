@@ -46,8 +46,13 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                   );
               if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.auth) {
                 return AuthView(
-                  requestedUserIDs: moduleInProcess.reservedForIds,
-                  requestedUserGroups: moduleInProcess.reservedForGroups,
+                  requiredUserIDs: moduleInProcess.reservedForIds,
+                  requiredUserGroups: moduleInProcess.reservedForGroups,
+                  onAuthCompleted: (wasAuthSuccessful) {
+                    if (wasAuthSuccessful) {
+                      Provider.of<ModuleProvider>(context, listen: false).fetchModules();
+                    }
+                  },
                 );
               }
               if (!isDisinfected) {

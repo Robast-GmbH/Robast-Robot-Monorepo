@@ -35,6 +35,18 @@ class UserProvider extends ChangeNotifier {
     return _middlewareApiUtilities.users.getUserSession(robotName: robotName);
   }
 
+  Future<bool> tryStartUserSession({
+    required String robotName,
+    List<String> requiredUserIDs = const [],
+    List<String> requiredUserGroups = const [],
+  }) async {
+    return _middlewareApiUtilities.users.tryStartUserSession(
+      robotName: robotName,
+      requiredUserIDs: requiredUserIDs,
+      requiredUserGroups: requiredUserGroups,
+    );
+  }
+
   Future<bool> endUserSession({required String robotName}) async {
     return _middlewareApiUtilities.users.endUserSession(robotName: robotName);
   }
