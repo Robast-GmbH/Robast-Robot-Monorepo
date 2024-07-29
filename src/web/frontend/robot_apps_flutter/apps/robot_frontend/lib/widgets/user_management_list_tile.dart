@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
@@ -114,35 +116,27 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                         title: const Text('NFC beschreiben'),
                         onTap: () async {
                           Navigator.pop(context);
+                          final newNfcID = const Uuid().v4();
+                          unawaited(
+                            Provider.of<UserProvider>(context, listen: false).updateUser(
+                              updatedUser: User(
+                                id: widget.user.id,
+                                nfcID: newNfcID,
+                                title: widget.user.title,
+                                firstName: widget.user.firstName,
+                                lastName: widget.user.lastName,
+                                station: widget.user.station,
+                                room: widget.user.room,
+                                userGroups: widget.user.userGroups,
+                              ),
+                            ),
+                          );
                           await showDialog<NFCWritingDialog>(
                             context: context,
                             builder: (context) => NFCWritingDialog(
-                              nfcData: widget.user.nfcID,
+                              nfcData: newNfcID,
                             ),
                           );
-                        },
-                      ),
-                    ),
-                    PopupMenuItem(
-                      child: ListTile(
-                        leading: const Icon(Icons.refresh),
-                        title: const Text('Neue ID generieren'),
-                        onTap: () async {
-                          final newNfcID = const Uuid().v4();
-                          Navigator.of(context).pop();
-                          await Provider.of<UserProvider>(context, listen: false).updateUser(
-                            updatedUser: User(
-                              id: widget.user.id,
-                              nfcID: newNfcID,
-                              title: widget.user.title,
-                              firstName: widget.user.firstName,
-                              lastName: widget.user.lastName,
-                              station: widget.user.station,
-                              room: widget.user.room,
-                              userGroups: widget.user.userGroups,
-                            ),
-                          );
-                          widget.onUserUpdate();
                         },
                       ),
                     ),
