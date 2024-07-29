@@ -64,6 +64,9 @@ class Drawer:
     def set_is_open(self, is_open: bool) -> None:
         self.__is_open = is_open
 
+    def get_is_open(self) -> bool:
+        return self.__is_open
+
     def get_type(self) -> str:
         return self.__type
 

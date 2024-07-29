@@ -1,7 +1,7 @@
 import 'dart:convert';
 
-import 'package:shared_data_models/shared_data_models.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_data_models/shared_data_models.dart';
 
 /// {@template robot_api_utilities}
 /// A Very Good Project created by Very Good CLI.
@@ -34,7 +34,9 @@ class RobotApiUtilities {
       if (response.statusCode == 200) {
         final jsonData = jsonDecode(response.body) as List<dynamic>;
         for (final module in jsonData) {
-          modules.add(DrawerModule.fromJson(data: module as Map<String, dynamic>));
+          modules.add(
+            DrawerModule.fromJson(data: module as Map<String, dynamic>),
+          );
         }
       }
       return modules;
@@ -105,43 +107,6 @@ class RobotApiUtilities {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body) as Map<String, dynamic>;
         return data['is_nav_blocked'] as bool;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      return false;
-    }
-  }
-
-  Future<ModuleProcess?> getModuleProcess() async {
-    try {
-      final headers = {
-        'Content-Type': 'application/json',
-      };
-      final response = await http.get(
-        Uri.parse('$prefix/module_process_status'),
-        headers: headers,
-      );
-      if (response.statusCode == 200) {
-        final data = jsonDecode(response.body) as Map<String, dynamic>;
-        if ((data["success"] as Map<String, dynamic>).isEmpty) return null;
-        return ModuleProcess.fromJson(data["success"]);
-      } else {
-        return null;
-      }
-    } catch (e) {
-      print(e);
-      return null;
-    }
-  }
-
-  Future<bool> finishModuleProcess() async {
-    try {
-      final response = await http.post(
-        Uri.parse('$prefix/finish_module_process'),
-      );
-      if (response.statusCode == 200) {
-        return true;
       } else {
         return false;
       }

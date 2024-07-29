@@ -6,5 +6,3 @@ dependency_overrides:
     path: ../../packages/shared_data_models
   shared_widgets:
     path: ../../packages/shared_widgets
-  rmf_api:
-    path: ../../packages/rmf_api
