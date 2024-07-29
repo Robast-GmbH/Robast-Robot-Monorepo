@@ -90,7 +90,7 @@ void receive_can_msg_task_loop(void* pvParameters)
       }
       else
       {
-        Serial.println("Error: Could not take the mutex. This should not occur.");
+        Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
       }
     }
   }
@@ -108,7 +108,7 @@ void process_can_msgs_task_loop(void* pvParameters)
     }
     else
     {
-      Serial.println("Error: Could not take the mutex. This should not occur.");
+      Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
     }
 
     if (received_message.has_value())
