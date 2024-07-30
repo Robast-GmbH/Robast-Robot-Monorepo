@@ -1,5 +1,5 @@
 from typing import Optional, Callable, Any
-from roslibpy import Topic, Ros
+from roslibpy import Topic, Ros, Service, ServiceRequest
 from thread_safe_dict import ThreadSafeDict
 
 
@@ -27,3 +27,11 @@ class BaseBridge:
     def start_publisher(self, topic: str, msg_type: str) -> Topic:
         publisher = Topic(self.__ros, topic, msg_type)
         return publisher
+
+    def start_service(
+        self, name: str, service_type: str, values: dict[str, Any] | None = None
+    ) -> Any:
+        service = Service(self.__ros, name, service_type)
+        request = ServiceRequest(values=values)
+        result = service.call(request)
+        self.context[name] = result

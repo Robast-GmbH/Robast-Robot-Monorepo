@@ -7,7 +7,7 @@ services:
       - ROS_DOMAIN_ID=1
       - is_simulation=True
       - config_directory=config_simulation
-      - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/><Peer Address="perception"/><Peer Address="machine-learning-tasks"/></Peers><MaxAutoParticipantIndex>50</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
+      - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/><Peer Address="perception"/><Peer Address="machine-learning-tasks"/><Peer Address="hardware-nodes"/></Peers><MaxAutoParticipantIndex>50</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
       - robot_name=rb_theron
       - init_x=-2.0
       - init_y=0.0
@@ -72,7 +72,6 @@ services:
               count: 1
               capabilities: [gpu]
     command: /bin/sh -c "while sleep 1000; do :; done"
-
   machine-learning-tasks:
     image: ghcr.io/robast-gmbh/monorepo/machine_learning_tasks:devel
     environment:
@@ -90,4 +89,21 @@ services:
             - driver: nvidia
               count: 1
               capabilities: [gpu]
+    command: /bin/sh -c "while sleep 1000; do :; done"   
+     
+  hardware-nodes:
+    image: ghcr.io/robast-gmbh/monorepo/hardware_nodes:devel
+    environment:
+      - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/><Peer Address="perception"/><Peer Address="hardware-nodes"/></Peers><MaxAutoParticipantIndex>100</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
+      - ROS_DOMAIN_ID=1
+      - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
+    volumes:
+      -  ../../src/ros2/hardware_nodes/:/workspace/src/hardware_nodes:cached
+      - ../../src/ros2/error_handling/error_utils/:/workspace/src/error_utils:cached
+      - ../../src/ros2/communication_interfaces/:/workspace/src/communication_interfaces:cached
+      -  ../../libs/:/workspace/libs:cached
+      -  ../../src/ros2/dds_configs:/workspace/dds_configs:cached
+      - ./hardware_nodes/:/workspace/:cached
+    devices:
+      - /dev/robast/robast_nfc:/dev/robast/robast_nfc
     command: /bin/sh -c "while sleep 1000; do :; done"

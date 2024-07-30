@@ -57,6 +57,16 @@ class UsersApi {
     return RequestService.wasRequestSuccessful(response: response);
   }
 
+  Future<bool> createAndWriteUserNFC({
+    required String robotName,
+    required String userID,
+  }) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/create_and_write_user_nfc_id?robot_name=$robotName&user_id=$userID'),
+    );
+    return RequestService.wasRequestSuccessful(response: response);
+  }
+
   Future<User?> getUserSession({required String robotName}) async {
     final response = await RequestService.tryGet(uri: Uri.parse('$prefix/users/session?robot_name=$robotName'));
     if (response != null) {
@@ -66,6 +76,21 @@ class UsersApi {
       }
     }
     return null;
+  }
+
+  Future<bool> tryStartUserSession({
+    required String robotName,
+    List<String> requiredUserIDs = const [],
+    List<String> requiredUserGroups = const [],
+  }) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/try_start_session?robot_name=$robotName'),
+      data: {
+        'required_user_ids': requiredUserIDs,
+        'required_user_groups': requiredUserGroups,
+      },
+    );
+    return RequestService.wasRequestSuccessful(response: response);
   }
 
   Future<bool> endUserSession({required String robotName}) async {
