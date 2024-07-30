@@ -32,6 +32,7 @@ def generate_launch_description():
         executable="tree_initiator",
         name="partial_drawer_tree_initiator",
         output="screen",
+        arguments=['--ros-args', '--log-level', "info"],
         parameters=[configured_params])
     
     ld = LaunchDescription()

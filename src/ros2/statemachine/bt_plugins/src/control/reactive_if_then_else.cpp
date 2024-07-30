@@ -5,7 +5,6 @@ namespace statemachine
   ReactiveIfThenElseNode::ReactiveIfThenElseNode(const std::string &name)
       : ControlNode::ControlNode(name, {})
   {
-    setRegistrationID("ReactiveIfThenElse");
   }
 
   void ReactiveIfThenElseNode::halt()
@@ -51,6 +50,7 @@ namespace statemachine
     if (child_idx > 0)
     {
       BT::NodeStatus status = children_nodes_[child_idx]->executeTick();
+
       if (status == BT::NodeStatus::RUNNING)
       {
         return BT::NodeStatus::RUNNING;
@@ -67,3 +67,8 @@ namespace statemachine
   }
 
 } // namespace statemachine
+#include "behaviortree_cpp/bt_factory.h"
+BT_REGISTER_NODES(factory)
+{
+  factory.registerNodeType<statemachine::ReactiveIfThenElseNode>("ReactiveIfThenElse");
+}
