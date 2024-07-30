@@ -146,8 +146,10 @@
                             led_topic="/led_cmd"
                             leds="{leds}"/>
         <ReactiveIfThenElse>
-          <BoolTopicCondition target_value="false"
-                              topic="/push_to_close_triggered"/>
+          <Inverter>
+            <BoolTopicCondition target_value="true"
+                                topic="/push_to_close_triggered"/>
+          </Inverter>
           <Sequence>
             <SubTree ID="Opening_partial_drawer"
                      _autoremap="true"/>
