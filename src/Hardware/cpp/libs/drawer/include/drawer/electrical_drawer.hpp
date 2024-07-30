@@ -23,12 +23,14 @@
 #define DRAWER_TARGET_HOMING_POSITION 0
 #define STALL_GUARD_DISABLED          0
 #define IS_HOMING                     true
+#define IS_NOT_HOMING                 false
+#define DO_NOT_USE_ACCELERATION_RAMP  false
 #define PUSH_TO_CLOSE_TRIGGERED       true
 #define PUSH_TO_CLOSE_NOT_TRIGGERED   false
 #define MOTOR_IS_STALLED              true
 
 // The drawer accelerates in dependency of the time
-#define DEFAULT_DRAWER_ACCELERATION 10
+#define DEFAULT_DRAWER_ACCELERATION 8   // TODO: Make this configurable via CAN
 
 namespace drawer_controller
 {

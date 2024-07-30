@@ -130,7 +130,7 @@ namespace stepper_motor
 
     uint32_t get_dt_since_start_in_ms() const;
 
-    int32_t calculate_new_active_speed(int32_t current_position_int32) const;
+    uint32_t calculate_new_active_speed(int32_t current_position_int32) const;
 
     void read_stall_guard_pin();
 

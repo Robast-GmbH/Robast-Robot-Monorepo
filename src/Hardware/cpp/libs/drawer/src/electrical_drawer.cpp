@@ -103,8 +103,8 @@ namespace drawer_controller
         add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
                                     _configs->get_drawer_push_in_auto_close_speed(),
                                     _configs->get_drawer_push_in_auto_close_stall_guard_value(),
-                                    false,
-                                    false});
+                                    IS_NOT_HOMING,
+                                    DO_NOT_USE_ACCELERATION_RAMP});
         _can_utils->handle_electrical_drawer_feedback_msg(
           _module_id,
           _id,
@@ -119,11 +119,15 @@ namespace drawer_controller
     std::optional<EDrawerTask> e_drawer_task = _e_drawer_task_queue->get_element_from_queue();
     if (e_drawer_task.has_value())
     {
+      debug_printf("[ElectricalDrawer]: Received new e-drawer task from queue with target position %u and speed %u!\n",
+                   e_drawer_task.value().target_position,
+                   e_drawer_task.value().target_speed);
+
       _is_idling = false;
 
       _target_position_uint8 = e_drawer_task.value().target_position;
 
-      _motor->set_stall_guard(e_drawer_task.value().stall_guard_value);
+      _motor->set_stall_guard(_configs->get_use_tmc_stall_guard() ? e_drawer_task.value().stall_guard_value : 0);
 
       if (e_drawer_task.value().is_homing)
       {
@@ -140,7 +144,7 @@ namespace drawer_controller
   {
     check_if_drawer_is_homed();
 
-    if (_target_position_uint8 == _encoder->get_current_position())
+    if (_target_position_uint8 == _encoder->get_normed_current_position())
     {
       _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
                                                         _id,
@@ -305,7 +309,10 @@ namespace drawer_controller
 
   uint32_t ElectricalDrawer::get_normed_target_speed_uint32(const uint8_t target_speed) const
   {
-    return (target_speed * _configs->get_drawer_max_speed()) / UINT8_MAX;
+    uint32_t max_speed = _configs->get_drawer_max_speed();
+    uint32_t target_speed_casted = static_cast<uint32_t>(target_speed);
+
+    return (target_speed_casted * max_speed) / UINT8_MAX;
   }
 
   uint8_t ElectricalDrawer::get_normed_target_speed_uint8(const uint32_t target_speed) const

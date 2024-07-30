@@ -24,13 +24,13 @@ namespace drawer_controller
     uint32_t position_difference = abs(current_position - _last_position);
     uint32_t time_difference_in_ms = current_timestamp_ms - _last_timestamp_ms;
 
-    uint32_t max_time_diff = _motor_monitor_configs->get_max_time_diff_between_encoder_measurements_in_ms();
-
-    if ((time_difference_in_ms > 0) && (time_difference_in_ms < max_time_diff))
+    if (are_monitor_conditions_met(time_difference_in_ms, current_position))
     {
       uint32_t encoder_speed = (position_difference * 1000) / time_difference_in_ms;
 
-      if (encoder_speed > _motor_monitor_configs->get_active_speed_threshold())
+      uint32_t active_speed_threshold = _motor_monitor_configs->get_active_speed_threshold();
+
+      if (encoder_speed > active_speed_threshold && active_motor_speed > active_speed_threshold)
       {
         uint32_t active_motor_speed_normed_to_encoder_speed =
           static_cast<uint32_t>(std::round(active_motor_speed * _FACTOR_BETWEEN_SPEEDS));
@@ -44,15 +44,21 @@ namespace drawer_controller
              (active_motor_speed_normed_to_encoder_speed < lower_speed_limit)))
         {
           debug_printf(
-            "[MotorMonitor]: Motor is stalled! Active Motor Speed: %d, Encoder Speed: %d. Deviation is higher than "
+            "[MotorMonitor]: Motor is stalled! Target motor speed: %u. Active motor speed: %u, Active Motor Speed "
+            "normed to encoder speed: %u, "
+            "Encoder Speed: %u. Deviation is higher than "
             "%.1f%%. Time difference between encoder measurements in ms: %d. Max time diff: %d. Position difference: "
-            "%d.\n",
+            "%d. Current position: %d. Last Position: %d.\n",
+            _motor->get_target_speed(),
+            active_motor_speed,
             active_motor_speed_normed_to_encoder_speed,
             encoder_speed,
             speed_deviation * 100,
             time_difference_in_ms,
-            max_time_diff,
-            position_difference);
+            _motor_monitor_configs->get_max_time_diff_between_encoder_measurements_in_ms(),
+            position_difference,
+            current_position,
+            _last_position);
           return true;
         }
       }
@@ -61,5 +67,15 @@ namespace drawer_controller
     _last_timestamp_ms = current_timestamp_ms;
 
     return false;
+  }
+
+  bool MotorMonitor::are_monitor_conditions_met(uint32_t time_difference_in_ms, int32_t current_position)
+  {
+    uint32_t max_time_diff = _motor_monitor_configs->get_max_time_diff_between_encoder_measurements_in_ms();
+
+    uint32_t lower_position_threshold = _motor_monitor_configs->get_lower_position_threshold();
+
+    return (time_difference_in_ms > 0) && (time_difference_in_ms < max_time_diff) &&
+           (current_position > lower_position_threshold);
   }
 }   // namespace drawer_controller

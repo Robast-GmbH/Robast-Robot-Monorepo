@@ -7,8 +7,13 @@ namespace drawer_controller
     _active_speed_threshold = active_speed_threshold;
   }
 
+  void MotorMonitorConfigs::set_lower_position_threshold(const uint32_t lower_position_threshold)
+  {
+    _lower_position_threshold = lower_position_threshold;
+  }
+
   void MotorMonitorConfigs::set_max_time_diff_between_encoder_measurements_in_ms(
-      const uint32_t max_time_diff_between_encoder_measurements_in_ms)
+    const uint32_t max_time_diff_between_encoder_measurements_in_ms)
   {
     _max_time_diff_between_encoder_measurements_in_ms = max_time_diff_between_encoder_measurements_in_ms;
   }
@@ -24,10 +29,15 @@ namespace drawer_controller
     return _active_speed_threshold;
   }
 
-    uint32_t MotorMonitorConfigs::get_max_time_diff_between_encoder_measurements_in_ms() const
-    {
-        return _max_time_diff_between_encoder_measurements_in_ms;
-    }
+  uint32_t MotorMonitorConfigs::get_lower_position_threshold() const
+  {
+    return _lower_position_threshold;
+  }
+
+  uint32_t MotorMonitorConfigs::get_max_time_diff_between_encoder_measurements_in_ms() const
+  {
+    return _max_time_diff_between_encoder_measurements_in_ms;
+  }
 
   float MotorMonitorConfigs::get_speed_deviation_in_percentage_for_stall() const
   {

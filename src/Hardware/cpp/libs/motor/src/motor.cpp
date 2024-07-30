@@ -65,7 +65,9 @@ namespace stepper_motor
       abort();
     }
 
-    debug_println("[Motor]: Stepper initialized");
+    debug_println("[Motor]: Stepper initialized. Disabling driver.");
+
+    disable_driver();
   }
 
   void Motor::setup_driver()
@@ -189,6 +191,10 @@ namespace stepper_motor
       return;
     }
 
+    // print active speed and target speed
+    debug_printf(
+      "[Motor, handle_motor_control]: Active speed: %u, Target speed: %u\n", get_active_speed(), get_target_speed());
+
     (get_active_speed() < get_target_speed()) ? handle_time_dependent_acceleration()
                                               : handle_position_dependent_deceleration(current_position_int32);
   }
@@ -211,6 +217,8 @@ namespace stepper_motor
 
     uint32_t new_active_speed_uint32 = _starting_speed_before_ramp_uint32 + delta_speed_uint32;
 
+    debug_printf("[Motor, handle_time_dependent_acceleration]: New active speed: %d\n", new_active_speed_uint32);
+
     if (new_active_speed_uint32 > get_target_speed())
     {
       finish_speed_ramp(get_target_speed());
@@ -223,24 +231,32 @@ namespace stepper_motor
 
   void Motor::handle_position_dependent_deceleration(int32_t current_position_int32)
   {
-    int32_t new_active_speed_int32 = calculate_new_active_speed(current_position_int32);
-    _speed_ramp_in_progress = !(new_active_speed_int32 < get_target_speed());
-    new_active_speed_int32 = _speed_ramp_in_progress ? new_active_speed_int32 : get_target_speed();
-    set_active_speed(new_active_speed_int32);
+    uint32_t new_active_speed_uint32 = calculate_new_active_speed(current_position_int32);
+    _speed_ramp_in_progress = !(new_active_speed_uint32 < get_target_speed());
+    new_active_speed_uint32 = _speed_ramp_in_progress ? new_active_speed_uint32 : get_target_speed();
+    debug_printf("[Motor, handle_position_dependent_deceleration]: New active speed: %d\n", new_active_speed_uint32);
+    set_active_speed(new_active_speed_uint32);
   }
 
-  int32_t Motor::calculate_new_active_speed(int32_t current_position_int32) const
+  uint32_t Motor::calculate_new_active_speed(int32_t current_position_int32) const
   {
     uint32_t distance_travelled_uint32 = abs(current_position_int32 - _starting_position_int32);
 
     uint32_t total_delta_speed_uint32 =
-      abs((int32_t) get_target_speed() - (int32_t) _starting_speed_before_ramp_uint32);
+      abs(static_cast<int32_t>(get_target_speed()) - static_cast<int32_t>(_starting_speed_before_ramp_uint32));
 
     uint32_t delta_speed_uint32 = (total_delta_speed_uint32 * distance_travelled_uint32) / _ramp_distance_uint32;
 
     int32_t new_active_speed_int32 = (int32_t) _starting_speed_before_ramp_uint32 - (int32_t) delta_speed_uint32;
 
-    return new_active_speed_int32;
+    if (new_active_speed_int32 < 0)
+    {
+      return 0;
+    }
+    else
+    {
+      return static_cast<uint32_t>(new_active_speed_int32);
+    }
   }
 
   uint32_t Motor::get_dt_since_start_in_ms() const
@@ -259,6 +275,8 @@ namespace stepper_motor
 
   void Motor::set_active_speed(uint32_t active_speed)
   {
+    debug_printf("[Motor]: Setting active speed to %u\n", active_speed);
+
     _active_speed = active_speed;
 
     setup_driver();
@@ -292,14 +310,15 @@ namespace stepper_motor
 
   void Motor::set_target_speed_with_accelerating_ramp(uint32_t target_speed, int16_t acceleration)
   {
-    if (acceleration == INSTANT_ACCELERATION)
+    if (acceleration == INSTANT_ACCELERATION || target_speed <= _target_speed)
     {
+      debug_printf("[Motor]: Setting target speed with INSTANT_ACCELERATION to %u\n", target_speed);
       set_active_speed(target_speed);
       _target_speed = target_speed;
       return;
     }
 
-    if (target_speed != _target_speed)
+    if (target_speed > _target_speed)
     {
       _target_speed = target_speed;
       _starting_speed_before_ramp_uint32 = _active_speed;
@@ -311,6 +330,7 @@ namespace stepper_motor
 
   void Motor::set_target_speed_instantly(uint32_t target_speed)
   {
+    debug_printf("[Motor]: Setting target speed instantly to %u\n", target_speed);
     set_active_speed(target_speed);
     _target_speed = target_speed;
   }

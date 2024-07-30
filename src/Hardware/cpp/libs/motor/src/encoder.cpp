@@ -62,7 +62,8 @@ namespace drawer_controller
       update_position_from_encoder();
     }
 
-    uint32_t normed_current_position_uint32 = (_current_position_int32 * UINT8_MAX) / get_count_drawer_max_extent();
+    uint32_t normed_current_position_uint32 =
+      (static_cast<uint32_t>(_current_position_int32) * UINT8_MAX) / get_count_drawer_max_extent();
 
     if (normed_current_position_uint32 > UINT8_MAX)
     {

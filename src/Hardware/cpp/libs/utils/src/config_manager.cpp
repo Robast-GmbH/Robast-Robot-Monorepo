@@ -120,6 +120,13 @@ namespace drawer_controller
             config_value));
         break;
 
+      case module_config::motor_monitor::LOWER_POSITION_THRESHOLD:
+        _motor_monitor_configs->set_lower_position_threshold(
+          reinterpret_cast<
+            module_config::ModuleConfigDataType<module_config::motor_monitor::LOWER_POSITION_THRESHOLD>::type>(
+            config_value));
+        break;
+
       case module_config::motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS:
         _motor_monitor_configs->set_max_time_diff_between_encoder_measurements_in_ms(
           reinterpret_cast<module_config::ModuleConfigDataType<
@@ -228,6 +235,11 @@ namespace drawer_controller
       module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD,
       std::bit_cast<uint32_t>(
         module_config::ModuleConfigDataType<module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD>::default_value));
+
+    set_config(
+      module_config::motor_monitor::LOWER_POSITION_THRESHOLD,
+      std::bit_cast<uint32_t>(
+        module_config::ModuleConfigDataType<module_config::motor_monitor::LOWER_POSITION_THRESHOLD>::default_value));
 
     set_config(module_config::motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS,
                std::bit_cast<uint32_t>(

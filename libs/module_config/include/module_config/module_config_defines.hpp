@@ -43,8 +43,9 @@ namespace module_config
   namespace motor_monitor
   {
     constexpr uint8_t ACTIVE_SPEED_THRESHOLD = 30;
-    constexpr uint8_t MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS = 31;
-    constexpr uint8_t SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL = 32;
+    constexpr uint8_t LOWER_POSITION_THRESHOLD = 31;
+    constexpr uint8_t MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS = 32;
+    constexpr uint8_t SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL = 33;
   }   // namespace motor_monitor
 
   template <>
@@ -58,14 +59,14 @@ namespace module_config
   struct ModuleConfigDataType<drawer::HOMING_SPEED>
   {
     using type = uint32_t;
-    static constexpr type default_value = 300;
+    static constexpr type default_value = 500;
   };
 
   template <>
   struct ModuleConfigDataType<drawer::INITIAL_HOMING_SPEED>
   {
     using type = uint32_t;
-    static constexpr type default_value = 1000;
+    static constexpr type default_value = 1500;
   };
 
   template <>
@@ -93,7 +94,7 @@ namespace module_config
   struct ModuleConfigDataType<drawer::PUSH_IN_AUTO_CLOSE_SPEED>
   {
     using type = uint8_t;
-    static constexpr type default_value = 100;
+    static constexpr type default_value = 120;
   };
 
   template <>
@@ -132,7 +133,7 @@ namespace module_config
   struct ModuleConfigDataType<encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT>
   {
     using type = uint32_t;
-    static constexpr type default_value = 86000;
+    static constexpr type default_value = 83000;
   };
 
   template <>
@@ -168,6 +169,15 @@ namespace module_config
   };
 
   template <>
+  struct ModuleConfigDataType<motor_monitor::LOWER_POSITION_THRESHOLD>
+  {
+    using type = uint32_t;
+    // Right after the drawer is homed, there can be a tension in the belt which can cause the motor to move a bit
+    // We don't want to trigger the stall guard in this case, so define a threshold from which to start monitoring
+    static constexpr type default_value = 200;
+  };
+
+  template <>
   struct ModuleConfigDataType<motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS>
   {
     using type = uint32_t;
@@ -179,7 +189,7 @@ namespace module_config
   struct ModuleConfigDataType<motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>
   {
     using type = float;
-    static constexpr type default_value = 0.25;
+    static constexpr type default_value = 0.35;
   };
 
 }   // namespace module_config

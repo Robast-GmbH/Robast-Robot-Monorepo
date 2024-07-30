@@ -31,6 +31,8 @@ namespace drawer_controller
 
     uint32_t _last_timestamp_ms = 0;
     int32_t _last_position = 0;
+
+    bool are_monitor_conditions_met(uint32_t time_difference_in_ms, int32_t current_position);
   };
 
 }   // namespace drawer_controller
