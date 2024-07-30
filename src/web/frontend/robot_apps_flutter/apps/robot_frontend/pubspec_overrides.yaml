@@ -2,7 +2,8 @@
 dependency_overrides:
   robot_api_utilities:
     path: ../../packages/robot_api_utilities
-
+  middleware_api_utilities:
+    path: ../../packages/middleware_api_utilities
   shared_data_models:
     path: ../../packages/shared_data_models
   shared_widgets:

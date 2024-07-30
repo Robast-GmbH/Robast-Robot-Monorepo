@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:rmf_api/rmf_api.dart';
 import 'package:web_frontend/models/controller/task_creation_controller.dart';
-import 'package:web_frontend/models/provider/rmf_provider.dart';
+import 'package:web_frontend/models/provider/task_provider.dart';
 
 class PatrolTaskCreationView extends StatefulWidget {
   const PatrolTaskCreationView({required this.controller, super.key});

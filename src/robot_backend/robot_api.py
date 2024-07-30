@@ -1,7 +1,6 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from ros_bridge import RosBridge
-from models.module_process_data import ModuleProcessData
 
 door_available = False
 ros_bridge = RosBridge(ip="localhost", port=9090, door_available=door_available)
@@ -98,6 +97,13 @@ def read_modules():
     return ros_bridge.module_bridge.get_modules()
 
 
+@app.get("/is_drawer_open", tags=["Modules"])
+def read_is_drawer_open(module_id: int, drawer_id: int):
+    return {
+        "is_open": ros_bridge.module_bridge.get_drawer_is_open(module_id, drawer_id)
+    }
+
+
 @app.post("/open_drawer", tags=["Modules"])
 def post_open_drawer(module_id: int, drawer_id: int):
     return {"success": ros_bridge.module_bridge.open_drawer(module_id, drawer_id)}
@@ -108,19 +114,26 @@ def post_close_drawer(module_id: int, drawer_id: int):
     return {"success": ros_bridge.module_bridge.close_drawer(module_id, drawer_id)}
 
 
-@app.post("/start_module_process", tags=["Modules"])
-def post_start_module_process(data: ModuleProcessData):
-    return {"success": ros_bridge.module_bridge.start_module_process(data)}
+"""
+======================
+NFC API Endpoints
+======================
+"""
 
 
-@app.post("/finish_module_process", tags=["Modules"])
-def post_finish_module_process():
-    return ros_bridge.module_bridge.finish_module_process()
+@app.get("/nfc_tag", tags=["NFC"])
+def get_nfc_tag():
+    return {"nfc_tag": ros_bridge.nfc_bridge.get_nfc_tag()}
 
 
-@app.get("/module_process_status", tags=["Modules"])
-def get_module_process_status():
-    return {"success": ros_bridge.module_bridge.get_current_module_process()}
+@app.post("/write_nfc_tag", tags=["NFC"])
+def write_nfc_tag(nfc_tag_id: str):
+    return ros_bridge.nfc_bridge.write_nfc_tag(nfc_tag_id=nfc_tag_id)
+
+
+@app.get("/read_nfc_tag", tags=["NFC"])
+def read_nfc_tag():
+    return {"nfc_tag": ros_bridge.nfc_bridge.read_nfc_tag()}
 
 
 """

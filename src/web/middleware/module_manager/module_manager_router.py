@@ -1,0 +1,134 @@
+from pydantic_models.module_process_request import ModuleProcessRequest
+from pydantic_models.drawer_address import DrawerAddress
+from module_manager.module_manager import ModuleManager
+from module_manager.module_process_manager import ModuleProcessManager
+
+from fastapi import APIRouter, Body
+
+
+module_manager_router = APIRouter()
+module_manager = ModuleManager()
+module_process_manager = ModuleProcessManager()
+
+
+def create_status_response(status: bool):
+    return {"status": "success" if status else "failed"}
+
+
+@module_manager_router.get("", tags=["Modules"])
+def get_modules(robot_name: str):
+    return module_manager.get_modules(robot_name)
+
+
+@module_manager_router.post("/create_module", tags=["Modules"])
+def create_module(
+    drawer_address: DrawerAddress,
+    position: int = Body(...),
+    size: int = Body(...),
+    variant: str = Body(...),
+):
+    has_been_created = module_manager.create_module(
+        drawer_address.robot_name,
+        drawer_address.module_id,
+        drawer_address.drawer_id,
+        position,
+        size,
+        variant,
+    )
+    return create_status_response(has_been_created)
+
+
+@module_manager_router.post("/delete_module", tags=["Modules"])
+def delete_module(drawer_address: DrawerAddress):
+    has_been_deleted = module_manager.delete_module(drawer_address)
+    return create_status_response(has_been_deleted)
+
+
+@module_manager_router.post("/update_module", tags=["Modules"])
+def update_module(
+    drawer_address: DrawerAddress,
+    variant: str = Body(...),
+):
+    has_been_updated = module_manager.update_module(
+        drawer_address,
+        variant,
+    )
+    return create_status_response(has_been_updated)
+
+
+@module_manager_router.post("/empty_module", tags=["Modules"])
+def empty_module(drawer_address: DrawerAddress):
+    has_been_emptied = module_manager.empty_module(drawer_address)
+    return create_status_response(has_been_emptied)
+
+
+@module_manager_router.post("/update_module_content", tags=["Modules"])
+def update_module_content(
+    drawer_address: DrawerAddress, items_by_count: dict[str, int] = Body(...)
+):
+    has_been_updated = module_manager.update_module_content(
+        drawer_address,
+        items_by_count,
+    )
+    return create_status_response(has_been_updated)
+
+
+@module_manager_router.post("/free_module", tags=["Modules"])
+def free_module(drawer_address: DrawerAddress):
+    has_been_freed = module_manager.free_module(drawer_address)
+    return create_status_response(has_been_freed)
+
+
+@module_manager_router.post("/reserve_module", tags=["Modules"])
+def reserve_module(
+    drawer_address: DrawerAddress,
+    user_ids: list[str] = Body(...),
+    user_groups: list[str] = Body(...),
+):
+    has_been_reserved = module_manager.reserve_module(
+        drawer_address,
+        user_ids=user_ids,
+        user_groups=user_groups,
+    )
+    return create_status_response(has_been_reserved)
+
+
+@module_manager_router.get("/module_process_status", tags=["Modules"])
+def module_process_status(
+    robot_name: str,
+    module_id: int,
+    drawer_id: int,
+):
+    return {
+        "status": module_process_manager.get_module_process_status(
+            DrawerAddress(
+                robot_name=robot_name,
+                module_id=module_id,
+                drawer_id=drawer_id,
+            )
+        )
+    }
+
+
+@module_manager_router.post("/start_module_process", tags=["Modules"])
+def start_module_process(module_process_data: ModuleProcessRequest = Body(...)):
+    has_been_started = module_process_manager.start_module_process(module_process_data)
+    return create_status_response(has_been_started)
+
+
+@module_manager_router.post("/open_drawer", tags=["Modules"])
+def open_drawer(drawer_address: DrawerAddress):
+    has_been_opened = module_process_manager.open_drawer(drawer_address)
+    return create_status_response(has_been_opened)
+
+
+@module_manager_router.post("/close_drawer", tags=["Modules"])
+def close_drawer(drawer_address: DrawerAddress):
+    has_been_closed = module_process_manager.close_drawer(drawer_address)
+    return create_status_response(has_been_closed)
+
+
+@module_manager_router.post("/finish_module_process", tags=["Modules"])
+def finish_module_process(drawer_address: DrawerAddress):
+    has_been_finished = module_process_manager.finish_module_process(drawer_address)
+    return create_status_response(has_been_finished)
