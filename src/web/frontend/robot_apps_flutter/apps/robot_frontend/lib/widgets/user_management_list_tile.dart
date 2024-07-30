@@ -116,25 +116,10 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                         title: const Text('NFC beschreiben'),
                         onTap: () async {
                           Navigator.pop(context);
-                          final newNfcID = const Uuid().v4();
-                          unawaited(
-                            Provider.of<UserProvider>(context, listen: false).updateUser(
-                              updatedUser: User(
-                                id: widget.user.id,
-                                nfcID: newNfcID,
-                                title: widget.user.title,
-                                firstName: widget.user.firstName,
-                                lastName: widget.user.lastName,
-                                station: widget.user.station,
-                                room: widget.user.room,
-                                userGroups: widget.user.userGroups,
-                              ),
-                            ),
-                          );
                           await showDialog<NFCWritingDialog>(
                             context: context,
                             builder: (context) => NFCWritingDialog(
-                              nfcData: newNfcID,
+                              userID: widget.user.id,
                             ),
                           );
                         },

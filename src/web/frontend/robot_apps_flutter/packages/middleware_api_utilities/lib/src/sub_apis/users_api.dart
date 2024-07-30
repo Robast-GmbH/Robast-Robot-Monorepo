@@ -57,6 +57,16 @@ class UsersApi {
     return RequestService.wasRequestSuccessful(response: response);
   }
 
+  Future<bool> createAndWriteUserNFC({
+    required String robotName,
+    required String userID,
+  }) async {
+    final response = await RequestService.tryPost(
+      uri: Uri.parse('$prefix/users/create_and_write_user_nfc_id?robot_name=$robotName&user_id=$userID'),
+    );
+    return RequestService.wasRequestSuccessful(response: response);
+  }
+
   Future<User?> getUserSession({required String robotName}) async {
     final response = await RequestService.tryGet(uri: Uri.parse('$prefix/users/session?robot_name=$robotName'));
     if (response != null) {
