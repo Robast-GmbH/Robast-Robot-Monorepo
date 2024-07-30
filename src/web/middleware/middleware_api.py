@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 
@@ -7,7 +7,7 @@ from pydantic_models.delivery_request import DeliveryRequest
 from user_system.user_system_router import user_system_router
 from module_manager.module_manager_router import module_manager_router
 import configs.url_config as url_config
-
+from models.url_helper import URLHelper
 
 app = FastAPI()
 app.add_middleware(
@@ -22,18 +22,11 @@ app.include_router(module_manager_router, prefix="/modules")
 
 
 name_to_ip = url_config.ROBOT_NAME_TO_IP
-robot_api_port = url_config.ROBOT_API_PORT
 fleet_management_address = url_config.FLEET_MANAGEMENT_ADDRESS
-
 
 task_assigment_system = TaskAssignmentSystem()
 
-
-def get_robot_url(robot_name: str):
-    robot_ip = name_to_ip.get(robot_name, None)
-    if robot_ip is None:
-        raise HTTPException(404, detail="Robot name not found")
-    return f"http://{robot_ip}:{robot_api_port}"
+get_robot_url = URLHelper.get_robot_url
 
 
 """

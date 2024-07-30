@@ -9,9 +9,9 @@ enum NFCWritingStatus {
 }
 
 class NFCWritingDialog extends StatefulWidget {
-  const NFCWritingDialog({required this.nfcData, super.key});
+  const NFCWritingDialog({required this.userID, super.key});
 
-  final String nfcData;
+  final String userID;
 
   @override
   State<NFCWritingDialog> createState() => _NFCWritingDialogState();
@@ -24,9 +24,9 @@ class _NFCWritingDialogState extends State<NFCWritingDialog> {
     status = NFCWritingStatus.inProgress;
     setState(() {});
 
-    final isSuccess = await Provider.of<UserProvider>(context, listen: false).writeNFC(
+    final isSuccess = await Provider.of<UserProvider>(context, listen: false).createAndWriteUserNFC(
       robotName: 'rb_theron',
-      nfcData: widget.nfcData,
+      userID: widget.userID,
     );
     if (isSuccess) {
       status = NFCWritingStatus.success;
@@ -70,6 +70,11 @@ class _NFCWritingDialogState extends State<NFCWritingDialog> {
       title: const Text('NFC Tag schreiben'),
       content: buildContent(),
       actions: <Widget>[
+        if (status == NFCWritingStatus.error)
+          TextButton(
+            onPressed: writeNFC,
+            child: const Text('Erneut versuchen'),
+          ),
         if (status == NFCWritingStatus.success)
           TextButton(
             onPressed: () {
@@ -77,12 +82,7 @@ class _NFCWritingDialogState extends State<NFCWritingDialog> {
             },
             child: const Text('OK'),
           )
-        else if (status == NFCWritingStatus.error)
-          TextButton(
-            onPressed: writeNFC,
-            child: const Text('Erneut versuchen'),
-          ),
-        if (status != NFCWritingStatus.success)
+        else
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
