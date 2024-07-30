@@ -51,7 +51,7 @@ namespace statemachine
     }
     void DrawerChangeStateReq::onHalted()
     {
-        _drawer_open_sub.reset();
+        RCLCPP_INFO(rclcpp::get_logger("DrawerChangeStateReq"), "action halted");
     }
 
     void DrawerChangeStateReq::callbackDrawerChangeStateReq(const communication_interfaces::msg::DrawerAddress::SharedPtr msg)
