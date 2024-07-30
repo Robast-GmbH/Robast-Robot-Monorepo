@@ -94,6 +94,7 @@
             <input_port name="status" default="false"/>
             <input_port name="drawer_address" default="{drawer}"/>
         </Action>
+        <Control ID="ReactiveIfThenElse" editable="true"/>
         <Decorator ID="ResetDecorator">
             <input_port name="topic" default="/tree_reset"/>
         </Decorator>

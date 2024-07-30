@@ -101,6 +101,26 @@
     </Sequence>
   </BehaviorTree>
 
+  <BehaviorTree ID="Opening_partial_drawer">
+    <Sequence>
+      <ElectricDrawerStatusCondition target_value="251"
+                                     topic="/electrical_drawer_status"/>
+      <Delay delay_msec="50">
+        <OpenDrawer drawer_address="{drawer}"
+                    drawer_open_topic="/open_drawer"/>
+      </Delay>
+      <PublishDrawerStatus topic_name="/bt_drawer_open"
+                           status="true"
+                           drawer_address="{drawer}"/>
+      <SubTree ID="LED_Open"
+               _autoremap="true"/>
+      <LEDPublisherAction drawer_address="{drawer}"
+                          fading_time_ms="100"
+                          led_topic="/led_cmd"
+                          leds="{leds}"/>
+    </Sequence>
+  </BehaviorTree>
+
   <BehaviorTree ID="partial_bt">
     <BaseErrorDecorator topic="/robast_error">
       <Sequence>
@@ -125,32 +145,22 @@
                             fading_time_ms="500"
                             led_topic="/led_cmd"
                             leds="{leds}"/>
-        <ElectricDrawerStatusCondition target_value="251"
-                                       topic="/electrical_drawer_status"/>
-        <Delay delay_msec="50">
-          <OpenDrawer drawer_address="{drawer}"
-                      drawer_open_topic="/open_drawer"/>
-        </Delay>
-        <PublishDrawerStatus topic_name="/bt_drawer_open"
-                             status="true"
-                             drawer_address="{drawer}"/>
-        <SubTree ID="LED_Open"
-                 _autoremap="true"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="100"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
-        <ReactiveFallback>
-          <BoolTopicCondition target_value="true"
+        <ReactiveIfThenElse>
+          <BoolTopicCondition target_value="false"
                               topic="/push_to_close_triggered"/>
-          <DrawerChangeStateReq drawer_address_topic="/close_drawer"
-                                drawer_address="{drawer}"/>
-        </ReactiveFallback>
-        <MoveElectricDrawer drawer_address="{drawer}"
-                            move_electric_drawer_topic="/electrical_drawer_task"
-                            speed="135"
-                            stall_guard_value="0"
-                            target_position="0"/>
+          <Sequence>
+            <SubTree ID="Opening_partial_drawer"
+                     _autoremap="true"/>
+            <DrawerChangeStateReq drawer_address_topic="/close_drawer"
+                                  drawer_address="{drawer}"/>
+            <MoveElectricDrawer drawer_address="{drawer}"
+                                move_electric_drawer_topic="/electrical_drawer_task"
+                                speed="135"
+                                stall_guard_value="0"
+                                target_position="0"/>
+          </Sequence>
+          <AlwaysSuccess/>
+        </ReactiveIfThenElse>
         <SubTree ID="LED_Closing"
                  _autoremap="true"/>
         <LEDPublisherAction drawer_address="{drawer}"
@@ -287,6 +297,8 @@
       <input_port name="drawer_address"
                   default="{drawer}"/>
     </Action>
+    <Control ID="ReactiveIfThenElse"
+             editable="true"/>
   </TreeNodesModel>
 
 </root>

@@ -122,6 +122,9 @@ list(APPEND plugin_libs led_changed_condition_node)
 add_library(is_robot_charging_condition_node SHARED src/condition/is_robot_charging_condition.cpp)
 list(APPEND plugin_libs is_robot_charging_condition_node)
 
+add_library(reactive_if_then_else_node SHARED src/control/reactive_if_then_else.cpp)
+list(APPEND plugin_libs reactive_if_then_else_node)
+
 foreach(bt_plugin ${plugin_libs})
   ament_target_dependencies(${bt_plugin} ${dependencies})
   target_compile_definitions(${bt_plugin} PRIVATE BT_PLUGIN_EXPORT)
