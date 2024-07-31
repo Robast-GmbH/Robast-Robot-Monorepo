@@ -7,6 +7,7 @@
 #include <string>
 #include <vector>
 #include <array>
+#include <bit>
 
 #include "can/can_frame.hpp"
 #include "can/can_message.hpp"
@@ -103,15 +104,9 @@ namespace robast_can_msgs
     // Mind that defining templates functions within the cpp file makes problems
     // when building with -DCMAKE_BUILD_TYPE=RelWithDebInfo because of the optimization
     // Therefore we define it within the header.
-    union U
-    {
-      T val;
-      std::array<uint8_t, sizeof(T)> raw;
-    } src, dst;
-
-    src.val = val;
-    std::reverse_copy(src.raw.begin(), src.raw.end(), dst.raw.begin());
-    val = dst.val;
+    auto raw = std::bit_cast<std::array<uint8_t, sizeof(T)>>(val);
+    std::reverse(raw.begin(), raw.end());
+    val = std::bit_cast<T>(raw);
   }
 
   /**
