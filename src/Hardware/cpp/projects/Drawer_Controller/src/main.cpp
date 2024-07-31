@@ -17,8 +17,6 @@
 #define LOCK_ID                 0
 #define STEPPER_MOTOR_1_ADDRESS 0
 #define USE_ENCODER             0
-// TODO@Jacob: This could be automatically detected in the future
-#define SHAFT_DIRECTION_IS_INVERTED true   // depends on how the motor is wired to the driver
 
 #define NUM_OF_LEDS 18
 
@@ -42,6 +40,7 @@ std::shared_ptr<drawer_controller::ElectricalDrawer> drawer;
 
 std::shared_ptr<drawer_controller::ElectricalDrawerConfigs> drawer_configs;
 std::shared_ptr<drawer_controller::EncoderConfigs> encoder_configs;
+std::shared_ptr<drawer_controller::MotorConfigs> motor_configs;
 std::shared_ptr<drawer_controller::MotorMonitorConfigs> motor_monitor_configs;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
@@ -203,10 +202,11 @@ void setup()
 
   drawer_configs = std::make_shared<drawer_controller::ElectricalDrawerConfigs>();
   encoder_configs = std::make_shared<drawer_controller::EncoderConfigs>();
+  motor_configs = std::make_shared<drawer_controller::MotorConfigs>();
   motor_monitor_configs = std::make_shared<drawer_controller::MotorMonitorConfigs>();
 
-  config_manager =
-    std::make_unique<drawer_controller::ConfigManager>(drawer_configs, encoder_configs, motor_monitor_configs);
+  config_manager = std::make_unique<drawer_controller::ConfigManager>(
+    drawer_configs, encoder_configs, motor_configs, motor_monitor_configs);
 
   drawer = std::make_shared<drawer_controller::ElectricalDrawer>(
     MODULE_ID,
@@ -218,7 +218,7 @@ void setup()
     gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_A_PIN_ID),
     gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_B_PIN_ID),
     STEPPER_MOTOR_1_ADDRESS,
-    SHAFT_DIRECTION_IS_INVERTED,
+    motor_configs,
     endstop_switch,
     drawer_lock,
     drawer_configs,
