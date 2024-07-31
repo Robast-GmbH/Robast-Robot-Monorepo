@@ -62,7 +62,7 @@ def calculate_translation_and_rotation(map_msg: OccupancyGrid, feuerplan_image: 
                     world2x, world2y = pixel_coord_to_world_coord(points2.numpy()[0], map_msg.info.resolution, (0, 0))
                     translation_x = world1x - world2x
                     translation_y = world1y - world2y
-                    best_translation_and_rotation = (translation_x, translation_y, np.degrees(np.arctan2(R[1, 0], R[0, 0])))
+                    best_translation_and_rotation = (translation_x, translation_y)
                     best_angle = angle
                     break
                 

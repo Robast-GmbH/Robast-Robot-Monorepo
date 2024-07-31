@@ -30,6 +30,7 @@ class FeuerplanPublisher(Node):
         self.__map_subscriber = self.create_subscription(OccupancyGrid, 'map', self.__listener_callback_map, 10)
         self.get_logger().info('Waiting for map...')
         self.__tf_broadcaster = TransformBroadcaster(self)
+        self.__previous_map_msg = None
         self.__map_msg = None
         self.__initial_match_obtained = False
         self.__throttled_timer = self.create_timer(10.0, self.__throttled_callback)  # 10 seconds
@@ -39,8 +40,8 @@ class FeuerplanPublisher(Node):
         self.__rotated_feuerplan_image = None
 
     def __throttled_callback(self) -> None:
-        if self.__map_msg:
-            self.get_logger().info('Map recieved')
+        if self.__map_msg.data != self.__previous_map_msg:
+            self.get_logger().info('Map changed. Recalculating...')
             self.__broadcast_frame_and_message()
 
     def __listener_callback_map(self, msg:OccupancyGrid) -> None:
@@ -68,6 +69,7 @@ class FeuerplanPublisher(Node):
             create_feuerplan_frame(self.__tf_broadcaster, self.__previous_translation_and_rotation, self.__map_msg, self.get_clock())
             publish_occupancy_grid_from_image(self.__publisher, self.__rotated_feuerplan_image, self.__previous_translation_and_rotation, self.get_logger(), self.get_clock())
             self.__initial_match_obtained = True
+            self.__previous_map_msg = self.__map_msg.data
             self.__throttled_timer.reset()
 
 
