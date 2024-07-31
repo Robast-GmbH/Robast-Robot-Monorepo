@@ -1,4 +1,4 @@
-#include "../include/can/can_message.h"
+#include "../include/can/can_message.hpp"
 
 namespace robast_can_msgs
 {

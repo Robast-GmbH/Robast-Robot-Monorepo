@@ -1,4 +1,4 @@
-#include "../include/can/can_helper.h"
+#include "../include/can/can_helper.hpp"
 
 namespace robast_can_msgs
 {
@@ -57,16 +57,16 @@ namespace robast_can_msgs
     // Therefore return just the object CanFrame and in case there is a bad argument input (wrong CAN ID)
     // we throw an exception.
     throw std::invalid_argument(
-      "The CAN message that should be encoded into a CAN frame has an ID which is not yet defined in the CAN "
-      "database!");
+        "The CAN message that should be encoded into a CAN frame has an ID which is not yet defined in the CAN "
+        "database!");
   }
 
-  void u64_to_eight_bytes(uint64_t input, uint8_t* result)
+  void u64_to_eight_bytes(uint64_t input, uint8_t *result)
   {
     uint64_t big_endian;
     int check_for_little_endian = 1;
     // little endian if true
-    if (*(char*) &check_for_little_endian == 1)
+    if (*(char *)&check_for_little_endian == 1)
     {
       SwapEndian<uint64_t>(input);
       big_endian = input;
@@ -101,4 +101,4 @@ namespace robast_can_msgs
     }
     return can_data;
   }
-}   // namespace robast_can_msgs
+} // namespace robast_can_msgs

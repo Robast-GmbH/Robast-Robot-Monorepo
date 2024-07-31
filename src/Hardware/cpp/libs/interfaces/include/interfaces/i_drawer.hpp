@@ -3,14 +3,14 @@
 
 #include <optional>
 
-#include "can/can_message.h"
+#include "can/can_message.hpp"
 
 namespace drawer_controller
 {
   class IDrawer
   {
-  public:
-    virtual ~IDrawer(){};
+   public:
+    virtual ~IDrawer() {};
 
     /**
      * Returns CAN messages of the drawer that should be sent via the CAN bus.
@@ -39,5 +39,5 @@ namespace drawer_controller
      */
     virtual void handle_electrical_drawer_lock_control() = 0;
   };
-} // namespace drawer_controller
+}   // namespace drawer_controller
 #endif

@@ -9,7 +9,7 @@
 #include <optional>
 
 #include "can/can_db.hpp"
-#include "can/can_helper.h"
+#include "can/can_helper.hpp"
 #include "debug/debug.hpp"
 
 namespace drawer_controller

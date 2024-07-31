@@ -7,7 +7,7 @@
 #include <optional>
 
 #include "can/can_db.hpp"
-#include "can/can_message.h"
+#include "can/can_message.hpp"
 #include "debug/debug.hpp"
 #include "utils/queue.hpp"
 

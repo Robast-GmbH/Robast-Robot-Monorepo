@@ -1,5 +1,5 @@
-#ifndef CAN__CAN_DB_DEFINES_H_
-#define CAN__CAN_DB_DEFINES_H_
+#ifndef CAN__CAN_DB_DEFINES_HPP_
+#define CAN__CAN_DB_DEFINES_HPP_
 
 #include <stdint.h>
 
@@ -310,4 +310,4 @@ namespace robast_can_msgs
 
 } // namespace robast_can_msgs
 
-#endif // CAN__CAN_DB_DEFINES_H_
+#endif // CAN__CAN_DB_DEFINES_HPP_

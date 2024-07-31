@@ -1,5 +1,5 @@
-#ifndef CAN__CAN_SIGNAL_H_
-#define CAN__CAN_SIGNAL_H_
+#ifndef CAN__CAN_SIGNAL_HPP_
+#define CAN__CAN_SIGNAL_HPP_
 
 #include <cstdint>
 
@@ -48,4 +48,4 @@ namespace robast_can_msgs
   };
 }   // namespace robast_can_msgs
 
-#endif   // CAN__CAN_SIGNAL_H_
+#endif   // CAN__CAN_SIGNAL_HPP_

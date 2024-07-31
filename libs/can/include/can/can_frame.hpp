@@ -1,11 +1,11 @@
-#ifndef CAN__CAN_FRAME_H_
-#define CAN__CAN_FRAME_H_
+#ifndef CAN__CAN_FRAME_HPP_
+#define CAN__CAN_FRAME_HPP_
 
 #include <cmath>
 #include <cstdint>
 #include <cstring>
 
-#include "can/can_db_defines.h"
+#include "can/can_db_defines.hpp"
 
 namespace robast_can_msgs
 {

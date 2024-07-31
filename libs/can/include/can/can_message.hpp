@@ -1,9 +1,9 @@
-#ifndef CAN__CAN_MESSAGE_H_
-#define CAN__CAN_MESSAGE_H_
+#ifndef CAN__CAN_MESSAGE_HPP_
+#define CAN__CAN_MESSAGE_HPP_
 
 #include <vector>
 
-#include "can/can_signal.h"
+#include "can/can_signal.hpp"
 
 namespace robast_can_msgs
 {
@@ -55,4 +55,4 @@ namespace robast_can_msgs
   };
 }   // namespace robast_can_msgs
 
-#endif   // CAN__CAN_MESSAGE_H_
+#endif   // CAN__CAN_MESSAGE_HPP_

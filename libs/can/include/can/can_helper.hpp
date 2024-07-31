@@ -1,5 +1,5 @@
-#ifndef CAN__CAN_HELPER_H_
-#define CAN__CAN_HELPER_H_
+#ifndef CAN__CAN_HELPER_HPP_
+#define CAN__CAN_HELPER_HPP_
 
 #include <algorithm>
 #include <iomanip>
@@ -8,8 +8,8 @@
 #include <vector>
 #include <array>
 
-#include "can/can_frame.h"
-#include "can/can_message.h"
+#include "can/can_frame.hpp"
+#include "can/can_message.hpp"
 
 namespace robast_can_msgs
 {
@@ -128,4 +128,4 @@ namespace robast_can_msgs
 
 } // namespace robast_can_msgs
 
-#endif // CAN__CAN_HELPER_H_
+#endif // CAN__CAN_HELPER_HPP_

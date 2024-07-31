@@ -1,8 +1,8 @@
 #include <catch2/catch_all.hpp>
 
 #include "../include/can/can_db.hpp"
-#include "../include/can/can_frame.h"
-#include "../include/can/can_helper.h"
+#include "../include/can/can_frame.hpp"
+#include "../include/can/can_helper.hpp"
 /*
  * HOW TO RUN THIS TEST ON WINDOWS:
  * - Go to directory libs/can/tests

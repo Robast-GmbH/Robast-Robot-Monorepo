@@ -3,8 +3,8 @@
 
 #include <vector>
 
-#include "can/can_db_defines.h"
-#include "can/can_message.h"
+#include "can/can_db_defines.hpp"
+#include "can/can_message.hpp"
 
 namespace robast_can_msgs
 {
