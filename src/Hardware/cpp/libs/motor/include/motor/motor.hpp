@@ -17,7 +17,6 @@
 #define TOFF_VALUE                 2
 #define SERIAL_PORT                Serial2
 #define R_SENSE                    0.33f   // Match to your driver
-#define DEFAULT_MOTOR_ACCELERATION 10
 #define INSTANT_ACCELERATION       0
 
 #define STALL_GUARD_READER_THRESHOLD           0.9
