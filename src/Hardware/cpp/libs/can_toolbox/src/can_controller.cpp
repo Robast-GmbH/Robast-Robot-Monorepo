@@ -93,12 +93,12 @@ namespace drawer_controller
       }
       else
       {
-        Serial.println("[CanController]: Error accured while sending CAN message!");
+        Serial.println("[CanController]: Error occured while sending CAN message!");
       }
     }
     catch (const std::invalid_argument &exception)
     {
-      Serial.print("Exception accurred while encoding CAN message into can frame. Exception message: ");
+      Serial.print("Exception occured while encoding CAN message into can frame. Exception message: ");
       Serial.println(exception.what());
     }
   }
