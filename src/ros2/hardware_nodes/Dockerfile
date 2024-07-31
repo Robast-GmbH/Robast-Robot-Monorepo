@@ -1,4 +1,5 @@
-FROM ros:jazzy-ros-base AS devel
+ARG ROS_DISTRO=jazzy
+FROM ros:${ROS_DISTRO}-ros-base AS devel 
 
 RUN echo "ubuntu:ubuntu" | chpasswd && \
     echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers

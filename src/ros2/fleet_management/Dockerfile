@@ -6,6 +6,7 @@ RUN apt-get update -q && \
     apt-get install -yq wget curl git build-essential vim sudo lsb-release locales bash-completion tzdata gosu && \
     rm -rf /var/lib/apt/lists/*
 RUN echo "Set disable_coredump false" >> /etc/sudo.conf
+
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
     echo robast:robast | chpasswd && \
     echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers

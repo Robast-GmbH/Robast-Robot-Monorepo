@@ -1,9 +1,10 @@
-FROM ros:humble as devel
+ARG ROS_DISTRO=jazzy
+#TODO@sagarvl96: define the correct image more specifically
+FROM ros:${ROS_DISTRO} AS devel
 
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-    echo robast:robast | chpasswd && \
-    echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
+RUN echo ubuntu:ubuntu | chpasswd && \
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+ENV USER=ubuntu
 
 RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
 
@@ -23,6 +24,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /tmp
 RUN git clone https://github.com/Robast-GmbH/LightGlue.git
+# TODO@sagarvl96 fails in next line. bdist_wheel invalid command
 RUN python3 LightGlue/setup.py bdist_wheel
 RUN mkdir /ws
 RUN if [ -f LightGlue/dist/*.whl ]; then mv LightGlue/dist/*.whl  /ws/ ; else echo "File not found!"; exit 1; fi
@@ -31,3 +33,5 @@ ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
+
+USER ubuntu
