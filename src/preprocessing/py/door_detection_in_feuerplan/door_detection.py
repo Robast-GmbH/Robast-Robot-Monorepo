@@ -62,9 +62,9 @@ class FeuerplanDoorDetector:
             angle = 180
         elif 80 <= angle <= 100:
             angle = 90
-        R_inv = self.__inverse_rotation_matrix(angle)
+        r_inv = self.__inverse_rotation_matrix(angle)
         points_centered = points - center
-        unrotated_points = R_inv @ points_centered.T
+        unrotated_points = r_inv @ points_centered.T
         unrotated_points = unrotated_points.T + center
         if angle == 90:
             sorted_points = sorted(unrotated_points, key=lambda y: y[0], reverse=True)[:2]
