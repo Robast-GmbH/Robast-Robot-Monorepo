@@ -138,11 +138,12 @@ void process_can_msgs_task_loop(void* pvParameters)
         break;
         case robast_can_msgs::can_id::MODULE_CONFIG:
         {
-          config_manager->set_config(
-            received_message->get_can_signals().at(robast_can_msgs::can_signal::module_config::CONFIG_ID).get_data(),
-            received_message->get_can_signals()
-              .at(robast_can_msgs::can_signal::module_config::CONFIG_VALUE)
-              .get_data());
+          config_manager->set_config(received_message->get_can_signals()
+                                       .at(robast_can_msgs::can_signal::id::module_config::CONFIG_ID)
+                                       .get_data(),
+                                     received_message->get_can_signals()
+                                       .at(robast_can_msgs::can_signal::id::module_config::CONFIG_VALUE)
+                                       .get_data());
         }
         default:
           debug_println("[Main]: Received unsupported CAN message.");

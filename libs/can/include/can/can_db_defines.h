@@ -58,176 +58,238 @@ namespace robast_can_msgs
 
   namespace can_signal
   {
-    namespace drawer_unlock
+    namespace id
     {
-      constexpr uint8_t MODULE_ID = 0;
-      constexpr uint8_t DRAWER_ID = 1;
-    } // drawer_unlock
 
-    namespace drawer_feedback
-    {
-      constexpr uint8_t MODULE_ID = 0;
-      constexpr uint8_t DRAWER_ID = 1;
-      constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 2;
-      constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 3;
-    } // drawer_feedback
+      namespace drawer_unlock
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t DRAWER_ID = 1;
+      } // drawer_unlock
 
-    namespace e_drawer_task
-    {
-      constexpr uint8_t MODULE_ID = 0;
-      constexpr uint8_t DRAWER_ID = 1;
-      constexpr uint8_t DRAWER_TARGET_POSITION = 2;
-      constexpr uint8_t DRAWER_SPEED = 3;
-      constexpr uint8_t DRAWER_STALL_GUARD_VALUE = 4;
-    } // e_drawer_task
+      namespace drawer_feedback
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t DRAWER_ID = 1;
+        constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 2;
+        constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 3;
+      } // drawer_feedback
 
-    namespace e_drawer_feedback
-    {
-      constexpr uint8_t MODULE_ID = 0;
-      constexpr uint8_t DRAWER_ID = 1;
-      constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 2;
-      constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 3;
-      constexpr uint8_t DRAWER_IS_STALL_GUARD_TRIGGERED = 4;
-      constexpr uint8_t DRAWER_POSITION = 5;
-      constexpr uint8_t IS_PUSH_TO_CLOSE_TRIGGERED = 6;
-    } // e_drawer_feedback
+      namespace e_drawer_task
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t DRAWER_ID = 1;
+        constexpr uint8_t DRAWER_TARGET_POSITION = 2;
+        constexpr uint8_t DRAWER_SPEED = 3;
+        constexpr uint8_t DRAWER_STALL_GUARD_VALUE = 4;
+      } // e_drawer_task
 
-    namespace error_feedback
-    {
-      constexpr uint8_t MODULE_ID = 0;
-      constexpr uint8_t DRAWER_ID = 1;
-      constexpr uint8_t ERROR_CODE = 2;
-    } // error_feedback
+      namespace e_drawer_feedback
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t DRAWER_ID = 1;
+        constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 2;
+        constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 3;
+        constexpr uint8_t DRAWER_IS_STALL_GUARD_TRIGGERED = 4;
+        constexpr uint8_t DRAWER_POSITION = 5;
+        constexpr uint8_t IS_PUSH_TO_CLOSE_TRIGGERED = 6;
+      } // e_drawer_feedback
 
-    namespace led_header
-    {
-      constexpr uint8_t MODULE_ID = 0;
-      constexpr uint8_t START_INDEX = 1;
-      constexpr uint8_t NUM_OF_LEDS = 2;
-      constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 3;
-    } // led_header
+      namespace error_feedback
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t DRAWER_ID = 1;
+        constexpr uint8_t ERROR_CODE = 2;
+      } // error_feedback
 
-    namespace single_led
-    {
-      constexpr uint8_t MODULE_ID = 0;
-      constexpr uint8_t LED_STATE_RED = 1;
-      constexpr uint8_t LED_STATE_GREEN = 2;
-      constexpr uint8_t LED_STATE_BLUE = 3;
-      constexpr uint8_t LED_STATE_BRIGHTNESS = 4;
-    } // single_led
+      namespace led_header
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t START_INDEX = 1;
+        constexpr uint8_t NUM_OF_LEDS = 2;
+        constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 3;
+      } // led_header
 
-    namespace tray_led_brightness
-    {
-      constexpr uint8_t MODULE_ID = 0;
-      constexpr uint8_t TRAY_ID = 1;
-      constexpr uint8_t TRAY_LED_ROW_INDEX = 2;
-      constexpr uint8_t TRAY_LED_STATE_BRIGHNESS = 3;
-    } // tray_led_brightness
+      namespace single_led
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t LED_STATE_RED = 1;
+        constexpr uint8_t LED_STATE_GREEN = 2;
+        constexpr uint8_t LED_STATE_BLUE = 3;
+        constexpr uint8_t LED_STATE_BRIGHTNESS = 4;
+      } // single_led
 
-    namespace module_config
+      namespace tray_led_brightness
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t TRAY_ID = 1;
+        constexpr uint8_t TRAY_LED_ROW_INDEX = 2;
+        constexpr uint8_t TRAY_LED_STATE_BRIGHNESS = 3;
+      } // tray_led_brightness
+
+      namespace module_config
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t CONFIG_ID = 1;
+        constexpr uint8_t CONFIG_VALUE = 2;
+      } // module_config
+
+    } // id
+
+    namespace bit_start
     {
-      constexpr uint8_t MODULE_ID = 0;
-      constexpr uint8_t CONFIG_ID = 1;
-      constexpr uint8_t CONFIG_VALUE = 2;
-    } // module_config
+      namespace drawer_unlock
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t DRAWER_ID = 24;
+      } // drawer_unlock
+
+      namespace drawer_feedback
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t DRAWER_ID = 24;
+        constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 32;
+        constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 33;
+      } // drawer_feedback
+
+      namespace e_drawer_task
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t DRAWER_ID = 24;
+        constexpr uint8_t DRAWER_TARGET_POSITION = 32;
+        constexpr uint8_t DRAWER_SPEED = 40;
+        constexpr uint8_t DRAWER_STALL_GUARD_VALUE = 48;
+      } // e_drawer_task
+
+      namespace e_drawer_feedback
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t DRAWER_ID = 24;
+        constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 32;
+        constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 33;
+        constexpr uint8_t DRAWER_IS_STALL_GUARD_TRIGGERED = 34;
+        constexpr uint8_t DRAWER_POSITION = 35;
+        constexpr uint8_t IS_PUSH_TO_CLOSE_TRIGGERED = 43;
+      } // e_drawer_feedback
+
+      namespace error_feedback
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t DRAWER_ID = 24;
+        constexpr uint8_t ERROR_CODE = 32;
+      } // error_feedback
+
+      namespace led_header
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t START_INDEX = 24;
+        constexpr uint8_t NUM_OF_LEDS = 40;
+        constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 56;
+      } // led_header
+
+      namespace single_led
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t LED_STATE_RED = 24;
+        constexpr uint8_t LED_STATE_GREEN = 32;
+        constexpr uint8_t LED_STATE_BLUE = 40;
+        constexpr uint8_t LED_STATE_BRIGHTNESS = 48;
+      } // single_led
+
+      namespace tray_led_brightness
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t TRAY_ID = 24;
+        constexpr uint8_t TRAY_LED_ROW_INDEX = 32;
+        constexpr uint8_t TRAY_LED_STATE_BRIGHNESS = 40;
+      } // tray_led_brightness
+
+      namespace module_config
+      {
+        constexpr uint8_t MODULE_ID = 0;
+        constexpr uint8_t CONFIG_ID = 24;
+        constexpr uint8_t CONFIG_VALUE = 32;
+      } // module_config
+    } // bit_config
+
+    namespace bit_length
+    {
+      namespace drawer_unlock
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t DRAWER_ID = 8;
+      } // drawer_unlock
+
+      namespace drawer_feedback
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t DRAWER_ID = 8;
+        constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 1;
+        constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 1;
+      } // drawer_feedback
+
+      namespace e_drawer_task
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t DRAWER_ID = 8;
+        constexpr uint8_t DRAWER_TARGET_POSITION = 8;
+        constexpr uint8_t DRAWER_SPEED = 8;
+        constexpr uint8_t DRAWER_STALL_GUARD_VALUE = 8;
+      } // e_drawer_task
+
+      namespace e_drawer_feedback
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t DRAWER_ID = 8;
+        constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 1;
+        constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 1;
+        constexpr uint8_t DRAWER_IS_STALL_GUARD_TRIGGERED = 1;
+        constexpr uint8_t DRAWER_POSITION = 8;
+        constexpr uint8_t IS_PUSH_TO_CLOSE_TRIGGERED = 1;
+      } // e_drawer_feedback
+
+      namespace error_feedback
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t DRAWER_ID = 8;
+        constexpr uint8_t ERROR_CODE = 6;
+      } // bit_length
+
+      namespace led_header
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t START_INDEX = 16;
+        constexpr uint8_t NUM_OF_LEDS = 16;
+        constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 8;
+      } // led_header
+
+      namespace single_led
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t LED_STATE_RED = 8;
+        constexpr uint8_t LED_STATE_GREEN = 8;
+        constexpr uint8_t LED_STATE_BLUE = 8;
+        constexpr uint8_t LED_STATE_BRIGHTNESS = 8;
+      } // single_led
+
+      namespace tray_led_brightness
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t TRAY_ID = 8;
+        constexpr uint8_t TRAY_LED_ROW_INDEX = 8;
+        constexpr uint8_t TRAY_LED_STATE_BRIGHNESS = 8;
+      } // tray_led_brightness
+
+      namespace module_config
+      {
+        constexpr uint8_t MODULE_ID = 24;
+        constexpr uint8_t CONFIG_ID = 8;
+        constexpr uint8_t CONFIG_VALUE = 32;
+      } // module_config
+
+    } // bit_length
 
   } // can_signal
-
-/*********************************************************************************************************
- CAN SIGNAL BIT START
-*********************************************************************************************************/
-
-// DRAWER_UNLOCK
-#define CAN_SIGNAL_MODULE_ID_BIT_START 0
-#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH 24
-#define CAN_SIGNAL_DRAWER_ID_BIT_START 24
-#define CAN_SIGNAL_DRAWER_ID_BIT_LENGTH 8
-
-// DRAWER_FEEDBACK
-#define CAN_SIGNAL_MODULE_ID_BIT_START 0
-#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH 24
-#define CAN_SIGNAL_DRAWER_ID_BIT_START 24
-#define CAN_SIGNAL_DRAWER_ID_BIT_LENGTH 8
-#define CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED_BIT_START 32
-#define CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED_BIT_LENGTH 1
-#define CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED_BIT_START 33
-#define CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED_BIT_LENGTH 1
-
-// ELECTRICAL_DRAWER_TASK
-#define CAN_SIGNAL_MODULE_ID_BIT_START 0
-#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH 24
-#define CAN_SIGNAL_DRAWER_ID_BIT_START 24
-#define CAN_SIGNAL_DRAWER_ID_BIT_LENGTH 8
-#define CAN_SIGNAL_DRAWER_TARGET_POSITION_BIT_START 32
-#define CAN_SIGNAL_DRAWER_TARGET_POSITION_BIT_LENGTH 8
-#define CAN_SIGNAL_DRAWER_SPEED_BIT_START 40
-#define CAN_SIGNAL_DRAWER_SPEED_BIT_LENGTH 8
-#define CAN_SIGNAL_DRAWER_STALL_GUARD_VALUE_BIT_START 48
-#define CAN_SIGNAL_DRAWER_STALL_GUARD_VALUE_BIT_LENGTH 8
-
-// ELECTRICAL_DRAWER_FEEDBACK
-#define CAN_SIGNAL_MODULE_ID_BIT_START 0
-#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH 24
-#define CAN_SIGNAL_DRAWER_ID_BIT_START 24
-#define CAN_SIGNAL_DRAWER_ID_BIT_LENGTH 8
-#define CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED_BIT_START 32
-#define CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED_BIT_LENGTH 1
-#define CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED_BIT_START 33
-#define CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED_BIT_LENGTH 1
-#define CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED_BIT_START 34
-#define CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED_BIT_LENGTH 1
-#define CAN_SIGNAL_DRAWER_POSITION_BIT_START 35
-#define CAN_SIGNAL_DRAWER_POSITION_BIT_LENGTH 8
-#define CAN_SIGNAL_IS_PUSH_TO_CLOSE_TRIGGERED_BIT_START 43
-#define CAN_SIGNAL_IS_PUSH_TO_CLOSE_TRIGGERED_BIT_LENGTH 1
-
-// ERROR FEEDBACK
-#define CAN_SIGNAL_MODULE_ID_BIT_START 0
-#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH 24
-#define CAN_SIGNAL_DRAWER_ID_BIT_START 24
-#define CAN_SIGNAL_DRAWER_ID_BIT_LENGTH 8
-#define CAN_SIGNAL_ERROR_CODE_BIT_START 32
-#define CAN_SIGNAL_ERROR_CODE_BIT_LENGTH 6
-
-// LED HEADER
-#define CAN_SIGNAL_MODULE_ID_BIT_START 0
-#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH 24
-#define CAN_SIGNAL_LED_START_INDEX_BIT_START 24
-#define CAN_SIGNAL_LED_START_INDEX_BIT_LENGTH 16
-#define CAN_SIGNAL_NUM_OF_LEDS_BIT_START 40
-#define CAN_SIGNAL_NUM_OF_LEDS_BIT_LENGTH 16
-#define CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS_BIT_START 56
-#define CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS_BIT_LENGTH 8
-
-// SINGLE_LED_STATE
-#define CAN_SIGNAL_MODULE_ID_BIT_START 0
-#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH 24
-#define CAN_SIGNAL_SINGLE_LED_STATE_RED_BIT_START 24
-#define CAN_SIGNAL_SINGLE_LED_STATE_RED_BIT_LENGTH 8
-#define CAN_SIGNAL_SINGLE_LED_STATE_GREEN_BIT_START 32
-#define CAN_SIGNAL_SINGLE_LED_STATE_GREEN_BIT_LENGTH 8
-#define CAN_SIGNAL_SINGLE_LED_STATE_BLUE_BIT_START 40
-#define CAN_SIGNAL_SINGLE_LED_STATE_BLUE_BIT_LENGTH 8
-#define CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_START 48
-#define CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_LENGTH 8
-
-// TRAY_LED_BRIGHTNESS
-#define CAN_SIGNAL_MODULE_ID_BIT_START 0
-#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH 24
-#define CAN_SIGNAL_TRAY_ID_BIT_START 24
-#define CAN_SIGNAL_TRAY_ID_BIT_LENGTH 8
-#define CAN_SIGNAL_TRAY_LED_ROW_INDEX_BIT_START 32
-#define CAN_SIGNAL_TRAY_LED_ROW_INDEX_BIT_LENGTH 8
-#define CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS_BIT_START 40
-#define CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS_BIT_LENGTH 8
-
-// MODULE_CONFIG
-#define CAN_SIGNAL_MODULE_ID_BIT_START 0
-#define CAN_SIGNAL_MODULE_ID_BIT_LENGTH 24
-#define CAN_SIGNAL_CONFIG_ID_BIT_START 24
-#define CAN_SIGNAL_CONFIG_ID_BIT_LENGTH 8
-#define CAN_SIGNAL_CONFIG_VALUE_BIT_START 32
-#define CAN_SIGNAL_CONFIG_VALUE_BIT_LENGTH 32
 
   /*******************************************
    * Some defines for actual CAN data

@@ -139,14 +139,14 @@ namespace drawer_bridge
     std::vector<robast_can_msgs::CanSignal> can_signals = drawer_feedback_can_msg.get_can_signals();
 
     DrawerAddress drawer_address = DrawerAddress();
-    drawer_address.module_id = can_signals.at(robast_can_msgs::can_signal::drawer_feedback::MODULE_ID).get_data();
-    drawer_address.drawer_id = can_signals.at(robast_can_msgs::can_signal::drawer_feedback::DRAWER_ID).get_data();
+    drawer_address.module_id = can_signals.at(robast_can_msgs::can_signal::id::drawer_feedback::MODULE_ID).get_data();
+    drawer_address.drawer_id = can_signals.at(robast_can_msgs::can_signal::id::drawer_feedback::DRAWER_ID).get_data();
 
     const bool is_endstop_switch_pushed =
-      can_signals.at(robast_can_msgs::can_signal::drawer_feedback::IS_ENDSTOP_SWITCH_PUSHED).get_data() ==
+      can_signals.at(robast_can_msgs::can_signal::id::drawer_feedback::IS_ENDSTOP_SWITCH_PUSHED).get_data() ==
       CAN_DATA_SWITCH_IS_PUSHED;
     const bool is_lock_switch_pushed =
-      can_signals.at(robast_can_msgs::can_signal::drawer_feedback::IS_LOCK_SWITCH_PUSHED).get_data() ==
+      can_signals.at(robast_can_msgs::can_signal::id::drawer_feedback::IS_LOCK_SWITCH_PUSHED).get_data() ==
       CAN_DATA_SWITCH_IS_PUSHED;
 
     DrawerStatus drawer_status_msg = DrawerStatus();
@@ -179,20 +179,21 @@ namespace drawer_bridge
 
     std_msgs::msg::Bool push_to_close_triggered_msg;
     push_to_close_triggered_msg.data =
-      can_signals.at(robast_can_msgs::can_signal::e_drawer_feedback::IS_PUSH_TO_CLOSE_TRIGGERED).get_data() == 1;
+      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::IS_PUSH_TO_CLOSE_TRIGGERED).get_data() == 1;
 
     _push_to_close_triggered->publish(push_to_close_triggered_msg);
 
     ElectricalDrawerStatus status = ElectricalDrawerStatus();
 
     status.drawer_address.module_id =
-      can_signals.at(robast_can_msgs::can_signal::e_drawer_feedback::MODULE_ID).get_data();
+      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::MODULE_ID).get_data();
     status.drawer_address.drawer_id =
-      can_signals.at(robast_can_msgs::can_signal::e_drawer_feedback::DRAWER_ID).get_data();
+      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_ID).get_data();
 
-    status.position = can_signals.at(robast_can_msgs::can_signal::e_drawer_feedback::DRAWER_POSITION).get_data();
+    status.position = can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_POSITION).get_data();
     status.is_stall_guard_triggered =
-      can_signals.at(robast_can_msgs::can_signal::e_drawer_feedback::DRAWER_IS_STALL_GUARD_TRIGGERED).get_data() == 1;
+      can_signals.at(robast_can_msgs::can_signal::id::e_drawer_feedback::DRAWER_IS_STALL_GUARD_TRIGGERED).get_data() ==
+      1;
 
     _electrical_drawer_status_publisher->publish(status);
   }
@@ -206,10 +207,10 @@ namespace drawer_bridge
     auto message_converter = MessageConverter<ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED_INTERFACE>();
 
     DrawerAddress drawer_address = DrawerAddress();
-    drawer_address.module_id = can_signals.at(robast_can_msgs::can_signal::error_feedback::MODULE_ID).get_data();
-    drawer_address.drawer_id = can_signals.at(robast_can_msgs::can_signal::error_feedback::DRAWER_ID).get_data();
+    drawer_address.module_id = can_signals.at(robast_can_msgs::can_signal::id::error_feedback::MODULE_ID).get_data();
+    drawer_address.drawer_id = can_signals.at(robast_can_msgs::can_signal::id::error_feedback::DRAWER_ID).get_data();
 
-    switch (can_signals.at(robast_can_msgs::can_signal::error_feedback::ERROR_CODE).get_data())
+    switch (can_signals.at(robast_can_msgs::can_signal::id::error_feedback::ERROR_CODE).get_data())
     {
       case CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED:
         error_msg.error_code = ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED;

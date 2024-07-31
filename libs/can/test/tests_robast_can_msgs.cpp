@@ -43,24 +43,24 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
                               0};
     WHEN("Creating the CanSignal classes")
     {
-      uint8_t bit_start_module_id = CAN_SIGNAL_MODULE_ID_BIT_START;
-      uint8_t bit_length_module_id = CAN_SIGNAL_MODULE_ID_BIT_LENGTH;
+      uint8_t bit_start_module_id = robast_can_msgs::can_signal::bit_start::single_led::MODULE_ID;
+      uint8_t bit_length_module_id = robast_can_msgs::can_signal::bit_length::single_led::MODULE_ID;
       robast_can_msgs::CanSignal can_signal_module_id =
         robast_can_msgs::CanSignal(bit_start_module_id, bit_length_module_id, data_module_id);
-      uint8_t bit_start_LED_red = CAN_SIGNAL_SINGLE_LED_STATE_RED_BIT_START;
-      uint8_t bit_length_LED_red = CAN_SIGNAL_SINGLE_LED_STATE_RED_BIT_LENGTH;
+      uint8_t bit_start_LED_red = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_RED;
+      uint8_t bit_length_LED_red = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_RED;
       robast_can_msgs::CanSignal can_signal_LED_red =
         robast_can_msgs::CanSignal(bit_start_LED_red, bit_length_LED_red, data_LED_red);
-      uint8_t bit_start_LED_green = CAN_SIGNAL_SINGLE_LED_STATE_GREEN_BIT_START;
-      uint8_t bit_length_LED_green = CAN_SIGNAL_SINGLE_LED_STATE_GREEN_BIT_LENGTH;
+      uint8_t bit_start_LED_green = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_GREEN;
+      uint8_t bit_length_LED_green = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_GREEN;
       robast_can_msgs::CanSignal can_signal_LED_green =
         robast_can_msgs::CanSignal(bit_start_LED_green, bit_length_LED_green, data_LED_green);
-      uint8_t bit_start_LED_blue = CAN_SIGNAL_SINGLE_LED_STATE_BLUE_BIT_START;
-      uint8_t bit_length_LED_blue = CAN_SIGNAL_SINGLE_LED_STATE_BLUE_BIT_LENGTH;
+      uint8_t bit_start_LED_blue = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_BLUE;
+      uint8_t bit_length_LED_blue = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_BLUE;
       robast_can_msgs::CanSignal can_signal_LED_blue =
         robast_can_msgs::CanSignal(bit_start_LED_blue, bit_length_LED_blue, data_LED_blue);
-      uint8_t bit_start_LED_brightness = CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_START;
-      uint8_t bit_length_LED_brightness = CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_LENGTH;
+      uint8_t bit_start_LED_brightness = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_BRIGHTNESS;
+      uint8_t bit_length_LED_brightness = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_BRIGHTNESS;
       robast_can_msgs::CanSignal can_signal_LED_brightness =
         robast_can_msgs::CanSignal(bit_start_LED_brightness, bit_length_LED_brightness, data_LED_brightness);
       THEN("The created CanSignal classes should encapsulate the data correctly")
@@ -94,43 +94,42 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
         {
           REQUIRE(can_message.get_id() == msg_id);
           REQUIRE(can_message.get_dlc() == dlc);
-          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::MODULE_ID].get_bit_start() ==
-                  can_signal_module_id.get_bit_start());
-          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::MODULE_ID].get_bit_length() ==
-                  can_signal_module_id.get_bit_length());
-          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::MODULE_ID].get_data() ==
+          REQUIRE(
+            can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::MODULE_ID].get_bit_start() ==
+            can_signal_module_id.get_bit_start());
+          REQUIRE(
+            can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::MODULE_ID].get_bit_length() ==
+            can_signal_module_id.get_bit_length());
+          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::MODULE_ID].get_data() ==
                   can_signal_module_id.get_data());
           REQUIRE(
-            can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_RED].get_bit_start() ==
+            can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_RED].get_bit_start() ==
             can_signal_LED_red.get_bit_start());
+          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_RED]
+                    .get_bit_length() == can_signal_LED_red.get_bit_length());
           REQUIRE(
-            can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_RED].get_bit_length() ==
-            can_signal_LED_red.get_bit_length());
-          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_RED].get_data() ==
-                  can_signal_LED_red.get_data());
+            can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_RED].get_data() ==
+            can_signal_LED_red.get_data());
+          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_GREEN]
+                    .get_bit_start() == can_signal_LED_green.get_bit_start());
+          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_GREEN]
+                    .get_bit_length() == can_signal_LED_green.get_bit_length());
           REQUIRE(
-            can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_GREEN].get_bit_start() ==
-            can_signal_LED_green.get_bit_start());
+            can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_GREEN].get_data() ==
+            can_signal_LED_green.get_data());
+          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BLUE]
+                    .get_bit_start() == can_signal_LED_blue.get_bit_start());
+          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BLUE]
+                    .get_bit_length() == can_signal_LED_blue.get_bit_length());
           REQUIRE(
-            can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_GREEN].get_bit_length() ==
-            can_signal_LED_green.get_bit_length());
-          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_GREEN].get_data() ==
-                  can_signal_LED_green.get_data());
-          REQUIRE(
-            can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BLUE].get_bit_start() ==
-            can_signal_LED_blue.get_bit_start());
-          REQUIRE(
-            can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BLUE].get_bit_length() ==
-            can_signal_LED_blue.get_bit_length());
-          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BLUE].get_data() ==
-                  can_signal_LED_blue.get_data());
-          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BRIGHTNESS]
+            can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BLUE].get_data() ==
+            can_signal_LED_blue.get_data());
+          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS]
                     .get_bit_start() == can_signal_LED_brightness.get_bit_start());
-          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BRIGHTNESS]
+          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS]
                     .get_bit_length() == can_signal_LED_brightness.get_bit_length());
-          REQUIRE(
-            can_message.get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BRIGHTNESS].get_data() ==
-            can_signal_LED_brightness.get_data());
+          REQUIRE(can_message.get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS]
+                    .get_data() == can_signal_LED_brightness.get_data());
         }
         WHEN("Creating the CanDb class")
         {
@@ -144,49 +143,49 @@ SCENARIO("Test class creation of CanSignal, CanMessage, CanDb and CanFrame", "[r
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE].get_dlc() ==
                     robast_can_msgs::can_dlc::SINGLE_LED_STATE);
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::MODULE_ID]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::MODULE_ID]
                       .get_bit_start() == can_signal_module_id.get_bit_start());
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::MODULE_ID]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::MODULE_ID]
                       .get_bit_length() == can_signal_module_id.get_bit_length());
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::MODULE_ID]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::MODULE_ID]
                       .get_data() == 0);
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_RED]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_RED]
                       .get_bit_start() == can_signal_LED_red.get_bit_start());
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_RED]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_RED]
                       .get_bit_length() == can_signal_LED_red.get_bit_length());
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_RED]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_RED]
                       .get_data() == 0);
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_GREEN]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_GREEN]
                       .get_bit_start() == can_signal_LED_green.get_bit_start());
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_GREEN]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_GREEN]
                       .get_bit_length() == can_signal_LED_green.get_bit_length());
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_GREEN]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_GREEN]
                       .get_data() == 0);
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BLUE]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BLUE]
                       .get_bit_start() == can_signal_LED_blue.get_bit_start());
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BLUE]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BLUE]
                       .get_bit_length() == can_signal_LED_blue.get_bit_length());
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BLUE]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BLUE]
                       .get_data() == 0);
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BRIGHTNESS]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS]
                       .get_bit_start() == can_signal_LED_brightness.get_bit_start());
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BRIGHTNESS]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS]
                       .get_bit_length() == can_signal_LED_brightness.get_bit_length());
             REQUIRE(can_db.can_messages[robast_can_msgs::can_msg::SINGLE_LED_STATE]
-                      .get_can_signals()[robast_can_msgs::can_signal::single_led::LED_STATE_BRIGHTNESS]
+                      .get_can_signals()[robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS]
                       .get_data() == 0);
           }
         }
@@ -226,24 +225,24 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
     uint8_t u8_can_data[8] = {0x01, 0x02, 0x03, 0x01, 0x02, 0x03, 0x07, 0};
     uint64_t u64_can_data_expected = 0x102030102030700;
     uint64_t u64_can_data_not_expected = 0x0907060509030201;
-    uint8_t bit_start_module_id = CAN_SIGNAL_MODULE_ID_BIT_START;
-    uint8_t bit_length_module_id = CAN_SIGNAL_MODULE_ID_BIT_LENGTH;
+    uint8_t bit_start_module_id = robast_can_msgs::can_signal::bit_start::single_led::MODULE_ID;
+    uint8_t bit_length_module_id = robast_can_msgs::can_signal::bit_length::single_led::MODULE_ID;
     robast_can_msgs::CanSignal can_signal_module_id =
       robast_can_msgs::CanSignal(bit_start_module_id, bit_length_module_id, data_module_id);
-    uint8_t bit_start_LED_red = CAN_SIGNAL_SINGLE_LED_STATE_RED_BIT_START;
-    uint8_t bit_length_LED_red = CAN_SIGNAL_SINGLE_LED_STATE_RED_BIT_LENGTH;
+    uint8_t bit_start_LED_red = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_RED;
+    uint8_t bit_length_LED_red = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_RED;
     robast_can_msgs::CanSignal can_signal_LED_red =
       robast_can_msgs::CanSignal(bit_start_LED_red, bit_length_LED_red, data_LED_red);
-    uint8_t bit_start_LED_green = CAN_SIGNAL_SINGLE_LED_STATE_GREEN_BIT_START;
-    uint8_t bit_length_LED_green = CAN_SIGNAL_SINGLE_LED_STATE_GREEN_BIT_LENGTH;
+    uint8_t bit_start_LED_green = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_GREEN;
+    uint8_t bit_length_LED_green = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_GREEN;
     robast_can_msgs::CanSignal can_signal_LED_green =
       robast_can_msgs::CanSignal(bit_start_LED_green, bit_length_LED_green, data_LED_green);
-    uint8_t bit_start_LED_blue = CAN_SIGNAL_SINGLE_LED_STATE_BLUE_BIT_START;
-    uint8_t bit_length_LED_blue = CAN_SIGNAL_SINGLE_LED_STATE_BLUE_BIT_LENGTH;
+    uint8_t bit_start_LED_blue = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_BLUE;
+    uint8_t bit_length_LED_blue = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_BLUE;
     robast_can_msgs::CanSignal can_signal_LED_blue =
       robast_can_msgs::CanSignal(bit_start_LED_blue, bit_length_LED_blue, data_LED_blue);
-    uint8_t bit_start_LED_brightness = CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_START;
-    uint8_t bit_length_LED_brightness = CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS_BIT_LENGTH;
+    uint8_t bit_start_LED_brightness = robast_can_msgs::can_signal::bit_start::single_led::LED_STATE_BRIGHTNESS;
+    uint8_t bit_length_LED_brightness = robast_can_msgs::can_signal::bit_length::single_led::LED_STATE_BRIGHTNESS;
     robast_can_msgs::CanSignal can_signal_LED_brightness =
       robast_can_msgs::CanSignal(bit_start_LED_brightness, bit_length_LED_brightness, data_LED_brightness);
     robast_can_msgs::CanMessage can_message = robast_can_msgs::CanMessage(
@@ -258,8 +257,12 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
       robast_can_msgs::can_id::DRAWER_UNLOCK,
       robast_can_msgs::can_dlc::DRAWER_UNLOCK,
       {
-        robast_can_msgs::CanSignal(CAN_SIGNAL_MODULE_ID_BIT_START, CAN_SIGNAL_MODULE_ID_BIT_LENGTH, data_module_id),
-        robast_can_msgs::CanSignal(CAN_SIGNAL_DRAWER_ID_BIT_START, CAN_SIGNAL_DRAWER_ID_BIT_LENGTH, data_drawer_id),
+        robast_can_msgs::CanSignal(robast_can_msgs::can_signal::bit_start::drawer_unlock::MODULE_ID,
+                                   robast_can_msgs::can_signal::bit_length::drawer_unlock::MODULE_ID,
+                                   data_module_id),
+        robast_can_msgs::CanSignal(robast_can_msgs::can_signal::bit_start::drawer_unlock::DRAWER_ID,
+                                   robast_can_msgs::can_signal::bit_length::drawer_unlock::DRAWER_ID,
+                                   data_drawer_id),
       });
     uint64_t u64_can_data_expected_drawer_feedback = 0x0102038000000000;
     robast_can_msgs::CanDb can_db = robast_can_msgs::CanDb();
@@ -352,38 +355,38 @@ SCENARIO("Test CAN helper functions", "[robast_can_msgs]")
         REQUIRE(decoded_can_message_drawer_unlock.has_value());
         REQUIRE(decoded_can_message_drawer_unlock.value().get_id() == robast_can_msgs::can_id::DRAWER_UNLOCK);
         REQUIRE(decoded_can_message_drawer_unlock.value().get_dlc() == robast_can_msgs::can_dlc::DRAWER_UNLOCK);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::drawer_unlock::MODULE_ID].get_bit_start() ==
-                CAN_SIGNAL_MODULE_ID_BIT_START);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::drawer_unlock::MODULE_ID].get_bit_length() ==
-                CAN_SIGNAL_MODULE_ID_BIT_LENGTH);
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::drawer_unlock::MODULE_ID].get_bit_start() ==
+                robast_can_msgs::can_signal::bit_start::drawer_unlock::MODULE_ID);
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::drawer_unlock::MODULE_ID].get_bit_length() ==
+                robast_can_msgs::can_signal::bit_length::drawer_unlock::MODULE_ID);
         REQUIRE(decoded_can_message_drawer_led.has_value());
         REQUIRE(decoded_can_message_drawer_led.value().get_id() == can_message.get_id());
         REQUIRE(decoded_can_message_drawer_led.value().get_dlc() == can_message.get_dlc());
-        REQUIRE(can_signals[robast_can_msgs::can_signal::drawer_unlock::MODULE_ID].get_bit_start() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::drawer_unlock::MODULE_ID].get_bit_start() ==
                 bit_start_module_id);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::drawer_unlock::MODULE_ID].get_bit_length() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::drawer_unlock::MODULE_ID].get_bit_length() ==
                 bit_length_module_id);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::drawer_unlock::MODULE_ID].get_data() == data_module_id);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_RED].get_bit_start() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::drawer_unlock::MODULE_ID].get_data() == data_module_id);
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_RED].get_bit_start() ==
                 bit_start_LED_red);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_RED].get_bit_length() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_RED].get_bit_length() ==
                 bit_length_LED_red);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_RED].get_data() == data_LED_red);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_GREEN].get_bit_start() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_RED].get_data() == data_LED_red);
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_GREEN].get_bit_start() ==
                 bit_start_LED_green);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_GREEN].get_bit_length() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_GREEN].get_bit_length() ==
                 bit_length_LED_green);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_GREEN].get_data() == data_LED_green);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_BLUE].get_bit_start() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_GREEN].get_data() == data_LED_green);
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_BLUE].get_bit_start() ==
                 bit_start_LED_blue);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_BLUE].get_bit_length() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_BLUE].get_bit_length() ==
                 bit_length_LED_blue);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_BLUE].get_data() == data_LED_blue);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_BRIGHTNESS].get_bit_start() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_BLUE].get_data() == data_LED_blue);
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS].get_bit_start() ==
                 bit_start_LED_brightness);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_BRIGHTNESS].get_bit_length() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS].get_bit_length() ==
                 bit_length_LED_brightness);
-        REQUIRE(can_signals[robast_can_msgs::can_signal::single_led::LED_STATE_BRIGHTNESS].get_data() ==
+        REQUIRE(can_signals[robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS].get_data() ==
                 data_LED_brightness);
       }
     }
