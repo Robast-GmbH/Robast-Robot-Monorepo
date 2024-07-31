@@ -28,6 +28,7 @@
 #define PUSH_TO_CLOSE_TRIGGERED       true
 #define PUSH_TO_CLOSE_NOT_TRIGGERED   false
 #define MOTOR_IS_STALLED              true
+#define MOTOR_IS_NOT_STALLED          false
 
 // The drawer accelerates in dependency of the time
 #define DEFAULT_DRAWER_ACCELERATION 8   // TODO: Make this configurable via CAN
@@ -109,6 +110,9 @@ namespace drawer_controller
     uint32_t _timestamp_stall_guard_triggered_in_ms = 0;
     uint32_t _timestamp_movement_started_in_ms = 0;
 
+    bool _is_motor_monitor_stall_guard_triggered = false;
+    bool _is_tmc_stall_guard_triggered = false;
+
     /* FUNCTIONS */
 
     void init_motor() const;
@@ -154,6 +158,8 @@ namespace drawer_controller
     uint32_t get_normed_target_speed_uint32(const uint8_t target_speed) const;
 
     uint8_t get_normed_target_speed_uint8(const uint32_t target_speed) const;
+
+    bool is_stall_guard_triggered() const;
   };
 }   // namespace drawer_controller
 

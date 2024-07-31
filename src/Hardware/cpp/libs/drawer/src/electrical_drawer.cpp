@@ -110,7 +110,7 @@ namespace drawer_controller
           _id,
           _endstop_switch->is_switch_pressed(),
           _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
-          _motor->get_is_stalled(),
+          MOTOR_IS_NOT_STALLED,
           _encoder->get_normed_current_position(),
           PUSH_TO_CLOSE_TRIGGERED);
       }
@@ -157,7 +157,7 @@ namespace drawer_controller
                                                         _id,
                                                         _endstop_switch->is_switch_pressed(),
                                                         false,
-                                                        _motor->get_is_stalled(),
+                                                        is_stall_guard_triggered(),
                                                         _encoder->get_normed_current_position(),
                                                         PUSH_TO_CLOSE_NOT_TRIGGERED);
       return;
@@ -244,26 +244,25 @@ namespace drawer_controller
       return false;
     }
 
-    bool is_tmc_stall_guard_triggered = false;
     if (_configs->get_use_tmc_stall_guard())
     {
-      is_tmc_stall_guard_triggered = _motor->get_is_stalled();
+      _is_tmc_stall_guard_triggered = _motor->get_is_stalled();
     }
 
-    bool is_motor_monitor_stall_guard_triggered = _motor_monitor->is_motor_stalled();
+    _is_motor_monitor_stall_guard_triggered = _motor_monitor->is_motor_stalled();
 
-    if (!is_tmc_stall_guard_triggered && !is_motor_monitor_stall_guard_triggered)
+    if (!_is_tmc_stall_guard_triggered && !_is_motor_monitor_stall_guard_triggered)
     {
       return false;
     }
 
-    if (is_tmc_stall_guard_triggered)
+    if (_is_tmc_stall_guard_triggered)
     {
       debug_println(
         "[ElectricalDrawer]: Motor stall is detected by TMC stall guard. Setting speed to 0 and creating feedback "
         "messages!");
     }
-    if (is_motor_monitor_stall_guard_triggered)
+    if (_is_motor_monitor_stall_guard_triggered)
     {
       debug_println(
         "[ElectricalDrawer]: Motor stall is detected by motor monitor. Setting speed to 0 and creating feedback "
@@ -418,7 +417,7 @@ namespace drawer_controller
                                                         _id,
                                                         _endstop_switch->is_switch_pressed(),
                                                         false,
-                                                        _motor->get_is_stalled(),
+                                                        is_stall_guard_triggered(),
                                                         _encoder->get_normed_current_position(),
                                                         PUSH_TO_CLOSE_NOT_TRIGGERED);
       _triggered_deceleration_for_drawer_moving_out = false;
@@ -493,7 +492,7 @@ namespace drawer_controller
       _id,
       _endstop_switch->is_switch_pressed(),
       _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
-      _motor->get_is_stalled(),
+      is_stall_guard_triggered(),
       _encoder->get_normed_current_position(),
       PUSH_TO_CLOSE_NOT_TRIGGERED);
     _can_utils->handle_drawer_feedback_msg(
@@ -501,6 +500,11 @@ namespace drawer_controller
       _id,
       _endstop_switch->is_switch_pressed(),
       _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false);
+  }
+
+  bool ElectricalDrawer::is_stall_guard_triggered() const
+  {
+    return _is_motor_monitor_stall_guard_triggered || _is_tmc_stall_guard_triggered;
   }
 
   void ElectricalDrawer::debug_prints_moving_electrical_drawer()

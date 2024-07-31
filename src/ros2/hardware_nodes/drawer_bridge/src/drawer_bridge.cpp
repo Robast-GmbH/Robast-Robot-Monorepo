@@ -186,6 +186,7 @@ namespace drawer_bridge
     status.drawer_address.drawer_id = can_signals.at(CAN_SIGNAL_DRAWER_ID).get_data();
 
     status.position = can_signals.at(CAN_SIGNAL_DRAWER_POSITION).get_data();
+    status.is_stall_guard_triggered = can_signals.at(CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED).get_data() == 1;
 
     _electrical_drawer_status_publisher->publish(status);
   }

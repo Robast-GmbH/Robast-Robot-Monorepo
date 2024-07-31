@@ -101,7 +101,7 @@ namespace drawer_controller
     can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED).set_data(is_endstop_switch_pushed);
     can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED).set_data(is_lock_switch_pushed);
     can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED)
-      .set_data(is_lock_switch_pushed);
+      .set_data(is_drawer_stall_guard_triggered);
     can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_DRAWER_POSITION).set_data(normed_current_position);
     can_signals_electrical_drawer_feedback.at(CAN_SIGNAL_IS_PUSH_TO_CLOSE_TRIGGERED)
       .set_data(is_push_to_close_triggered);
