@@ -241,7 +241,7 @@ void setup()
 
   xTaskCreatePinnedToCore(process_can_msgs_task_loop, /* Task function. */
                           "Task2",                    /* name of task. */
-                          10000,                      /* Stack size of task */
+                          20000,                      /* Stack size of task */
                           NULL,                       /* parameter of the task */
                           1,                          /* priority of the task */
                           &Task2,                     /* Task handle to keep track of created task */
