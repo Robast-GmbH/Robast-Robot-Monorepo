@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 
 void main() {
   group('RobotApiUtilities', () {
-    final testPrefix = 'http://10.10.23.7:8001';
+    const testPrefix = 'http://10.10.23.7:8001';
 
     test('can be instantiated', () {
       expect(RobotApiUtilities(prefix: ''), isNotNull);
@@ -14,11 +14,6 @@ void main() {
       final robotApiUtilities = RobotApiUtilities(prefix: testPrefix);
       final isNavigationBlocked = await robotApiUtilities.isNavigationBlocked();
       expect(isNavigationBlocked, isNotNull);
-    });
-    test('can get module_process_status', () async {
-      final robotApiUtilities = RobotApiUtilities(prefix: testPrefix);
-      final moduleProcess = await robotApiUtilities.getModuleProcess();
-      expect(moduleProcess, isNotNull);
     });
   });
 }

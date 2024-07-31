@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 
 class HintView extends StatelessWidget {
   const HintView({
-    super.key,
     required this.moduleLabel,
     required this.text,
+    super.key,
   });
 
   final String moduleLabel;
@@ -17,18 +17,16 @@ class HintView extends StatelessWidget {
         color: Colors.lightBlue,
         borderRadius: BorderRadius.circular(12),
       ),
-      margin: EdgeInsets.all(4),
-      child: SizedBox(
-        width: double.infinity,
-        height: double.infinity,
+      margin: const EdgeInsets.all(4),
+      child: SizedBox.expand(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Padding(
-              padding: const EdgeInsets.only(top: 8.0),
+              padding: const EdgeInsets.only(top: 8),
               child: Text(
                 moduleLabel,
-                style: TextStyle(
+                style: const TextStyle(
                   height: 0,
                   color: Colors.white,
                   fontSize: 40,
@@ -41,15 +39,15 @@ class HintView extends StatelessWidget {
               child: Text(
                 text,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   color: Colors.white,
                   fontSize: 40,
                   fontWeight: FontWeight.w500,
                 ),
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.only(bottom: 64.0),
+            const Padding(
+              padding: EdgeInsets.only(bottom: 64),
               child: Icon(Icons.arrow_downward, size: 100, color: Colors.white),
             ),
           ],

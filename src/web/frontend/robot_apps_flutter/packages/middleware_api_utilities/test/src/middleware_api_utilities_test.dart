@@ -1,11 +1,220 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
+import 'package:middleware_api_utilities/src/sub_apis/nfc_api.dart';
+import 'package:middleware_api_utilities/src/sub_apis/users_api.dart';
 import 'package:test/test.dart';
 
 void main() {
   group('MiddlewareApiUtilities', () {
+    const robotName = 'rb_theron';
+    const moduleID = 7;
+    const drawerID = 0;
+    const position = 9;
+    const size = 1;
+    const itemID = 'Stifte';
+    const quantity = 3;
+    const variant = 'manual';
+    final modulesApi = ModulesApi(prefix: 'http://localhost:8003');
+
+    const userID = '';
+    const nfcID = '';
+    const title = 'Prof. Dr. med.';
+    const firstName = 'Max';
+    const lastName = 'Mustermann';
+    const station = 'HNO';
+    const room = 'Raum 3';
+    const userGroups = ['group1', 'group2'];
+    final testUser = User(
+      id: userID,
+      nfcID: nfcID,
+      title: title,
+      firstName: firstName,
+      lastName: lastName,
+      station: station,
+      room: room,
+      userGroups: userGroups,
+    );
+    const updatedTitle = 'Dr. med.';
+    const updatedFirstName = 'Maximilian';
+    const updatedLastName = 'Musterfrau';
+    const updatedStation = 'Orthopädie';
+    const updatedRoom = 'Raum 4';
+    const updatedUserGroups = ['group3', 'group4'];
+
+    final usersApi = UsersApi(prefix: 'http://localhost:8003');
     test('can be instantiated', () {
-      expect(MiddlewareApiUtilities(prefix: ''), isNotNull);
+      expect(MiddlewareApiUtilities(), isNotNull);
+    });
+
+    test('can get modules', () async {
+      final modules = await modulesApi.getModules(robotName: robotName);
+      expect(modules, isNotEmpty);
+    });
+
+    test('can create and delete module', () async {
+      final creationResult = await modulesApi.createModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+        position: position,
+        size: size,
+        variant: variant,
+      );
+      expect(creationResult, isTrue);
+      final modules = await modulesApi.getModules(robotName: robotName);
+      expect(
+        modules.where((drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID),
+        isNotEmpty,
+      );
+      final deletionResult = await modulesApi.deleteModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+      );
+      expect(deletionResult, isTrue);
+    });
+
+    test('can fill and empty module', () async {
+      final creationResult = await modulesApi.createModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+        position: position,
+        size: size,
+        variant: variant,
+      );
+      expect(creationResult, isTrue);
+      final fillModuleResult = await modulesApi.updateModuleContent(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+        itemsByCount: {itemID: quantity},
+      );
+      expect(fillModuleResult, isTrue);
+      final modules = await modulesApi.getModules(robotName: robotName);
+      final filledModule = modules.firstWhere(
+        (drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID,
+        orElse: () => throw Exception('Drawer not found'),
+      );
+      expect(filledModule.itemsByCount, equals({'Stifte': 3}));
+      final emptyResult = await modulesApi.emptyModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+      );
+      expect(emptyResult, isTrue);
+      final modules2 = await modulesApi.getModules(robotName: robotName);
+      final emptiedModule = modules2.firstWhere(
+        (drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID,
+        orElse: () => throw Exception('Drawer not found'),
+      );
+      expect(emptiedModule.itemsByCount, equals({}));
+      final deletionResult = await modulesApi.deleteModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+      );
+      expect(deletionResult, isTrue);
+    });
+
+    test('can reserve and free drawer', () async {
+      final creationResult = await modulesApi.createModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+        position: position,
+        size: size,
+        variant: variant,
+      );
+      expect(creationResult, isTrue);
+      final reserveResult = await modulesApi.reserveModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+        userIDs: ['user1', 'user2'],
+        userGroups: ['group1', 'group2'],
+      );
+      expect(reserveResult, isTrue);
+      final modules = await modulesApi.getModules(robotName: robotName);
+      final reservedModule = modules.firstWhere(
+        (drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID,
+        orElse: () => throw Exception('Drawer not found'),
+      );
+      expect(reservedModule.reservedForIds, equals(['user1', 'user2']));
+      expect(reservedModule.reservedForGroups, equals(['group1', 'group2']));
+      final freeResult = await modulesApi.freeModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+      );
+      expect(freeResult, isTrue);
+      final modules2 = await modulesApi.getModules(robotName: robotName);
+      final freedModule = modules2.firstWhere(
+        (drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID,
+        orElse: () => throw Exception('Drawer not found'),
+      );
+      expect(freedModule.reservedForIds, isEmpty);
+      expect(freedModule.reservedForGroups, isEmpty);
+      final deletionResult = await modulesApi.deleteModule(
+        robotName: robotName,
+        moduleID: moduleID,
+        drawerID: drawerID,
+      );
+      expect(deletionResult, isTrue);
+    });
+
+    test('can get users', () async {
+      final users = await usersApi.getUsers();
+      expect(users, isNotEmpty);
+    });
+    test('can create and delete user', () async {
+      final creationResult = await usersApi.createUser(
+        newUser: testUser,
+      );
+      expect(creationResult, isNotNull);
+      final users = await usersApi.getUsers();
+      expect(
+        users.where((user) => user.id == creationResult!.id),
+        isNotEmpty,
+      );
+      final deletionResult = await usersApi.deleteUser(id: creationResult!.id);
+      expect(deletionResult, isTrue);
+    });
+
+    test('can update user', () async {
+      final creationResult = await usersApi.createUser(
+        newUser: testUser,
+      );
+      expect(creationResult, isNotNull);
+      final updatedUser = User(
+        id: creationResult!.id,
+        nfcID: creationResult.nfcID,
+        title: updatedTitle,
+        firstName: updatedFirstName,
+        lastName: updatedLastName,
+        station: updatedStation,
+        room: updatedRoom,
+        userGroups: updatedUserGroups,
+      );
+      final updatedUserResult = await usersApi.updateUser(updatedUser: updatedUser);
+      expect(updatedUserResult, isNotNull);
+      final user = await usersApi.getUser(id: updatedUserResult!.id);
+      expect(user, isNotNull);
+      expect(user!.title, equals(updatedTitle));
+      expect(user.firstName, equals(updatedFirstName));
+      expect(user.lastName, equals(updatedLastName));
+      expect(user.station, equals(updatedStation));
+      expect(user.room, equals(updatedRoom));
+      expect(user.userGroups, equals(updatedUserGroups));
+      final deletionResult = await usersApi.deleteUser(id: creationResult.id);
+      expect(deletionResult, isTrue);
+    });
+
+    test('can read nfc', () async {
+      final nfc = NFCApi(prefix: 'http://localhost:8003');
+      final result = await nfc.readNFC(robotName: robotName);
+      expect(result, isNotNull);
     });
   });
 }
