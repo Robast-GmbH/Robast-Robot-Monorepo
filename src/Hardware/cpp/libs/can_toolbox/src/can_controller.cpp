@@ -41,8 +41,10 @@ namespace drawer_controller
         can_message = robast_can_msgs::decode_can_message(
           rx_frame.MsgID, rx_frame.data.u8, rx_frame.FIR.B.DLC, this->_can_db->can_messages);
 
-        if (can_message.has_value() &&
-            can_message.value().get_can_signals().at(CAN_SIGNAL_MODULE_ID).get_data() == _module_id)
+        if (can_message.has_value() && can_message.value()
+                                           .get_can_signals()
+                                           .at(robast_can_msgs::can_signal::drawer_unlock::MODULE_ID)
+                                           .get_data() == _module_id)
         {
           return can_message;
         }

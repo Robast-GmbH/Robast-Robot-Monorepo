@@ -56,60 +56,82 @@ namespace robast_can_msgs
     constexpr uint8_t MODULE_CONFIG = 8;
   }
 
-// DRAWER_UNLOCK
-#define CAN_SIGNAL_MODULE_ID 0
-#define CAN_SIGNAL_DRAWER_ID 1
+  namespace can_signal
+  {
+    namespace drawer_unlock
+    {
+      constexpr uint8_t MODULE_ID = 0;
+      constexpr uint8_t DRAWER_ID = 1;
+    } // drawer_unlock
 
-// DRAWER_FEEDBACK
-#define CAN_SIGNAL_MODULE_ID 0
-#define CAN_SIGNAL_DRAWER_ID 1
-#define CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED 2
-#define CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED 3
+    namespace drawer_feedback
+    {
+      constexpr uint8_t MODULE_ID = 0;
+      constexpr uint8_t DRAWER_ID = 1;
+      constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 2;
+      constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 3;
+    } // drawer_feedback
 
-// ELECTRICAL_DRAWER_TASK
-#define CAN_SIGNAL_MODULE_ID 0
-#define CAN_SIGNAL_DRAWER_ID 1
-#define CAN_SIGNAL_DRAWER_TARGET_POSITION 2
-#define CAN_SIGNAL_DRAWER_SPEED 3
-#define CAN_SIGNAL_DRAWER_STALL_GUARD_VALUE 4
+    namespace e_drawer_task
+    {
+      constexpr uint8_t MODULE_ID = 0;
+      constexpr uint8_t DRAWER_ID = 1;
+      constexpr uint8_t DRAWER_TARGET_POSITION = 2;
+      constexpr uint8_t DRAWER_SPEED = 3;
+      constexpr uint8_t DRAWER_STALL_GUARD_VALUE = 4;
+    } // e_drawer_task
 
-// ELECTRICAL_DRAWER_FEEDBACK
-#define CAN_SIGNAL_MODULE_ID 0
-#define CAN_SIGNAL_DRAWER_ID 1
-#define CAN_SIGNAL_IS_ENDSTOP_SWITCH_PUSHED 2
-#define CAN_SIGNAL_IS_LOCK_SWITCH_PUSHED 3
-#define CAN_SIGNAL_DRAWER_IS_STALL_GUARD_TRIGGERED 4
-#define CAN_SIGNAL_DRAWER_POSITION 5
-#define CAN_SIGNAL_IS_PUSH_TO_CLOSE_TRIGGERED 6
+    namespace e_drawer_feedback
+    {
+      constexpr uint8_t MODULE_ID = 0;
+      constexpr uint8_t DRAWER_ID = 1;
+      constexpr uint8_t IS_ENDSTOP_SWITCH_PUSHED = 2;
+      constexpr uint8_t IS_LOCK_SWITCH_PUSHED = 3;
+      constexpr uint8_t DRAWER_IS_STALL_GUARD_TRIGGERED = 4;
+      constexpr uint8_t DRAWER_POSITION = 5;
+      constexpr uint8_t IS_PUSH_TO_CLOSE_TRIGGERED = 6;
+    } // e_drawer_feedback
 
-// ERROR_FEEDBACK
-#define CAN_SIGNAL_MODULE_ID 0
-#define CAN_SIGNAL_DRAWER_ID 1
-#define CAN_SIGNAL_ERROR_CODE 2
+    namespace error_feedback
+    {
+      constexpr uint8_t MODULE_ID = 0;
+      constexpr uint8_t DRAWER_ID = 1;
+      constexpr uint8_t ERROR_CODE = 2;
+    } // error_feedback
 
-// LED HEADER
-#define CAN_SIGNAL_MODULE_ID 0
-#define CAN_SIGNAL_START_INDEX 1
-#define CAN_SIGNAL_NUM_OF_LEDS 2
-#define CAN_SIGNAL_FADE_TIME_IN_HUNDREDS_OF_MS 3
+    namespace led_header
+    {
+      constexpr uint8_t MODULE_ID = 0;
+      constexpr uint8_t START_INDEX = 1;
+      constexpr uint8_t NUM_OF_LEDS = 2;
+      constexpr uint8_t FADE_TIME_IN_HUNDREDS_OF_MS = 3;
+    } // led_header
 
-// SINGLE LED
-#define CAN_SIGNAL_MODULE_ID 0
-#define CAN_SIGNAL_SINGLE_LED_STATE_RED 1
-#define CAN_SIGNAL_SINGLE_LED_STATE_GREEN 2
-#define CAN_SIGNAL_SINGLE_LED_STATE_BLUE 3
-#define CAN_SIGNAL_SINGLE_LED_STATE_BRIGHTNESS 4
+    namespace single_led
+    {
+      constexpr uint8_t MODULE_ID = 0;
+      constexpr uint8_t LED_STATE_RED = 1;
+      constexpr uint8_t LED_STATE_GREEN = 2;
+      constexpr uint8_t LED_STATE_BLUE = 3;
+      constexpr uint8_t LED_STATE_BRIGHTNESS = 4;
+    } // single_led
 
-// TRAY_LED_BRIGHTNESS
-#define CAN_SIGNAL_MODULE_ID 0
-#define CAN_SIGNAL_TRAY_ID 1
-#define CAN_SIGNAL_TRAY_LED_ROW_INDEX 2
-#define CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS 3
+    namespace tray_led_brightness
+    {
+      constexpr uint8_t MODULE_ID = 0;
+      constexpr uint8_t TRAY_ID = 1;
+      constexpr uint8_t TRAY_LED_ROW_INDEX = 2;
+      constexpr uint8_t TRAY_LED_STATE_BRIGHNESS = 3;
+    } // tray_led_brightness
 
-// MODULE_CONFIG
-#define CAN_SIGNAL_MODULE_ID 0
-#define CAN_SIGNAL_CONFIG_ID 1
-#define CAN_SIGNAL_CONFIG_VALUE 2
+    namespace module_config
+    {
+      constexpr uint8_t MODULE_ID = 0;
+      constexpr uint8_t CONFIG_ID = 1;
+      constexpr uint8_t CONFIG_VALUE = 2;
+    } // module_config
+
+  } // can_signal
 
 /*********************************************************************************************************
  CAN SIGNAL BIT START

@@ -117,7 +117,8 @@ void process_can_msgs_task_loop(void* pvParameters)
       {
         case robast_can_msgs::can_id::DRAWER_UNLOCK:
         {
-          uint8_t tray_id = received_message->get_can_signals().at(CAN_SIGNAL_DRAWER_ID).get_data();
+          uint8_t tray_id =
+            received_message->get_can_signals().at(robast_can_msgs::can_signal::drawer_unlock::DRAWER_ID).get_data();
           tray_manager->unlock_lock(tray_id);
         }
         break;
@@ -142,15 +143,24 @@ void process_can_msgs_task_loop(void* pvParameters)
         case robast_can_msgs::can_id::TRAY_LED_BRIGHTNESS:
         {
           tray_manager->set_tray_led_brightness(
-            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_ID).get_data(),
-            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_ROW_INDEX).get_data(),
-            received_message->get_can_signals().at(CAN_SIGNAL_TRAY_LED_STATE_BRIGHNESS).get_data());
+            received_message->get_can_signals()
+              .at(robast_can_msgs::can_signal::tray_led_brightness::TRAY_ID)
+              .get_data(),
+            received_message->get_can_signals()
+              .at(robast_can_msgs::can_signal::tray_led_brightness::TRAY_LED_ROW_INDEX)
+              .get_data(),
+            received_message->get_can_signals()
+              .at(robast_can_msgs::can_signal::tray_led_brightness::TRAY_LED_STATE_BRIGHNESS)
+              .get_data());
         }
         break;
         case robast_can_msgs::can_id::MODULE_CONFIG:
         {
-          config_manager->set_config(received_message->get_can_signals().at(CAN_SIGNAL_CONFIG_ID).get_data(),
-                                     received_message->get_can_signals().at(CAN_SIGNAL_CONFIG_VALUE).get_data());
+          config_manager->set_config(
+            received_message->get_can_signals().at(robast_can_msgs::can_signal::module_config::CONFIG_ID).get_data(),
+            received_message->get_can_signals()
+              .at(robast_can_msgs::can_signal::module_config::CONFIG_VALUE)
+              .get_data());
         }
         default:
           debug_println("[Main]: Received unsupported CAN message.");
