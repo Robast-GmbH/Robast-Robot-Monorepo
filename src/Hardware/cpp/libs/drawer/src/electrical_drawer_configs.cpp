@@ -47,6 +47,11 @@ namespace drawer_controller
     _push_in_wait_time_after_stall_guard_triggered_in_ms = wait_time;
   }
 
+  void ElectricalDrawerConfigs::set_drawer_stall_guard_wait_time_after_movement_started_in_ms(const uint32_t wait_time)
+  {
+    _stall_guard_wait_time_after_movement_started_in_ms = wait_time;
+  }
+
   void ElectricalDrawerConfigs::set_use_tmc_stall_guard(const bool use_tmc_stall_guard)
   {
     _use_tmc_stall_guard = use_tmc_stall_guard;
@@ -95,6 +100,11 @@ namespace drawer_controller
   uint32_t ElectricalDrawerConfigs::get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms() const
   {
     return _push_in_wait_time_after_stall_guard_triggered_in_ms;
+  }
+
+  uint32_t ElectricalDrawerConfigs::get_drawer_stall_guard_wait_time_after_movement_started_in_ms() const
+  {
+    return _stall_guard_wait_time_after_movement_started_in_ms;
   }
 
   bool ElectricalDrawerConfigs::get_use_tmc_stall_guard() const

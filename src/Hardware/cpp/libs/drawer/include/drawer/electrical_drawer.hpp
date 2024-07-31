@@ -107,6 +107,7 @@ namespace drawer_controller
     bool _triggered_closing_lock_after_opening = false;
 
     uint32_t _timestamp_stall_guard_triggered_in_ms = 0;
+    uint32_t _timestamp_movement_started_in_ms = 0;
 
     /* FUNCTIONS */
 
@@ -115,6 +116,8 @@ namespace drawer_controller
     void handle_drawer_idle_state();
 
     void handle_drawer_active_state();
+
+    void start_next_e_drawer_task();
 
     void start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp);
 

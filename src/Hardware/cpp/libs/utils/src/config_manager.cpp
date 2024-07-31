@@ -73,6 +73,12 @@ namespace drawer_controller
             module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::type>(config_value));
         break;
 
+      case module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS:
+        _drawer_configs->set_drawer_stall_guard_wait_time_after_movement_started_in_ms(
+          reinterpret_cast<module_config::ModuleConfigDataType<
+            module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>::type>(config_value));
+        break;
+
       case module_config::drawer::USE_TMC_STALL_GUARD:
         _drawer_configs->set_use_tmc_stall_guard(
           static_cast<module_config::ModuleConfigDataType<module_config::drawer::USE_TMC_STALL_GUARD>::type>(
@@ -195,6 +201,11 @@ namespace drawer_controller
                std::bit_cast<uint32_t>(
                  module_config::ModuleConfigDataType<
                    module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::default_value));
+
+    set_config(module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS,
+               std::bit_cast<uint32_t>(
+                 module_config::ModuleConfigDataType<
+                   module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>::default_value));
 
     set_config(module_config::drawer::USE_TMC_STALL_GUARD,
                static_cast<uint32_t>(

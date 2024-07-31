@@ -116,6 +116,11 @@ namespace drawer_controller
       }
     }
 
+    start_next_e_drawer_task();
+  }
+
+  void ElectricalDrawer::start_next_e_drawer_task()
+  {
     std::optional<EDrawerTask> e_drawer_task = _e_drawer_task_queue->get_element_from_queue();
     if (e_drawer_task.has_value())
     {
@@ -128,6 +133,8 @@ namespace drawer_controller
       _target_position_uint8 = e_drawer_task.value().target_position;
 
       _motor->set_stall_guard(_configs->get_use_tmc_stall_guard() ? e_drawer_task.value().stall_guard_value : 0);
+
+      _timestamp_movement_started_in_ms = millis();
 
       if (e_drawer_task.value().is_homing)
       {
@@ -228,6 +235,15 @@ namespace drawer_controller
 
   bool ElectricalDrawer::handle_motor_stall_guard_and_return_status()
   {
+    if (millis() - _timestamp_movement_started_in_ms <
+        _configs->get_drawer_stall_guard_wait_time_after_movement_started_in_ms())
+    {
+      debug_printf("[ElectricalDrawer]: Since the movement started, %u ms passed! We need to wait %u ms!\n",
+                   millis() - _timestamp_movement_started_in_ms,
+                   _configs->get_drawer_stall_guard_wait_time_after_movement_started_in_ms());
+      return false;
+    }
+
     bool is_tmc_stall_guard_triggered = false;
     if (_configs->get_use_tmc_stall_guard())
     {
