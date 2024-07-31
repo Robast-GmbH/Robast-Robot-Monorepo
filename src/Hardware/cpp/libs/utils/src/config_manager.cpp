@@ -4,9 +4,11 @@ namespace drawer_controller
 {
   ConfigManager::ConfigManager(const std::shared_ptr<ElectricalDrawerConfigs> drawer_configs,
                                const std::shared_ptr<EncoderConfigs> encoder_configs,
+                               const std::shared_ptr<MotorConfigs> motor_configs,
                                const std::shared_ptr<MotorMonitorConfigs> motor_monitor_configs)
       : _drawer_configs{drawer_configs},
         _encoder_configs{encoder_configs},
+        _motor_configs{motor_configs},
         _motor_monitor_configs{motor_monitor_configs}
   {
     set_default_configs();
@@ -119,6 +121,12 @@ namespace drawer_controller
             module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>::type>(config_value));
         break;
 
+      case module_config::motor::IS_SHAFT_DIRECTION_INVERTED:
+        _motor_configs->set_is_shaft_direction_inverted(
+          static_cast<module_config::ModuleConfigDataType<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::type>(
+            config_value));
+        break;
+
       case module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD:
         _motor_monitor_configs->set_active_speed_threshold(
           reinterpret_cast<
@@ -156,6 +164,8 @@ namespace drawer_controller
     set_default_drawer_configs();
 
     set_default_encoder_configs();
+
+    set_motor_configs();
 
     set_default_motor_monitor_configs();
   }
@@ -238,6 +248,14 @@ namespace drawer_controller
       module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS,
       std::bit_cast<uint32_t>(module_config::ModuleConfigDataType<
                               module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>::default_value));
+  }
+
+  void ConfigManager::set_motor_configs()
+  {
+    set_config(
+      module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
+      static_cast<uint32_t>(
+        module_config::ModuleConfigDataType<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::default_value));    
   }
 
   void ConfigManager::set_default_motor_monitor_configs()

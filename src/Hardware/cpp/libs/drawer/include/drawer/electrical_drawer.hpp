@@ -15,6 +15,7 @@
 #include "motor/encoder_monitor.hpp"
 #include "motor/enconder_configs.hpp"
 #include "motor/motor.hpp"
+#include "motor/motor_configs.hpp"
 #include "motor/motor_monitor.hpp"
 #include "switch/switch.hpp"
 #include "utils/e_drawer_task.hpp"
@@ -48,7 +49,7 @@ namespace drawer_controller
                      const uint8_t encoder_pin_a,
                      const uint8_t encoder_pin_b,
                      const uint8_t motor_driver_address,
-                     const bool shaft_direction_is_inverted,
+                     const std::shared_ptr<MotorConfigs> motor_configs,
                      const std::shared_ptr<Switch> endstop_switch,
                      const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock,
                      const std::shared_ptr<ElectricalDrawerConfigs> e_drawer_configs,

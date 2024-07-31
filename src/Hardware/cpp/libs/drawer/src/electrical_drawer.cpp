@@ -11,7 +11,7 @@ namespace drawer_controller
                                      const uint8_t encoder_pin_a,
                                      const uint8_t encoder_pin_b,
                                      const uint8_t motor_driver_address,
-                                     const bool shaft_direction_is_inverted,
+                                     const std::shared_ptr<MotorConfigs> motor_configs,
                                      const std::shared_ptr<Switch> endstop_switch,
                                      const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock,
                                      const std::shared_ptr<ElectricalDrawerConfigs> e_drawer_configs,
@@ -24,7 +24,7 @@ namespace drawer_controller
         _encoder{std::make_shared<Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_configs)},
         _can_utils{std::make_unique<CanUtils>(can_db)},
         _motor{std::make_shared<stepper_motor::Motor>(
-          motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, shaft_direction_is_inverted)},
+          motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, motor_configs)},
         _endstop_switch{endstop_switch},
         _electrical_drawer_lock{electrical_drawer_lock},
         _e_drawer_task_queue{std::make_unique<Queue<EDrawerTask>>()},

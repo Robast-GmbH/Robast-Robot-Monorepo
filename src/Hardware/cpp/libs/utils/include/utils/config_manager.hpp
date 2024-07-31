@@ -9,6 +9,7 @@
 #include "drawer/electrical_drawer_configs.hpp"
 #include "module_config/module_config_defines.hpp"
 #include "motor/enconder_configs.hpp"
+#include "motor/motor_configs.hpp"
 #include "motor/motor_monitor_configs.hpp"
 
 namespace drawer_controller
@@ -18,6 +19,7 @@ namespace drawer_controller
    public:
     ConfigManager(const std::shared_ptr<ElectricalDrawerConfigs> drawer_configs,
                   const std::shared_ptr<EncoderConfigs> encoder_configs,
+                  const std::shared_ptr<MotorConfigs> motor_configs,
                   const std::shared_ptr<MotorMonitorConfigs> motor_monitor_configs);
 
     void set_config(const uint8_t config_id, const uint32_t config_value);
@@ -25,6 +27,7 @@ namespace drawer_controller
    private:
     std::shared_ptr<ElectricalDrawerConfigs> _drawer_configs;
     std::shared_ptr<EncoderConfigs> _encoder_configs;
+    std::shared_ptr<MotorConfigs> _motor_configs;
     std::shared_ptr<MotorMonitorConfigs> _motor_monitor_configs;
 
     void set_default_configs();
@@ -32,6 +35,8 @@ namespace drawer_controller
     void set_default_drawer_configs();
 
     void set_default_encoder_configs();
+
+    void set_motor_configs();
 
     void set_default_motor_monitor_configs();
   };

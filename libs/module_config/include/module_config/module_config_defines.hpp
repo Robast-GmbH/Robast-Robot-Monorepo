@@ -30,7 +30,7 @@ namespace module_config
     constexpr uint8_t PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS = 9;
     constexpr uint8_t STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS = 10;
     constexpr uint8_t USE_TMC_STALL_GUARD = 11;
-  }   // namespace drawer
+  } // namespace drawer
 
   namespace encoder
   {
@@ -39,15 +39,24 @@ namespace module_config
     constexpr uint8_t DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN = 22;
     constexpr uint8_t DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT = 23;
     constexpr uint8_t DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS = 24;
-  }   // namespace encoder
+  } // namespace encoder
+
+  namespace motor
+  {
+    constexpr uint8_t IS_SHAFT_DIRECTION_INVERTED = 30;
+  }
 
   namespace motor_monitor
   {
-    constexpr uint8_t ACTIVE_SPEED_THRESHOLD = 30;
-    constexpr uint8_t LOWER_POSITION_THRESHOLD = 31;
-    constexpr uint8_t MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS = 32;
-    constexpr uint8_t SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL = 33;
-  }   // namespace motor_monitor
+    constexpr uint8_t ACTIVE_SPEED_THRESHOLD = 40;
+    constexpr uint8_t LOWER_POSITION_THRESHOLD = 41;
+    constexpr uint8_t MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS = 42;
+    constexpr uint8_t SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL = 43;
+  } // namespace motor_monitor
+
+  /********************************************************************************************************
+   * Configs for the drawer
+   *********************************************************************************************************/
 
   template <>
   struct ModuleConfigDataType<drawer::MAX_SPEED>
@@ -126,8 +135,6 @@ namespace module_config
     static constexpr type default_value = false;
   };
 
-
-
   /********************************************************************************************************
    * Configs for the encoder
    *********************************************************************************************************/
@@ -168,8 +175,19 @@ namespace module_config
   };
 
   /********************************************************************************************************
+   * Configs for the motor
+   ********************************************************************************************************/
+
+  template <>
+  struct ModuleConfigDataType<motor::IS_SHAFT_DIRECTION_INVERTED>
+  {
+    using type = bool;
+    static constexpr type default_value = true;
+  };
+
+  /********************************************************************************************************
    * Configs for the motor monitor
-   *********************************************************************************************************/
+   ********************************************************************************************************/
 
   template <>
   struct ModuleConfigDataType<motor_monitor::ACTIVE_SPEED_THRESHOLD>
@@ -202,6 +220,6 @@ namespace module_config
     static constexpr type default_value = 0.35;
   };
 
-}   // namespace module_config
+} // namespace module_config
 
-#endif   // MODULE_CONFIG__MODULE_CONFIG_DEFINES_HPP
+#endif // MODULE_CONFIG__MODULE_CONFIG_DEFINES_HPP
