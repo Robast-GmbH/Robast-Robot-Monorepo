@@ -1,0 +1,50 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "build",
+            "detail": "Symlink Build.",
+            "type": "shell",
+            "command": "source ~/../../opt/ros/${ROS_DISTRO}/setup.bash; colcon build --symlink-install --cmake-args '-DCMAKE_BUILD_TYPE=RelWithDebInfo' -Wall -Wextra -Wpedantic",
+            "problemMatcher": []
+        },
+        {
+            "label": "Launch Disinfection Publisher",
+            "detail": "Launch the disinfection publisher node",
+            "type": "shell",
+            "command": "source install/setup.bash; ros2 launch disinfection_module disinfection_publisher.py;",
+            "problemMatcher": []
+        },
+      
+        {
+            "label": "Test",
+            "detail": "Build and executes all tests and shows the links to the testreport with Errors",
+            "type": "shell",
+            "dependsOn": [
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "command": "source install/setup.bash; colcon test --event-handler=console_direct+; colcon test-result --all",
+            "problemMatcher": []
+        },
+        {
+            "label": "clean-build",
+            "detail": "Purges and symlink colcon build",
+            "dependsOn": [
+                "purge",
+                "build"
+            ],
+            "dependsOrder": "sequence",
+            "problemMatcher": []
+        },
+        {
+            "label": "purge",
+            "detail": "Purge workspace by deleting all generated files.",
+            "type": "shell",
+            "command": "rm -fr build install log; py3clean .",
+            "problemMatcher": []
+        }
+    ],
+}
