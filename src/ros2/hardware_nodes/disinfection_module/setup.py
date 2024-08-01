@@ -10,6 +10,7 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         ('share/' + package_name, ['package.xml']),
+        ("share/" + package_name, ["launch/disinfection_module_launch.py"]),
     ],
     install_requires=['setuptools'],
     zip_safe=True,
@@ -22,5 +23,5 @@ setup(
         'console_scripts': [
             'disinfection_publisher = disinfection_module.disinfection_publisher:main',
         ],
-},
+    },
 )
