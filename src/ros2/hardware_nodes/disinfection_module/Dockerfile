@@ -1,23 +1,39 @@
-ARG ROS_VERSION=humble
-
-# First stage: Use the ROS base image to install ROS and other dependencies
-FROM ros:${ROS_VERSION}-ros-core AS ros-base
-
 # Second stage: Use the NVIDIA base image
-FROM nvcr.io/nvidia/l4t-base:r32.4.3 AS final
+FROM nvcr.io/nvidia/l4t-base:r36.2.0
 
-COPY --from=ros-base /opt/ros /opt/ros
-
-ENV ROS_DISTRO=${ROS_VERSION}
+ENV ROS_DISTRO=humble
 
 RUN apt-get update 
-RUN apt-get install -y python3-pip
+RUN apt-get install -y python3-pip sudo
 RUN pip3 install Jetson.GPIO
 
 RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
   echo robast:robast | chpasswd && \
   echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
+ENV USER=robast
+
+RUN usermod -aG sudo robast
+
+RUN apt update && apt install -y locales
+RUN locale-gen en_US en_US.UTF-8
+RUN update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+RUN export LANG=en_US.UTF-8
+
+RUN apt install -y software-properties-common && add-apt-repository universe
+
+RUN apt update && apt install curl -y && curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.key -o /usr/share/keyrings/ros-archive-keyring.gpg
+
+RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/ros-archive-keyring.gpg] http://packages.ros.org/ros2/ubuntu $(. /etc/os-release && echo $UBUNTU_CODENAME) main" | sudo tee /etc/apt/sources.list.d/ros2.list > /dev/null
+
+RUN apt update && apt upgrade -y
+
+ARG DEBIAN_FRONTEND=noninteractive
+RUN apt install -y ros-humble-ros-base ros-${ROS_DISTRO}-rmw-cyclonedds-cpp python3-colcon-common-extensions
+
+RUN apt-get update && apt-get install -y \
+  python3-rosdep \
+  && rosdep init || echo "rosdep already initialized"
+ARG DEBIAN_FRONTEND  
 
 RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc
 
