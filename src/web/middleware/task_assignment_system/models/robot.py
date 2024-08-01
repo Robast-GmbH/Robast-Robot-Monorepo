@@ -1,9 +1,9 @@
+from pydantic_models.sub_task import SubTask
 from pydantic_models.drawer_address import DrawerAddress
 from task_assignment_system.models.node import Node
-from task_assignment_system.models.task_models.task import Task
 from task_assignment_system.models.fleet_management_api import FleetManagementAPI
 from task_assignment_system.models.nav_graph import NavGraph
-from pydantic_models.delivery_request import DeliveryRequest
+from pydantic_models.task import Task
 from module_manager.module_manager import ModuleManager
 from typing import Any
 import threading
@@ -25,7 +25,7 @@ class Robot:
         self.module_manager = module_manager
         self.current_task = None
         self.current_task_id = None
-        self.task_queue: list[Task] = []
+        self.task_queue: list[SubTask] = []
         self.current_node = initial_node
         self.nav_graph = nav_graph
         self.done_tasks_ids: list[str] = []
@@ -35,36 +35,83 @@ class Robot:
         )
         self.__start_task_status_update_timer()
 
-    def get_request_cost(self, delivery_request: DeliveryRequest) -> float:
+    def get_request_cost(self, task: Task) -> float:
         # check if any drawer of required drawer_type is available
-        is_drawer_available = self.module_manager.is_module_size_available(
-            self.name,
-            delivery_request.required_drawer_type,
-        )
-
-        if not is_drawer_available:
-            return float("inf")
+        if "required_drawer_type" in task.requirements:
+            is_drawer_available = self.module_manager.is_module_size_available(
+                self.name,
+                int(task.requirements["required_drawer_type"]),
+            )
+            if not is_drawer_available:
+                return float("inf")
 
         return float(len(self.task_queue))
 
-    def accept_request(self, delivery_request: DeliveryRequest) -> None:
+    def accept_request(self, task: Task) -> bool:
         with self.task_queue_lock:
-            drawer = self.module_manager.try_reserve_module_type(
-                self.name,
-                delivery_request.required_drawer_type,
-                delivery_request.sender_user_ids,
-                delivery_request.sender_user_groups,
-            )
-            if drawer is not None:
-                tasks = Task.from_delivery_request(self.name, delivery_request, drawer)
-                self.task_queue.extend(tasks)
-                self.__optimize_task_queue()
+            if not self.__handle_requirements(task):
+                return False
+            task.assignee_name = self.name
+            for subtask in task.subtasks:
+                subtask.assignee_name = self.name
+            self.task_queue.extend(task.subtasks)
+            self.__optimize_task_queue()
+            return True
 
     def get_robot_tasks(self) -> dict[str, Any]:
         return {
             "active": self.current_task.to_json() if self.current_task else None,
             "queued": [task.to_json() for task in self.task_queue],
         }
+
+    def __check_subtask_for_drawer_process(self, subtask: SubTask) -> bool:
+        action = subtask.action
+        while action:
+            if action.name == "drawer_process":
+                return True
+            action = action.subaction
+        return False
+
+    def __write_drawer_address_to_subtask(
+        self, subtask: SubTask, drawer_address: DrawerAddress
+    ) -> None:
+        subtask.requirements["drawer_address"] = drawer_address.to_json()
+        action = subtask.action
+        while action:
+            if action.name == "drawer_process":
+                action.parameters["drawer_address"] = drawer_address.to_json()
+            action = action.subaction
+
+    def __handle_requirements(self, task: Task) -> bool:
+        if "required_drawer_type" in task.requirements:
+            drawer = self.module_manager.try_reserve_module_type(
+                self.name, task.requirements["required_drawer_type"], task.id, [], []
+            )
+            if not drawer:
+                return False
+            subtasks_with_drawer_process = [
+                subtask
+                for subtask in task.subtasks
+                if self.__check_subtask_for_drawer_process(subtask)
+            ]
+            for subtask in subtasks_with_drawer_process:
+                self.__write_drawer_address_to_subtask(subtask, drawer.address)
+            self.__handle_subtask_requirements(subtasks_with_drawer_process[0])
+        return True
+
+    def __handle_subtask_requirements(self, subtask: SubTask) -> bool:
+        if subtask.requirements["drawer_address"]:
+            was_successful = self.module_manager.reserve_module(
+                drawer_address=DrawerAddress.from_json(
+                    subtask.requirements["drawer_address"]
+                ),
+                task_id=subtask.parent_id,
+                user_ids=subtask.requirements["required_user_ids"],
+                user_groups=subtask.requirements["required_user_groups"],
+            )
+            if not was_successful:
+                return False
+        return True
 
     def __start_task_status_update_timer(self) -> None:
         self.timer = threading.Timer(
@@ -95,32 +142,25 @@ class Robot:
         if self.current_task is None:
             return
         self.done_tasks_ids.append(self.current_task.id)
-        if self.current_task.task_type == "dropoff":
-            self.module_manager.free_module(
-                DrawerAddress(
-                    robot_name=self.name,
-                    module_id=int(self.current_task.module_id),
-                    drawer_id=int(self.current_task.drawer_id),
-                ),
-            )
-        elif self.current_task.task_type == "pickup":
-            dropoff_task = [
-                task
-                for task in self.task_queue
-                if task.requires_task_id == self.current_task.id
-            ]
-            if dropoff_task:
-                dropoff_task = dropoff_task[0]
-                self.module_manager.reserve_module(
-                    DrawerAddress(
-                        robot_name=self.name,
-                        module_id=dropoff_task.module_id,
-                        drawer_id=dropoff_task.drawer_id,
-                    ),
-                    dropoff_task.auth_users,
-                    dropoff_task.auth_user_groups,
-                )
         self.current_task.status = "completed"
+        related_drawer_tasks = [
+            task
+            for task in self.task_queue
+            if self.current_task.parent_id == task.parent_id
+            and self.__check_subtask_for_drawer_process(task)
+        ]
+        if related_drawer_tasks:
+            self.__handle_subtask_requirements(related_drawer_tasks[0])
+        elif self.__check_subtask_for_drawer_process(self.current_task) or not [
+            task
+            for task in self.task_queue
+            if task.parent_id == self.current_task.parent_id
+        ]:
+            self.module_manager.free_module(
+                DrawerAddress.from_json(
+                    self.current_task.requirements["drawer_address"]
+                )
+            )
         self.current_task = None
 
     def __start_next_task(self) -> None:
@@ -175,10 +215,6 @@ class Robot:
                 task for task in eligible_tasks if task not in closest_tasks
             ]
 
-            def sort_drop_off_first(task: Task):
-                return task.task_type != "dropoff"
-
-            closest_tasks.sort(key=sort_drop_off_first)
             self.task_queue.extend(closest_tasks)
             closest_tasks_ids = [task.id for task in closest_tasks]
             new_eligible_tasks = [

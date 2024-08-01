@@ -5,8 +5,8 @@ class TaskProvider extends ChangeNotifier {
   RobotTaskStatus? _robotTaskStatus;
   final _middlewareApiUtilities = MiddlewareApiUtilities();
 
-  Task? get activeTask => _robotTaskStatus?.activeTask;
-  List<Task> get queuedTasks => _robotTaskStatus?.queuedTasks ?? [];
+  SubTask? get activeTask => _robotTaskStatus?.activeTask;
+  List<SubTask> get queuedTasks => _robotTaskStatus?.queuedTasks ?? [];
 
   Future<void> fetchRobotTaskStatus({required String robotName}) async {
     _robotTaskStatus = await _middlewareApiUtilities.tasks.getRobotTasks(robotName: robotName);
