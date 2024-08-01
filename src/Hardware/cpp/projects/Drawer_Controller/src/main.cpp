@@ -3,10 +3,9 @@
 #include "drawer_controller/global.hpp"
 #include "led/led_strip.hpp"
 
-#define MODULE_ID               6
-#define LOCK_ID                 0
-#define STEPPER_MOTOR_1_ADDRESS 0
-#define USE_ENCODER             0
+#define MODULE_ID   6
+#define LOCK_ID     0
+#define USE_ENCODER 0
 
 #define NUM_OF_LEDS 18
 
