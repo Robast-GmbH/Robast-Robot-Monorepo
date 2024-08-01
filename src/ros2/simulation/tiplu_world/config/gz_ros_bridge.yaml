@@ -7,15 +7,6 @@
   lazy: true               # Default "false"
   direction: GZ_TO_ROS
 
-- ros_topic_name: "/bpearl_laser/scan/points"
-  gz_topic_name: "/bpearl_laser/scan/points"
-  ros_type_name: "sensor_msgs/msg/PointCloud2"
-  gz_type_name: "gz.msgs.PointCloudPacked"
-  subscriber_queue: 10      # Default 10
-  publisher_queue: 10       # Default 10
-  lazy: true               # Default "false"
-  direction: GZ_TO_ROS
-
 - ros_topic_name: "/front_realsense_camera/color"
   gz_topic_name: "/front_realsense_camera/color"
   ros_type_name: "sensor_msgs/msg/Image"
@@ -38,6 +29,51 @@
   gz_topic_name: "/front_realsense_camera/front_realsense_camera/depth/points"
   ros_type_name: "sensor_msgs/msg/PointCloud2"
   gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/zed_node/image/color"
+  gz_topic_name: "/zed2/color"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/zed_node/depth"
+  gz_topic_name: "/zed2/zed/depth"
+  ros_type_name: "sensor_msgs/msg/Image"
+  gz_type_name: "gz.msgs.Image"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/zed_node/depth/points"
+  gz_topic_name: "/zed2/zed/depth/points"
+  ros_type_name: "sensor_msgs/msg/PointCloud2"
+  gz_type_name: "gz.msgs.PointCloudPacked"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/zed_node/camera_info"
+  gz_topic_name: "/zed2/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
+  subscriber_queue: 10      # Default 10
+  publisher_queue: 10       # Default 10
+  lazy: true               # Default "false"
+  direction: GZ_TO_ROS
+
+- ros_topic_name: "/zed_node/zed/camera_info"
+  gz_topic_name: "/zed2/zed/camera_info"
+  ros_type_name: "sensor_msgs/msg/CameraInfo"
+  gz_type_name: "gz.msgs.CameraInfo"
   subscriber_queue: 10      # Default 10
   publisher_queue: 10       # Default 10
   lazy: true               # Default "false"
@@ -72,42 +108,6 @@
 
 - ros_topic_name: "back_top_oak_d_camera/color_camera_info"
   gz_topic_name: "/back_top_oak_d_camera/back_top_oak_d_camera/camera_info"
-  ros_type_name: "sensor_msgs/msg/CameraInfo"
-  gz_type_name: "gz.msgs.CameraInfo"
-  subscriber_queue: 10      # Default 10
-  publisher_queue: 10       # Default 10
-  lazy: true               # Default "false"
-  direction: GZ_TO_ROS
-
-- ros_topic_name: "/front_top_oak_d_camera/color"
-  gz_topic_name: "/front_top_oak_d_camera/color"
-  ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "gz.msgs.Image"
-  subscriber_queue: 10      # Default 10
-  publisher_queue: 10       # Default 10
-  lazy: true               # Default "false"
-  direction: GZ_TO_ROS
-
-- ros_topic_name: "/front_top_oak_d_camera/depth"
-  gz_topic_name: "/front_top_oak_d_camera/front_top_oak_d_camera/depth"
-  ros_type_name: "sensor_msgs/msg/Image"
-  gz_type_name: "gz.msgs.Image"
-  subscriber_queue: 10      # Default 10
-  publisher_queue: 10       # Default 10
-  lazy: true               # Default "false"
-  direction: GZ_TO_ROS
-
-- ros_topic_name: "/front_top_oak_d_camera/depth/points"
-  gz_topic_name: "/front_top_oak_d_camera/front_top_oak_d_camera/depth/points"
-  ros_type_name: "sensor_msgs/msg/PointCloud2"
-  gz_type_name: "gz.msgs.PointCloudPacked"
-  subscriber_queue: 10      # Default 10
-  publisher_queue: 10       # Default 10
-  lazy: true               # Default "false"
-  direction: GZ_TO_ROS
-
-- ros_topic_name: "front_top_oak_d_camera/color_camera_info"
-  gz_topic_name: "/front_top_oak_d_camera/front_top_oak_d_camera/camera_info"
   ros_type_name: "sensor_msgs/msg/CameraInfo"
   gz_type_name: "gz.msgs.CameraInfo"
   subscriber_queue: 10      # Default 10

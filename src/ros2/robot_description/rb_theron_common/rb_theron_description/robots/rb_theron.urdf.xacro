@@ -118,43 +118,13 @@
 		<origin xyz="0.250 0.0 0.1643" rpy="0 3.1416 3.1416"/>
 	</xacro:sensor_sick_nanoscan3>
 
-	<!--<xacro:sensor_rs_lidar_16 prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" prefix_topic="top_laser" min_angle="-3.1416" max_angle="3.1416">
-		<origin xyz="0.214 0.0 0.275" rpy="-1.57079632679 0 -0.23"/>
-	</xacro:sensor_rs_lidar_16>-->
-
-	<xacro:sensor_rs_bpearl prefix="$(arg prefix)top_laser" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="top_laser" hq="${hq}" range_min="0.1" range_max="90" hfov="360" samples="1800" vfov="90.0" lasers="32" fps="10" gpu="false">
-		<origin xyz="0.3 -0.175 1.165" rpy="-1.570796326795 0 -1.570796326795"/>
-		<!-- positions of the b-pearl based on solid: xyz="0.333 -0.180 1.194" rpy="-1.570796326795 0 -1.570796326795" -->
-	</xacro:sensor_rs_bpearl>
+	<xacro:sensor_zed2 prefix="$(arg prefix)zed" parent="$(arg prefix)base_link" sensor_base_frame="${sensor_base_frame}" robot_name="${robot_name}" prefix_topic="zed2" hq="${hq}">
+		<origin xyz="0.27 0 1.43" rpy="0 0.416 0"/>
+  	</xacro:sensor_zed2>
 
 	<!-- <xacro:sensor_sick_nanoscan3 prefix="$(arg prefix)back_laser" parent="$(arg prefix)base_link" prefix_topic="back_laser" min_angle="-1.8107619" max_angle="1.8107619">
 		<origin xyz="-0.250 0.0 0.1643" rpy="0 3.1416 0"/>
 	</xacro:sensor_sick_nanoscan3> -->
-
-	<xacro:arg name="front_oak_d_camera_model" default="OAK-D-S2" />
-	<xacro:arg name="front_oak_d_base_frame" default="oak-d-s2-usb-base--frame" />
-	<xacro:arg name="front_oak_d_pos_x" default="0.317" />
-	<xacro:arg name="front_oak_d_pos_y" default="-0.197" />
-	<xacro:arg name="front_oak_d_pos_z" default="1.3044" />
-	<xacro:arg name="front_oak_d_roll" default="0.0" />
-	<xacro:arg name="front_oak_d_pitch" default="0.0" />
-	<xacro:arg name="front_oak_d_yaw" default="0.0" />
-	<xacro:depthai_camera
-		prefix="$(arg prefix)front_top_oak_d_camera"
-		parent="$(arg prefix)base_link"
-		sensor_base_frame="${sensor_base_frame}"
-		robot_name="${robot_name}"
-		prefix_topic="front_top_oak_d_camera"
-		camera_model="$(arg front_oak_d_camera_model)"
-		base_frame="$(arg front_oak_d_base_frame)"
-		cam_pos_x="$(arg front_oak_d_pos_x)"
-		cam_pos_y="$(arg front_oak_d_pos_y)"
-		cam_pos_z="$(arg front_oak_d_pos_z)"
-		cam_roll="$(arg front_oak_d_roll)"
-		cam_pitch="$(arg front_oak_d_pitch)"
-		cam_yaw="$(arg front_oak_d_yaw)"
-		hq="${hq}">
-	</xacro:depthai_camera>
 
 	<!-- ROBAST Module Cage -->
 	<xacro:include filename="$(find rb_theron_description)/urdf/module_cage/module_cage.urdf.xacro" />
