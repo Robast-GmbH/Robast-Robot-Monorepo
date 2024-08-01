@@ -13,8 +13,9 @@
           <emissive>0.0 0.0 0.0 0.0</emissive>  
         </material>  
       </visual>  
-      <sensor name="${prefix}_rgb_camera_optical_frame" type="camera">
+      <sensor name="${prefix}_right_camera_frame" type="camera">
 				<topic>${prefix_topic}/color</topic>
+        <gz_frame_id>"${prefix}_right_camera_frame"</gz_frame_id>
         <camera name="zed2">
             <horizontal_fov>1.2217</horizontal_fov>
             <image>
@@ -34,8 +35,9 @@
         </camera>
       </sensor>
 
-      <sensor name="${prefix}_right_camera_optical_frame" type="depth">
+      <sensor name="${prefix}_depth_frame" type="depth">
         <topic>${prefix_topic}/${prefix}/depth</topic>
+        <gz_frame_id>${prefix}_depth_frame</gz_frame_id>
         <camera name="zed2">
           <horizontal_fov>${85.2*M_PI/180.0}</horizontal_fov>
           <image>
@@ -156,7 +158,7 @@
         prefix="${prefix}"
         hfov="1.2217"
         baseline="${baseline}"
-        fps="30"
+        fps="10"
         width="1280"
         height="720"
         format="${format}"
