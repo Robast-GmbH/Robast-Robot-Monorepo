@@ -6,28 +6,33 @@ from builtin_interfaces.msg import Time
 
 import Jetson.GPIO as GPIO
 
-DISINFECTION_PIN = 3
+DISINFECTION_PIN = 7
+BOUNCE_TIME_IN_MS = 300
 
 class DisinfectionPublisher(Node):
 
     def __init__(self):
         super().__init__('disinfection_publisher')
-        self._publisher = self.create_publisher(Time, 'disinfection_triggered', 10)
+        self.__publisher = self.create_publisher(Time, 'disinfection_triggered', 10)
         self.setup_gpio()
 
-    def pub_disinfection_triggered(self):
+
+    def pub_disinfection_triggered(self, channel):
         msg = Time()
         # fill time message with current timestamp
-        msg.sec = time.time()
-        msg.nanosec = (time.time() - msg.sec) * 1e9
-        self.publisher_.publish(msg)
-
+        current_time = time.time()
+        msg.sec = int(current_time)
+        msg.nanosec = int((current_time - msg.sec) * 1e9)
         self.get_logger().info('Publishing disinfection triggered at: %d.%d' % (msg.sec, msg.nanosec))
+        self.__publisher.publish(msg)
+
 
     def setup_gpio(self):
+        self.get_logger().info('Setting up GPIO')
+        self.get_logger().info('GPIO.JETSON_INFO = %s' % GPIO.JETSON_INFO)
         GPIO.setmode(GPIO.BOARD)
         GPIO.setup(DISINFECTION_PIN, GPIO.IN)
-        GPIO.add_event_detect(DISINFECTION_PIN, GPIO.FALLING, callback=self.pub_disinfection_triggered, bouncetime=10, polltime=0.2)
+        GPIO.add_event_detect(DISINFECTION_PIN, GPIO.FALLING, callback=self.pub_disinfection_triggered, bouncetime=BOUNCE_TIME_IN_MS)
 
 
 def main(args=None):
@@ -39,9 +44,6 @@ def main(args=None):
 
     GPIO.cleanup()
 
-    # Destroy the node explicitly
-    # (optional - otherwise it will be done automatically
-    # when the garbage collector destroys the node object)
     disinfection_publisher.destroy_node()
     rclpy.shutdown()
 
