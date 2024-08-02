@@ -3,7 +3,7 @@
 <package format="3">
   <name>disinfection_module</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>This package contains code to interact with the disinfection module</description>
   <maintainer email="j.ritterbach@tiplu.de">robast</maintainer>
   <license>TODO: License declaration</license>
 
