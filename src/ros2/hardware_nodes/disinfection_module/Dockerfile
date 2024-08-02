@@ -1,4 +1,3 @@
-# Second stage: Use the NVIDIA base image
 FROM nvcr.io/nvidia/l4t-base:r36.2.0
 
 ENV ROS_DISTRO=humble
@@ -13,6 +12,8 @@ RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group
 ENV USER=robast
 
 RUN usermod -aG sudo robast
+RUN groupadd -f -r gpio
+RUN usermod -a -G gpio robast
 
 RUN apt update && apt install -y locales
 RUN locale-gen en_US en_US.UTF-8
