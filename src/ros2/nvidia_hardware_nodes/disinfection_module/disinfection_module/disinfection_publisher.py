@@ -15,6 +15,10 @@ class DisinfectionPublisher(Node):
         self.__publisher = self.create_publisher(Time, "disinfection_triggered", 10)
         self.__setup_gpio()
 
+    def destroy_node(self) -> None:
+        super().destroy_node()
+        GPIO.cleanup()
+
     def __pub_disinfection_triggered(self, channel: int):
         msg = self.get_clock().now().to_msg()
         self.get_logger().info(
@@ -39,13 +43,12 @@ def main(args=None):
 
     disinfection_publisher = DisinfectionPublisher()
 
-    rclpy.spin(disinfection_publisher)
-
-    GPIO.cleanup()
-
-    disinfection_publisher.destroy_node()
-
-    rclpy.shutdown()
+    try:
+        rclpy.spin(disinfection_publisher)
+        disinfection_publisher.destroy_node()
+        rclpy.shutdown()
+    except KeyboardInterrupt:
+        disinfection_publisher.destroy_node()
 
 
 if __name__ == "__main__":
