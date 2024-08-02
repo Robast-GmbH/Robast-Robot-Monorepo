@@ -8,7 +8,9 @@
 	"mounts": [
 		"source=${localWorkspaceFolder}/../../src/ros2/hardware_nodes/disinfection_module/,target=/workspace/src/hardware_nodes/disinfection_module,type=bind",
 		"source=${localWorkspaceFolder}/../../src/ros2/error_handling/error_utils/,target=/workspace/src/error_utils/,type=bind",
-		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind"
+		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind",
+		"source=/proc/device-tree/compatible,target=/proc/device-tree/compatible,type=bind",
+		"source=/proc/device-tree/chosen,target=/proc/device-tree/chosen,type=bind",
 	],
 	"workspaceFolder": "/workspace",
 	"remoteUser": "robast",
@@ -20,6 +22,7 @@
 		"--name=hardware_nodes_drawer",
 		"--network=host",
 		"--device=/dev/gpiochip0",
+		"--privileged",
 	],
 	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
 	// Set *default* container specific settings.json values on container create.
