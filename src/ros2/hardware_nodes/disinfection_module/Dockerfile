@@ -1,6 +1,8 @@
 FROM nvcr.io/nvidia/l4t-base:r36.2.0
 
-ENV ROS_DISTRO=humble
+ARG ROS_VERSION=humble
+
+ENV ROS_DISTRO=${ROS_VERSION}
 
 RUN apt-get update 
 RUN apt-get install -y python3-pip sudo
@@ -29,7 +31,7 @@ RUN echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/r
 RUN apt update && apt upgrade -y
 
 ARG DEBIAN_FRONTEND=noninteractive
-RUN apt install -y ros-humble-ros-base ros-${ROS_DISTRO}-rmw-cyclonedds-cpp python3-colcon-common-extensions
+RUN apt install -y ros-${ROS_DISTRO}-ros-base ros-${ROS_DISTRO}-rmw-cyclonedds-cpp python3-colcon-common-extensions
 
 RUN apt-get update && apt-get install -y \
   python3-rosdep \
