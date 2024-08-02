@@ -5,8 +5,8 @@ from builtin_interfaces.msg import Time
 
 import Jetson.GPIO as GPIO
 
-DISINFECTION_PIN = 7
-BOUNCE_TIME_IN_MS = 300
+SENSE_DISINFECTION_SWITCH_PIN = 7
+BOUNCE_TIME_IN_MS = 300 
 
 
 class DisinfectionPublisher(Node):
@@ -19,7 +19,7 @@ class DisinfectionPublisher(Node):
         super().destroy_node()
         GPIO.cleanup()
 
-    def __pub_disinfection_triggered(self, channel: int):
+    def __publish_disinfection_triggered(self, channel: int):
         msg = self.get_clock().now().to_msg()
         self.get_logger().info(
             f"Disinfection triggered at {msg.sec}.{msg.nanosec} seconds."
@@ -29,11 +29,11 @@ class DisinfectionPublisher(Node):
     def __setup_gpio(self):
         self.get_logger().info("Setting up GPIO")
         GPIO.setmode(GPIO.BOARD)
-        GPIO.setup(DISINFECTION_PIN, GPIO.IN)
+        GPIO.setup(SENSE_DISINFECTION_SWITCH_PIN, GPIO.IN)
         GPIO.add_event_detect(
-            DISINFECTION_PIN,
+            SENSE_DISINFECTION_SWITCH_PIN,
             GPIO.FALLING,
-            callback=self.__pub_disinfection_triggered,
+            callback=self.__publish_disinfection_triggered,
             bouncetime=BOUNCE_TIME_IN_MS,
         )
 
