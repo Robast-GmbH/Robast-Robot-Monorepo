@@ -16,20 +16,17 @@
 #include "timer/timer.hpp"
 #include "utils/queue.hpp"
 
-#define MAX_NUM_OF_LED_MODES_IN_QUEUE 3
-
-#define LED_INIT_ANIMATION_FADE_TIME_IN_MS 3000
-#define LED_INIT_ANIMATION_START_INDEX     0
-#define LED_INIT_RED                       0
-#define LED_INIT_GREEN                     155
-#define LED_INIT_BLUE                      155
-#define LED_INIT_BRIGHTNESS                25
-#define LED_MAX_BRIGHTNESS                 255
-
-#define FULL_PROGRESS_LED_FADING 1.0
-
 namespace drawer_controller
 {
+  constexpr uint16_t LED_INIT_ANIMATION_FADE_TIME_IN_MS = 3000;
+  constexpr uint8_t LED_INIT_ANIMATION_START_INDEX = 0;
+  constexpr uint8_t LED_INIT_RED = 0;
+  constexpr uint8_t LED_INIT_GREEN = 155;
+  constexpr uint8_t LED_INIT_BLUE = 155;
+  constexpr uint8_t LED_INIT_BRIGHTNESS = 25;
+  constexpr uint8_t LED_MAX_BRIGHTNESS = 255;
+  constexpr float FULL_PROGRESS_LED_FADING = 1.0;
+
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   class LedStrip
   {
