@@ -30,6 +30,7 @@ namespace module_config
     constexpr uint8_t PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS = 9;
     constexpr uint8_t STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS = 10;
     constexpr uint8_t USE_TMC_STALL_GUARD = 11;
+    constexpr uint8_t DRAWER_DEFAULT_ACCELERATION = 12;
   } // namespace drawer
 
   namespace encoder
@@ -133,6 +134,13 @@ namespace module_config
   {
     using type = bool;
     static constexpr type default_value = false;
+  };
+
+  template <>
+  struct ModuleConfigDataType<drawer::DRAWER_DEFAULT_ACCELERATION>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 8;
   };
 
   /********************************************************************************************************

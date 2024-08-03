@@ -87,6 +87,12 @@ namespace drawer_controller
             config_value));
         break;
 
+      case module_config::drawer::DRAWER_DEFAULT_ACCELERATION:
+        _drawer_configs->set_drawer_default_acceleration(
+          static_cast<module_config::ModuleConfigDataType<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::type>(
+            config_value));
+        break;
+
       case module_config::encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT:
         _encoder_configs->set_open_loop_count_drawer_max_extent(
           reinterpret_cast<
@@ -220,6 +226,11 @@ namespace drawer_controller
     set_config(module_config::drawer::USE_TMC_STALL_GUARD,
                static_cast<uint32_t>(
                  module_config::ModuleConfigDataType<module_config::drawer::USE_TMC_STALL_GUARD>::default_value));
+
+    set_config(
+      module_config::drawer::DRAWER_DEFAULT_ACCELERATION,
+      static_cast<uint32_t>(
+        module_config::ModuleConfigDataType<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value));
   }
 
   void ConfigManager::set_default_encoder_configs()
@@ -255,7 +266,7 @@ namespace drawer_controller
     set_config(
       module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
       static_cast<uint32_t>(
-        module_config::ModuleConfigDataType<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::default_value));    
+        module_config::ModuleConfigDataType<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::default_value));
   }
 
   void ConfigManager::set_default_motor_monitor_configs()

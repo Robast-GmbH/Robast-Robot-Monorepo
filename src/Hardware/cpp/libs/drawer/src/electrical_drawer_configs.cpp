@@ -57,6 +57,11 @@ namespace drawer_controller
     _use_tmc_stall_guard = use_tmc_stall_guard;
   }
 
+  void ElectricalDrawerConfigs::set_drawer_default_acceleration(const uint8_t acceleration)
+  {
+    _drawer_default_acceleration = acceleration;
+  }
+
   uint32_t ElectricalDrawerConfigs::get_drawer_max_speed() const
   {
     return _max_speed;
@@ -110,5 +115,10 @@ namespace drawer_controller
   bool ElectricalDrawerConfigs::get_use_tmc_stall_guard() const
   {
     return _use_tmc_stall_guard;
+  }
+
+  uint8_t ElectricalDrawerConfigs::get_drawer_default_acceleration() const
+  {
+    return _drawer_default_acceleration;
   }
 }   // namespace drawer_controller

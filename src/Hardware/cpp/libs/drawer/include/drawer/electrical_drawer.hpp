@@ -31,8 +31,6 @@
 #define MOTOR_IS_STALLED              true
 #define MOTOR_IS_NOT_STALLED          false
 
-// The drawer accelerates in dependency of the time
-#define DEFAULT_DRAWER_ACCELERATION 8   // TODO: Make this configurable via CAN
 
 namespace drawer_controller
 {

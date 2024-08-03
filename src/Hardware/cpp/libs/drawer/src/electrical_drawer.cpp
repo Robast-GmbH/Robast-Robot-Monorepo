@@ -344,7 +344,8 @@ namespace drawer_controller
 
     if (use_acceleration_ramp)
     {
-      _motor->set_target_speed_with_accelerating_ramp(normed_target_speed_uint32, DEFAULT_DRAWER_ACCELERATION);
+      _motor->set_target_speed_with_accelerating_ramp(normed_target_speed_uint32,
+                                                      _configs->get_drawer_default_acceleration());
     }
     else
     {

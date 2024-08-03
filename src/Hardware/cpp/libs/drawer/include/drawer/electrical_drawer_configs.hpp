@@ -21,6 +21,7 @@ namespace drawer_controller
     void set_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms(const uint32_t wait_time);
     void set_drawer_stall_guard_wait_time_after_movement_started_in_ms(const uint32_t wait_time);
     void set_use_tmc_stall_guard(const bool use_tmc_stall_guard);
+    void set_drawer_default_acceleration(const uint8_t acceleration);
 
     uint32_t get_drawer_max_speed() const;
     uint32_t get_drawer_homing_speed() const;
@@ -33,6 +34,7 @@ namespace drawer_controller
     uint32_t get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms() const;
     uint32_t get_drawer_stall_guard_wait_time_after_movement_started_in_ms() const;
     bool get_use_tmc_stall_guard() const;
+    uint8_t get_drawer_default_acceleration() const;
 
    private:
     uint64_t _max_speed;
@@ -46,6 +48,7 @@ namespace drawer_controller
     uint32_t _push_in_wait_time_after_stall_guard_triggered_in_ms;
     uint32_t _stall_guard_wait_time_after_movement_started_in_ms;
     bool _use_tmc_stall_guard;
+    uint8_t _drawer_default_acceleration;
   };
 
 }   // namespace drawer_controller
