@@ -20,15 +20,15 @@ namespace drawer_controller
 
     std::optional<robast_can_msgs::CanMessage> get_element_from_feedback_msg_queue() const;
 
-    void handle_error_feedback_msg(const uint32_t module_id, const uint8_t id, uint8_t error_code) const;
+    void handle_error_feedback_msg(const uint32_t module_id, const uint8_t drawer_id, uint8_t error_code) const;
 
     void handle_drawer_feedback_msg(const uint32_t module_id,
-                                    const uint8_t id,
+                                    const uint8_t drawer_id,
                                     const bool is_endstop_switch_pushed,
                                     const bool is_lock_switch_pushed) const;
 
     void handle_electrical_drawer_feedback_msg(const uint32_t module_id,
-                                               const uint8_t id,
+                                               const uint8_t drawer_id,
                                                const bool is_endstop_switch_pushed,
                                                const bool is_lock_switch_pushed,
                                                const bool is_drawer_stall_guard_triggered,
@@ -41,16 +41,16 @@ namespace drawer_controller
     const std::shared_ptr<robast_can_msgs::CanDb> _can_db;
 
     robast_can_msgs::CanMessage create_error_feedback_msg(const uint32_t module_id,
-                                                          const uint8_t id,
+                                                          const uint8_t drawer_id,
                                                           const uint8_t error_code) const;
 
     robast_can_msgs::CanMessage create_drawer_feedback_msg(const uint32_t module_id,
-                                                           const uint8_t id,
+                                                           const uint8_t drawer_id,
                                                            const bool is_endstop_switch_pushed,
                                                            const bool is_lock_switch_pushed) const;
 
     robast_can_msgs::CanMessage create_electrical_drawer_feedback_msg(const uint32_t module_id,
-                                                                      const uint8_t id,
+                                                                      const uint8_t drawer_id,
                                                                       const bool is_endstop_switch_pushed,
                                                                       const bool is_lock_switch_pushed,
                                                                       const bool is_drawer_stall_guard_triggered,
