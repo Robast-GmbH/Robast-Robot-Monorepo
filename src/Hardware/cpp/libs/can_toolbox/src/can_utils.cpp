@@ -19,8 +19,8 @@ namespace drawer_controller
 
   void CanUtils::handle_error_feedback_msg(const uint32_t module_id, const uint8_t id, const uint8_t error_code) const
   {
-    CanMessage drawer_closed_feedback_msg = create_error_feedback_msg(module_id, id, error_code);
-    _feedback_can_msg_queue->add_element_to_queue(drawer_closed_feedback_msg);
+    CanMessage error_feedback_msg = create_error_feedback_msg(module_id, id, error_code);
+    _feedback_can_msg_queue->add_element_to_queue(error_feedback_msg);
   }
 
   void CanUtils::handle_drawer_feedback_msg(const uint32_t module_id,
