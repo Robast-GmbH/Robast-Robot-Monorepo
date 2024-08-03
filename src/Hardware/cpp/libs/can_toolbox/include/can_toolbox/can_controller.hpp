@@ -22,8 +22,6 @@ namespace drawer_controller
                   const gpio_num_t twai_tx_pin,
                   const gpio_num_t twai_rx_pin);
 
-    void initialize_can_controller(void);
-
     std::optional<robast_can_msgs::CanMessage> handle_receiving_can_msg();
 
     void send_can_message(robast_can_msgs::CanMessage can_msg);
@@ -35,6 +33,8 @@ namespace drawer_controller
     const gpio_num_t _twai_rx_pin;
 
     static const uint8_t _RX_QUEUE_SIZE = 150;   // Receive Queue size
+
+    void initialize_can_controller(void);
   };
 }   // namespace drawer_controller
 #endif   // DRAWER_CONTROLLER_CAN_CONTROLLER_HPP

@@ -10,7 +10,10 @@ namespace drawer_controller
                                const std::shared_ptr<robast_can_msgs::CanDb> can_db,
                                const gpio_num_t twai_tx_pin,
                                const gpio_num_t twai_rx_pin)
-      : _module_id{module_id}, _can_db{can_db}, _twai_tx_pin{twai_tx_pin}, _twai_rx_pin{twai_rx_pin} {};
+      : _module_id{module_id}, _can_db{can_db}, _twai_tx_pin{twai_tx_pin}, _twai_rx_pin{twai_rx_pin}
+  {
+    initialize_can_controller();
+  };
 
   void CanController::initialize_can_controller(void)
   {
