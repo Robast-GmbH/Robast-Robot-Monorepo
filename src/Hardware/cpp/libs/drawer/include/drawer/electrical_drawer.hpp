@@ -19,21 +19,18 @@
 #include "motor/motor_monitor.hpp"
 #include "switch/switch.hpp"
 #include "utils/e_drawer_task.hpp"
-#include "utils/queue.hpp"
-
-#define DRAWER_TARGET_HOMING_POSITION 0
-#define STALL_GUARD_DISABLED          0
-#define IS_HOMING                     true
-#define IS_NOT_HOMING                 false
-#define DO_NOT_USE_ACCELERATION_RAMP  false
-#define PUSH_TO_CLOSE_TRIGGERED       true
-#define PUSH_TO_CLOSE_NOT_TRIGGERED   false
-#define MOTOR_IS_STALLED              true
-#define MOTOR_IS_NOT_STALLED          false
-
 
 namespace drawer_controller
 {
+  constexpr uint8_t DRAWER_TARGET_HOMING_POSITION = 0;
+  constexpr uint8_t STALL_GUARD_DISABLED = 0;
+  constexpr bool IS_HOMING = true;
+  constexpr bool IS_NOT_HOMING = false;
+  constexpr bool DO_NOT_USE_ACCELERATION_RAMP = false;
+  constexpr bool PUSH_TO_CLOSE_TRIGGERED = true;
+  constexpr bool PUSH_TO_CLOSE_NOT_TRIGGERED = false;
+  constexpr bool MOTOR_IS_STALLED = true;
+  constexpr bool MOTOR_IS_NOT_STALLED = false;
 
   class ElectricalDrawer : public IDrawer
   {
