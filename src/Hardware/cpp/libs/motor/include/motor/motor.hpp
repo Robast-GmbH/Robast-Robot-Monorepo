@@ -7,7 +7,7 @@
 
 #include "debug/debug.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
-#include "motor/motor_configs.hpp"
+#include "motor/motor_config.hpp"
 #include "switch/switch.hpp"
 
 // higher value of STALL_VALUE increases stall sensitivity
@@ -53,7 +53,7 @@ namespace stepper_motor
     Motor(const uint8_t driver_address,
           const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
           const StepperPinIdConfig &stepper_pin_id_config,
-          const std::shared_ptr<drawer_controller::MotorConfigs> motor_configs);
+          const std::shared_ptr<drawer_controller::MotorConfig> motor_config);
 
     void init();
 
@@ -86,7 +86,7 @@ namespace stepper_motor
    private:
     const std::unique_ptr<TMC2209Stepper> _driver;
 
-    const std::shared_ptr<drawer_controller::MotorConfigs> _motor_configs;
+    const std::shared_ptr<drawer_controller::MotorConfig> _motor_config;
 
     bool _driver_is_enabled;
 

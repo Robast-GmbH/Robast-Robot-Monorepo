@@ -1,14 +1,14 @@
-#ifndef DRAWER_CONTROLLER_MOTOR_MONITOR_CONFIGS_HPP
-#define DRAWER_CONTROLLER_MOTOR_MONITOR_CONFIGS_HPP
+#ifndef DRAWER_CONTROLLER_MOTOR_MONITOR_CONFIG_HPP
+#define DRAWER_CONTROLLER_MOTOR_MONITOR_CONFIG_HPP
 
 #include <cstdint>
 
 namespace drawer_controller
 {
-  class MotorMonitorConfigs
+  class MotorMonitorConfig
   {
    public:
-    MotorMonitorConfigs() = default;
+    MotorMonitorConfig() = default;
 
     void set_active_speed_threshold(const uint32_t active_speed_threshold);
     void set_lower_position_threshold(const uint32_t lower_position_threshold);
@@ -30,4 +30,4 @@ namespace drawer_controller
 
 }   // namespace drawer_controller
 
-#endif   // DRAWER_CONTROLLER_MOTOR_MONITOR_CONFIGS_HPP
+#endif   // DRAWER_CONTROLLER_MOTOR_MONITOR_CONFIG_HPP

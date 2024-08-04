@@ -1,14 +1,14 @@
-#ifndef DRAWER_CONTROLLER_MOTOR_CONFIGS_HPP
-#define DRAWER_CONTROLLER_MOTOR_CONFIGS_HPP
+#ifndef DRAWER_CONTROLLER_MOTOR_CONFIG_HPP
+#define DRAWER_CONTROLLER_MOTOR_CONFIG_HPP
 
 #include <cstdint>
 
 namespace drawer_controller
 {
-  class MotorConfigs
+  class MotorConfig
   {
    public:
-    MotorConfigs() = default;
+    MotorConfig() = default;
 
     void set_is_shaft_direction_inverted(const bool is_shaft_direction_inverted);
 
@@ -19,4 +19,4 @@ namespace drawer_controller
   };
 }   // namespace drawer_controller
 
-#endif   // DRAWER_CONTROLLER_MOTOR_CONFIGS_HPP
+#endif   // DRAWER_CONTROLLER_MOTOR_CONFIG_HPP

@@ -9,7 +9,7 @@
 #include "gpio/gpio_wrapper_pca9535.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "led/led_strip.hpp"
-#include "motor/motor_monitor_configs.hpp"
+#include "motor/motor_monitor_config.hpp"
 #include "peripherals/gpio_defines.hpp"
 #include "switch/switch.hpp"
 #include "utils/config_manager.hpp"
@@ -36,10 +36,10 @@ std::shared_ptr<drawer_controller::ElectricalDrawerLock> drawer_lock;
 
 std::shared_ptr<drawer_controller::ElectricalDrawer> drawer;
 
-std::shared_ptr<drawer_controller::ElectricalDrawerConfigs> drawer_configs;
-std::shared_ptr<drawer_controller::EncoderConfigs> encoder_configs;
-std::shared_ptr<drawer_controller::MotorConfigs> motor_configs;
-std::shared_ptr<drawer_controller::MotorMonitorConfigs> motor_monitor_configs;
+std::shared_ptr<drawer_controller::ElectricalDrawerConfig> drawer_config;
+std::shared_ptr<drawer_controller::EncoderConfig> encoder_config;
+std::shared_ptr<drawer_controller::MotorConfig> motor_config;
+std::shared_ptr<drawer_controller::MotorMonitorConfig> motor_monitor_config;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_enn_tmc2209_pin_id = STEPPER_1_ENN_TMC2209_PIN_ID,

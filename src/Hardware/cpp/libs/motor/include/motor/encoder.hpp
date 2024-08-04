@@ -6,7 +6,7 @@
 
 #include <memory>
 
-#include "motor/enconder_configs.hpp"
+#include "motor/enconder_config.hpp"
 
 namespace drawer_controller
 {
@@ -16,7 +16,7 @@ namespace drawer_controller
     Encoder(const bool use_encoder,
             const uint8_t encoder_pin_a,
             const uint8_t encoder_pin_b,
-            const std::shared_ptr<EncoderConfigs> configs);
+            const std::shared_ptr<EncoderConfig> config);
 
     void update_position(uint32_t active_speed);
 
@@ -34,7 +34,7 @@ namespace drawer_controller
 
    private:
     const bool _use_encoder;
-    const std::shared_ptr<EncoderConfigs> _configs;
+    const std::shared_ptr<EncoderConfig> _config;
 
     std::unique_ptr<ESP32Encoder> _esp32_encoder;
 

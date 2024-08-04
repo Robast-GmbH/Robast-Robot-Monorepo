@@ -7,15 +7,15 @@
 #include <optional>
 
 #include "can_toolbox/can_utils.hpp"
-#include "drawer/electrical_drawer_configs.hpp"
+#include "drawer/electrical_drawer_config.hpp"
 #include "interfaces/i_drawer.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "lock/electrical_drawer_lock.hpp"
 #include "motor/encoder.hpp"
 #include "motor/encoder_monitor.hpp"
-#include "motor/enconder_configs.hpp"
+#include "motor/enconder_config.hpp"
 #include "motor/motor.hpp"
-#include "motor/motor_configs.hpp"
+#include "motor/motor_config.hpp"
 #include "motor/motor_monitor.hpp"
 #include "switch/switch.hpp"
 #include "utils/e_drawer_task.hpp"
@@ -44,12 +44,12 @@ namespace drawer_controller
                      const uint8_t encoder_pin_a,
                      const uint8_t encoder_pin_b,
                      const uint8_t motor_driver_address,
-                     const std::shared_ptr<MotorConfigs> motor_configs,
+                     const std::shared_ptr<MotorConfig> motor_config,
                      const std::shared_ptr<Switch> endstop_switch,
                      const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock,
-                     const std::shared_ptr<ElectricalDrawerConfigs> e_drawer_configs,
-                     const std::shared_ptr<EncoderConfigs> encoder_configs,
-                     const std::shared_ptr<MotorMonitorConfigs> motor_monitor_configs);
+                     const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config,
+                     const std::shared_ptr<EncoderConfig> encoder_config,
+                     const std::shared_ptr<MotorMonitorConfig> motor_monitor_config);
 
     void init() const;
 
@@ -86,7 +86,7 @@ namespace drawer_controller
 
     std::unique_ptr<Queue<EDrawerTask>> _e_drawer_task_queue;
 
-    const std::shared_ptr<ElectricalDrawerConfigs> _configs;
+    const std::shared_ptr<ElectricalDrawerConfig> _config;
 
     const std::unique_ptr<EncoderMonitor> _encoder_monitor;
 

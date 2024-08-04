@@ -7,8 +7,8 @@ namespace drawer_controller
   Encoder::Encoder(const bool use_encoder,
                    const uint8_t encoder_pin_a,
                    const uint8_t encoder_pin_b,
-                   const std::shared_ptr<EncoderConfigs> _configs)
-      : _use_encoder(use_encoder), _configs(_configs)
+                   const std::shared_ptr<EncoderConfig> config)
+      : _use_encoder(use_encoder), _config(config)
   {
     if (use_encoder)
     {
@@ -104,7 +104,7 @@ namespace drawer_controller
     uint32_t current_timestemp = millis();
 
     integrated_position =
-      ((current_timestemp - _last_timestamp) * active_speed) / _configs->get_drawer_position_open_loop_integral_gain();
+      ((current_timestemp - _last_timestamp) * active_speed) / _config->get_drawer_position_open_loop_integral_gain();
 
     if (!_is_drawer_moving_out)
     {
@@ -117,8 +117,8 @@ namespace drawer_controller
 
   uint32_t Encoder::get_count_drawer_max_extent() const
   {
-    return _use_encoder ? _configs->get_encoder_count_drawer_max_extent()
-                        : _configs->get_open_loop_count_drawer_max_extent();
+    return _use_encoder ? _config->get_encoder_count_drawer_max_extent()
+                        : _config->get_open_loop_count_drawer_max_extent();
   }
 
 }   // namespace drawer_controller

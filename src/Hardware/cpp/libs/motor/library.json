@@ -19,5 +19,5 @@
     "license": "MIT",
     "frameworks": "*",
     "platforms": "*",
-    "headers": ["motor.hpp", "motor_configs.hpp", "encoder.hpp", "encoder_configs.hpp", "encoder_monitor.hpp", "motor_monitor.hpp", "motor_monitor_configs.hpp"]
+    "headers": ["motor.hpp", "motor_config.hpp", "encoder.hpp", "encoder_config.hpp", "encoder_monitor.hpp", "motor_monitor.hpp", "motor_monitor_config.hpp"]
   }

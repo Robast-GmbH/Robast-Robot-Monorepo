@@ -1,14 +1,14 @@
-#ifndef DRAWER_CONTROLLER_ELECTRICAL_DRAWER_CONFIGS_HPP
-#define DRAWER_CONTROLLER_ELECTRICAL_DRAWER_CONFIGS_HPP
+#ifndef DRAWER_CONTROLLER_ELECTRICAL_DRAWER_CONFIG_HPP
+#define DRAWER_CONTROLLER_ELECTRICAL_DRAWER_CONFIG_HPP
 
 #include <cstdint>
 
 namespace drawer_controller
 {
-  class ElectricalDrawerConfigs
+  class ElectricalDrawerConfig
   {
    public:
-    ElectricalDrawerConfigs() = default;
+    ElectricalDrawerConfig() = default;
 
     void set_drawer_max_speed(const uint32_t max_speed);
     void set_drawer_homing_speed(const uint32_t homing_speed);
@@ -53,4 +53,4 @@ namespace drawer_controller
 
 }   // namespace drawer_controller
 
-#endif   // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_CONFIGS_HPP
+#endif   // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_CONFIG_HPP

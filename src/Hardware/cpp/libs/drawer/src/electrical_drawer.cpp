@@ -11,26 +11,26 @@ namespace drawer_controller
                                      const uint8_t encoder_pin_a,
                                      const uint8_t encoder_pin_b,
                                      const uint8_t motor_driver_address,
-                                     const std::shared_ptr<MotorConfigs> motor_configs,
+                                     const std::shared_ptr<MotorConfig> motor_config,
                                      const std::shared_ptr<Switch> endstop_switch,
                                      const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock,
-                                     const std::shared_ptr<ElectricalDrawerConfigs> e_drawer_configs,
-                                     const std::shared_ptr<EncoderConfigs> encoder_configs,
-                                     const std::shared_ptr<MotorMonitorConfigs> motor_monitor_configs)
+                                     const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config,
+                                     const std::shared_ptr<EncoderConfig> encoder_config,
+                                     const std::shared_ptr<MotorMonitorConfig> motor_monitor_config)
       : _module_id{module_id},
         _id{id},
         _gpio_wrapper{gpio_wrapper},
         _stepper_pin_id_config{stepper_pin_id_config},
-        _encoder{std::make_shared<Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_configs)},
+        _encoder{std::make_shared<Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_config)},
         _can_utils{std::make_unique<CanUtils>(can_db)},
         _motor{std::make_shared<stepper_motor::Motor>(
-          motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, motor_configs)},
+          motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, motor_config)},
         _endstop_switch{endstop_switch},
         _electrical_drawer_lock{electrical_drawer_lock},
         _e_drawer_task_queue{std::make_unique<Queue<EDrawerTask>>()},
-        _encoder_monitor{std::make_unique<EncoderMonitor>(_encoder, encoder_configs)},
-        _configs{e_drawer_configs},
-        _motor_monitor{std::make_unique<MotorMonitor>(_encoder, encoder_configs, _motor, motor_monitor_configs)}
+        _encoder_monitor{std::make_unique<EncoderMonitor>(_encoder, encoder_config)},
+        _config{e_drawer_config},
+        _motor_monitor{std::make_unique<MotorMonitor>(_encoder, encoder_config, _motor, motor_monitor_config)}
   {
   }
 
@@ -95,14 +95,14 @@ namespace drawer_controller
 
     // if the drawer is not moving, we need to check if the drawer is pushed in
     // but make sure to wait a certain amount of time if the stall guard was triggered
-    uint32_t wait_time_in_ms = _configs->get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms();
+    uint32_t wait_time_in_ms = _config->get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms();
     if (millis() - _timestamp_stall_guard_triggered_in_ms > wait_time_in_ms)
     {
       if (_encoder_monitor->check_if_drawer_is_pushed_in())
       {
         add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
-                                    _configs->get_drawer_push_in_auto_close_speed(),
-                                    _configs->get_drawer_push_in_auto_close_stall_guard_value(),
+                                    _config->get_drawer_push_in_auto_close_speed(),
+                                    _config->get_drawer_push_in_auto_close_stall_guard_value(),
                                     IS_NOT_HOMING,
                                     DO_NOT_USE_ACCELERATION_RAMP});
         _can_utils->handle_electrical_drawer_feedback_msg(
@@ -132,7 +132,7 @@ namespace drawer_controller
 
       _target_position_uint8 = e_drawer_task.value().target_position;
 
-      _motor->set_stall_guard(_configs->get_use_tmc_stall_guard() ? e_drawer_task.value().stall_guard_value : 0);
+      _motor->set_stall_guard(_config->get_use_tmc_stall_guard() ? e_drawer_task.value().stall_guard_value : 0);
 
       _timestamp_movement_started_in_ms = millis();
 
@@ -236,15 +236,15 @@ namespace drawer_controller
   bool ElectricalDrawer::handle_motor_stall_guard_and_return_status()
   {
     if (millis() - _timestamp_movement_started_in_ms <
-        _configs->get_drawer_stall_guard_wait_time_after_movement_started_in_ms())
+        _config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms())
     {
       debug_printf("[ElectricalDrawer]: Since the movement started, %u ms passed! We need to wait %u ms!\n",
                    millis() - _timestamp_movement_started_in_ms,
-                   _configs->get_drawer_stall_guard_wait_time_after_movement_started_in_ms());
+                   _config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms());
       return false;
     }
 
-    if (_configs->get_use_tmc_stall_guard())
+    if (_config->get_use_tmc_stall_guard())
     {
       _is_tmc_stall_guard_triggered = _motor->get_is_stalled();
     }
@@ -305,7 +305,7 @@ namespace drawer_controller
       debug_println("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!");
       _e_drawer_task_queue->add_element_to_queue(
         {DRAWER_TARGET_HOMING_POSITION,
-         get_normed_target_speed_uint8(_configs->get_drawer_initial_homing_speed()),
+         get_normed_target_speed_uint8(_config->get_drawer_initial_homing_speed()),
          STALL_GUARD_DISABLED,
          IS_HOMING,
          false});
@@ -324,7 +324,7 @@ namespace drawer_controller
 
   uint32_t ElectricalDrawer::get_normed_target_speed_uint32(const uint8_t target_speed) const
   {
-    uint32_t max_speed = _configs->get_drawer_max_speed();
+    uint32_t max_speed = _config->get_drawer_max_speed();
     uint32_t target_speed_casted = static_cast<uint32_t>(target_speed);
 
     return (target_speed_casted * max_speed) / UINT8_MAX;
@@ -332,7 +332,7 @@ namespace drawer_controller
 
   uint8_t ElectricalDrawer::get_normed_target_speed_uint8(const uint32_t target_speed) const
   {
-    return (target_speed * UINT8_MAX) / _configs->get_drawer_max_speed();
+    return (target_speed * UINT8_MAX) / _config->get_drawer_max_speed();
   }
 
   void ElectricalDrawer::set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp)
@@ -345,7 +345,7 @@ namespace drawer_controller
     if (use_acceleration_ramp)
     {
       _motor->set_target_speed_with_accelerating_ramp(normed_target_speed_uint32,
-                                                      _configs->get_drawer_default_acceleration());
+                                                      _config->get_drawer_default_acceleration());
     }
     else
     {
@@ -360,15 +360,15 @@ namespace drawer_controller
     _triggered_deceleration_for_drawer_moving_in = true;
 
     _motor->set_target_speed_with_decelerating_ramp(
-      _configs->get_drawer_homing_speed(),
-      _encoder->convert_uint8_position_to_drawer_position_scale(_configs->get_drawer_moving_in_deceleration_distance()),
+      _config->get_drawer_homing_speed(),
+      _encoder->convert_uint8_position_to_drawer_position_scale(_config->get_drawer_moving_in_deceleration_distance()),
       _encoder->get_current_position());
   }
 
   void ElectricalDrawer::handle_decelerating_for_moving_out_drawer()
   {
     if (!_triggered_deceleration_for_drawer_moving_out &&
-        (_encoder->get_normed_current_position() + _configs->get_drawer_moving_out_deceleration_distance()) >=
+        (_encoder->get_normed_current_position() + _config->get_drawer_moving_out_deceleration_distance()) >=
           _target_position_uint8)
     {
       debug_printf(
@@ -380,7 +380,7 @@ namespace drawer_controller
       _triggered_deceleration_for_drawer_moving_out = true;
       _motor->set_target_speed_with_decelerating_ramp(0,
                                                       _encoder->convert_uint8_position_to_drawer_position_scale(
-                                                        _configs->get_drawer_moving_out_deceleration_distance()),
+                                                        _config->get_drawer_moving_out_deceleration_distance()),
                                                       _encoder->get_current_position());
     }
   }
@@ -430,13 +430,13 @@ namespace drawer_controller
   void ElectricalDrawer::handle_drawer_moving_in()
   {
     if (!_triggered_deceleration_for_drawer_moving_in &&
-        _encoder->get_normed_current_position() < _configs->get_drawer_moving_in_deceleration_distance())
+        _encoder->get_normed_current_position() < _config->get_drawer_moving_in_deceleration_distance())
     {
       handle_decelerating_for_moving_in_drawer();
     }
-    else if (_encoder->get_normed_current_position() < _configs->get_drawer_moving_in_final_homing_distance())
+    else if (_encoder->get_normed_current_position() < _config->get_drawer_moving_in_final_homing_distance())
     {
-      _motor->set_target_speed_instantly(_configs->get_drawer_homing_speed());
+      _motor->set_target_speed_instantly(_config->get_drawer_homing_speed());
 
       handle_finished_moving_in_drawer();
     }

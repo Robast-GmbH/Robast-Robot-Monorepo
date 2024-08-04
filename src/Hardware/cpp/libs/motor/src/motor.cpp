@@ -5,7 +5,7 @@ namespace stepper_motor
   Motor::Motor(const uint8_t driver_address,
                const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
                const StepperPinIdConfig &stepper_pin_id_config,
-               const std::shared_ptr<drawer_controller::MotorConfigs> motor_configs)
+               const std::shared_ptr<drawer_controller::MotorConfig> motor_config)
       : _gpio_wrapper{gpio_wrapper},
         _driver{std::make_unique<TMC2209Stepper>(&SERIAL_PORT, R_SENSE, driver_address)},
         _driver_is_enabled{false},
@@ -17,7 +17,7 @@ namespace stepper_motor
         _stepper_index_pin_id{stepper_pin_id_config.stepper_index_pin_id},
         _stepper_step_pin_id{stepper_pin_id_config.stepper_step_pin_id},
         _port_expander_ninterrupt_pin_id{stepper_pin_id_config.port_expander_ninterrupt_pin_id},
-        _motor_configs{motor_configs},
+        _motor_config{motor_config},
         _is_stalled{false},
         _stall_guard_reader{std::make_unique<drawer_controller::Switch>(gpio_wrapper,
                                                                         stepper_pin_id_config.stepper_diag_pin_id,
@@ -342,7 +342,7 @@ namespace stepper_motor
 
   bool Motor::direction_to_shaft_bool(Direction direction)
   {
-    if (_motor_configs->get_is_shaft_direction_inverted())
+    if (_motor_config->get_is_shaft_direction_inverted())
     {
       return direction == Direction::counter_clockwise;
     }

@@ -1,14 +1,14 @@
-#ifndef DRAWER_CONTROLLER_ENCODER_CONFIGS_HPP
-#define DRAWER_CONTROLLER_ENCODER_CONFIGS_HPP
+#ifndef DRAWER_CONTROLLER_ENCODER_CONFIG_HPP
+#define DRAWER_CONTROLLER_ENCODER_CONFIG_HPP
 
 #include <cstdint>
 
 namespace drawer_controller
 {
-  class EncoderConfigs
+  class EncoderConfig
   {
    public:
-    EncoderConfigs() = default;
+    EncoderConfig() = default;
 
     void set_open_loop_count_drawer_max_extent(const uint32_t open_loop_count_drawer_max_extent);
     void set_encoder_count_drawer_max_extent(const uint32_t encoder_count_drawer_max_extent);
@@ -35,4 +35,4 @@ namespace drawer_controller
 
 }   // namespace drawer_controller
 
-#endif   // DRAWER_CONTROLLER_ENCODER_CONFIGS_HPP
+#endif   // DRAWER_CONTROLLER_ENCODER_CONFIG_HPP

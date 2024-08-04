@@ -125,13 +125,13 @@ void setup()
                                                                           SWITCH_PRESSED_THRESHOLD,
                                                                           SWITCH_WEIGHT_NEW_VALUES);
 
-  drawer_configs = std::make_shared<drawer_controller::ElectricalDrawerConfigs>();
-  encoder_configs = std::make_shared<drawer_controller::EncoderConfigs>();
-  motor_configs = std::make_shared<drawer_controller::MotorConfigs>();
-  motor_monitor_configs = std::make_shared<drawer_controller::MotorMonitorConfigs>();
+  drawer_config = std::make_shared<drawer_controller::ElectricalDrawerConfig>();
+  encoder_config = std::make_shared<drawer_controller::EncoderConfig>();
+  motor_config = std::make_shared<drawer_controller::MotorConfig>();
+  motor_monitor_config = std::make_shared<drawer_controller::MotorMonitorConfig>();
 
   config_manager = std::make_unique<drawer_controller::ConfigManager>(
-    drawer_configs, encoder_configs, motor_configs, motor_monitor_configs);
+    drawer_config, encoder_config, motor_config, motor_monitor_config);
 
   drawer = std::make_shared<drawer_controller::ElectricalDrawer>(
     MODULE_ID,
@@ -143,12 +143,12 @@ void setup()
     gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_A_PIN_ID),
     gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_B_PIN_ID),
     STEPPER_MOTOR_1_ADDRESS,
-    motor_configs,
+    motor_config,
     endstop_switch,
     drawer_lock,
-    drawer_configs,
-    encoder_configs,
-    motor_monitor_configs);
+    drawer_config,
+    encoder_config,
+    motor_monitor_config);
   drawer->init();
 
   debug_println("[Main]: Finished setup()!");

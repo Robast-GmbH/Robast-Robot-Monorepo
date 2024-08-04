@@ -7,10 +7,10 @@ namespace module_config
 {
 
   // Define the mapping struct
-  template <int ID>
-  struct ModuleConfigDataType;
+  template <uint8_t ID>
+  struct ModuleSetting;
   // Usage example:
-  // using DataType = ModuleConfigDataType<drawer::MAX_SPEED>::type;
+  // using DataType = ModuleSetting<drawer::MAX_SPEED>::type;
   // DataType value = 10;
 
   /********************************************************************************************************
@@ -60,84 +60,84 @@ namespace module_config
    *********************************************************************************************************/
 
   template <>
-  struct ModuleConfigDataType<drawer::MAX_SPEED>
+  struct ModuleSetting<drawer::MAX_SPEED>
   {
     using type = uint32_t;
     static constexpr type default_value = 35000;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::HOMING_SPEED>
+  struct ModuleSetting<drawer::HOMING_SPEED>
   {
     using type = uint32_t;
     static constexpr type default_value = 500;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::INITIAL_HOMING_SPEED>
+  struct ModuleSetting<drawer::INITIAL_HOMING_SPEED>
   {
     using type = uint32_t;
     static constexpr type default_value = 1500;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::MOVING_IN_DECELERATION_DISTANCE>
+  struct ModuleSetting<drawer::MOVING_IN_DECELERATION_DISTANCE>
   {
     using type = uint8_t;
     static constexpr type default_value = 50;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::MOVING_IN_FINAL_HOMING_DISTANCE>
+  struct ModuleSetting<drawer::MOVING_IN_FINAL_HOMING_DISTANCE>
   {
     using type = uint8_t;
     static constexpr type default_value = 1;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::MOVING_OUT_DECELERATION_DISTANCE>
+  struct ModuleSetting<drawer::MOVING_OUT_DECELERATION_DISTANCE>
   {
     using type = uint8_t;
     static constexpr type default_value = 70;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::PUSH_IN_AUTO_CLOSE_SPEED>
+  struct ModuleSetting<drawer::PUSH_IN_AUTO_CLOSE_SPEED>
   {
     using type = uint8_t;
     static constexpr type default_value = 120;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE>
+  struct ModuleSetting<drawer::PUSH_IN_AUTO_CLOSE_TMC_STALL_GUARD_VALUE>
   {
     using type = uint8_t;
     static constexpr type default_value = 75;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>
+  struct ModuleSetting<drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>
   {
     using type = uint32_t;
     static constexpr type default_value = 200;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>
+  struct ModuleSetting<drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>
   {
     using type = uint32_t;
     static constexpr type default_value = 350;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::USE_TMC_STALL_GUARD>
+  struct ModuleSetting<drawer::USE_TMC_STALL_GUARD>
   {
     using type = bool;
     static constexpr type default_value = false;
   };
 
   template <>
-  struct ModuleConfigDataType<drawer::DRAWER_DEFAULT_ACCELERATION>
+  struct ModuleSetting<drawer::DRAWER_DEFAULT_ACCELERATION>
   {
     using type = uint8_t;
     static constexpr type default_value = 8;
@@ -148,35 +148,35 @@ namespace module_config
    *********************************************************************************************************/
 
   template <>
-  struct ModuleConfigDataType<encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT>
+  struct ModuleSetting<encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT>
   {
     using type = uint32_t;
     static constexpr type default_value = 85000;
   };
 
   template <>
-  struct ModuleConfigDataType<encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT>
+  struct ModuleSetting<encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT>
   {
     using type = uint32_t;
     static constexpr type default_value = 83000;
   };
 
   template <>
-  struct ModuleConfigDataType<encoder::DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN>
+  struct ModuleSetting<encoder::DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN>
   {
     using type = uint32_t;
     static constexpr type default_value = 1000;
   };
 
   template <>
-  struct ModuleConfigDataType<encoder::DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>
+  struct ModuleSetting<encoder::DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>
   {
     using type = float;
     static constexpr type default_value = 0.005;
   };
 
   template <>
-  struct ModuleConfigDataType<encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>
+  struct ModuleSetting<encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>
   {
     using type = uint32_t;
     static constexpr type default_value = 500;
@@ -187,7 +187,7 @@ namespace module_config
    ********************************************************************************************************/
 
   template <>
-  struct ModuleConfigDataType<motor::IS_SHAFT_DIRECTION_INVERTED>
+  struct ModuleSetting<motor::IS_SHAFT_DIRECTION_INVERTED>
   {
     using type = bool;
     static constexpr type default_value = true;
@@ -198,14 +198,14 @@ namespace module_config
    ********************************************************************************************************/
 
   template <>
-  struct ModuleConfigDataType<motor_monitor::ACTIVE_SPEED_THRESHOLD>
+  struct ModuleSetting<motor_monitor::ACTIVE_SPEED_THRESHOLD>
   {
     using type = uint32_t;
     static constexpr type default_value = 800;
   };
 
   template <>
-  struct ModuleConfigDataType<motor_monitor::LOWER_POSITION_THRESHOLD>
+  struct ModuleSetting<motor_monitor::LOWER_POSITION_THRESHOLD>
   {
     using type = uint32_t;
     // Right after the drawer is homed, there can be a tension in the belt which can cause the motor to move a bit
@@ -214,7 +214,7 @@ namespace module_config
   };
 
   template <>
-  struct ModuleConfigDataType<motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS>
+  struct ModuleSetting<motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS>
   {
     using type = uint32_t;
     // usually one control loop takes 30-40ms (as of 29.07.2024)
@@ -222,7 +222,7 @@ namespace module_config
   };
 
   template <>
-  struct ModuleConfigDataType<motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>
+  struct ModuleSetting<motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>
   {
     using type = float;
     static constexpr type default_value = 0.35;
