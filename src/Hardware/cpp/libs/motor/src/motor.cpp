@@ -232,7 +232,7 @@ namespace stepper_motor
   void Motor::handle_position_dependent_deceleration(int32_t current_position_int32)
   {
     uint32_t new_active_speed_uint32 = calculate_new_active_speed(current_position_int32);
-    _speed_ramp_in_progress = !(new_active_speed_uint32 < get_target_speed());
+    _speed_ramp_in_progress = new_active_speed_uint32 >= get_target_speed();
     new_active_speed_uint32 = _speed_ramp_in_progress ? new_active_speed_uint32 : get_target_speed();
     debug_printf("[Motor, handle_position_dependent_deceleration]: New active speed: %d\n", new_active_speed_uint32);
     set_active_speed(new_active_speed_uint32);
