@@ -19,7 +19,7 @@ class DisinfectionPublisher(Node):
         super().destroy_node()
         GPIO.cleanup()
 
-    def __publish_disinfection_triggered(self, channel: int):
+    def __publish_disinfection_triggered_with_stamp(self, channel: int):
         msg = self.get_clock().now().to_msg()
         self.get_logger().info(
             f"Disinfection triggered at {msg.sec}.{msg.nanosec} seconds."
@@ -33,7 +33,7 @@ class DisinfectionPublisher(Node):
         GPIO.add_event_detect(
             SENSE_DISINFECTION_SWITCH_PIN,
             GPIO.FALLING,
-            callback=self.__publish_disinfection_triggered,
+            callback=self.__publish_disinfection_triggered_with_stamp,
             bouncetime=BOUNCE_TIME_IN_MS,
         )
 
