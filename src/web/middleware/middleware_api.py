@@ -70,6 +70,16 @@ def read_robot_battery_level(robot_url: str = Depends(get_robot_url)):
     return {"battery_level": 1.0}
 
 
+@app.get("/disinfection_triggered", tags=["Robot Status"])
+def read_disinfection_triggered(
+    robot_url: str = Depends(get_robot_url), timeout: int = 10
+):
+    response = requests.get(
+        f"{robot_url}/disinfection_triggered?time_out={timeout}"
+    ).json()
+    return response
+
+
 """
 =========================
 Navigation API Endpoints

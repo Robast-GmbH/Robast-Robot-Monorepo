@@ -151,3 +151,17 @@ if door_available:
     @app.post("/close_door", tags=["Doors"])
     def post_close_door():
         return {"success": ros_bridge.door_bridge.close_door()}
+
+
+"""
+======================
+Disinfection API Endpoints
+======================
+"""
+
+
+@app.get("/disinfection_triggered", tags=["Disinfection"])
+def get_disinfection_triggered(timeout: int):
+    return ros_bridge.disinfection_module_bridge.wait_for_disinfection_triggered(
+        timeout
+    )
