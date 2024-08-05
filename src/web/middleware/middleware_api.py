@@ -2,10 +2,10 @@ from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 
-from task_assignment_system.task_assignment_system import TaskAssignmentSystem
-from pydantic_models.task import Task
+
 from user_system.user_system_router import user_system_router
 from module_manager.module_manager_router import module_manager_router
+from task_system.task_system_router import task_system_router
 import configs.url_config as url_config
 from models.url_helper import URLHelper
 
@@ -19,12 +19,11 @@ app.add_middleware(
 )
 app.include_router(user_system_router, prefix="/users")
 app.include_router(module_manager_router, prefix="/modules")
+app.include_router(task_system_router, prefix="/tasks")
 
 
 name_to_ip = url_config.ROBOT_NAME_TO_IP
 fleet_management_address = url_config.FLEET_MANAGEMENT_ADDRESS
-
-task_assigment_system = TaskAssignmentSystem()
 
 get_robot_url = URLHelper.get_robot_url
 
@@ -148,32 +147,6 @@ def get_open_door(robot_url: str = Depends(get_robot_url)):
 def get_close_door(robot_url: str = Depends(get_robot_url)):
     response = requests.get(f"{robot_url}/close_door").json()
     return response
-
-
-"""
-======================
-Tasks API Endpoints
-======================
-"""
-
-
-@app.post("/task_assignment", tags=["Tasks"])
-def post_task_assignment(request: Task):
-    success, message = task_assigment_system.receive_task(request)
-    return {"success": success, "message": message}
-
-
-@app.get("/tasks", tags=["Tasks"])
-def get_tasks():
-    tasks = {}
-    for robot in task_assigment_system.robots.values():
-        tasks[robot.name] = robot.get_robot_tasks()
-    return tasks
-
-
-@app.get("/robot_tasks", tags=["Tasks"])
-def get_robot_tasks(robot_name: str):
-    return task_assigment_system.robots[robot_name].get_robot_tasks()
 
 
 """

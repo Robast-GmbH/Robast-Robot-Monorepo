@@ -1,4 +1,4 @@
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
+import 'package:middleware_api_utilities/src/models/subtask.dart';
 
 class RobotTaskStatus {
   RobotTaskStatus({

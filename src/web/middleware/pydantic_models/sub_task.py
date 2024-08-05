@@ -19,22 +19,37 @@ class SubTask(BaseModel):
     requirements: dict[str, Any]
     action: Action
 
+    @classmethod
+    def from_json(cls, json_data: dict[str, Any]) -> "SubTask":
+        return cls(
+            id=json_data["id"],
+            name=json_data["name"],
+            status=json_data["status"],
+            assignee_name=json_data["assignee_name"],
+            parent_id=json_data["parent_id"],
+            requires_task_id=json_data["requires_task_id"],
+            is_part_of_monolith=json_data["is_part_of_monolith"],
+            target_id=json_data["target_id"],
+            priority=json_data["priority"],
+            earliest_start_time=json_data["earliest_start_time"],
+            requirements=json_data["requirements"],
+            action=Action.from_json(json_data["action"]),
+        )
+
     def to_json(self) -> dict[str, Any]:
         return {
-            "task": {
-                "id": self.id,
-                "name": self.name,
-                "status": self.status,
-                "assignee_name": self.assignee_name,
-                "parent_id": self.parent_id,
-                "requires_task_id": self.requires_task_id,
-                "is_part_of_monolith": self.is_part_of_monolith,
-                "target_id": self.target_id,
-                "priority": self.priority,
-                "earliest_start_time": self.earliest_start_time,
-                "requirements": self.requirements,
-                "action": self.action.to_json(),
-            }
+            "id": self.id,
+            "name": self.name,
+            "status": self.status,
+            "assignee_name": self.assignee_name,
+            "parent_id": self.parent_id,
+            "requires_task_id": self.requires_task_id,
+            "is_part_of_monolith": self.is_part_of_monolith,
+            "target_id": self.target_id,
+            "priority": self.priority,
+            "earliest_start_time": self.earliest_start_time,
+            "requirements": self.requirements,
+            "action": self.action.to_json(),
         }
 
     def to_robot_task_request(self) -> dict[str, Any]:
@@ -51,7 +66,7 @@ class SubTask(BaseModel):
                     "category": "custom_action",
                     "phases": [self.__create_task_phase()],
                 },
-                "requester": "task_assignment_system",
+                "requester": "task_system",
             },
         }
 

@@ -87,6 +87,7 @@ def reserve_module(
 ):
     has_been_reserved = module_manager.reserve_module(
         drawer_address,
+        task_id="",
         user_ids=user_ids,
         user_groups=user_groups,
     )

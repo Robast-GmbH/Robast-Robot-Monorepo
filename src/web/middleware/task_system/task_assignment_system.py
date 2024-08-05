@@ -1,7 +1,8 @@
-from task_assignment_system.models.robot import Robot
-from task_assignment_system.models.nav_graph import NavGraph
+from task_system.models.robot import Robot
+from task_system.models.nav_graph import NavGraph
 from pydantic_models.task import Task
-from task_assignment_system.models.fleet_management_api import FleetManagementAPI
+from task_system.models.fleet_management_api import FleetManagementAPI
+from task_system.task_repository import TaskRepository
 from module_manager.module_manager import ModuleManager
 from configs.url_config import FLEET_MANAGEMENT_ADDRESS, ROBOT_NAME_TO_IP
 
@@ -16,13 +17,14 @@ class TaskAssignmentSystem:
     def __init__(
         self,
     ) -> None:
-        path = "task_assignment_system/configs/nav_config.json"
+        path = "task_system/configs/nav_config.json"
         with open(path, "r") as file:
             data = json.load(file)["levels"][0]["nav_graphs"][0]
         self.nav_graph = NavGraph.from_json(data=data)
         self.available_drawer_types = set()
         self.fleet_management_api = FleetManagementAPI(FLEET_MANAGEMENT_ADDRESS)
         self.module_manager = ModuleManager()
+        self.task_repository = TaskRepository()
         self.robots = self.__init_robots(
             self.fleet_management_api,
             self.module_manager,
@@ -43,7 +45,8 @@ class TaskAssignmentSystem:
         if not self.__validate_task_requirements(task):
             return False, "Invalid request, drawer type not mounted in fleet."
 
-        self.request_queue.append(task)
+        self.task_repository.create_task(task)
+
         self.__trigger_task_assignment()
         return True, "Request added to queue."
 
@@ -65,15 +68,18 @@ class TaskAssignmentSystem:
         return True
 
     def __trigger_task_assignment(self) -> None:
-        if len(self.request_queue) > 0:
-            delivery_request = self.request_queue.pop(0)
+        unassigned_tasks = self.task_repository.read_unassigned_tasks()
+        if len(unassigned_tasks) > 0:
+            unassigned_task = unassigned_tasks[0]
 
-            assignee = self.__find_cheapest_assignment(delivery_request)
+            assignee = self.__find_cheapest_assignment(unassigned_task)
 
             if assignee is not None:
-                is_accepted = assignee.accept_request(delivery_request)
-            if assignee is None or not is_accepted:
-                self.request_queue.append(delivery_request)
+                is_accepted = assignee.accept_request(unassigned_task)
+                if is_accepted:
+                    unassigned_task.status = "pending"
+                    unassigned_task.assignee_name = assignee.name
+                    self.task_repository.update_task(unassigned_task)
 
         self.timer = Timer(
             TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_SECONDS,

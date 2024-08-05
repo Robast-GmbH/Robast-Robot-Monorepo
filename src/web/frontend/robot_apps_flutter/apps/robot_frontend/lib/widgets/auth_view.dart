@@ -102,16 +102,8 @@ class _AuthViewState extends State<AuthView> {
         FutureBuilder<bool>(
           future: tryStartUserSessionFuture,
           builder: (context, snapshot) {
-            if (snapshot.connectionState != ConnectionState.done) {
+            if (snapshot.connectionState != ConnectionState.done || snapshot.data!) {
               return const CircularProgressIndicator();
-            } else if (snapshot.data!) {
-              return const Text(
-                'Authentifizierung erfolgreich',
-                style: TextStyle(
-                  fontSize: 50,
-                  fontWeight: FontWeight.bold,
-                ),
-              );
             } else {
               return InkWell(
                 onTap: () {

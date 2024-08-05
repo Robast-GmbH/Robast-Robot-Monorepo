@@ -15,8 +15,6 @@ import 'package:robot_frontend/widgets/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_view.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_selector.dart';
-import 'package:uuid/uuid.dart';
-import 'package:uuid/v4.dart';
 
 class DeliveryTaskCreationPage extends StatefulWidget {
   const DeliveryTaskCreationPage({super.key});
@@ -163,42 +161,20 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
             CustomButtonView(
               padding: const EdgeInsets.all(16),
               onPressed: () async {
-                final id = const Uuid().v4();
-                final itemsByChange = moduleContentController.createItemsByChange();
-                final dropoffItemsByChange = itemsByChange.map((key, value) => MapEntry(key, -value));
-                final task = Task.delivery(
-                  id: id,
+                await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
                   requiredDrawerType: requiredDrawerType,
-                  pickupTaskID: const Uuid().v4(),
                   pickupTargetID: startController.room!,
-                  pickupItemsByChange: itemsByChange,
                   senderUserIDs: [
                     if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
                   ],
                   senderUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
-                  dropoffTaskID: const Uuid().v4(),
                   dropoffTargetID: targetController.room!,
-                  dropoffItemsByChange: dropoffItemsByChange,
                   recipientUserIDs: [
                     if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
                   ],
                   recipientUserGroups: recipientUserGroupsSelectionController.selectionAsStringList(),
+                  itemsByChange: moduleContentController.createItemsByChange(),
                 );
-                print(jsonEncode(task.toJson()));
-                // await Provider.of<TaskProvider>(context, listen: false).createTaskRequest(
-                //   startID: startController.room,
-                //   targetID: targetController.room,
-                //   requiredDrawerType: requiredDrawerType,
-                //   itemsByChange: moduleContentController.createItemsByChange(),
-                //   senderAuthUsers: [
-                //     if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
-                //   ],
-                //   senderAuthUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
-                //   recipientAuthUsers: [
-                //     if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
-                //   ],
-                //   recipientAuthUserGroups: recipientUserGroupsSelectionController.selectionAsStringList(),
-                // );
                 if (context.mounted) {
                   Navigator.of(context).pop();
                 }

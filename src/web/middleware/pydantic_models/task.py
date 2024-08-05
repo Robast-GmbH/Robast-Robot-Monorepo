@@ -11,3 +11,5 @@ class Task(BaseModel):
     requirements: dict[str, Any]
     subtasks: list[SubTask]
     is_monolithic: bool
+    earliest_start_time: int
+    priority: int
