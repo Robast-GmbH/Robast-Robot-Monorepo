@@ -55,7 +55,7 @@ services:
       - /proc/device-tree/chosen:/proc/device-tree/chosen:cashed
     devices:
       - "/dev/gpiochip0:/dev/gpiochip0"
-    command: /bin/sh -c "./start_scripts/disinfection_module_start.sh"
+    command: /bin/sh -c "/start_scripts/disinfection_publisher_start.sh"
     privileged: true
     stop_signal: SIGINT
     restart: unless-stopped
