@@ -45,14 +45,14 @@ services:
     network_mode: "host"
 
   disinfection_module:
-    image: ghcr.io/robast-gmbh/monorepo/disinfection_module:release
+    image: ghcr.io/robast-gmbh/monorepo/nvidia_hardware_nodes:release
     environment:
       - ROS_DOMAIN_ID=23
       - RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
     volumes:
       - ./start_scripts/:/start_scripts/:cached
       - /proc/device-tree/compatible:/proc/device-tree/compatible:cashed
-      - /proc/device-tree/compatible:/proc/device-tree/compatible:cashed
+      - /proc/device-tree/chosen:/proc/device-tree/chosen:cashed
     devices:
       - "/dev/gpiochip0:/dev/gpiochip0"
     command: /bin/sh -c "./start_scripts/disinfection_module_start.sh"

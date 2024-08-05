@@ -1,13 +1,11 @@
 name: Create Docker Image Disinfection Module
 #trigger workflow every day at 00:00
 on:
-  schedule:
-    - cron: '0 0 07 */2 *'
   push:
     branches:
         - main
     paths:
-        - src/ros2/hardware_nodes/disinfection_module/Dockerfile
+        - src/ros2/nvidia_hardware_nodes/Dockerfile
   workflow_dispatch:
 
 
@@ -16,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       Ros-Distro: humble
-      Project-Name: disinfection_module
+      Project-Name: nvidia_hardware_nodes
 
     steps:
     - name: Checkout repository and submodules
@@ -34,27 +32,13 @@ jobs:
     - name: configures Docker Buildx to create a builder instance for running the image build.
       uses: docker/setup-buildx-action@v2 
     
-    - name: Build ${{ env.Project-Name }} devel docker
-      uses: docker/build-push-action@v4
-      with:
-        context: src/ros2/disinfection_module/${{ env.Project-Name }}/
-        target: devel
-        build-args: |
-          ROS_VERSION=${{ env.Ros-Distro }}
-          GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }} #TODO @TAlscher find a smarter way then using this token
-        push: true
-        file: src/ros2/disinfection_module/${{ env.Project-Name }}/Dockerfile
-        tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:devel
-
     - name: Build ${{ env.Project-Name }} release docker
       uses: docker/build-push-action@v4
       with:
-        context: src/ros2/disinfection_module/${{ env.Project-Name }}/
-        target: release
-        platforms: linux/amd64,linux/arm64/v8
+        context: src/ros2/${{ env.Project-Name }}/
+        platforms: linux/arm64/v8
         build-args: |
-          ROS_VERSION=${{ env.Ros-Distro }}
-          GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }}
+          GIT_TOKEN=${{ secrets.DOCKER_GIT_TOKEN }} #TODO @TAlscher find a smarter way then using this token
         push: true
         file: src/ros2/disinfection_module/${{ env.Project-Name }}/Dockerfile
         tags: ghcr.io/robast-gmbh/monorepo/${{ env.Project-Name }}:release

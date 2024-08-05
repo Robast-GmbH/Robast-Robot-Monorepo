@@ -3,6 +3,7 @@ ARG GIT_TOKEN
 
 ENV ROS_DISTRO=humble
 
+ARG DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && \
     apt-get install -y python3-pip sudo locales software-properties-common curl git \
     && pip3 install Jetson.GPIO \
@@ -22,6 +23,7 @@ RUN apt-get update && \
     && rosdep init || echo "rosdep already initialized" \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+ARG DEBIAN_FRONTEND
 
 RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/robast/.bashrc && \
     echo "if [ -f /robast/${ROS_DISTRO}/install/setup.bash ]; then source /robast/${ROS_DISTRO}/install/setup.bash; fi" >> /home/robast/.bashrc
@@ -34,7 +36,7 @@ ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
 COPY . /ws/src/nvidia_hardware_nodes/disinfection_module
 
 WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+RUN git clone -b main https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
 
 WORKDIR /ws
 RUN mkdir -p /ws/src/ros2/ && mkdir /robast \
