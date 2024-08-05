@@ -15,9 +15,8 @@ class ModuleProvider extends ChangeNotifier {
     final modules = await _middlewareApiUtilities.modules.getModules(robotName: 'rb_theron');
     setModules(modules);
     _modulesUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
-      final modules = await _middlewareApiUtilities.modules.getModules(robotName: 'rb_theron');
-      setModules(modules);
-      if (modules.any((element) => element.moduleProcess.status != ModuleProcessStatus.idle)) {
+      await fetchModules();
+      if (_modules.any((element) => element.moduleProcess.status != ModuleProcessStatus.idle)) {
         onModuleProcess?.call();
       }
     });

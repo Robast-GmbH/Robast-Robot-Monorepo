@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
@@ -6,13 +8,15 @@ import 'package:robot_frontend/models/controller/user_groups_selection_controlle
 import 'package:robot_frontend/models/controller/user_name_controller.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/location_selector.dart';
+import 'package:robot_frontend/widgets/nfc_writing_dialog.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_name_editor.dart';
+import 'package:uuid/uuid.dart';
 
 class UserManagementListTile extends StatefulWidget {
-  const UserManagementListTile({required this.user, required this.onDeletePressed, super.key});
+  const UserManagementListTile({required this.user, required this.onUserUpdate, super.key});
   final User user;
-  final VoidCallback onDeletePressed;
+  final VoidCallback onUserUpdate;
   @override
   State<UserManagementListTile> createState() => _UserManagementListTileState();
 }
@@ -75,6 +79,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                     Provider.of<UserProvider>(context, listen: false).updateUser(
                       updatedUser: User(
                         id: widget.user.id,
+                        nfcID: widget.user.nfcID,
                         title: userNameController.title,
                         firstName: userNameController.firstName,
                         lastName: userNameController.lastName,
@@ -102,16 +107,39 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                 const SizedBox(
                   width: 8,
                 ),
-                IconButton(
+                PopupMenuButton(
                   iconSize: 32,
-                  color: Colors.white,
-                  onPressed: () {
-                    widget.onDeletePressed();
-                  },
-                  icon: const Icon(Icons.delete),
+                  itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: const Icon(Icons.nfc),
+                        title: const Text('NFC beschreiben'),
+                        onTap: () async {
+                          Navigator.pop(context);
+                          await showDialog<NFCWritingDialog>(
+                            context: context,
+                            builder: (context) => NFCWritingDialog(
+                              userID: widget.user.id,
+                            ),
+                          );
+                        },
+                      ),
+                    ),
+                    PopupMenuItem(
+                      child: ListTile(
+                        leading: const Icon(Icons.delete),
+                        title: const Text('Löschen'),
+                        onTap: () async {
+                          Navigator.pop(context);
+                          await Provider.of<UserProvider>(context, listen: false).deleteUser(id: widget.user.id);
+                          widget.onUserUpdate();
+                        },
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

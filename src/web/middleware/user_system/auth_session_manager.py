@@ -29,37 +29,46 @@ class AuthSessionManager:
             self.__sessions: dict[str, User | None] = {}
             for key in ROBOT_NAME_TO_IP:
                 self.__sessions[key] = None
-            self.__start_nfc_polling()
 
-    def __start_nfc_polling(self) -> None:
-        for robot_name in self.__fleet_ip_config:
-
-            def timer_cb(name=robot_name):
-                self.__nfc_polling_callback(robot_name=name)
-
-            timer = PeriodicTimer(
-                1,
-                timer_cb,
-            )
-            timer.start()
-
-    def __nfc_polling_callback(self, robot_name: str) -> None:
+    def try_start_session(
+        self,
+        robot_name: str,
+        required_user_ids: list[str],
+        required_user_groups: list[str],
+    ) -> dict[str, str]:
         try:
+            # Fetch NFC tag data from the robot's API
             response = requests.get(
-                f"http://{self.__fleet_ip_config[robot_name]}:{self.__robot_api_port}/nfc_tag"
+                f"http://{self.__fleet_ip_config[robot_name]}:{self.__robot_api_port}/read_nfc_tag"
             )
+
+            # Check if the request was successful
             if response.status_code == 200:
-                nfc_id = response.json()["nfc_tag"]["data"]
-                user = self.__user_repository.get_user(nfc_id)
-                if user and user != self.__sessions[robot_name]:
-                    self.__start_session(robot_name, user)
+                nfc_id = response.json().get("nfc_tag", {}).get("data")
+                if not nfc_id:
+                    return {"status": "error", "message": "No NFC tag data in response"}
+
+                user = self.__user_repository.get_user_by_nfc_id(nfc_id)
+                if not user:
+                    return {"status": "error", "message": "User not found"}
+
+                # Check if the user is authorized
+                if user.id in required_user_ids or any(
+                    group in user.user_groups for group in required_user_groups
+                ):
+                    print(
+                        f"start_session {robot_name} {user.first_name} {user.last_name}"
+                    )
+                    self.__sessions[robot_name] = user
+                    return {"status": "success", "message": "Session started"}
+                else:
+                    return {"status": "error", "message": "User not authorized"}
+
+            return {"status": "error", "message": "No NFC tag found"}
+
         except Exception as e:
             print(f"Warning: {e}")
-            
-
-    def __start_session(self, robot_name: str, user: User) -> None:
-        print(f"start_session {robot_name} {user.first_name} {user.last_name}")
-        self.__sessions[robot_name] = user
+            return {"status": "error", "message": str(e)}
 
     def end_session(self, robot_name: str) -> None:
         self.__sessions[robot_name] = None

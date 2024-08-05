@@ -1,6 +1,7 @@
 // ignore_for_file: prefer_const_constructors
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
+import 'package:middleware_api_utilities/src/sub_apis/nfc_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/users_api.dart';
 import 'package:test/test.dart';
 
@@ -17,6 +18,7 @@ void main() {
     final modulesApi = ModulesApi(prefix: 'http://localhost:8003');
 
     const userID = '';
+    const nfcID = '';
     const title = 'Prof. Dr. med.';
     const firstName = 'Max';
     const lastName = 'Mustermann';
@@ -25,6 +27,7 @@ void main() {
     const userGroups = ['group1', 'group2'];
     final testUser = User(
       id: userID,
+      nfcID: nfcID,
       title: title,
       firstName: firstName,
       lastName: lastName,
@@ -186,6 +189,7 @@ void main() {
       expect(creationResult, isNotNull);
       final updatedUser = User(
         id: creationResult!.id,
+        nfcID: creationResult.nfcID,
         title: updatedTitle,
         firstName: updatedFirstName,
         lastName: updatedLastName,
@@ -205,6 +209,12 @@ void main() {
       expect(user.userGroups, equals(updatedUserGroups));
       final deletionResult = await usersApi.deleteUser(id: creationResult.id);
       expect(deletionResult, isTrue);
+    });
+
+    test('can read nfc', () async {
+      final nfc = NFCApi(prefix: 'http://localhost:8003');
+      final result = await nfc.readNFC(robotName: robotName);
+      expect(result, isNotNull);
     });
   });
 }

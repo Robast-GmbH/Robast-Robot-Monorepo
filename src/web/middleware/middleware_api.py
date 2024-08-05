@@ -1,4 +1,4 @@
-from fastapi import FastAPI, Depends, HTTPException
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 import requests
 
@@ -7,7 +7,7 @@ from pydantic_models.delivery_request import DeliveryRequest
 from user_system.user_system_router import user_system_router
 from module_manager.module_manager_router import module_manager_router
 import configs.url_config as url_config
-
+from models.url_helper import URLHelper
 
 app = FastAPI()
 app.add_middleware(
@@ -22,18 +22,11 @@ app.include_router(module_manager_router, prefix="/modules")
 
 
 name_to_ip = url_config.ROBOT_NAME_TO_IP
-robot_api_port = url_config.ROBOT_API_PORT
 fleet_management_address = url_config.FLEET_MANAGEMENT_ADDRESS
-
 
 task_assigment_system = TaskAssignmentSystem()
 
-
-def get_robot_url(robot_name: str):
-    robot_ip = name_to_ip.get(robot_name, None)
-    if robot_ip is None:
-        raise HTTPException(404, detail="Robot name not found")
-    return f"http://{robot_ip}:{robot_api_port}"
+get_robot_url = URLHelper.get_robot_url
 
 
 """
@@ -183,4 +176,31 @@ RMF API Endpoints
 @app.get("/building_map", tags=["RMF"])
 def get_building_map():
     response = requests.get(f"{fleet_management_address}/building_map").json()
+    return response
+
+
+"""
+======================
+NFC API Endpoints
+======================
+"""
+
+
+@app.get("/nfc_tag", tags=["NFC"])
+def get_nfc_tag(robot_url: str = Depends(get_robot_url)):
+    response = requests.get(f"{robot_url}/nfc_tag").json()
+    return response
+
+
+@app.post("/write_nfc_tag", tags=["NFC"])
+def write_nfc_tag(nfc_tag_id: str, robot_url: str = Depends(get_robot_url)):
+    response = requests.post(
+        f"{robot_url}/write_nfc_tag?nfc_tag_id={nfc_tag_id}"
+    ).json()
+    return response
+
+
+@app.get("/read_nfc_tag", tags=["NFC"])
+def read_nfc_tag(robot_url: str = Depends(get_robot_url)):
+    response = requests.get(f"{robot_url}/read_nfc_tag").json()
     return response

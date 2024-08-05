@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:middleware_api_utilities/src/services/request_service.dart';
 import 'package:middleware_api_utilities/src/sub_apis/modules_api.dart';
+import 'package:middleware_api_utilities/src/sub_apis/nfc_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/tasks_api.dart';
 import 'package:middleware_api_utilities/src/sub_apis/users_api.dart';
 import 'package:shared_data_models/shared_data_models.dart';
@@ -22,16 +23,19 @@ class MiddlewareApiUtilities {
     _modules = ModulesApi(prefix: prefix);
     _users = UsersApi(prefix: prefix);
     _tasks = TasksApi(prefix: prefix);
+    _nfc = NFCApi(prefix: prefix);
   }
 
   late String _prefix;
   late ModulesApi _modules;
   late UsersApi _users;
   late TasksApi _tasks;
+  late NFCApi _nfc;
 
   ModulesApi get modules => _modules;
   UsersApi get users => _users;
   TasksApi get tasks => _tasks;
+  NFCApi get nfc => _nfc;
 
   Future<bool> testConnection({
     required String url,
