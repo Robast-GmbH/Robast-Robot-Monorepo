@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_data_models/shared_data_models.dart';
-import 'package:web_frontend/models/provider/robot_provider.dart';
+import 'package:web_frontend/models/provider/fleet_provider.dart';
 
 class ModulesView extends StatefulWidget {
   const ModulesView({required this.robotName, super.key});
@@ -16,18 +16,18 @@ class _ModulesViewState extends State<ModulesView> {
   @override
   void initState() {
     super.initState();
-    Provider.of<RobotProvider>(context, listen: false).startPeriodicModuleUpdate();
+    Provider.of<FleetProvider>(context, listen: false).startPeriodicModuleUpdate();
   }
 
   @override
   void deactivate() {
-    Provider.of<RobotProvider>(context, listen: false).stopPeriodicModuleUpdate();
+    Provider.of<FleetProvider>(context, listen: false).stopPeriodicModuleUpdate();
     super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Selector<RobotProvider, Map<String, List<DrawerModule>>>(
+    return Selector<FleetProvider, Map<String, List<RobotDrawer>>>(
       selector: (_, provider) => provider.modules,
       builder: (context, modules, child) {
         final robotModules = modules[widget.robotName];
@@ -35,19 +35,20 @@ class _ModulesViewState extends State<ModulesView> {
           itemCount: robotModules?.length ?? 0,
           separatorBuilder: (context, index) => const Divider(color: Colors.grey),
           itemBuilder: (context, index) {
+            final isOpen = robotModules![index].moduleProcess.status == ModuleProcessStatus.open;
             return ListTile(
-              title: Text(robotModules![index].label),
-              subtitle: Text(robotModules[index].isOpen ? 'Opened' : 'Closed'),
+              title: Text('${robotModules[index].moduleID}_${robotModules[index].drawerID}'),
+              subtitle: Text(isOpen ? 'Opened' : 'Closed'),
               style: ListTileStyle.list,
               onTap: () {
-                if (robotModules[index].isOpen && robotModules[index].type == ModuleType.electric_drawer) {
-                  Provider.of<RobotProvider>(context, listen: false).closeDrawer(
+                if (isOpen && robotModules[index].variant == DrawerVariant.electric) {
+                  Provider.of<FleetProvider>(context, listen: false).closeDrawer(
                     robotName: widget.robotName,
                     moduleID: robotModules[index].moduleID,
                     drawerID: robotModules[index].drawerID,
                   );
-                } else if (!robotModules[index].isOpen) {
-                  Provider.of<RobotProvider>(context, listen: false).openDrawer(
+                } else if (!isOpen) {
+                  Provider.of<FleetProvider>(context, listen: false).openDrawer(
                     robotName: widget.robotName,
                     moduleID: robotModules[index].moduleID,
                     drawerID: robotModules[index].drawerID,

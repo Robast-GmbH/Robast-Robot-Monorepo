@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_data_models/shared_data_models.dart';
 import 'package:shared_widgets/shared_widgets.dart';
-import 'package:web_frontend/models/provider/robot_provider.dart';
+import 'package:web_frontend/models/provider/fleet_provider.dart';
 
 class RobotMapView extends StatefulWidget {
   const RobotMapView({required this.robotName, super.key});
@@ -18,23 +18,23 @@ class _RobotMapViewState extends State<RobotMapView> {
 
   @override
   void initState() {
-    Provider.of<RobotProvider>(context, listen: false).startPeriodicRobotUpdate();
-    Provider.of<RobotProvider>(context, listen: false).startPeriodicIsNavigationBlockedUpdate();
+    Provider.of<FleetProvider>(context, listen: false).startPeriodicRobotUpdate();
+    Provider.of<FleetProvider>(context, listen: false).startPeriodicIsNavigationBlockedUpdate();
     super.initState();
   }
 
   @override
   void deactivate() {
-    Provider.of<RobotProvider>(context, listen: false).stopPeriodicUpdates();
+    Provider.of<FleetProvider>(context, listen: false).stopPeriodicUpdates();
     super.deactivate();
   }
 
   @override
   Widget build(BuildContext context) {
-    return Selector<RobotProvider, List<Robot>>(
+    return Selector<FleetProvider, List<Robot>>(
       selector: (_, provider) => provider.robots,
       builder: (context, robots, child) {
-        final robotProvider = Provider.of<RobotProvider>(context, listen: false);
+        final robotProvider = Provider.of<FleetProvider>(context, listen: false);
         return Stack(
           alignment: Alignment.bottomCenter,
           children: [

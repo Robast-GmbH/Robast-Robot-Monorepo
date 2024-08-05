@@ -31,35 +31,36 @@ class Transformation {
   }
 
   Pose centroid(List<Pose> poses) {
-    double sumX = 0, sumY = 0;
-    for (var pose in poses) {
+    var sumX = 0.0;
+    var sumY = 0.0;
+    for (final pose in poses) {
       sumX += pose.x;
       sumY += pose.y;
     }
-    return Pose(x: sumX / poses.length, y: sumY / poses.length, yaw: 0.0);
+    return Pose(x: sumX / poses.length, y: sumY / poses.length);
   }
 
   Pose translate(Pose pose, Pose translation) {
-    return Pose(x: pose.x - translation.x, y: pose.y - translation.y, yaw: 0.0);
+    return Pose(x: pose.x - translation.x, y: pose.y - translation.y);
   }
 
   double calculateRotation(List<Pose> poses1, List<Pose> poses2) {
-    double sum = 0;
-    for (int i = 0; i < poses1.length; i++) {
+    var sum = 0.0;
+    for (var i = 0; i < poses1.length; i++) {
       sum += poses1[i].x * poses2[i].y - poses1[i].y * poses2[i].x;
     }
     return atan2(sum, dotProduct(poses1, poses2));
   }
 
   double dotProduct(List<Pose> poses1, List<Pose> poses2) {
-    double sum = 0;
-    for (int i = 0; i < poses1.length; i++) {
+    var sum = 0.0;
+    for (var i = 0; i < poses1.length; i++) {
       sum += poses1[i].x * poses2[i].x + poses1[i].y * poses2[i].y;
     }
     return sum;
   }
 
   Pose rotate(Pose pose, double angle) {
-    return Pose(x: cos(angle) * pose.x - sin(angle) * pose.y, y: sin(angle) * pose.x + cos(angle) * pose.y, yaw: 0.0);
+    return Pose(x: cos(angle) * pose.x - sin(angle) * pose.y, y: sin(angle) * pose.x + cos(angle) * pose.y);
   }
 }

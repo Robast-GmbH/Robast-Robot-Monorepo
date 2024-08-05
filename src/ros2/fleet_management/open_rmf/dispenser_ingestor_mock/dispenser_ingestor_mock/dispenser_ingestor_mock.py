@@ -44,8 +44,6 @@ class DispenserIngestorMock(Node):
         )
 
     def __on_request_callback(self, msg: DispenserRequest | IngestorRequest) -> None:
-        # For now the drawer_address and robot_name is derived from the entered item type
-        # Example: 2,0,item_type,rb_theron for module 2 drawer 0 on rb_theron
         module_process_request = ModuleProcess.from_request_msg(msg)
         current_module_process = self.__module_processes.get(
             module_process_request.robot_name
@@ -71,8 +69,10 @@ class DispenserIngestorMock(Node):
     def __update_module_process(self, module_process: ModuleProcess) -> None:
         module_process_status = self.__robot_module_api.update_module_process_status(
             robot_name=module_process.robot_name,
+            module_id=module_process.module_id,
+            drawer_id=module_process.drawer_id,
         )
-        if module_process_status is not None and module_process_status == "finished":
+        if module_process_status is not None and module_process_status == "idle":
             msg = self.__create_result_msg(module_process)
             self.__publish_result(msg)
             module_process.is_in_process = False
