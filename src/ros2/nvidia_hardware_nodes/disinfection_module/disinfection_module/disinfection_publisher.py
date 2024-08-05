@@ -6,7 +6,7 @@ from builtin_interfaces.msg import Time
 import Jetson.GPIO as GPIO
 
 SENSE_DISINFECTION_SWITCH_PIN = 7
-BOUNCE_TIME_IN_MS = 300
+BOUNCE_TIME_IN_MS = 300 # the switch of the disinfection module closes for 300ms when triggered
 
 
 class DisinfectionPublisher(Node):
