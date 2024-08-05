@@ -30,8 +30,8 @@ RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${RO
 
 ENV LANG=en_US.UTF-8
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
-ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
-ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
+ENV CYCLONEDDS_URI=/robast/dds_configs/cyclone_DDS_config.xml
+ENV FASTRTPS_DEFAULT_PROFILES_FILE=/robast/dds_configs/fast_DDS_config.xml
 
 COPY . /ws/src/nvidia_hardware_nodes/disinfection_module
 
