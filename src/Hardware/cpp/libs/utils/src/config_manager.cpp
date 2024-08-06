@@ -14,7 +14,7 @@ namespace drawer_controller
     set_default_configs();
   }
 
-  void ConfigManager::set_config(const uint8_t config_id, const uint32_t config_value)
+  bool ConfigManager::set_config(const uint8_t config_id, const uint32_t config_value)
   {
     switch (config_id)
     {
@@ -154,9 +154,10 @@ namespace drawer_controller
         break;
 
       default:
-        Serial.println("[ConfigManager]: Warning - Trying to set config for invalid config id");
+        return false;
         break;
     }
+    return true;
   }
 
   void ConfigManager::set_default_configs()
