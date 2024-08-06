@@ -38,8 +38,8 @@ namespace nfc_bridge
     void start_up_scanner();
     void shutdown_scanner();
     bool wait_for_tag();
-    bool read_nfc_code(std::string& nfc_code);
-    bool write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type = "");
+    bool read_nfc_code(std::string& nfc_code, int max_iterations = 100);
+    bool write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type = "", int max_iterations = 20);
 
     void write_nfc_callback(const std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Request> request,
                             std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Response> response);

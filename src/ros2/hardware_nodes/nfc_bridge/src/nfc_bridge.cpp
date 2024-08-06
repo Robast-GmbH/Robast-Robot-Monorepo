@@ -55,7 +55,7 @@ namespace nfc_bridge
     return result == Twn4Elatec::ResultOK;
   }
 
-  bool NFCBridge::read_nfc_code(std::string& nfc_key, int max_iterations = 100)
+  bool NFCBridge::read_nfc_code(std::string& nfc_key, int max_iterations)
   {
     if(max_iterations < 0)
     {
@@ -81,7 +81,7 @@ namespace nfc_bridge
     return result == Twn4Elatec::ResultOK;
   }
 
-  bool NFCBridge::write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type, int max_iterations = 20)
+  bool NFCBridge::write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type, int max_iterations)
   {
     if(max_iterations < 0)
     {
