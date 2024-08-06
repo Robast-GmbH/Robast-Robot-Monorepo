@@ -145,7 +145,7 @@ namespace drawer_controller
 
   void ElectricalDrawer::start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp)
   {
-    reset_encoder_if_drawer_is_homed();
+    reset_encoder_if_endstop_is_pushed();
 
     if (_target_position_uint8 == _encoder->get_normed_current_position())
     {
@@ -158,6 +158,8 @@ namespace drawer_controller
                                                 PUSH_TO_CLOSE_NOT_TRIGGERED);
       return;
     }
+
+    _is_drawer_moving_out = _target_position_uint8 > _encoder->get_normed_current_position();
 
     set_target_speed_and_direction(target_speed, use_acceleration_ramp);
   }
@@ -289,7 +291,7 @@ namespace drawer_controller
     _timestamp_stall_guard_triggered_in_ms = millis();
   }
 
-  void ElectricalDrawer::reset_encoder_if_drawer_is_homed()
+  void ElectricalDrawer::reset_encoder_if_endstop_is_pushed()
   {
     if (_endstop_switch->is_switch_pressed())
     {
@@ -338,7 +340,6 @@ namespace drawer_controller
   void ElectricalDrawer::set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp)
   {
     uint32_t normed_target_speed_uint32 = get_normed_target_speed_uint32(target_speed);
-    _is_drawer_moving_out = _target_position_uint8 > _encoder->get_normed_current_position();
     _is_drawer_moving_out ? _motor->set_direction(stepper_motor::counter_clockwise)
                           : _motor->set_direction(stepper_motor::clockwise);
 

@@ -147,7 +147,7 @@ namespace drawer_controller
 
     void set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp);
 
-    void reset_encoder_if_drawer_is_homed();
+    void reset_encoder_if_endstop_is_pushed();
 
     void debug_prints_moving_electrical_drawer();
 
