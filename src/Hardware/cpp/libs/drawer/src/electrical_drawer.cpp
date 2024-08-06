@@ -105,7 +105,7 @@ namespace drawer_controller
                                     _config->get_drawer_push_in_auto_close_stall_guard_value(),
                                     IS_NOT_HOMING,
                                     DO_NOT_USE_ACCELERATION_RAMP});
-        _can_utils->handle_electrical_drawer_feedback_msg(
+        _can_utils->enqueue_e_drawer_feedback_msg(
           _module_id,
           _id,
           _endstop_switch->is_switch_pressed(),
@@ -153,13 +153,13 @@ namespace drawer_controller
 
     if (_target_position_uint8 == _encoder->get_normed_current_position())
     {
-      _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
-                                                        _id,
-                                                        _endstop_switch->is_switch_pressed(),
-                                                        false,
-                                                        is_stall_guard_triggered(),
-                                                        _encoder->get_normed_current_position(),
-                                                        PUSH_TO_CLOSE_NOT_TRIGGERED);
+      _can_utils->enqueue_e_drawer_feedback_msg(_module_id,
+                                                _id,
+                                                _endstop_switch->is_switch_pressed(),
+                                                false,
+                                                is_stall_guard_triggered(),
+                                                _encoder->get_normed_current_position(),
+                                                PUSH_TO_CLOSE_NOT_TRIGGERED);
       return;
     }
 
@@ -226,7 +226,7 @@ namespace drawer_controller
 
     if (_electrical_drawer_lock.value()->is_drawer_auto_close_timeout_triggered())
     {
-      _can_utils->handle_error_feedback_msg(_module_id, _id, CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
+      _can_utils->enqueue_error_feedback_msg(_module_id, _id, CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
       _electrical_drawer_lock.value()->set_drawer_auto_close_timeout_triggered(false);
     }
 
@@ -275,7 +275,7 @@ namespace drawer_controller
 
     _is_idling = true;
 
-    _can_utils->handle_electrical_drawer_feedback_msg(
+    _can_utils->enqueue_e_drawer_feedback_msg(
       _module_id,
       _id,
       _endstop_switch->is_switch_pressed(),
@@ -414,13 +414,13 @@ namespace drawer_controller
         _encoder->get_normed_current_position(),
         _target_position_uint8);
       _motor->set_target_speed_instantly(0);
-      _can_utils->handle_electrical_drawer_feedback_msg(_module_id,
-                                                        _id,
-                                                        _endstop_switch->is_switch_pressed(),
-                                                        false,
-                                                        is_stall_guard_triggered(),
-                                                        _encoder->get_normed_current_position(),
-                                                        PUSH_TO_CLOSE_NOT_TRIGGERED);
+      _can_utils->enqueue_e_drawer_feedback_msg(_module_id,
+                                                _id,
+                                                _endstop_switch->is_switch_pressed(),
+                                                false,
+                                                is_stall_guard_triggered(),
+                                                _encoder->get_normed_current_position(),
+                                                PUSH_TO_CLOSE_NOT_TRIGGERED);
       _triggered_deceleration_for_drawer_moving_out = false;
       _is_idling = true;
       return;
@@ -488,7 +488,7 @@ namespace drawer_controller
     _triggered_closing_lock_after_opening = false;
     _triggered_deceleration_for_drawer_moving_in = false;
 
-    _can_utils->handle_electrical_drawer_feedback_msg(
+    _can_utils->enqueue_e_drawer_feedback_msg(
       _module_id,
       _id,
       _endstop_switch->is_switch_pressed(),
@@ -496,7 +496,7 @@ namespace drawer_controller
       is_stall_guard_triggered(),
       _encoder->get_normed_current_position(),
       PUSH_TO_CLOSE_NOT_TRIGGERED);
-    _can_utils->handle_drawer_feedback_msg(
+    _can_utils->enqueue_drawer_feedback_msg(
       _module_id,
       _id,
       _endstop_switch->is_switch_pressed(),

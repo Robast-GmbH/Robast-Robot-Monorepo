@@ -17,39 +17,39 @@ namespace drawer_controller
     return _feedback_can_msg_queue->get_element_from_queue();
   }
 
-  void CanUtils::handle_error_feedback_msg(const uint32_t module_id,
-                                           const uint8_t drawer_id,
-                                           const uint8_t error_code) const
+  void CanUtils::enqueue_error_feedback_msg(const uint32_t module_id,
+                                            const uint8_t drawer_id,
+                                            const uint8_t error_code) const
   {
     CanMessage error_feedback_msg = create_error_feedback_msg(module_id, drawer_id, error_code);
     _feedback_can_msg_queue->add_element_to_queue(error_feedback_msg);
   }
 
-  void CanUtils::handle_drawer_feedback_msg(const uint32_t module_id,
-                                            const uint8_t drawer_id,
-                                            const bool is_endstop_switch_pushed,
-                                            const bool is_lock_switch_pushed) const
+  void CanUtils::enqueue_drawer_feedback_msg(const uint32_t module_id,
+                                             const uint8_t drawer_id,
+                                             const bool is_endstop_switch_pushed,
+                                             const bool is_lock_switch_pushed) const
   {
     CanMessage drawer_closed_feedback_msg =
       create_drawer_feedback_msg(module_id, drawer_id, is_endstop_switch_pushed, is_lock_switch_pushed);
     _feedback_can_msg_queue->add_element_to_queue(drawer_closed_feedback_msg);
   }
 
-  void CanUtils::handle_electrical_drawer_feedback_msg(const uint32_t module_id,
-                                                       const uint8_t drawer_id,
-                                                       const bool is_endstop_switch_pushed,
-                                                       const bool is_lock_switch_pushed,
-                                                       const bool is_drawer_stall_guard_triggered,
-                                                       const uint8_t normed_current_position,
-                                                       const bool is_push_to_close_triggered) const
+  void CanUtils::enqueue_e_drawer_feedback_msg(const uint32_t module_id,
+                                               const uint8_t drawer_id,
+                                               const bool is_endstop_switch_pushed,
+                                               const bool is_lock_switch_pushed,
+                                               const bool is_drawer_stall_guard_triggered,
+                                               const uint8_t normed_current_position,
+                                               const bool is_push_to_close_triggered) const
   {
-    CanMessage electrical_drawer_feedback_msg = create_electrical_drawer_feedback_msg(module_id,
-                                                                                      drawer_id,
-                                                                                      is_endstop_switch_pushed,
-                                                                                      is_lock_switch_pushed,
-                                                                                      is_drawer_stall_guard_triggered,
-                                                                                      normed_current_position,
-                                                                                      is_push_to_close_triggered);
+    CanMessage electrical_drawer_feedback_msg = create_e_drawer_feedback_msg(module_id,
+                                                                             drawer_id,
+                                                                             is_endstop_switch_pushed,
+                                                                             is_lock_switch_pushed,
+                                                                             is_drawer_stall_guard_triggered,
+                                                                             normed_current_position,
+                                                                             is_push_to_close_triggered);
     _feedback_can_msg_queue->add_element_to_queue(electrical_drawer_feedback_msg);
   }
 
@@ -87,13 +87,13 @@ namespace drawer_controller
     return can_msg_drawer_feedback;
   }
 
-  CanMessage CanUtils::create_electrical_drawer_feedback_msg(const uint32_t module_id,
-                                                             const uint8_t drawer_id,
-                                                             const bool is_endstop_switch_pushed,
-                                                             const bool is_lock_switch_pushed,
-                                                             const bool is_drawer_stall_guard_triggered,
-                                                             const uint8_t normed_current_position,
-                                                             const bool is_push_to_close_triggered) const
+  CanMessage CanUtils::create_e_drawer_feedback_msg(const uint32_t module_id,
+                                                    const uint8_t drawer_id,
+                                                    const bool is_endstop_switch_pushed,
+                                                    const bool is_lock_switch_pushed,
+                                                    const bool is_drawer_stall_guard_triggered,
+                                                    const uint8_t normed_current_position,
+                                                    const bool is_push_to_close_triggered) const
   {
     CanMessage can_msg_electrical_drawer_feedback =
       _can_db->can_messages.at(robast_can_msgs::can_msg::ELECTRICAL_DRAWER_FEEDBACK);
