@@ -13,6 +13,9 @@ namespace drawer_controller
 {
   using port_info = std::tuple<uint8_t, PCA95x5::Port::Port>;
 
+  constexpr bool FOUND_PIN_INFO = true;
+  constexpr bool PIN_INFO_NOT_FOUND = false;
+
   class GpioWrapperPca9535 : public IGpioWrapper
   {
    public:
@@ -45,13 +48,9 @@ namespace drawer_controller
     bool set_pin_mode(const byte pin_mapping_id, const bool is_input) const
     {
       // check if requested pin is accessible via port expander
-      if (_pin_mapping_id_to_port.find(pin_mapping_id) != _pin_mapping_id_to_port.end())
+      auto [found_pin_info, port_expander_id, port_id] = get_pin_info_for_port_expander(pin_mapping_id);
+      if (found_pin_info)
       {
-        port_info port_info = _pin_mapping_id_to_port.at(pin_mapping_id);
-
-        uint8_t port_expander_id = std::get<0>(port_info);
-        PCA95x5::Port::Port port_id = std::get<1>(port_info);
-
         return _slave_address_to_port_expander.at(port_expander_id)
           ->direction(port_id, (is_input == PCA95x5::Direction::IN) ? PCA95x5::Direction::IN : PCA95x5::Direction::OUT);
       }
@@ -83,24 +82,21 @@ namespace drawer_controller
      */
     bool digital_read(const byte pin_mapping_id, byte &value) const
     {
-      if (_pin_mapping_id_to_port.find(pin_mapping_id) == _pin_mapping_id_to_port.end())
+      auto [found_pin_info, port_expander_id, port_id] = get_pin_info_for_port_expander(pin_mapping_id);
+      if (found_pin_info)
       {
-        if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) == _pin_mapping_id_to_gpio_info.end())
-        {
-          Serial.printf("Error! Pin mapping ID %d not found when trying to digital_read!\n", pin_mapping_id);
-          return false;
-        }
+        value = _slave_address_to_port_expander.at(port_expander_id)->read(port_id);
+        return true;
+      }
 
+      if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) != _pin_mapping_id_to_gpio_info.end())
+      {
         value = digitalRead(_pin_mapping_id_to_gpio_info.at(pin_mapping_id).pin_number);
         return true;
       }
 
-      port_info port_info = _pin_mapping_id_to_port.at(pin_mapping_id);
-      uint8_t port_expander_id = std::get<0>(port_info);
-      PCA95x5::Port::Port port_id = std::get<1>(port_info);
-
-      value = _slave_address_to_port_expander.at(port_expander_id)->read(port_id);
-      return true;
+      Serial.printf("Error! Pin mapping ID %d not found when trying to digital_read!\n", pin_mapping_id);
+      return false;
     }
 
     /**
@@ -112,24 +108,22 @@ namespace drawer_controller
      */
     bool digital_write(const byte pin_mapping_id, const bool state) const
     {
-      if (_pin_mapping_id_to_port.find(pin_mapping_id) == _pin_mapping_id_to_port.end())
+      // use get_info_for_port_expander(pin_mapping_id);
+      auto [found_pin_info, port_expander_id, port_id] = get_pin_info_for_port_expander(pin_mapping_id);
+      if (found_pin_info)
       {
-        if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) == _pin_mapping_id_to_gpio_info.end())
-        {
-          Serial.printf("Error! Pin mapping ID %d not found when trying to digital_write!\n", pin_mapping_id);
-          return false;
-        }
+        return _slave_address_to_port_expander.at(port_expander_id)
+          ->write(port_id, state ? PCA95x5::Level::H : PCA95x5::Level::L);
+      }
 
+      if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) != _pin_mapping_id_to_gpio_info.end())
+      {
         digitalWrite(_pin_mapping_id_to_gpio_info.at(pin_mapping_id).pin_number, state);
         return true;
       }
 
-      port_info port_info = _pin_mapping_id_to_port.at(pin_mapping_id);
-      uint8_t port_expander_id = std::get<0>(port_info);
-      PCA95x5::Port::Port port_id = std::get<1>(port_info);
-
-      return _slave_address_to_port_expander.at(port_expander_id)
-        ->write(port_id, state ? PCA95x5::Level::H : PCA95x5::Level::L);
+      Serial.printf("Error! Pin mapping ID %d not found when trying to digital_write!\n", pin_mapping_id);
+      return false;
     }
 
     bool get_gpio_output_pin_mode() const
@@ -161,6 +155,18 @@ namespace drawer_controller
     const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> _slave_address_to_port_expander;
 
     const std::unordered_map<uint8_t, port_info> _pin_mapping_id_to_port;
+
+    std::tuple<bool, uint8_t, PCA95x5::Port::Port> get_pin_info_for_port_expander(uint8_t pin_mapping_id) const
+    {
+      if (_pin_mapping_id_to_port.find(pin_mapping_id) != _pin_mapping_id_to_port.end())
+      {
+        port_info port_info = _pin_mapping_id_to_port.at(pin_mapping_id);
+        uint8_t port_expander_id = std::get<0>(port_info);
+        PCA95x5::Port::Port port_id = std::get<1>(port_info);
+        return std::make_tuple(FOUND_PIN_INFO, port_expander_id, port_id);
+      }
+      return std::make_tuple(PIN_INFO_NOT_FOUND, 0, PCA95x5::Port::Port::P00);   // Default values if not found
+    }
   };
 
 }   // namespace drawer_controller
