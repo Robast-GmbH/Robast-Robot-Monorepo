@@ -1,7 +1,7 @@
-#ifndef DRAWER_CONTROLLER_GPIO_INFO_HPP
-#define DRAWER_CONTROLLER_GPIO_INFO_HPP
+#ifndef GPIO_INFO__GPIO_INFO_HPP
+#define GPIO_INFO__GPIO_INFO_HPP
 
-namespace drawer_controller
+namespace gpio_info
 {
   constexpr bool IS_INPUT = true;
   constexpr bool IS_OUTPUT = false;
@@ -16,6 +16,6 @@ namespace drawer_controller
     }
   };
 
-}   // namespace drawer_controller
+}   // namespace gpio_info
 
-#endif /* DRAWER_CONTROLLER_GPIO_INFO_HPP */
+#endif /* GPIO_INFO__GPIO_INFO_HPP */

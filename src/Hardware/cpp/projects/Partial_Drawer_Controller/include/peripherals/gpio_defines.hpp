@@ -7,6 +7,7 @@
 
 namespace partial_drawer_controller
 {
+  using GpioInfo = gpio_info::GpioInfo;
 
   using port_info = std::tuple<uint8_t, PCA95x5::Port::Port>;
 
@@ -78,14 +79,14 @@ namespace partial_drawer_controller
 #define PE_1_NINTERRUPT_PIN_ID 81
 #define PE_2_NINTERRUPT_PIN_ID 82
 
-  const std::unordered_map<uint8_t, drawer_controller::GpioInfo> pin_mapping_id_to_gpio_info = {
-    {STEPPER_1_ENCODER_B_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_2, IS_INPUT}},
-    {STEPPER_1_VREF_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_25, IS_OUTPUT}},
-    {STEPPER_1_ENCODER_A_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_26, IS_INPUT}},
-    {PE_1_NINTERRUPT_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_34, IS_INPUT}},
-    {SENSE_INPUT_LID_8_CLOSED_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_35, IS_INPUT}},
-    {PE_0_NINTERRUPT_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_36, IS_INPUT}},
-    {PE_2_NINTERRUPT_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_39, IS_INPUT}}};
+  const std::unordered_map<uint8_t, gpio_info::GpioInfo> pin_mapping_id_to_gpio_info = {
+    {STEPPER_1_ENCODER_B_PIN_ID, GpioInfo{GPIO_NUM_2, gpio_info::IS_INPUT}},
+    {STEPPER_1_VREF_PIN_ID, GpioInfo{GPIO_NUM_25, gpio_info::IS_OUTPUT}},
+    {STEPPER_1_ENCODER_A_PIN_ID, GpioInfo{GPIO_NUM_26, gpio_info::IS_INPUT}},
+    {PE_1_NINTERRUPT_PIN_ID, GpioInfo{GPIO_NUM_34, gpio_info::IS_INPUT}},
+    {SENSE_INPUT_LID_8_CLOSED_PIN_ID, GpioInfo{GPIO_NUM_35, gpio_info::IS_INPUT}},
+    {PE_0_NINTERRUPT_PIN_ID, GpioInfo{GPIO_NUM_36, gpio_info::IS_INPUT}},
+    {PE_2_NINTERRUPT_PIN_ID, GpioInfo{GPIO_NUM_39, gpio_info::IS_INPUT}}};
 
   const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> port_expanders = {
     {SLAVE_ADDRESS_PORT_EXPANDER_1, std::make_shared<PCA9535>()},

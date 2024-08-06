@@ -7,6 +7,7 @@
 
 namespace drawer_controller
 {
+  using GpioInfo = gpio_info::GpioInfo;
 
   using port_info = std::tuple<uint8_t, PCA95x5::Port::Port>;
 
@@ -46,13 +47,13 @@ namespace drawer_controller
 #define PE_0_IO0_6_PIN_ID 53
 #define PE_0_IO0_7_PIN_ID 54
 
-  const std::unordered_map<uint8_t, drawer_controller::GpioInfo> pin_mapping_id_to_gpio_info = {
-    {STEPPER_1_ENCODER_B_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_2, IS_INPUT}},
-    {STEPPER_1_ENCODER_A_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_26, IS_INPUT}},
-    {STEPPER_1_ENCODER_N_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_34, IS_INPUT}},
-    {SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_35, IS_INPUT}},
-    {PE_0_NINT, drawer_controller::GpioInfo{GPIO_NUM_36, IS_INPUT}},
-    {LOCK_1_SENSE_PIN_ID, drawer_controller::GpioInfo{GPIO_NUM_39, IS_INPUT}}};
+  const std::unordered_map<uint8_t, GpioInfo> pin_mapping_id_to_gpio_info = {
+    {STEPPER_1_ENCODER_B_PIN_ID, GpioInfo{GPIO_NUM_2, gpio_info::IS_INPUT}},
+    {STEPPER_1_ENCODER_A_PIN_ID, GpioInfo{GPIO_NUM_26, gpio_info::IS_INPUT}},
+    {STEPPER_1_ENCODER_N_PIN_ID, GpioInfo{GPIO_NUM_34, gpio_info::IS_INPUT}},
+    {SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID, GpioInfo{GPIO_NUM_35, gpio_info::IS_INPUT}},
+    {PE_0_NINT, GpioInfo{GPIO_NUM_36, gpio_info::IS_INPUT}},
+    {LOCK_1_SENSE_PIN_ID, GpioInfo{GPIO_NUM_39, gpio_info::IS_INPUT}}};
 
   const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> port_expanders = {
     {SLAVE_ADDRESS_PORT_EXPANDER_1, std::make_shared<PCA9535>()},
