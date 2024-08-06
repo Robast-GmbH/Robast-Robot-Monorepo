@@ -44,14 +44,21 @@ namespace drawer_controller
      */
     bool set_pin_mode(const byte pin_mapping_id, const bool is_input) const
     {
-      if (_pin_mapping_id_to_port.find(pin_mapping_id) == _pin_mapping_id_to_port.end())
+      // check if requested pin is accessible via port expander
+      if (_pin_mapping_id_to_port.find(pin_mapping_id) != _pin_mapping_id_to_port.end())
       {
-        if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) == _pin_mapping_id_to_gpio_info.end())
-        {
-          Serial.printf("Error! Pin mapping ID %d not found when setting pin mode!\n", pin_mapping_id);
-          return false;
-        }
+        port_info port_info = _pin_mapping_id_to_port.at(pin_mapping_id);
 
+        uint8_t port_expander_id = std::get<0>(port_info);
+        PCA95x5::Port::Port port_id = std::get<1>(port_info);
+
+        return _slave_address_to_port_expander.at(port_expander_id)
+          ->direction(port_id, (is_input == PCA95x5::Direction::IN) ? PCA95x5::Direction::IN : PCA95x5::Direction::OUT);
+      }
+
+      // check if requested pin is accessible via GPIO from the microcontroller
+      if (_pin_mapping_id_to_gpio_info.find(pin_mapping_id) != _pin_mapping_id_to_gpio_info.end())
+      {
         if (_pin_mapping_id_to_gpio_info.at(pin_mapping_id).is_input && !is_input)
         {
           Serial.printf("Error! Trying to set pin mode for pin id %d to input, but it is input only!\n",
@@ -63,13 +70,8 @@ namespace drawer_controller
         return true;
       }
 
-      port_info port_info = _pin_mapping_id_to_port.at(pin_mapping_id);
-
-      uint8_t port_expander_id = std::get<0>(port_info);
-      PCA95x5::Port::Port port_id = std::get<1>(port_info);
-
-      return _slave_address_to_port_expander.at(port_expander_id)
-        ->direction(port_id, (is_input == PCA95x5::Direction::IN) ? PCA95x5::Direction::IN : PCA95x5::Direction::OUT);
+      Serial.printf("Error! Pin mapping ID %d not found when setting pin mode!\n", pin_mapping_id);
+      return false;
     }
 
     /**
