@@ -20,18 +20,17 @@ namespace drawer_controller
     {
       case module_config::drawer::MAX_SPEED:
         _drawer_config->set_drawer_max_speed(
-          reinterpret_cast<module_config::ModuleSetting<module_config::drawer::MAX_SPEED>::type>(config_value));
+          std::bit_cast<module_config::ModuleSetting<module_config::drawer::MAX_SPEED>::type>(config_value));
         break;
 
       case module_config::drawer::HOMING_SPEED:
         _drawer_config->set_drawer_homing_speed(
-          reinterpret_cast<module_config::ModuleSetting<module_config::drawer::HOMING_SPEED>::type>(config_value));
+          std::bit_cast<module_config::ModuleSetting<module_config::drawer::HOMING_SPEED>::type>(config_value));
         break;
 
       case module_config::drawer::INITIAL_HOMING_SPEED:
         _drawer_config->set_drawer_initial_homing_speed(
-          reinterpret_cast<module_config::ModuleSetting<module_config::drawer::INITIAL_HOMING_SPEED>::type>(
-            config_value));
+          std::bit_cast<module_config::ModuleSetting<module_config::drawer::INITIAL_HOMING_SPEED>::type>(config_value));
         break;
 
       case module_config::drawer::MOVING_IN_DECELERATION_DISTANCE:
@@ -67,13 +66,13 @@ namespace drawer_controller
 
       case module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS:
         _drawer_config->set_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms(
-          reinterpret_cast<module_config::ModuleSetting<
+          std::bit_cast<module_config::ModuleSetting<
             module_config::drawer::PUSH_IN_WAIT_TIME_AFTER_STALL_GUARD_TRIGGERED_IN_MS>::type>(config_value));
         break;
 
       case module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS:
         _drawer_config->set_drawer_stall_guard_wait_time_after_movement_started_in_ms(
-          reinterpret_cast<module_config::ModuleSetting<
+          std::bit_cast<module_config::ModuleSetting<
             module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>::type>(config_value));
         break;
 
@@ -90,20 +89,19 @@ namespace drawer_controller
 
       case module_config::encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT:
         _encoder_config->set_open_loop_count_drawer_max_extent(
-          reinterpret_cast<
-            module_config::ModuleSetting<module_config::encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT>::type>(
+          std::bit_cast<module_config::ModuleSetting<module_config::encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT>::type>(
             config_value));
         break;
 
       case module_config::encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT:
         _encoder_config->set_encoder_count_drawer_max_extent(
-          reinterpret_cast<module_config::ModuleSetting<module_config::encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT>::type>(
+          std::bit_cast<module_config::ModuleSetting<module_config::encoder::ENCODER_COUNT_DRAWER_MAX_EXTENT>::type>(
             config_value));
         break;
 
       case module_config::encoder::DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN:
         _encoder_config->set_drawer_position_open_loop_integral_gain(
-          reinterpret_cast<
+          std::bit_cast<
             module_config::ModuleSetting<module_config::encoder::DRAWER_POSITION_OPEN_LOOP_INTEGRAL_GAIN>::type>(
             config_value));
         break;
@@ -117,7 +115,7 @@ namespace drawer_controller
 
       case module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS:
         _encoder_config->set_drawer_push_in_encoder_check_interval_ms(
-          reinterpret_cast<
+          std::bit_cast<
             module_config::ModuleSetting<module_config::encoder::DRAWER_PUSH_IN_ENCODER_CHECK_INTERVAL_MS>::type>(
             config_value));
         break;
@@ -130,19 +128,19 @@ namespace drawer_controller
 
       case module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD:
         _motor_monitor_config->set_active_speed_threshold(
-          reinterpret_cast<module_config::ModuleSetting<module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD>::type>(
+          std::bit_cast<module_config::ModuleSetting<module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD>::type>(
             config_value));
         break;
 
       case module_config::motor_monitor::LOWER_POSITION_THRESHOLD:
         _motor_monitor_config->set_lower_position_threshold(
-          reinterpret_cast<module_config::ModuleSetting<module_config::motor_monitor::LOWER_POSITION_THRESHOLD>::type>(
+          std::bit_cast<module_config::ModuleSetting<module_config::motor_monitor::LOWER_POSITION_THRESHOLD>::type>(
             config_value));
         break;
 
       case module_config::motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS:
         _motor_monitor_config->set_max_time_diff_between_encoder_measurements_in_ms(
-          reinterpret_cast<module_config::ModuleSetting<
+          std::bit_cast<module_config::ModuleSetting<
             module_config::motor_monitor::MAX_TIME_DIFF_BETWEEN_ENCODER_MEASUREMENTS_IN_MS>::type>(config_value));
         break;
 
