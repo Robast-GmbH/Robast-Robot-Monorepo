@@ -503,12 +503,13 @@ namespace drawer_controller
   void ElectricalDrawer::debug_prints_moving_e_drawer()
   {
     int normed_target_position = (_target_position_uint8 / 255.0) * _encoder->get_count_drawer_max_extent();
-    // debug_printf("[ElectricalDrawer]: Current position: % d, Target Position: %d, Current Speed: %d, Target
-    // Speed: %d\n",
-    //              _encoder->get_current_position(),
-    //              normed_target_position,
-    //              _motor->get_active_speed(),
-    //              _motor->get_target_speed());
+    debug_printf("[ElectricalDrawer]: Current position: % d, Target Position: %d, Current Speed: %d, Target
+                 Speed
+                 : % d\n ",
+                     _encoder->get_current_position(),
+                   normed_target_position,
+                   _motor->get_active_speed(),
+                   _motor->get_target_speed());
   }
 
 }   // namespace drawer_controller
