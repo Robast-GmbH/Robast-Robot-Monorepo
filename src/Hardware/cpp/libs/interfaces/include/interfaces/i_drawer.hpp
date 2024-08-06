@@ -37,7 +37,7 @@ namespace drawer_controller
     /**
      * Handle the control of the lock of the drawer.
      */
-    virtual void handle_electrical_drawer_lock_control() = 0;
+    virtual void handle_e_drawer_lock_control() = 0;
   };
 }   // namespace drawer_controller
 #endif

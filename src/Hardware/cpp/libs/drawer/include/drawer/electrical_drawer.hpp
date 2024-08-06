@@ -46,7 +46,7 @@ namespace drawer_controller
                      const uint8_t motor_driver_address,
                      const std::shared_ptr<MotorConfig> motor_config,
                      const std::shared_ptr<Switch> endstop_switch,
-                     const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock,
+                     const std::optional<std::shared_ptr<ElectricalDrawerLock>> e_drawer_lock,
                      const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config,
                      const std::shared_ptr<EncoderConfig> encoder_config,
                      const std::shared_ptr<MotorMonitorConfig> motor_monitor_config);
@@ -72,7 +72,7 @@ namespace drawer_controller
     const std::shared_ptr<Switch> _endstop_switch;
 
     // optional because the lock is not always installed (e.g. in the partial drawer)
-    const std::optional<std::shared_ptr<ElectricalDrawerLock>> _electrical_drawer_lock;
+    const std::optional<std::shared_ptr<ElectricalDrawerLock>> _e_drawer_lock;
 
     const std::unique_ptr<CanUtils> _can_utils;
 
@@ -123,7 +123,7 @@ namespace drawer_controller
 
     void handle_drawer_just_closed() override;
 
-    void handle_electrical_drawer_lock_control() override;
+    void handle_e_drawer_lock_control() override;
 
     void handle_drawer_moving_in();
 
@@ -145,7 +145,7 @@ namespace drawer_controller
 
     void reset_encoder_if_endstop_is_pushed();
 
-    void debug_prints_moving_electrical_drawer();
+    void debug_prints_moving_e_drawer();
 
     uint32_t get_normed_target_speed_uint32(const uint8_t target_speed) const;
 

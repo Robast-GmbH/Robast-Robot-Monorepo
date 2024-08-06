@@ -13,7 +13,7 @@ namespace drawer_controller
                                      const uint8_t motor_driver_address,
                                      const std::shared_ptr<MotorConfig> motor_config,
                                      const std::shared_ptr<Switch> endstop_switch,
-                                     const std::optional<std::shared_ptr<ElectricalDrawerLock>> electrical_drawer_lock,
+                                     const std::optional<std::shared_ptr<ElectricalDrawerLock>> e_drawer_lock,
                                      const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config,
                                      const std::shared_ptr<EncoderConfig> encoder_config,
                                      const std::shared_ptr<MotorMonitorConfig> motor_monitor_config)
@@ -26,7 +26,7 @@ namespace drawer_controller
         _motor{std::make_shared<stepper_motor::Motor>(
           motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, motor_config)},
         _endstop_switch{endstop_switch},
-        _electrical_drawer_lock{electrical_drawer_lock},
+        _e_drawer_lock{e_drawer_lock},
         _e_drawer_task_queue{std::make_unique<Queue<EDrawerTask>>()},
         _encoder_monitor{std::make_unique<EncoderMonitor>(_encoder, encoder_config)},
         _config{e_drawer_config},
@@ -37,19 +37,19 @@ namespace drawer_controller
 
   void ElectricalDrawer::init() const
   {
-    if (_electrical_drawer_lock.has_value())
+    if (_e_drawer_lock.has_value())
     {
-      _electrical_drawer_lock.value()->initialize_lock();
+      _e_drawer_lock.value()->initialize_lock();
     }
     _motor->init();
   }
 
   void ElectricalDrawer::unlock()
   {
-    if (_electrical_drawer_lock.has_value())
+    if (_e_drawer_lock.has_value())
     {
       debug_println("[ElectricalDrawer]: Received request to unlock the lock!");
-      _electrical_drawer_lock.value()->unlock();
+      _e_drawer_lock.value()->unlock();
     }
     else
     {
@@ -96,7 +96,7 @@ namespace drawer_controller
           _module_id,
           _id,
           _endstop_switch->is_switch_pressed(),
-          _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
+          _e_drawer_lock.has_value() ? _e_drawer_lock.value()->is_lock_switch_pushed() : false,
           MOTOR_IS_NOT_STALLED,
           _encoder->get_normed_current_position(),
           PUSH_TO_CLOSE_TRIGGERED);
@@ -163,9 +163,9 @@ namespace drawer_controller
 
   void ElectricalDrawer::handle_drawer_active_state()
   {
-    if (_electrical_drawer_lock.has_value())
+    if (_e_drawer_lock.has_value())
     {
-      handle_electrical_drawer_lock_control();
+      handle_e_drawer_lock_control();
     }
 
     if (is_stall_guard_triggered())
@@ -187,7 +187,7 @@ namespace drawer_controller
 
     _is_drawer_moving_out ? handle_drawer_moving_out() : handle_drawer_moving_in();
 
-    debug_prints_moving_electrical_drawer();
+    debug_prints_moving_e_drawer();
   }
 
   bool ElectricalDrawer::check_and_handle_initial_drawer_homing()
@@ -208,16 +208,16 @@ namespace drawer_controller
     return true;
   }
 
-  void ElectricalDrawer::handle_electrical_drawer_lock_control()
+  void ElectricalDrawer::handle_e_drawer_lock_control()
   {
-    _electrical_drawer_lock.value()->update_sensor_values();
+    _e_drawer_lock.value()->update_sensor_values();
 
-    _electrical_drawer_lock.value()->handle_lock_control();
+    _e_drawer_lock.value()->handle_lock_control();
 
-    if (_electrical_drawer_lock.value()->is_drawer_auto_close_timeout_triggered())
+    if (_e_drawer_lock.value()->is_drawer_auto_close_timeout_triggered())
     {
       _can_utils->enqueue_error_feedback_msg(_module_id, _id, CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
-      _electrical_drawer_lock.value()->set_drawer_auto_close_timeout_triggered(false);
+      _e_drawer_lock.value()->set_drawer_auto_close_timeout_triggered(false);
     }
 
     handle_drawer_just_opened();
@@ -274,7 +274,7 @@ namespace drawer_controller
       _module_id,
       _id,
       _endstop_switch->is_switch_pressed(),
-      _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
+      _e_drawer_lock.has_value() ? _e_drawer_lock.value()->is_lock_switch_pushed() : false,
       MOTOR_IS_STALLED,
       _encoder->get_normed_current_position(),
       PUSH_TO_CLOSE_NOT_TRIGGERED);
@@ -380,10 +380,9 @@ namespace drawer_controller
   void ElectricalDrawer::handle_finished_moving_in_drawer()
   {
     bool is_drawer_closed;
-    if (_electrical_drawer_lock.has_value())
+    if (_e_drawer_lock.has_value())
     {
-      is_drawer_closed =
-        _endstop_switch->is_switch_pressed() && !_electrical_drawer_lock.value()->is_lock_switch_pushed();
+      is_drawer_closed = _endstop_switch->is_switch_pressed() && !_e_drawer_lock.value()->is_lock_switch_pushed();
     }
     else
     {
@@ -445,10 +444,10 @@ namespace drawer_controller
   {
     bool is_drawer_retracted = _endstop_switch->is_switch_pressed();
 
-    if (_electrical_drawer_lock.value()->is_drawer_opening_in_progress() && !is_drawer_retracted &&
+    if (_e_drawer_lock.value()->is_drawer_opening_in_progress() && !is_drawer_retracted &&
         !_triggered_closing_lock_after_opening)
     {
-      _electrical_drawer_lock.value()->set_open_lock_current_step(
+      _e_drawer_lock.value()->set_open_lock_current_step(
         false);   // this makes sure the lock automatically closes as soon as the drawer is opened
       _triggered_closing_lock_after_opening =
         true;   // this makes sure, closing the lock is only triggered once and not permanently
@@ -458,12 +457,12 @@ namespace drawer_controller
 
   void ElectricalDrawer::handle_drawer_just_closed()
   {
-    if (_electrical_drawer_lock.has_value())
+    if (_e_drawer_lock.has_value())
     {
-      if (_electrical_drawer_lock.value()->is_drawer_opening_in_progress())
+      if (_e_drawer_lock.value()->is_drawer_opening_in_progress())
       {
         // reset these flags for the next opening of the drawer
-        _electrical_drawer_lock.value()->set_drawer_opening_is_in_progress(false);
+        _e_drawer_lock.value()->set_drawer_opening_is_in_progress(false);
       }
       else
       {
@@ -484,7 +483,7 @@ namespace drawer_controller
       _module_id,
       _id,
       _endstop_switch->is_switch_pressed(),
-      _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false,
+      _e_drawer_lock.has_value() ? _e_drawer_lock.value()->is_lock_switch_pushed() : false,
       is_stall_guard_triggered(),
       _encoder->get_normed_current_position(),
       PUSH_TO_CLOSE_NOT_TRIGGERED);
@@ -492,7 +491,7 @@ namespace drawer_controller
       _module_id,
       _id,
       _endstop_switch->is_switch_pressed(),
-      _electrical_drawer_lock.has_value() ? _electrical_drawer_lock.value()->is_lock_switch_pushed() : false);
+      _e_drawer_lock.has_value() ? _e_drawer_lock.value()->is_lock_switch_pushed() : false);
   }
 
   bool ElectricalDrawer::is_stall_guard_triggered() const
@@ -500,7 +499,7 @@ namespace drawer_controller
     return _is_motor_monitor_stall_guard_triggered || _is_tmc_stall_guard_triggered;
   }
 
-  void ElectricalDrawer::debug_prints_moving_electrical_drawer()
+  void ElectricalDrawer::debug_prints_moving_e_drawer()
   {
     int normed_target_position = (_target_position_uint8 / 255.0) * _encoder->get_count_drawer_max_extent();
     // debug_printf("[ElectricalDrawer]: Current position: % d, Target Position: %d, Current Speed: %d, Target
