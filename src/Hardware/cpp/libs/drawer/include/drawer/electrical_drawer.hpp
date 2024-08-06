@@ -22,8 +22,11 @@
 
 namespace drawer_controller
 {
+  constexpr uint8_t MAX_SPEED_UINT8 = 255;
   constexpr uint8_t DRAWER_TARGET_HOMING_POSITION = 0;
+  constexpr uint8_t DRAWER_HOMING_POSITION = 0;
   constexpr uint8_t STALL_GUARD_DISABLED = 0;
+  constexpr uint8_t TARGET_SPEED_ZERO = 0;
   constexpr bool IS_HOMING = true;
   constexpr bool IS_NOT_HOMING = false;
   constexpr bool DO_NOT_USE_ACCELERATION_RAMP = false;

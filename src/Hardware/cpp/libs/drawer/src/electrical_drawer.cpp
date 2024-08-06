@@ -119,7 +119,8 @@ namespace drawer_controller
 
       _target_position_uint8 = e_drawer_task.value().target_position;
 
-      _motor->set_stall_guard(_config->get_use_tmc_stall_guard() ? e_drawer_task.value().stall_guard_value : 0);
+      _motor->set_stall_guard(_config->get_use_tmc_stall_guard() ? e_drawer_task.value().stall_guard_value
+                                                                 : STALL_GUARD_DISABLED);
 
       _timestamp_movement_started_in_ms = millis();
 
@@ -199,8 +200,8 @@ namespace drawer_controller
 
     if (_endstop_switch->is_switch_pressed())
     {
-      _motor->set_target_speed_instantly(0);
-      _encoder->set_current_position(0);
+      _motor->set_target_speed_instantly(TARGET_SPEED_ZERO);
+      _encoder->set_current_position(STALL_GUARD_DISABLED);
       _drawer_was_homed_once = true;
       _is_idling = true;
       debug_println("[ElectricalDrawer]: Drawer was homed successfully!");
@@ -264,7 +265,7 @@ namespace drawer_controller
   {
     debug_println("[ElectricalDrawer]: Stall guard is triggered! Setting speed to 0 and creating feedback messages!");
 
-    _motor->set_target_speed_instantly(0);
+    _motor->set_target_speed_instantly(TARGET_SPEED_ZERO);
 
     _motor->reset_stall_guard();
 
@@ -286,7 +287,7 @@ namespace drawer_controller
   {
     if (_endstop_switch->is_switch_pressed())
     {
-      _encoder->set_current_position(0);
+      _encoder->set_current_position(DRAWER_HOMING_POSITION);
     }
   }
 
@@ -320,12 +321,12 @@ namespace drawer_controller
     uint32_t max_speed = _config->get_drawer_max_speed();
     uint32_t target_speed_casted = static_cast<uint32_t>(target_speed);
 
-    return (target_speed_casted * max_speed) / UINT8_MAX;
+    return (target_speed_casted * max_speed) / MAX_SPEED_UINT8;
   }
 
   uint8_t ElectricalDrawer::get_normed_target_speed_uint8(const uint32_t target_speed) const
   {
-    return (target_speed * UINT8_MAX) / _config->get_drawer_max_speed();
+    return (target_speed * MAX_SPEED_UINT8) / _config->get_drawer_max_speed();
   }
 
   void ElectricalDrawer::set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp)
@@ -370,7 +371,7 @@ namespace drawer_controller
         _encoder->get_normed_current_position(),
         _target_position_uint8);
       _triggered_deceleration_for_drawer_moving_out = true;
-      _motor->set_target_speed_with_decelerating_ramp(0,
+      _motor->set_target_speed_with_decelerating_ramp(TARGET_SPEED_ZERO,
                                                       _encoder->convert_uint8_position_to_drawer_position_scale(
                                                         _config->get_drawer_moving_out_deceleration_distance()),
                                                       _encoder->get_current_position());
@@ -404,7 +405,7 @@ namespace drawer_controller
         "_target_position_uint8: %d\n",
         _encoder->get_normed_current_position(),
         _target_position_uint8);
-      _motor->set_target_speed_instantly(0);
+      _motor->set_target_speed_instantly(TARGET_SPEED_ZERO);
       _can_utils->enqueue_e_drawer_feedback_msg(_module_id,
                                                 _id,
                                                 _endstop_switch->is_switch_pressed(),
@@ -472,8 +473,8 @@ namespace drawer_controller
     }
 
     debug_println("[ElectricalDrawer]: Drawer is closed! Setting speed to 0 and creating feedback messages!");
-    _motor->set_target_speed_instantly(0);
-    _encoder->set_current_position(0);
+    _motor->set_target_speed_instantly(TARGET_SPEED_ZERO);
+    _encoder->set_current_position(DRAWER_HOMING_POSITION);
 
     _is_idling = true;
     _triggered_closing_lock_after_opening = false;
