@@ -2,7 +2,7 @@
     "name": "drawer_controller",
     "version": "1.0.0",
     "description": "A library that contains all common code for the drawer controller firmware.",
-    "keywords": "can",
+    "keywords": "drawer_controller",
     "repository":
     {
       "type": "git",

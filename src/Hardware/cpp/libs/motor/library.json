@@ -2,7 +2,7 @@
     "name": "motor",
     "version": "1.0.0",
     "description": "A library that contains all functions to control a motor.",
-    "keywords": "can",
+    "keywords": "motor",
     "repository":
     {
       "type": "git",

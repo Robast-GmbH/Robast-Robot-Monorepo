@@ -1,8 +1,8 @@
 {
-    "name": "can_toolbox",
+    "name": "debug",
     "version": "1.0.0",
     "description": "A library that contains functions used for debugging.",
-    "keywords": "can",
+    "keywords": "debug",
     "repository":
     {
       "type": "git",

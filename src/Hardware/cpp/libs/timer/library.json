@@ -2,7 +2,7 @@
     "name": "timer",
     "version": "1.0.0",
     "description": "A library that contains timer functions ",
-    "keywords": "can",
+    "keywords": "timer",
     "repository":
     {
       "type": "git",

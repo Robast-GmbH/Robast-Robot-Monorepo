@@ -2,7 +2,7 @@
     "name": "led",
     "version": "1.0.0",
     "description": "A library that contains functions and classes for led action.",
-    "keywords": "can",
+    "keywords": "led",
     "repository":
     {
       "type": "git",

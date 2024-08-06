@@ -2,7 +2,7 @@
     "name": "lock",
     "version": "1.0.0",
     "description": "A library that contains all functions to control electrical locks",
-    "keywords": "can",
+    "keywords": "lock",
     "repository":
     {
       "type": "git",
