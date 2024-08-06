@@ -159,7 +159,7 @@ namespace drawer_controller
     }
   }
 
-  void ConfigManager::set_default_config()
+  void ConfigManager::set_default_configs()
   {
     set_default_drawer_config();
 
