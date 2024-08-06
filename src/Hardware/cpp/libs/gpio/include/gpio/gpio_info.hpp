@@ -3,8 +3,8 @@
 
 namespace drawer_controller
 {
-#define IS_INPUT true
-#define IS_OUTPUT false
+  constexpr bool IS_INPUT = true;
+  constexpr bool IS_OUTPUT = false;
 
   struct GpioInfo
   {
@@ -16,6 +16,6 @@ namespace drawer_controller
     }
   };
 
-} // namespace drawer_controller
+}   // namespace drawer_controller
 
 #endif /* DRAWER_CONTROLLER_GPIO_INFO_HPP */
