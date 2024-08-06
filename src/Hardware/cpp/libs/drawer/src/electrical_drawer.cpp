@@ -44,16 +44,6 @@ namespace drawer_controller
     _motor->init();
   }
 
-  void ElectricalDrawer::stop_motor() const
-  {
-    _motor->set_target_speed_instantly(0);
-  }
-
-  void ElectricalDrawer::start_motor() const
-  {
-    _motor->set_target_speed_instantly(1000);
-  }
-
   void ElectricalDrawer::unlock()
   {
     if (_electrical_drawer_lock.has_value())

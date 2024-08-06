@@ -59,10 +59,6 @@ namespace drawer_controller
 
     void add_e_drawer_task_to_queue(const EDrawerTask &e_drawer_task);
 
-    void stop_motor() const;
-
-    void start_motor() const;
-
    private:
     const uint32_t _module_id;
     const uint8_t _id;
