@@ -97,10 +97,11 @@ void setup()
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(2);
   wire_port_expander->begin(I2C_SDA, I2C_SCL);
 
-  gpio_wrapper = std::make_shared<drawer_controller::GpioWrapperPca9535>(wire_port_expander,
-                                                                         drawer_controller::port_expanders,
-                                                                         drawer_controller::pin_mapping_id_to_gpio_info,
-                                                                         drawer_controller::pin_mapping_id_to_port);
+  gpio_wrapper =
+    std::make_shared<drawer_controller::GpioWrapperPca9535>(wire_port_expander,
+                                                            drawer_controller::slave_address_to_port_expander,
+                                                            drawer_controller::pin_mapping_id_to_gpio_info,
+                                                            drawer_controller::pin_mapping_id_to_port);
 
   endstop_switch = std::make_shared<drawer_controller::Switch>(gpio_wrapper,
                                                                SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,

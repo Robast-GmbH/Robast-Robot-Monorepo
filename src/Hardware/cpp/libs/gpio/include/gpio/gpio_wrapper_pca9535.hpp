@@ -17,18 +17,18 @@ namespace drawer_controller
   {
    public:
     GpioWrapperPca9535(const std::shared_ptr<TwoWire> wire,
-                       const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> port_expanders,
+                       const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> slave_address_to_port_expander,
                        const std::unordered_map<uint8_t, gpio_info::GpioInfo> pin_mapping_id_to_gpio_info,
                        const std::unordered_map<uint8_t, port_info> pin_mapping_id_to_port)
         : _wire{wire},
-          _port_expanders{port_expanders},
+          _slave_address_to_port_expander{slave_address_to_port_expander},
           _pin_mapping_id_to_gpio_info{pin_mapping_id_to_gpio_info},
           _pin_mapping_id_to_port{pin_mapping_id_to_port}
     {
-      for (auto &it : _port_expanders)
+      for (auto &slave_address_port_expander_tuple : slave_address_to_port_expander)
       {
-        std::shared_ptr<PCA9535> port_expander = it.second;
-        uint8_t slave_address = it.first;
+        std::shared_ptr<PCA9535> port_expander = slave_address_port_expander_tuple.second;
+        uint8_t slave_address = slave_address_port_expander_tuple.first;
 
         port_expander->attach(*_wire, slave_address);
         port_expander->polarity(PCA95x5::Polarity::ORIGINAL_ALL);
@@ -68,7 +68,7 @@ namespace drawer_controller
       uint8_t port_expander_id = std::get<0>(port_info);
       PCA95x5::Port::Port port_id = std::get<1>(port_info);
 
-      return _port_expanders.at(port_expander_id)
+      return _slave_address_to_port_expander.at(port_expander_id)
         ->direction(port_id, (is_input == PCA95x5::Direction::IN) ? PCA95x5::Direction::IN : PCA95x5::Direction::OUT);
     }
 
@@ -97,7 +97,7 @@ namespace drawer_controller
       uint8_t port_expander_id = std::get<0>(port_info);
       PCA95x5::Port::Port port_id = std::get<1>(port_info);
 
-      value = _port_expanders.at(port_expander_id)->read(port_id);
+      value = _slave_address_to_port_expander.at(port_expander_id)->read(port_id);
       return true;
     }
 
@@ -126,7 +126,8 @@ namespace drawer_controller
       uint8_t port_expander_id = std::get<0>(port_info);
       PCA95x5::Port::Port port_id = std::get<1>(port_info);
 
-      return _port_expanders.at(port_expander_id)->write(port_id, state ? PCA95x5::Level::H : PCA95x5::Level::L);
+      return _slave_address_to_port_expander.at(port_expander_id)
+        ->write(port_id, state ? PCA95x5::Level::H : PCA95x5::Level::L);
     }
 
     bool get_gpio_output_pin_mode() const
@@ -155,7 +156,7 @@ namespace drawer_controller
 
     const std::unordered_map<uint8_t, gpio_info::GpioInfo> _pin_mapping_id_to_gpio_info;
 
-    const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> _port_expanders;
+    const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> _slave_address_to_port_expander;
 
     const std::unordered_map<uint8_t, port_info> _pin_mapping_id_to_port;
   };

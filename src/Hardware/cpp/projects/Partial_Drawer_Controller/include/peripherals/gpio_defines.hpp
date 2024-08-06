@@ -88,7 +88,7 @@ namespace partial_drawer_controller
     {PE_0_NINTERRUPT_PIN_ID, GpioInfo{GPIO_NUM_36, gpio_info::IS_INPUT}},
     {PE_2_NINTERRUPT_PIN_ID, GpioInfo{GPIO_NUM_39, gpio_info::IS_INPUT}}};
 
-  const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> port_expanders = {
+  const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> slave_address_to_port_expander = {
     {SLAVE_ADDRESS_PORT_EXPANDER_1, std::make_shared<PCA9535>()},
     {SLAVE_ADDRESS_PORT_EXPANDER_2, std::make_shared<PCA9535>()},
     {SLAVE_ADDRESS_PORT_EXPANDER_3, std::make_shared<PCA9535>()},

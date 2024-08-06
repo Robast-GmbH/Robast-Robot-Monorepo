@@ -129,7 +129,7 @@ void setup()
 
   gpio_wrapper =
     std::make_shared<drawer_controller::GpioWrapperPca9535>(wire_port_expander,
-                                                            partial_drawer_controller::port_expanders,
+                                                            partial_drawer_controller::slave_address_to_port_expander,
                                                             partial_drawer_controller::pin_mapping_id_to_gpio_info,
                                                             partial_drawer_controller::pin_mapping_id_to_port);
 
