@@ -175,8 +175,9 @@ namespace drawer_controller
       handle_electrical_drawer_lock_control();
     }
 
-    if (handle_motor_stall_guard_and_return_status())
+    if (is_stall_guard_triggered())
     {
+      handle_stall_guard_triggered();
       return;
     }
 
@@ -229,14 +230,16 @@ namespace drawer_controller
     handle_drawer_just_opened();
   }
 
-  bool ElectricalDrawer::handle_motor_stall_guard_and_return_status()
+  bool ElectricalDrawer::is_stall_guard_triggered()
   {
     if (millis() - _timestamp_movement_started_in_ms <
         _config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms())
     {
-      debug_printf("[ElectricalDrawer]: Since the movement started, %u ms passed! We need to wait %u ms!\n",
-                   millis() - _timestamp_movement_started_in_ms,
-                   _config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms());
+      debug_printf(
+        "[ElectricalDrawer]: Since the movement started, %u ms passed! We need to wait %u ms until we start detecting "
+        "a stall guard!\n",
+        millis() - _timestamp_movement_started_in_ms,
+        _config->get_drawer_stall_guard_wait_time_after_movement_started_in_ms());
       return false;
     }
 
@@ -254,16 +257,19 @@ namespace drawer_controller
 
     if (_is_tmc_stall_guard_triggered)
     {
-      debug_println(
-        "[ElectricalDrawer]: Motor stall is detected by TMC stall guard. Setting speed to 0 and creating feedback "
-        "messages!");
+      debug_println("[ElectricalDrawer]: Motor stall is detected by TMC stall guard.!");
     }
     if (_is_motor_monitor_stall_guard_triggered)
     {
-      debug_println(
-        "[ElectricalDrawer]: Motor stall is detected by motor monitor. Setting speed to 0 and creating feedback "
-        "messages!");
+      debug_println("[ElectricalDrawer]: Motor stall is detected by motor monitor.");
     }
+
+    return true;
+  }
+
+  void ElectricalDrawer::handle_stall_guard_triggered()
+  {
+    debug_println("[ElectricalDrawer]: Stall guard is triggered! Setting speed to 0 and creating feedback messages!");
 
     _motor->set_target_speed_instantly(0);
 
@@ -281,8 +287,6 @@ namespace drawer_controller
       PUSH_TO_CLOSE_NOT_TRIGGERED);
 
     _timestamp_stall_guard_triggered_in_ms = millis();
-
-    return true;
   }
 
   void ElectricalDrawer::reset_encoder_if_drawer_is_homed()

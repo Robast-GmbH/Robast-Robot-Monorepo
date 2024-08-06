@@ -141,7 +141,9 @@ namespace drawer_controller
 
     void handle_finished_moving_out_drawer();
 
-    bool handle_motor_stall_guard_and_return_status();
+    bool is_stall_guard_triggered();
+
+    void handle_stall_guard_triggered();
 
     void set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp);
 
