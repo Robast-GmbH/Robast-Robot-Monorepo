@@ -145,7 +145,7 @@ namespace drawer_controller
 
   void ElectricalDrawer::start_normal_drawer_movement(const uint8_t target_speed, const bool use_acceleration_ramp)
   {
-    check_if_drawer_is_homed();
+    reset_encoder_if_drawer_is_homed();
 
     if (_target_position_uint8 == _encoder->get_normed_current_position())
     {
@@ -285,7 +285,7 @@ namespace drawer_controller
     return true;
   }
 
-  void ElectricalDrawer::check_if_drawer_is_homed()
+  void ElectricalDrawer::reset_encoder_if_drawer_is_homed()
   {
     if (_endstop_switch->is_switch_pressed())
     {
