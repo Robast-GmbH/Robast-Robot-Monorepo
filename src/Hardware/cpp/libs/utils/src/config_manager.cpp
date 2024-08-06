@@ -11,7 +11,7 @@ namespace drawer_controller
         _motor_config{motor_config},
         _motor_monitor_config{motor_monitor_config}
   {
-    set_default_config();
+    set_default_configs();
   }
 
   void ConfigManager::set_config(const uint8_t config_id, const uint32_t config_value)

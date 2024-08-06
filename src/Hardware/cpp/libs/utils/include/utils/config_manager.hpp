@@ -30,7 +30,7 @@ namespace drawer_controller
     std::shared_ptr<MotorConfig> _motor_config;
     std::shared_ptr<MotorMonitorConfig> _motor_monitor_config;
 
-    void set_default_config();
+    void set_default_configs();
 
     void set_default_drawer_config();
 
