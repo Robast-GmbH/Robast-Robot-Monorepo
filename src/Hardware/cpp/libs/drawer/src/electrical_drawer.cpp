@@ -32,6 +32,7 @@ namespace drawer_controller
         _config{e_drawer_config},
         _motor_monitor{std::make_unique<MotorMonitor>(_encoder, encoder_config, _motor, motor_monitor_config)}
   {
+    init();
   }
 
   void ElectricalDrawer::init() const
@@ -40,7 +41,7 @@ namespace drawer_controller
     {
       _electrical_drawer_lock.value()->initialize_lock();
     }
-    init_motor();
+    _motor->init();
   }
 
   void ElectricalDrawer::stop_motor() const
@@ -51,11 +52,6 @@ namespace drawer_controller
   void ElectricalDrawer::start_motor() const
   {
     _motor->set_target_speed_instantly(1000);
-  }
-
-  void ElectricalDrawer::init_motor() const
-  {
-    _motor->init();
   }
 
   void ElectricalDrawer::unlock()

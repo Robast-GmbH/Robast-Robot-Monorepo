@@ -51,8 +51,6 @@ namespace drawer_controller
                      const std::shared_ptr<EncoderConfig> encoder_config,
                      const std::shared_ptr<MotorMonitorConfig> motor_monitor_config);
 
-    void init() const;
-
     std::optional<robast_can_msgs::CanMessage> can_out() override;
 
     void update_state() override;
@@ -111,7 +109,7 @@ namespace drawer_controller
 
     /* FUNCTIONS */
 
-    void init_motor() const;
+    void init() const;
 
     void handle_drawer_idle_state();
 

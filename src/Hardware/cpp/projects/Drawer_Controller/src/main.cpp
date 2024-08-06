@@ -149,7 +149,6 @@ void setup()
     drawer_config,
     encoder_config,
     motor_monitor_config);
-  drawer->init();
 
   debug_println("[Main]: Finished setup()!");
 
