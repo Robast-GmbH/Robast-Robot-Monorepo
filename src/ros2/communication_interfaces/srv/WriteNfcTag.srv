@@ -1,6 +1,6 @@
 # request
 string nfc_tag_id
-int timout_in_s
+uint16 timout_in_s
 
 ---
 # response
