@@ -153,7 +153,6 @@ namespace drawer_controller
 
       default:
         return false;
-        break;
     }
     return true;
   }
