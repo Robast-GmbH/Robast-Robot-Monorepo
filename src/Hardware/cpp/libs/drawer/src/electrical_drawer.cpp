@@ -88,6 +88,7 @@ namespace drawer_controller
   {
     // updating the sensor values needs to be done all the time because of the moving average calculation
     _endstop_switch->update_sensor_value();
+    reset_encoder_if_endstop_is_pushed();
 
     // if the drawer is not moving, we need to check if the drawer is pushed in
     // but make sure to wait a certain amount of time if the stall guard was triggered
