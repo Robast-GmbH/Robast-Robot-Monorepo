@@ -1,8 +1,6 @@
 #ifndef DRAWER_CONTROLLER_CONFIG_MANAGER_HPP
 #define DRAWER_CONTROLLER_CONFIG_MANAGER_HPP
 
-#include <Arduino.h>
-
 #include <bit>
 #include <memory>
 
@@ -22,7 +20,7 @@ namespace drawer_controller
                   const std::shared_ptr<MotorConfig> motor_config,
                   const std::shared_ptr<MotorMonitorConfig> motor_monitor_config);
 
-    void set_config(const uint8_t config_id, const uint32_t config_value);
+    bool set_config(const uint8_t config_id, const uint32_t config_value);
 
    private:
     std::shared_ptr<ElectricalDrawerConfig> _drawer_config;
