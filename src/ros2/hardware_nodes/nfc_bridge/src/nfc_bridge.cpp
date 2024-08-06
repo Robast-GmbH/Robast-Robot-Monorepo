@@ -55,8 +55,12 @@ namespace nfc_bridge
     return result == Twn4Elatec::ResultOK;
   }
 
-  bool NFCBridge::read_nfc_code(std::string& nfc_key)
+  bool NFCBridge::read_nfc_code(std::string& nfc_key, int max_iterations = 100)
   {
+    if(max_iterations < 0)
+    {
+      return false;
+    }
     start_up_scanner();
     if (!wait_for_tag())
     {
@@ -67,7 +71,6 @@ namespace nfc_bridge
     std::array<uint8_t, 16> data;
     std::string response = "";
     uint8_t result = 0;
-    int max_iterations = 100;
 
     while (result != 1 && max_iterations-- >= 1)
     {
@@ -78,8 +81,12 @@ namespace nfc_bridge
     return result == Twn4Elatec::ResultOK;
   }
 
-  bool NFCBridge::write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type)
+  bool NFCBridge::write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type, int max_iterations = 20)
   {
+    if(max_iterations < 0)
+    {
+      return false;
+    }
     start_up_scanner();
     if (!wait_for_tag())
     {
@@ -96,7 +103,6 @@ namespace nfc_bridge
       }
       std::string response = "";
       u_int8_t result = 0;
-      int max_iterations = 20;
       // TODO(@TAlscher): Use result for feedback.
       while (result != 1)
       {
@@ -118,14 +124,14 @@ namespace nfc_bridge
                                      std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Response> response)
   {
     // Implement your logic to write data to an NFC tag
-    response->success = write_nfc_code(request->nfc_tag_id, "");
+    response->success = write_nfc_code(request->nfc_tag_id, "", request->timout_in_s*2);
   }
 
   void NFCBridge::read_nfc_callback(const std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Request> request,
                                     std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Response> response)
   {
     std::string nfc_key = "";
-    if (read_nfc_code(nfc_key))
+    if (read_nfc_code(nfc_key, request->timout_in_s*2))
     {
       response->nfc_tag_id = nfc_key;
     }
