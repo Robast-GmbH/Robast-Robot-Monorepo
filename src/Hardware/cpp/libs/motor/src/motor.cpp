@@ -16,7 +16,7 @@ namespace stepper_motor
         _stepper_diag_pin_id{stepper_pin_id_config.stepper_diag_pin_id},
         _stepper_index_pin_id{stepper_pin_id_config.stepper_index_pin_id},
         _stepper_step_pin_id{stepper_pin_id_config.stepper_step_pin_id},
-        _port_expander_ninterrupt_pin_id{stepper_pin_id_config.port_expander_ninterrupt_pin_id},
+        _port_expander_not_interrupt_pin_id{stepper_pin_id_config.port_expander_not_interrupt_pin_id},
         _motor_config{motor_config},
         _is_stalled{false},
         _stall_guard_reader{std::make_unique<drawer_controller::Switch>(gpio_wrapper,

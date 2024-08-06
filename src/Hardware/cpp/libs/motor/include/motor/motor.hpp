@@ -44,7 +44,7 @@ namespace stepper_motor
     uint8_t stepper_diag_pin_id;
     uint8_t stepper_index_pin_id;
     uint8_t stepper_step_pin_id;
-    uint8_t port_expander_ninterrupt_pin_id;
+    uint8_t port_expander_not_interrupt_pin_id;
   };
 
   class Motor
@@ -99,7 +99,7 @@ namespace stepper_motor
     const uint8_t _stepper_diag_pin_id;
     const uint8_t _stepper_index_pin_id;
     const uint8_t _stepper_step_pin_id;
-    const uint8_t _port_expander_ninterrupt_pin_id;
+    const uint8_t _port_expander_not_interrupt_pin_id;
 
     uint32_t _active_speed = 0;
     uint32_t _target_speed = 0;
