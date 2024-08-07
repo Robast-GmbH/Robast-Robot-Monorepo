@@ -3,11 +3,10 @@ FROM ros:${ROS_VERSION} as devel
 ARG ROS_CONTROL_VERSION=humble
 ARG MOVEIT2_TUTORIALS_VERSION=humble
 
-RUN useradd --create-home --home-dir /home/robast --shell /bin/bash --user-group --groups adm,sudo robast && \
-  echo robast:robast | chpasswd && \
-  echo "robast ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
-ENV USER robast
+RUN echo ubuntu:ubuntu | chpasswd && \
+    echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
+ENV USER=ubuntu
 RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/${USER}/.bashrc
 
 RUN apt-get update && apt-get install -y \
