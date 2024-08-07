@@ -444,7 +444,7 @@ namespace drawer_controller
         !_triggered_closing_lock_after_opening)
     {
       // This makes sure the lock automatically closes as soon as the drawer is opened.
-      _electrical_drawer_lock.value()->set_open_lock_current_step(false);
+      _e_drawer_lock.value()->set_open_lock_current_step(false);
 
       // This makes sure, closing the lock is only triggered once and not permanently.
       _triggered_closing_lock_after_opening = true;
@@ -459,7 +459,7 @@ namespace drawer_controller
       if (_e_drawer_lock.value()->is_drawer_opening_in_progress())
       {
         // Reset these flags for the next opening of the drawer.
-        _electrical_drawer_lock.value()->set_drawer_opening_is_in_progress(false);
+        _e_drawer_lock.value()->set_drawer_opening_is_in_progress(false);
       }
       else
       {
