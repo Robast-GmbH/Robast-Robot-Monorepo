@@ -177,7 +177,7 @@ namespace drawer_controller
 
     _endstop_switch->update_sensor_value();
 
-    if (check_and_handle_initial_drawer_homing())
+    if (!check_and_handle_initial_drawer_homing())
     {
       return;
     }
@@ -193,12 +193,7 @@ namespace drawer_controller
 
   bool ElectricalDrawer::check_and_handle_initial_drawer_homing()
   {
-    if (_drawer_was_homed_once)
-    {
-      return false;
-    }
-
-    if (_endstop_switch->is_switch_pressed())
+    if (!_drawer_was_homed_once && _endstop_switch->is_switch_pressed())
     {
       _motor->set_target_speed_instantly(TARGET_SPEED_ZERO);
       _encoder->set_current_position(STALL_GUARD_DISABLED);
@@ -206,7 +201,7 @@ namespace drawer_controller
       _is_idling = true;
       debug_println("[ElectricalDrawer]: Drawer was homed successfully!");
     }
-    return true;
+    return _drawer_was_homed_once;
   }
 
   void ElectricalDrawer::handle_e_drawer_lock_control()
@@ -448,10 +443,11 @@ namespace drawer_controller
     if (_e_drawer_lock.value()->is_drawer_opening_in_progress() && !is_drawer_retracted &&
         !_triggered_closing_lock_after_opening)
     {
-      _e_drawer_lock.value()->set_open_lock_current_step(
-        false);   // this makes sure the lock automatically closes as soon as the drawer is opened
-      _triggered_closing_lock_after_opening =
-        true;   // this makes sure, closing the lock is only triggered once and not permanently
+      // This makes sure the lock automatically closes as soon as the drawer is opened.
+      _electrical_drawer_lock.value()->set_open_lock_current_step(false);
+
+      // This makes sure, closing the lock is only triggered once and not permanently.
+      _triggered_closing_lock_after_opening = true;
       debug_println("[ElectricalDrawer]: Triggered closing the lock because drawer is not retracted anymore!");
     }
   }
@@ -462,8 +458,8 @@ namespace drawer_controller
     {
       if (_e_drawer_lock.value()->is_drawer_opening_in_progress())
       {
-        // reset these flags for the next opening of the drawer
-        _e_drawer_lock.value()->set_drawer_opening_is_in_progress(false);
+        // Reset these flags for the next opening of the drawer.
+        _electrical_drawer_lock.value()->set_drawer_opening_is_in_progress(false);
       }
       else
       {
