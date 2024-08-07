@@ -27,6 +27,7 @@ class _ConfigPageState extends State<ConfigPage> {
   String robotBackendAddress = '';
   String middlewareAddress = '';
   late Future<SharedPreferences> getSharedPreferencesFuture;
+  bool isFinished = false;
 
   Future<void> finishConfiguration({
     required String robotBackendAddress,
@@ -62,10 +63,13 @@ class _ConfigPageState extends State<ConfigPage> {
                   if (snapshot.connectionState == ConnectionState.done) {
                     if (snapshot.data!.getString('robotBackendAddress') != null && snapshot.data!.getString('middlewareAddress') != null && widget.autoClose) {
                       WidgetsBinding.instance.addPostFrameCallback((_) async {
-                        await finishConfiguration(
-                          robotBackendAddress: snapshot.data!.getString('robotBackendAddress') ?? '',
-                          middlewareAddress: snapshot.data!.getString('middlewareAddress') ?? '',
-                        );
+                        if (!isFinished) {
+                          isFinished = true;
+                          await finishConfiguration(
+                            robotBackendAddress: snapshot.data!.getString('robotBackendAddress') ?? '',
+                            middlewareAddress: snapshot.data!.getString('middlewareAddress') ?? '',
+                          );
+                        }
                       });
                       return const SizedBox();
                     }

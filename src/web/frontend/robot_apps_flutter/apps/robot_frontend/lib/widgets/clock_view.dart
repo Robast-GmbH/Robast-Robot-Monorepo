@@ -23,17 +23,18 @@ class _ClockViewState extends State<ClockView> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<DateTime>(
-        stream: dateTimeStream,
-        builder: (context, stream) {
-          final date = stream.hasData ? stream.data! : DateTime.now();
-          return Text(
-            "${date.hour}:${date.minute < 10 ? "0${date.minute}" : date.minute}",
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 32,
-            ),
-          );
-        },);
+      stream: dateTimeStream,
+      builder: (context, stream) {
+        final date = stream.hasData ? stream.data! : DateTime.now();
+        return Text(
+          "${date.hour}:${date.minute < 10 ? "0${date.minute}" : date.minute}",
+          textAlign: TextAlign.center,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 32,
+          ),
+        );
+      },
+    );
   }
 }

@@ -58,7 +58,7 @@ class _UserSelectorState extends State<UserSelector> {
                               (e) => DropdownMenuItem<User>(
                                 value: e,
                                 child: Text(
-                                  '${e.title} ${e.firstName} ${e.lastName}',
+                                  ' ${e.title}${e.title.isNotEmpty ? ' ' : ''}${e.firstName} ${e.lastName}',
                                   style: const TextStyle(
                                     fontSize: 24,
                                   ),

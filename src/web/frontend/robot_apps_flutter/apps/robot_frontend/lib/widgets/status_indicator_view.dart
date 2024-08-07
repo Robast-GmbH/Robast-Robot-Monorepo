@@ -13,19 +13,19 @@ class StatusIndicatorView extends StatelessWidget {
       children: [
         const Icon(
           Icons.icecream,
-          size: 48,
+          size: 40,
         ),
         const SizedBox(width: 8),
         const Icon(
           Icons.link,
-          size: 48,
+          size: 40,
         ),
         const SizedBox(width: 8),
         const RotatedBox(
           quarterTurns: 1,
           child: Icon(
             Icons.battery_5_bar,
-            size: 48,
+            size: 40,
           ),
         ),
         const SizedBox(width: 8),
@@ -43,8 +43,8 @@ class StatusIndicatorView extends StatelessWidget {
                 width: 4,
               ),
             ),
-            width: 38,
-            height: 38,
+            width: 30,
+            height: 30,
           ),
         ),
       ],
