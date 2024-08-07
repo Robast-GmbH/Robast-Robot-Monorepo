@@ -4,9 +4,7 @@ import 'package:flutter/material.dart';
 
 class DeveloperButtonView extends StatefulWidget {
   const DeveloperButtonView({
-    super.key,
-    required this.child,
-    required this.onPressed,
+    required this.child, required this.onPressed, super.key,
   });
 
   final Widget child;
@@ -33,7 +31,7 @@ class _DeveloperButtonViewState extends State<DeveloperButtonView> {
           widget.onPressed();
           _tapCount = 0;
         }
-        _tapTimer = Timer(Duration(seconds: 2), () {
+        _tapTimer = Timer(const Duration(seconds: 2), () {
           _tapCount = 0;
         });
       },

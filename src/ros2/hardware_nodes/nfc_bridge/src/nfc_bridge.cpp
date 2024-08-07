@@ -45,7 +45,7 @@ namespace nfc_bridge
     std::string response = "";
     u_int8_t result = 0;
     int max_iterations = 100;
-    while (result != 1 && max_iterations-- <= 1)
+    while (result != 1 && max_iterations-- >= 1)
     {
       std::string tmp = "";
       _serial_connector->ascii_interaction(Twn4Elatec::search_tag_req(0x10), response);
@@ -69,7 +69,7 @@ namespace nfc_bridge
     uint8_t result = 0;
     int max_iterations = 100;
 
-    while (result != 1 && max_iterations-- <= 1)
+    while (result != 1 && max_iterations-- >= 1)
     {
       _serial_connector->ascii_interaction(Twn4Elatec::ntag_read_req(0x04), response);
       Twn4Elatec::ntag_read_resp(response, result, data, nfc_key);
@@ -97,7 +97,7 @@ namespace nfc_bridge
       std::string response = "";
       u_int8_t result = 0;
       int max_iterations = 20;
-
+      // TODO(@TAlscher): Use result for feedback.
       while (result != 1)
       {
         _serial_connector->ascii_interaction(Twn4Elatec::ntag_write_req(0x04 + j, data), response);

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
-import 'package:rmf_api/rmf_api.dart';
-import 'package:web_frontend/models/provider/rmf_provider.dart';
+import 'package:web_frontend/models/provider/task_provider.dart';
 
 class RobotTaskView extends StatefulWidget {
   const RobotTaskView({required this.robotName, super.key});
@@ -30,7 +30,7 @@ class _RobotTaskViewState extends State<RobotTaskView> {
     return Selector<RMFProvider, List<Task>>(
       selector: (_, provider) => provider.tasks,
       builder: (context, tasks, child) {
-        final filteredTasks = tasks.where((task) => task.assignee == widget.robotName).toList();
+        final filteredTasks = tasks.where((task) => task.assigneeName == widget.robotName).toList();
         return ListView.builder(
           itemCount: filteredTasks.length,
           itemBuilder: (context, index) {
@@ -45,8 +45,8 @@ class _RobotTaskViewState extends State<RobotTaskView> {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Category: ${filteredTasks[index].category}'),
-                    Text('State: ${filteredTasks[index].state}'),
+                    Text('Category: ${filteredTasks[index].taskType}'),
+                    const Text('State: To be implemented'),
                   ],
                 ),
                 trailing: const Icon(Icons.more_vert),

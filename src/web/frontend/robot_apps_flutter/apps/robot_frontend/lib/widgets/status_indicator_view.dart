@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:robot_frontend/views/config_view.dart';
+import 'package:robot_frontend/pages/config_page.dart';
 import 'package:robot_frontend/widgets/developer_button_view.dart';
 
 class StatusIndicatorView extends StatelessWidget {
@@ -11,33 +11,33 @@ class StatusIndicatorView extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.end,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Icon(
+        const Icon(
           Icons.icecream,
           size: 48,
         ),
-        SizedBox(width: 8),
-        Icon(
+        const SizedBox(width: 8),
+        const Icon(
           Icons.link,
           size: 48,
         ),
-        SizedBox(width: 8),
-        RotatedBox(
+        const SizedBox(width: 8),
+        const RotatedBox(
           quarterTurns: 1,
           child: Icon(
             Icons.battery_5_bar,
             size: 48,
           ),
         ),
-        SizedBox(width: 8),
+        const SizedBox(width: 8),
         DeveloperButtonView(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => const ConfigView()));
+            Navigator.push(context, MaterialPageRoute<ConfigPage>(builder: (context) => const ConfigPage()));
           },
           child: Container(
             margin: const EdgeInsets.all(4),
             decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Color(0xFF00FF00),
+              color: const Color(0xFF00FF00),
               border: Border.all(
                 color: Colors.white,
                 width: 4,
@@ -46,7 +46,7 @@ class StatusIndicatorView extends StatelessWidget {
             width: 38,
             height: 38,
           ),
-        )
+        ),
       ],
     );
   }
