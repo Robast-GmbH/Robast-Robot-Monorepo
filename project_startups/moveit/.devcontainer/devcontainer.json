@@ -15,7 +15,7 @@
 		"source=${localWorkspaceFolder}/../../src/ros2/utils,target=/workspace/src/utils,type=bind",
 	],
 	"workspaceFolder": "/workspace",
-	"remoteUser": "robast",
+	"remoteUser": "ubuntu",
 	"runArgs": [
 		"--name=moveit",
 		"--network=host",
