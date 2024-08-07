@@ -14,14 +14,19 @@ BOUNCE_TIME_IN_MS = 300
 class DisinfectionPublisher(Node):
     def __init__(self):
         super().__init__("disinfection_publisher")
-        self.__declare_parameter()
-        self.__get_parameter()
+        self.__declare_parameters()
+        self.__get_parameters()
         self.__publisher = self.create_publisher(Time, "disinfection_triggered", 10)
         self.__setup_gpio()
         self.__sum_of_readings = 0
         self.__read_counter = 0
+        self.__average_switch_reading = 0
 
-    def __declare_parameter(self):
+    def destroy_node(self) -> None:
+        super().destroy_node()
+        GPIO.cleanup()
+
+    def __declare_parameters(self):
         self.declare_parameter("read_counter_limit", 10)
         self.declare_parameter("switch_threshold", 0.2)
         self.declare_parameter("is_pulldown", True)
@@ -29,7 +34,7 @@ class DisinfectionPublisher(Node):
         # Tests have shown that the first readings after an event is not reliable (probably because of bouncing)
         self.declare_parameter("num_of_first_readings_to_ignore", 1) 
 
-    def __get_parameter(self):
+    def __get_parameters(self):
         self.__read_counter_limit = (
             self.get_parameter("read_counter_limit")
             .get_parameter_value()
@@ -53,10 +58,6 @@ class DisinfectionPublisher(Node):
             .get_parameter_value()
             .integer_value
         )
-
-    def destroy_node(self) -> None:
-        super().destroy_node()
-        GPIO.cleanup()
 
     def __publish_disinfection_triggered_with_stamp(self):
         msg = self.get_clock().now().to_msg()
