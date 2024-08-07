@@ -1,11 +1,11 @@
-#ifndef DRAWER_CONTROLLER_IDRAWER_HPP
-#define DRAWER_CONTROLLER_IDRAWER_HPP
+#ifndef INTERFACES_I_DRAWER_HPP
+#define INTERFACES_I_DRAWER_HPP
 
 #include <optional>
 
 #include "can/can_message.hpp"
 
-namespace drawer_controller
+namespace interfaces
 {
   class IDrawer
   {
@@ -39,5 +39,6 @@ namespace drawer_controller
      */
     virtual void handle_e_drawer_lock_control() = 0;
   };
-}   // namespace drawer_controller
-#endif
+}   // namespace interfaces
+
+#endif  // INTERFACES_I_DRAWER_HPP

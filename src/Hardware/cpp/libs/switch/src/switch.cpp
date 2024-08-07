@@ -1,8 +1,8 @@
 #include "switch/switch.hpp"
 
-namespace drawer_controller
+namespace switch_ns
 {
-  Switch::Switch(const std::shared_ptr<IGpioWrapper> gpio_wrapper,
+  Switch::Switch(const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                  const uint8_t switch_pin_id,
                  const float switch_pressed_threshold,
                  const SwitchType switch_type,
@@ -37,4 +37,4 @@ namespace drawer_controller
   {
     return _moving_average;
   }
-} // namespace drawer_controller
+}   // namespace switch_ns

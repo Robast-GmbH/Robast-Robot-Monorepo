@@ -3,9 +3,9 @@
 namespace stepper_motor
 {
   Motor::Motor(const uint8_t driver_address,
-               const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+               const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                const StepperPinIdConfig &stepper_pin_id_config,
-               const std::shared_ptr<drawer_controller::MotorConfig> motor_config)
+               const std::shared_ptr<motor::MotorConfig> motor_config)
       : _gpio_wrapper{gpio_wrapper},
         _driver{std::make_unique<TMC2209Stepper>(&SERIAL_PORT, R_SENSE, driver_address)},
         _driver_is_enabled{false},
@@ -19,11 +19,11 @@ namespace stepper_motor
         _port_expander_not_interrupt_pin_id{stepper_pin_id_config.port_expander_not_interrupt_pin_id},
         _motor_config{motor_config},
         _is_stalled{false},
-        _stall_guard_reader{std::make_unique<drawer_controller::Switch>(gpio_wrapper,
-                                                                        stepper_pin_id_config.stepper_diag_pin_id,
-                                                                        STALL_GUARD_READER_THRESHOLD,
-                                                                        drawer_controller::Switch::normally_open,
-                                                                        STALL_GUARD_READER_WEIGHT_NEW_READINGS)},
+        _stall_guard_reader{std::make_unique<switch_ns::Switch>(gpio_wrapper,
+                                                                stepper_pin_id_config.stepper_diag_pin_id,
+                                                                STALL_GUARD_READER_THRESHOLD,
+                                                                switch_ns::Switch::normally_open,
+                                                                STALL_GUARD_READER_WEIGHT_NEW_READINGS)},
         _current_stall_guard_value{STALL_DEFAULT_VALUE}
   {
     _gpio_wrapper->set_pin_mode(_stepper_enn_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());

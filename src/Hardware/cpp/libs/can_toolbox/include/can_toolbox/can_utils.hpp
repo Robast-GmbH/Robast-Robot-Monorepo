@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_CAN_UTILS_HPP
-#define DRAWER_CONTROLLER_CAN_UTILS_HPP
+#ifndef CAN_CONTROLLER_CAN_UTILS_HPP
+#define CAN_CONTROLLER_CAN_UTILS_HPP
 
 #include <Arduino.h>
 
@@ -11,7 +11,7 @@
 #include "debug/debug.hpp"
 #include "utils/queue.hpp"
 
-namespace drawer_controller
+namespace can_controller
 {
   class CanUtils
   {
@@ -36,7 +36,7 @@ namespace drawer_controller
                                        const bool is_push_to_close_triggered) const;
 
    private:
-    const std::unique_ptr<Queue<robast_can_msgs::CanMessage>> _feedback_can_msg_queue;
+    const std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> _feedback_can_msg_queue;
 
     const std::shared_ptr<robast_can_msgs::CanDb> _can_db;
 
@@ -57,5 +57,5 @@ namespace drawer_controller
                                                              const uint8_t normed_current_position,
                                                              const bool is_push_to_close_triggered) const;
   };
-}   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_CAN_UTILS_HPP
+}   // namespace can_controller
+#endif   // CAN_CONTROLLER_CAN_UTILS_HPP

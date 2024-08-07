@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_GPIO_WRAPPER_PCA9535_HPP
-#define DRAWER_CONTROLLER_GPIO_WRAPPER_PCA9535_HPP
+#ifndef GPIO_GPIO_WRAPPER_PCA9535_HPP
+#define GPIO_GPIO_WRAPPER_PCA9535_HPP
 
 #include <Arduino.h>
 #include <PCA95x5.h>
@@ -9,19 +9,19 @@
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "peripherals/pinout_defines.hpp"
 
-namespace drawer_controller
+namespace gpio
 {
   using port_info = std::tuple<uint8_t, PCA95x5::Port::Port>;
 
   constexpr bool FOUND_PIN_INFO = true;
   constexpr bool PIN_INFO_NOT_FOUND = false;
 
-  class GpioWrapperPca9535 : public IGpioWrapper
+  class GpioWrapperPca9535 : public interfaces::IGpioWrapper
   {
    public:
     GpioWrapperPca9535(const std::shared_ptr<TwoWire> wire,
                        const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> slave_address_to_port_expander,
-                       const std::unordered_map<uint8_t, gpio_info::GpioInfo> pin_mapping_id_to_gpio_info,
+                       const std::unordered_map<uint8_t, gpio::GpioInfo> pin_mapping_id_to_gpio_info,
                        const std::unordered_map<uint8_t, port_info> pin_mapping_id_to_port)
         : _wire{wire},
           _slave_address_to_port_expander{slave_address_to_port_expander},
@@ -150,7 +150,7 @@ namespace drawer_controller
    private:
     const std::shared_ptr<TwoWire> _wire;
 
-    const std::unordered_map<uint8_t, gpio_info::GpioInfo> _pin_mapping_id_to_gpio_info;
+    const std::unordered_map<uint8_t, gpio::GpioInfo> _pin_mapping_id_to_gpio_info;
 
     const std::unordered_map<uint8_t, std::shared_ptr<PCA9535>> _slave_address_to_port_expander;
 
@@ -169,5 +169,5 @@ namespace drawer_controller
     }
   };
 
-}   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_GPIO_WRAPPER_PCA9535_HPP
+}   // namespace gpio
+#endif   // GPIO_GPIO_WRAPPER_PCA9535_HPP

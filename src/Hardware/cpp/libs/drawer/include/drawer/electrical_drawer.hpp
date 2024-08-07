@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP
-#define DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP
+#ifndef DRAWER_ELECTRICAL_DRAWER_HPP
+#define DRAWER_ELECTRICAL_DRAWER_HPP
 
 #include <Arduino.h>
 
@@ -20,7 +20,7 @@
 #include "switch/switch.hpp"
 #include "utils/e_drawer_task.hpp"
 
-namespace drawer_controller
+namespace drawer
 {
   constexpr uint8_t MAX_SPEED_UINT8 = 255;
   constexpr uint8_t DRAWER_TARGET_HOMING_POSITION = 0;
@@ -35,24 +35,24 @@ namespace drawer_controller
   constexpr bool MOTOR_IS_STALLED = true;
   constexpr bool MOTOR_IS_NOT_STALLED = false;
 
-  class ElectricalDrawer : public IDrawer
+  class ElectricalDrawer : public interfaces::IDrawer
   {
    public:
     ElectricalDrawer(const uint32_t module_id,
                      const uint8_t id,
                      const std::shared_ptr<robast_can_msgs::CanDb> can_db,
-                     const std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                     const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                      const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
                      const bool use_encoder,
                      const uint8_t encoder_pin_a,
                      const uint8_t encoder_pin_b,
                      const uint8_t motor_driver_address,
-                     const std::shared_ptr<MotorConfig> motor_config,
-                     const std::shared_ptr<Switch> endstop_switch,
-                     const std::optional<std::shared_ptr<ElectricalDrawerLock>> e_drawer_lock,
+                     const std::shared_ptr<motor::MotorConfig> motor_config,
+                     const std::shared_ptr<switch_ns::Switch> endstop_switch,
+                     const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> e_drawer_lock,
                      const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config,
-                     const std::shared_ptr<EncoderConfig> encoder_config,
-                     const std::shared_ptr<MotorMonitorConfig> motor_monitor_config);
+                     const std::shared_ptr<motor::EncoderConfig> encoder_config,
+                     const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config);
 
     std::optional<robast_can_msgs::CanMessage> can_out() override;
 
@@ -60,34 +60,34 @@ namespace drawer_controller
 
     void unlock();
 
-    void add_e_drawer_task_to_queue(const EDrawerTask &e_drawer_task);
+    void add_e_drawer_task_to_queue(const utils::EDrawerTask &e_drawer_task);
 
    private:
     const uint32_t _module_id;
     const uint8_t _id;
 
-    const std::shared_ptr<IGpioWrapper> _gpio_wrapper;
+    const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
 
     const stepper_motor::StepperPinIdConfig _stepper_pin_id_config;
 
-    const std::shared_ptr<Encoder> _encoder;
+    const std::shared_ptr<motor::Encoder> _encoder;
 
-    const std::shared_ptr<Switch> _endstop_switch;
+    const std::shared_ptr<switch_ns::Switch> _endstop_switch;
 
     // optional because the lock is not always installed (e.g. in the partial drawer)
-    const std::optional<std::shared_ptr<ElectricalDrawerLock>> _e_drawer_lock;
+    const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> _e_drawer_lock;
 
-    const std::unique_ptr<CanUtils> _can_utils;
+    const std::unique_ptr<can_controller::CanUtils> _can_utils;
 
     const std::shared_ptr<stepper_motor::Motor> _motor;
 
-    std::unique_ptr<Queue<EDrawerTask>> _e_drawer_task_queue;
+    std::unique_ptr<utils::Queue<utils::EDrawerTask>> _e_drawer_task_queue;
 
     const std::shared_ptr<ElectricalDrawerConfig> _config;
 
-    const std::unique_ptr<EncoderMonitor> _encoder_monitor;
+    const std::unique_ptr<motor::EncoderMonitor> _encoder_monitor;
 
-    const std::unique_ptr<MotorMonitor> _motor_monitor;
+    const std::unique_ptr<motor::MotorMonitor> _motor_monitor;
 
     bool _drawer_was_homed_once = false;
 
@@ -156,6 +156,6 @@ namespace drawer_controller
 
     bool is_stall_guard_triggered() const;
   };
-}   // namespace drawer_controller
+}   // namespace drawer
 
-#endif   // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_HPP
+#endif   // DRAWER_ELECTRICAL_DRAWER_HPP

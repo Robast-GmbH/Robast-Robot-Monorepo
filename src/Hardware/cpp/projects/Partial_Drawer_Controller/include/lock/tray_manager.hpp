@@ -15,7 +15,7 @@ namespace partial_drawer_controller
   {
    public:
     TrayManager(const std::vector<TrayPinConfig>& tray_pin_configs,
-                const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+                const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                 const std::shared_ptr<TwoWire> wire,
                 const float switch_pressed_threshold,
                 const float switch_weight_new_value);
@@ -31,7 +31,7 @@ namespace partial_drawer_controller
    private:
     std::vector<std::unique_ptr<ElectricalTrayLock>> _electrical_tray_locks;
 
-    std::vector<std::unique_ptr<drawer_controller::Switch>> _tray_switches;
+    std::vector<std::unique_ptr<switch_ns::Switch>> _tray_switches;
 
     const std::unique_ptr<OnboardLedDriver> _onboard_led_driver;
 

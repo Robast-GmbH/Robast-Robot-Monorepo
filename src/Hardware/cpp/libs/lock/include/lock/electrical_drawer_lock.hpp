@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_ELECTRICAL_DRAWER_LOCK_HPP
-#define DRAWER_CONTROLLER_ELECTRICAL_DRAWER_LOCK_HPP
+#ifndef LOCK_ELECTRICAL_DRAWER_LOCK_HPP
+#define LOCK_ELECTRICAL_DRAWER_LOCK_HPP
 
 #include <Arduino.h>
 
@@ -12,12 +12,12 @@
 #define ELECTRICAL_LOCK_MECHANISM_TIME                         700   // according to the datasheet a minimum of 600ms is required
 #define ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED 10000   // milliseconds
 
-namespace drawer_controller
+namespace lock
 {
   class ElectricalDrawerLock
   {
    public:
-    ElectricalDrawerLock(const std::shared_ptr<IGpioWrapper> gpio_wrapper,
+    ElectricalDrawerLock(const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                          const uint8_t power_open_pin_id,
                          const uint8_t power_close_pin_id,
                          const uint8_t sensor_lock_pin_id,
@@ -55,7 +55,7 @@ namespace drawer_controller
     const float _switch_pressed_threshold;
     const float _switch_weight_new_values;
 
-    const std::shared_ptr<IGpioWrapper> _gpio_wrapper;
+    const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
 
     bool _open_lock_current_step;    // flag to store which state the locks should have
     bool _open_lock_previous_step;   // flag to store state of the lock of the previous step
@@ -75,5 +75,5 @@ namespace drawer_controller
 
     void set_lock_output_low() const;
   };
-}   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_LOCK_HPP
+}   // namespace lock
+#endif   // LOCK_ELECTRICAL_DRAWER_LOCK_HPP

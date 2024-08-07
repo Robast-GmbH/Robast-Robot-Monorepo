@@ -1,6 +1,6 @@
 #include "drawer/electrical_drawer_config.hpp"
 
-namespace drawer_controller
+namespace drawer
 {
   void ElectricalDrawerConfig::set_drawer_max_speed(const uint32_t max_speed)
   {

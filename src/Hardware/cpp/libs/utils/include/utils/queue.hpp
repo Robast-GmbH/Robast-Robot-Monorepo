@@ -1,12 +1,12 @@
-#ifndef DRAWER_CONTROLLER_QUEUE_HPP
-#define DRAWER_CONTROLLER_QUEUE_HPP
+#ifndef UTILS_QUEUE_HPP
+#define UTILS_QUEUE_HPP
 
 #include <memory>
 #include <optional>
 
 #include "debug/debug.hpp"
 
-namespace drawer_controller
+namespace utils
 {
   template <typename T>
   class Queue
@@ -69,6 +69,6 @@ namespace drawer_controller
     }
   }
 
-}   // namespace drawer_controller
+}   // namespace utils
 
-#endif   // DRAWER_CONTROLLER_QUEUE_HPP
+#endif   // UTILS_QUEUE_HPP

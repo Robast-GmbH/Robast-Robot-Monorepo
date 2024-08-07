@@ -1,6 +1,6 @@
 #include "motor/encoder_monitor.hpp"
 
-namespace drawer_controller
+namespace motor
 {
   EncoderMonitor::EncoderMonitor(const std::shared_ptr<Encoder> encoder, const std::shared_ptr<EncoderConfig> config)
       : _encoder(encoder), _config(config)
@@ -62,4 +62,4 @@ namespace drawer_controller
     _last_timestamp_ms = current_timestamp_ms;
     _last_position_int32 = current_position_int32;
   }
-}   // namespace drawer_controller
+}   // namespace motor

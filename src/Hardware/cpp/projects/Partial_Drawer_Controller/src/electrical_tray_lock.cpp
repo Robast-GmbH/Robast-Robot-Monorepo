@@ -2,7 +2,7 @@
 
 namespace partial_drawer_controller
 {
-  ElectricalTrayLock::ElectricalTrayLock(const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+  ElectricalTrayLock::ElectricalTrayLock(const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                                          const uint8_t power_open_pin_id,
                                          const uint8_t power_close_pin_id)
       : _gpio_wrapper{gpio_wrapper}, _power_open_pin_id{power_open_pin_id}, _power_close_pin_id{power_close_pin_id}

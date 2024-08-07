@@ -1,6 +1,6 @@
 #include "motor/enconder_config.hpp"
 
-namespace drawer_controller
+namespace motor
 {
   void EncoderConfig::set_open_loop_count_drawer_max_extent(const uint32_t open_loop_count_drawer_max_extent)
   {
@@ -55,4 +55,4 @@ namespace drawer_controller
     return _drawer_push_in_threshold_in_percent_of_max_extent;
   }
 
-}   // namespace drawer_controller
+}   // namespace motor

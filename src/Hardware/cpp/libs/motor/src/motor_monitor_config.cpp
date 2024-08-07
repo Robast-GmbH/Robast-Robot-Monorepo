@@ -1,6 +1,6 @@
 #include "motor/motor_monitor_config.hpp"
 
-namespace drawer_controller
+namespace motor
 {
   void MotorMonitorConfig::set_active_speed_threshold(const uint32_t active_speed_threshold)
   {
@@ -44,4 +44,4 @@ namespace drawer_controller
     return _speed_deviation_in_percentage_for_stall;
   }
 
-}   // namespace drawer_controller
+}   // namespace motor

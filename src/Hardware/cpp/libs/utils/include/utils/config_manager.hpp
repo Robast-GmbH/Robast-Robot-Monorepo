@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_CONFIG_MANAGER_HPP
-#define DRAWER_CONTROLLER_CONFIG_MANAGER_HPP
+#ifndef UTILS_CONFIG_MANAGER_HPP
+#define UTILS_CONFIG_MANAGER_HPP
 
 #include <bit>
 #include <memory>
@@ -10,23 +10,23 @@
 #include "motor/motor_config.hpp"
 #include "motor/motor_monitor_config.hpp"
 
-namespace drawer_controller
+namespace utils
 {
   class ConfigManager
   {
    public:
-    ConfigManager(const std::shared_ptr<ElectricalDrawerConfig> drawer_config,
-                  const std::shared_ptr<EncoderConfig> encoder_config,
-                  const std::shared_ptr<MotorConfig> motor_config,
-                  const std::shared_ptr<MotorMonitorConfig> motor_monitor_config);
+    ConfigManager(const std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config,
+                  const std::shared_ptr<motor::EncoderConfig> encoder_config,
+                  const std::shared_ptr<motor::MotorConfig> motor_config,
+                  const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config);
 
     bool set_config(const uint8_t config_id, const uint32_t config_value);
 
    private:
-    std::shared_ptr<ElectricalDrawerConfig> _drawer_config;
-    std::shared_ptr<EncoderConfig> _encoder_config;
-    std::shared_ptr<MotorConfig> _motor_config;
-    std::shared_ptr<MotorMonitorConfig> _motor_monitor_config;
+    std::shared_ptr<drawer::ElectricalDrawerConfig> _drawer_config;
+    std::shared_ptr<motor::EncoderConfig> _encoder_config;
+    std::shared_ptr<motor::MotorConfig> _motor_config;
+    std::shared_ptr<motor::MotorMonitorConfig> _motor_monitor_config;
 
     void set_default_configs();
 
@@ -39,6 +39,6 @@ namespace drawer_controller
     void set_default_motor_monitor_config();
   };
 
-}   // namespace drawer_controller
+}   // namespace utils
 
-#endif   // DRAWER_CONTROLLER_CONFIG_MANAGER_HPP
+#endif   // UTILS_CONFIG_MANAGER_HPP

@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_ENCODER_HPP
-#define DRAWER_CONTROLLER_ENCODER_HPP
+#ifndef MOTOR_ENCODER_HPP
+#define MOTOR_ENCODER_HPP
 
 #include <Arduino.h>
 #include <ESP32Encoder.h>
@@ -8,7 +8,7 @@
 
 #include "motor/enconder_config.hpp"
 
-namespace drawer_controller
+namespace motor
 {
   class Encoder
   {
@@ -48,6 +48,6 @@ namespace drawer_controller
 
     void update_position_from_encoder();
   };
-}   // namespace drawer_controller
+}   // namespace motor
 
-#endif   // DRAWER_CONTROLLER_ENCODER_HPP
+#endif   // MOTOR_ENCODER_HPP

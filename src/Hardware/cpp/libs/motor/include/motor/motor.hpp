@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_MOTOR_HPP
-#define DRAWER_CONTROLLER_MOTOR_HPP
+#ifndef MOTOR_MOTOR_HPP
+#define MOTOR_MOTOR_HPP
 
 #include <TMCStepper.h>
 
@@ -51,9 +51,9 @@ namespace stepper_motor
   {
    public:
     Motor(const uint8_t driver_address,
-          const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+          const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
           const StepperPinIdConfig &stepper_pin_id_config,
-          const std::shared_ptr<drawer_controller::MotorConfig> motor_config);
+          const std::shared_ptr<motor::MotorConfig> motor_config);
 
     void init();
 
@@ -86,11 +86,11 @@ namespace stepper_motor
    private:
     const std::unique_ptr<TMC2209Stepper> _driver;
 
-    const std::shared_ptr<drawer_controller::MotorConfig> _motor_config;
+    const std::shared_ptr<motor::MotorConfig> _motor_config;
 
     bool _driver_is_enabled;
 
-    const std::shared_ptr<drawer_controller::IGpioWrapper> _gpio_wrapper;
+    const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
 
     const uint8_t _stepper_enn_tmc2209_pin_id;
     const uint8_t _stepper_stdby_tmc2209_pin_id;
@@ -112,7 +112,7 @@ namespace stepper_motor
     uint32_t _start_ramp_timestamp;
 
     bool _is_stalled;
-    const std::unique_ptr<drawer_controller::Switch> _stall_guard_reader;
+    const std::unique_ptr<switch_ns::Switch> _stall_guard_reader;
     uint8_t _current_stall_guard_value;
 
     Direction _shaft_direction;
@@ -143,4 +143,4 @@ namespace stepper_motor
   };
 }   // namespace stepper_motor
 
-#endif   // DRAWER_CONTROLLER_MOTOR_HPP
+#endif   // MOTOR_MOTOR_HPP

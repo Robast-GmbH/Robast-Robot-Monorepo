@@ -1,7 +1,7 @@
-#ifndef DRAWER_CONTROLLER_E_DRAWER_TASK_HPP
-#define DRAWER_CONTROLLER_E_DRAWER_TASK_HPP
+#ifndef UTILS_E_DRAWER_TASK_HPP
+#define UTILS_E_DRAWER_TASK_HPP
 
-namespace drawer_controller
+namespace utils
 {
   struct EDrawerTask
   {
@@ -43,6 +43,6 @@ namespace drawer_controller
     {
     }
   };
-}   // namespace drawer_controller
+}   // namespace utils
 
-#endif   // DRAWER_CONTROLLER_E_DRAWER_TASK_HPP
+#endif   // UTILS_E_DRAWER_TASK_HPP

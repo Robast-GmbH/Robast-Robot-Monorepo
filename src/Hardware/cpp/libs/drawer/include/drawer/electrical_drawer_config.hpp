@@ -1,9 +1,9 @@
-#ifndef DRAWER_CONTROLLER_ELECTRICAL_DRAWER_CONFIG_HPP
-#define DRAWER_CONTROLLER_ELECTRICAL_DRAWER_CONFIG_HPP
+#ifndef DRAWER_ELECTRICAL_DRAWER_CONFIG_HPP
+#define DRAWER_ELECTRICAL_DRAWER_CONFIG_HPP
 
 #include <cstdint>
 
-namespace drawer_controller
+namespace drawer
 {
   class ElectricalDrawerConfig
   {
@@ -51,6 +51,6 @@ namespace drawer_controller
     uint8_t _drawer_default_acceleration;
   };
 
-}   // namespace drawer_controller
+}   // namespace drawer
 
-#endif   // DRAWER_CONTROLLER_ELECTRICAL_DRAWER_CONFIG_HPP
+#endif   // DRAWER_ELECTRICAL_DRAWER_CONFIG_HPP

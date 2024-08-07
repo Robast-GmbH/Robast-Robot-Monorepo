@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
-#define DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
+#ifndef CAN_CONTROLLER_CAN_CONTROLLER_HPP
+#define CAN_CONTROLLER_CAN_CONTROLLER_HPP
 
 #include <Arduino.h>
 #include <CAN_config.h>
@@ -12,7 +12,7 @@
 #include "can/can_helper.hpp"
 #include "debug/debug.hpp"
 
-namespace drawer_controller
+namespace can_controller
 {
   class CanController
   {
@@ -36,5 +36,5 @@ namespace drawer_controller
 
     void initialize_can_controller(void);
   };
-}   // namespace drawer_controller
-#endif   // DRAWER_CONTROLLER_CAN_CONTROLLER_HPP
+}   // namespace can_controller
+#endif   // CAN_CONTROLLER_CAN_CONTROLLER_HPP

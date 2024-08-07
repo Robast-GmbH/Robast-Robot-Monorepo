@@ -16,7 +16,7 @@ namespace partial_drawer_controller
   class ElectricalTrayLock
   {
    public:
-    ElectricalTrayLock(const std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper,
+    ElectricalTrayLock(const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                        const uint8_t power_open_pin_id,
                        const uint8_t power_close_pin_id);
 
@@ -36,7 +36,7 @@ namespace partial_drawer_controller
     const uint8_t _power_open_pin_id;
     const uint8_t _power_close_pin_id;
 
-    const std::shared_ptr<drawer_controller::IGpioWrapper> _gpio_wrapper;
+    const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
 
     bool _open_lock_current_step;    // flag to store which state the locks should have
     bool _open_lock_previous_step;   // flag to store state of the lock of the previous step

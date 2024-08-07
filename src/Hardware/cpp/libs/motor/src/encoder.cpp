@@ -2,7 +2,7 @@
 
 #include "debug/debug.hpp"
 
-namespace drawer_controller
+namespace motor
 {
   Encoder::Encoder(const bool use_encoder,
                    const uint8_t encoder_pin_a,
@@ -121,4 +121,4 @@ namespace drawer_controller
                         : _config->get_open_loop_count_drawer_max_extent();
   }
 
-}   // namespace drawer_controller
+}   // namespace motor

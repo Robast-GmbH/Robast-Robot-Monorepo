@@ -1,9 +1,9 @@
-#ifndef DRAWER_CONTROLLER_ENCODER_CONFIG_HPP
-#define DRAWER_CONTROLLER_ENCODER_CONFIG_HPP
+#ifndef MOTOR_ENCODER_CONFIG_HPP
+#define MOTOR_ENCODER_CONFIG_HPP
 
 #include <cstdint>
 
-namespace drawer_controller
+namespace motor
 {
   class EncoderConfig
   {
@@ -33,6 +33,6 @@ namespace drawer_controller
     float _drawer_push_in_threshold_in_percent_of_max_extent;
   };
 
-}   // namespace drawer_controller
+}   // namespace motor
 
-#endif   // DRAWER_CONTROLLER_ENCODER_CONFIG_HPP
+#endif   // MOTOR_ENCODER_CONFIG_HPP

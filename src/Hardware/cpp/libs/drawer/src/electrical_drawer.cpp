@@ -1,36 +1,36 @@
 #include "drawer/electrical_drawer.hpp"
 
-namespace drawer_controller
+namespace drawer
 {
   ElectricalDrawer::ElectricalDrawer(const uint32_t module_id,
                                      const uint8_t id,
                                      const std::shared_ptr<robast_can_msgs::CanDb> can_db,
-                                     const std::shared_ptr<IGpioWrapper> gpio_wrapper,
+                                     const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                                      const stepper_motor::StepperPinIdConfig &stepper_pin_id_config,
                                      const bool use_encoder,
                                      const uint8_t encoder_pin_a,
                                      const uint8_t encoder_pin_b,
                                      const uint8_t motor_driver_address,
-                                     const std::shared_ptr<MotorConfig> motor_config,
-                                     const std::shared_ptr<Switch> endstop_switch,
-                                     const std::optional<std::shared_ptr<ElectricalDrawerLock>> e_drawer_lock,
+                                     const std::shared_ptr<motor::MotorConfig> motor_config,
+                                     const std::shared_ptr<switch_ns::Switch> endstop_switch,
+                                     const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> e_drawer_lock,
                                      const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config,
-                                     const std::shared_ptr<EncoderConfig> encoder_config,
-                                     const std::shared_ptr<MotorMonitorConfig> motor_monitor_config)
+                                     const std::shared_ptr<motor::EncoderConfig> encoder_config,
+                                     const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config)
       : _module_id{module_id},
         _id{id},
         _gpio_wrapper{gpio_wrapper},
         _stepper_pin_id_config{stepper_pin_id_config},
-        _encoder{std::make_shared<Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_config)},
-        _can_utils{std::make_unique<CanUtils>(can_db)},
+        _encoder{std::make_shared<motor::Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_config)},
+        _can_utils{std::make_unique<can_controller::CanUtils>(can_db)},
         _motor{std::make_shared<stepper_motor::Motor>(
           motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, motor_config)},
         _endstop_switch{endstop_switch},
         _e_drawer_lock{e_drawer_lock},
-        _e_drawer_task_queue{std::make_unique<Queue<EDrawerTask>>()},
-        _encoder_monitor{std::make_unique<EncoderMonitor>(_encoder, encoder_config)},
+        _e_drawer_task_queue{std::make_unique<utils::Queue<utils::EDrawerTask>>()},
+        _encoder_monitor{std::make_unique<motor::EncoderMonitor>(_encoder, encoder_config)},
         _config{e_drawer_config},
-        _motor_monitor{std::make_unique<MotorMonitor>(_encoder, encoder_config, _motor, motor_monitor_config)}
+        _motor_monitor{std::make_unique<motor::MotorMonitor>(_encoder, encoder_config, _motor, motor_monitor_config)}
   {
     init();
   }
@@ -108,7 +108,7 @@ namespace drawer_controller
 
   void ElectricalDrawer::start_next_e_drawer_task()
   {
-    std::optional<EDrawerTask> e_drawer_task = _e_drawer_task_queue->get_element_from_queue();
+    std::optional<utils::EDrawerTask> e_drawer_task = _e_drawer_task_queue->get_element_from_queue();
     if (e_drawer_task.has_value())
     {
       debug_printf("[ElectricalDrawer]: Received new e-drawer task from queue with target position %u and speed %u!\n",
@@ -286,7 +286,7 @@ namespace drawer_controller
     }
   }
 
-  void ElectricalDrawer::add_e_drawer_task_to_queue(const EDrawerTask &e_drawer_task)
+  void ElectricalDrawer::add_e_drawer_task_to_queue(const utils::EDrawerTask &e_drawer_task)
   {
     // Before we add a new task to the queue, we need to check if the drawer was homed once
     if (!_drawer_was_homed_once)
@@ -508,4 +508,4 @@ namespace drawer_controller
                    _motor->get_target_speed());
   }
 
-}   // namespace drawer_controller
+}   // namespace drawer

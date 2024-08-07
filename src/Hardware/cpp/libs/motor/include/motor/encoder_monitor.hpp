@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_ENCODER_MONITOR_HPP
-#define DRAWER_CONTROLLER_ENCODER_MONITOR_HPP
+#ifndef MOTOR_ENCODER_MONITOR_HPP
+#define MOTOR_ENCODER_MONITOR_HPP
 
 #include <debug/debug.hpp>
 #include <memory>
@@ -9,7 +9,7 @@
 
 #define ENCODER_MONITOR_DEFAULT_CHECK_INTERVAL_MS 200
 
-namespace drawer_controller
+namespace motor
 {
   class EncoderMonitor
   {
@@ -30,6 +30,6 @@ namespace drawer_controller
 
     void update_position_stamped(const uint32_t current_timestamp_ms, const int32_t current_position_int32);
   };
-}   // namespace drawer_controller
+}   // namespace motor
 
-#endif   // DRAWER_CONTROLLER_ENCODER_HPP
+#endif   // MOTOR_ENCODER_MONITOR_HPP

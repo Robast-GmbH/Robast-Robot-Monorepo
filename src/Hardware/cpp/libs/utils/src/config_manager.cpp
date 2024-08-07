@@ -1,11 +1,11 @@
 #include "utils/config_manager.hpp"
 
-namespace drawer_controller
+namespace utils
 {
-  ConfigManager::ConfigManager(const std::shared_ptr<ElectricalDrawerConfig> drawer_config,
-                               const std::shared_ptr<EncoderConfig> encoder_config,
-                               const std::shared_ptr<MotorConfig> motor_config,
-                               const std::shared_ptr<MotorMonitorConfig> motor_monitor_config)
+  ConfigManager::ConfigManager(const std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config,
+                               const std::shared_ptr<motor::EncoderConfig> encoder_config,
+                               const std::shared_ptr<motor::MotorConfig> motor_config,
+                               const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config)
       : _drawer_config{drawer_config},
         _encoder_config{encoder_config},
         _motor_config{motor_config},
@@ -276,4 +276,4 @@ namespace drawer_controller
                               module_config::motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>::default_value));
   }
 
-}   // namespace drawer_controller
+}   // namespace utils

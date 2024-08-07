@@ -1,8 +1,8 @@
 #include "lock/electrical_drawer_lock.hpp"
 
-namespace drawer_controller
+namespace lock
 {
-  ElectricalDrawerLock::ElectricalDrawerLock(const std::shared_ptr<IGpioWrapper> gpio_wrapper,
+  ElectricalDrawerLock::ElectricalDrawerLock(const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                                              const uint8_t power_open_pin_id,
                                              const uint8_t power_close_pin_id,
                                              const uint8_t sensor_lock_pin_id,
@@ -148,4 +148,4 @@ namespace drawer_controller
     _gpio_wrapper->digital_write(_power_open_pin_id, LOW);
     _gpio_wrapper->digital_write(_power_close_pin_id, LOW);
   }
-}   // namespace drawer_controller
+}   // namespace lock

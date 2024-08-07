@@ -1,7 +1,7 @@
-#ifndef GPIO_INFO__GPIO_INFO_HPP
-#define GPIO_INFO__GPIO_INFO_HPP
+#ifndef GPIO_GPIO_INFO_HPP
+#define GPIO_GPIO_INFO_HPP
 
-namespace gpio_info
+namespace gpio
 {
   constexpr bool IS_INPUT = true;
   constexpr bool IS_OUTPUT = false;
@@ -16,6 +16,6 @@ namespace gpio_info
     }
   };
 
-}   // namespace gpio_info
+}   // namespace gpio
 
-#endif /* GPIO_INFO__GPIO_INFO_HPP */
+#endif /* GPIO_GPIO_INFO_HPP */

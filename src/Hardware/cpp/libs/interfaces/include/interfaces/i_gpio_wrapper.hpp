@@ -1,7 +1,7 @@
-#ifndef DRAWER_CONTROLLER_I_GPIO_WRAPPER_HPP
-#define DRAWER_CONTROLLER_I_GPIO_WRAPPER_HPP
+#ifndef INTERFACES_I_GPIO_WRAPPER_HPP
+#define INTERFACES_I_GPIO_WRAPPER_HPP
 
-namespace drawer_controller
+namespace interfaces
 {
   class IGpioWrapper
   {
@@ -58,6 +58,6 @@ namespace drawer_controller
     virtual uint8_t get_gpio_num_for_pin_id(const uint8_t pin_id) const = 0;
   };
 
-} // namespace drawer_controller
+} // namespace interfaces
 
-#endif // DRAWER_CONTROLLER_I_GPIO_WRAPPER_HPP
+#endif // INTERFACES_I_GPIO_WRAPPER_HPP

@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_MOTOR_MONITOR_HPP
-#define DRAWER_CONTROLLER_MOTOR_MONITOR_HPP
+#ifndef MOTOR_MOTOR_MONITOR_HPP
+#define MOTOR_MOTOR_MONITOR_HPP
 
 #include <memory>
 
@@ -9,7 +9,7 @@
 #include "motor/motor.hpp"
 #include "motor/motor_monitor_config.hpp"
 
-namespace drawer_controller
+namespace motor
 {
   class MotorMonitor
   {
@@ -35,6 +35,6 @@ namespace drawer_controller
     bool are_monitor_conditions_met(uint32_t time_difference_in_ms, int32_t current_position);
   };
 
-}   // namespace drawer_controller
+}   // namespace motor
 
-#endif   // DRAWER_CONTROLLER_MOTOR_MONITOR_HPP
+#endif   // MOTOR_MOTOR_MONITOR_HPP

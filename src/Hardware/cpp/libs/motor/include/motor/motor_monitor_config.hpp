@@ -1,9 +1,9 @@
-#ifndef DRAWER_CONTROLLER_MOTOR_MONITOR_CONFIG_HPP
-#define DRAWER_CONTROLLER_MOTOR_MONITOR_CONFIG_HPP
+#ifndef MOTOR_MOTOR_MONITOR_CONFIG_HPP
+#define MOTOR_MOTOR_MONITOR_CONFIG_HPP
 
 #include <cstdint>
 
-namespace drawer_controller
+namespace motor
 {
   class MotorMonitorConfig
   {
@@ -28,6 +28,6 @@ namespace drawer_controller
     float _speed_deviation_in_percentage_for_stall;
   };
 
-}   // namespace drawer_controller
+}   // namespace motor
 
-#endif   // DRAWER_CONTROLLER_MOTOR_MONITOR_CONFIG_HPP
+#endif   // MOTOR_MOTOR_MONITOR_CONFIG_HPP

@@ -1,6 +1,6 @@
 #include "motor/motor_monitor.hpp"
 
-namespace drawer_controller
+namespace motor
 {
   MotorMonitor::MotorMonitor(const std::shared_ptr<Encoder> encoder,
                              const std::shared_ptr<EncoderConfig> encoder_config,
@@ -75,4 +75,4 @@ namespace drawer_controller
     return (time_difference_in_ms > 0) && (time_difference_in_ms < max_time_diff) &&
            (current_position > lower_position_threshold);
   }
-}   // namespace drawer_controller
+}   // namespace motor

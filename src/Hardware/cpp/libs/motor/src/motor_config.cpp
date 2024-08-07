@@ -1,6 +1,6 @@
 #include "motor/motor_config.hpp"
 
-namespace drawer_controller
+namespace motor
 {
   void MotorConfig::set_is_shaft_direction_inverted(const bool is_shaft_direction_inverted)
   {
@@ -12,4 +12,4 @@ namespace drawer_controller
     return _is_shaft_direction_inverted;
   }
 
-}   // namespace drawer_controller
+}   // namespace motor

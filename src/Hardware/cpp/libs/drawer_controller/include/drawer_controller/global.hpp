@@ -26,20 +26,20 @@ TaskHandle_t Task2;
 
 SemaphoreHandle_t can_queue_mutex = NULL;
 
-using drawer_ptr = std::shared_ptr<drawer_controller::IDrawer>;
+using drawer_ptr = std::shared_ptr<interfaces::IDrawer>;
 
 std::shared_ptr<robast_can_msgs::CanDb> can_db;
 
-std::shared_ptr<drawer_controller::IGpioWrapper> gpio_wrapper;
+std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper;
 
-std::shared_ptr<drawer_controller::ElectricalDrawerLock> drawer_lock;
+std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock;
 
-std::shared_ptr<drawer_controller::ElectricalDrawer> drawer;
+std::shared_ptr<drawer::ElectricalDrawer> e_drawer;
 
-std::shared_ptr<drawer_controller::ElectricalDrawerConfig> drawer_config;
-std::shared_ptr<drawer_controller::EncoderConfig> encoder_config;
-std::shared_ptr<drawer_controller::MotorConfig> motor_config;
-std::shared_ptr<drawer_controller::MotorMonitorConfig> motor_monitor_config;
+std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config;
+std::shared_ptr<motor::EncoderConfig> encoder_config;
+std::shared_ptr<motor::MotorConfig> motor_config;
+std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_enn_tmc2209_pin_id = STEPPER_1_ENN_TMC2209_PIN_ID,
@@ -50,22 +50,22 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_index_pin_id = STEPPER_1_INDEX_PIN_ID,
   .stepper_step_pin_id = STEPPER_1_STEP_PIN_ID};
 
-std::shared_ptr<drawer_controller::Switch> endstop_switch;
+std::shared_ptr<switch_ns::Switch> endstop_switch;
 
-std::unique_ptr<drawer_controller::DataMapper> data_mapper;
+std::unique_ptr<utils::DataMapper> data_mapper;
 
-std::unique_ptr<drawer_controller::ConfigManager> config_manager;
+std::unique_ptr<utils::ConfigManager> config_manager;
 
-std::unique_ptr<drawer_controller::CanController> can_controller;
+std::unique_ptr<can_controller::CanController> drawer_can_controller;
 
 // shared resource, so we need a mutex for this
-std::unique_ptr<drawer_controller::Queue<robast_can_msgs::CanMessage>> can_msg_queue;
+std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue;
 
 void receive_can_msg_task_loop(void* pvParameters)
 {
   for (;;)
   {
-    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
+    std::optional<robast_can_msgs::CanMessage> received_message = drawer_can_controller->handle_receiving_can_msg();
     if (received_message.has_value())
     {
       if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)

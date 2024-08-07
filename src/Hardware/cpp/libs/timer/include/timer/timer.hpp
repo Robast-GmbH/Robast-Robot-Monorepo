@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_TIMER_HPP
-#define DRAWER_CONTROLLER_TIMER_HPP
+#ifndef TIMER_TIMER_HPP
+#define TIMER_TIMER_HPP
 
 #include <Arduino.h>
 
@@ -31,4 +31,4 @@ namespace timer
 
 }   // namespace timer
 
-#endif   // DRAWER_CONTROLLER_TIMER_HPP
+#endif   // TIMER_TIMER_HPP

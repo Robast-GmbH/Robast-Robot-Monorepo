@@ -1,7 +1,7 @@
-#ifndef DRAWER_CONTROLLER_LED_STATE_HPP
-#define DRAWER_CONTROLLER_LED_STATE_HPP
+#ifndef LED_LED_STATE_HPP
+#define LED_LED_STATE_HPP
 
-namespace drawer_controller
+namespace led
 {
   struct LedState
   {
@@ -24,6 +24,6 @@ namespace drawer_controller
     {
     }
   };
-} // namespace drawer_controller
+} // namespace led
 
-#endif // DRAWER_CONTROLLER_LED_STATE_HPP
+#endif // LED_LED_STATE_HPP

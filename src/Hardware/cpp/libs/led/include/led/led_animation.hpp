@@ -1,11 +1,11 @@
-#ifndef DRAWER_CONTROLLER_LED_ANIMATION_HPP
-#define DRAWER_CONTROLLER_LED_ANIMATION_HPP
+#ifndef LED_LED_ANIMATION_HPP
+#define LED_LED_ANIMATION_HPP
 
 #include <vector>
 
 #include "led/led_state.hpp"
 
-namespace drawer_controller
+namespace led
 {
   struct LedAnimation
   {
@@ -59,6 +59,6 @@ namespace drawer_controller
       return *this;
     }
   };
-} // namespace drawer_controller
+} // namespace led
 
-#endif // DRAWER_CONTROLLER_LED_ANIMATION_HPP
+#endif // LED_LED_ANIMATION_HPP

@@ -9,7 +9,7 @@
 
 #define NUM_OF_LEDS 21
 
-std::unique_ptr<drawer_controller::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
+std::unique_ptr<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
 std::shared_ptr<partial_drawer_controller::TrayManager> tray_manager;
 
@@ -50,19 +50,19 @@ void process_can_msgs_task_loop(void* pvParameters)
         break;
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_TASK:
         {
-          drawer_controller::EDrawerTask e_drawer_task = data_mapper->create_e_drawer_task(received_message.value());
-          drawer->add_e_drawer_task_to_queue(e_drawer_task);
+          utils::EDrawerTask e_drawer_task = data_mapper->create_e_drawer_task(received_message.value());
+          e_drawer->add_e_drawer_task_to_queue(e_drawer_task);
         }
         break;
         case robast_can_msgs::can_id::LED_HEADER:
         {
-          drawer_controller::LedHeader led_header = data_mapper->create_led_header(received_message.value());
+          led::LedHeader led_header = data_mapper->create_led_header(received_message.value());
           led_strip->initialize_led_state_change(led_header);
         }
         break;
         case robast_can_msgs::can_id::SINGLE_LED_STATE:
         {
-          drawer_controller::LedState led_state = data_mapper->create_led_state(received_message.value());
+          led::LedState led_state = data_mapper->create_led_state(received_message.value());
           led_strip->set_led_state(led_state);
         }
         break;
@@ -102,21 +102,16 @@ void process_can_msgs_task_loop(void* pvParameters)
 
     led_strip->handle_led_control();
 
-    drawer->update_state();
+    e_drawer->update_state();
 
-    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = drawer->can_out();
+    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = e_drawer->can_out();
 
     if (to_be_sent_message.has_value())
     {
-      can_controller->send_can_message(to_be_sent_message.value());
+      drawer_can_controller->send_can_message(to_be_sent_message.value());
     }
 
     tray_manager->update_states();
-
-    // end timer to track time for one loop iteration
-    // unsigned long end_time = millis();
-    // unsigned long duration = end_time - start_time;
-    // debug_printf("[Main]: Duration of one loop iteration: %lu ms. Free heap: %u\n", duration, ESP.getFreeHeap());
   }
 }
 
@@ -132,17 +127,16 @@ void setup()
   wire_onboard_led_driver->begin(I2C_SDA, I2C_SCL);
   wire_port_expander->begin(I2C_SDA_PORT_EXPANDER, I2C_SCL_PORT_EXPANDER);
 
-  gpio_wrapper =
-    std::make_shared<drawer_controller::GpioWrapperPca9535>(wire_port_expander,
+  gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(wire_port_expander,
                                                             partial_drawer_controller::slave_address_to_port_expander,
                                                             partial_drawer_controller::pin_mapping_id_to_gpio_info,
                                                             partial_drawer_controller::pin_mapping_id_to_port);
 
-  endstop_switch = std::make_shared<drawer_controller::Switch>(gpio_wrapper,
-                                                               SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
-                                                               SWITCH_PRESSED_THRESHOLD,
-                                                               drawer_controller::Switch::normally_open,
-                                                               SWITCH_WEIGHT_NEW_VALUES);
+  endstop_switch = std::make_shared<switch_ns::Switch>(gpio_wrapper,
+                                                       SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
+                                                       SWITCH_PRESSED_THRESHOLD,
+                                                       switch_ns::Switch::normally_open,
+                                                       SWITCH_WEIGHT_NEW_VALUES);
 
   std::vector<partial_drawer_controller::TrayPinConfig> tray_pin_config = {
     {LOCK_1_OPEN_CONTROL_PIN_ID, LOCK_1_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_1_CLOSED_PIN_ID},
@@ -165,39 +159,39 @@ void setup()
   tray_manager->init(set_led_driver_enable_pin_high);
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
-  data_mapper = std::make_unique<drawer_controller::DataMapper>();
+  data_mapper = std::make_unique<utils::DataMapper>();
 
-  led_strip = std::make_unique<drawer_controller::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>>();
+  led_strip = std::make_unique<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>>();
 
-  can_controller = std::make_unique<drawer_controller::CanController>(MODULE_ID, can_db, TWAI_TX_PIN, TWAI_RX_PIN);
+  drawer_can_controller = std::make_unique<can_controller::CanController>(MODULE_ID, can_db, TWAI_TX_PIN, TWAI_RX_PIN);
 
   can_queue_mutex = xSemaphoreCreateMutex();
-  can_msg_queue = std::make_unique<drawer_controller::Queue<robast_can_msgs::CanMessage>>();
+  can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
 
-  drawer_config = std::make_shared<drawer_controller::ElectricalDrawerConfig>();
-  encoder_config = std::make_shared<drawer_controller::EncoderConfig>();
-  motor_config = std::make_shared<drawer_controller::MotorConfig>();
-  motor_monitor_config = std::make_shared<drawer_controller::MotorMonitorConfig>();
+  drawer_config = std::make_shared<drawer::ElectricalDrawerConfig>();
+  encoder_config = std::make_shared<motor::EncoderConfig>();
+  motor_config = std::make_shared<motor::MotorConfig>();
+  motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
 
-  config_manager = std::make_unique<drawer_controller::ConfigManager>(
-    drawer_config, encoder_config, motor_config, motor_monitor_config);
+  config_manager =
+    std::make_unique<utils::ConfigManager>(drawer_config, encoder_config, motor_config, motor_monitor_config);
 
-  drawer = std::make_shared<drawer_controller::ElectricalDrawer>(
-    MODULE_ID,
-    LOCK_ID,
-    can_db,
-    gpio_wrapper,
-    stepper_1_pin_id_config,
-    USE_ENCODER,
-    gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_A_PIN_ID),
-    gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_B_PIN_ID),
-    STEPPER_MOTOR_1_ADDRESS,
-    motor_config,
-    endstop_switch,
-    std::nullopt,
-    drawer_config,
-    encoder_config,
-    motor_monitor_config);
+  e_drawer =
+    std::make_shared<drawer::ElectricalDrawer>(MODULE_ID,
+                                               LOCK_ID,
+                                               can_db,
+                                               gpio_wrapper,
+                                               stepper_1_pin_id_config,
+                                               USE_ENCODER,
+                                               gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_A_PIN_ID),
+                                               gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_B_PIN_ID),
+                                               STEPPER_MOTOR_1_ADDRESS,
+                                               motor_config,
+                                               endstop_switch,
+                                               std::nullopt,
+                                               drawer_config,
+                                               encoder_config,
+                                               motor_monitor_config);
 
   debug_println("[Main]: Finished setup()!");
 

@@ -1,5 +1,5 @@
-#ifndef DRAWER_CONTROLLER_LED_STRIP_HPP
-#define DRAWER_CONTROLLER_LED_STRIP_HPP
+#ifndef LED_LED_STRIP_HPP
+#define LED_LED_STRIP_HPP
 
 #include <Arduino.h>
 #include <FastLED.h>
@@ -16,7 +16,7 @@
 #include "timer/timer.hpp"
 #include "utils/queue.hpp"
 
-namespace drawer_controller
+namespace led
 {
   constexpr uint16_t LED_INIT_ANIMATION_FADE_TIME_IN_MS = 3000;
   constexpr uint8_t LED_INIT_ANIMATION_START_INDEX = 0;
@@ -46,7 +46,7 @@ namespace drawer_controller
 
     LedAnimation _target_led_animation;   // the current target led animation, which is applied withing fading time
 
-    std::unique_ptr<Queue<LedAnimation>> _led_animations_queue;
+    std::unique_ptr<utils::Queue<LedAnimation>> _led_animations_queue;
 
     LedAnimation _new_target_led_animation;   // the new target led animation that is successively filled by can msgs
 
@@ -86,7 +86,7 @@ namespace drawer_controller
         _current_led_states(num_of_leds),
         _target_led_animation(std::vector<LedState>(num_of_leds), 0, num_of_leds, 0),
         _new_target_led_animation(std::vector<LedState>(num_of_leds), 0, num_of_leds, 0),
-        _led_animations_queue(std::make_unique<Queue<LedAnimation>>())
+        _led_animations_queue(std::make_unique<utils::Queue<LedAnimation>>())
   {
     initialize_led_strip();
   }
@@ -284,6 +284,6 @@ namespace drawer_controller
     }
   }
 
-}   // namespace drawer_controller
+}   // namespace led
 
-#endif   // DRAWER_CONTROLLER_LED_STRIP_HPP
+#endif   // LED_LED_STRIP_HPP
