@@ -1,7 +1,7 @@
-ARG ROS_VERSION=humble
-FROM ros:${ROS_VERSION} as devel
-ARG ROS_CONTROL_VERSION=humble
-ARG MOVEIT2_TUTORIALS_VERSION=humble
+ARG ROS_VERSION=jazzy
+FROM ros:${ROS_VERSION} AS devel
+ARG ROS_CONTROL_VERSION=master
+ARG MOVEIT2_TUTORIALS_VERSION=main
 
 RUN echo ubuntu:ubuntu | chpasswd && \
     echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
