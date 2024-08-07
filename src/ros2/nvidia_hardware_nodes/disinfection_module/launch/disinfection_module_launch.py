@@ -10,10 +10,10 @@ def generate_launch_description():
                 executable="disinfection_publisher",
                 name="disinfection_publisher",
                 parameters=[
-                    {"read_in_disinfection_switch_counter_limit": 15},
-                    {"disinfection_switch_threshold": 0.35},
+                    {"read_counter_limit": 15},
+                    {"switch_threshold": 0.35},
                     {"is_pulldown": True},
-                    {"disinfection_timer_period_in_sec": 0.01},
+                    {"timer_period_in_sec": 0.01},
                     {"num_of_first_readings_to_ignore": 2},
                 ],
             ),
