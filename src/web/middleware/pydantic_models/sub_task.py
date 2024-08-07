@@ -3,6 +3,7 @@ import time
 from pydantic import BaseModel
 from typing import Any
 from pydantic_models.action import Action
+from pydantic_models.drawer_address import DrawerAddress
 
 
 class SubTask(BaseModel):
@@ -35,6 +36,23 @@ class SubTask(BaseModel):
             requirements=json_data["requirements"],
             action=Action.from_json(json_data["action"]),
         )
+
+    def contains_drawer_process_action(self) -> bool:
+        action = self.action
+        while action:
+            if action.name == "drawer_process":
+                return True
+            action = action.subaction
+        return False
+
+    def write_drawer_address(self, drawer_address: DrawerAddress) -> None:
+        drawer_address_json = drawer_address.to_json()
+        self.requirements["drawer_address"] = drawer_address_json
+        action = self.action
+        while action:
+            if action.name == "drawer_process":
+                action.parameters["drawer_address"] = drawer_address_json
+            action = action.subaction
 
     def to_json(self) -> dict[str, Any]:
         return {

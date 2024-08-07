@@ -5,6 +5,7 @@ from task_system.models.fleet_management_api import FleetManagementAPI
 from task_system.models.nav_graph import NavGraph
 from pydantic_models.task import Task
 from module_manager.module_manager import ModuleManager
+from task_system.task_manager import TaskManager
 from typing import Any
 import threading
 
@@ -23,20 +24,20 @@ class Robot:
         self.name = name
         self.fleet_management_api = fleet_management_api
         self.module_manager = module_manager
-        self.current_task = None
-        self.current_task_id = None
-        self.task_queue: list[SubTask] = []
+        self.current_subtask_id = None
+        self.current_subtask_fm_id = None
+        self.subtask_queue: list[str] = []
         self.current_node = initial_node
         self.nav_graph = nav_graph
-        self.done_tasks_ids: list[str] = []
-        self.task_queue_lock = threading.Lock()
+        self.done_subtasks_ids: list[str] = []
+        self.subtask_queue_lock = threading.Lock()
+        self.task_manager = TaskManager()
         print(
             f"Robot {self.name} initialized at node {self.current_node.id} -> Starting task status update timer"
         )
         self.__start_task_status_update_timer()
 
     def get_request_cost(self, task: Task) -> float:
-        # check if any drawer of required drawer_type is available
         if "required_drawer_type" in task.requirements:
             is_drawer_available = self.module_manager.is_module_size_available(
                 self.name,
@@ -45,42 +46,17 @@ class Robot:
             if not is_drawer_available:
                 return float("inf")
 
-        return float(len(self.task_queue))
+        return float(len(self.subtask_queue))
 
-    def accept_request(self, task: Task) -> bool:
-        with self.task_queue_lock:
-            if not self.__handle_requirements(task):
-                return False
-            task.assignee_name = self.name
-            for subtask in task.subtasks:
-                subtask.assignee_name = self.name
-            self.task_queue.extend(task.subtasks)
+    def accept_task(self, task: Task) -> None:
+        if not self.__handle_requirements(task):
+            return
+
+        self.task_manager.assign_task(task.id, self.name)
+
+        with self.subtask_queue_lock:
+            self.subtask_queue.extend([subtask.id for subtask in task.subtasks])
             self.__optimize_task_queue()
-            return True
-
-    def get_robot_tasks(self) -> dict[str, Any]:
-        return {
-            "active": self.current_task.to_json() if self.current_task else None,
-            "queued": [task.to_json() for task in self.task_queue],
-        }
-
-    def __check_subtask_for_drawer_process(self, subtask: SubTask) -> bool:
-        action = subtask.action
-        while action:
-            if action.name == "drawer_process":
-                return True
-            action = action.subaction
-        return False
-
-    def __write_drawer_address_to_subtask(
-        self, subtask: SubTask, drawer_address: DrawerAddress
-    ) -> None:
-        subtask.requirements["drawer_address"] = drawer_address.to_json()
-        action = subtask.action
-        while action:
-            if action.name == "drawer_process":
-                action.parameters["drawer_address"] = drawer_address.to_json()
-            action = action.subaction
 
     def __handle_requirements(self, task: Task) -> bool:
         if "required_drawer_type" in task.requirements:
@@ -92,10 +68,11 @@ class Robot:
             subtasks_with_drawer_process = [
                 subtask
                 for subtask in task.subtasks
-                if self.__check_subtask_for_drawer_process(subtask)
+                if subtask.contains_drawer_process_action()
             ]
             for subtask in subtasks_with_drawer_process:
-                self.__write_drawer_address_to_subtask(subtask, drawer.address)
+                subtask.write_drawer_address(drawer.address)
+                self.task_manager.update_subtask(subtask)
             self.__handle_subtask_requirements(subtasks_with_drawer_process[0])
         return True
 
@@ -120,8 +97,8 @@ class Robot:
         self.timer.start()
 
     def __task_status_update_callback(self) -> None:
-        with self.task_queue_lock:
-            if self.current_task is None and self.task_queue:
+        with self.subtask_queue_lock:
+            if self.current_subtask_id is None and self.subtask_queue:
                 self.__start_next_task()
             elif self.__is_task_completed():
                 self.__finish_task()
@@ -129,9 +106,9 @@ class Robot:
         self.__start_task_status_update_timer()
 
     def __is_task_completed(self) -> bool:
-        if self.current_task_id is None:
-            return True
-        data = self.fleet_management_api.request_task_status(self.current_task_id)
+        if self.current_subtask_fm_id is None:
+            return False
+        data = self.fleet_management_api.request_task_status(self.current_subtask_fm_id)
         if data is None:
             return False
         completed_phases = data["completed"]
@@ -139,64 +116,74 @@ class Robot:
         return active_phase in completed_phases
 
     def __finish_task(self) -> None:
-        if self.current_task is None:
+        if self.current_subtask_id is None:
             return
-        self.done_tasks_ids.append(self.current_task.id)
-        self.current_task.status = "completed"
-        related_drawer_tasks = [
-            task
-            for task in self.task_queue
-            if self.current_task.parent_id == task.parent_id
-            and self.__check_subtask_for_drawer_process(task)
+        current_task = self.task_manager.read_subtask(self.current_subtask_id)
+        if not current_task:
+            return
+        self.done_subtasks_ids.append(current_task.id)
+        queued_subtasks = self.task_manager.read_subtasks_by_subtask_ids(
+            self.subtask_queue
+        )
+        related_tasks = [
+            task for task in queued_subtasks if task.parent_id == current_task.parent_id
         ]
+        related_drawer_tasks = [
+            task for task in related_tasks if task.contains_drawer_process_action()
+        ]
+        self.task_manager.finish_subtask(current_task.parent_id, current_task.id)
         if related_drawer_tasks:
             self.__handle_subtask_requirements(related_drawer_tasks[0])
-        elif self.__check_subtask_for_drawer_process(self.current_task) or not [
-            task
-            for task in self.task_queue
-            if task.parent_id == self.current_task.parent_id
-        ]:
+        elif current_task.contains_drawer_process_action():
             self.module_manager.free_module(
-                DrawerAddress.from_json(
-                    self.current_task.requirements["drawer_address"]
-                )
+                DrawerAddress.from_json(current_task.requirements["drawer_address"])
             )
-        self.current_task = None
+
+        if not related_tasks:
+            self.task_manager.finish_task(current_task.parent_id)
+
+        self.current_subtask_id = None
 
     def __start_next_task(self) -> None:
-        self.current_task = self.task_queue.pop(0)
-        self.current_task.status = "active"
+        print(self.subtask_queue)
+        next_subtask = self.task_manager.read_subtask(self.subtask_queue[0])
+        if not next_subtask:
+            return
         result = self.fleet_management_api.dispatch_robot_task(
-            self.current_task.to_robot_task_request()
+            next_subtask.to_robot_task_request()
         )
         if result is not None:
             print(result)
             assigned_id = result["state"]["booking"]["id"]
-            self.current_task_id = assigned_id
-        else:
-            self.current_task.status = "pending"
-            self.task_queue.insert(0, self.current_task)
+            self.current_subtask_fm_id = assigned_id
+            self.current_subtask_id = self.subtask_queue.pop(0)
+            self.task_manager.start_subtask(self.current_subtask_id)
 
     def __optimize_task_queue(self) -> None:
+        queued_subtasks = self.task_manager.read_subtasks_by_subtask_ids(
+            self.subtask_queue
+        )
         eligible_tasks = [
             task
-            for task in self.task_queue
+            for task in queued_subtasks
             if task.requires_task_id is None
-            or task.requires_task_id in self.done_tasks_ids
+            or task.requires_task_id in self.done_subtasks_ids
             or (
-                self.current_task is not None
-                and task.requires_task_id == self.current_task.id
+                self.current_subtask_id is not None
+                and task.requires_task_id == self.current_subtask_id
             )
         ]
         non_eligible_tasks = [
-            task for task in self.task_queue if task not in eligible_tasks
+            task for task in queued_subtasks if task not in eligible_tasks
         ]
-        self.task_queue.clear()
+        self.subtask_queue.clear()
 
-        if self.current_task is None:
+        if self.current_subtask_id is None:
             start = self.current_node
         else:
-            start = self.nav_graph.get_node_by_id(self.current_task.target_id)
+            current_task = self.task_manager.read_subtask(self.current_subtask_id)
+            if current_task:
+                start = self.nav_graph.get_node_by_id(current_task.target_id)
 
         while len(eligible_tasks) > 0:
             min_distance = float("inf")
@@ -215,7 +202,7 @@ class Robot:
                 task for task in eligible_tasks if task not in closest_tasks
             ]
 
-            self.task_queue.extend(closest_tasks)
+            self.subtask_queue.extend([subtask.id for subtask in closest_tasks])
             closest_tasks_ids = [task.id for task in closest_tasks]
             new_eligible_tasks = [
                 task

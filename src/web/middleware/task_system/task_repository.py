@@ -105,11 +105,37 @@ class TaskRepository:
             status=result[2],
             assignee_name=result[3],
             requirements=json.loads(result[4]),
-            subtasks=self.read_subtasks(result[0]),
+            subtasks=self.read_subtasks_by_task_id(result[0]),
             is_monolithic=result[5],
             earliest_start_time=result[6],
             priority=result[7],
         )
+
+    def read_tasks_by_assignee(self, assignee_name: str) -> list[Task]:
+        db_connection = sqlite3.connect(self.__db_path)
+        cursor = db_connection.cursor()
+        cursor.execute(
+            """
+            SELECT * FROM tasks WHERE assignee_name = ?
+        """,
+            (assignee_name,),
+        )
+        results = cursor.fetchall()
+        db_connection.close()
+        return [
+            Task(
+                id=result[0],
+                name=result[1],
+                status=result[2],
+                assignee_name=result[3],
+                requirements=json.loads(result[4]),
+                subtasks=self.read_subtasks_by_task_id(result[0]),
+                is_monolithic=result[5],
+                earliest_start_time=result[6],
+                priority=result[7],
+            )
+            for result in results
+        ]
 
     def read_subtask(self, subtask_id: str) -> SubTask | None:
         db_connection = sqlite3.connect(self.__db_path)
@@ -159,7 +185,7 @@ class TaskRepository:
                 status=result[2],
                 assignee_name=result[3],
                 requirements=json.loads(result[4]),
-                subtasks=self.read_subtasks(result[0]),
+                subtasks=self.read_subtasks_by_task_id(result[0]),
                 is_monolithic=result[5],
                 earliest_start_time=result[6],
                 priority=result[7],
@@ -184,7 +210,7 @@ class TaskRepository:
                 status=result[2],
                 assignee_name=result[3],
                 requirements=json.loads(result[4]),
-                subtasks=self.read_subtasks(result[0]),
+                subtasks=self.read_subtasks_by_task_id(result[0]),
                 is_monolithic=result[5],
                 earliest_start_time=result[6],
                 priority=result[7],
@@ -192,7 +218,7 @@ class TaskRepository:
             for result in results
         ]
 
-    def read_subtasks(self, task_id: str) -> list[SubTask]:
+    def read_subtasks_by_task_id(self, task_id: str) -> list[SubTask]:
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
         cursor.execute(
@@ -200,6 +226,37 @@ class TaskRepository:
             SELECT * FROM subtasks WHERE parent_id = ?
         """,
             (task_id,),
+        )
+        results = cursor.fetchall()
+        db_connection.close()
+        return [
+            SubTask(
+                id=result[0],
+                name=result[1],
+                status=result[2],
+                assignee_name=result[3],
+                parent_id=result[4],
+                requires_task_id=result[5],
+                is_part_of_monolith=result[6],
+                target_id=result[7],
+                priority=result[8],
+                earliest_start_time=result[9],
+                requirements=json.loads(result[10]),
+                action=Action.from_json(json.loads(result[11])),
+            )
+            for result in results
+        ]
+
+    def read_subtasks_by_subtask_ids(self, subtask_ids: list[str]) -> list[SubTask]:
+        db_connection = sqlite3.connect(self.__db_path)
+        cursor = db_connection.cursor()
+        cursor.execute(
+            """
+            SELECT * FROM subtasks WHERE id IN ({})
+        """.format(
+                ",".join(["?"] * len(subtask_ids))
+            ),
+            subtask_ids,
         )
         results = cursor.fetchall()
         db_connection.close()
@@ -250,9 +307,6 @@ class TaskRepository:
             is_successful = True
         except Exception as e:
             print(f"Warning ut: {e}")
-        finally:
-            db_connection.commit()
-            db_connection.close()
         return is_successful
 
     def update_subtask(self, subtask: SubTask) -> bool:

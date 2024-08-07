@@ -75,11 +75,8 @@ class TaskAssignmentSystem:
             assignee = self.__find_cheapest_assignment(unassigned_task)
 
             if assignee is not None:
-                is_accepted = assignee.accept_request(unassigned_task)
-                if is_accepted:
-                    unassigned_task.status = "pending"
-                    unassigned_task.assignee_name = assignee.name
-                    self.task_repository.update_task(unassigned_task)
+                assignee.accept_task(unassigned_task)
+
 
         self.timer = Timer(
             TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_SECONDS,
