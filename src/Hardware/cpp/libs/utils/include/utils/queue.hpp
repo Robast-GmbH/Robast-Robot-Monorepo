@@ -14,9 +14,9 @@ namespace utils
    public:
     Queue();
 
-    void add_element_to_queue(const T element);
+    void enqueue(const T element);
 
-    std::optional<T> get_element_from_queue();
+    std::optional<T> dequeue();
 
    private:
     // Please mind: Normaly you would not built a queue yourself and use xQueue from FreeRTOS or std::queue
@@ -42,13 +42,13 @@ namespace utils
   }
 
   template <typename T>
-  void Queue<T>::add_element_to_queue(const T element)
+  void Queue<T>::enqueue(const T element)
   {
     _queue.push_back(element);
   }
 
   template <typename T>
-  std::optional<T> Queue<T>::get_element_from_queue()
+  std::optional<T> Queue<T>::dequeue()
   {
     uint8_t num_of_elements_in_queue = _queue.size();
     if (num_of_elements_in_queue == 0)

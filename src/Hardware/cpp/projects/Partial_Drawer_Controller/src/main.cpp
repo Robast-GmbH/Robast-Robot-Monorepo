@@ -28,7 +28,7 @@ void process_can_msgs_task_loop(void* pvParameters)
     std::optional<robast_can_msgs::CanMessage> received_message;
     if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
     {
-      received_message = can_msg_queue->get_element_from_queue();
+      received_message = can_msg_queue->dequeue();
       xSemaphoreGive(can_queue_mutex);
     }
     else

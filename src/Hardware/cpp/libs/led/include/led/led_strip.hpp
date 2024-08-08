@@ -101,7 +101,7 @@ namespace led
     }
     else
     {
-      std::optional<LedAnimation> new_led_animation = _led_animations_queue->get_element_from_queue();
+      std::optional<LedAnimation> new_led_animation = _led_animations_queue->dequeue();
       if (new_led_animation.has_value())
       {
         _target_led_animation = new_led_animation.value();
@@ -123,7 +123,7 @@ namespace led
                                                       LED_INIT_ANIMATION_FADE_TIME_IN_MS / 100,
                                                       num_of_leds,
                                                       LED_INIT_ANIMATION_START_INDEX);
-    _led_animations_queue->add_element_to_queue(initial_led_animation);
+    _led_animations_queue->enqueue(initial_led_animation);
   }
 
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
@@ -280,7 +280,7 @@ namespace led
     if (all_led_states_set)
     {
       LedAnimation led_animation = _new_target_led_animation;   // deep copy (see "=" operator definition in struct)
-      _led_animations_queue->add_element_to_queue(led_animation);
+      _led_animations_queue->enqueue(led_animation);
     }
   }
 

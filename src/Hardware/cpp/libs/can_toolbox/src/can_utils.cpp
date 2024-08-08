@@ -14,7 +14,7 @@ namespace can_controller
 
   std::optional<CanMessage> CanUtils::get_element_from_feedback_msg_queue() const
   {
-    return _feedback_can_msg_queue->get_element_from_queue();
+    return _feedback_can_msg_queue->dequeue();
   }
 
   void CanUtils::enqueue_error_feedback_msg(const uint32_t module_id,
@@ -22,7 +22,7 @@ namespace can_controller
                                             const uint8_t error_code) const
   {
     CanMessage error_feedback_msg = create_error_feedback_msg(module_id, drawer_id, error_code);
-    _feedback_can_msg_queue->add_element_to_queue(error_feedback_msg);
+    _feedback_can_msg_queue->enqueue(error_feedback_msg);
   }
 
   void CanUtils::enqueue_drawer_feedback_msg(const uint32_t module_id,
@@ -32,7 +32,7 @@ namespace can_controller
   {
     CanMessage drawer_closed_feedback_msg =
       create_drawer_feedback_msg(module_id, drawer_id, is_endstop_switch_pushed, is_lock_switch_pushed);
-    _feedback_can_msg_queue->add_element_to_queue(drawer_closed_feedback_msg);
+    _feedback_can_msg_queue->enqueue(drawer_closed_feedback_msg);
   }
 
   void CanUtils::enqueue_e_drawer_feedback_msg(const uint32_t module_id,
@@ -50,7 +50,7 @@ namespace can_controller
                                                                              is_drawer_stall_guard_triggered,
                                                                              normed_current_position,
                                                                              is_push_to_close_triggered);
-    _feedback_can_msg_queue->add_element_to_queue(electrical_drawer_feedback_msg);
+    _feedback_can_msg_queue->enqueue(electrical_drawer_feedback_msg);
   }
 
   CanMessage CanUtils::create_error_feedback_msg(const uint32_t module_id,

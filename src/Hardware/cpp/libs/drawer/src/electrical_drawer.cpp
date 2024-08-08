@@ -108,7 +108,7 @@ namespace drawer
 
   void ElectricalDrawer::start_next_e_drawer_task()
   {
-    std::optional<utils::EDrawerTask> e_drawer_task = _e_drawer_task_queue->get_element_from_queue();
+    std::optional<utils::EDrawerTask> e_drawer_task = _e_drawer_task_queue->dequeue();
     if (e_drawer_task.has_value())
     {
       debug_printf("[ElectricalDrawer]: Received new e-drawer task from queue with target position %u and speed %u!\n",
@@ -292,7 +292,7 @@ namespace drawer
     if (!_drawer_was_homed_once)
     {
       debug_println("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!");
-      _e_drawer_task_queue->add_element_to_queue(
+      _e_drawer_task_queue->enqueue(
         {DRAWER_TARGET_HOMING_POSITION,
          get_normed_target_speed_uint8(_config->get_drawer_initial_homing_speed()),
          STALL_GUARD_DISABLED,
@@ -308,7 +308,7 @@ namespace drawer
       e_drawer_task.target_speed,
       e_drawer_task.stall_guard_value);
 
-    _e_drawer_task_queue->add_element_to_queue(e_drawer_task);
+    _e_drawer_task_queue->enqueue(e_drawer_task);
   }
 
   uint32_t ElectricalDrawer::get_normed_target_speed_uint32(const uint8_t target_speed) const

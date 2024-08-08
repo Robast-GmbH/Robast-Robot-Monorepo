@@ -71,7 +71,7 @@ void receive_can_msg_task_loop(void* pvParameters)
       if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
       {
         debug_println("[Main]: Received CAN message and adding it to the queue.");
-        can_msg_queue->add_element_to_queue(received_message.value());
+        can_msg_queue->enqueue(received_message.value());
         xSemaphoreGive(can_queue_mutex);
       }
       else
