@@ -18,7 +18,7 @@ jobs:
     with:
       ros_distro: jazzy
       project_name: hardware_nodes
-      tag: dev
+      tag: devel
       target: devel
       platforms: linux/amd64
 
@@ -30,5 +30,4 @@ jobs:
       tag: release
       target: release
       platforms: linux/amd64,linux/arm64/v8
-      token: ${{ secrets.DOCKER_GIT_TOKEN }}
   

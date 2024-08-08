@@ -19,9 +19,6 @@ on:
                 required: false
                 type: string
                 default: "linux/amd64"
-            token:
-                required: false
-                type: string
 
 
 jobs:
