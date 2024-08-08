@@ -10,7 +10,6 @@
 
 namespace partial_drawer_controller
 {
-
   class TrayManager
   {
    public:
@@ -18,7 +17,7 @@ namespace partial_drawer_controller
                 const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                 const std::shared_ptr<TwoWire> wire,
                 const float switch_pressed_threshold,
-                const float switch_weight_new_value);
+                const float switch_new_reading_weight);
 
     void init(std::function<void()> set_enable_pin_high);
 
