@@ -311,7 +311,7 @@ def generate_launch_description():
         [
             DeclareLaunchArgument(
                 name="log_level",
-                default_value="error",
+                default_value="info",
                 description="Logging level for all nodes.",
             ),
             DeclareLaunchArgument(
