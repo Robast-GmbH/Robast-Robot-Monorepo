@@ -9,7 +9,7 @@
 #include "interfaces/i_gpio_wrapper.hpp"
 
 // the time in ms the lock mechanism needs to open resp. close the lock
-#define ELECTRICAL_LOCK_MECHANISM_TIME 700   // according to the datasheet a minimum of 600ms is required
+#define ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS 700   // according to the datasheet a minimum of 600ms is required
 
 namespace partial_drawer_controller
 {
