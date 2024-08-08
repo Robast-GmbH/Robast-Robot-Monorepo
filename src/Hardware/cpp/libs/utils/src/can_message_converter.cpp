@@ -1,8 +1,8 @@
-#include "utils/data_mapper.hpp"
+#include "utils/can_message_converter.hpp"
 
 namespace utils
 {
-  led::LedState DataMapper::create_led_state(const robast_can_msgs::CanMessage msg) const
+  led::LedState CanMessageConverter::convert_to_led_state(const robast_can_msgs::CanMessage msg) const
   {
     return led::LedState(
       msg.get_can_signals().at(robast_can_msgs::can_signal::id::single_led::LED_STATE_RED).get_data(),
@@ -11,7 +11,7 @@ namespace utils
       msg.get_can_signals().at(robast_can_msgs::can_signal::id::single_led::LED_STATE_BRIGHTNESS).get_data());
   }
 
-  led::LedHeader DataMapper::create_led_header(const robast_can_msgs::CanMessage msg) const
+  led::LedHeader CanMessageConverter::convert_to_led_header(const robast_can_msgs::CanMessage msg) const
   {
     return led::LedHeader(
       msg.get_can_signals().at(robast_can_msgs::can_signal::id::led_header::NUM_OF_LEDS).get_data(),
@@ -19,7 +19,7 @@ namespace utils
       msg.get_can_signals().at(robast_can_msgs::can_signal::id::led_header::FADE_TIME_IN_HUNDREDS_OF_MS).get_data());
   }
 
-  EDrawerTask DataMapper::create_e_drawer_task(const robast_can_msgs::CanMessage msg) const
+  EDrawerTask CanMessageConverter::convert_to_e_drawer_task(const robast_can_msgs::CanMessage msg) const
   {
     return EDrawerTask(
       msg.get_can_signals().at(robast_can_msgs::can_signal::id::e_drawer_task::DRAWER_TARGET_POSITION).get_data(),

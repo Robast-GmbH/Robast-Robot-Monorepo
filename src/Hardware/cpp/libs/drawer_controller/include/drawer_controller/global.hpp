@@ -12,8 +12,8 @@
 #include "motor/motor_monitor_config.hpp"
 #include "peripherals/gpio_defines.hpp"
 #include "switch/switch.hpp"
+#include "utils/can_message_converter.hpp"
 #include "utils/config_manager.hpp"
-#include "utils/data_mapper.hpp"
 #include "utils/queue.hpp"
 
 #define SWITCH_PRESSED_THRESHOLD 0.9
@@ -52,7 +52,7 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
 
 std::shared_ptr<switch_lib::Switch> endstop_switch;
 
-std::unique_ptr<utils::DataMapper> data_mapper;
+std::unique_ptr<utils::CanMessageConverter> can_message_converter;
 
 std::unique_ptr<utils::ConfigManager> config_manager;
 

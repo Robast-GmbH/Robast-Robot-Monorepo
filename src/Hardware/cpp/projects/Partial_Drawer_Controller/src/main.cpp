@@ -50,19 +50,19 @@ void process_can_msgs_task_loop(void* pvParameters)
         break;
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_TASK:
         {
-          utils::EDrawerTask e_drawer_task = data_mapper->create_e_drawer_task(received_message.value());
+          utils::EDrawerTask e_drawer_task = can_message_converter->convert_to_e_drawer_task(received_message.value());
           e_drawer->add_e_drawer_task_to_queue(e_drawer_task);
         }
         break;
         case robast_can_msgs::can_id::LED_HEADER:
         {
-          led::LedHeader led_header = data_mapper->create_led_header(received_message.value());
+          led::LedHeader led_header = can_message_converter->convert_to_led_header(received_message.value());
           led_strip->initialize_led_state_change(led_header);
         }
         break;
         case robast_can_msgs::can_id::SINGLE_LED_STATE:
         {
-          led::LedState led_state = data_mapper->create_led_state(received_message.value());
+          led::LedState led_state = can_message_converter->convert_to_led_state(received_message.value());
           led_strip->set_led_state(led_state);
         }
         break;
@@ -133,10 +133,10 @@ void setup()
                                                             partial_drawer_controller::pin_mapping_id_to_port);
 
   endstop_switch = std::make_shared<switch_lib::Switch>(gpio_wrapper,
-                                                       SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
-                                                       SWITCH_PRESSED_THRESHOLD,
-                                                       switch_lib::Switch::normally_open,
-                                                       SWITCH_WEIGHT_NEW_VALUES);
+                                                        SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
+                                                        SWITCH_PRESSED_THRESHOLD,
+                                                        switch_lib::Switch::normally_open,
+                                                        SWITCH_WEIGHT_NEW_VALUES);
 
   std::vector<partial_drawer_controller::TrayPinConfig> tray_pin_config = {
     {LOCK_1_OPEN_CONTROL_PIN_ID, LOCK_1_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_1_CLOSED_PIN_ID},
@@ -159,7 +159,7 @@ void setup()
   tray_manager->init(set_led_driver_enable_pin_high);
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();
-  data_mapper = std::make_unique<utils::DataMapper>();
+  can_message_converter = std::make_unique<utils::CanMessageConverter>();
 
   led_strip = std::make_unique<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>>();
 
