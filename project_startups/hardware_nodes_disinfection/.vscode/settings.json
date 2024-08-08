@@ -1,0 +1,33 @@
+{
+    "python.autoComplete.extraPaths": [
+        "/workspaces/Ros_Hardware_Nodes/install/communication_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/${ROS_DISTRO}/lib/python3.10/site-packages",
+        "/opt/ros/${ROS_DISTRO}/local/lib/python3.10/dist-packages"
+    ],
+    "python.analysis.extraPaths": [
+        "/workspaces/Ros_Hardware_Nodes/install/communication_interfaces/local/lib/python3.10/dist-packages",
+        "/opt/ros/${ROS_DISTRO}/lib/python3.10/site-packages",
+        "/opt/ros/${ROS_DISTRO}/local/lib/python3.10/dist-packages"
+    ],
+    "files.autoSave": "onFocusChange",
+    "editor.tabSize": 4,
+    "editor.codeActionsOnSave": {
+        "source.fixAll": "explicit",
+        "source.organizeImports": "explicit"
+    },
+    "editor.minimap.autohide": true,
+    "editor.formatOnSave": true,
+    "C_Cpp.formatting": "clangFormat",
+    "C_Cpp.clang_format_style": "file", // formatting rules are defined in the .clang-format file
+    "[cpp]": {
+        "editor.tabSize": 2
+    },
+    "[python]": {
+        "editor.tabSize": 4,
+        "editor.defaultFormatter": "ms-python.black-formatter"
+    },
+    "editor.formatOnType": true,
+    "cmake.configureOnOpen": false,
+    "cmake.sourceDirectory": "${workspaceFolder}/libs/can",
+    "ros.distro": "humble"
+}

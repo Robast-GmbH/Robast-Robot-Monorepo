@@ -1,0 +1,43 @@
+// See https://aka.ms/vscode-remote/devcontainer.json for format details.
+{
+	"image": "ghcr.io/robast-gmbh/monorepo/disinfection_module:release",
+	"workspaceMount": "source=${localWorkspaceFolder}/,target=/workspace/,type=bind",
+	"mounts": [
+		"source=${localWorkspaceFolder}/../../src/ros2/nvidia_hardware_nodes/disinfection_module/,target=/workspace/src/nvidia_hardware_nodes/disinfection_module,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/error_handling/error_utils/,target=/workspace/src/error_utils/,type=bind",
+		"source=${localWorkspaceFolder}/../../src/ros2/dds_configs,target=/workspace/dds_configs,type=bind",
+		"source=/proc/device-tree/compatible,target=/proc/device-tree/compatible,type=bind",
+		"source=/proc/device-tree/chosen,target=/proc/device-tree/chosen,type=bind",
+	],
+	"workspaceFolder": "/workspace",
+	"remoteUser": "robast",
+	"remoteEnv": {
+		"RMW_IMPLEMENTATION": "rmw_cyclonedds_cpp",
+		"ROS_DOMAIN_ID": "23"
+	},
+	"runArgs": [
+		"--name=hardware_nodes_drawer",
+		"--network=host",
+		"--device=/dev/gpiochip0",
+		"--privileged",
+	],
+	"postStartCommand": "/workspace/.devcontainer/entrypoint.sh",
+	// Set *default* container specific settings.json values on container create.
+	"settings": {
+		"terminal.integrated.shell.linux": "/bin/bash"
+	},
+	"extensions": [
+		"dotjoshjohnson.xml",
+		"laurenttreguier.uncrustify",
+		"ms-azuretools.vscode-docker",
+		"ms-iot.vscode-ros",
+		"ms-python.python",
+		"ms-python.black-formatter",
+		"ms-vscode.cpptools",
+		"redhat.vscode-yaml",
+		"smilerobotics.urdf",
+		"streetsidesoftware.code-spell-checker",
+		"twxs.cmake",
+		"yzhang.markdown-all-in-one"
+	]
+}
