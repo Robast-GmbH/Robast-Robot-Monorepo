@@ -21,7 +21,7 @@ namespace switch_lib
            const uint8_t switch_pin_id,
            const float switch_pressed_threshold,
            const SwitchType type,
-           const float weight_new_value);
+           const float new_reading_weight);
 
     bool is_switch_pressed();
 
@@ -34,7 +34,7 @@ namespace switch_lib
     const SwitchType _type;
     const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
     const float _switch_pressed_threshold;
-    const float _weight_new_value;
+    const float _new_reading_weight;
     float _moving_average;
   };
 } // namespace switch_lib
