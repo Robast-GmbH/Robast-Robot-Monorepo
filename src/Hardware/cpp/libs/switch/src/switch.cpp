@@ -6,12 +6,12 @@ namespace switch_lib
                  const uint8_t pin_id,
                  const float switch_pressed_threshold,
                  const SwitchType type,
-                 const float weight_new_value)
+                 const float new_reading_weight)
       : _gpio_wrapper{gpio_wrapper},
         _pin_id{pin_id},
         _switch_pressed_threshold{switch_pressed_threshold},
         _type{type},
-        _new_reading_weight{weight_new_value},
+        _new_reading_weight{new_reading_weight},
         _moving_average{0.0}
   {
     _gpio_wrapper->set_pin_mode(_pin_id, true);
@@ -31,10 +31,5 @@ namespace switch_lib
     uint8_t digital_read_result;
     _gpio_wrapper->digital_read(_pin_id, digital_read_result);
     _moving_average = _new_reading_weight * digital_read_result + (1 - _new_reading_weight) * _moving_average;
-  }
-
-  float Switch::get_moving_average() const
-  {
-    return _moving_average;
   }
 }   // namespace switch_lib

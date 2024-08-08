@@ -27,8 +27,6 @@ namespace switch_lib
 
     void update_sensor_value();
 
-    float get_moving_average() const;
-
   private:
     const uint8_t _pin_id;
     const SwitchType _type;
