@@ -28,7 +28,7 @@ namespace utils
     // messages and is rarely used. Furthermore we try to keep it as efficient as possible and try to follow what is
     // explained here: https://youtu.be/fHNmRkzxHWs?t=2541
     std::vector<T> _queue;
-    uint8_t _head_of_queue;
+    uint8_t _head_of_queue = 0;
   };
 
   // Please mind:
@@ -37,8 +37,6 @@ namespace utils
   template <typename T>
   Queue<T>::Queue()
   {
-    _queue.clear();
-    _head_of_queue = 0;
   }
 
   template <typename T>
