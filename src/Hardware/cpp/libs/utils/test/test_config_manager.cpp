@@ -9,16 +9,16 @@
 // Run the test by executing this command:
 //   ctest
 
-TEST_CASE("Test if default configs are set correctly", "[config_manager]")
+TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
 {
-  auto e_drawer_config = std::make_shared<drawer_controller::ElectricalDrawerConfig>();
-  auto encoder_config = std::make_shared<drawer_controller::EncoderConfig>();
-  auto motor_config = std::make_shared<drawer_controller::MotorConfig>();
-  auto motor_monitor_config = std::make_shared<drawer_controller::MotorMonitorConfig>();
+  auto e_drawer_config = std::make_shared<drawer::ElectricalDrawerConfig>();
+  auto encoder_config = std::make_shared<motor::EncoderConfig>();
+  auto motor_config = std::make_shared<motor::MotorConfig>();
+  auto motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
 
-  drawer_controller::ConfigManager config_manager(e_drawer_config, encoder_config, motor_config, motor_monitor_config);
+  utils::ConfigManager config_manager(e_drawer_config, encoder_config, motor_config, motor_monitor_config);
 
-  SECTION("Check if default configs are set correctly for the e-drawer config")
+  SECTION("Check if default configs are set correctly for the e-drawer config.")
   {
     REQUIRE(e_drawer_config->get_drawer_max_speed() ==
             module_config::ModuleSetting<module_config::drawer::MAX_SPEED>::default_value);
@@ -49,7 +49,7 @@ TEST_CASE("Test if default configs are set correctly", "[config_manager]")
             module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value);
   }
 
-  SECTION("Check if default configs are set correctly for the encoder config")
+  SECTION("Check if default configs are set correctly for the encoder config.")
   {
     REQUIRE(encoder_config->get_open_loop_count_drawer_max_extent() ==
             module_config::ModuleSetting<module_config::encoder::OPEN_LOOP_COUNT_DRAWER_MAX_EXTENT>::default_value);
@@ -66,13 +66,13 @@ TEST_CASE("Test if default configs are set correctly", "[config_manager]")
               module_config::encoder::DRAWER_PUSH_IN_THRESHOLD_IN_PERCENT_OF_MAX_EXTENT>::default_value);
   }
 
-  SECTION("Check if default configs are set correctlx for the motor config")
+  SECTION("Check if default configs are set correctlx for the motor config.")
   {
     REQUIRE(motor_config->get_is_shaft_direction_inverted() ==
             module_config::ModuleSetting<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::default_value);
   }
 
-  SECTION("Check if default configs are set correctly for the motor monitor config")
+  SECTION("Check if default configs are set correctly for the motor monitor config.")
   {
     REQUIRE(motor_monitor_config->get_active_speed_threshold() ==
             module_config::ModuleSetting<module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD>::default_value);
