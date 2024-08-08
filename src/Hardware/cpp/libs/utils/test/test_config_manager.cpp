@@ -21,7 +21,7 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
   SECTION("Check if default configs are set correctly for the e-drawer config.")
   {
     REQUIRE(e_drawer_config->get_drawer_max_speed() ==
-            module_config::ModuleSetting<module_config::drawer::MAX_SPEED>::default_value + 1);
+            module_config::ModuleSetting<module_config::drawer::MAX_SPEED>::default_value);
     REQUIRE(e_drawer_config->get_drawer_homing_speed() ==
             module_config::ModuleSetting<module_config::drawer::HOMING_SPEED>::default_value);
     REQUIRE(e_drawer_config->get_drawer_initial_homing_speed() ==
