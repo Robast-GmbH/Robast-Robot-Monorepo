@@ -20,18 +20,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   bool isInModuleProcess = false;
-  bool isModuleUpdateActivae = false;
-
-  @override
-  void deactivate() {
-    Provider.of<ModuleProvider>(context, listen: false).stopModulesUpdateTimer();
-    super.deactivate();
-  }
+  bool isModuleUpdateActive = false;
 
   Future<void> startModuleProcess() async {
-    if (!context.mounted) {
-      return;
-    }
     final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
     if (moduleProvider.isInModuleProcess) {
       return;
@@ -47,7 +38,7 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
       ),
     );
     moduleProvider.isInModuleProcess = false;
-    if (mounted) {
+    if (mounted && (ModalRoute.of(context)?.isCurrent ?? false)) {
       await Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
     }
   }
@@ -55,8 +46,8 @@ class _HomePageState extends State<HomePage> with SingleTickerProviderStateMixin
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!isModuleUpdateActivae) {
-        isModuleUpdateActivae = true;
+      if (!isModuleUpdateActive) {
+        isModuleUpdateActive = true;
         Provider.of<ModuleProvider>(context, listen: false).startModulesUpdateTimer(onModuleProcess: startModuleProcess);
       }
     });

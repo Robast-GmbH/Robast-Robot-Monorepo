@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/map_provider.dart';
+import 'package:robot_frontend/models/provider/module_provider.dart';
 
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/home_page.dart';
@@ -36,6 +37,7 @@ class _ConfigPageState extends State<ConfigPage> {
     Provider.of<RobotProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
     MiddlewareApiUtilities().setPrefix(prefix: middlewareAddress);
     unawaited(Provider.of<MapProvider>(context, listen: false).fetchBuildingMap());
+    Provider.of<ModuleProvider>(context, listen: false).stopModulesUpdateTimer();
     Navigator.popUntil(context, ModalRoute.withName('/root'));
     await Navigator.push(
       context,

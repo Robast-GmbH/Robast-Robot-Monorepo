@@ -103,19 +103,6 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                   padding: const EdgeInsets.symmetric(vertical: 64),
                   child: Stack(
                     children: [
-                      Column(
-                        children: modules.map((module) {
-                          return DrawerView(
-                            module: module,
-                            isAnyDrawerOpen: moduleInProcess.moduleID != module.moduleID,
-                            isEnabled: moduleInProcess.moduleID == module.moduleID,
-                            onOpening: () {
-                              Provider.of<ModuleProvider>(context, listen: false).openDrawer(module);
-                            },
-                            label: moduleInProcess == module ? 'Zum Öffnen tippen' : '',
-                          );
-                        }).toList(),
-                      ),
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.opening) ...[
                         HintView(
                           text: modules[moduleInProcess.moduleID - 1].variant == DrawerVariant.electric
@@ -132,7 +119,8 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                             }
                           },
                           child: HintView(
-                            text: moduleInProcess.moduleProcess.itemsByChangeToString(),
+                            text:
+                                '${moduleInProcess.moduleProcess.itemsByChangeToString()}${moduleInProcess.variant == DrawerVariant.electric ? ' Zum Schließen tippen.' : ''}',
                             moduleLabel: 'Modul ${moduleInProcess.moduleID}',
                           ),
                         ),

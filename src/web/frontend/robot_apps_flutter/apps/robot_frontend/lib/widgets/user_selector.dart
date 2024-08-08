@@ -7,22 +7,36 @@ import 'package:robot_frontend/models/provider/user_provider.dart';
 class UserSelector extends StatefulWidget {
   const UserSelector({
     required this.controller,
+    this.initWithSessionUser = false,
     super.key,
   });
 
   final UserSelectionController controller;
+  final bool initWithSessionUser;
 
   @override
   State<UserSelector> createState() => _UserSelectorState();
 }
 
 class _UserSelectorState extends State<UserSelector> {
-  late Future<List<User>> loadUsersFuture;
+  late Future<List<User>> initUserSelectorFuture;
+
+  Future<List<User>> initUserSelector() async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final users = await userProvider.getUsers();
+    if (widget.initWithSessionUser) {
+      final userSession = await userProvider.getUserSession(robotName: 'rb_theron');
+      if (userSession != null) {
+        widget.controller.selectedUser = users.firstWhere((element) => userSession.id == element.id);
+      }
+    }
+    return users;
+  }
 
   @override
   void initState() {
     super.initState();
-    loadUsersFuture = Provider.of<UserProvider>(context, listen: false).getUsers();
+    initUserSelectorFuture = initUserSelector();
   }
 
   @override
@@ -45,7 +59,7 @@ class _UserSelectorState extends State<UserSelector> {
             ),
             Expanded(
               child: FutureBuilder<List<User>>(
-                future: loadUsersFuture,
+                future: initUserSelectorFuture,
                 builder: (context, snapshot) {
                   return DropdownButton<User>(
                     disabledHint: const Text(''),

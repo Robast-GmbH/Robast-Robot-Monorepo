@@ -8,7 +8,7 @@ class ModuleManager:
     def __init__(self):
         self.repository = ModuleRepository()
 
-    def is_module_size_mounted(self, robot_name: str, size: int) -> bool:
+    def is_drawer_type_mounted(self, robot_name: str, size: int) -> bool:
         drawers = self.repository.read_robot_drawers(robot_name)
         return any(drawer.size == size for drawer in drawers)
 
