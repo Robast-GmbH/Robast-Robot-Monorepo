@@ -89,7 +89,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 
     if (to_be_sent_message.has_value())
     {
-      drawer_can_controller->send_can_message(to_be_sent_message.value());
+      can_controller->send_can_message(to_be_sent_message.value());
     }
   }
 }
@@ -118,7 +118,7 @@ void setup()
 
   led_strip = std::make_unique<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>>();
 
-  drawer_can_controller = std::make_unique<can_controller::CanController>(MODULE_ID, can_db, TWAI_TX_PIN, TWAI_RX_PIN);
+  can_controller = std::make_unique<can_toolbox::CanController>(MODULE_ID, can_db, TWAI_TX_PIN, TWAI_RX_PIN);
 
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();

@@ -11,7 +11,7 @@
 #include "debug/debug.hpp"
 #include "utils/queue.hpp"
 
-namespace can_controller
+namespace can_toolbox
 {
   class CanUtils
   {
@@ -57,5 +57,5 @@ namespace can_controller
                                                              const uint8_t normed_current_position,
                                                              const bool is_push_to_close_triggered) const;
   };
-}   // namespace can_controller
+}   // namespace can_toolbox
 #endif   // CAN_CONTROLLER_CAN_UTILS_HPP

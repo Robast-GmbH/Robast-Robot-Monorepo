@@ -77,7 +77,7 @@ namespace drawer
     // optional because the lock is not always installed (e.g. in the partial drawer)
     const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> _e_drawer_lock;
 
-    const std::unique_ptr<can_controller::CanUtils> _can_utils;
+    const std::unique_ptr<can_toolbox::CanUtils> _can_utils;
 
     const std::shared_ptr<stepper_motor::Motor> _motor;
 

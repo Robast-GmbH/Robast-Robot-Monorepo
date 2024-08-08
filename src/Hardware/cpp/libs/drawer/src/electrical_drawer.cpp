@@ -22,7 +22,7 @@ namespace drawer
         _gpio_wrapper{gpio_wrapper},
         _stepper_pin_id_config{stepper_pin_id_config},
         _encoder{std::make_shared<motor::Encoder>(use_encoder, encoder_pin_a, encoder_pin_b, encoder_config)},
-        _can_utils{std::make_unique<can_controller::CanUtils>(can_db)},
+        _can_utils{std::make_unique<can_toolbox::CanUtils>(can_db)},
         _motor{std::make_shared<stepper_motor::Motor>(
           motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, motor_config)},
         _endstop_switch{endstop_switch},

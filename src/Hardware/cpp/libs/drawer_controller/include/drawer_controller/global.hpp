@@ -56,7 +56,7 @@ std::unique_ptr<utils::DataMapper> data_mapper;
 
 std::unique_ptr<utils::ConfigManager> config_manager;
 
-std::unique_ptr<can_controller::CanController> drawer_can_controller;
+std::unique_ptr<can_toolbox::CanController> can_controller;
 
 // shared resource, so we need a mutex for this
 std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue;
@@ -65,7 +65,7 @@ void receive_can_msg_task_loop(void* pvParameters)
 {
   for (;;)
   {
-    std::optional<robast_can_msgs::CanMessage> received_message = drawer_can_controller->handle_receiving_can_msg();
+    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
     if (received_message.has_value())
     {
       if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)

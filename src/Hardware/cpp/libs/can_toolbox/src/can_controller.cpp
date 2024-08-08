@@ -3,7 +3,7 @@
 // had a lot of linking errors when this was in the class, put it here and it works, no idea why
 CAN_device_t CAN_cfg;
 
-namespace can_controller
+namespace can_toolbox
 {
 
   CanController::CanController(const uint32_t module_id,
@@ -106,4 +106,4 @@ namespace can_controller
     }
   }
 
-}   // namespace can_controller
+}   // namespace can_toolbox

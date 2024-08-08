@@ -1,5 +1,5 @@
-#ifndef CAN_CONTROLLER_CAN_CONTROLLER_HPP
-#define CAN_CONTROLLER_CAN_CONTROLLER_HPP
+#ifndef CAN_TOOLBOX_CAN_CONTROLLER_HPP
+#define CAN_TOOLBOX_CAN_CONTROLLER_HPP
 
 #include <Arduino.h>
 #include <CAN_config.h>
@@ -12,7 +12,7 @@
 #include "can/can_helper.hpp"
 #include "debug/debug.hpp"
 
-namespace can_controller
+namespace can_toolbox
 {
   class CanController
   {
@@ -36,5 +36,5 @@ namespace can_controller
 
     void initialize_can_controller(void);
   };
-}   // namespace can_controller
-#endif   // CAN_CONTROLLER_CAN_CONTROLLER_HPP
+}   // namespace can_toolbox
+#endif   // CAN_TOOLBOX_CAN_CONTROLLER_HPP
