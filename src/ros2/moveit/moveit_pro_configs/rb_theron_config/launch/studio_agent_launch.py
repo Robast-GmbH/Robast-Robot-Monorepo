@@ -88,6 +88,7 @@ def launch_setup(context, *args, **kwargs):
         moveit_setting["sensors_3d_parameters"],
         ros_configs,
         robot_description,
+        robot_description_semantic,
     ]
 
     # Start the actual move_group node/action server
@@ -127,6 +128,7 @@ def launch_setup(context, *args, **kwargs):
                 moveit_setting["joint_group_name"],
                 ros_configs,
                 robot_description,
+                robot_description_semantic,
             ],
             arguments=["--ros-args", "--log-level", log_level_config],
         )
@@ -181,6 +183,7 @@ def launch_setup(context, *args, **kwargs):
             "behavior_status_publisher_period": 0.5,  # seconds
         },
         robot_description,
+        robot_description_semantic,
     ]
 
     servo_parameters = [
@@ -189,6 +192,7 @@ def launch_setup(context, *args, **kwargs):
         moveit_setting["servo_params"],
         ros_configs,
         robot_description,
+        robot_description_semantic,
     ]
 
     # TODO(7664): Run as a component node instead of as a standalone node
@@ -221,6 +225,7 @@ def launch_setup(context, *args, **kwargs):
                 parameters=[
                     robot_description,
                     ros_configs,
+                    robot_description_semantic,
                 ],
             ),
         )
@@ -254,6 +259,7 @@ def launch_setup(context, *args, **kwargs):
             parameters=[
                 {"use_sim_time": use_sim_time},
                 robot_description,
+                robot_description_semantic,
             ],
         )
     )
@@ -266,6 +272,7 @@ def launch_setup(context, *args, **kwargs):
             parameters=[
                 ros_configs,
                 robot_description,
+                robot_description_semantic,
             ],
         )
     )
