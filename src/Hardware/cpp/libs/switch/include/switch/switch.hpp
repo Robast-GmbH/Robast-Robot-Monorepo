@@ -20,7 +20,7 @@ namespace switch_lib
     Switch(const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
            const uint8_t switch_pin_id,
            const float switch_pressed_threshold,
-           const SwitchType switch_type,
+           const SwitchType type,
            const float weight_new_value);
 
     bool is_switch_pressed();
@@ -30,8 +30,8 @@ namespace switch_lib
     float get_moving_average() const;
 
   private:
-    const uint8_t _switch_pin_id;
-    const SwitchType _switch_type;
+    const uint8_t _pin_id;
+    const SwitchType _type;
     const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
     const float _switch_pressed_threshold;
     const float _weight_new_value;
