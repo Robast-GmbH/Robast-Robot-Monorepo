@@ -22,7 +22,7 @@ namespace lock
                          const uint8_t power_close_pin_id,
                          const uint8_t sensor_lock_pin_id,
                          const float switch_pressed_threshold,
-                         const float switch_weight_new_values);
+                         const float switch_new_reading_weight);
 
     void initialize_lock();
 
@@ -53,7 +53,7 @@ namespace lock
     const uint8_t _power_close_pin_id;
     const uint8_t _sensor_lock_pin_id;
     const float _switch_pressed_threshold;
-    const float _switch_weight_new_values;
+    const float _switch_new_reading_weight;
 
     const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
 

@@ -7,13 +7,13 @@ namespace lock
                                              const uint8_t power_close_pin_id,
                                              const uint8_t sensor_lock_pin_id,
                                              const float switch_pressed_threshold,
-                                             const float switch_weight_new_values)
+                                             const float switch_new_reading_weight)
       : _gpio_wrapper{gpio_wrapper},
         _power_open_pin_id{power_open_pin_id},
         _power_close_pin_id{power_close_pin_id},
         _sensor_lock_pin_id{sensor_lock_pin_id},
         _switch_pressed_threshold{switch_pressed_threshold},
-        _switch_weight_new_values{switch_weight_new_values}
+        _switch_new_reading_weight{switch_new_reading_weight}
   {
   }
 
@@ -108,8 +108,8 @@ namespace lock
     // Tracking the moving average for the sensor pins helps to debounce them a little bit
     byte digital_read_sensor_lock_pin;
     _gpio_wrapper->digital_read(_sensor_lock_pin_id, digital_read_sensor_lock_pin);
-    _moving_average_sensor_lock_pin = _switch_weight_new_values * digital_read_sensor_lock_pin +
-                                      (1 - _switch_weight_new_values) * _moving_average_sensor_lock_pin;
+    _moving_average_sensor_lock_pin = _switch_new_reading_weight * digital_read_sensor_lock_pin +
+                                      (1 - _switch_new_reading_weight) * _moving_average_sensor_lock_pin;
   }
 
   float ElectricalDrawerLock::get_moving_average_sensor_lock_pin() const
