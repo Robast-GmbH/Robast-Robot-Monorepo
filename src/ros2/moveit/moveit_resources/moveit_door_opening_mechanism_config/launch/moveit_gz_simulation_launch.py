@@ -34,7 +34,7 @@ def generate_launch_description():
     ros_distro = os.environ["ROS_DISTRO"]
     if ros_distro == "humble":
         planning_pipelines = ["ompl_humble"]
-    elif ros_distro == "iron":
+    elif ros_distro == "iron" or ros_distro == "jazzy":
         planning_pipelines = ["ompl_iron"]
     else:
         raise Exception("Unknown ROS distro: " + ros_distro)

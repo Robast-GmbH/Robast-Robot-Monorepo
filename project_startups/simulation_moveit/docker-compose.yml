@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   simulation:
-    image: ghcr.io/robast-gmbh/monorepo/simulation:devel-humble
+    image: ghcr.io/robast-gmbh/monorepo/simulation:devel-jazzy
     environment:
       - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/><Peer Address="moveit"/><Peer Address="perception"/></Peers><MaxAutoParticipantIndex>100</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
       - ROS_DOMAIN_ID=1
@@ -37,7 +37,7 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
     
   navigation:
-    image: ghcr.io/robast-gmbh/monorepo/navigation:devel
+    image: ghcr.io/robast-gmbh/monorepo/navigation:devel-jazzy
     environment:
       - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/><Peer Address="moveit"/><Peer Address="perception"/></Peers><MaxAutoParticipantIndex>100</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
       - ROS_DOMAIN_ID=1
@@ -58,7 +58,7 @@ services:
     command: /bin/sh -c "while sleep 1000; do :; done"
 
   moveit:
-    image: ghcr.io/robast-gmbh/monorepo/moveit:devel-humble
+    image: ghcr.io/robast-gmbh/monorepo/moveit:devel-jazzy
     environment:
       - CYCLONEDDS_URI=<?xml version="1.0" encoding="us-ascii"?><CycloneDDS xmlns="https://cdds.io/config" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="https://cdds.io/config https://raw.githubusercontent.com/eclipse-cyclonedds/cyclonedds/master/etc/cyclonedds.xsd"><Domain id="any"><General><AllowMulticast>false</AllowMulticast></General><Discovery><ParticipantIndex>auto</ParticipantIndex><Peers><Peer Address="simulation"/><Peer Address="navigation"/><Peer Address="moveit"/><Peer Address="perception"/></Peers><MaxAutoParticipantIndex>100</MaxAutoParticipantIndex></Discovery><Internal><SocketReceiveBufferSize min="10MB"/></Internal></Domain></CycloneDDS>
       - ROS_DOMAIN_ID=1
