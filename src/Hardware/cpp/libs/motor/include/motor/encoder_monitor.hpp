@@ -7,7 +7,7 @@
 #include "motor/encoder.hpp"
 #include "motor/enconder_config.hpp"
 
-#define ENCODER_MONITOR_DEFAULT_CHECK_INTERVAL_MS 200
+#define DEFAULT_ENCODER_MONITOR_CHECK_INTERVAL_MS 200
 
 namespace motor
 {
