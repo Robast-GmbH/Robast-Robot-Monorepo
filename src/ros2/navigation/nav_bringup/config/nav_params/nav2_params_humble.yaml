@@ -450,50 +450,6 @@ global_costmap:
         mapping_mode: false
         map_save_duration: 60.0
         observation_sources: lidar2d zed_marking
-        lidar3d_marking:
-          enabled: true
-          data_type: PointCloud2
-          topic: /robot/bpearl_laser/scan
-          marking: true
-          clearing: true
-          obstacle_range: 5.0
-          min_obstacle_height: 0.10
-          max_obstacle_height: 1.8
-          expected_update_rate: 0.25 # default 0, if not updating at this rate at least, remove from buffer
-          observation_persistence: 0.0 # default 0, use all measurements taken during now-value, 0=latest
-          inf_is_valid: false # default false, for laser scans
-          filter: "passthrough" # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on
-          voxel_min_points: 10
-          clear_after_reading: true # default false, clear the buffer after the layer gets readings from it
-          max_z: 1.5
-          min_z: 0.10
-          vertical_fov_angle: 3.14   # default 0.7, radians. For 3D lidars it's the symmetric FOV about the planar axis.
-          vertical_fov_padding: 0.05    # 3D Lidar only. Default 0, in meters 
-          horizontal_fov_angle: 3.14 # 3D lidar scanners like the VLP16 have 360 deg horizontal FOV.
-          decay_acceleration: 0.0 # default 0, 1/s^2. If laser scanner MUST be 0
-          model_type: 1 # default 0, model type for frustum. 0=depth camera, 1=3d lidar like VLP16 or similar
-        lidar3d_clearing:
-          enabled: false
-          data_type: PointCloud2
-          topic: /robot/bpearl_laser/scan
-          marking: false
-          clearing: true
-          obstacle_range: 15.0
-          min_obstacle_height: 0.1
-          max_obstacle_height: 1.9
-          expected_update_rate: 0.0 # default 0, if not updating at this rate at least, remove from buffer
-          observation_persistence: 0.0 # default 0, use all measurements taken during now-value, 0=latest
-          inf_is_valid: false # default false, for laser scans
-          filter: "voxel" # default passthrough, apply "voxel", "passthrough", or no filter to sensor data, recommend on
-          voxel_min_points: 1
-          clear_after_reading: true # default false, clear the buffer after the layer gets readings from it
-          max_z: 1.5
-          min_z: 0.3
-          vertical_fov_angle: 3.14   # default 0.7, radians. For 3D lidars it's the symmetric FOV about the planar axis.
-          vertical_fov_padding: 0.05    # 3D Lidar only. Default 0, in meters 
-          horizontal_fov_angle: 3.14 # 3D lidar scanners like the VLP16 have 360 deg horizontal FOV.
-          decay_acceleration: 0.0 # default 0, 1/s^2. If laser scanner MUST be 0
-          model_type: 1 # default 0, model type for frustum. 0=depth camera, 1=3d lidar like VLP16 or similar
         lidar2d:
           enabled: true
           data_type: LaserScan

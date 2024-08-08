@@ -19,9 +19,6 @@ ARG ROBOT_LOCALIZATION_VERSION=3.4.2
 
 ENV DEBIAN_FRONTEND noninteractive
 
-# Enable required NVIDIA drivers
-#ENV NVIDIA_DRIVER_CAPABILITIES \
-#  ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}compute,video,utility
 
 # Disable apt-get warnings
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 42D5A192B819C5DA || true && \
