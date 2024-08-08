@@ -7,6 +7,7 @@
 
 #include "debug/debug.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
+#include "lock/lock_state.hpp"
 
 // the time in ms the lock mechanism needs to open resp. close the lock
 #define ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS                         700   // according to the datasheet a minimum of 600ms is required
@@ -28,7 +29,7 @@ namespace lock
 
     void handle_lock_control();
 
-    void set_open_lock_current_step(const bool open_lock_current_step);
+    void set_expected_lock_state_current_step(const LockState expected_lock_state_current_step);
 
     void set_timestamp_last_lock_change();
 
@@ -57,8 +58,8 @@ namespace lock
 
     const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
 
-    bool _open_lock_current_step;    // flag to store which state the locks should have
-    bool _open_lock_previous_step;   // flag to store state of the lock of the previous step
+    LockState _expected_lock_state_current_step;   // flag to store which state the locks should have
+    LockState _lock_state_previous_step;           // flag to store state of the lock of the previous step
 
     bool _drawer_opening_is_in_progress = false;
 

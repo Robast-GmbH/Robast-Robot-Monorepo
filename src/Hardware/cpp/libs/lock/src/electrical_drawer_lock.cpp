@@ -26,8 +26,8 @@ namespace lock
     _gpio_wrapper->set_pin_mode(_power_close_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
     _gpio_wrapper->set_pin_mode(_sensor_lock_pin_id, _gpio_wrapper->get_gpio_input_pin_mode());
 
-    _open_lock_previous_step = false;
-    set_open_lock_current_step(false);
+    _lock_state_previous_step = LockState::locked;
+    set_expected_lock_state_current_step(LockState::locked);
     set_drawer_opening_is_in_progress(false);
     set_drawer_auto_close_timeout_triggered(false);
   }
@@ -36,7 +36,7 @@ namespace lock
   {
     // Mind that the state for open_lock_current_step_ is changed in the handle_lock_status function when a CAN msg is
     // received
-    bool change_lock_state = !(_open_lock_current_step == _open_lock_previous_step);
+    bool change_lock_state = !(_expected_lock_state_current_step == _lock_state_previous_step);
 
     unsigned long current_timestamp = millis();
     unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
@@ -44,22 +44,22 @@ namespace lock
 
     if (change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
     {
-      _open_lock_previous_step = _open_lock_current_step;
+      _lock_state_previous_step = _expected_lock_state_current_step;
       _timestamp_last_lock_change = current_timestamp;
-      _open_lock_current_step ? open_lock() : close_lock();
+      _expected_lock_state_current_step == LockState::unlocked ? open_lock() : close_lock();
     }
     else if (!change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
     {
-      // this makes sure, there is only a 5V pulse with the duration of ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS on the respective
-      // input of the lock
+      // this makes sure, there is only a 5V pulse with the duration of ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS on the
+      // respective input of the lock
       set_lock_output_low();
     }
 
-    if (_open_lock_current_step &&
+    if (_expected_lock_state_current_step == LockState::unlocked &&
         (time_since_lock_was_opened > ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS))
     {
       // Close the lock automatically after some seconds when drawer wasn't opened for safety reasons
-      set_open_lock_current_step(false);
+      set_expected_lock_state_current_step(LockState::locked);
       set_drawer_opening_is_in_progress(false);
       set_drawer_auto_close_timeout_triggered(true);
       debug_println(
@@ -78,9 +78,9 @@ namespace lock
     return _is_drawer_auto_close_timeout_triggered;
   }
 
-  void ElectricalDrawerLock::set_open_lock_current_step(const bool open_lock_current_step)
+  void ElectricalDrawerLock::set_expected_lock_state_current_step(const LockState expected_lock_state_current_step)
   {
-    _open_lock_current_step = open_lock_current_step;
+    _expected_lock_state_current_step = expected_lock_state_current_step;
   }
 
   void ElectricalDrawerLock::set_timestamp_last_lock_change()
@@ -125,7 +125,7 @@ namespace lock
     }
     else
     {
-      set_open_lock_current_step(true);
+      set_expected_lock_state_current_step(LockState::unlocked);
       set_timestamp_last_lock_change();
       set_drawer_opening_is_in_progress(true);
     }

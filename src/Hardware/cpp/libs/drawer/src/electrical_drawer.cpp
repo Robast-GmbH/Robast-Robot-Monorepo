@@ -292,12 +292,11 @@ namespace drawer
     if (!_drawer_was_homed_once)
     {
       debug_println("[ElectricalDrawer]: Drawer was not homed once yet, so add homing task to queue!");
-      _e_drawer_task_queue->enqueue(
-        {DRAWER_TARGET_HOMING_POSITION,
-         get_normed_target_speed_uint8(_config->get_drawer_initial_homing_speed()),
-         STALL_GUARD_DISABLED,
-         IS_HOMING,
-         false});
+      _e_drawer_task_queue->enqueue({DRAWER_TARGET_HOMING_POSITION,
+                                     get_normed_target_speed_uint8(_config->get_drawer_initial_homing_speed()),
+                                     STALL_GUARD_DISABLED,
+                                     IS_HOMING,
+                                     false});
     }
 
     debug_printf(
@@ -444,7 +443,7 @@ namespace drawer
         !_triggered_closing_lock_after_opening)
     {
       // This makes sure the lock automatically closes as soon as the drawer is opened.
-      _e_drawer_lock.value()->set_open_lock_current_step(false);
+      _e_drawer_lock.value()->set_expected_lock_state_current_step(lock::LockState::locked);
 
       // This makes sure, closing the lock is only triggered once and not permanently.
       _triggered_closing_lock_after_opening = true;
