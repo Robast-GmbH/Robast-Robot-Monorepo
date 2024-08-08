@@ -9,10 +9,16 @@ oak_d_sensor:
   padding_scale: 1.0
   point_cloud_topic: /stereo/points
   point_subsample: 1
-  # The name of the Octomap updater plugin that we are using.
+
+  # Choose the plugin that should be used to update the octomap:
+
+  ## Available without MoveitPro (and with MoveitPro):
+  # sensor_plugin: occupancy_map_monitor/RobastPointCloudOctomapUpdater
+
+  ## Only available with MoveitPro:
+  ### The name of the Octomap updater plugin that we are using.
   sensor_plugin: "moveit_studio_plugins/PointCloudServiceOctomapUpdater"
-  # Specifies the topic to listen on for a point cloud.
-  # Set to an empty topic to disable.
+  ### Specifies the topic to listen on for a point cloud. Set to an empty topic to disable.
   point_cloud_service_name: "/point_cloud_service"
 
 # Specifies the resolution at which the octomap is maintained (in meters).
