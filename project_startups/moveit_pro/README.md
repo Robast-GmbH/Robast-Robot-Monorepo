@@ -35,7 +35,7 @@ Then use the 4 terminals to run (you might need to `source install/setup.bash`):
 
 If you want to run door handle detection open another terminal and run:
 
-`ros2 launch door_handle_detector_sim door_handle_detection_sim.launch.py` (you might need to run `pip install yolov5` before)
+`ros2 launch door_handle_detector_sim door_handle_detection_sim.launch.py` (you might need to run `pip install yolov5` before and you might need `pip3 install setuptools==65.5.1` after that)
 
 # How to run MoveIt Pro over ssh
 
