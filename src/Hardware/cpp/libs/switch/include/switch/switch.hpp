@@ -5,7 +5,7 @@
 
 #include "interfaces/i_gpio_wrapper.hpp"
 
-namespace switch_ns
+namespace switch_lib
 {
   class Switch
   {
@@ -37,6 +37,6 @@ namespace switch_ns
     const float _weight_new_value;
     float _moving_average;
   };
-} // namespace switch_ns
+} // namespace switch_lib
 
 #endif // SWITCH_SWITCH_HPP

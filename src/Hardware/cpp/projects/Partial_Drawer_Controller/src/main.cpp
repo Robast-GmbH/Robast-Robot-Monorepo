@@ -132,10 +132,10 @@ void setup()
                                                             partial_drawer_controller::pin_mapping_id_to_gpio_info,
                                                             partial_drawer_controller::pin_mapping_id_to_port);
 
-  endstop_switch = std::make_shared<switch_ns::Switch>(gpio_wrapper,
+  endstop_switch = std::make_shared<switch_lib::Switch>(gpio_wrapper,
                                                        SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
                                                        SWITCH_PRESSED_THRESHOLD,
-                                                       switch_ns::Switch::normally_open,
+                                                       switch_lib::Switch::normally_open,
                                                        SWITCH_WEIGHT_NEW_VALUES);
 
   std::vector<partial_drawer_controller::TrayPinConfig> tray_pin_config = {

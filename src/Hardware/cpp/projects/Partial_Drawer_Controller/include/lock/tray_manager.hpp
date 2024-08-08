@@ -31,7 +31,7 @@ namespace partial_drawer_controller
    private:
     std::vector<std::unique_ptr<ElectricalTrayLock>> _electrical_tray_locks;
 
-    std::vector<std::unique_ptr<switch_ns::Switch>> _tray_switches;
+    std::vector<std::unique_ptr<switch_lib::Switch>> _tray_switches;
 
     const std::unique_ptr<OnboardLedDriver> _onboard_led_driver;
 

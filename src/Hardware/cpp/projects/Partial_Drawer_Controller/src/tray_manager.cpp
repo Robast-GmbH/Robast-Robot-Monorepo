@@ -15,10 +15,10 @@ namespace partial_drawer_controller
     {
       _electrical_tray_locks.push_back(std::make_unique<ElectricalTrayLock>(
         gpio_wrapper, tray_pin_config.power_open_pin_id, tray_pin_config.power_close_pin_id));
-      _tray_switches.push_back(std::make_unique<switch_ns::Switch>(gpio_wrapper,
+      _tray_switches.push_back(std::make_unique<switch_lib::Switch>(gpio_wrapper,
                                                                    tray_pin_config.sensor_lock_pin_id,
                                                                    switch_pressed_threshold,
-                                                                   switch_ns::Switch::normally_closed,
+                                                                   switch_lib::Switch::normally_closed,
                                                                    switch_weight_new_value));
     }
   }

@@ -50,7 +50,7 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_index_pin_id = STEPPER_1_INDEX_PIN_ID,
   .stepper_step_pin_id = STEPPER_1_STEP_PIN_ID};
 
-std::shared_ptr<switch_ns::Switch> endstop_switch;
+std::shared_ptr<switch_lib::Switch> endstop_switch;
 
 std::unique_ptr<utils::DataMapper> data_mapper;
 

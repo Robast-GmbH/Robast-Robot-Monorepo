@@ -19,10 +19,10 @@ namespace stepper_motor
         _port_expander_not_interrupt_pin_id{stepper_pin_id_config.port_expander_not_interrupt_pin_id},
         _motor_config{motor_config},
         _is_stalled{false},
-        _stall_guard_reader{std::make_unique<switch_ns::Switch>(gpio_wrapper,
+        _stall_guard_reader{std::make_unique<switch_lib::Switch>(gpio_wrapper,
                                                                 stepper_pin_id_config.stepper_diag_pin_id,
                                                                 STALL_GUARD_READER_THRESHOLD,
-                                                                switch_ns::Switch::normally_open,
+                                                                switch_lib::Switch::normally_open,
                                                                 STALL_GUARD_READER_WEIGHT_NEW_READINGS)},
         _current_stall_guard_value{STALL_DEFAULT_VALUE}
   {

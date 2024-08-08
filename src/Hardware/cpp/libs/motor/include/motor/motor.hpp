@@ -112,7 +112,7 @@ namespace stepper_motor
     uint32_t _start_ramp_timestamp;
 
     bool _is_stalled;
-    const std::unique_ptr<switch_ns::Switch> _stall_guard_reader;
+    const std::unique_ptr<switch_lib::Switch> _stall_guard_reader;
     uint8_t _current_stall_guard_value;
 
     Direction _shaft_direction;

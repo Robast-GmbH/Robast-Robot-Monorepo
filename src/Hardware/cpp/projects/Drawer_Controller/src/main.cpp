@@ -107,10 +107,10 @@ void setup()
                                                             drawer_controller::pin_mapping_id_to_gpio_info,
                                                             drawer_controller::pin_mapping_id_to_port);
 
-  endstop_switch = std::make_shared<switch_ns::Switch>(gpio_wrapper,
+  endstop_switch = std::make_shared<switch_lib::Switch>(gpio_wrapper,
                                                        SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
                                                        SWITCH_PRESSED_THRESHOLD,
-                                                       switch_ns::Switch::normally_closed,
+                                                       switch_lib::Switch::normally_closed,
                                                        SWITCH_WEIGHT_NEW_VALUES);
 
   can_db = std::make_shared<robast_can_msgs::CanDb>();

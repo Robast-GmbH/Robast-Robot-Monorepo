@@ -1,6 +1,6 @@
 #include "switch/switch.hpp"
 
-namespace switch_ns
+namespace switch_lib
 {
   Switch::Switch(const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
                  const uint8_t switch_pin_id,
@@ -37,4 +37,4 @@ namespace switch_ns
   {
     return _moving_average;
   }
-}   // namespace switch_ns
+}   // namespace switch_lib

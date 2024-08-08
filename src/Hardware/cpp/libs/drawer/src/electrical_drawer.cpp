@@ -12,7 +12,7 @@ namespace drawer
                                      const uint8_t encoder_pin_b,
                                      const uint8_t motor_driver_address,
                                      const std::shared_ptr<motor::MotorConfig> motor_config,
-                                     const std::shared_ptr<switch_ns::Switch> endstop_switch,
+                                     const std::shared_ptr<switch_lib::Switch> endstop_switch,
                                      const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> e_drawer_lock,
                                      const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config,
                                      const std::shared_ptr<motor::EncoderConfig> encoder_config,
