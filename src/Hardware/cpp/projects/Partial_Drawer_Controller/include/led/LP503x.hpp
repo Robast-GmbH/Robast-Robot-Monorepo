@@ -101,11 +101,7 @@ namespace lp503x
       _wire->write(register_address);
       _wire->write(data_write);
 
-      if (_wire->endTransmission() == 0)
-      {
-        return true;
-      }
-      return false;
+      return _wire->endTransmission() == 0;
     }
 
     bool set_led_brigthness(byte led_number, byte brightness)
