@@ -126,6 +126,36 @@ namespace utils
             config_value));
         break;
 
+      case module_config::motor::TCOOLTHRS:
+        _motor_config->set_tcoolthrs(
+          std::bit_cast<module_config::ModuleSetting<module_config::motor::TCOOLTHRS>::type>(config_value));
+        break;
+
+      case module_config::motor::TPWMTHRS:
+        _motor_config->set_tpwmthrs(
+          std::bit_cast<module_config::ModuleSetting<module_config::motor::TPWMTHRS>::type>(config_value));
+        break;
+
+      case module_config::motor::MICROSTEPS:
+        _motor_config->set_microsteps(
+          static_cast<module_config::ModuleSetting<module_config::motor::MICROSTEPS>::type>(config_value));
+        break;
+
+      case module_config::motor::SEMIN:
+        _motor_config->set_semin(
+          static_cast<module_config::ModuleSetting<module_config::motor::SEMIN>::type>(config_value));
+        break;
+
+      case module_config::motor::SEMAX:
+        _motor_config->set_semax(
+          static_cast<module_config::ModuleSetting<module_config::motor::SEMAX>::type>(config_value));
+        break;
+
+      case module_config::motor::SEDN:
+        _motor_config->set_sedn(
+          static_cast<module_config::ModuleSetting<module_config::motor::SEDN>::type>(config_value));
+        break;
+
       case module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD:
         _motor_monitor_config->set_active_speed_threshold(
           std::bit_cast<module_config::ModuleSetting<module_config::motor_monitor::ACTIVE_SPEED_THRESHOLD>::type>(
@@ -253,6 +283,18 @@ namespace utils
     set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED,
                static_cast<uint32_t>(
                  module_config::ModuleSetting<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::default_value));
+    set_config(module_config::motor::TCOOLTHRS,
+               std::bit_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::TCOOLTHRS>::default_value));
+    set_config(module_config::motor::TPWMTHRS,
+               std::bit_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::TPWMTHRS>::default_value));
+    set_config(module_config::motor::MICROSTEPS,
+               static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::MICROSTEPS>::default_value));
+    set_config(module_config::motor::SEMIN,
+               static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::SEMIN>::default_value));
+    set_config(module_config::motor::SEMAX,
+               static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::SEMAX>::default_value));
+    set_config(module_config::motor::SEDN,
+               static_cast<uint32_t>(module_config::ModuleSetting<module_config::motor::SEDN>::default_value));
   }
 
   void ConfigManager::set_default_motor_monitor_config()

@@ -105,30 +105,30 @@ namespace stepper_motor
     _driver->blank_time(24);
 
     _driver->rms_current(670);   // mA
-    _driver->microsteps(16);
+    _driver->microsteps(_motor_config->get_microsteps());
 
     // Lower threshold velocity for switching on smart energy CoolStep and StallGuard to DIAG output
     // Mind that TCOOLTHRS is compared with TSTEP and TSTEP is scaling INVERSELY with the velocity.
     // So the higher the velocity, the lower the TSTEP and the higher the TCOOLTHRS has to be.
     // TCOOLTHRS >= TSTEP >= TPWMTHRS
-    _driver->TCOOLTHRS(TCOOLTHRS_VALUE);   // 20bit max
+    _driver->TCOOLTHRS(_motor_config->get_tcoolthrs());   // 20bit max
 
     // Upper threshold velocity for switching off smart energy CoolStep and StallGuard to DIAG output
-    _driver->TPWMTHRS(TPWMTHRS_VALUE);
+    _driver->TPWMTHRS(_motor_config->get_tpwmthrs());
 
     // CoolStep lower threshold [0... 15].
     // If SG_RESULT goes below this threshold, CoolStep increases the current to both coils.
     // 0: disable CoolStep
-    _driver->semin(5);
+    _driver->semin(_motor_config->get_semin());
 
     // CoolStep upper threshold [0... 15].
     // If SG is sampled equal to or above this threshold enough times,
     // CoolStep decreases the current to both coils.
-    _driver->semax(2);
+    _driver->semax(_motor_config->get_semax());
 
     // Sets the number of StallGuard2 readings above the upper threshold necessary
     // for each current decrement of the motor current.
-    _driver->sedn(0b01);
+    _driver->sedn(_motor_config->get_sedn());
 
     // StallGuard4 threshold [0... 255] level for stall detection. It compensates for
     // motor specific characteristics and controls sensitivity. A higher value gives a higher

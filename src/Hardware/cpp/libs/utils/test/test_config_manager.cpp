@@ -70,6 +70,15 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
   {
     REQUIRE(motor_config->get_is_shaft_direction_inverted() ==
             module_config::ModuleSetting<module_config::motor::IS_SHAFT_DIRECTION_INVERTED>::default_value);
+    REQUIRE(motor_config->get_tcoolthrs() ==
+            module_config::ModuleSetting<module_config::motor::TCOOLTHRS>::default_value);
+    REQUIRE(motor_config->get_tpwmthrs() ==
+            module_config::ModuleSetting<module_config::motor::TPWMTHRS>::default_value);
+    REQUIRE(motor_config->get_microsteps() ==
+            module_config::ModuleSetting<module_config::motor::MICROSTEPS>::default_value);
+    REQUIRE(motor_config->get_semin() == module_config::ModuleSetting<module_config::motor::SEMIN>::default_value);
+    REQUIRE(motor_config->get_semax() == module_config::ModuleSetting<module_config::motor::SEMAX>::default_value);
+    REQUIRE(motor_config->get_sedn() == module_config::ModuleSetting<module_config::motor::SEDN>::default_value);
   }
 
   SECTION("Check if default configs are set correctly for the motor monitor config.")

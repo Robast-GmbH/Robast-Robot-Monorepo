@@ -45,6 +45,12 @@ namespace module_config
   namespace motor
   {
     constexpr uint8_t IS_SHAFT_DIRECTION_INVERTED = 30;
+    constexpr uint8_t TCOOLTHRS = 31;
+    constexpr uint8_t TPWMTHRS = 32;
+    constexpr uint8_t MICROSTEPS = 33;
+    constexpr uint8_t SEMIN = 34;
+    constexpr uint8_t SEMAX = 35;
+    constexpr uint8_t SEDN = 36;
   }
 
   namespace motor_monitor
@@ -191,6 +197,47 @@ namespace module_config
   {
     using type = bool;
     static constexpr type default_value = true;
+  };
+  template <>
+  struct ModuleSetting<motor::TCOOLTHRS>
+  {
+    using type = uint32_t;
+    static constexpr type default_value = 120;
+  };
+
+  template <>
+  struct ModuleSetting<motor::TPWMTHRS>
+  {
+    using type = uint32_t;
+    static constexpr type default_value = 10;
+  };
+
+  template <>
+  struct ModuleSetting<motor::MICROSTEPS>
+  {
+    using type = uint16_t;
+    static constexpr type default_value = 16;
+  };
+
+  template <>
+  struct ModuleSetting<motor::SEMIN>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 5;
+  };
+
+  template <>
+  struct ModuleSetting<motor::SEMAX>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 2;
+  };
+
+  template <>
+  struct ModuleSetting<motor::SEDN>
+  {
+    using type = uint8_t;
+    static constexpr type default_value = 1;
   };
 
   /********************************************************************************************************
