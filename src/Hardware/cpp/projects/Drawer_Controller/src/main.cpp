@@ -9,7 +9,18 @@
 
 #define NUM_OF_LEDS 18
 
+using namespace drawer_controller;
+
 std::unique_ptr<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
+
+stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
+  .stepper_enn_tmc2209_pin_id = pin_id::STEPPER_1_ENN_TMC2209,
+  .stepper_stdby_tmc2209_pin_id = pin_id::STEPPER_1_STDBY_TMC2209,
+  .stepper_spread_pin_id = pin_id::STEPPER_1_SPREAD,
+  .stepper_dir_pin_id = pin_id::STEPPER_1_DIR,
+  .stepper_diag_pin_id = pin_id::STEPPER_1_DIAG,
+  .stepper_index_pin_id = pin_id::STEPPER_1_INDEX,
+  .stepper_step_pin_id = pin_id::STEPPER_1_STEP};
 
 /**********************************************************************************************************************
  * The program flow is organized as follows:
@@ -102,13 +113,11 @@ void setup()
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(2);
   wire_port_expander->begin(I2C_SDA, I2C_SCL);
 
-  gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(wire_port_expander,
-                                                            drawer_controller::slave_address_to_port_expander,
-                                                            drawer_controller::pin_mapping_id_to_gpio_info,
-                                                            drawer_controller::pin_mapping_id_to_port);
+  gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(
+    wire_port_expander, slave_address_to_port_expander, pin_mapping_id_to_gpio_info, pin_mapping_id_to_port);
 
   endstop_switch = std::make_shared<switch_lib::Switch>(gpio_wrapper,
-                                                        SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
+                                                        pin_id::SENSE_INPUT_DRAWER_1_CLOSED,
                                                         SWITCH_PRESSED_THRESHOLD,
                                                         switch_lib::Switch::normally_closed,
                                                         SWITCH_WEIGHT_NEW_VALUES);
@@ -124,9 +133,9 @@ void setup()
   can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
 
   drawer_lock = std::make_shared<lock::ElectricalDrawerLock>(gpio_wrapper,
-                                                             LOCK_1_OPEN_CONTROL_PIN_ID,
-                                                             LOCK_1_CLOSE_CONTROL_PIN_ID,
-                                                             LOCK_1_SENSE_PIN_ID,
+                                                             pin_id::LOCK_1_OPEN_CONTROL,
+                                                             pin_id::LOCK_1_CLOSE_CONTROL,
+                                                             pin_id::LOCK_1_SENSE,
                                                              SWITCH_PRESSED_THRESHOLD,
                                                              SWITCH_WEIGHT_NEW_VALUES);
 
@@ -145,8 +154,8 @@ void setup()
                                                gpio_wrapper,
                                                stepper_1_pin_id_config,
                                                USE_ENCODER,
-                                               gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_A_PIN_ID),
-                                               gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_B_PIN_ID),
+                                               gpio_wrapper->get_gpio_num_for_pin_id(pin_id::STEPPER_1_ENCODER_A),
+                                               gpio_wrapper->get_gpio_num_for_pin_id(pin_id::STEPPER_1_ENCODER_B),
                                                STEPPER_MOTOR_1_ADDRESS,
                                                motor_config,
                                                endstop_switch,

@@ -41,15 +41,6 @@ std::shared_ptr<motor::EncoderConfig> encoder_config;
 std::shared_ptr<motor::MotorConfig> motor_config;
 std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config;
 
-stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
-  .stepper_enn_tmc2209_pin_id = STEPPER_1_ENN_TMC2209_PIN_ID,
-  .stepper_stdby_tmc2209_pin_id = STEPPER_1_STDBY_TMC2209_PIN_ID,
-  .stepper_spread_pin_id = STEPPER_1_SPREAD_PIN_ID,
-  .stepper_dir_pin_id = STEPPER_1_DIR_PIN_ID,
-  .stepper_diag_pin_id = STEPPER_1_DIAG_PIN_ID,
-  .stepper_index_pin_id = STEPPER_1_INDEX_PIN_ID,
-  .stepper_step_pin_id = STEPPER_1_STEP_PIN_ID};
-
 std::shared_ptr<switch_lib::Switch> endstop_switch;
 
 std::unique_ptr<utils::CanMessageConverter> can_message_converter;

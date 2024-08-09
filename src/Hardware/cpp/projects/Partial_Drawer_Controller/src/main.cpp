@@ -9,9 +9,20 @@
 
 #define NUM_OF_LEDS 21
 
+using namespace partial_drawer_controller;
+
 std::unique_ptr<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
-std::shared_ptr<partial_drawer_controller::TrayManager> tray_manager;
+std::shared_ptr<TrayManager> tray_manager;
+
+stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
+  .stepper_enn_tmc2209_pin_id = pin_id::STEPPER_1_ENN_TMC2209,
+  .stepper_stdby_tmc2209_pin_id = pin_id::STEPPER_1_STDBY_TMC2209,
+  .stepper_spread_pin_id = pin_id::STEPPER_1_SPREAD,
+  .stepper_dir_pin_id = pin_id::STEPPER_1_DIR,
+  .stepper_diag_pin_id = pin_id::STEPPER_1_DIAG,
+  .stepper_index_pin_id = pin_id::STEPPER_1_INDEX,
+  .stepper_step_pin_id = pin_id::STEPPER_1_STEP};
 
 /**********************************************************************************************************************
  * The program flow is organized as follows:
@@ -127,34 +138,32 @@ void setup()
   wire_onboard_led_driver->begin(I2C_SDA, I2C_SCL);
   wire_port_expander->begin(I2C_SDA_PORT_EXPANDER, I2C_SCL_PORT_EXPANDER);
 
-  gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(wire_port_expander,
-                                                            partial_drawer_controller::slave_address_to_port_expander,
-                                                            partial_drawer_controller::pin_mapping_id_to_gpio_info,
-                                                            partial_drawer_controller::pin_mapping_id_to_port);
+  gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(
+    wire_port_expander, slave_address_to_port_expander, pin_mapping_id_to_gpio_info, pin_mapping_id_to_port);
 
   endstop_switch = std::make_shared<switch_lib::Switch>(gpio_wrapper,
-                                                        SENSE_INPUT_DRAWER_1_CLOSED_PIN_ID,
+                                                        pin_id::SENSE_INPUT_DRAWER_1_CLOSED,
                                                         SWITCH_PRESSED_THRESHOLD,
                                                         switch_lib::Switch::normally_open,
                                                         SWITCH_WEIGHT_NEW_VALUES);
 
-  std::vector<partial_drawer_controller::TrayPinConfig> tray_pin_config = {
-    {LOCK_1_OPEN_CONTROL_PIN_ID, LOCK_1_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_1_CLOSED_PIN_ID},
-    {LOCK_2_OPEN_CONTROL_PIN_ID, LOCK_2_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_2_CLOSED_PIN_ID},
-    {LOCK_3_OPEN_CONTROL_PIN_ID, LOCK_3_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_3_CLOSED_PIN_ID},
-    {LOCK_4_OPEN_CONTROL_PIN_ID, LOCK_4_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_4_CLOSED_PIN_ID},
-    {LOCK_5_OPEN_CONTROL_PIN_ID, LOCK_5_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_5_CLOSED_PIN_ID},
-    {LOCK_6_OPEN_CONTROL_PIN_ID, LOCK_6_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_6_CLOSED_PIN_ID},
-    {LOCK_7_OPEN_CONTROL_PIN_ID, LOCK_7_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_7_CLOSED_PIN_ID},
-    {LOCK_8_OPEN_CONTROL_PIN_ID, LOCK_8_CLOSE_CONTROL_PIN_ID, SENSE_INPUT_LID_8_CLOSED_PIN_ID}};
+  std::vector<TrayPinConfig> tray_pin_config = {
+    {pin_id::LOCK_1_OPEN_CONTROL, pin_id::LOCK_1_CLOSE_CONTROL, pin_id::SENSE_INPUT_LID_1_CLOSED},
+    {pin_id::LOCK_2_OPEN_CONTROL, pin_id::LOCK_2_CLOSE_CONTROL, pin_id::SENSE_INPUT_LID_2_CLOSED},
+    {pin_id::LOCK_3_OPEN_CONTROL, pin_id::LOCK_3_CLOSE_CONTROL, pin_id::SENSE_INPUT_LID_3_CLOSED},
+    {pin_id::LOCK_4_OPEN_CONTROL, pin_id::LOCK_4_CLOSE_CONTROL, pin_id::SENSE_INPUT_LID_4_CLOSED},
+    {pin_id::LOCK_5_OPEN_CONTROL, pin_id::LOCK_5_CLOSE_CONTROL, pin_id::SENSE_INPUT_LID_5_CLOSED},
+    {pin_id::LOCK_6_OPEN_CONTROL, pin_id::LOCK_6_CLOSE_CONTROL, pin_id::SENSE_INPUT_LID_6_CLOSED},
+    {pin_id::LOCK_7_OPEN_CONTROL, pin_id::LOCK_7_CLOSE_CONTROL, pin_id::SENSE_INPUT_LID_7_CLOSED},
+    {pin_id::LOCK_8_OPEN_CONTROL, pin_id::LOCK_8_CLOSE_CONTROL, pin_id::SENSE_INPUT_LID_8_CLOSED}};
 
-  tray_manager = std::make_shared<partial_drawer_controller::TrayManager>(
+  tray_manager = std::make_shared<TrayManager>(
     tray_pin_config, gpio_wrapper, wire_onboard_led_driver, SWITCH_PRESSED_THRESHOLD, SWITCH_WEIGHT_NEW_VALUES);
 
   auto set_led_driver_enable_pin_high = []()
   {
-    gpio_wrapper->set_pin_mode(ENABLE_ONBOARD_LED_VDD_PIN_ID, gpio_wrapper->get_gpio_output_pin_mode());
-    gpio_wrapper->digital_write(ENABLE_ONBOARD_LED_VDD_PIN_ID, true);
+    gpio_wrapper->set_pin_mode(pin_id::ENABLE_ONBOARD_LED_VDD, gpio_wrapper->get_gpio_output_pin_mode());
+    gpio_wrapper->digital_write(pin_id::ENABLE_ONBOARD_LED_VDD, true);
   };
   tray_manager->init(set_led_driver_enable_pin_high);
 
@@ -183,8 +192,8 @@ void setup()
                                                gpio_wrapper,
                                                stepper_1_pin_id_config,
                                                USE_ENCODER,
-                                               gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_A_PIN_ID),
-                                               gpio_wrapper->get_gpio_num_for_pin_id(STEPPER_1_ENCODER_B_PIN_ID),
+                                               gpio_wrapper->get_gpio_num_for_pin_id(pin_id::STEPPER_1_ENCODER_A),
+                                               gpio_wrapper->get_gpio_num_for_pin_id(pin_id::STEPPER_1_ENCODER_B),
                                                STEPPER_MOTOR_1_ADDRESS,
                                                motor_config,
                                                endstop_switch,
