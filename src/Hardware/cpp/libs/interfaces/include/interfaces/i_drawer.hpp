@@ -10,7 +10,7 @@ namespace interfaces
   class IDrawer
   {
    public:
-    virtual ~IDrawer() {};
+    virtual ~IDrawer() = default;
 
     /**
      * Returns CAN messages of the drawer that should be sent via the CAN bus.
@@ -41,4 +41,4 @@ namespace interfaces
   };
 }   // namespace interfaces
 
-#endif  // INTERFACES_I_DRAWER_HPP
+#endif   // INTERFACES_I_DRAWER_HPP
