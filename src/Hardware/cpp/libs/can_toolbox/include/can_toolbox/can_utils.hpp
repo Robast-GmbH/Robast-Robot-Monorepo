@@ -36,7 +36,8 @@ namespace can_toolbox
                                        const bool is_push_to_close_triggered) const;
 
    private:
-    const std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> _feedback_can_msg_queue;
+    const std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> _feedback_can_msg_queue =
+      std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
 
     const std::shared_ptr<robast_can_msgs::CanDb> _can_db;
 

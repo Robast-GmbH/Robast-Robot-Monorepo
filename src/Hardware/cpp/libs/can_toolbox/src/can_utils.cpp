@@ -7,8 +7,7 @@ namespace e_drawer_feedback = robast_can_msgs::can_signal::id::e_drawer_feedback
 
 namespace can_toolbox
 {
-  CanUtils::CanUtils(const std::shared_ptr<robast_can_msgs::CanDb> can_db)
-      : _can_db{can_db}, _feedback_can_msg_queue{std::make_unique<utils::Queue<CanMessage>>()}
+  CanUtils::CanUtils(const std::shared_ptr<robast_can_msgs::CanDb> can_db) : _can_db{can_db}
   {
   }
 
