@@ -16,7 +16,7 @@ namespace can_toolbox
   class CanUtils
   {
    public:
-    CanUtils(const std::shared_ptr<robast_can_msgs::CanDb> can_db);
+    explicit CanUtils(const std::shared_ptr<robast_can_msgs::CanDb> can_db);
 
     std::optional<robast_can_msgs::CanMessage> get_element_from_feedback_msg_queue() const;
 
