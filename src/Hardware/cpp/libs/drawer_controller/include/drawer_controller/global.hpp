@@ -16,10 +16,10 @@
 #include "utils/config_manager.hpp"
 #include "utils/queue.hpp"
 
-#define SWITCH_PRESSED_THRESHOLD 0.9
-#define SWITCH_WEIGHT_NEW_VALUES 0.2
+constexpr float SWITCH_PRESSED_THRESHOLD = 0.9;
+constexpr float SWITCH_WEIGHT_NEW_VALUES = 0.2;
 
-#define STEPPER_MOTOR_1_ADDRESS 0x00
+constexpr uint8_t STEPPER_MOTOR_1_ADDRESS = 0x00;
 
 TaskHandle_t Task1;
 TaskHandle_t Task2;
