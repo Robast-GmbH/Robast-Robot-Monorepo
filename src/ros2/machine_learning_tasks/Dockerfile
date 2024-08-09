@@ -1,8 +1,7 @@
 ARG ROS_DISTRO=jazzy
-#TODO@sagarvl96: define the correct image more specifically
-FROM ros:${ROS_DISTRO} AS devel
+FROM ros:${ROS_DISTRO}-perception AS devel
 
-RUN echo ubuntu:ubuntu | chpasswd && \
+RUN echo "ubuntu:ubuntu" | chpasswd &&  \
     echo "ubuntu ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 ENV USER=ubuntu
 
@@ -14,7 +13,6 @@ RUN apt-get update && apt-get install -y \
     cmake \
     git \
     curl \
-    libgl1-mesa-glx\
     python3-colcon-common-extensions \
     python3-pip \
     python3-rosdep \
