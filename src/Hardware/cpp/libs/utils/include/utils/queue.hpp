@@ -35,9 +35,7 @@ namespace utils
   // In C++ you need to include the implementation of the template class in the header file because the compiler
   // needs to know the implementation of the template class when it is used in another file
   template <typename T>
-  Queue<T>::Queue()
-  {
-  }
+  Queue<T>::Queue() = default;
 
   template <typename T>
   void Queue<T>::enqueue(const T element)
