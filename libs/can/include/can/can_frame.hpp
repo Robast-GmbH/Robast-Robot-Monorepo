@@ -15,7 +15,7 @@ namespace robast_can_msgs
     /**
      * @brief A constructor for robast_can_msgs::CanFrame class
      */
-    CanFrame(uint32_t id_in, uint8_t dlc_in, uint8_t data_in[]);
+    CanFrame(uint32_t id, uint8_t dlc, uint8_t data[]);
     /**
      * @brief A destructor for robast_can_msgs::CanFrame class
      */
@@ -41,10 +41,10 @@ namespace robast_can_msgs
      */
     uint8_t get_dlc() const;
 
-   protected:
-    uint8_t* data_;
-    uint8_t dlc_;
-    uint32_t id_;
+   private:
+    uint8_t* _data;
+    uint8_t _dlc;
+    uint32_t _id;
   };
 
 }   // namespace robast_can_msgs

@@ -13,8 +13,8 @@ namespace robast_can_msgs
     /**
      * @brief A constructor for robast_can_msgs::CanMessage class
      */
-    CanMessage(uint32_t id_in, uint8_t dlc_in, std::vector<CanSignal> can_signals_in)
-        : id_{id_in}, dlc_{dlc_in}, can_signals_{can_signals_in}
+    CanMessage(uint32_t id, uint8_t dlc, std::vector<CanSignal> can_signals)
+        : _id{id}, _dlc{dlc}, _can_signals{can_signals}
     {
     }
 
@@ -48,10 +48,10 @@ namespace robast_can_msgs
      */
     uint8_t get_dlc() const;
 
-   protected:
-    uint32_t id_;
-    uint8_t dlc_;
-    std::vector<CanSignal> can_signals_;
+   private:
+    uint32_t _id;
+    uint8_t _dlc;
+    std::vector<CanSignal> _can_signals;
   };
 }   // namespace robast_can_msgs
 

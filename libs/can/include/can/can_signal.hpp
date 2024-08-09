@@ -11,8 +11,8 @@ namespace robast_can_msgs
     /**
      * @brief A constructor for robast_can_msgs::CanSignal class
      */
-    CanSignal(uint8_t bit_start_in, uint8_t bit_length_in, uint64_t data_in)
-        : bit_start_{bit_start_in}, bit_length_{bit_length_in}, data_{data_in}
+    CanSignal(uint8_t bit_start, uint8_t bit_length, uint64_t data)
+        : _bit_start{bit_start}, _bit_length{bit_length}, _data{data}
     {
     }
 
@@ -41,10 +41,10 @@ namespace robast_can_msgs
      */
     uint8_t get_bit_length() const;
 
-   protected:
-    uint8_t bit_start_;
-    uint8_t bit_length_;   // number of bits for this can_signal
-    uint64_t data_;
+   private:
+    uint8_t _bit_start;
+    uint8_t _bit_length;   // number of bits for this can_signal
+    uint64_t _data;
   };
 }   // namespace robast_can_msgs
 

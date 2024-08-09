@@ -2,36 +2,36 @@
 
 namespace robast_can_msgs
 {
-  CanFrame::CanFrame(uint32_t id_in, uint8_t dlc_in, uint8_t data_in[])
+  CanFrame::CanFrame(uint32_t id, uint8_t dlc, uint8_t data[])
   {
-    this->id_ = id_in;
-    this->dlc_ = dlc_in;
-    this->data_ = (uint8_t*) malloc(CAN_STD_MSG_DLC_MAXIMUM * sizeof(uint8_t));
-    std::memcpy(this->data_, data_in, CAN_STD_MSG_DLC_MAXIMUM);
+    this->_id = id;
+    this->_dlc = dlc;
+    this->_data = (uint8_t*) malloc(CAN_STD_MSG_DLC_MAXIMUM * sizeof(uint8_t));
+    std::memcpy(this->_data, data, CAN_STD_MSG_DLC_MAXIMUM);
   }
 
   CanFrame::~CanFrame()
   {
-    free(this->data_);
+    free(this->_data);
   }
 
   void CanFrame::set_data(uint8_t* data)
   {
-    this->data_ = data;
+    this->_data = data;
   }
 
   uint8_t* CanFrame::get_data() const
   {
-    return this->data_;
+    return this->_data;
   }
 
   uint32_t CanFrame::get_id() const
   {
-    return this->id_;
+    return this->_id;
   }
 
   uint8_t CanFrame::get_dlc() const
   {
-    return this->dlc_;
+    return this->_dlc;
   }
 }   // namespace robast_can_msgs
