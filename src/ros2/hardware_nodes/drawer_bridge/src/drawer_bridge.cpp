@@ -144,10 +144,10 @@ namespace drawer_bridge
 
     const bool is_endstop_switch_pushed =
       can_signals.at(robast_can_msgs::can_signal::id::drawer_feedback::IS_ENDSTOP_SWITCH_PUSHED).get_data() ==
-      CAN_DATA_SWITCH_IS_PUSHED;
+      robast_can_msgs::can_data::CAN_DATA_SWITCH_IS_PUSHED;
     const bool is_lock_switch_pushed =
       can_signals.at(robast_can_msgs::can_signal::id::drawer_feedback::IS_LOCK_SWITCH_PUSHED).get_data() ==
-      CAN_DATA_SWITCH_IS_PUSHED;
+      robast_can_msgs::can_data::CAN_DATA_SWITCH_IS_PUSHED;
 
     DrawerStatus drawer_status_msg = DrawerStatus();
     drawer_status_msg.drawer_address = drawer_address;
@@ -212,7 +212,7 @@ namespace drawer_bridge
 
     switch (can_signals.at(robast_can_msgs::can_signal::id::error_feedback::ERROR_CODE).get_data())
     {
-      case CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED:
+      case robast_can_msgs::can_data::CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED:
         error_msg.error_code = ERROR_CODES_TIMEOUT_DRAWER_NOT_OPENED;
         error_msg.error_description =
           "The drawer was not opened and therefore a timeout occurred. Drawer is now locked again.";

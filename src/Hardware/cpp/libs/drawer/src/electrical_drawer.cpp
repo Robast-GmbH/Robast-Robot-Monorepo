@@ -212,7 +212,8 @@ namespace drawer
 
     if (_e_drawer_lock.value()->is_drawer_auto_close_timeout_triggered())
     {
-      _can_utils->enqueue_error_feedback_msg(_module_id, _id, CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
+      _can_utils->enqueue_error_feedback_msg(
+        _module_id, _id, robast_can_msgs::can_data::CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED);
       _e_drawer_lock.value()->set_drawer_auto_close_timeout_triggered(false);
     }
 

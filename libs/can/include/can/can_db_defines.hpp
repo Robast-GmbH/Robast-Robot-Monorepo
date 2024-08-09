@@ -5,7 +5,7 @@
 
 namespace robast_can_msgs
 {
-#define CAN_STD_MSG_DLC_MAXIMUM 8
+  constexpr uint8_t CAN_STD_MSG_DLC_MAXIMUM = 8;
 
   /*********************************************************************************************************
    CAN IDs and DLCs for the CAN Bus
@@ -288,24 +288,21 @@ namespace robast_can_msgs
     } // bit_length
 
   } // can_signal
+  namespace can_data
+  {
+    constexpr uint64_t CAN_DATA_SWITCH_IS_NOT_PUSHED = 0;
+    constexpr uint64_t CAN_DATA_SWITCH_IS_PUSHED = 1;
 
-  /*******************************************
-   * Some defines for actual CAN data
-   *******************************************/
+    constexpr uint64_t CAN_DATA_ELECTRICAL_DRAWER_STALL_GUARD_DISABLED = 0;
 
-#define CAN_DATA_SWITCH_IS_NOT_PUSHED 0
-#define CAN_DATA_SWITCH_IS_PUSHED 1
+    constexpr uint64_t CAN_DATA_ELECTRICAL_DRAWER_IS_STALL_GUARD_NOT_TRIGGERED = 0;
+    constexpr uint64_t CAN_DATA_ELECTRICAL_DRAWER_IS_STALL_GUARD_TRIGGERED = 1;
 
-#define CAN_DATA_ELECTRICAL_DRAWER_STALL_GUARD_DISABLED 0
+    constexpr uint64_t CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED = 1;
 
-#define CAN_DATA_ELECTRICAL_DRAWER_IS_STALL_GUARD_NOT_TRIGGERED 0
-#define CAN_DATA_ELECTRICAL_DRAWER_IS_STALL_GUARD_TRIGGERED 1
-
-#define CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED 1
-
-#define CAN_DATA_PUSH_TO_CLOSE_NOT_TRIGGERED 0
-#define CAN_DATA_PUSH_TO_CLOSE_TRIGGERED 1
-
+    constexpr uint64_t CAN_DATA_PUSH_TO_CLOSE_NOT_TRIGGERED = 0;
+    constexpr uint64_t CAN_DATA_PUSH_TO_CLOSE_TRIGGERED = 1;
+  } // namespace can_data
 } // namespace robast_can_msgs
 
 #endif // CAN__CAN_DB_DEFINES_HPP_
