@@ -6,7 +6,6 @@ RUN echo "ubuntu:ubuntu" | chpasswd &&  \
 ENV USER=ubuntu
 
 RUN echo "if [ -f /opt/ros/${ROS_DISTRO}/setup.bash ]; then source /opt/ros/${ROS_DISTRO}/setup.bash; fi" >> /home/$USER/.bashrc
-
 # Install dependencies
 RUN apt-get update && apt-get install -y \
     build-essential \
@@ -22,11 +21,11 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /tmp
 RUN git clone https://github.com/Robast-GmbH/LightGlue.git
-# TODO@sagarvl96 fails in next line. bdist_wheel invalid command
 RUN python3 LightGlue/setup.py bdist_wheel
 RUN mkdir /ws
 RUN if [ -f LightGlue/dist/*.whl ]; then mv LightGlue/dist/*.whl  /ws/ ; else echo "File not found!"; exit 1; fi
 WORKDIR /ws
+
 ENV RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 # rmw_cyclonedds_cpp #rmw_fastrtps_cpp
 ENV FASTRTPS_DEFAULT_PROFILES_FILE=/workspace/dds_configs/fast_DDS_config.xml
