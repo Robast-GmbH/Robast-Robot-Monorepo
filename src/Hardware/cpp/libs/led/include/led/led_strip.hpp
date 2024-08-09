@@ -132,7 +132,7 @@ namespace led
     debug_printf("[LedStrip]: Init fading with new_fade_time_in_hundreds_of_ms = %d \n",
                  new_fade_time_in_hundreds_of_ms);
     _is_fading_in_progress = true;
-    timer::set_max_counter_value(new_fade_time_in_hundreds_of_ms, TIMER_FACTOR);
+    timer::set_max_counter_value(new_fade_time_in_hundreds_of_ms, timer::TIMER_FACTOR);
     timer::enable_timer();
   }
 

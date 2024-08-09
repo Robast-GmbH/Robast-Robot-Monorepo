@@ -3,13 +3,13 @@
 
 #include <Arduino.h>
 
-#define FADING_TIMER_MINIMAL_ALARM_VALUE 390.625
-#define TIMER_FACTOR                     1 * 8   // this should be an integer multiple of 8
-#define FADING_TIMER_PRESCALER_VALUE     80
-#define TIMER_ID                         0   // can be 0 or 1
-
 namespace timer
 {
+  constexpr float FADING_TIMER_MINIMAL_ALARM_VALUE = 390.625;
+  constexpr uint8_t TIMER_FACTOR = 1 * 8; // this should be an integer multiple of 8
+  constexpr uint8_t FADING_TIMER_PRESCALER_VALUE = 80;
+  constexpr uint8_t TIMER_ID = 0;   // can be 0 or 1
+
   extern volatile uint16_t fade_counter;
   extern float max_fade_counter;
   extern hw_timer_t *fading_timer;
