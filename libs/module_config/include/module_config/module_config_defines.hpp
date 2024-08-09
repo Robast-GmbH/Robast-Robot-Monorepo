@@ -272,7 +272,7 @@ namespace module_config
   struct ModuleSetting<motor_monitor::SPEED_DEVIATION_IN_PERCENTAGE_FOR_STALL>
   {
     using type = float;
-    static constexpr type default_value = 0.35;
+    static constexpr type default_value = 0.80;
   };
 
 } // namespace module_config
