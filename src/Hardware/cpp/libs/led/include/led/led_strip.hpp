@@ -186,7 +186,7 @@ namespace led
   template <uint8_t led_pixel_pin, uint8_t num_of_leds>
   void LedStrip<led_pixel_pin, num_of_leds>::handle_fading(void)
   {
-    if (timer::get_max_fade_counter_value == 0)
+    if (timer::get_max_fade_counter_value() == 0)
     {
       set_current_led_states_to_target_led_states();
     }
