@@ -3,26 +3,24 @@
 #include "drawer_controller/global.hpp"
 #include "lock/tray_manager.hpp"
 
-#define MODULE_ID   6
-#define LOCK_ID     0
-#define USE_ENCODER true
+constexpr uint32_t MODULE_ID = 6;
+constexpr uint8_t LOCK_ID = 0;
+constexpr bool USE_ENCODER = true;
 
-#define NUM_OF_LEDS 21
-
-using namespace partial_drawer_controller;
+constexpr uint8_t NUM_OF_LEDS = 21;
 
 std::unique_ptr<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
-std::shared_ptr<TrayManager> tray_manager;
+std::shared_ptr<partial_drawer_controller::TrayManager> tray_manager;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
-  .stepper_enn_tmc2209_pin_id = pin_id::STEPPER_1_ENN_TMC2209,
-  .stepper_stdby_tmc2209_pin_id = pin_id::STEPPER_1_STDBY_TMC2209,
-  .stepper_spread_pin_id = pin_id::STEPPER_1_SPREAD,
-  .stepper_dir_pin_id = pin_id::STEPPER_1_DIR,
-  .stepper_diag_pin_id = pin_id::STEPPER_1_DIAG,
-  .stepper_index_pin_id = pin_id::STEPPER_1_INDEX,
-  .stepper_step_pin_id = pin_id::STEPPER_1_STEP};
+  .stepper_enn_tmc2209_pin_id = partial_drawer_controller::pin_id::STEPPER_1_ENN_TMC2209,
+  .stepper_stdby_tmc2209_pin_id = partial_drawer_controller::pin_id::STEPPER_1_STDBY_TMC2209,
+  .stepper_spread_pin_id = partial_drawer_controller::pin_id::STEPPER_1_SPREAD,
+  .stepper_dir_pin_id = partial_drawer_controller::pin_id::STEPPER_1_DIR,
+  .stepper_diag_pin_id = partial_drawer_controller::pin_id::STEPPER_1_DIAG,
+  .stepper_index_pin_id = partial_drawer_controller::pin_id::STEPPER_1_INDEX,
+  .stepper_step_pin_id = partial_drawer_controller::pin_id::STEPPER_1_STEP};
 
 /**********************************************************************************************************************
  * The program flow is organized as follows:
@@ -31,6 +29,8 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
  *    - receive_can_msg_task_loop() is responsible for receiving CAN messages and adding them to the queue
  *    - process_can_msgs_task_loop() is responsible for processing the CAN messages from the queue
  **********************************************************************************************************************/
+
+using namespace partial_drawer_controller;
 
 void process_can_msgs_task_loop(void* pvParameters)
 {
