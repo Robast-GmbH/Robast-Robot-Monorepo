@@ -9,11 +9,6 @@
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "lock/lock_state.hpp"
 
-// the time in ms the lock mechanism needs to open resp. close the lock
-// according to the datasheet a minimum of 600ms is required
-constexpr uint16_t ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS = 700;
-constexpr uint16_t ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS = 10000;
-
 namespace lock
 {
   class ElectricalDrawerLock
@@ -70,6 +65,11 @@ namespace lock
     unsigned long _timestamp_last_lock_opening = 0;
 
     float _moving_average_sensor_lock_pin = 0;
+
+    // the time in ms the lock mechanism needs to open resp. close the lock
+    // according to the datasheet a minimum of 600ms is required
+    static constexpr uint16_t _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS = 700;
+    static constexpr uint16_t _ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS = 10000;
 
     void open_lock() const;
 

@@ -21,8 +21,6 @@ namespace partial_drawer_controller
     constexpr uint8_t PORT_EXPANDER_2 = 0x21;
     constexpr uint8_t PORT_EXPANDER_3 = 0x22;
 
-    constexpr uint8_t LP5030RJVR = 0x33;             // individual address, configured by hardware pins
-    constexpr uint8_t LP5030RJVR_BROADCAST = 0x1C;   // broadcast to all LP5030RJVRs (up to 4 devices on same I2C bus)
   }   // namespace slave_address
 
   /*********************************************************************************************************

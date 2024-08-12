@@ -11,26 +11,23 @@
 
 namespace partial_drawer_controller
 {
+  namespace slave_address
+  {
+    constexpr uint8_t LP5030RJVR = 0x33;             // individual address, configured by hardware pins
+    constexpr uint8_t LP5030RJVR_BROADCAST = 0x1C;   // broadcast to all LP5030RJVRs (up to 4 devices on same I2C bus)
+  }   // namespace slave_address
 
-  /*********************************************************************************************************
-   Slave address defines
-  *********************************************************************************************************/
-
-#define SLAVE_ADDRESS_LP5030RJVR           0x33   // individual address, configured by hardware pins
-#define SLAVE_ADDRESS_LP5030RJVR_BROADCAST 0x1C   // broadcast to all LP5030RJVRs (up to 4 devices on same I2C bus)
-
-  /*********************************************************************************************************
-   * Trays
-   *********************************************************************************************************/
-
-#define TRAY_1 1
-#define TRAY_2 2
-#define TRAY_3 3
-#define TRAY_4 4
-#define TRAY_5 5
-#define TRAY_6 6
-#define TRAY_7 7
-#define TRAY_8 8
+  namespace tray_id
+  {
+    constexpr uint8_t TRAY_1 = 1;
+    constexpr uint8_t TRAY_2 = 2;
+    constexpr uint8_t TRAY_3 = 3;
+    constexpr uint8_t TRAY_4 = 4;
+    constexpr uint8_t TRAY_5 = 5;
+    constexpr uint8_t TRAY_6 = 6;
+    constexpr uint8_t TRAY_7 = 7;
+    constexpr uint8_t TRAY_8 = 8;
+  }   // namespace tray_id
 
   // One tray has 3 rows of leds with 8 leds each and each row has its own port
   struct tray_led_register_config
@@ -45,7 +42,7 @@ namespace partial_drawer_controller
    public:
     OnboardLedDriver(std::shared_ptr<TwoWire> wire)
     {
-      _lp5030rjvr = std::make_shared<lp503x::LP503x>(SLAVE_ADDRESS_LP5030RJVR, wire);
+      _lp5030rjvr = std::make_shared<lp503x::LP503x>(slave_address::LP5030RJVR, wire);
     }
 
     void reset_registers()
@@ -77,7 +74,7 @@ namespace partial_drawer_controller
 
     void set_tray_led_brightness(uint8_t tray, uint8_t led_row, uint8_t brightness)
     {
-      if (tray < TRAY_1 || tray > TRAY_8)
+      if (tray < tray_id::TRAY_1 || tray > tray_id::TRAY_8)
       {
         Serial.printf("Warning! Trying to set led brightness for invalid tray %d!\n", tray);
         return;
@@ -106,14 +103,38 @@ namespace partial_drawer_controller
     std::shared_ptr<lp503x::LP503x> _lp5030rjvr;
 
     const std::unordered_map<uint8_t, tray_led_register_config> _tray_to_led_config = {
-      {TRAY_1, {OUT16_COLOR, OUT15_COLOR, OUT17_COLOR}},
-      {TRAY_2, {OUT19_COLOR, OUT20_COLOR, OUT21_COLOR}},
-      {TRAY_3, {OUT18_COLOR, OUT22_COLOR, OUT23_COLOR}},
-      {TRAY_4, {OUT14_COLOR, OUT6_COLOR, OUT4_COLOR}},
-      {TRAY_5, {OUT3_COLOR, OUT2_COLOR, OUT1_COLOR}},
-      {TRAY_6, {OUT5_COLOR, OUT7_COLOR, OUT0_COLOR}},
-      {TRAY_7, {OUT12_COLOR, OUT9_COLOR, OUT8_COLOR}},
-      {TRAY_8, {OUT11_COLOR, OUT10_COLOR, OUT13_COLOR}},
+      {tray_id::TRAY_1,
+       {lp503x::register_address::OUT16_COLOR,
+        lp503x::register_address::OUT15_COLOR,
+        lp503x::register_address::OUT17_COLOR}},
+      {tray_id::TRAY_2,
+       {lp503x::register_address::OUT19_COLOR,
+        lp503x::register_address::OUT20_COLOR,
+        lp503x::register_address::OUT21_COLOR}},
+      {tray_id::TRAY_3,
+       {lp503x::register_address::OUT18_COLOR,
+        lp503x::register_address::OUT22_COLOR,
+        lp503x::register_address::OUT23_COLOR}},
+      {tray_id::TRAY_4,
+       {lp503x::register_address::OUT14_COLOR,
+        lp503x::register_address::OUT6_COLOR,
+        lp503x::register_address::OUT4_COLOR}},
+      {tray_id::TRAY_5,
+       {lp503x::register_address::OUT3_COLOR,
+        lp503x::register_address::OUT2_COLOR,
+        lp503x::register_address::OUT1_COLOR}},
+      {tray_id::TRAY_6,
+       {lp503x::register_address::OUT5_COLOR,
+        lp503x::register_address::OUT7_COLOR,
+        lp503x::register_address::OUT0_COLOR}},
+      {tray_id::TRAY_7,
+       {lp503x::register_address::OUT12_COLOR,
+        lp503x::register_address::OUT9_COLOR,
+        lp503x::register_address::OUT8_COLOR}},
+      {tray_id::TRAY_8,
+       {lp503x::register_address::OUT11_COLOR,
+        lp503x::register_address::OUT10_COLOR,
+        lp503x::register_address::OUT13_COLOR}},
     };
 
     void set_led_output_color_by_number(byte led_number, byte color)

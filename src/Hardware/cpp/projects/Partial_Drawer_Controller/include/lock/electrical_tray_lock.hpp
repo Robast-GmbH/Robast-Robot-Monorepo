@@ -9,9 +9,6 @@
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "lock/lock_state.hpp"
 
-// the time in ms the lock mechanism needs to open resp. close the lock
-#define ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS 700   // according to the datasheet a minimum of 600ms is required
-
 namespace partial_drawer_controller
 {
   class ElectricalTrayLock
@@ -45,6 +42,9 @@ namespace partial_drawer_controller
     bool _drawer_opening_is_in_progress = false;
 
     unsigned long _timestamp_last_lock_change = 0;
+
+    // the time in ms the lock mechanism needs to open resp. close the lock
+    static constexpr uint16_t _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS = 700;   // according to the datasheet a minimum of 600ms is required
 
     void open_lock();
 

@@ -41,13 +41,13 @@ namespace lock
     unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
     unsigned long time_since_lock_was_opened = current_timestamp - _timestamp_last_lock_opening;
 
-    if (change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
+    if (change_lock_state && (time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
     {
       _lock_state_previous_step = _expected_lock_state_current_step;
       _timestamp_last_lock_change = current_timestamp;
       _expected_lock_state_current_step == LockState::unlocked ? open_lock() : close_lock();
     }
-    else if (!change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
+    else if (!change_lock_state && (time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
     {
       // this makes sure, there is only a 5V pulse with the duration of ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS on the
       // respective input of the lock
@@ -55,7 +55,7 @@ namespace lock
     }
 
     if (_expected_lock_state_current_step == LockState::unlocked &&
-        (time_since_lock_was_opened > ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS))
+        (time_since_lock_was_opened > _ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS))
     {
       // Close the lock automatically after some seconds when drawer wasn't opened for safety reasons
       set_expected_lock_state_current_step(LockState::locked);

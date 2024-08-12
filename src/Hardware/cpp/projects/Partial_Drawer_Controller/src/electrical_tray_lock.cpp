@@ -33,13 +33,13 @@ namespace partial_drawer_controller
     const unsigned long current_timestamp = millis();
     const unsigned long time_since_lock_state_was_changed = current_timestamp - _timestamp_last_lock_change;
 
-    if (change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
+    if (change_lock_state && (time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
     {
       _lock_state_previous_step = _expected_lock_state_current_step;
       _timestamp_last_lock_change = current_timestamp;
       _expected_lock_state_current_step == lock::LockState::unlocked ? open_lock() : close_lock();
     }
-    else if (!change_lock_state && (time_since_lock_state_was_changed >= ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
+    else if (!change_lock_state && (time_since_lock_state_was_changed >= _ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS))
     {
       // this makes sure, there is only a 5V pulse with the duration of ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS on the
       // respective input of the lock
