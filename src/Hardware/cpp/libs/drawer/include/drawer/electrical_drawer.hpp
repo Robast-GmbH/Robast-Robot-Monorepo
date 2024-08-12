@@ -81,7 +81,8 @@ namespace drawer
 
     const std::shared_ptr<stepper_motor::Motor> _motor;
 
-    std::unique_ptr<utils::Queue<utils::EDrawerTask>> _e_drawer_task_queue;
+    std::unique_ptr<utils::Queue<utils::EDrawerTask>> _e_drawer_task_queue =
+      std::make_unique<utils::Queue<utils::EDrawerTask>>();
 
     const std::shared_ptr<ElectricalDrawerConfig> _config;
 

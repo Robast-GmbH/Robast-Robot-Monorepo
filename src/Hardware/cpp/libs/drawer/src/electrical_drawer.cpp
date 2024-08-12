@@ -27,7 +27,6 @@ namespace drawer
           motor_driver_address, _gpio_wrapper, _stepper_pin_id_config, motor_config)},
         _endstop_switch{endstop_switch},
         _e_drawer_lock{e_drawer_lock},
-        _e_drawer_task_queue{std::make_unique<utils::Queue<utils::EDrawerTask>>()},
         _encoder_monitor{std::make_unique<motor::EncoderMonitor>(_encoder, encoder_config)},
         _config{e_drawer_config},
         _motor_monitor{std::make_unique<motor::MotorMonitor>(_encoder, encoder_config, _motor, motor_monitor_config)}
