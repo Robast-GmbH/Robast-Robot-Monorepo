@@ -82,24 +82,22 @@ namespace drawer
     // if the drawer is not moving, we need to check if the drawer is pushed in
     // but make sure to wait a certain amount of time if the stall guard was triggered
     uint32_t wait_time_in_ms = _config->get_drawer_push_in_wait_time_after_stall_guard_triggered_in_ms();
-    if (millis() - _timestamp_stall_guard_triggered_in_ms > wait_time_in_ms)
+    if ((millis() - _timestamp_stall_guard_triggered_in_ms > wait_time_in_ms) &&
+        _encoder_monitor->check_if_drawer_is_pushed_in())
     {
-      if (_encoder_monitor->check_if_drawer_is_pushed_in())
-      {
-        add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
-                                    _config->get_drawer_push_in_auto_close_speed(),
-                                    _config->get_drawer_push_in_auto_close_stall_guard_value(),
-                                    IS_NOT_HOMING,
-                                    DO_NOT_USE_ACCELERATION_RAMP});
-        _can_utils->enqueue_e_drawer_feedback_msg(
-          _module_id,
-          _id,
-          _endstop_switch->is_switch_pressed(),
-          _e_drawer_lock.has_value() ? _e_drawer_lock.value()->is_lock_switch_pushed() : false,
-          MOTOR_IS_NOT_STALLED,
-          _encoder->get_normed_current_position(),
-          PUSH_TO_CLOSE_TRIGGERED);
-      }
+      add_e_drawer_task_to_queue({DRAWER_TARGET_HOMING_POSITION,
+                                  _config->get_drawer_push_in_auto_close_speed(),
+                                  _config->get_drawer_push_in_auto_close_stall_guard_value(),
+                                  IS_NOT_HOMING,
+                                  DO_NOT_USE_ACCELERATION_RAMP});
+      _can_utils->enqueue_e_drawer_feedback_msg(
+        _module_id,
+        _id,
+        _endstop_switch->is_switch_pressed(),
+        _e_drawer_lock.has_value() ? _e_drawer_lock.value()->is_lock_switch_pushed() : false,
+        MOTOR_IS_NOT_STALLED,
+        _encoder->get_normed_current_position(),
+        PUSH_TO_CLOSE_TRIGGERED);
     }
 
     start_next_e_drawer_task();
