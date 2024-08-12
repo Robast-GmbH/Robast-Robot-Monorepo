@@ -7,7 +7,7 @@ namespace stepper_motor
                const StepperPinIdConfig &stepper_pin_id_config,
                const std::shared_ptr<motor::MotorConfig> motor_config)
       : _gpio_wrapper{gpio_wrapper},
-        _driver{std::make_unique<TMC2209Stepper>(&SERIAL_PORT, R_SENSE, driver_address)},
+        _driver{std::make_unique<TMC2209Stepper>(&_SERIAL_PORT, _R_SENSE, driver_address)},
         _driver_is_enabled{false},
         _stepper_enn_tmc2209_pin_id{stepper_pin_id_config.stepper_enn_tmc2209_pin_id},
         _stepper_stdby_tmc2209_pin_id{stepper_pin_id_config.stepper_stdby_tmc2209_pin_id},
@@ -21,10 +21,10 @@ namespace stepper_motor
         _is_stalled{false},
         _stall_guard_reader{std::make_unique<switch_lib::Switch>(gpio_wrapper,
                                                                 stepper_pin_id_config.stepper_diag_pin_id,
-                                                                STALL_GUARD_READER_THRESHOLD,
+                                                                _STALL_GUARD_READER_THRESHOLD,
                                                                 switch_lib::Switch::normally_open,
-                                                                STALL_GUARD_READER_WEIGHT_NEW_READINGS)},
-        _current_stall_guard_value{STALL_DEFAULT_VALUE}
+                                                                _STALL_GUARD_READER_WEIGHT_NEW_READINGS)},
+        _current_stall_guard_value{_STALL_DEFAULT_VALUE}
   {
     _gpio_wrapper->set_pin_mode(_stepper_enn_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
     _gpio_wrapper->set_pin_mode(_stepper_stdby_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
@@ -36,7 +36,7 @@ namespace stepper_motor
 
     _gpio_wrapper->digital_write(_stepper_stdby_tmc2209_pin_id, LOW);
 
-    SERIAL_PORT.begin(115200);
+    _SERIAL_PORT.begin(115200);
 
     setup_driver();
 
@@ -88,7 +88,7 @@ namespace stepper_motor
     // the maximum chopper frequency. For operation with StealthChop,
     // this parameter is not used, but it is required to enable the motor.
     // In case of operation with StealthChop only, any setting is OK.
-    _driver->toff(TOFF_VALUE);
+    _driver->toff(_TOFF_VALUE);
 
     // VACTUAL allows moving the motor by UART control.
     // It gives the motor velocity in +-(2^23)-1 [μsteps / t]
@@ -310,9 +310,9 @@ namespace stepper_motor
 
   void Motor::set_target_speed_with_accelerating_ramp(uint32_t target_speed, int16_t acceleration)
   {
-    if (acceleration == INSTANT_ACCELERATION || target_speed <= _target_speed)
+    if (acceleration == _INSTANT_ACCELERATION || target_speed <= _target_speed)
     {
-      debug_printf("[Motor]: Setting target speed with INSTANT_ACCELERATION to %u\n", target_speed);
+      debug_printf("[Motor]: Setting target speed with _INSTANT_ACCELERATION to %u\n", target_speed);
       set_active_speed(target_speed);
       _target_speed = target_speed;
       return;
@@ -372,7 +372,7 @@ namespace stepper_motor
     debug_print("[Motor]: Status: ");
     debug_print_with_base(_driver->SG_RESULT(), DEC);
     debug_print(" ");
-    debug_print_with_base(_driver->SG_RESULT() < STALL_DEFAULT_VALUE, DEC);
+    debug_print_with_base(_driver->SG_RESULT() < _STALL_DEFAULT_VALUE, DEC);
     debug_print(" ");
     byte drawer_diag_state;
     _gpio_wrapper->digital_read(_stepper_diag_pin_id, drawer_diag_state);

@@ -7,7 +7,7 @@
 #include "motor/encoder.hpp"
 #include "motor/enconder_config.hpp"
 
-#define DEFAULT_ENCODER_MONITOR_CHECK_INTERVAL_MS 200
+
 
 namespace motor
 {
@@ -21,6 +21,8 @@ namespace motor
    private:
     const std::shared_ptr<Encoder> _encoder;
     const std::shared_ptr<EncoderConfig> _config;
+    
+    static constexpr uint16_t _DEFAULT_ENCODER_MONITOR_CHECK_INTERVAL_MS = 200;
 
     int32_t _last_position_int32 = 0;
 

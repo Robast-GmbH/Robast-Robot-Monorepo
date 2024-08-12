@@ -10,8 +10,9 @@
 #include "lock/lock_state.hpp"
 
 // the time in ms the lock mechanism needs to open resp. close the lock
-#define ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS                         700   // according to the datasheet a minimum of 600ms is required
-#define ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS 10000   // milliseconds
+// according to the datasheet a minimum of 600ms is required
+constexpr uint16_t ELECTRICAL_LOCK_MECHANISM_TIME_IN_MS = 700;
+constexpr uint16_t ELECTRICAL_LOCK_AUTO_CLOSE_TIME_WHEN_DRAWER_NOT_OPENED_IN_MS = 10000;
 
 namespace lock
 {

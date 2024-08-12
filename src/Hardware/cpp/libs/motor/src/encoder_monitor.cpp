@@ -48,7 +48,7 @@ namespace motor
   {
     // In case the postion has not been updated (e.g. when the drawer is intentionally moving)
     if (current_timestamp_ms - _last_timestamp_ms >
-        _config->get_drawer_push_in_encoder_check_interval_ms() + DEFAULT_ENCODER_MONITOR_CHECK_INTERVAL_MS)
+        _config->get_drawer_push_in_encoder_check_interval_ms() + _DEFAULT_ENCODER_MONITOR_CHECK_INTERVAL_MS)
     {
       update_position_stamped(current_timestamp_ms, current_position_int32);
       return true;

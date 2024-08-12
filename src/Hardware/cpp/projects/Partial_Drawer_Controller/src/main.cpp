@@ -9,7 +9,7 @@ constexpr bool USE_ENCODER = true;
 
 constexpr uint8_t NUM_OF_LEDS = 21;
 
-std::unique_ptr<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
+std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
 std::shared_ptr<partial_drawer_controller::TrayManager> tray_manager;
 
@@ -135,8 +135,8 @@ void setup()
   // TODO: In order to use the hardware anyway, we need to create two instances of the bus with different pin init
   std::shared_ptr<TwoWire> wire_onboard_led_driver = std::make_shared<TwoWire>(1);
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(2);
-  wire_onboard_led_driver->begin(I2C_SDA, I2C_SCL);
-  wire_port_expander->begin(I2C_SDA_PORT_EXPANDER, I2C_SCL_PORT_EXPANDER);
+  wire_onboard_led_driver->begin(peripherals::i2c::I2C_SDA, peripherals::i2c::I2C_SCL);
+  wire_port_expander->begin(peripherals::i2c::I2C_SDA_PORT_EXPANDER, peripherals::i2c::I2C_SCL_PORT_EXPANDER);
 
   gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(
     wire_port_expander, slave_address_to_port_expander, pin_mapping_id_to_gpio_info, pin_mapping_id_to_port);
@@ -170,9 +170,10 @@ void setup()
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
 
-  led_strip = std::make_unique<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>>();
+  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>();
 
-  can_controller = std::make_unique<can_toolbox::CanController>(MODULE_ID, can_db, TWAI_TX_PIN, TWAI_RX_PIN);
+  can_controller = std::make_unique<can_toolbox::CanController>(
+    MODULE_ID, can_db, peripherals::pinout::TWAI_TX_PIN, peripherals::pinout::TWAI_RX_PIN);
 
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();

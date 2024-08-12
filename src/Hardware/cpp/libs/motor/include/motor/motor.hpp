@@ -10,19 +10,6 @@
 #include "motor/motor_config.hpp"
 #include "switch/switch.hpp"
 
-// higher value of STALL_VALUE increases stall sensitivity
-// diag pin pulsed HIGH when SG_RESULT falls below 2*STALL_VALUE
-// must be in StealthChop Mode for stallguard to work
-// Value of TCOOLTHRS must be greater than TSTEP & TPWMTHRS
-#define STALL_DEFAULT_VALUE  50   // [0..255]
-#define TOFF_VALUE           2
-#define SERIAL_PORT          Serial2
-#define R_SENSE              0.33f   // Match to your driver
-#define INSTANT_ACCELERATION 0
-
-#define STALL_GUARD_READER_THRESHOLD           0.9
-#define STALL_GUARD_READER_WEIGHT_NEW_READINGS 1.0
-
 namespace stepper_motor
 {
 
@@ -49,7 +36,7 @@ namespace stepper_motor
    public:
     Motor(const uint8_t driver_address,
           const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper,
-          const StepperPinIdConfig &stepper_pin_id_config,
+          const StepperPinIdConfig& stepper_pin_id_config,
           const std::shared_ptr<motor::MotorConfig> motor_config);
 
     void init();
@@ -97,6 +84,19 @@ namespace stepper_motor
     const uint8_t _stepper_index_pin_id;
     const uint8_t _stepper_step_pin_id;
     const uint8_t _port_expander_not_interrupt_pin_id;
+
+    // higher value of STALL_VALUE increases stall sensitivity
+    // diag pin pulsed HIGH when SG_RESULT falls below 2*STALL_VALUE
+    // must be in StealthChop Mode for stallguard to work
+    // Value of TCOOLTHRS must be greater than TSTEP & TPWMTHRS
+    static constexpr uint8_t _STALL_DEFAULT_VALUE = 50;   // [0..255]
+    static constexpr uint8_t _TOFF_VALUE = 2;
+    static constexpr float _R_SENSE = 0.33f;   // Match to your driver
+    static constexpr uint8_t _INSTANT_ACCELERATION = 0;
+    HardwareSerial& _SERIAL_PORT = Serial2;
+
+    static constexpr double _STALL_GUARD_READER_THRESHOLD = 0.9;
+    static constexpr double _STALL_GUARD_READER_WEIGHT_NEW_READINGS = 1.0;
 
     uint32_t _active_speed = 0;
     uint32_t _target_speed = 0;

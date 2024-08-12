@@ -9,7 +9,7 @@ constexpr bool USE_ENCODER = false;
 
 constexpr uint8_t NUM_OF_LEDS = 21;
 
-std::unique_ptr<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
+std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
   .stepper_enn_tmc2209_pin_id = drawer_controller::pin_id::STEPPER_1_ENN_TMC2209,
@@ -111,7 +111,7 @@ void setup()
   debug_println("[Main]: Start...");
 
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(2);
-  wire_port_expander->begin(I2C_SDA, I2C_SCL);
+  wire_port_expander->begin(peripherals::i2c::I2C_SDA, peripherals::i2c::I2C_SCL);
 
   gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(
     wire_port_expander, slave_address_to_port_expander, pin_mapping_id_to_gpio_info, pin_mapping_id_to_port);
@@ -125,9 +125,10 @@ void setup()
   can_db = std::make_shared<robast_can_msgs::CanDb>();
   can_message_converter = std::make_unique<utils::CanMessageConverter>();
 
-  led_strip = std::make_unique<led::LedStrip<LED_PIXEL_PIN, NUM_OF_LEDS>>();
+  led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>();
 
-  can_controller = std::make_unique<can_toolbox::CanController>(MODULE_ID, can_db, TWAI_TX_PIN, TWAI_RX_PIN);
+  can_controller = std::make_unique<can_toolbox::CanController>(
+    MODULE_ID, can_db, peripherals::pinout::TWAI_TX_PIN, peripherals::pinout::TWAI_RX_PIN);
 
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
