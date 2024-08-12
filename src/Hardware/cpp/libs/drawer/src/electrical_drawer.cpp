@@ -158,7 +158,7 @@ namespace drawer
 
   void ElectricalDrawer::start_homing_movement(const uint8_t target_speed)
   {
-    _motor->set_direction(stepper_motor::clockwise);
+    _motor->set_direction(stepper_motor::Direction::clockwise);
     _motor->set_target_speed_instantly(get_normed_target_speed_uint32(target_speed));
   }
 
@@ -327,8 +327,8 @@ namespace drawer
   void ElectricalDrawer::set_target_speed_and_direction(const uint8_t target_speed, const bool use_acceleration_ramp)
   {
     uint32_t normed_target_speed_uint32 = get_normed_target_speed_uint32(target_speed);
-    _is_drawer_moving_out ? _motor->set_direction(stepper_motor::counter_clockwise)
-                          : _motor->set_direction(stepper_motor::clockwise);
+    _is_drawer_moving_out ? _motor->set_direction(stepper_motor::Direction::counter_clockwise)
+                          : _motor->set_direction(stepper_motor::Direction::clockwise);
 
     if (use_acceleration_ramp)
     {

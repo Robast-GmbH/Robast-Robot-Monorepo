@@ -26,7 +26,7 @@
 namespace stepper_motor
 {
 
-  enum Direction
+  enum class Direction
   {
     clockwise,
     counter_clockwise
