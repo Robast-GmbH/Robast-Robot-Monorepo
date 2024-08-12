@@ -91,7 +91,7 @@ namespace robast_can_msgs
     // when building with -DCMAKE_BUILD_TYPE=RelWithDebInfo because of the optimization
     // Therefore we define it within the header.
     auto raw = std::bit_cast<std::array<uint8_t, sizeof(T)>>(val);
-    std::reverse(raw.begin(), raw.end());
+    std::ranges::reverse(raw);
     val = std::bit_cast<T>(raw);
   }
 
