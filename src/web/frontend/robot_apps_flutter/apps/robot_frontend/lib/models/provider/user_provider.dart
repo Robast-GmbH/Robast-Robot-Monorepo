@@ -31,11 +31,38 @@ class UserProvider extends ChangeNotifier {
     return _middlewareApiUtilities.users.deleteUser(id: id);
   }
 
+  Future<bool> createAndWriteUserNFC({
+    required String robotName,
+    required String userID,
+  }) async {
+    return _middlewareApiUtilities.users.createAndWriteUserNFC(robotName: robotName, userID: userID);
+  }
+
   Future<User?> getUserSession({required String robotName}) async {
     return _middlewareApiUtilities.users.getUserSession(robotName: robotName);
   }
 
+  Future<bool> tryStartUserSession({
+    required String robotName,
+    List<String> requiredUserIDs = const [],
+    List<String> requiredUserGroups = const [],
+  }) async {
+    return _middlewareApiUtilities.users.tryStartUserSession(
+      robotName: robotName,
+      requiredUserIDs: requiredUserIDs,
+      requiredUserGroups: requiredUserGroups,
+    );
+  }
+
   Future<bool> endUserSession({required String robotName}) async {
     return _middlewareApiUtilities.users.endUserSession(robotName: robotName);
+  }
+
+  Future<bool> writeNFC({required String robotName, required String nfcData}) async {
+    return _middlewareApiUtilities.nfc.writeNFC(robotName: robotName, nfcData: nfcData);
+  }
+
+  Future<String> readNFC({required String robotName}) async {
+    return _middlewareApiUtilities.nfc.readNFC(robotName: robotName);
   }
 }

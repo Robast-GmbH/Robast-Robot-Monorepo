@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
@@ -18,48 +17,22 @@ class AuthPage extends StatefulWidget {
 }
 
 class _AuthPageState extends State<AuthPage> {
-  final timeout = const Duration(seconds: 5);
+  bool authCompleted = false;
   Timer? timeoutTimer;
-  Timer? userSessionUpdateTimer;
-  User? authenticatedUser;
+
+  void onTimeout() {
+    Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
+    Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
+    Navigator.pop(context);
+  }
 
   void startTimeoutTimer() {
-    timeoutTimer = Timer(
-      timeout,
-      () {
-        Provider.of<RobotProvider>(context, listen: false).unblockNavigation();
-        Provider.of<UserProvider>(context, listen: false).endUserSession(robotName: 'rb_theron');
-        Navigator.pop(context);
-      },
-    );
-  }
-
-  void startUserSessionUpdateTimer() {
-    userSessionUpdateTimer = Timer.periodic(
-      const Duration(milliseconds: 300),
-      (timer) async {
-        authenticatedUser = await Provider.of<UserProvider>(context, listen: false).getUserSession(robotName: 'rb_theron');
-        if (authenticatedUser != null) {
-          userSessionUpdateTimer?.cancel();
-          timeoutTimer?.cancel();
-          startTimeoutTimer();
-        }
-        setState(() {});
-      },
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    startTimeoutTimer();
-    startUserSessionUpdateTimer();
+    timeoutTimer = Timer(const Duration(seconds: 5), onTimeout);
   }
 
   @override
   void dispose() {
     timeoutTimer?.cancel();
-    userSessionUpdateTimer?.cancel();
     super.dispose();
   }
 
@@ -67,12 +40,22 @@ class _AuthPageState extends State<AuthPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: BackgroundView(
-        child: authenticatedUser == null
-            ? const SizedBox.expand(
+        child: !authCompleted
+            ? SizedBox.expand(
                 child: Center(
                   child: AuthView(
-                    requestedUserIDs: [],
-                    requestedUserGroups: [],
+                    requiredUserIDs: const [],
+                    requiredUserGroups: const ['PATIENT', 'STAFF', 'ADMIN'],
+                    onAuthCompleted: (wasAuthSuccessful) {
+                      if (wasAuthSuccessful) {
+                        authCompleted = true;
+                        setState(() {});
+                      }
+                      startTimeoutTimer();
+                    },
+                    onRetry: () {
+                      timeoutTimer?.cancel();
+                    },
                   ),
                 ),
               )

@@ -13,6 +13,7 @@ class CreateUserRequest(BaseModel):
 
 class UpdateUserRequest(BaseModel):
     id: str
+    nfc_id: Optional[str] = None
     title: Optional[str] = None
     first_name: Optional[str] = None
     last_name: Optional[str] = None

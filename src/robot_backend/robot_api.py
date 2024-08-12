@@ -96,9 +96,13 @@ Modules API Endpoints
 def read_modules():
     return ros_bridge.module_bridge.get_modules()
 
+
 @app.get("/is_drawer_open", tags=["Modules"])
 def read_is_drawer_open(module_id: int, drawer_id: int):
-    return {"is_open":ros_bridge.module_bridge.get_drawer_is_open(module_id, drawer_id)}
+    return {
+        "is_open": ros_bridge.module_bridge.get_drawer_is_open(module_id, drawer_id)
+    }
+
 
 @app.post("/open_drawer", tags=["Modules"])
 def post_open_drawer(module_id: int, drawer_id: int):
@@ -110,16 +114,27 @@ def post_close_drawer(module_id: int, drawer_id: int):
     return {"success": ros_bridge.module_bridge.close_drawer(module_id, drawer_id)}
 
 
-
 """
 ======================
 NFC API Endpoints
 ======================
 """
 
+
 @app.get("/nfc_tag", tags=["NFC"])
-def read_nfc_tag():
+def get_nfc_tag():
     return {"nfc_tag": ros_bridge.nfc_bridge.get_nfc_tag()}
+
+
+@app.post("/write_nfc_tag", tags=["NFC"])
+def write_nfc_tag(nfc_tag_id: str):
+    return ros_bridge.nfc_bridge.write_nfc_tag(nfc_tag_id=nfc_tag_id)
+
+
+@app.get("/read_nfc_tag", tags=["NFC"])
+def read_nfc_tag():
+    return {"nfc_tag": ros_bridge.nfc_bridge.read_nfc_tag()}
+
 
 """
 ======================
