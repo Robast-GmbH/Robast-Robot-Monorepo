@@ -40,7 +40,7 @@ namespace partial_drawer_controller
   class OnboardLedDriver
   {
    public:
-    OnboardLedDriver(std::shared_ptr<TwoWire> wire)
+    explicit OnboardLedDriver(std::shared_ptr<TwoWire> wire)
     {
       _lp5030rjvr = std::make_shared<lp503x::LP503x>(slave_address::LP5030RJVR, wire);
     }
