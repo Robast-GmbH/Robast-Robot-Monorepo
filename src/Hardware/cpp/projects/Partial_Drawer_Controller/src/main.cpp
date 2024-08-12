@@ -227,4 +227,6 @@ void setup()
 
 void loop()
 {
+  // In the setup we created two tasks that run in parallel, so we do not need to do anything here.
+  // But as we are using the Arduino framework we need to have a loop function.
 }
