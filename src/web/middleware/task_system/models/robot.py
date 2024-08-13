@@ -9,10 +9,10 @@ from task_system.task_manager import TaskManager
 from configs.url_config import FLEET_MANAGEMENT_ADDRESS
 import threading
 
-UPDATE_TIMER_INTERVAL_IN_SECONDS = 1
-
 
 class Robot:
+    UPDATE_TIMER_INTERVAL_IN_S = 1
+
     def __init__(
         self,
         name: str,
@@ -34,6 +34,7 @@ class Robot:
         print(
             f"Robot {self.__name} initialized at node {self.__current_node.id} -> Starting task status update timer"
         )
+        self.__timer = None
         self.__start_task_status_update_timer()
 
     def get_request_cost(self, task: Task) -> float:
@@ -93,10 +94,10 @@ class Robot:
         return True
 
     def __start_task_status_update_timer(self) -> None:
-        self.timer = threading.Timer(
-            UPDATE_TIMER_INTERVAL_IN_SECONDS, self.__task_status_update_callback
+        self.__timer = threading.Timer(
+            self.UPDATE_TIMER_INTERVAL_IN_S, self.__task_status_update_callback
         )
-        self.timer.start()
+        self.__timer.start()
 
     def __task_status_update_callback(self) -> None:
         with self.__subtask_queue_lock:
