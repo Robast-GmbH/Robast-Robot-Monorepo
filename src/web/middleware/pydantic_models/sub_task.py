@@ -37,6 +37,23 @@ class SubTask(BaseModel):
             action=Action.from_json(json_data["action"]),
         )
 
+    @classmethod
+    def from_database_row(cls, row: list[Any]) -> "SubTask":
+        return cls(
+            id=row[0],
+            name=row[1],
+            status=row[2],
+            assignee_name=row[3],
+            parent_id=row[4],
+            requires_task_id=row[5],
+            is_part_of_monolith=row[6],
+            target_id=row[7],
+            priority=row[8],
+            earliest_start_time=row[9],
+            requirements=json.loads(row[10]),
+            action=Action.from_json(json.loads(row[11])),
+        )
+
     def contains_drawer_process_action(self) -> bool:
         action = self.action
         while action:
