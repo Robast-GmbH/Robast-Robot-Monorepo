@@ -47,7 +47,7 @@ namespace nfc_bridge
 
     void read_nfc_callback(const std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Request> request,
                            std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Response> response);
-    uint32_t NFCBridge::calculate_max_iterations(uint16_t timout_in_s);
+    uint32_t calculate_max_iterations(uint16_t timout_in_s);
   };
 
 }   // namespace nfc_bridge
