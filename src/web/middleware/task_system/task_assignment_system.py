@@ -8,10 +8,10 @@ from threading import Timer
 from typing import Tuple
 import json
 
-TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_SECONDS = 10
-
 
 class TaskAssignmentSystem:
+    TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_S = 10
+
     def __init__(
         self,
     ) -> None:
@@ -64,7 +64,7 @@ class TaskAssignmentSystem:
 
     def __start_task_assignment_trigger_timer(self) -> None:
         self.__task_assignment_trigger_timer = Timer(
-            TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_SECONDS,
+            self.TASK_ASSIGNMENT_TRIGGER_INTERVAL_IN_S,
             self.__trigger_task_assignment,
         )
         self.__task_assignment_trigger_timer.start()
