@@ -55,9 +55,9 @@ namespace nfc_bridge
     return result == Twn4Elatec::ResultOK;
   }
 
-  bool NFCBridge::read_nfc_code(std::string& nfc_key, int max_iterations)
+  bool NFCBridge::read_nfc_code(std::string& nfc_key, uint32_t max_iterations)
   {
-    if(max_iterations < 0)
+    if(max_iterations == 0)
     {
       return false;
     }
@@ -81,9 +81,9 @@ namespace nfc_bridge
     return result == Twn4Elatec::ResultOK;
   }
 
-  bool NFCBridge::write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type, int max_iterations)
+  bool NFCBridge::write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type, uint32_t max_iterations)
   {
-    if(max_iterations < 0)
+    if(max_iterations == 0)
     {
       return false;
     }
@@ -120,18 +120,26 @@ namespace nfc_bridge
     return true;
   }
 
+  uint32_t NFCBridge::calculate_max_iterations(uint16_t timout_in_s)
+  {
+    return timout_in_s*_nfc_buffer_read_freq;
+  }
+
   void NFCBridge::write_nfc_callback(const std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Request> request,
                                      std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Response> response)
   {
     // Implement your logic to write data to an NFC tag
-    response->success = write_nfc_code(request->nfc_tag_id, "", request->timout_in_s*2);
+    uint32_t max_iterations = calculate_max_iterations(request->timout_in_s);
+    response->success = write_nfc_code(request->nfc_tag_id, "", max_iterations);
   }
 
   void NFCBridge::read_nfc_callback(const std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Request> request,
                                     std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Response> response)
   {
     std::string nfc_key = "";
-    if (read_nfc_code(nfc_key, request->timout_in_s*2))
+    uint32_t max_iterations = calculate_max_iterations(request->timout_in_s);
+
+    if (read_nfc_code(nfc_key, max_iterations))
     {
       response->nfc_tag_id = nfc_key;
     }
