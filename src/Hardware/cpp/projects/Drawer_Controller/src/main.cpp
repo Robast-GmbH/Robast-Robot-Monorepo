@@ -106,33 +106,32 @@ void setup()
   debug_setup(115200);
   debug_println("[Main]: Start...");
 
-  const std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(2);
+  std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(2);
   wire_port_expander->begin(peripherals::i2c::I2C_SDA, peripherals::i2c::I2C_SCL);
 
-  const std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(
+  std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(
     wire_port_expander, slave_address_to_port_expander, pin_mapping_id_to_gpio_info, pin_mapping_id_to_port);
 
-  const std::shared_ptr<switch_lib::Switch> endstop_switch =
+  std::shared_ptr<switch_lib::Switch> endstop_switch =
     std::make_shared<switch_lib::Switch>(gpio_wrapper,
                                          pin_id::SENSE_INPUT_DRAWER_1_CLOSED,
                                          SWITCH_PRESSED_THRESHOLD,
                                          switch_lib::Switch::normally_closed,
                                          SWITCH_WEIGHT_NEW_VALUES);
 
-  const std::shared_ptr<robast_can_msgs::CanDb> can_db = std::make_shared<robast_can_msgs::CanDb>();
-  const std::shared_ptr<utils::CanMessageConverter> can_message_converter =
-    std::make_shared<utils::CanMessageConverter>();
+  std::shared_ptr<robast_can_msgs::CanDb> can_db = std::make_shared<robast_can_msgs::CanDb>();
+  std::shared_ptr<utils::CanMessageConverter> can_message_converter = std::make_shared<utils::CanMessageConverter>();
 
   led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>();
 
-  const std::shared_ptr<can_toolbox::CanController> can_controller = std::make_shared<can_toolbox::CanController>(
+  std::shared_ptr<can_toolbox::CanController> can_controller = std::make_shared<can_toolbox::CanController>(
     MODULE_ID, can_db, peripherals::pinout::TWAI_TX_PIN, peripherals::pinout::TWAI_RX_PIN);
 
   can_queue_mutex = xSemaphoreCreateMutex();
-  const std::shared_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue =
+  std::shared_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue =
     std::make_shared<utils::Queue<robast_can_msgs::CanMessage>>();
 
-  const std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock =
+  std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock =
     std::make_shared<lock::ElectricalDrawerLock>(gpio_wrapper,
                                                  pin_id::LOCK_1_OPEN_CONTROL,
                                                  pin_id::LOCK_1_CLOSE_CONTROL,
@@ -140,16 +139,15 @@ void setup()
                                                  SWITCH_PRESSED_THRESHOLD,
                                                  SWITCH_WEIGHT_NEW_VALUES);
 
-  const std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config =
-    std::make_shared<drawer::ElectricalDrawerConfig>();
-  const std::shared_ptr<motor::EncoderConfig> encoder_config = std::make_shared<motor::EncoderConfig>();
-  const std::shared_ptr<motor::MotorConfig> motor_config = std::make_shared<motor::MotorConfig>();
-  const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
+  std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config = std::make_shared<drawer::ElectricalDrawerConfig>();
+  std::shared_ptr<motor::EncoderConfig> encoder_config = std::make_shared<motor::EncoderConfig>();
+  std::shared_ptr<motor::MotorConfig> motor_config = std::make_shared<motor::MotorConfig>();
+  std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config = std::make_shared<motor::MotorMonitorConfig>();
 
-  const std::shared_ptr<utils::ConfigManager> config_manager =
+  std::shared_ptr<utils::ConfigManager> config_manager =
     std::make_shared<utils::ConfigManager>(drawer_config, encoder_config, motor_config, motor_monitor_config);
 
-  const stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
+  stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
     .stepper_enn_tmc2209_pin_id = drawer_controller::pin_id::STEPPER_1_ENN_TMC2209,
     .stepper_stdby_tmc2209_pin_id = drawer_controller::pin_id::STEPPER_1_STDBY_TMC2209,
     .stepper_spread_pin_id = drawer_controller::pin_id::STEPPER_1_SPREAD,
@@ -158,7 +156,7 @@ void setup()
     .stepper_index_pin_id = drawer_controller::pin_id::STEPPER_1_INDEX,
     .stepper_step_pin_id = drawer_controller::pin_id::STEPPER_1_STEP};
 
-  const std::shared_ptr<drawer::ElectricalDrawer> e_drawer =
+  std::shared_ptr<drawer::ElectricalDrawer> e_drawer =
     std::make_shared<drawer::ElectricalDrawer>(MODULE_ID,
                                                LOCK_ID,
                                                can_db,
