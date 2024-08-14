@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
@@ -44,16 +43,16 @@ class TaskProvider extends ChangeNotifier {
     required String robotName,
     required String dropoffTargetID,
     required User user,
-    required RobotDrawer drawer,
+    required RobotDrawer submodule,
   }) async {
-    final dropoffItemsByChange = drawer.itemsByCount.map((key, value) => MapEntry(key, -value));
+    final dropoffItemsByChange = submodule.itemsByCount.map((key, value) => MapEntry(key, -value));
     final task = Task.dropoff(
       robotName: 'rb_theron',
       targetID: dropoffTargetID,
       itemsByChange: dropoffItemsByChange,
       recipientUserIDs: [user.id],
       recipientUserGroups: [],
-      drawerAddress: drawer.address,
+      drawerAddress: submodule.address,
     );
 
     final wasSuccessful = await _middlewareApiUtilities.tasks.postTaskRequest(task: task);

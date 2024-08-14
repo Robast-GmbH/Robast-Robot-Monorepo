@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
 
 class UserGroupsSelector extends StatefulWidget {
-  const UserGroupsSelector({required this.controller, super.key});
+  const UserGroupsSelector({required this.controller, this.onChanged, super.key});
   final UserGroupsSelectionController controller;
+  final void Function()? onChanged;
   @override
   State<UserGroupsSelector> createState() => _UserGroupsSelectorState();
 }
@@ -36,7 +37,10 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
                     buildUserGroupSelector(
                       label: 'Patient',
                       value: controller.isPatient,
-                      onChanged: ({required bool newValue}) => setState(() => controller.isPatient = newValue),
+                      onChanged: ({required bool newValue}) {
+                        setState(() => controller.isPatient = newValue);
+                        widget.onChanged?.call();
+                      },
                     ),
                     const SizedBox(
                       width: 16,
@@ -44,7 +48,10 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
                     buildUserGroupSelector(
                       label: 'Angestellte/r',
                       value: controller.isStaff,
-                      onChanged: ({required bool newValue}) => setState(() => controller.isStaff = newValue),
+                      onChanged: ({required bool newValue}) {
+                        setState(() => controller.isStaff = newValue);
+                        widget.onChanged?.call();
+                      },
                     ),
                     const SizedBox(
                       width: 16,
@@ -52,7 +59,10 @@ class _UserGroupsSelectorState extends State<UserGroupsSelector> {
                     buildUserGroupSelector(
                       label: 'Admin',
                       value: controller.isAdmin,
-                      onChanged: ({required bool newValue}) => setState(() => controller.isAdmin = newValue),
+                      onChanged: ({required bool newValue}) {
+                        setState(() => controller.isAdmin = newValue);
+                        widget.onChanged?.call();
+                      },
                     ),
                   ],
                 ),

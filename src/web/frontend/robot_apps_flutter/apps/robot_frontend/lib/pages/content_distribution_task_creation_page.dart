@@ -6,7 +6,7 @@ import 'package:robot_frontend/models/controller/user_groups_selection_controlle
 import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/enums/creation_steps.dart';
 import 'package:robot_frontend/models/provider/module_provider.dart';
-import 'package:robot_frontend/models/provider/task_provider.dart';
+import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/content_distribution_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/module_filling_view.dart';
@@ -20,110 +20,148 @@ class ContentDistributionTaskCreationPage extends StatefulWidget {
 }
 
 class _ContentDistributionTaskCreationPageState extends State<ContentDistributionTaskCreationPage> {
+  late Future<void> initPageFuture;
+  late User? currentUser;
   CreationSteps currentStep = CreationSteps.reserveModules;
   final reservedSubmodules = <DrawerAddress>[];
   final userSelectionControllers = <UserSelectionController>[];
   final userGroupsSelectionControllers = <UserGroupsSelectionController>[];
   final locationSelectionControllers = <LocationSelectionController>[];
 
-  bool validateTaskAssignments() {
-    for (var i = 0; i < reservedSubmodules.length; i++) {
-      final userSelectionController = userSelectionControllers[i];
-      final userGroupsSelectionController = userGroupsSelectionControllers[i];
-      if (userSelectionController.selectedUser == null && userGroupsSelectionController.selectionAsStringList().isEmpty) {
-        return false;
-      }
-      final locationController = locationSelectionControllers[i];
-      if (locationController.room == null) {
-        return false;
+  Future<void> initPage() async {
+    final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final user = await userProvider.getUserSession(robotName: 'rb_theron');
+    if (user != null) {
+      final availableReservedSubmodules = moduleProvider.submodules.where(
+        (submodule) => submodule.reservedForTask.isEmpty && submodule.checkUserAuth(user),
+      );
+      for (final submodule in availableReservedSubmodules) {
+        onReservation(submodule.address);
       }
     }
-    return true;
+    currentUser = user;
+  }
+
+  void onReservation(DrawerAddress submoduleAddress) {
+    reservedSubmodules.add(submoduleAddress);
+    userSelectionControllers.add(UserSelectionController());
+    userGroupsSelectionControllers.add(UserGroupsSelectionController());
+    locationSelectionControllers.add(LocationSelectionController());
+  }
+
+  void onFreeing(DrawerAddress submoduleAddress) {
+    final index = reservedSubmodules.indexOf(submoduleAddress);
+    reservedSubmodules.remove(submoduleAddress);
+    userSelectionControllers.removeAt(index);
+    userGroupsSelectionControllers.removeAt(index);
+    locationSelectionControllers.removeAt(index);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    initPageFuture = initPage();
   }
 
   @override
   Widget build(BuildContext context) {
     return CustomScaffold(
       title: currentStep.name,
-      child: Stack(
-        children: [
-          if (currentStep == CreationSteps.reserveModules)
-            ReservationView(
-              onReservation: (submoduleAddress) {
-                reservedSubmodules.add(submoduleAddress);
-                userSelectionControllers.add(UserSelectionController());
-                userGroupsSelectionControllers.add(UserGroupsSelectionController());
-                locationSelectionControllers.add(LocationSelectionController());
-                setState(() {});
-              },
-              onFreeing: (submoduleAddress) {
-                final index = reservedSubmodules.indexOf(submoduleAddress);
-                reservedSubmodules.remove(submoduleAddress);
-                userSelectionControllers.removeAt(index);
-                userGroupsSelectionControllers.removeAt(index);
-                locationSelectionControllers.removeAt(index);
-                setState(() {});
-              },
-            )
-          else if (currentStep == CreationSteps.fillModules)
-            ModuleFillingView(
-              preselectedDrawers: reservedSubmodules,
-            )
-          else
-            ContentDistributionView(
-              preselectedDrawers: reservedSubmodules,
-              userSelectionControllers: userSelectionControllers,
-              userGroupsSelectionControllers: userGroupsSelectionControllers,
-              locationSelectionControllers: locationSelectionControllers,
-            ),
-          if (currentStep != CreationSteps.assignTargets)
-            Align(
-              alignment: Alignment.bottomRight,
-              child: Padding(
-                padding: const EdgeInsets.all(32),
-                child: ElevatedButton(
-                  onPressed: reservedSubmodules.isEmpty
-                      ? null
-                      : () async {
-                          if (currentStep == CreationSteps.reserveModules) {
-                            setState(() {
-                              currentStep = CreationSteps.fillModules;
-                            });
-                          } else if (currentStep == CreationSteps.fillModules) {
-                            setState(() {
-                              currentStep = CreationSteps.assignTargets;
-                            });
-                          } else {
-                            final modules = Provider.of<ModuleProvider>(context, listen: false).submodules;
-                            final taskProvider = Provider.of<TaskProvider>(context, listen: false);
-                            for (var i = 0; i < reservedSubmodules.length; i++) {
-                              final drawerAddress = reservedSubmodules[i];
-                              final drawer = modules.firstWhere((element) => element.address == drawerAddress);
-                              final controller = userSelectionControllers[i];
-                              final user = controller.selectedUser!;
-                              await taskProvider.createDirectDropoffTask(
-                                robotName: 'rb_theron',
-                                dropoffTargetID: locationSelectionControllers[i].room!,
-                                user: user,
-                                drawer: drawer,
-                              );
-                            }
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                            }
-                          }
-                        },
-                  child: const Padding(
-                    padding: EdgeInsets.all(8),
-                    child: Text(
-                      'Weiter',
-                      style: TextStyle(fontSize: 40),
+      onBackButtonPressed: () {
+        if (currentStep == CreationSteps.reserveModules) {
+          Navigator.pop(context);
+        } else if (currentStep == CreationSteps.fillModules) {
+          setState(() {
+            currentStep = CreationSteps.reserveModules;
+          });
+        } else {
+          setState(() {
+            currentStep = CreationSteps.fillModules;
+          });
+        }
+      },
+      child: FutureBuilder<void>(
+        future: initPageFuture,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState != ConnectionState.done) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          }
+          if (currentUser == null) {
+            return Center(
+              child: Column(
+                children: [
+                  const Text('Aktueller Nutzer konnte nicht geladen werden'),
+                  TextButton(
+                    onPressed: () {
+                      initPageFuture = initPage();
+                      setState(() {});
+                    },
+                    child: const Text('Erneut versuchen'),
+                  ),
+                ],
+              ),
+            );
+          }
+          return Stack(
+            children: [
+              if (currentStep == CreationSteps.reserveModules)
+                ReservationView(
+                  currentUser: currentUser!,
+                  onReservation: (submoduleAddress) {
+                    onReservation(submoduleAddress);
+                    setState(() {});
+                  },
+                  onFreeing: (submoduleAddress) {
+                    onFreeing(submoduleAddress);
+                    setState(() {});
+                  },
+                )
+              else if (currentStep == CreationSteps.fillModules)
+                ModuleFillingView(
+                  preselectedDrawers: reservedSubmodules,
+                )
+              else if (currentStep == CreationSteps.assignTargets)
+                ContentDistributionView(
+                  preselectedSubmodules: reservedSubmodules,
+                  userSelectionControllers: userSelectionControllers,
+                  userGroupsSelectionControllers: userGroupsSelectionControllers,
+                  locationSelectionControllers: locationSelectionControllers,
+                ),
+              if (currentStep != CreationSteps.assignTargets)
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: Padding(
+                    padding: const EdgeInsets.all(32),
+                    child: ElevatedButton(
+                      onPressed: reservedSubmodules.isEmpty
+                          ? null
+                          : () async {
+                              if (currentStep == CreationSteps.reserveModules) {
+                                setState(() {
+                                  currentStep = CreationSteps.fillModules;
+                                });
+                              } else if (currentStep == CreationSteps.fillModules) {
+                                setState(() {
+                                  currentStep = CreationSteps.assignTargets;
+                                });
+                              }
+                            },
+                      child: const Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          'Weiter',
+                          style: TextStyle(fontSize: 40),
+                        ),
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ),
-        ],
+            ],
+          );
+        },
       ),
     );
   }

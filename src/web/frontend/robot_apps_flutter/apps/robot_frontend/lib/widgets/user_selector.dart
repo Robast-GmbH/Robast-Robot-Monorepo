@@ -8,11 +8,13 @@ class UserSelector extends StatefulWidget {
   const UserSelector({
     required this.controller,
     this.initWithSessionUser = false,
+    this.onChanged,
     super.key,
   });
 
   final UserSelectionController controller;
   final bool initWithSessionUser;
+  final void Function()? onChanged;
 
   @override
   State<UserSelector> createState() => _UserSelectorState();
@@ -85,6 +87,7 @@ class _UserSelectorState extends State<UserSelector> {
                         if (snapshot.data?.any((element) => element.id == value) ?? false) {
                           widget.controller.selectedUser = snapshot.data!.firstWhere((element) => element.id == value);
                         }
+                        widget.onChanged?.call();
                       });
                     },
                   );
@@ -99,6 +102,7 @@ class _UserSelectorState extends State<UserSelector> {
                 setState(() {
                   widget.controller.selectedUser = null;
                 });
+                widget.onChanged?.call();
               },
               icon: const Icon(Icons.delete),
             ),

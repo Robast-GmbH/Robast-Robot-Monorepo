@@ -7,11 +7,13 @@ class LocationSelector extends StatefulWidget {
   const LocationSelector({
     required this.controller,
     required this.label,
+    this.onChanged,
     super.key,
   });
 
   final LocationSelectionController controller;
   final String label;
+  final void Function()? onChanged;
 
   @override
   State<LocationSelector> createState() => _LocationSelectorState();
@@ -50,6 +52,7 @@ class _LocationSelectorState extends State<LocationSelector> {
                   setState(() {
                     controller.setStation(value ?? '');
                   });
+                  widget.onChanged?.call();
                 },
                 items: Provider.of<MapProvider>(context)
                     .roomsByStations
