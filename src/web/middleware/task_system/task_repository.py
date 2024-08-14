@@ -99,16 +99,9 @@ class TaskRepository:
         db_connection.close()
         if result is None:
             return None
-        return Task(
-            id=result[0],
-            name=result[1],
-            status=result[2],
-            assignee_name=result[3],
-            requirements=json.loads(result[4]),
-            subtasks=self.read_subtasks_by_task_id(result[0]),
-            is_monolithic=result[5],
-            earliest_start_time=result[6],
-            priority=result[7],
+        return Task.from_database_row(
+            result,
+            self.read_subtasks_by_task_id(result[0]),
         )
 
     def read_tasks_by_assignee(self, assignee_name: str) -> list[Task]:
@@ -123,16 +116,9 @@ class TaskRepository:
         results = cursor.fetchall()
         db_connection.close()
         return [
-            Task(
-                id=result[0],
-                name=result[1],
-                status=result[2],
-                assignee_name=result[3],
-                requirements=json.loads(result[4]),
-                subtasks=self.read_subtasks_by_task_id(result[0]),
-                is_monolithic=result[5],
-                earliest_start_time=result[6],
-                priority=result[7],
+            Task.from_database_row(
+                result,
+                self.read_subtasks_by_task_id(result[0]),
             )
             for result in results
         ]
@@ -150,20 +136,7 @@ class TaskRepository:
         db_connection.close()
         if result is None:
             return None
-        return SubTask(
-            id=result[0],
-            name=result[1],
-            status=result[2],
-            assignee_name=result[3],
-            parent_id=result[4],
-            requires_task_id=result[5],
-            is_part_of_monolith=result[6],
-            target_id=result[7],
-            priority=result[8],
-            earliest_start_time=result[9],
-            requirements=json.loads(result[10]),
-            action=Action.from_json(json.loads(result[11])),
-        )
+        return SubTask.from_database_row(result)
 
     def read_unassigned_tasks(self) -> list[Task]:
         db_connection = sqlite3.connect(self.__db_path)
@@ -179,16 +152,9 @@ class TaskRepository:
         db_connection.close()
 
         return [
-            Task(
-                id=result[0],
-                name=result[1],
-                status=result[2],
-                assignee_name=result[3],
-                requirements=json.loads(result[4]),
-                subtasks=self.read_subtasks_by_task_id(result[0]),
-                is_monolithic=result[5],
-                earliest_start_time=result[6],
-                priority=result[7],
+            Task.from_database_row(
+                result,
+                self.read_subtasks_by_task_id(result[0]),
             )
             for result in results
         ]
@@ -204,16 +170,9 @@ class TaskRepository:
         results = cursor.fetchall()
         db_connection.close()
         return [
-            Task(
-                id=result[0],
-                name=result[1],
-                status=result[2],
-                assignee_name=result[3],
-                requirements=json.loads(result[4]),
-                subtasks=self.read_subtasks_by_task_id(result[0]),
-                is_monolithic=result[5],
-                earliest_start_time=result[6],
-                priority=result[7],
+            Task.from_database_row(
+                result,
+                self.read_subtasks_by_task_id(result[0]),
             )
             for result in results
         ]
@@ -229,23 +188,7 @@ class TaskRepository:
         )
         results = cursor.fetchall()
         db_connection.close()
-        return [
-            SubTask(
-                id=result[0],
-                name=result[1],
-                status=result[2],
-                assignee_name=result[3],
-                parent_id=result[4],
-                requires_task_id=result[5],
-                is_part_of_monolith=result[6],
-                target_id=result[7],
-                priority=result[8],
-                earliest_start_time=result[9],
-                requirements=json.loads(result[10]),
-                action=Action.from_json(json.loads(result[11])),
-            )
-            for result in results
-        ]
+        return [SubTask.from_database_row(result) for result in results]
 
     def read_subtasks_by_subtask_ids(self, subtask_ids: list[str]) -> list[SubTask]:
         db_connection = sqlite3.connect(self.__db_path)
@@ -260,23 +203,7 @@ class TaskRepository:
         )
         results = cursor.fetchall()
         db_connection.close()
-        return [
-            SubTask(
-                id=result[0],
-                name=result[1],
-                status=result[2],
-                assignee_name=result[3],
-                parent_id=result[4],
-                requires_task_id=result[5],
-                is_part_of_monolith=result[6],
-                target_id=result[7],
-                priority=result[8],
-                earliest_start_time=result[9],
-                requirements=json.loads(result[10]),
-                action=Action.from_json(json.loads(result[11])),
-            )
-            for result in results
-        ]
+        return [SubTask.from_database_row(result) for result in results]
 
     def update_task(self, task: Task) -> bool:
         db_connection = sqlite3.connect(self.__db_path)

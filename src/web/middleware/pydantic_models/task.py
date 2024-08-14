@@ -24,9 +24,9 @@ class Task(BaseModel):
             assignee_name=row[3],
             requirements=json.loads(row[4]),
             subtasks=subtasks,
-            is_monolithic=row[6],
-            earliest_start_time=row[7],
-            priority=row[8],
+            is_monolithic=row[5],
+            earliest_start_time=row[6],
+            priority=row[7],
         )
 
     def to_json(self) -> dict[str, Any]:
