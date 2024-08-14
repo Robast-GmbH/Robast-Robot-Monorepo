@@ -91,22 +91,22 @@ class ModulesApi {
 
   Future<bool> freeModule({
     required String robotName,
-    required DrawerAddress drawerAddress,
+    required DrawerAddress submoduleAddress,
   }) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/free_module'),
       data: {
         'robot_name': robotName,
-        'module_id': drawerAddress.moduleID,
-        'drawer_id': drawerAddress.drawerID,
+        'module_id': submoduleAddress.moduleID,
+        'drawer_id': submoduleAddress.drawerID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> reserveModule({
+  Future<bool> reserveSubmodule({
     required String robotName,
-    required DrawerAddress drawerAddress,
+    required DrawerAddress submoduleAddress,
     required String taskID,
     required List<String> userIDs,
     required List<String> userGroups,
@@ -116,8 +116,8 @@ class ModulesApi {
       data: {
         'drawer_address': {
           'robot_name': robotName,
-          'module_id': drawerAddress.moduleID,
-          'drawer_id': drawerAddress.drawerID,
+          'module_id': submoduleAddress.moduleID,
+          'drawer_id': submoduleAddress.drawerID,
         },
         'task_id': taskID,
         'user_ids': userIDs,

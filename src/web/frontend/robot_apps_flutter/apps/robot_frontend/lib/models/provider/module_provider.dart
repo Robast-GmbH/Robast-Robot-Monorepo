@@ -99,15 +99,15 @@ class ModuleProvider extends ChangeNotifier {
     );
   }
 
-  Future<bool> reserveModule({
-    required DrawerAddress drawerAddress,
+  Future<bool> reserveSubmodule({
+    required DrawerAddress submoduleAddress,
     String taskID = '',
     List<String> userIDs = const [],
     List<String> userGroups = const [],
   }) async {
-    return _middlewareApiUtilities.modules.reserveModule(
+    return _middlewareApiUtilities.modules.reserveSubmodule(
       robotName: 'rb_theron',
-      drawerAddress: drawerAddress,
+      submoduleAddress: submoduleAddress,
       taskID: taskID,
       userIDs: userIDs,
       userGroups: userGroups,
@@ -119,7 +119,7 @@ class ModuleProvider extends ChangeNotifier {
   }) async {
     return _middlewareApiUtilities.modules.freeModule(
       robotName: 'rb_theron',
-      drawerAddress: submoduleAddress,
+      submoduleAddress: submoduleAddress,
     );
   }
 }

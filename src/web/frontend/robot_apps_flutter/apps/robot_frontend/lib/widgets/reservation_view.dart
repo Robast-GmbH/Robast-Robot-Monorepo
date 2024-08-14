@@ -47,8 +47,8 @@ class _ReservationViewState extends State<ReservationView> {
                               if (!submodule.isReserved() && !isUpdatingReservationStatus) {
                                 isUpdatingReservationStatus = true;
                                 final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
-                                final reservationSuccessful = await moduleProvider.reserveModule(
-                                  drawerAddress: submodule.address,
+                                final reservationSuccessful = await moduleProvider.reserveSubmodule(
+                                  submoduleAddress: submodule.address,
                                   userIDs: [widget.currentUser.id],
                                   userGroups: widget.currentUser.userGroups,
                                 );

@@ -117,9 +117,9 @@ void main() {
         variant: variant,
       );
       expect(creationResult, isTrue);
-      final reserveResult = await modulesApi.reserveModule(
+      final reserveResult = await modulesApi.reserveSubmodule(
         robotName: robotName,
-        drawerAddress: drawerAddress,
+        submoduleAddress: drawerAddress,
         taskID: 'task1',
         userIDs: ['user1', 'user2'],
         userGroups: ['group1', 'group2'],
@@ -135,7 +135,7 @@ void main() {
       expect(reservedModule.reservedForGroups, equals(['group1', 'group2']));
       final freeResult = await modulesApi.freeModule(
         robotName: robotName,
-        drawerAddress: drawerAddress,
+        submoduleAddress: drawerAddress,
       );
       expect(freeResult, isTrue);
       final modules2 = await modulesApi.getModules(robotName: robotName);

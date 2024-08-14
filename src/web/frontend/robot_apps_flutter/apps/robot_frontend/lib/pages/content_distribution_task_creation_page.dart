@@ -22,7 +22,7 @@ class ContentDistributionTaskCreationPage extends StatefulWidget {
 class _ContentDistributionTaskCreationPageState extends State<ContentDistributionTaskCreationPage> {
   late Future<void> initPageFuture;
   late User? currentUser;
-  CreationSteps currentStep = CreationSteps.reserveModules;
+  CreationSteps currentStep = CreationSteps.reserveSubmodules;
   final reservedSubmodules = <DrawerAddress>[];
   final userSelectionControllers = <UserSelectionController>[];
   final userGroupsSelectionControllers = <UserGroupsSelectionController>[];
@@ -69,11 +69,11 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
     return CustomScaffold(
       title: currentStep.name,
       onBackButtonPressed: () {
-        if (currentStep == CreationSteps.reserveModules) {
+        if (currentStep == CreationSteps.reserveSubmodules) {
           Navigator.pop(context);
         } else if (currentStep == CreationSteps.fillModules) {
           setState(() {
-            currentStep = CreationSteps.reserveModules;
+            currentStep = CreationSteps.reserveSubmodules;
           });
         } else {
           setState(() {
@@ -107,7 +107,7 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
           }
           return Stack(
             children: [
-              if (currentStep == CreationSteps.reserveModules)
+              if (currentStep == CreationSteps.reserveSubmodules)
                 ReservationView(
                   currentUser: currentUser!,
                   onReservation: (submoduleAddress) {
@@ -139,7 +139,7 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
                       onPressed: reservedSubmodules.isEmpty
                           ? null
                           : () async {
-                              if (currentStep == CreationSteps.reserveModules) {
+                              if (currentStep == CreationSteps.reserveSubmodules) {
                                 setState(() {
                                   currentStep = CreationSteps.fillModules;
                                 });

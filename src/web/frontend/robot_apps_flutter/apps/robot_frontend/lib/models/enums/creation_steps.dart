@@ -1,5 +1,5 @@
 enum CreationSteps {
-  reserveModules,
+  reserveSubmodules,
   fillModules,
   assignTargets,
 }
@@ -7,7 +7,7 @@ enum CreationSteps {
 extension CreationStepsExtension on CreationSteps {
   String get name {
     switch (this) {
-      case CreationSteps.reserveModules:
+      case CreationSteps.reserveSubmodules:
         return 'Module reservieren';
       case CreationSteps.fillModules:
         return 'Module befüllen';
