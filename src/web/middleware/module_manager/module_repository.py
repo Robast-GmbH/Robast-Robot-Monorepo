@@ -28,8 +28,8 @@ class ModuleRepository:
 
     def create_drawer(self, drawer: Drawer) -> int | None:
         sql = """
-        INSERT INTO drawers (robot_name, module_id, drawer_id, position, size, variant, module_process_status, module_process_type, module_process_items_by_change, items_by_count, reserved_for_ids, reserved_for_groups)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        INSERT INTO drawers (robot_name, module_id, drawer_id, position, size, variant, module_process_status, module_process_type, module_process_items_by_change, items_by_count, reserved_for_task, reserved_for_ids, reserved_for_groups)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()
@@ -47,6 +47,7 @@ class ModuleRepository:
                     drawer.module_process_type,
                     json.dumps(drawer.module_process_items_by_change),
                     json.dumps(drawer.items_by_count),
+                    drawer.reserved_for_task,
                     json.dumps(drawer.reserved_for_ids),
                     json.dumps(drawer.reserved_for_groups),
                 ),
@@ -80,8 +81,9 @@ class ModuleRepository:
                 module_process_type=row[7],
                 module_process_items_by_change=json.loads(row[8]),
                 items_by_count=json.loads(row[9]),
-                reserved_for_ids=json.loads(row[10]),
-                reserved_for_groups=json.loads(row[11]),
+                reserved_for_task=row[10],
+                reserved_for_ids=json.loads(row[11]),
+                reserved_for_groups=json.loads(row[12]),
             )
         return None
 
@@ -108,8 +110,9 @@ class ModuleRepository:
                     module_process_type=row[7],
                     module_process_items_by_change=json.loads(row[8]),
                     items_by_count=json.loads(row[9]),
-                    reserved_for_ids=json.loads(row[10]),
-                    reserved_for_groups=json.loads(row[11]),
+                    reserved_for_task=row[10],
+                    reserved_for_ids=json.loads(row[11]),
+                    reserved_for_groups=json.loads(row[12]),
                 )
             )
         return drawers
@@ -117,7 +120,7 @@ class ModuleRepository:
     def update_drawer(self, drawer: Drawer):
         sql = """
         UPDATE drawers
-        SET position = ?, size = ?, variant = ?, items_by_count = ?, reserved_for_ids = ?, reserved_for_groups = ?, module_process_status = ?, module_process_type = ?, module_process_items_by_change = ?
+        SET position = ?, size = ?, variant = ?, items_by_count = ?, reserved_for_task = ?, reserved_for_ids = ?, reserved_for_groups = ?, module_process_status = ?, module_process_type = ?, module_process_items_by_change = ?
         WHERE robot_name = ? AND module_id = ? AND drawer_id = ?
         """
         db_connection = sqlite3.connect(self.__db_path)
@@ -129,6 +132,7 @@ class ModuleRepository:
                 drawer.size,
                 drawer.variant,
                 json.dumps(drawer.items_by_count),
+                drawer.reserved_for_task,
                 json.dumps(drawer.reserved_for_ids),
                 json.dumps(drawer.reserved_for_groups),
                 drawer.module_process_status,
@@ -170,6 +174,7 @@ class ModuleRepository:
             module_process_type TEXT,
             module_process_items_by_change TEXT,
             items_by_count TEXT,
+            reserved_for_task TEXT,
             reserved_for_ids TEXT,
             reserved_for_groups TEXT,
             PRIMARY KEY (robot_name, module_id, drawer_id)

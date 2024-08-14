@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
@@ -22,11 +24,34 @@ class ModuleProcessView extends StatefulWidget {
 
 class _ModuleProcessViewState extends State<ModuleProcessView> {
   bool isDisinfected = false;
+  bool openingTriggered = false;
+  Timer? finishedTimer;
+  bool waitingForFinish = false;
+  int finishTimerClockIndex = 0;
 
   @override
   void initState() {
     super.initState();
     isDisinfected = !widget.requireDesinfection;
+  }
+
+  Future<void> onFinish(RobotDrawer moduleInProcess) async {
+    if (!mounted) {
+      return;
+    }
+    final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
+    await moduleProvider.finishModuleProcess(moduleInProcess);
+    await moduleProvider.fetchModules();
+    finishedTimer?.cancel();
+    if (mounted) {
+      Navigator.pop(context);
+    }
+  }
+
+  @override
+  void dispose() {
+    finishedTimer?.cancel();
+    super.dispose();
   }
 
   @override
@@ -44,6 +69,14 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
               final moduleInProcess = Provider.of<ModuleProvider>(context).modules.firstWhere(
                     (element) => element.moduleProcess.status != ModuleProcessStatus.idle,
                   );
+              if (isDisinfected && moduleInProcess.moduleProcess.status == ModuleProcessStatus.waitingForOpening && !openingTriggered) {
+                openingTriggered = true;
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Provider.of<ModuleProvider>(context, listen: false).openDrawer(moduleInProcess);
+                });
+                return const Center(child: CircularProgressIndicator());
+              }
+
               if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.auth) {
                 return AuthView(
                   requiredUserIDs: moduleInProcess.reservedForIds,
@@ -70,25 +103,12 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                   padding: const EdgeInsets.symmetric(vertical: 64),
                   child: Stack(
                     children: [
-                      Column(
-                        children: modules.map((module) {
-                          return DrawerView(
-                            module: module,
-                            isAnyDrawerOpen: moduleInProcess.moduleID != module.moduleID,
-                            isEnabled: moduleInProcess.moduleID == module.moduleID,
-                            onOpening: () {
-                              Provider.of<ModuleProvider>(context, listen: false).openDrawer(module);
-                            },
-                            label: moduleInProcess == module ? 'Zum Öffnen tippen' : '',
-                          );
-                        }).toList(),
-                      ),
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.opening) ...[
                         HintView(
                           text: modules[moduleInProcess.moduleID - 1].variant == DrawerVariant.electric
                               ? 'Gewählte Schublade öffnet sich'
                               : 'Bitte gewählte Schublade öffnen',
-                          moduleLabel: moduleInProcess.moduleProcess.itemsByChange.toString(),
+                          moduleLabel: 'Modul ${moduleInProcess.moduleID}',
                         ),
                       ],
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.open) ...[
@@ -99,15 +119,16 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                             }
                           },
                           child: HintView(
-                            text: moduleInProcess.moduleProcess.itemsByChangeToString(),
-                            moduleLabel: moduleInProcess.moduleProcess.itemsByChange.toString(),
+                            text:
+                                '${moduleInProcess.moduleProcess.itemsByChangeToString()}${moduleInProcess.variant == DrawerVariant.electric ? ' Zum Schließen tippen.' : ''}',
+                            moduleLabel: 'Modul ${moduleInProcess.moduleID}',
                           ),
                         ),
                       ],
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.closing) ...[
                         HintView(
                           text: 'Schublade schließt sich, bitte warten',
-                          moduleLabel: moduleInProcess.moduleProcess.itemsByChange.toString(),
+                          moduleLabel: 'Module ${moduleInProcess.moduleID}',
                         ),
                       ],
                     ],
@@ -115,6 +136,16 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                 );
               }
               if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.closed) {
+                if (!waitingForFinish) {
+                  waitingForFinish = true;
+                  finishedTimer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                    finishTimerClockIndex++;
+                    setState(() {});
+                    if (finishTimerClockIndex == 5) {
+                      onFinish(moduleInProcess);
+                    }
+                  });
+                }
                 return Padding(
                   padding: const EdgeInsets.symmetric(vertical: 196),
                   child: Column(
@@ -122,16 +153,8 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                       Expanded(
                         flex: 2,
                         child: CustomButtonView(
-                          text: 'Finish',
-                          onPressed: () async {
-                            final moduleProvider = Provider.of<ModuleProvider>(context, listen: false);
-                            await moduleProvider.finishModuleProcess(moduleInProcess);
-                            await moduleProvider.fetchModules();
-
-                            if (context.mounted) {
-                              Navigator.pop(context);
-                            }
-                          },
+                          text: 'Finish  ${5 - finishTimerClockIndex}',
+                          onPressed: () => onFinish(moduleInProcess),
                         ),
                       ),
                       const SizedBox(
@@ -140,8 +163,11 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                       Expanded(
                         child: CustomButtonView(
                           text: 'Reopen',
-                          onPressed: () {
-                            Provider.of<ModuleProvider>(context, listen: false).openDrawer(moduleInProcess);
+                          onPressed: () async {
+                            await Provider.of<ModuleProvider>(context, listen: false).openDrawer(moduleInProcess);
+                            finishedTimer?.cancel();
+                            waitingForFinish = false;
+                            finishTimerClockIndex = 0;
                           },
                         ),
                       ),

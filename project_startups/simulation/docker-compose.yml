@@ -106,6 +106,6 @@ services:
       -  ../../libs/:/workspace/libs:cached
       -  ../../src/ros2/dds_configs:/workspace/dds_configs:cached
       - ./hardware_nodes/:/workspace/:cached
-    devices:
-      - /dev/robast/robast_nfc:/dev/robast/robast_nfc
+    # devices:
+    #   - /dev/robast/robast_nfc:/dev/robast/robast_nfc
     command: /bin/sh -c "while sleep 1000; do :; done"
