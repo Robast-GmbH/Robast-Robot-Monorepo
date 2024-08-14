@@ -172,7 +172,9 @@ class Robot:
         )
         self.__subtask_queue.clear()
 
-        eligible_tasks, non_eligible_tasks = self.__filter_tasks(queued_subtasks)
+        eligible_tasks, non_eligible_tasks = self.__partition_tasks_by_eligibility(
+            queued_subtasks
+        )
 
         start = self.__determine_start_node()
 
@@ -190,7 +192,7 @@ class Robot:
 
             start = self.__nav_graph.get_node_by_id(closest_tasks[0].target_id)
 
-    def __filter_tasks(
+    def __partition_tasks_by_eligibility(
         self, queued_subtasks: list[SubTask]
     ) -> tuple[list[SubTask], list[SubTask]]:
         eligible_tasks = [
