@@ -4,7 +4,7 @@ import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
 class ModuleProvider extends ChangeNotifier {
   List<RobotDrawer> _modules = [];
-  List<RobotDrawer> get modules => _modules;
+  List<RobotDrawer> get submodules => _modules;
   Timer? _modulesUpdateTimer;
   bool isInModuleProcess = false;
 
@@ -111,6 +111,15 @@ class ModuleProvider extends ChangeNotifier {
       taskID: taskID,
       userIDs: userIDs,
       userGroups: userGroups,
+    );
+  }
+
+  Future<bool> freeSubmodule({
+    required DrawerAddress submoduleAddress,
+  }) async {
+    return _middlewareApiUtilities.modules.freeModule(
+      robotName: 'rb_theron',
+      drawerAddress: submoduleAddress,
     );
   }
 }

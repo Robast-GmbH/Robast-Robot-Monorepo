@@ -62,7 +62,7 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 16, bottom: 32),
                   child: Selector<ModuleProvider, List<RobotDrawer>>(
-                    selector: (_, provider) => provider.modules,
+                    selector: (_, provider) => provider.submodules,
                     builder: (context, modules, child) {
                       updateSlots(modules);
                       return Column(
@@ -160,7 +160,7 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                           TextButton.icon(
                             onPressed: () async {
                               final modulesProvider = Provider.of<ModuleProvider>(context, listen: false);
-                              for (final drawer in modulesProvider.modules) {
+                              for (final drawer in modulesProvider.submodules) {
                                 await modulesProvider.deleteModule(
                                   robotName: 'rb_theron',
                                   drawerAddress: drawer.address,

@@ -60,12 +60,12 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
         const Expanded(child: SizedBox()),
         Expanded(
           child: Selector<ModuleProvider, List<RobotDrawer>>(
-            selector: (_, provider) => provider.modules,
+            selector: (_, provider) => provider.submodules,
             builder: (context, modules, child) {
               if (modules.isEmpty || modules.every((module) => module.moduleProcess.status == ModuleProcessStatus.idle)) {
                 return const Center(child: CircularProgressIndicator());
               }
-              final moduleInProcess = Provider.of<ModuleProvider>(context).modules.firstWhere(
+              final moduleInProcess = Provider.of<ModuleProvider>(context).submodules.firstWhere(
                     (element) => element.moduleProcess.status != ModuleProcessStatus.idle,
                   );
               if (isDisinfected && moduleInProcess.moduleProcess.status == ModuleProcessStatus.waitingForOpening && !openingTriggered) {

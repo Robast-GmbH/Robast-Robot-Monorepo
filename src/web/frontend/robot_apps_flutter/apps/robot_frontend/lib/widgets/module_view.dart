@@ -1,17 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
-class DrawerView extends StatelessWidget {
-  const DrawerView({
+class ModuleView extends StatelessWidget {
+  const ModuleView({
     required this.module,
-    super.key,
+    required this.onPressed,
     this.showReservationStatus = false,
+    this.enabled = true,
     this.label,
-    this.onPressed,
+    super.key,
   });
 
   final RobotDrawer module;
   final bool showReservationStatus;
+  final bool enabled;
   final String? label;
   final VoidCallback? onPressed;
 
@@ -21,9 +23,7 @@ class DrawerView extends StatelessWidget {
     return Expanded(
       flex: module.size,
       child: GestureDetector(
-        onTap: () {
-          onPressed?.call();
-        },
+        onTap: enabled ? onPressed : null,
         child: Column(
           children: [
             Expanded(
@@ -34,15 +34,20 @@ class DrawerView extends StatelessWidget {
                     gradient: LinearGradient(
                       begin: Alignment.bottomCenter,
                       end: Alignment.topCenter,
-                      colors: showReservationStatus && !isReserved
+                      colors: !enabled
                           ? [
-                              Colors.white.withOpacity(0.5),
-                              Colors.white.withOpacity(0.3),
+                              Colors.white.withOpacity(0.2),
+                              Colors.white.withOpacity(0.1),
                             ]
-                          : [
-                              const Color(0xCCBBFF33),
-                              const Color(0x7FA8E52D),
-                            ],
+                          : showReservationStatus && !isReserved
+                              ? [
+                                  Colors.white.withOpacity(0.5),
+                                  Colors.white.withOpacity(0.3),
+                                ]
+                              : [
+                                  const Color(0xCCBBFF33),
+                                  const Color(0x7FA8E52D),
+                                ],
                     ),
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -51,9 +56,9 @@ class DrawerView extends StatelessWidget {
                       child: Text(
                         label ?? '',
                         textAlign: TextAlign.center,
-                        style: const TextStyle(
+                        style: TextStyle(
                           height: 0,
-                          color: Colors.white,
+                          color: enabled ? Colors.white : Colors.white.withOpacity(0.2),
                           fontSize: 40,
                           fontWeight: FontWeight.w400,
                         ),

@@ -25,7 +25,7 @@ class _ModuleFillingViewState extends State<ModuleFillingView> {
       children: [
         Expanded(
           child: Selector<ModuleProvider, List<RobotDrawer>>(
-            selector: (context, provider) => provider.modules,
+            selector: (context, provider) => provider.submodules,
             builder: (context, modules, child) {
               if (selectedDrawerAddress == null) {
                 return buildModulesOverview(

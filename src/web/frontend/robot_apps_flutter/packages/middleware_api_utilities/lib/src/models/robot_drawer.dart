@@ -1,5 +1,4 @@
-import 'package:middleware_api_utilities/src/models/drawer_address.dart';
-import 'package:middleware_api_utilities/src/models/module_process.dart';
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
 enum DrawerVariant { manual, electric }
 
@@ -70,5 +69,13 @@ class RobotDrawer {
 
   bool isReserved() {
     return reservedForTask.isNotEmpty || reservedForIds.isNotEmpty || reservedForGroups.isNotEmpty;
+  }
+
+  bool checkUserAuth(User user) {
+    return reservedForIds.contains(user.id) || reservedForGroups.any((group) => user.userGroups.contains(group));
+  }
+
+  String contentToString() {
+    return itemsByCount.entries.map((entry) => '${entry.key}: ${entry.value}').join(', ');
   }
 }
