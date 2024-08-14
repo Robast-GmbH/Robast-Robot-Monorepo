@@ -167,7 +167,6 @@ void setup()
 
   debug_println("[Main]: Finished setup()!");
 
-  // create a task that will be executed in the Task1code() function, with priority 1 and executed on core 0
   xTaskCreatePinnedToCore(receive_can_msg_task_loop, /* Task function. */
                           "Task1",                   /* name of task. */
                           10000,                     /* Stack size of task */
