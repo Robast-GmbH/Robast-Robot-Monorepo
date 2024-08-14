@@ -2,7 +2,7 @@
 {
 	"name": "Robast Hardware Nodes",
 	"dockerComposeFile": "../../docker-compose.yml",
-	"service": "hardwarenodes",
+	"service": "hardware-nodes",
 	"workspaceFolder": "/workspace",
 	"shutdownAction": "stopCompose",
 	"remoteUser": "robast",

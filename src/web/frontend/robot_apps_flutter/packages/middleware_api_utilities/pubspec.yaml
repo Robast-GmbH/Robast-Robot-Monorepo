@@ -10,6 +10,7 @@ dependencies:
   http: ^1.2.1
   shared_data_models:
     path: ../shared_data_models
+  uuid: ^4.4.2
 
 dev_dependencies:
   mocktail: ^1.0.3

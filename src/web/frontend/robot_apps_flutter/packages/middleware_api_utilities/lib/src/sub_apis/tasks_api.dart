@@ -1,4 +1,5 @@
 import 'package:middleware_api_utilities/src/models/robot_task_status.dart';
+import 'package:middleware_api_utilities/src/models/task.dart';
 import 'package:middleware_api_utilities/src/services/request_service.dart';
 
 class TasksApi {
@@ -15,28 +16,10 @@ class TasksApi {
     }
   }
 
-  Future<bool> postTaskRequest({
-    required int requiredDrawerType,
-    required Map<String, int> itemsByChange,
-    required List<String> senderAuthUsers,
-    required List<String> senderAuthUserGroups,
-    required List<String> recipientAuthUsers,
-    required List<String> recipientAuthUserGroups,
-    String? targetID,
-    String? startID,
-  }) async {
+  Future<bool> postTaskRequest({required Task task}) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/task_assignment'),
-      data: {
-        'required_drawer_type': requiredDrawerType,
-        'items_by_change': itemsByChange,
-        'target_id': targetID,
-        'start_id': startID,
-        'sender_user_ids': senderAuthUsers,
-        'sender_user_groups': senderAuthUserGroups,
-        'recipient_user_ids': recipientAuthUsers,
-        'recipient_user_groups': recipientAuthUserGroups,
-      },
+      uri: Uri.parse('$prefix/tasks/task_assignment'),
+      data: task.toJson(),
     );
     return RequestService.wasRequestSuccessful(response: response);
   }

@@ -8,7 +8,7 @@ class ModuleManager:
     def __init__(self):
         self.repository = ModuleRepository()
 
-    def is_module_size_mounted(self, robot_name: str, size: int) -> bool:
+    def is_drawer_type_mounted(self, robot_name: str, size: int) -> bool:
         drawers = self.repository.read_robot_drawers(robot_name)
         return any(drawer.size == size for drawer in drawers)
 
@@ -47,6 +47,7 @@ class ModuleManager:
             module_process_type="",
             module_process_items_by_change={},
             items_by_count={},
+            reserved_for_task="",
             reserved_for_ids=[],
             reserved_for_groups=[],
         )
@@ -90,39 +91,56 @@ class ModuleManager:
         return False
 
     def free_module(self, address: DrawerAddress) -> bool:
-        return self.__update_module_reservation(address, [], [])
+        return self.__update_module_reservation(address, "", [], [])
 
     def try_reserve_module_type(
-        self, robot_name: str, size: int, user_ids: list[str], user_groups: list[str]
+        self,
+        robot_name: str,
+        size: int,
+        task_id: str,
+        user_ids: list[str],
+        user_groups: list[str],
     ) -> Drawer | None:
         drawers = self.repository.read_robot_drawers(robot_name)
         for drawer in drawers:
             if (
                 drawer.size == size
+                and not drawer.reserved_for_task
                 and not drawer.reserved_for_ids
                 and not drawer.reserved_for_groups
             ):
                 self.reserve_module(
                     drawer.address,
+                    task_id,
                     user_ids,
                     user_groups,
                 )
                 return drawer
 
     def reserve_module(
-        self, drawer_address: DrawerAddress, user_ids: list[str], user_groups: list[str]
+        self,
+        drawer_address: DrawerAddress,
+        task_id: str,
+        user_ids: list[str],
+        user_groups: list[str],
     ) -> bool:
         return self.__update_module_reservation(
             drawer_address,
+            task_id,
             user_ids,
             user_groups,
         )
 
     def __update_module_reservation(
-        self, address: DrawerAddress, user_ids: list[str], user_groups: list[str]
+        self,
+        address: DrawerAddress,
+        task_id: str,
+        user_ids: list[str],
+        user_groups: list[str],
     ) -> bool:
         drawer = self.repository.read_drawer(address)
         if drawer:
+            drawer.reserved_for_task = task_id
             drawer.reserved_for_ids = user_ids
             drawer.reserved_for_groups = user_groups
             self.repository.update_drawer(drawer)

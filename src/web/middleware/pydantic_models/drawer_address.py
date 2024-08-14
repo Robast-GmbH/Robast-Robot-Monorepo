@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from typing import Any
+from typing import Any, Dict
 
 
 class DrawerAddress(BaseModel):
@@ -14,3 +14,6 @@ class DrawerAddress(BaseModel):
             module_id=json_data["module_id"],
             drawer_id=json_data["drawer_id"],
         )
+
+    def to_json(self) -> Dict[str, Any]:
+        return self.model_dump()

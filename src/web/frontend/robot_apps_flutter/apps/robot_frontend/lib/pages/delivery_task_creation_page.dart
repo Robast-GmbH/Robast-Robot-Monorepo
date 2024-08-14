@@ -1,12 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/controller/location_selection_controller.dart';
 import 'package:robot_frontend/models/controller/module_content_controller.dart';
 import 'package:robot_frontend/models/controller/user_groups_selection_controller.dart';
 import 'package:robot_frontend/models/controller/user_selection_controller.dart';
 import 'package:robot_frontend/models/provider/task_provider.dart';
-import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/location_selector.dart';
@@ -32,14 +30,6 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
   final recipientUserController = UserSelectionController();
   final senderUserGroupsSelectionController = UserGroupsSelectionController();
   final recipientUserGroupsSelectionController = UserGroupsSelectionController();
-
-  late Future<List<User>> loadUsersFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    loadUsersFuture = Provider.of<UserProvider>(context, listen: false).getUsers();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -110,6 +100,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                     Expanded(
                       child: UserSelector(
                         controller: senderUserController,
+                        initWithSessionUser: true,
                       ),
                     ),
                     Expanded(
@@ -159,19 +150,19 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
             CustomButtonView(
               padding: const EdgeInsets.all(16),
               onPressed: () async {
-                await Provider.of<TaskProvider>(context, listen: false).createTaskRequest(
-                  startID: startController.room,
-                  targetID: targetController.room,
+                await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
                   requiredDrawerType: requiredDrawerType,
-                  itemsByChange: moduleContentController.createItemsByChange(),
-                  senderAuthUsers: [
+                  pickupTargetID: startController.room!,
+                  senderUserIDs: [
                     if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
                   ],
-                  senderAuthUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
-                  recipientAuthUsers: [
+                  senderUserGroups: senderUserGroupsSelectionController.selectionAsStringList(),
+                  dropoffTargetID: targetController.room!,
+                  recipientUserIDs: [
                     if (recipientUserController.selectedUser != null) recipientUserController.selectedUser!.id,
                   ],
-                  recipientAuthUserGroups: recipientUserGroupsSelectionController.selectionAsStringList(),
+                  recipientUserGroups: recipientUserGroupsSelectionController.selectionAsStringList(),
+                  itemsByChange: moduleContentController.createItemsByChange(),
                 );
                 if (context.mounted) {
                   Navigator.of(context).pop();
