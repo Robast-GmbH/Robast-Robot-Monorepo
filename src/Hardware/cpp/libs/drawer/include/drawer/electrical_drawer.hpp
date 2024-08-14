@@ -49,7 +49,7 @@ namespace drawer
                      const uint8_t motor_driver_address,
                      const std::shared_ptr<motor::MotorConfig> motor_config,
                      const std::shared_ptr<switch_lib::Switch> endstop_switch,
-                     const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> e_drawer_lock,
+                     const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> drawer_lock,
                      const std::shared_ptr<ElectricalDrawerConfig> e_drawer_config,
                      const std::shared_ptr<motor::EncoderConfig> encoder_config,
                      const std::shared_ptr<motor::MotorMonitorConfig> motor_monitor_config);
@@ -58,9 +58,9 @@ namespace drawer
 
     void update_state() override;
 
-    void unlock();
+    void unlock() override;
 
-    void add_e_drawer_task_to_queue(const utils::EDrawerTask &e_drawer_task);
+    void add_e_drawer_task_to_queue(const utils::EDrawerTask &e_drawer_task) override;
 
    private:
     const uint32_t _module_id;
@@ -75,7 +75,7 @@ namespace drawer
     const std::shared_ptr<switch_lib::Switch> _endstop_switch;
 
     // optional because the lock is not always installed (e.g. in the partial drawer)
-    const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> _e_drawer_lock;
+    const std::optional<std::shared_ptr<lock::ElectricalDrawerLock>> _drawer_lock;
 
     const std::unique_ptr<can_toolbox::CanUtils> _can_utils;
 
@@ -127,7 +127,7 @@ namespace drawer
 
     void handle_drawer_just_closed() override;
 
-    void handle_e_drawer_lock_control() override;
+    void handle_drawer_lock_control() override;
 
     void handle_drawer_moving_in();
 

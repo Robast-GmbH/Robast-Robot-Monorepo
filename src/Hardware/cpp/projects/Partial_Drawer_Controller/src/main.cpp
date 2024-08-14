@@ -1,5 +1,6 @@
 #include <memory>
 
+#include "drawer/electrical_drawer.hpp"
 #include "drawer_controller/global.hpp"
 #include "lock/tray_manager.hpp"
 
@@ -10,6 +11,8 @@ constexpr bool USE_ENCODER = true;
 constexpr uint8_t NUM_OF_LEDS = 21;
 
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
+
+std::shared_ptr<drawer::ElectricalDrawer> e_drawer;
 
 std::shared_ptr<partial_drawer_controller::TrayManager> tray_manager;
 

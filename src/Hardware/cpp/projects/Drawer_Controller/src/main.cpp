@@ -3,6 +3,7 @@
 #include "drawer_controller/global.hpp"
 #include "led/led_strip.hpp"
 
+constexpr bool IS_ELECTRICAL_DRAWER = false;
 constexpr uint32_t MODULE_ID = 1;
 constexpr uint8_t LOCK_ID = 0;
 constexpr bool USE_ENCODER = false;
@@ -51,13 +52,13 @@ void process_can_msgs_task_loop(void* pvParameters)
       {
         case robast_can_msgs::can_id::DRAWER_UNLOCK:
         {
-          e_drawer->unlock();
+          i_drawer->unlock();
         }
         break;
         case robast_can_msgs::can_id::ELECTRICAL_DRAWER_TASK:
         {
           utils::EDrawerTask e_drawer_task = can_message_converter->convert_to_e_drawer_task(received_message.value());
-          e_drawer->add_e_drawer_task_to_queue(e_drawer_task);
+          i_drawer->add_e_drawer_task_to_queue(e_drawer_task);
         }
         break;
         case robast_can_msgs::can_id::LED_HEADER:
@@ -94,9 +95,9 @@ void process_can_msgs_task_loop(void* pvParameters)
 
     led_strip->handle_led_control();
 
-    e_drawer->update_state();
+    i_drawer->update_state();
 
-    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = e_drawer->can_out();
+    std::optional<robast_can_msgs::CanMessage> to_be_sent_message = i_drawer->can_out();
 
     if (to_be_sent_message.has_value())
     {
@@ -148,22 +149,29 @@ void setup()
   config_manager =
     std::make_unique<utils::ConfigManager>(drawer_config, encoder_config, motor_config, motor_monitor_config);
 
-  e_drawer =
-    std::make_shared<drawer::ElectricalDrawer>(MODULE_ID,
-                                               LOCK_ID,
-                                               can_db,
-                                               gpio_wrapper,
-                                               stepper_1_pin_id_config,
-                                               USE_ENCODER,
-                                               gpio_wrapper->get_gpio_num_for_pin_id(pin_id::STEPPER_1_ENCODER_A),
-                                               gpio_wrapper->get_gpio_num_for_pin_id(pin_id::STEPPER_1_ENCODER_B),
-                                               STEPPER_MOTOR_1_ADDRESS,
-                                               motor_config,
-                                               endstop_switch,
-                                               drawer_lock,
-                                               drawer_config,
-                                               encoder_config,
-                                               motor_monitor_config);
+  if (IS_ELECTRICAL_DRAWER)
+  {
+    i_drawer =
+      std::make_shared<drawer::ElectricalDrawer>(MODULE_ID,
+                                                 LOCK_ID,
+                                                 can_db,
+                                                 gpio_wrapper,
+                                                 stepper_1_pin_id_config,
+                                                 USE_ENCODER,
+                                                 gpio_wrapper->get_gpio_num_for_pin_id(pin_id::STEPPER_1_ENCODER_A),
+                                                 gpio_wrapper->get_gpio_num_for_pin_id(pin_id::STEPPER_1_ENCODER_B),
+                                                 STEPPER_MOTOR_1_ADDRESS,
+                                                 motor_config,
+                                                 endstop_switch,
+                                                 drawer_lock,
+                                                 drawer_config,
+                                                 encoder_config,
+                                                 motor_monitor_config);
+  }
+  else
+  {
+    i_drawer = std::make_shared<drawer::ManualDrawer>(MODULE_ID, LOCK_ID, can_db, endstop_switch, drawer_lock);
+  }
 
   debug_println("[Main]: Finished setup()!");
 

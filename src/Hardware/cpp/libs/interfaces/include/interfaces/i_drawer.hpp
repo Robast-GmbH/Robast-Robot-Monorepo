@@ -4,6 +4,7 @@
 #include <optional>
 
 #include "can/can_message.hpp"
+#include "utils/e_drawer_task.hpp"
 
 namespace interfaces
 {
@@ -25,6 +26,19 @@ namespace interfaces
     virtual void update_state() = 0;
 
     /**
+     * Unlock the drawer.
+     */
+    virtual void unlock() = 0;
+
+    /**
+     * Add a drawer task to the queue.
+     *
+     * @param e_drawer_task the task to be added to the queue
+     */
+    virtual void add_e_drawer_task_to_queue(const utils::EDrawerTask &e_drawer_task) = 0;
+
+   private:
+    /**
      * Handles the procedure of what to do when drawer just opened.
      */
     virtual void handle_drawer_just_opened() = 0;
@@ -37,7 +51,7 @@ namespace interfaces
     /**
      * Handle the control of the lock of the drawer.
      */
-    virtual void handle_e_drawer_lock_control() = 0;
+    virtual void handle_drawer_lock_control() = 0;
   };
 }   // namespace interfaces
 

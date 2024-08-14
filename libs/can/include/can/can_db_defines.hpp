@@ -290,18 +290,14 @@ namespace robast_can_msgs
   } // can_signal
   namespace can_data
   {
-    constexpr uint64_t CAN_DATA_SWITCH_IS_NOT_PUSHED = 0;
-    constexpr uint64_t CAN_DATA_SWITCH_IS_PUSHED = 1;
+    constexpr uint64_t SWITCH_IS_NOT_PUSHED = 0;
+    constexpr uint64_t SWITCH_IS_PUSHED = 1;
 
-    constexpr uint64_t CAN_DATA_ELECTRICAL_DRAWER_STALL_GUARD_DISABLED = 0;
-
-    constexpr uint64_t CAN_DATA_ELECTRICAL_DRAWER_IS_STALL_GUARD_NOT_TRIGGERED = 0;
-    constexpr uint64_t CAN_DATA_ELECTRICAL_DRAWER_IS_STALL_GUARD_TRIGGERED = 1;
-
-    constexpr uint64_t CAN_DATA_ERROR_CODE_TIMEOUT_DRAWER_NOT_OPENED = 1;
-
-    constexpr uint64_t CAN_DATA_PUSH_TO_CLOSE_NOT_TRIGGERED = 0;
-    constexpr uint64_t CAN_DATA_PUSH_TO_CLOSE_TRIGGERED = 1;
+    namespace error_code
+    {
+      constexpr uint64_t TIMEOUT_DRAWER_NOT_OPENED = 1;
+      constexpr uint64_t E_DRAWER_TASK_NOT_SUPPORTED_BY_MODULE = 2;
+    }
   } // namespace can_data
 } // namespace robast_can_msgs
 

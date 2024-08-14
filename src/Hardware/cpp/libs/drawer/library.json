@@ -19,5 +19,5 @@
     "license": "MIT",
     "frameworks": "*",
     "platforms": "*",
-    "headers": ["electrical_drawer.hpp", "electrical_drawer_config.hpp"]
+    "headers": ["electrical_drawer.hpp", "electrical_drawer_config.hpp", "manual_drawer.hpp"]
   }

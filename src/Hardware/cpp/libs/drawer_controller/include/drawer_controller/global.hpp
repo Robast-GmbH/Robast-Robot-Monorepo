@@ -6,6 +6,7 @@
 #include "can_toolbox/can_controller.hpp"
 #include "debug/debug.hpp"
 #include "drawer/electrical_drawer.hpp"
+#include "drawer/manual_drawer.hpp"
 #include "gpio/gpio_wrapper_pca9535.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "led/led_strip.hpp"
@@ -26,15 +27,13 @@ TaskHandle_t Task2;
 
 SemaphoreHandle_t can_queue_mutex = NULL;
 
-using drawer_ptr = std::shared_ptr<interfaces::IDrawer>;
-
 std::shared_ptr<robast_can_msgs::CanDb> can_db;
 
 std::shared_ptr<interfaces::IGpioWrapper> gpio_wrapper;
 
 std::shared_ptr<lock::ElectricalDrawerLock> drawer_lock;
 
-std::shared_ptr<drawer::ElectricalDrawer> e_drawer;
+std::shared_ptr<interfaces::IDrawer> i_drawer;
 
 std::shared_ptr<drawer::ElectricalDrawerConfig> drawer_config;
 std::shared_ptr<motor::EncoderConfig> encoder_config;
