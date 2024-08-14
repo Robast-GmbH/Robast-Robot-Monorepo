@@ -60,7 +60,7 @@ namespace nfc_bridge
     {
       return false;
     }
-    max_iterations /= 2;
+    max_iterations >>= 1;
     start_up_scanner();
     if (!wait_for_tag(max_iterations))
     {
@@ -88,7 +88,7 @@ namespace nfc_bridge
       return false;
     }
     start_up_scanner();
-    max_iterations /= 2;
+    max_iterations >>= 1;
     if (!wait_for_tag(max_iterations))
     {
       shutdown_scanner();
