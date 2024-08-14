@@ -170,6 +170,29 @@ class Robot:
         queued_subtasks = self.__task_manager.read_subtasks_by_subtask_ids(
             self.__subtask_queue
         )
+        self.__subtask_queue.clear()
+
+        eligible_tasks, non_eligible_tasks = self.__filter_tasks(queued_subtasks)
+
+        start = self.__determine_start_node()
+
+        while len(eligible_tasks) > 0:
+            closest_tasks = self.__find_closest_tasks(eligible_tasks, start)
+            eligible_tasks = [
+                task for task in eligible_tasks if task not in closest_tasks
+            ]
+            self.__subtask_queue.extend([subtask.id for subtask in closest_tasks])
+
+            new_eligible_tasks = self.__find_new_eligible_tasks(
+                closest_tasks, non_eligible_tasks
+            )
+            eligible_tasks.extend(new_eligible_tasks)
+
+            start = self.__nav_graph.get_node_by_id(closest_tasks[0].target_id)
+
+    def __filter_tasks(
+        self, queued_subtasks: list[SubTask]
+    ) -> tuple[list[SubTask], list[SubTask]]:
         eligible_tasks = [
             task
             for task in queued_subtasks
@@ -183,42 +206,44 @@ class Robot:
         non_eligible_tasks = [
             task for task in queued_subtasks if task not in eligible_tasks
         ]
-        self.__subtask_queue.clear()
+        return eligible_tasks, non_eligible_tasks
 
-        if self.__current_subtask_id is None:
-            start = self.__current_node
-        else:
+    def __determine_start_node(self) -> Node:
+        if self.__current_subtask_id:
             current_task = self.__task_manager.read_subtask(self.__current_subtask_id)
             if current_task:
-                start = self.__nav_graph.get_node_by_id(current_task.target_id)
+                return self.__nav_graph.get_node_by_id(current_task.target_id)
+        return self.__current_node
 
-        while len(eligible_tasks) > 0:
-            min_distance = float("inf")
-            closest_tasks = []
-            for task in eligible_tasks:
-                task_target = self.__nav_graph.get_node_by_id(task.target_id)
-                distance = self.__nav_graph.min_distances[start][task_target]
+    def __find_closest_tasks(
+        self, eligible_tasks: list[SubTask], start_node: Node
+    ) -> list[SubTask]:
+        min_distance = float("inf")
+        closest_tasks = []
 
-                if distance < min_distance:
-                    min_distance = distance
-                    closest_tasks = [task]
-                elif distance == min_distance:
-                    closest_tasks.append(task)
+        for task in eligible_tasks:
+            task_target = self.__nav_graph.get_node_by_id(task.target_id)
+            distance = self.__nav_graph.min_distances[start_node][task_target]
 
-            eligible_tasks = [
-                task for task in eligible_tasks if task not in closest_tasks
-            ]
+            if distance < min_distance:
+                min_distance = distance
+                closest_tasks = [task]
+            elif distance == min_distance:
+                closest_tasks.append(task)
 
-            self.__subtask_queue.extend([subtask.id for subtask in closest_tasks])
-            closest_tasks_ids = [task.id for task in closest_tasks]
-            new_eligible_tasks = [
-                task
-                for task in non_eligible_tasks
-                if task.requires_task_id in closest_tasks_ids
-            ]
+        return closest_tasks
 
-            for task in new_eligible_tasks:
-                non_eligible_tasks.remove(task)
-                eligible_tasks.append(task)
+    def __find_new_eligible_tasks(
+        self, closest_tasks: list[SubTask], non_eligible_tasks: list[SubTask]
+    ) -> list[SubTask]:
+        closest_tasks_ids = [task.id for task in closest_tasks]
+        new_eligible_tasks = [
+            task
+            for task in non_eligible_tasks
+            if task.requires_task_id in closest_tasks_ids
+        ]
 
-            start = self.__nav_graph.get_node_by_id(closest_tasks[0].target_id)
+        for task in new_eligible_tasks:
+            non_eligible_tasks.remove(task)
+
+        return new_eligible_tasks
