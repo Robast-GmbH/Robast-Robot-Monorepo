@@ -39,16 +39,14 @@ class ModuleProvider extends ChangeNotifier {
 
   Future<bool> createModule({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
     required int position,
     required int size,
     required String variant,
   }) async {
     final wasSuccessful = await _middlewareApiUtilities.modules.createModule(
       robotName: robotName,
-      moduleID: moduleID,
-      drawerID: drawerID,
+      drawerAddress: drawerAddress,
       position: position,
       size: size,
       variant: variant,
@@ -58,13 +56,11 @@ class ModuleProvider extends ChangeNotifier {
 
   Future<bool> deleteModule({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
   }) async {
     final wasSuccessful = await _middlewareApiUtilities.modules.deleteModule(
       robotName: robotName,
-      moduleID: moduleID,
-      drawerID: drawerID,
+      drawerAddress: drawerAddress,
     );
     return wasSuccessful;
   }
@@ -85,24 +81,36 @@ class ModuleProvider extends ChangeNotifier {
   Future<void> closeDrawer(RobotDrawer module) async {
     await _middlewareApiUtilities.modules.closeDrawer(
       robotName: module.robotName,
-      moduleID: module.moduleID,
-      drawerID: module.drawerID,
+      drawerAddress: module.address,
     );
   }
 
   Future<void> openDrawer(RobotDrawer module) async {
     await _middlewareApiUtilities.modules.openDrawer(
       robotName: module.robotName,
-      moduleID: module.moduleID,
-      drawerID: module.drawerID,
+      drawerAddress: module.address,
     );
   }
 
   Future<void> finishModuleProcess(RobotDrawer moduleInProcess) async {
     await _middlewareApiUtilities.modules.finishModuleProcess(
       robotName: moduleInProcess.robotName,
-      moduleID: moduleInProcess.moduleID,
-      drawerID: moduleInProcess.drawerID,
+      drawerAddress: moduleInProcess.address,
+    );
+  }
+
+  Future<bool> reserveModule({
+    required DrawerAddress drawerAddress,
+    String taskID = '',
+    List<String> userIDs = const [],
+    List<String> userGroups = const [],
+  }) async {
+    return _middlewareApiUtilities.modules.reserveModule(
+      robotName: 'rb_theron',
+      drawerAddress: drawerAddress,
+      taskID: taskID,
+      userIDs: userIDs,
+      userGroups: userGroups,
     );
   }
 }

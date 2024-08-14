@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/models/controller/module_content_controller.dart';
 
-class ModuleContentView extends StatefulWidget {
-  const ModuleContentView({
+class ModuleContentCreationView extends StatefulWidget {
+  const ModuleContentCreationView({
     required this.moduleContentController,
     this.label = 'Fracht',
     super.key,
@@ -12,10 +12,10 @@ class ModuleContentView extends StatefulWidget {
   final ModuleContentController moduleContentController;
 
   @override
-  State<ModuleContentView> createState() => _ModuleContentViewState();
+  State<ModuleContentCreationView> createState() => _ModuleContentCreationViewState();
 }
 
-class _ModuleContentViewState extends State<ModuleContentView> {
+class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
   final textController = TextEditingController();
   final amountController = TextEditingController();
 

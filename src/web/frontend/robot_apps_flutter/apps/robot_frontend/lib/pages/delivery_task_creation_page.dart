@@ -8,7 +8,7 @@ import 'package:robot_frontend/models/provider/task_provider.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/location_selector.dart';
-import 'package:robot_frontend/widgets/module_content_view.dart';
+import 'package:robot_frontend/widgets/module_content_creation_view.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_selector.dart';
 
@@ -40,7 +40,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
         child: Column(
           children: [
             Expanded(
-              child: ModuleContentView(
+              child: ModuleContentCreationView(
                 moduleContentController: moduleContentController,
               ),
             ),

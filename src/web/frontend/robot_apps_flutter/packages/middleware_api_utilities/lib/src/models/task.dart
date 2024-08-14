@@ -1,4 +1,6 @@
+import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:middleware_api_utilities/src/models/subtask.dart';
+import 'package:uuid/uuid.dart';
 
 class Task {
   Task({
@@ -28,21 +30,21 @@ class Task {
   }
 
   factory Task.delivery({
-    required String id,
     required int requiredDrawerType,
-    required String pickupTaskID,
     required String pickupTargetID,
     required Map<String, int> pickupItemsByChange,
     required List<String> senderUserIDs,
     required List<String> senderUserGroups,
-    required String dropoffTaskID,
     required String dropoffTargetID,
     required Map<String, int> dropoffItemsByChange,
     required List<String> recipientUserIDs,
     required List<String> recipientUserGroups,
   }) {
+    final taskID = const Uuid().v4();
+    final pickupTaskID = const Uuid().v4();
+    final dropoffTaskID = const Uuid().v4();
     return Task(
-      id: id,
+      id: taskID,
       name: 'delivery',
       status: 'unassigned',
       assigneeName: '',
@@ -52,7 +54,7 @@ class Task {
       subtasks: [
         SubTask.drawerProcess(
           id: pickupTaskID,
-          parentID: id,
+          parentID: taskID,
           requiresTaskID: null,
           targetID: pickupTargetID,
           requiredUserIDs: senderUserIDs,
@@ -61,12 +63,46 @@ class Task {
         ),
         SubTask.drawerProcess(
           id: dropoffTaskID,
-          parentID: id,
+          parentID: taskID,
           requiresTaskID: pickupTaskID,
           targetID: dropoffTargetID,
           requiredUserIDs: recipientUserIDs,
           requiredUserGroups: recipientUserGroups,
           itemsByChange: dropoffItemsByChange,
+        ),
+      ],
+      isMonolithic: false,
+      earliestStartTime: DateTime.now().millisecondsSinceEpoch ~/ 1000,
+      priority: 0,
+    );
+  }
+
+  factory Task.dropoff({
+    required String robotName,
+    required String targetID,
+    required Map<String, int> itemsByChange,
+    required List<String> recipientUserIDs,
+    required List<String> recipientUserGroups,
+    required DrawerAddress drawerAddress,
+  }) {
+    final taskID = const Uuid().v4();
+    return Task(
+      id: taskID,
+      name: 'dropoff',
+      status: 'pending',
+      assigneeName: robotName,
+      requirements: {},
+      subtasks: [
+        SubTask.assignedDrawerProcess(
+          id: const Uuid().v4(),
+          parentID: taskID,
+          requiresTaskID: null,
+          targetID: targetID,
+          requiredUserIDs: recipientUserIDs,
+          requiredUserGroups: recipientUserGroups,
+          itemsByChange: itemsByChange,
+          drawerAddress: drawerAddress,
+          assigneeName: robotName,
         ),
       ],
       isMonolithic: false,

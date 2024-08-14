@@ -8,8 +8,7 @@ import 'package:test/test.dart';
 void main() {
   group('MiddlewareApiUtilities', () {
     const robotName = 'rb_theron';
-    const moduleID = 7;
-    const drawerID = 0;
+    const drawerAddress = DrawerAddress(moduleID: 7, drawerID: 0);
     const position = 9;
     const size = 1;
     const itemID = 'Stifte';
@@ -55,8 +54,7 @@ void main() {
     test('can create and delete module', () async {
       final creationResult = await modulesApi.createModule(
         robotName: robotName,
-        moduleID: moduleID,
-        drawerID: drawerID,
+        drawerAddress: drawerAddress,
         position: position,
         size: size,
         variant: variant,
@@ -64,22 +62,17 @@ void main() {
       expect(creationResult, isTrue);
       final modules = await modulesApi.getModules(robotName: robotName);
       expect(
-        modules.where((drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID),
+        modules.where((drawer) => drawer.address == drawerAddress),
         isNotEmpty,
       );
-      final deletionResult = await modulesApi.deleteModule(
-        robotName: robotName,
-        moduleID: moduleID,
-        drawerID: drawerID,
-      );
+      final deletionResult = await modulesApi.deleteModule(robotName: robotName, drawerAddress: drawerAddress);
       expect(deletionResult, isTrue);
     });
 
     test('can fill and empty module', () async {
       final creationResult = await modulesApi.createModule(
         robotName: robotName,
-        moduleID: moduleID,
-        drawerID: drawerID,
+        drawerAddress: drawerAddress,
         position: position,
         size: size,
         variant: variant,
@@ -87,33 +80,30 @@ void main() {
       expect(creationResult, isTrue);
       final fillModuleResult = await modulesApi.updateModuleContent(
         robotName: robotName,
-        moduleID: moduleID,
-        drawerID: drawerID,
+        drawerAddress: drawerAddress,
         itemsByCount: {itemID: quantity},
       );
       expect(fillModuleResult, isTrue);
       final modules = await modulesApi.getModules(robotName: robotName);
       final filledModule = modules.firstWhere(
-        (drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID,
+        (drawer) => drawer.address == drawerAddress,
         orElse: () => throw Exception('Drawer not found'),
       );
       expect(filledModule.itemsByCount, equals({'Stifte': 3}));
       final emptyResult = await modulesApi.emptyModule(
         robotName: robotName,
-        moduleID: moduleID,
-        drawerID: drawerID,
+        drawerAddress: drawerAddress,
       );
       expect(emptyResult, isTrue);
       final modules2 = await modulesApi.getModules(robotName: robotName);
       final emptiedModule = modules2.firstWhere(
-        (drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID,
+        (drawer) => drawer.address == drawerAddress,
         orElse: () => throw Exception('Drawer not found'),
       );
       expect(emptiedModule.itemsByCount, equals({}));
       final deletionResult = await modulesApi.deleteModule(
         robotName: robotName,
-        moduleID: moduleID,
-        drawerID: drawerID,
+        drawerAddress: drawerAddress,
       );
       expect(deletionResult, isTrue);
     });
@@ -121,8 +111,7 @@ void main() {
     test('can reserve and free drawer', () async {
       final creationResult = await modulesApi.createModule(
         robotName: robotName,
-        moduleID: moduleID,
-        drawerID: drawerID,
+        drawerAddress: drawerAddress,
         position: position,
         size: size,
         variant: variant,
@@ -130,36 +119,35 @@ void main() {
       expect(creationResult, isTrue);
       final reserveResult = await modulesApi.reserveModule(
         robotName: robotName,
-        moduleID: moduleID,
-        drawerID: drawerID,
+        drawerAddress: drawerAddress,
+        taskID: 'task1',
         userIDs: ['user1', 'user2'],
         userGroups: ['group1', 'group2'],
       );
       expect(reserveResult, isTrue);
       final modules = await modulesApi.getModules(robotName: robotName);
       final reservedModule = modules.firstWhere(
-        (drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID,
+        (drawer) => drawer.address == drawerAddress,
         orElse: () => throw Exception('Drawer not found'),
       );
+      expect(reservedModule.reservedForTask, equals('task1'));
       expect(reservedModule.reservedForIds, equals(['user1', 'user2']));
       expect(reservedModule.reservedForGroups, equals(['group1', 'group2']));
       final freeResult = await modulesApi.freeModule(
         robotName: robotName,
-        moduleID: moduleID,
-        drawerID: drawerID,
+        drawerAddress: drawerAddress,
       );
       expect(freeResult, isTrue);
       final modules2 = await modulesApi.getModules(robotName: robotName);
       final freedModule = modules2.firstWhere(
-        (drawer) => drawer.moduleID == moduleID && drawer.drawerID == drawerID,
+        (drawer) => drawer.address == drawerAddress,
         orElse: () => throw Exception('Drawer not found'),
       );
       expect(freedModule.reservedForIds, isEmpty);
       expect(freedModule.reservedForGroups, isEmpty);
       final deletionResult = await modulesApi.deleteModule(
         robotName: robotName,
-        moduleID: moduleID,
-        drawerID: drawerID,
+        drawerAddress: drawerAddress,
       );
       expect(deletionResult, isTrue);
     });

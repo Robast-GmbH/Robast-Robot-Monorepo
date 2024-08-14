@@ -7,7 +7,6 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/auth_view.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/disinfection_view.dart';
-import 'package:robot_frontend/widgets/drawer_view.dart';
 import 'package:robot_frontend/widgets/hint_view.dart';
 
 class ModuleProcessView extends StatefulWidget {
@@ -81,8 +80,8 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                 return AuthView(
                   requiredUserIDs: moduleInProcess.reservedForIds,
                   requiredUserGroups: moduleInProcess.reservedForGroups,
-                  onAuthCompleted: (wasAuthSuccessful) {
-                    if (wasAuthSuccessful) {
+                  onAuthCompleted: ({required bool wasSuccessful}) {
+                    if (wasSuccessful) {
                       Provider.of<ModuleProvider>(context, listen: false).fetchModules();
                     }
                   },
@@ -105,10 +104,10 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                     children: [
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.opening) ...[
                         HintView(
-                          text: modules[moduleInProcess.moduleID - 1].variant == DrawerVariant.electric
+                          text: modules[moduleInProcess.address.moduleID - 1].variant == DrawerVariant.electric
                               ? 'Gewählte Schublade öffnet sich'
                               : 'Bitte gewählte Schublade öffnen',
-                          moduleLabel: 'Modul ${moduleInProcess.moduleID}',
+                          moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
                         ),
                       ],
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.open) ...[
@@ -121,14 +120,14 @@ class _ModuleProcessViewState extends State<ModuleProcessView> {
                           child: HintView(
                             text:
                                 '${moduleInProcess.moduleProcess.itemsByChangeToString()}${moduleInProcess.variant == DrawerVariant.electric ? ' Zum Schließen tippen.' : ''}',
-                            moduleLabel: 'Modul ${moduleInProcess.moduleID}',
+                            moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
                           ),
                         ),
                       ],
                       if (moduleInProcess.moduleProcess.status == ModuleProcessStatus.closing) ...[
                         HintView(
                           text: 'Schublade schließt sich, bitte warten',
-                          moduleLabel: 'Module ${moduleInProcess.moduleID}',
+                          moduleLabel: 'Modul ${moduleInProcess.address.moduleID}',
                         ),
                       ],
                     ],

@@ -12,6 +12,7 @@ import threading
 
 class Robot:
     UPDATE_TIMER_INTERVAL_IN_S = 1
+    TASK_RECEIVE_WINDOW_IN_S = 5
 
     def __init__(
         self,
@@ -48,18 +49,28 @@ class Robot:
 
         return float(len(self.__subtask_queue))
 
-    def accept_task(self, task: Task) -> None:
-        if not self.__handle_requirements(task):
-            return
+    def accept_assigned_task(self, task: Task) -> bool:
+        self.__open_task_receive_window()
+        if self.__handle_requirements(task):
+            self.__task_manager.assign_task(task.id, self.__name)
+            self.__enqueue_task(task)
+            return True
+        return False
 
-        self.__task_manager.assign_task(task.id, self.__name)
-
-        with self.__subtask_queue_lock:
-            self.__subtask_queue.extend([subtask.id for subtask in task.subtasks])
-            self.__optimize_task_queue()
+    def accept_direct_task(self, task: Task) -> None:
+        self.__open_task_receive_window()
+        self.__enqueue_task(task)
 
     def is_drawer_type_mounted(self, drawer_type: int) -> bool:
-        return self.__module_manager.is_drawer_type_mounted(self.__name, drawer_type)
+        return self.__module_manager.is_module_type_mounted(self.__name, drawer_type)
+
+    def __open_task_receive_window(self) -> None:
+        if self.__timer:
+            self.__timer.cancel()
+            self.__timer = threading.Timer(
+                self.TASK_RECEIVE_WINDOW_IN_S, self.__task_status_update_callback
+            )
+            self.__timer.start()
 
     def __handle_requirements(self, task: Task) -> bool:
         if "required_drawer_type" in task.requirements:
@@ -76,7 +87,6 @@ class Robot:
             for subtask in subtasks_with_drawer_process:
                 subtask.write_drawer_address(drawer.address)
                 self.__task_manager.update_subtask(subtask)
-            self.__handle_subtask_requirements(subtasks_with_drawer_process[0])
         return True
 
     def __handle_subtask_requirements(self, subtask: SubTask) -> bool:
@@ -128,6 +138,7 @@ class Robot:
         current_task = self.__task_manager.read_subtask(self.__current_subtask_id)
         if not current_task:
             return
+        self.__current_node = self.__nav_graph.get_node_by_id(current_task.target_id)
         self.__done_subtasks_ids.append(current_task.id)
         queued_subtasks = self.__task_manager.read_subtasks_by_subtask_ids(
             self.__subtask_queue
@@ -140,7 +151,14 @@ class Robot:
         ]
         self.__task_manager.finish_subtask(current_task.parent_id, current_task.id)
         if related_drawer_tasks:
-            self.__handle_subtask_requirements(related_drawer_tasks[0])
+            self.__module_manager.reserve_module(
+                DrawerAddress.from_json(
+                    related_drawer_tasks[0].requirements["drawer_address"]
+                ),
+                current_task.parent_id,
+                [],
+                [],
+            )
         elif current_task.contains_drawer_process_action():
             self.__module_manager.free_module(
                 DrawerAddress.from_json(current_task.requirements["drawer_address"])
@@ -152,9 +170,10 @@ class Robot:
         self.__current_subtask_id = None
 
     def __start_next_task(self) -> None:
-        print(self.__subtask_queue)
         next_subtask = self.__task_manager.read_subtask(self.__subtask_queue[0])
         if not next_subtask:
+            return
+        if not self.__handle_subtask_requirements(next_subtask):
             return
         result = self.__fleet_management_api.dispatch_robot_task(
             next_subtask.to_robot_task_request()
@@ -165,6 +184,11 @@ class Robot:
             self.__current_subtask_fm_id = assigned_id
             self.__current_subtask_id = self.__subtask_queue.pop(0)
             self.__task_manager.start_subtask(self.__current_subtask_id)
+
+    def __enqueue_task(self, task: Task) -> None:
+        with self.__subtask_queue_lock:
+            self.__subtask_queue.extend([subtask.id for subtask in task.subtasks])
+            self.__optimize_task_queue()
 
     def __optimize_task_queue(self) -> None:
         queued_subtasks = self.__task_manager.read_subtasks_by_subtask_ids(

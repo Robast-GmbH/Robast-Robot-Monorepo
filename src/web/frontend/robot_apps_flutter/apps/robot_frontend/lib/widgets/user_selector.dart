@@ -61,16 +61,16 @@ class _UserSelectorState extends State<UserSelector> {
               child: FutureBuilder<List<User>>(
                 future: initUserSelectorFuture,
                 builder: (context, snapshot) {
-                  return DropdownButton<User>(
+                  return DropdownButton<String>(
                     disabledHint: const Text(''),
                     isExpanded: true,
-                    value: widget.controller.selectedUser,
+                    value: widget.controller.selectedUser?.id,
                     items: snapshot.connectionState != ConnectionState.done
                         ? []
                         : snapshot.data!
                             .map(
-                              (e) => DropdownMenuItem<User>(
-                                value: e,
+                              (e) => DropdownMenuItem<String>(
+                                value: e.id,
                                 child: Text(
                                   ' ${e.title}${e.title.isNotEmpty ? ' ' : ''}${e.firstName} ${e.lastName}',
                                   style: const TextStyle(
@@ -82,7 +82,9 @@ class _UserSelectorState extends State<UserSelector> {
                             .toList(),
                     onChanged: (value) {
                       setState(() {
-                        widget.controller.selectedUser = value;
+                        if (snapshot.data?.any((element) => element.id == value) ?? false) {
+                          widget.controller.selectedUser = snapshot.data!.firstWhere((element) => element.id == value);
+                        }
                       });
                     },
                   );

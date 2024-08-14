@@ -22,8 +22,7 @@ class ModulesApi {
 
   Future<bool> createModule({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
     required int position,
     required int size,
     required String variant,
@@ -33,8 +32,8 @@ class ModulesApi {
       data: {
         'drawer_address': {
           'robot_name': robotName,
-          'module_id': moduleID,
-          'drawer_id': drawerID,
+          'module_id': drawerAddress.moduleID,
+          'drawer_id': drawerAddress.drawerID,
         },
         'position': position,
         'size': size,
@@ -44,17 +43,13 @@ class ModulesApi {
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> deleteModule({
-    required String robotName,
-    required int moduleID,
-    required int drawerID,
-  }) async {
+  Future<bool> deleteModule({required String robotName, required DrawerAddress drawerAddress}) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/delete_module'),
       data: {
         'robot_name': robotName,
-        'module_id': moduleID,
-        'drawer_id': drawerID,
+        'module_id': drawerAddress.moduleID,
+        'drawer_id': drawerAddress.drawerID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
@@ -62,15 +57,14 @@ class ModulesApi {
 
   Future<bool> emptyModule({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
   }) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/empty_module'),
       data: {
         'robot_name': robotName,
-        'module_id': moduleID,
-        'drawer_id': drawerID,
+        'module_id': drawerAddress.moduleID,
+        'drawer_id': drawerAddress.drawerID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
@@ -78,8 +72,7 @@ class ModulesApi {
 
   Future<bool> updateModuleContent({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
     required Map<String, int> itemsByCount,
   }) async {
     final response = await RequestService.tryPost(
@@ -87,8 +80,8 @@ class ModulesApi {
       data: {
         'drawer_address': {
           'robot_name': robotName,
-          'module_id': moduleID,
-          'drawer_id': drawerID,
+          'module_id': drawerAddress.moduleID,
+          'drawer_id': drawerAddress.drawerID,
         },
         'items_by_count': itemsByCount,
       },
@@ -98,15 +91,14 @@ class ModulesApi {
 
   Future<bool> freeModule({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
   }) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/free_module'),
       data: {
         'robot_name': robotName,
-        'module_id': moduleID,
-        'drawer_id': drawerID,
+        'module_id': drawerAddress.moduleID,
+        'drawer_id': drawerAddress.drawerID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
@@ -114,8 +106,8 @@ class ModulesApi {
 
   Future<bool> reserveModule({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
+    required String taskID,
     required List<String> userIDs,
     required List<String> userGroups,
   }) async {
@@ -124,9 +116,10 @@ class ModulesApi {
       data: {
         'drawer_address': {
           'robot_name': robotName,
-          'module_id': moduleID,
-          'drawer_id': drawerID,
+          'module_id': drawerAddress.moduleID,
+          'drawer_id': drawerAddress.drawerID,
         },
+        'task_id': taskID,
         'user_ids': userIDs,
         'user_groups': userGroups,
       },
@@ -157,15 +150,14 @@ class ModulesApi {
 
   Future<bool> openDrawer({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
   }) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/open_drawer'),
       data: {
         'robot_name': robotName,
-        'module_id': moduleID,
-        'drawer_id': drawerID,
+        'module_id': drawerAddress.moduleID,
+        'drawer_id': drawerAddress.drawerID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
@@ -173,15 +165,14 @@ class ModulesApi {
 
   Future<bool> closeDrawer({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
   }) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/close_drawer'),
       data: {
         'robot_name': robotName,
-        'module_id': moduleID,
-        'drawer_id': drawerID,
+        'module_id': drawerAddress.moduleID,
+        'drawer_id': drawerAddress.drawerID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
@@ -189,15 +180,14 @@ class ModulesApi {
 
   Future<bool> finishModuleProcess({
     required String robotName,
-    required int moduleID,
-    required int drawerID,
+    required DrawerAddress drawerAddress,
   }) async {
     final response = await RequestService.tryPost(
       uri: Uri.parse('$prefix/modules/finish_module_process'),
       data: {
         'robot_name': robotName,
-        'module_id': moduleID,
-        'drawer_id': drawerID,
+        'module_id': drawerAddress.moduleID,
+        'drawer_id': drawerAddress.drawerID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);

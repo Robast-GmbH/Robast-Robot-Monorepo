@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:uuid/uuid.dart';
@@ -28,19 +26,36 @@ class TaskProvider extends ChangeNotifier {
   }) async {
     final dropoffItemsByChange = itemsByChange.map((key, value) => MapEntry(key, -value));
     final task = Task.delivery(
-      id: const Uuid().v4(),
       requiredDrawerType: requiredDrawerType,
-      pickupTaskID: const Uuid().v4(),
       pickupTargetID: pickupTargetID,
       pickupItemsByChange: itemsByChange,
       senderUserIDs: senderUserIDs,
       senderUserGroups: senderUserGroups,
-      dropoffTaskID: const Uuid().v4(),
       dropoffTargetID: dropoffTargetID,
       dropoffItemsByChange: dropoffItemsByChange,
       recipientUserIDs: recipientUserIDs,
       recipientUserGroups: recipientUserGroups,
     );
+    final wasSuccessful = await _middlewareApiUtilities.tasks.postTaskRequest(task: task);
+    return wasSuccessful;
+  }
+
+  Future<bool> createDirectDropoffTask({
+    required String robotName,
+    required String dropoffTargetID,
+    required User user,
+    required RobotDrawer drawer,
+  }) async {
+    final dropoffItemsByChange = drawer.itemsByCount.map((key, value) => MapEntry(key, -value));
+    final task = Task.dropoff(
+      robotName: 'rb_theron',
+      targetID: dropoffTargetID,
+      itemsByChange: dropoffItemsByChange,
+      recipientUserIDs: [user.id],
+      recipientUserGroups: [],
+      drawerAddress: drawer.address,
+    );
+
     final wasSuccessful = await _middlewareApiUtilities.tasks.postTaskRequest(task: task);
     return wasSuccessful;
   }

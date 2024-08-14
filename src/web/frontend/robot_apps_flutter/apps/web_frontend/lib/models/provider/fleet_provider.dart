@@ -20,7 +20,7 @@ class FleetProvider extends ChangeNotifier {
   }
 
   List<String> getIDsOfModules({required String robotName}) {
-    return modules[robotName]?.map((e) => '${e.moduleID}_${e.drawerID}').toList() ?? [];
+    return modules[robotName]?.map((e) => '${e.address.moduleID}_${e.address.drawerID}').toList() ?? [];
   }
 
   Future<void> updateProviderData() async {
@@ -99,8 +99,7 @@ class FleetProvider extends ChangeNotifier {
   }) async {
     await _middlewareApi.modules.openDrawer(
       robotName: robotName,
-      moduleID: moduleID,
-      drawerID: drawerID,
+      drawerAddress: DrawerAddress(moduleID: moduleID, drawerID: drawerID),
     );
     await updateModules();
   }
@@ -112,8 +111,7 @@ class FleetProvider extends ChangeNotifier {
   }) async {
     await _middlewareApi.modules.closeDrawer(
       robotName: robotName,
-      moduleID: moduleID,
-      drawerID: drawerID,
+      drawerAddress: DrawerAddress(moduleID: moduleID, drawerID: drawerID),
     );
     await updateModules();
   }
