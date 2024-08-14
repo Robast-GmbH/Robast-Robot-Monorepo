@@ -81,6 +81,12 @@ namespace utils
           static_cast<module_config::ModuleSetting<module_config::drawer::USE_TMC_STALL_GUARD>::type>(config_value));
         break;
 
+      case module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD:
+        _drawer_config->set_use_motor_monitor_stall_guard(
+          static_cast<module_config::ModuleSetting<module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD>::type>(
+            config_value));
+        break;
+
       case module_config::drawer::DRAWER_DEFAULT_ACCELERATION:
         _drawer_config->set_drawer_default_acceleration(
           static_cast<module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::type>(
@@ -245,6 +251,10 @@ namespace utils
     set_config(
       module_config::drawer::USE_TMC_STALL_GUARD,
       static_cast<uint32_t>(module_config::ModuleSetting<module_config::drawer::USE_TMC_STALL_GUARD>::default_value));
+
+    set_config(module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD,
+               static_cast<uint32_t>(
+                 module_config::ModuleSetting<module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD>::default_value));
 
     set_config(module_config::drawer::DRAWER_DEFAULT_ACCELERATION,
                static_cast<uint32_t>(

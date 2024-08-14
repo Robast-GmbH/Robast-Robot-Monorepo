@@ -235,7 +235,10 @@ namespace drawer
       _is_tmc_stall_guard_triggered = _motor->get_is_stalled();
     }
 
-    _is_motor_monitor_stall_guard_triggered = _motor_monitor->is_motor_stalled();
+    if (_config->get_use_motor_monitor_stall_guard())
+    {
+      _is_motor_monitor_stall_guard_triggered = _motor_monitor->is_motor_stalled();
+    }
 
     if (!_is_tmc_stall_guard_triggered && !_is_motor_monitor_stall_guard_triggered)
     {

@@ -45,6 +45,8 @@ TEST_CASE("Test if default configs are set correctly.", "[config_manager]")
               module_config::drawer::STALL_GUARD_WAIT_TIME_AFTER_MOVEMENT_STARTED_IN_MS>::default_value);
     REQUIRE(e_drawer_config->get_use_tmc_stall_guard() ==
             module_config::ModuleSetting<module_config::drawer::USE_TMC_STALL_GUARD>::default_value);
+    REQUIRE(e_drawer_config->get_use_motor_monitor_stall_guard() ==
+            module_config::ModuleSetting<module_config::drawer::USE_MOTOR_MONITOR_STALL_GUARD>::default_value);
     REQUIRE(e_drawer_config->get_drawer_default_acceleration() ==
             module_config::ModuleSetting<module_config::drawer::DRAWER_DEFAULT_ACCELERATION>::default_value);
   }

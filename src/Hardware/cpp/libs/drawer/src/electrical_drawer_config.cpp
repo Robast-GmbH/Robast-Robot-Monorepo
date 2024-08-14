@@ -57,6 +57,11 @@ namespace drawer
     _use_tmc_stall_guard = use_tmc_stall_guard;
   }
 
+  void ElectricalDrawerConfig::set_use_motor_monitor_stall_guard(const bool use_motor_monitor_stall_guard)
+  {
+    _use_motor_monitor_stall_guard = use_motor_monitor_stall_guard;
+  }
+
   void ElectricalDrawerConfig::set_drawer_default_acceleration(const uint8_t acceleration)
   {
     _drawer_default_acceleration = acceleration;
@@ -117,8 +122,13 @@ namespace drawer
     return _use_tmc_stall_guard;
   }
 
+  bool ElectricalDrawerConfig::get_use_motor_monitor_stall_guard() const
+  {
+    return _use_motor_monitor_stall_guard;
+  }
+
   uint8_t ElectricalDrawerConfig::get_drawer_default_acceleration() const
   {
     return _drawer_default_acceleration;
   }
-}   // namespace drawer_controller
+}   // namespace drawer
