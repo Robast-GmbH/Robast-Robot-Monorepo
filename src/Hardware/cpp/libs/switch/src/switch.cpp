@@ -11,8 +11,7 @@ namespace switch_lib
         _pin_id{pin_id},
         _switch_pressed_threshold{switch_pressed_threshold},
         _type{type},
-        _new_reading_weight{new_reading_weight},
-        _moving_average{0.0}
+        _new_reading_weight{new_reading_weight}
   {
     _gpio_wrapper->set_pin_mode(_pin_id, true);
   }

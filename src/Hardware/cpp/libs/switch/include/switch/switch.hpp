@@ -33,7 +33,7 @@ namespace switch_lib
     const std::shared_ptr<interfaces::IGpioWrapper> _gpio_wrapper;
     const float _switch_pressed_threshold;
     const float _new_reading_weight;
-    float _moving_average;
+    float _moving_average = 0;
   };
 } // namespace switch_lib
 
