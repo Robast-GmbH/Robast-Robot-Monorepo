@@ -40,16 +40,15 @@ namespace nfc_bridge
     _serial_connector->close_serial();
   }
 
-  bool NFCBridge::wait_for_tag()
+  bool NFCBridge::wait_for_tag(uint32_t max_iterations)
   {
     std::string response = "";
-    u_int8_t result = 0;
-    int max_iterations = 100;
+    uint8_t result = 0;
     while (result != 1 && max_iterations-- >= 1)
     {
       std::string tmp = "";
       _serial_connector->ascii_interaction(Twn4Elatec::search_tag_req(0x10), response);
-      Twn4Elatec::seatch_tag_resp(response, result, tmp);
+      Twn4Elatec::search_tag_resp(response, result, tmp);
       rclcpp::sleep_for(std::chrono::milliseconds(300));
     }
     return result == Twn4Elatec::ResultOK;
@@ -61,8 +60,9 @@ namespace nfc_bridge
     {
       return false;
     }
+    max_iterations /= 2;
     start_up_scanner();
-    if (!wait_for_tag())
+    if (!wait_for_tag(max_iterations))
     {
       shutdown_scanner();
       return false;
@@ -88,7 +88,8 @@ namespace nfc_bridge
       return false;
     }
     start_up_scanner();
-    if (!wait_for_tag())
+    max_iterations /= 2;
+    if (!wait_for_tag(max_iterations))
     {
       shutdown_scanner();
       return false;
