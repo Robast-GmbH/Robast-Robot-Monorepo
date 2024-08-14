@@ -87,4 +87,12 @@ class RobotProvider extends ChangeNotifier {
   Future<void> unblockNavigation() async {
     await _robotAPI.unblockNavigation();
   }
+
+  Future<bool> waitForDisinfectionTriggered({required VoidCallback onDisinfection, int timeout = 10}) async {
+    final wasSuccessful = await _robotAPI.waitForDisinfectionTriggered(timeout: timeout);
+    if (wasSuccessful) {
+      onDisinfection();
+    }
+    return wasSuccessful;
+  }
 }

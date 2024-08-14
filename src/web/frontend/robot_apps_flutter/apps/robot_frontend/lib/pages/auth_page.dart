@@ -61,12 +61,14 @@ class _AuthPageState extends State<AuthPage> {
               )
             : DisinfectionView(
                 onDisinfection: () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute<MenuPage>(
-                      builder: (context) => const MenuPage(),
-                    ),
-                  );
+                  if (context.mounted) {
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute<MenuPage>(
+                        builder: (context) => const MenuPage(),
+                      ),
+                    );
+                  }
                 },
               ),
       ),

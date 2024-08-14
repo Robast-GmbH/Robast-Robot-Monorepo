@@ -23,22 +23,8 @@ class ModuleProcess:
     def from_request_msg(
         cls, request_msg: DispenserRequest | IngestorRequest
     ) -> ModuleProcess:
-        # For now the drawer_address and robot_name is derived from the entered item type
-        # Example: 2,0,item_type,rb_theron for module 2 drawer 0 on rb_theron
         input_str = request_msg.items[0].type_guid
-        parts = input_str.split(",")
-
-        # Extracting the components
-        module_id = parts[0].strip()
-        drawer_id = parts[1].strip()
-        json_str = ",".join(parts[2:-1]).strip()
-        robot_name = parts[-1].strip()
-
-        # Step 2: Replace single quotes with double quotes in the JSON string
-        json_str = json_str.replace("''", '"').replace("'", '"')
-
-        # Step 3: Parse the JSON string
-        items_by_change = json.loads(json_str)
+        action_data = json.loads(input_str)
 
         process_name = (
             PICK_UP_PROCESS
@@ -46,11 +32,11 @@ class ModuleProcess:
             else DROP_OFF_PROCESS
         )
         return cls(
-            robot_name=robot_name,
-            module_id=int(module_id),
-            drawer_id=int(drawer_id),
+            robot_name=action_data["parameters"]["drawer_address"]["robot_name"],
+            module_id=int(action_data["parameters"]["drawer_address"]["module_id"]),
+            drawer_id=int(action_data["parameters"]["drawer_address"]["drawer_id"]),
             process_name=process_name,
-            items_by_change=items_by_change,
+            items_by_change=action_data["parameters"]["items_by_change"],
             request_guid=request_msg.request_guid,
             target_guid=request_msg.target_guid,
             is_in_process=True,

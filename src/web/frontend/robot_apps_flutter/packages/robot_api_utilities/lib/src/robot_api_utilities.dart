@@ -114,4 +114,24 @@ class RobotApiUtilities {
       return false;
     }
   }
+
+  Future<bool> waitForDisinfectionTriggered({int timeout = 10}) async {
+    try {
+      final headers = {
+        'Content-Type': 'application/json',
+      };
+      final response = await http.get(
+        Uri.parse('$prefix/disinfection_triggered?timeout=$timeout'),
+        headers: headers,
+      );
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body) as Map<String, dynamic>;
+        return data['status'] as String == 'success';
+      } else {
+        return false;
+      }
+    } catch (e) {
+      return false;
+    }
+  }
 }

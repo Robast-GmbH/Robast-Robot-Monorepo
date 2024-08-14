@@ -7,7 +7,7 @@ class ExpandableTaskTile extends StatefulWidget {
     super.key,
   });
 
-  final Task task;
+  final SubTask task;
 
   @override
   State<ExpandableTaskTile> createState() => _ExpandableTaskTileState();
@@ -32,11 +32,6 @@ class _ExpandableTaskTileState extends State<ExpandableTaskTile> {
           child: ExpansionTile(
             title: Row(
               children: [
-                Text(widget.task.itemsByChange.keys.map((e) => e).join(', ')),
-                const SizedBox(
-                  width: 4,
-                ),
-                Text(widget.task.taskType),
                 const SizedBox(
                   width: 4,
                 ),
@@ -44,19 +39,14 @@ class _ExpandableTaskTileState extends State<ExpandableTaskTile> {
                 const SizedBox(
                   width: 4,
                 ),
-                Text('in drawer ${widget.task.address.moduleID}_${widget.task.address.drawerID}'),
               ],
             ),
             children: [
               buildTaskInfoTile(title: 'ID', subtitle: widget.task.id),
               buildTaskInfoTile(title: 'Status', subtitle: widget.task.status),
-              buildTaskInfoTile(title: 'Erstellungsdatum', subtitle: unixTimeStampToFormattedString(unixTimeStamp: widget.task.creationDate)),
               if (widget.task.requiresTaskID != null) buildTaskInfoTile(title: 'Erfordert Task', subtitle: widget.task.requiresTaskID!),
               buildTaskInfoTile(title: 'Zugewiesen an', subtitle: widget.task.assigneeName),
               buildTaskInfoTile(title: 'Priorität', subtitle: widget.task.priority.toString()),
-              buildTaskInfoTile(title: 'Schubladentyp', subtitle: widget.task.drawerType.toString()),
-              if (widget.task.authUsers.isNotEmpty) buildTaskInfoTile(title: 'Authentifizierte Nutzer', subtitle: widget.task.authUsers.join(', ')),
-              if (widget.task.authUserGroups.isNotEmpty) buildTaskInfoTile(title: 'Authentifizierte Gruppen', subtitle: widget.task.authUserGroups.join(', ')),
             ],
           ),
         ),

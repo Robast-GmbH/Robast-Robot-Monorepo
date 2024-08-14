@@ -45,7 +45,7 @@ class _RobotTaskViewState extends State<RobotTaskView> {
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text('Category: ${filteredTasks[index].taskType}'),
+                    Text('Category: ${filteredTasks[index].name}'),
                     const Text('State: To be implemented'),
                   ],
                 ),

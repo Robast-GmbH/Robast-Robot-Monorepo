@@ -1,4 +1,4 @@
-from task_assignment_system.models.node import Node
+from task_system.models.node import Node
 from dataclasses import dataclass, field
 
 

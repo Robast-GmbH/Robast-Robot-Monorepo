@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
@@ -12,8 +11,10 @@ class ModuleProvider extends ChangeNotifier {
   final _middlewareApiUtilities = MiddlewareApiUtilities();
 
   Future<void> startModulesUpdateTimer({VoidCallback? onModuleProcess}) async {
+    _modulesUpdateTimer?.cancel();
     final modules = await _middlewareApiUtilities.modules.getModules(robotName: 'rb_theron');
     setModules(modules);
+
     _modulesUpdateTimer = Timer.periodic(const Duration(milliseconds: 500), (timer) async {
       await fetchModules();
       if (_modules.any((element) => element.moduleProcess.status != ModuleProcessStatus.idle)) {
