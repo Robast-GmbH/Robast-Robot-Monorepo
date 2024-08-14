@@ -19,5 +19,5 @@
     "license": "MIT",
     "frameworks": "*",
     "platforms": "*",
-    "headers": ["global.hpp", "task_params.hpp"]
+    "headers": ["global.hpp"]
   }
