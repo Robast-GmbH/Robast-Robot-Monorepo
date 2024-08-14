@@ -42,7 +42,8 @@ class TaskProvider extends ChangeNotifier {
   Future<bool> createDirectDropoffTask({
     required String robotName,
     required String dropoffTargetID,
-    required User user,
+    required User? user,
+    required List<String> userGroups,
     required RobotDrawer submodule,
   }) async {
     final dropoffItemsByChange = submodule.itemsByCount.map((key, value) => MapEntry(key, -value));
@@ -50,8 +51,8 @@ class TaskProvider extends ChangeNotifier {
       robotName: 'rb_theron',
       targetID: dropoffTargetID,
       itemsByChange: dropoffItemsByChange,
-      recipientUserIDs: [user.id],
-      recipientUserGroups: [],
+      recipientUserIDs: user?.id != null ? [user!.id] : [],
+      recipientUserGroups: userGroups,
       drawerAddress: submodule.address,
     );
 

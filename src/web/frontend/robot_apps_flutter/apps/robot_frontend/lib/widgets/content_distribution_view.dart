@@ -157,11 +157,13 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                             final submoduleAddress = widget.preselectedSubmodules[i];
                             final submodule = submodules.firstWhere((element) => element.address == submoduleAddress);
                             final controller = widget.userSelectionControllers[i];
-                            final user = controller.selectedUser!;
+                            final user = controller.selectedUser;
+                            final userGroups = widget.userGroupsSelectionControllers[i].selectionAsStringList();
                             await taskProvider.createDirectDropoffTask(
                               robotName: 'rb_theron',
                               dropoffTargetID: widget.locationSelectionControllers[i].room!,
                               user: user,
+                              userGroups: userGroups,
                               submodule: submodule,
                             );
                           }
