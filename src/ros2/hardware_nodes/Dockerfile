@@ -42,14 +42,24 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 ############################## Build ##################################
 FROM ros:humble-ros-base-jammy as build
 ARG GIT_TOKEN
-ARG GIT_BRANCH=dev/RE-2121-fixed
 COPY --from=devel / /
 COPY . /ws/src/hardware_nodes
 RUN apt-get update && apt-get install -y git
 
 
+# TODO: No idea why but it seems that this version is broken: ros-humble-ros2-socketcan/jammy 1.3.0-1jammy.20240729.003002 amd64
+# Therefore we need to install it manually for now
+WORKDIR /ros2_socketcan_ws
+RUN git clone -b ${ROS_DISTRO} https://github.com/autowarefoundation/ros2_socketcan.git
+RUN rosdep update && \
+  rosdep install --from-paths /ros2_socketcan_ws/ros2_socketcan --ignore-src -r -y && \
+  . /opt/ros/${ROS_DISTRO}/setup.sh && \
+  colcon build --install-base /robast/${ROS_DISTRO}/
+
+
 WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+# TODO: Put in correct branch (main)
+RUN git clone -b dev/RE-2121-fixed https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
 
 
 WORKDIR /ws
