@@ -36,7 +36,7 @@ namespace nfc_bridge
                                std::array<uint8_t, 16>& data,
                                std::string& nfc_key);
     static void ntag_write_resp(const std::string& response, uint8_t& result);
-    static void seatch_tag_resp(const std::string& response, uint8_t& result, std::string& tagID);
+    static void search_tag_resp(const std::string& response, uint8_t& result, std::string& tagID);
   };
 
   // Initialize constants
@@ -106,7 +106,7 @@ namespace nfc_bridge
     result = std::stoi(response.substr(2, 2), nullptr, 16);
   }
 
-  void Twn4Elatec::seatch_tag_resp(const std::string& response, uint8_t& result, std::string& tagType)
+  void Twn4Elatec::search_tag_resp(const std::string& response, uint8_t& result, std::string& tagType)
   {
     if (response.size() < 10)
     {
