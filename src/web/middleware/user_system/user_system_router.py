@@ -84,7 +84,7 @@ def create_and_write_user_nfc_id(robot_name: str, user_id: str):
         user_repository.update_user(user_id=user_id, nfc_id=new_nfc_id)
         robot_url = URLHelper.get_robot_url(robot_name)
         response = requests.post(
-            f"{robot_url}/write_nfc_tag?nfc_tag_id={new_nfc_id}"
+            f"{robot_url}/write_nfc_tag?nfc_tag_id={new_nfc_id}&timeout_in_s=30"
         ).json()
         return response
 
