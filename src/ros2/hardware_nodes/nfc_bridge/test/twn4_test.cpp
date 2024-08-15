@@ -100,13 +100,13 @@ TEST_CASE("ntag_write_resp - Invalid response format")
   REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::ntag_write_resp(response, result), std::invalid_argument);
 }
 
-TEST_CASE("seatch_tag_resp - Valid response")
+TEST_CASE("search_tag_resp - Valid response")
 {
   std::string response = "0001FF123456789";
   uint8_t result;
   std::string tagType;
 
-  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::seatch_tag_resp(response, result, tagType));
+  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::search_tag_resp(response, result, tagType));
 
   SECTION("Result should be parsed correctly")
   {

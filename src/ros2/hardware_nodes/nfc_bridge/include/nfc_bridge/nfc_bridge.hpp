@@ -38,7 +38,7 @@ namespace nfc_bridge
     void boot_beep();
     void start_up_scanner();
     void shutdown_scanner();
-    bool wait_for_tag();
+    bool wait_for_tag(uint32_t max_iterations = 100);
     bool read_nfc_code(std::string& nfc_code, const uint32_t max_iterations = 100);
     bool write_nfc_code(const std::string nfc_key, const std::string nfc_tag_type = "", const uint32_t max_iterations = 20);
 
