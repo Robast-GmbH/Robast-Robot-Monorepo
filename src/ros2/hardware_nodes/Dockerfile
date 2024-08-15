@@ -58,8 +58,7 @@ RUN rosdep update && \
 
 
 WORKDIR /tmp
-# TODO: Put in correct branch (main)
-RUN git clone -b dev/RE-2121-fixed https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+RUN git clone -b main https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
 
 
 WORKDIR /ws
