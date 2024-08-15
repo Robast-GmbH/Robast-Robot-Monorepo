@@ -111,7 +111,7 @@ void setup()
   debug_setup(115200);
   debug_println("[Main]: Start...");
 
-  std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(2);
+  std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(1);
   wire_port_expander->begin(peripherals::i2c::I2C_SDA, peripherals::i2c::I2C_SCL);
 
   gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(

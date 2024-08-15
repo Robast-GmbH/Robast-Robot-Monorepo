@@ -18,8 +18,8 @@ namespace peripherals
 
   namespace i2c
   {
-    constexpr gpio_num_t I2C_SDA = GPIO_NUM_21;
-    constexpr gpio_num_t I2C_SCL = GPIO_NUM_22;
+    constexpr gpio_num_t I2C_SDA = GPIO_NUM_22;
+    constexpr gpio_num_t I2C_SCL = GPIO_NUM_21;
   }   // namespace i2c
 
 }   // namespace peripherals
