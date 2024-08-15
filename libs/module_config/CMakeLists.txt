@@ -36,6 +36,13 @@ if(BUILD_TESTING)
     ament_cppcheck()
 endif()
 
+install(TARGETS
+    library_module_config
+    ARCHIVE DESTINATION lib
+    LIBRARY DESTINATION lib
+    RUNTIME DESTINATION bin
+)
+
 install(DIRECTORY include/
     DESTINATION include
 )
