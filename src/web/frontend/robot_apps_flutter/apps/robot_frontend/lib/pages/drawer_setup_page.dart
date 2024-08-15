@@ -62,7 +62,7 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                 child: Padding(
                   padding: const EdgeInsets.only(top: 16, bottom: 32),
                   child: Selector<ModuleProvider, List<RobotDrawer>>(
-                    selector: (_, provider) => provider.modules,
+                    selector: (_, provider) => provider.submodules,
                     builder: (context, modules, child) {
                       updateSlots(modules);
                       return Column(
@@ -140,8 +140,10 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                               if (selectedSlots.every((slot) => !slot)) return;
                               await Provider.of<ModuleProvider>(context, listen: false).createModule(
                                 robotName: 'rb_theron',
-                                moduleID: int.tryParse(controller.text) ?? 0,
-                                drawerID: 0,
+                                drawerAddress: DrawerAddress(
+                                  moduleID: int.tryParse(controller.text) ?? 0,
+                                  drawerID: 0,
+                                ),
                                 position: selectedSlots.indexWhere((slot) => slot) + 1,
                                 size: selectedSlots.where((slot) => slot).length,
                                 variant: isElectric ? 'electric' : 'manual',
@@ -158,11 +160,10 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                           TextButton.icon(
                             onPressed: () async {
                               final modulesProvider = Provider.of<ModuleProvider>(context, listen: false);
-                              for (final drawer in modulesProvider.modules) {
+                              for (final drawer in modulesProvider.submodules) {
                                 await modulesProvider.deleteModule(
                                   robotName: 'rb_theron',
-                                  moduleID: drawer.moduleID,
-                                  drawerID: drawer.drawerID,
+                                  drawerAddress: drawer.address,
                                 );
                               }
                               selectedSlots.fillRange(0, selectedSlots.length, false);

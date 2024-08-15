@@ -87,7 +87,7 @@ class ModuleRepository:
             )
         return None
 
-    def read_robot_drawers(self, robot_name: str) -> List[Drawer]:
+    def read_robot_modules(self, robot_name: str) -> List[Drawer]:
         sql = "SELECT * FROM drawers WHERE robot_name = ?"
         db_connection = sqlite3.connect(self.__db_path)
         cursor = db_connection.cursor()

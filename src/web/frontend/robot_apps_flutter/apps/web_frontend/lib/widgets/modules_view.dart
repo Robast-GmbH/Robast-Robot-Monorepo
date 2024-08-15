@@ -37,21 +37,21 @@ class _ModulesViewState extends State<ModulesView> {
           itemBuilder: (context, index) {
             final isOpen = robotModules![index].moduleProcess.status == ModuleProcessStatus.open;
             return ListTile(
-              title: Text('${robotModules[index].moduleID}_${robotModules[index].drawerID}'),
+              title: Text('${robotModules[index].address.moduleID}_${robotModules[index].address.drawerID}'),
               subtitle: Text(isOpen ? 'Opened' : 'Closed'),
               style: ListTileStyle.list,
               onTap: () {
                 if (isOpen && robotModules[index].variant == DrawerVariant.electric) {
                   Provider.of<FleetProvider>(context, listen: false).closeDrawer(
                     robotName: widget.robotName,
-                    moduleID: robotModules[index].moduleID,
-                    drawerID: robotModules[index].drawerID,
+                    moduleID: robotModules[index].address.moduleID,
+                    drawerID: robotModules[index].address.drawerID,
                   );
                 } else if (!isOpen) {
                   Provider.of<FleetProvider>(context, listen: false).openDrawer(
                     robotName: widget.robotName,
-                    moduleID: robotModules[index].moduleID,
-                    drawerID: robotModules[index].drawerID,
+                    moduleID: robotModules[index].address.moduleID,
+                    drawerID: robotModules[index].address.drawerID,
                   );
                 }
               },

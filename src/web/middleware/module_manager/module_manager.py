@@ -8,12 +8,12 @@ class ModuleManager:
     def __init__(self):
         self.repository = ModuleRepository()
 
-    def is_drawer_type_mounted(self, robot_name: str, size: int) -> bool:
-        drawers = self.repository.read_robot_drawers(robot_name)
-        return any(drawer.size == size for drawer in drawers)
+    def is_module_type_mounted(self, robot_name: str, size: int) -> bool:
+        modules = self.repository.read_robot_modules(robot_name)
+        return any(module.size == size for module in modules)
 
     def is_module_size_available(self, robot_name: str, size: int) -> bool:
-        drawers = self.repository.read_robot_drawers(robot_name)
+        drawers = self.repository.read_robot_modules(robot_name)
         return any(
             drawer.size == size
             and not drawer.reserved_for_ids
@@ -22,8 +22,8 @@ class ModuleManager:
         )
 
     def get_modules(self, robot_name: str) -> list[dict[str, Any]]:
-        drawers = self.repository.read_robot_drawers(robot_name)
-        return [drawer.to_json() for drawer in drawers]
+        modules = self.repository.read_robot_modules(robot_name)
+        return [module.to_json() for module in modules]
 
     def create_module(
         self,
@@ -101,7 +101,7 @@ class ModuleManager:
         user_ids: list[str],
         user_groups: list[str],
     ) -> Drawer | None:
-        drawers = self.repository.read_robot_drawers(robot_name)
+        drawers = self.repository.read_robot_modules(robot_name)
         for drawer in drawers:
             if (
                 drawer.size == size
