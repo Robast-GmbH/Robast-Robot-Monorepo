@@ -1,5 +1,5 @@
 # request
-uint16 timout_in_s
+uint16 timeout_in_s
 ---
 # response
 string nfc_tag_id

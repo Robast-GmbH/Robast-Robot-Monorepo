@@ -121,16 +121,16 @@ namespace nfc_bridge
     return true;
   }
 
-  uint32_t NFCBridge::calculate_max_iterations(uint16_t timout_in_s)
+  uint32_t NFCBridge::calculate_max_iterations(uint16_t timeout_in_s)
   {
-    return timout_in_s*_nfc_buffer_read_freq;
+    return timeout_in_s*_nfc_buffer_read_freq;
   }
 
   void NFCBridge::write_nfc_callback(const std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Request> request,
                                      std::shared_ptr<communication_interfaces::srv::WriteNfcTag::Response> response)
   {
     // Implement your logic to write data to an NFC tag
-    uint32_t max_iterations = calculate_max_iterations(request->timout_in_s);
+    uint32_t max_iterations = calculate_max_iterations(request->timeout_in_s);
     response->success = write_nfc_code(request->nfc_tag_id, "", max_iterations);
   }
 
@@ -138,7 +138,7 @@ namespace nfc_bridge
                                     std::shared_ptr<communication_interfaces::srv::ReadNfcTag::Response> response)
   {
     std::string nfc_key = "";
-    uint32_t max_iterations = calculate_max_iterations(request->timout_in_s);
+    uint32_t max_iterations = calculate_max_iterations(request->timeout_in_s);
 
     if (read_nfc_code(nfc_key, max_iterations))
     {
