@@ -63,7 +63,7 @@ RUN git clone -b dev/RE-2121-fixed https://$GIT_TOKEN@github.com/Robast-GmbH/Mon
 
 
 WORKDIR /ws
-RUN mkdir -p /ws/src/ros2/ && mkdir /robast\
+RUN mkdir -p /ws/src/ros2/ && mkdir -p /robast\
   && mv /tmp/Monorepo/src/ros2/communication_interfaces /ws/src/ros2/communication_interfaces \
   && mv /tmp/Monorepo/src/ros2/error_handling /ws/src/ros2/error_handling \
   && mv /tmp/Monorepo/libs ws/ \
