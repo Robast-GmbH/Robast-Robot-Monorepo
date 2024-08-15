@@ -4,9 +4,11 @@
 #include "drawer_controller/global.hpp"
 #include "lock/tray_manager.hpp"
 
+// These are the very basic top level configurations for the drawer controller you need to set.
 constexpr uint32_t MODULE_ID = 6;
 constexpr uint8_t LOCK_ID = 0;
 constexpr bool USE_ENCODER = true;
+constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_closed;
 
 constexpr uint8_t NUM_OF_LEDS = 21;
 
@@ -147,7 +149,7 @@ void setup()
   endstop_switch = std::make_shared<switch_lib::Switch>(gpio_wrapper,
                                                         pin_id::SENSE_INPUT_DRAWER_1_CLOSED,
                                                         SWITCH_PRESSED_THRESHOLD,
-                                                        switch_lib::Switch::normally_open,
+                                                        ENDSTOP_SWITCH_TYPE,
                                                         SWITCH_WEIGHT_NEW_VALUES);
 
   std::vector<TrayPinConfig> tray_pin_config = {
