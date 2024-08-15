@@ -40,9 +40,10 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 
 
 ############################## Build ##################################
+ARG GIT_BRANCH=main
 FROM ros:humble-ros-base-jammy as build
 ARG GIT_TOKEN
-ARG GIT_BRANCH=main
+ARG GIT_BRANCH
 COPY --from=devel / /
 COPY . /ws/src/hardware_nodes
 RUN apt-get update && apt-get install -y git
