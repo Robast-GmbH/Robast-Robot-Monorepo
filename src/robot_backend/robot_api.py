@@ -127,13 +127,15 @@ def get_nfc_tag():
 
 
 @app.post("/write_nfc_tag", tags=["NFC"])
-def write_nfc_tag(nfc_tag_id: str):
-    return ros_bridge.nfc_bridge.write_nfc_tag(nfc_tag_id=nfc_tag_id)
+def write_nfc_tag(nfc_tag_id: str, timeout_in_s: int):
+    return ros_bridge.nfc_bridge.write_nfc_tag(
+        nfc_tag_id=nfc_tag_id, timeout_in_s=timeout_in_s
+    )
 
 
 @app.get("/read_nfc_tag", tags=["NFC"])
-def read_nfc_tag():
-    return {"nfc_tag": ros_bridge.nfc_bridge.read_nfc_tag()}
+def read_nfc_tag(timeout_in_s: int):
+    return ros_bridge.nfc_bridge.read_nfc_tag(timeout_in_s=timeout_in_s)
 
 
 """
