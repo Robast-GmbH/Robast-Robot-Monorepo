@@ -23,6 +23,7 @@ jobs:
       platforms: linux/amd64
 
   create_ros2_release_docker:
+    needs: create_ros2_devel_docker
     uses: ./.github/workflows/create_ros2_docker.yml
     with:
       ros_distro: jazzy
