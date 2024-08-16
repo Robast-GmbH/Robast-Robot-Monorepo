@@ -16,6 +16,13 @@ find_package(behaviortree_cpp REQUIRED)
 find_package(error_utils REQUIRED)
 find_package(bt_base_types REQUIRED)
 find_package(robotnik_msgs REQUIRED)
+find_package(nav_msgs REQUIRED)
+find_package(geometry_msgs REQUIRED)
+find_package(tf2 REQUIRED)
+find_package(tf2_geometry_msgs REQUIRED)
+find_package(tf2_eigen REQUIRED)
+find_package(tf2_ros REQUIRED)
+
 
 set(dependencies
   rclcpp
@@ -25,7 +32,12 @@ set(dependencies
   behaviortree_cpp
   error_utils
   bt_base_types
+  nav_msgs
   robotnik_msgs
+  geometry_msgs
+  tf2
+  tf2_geometry_msgs
+  tf2_ros
 )
 include_directories(
   include
@@ -101,6 +113,9 @@ list(APPEND plugin_libs base_error_decorator_node)
 add_library(partial_colorize_leds_action_bt_node SHARED src/action/partial_colorize_leds_action.cpp)
 list(APPEND plugin_libs partial_colorize_leds_action_bt_node)
 
+add_library(evaluate_drive_direction_action_bt_node SHARED src/action/evaluate_drive_direction_action.cpp)
+list(APPEND plugin_libs evaluate_drive_direction_action_bt_node)
+
 add_library(publish_led_action_bt_node SHARED src/action/publish_led_action.cpp)
 list(APPEND plugin_libs publish_led_action_bt_node)
 
@@ -164,6 +179,8 @@ if(BUILD_TESTING)
   list(APPEND test_executables move_electric_drawer_action_test)
   add_executable(error_decorator_test tests/decorators/error_decorator_test.cpp)
   list(APPEND test_executables error_decorator_test)
+  add_executable(calculate_direction_test tests/calculate_direction_test.cpp)
+  list(APPEND test_executables calculate_direction_test)
   
 
   ament_target_dependencies(${test_libs}
@@ -182,7 +199,7 @@ if(BUILD_TESTING)
       include(Catch)
     catch_discover_tests(${test})
   endforeach()
-
+  
   include(CTest)
 
   # find_package(ament_cmake_lint_cmake REQUIRED)
