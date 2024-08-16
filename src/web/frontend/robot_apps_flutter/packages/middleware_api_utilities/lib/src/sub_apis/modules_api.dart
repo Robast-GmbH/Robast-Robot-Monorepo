@@ -1,39 +1,39 @@
-import 'package:middleware_api_utilities/src/models/drawer_address.dart';
-import 'package:middleware_api_utilities/src/models/robot_drawer.dart';
+import 'package:middleware_api_utilities/src/models/submodule.dart';
+import 'package:middleware_api_utilities/src/models/submodule_address.dart';
 import 'package:middleware_api_utilities/src/services/request_service.dart';
 
 class ModulesApi {
   ModulesApi({required this.prefix});
   final String prefix;
 
-  Future<List<RobotDrawer>> getModules({
+  Future<List<Submodule>> getSubmodules({
     required String robotName,
   }) async {
-    final drawers = <RobotDrawer>[];
+    final submodules = <Submodule>[];
     final response = await RequestService.tryGet(uri: Uri.parse('$prefix/modules?robot_name=$robotName'));
     if (response != null) {
       final data = RequestService.responseToList(response: response);
-      for (final drawer in data) {
-        drawers.add(RobotDrawer.fromJson(drawer as Map<String, dynamic>));
+      for (final submodule in data) {
+        submodules.add(Submodule.fromJson(submodule as Map<String, dynamic>));
       }
     }
-    return drawers;
+    return submodules;
   }
 
-  Future<bool> createModule({
+  Future<bool> createSubmodule({
     required String robotName,
-    required DrawerAddress drawerAddress,
+    required SubmoduleAddress submoduleAddress,
     required int position,
     required int size,
     required String variant,
   }) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/modules/create_module'),
+      uri: Uri.parse('$prefix/modules/create_submodule'),
       data: {
-        'drawer_address': {
+        'submodule_address': {
           'robot_name': robotName,
-          'module_id': drawerAddress.moduleID,
-          'drawer_id': drawerAddress.drawerID,
+          'module_id': submoduleAddress.moduleID,
+          'submodule_id': submoduleAddress.submoduleID,
         },
         'position': position,
         'size': size,
@@ -43,45 +43,45 @@ class ModulesApi {
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> deleteModule({required String robotName, required DrawerAddress drawerAddress}) async {
+  Future<bool> deleteSubmodule({required String robotName, required SubmoduleAddress submoduleAddress}) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/modules/delete_module'),
+      uri: Uri.parse('$prefix/modules/delete_submodule'),
       data: {
         'robot_name': robotName,
-        'module_id': drawerAddress.moduleID,
-        'drawer_id': drawerAddress.drawerID,
+        'module_id': submoduleAddress.moduleID,
+        'submodule_id': submoduleAddress.submoduleID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> emptyModule({
+  Future<bool> emptySubmodule({
     required String robotName,
-    required DrawerAddress drawerAddress,
+    required SubmoduleAddress submoduleAddress,
   }) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/modules/empty_module'),
+      uri: Uri.parse('$prefix/modules/empty_submodule'),
       data: {
         'robot_name': robotName,
-        'module_id': drawerAddress.moduleID,
-        'drawer_id': drawerAddress.drawerID,
+        'module_id': submoduleAddress.moduleID,
+        'submodule_id': submoduleAddress.submoduleID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> updateModuleContent({
+  Future<bool> updateSubmoduleContent({
     required String robotName,
-    required DrawerAddress drawerAddress,
+    required SubmoduleAddress submoduleAddress,
     required Map<String, int> itemsByCount,
   }) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/modules/update_module_content'),
+      uri: Uri.parse('$prefix/modules/update_submodule_content'),
       data: {
-        'drawer_address': {
+        'submodule_address': {
           'robot_name': robotName,
-          'module_id': drawerAddress.moduleID,
-          'drawer_id': drawerAddress.drawerID,
+          'module_id': submoduleAddress.moduleID,
+          'submodule_id': submoduleAddress.submoduleID,
         },
         'items_by_count': itemsByCount,
       },
@@ -89,16 +89,16 @@ class ModulesApi {
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> freeModule({
+  Future<bool> freeSubmodule({
     required String robotName,
-    required DrawerAddress submoduleAddress,
+    required SubmoduleAddress submoduleAddress,
   }) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/modules/free_module'),
+      uri: Uri.parse('$prefix/modules/free_submodule'),
       data: {
         'robot_name': robotName,
         'module_id': submoduleAddress.moduleID,
-        'drawer_id': submoduleAddress.drawerID,
+        'submodule_id': submoduleAddress.submoduleID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
@@ -106,18 +106,18 @@ class ModulesApi {
 
   Future<bool> reserveSubmodule({
     required String robotName,
-    required DrawerAddress submoduleAddress,
+    required SubmoduleAddress submoduleAddress,
     required String taskID,
     required List<String> userIDs,
     required List<String> userGroups,
   }) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/modules/reserve_module'),
+      uri: Uri.parse('$prefix/modules/reserve_submodule'),
       data: {
-        'drawer_address': {
+        'submodule_address': {
           'robot_name': robotName,
           'module_id': submoduleAddress.moduleID,
-          'drawer_id': submoduleAddress.drawerID,
+          'submodule_id': submoduleAddress.submoduleID,
         },
         'task_id': taskID,
         'user_ids': userIDs,
@@ -127,19 +127,19 @@ class ModulesApi {
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> startModuleProcess({
+  Future<bool> startSubmoduleProcess({
     required String robotName,
-    required DrawerAddress drawerAddress,
+    required SubmoduleAddress submoduleAddress,
     required String processName,
     required Map<String, int> itemsByChange,
   }) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/modules/start_module_process'),
+      uri: Uri.parse('$prefix/modules/start_submodule_process'),
       data: {
-        'drawer_address': {
+        'submodule_address': {
           'robot_name': robotName,
-          'module_id': drawerAddress.moduleID,
-          'drawer_id': drawerAddress.drawerID,
+          'module_id': submoduleAddress.moduleID,
+          'submodule_id': submoduleAddress.submoduleID,
         },
         'process_name': processName,
         'items_by_change': itemsByChange,
@@ -148,46 +148,46 @@ class ModulesApi {
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> openDrawer({
+  Future<bool> openSubmodule({
     required String robotName,
-    required DrawerAddress drawerAddress,
+    required SubmoduleAddress submoduleAddress,
   }) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/modules/open_drawer'),
+      uri: Uri.parse('$prefix/modules/open_submodule'),
       data: {
         'robot_name': robotName,
-        'module_id': drawerAddress.moduleID,
-        'drawer_id': drawerAddress.drawerID,
+        'module_id': submoduleAddress.moduleID,
+        'submodule_id': submoduleAddress.submoduleID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> closeDrawer({
+  Future<bool> closeSubmodule({
     required String robotName,
-    required DrawerAddress drawerAddress,
+    required SubmoduleAddress submoduleAddress,
   }) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/modules/close_drawer'),
+      uri: Uri.parse('$prefix/modules/close_submodule'),
       data: {
         'robot_name': robotName,
-        'module_id': drawerAddress.moduleID,
-        'drawer_id': drawerAddress.drawerID,
+        'module_id': submoduleAddress.moduleID,
+        'submodule_id': submoduleAddress.submoduleID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);
   }
 
-  Future<bool> finishModuleProcess({
+  Future<bool> finishSubmoduleProcess({
     required String robotName,
-    required DrawerAddress drawerAddress,
+    required SubmoduleAddress submoduleAddress,
   }) async {
     final response = await RequestService.tryPost(
-      uri: Uri.parse('$prefix/modules/finish_module_process'),
+      uri: Uri.parse('$prefix/modules/finish_submodule_process'),
       data: {
         'robot_name': robotName,
-        'module_id': drawerAddress.moduleID,
-        'drawer_id': drawerAddress.drawerID,
+        'module_id': submoduleAddress.moduleID,
+        'submodule_id': submoduleAddress.submoduleID,
       },
     );
     return RequestService.wasRequestSuccessful(response: response);

@@ -9,10 +9,10 @@ DROP_OFF_PROCESS = "dropoff"
 
 
 @dataclass
-class ModuleProcess:
+class SubmoduleProcess:
     robot_name: str
     module_id: int
-    drawer_id: int
+    submodule_id: int
     process_name: str
     items_by_change: dict[str, int]
     request_guid: str
@@ -22,7 +22,7 @@ class ModuleProcess:
     @classmethod
     def from_request_msg(
         cls, request_msg: DispenserRequest | IngestorRequest
-    ) -> ModuleProcess:
+    ) -> SubmoduleProcess:
         input_str = request_msg.items[0].type_guid
         action_data = json.loads(input_str)
 
@@ -32,9 +32,11 @@ class ModuleProcess:
             else DROP_OFF_PROCESS
         )
         return cls(
-            robot_name=action_data["parameters"]["drawer_address"]["robot_name"],
-            module_id=int(action_data["parameters"]["drawer_address"]["module_id"]),
-            drawer_id=int(action_data["parameters"]["drawer_address"]["drawer_id"]),
+            robot_name=action_data["parameters"]["submodule_address"]["robot_name"],
+            module_id=int(action_data["parameters"]["submodule_address"]["module_id"]),
+            submodule_id=int(
+                action_data["parameters"]["submodule_address"]["submodule_id"]
+            ),
             process_name=process_name,
             items_by_change=action_data["parameters"]["items_by_change"],
             request_guid=request_msg.request_guid,

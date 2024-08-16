@@ -3,7 +3,7 @@ import time
 from pydantic import BaseModel
 from typing import Any
 from pydantic_models.action import Action
-from pydantic_models.drawer_address import DrawerAddress
+from pydantic_models.submodule_address import SubmoduleAddress
 
 
 class SubTask(BaseModel):
@@ -54,21 +54,21 @@ class SubTask(BaseModel):
             action=Action.from_json(json.loads(row[11])),
         )
 
-    def contains_drawer_process_action(self) -> bool:
+    def contains_submodule_process_action(self) -> bool:
         action = self.action
         while action:
-            if action.name == "drawer_process":
+            if action.name == "submodule_process":
                 return True
             action = action.subaction
         return False
 
-    def write_drawer_address(self, drawer_address: DrawerAddress) -> None:
-        drawer_address_json = drawer_address.to_json()
-        self.requirements["drawer_address"] = drawer_address_json
+    def write_submodule_address(self, submodule_address: SubmoduleAddress) -> None:
+        submodule_address_json = submodule_address.to_json()
+        self.requirements["submodule_address"] = submodule_address_json
         action = self.action
         while action:
-            if action.name == "drawer_process":
-                action.parameters["drawer_address"] = drawer_address_json
+            if action.name == "submodule_process":
+                action.parameters["submodule_address"] = submodule_address_json
             action = action.subaction
 
     def to_json(self) -> dict[str, Any]:
@@ -121,7 +121,7 @@ class SubTask(BaseModel):
             "category": "pickup",
             "description": {
                 "place": self.target_id,
-                "handler": "drawer_dispenser",
+                "handler": "submodule_dispenser",
                 "payload": {
                     "sku": json.dumps(self.action.to_json()),
                     "quantity": 1,

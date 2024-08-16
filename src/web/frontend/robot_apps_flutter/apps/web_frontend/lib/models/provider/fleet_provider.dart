@@ -6,7 +6,7 @@ import 'package:shared_data_models/shared_data_models.dart';
 
 class FleetProvider extends ChangeNotifier {
   List<Robot> robots = [];
-  Map<String, List<RobotDrawer>> modules = {};
+  Map<String, List<Submodule>> modules = {};
   Map<String, RobotTaskStatus?> tasks = {};
   bool isNavigationBlocked = false;
   Timer? _robotUpdateTimer;
@@ -20,7 +20,7 @@ class FleetProvider extends ChangeNotifier {
   }
 
   List<String> getIDsOfModules({required String robotName}) {
-    return modules[robotName]?.map((e) => '${e.address.moduleID}_${e.address.drawerID}').toList() ?? [];
+    return modules[robotName]?.map((e) => '${e.address.moduleID}_${e.address.submoduleID}').toList() ?? [];
   }
 
   Future<void> updateProviderData() async {
@@ -34,10 +34,10 @@ class FleetProvider extends ChangeNotifier {
   }
 
   Future<void> updateModules() async {
-    final updatedModules = <String, List<RobotDrawer>>{};
+    final updatedModules = <String, List<Submodule>>{};
     for (final robot in robots) {
       if (robot.name.isNotEmpty) {
-        final robotModules = await _middlewareApi.modules.getModules(robotName: robot.name);
+        final robotModules = await _middlewareApi.modules.getSubmodules(robotName: robot.name);
         updatedModules[robot.name] = robotModules;
       }
     }
@@ -92,26 +92,26 @@ class FleetProvider extends ChangeNotifier {
     _moduleUpdateTimer?.cancel();
   }
 
-  Future<void> openDrawer({
+  Future<void> openSubmodule({
     required String robotName,
     required int moduleID,
-    required int drawerID,
+    required int submoduleID,
   }) async {
-    await _middlewareApi.modules.openDrawer(
+    await _middlewareApi.modules.openSubmodule(
       robotName: robotName,
-      drawerAddress: DrawerAddress(moduleID: moduleID, drawerID: drawerID),
+      submoduleAddress: SubmoduleAddress(moduleID: moduleID, submoduleID: submoduleID),
     );
     await updateModules();
   }
 
-  Future<void> closeDrawer({
+  Future<void> closeSubmodule({
     required String robotName,
     required int moduleID,
-    required int drawerID,
+    required int submoduleID,
   }) async {
-    await _middlewareApi.modules.closeDrawer(
+    await _middlewareApi.modules.closeSubmodule(
       robotName: robotName,
-      drawerAddress: DrawerAddress(moduleID: moduleID, drawerID: drawerID),
+      submoduleAddress: SubmoduleAddress(moduleID: moduleID, submoduleID: submoduleID),
     );
     await updateModules();
   }

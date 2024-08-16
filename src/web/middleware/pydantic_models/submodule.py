@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 from typing import Dict, Any
-from pydantic_models.drawer_address import DrawerAddress
+from pydantic_models.submodule_address import SubmoduleAddress
 
 
-class Drawer(BaseModel):
-    address: DrawerAddress
+class Submodule(BaseModel):
+    address: SubmoduleAddress
     position: int
     size: int
     variant: str
@@ -17,9 +17,9 @@ class Drawer(BaseModel):
     reserved_for_groups: list[str]
 
     @classmethod
-    def from_json(cls, json_data: dict[str, Any]) -> "Drawer":
+    def from_json(cls, json_data: dict[str, Any]) -> "Submodule":
         return cls(
-            address=DrawerAddress.from_json(json_data["address"]),
+            address=SubmoduleAddress.from_json(json_data["address"]),
             size=json_data["size"],
             position=json_data["position"],
             variant=json_data["variant"],

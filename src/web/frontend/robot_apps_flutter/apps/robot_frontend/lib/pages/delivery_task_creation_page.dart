@@ -21,7 +21,7 @@ class DeliveryTaskCreationPage extends StatefulWidget {
 
 class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
   final moduleContentController = ModuleContentController();
-  int requiredDrawerType = 1;
+  int requiredSubmoduleType = 1;
 
   final startController = LocationSelectionController();
   final targetController = LocationSelectionController();
@@ -65,15 +65,15 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: buildRequiredDrawerSizeButton(type: 1, text: 'Small'),
+                            child: buildRequiredSubmoduleTypeButton(type: 1, text: 'Small'),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: buildRequiredDrawerSizeButton(type: 2, text: 'Medium'),
+                            child: buildRequiredSubmoduleTypeButton(type: 2, text: 'Medium'),
                           ),
                           const SizedBox(width: 16),
                           Expanded(
-                            child: buildRequiredDrawerSizeButton(type: 3, text: 'Large'),
+                            child: buildRequiredSubmoduleTypeButton(type: 3, text: 'Large'),
                           ),
                         ],
                       ),
@@ -151,7 +151,7 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
               padding: const EdgeInsets.all(16),
               onPressed: () async {
                 await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
-                  requiredDrawerType: requiredDrawerType,
+                  requiredSubmoduleType: requiredSubmoduleType,
                   pickupTargetID: startController.room!,
                   senderUserIDs: [
                     if (senderUserController.selectedUser != null) senderUserController.selectedUser!.id,
@@ -176,17 +176,17 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
     );
   }
 
-  GestureDetector buildRequiredDrawerSizeButton({required int type, required String text}) {
+  GestureDetector buildRequiredSubmoduleTypeButton({required int type, required String text}) {
     return GestureDetector(
       onTap: () {
         setState(() {
-          requiredDrawerType = type;
+          requiredSubmoduleType = type;
         });
       },
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
-          color: requiredDrawerType == type ? Colors.blue.withOpacity(0.5) : Colors.white.withOpacity(0.4),
+          color: requiredSubmoduleType == type ? Colors.blue.withOpacity(0.5) : Colors.white.withOpacity(0.4),
           border: Border.all(color: Colors.white.withOpacity(0.4)),
           borderRadius: BorderRadius.circular(8),
         ),

@@ -5,24 +5,24 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/titled_view.dart';
 
-class DrawerSetupPage extends StatefulWidget {
-  const DrawerSetupPage({super.key});
+class SubmodulesSetupPage extends StatefulWidget {
+  const SubmodulesSetupPage({super.key});
 
   @override
-  State<DrawerSetupPage> createState() => _DrawerSetupPageState();
+  State<SubmodulesSetupPage> createState() => _SubmodulesSetupPageState();
 }
 
-class _DrawerSetupPageState extends State<DrawerSetupPage> {
+class _SubmodulesSetupPageState extends State<SubmodulesSetupPage> {
   final List<bool> slotOccupancy = List.generate(8, (index) => false);
   final List<bool> selectedSlots = List.generate(8, (index) => false);
   final controller = TextEditingController();
   bool isElectric = false;
 
-  void updateSlots(List<RobotDrawer> drawers) {
+  void updateSlots(List<Submodule> submodules) {
     slotOccupancy.fillRange(0, slotOccupancy.length, false);
-    for (final drawer in drawers) {
-      for (var i = 0; i < drawer.size; i++) {
-        slotOccupancy[drawer.position + i - 1] = true;
+    for (final submodule in submodules) {
+      for (var i = 0; i < submodule.size; i++) {
+        slotOccupancy[submodule.position + i - 1] = true;
       }
     }
   }
@@ -51,7 +51,7 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
       body: BackgroundView(
         child: TitledView(
           showBackButton: true,
-          title: 'Drawer Setup',
+          title: 'Submodules Setup',
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -61,7 +61,7 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
               Expanded(
                 child: Padding(
                   padding: const EdgeInsets.only(top: 16, bottom: 32),
-                  child: Selector<ModuleProvider, List<RobotDrawer>>(
+                  child: Selector<ModuleProvider, List<Submodule>>(
                     selector: (_, provider) => provider.submodules,
                     builder: (context, modules, child) {
                       updateSlots(modules);
@@ -138,11 +138,11 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                           TextButton.icon(
                             onPressed: () async {
                               if (selectedSlots.every((slot) => !slot)) return;
-                              await Provider.of<ModuleProvider>(context, listen: false).createModule(
+                              await Provider.of<ModuleProvider>(context, listen: false).createSubmodule(
                                 robotName: 'rb_theron',
-                                drawerAddress: DrawerAddress(
+                                submoduleAddress: SubmoduleAddress(
                                   moduleID: int.tryParse(controller.text) ?? 0,
-                                  drawerID: 0,
+                                  submoduleID: 0,
                                 ),
                                 position: selectedSlots.indexWhere((slot) => slot) + 1,
                                 size: selectedSlots.where((slot) => slot).length,
@@ -151,7 +151,7 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                               selectedSlots.fillRange(0, selectedSlots.length, false);
                               isElectric = false;
                               if (context.mounted) {
-                                await Provider.of<ModuleProvider>(context, listen: false).fetchModules();
+                                await Provider.of<ModuleProvider>(context, listen: false).fetchSubmodules();
                               }
                             },
                             label: const Text('Add'),
@@ -160,10 +160,10 @@ class _DrawerSetupPageState extends State<DrawerSetupPage> {
                           TextButton.icon(
                             onPressed: () async {
                               final modulesProvider = Provider.of<ModuleProvider>(context, listen: false);
-                              for (final drawer in modulesProvider.submodules) {
-                                await modulesProvider.deleteModule(
+                              for (final submodule in modulesProvider.submodules) {
+                                await modulesProvider.deleteSubmodule(
                                   robotName: 'rb_theron',
-                                  drawerAddress: drawer.address,
+                                  submoduleAddress: submodule.address,
                                 );
                               }
                               selectedSlots.fillRange(0, selectedSlots.length, false);

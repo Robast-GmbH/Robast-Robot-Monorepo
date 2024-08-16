@@ -11,7 +11,7 @@ class ModuleView extends StatelessWidget {
     super.key,
   });
 
-  final RobotDrawer module;
+  final Submodule module;
   final bool showReservationStatus;
   final bool enabled;
   final String? label;

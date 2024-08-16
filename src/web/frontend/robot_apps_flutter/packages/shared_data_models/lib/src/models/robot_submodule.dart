@@ -1,10 +1,10 @@
 // ignore: constant_identifier_names
-enum ModuleType { manual_drawer, electric_drawer }
+enum ModuleType { manual_submodule, electric_submodule }
 
-class DrawerModule {
-  DrawerModule({
+class SubmoduleModule {
+  SubmoduleModule({
     required this.moduleID,
-    required this.drawerID,
+    required this.submoduleID,
     required this.type,
     required this.size,
     required this.robotName,
@@ -13,9 +13,9 @@ class DrawerModule {
     required this.label,
   });
 
-  DrawerModule.fromJson({required Map<String, dynamic> data})
+  SubmoduleModule.fromJson({required Map<String, dynamic> data})
       : moduleID = data['module_id'] as int,
-        drawerID = data['drawer_id'] as int,
+        submoduleID = data['submodule_id'] as int,
         type = ModuleType.values.firstWhere((element) => element.name == data['type']),
         size = data['size'] as int,
         robotName = data['robot_name'] as String? ?? 'rb_theron',
@@ -24,7 +24,7 @@ class DrawerModule {
         label = data['label'] as String? ?? 'Dinge';
 
   final int moduleID;
-  final int drawerID;
+  final int submoduleID;
   final ModuleType type;
   final int size;
   final String robotName;
