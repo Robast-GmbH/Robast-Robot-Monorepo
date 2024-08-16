@@ -75,6 +75,34 @@
                                   LEDs_colored="{leds}"/>
               <AlwaysSuccess/>
             </IfThenElse>
+            <Sequence>
+              <EvaluateDriveDirection path_topic="path"
+                                      direction="{direction}"/>
+              <Switch4 case_1="standing"
+                       case_2="left"
+                       case_3="right"
+                       case_4="forward"
+                       variable="{direction}">
+                <AlwaysSuccess/>
+                <PartialColorizeLED LEDs="{leds}"
+                                    blue="0"
+                                    brightness="100"
+                                    green="0"
+                                    lower_bound="27.0"
+                                    red="255"
+                                    upper_bound="50.0"
+                                    LEDs_colored="{leds}"/>
+                <PartialColorizeLED LEDs="{leds}"
+                                    blue="0"
+                                    brightness="100"
+                                    green="0"
+                                    lower_bound="27.0"
+                                    red="255"
+                                    upper_bound="50.0"
+                                    LEDs_colored="{leds}"/>
+                <AlwaysSuccess/>
+              </Switch4>
+            </Sequence>
             <IfThenElse>
               <LEDChangedCondition led_vector="{leds}"/>
               <LEDPublisherAction drawer_address="{drawer}"
@@ -98,6 +126,13 @@
       <input_port name="topic"
                   default="/topic_name"/>
     </Condition>
+    <Action ID="EvaluateDriveDirection"
+            editable="true">
+      <input_port name="path_topic"
+                  default="path"/>
+      <output_port name="direction"
+                   default="standing">standing, left, right, forward</output_port>
+    </Action>
     <Action ID="GetBlackboardEntry">
       <input_port name="key"
                   default="drawer_address">string</input_port>

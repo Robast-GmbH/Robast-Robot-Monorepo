@@ -36,6 +36,10 @@
             <input_port name="target_value" default="0">uint8. wether the value should be true or false</input_port>
             <input_port name="topic" default="/drawer_feedback_status"/>
         </Condition>
+        <Action ID="EvaluateDriveDirection" editable="true">
+            <input_port name="path_topic" default="path"/>
+            <output_port name="direction" default="standing">standing, left, right, forward</output_port>
+        </Action>
         <Action ID="GetBlackboardEntry">
             <input_port name="key" default="drawer_address">string</input_port>
             <output_port name="value" default="{drawer}"/>
