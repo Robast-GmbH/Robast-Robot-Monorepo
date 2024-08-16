@@ -13,8 +13,8 @@ class ReservationView extends StatefulWidget {
   });
 
   final User currentUser;
-  final void Function(DrawerAddress) onReservation;
-  final void Function(DrawerAddress) onFreeing;
+  final void Function(SubmoduleAddress) onReservation;
+  final void Function(SubmoduleAddress) onFreeing;
 
   @override
   State<ReservationView> createState() => _ReservationViewState();
@@ -25,7 +25,7 @@ class _ReservationViewState extends State<ReservationView> {
 
   @override
   Widget build(BuildContext context) {
-    return Selector<ModuleProvider, List<RobotDrawer>>(
+    return Selector<ModuleProvider, List<Submodule>>(
       selector: (context, provider) => provider.submodules,
       builder: (context, submodules, child) {
         if (submodules.isNotEmpty) {
@@ -52,7 +52,7 @@ class _ReservationViewState extends State<ReservationView> {
                                   userIDs: [widget.currentUser.id],
                                   userGroups: widget.currentUser.userGroups,
                                 );
-                                await moduleProvider.fetchModules();
+                                await moduleProvider.fetchSubmodules();
                                 isUpdatingReservationStatus = false;
                                 widget.onReservation(submodule.address);
                                 if (!reservationSuccessful && context.mounted) {
@@ -78,7 +78,7 @@ class _ReservationViewState extends State<ReservationView> {
                                 final freeingSuccessful = await moduleProvider.freeSubmodule(
                                   submoduleAddress: submodule.address,
                                 );
-                                await moduleProvider.fetchModules();
+                                await moduleProvider.fetchSubmodules();
                                 isUpdatingReservationStatus = false;
                                 widget.onFreeing(submodule.address);
                                 if (!freeingSuccessful && context.mounted) {

@@ -24,7 +24,7 @@ class ContentDistributionView extends StatefulWidget {
           'preselectedSubmodules, userSelectionControllers, userGroupsSelectionControllers and locationSelectionControllers must have the same length',
         );
 
-  final List<DrawerAddress> preselectedSubmodules;
+  final List<SubmoduleAddress> preselectedSubmodules;
   final List<UserSelectionController> userSelectionControllers;
   final List<UserGroupsSelectionController> userGroupsSelectionControllers;
   final List<LocationSelectionController> locationSelectionControllers;
@@ -56,17 +56,17 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
       child: Column(
         children: [
           Expanded(
-            child: Selector<ModuleProvider, List<RobotDrawer>>(
+            child: Selector<ModuleProvider, List<Submodule>>(
               selector: (context, provider) => provider.submodules,
-              builder: (context, modules, child) {
-                final selectedDrawers = modules
+              builder: (context, submodules, child) {
+                final selectedSubmodules = submodules
                     .where(
-                      (drawer) => widget.preselectedSubmodules.any((preselectedDrawer) => preselectedDrawer == drawer.address),
+                      (submodule) => widget.preselectedSubmodules.any((preselectedSubmodule) => preselectedSubmodule == submodule.address),
                     )
                     .toList();
                 return ListView(
                   children: List.generate(widget.preselectedSubmodules.length, (index) {
-                    final drawer = selectedDrawers[index];
+                    final submodule = selectedSubmodules[index];
                     return Card(
                       color: Colors.white.withOpacity(0.4),
                       child: Padding(
@@ -77,7 +77,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                             Padding(
                               padding: const EdgeInsets.all(4),
                               child: Text(
-                                'Modul ${drawer.address.moduleID}',
+                                'Modul ${submodule.address.moduleID}',
                                 style: const TextStyle(fontSize: 32),
                               ),
                             ),
@@ -95,7 +95,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                                     ),
                                     Expanded(
                                       child: Text(
-                                        drawer.contentToString(),
+                                        submodule.contentToString(),
                                         textAlign: TextAlign.end,
                                         style: const TextStyle(
                                           fontSize: 24,

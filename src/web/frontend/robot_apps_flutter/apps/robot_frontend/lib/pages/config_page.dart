@@ -37,7 +37,7 @@ class _ConfigPageState extends State<ConfigPage> {
     Provider.of<RobotProvider>(context, listen: false).initRobotAPI(prefix: robotBackendAddress);
     MiddlewareApiUtilities().setPrefix(prefix: middlewareAddress);
     unawaited(Provider.of<MapProvider>(context, listen: false).fetchBuildingMap());
-    Provider.of<ModuleProvider>(context, listen: false).stopModulesUpdateTimer();
+    Provider.of<ModuleProvider>(context, listen: false).stopSubmodulesUpdateTimer();
     Navigator.popUntil(context, ModalRoute.withName('/root'));
     await Navigator.push(
       context,

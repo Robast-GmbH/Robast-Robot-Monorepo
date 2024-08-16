@@ -23,7 +23,7 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
   late Future<void> initPageFuture;
   late User? currentUser;
   CreationSteps currentStep = CreationSteps.reserveSubmodules;
-  final reservedSubmodules = <DrawerAddress>[];
+  final reservedSubmodules = <SubmoduleAddress>[];
   final userSelectionControllers = <UserSelectionController>[];
   final userGroupsSelectionControllers = <UserGroupsSelectionController>[];
   final locationSelectionControllers = <LocationSelectionController>[];
@@ -43,14 +43,14 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
     currentUser = user;
   }
 
-  void onReservation(DrawerAddress submoduleAddress) {
+  void onReservation(SubmoduleAddress submoduleAddress) {
     reservedSubmodules.add(submoduleAddress);
     userSelectionControllers.add(UserSelectionController());
     userGroupsSelectionControllers.add(UserGroupsSelectionController());
     locationSelectionControllers.add(LocationSelectionController());
   }
 
-  void onFreeing(DrawerAddress submoduleAddress) {
+  void onFreeing(SubmoduleAddress submoduleAddress) {
     final index = reservedSubmodules.indexOf(submoduleAddress);
     reservedSubmodules.remove(submoduleAddress);
     userSelectionControllers.removeAt(index);
@@ -121,7 +121,7 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
                 )
               else if (currentStep == CreationSteps.fillModules)
                 ModuleFillingView(
-                  preselectedDrawers: reservedSubmodules,
+                  preselectedSubmodules: reservedSubmodules,
                 )
               else if (currentStep == CreationSteps.assignTargets)
                 ContentDistributionView(

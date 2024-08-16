@@ -14,7 +14,7 @@ class TaskProvider extends ChangeNotifier {
   }
 
   Future<bool> createDeliveryTaskRequest({
-    required int requiredDrawerType,
+    required int requiredSubmoduleType,
     required String pickupTargetID,
     required List<String> senderUserIDs,
     required List<String> senderUserGroups,
@@ -25,7 +25,7 @@ class TaskProvider extends ChangeNotifier {
   }) async {
     final dropoffItemsByChange = itemsByChange.map((key, value) => MapEntry(key, -value));
     final task = Task.delivery(
-      requiredDrawerType: requiredDrawerType,
+      requiredSubmoduleType: requiredSubmoduleType,
       pickupTargetID: pickupTargetID,
       pickupItemsByChange: itemsByChange,
       senderUserIDs: senderUserIDs,
@@ -44,7 +44,7 @@ class TaskProvider extends ChangeNotifier {
     required String dropoffTargetID,
     required User? user,
     required List<String> userGroups,
-    required RobotDrawer submodule,
+    required Submodule submodule,
   }) async {
     final dropoffItemsByChange = submodule.itemsByCount.map((key, value) => MapEntry(key, -value));
     final task = Task.dropoff(
@@ -53,7 +53,7 @@ class TaskProvider extends ChangeNotifier {
       itemsByChange: dropoffItemsByChange,
       recipientUserIDs: user?.id != null ? [user!.id] : [],
       recipientUserGroups: userGroups,
-      drawerAddress: submodule.address,
+      submoduleAddress: submodule.address,
     );
 
     final wasSuccessful = await _middlewareApiUtilities.tasks.postTaskRequest(task: task);

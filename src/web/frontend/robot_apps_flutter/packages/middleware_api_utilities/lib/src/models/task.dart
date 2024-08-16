@@ -29,7 +29,7 @@ class Task {
   }
 
   factory Task.delivery({
-    required int requiredDrawerType,
+    required int requiredSubmoduleType,
     required String pickupTargetID,
     required Map<String, int> pickupItemsByChange,
     required List<String> senderUserIDs,
@@ -48,10 +48,10 @@ class Task {
       status: 'unassigned',
       assigneeName: '',
       requirements: {
-        'required_drawer_type': requiredDrawerType,
+        'required_submodule_type': requiredSubmoduleType,
       },
       subtasks: [
-        SubTask.drawerProcess(
+        SubTask.submoduleProcess(
           id: pickupTaskID,
           parentID: taskID,
           requiresTaskID: null,
@@ -60,7 +60,7 @@ class Task {
           requiredUserGroups: senderUserGroups,
           itemsByChange: pickupItemsByChange,
         ),
-        SubTask.drawerProcess(
+        SubTask.submoduleProcess(
           id: dropoffTaskID,
           parentID: taskID,
           requiresTaskID: pickupTaskID,
@@ -82,7 +82,7 @@ class Task {
     required Map<String, int> itemsByChange,
     required List<String> recipientUserIDs,
     required List<String> recipientUserGroups,
-    required DrawerAddress drawerAddress,
+    required SubmoduleAddress submoduleAddress,
   }) {
     final taskID = const Uuid().v4();
     return Task(
@@ -92,7 +92,7 @@ class Task {
       assigneeName: robotName,
       requirements: {},
       subtasks: [
-        SubTask.assignedDrawerProcess(
+        SubTask.assignedSubmoduleProcess(
           id: const Uuid().v4(),
           parentID: taskID,
           requiresTaskID: null,
@@ -100,7 +100,7 @@ class Task {
           requiredUserIDs: recipientUserIDs,
           requiredUserGroups: recipientUserGroups,
           itemsByChange: itemsByChange,
-          drawerAddress: drawerAddress,
+          submoduleAddress: submoduleAddress,
           assigneeName: robotName,
         ),
       ],

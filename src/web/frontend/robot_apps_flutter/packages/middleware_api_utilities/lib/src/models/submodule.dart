@@ -1,9 +1,9 @@
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
-enum DrawerVariant { manual, electric }
+enum SubmoduleVariant { manual, electric }
 
-class RobotDrawer {
-  RobotDrawer({
+class Submodule {
+  Submodule({
     required this.robotName,
     required this.address,
     required this.position,
@@ -16,18 +16,18 @@ class RobotDrawer {
     required this.moduleProcess,
   });
 
-  // Factory method to create a Drawer instance from a JSON object
-  factory RobotDrawer.fromJson(Map<String, dynamic> json) {
-    final drawerAddress = json['address'] as Map<String, dynamic>;
-    return RobotDrawer(
-      robotName: drawerAddress['robot_name'] as String,
-      address: DrawerAddress(
-        moduleID: drawerAddress['module_id'] as int,
-        drawerID: drawerAddress['drawer_id'] as int,
+  // Factory method to create a Submodule instance from a JSON object
+  factory Submodule.fromJson(Map<String, dynamic> json) {
+    final submoduleAddress = json['address'] as Map<String, dynamic>;
+    return Submodule(
+      robotName: submoduleAddress['robot_name'] as String,
+      address: SubmoduleAddress(
+        moduleID: submoduleAddress['module_id'] as int,
+        submoduleID: submoduleAddress['submodule_id'] as int,
       ),
       position: json['position'] as int,
       size: json['size'] as int,
-      variant: DrawerVariant.values.firstWhere((element) => element.toString() == 'DrawerVariant.${json['variant']}'),
+      variant: SubmoduleVariant.values.firstWhere((element) => element.toString() == 'SubmoduleVariant.${json['variant']}'),
       itemsByCount: Map<String, int>.from(json['items_by_count'] as Map<String, dynamic>),
       reservedForTask: json['reserved_for_task'] as String,
       reservedForIds: List<String>.from(json['reserved_for_ids'] as List<dynamic>),
@@ -36,10 +36,10 @@ class RobotDrawer {
     );
   }
   final String robotName;
-  final DrawerAddress address;
+  final SubmoduleAddress address;
   final int position;
   final int size;
-  final DrawerVariant variant;
+  final SubmoduleVariant variant;
 
   final Map<String, int> itemsByCount;
   final String reservedForTask;
@@ -47,13 +47,13 @@ class RobotDrawer {
   final List<String> reservedForGroups;
   final ModuleProcess moduleProcess;
 
-  // Method to convert a Drawer instance to a JSON object
+  // Method to convert a Submodule instance to a JSON object
   Map<String, dynamic> toJson() {
     return {
       'address': {
         'robot_name': robotName,
         'module_id': address.moduleID,
-        'drawer_id': address.drawerID,
+        'submodule_id': address.submoduleID,
       },
       'position': position,
       'size': size,

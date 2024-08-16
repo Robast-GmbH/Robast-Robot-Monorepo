@@ -7,16 +7,16 @@ import 'package:robot_frontend/pages/module_process_page.dart';
 import 'package:robot_frontend/widgets/module_content_creation_view.dart';
 
 class ModuleFillingView extends StatefulWidget {
-  const ModuleFillingView({this.preselectedDrawers, super.key});
+  const ModuleFillingView({this.preselectedSubmodules, super.key});
 
-  final List<DrawerAddress>? preselectedDrawers;
+  final List<SubmoduleAddress>? preselectedSubmodules;
 
   @override
   State<ModuleFillingView> createState() => _ModuleFillingViewState();
 }
 
 class _ModuleFillingViewState extends State<ModuleFillingView> {
-  DrawerAddress? selectedDrawerAddress;
+  SubmoduleAddress? selectedSubmoduleAddress;
   final moduleContentController = ModuleContentController();
 
   @override
@@ -24,18 +24,20 @@ class _ModuleFillingViewState extends State<ModuleFillingView> {
     return Column(
       children: [
         Expanded(
-          child: Selector<ModuleProvider, List<RobotDrawer>>(
+          child: Selector<ModuleProvider, List<Submodule>>(
             selector: (context, provider) => provider.submodules,
             builder: (context, modules, child) {
-              if (selectedDrawerAddress == null) {
+              if (selectedSubmoduleAddress == null) {
                 return buildModulesOverview(
-                  widget.preselectedDrawers == null
+                  widget.preselectedSubmodules == null
                       ? modules
-                      : modules.where((drawer) => widget.preselectedDrawers!.any((preselectedDrawer) => preselectedDrawer == drawer.address)).toList(),
+                      : modules
+                          .where((submodule) => widget.preselectedSubmodules!.any((preselectedSubmodule) => preselectedSubmodule == submodule.address))
+                          .toList(),
                 );
               } else if (modules.isNotEmpty) {
                 final module = modules.firstWhere(
-                  (element) => element.address == selectedDrawerAddress,
+                  (element) => element.address == selectedSubmoduleAddress,
                 );
                 return buildModuleContentUpdateView(module);
               }
@@ -47,7 +49,7 @@ class _ModuleFillingViewState extends State<ModuleFillingView> {
     );
   }
 
-  Widget buildModuleContentUpdateView(RobotDrawer module) {
+  Widget buildModuleContentUpdateView(Submodule module) {
     return Padding(
       padding: const EdgeInsets.all(128),
       child: Column(
@@ -66,7 +68,7 @@ class _ModuleFillingViewState extends State<ModuleFillingView> {
               TextButton(
                 onPressed: () {
                   moduleContentController.clear();
-                  selectedDrawerAddress = null;
+                  selectedSubmoduleAddress = null;
                   setState(() {});
                 },
                 child: const Text('Abbrechen'),
@@ -77,17 +79,17 @@ class _ModuleFillingViewState extends State<ModuleFillingView> {
                     return;
                   }
                   final itemsByChange = moduleContentController.createItemsByChange();
-                  final moduleProvider = Provider.of<ModuleProvider>(context, listen: false)..isInModuleProcess = true;
-                  await moduleProvider.startModuleProcess(
-                    drawerAddress: selectedDrawerAddress!,
+                  final moduleProvider = Provider.of<ModuleProvider>(context, listen: false)..isInSubmoduleProcess = true;
+                  await moduleProvider.startSubmoduleProcess(
+                    submoduleAddress: selectedSubmoduleAddress!,
                     processName: 'fill',
                     itemsByChange: itemsByChange,
                   );
                   if (mounted) {
                     await Navigator.push(context, MaterialPageRoute<ModuleProcessPage>(builder: (context) => const ModuleProcessPage()));
                   }
-                  moduleProvider.isInModuleProcess = false;
-                  selectedDrawerAddress = null;
+                  moduleProvider.isInSubmoduleProcess = false;
+                  selectedSubmoduleAddress = null;
                   moduleContentController.clear();
                 },
                 child: const Text('Bestätigen'),
@@ -99,18 +101,18 @@ class _ModuleFillingViewState extends State<ModuleFillingView> {
     );
   }
 
-  Padding buildModulesOverview(List<RobotDrawer> modules) {
+  Padding buildModulesOverview(List<Submodule> submodules) {
     return Padding(
       padding: const EdgeInsets.all(128),
       child: ListView(
-        children: modules
+        children: submodules
             .map(
-              (drawer) => GestureDetector(
+              (submodule) => GestureDetector(
                 onTap: () {
                   setState(() {
-                    selectedDrawerAddress = drawer.address;
+                    selectedSubmoduleAddress = submodule.address;
                     moduleContentController.initialItemsByCount.clear();
-                    moduleContentController.initialItemsByCount.addAll(drawer.itemsByCount);
+                    moduleContentController.initialItemsByCount.addAll(submodule.itemsByCount);
                   });
                 },
                 child: Card(
@@ -124,10 +126,10 @@ class _ModuleFillingViewState extends State<ModuleFillingView> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         buildListTileText(
-                          '${drawer.address.moduleID}_${drawer.address.drawerID}',
+                          '${submodule.address.moduleID}_${submodule.address.submoduleID}',
                         ),
                         buildListTileText(
-                          drawer.itemsByCount.entries.map((e) => ' ${e.key}: ${e.value}').fold('', (previousValue, element) => previousValue + element),
+                          submodule.itemsByCount.entries.map((e) => ' ${e.key}: ${e.value}').fold('', (previousValue, element) => previousValue + element),
                         ),
                       ],
                     ),
