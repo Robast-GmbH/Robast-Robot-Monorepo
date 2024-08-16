@@ -16,7 +16,7 @@ class RobotModulesAPI:
             process_name = submodule_process_request.process_name
             items_by_change = submodule_process_request.items_by_change
             data = {
-                "drawer_address": {
+                "submodule_address": {
                     "robot_name": robot_name,
                     "module_id": module_id,
                     "submodule_id": submodule_id,

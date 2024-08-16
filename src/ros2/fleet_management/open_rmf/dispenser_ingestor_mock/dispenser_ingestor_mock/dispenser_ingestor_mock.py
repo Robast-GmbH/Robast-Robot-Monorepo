@@ -17,7 +17,7 @@ class DispenserIngestorMock(Node):
     def __init__(self) -> None:
         super().__init__("dispenser_ingestor_mock")
 
-        self.declare_parameter("middleware_url", "http://10.10.23.6:8003")
+        self.declare_parameter("middleware_url", "http://10.10.13.7:8003")
         middleware_url = self.get_parameter("middleware_url").value
         self.__robot_module_api = RobotModulesAPI(
             middleware_url,
@@ -71,7 +71,7 @@ class DispenserIngestorMock(Node):
             self.__robot_module_api.update_submodule_process_status(
                 robot_name=submodule_process.robot_name,
                 module_id=submodule_process.module_id,
-                drawer_id=submodule_process.submodule_id,
+                submodule_id=submodule_process.submodule_id,
             )
         )
         if submodule_process_status is not None and submodule_process_status == "idle":
