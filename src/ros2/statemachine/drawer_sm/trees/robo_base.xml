@@ -84,22 +84,62 @@
                        case_4="forward"
                        variable="{direction}">
                 <AlwaysSuccess/>
-                <PartialColorizeLED LEDs="{leds}"
-                                    blue="0"
-                                    brightness="100"
-                                    green="0"
-                                    lower_bound="27.0"
-                                    red="255"
-                                    upper_bound="50.0"
-                                    LEDs_colored="{leds}"/>
-                <PartialColorizeLED LEDs="{leds}"
-                                    blue="0"
-                                    brightness="100"
-                                    green="0"
-                                    lower_bound="27.0"
-                                    red="255"
-                                    upper_bound="50.0"
-                                    LEDs_colored="{leds}"/>
+                <Sequence>
+                  <PartialColorizeLED LEDs="{leds}"
+                                      blue="0"
+                                      brightness="100"
+                                      green="0"
+                                      lower_bound="40.0"
+                                      red="255"
+                                      upper_bound="60.0"
+                                      LEDs_colored="{leds}"/>
+                  <LEDPublisherAction drawer_address="{drawer}"
+                                      fading_time_ms="100"
+                                      led_topic="/led_cmd"
+                                      leds="{leds}"/>
+                  <Delay delay_msec="1000">
+                    <PartialColorizeLED LEDs="{leds}"
+                                        blue="0"
+                                        brightness="100"
+                                        green="255"
+                                        lower_bound="0.0"
+                                        red="0"
+                                        upper_bound="100.0"
+                                        LEDs_colored="{leds}"/>
+                  </Delay>
+                  <LEDPublisherAction drawer_address="{drawer}"
+                                      fading_time_ms="100"
+                                      led_topic="/led_cmd"
+                                      leds="{leds}"/>
+                </Sequence>
+                <Sequence>
+                  <PartialColorizeLED LEDs="{leds}"
+                                      blue="0"
+                                      brightness="100"
+                                      green="0"
+                                      lower_bound="15.0"
+                                      red="255"
+                                      upper_bound="35.0"
+                                      LEDs_colored="{leds}"/>
+                  <LEDPublisherAction drawer_address="{drawer}"
+                                      fading_time_ms="100"
+                                      led_topic="/led_cmd"
+                                      leds="{leds}"/>
+                  <Delay delay_msec="1000">
+                    <PartialColorizeLED LEDs="{leds}"
+                                        blue="0"
+                                        brightness="100"
+                                        green="255"
+                                        lower_bound="0.0"
+                                        red="0"
+                                        upper_bound="100.0"
+                                        LEDs_colored="{leds}"/>
+                  </Delay>
+                  <LEDPublisherAction drawer_address="{drawer}"
+                                      fading_time_ms="100"
+                                      led_topic="/led_cmd"
+                                      leds="{leds}"/>
+                </Sequence>
                 <AlwaysSuccess/>
               </Switch4>
             </Sequence>
