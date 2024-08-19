@@ -8,7 +8,6 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/pages/home_page.dart';
-import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
