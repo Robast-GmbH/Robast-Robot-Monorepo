@@ -47,14 +47,14 @@ ENV CYCLONEDDS_URI=/workspace/dds_configs/cyclone_DDS_config.xml
 ############################## Build ##################################
 FROM ros:humble-ros-base-jammy as build
 ARG GIT_TOKEN
-ARG GIT_BRANCH=main
 COPY --from=devel / /
 COPY . /ws/src/statemachine
 RUN apt-get update && apt-get install -y git
 
 
 WORKDIR /tmp
-RUN git clone -b $GIT_BRANCH https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+# TODO: Replace with the correct branch "main"
+RUN git clone -b dev/RE-2121-fixed https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
 RUN git clone https://github.com/BehaviorTree/BehaviorTree.CPP.git
 
 
