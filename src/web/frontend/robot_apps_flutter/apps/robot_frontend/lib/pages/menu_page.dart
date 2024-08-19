@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/provider/robot_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
-import 'package:robot_frontend/pages/module_filling_page.dart';
+import 'package:robot_frontend/pages/module_management_page.dart';
 import 'package:robot_frontend/pages/settings_page.dart';
 import 'package:robot_frontend/pages/task_creation_menu_page.dart';
 import 'package:robot_frontend/pages/tasks_overview_page.dart';
@@ -39,6 +39,7 @@ class MenuPage extends StatelessWidget {
                   child: Column(
                     children: [
                       Expanded(
+                        flex: 2,
                         child: CustomButtonView(
                           text: 'Auftrag erstellen',
                           onPressed: () => Navigator.push(
@@ -67,12 +68,13 @@ class MenuPage extends StatelessWidget {
                   child: Column(
                     children: [
                       Expanded(
+                        flex: 2,
                         child: CustomButtonView(
-                          text: 'Module befüllen',
+                          text: 'Module verwalten',
                           onPressed: () => Navigator.push(
                             context,
-                            MaterialPageRoute<ModuleFillingPage>(
-                              builder: (context) => const ModuleFillingPage(),
+                            MaterialPageRoute<ModuleManagementPage>(
+                              builder: (context) => const ModuleManagementPage(),
                             ),
                           ),
                         ),

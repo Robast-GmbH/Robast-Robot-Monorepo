@@ -75,7 +75,7 @@ class _ContentDistributionViewState extends State<ContentDistributionView> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.all(4),
+                              padding: const EdgeInsets.only(left: 8, bottom: 4),
                               child: Text(
                                 'Modul ${submodule.address.moduleID}',
                                 style: const TextStyle(fontSize: 32),
