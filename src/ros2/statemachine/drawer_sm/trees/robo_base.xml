@@ -111,6 +111,9 @@
                                       fading_time_ms="100"
                                       led_topic="/led_cmd"
                                       leds="{leds}"/>
+                  <Delay delay_msec="1000">
+                    <AlwaysSuccess/>
+                  </Delay>
                 </Sequence>
                 <Sequence>
                   <PartialColorizeLED LEDs="{leds}"
@@ -139,6 +142,9 @@
                                       fading_time_ms="100"
                                       led_topic="/led_cmd"
                                       leds="{leds}"/>
+                  <Delay delay_msec="1000">
+                    <AlwaysSuccess/>
+                  </Delay>
                 </Sequence>
                 <AlwaysSuccess/>
               </Switch4>
