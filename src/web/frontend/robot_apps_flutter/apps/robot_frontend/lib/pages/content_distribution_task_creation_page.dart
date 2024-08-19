@@ -9,7 +9,7 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
 import 'package:robot_frontend/widgets/content_distribution_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
-import 'package:robot_frontend/widgets/module_filling_view.dart';
+import 'package:robot_frontend/widgets/modules_overview.dart';
 import 'package:robot_frontend/widgets/reservation_view.dart';
 
 class ContentDistributionTaskCreationPage extends StatefulWidget {
@@ -120,8 +120,15 @@ class _ContentDistributionTaskCreationPageState extends State<ContentDistributio
                   },
                 )
               else if (currentStep == CreationSteps.fillModules)
-                ModuleFillingView(
-                  preselectedSubmodules: reservedSubmodules,
+                Selector<ModuleProvider, List<Submodule>>(
+                  selector: (context, provider) => provider.submodules,
+                  builder: (context, submodules, child) {
+                    return ModulesOverview(
+                      submodules: submodules
+                          .where((submodule) => reservedSubmodules.any((reservedSubmoduleAddress) => submodule.address == reservedSubmoduleAddress))
+                          .toList(),
+                    );
+                  },
                 )
               else if (currentStep == CreationSteps.assignTargets)
                 ContentDistributionView(

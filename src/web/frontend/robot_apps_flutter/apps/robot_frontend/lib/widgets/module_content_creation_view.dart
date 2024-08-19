@@ -25,11 +25,11 @@ class _ModuleContentCreationViewState extends State<ModuleContentCreationView> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Padding(
-          padding: EdgeInsets.only(
+        Padding(
+          padding: const EdgeInsets.only(
             left: 8,
           ),
-          child: Text('Fracht', style: TextStyle(fontSize: 28)),
+          child: Text(widget.label, style: const TextStyle(fontSize: 28)),
         ),
         Expanded(
           child: Card(
