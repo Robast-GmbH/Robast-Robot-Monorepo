@@ -41,8 +41,8 @@ namespace statemachine
     static BT::PortsList providedPorts()
     {
       return {
-          BT::InputPort<std::string>("path_topic", "topic", "empty"),
-          BT::OutputPort<std::string>("direction", "standing", "empty")};
+          BT::InputPort<std::string>("path_topic", "topic"),
+          BT::OutputPort<std::string>("direction", "standing")};
     }
 
   private:
