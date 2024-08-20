@@ -180,7 +180,7 @@ namespace nfc_bridge
     std::string nfc_key = "";
     uint32_t max_iterations = calculate_max_iterations(request->timeout_in_s);
 
-    if (read_nfc_payload(nfc_key, max_iterations))
+    if (read_nfc_code(nfc_key, max_iterations))
     {
       response->nfc_tag_id = nfc_key;
     }
