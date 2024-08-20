@@ -12,24 +12,24 @@ TEST_CASE("search_tag_req generates correct command string", "[Twn4Elatec]")
   REQUIRE(nfc_bridge::Twn4Elatec::search_tag_req(0x10) == "050010");
 }
 
-TEST_CASE("ntag_read_req generates correct command string", "[Twn4Elatec]")
+TEST_CASE("ntag_read_payload_req generates correct command string", "[Twn4Elatec]")
 {
-  REQUIRE(nfc_bridge::Twn4Elatec::ntag_read_req(0x04) == "200004");
+  REQUIRE(nfc_bridge::Twn4Elatec::ntag_read_payload_req(0x04) == "200004");
 }
 
-TEST_CASE("ntag_write_req generates correct command string", "[Twn4Elatec]")
+TEST_CASE("ntag_write_payload_req generates correct command string", "[Twn4Elatec]")
 {
-  REQUIRE(nfc_bridge::Twn4Elatec::ntag_write_req(0x04, {0x01, 0x02, 0x03, 0x04}) == "20010401020304");
+  REQUIRE(nfc_bridge::Twn4Elatec::ntag_write_payload_req(0x04, {0x01, 0x02, 0x03, 0x04}) == "20010401020304");
 }
 
-TEST_CASE("ntag_read_resp - Valid response")
+TEST_CASE("ntag_read_payload_resp - Valid response")
 {
   std::string response = "000103B691028C537091016855016E78702E";
   uint8_t result;
   std::array<uint8_t, 16> data;
   std::string nfc_key;
 
-  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::ntag_read_resp(response, result, data, nfc_key));
+  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::ntag_read_payload_resp(response, result, data, nfc_key));
 
   SECTION("Result should be parsed correctly")
   {
@@ -49,55 +49,55 @@ TEST_CASE("ntag_read_resp - Valid response")
   }
 }
 
-TEST_CASE("ntag_read_resp - Invalid response format")
+TEST_CASE("ntag_read_payload_resp - Invalid response format")
 {
   std::string response = "20ZZ";
   uint8_t result = 0;
 
-  REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::ntag_write_resp(response, result), std::invalid_argument);
+  REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::ntag_write_payload_resp(response, result), std::invalid_argument);
 }
 
-TEST_CASE("ntag_write_resp Test", "[Twn4Elatec]")
+TEST_CASE("ntag_write_payload_resp Test", "[Twn4Elatec]")
 {
   uint8_t result;
   std::string response = "0001";
 
   SECTION("Valid response")
   {
-    REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::ntag_write_resp(response, result));
+    REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::ntag_write_payload_resp(response, result));
     REQUIRE(result == 1);
   }
 
   SECTION("Invalid response length")
   {
     response = "2001FF00";
-    REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::ntag_write_resp(response, result), std::runtime_error);
+    REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::ntag_write_payload_resp(response, result), std::runtime_error);
   }
 }
 
-TEST_CASE("ntag_write_resp - Valid response")
+TEST_CASE("ntag_write_payload_resp - Valid response")
 {
   std::string response = "0001";
   uint8_t result = 0;
 
-  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::ntag_write_resp(response, result));
+  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::ntag_write_payload_resp(response, result));
   REQUIRE(result == 0x01);
 }
 
-TEST_CASE("ntag_write_resp - Invalid response length")
+TEST_CASE("ntag_write_payload_resp - Invalid response length")
 {
   std::string response = "01";
   uint8_t result = 0;
 
-  REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::ntag_write_resp(response, result), std::runtime_error);
+  REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::ntag_write_payload_resp(response, result), std::runtime_error);
 }
 
-TEST_CASE("ntag_write_resp - Invalid response format")
+TEST_CASE("ntag_write_payload_resp - Invalid response format")
 {
   std::string response = "20ZZ";
   uint8_t result = 0;
 
-  REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::ntag_write_resp(response, result), std::invalid_argument);
+  REQUIRE_THROWS_AS(nfc_bridge::Twn4Elatec::ntag_write_payload_resp(response, result), std::invalid_argument);
 }
 
 TEST_CASE("search_tag_resp - Valid response")
@@ -105,8 +105,9 @@ TEST_CASE("search_tag_resp - Valid response")
   std::string response = "0001FF123456789";
   uint8_t result;
   std::string tagType;
+  std::string tagID;
 
-  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::search_tag_resp(response, result, tagType));
+  REQUIRE_NOTHROW(nfc_bridge::Twn4Elatec::search_tag_resp(response, result, tagType, tagID));
 
   SECTION("Result should be parsed correctly")
   {
@@ -117,4 +118,18 @@ TEST_CASE("search_tag_resp - Valid response")
   {
     REQUIRE(tagType == "FF");
   }
+}
+
+TEST_CASE("TagTypeValidation returns true for valid tag types", "[Twn4Elatec]")
+{
+  REQUIRE(nfc_bridge::Twn4Elatec::TagTypeValidation("04") == true);
+  REQUIRE(nfc_bridge::Twn4Elatec::TagTypeValidation("05") == true);
+  REQUIRE(nfc_bridge::Twn4Elatec::TagTypeValidation("80") == true);
+}
+
+TEST_CASE("TagTypeValidation returns false for invalid tag types", "[Twn4Elatec]")
+{
+  REQUIRE(nfc_bridge::Twn4Elatec::TagTypeValidation("00") == false);
+  REQUIRE(nfc_bridge::Twn4Elatec::TagTypeValidation("FF") == false);
+  REQUIRE(nfc_bridge::Twn4Elatec::TagTypeValidation("AB") == false);
 }
