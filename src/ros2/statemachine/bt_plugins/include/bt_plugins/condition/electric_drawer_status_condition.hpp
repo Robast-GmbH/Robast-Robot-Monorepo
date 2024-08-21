@@ -15,7 +15,8 @@ namespace statemachine
         {
             return {
                 BT::InputPort<uint8_t>("target_value", "0"),
-                BT::InputPort<std::string>("topic", "/drawer_feedback_status")};
+                BT::InputPort<std::string>("topic", "/drawer_feedback_status"),
+                BT::InputPort<bool>("use_stallguard", "false")};
         }
         BT::NodeStatus tick() override;
 
@@ -24,6 +25,9 @@ namespace statemachine
         bool comparator(communication_interfaces::msg::ElectricalDrawerStatus last_message_, uint8_t target_value_) override;
         void callbackTopicFeedback(const communication_interfaces::msg::ElectricalDrawerStatus::SharedPtr msg) override;
         void initialize_target_value() override;
+
+    private:
+        bool _use_stallguard;
     };
 } // namespace statemachine
 

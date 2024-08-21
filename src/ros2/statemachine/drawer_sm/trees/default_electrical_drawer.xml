@@ -1,179 +1,90 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<root BTCPP_format="4"
-      main_tree_to_execute="default_electrical_drawer_tree">
+<root BTCPP_format="4" main_tree_to_execute="default_electrical_drawer_tree">
   <BehaviorTree ID="LED_Close">
     <Sequence>
-      <InitLEDVector size="18"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="155"
-                          brightness="184"
-                          green="155"
-                          lower_bound="0.0"
-                          red="0"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
+      <InitLEDVector size="18" led_vector="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}" blue="155" brightness="184" green="155" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
     </Sequence>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Closing">
     <Sequence>
-      <InitLEDVector size="18"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="155"
-                          brightness="80"
-                          green="155"
-                          lower_bound="0.0"
-                          red="0"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
+      <InitLEDVector size="18" led_vector="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}" blue="155" brightness="80" green="155" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
     </Sequence>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Default">
     <Sequence>
-      <InitLEDVector size="18"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="155"
-                          brightness="25"
-                          green="155"
-                          lower_bound="0.0"
-                          red="0"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
+      <InitLEDVector size="18" led_vector="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}" blue="155" brightness="25" green="155" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
     </Sequence>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Open">
     <Sequence>
-      <InitLEDVector size="18"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="128"
-                          brightness="184"
-                          green="128"
-                          lower_bound="0.0"
-                          red="128"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
+      <InitLEDVector size="18" led_vector="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}" blue="128" brightness="184" green="128" lower_bound="0.0" red="128" upper_bound="100.0" LEDs_colored="{leds}"/>
     </Sequence>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_Start">
     <Sequence>
-      <InitLEDVector size="18"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="105"
-                          brightness="150"
-                          green="205"
-                          lower_bound="0.0"
-                          red="0"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
+      <InitLEDVector size="18" led_vector="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}" blue="105" brightness="150" green="205" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
     </Sequence>
   </BehaviorTree>
 
   <BehaviorTree ID="LED_unlocked">
     <Sequence>
-      <InitLEDVector size="18"
-                     led_vector="{leds}"/>
-      <PartialColorizeLED LEDs="{leds}"
-                          blue="105"
-                          brightness="150"
-                          green="205"
-                          lower_bound="0.0"
-                          red="0"
-                          upper_bound="100.0"
-                          LEDs_colored="{leds}"/>
+      <InitLEDVector size="18" led_vector="{leds}"/>
+      <PartialColorizeLED LEDs="{leds}" blue="105" brightness="150" green="205" lower_bound="0.0" red="0" upper_bound="100.0" LEDs_colored="{leds}"/>
     </Sequence>
   </BehaviorTree>
 
   <BehaviorTree ID="Opening_electrical_drawer">
     <Sequence>
-      <ElectricDrawerStatusCondition target_value="251"
-                                     topic="/electrical_drawer_status"/>
-      <PublishDrawerStatus topic_name="/bt_drawer_open"
-                           status="true"
-                           drawer_address="{drawer}"/>
-      <SubTree ID="LED_Open"
-               _autoremap="true"/>
-      <LEDPublisherAction drawer_address="{drawer}"
-                          fading_time_ms="100"
-                          led_topic="/led_cmd"
-                          leds="{leds}"/>
+      <ElectricDrawerStatusCondition target_value="251" topic="/electrical_drawer_status" use_stallguard="true"/>
+      <PublishDrawerStatus topic_name="/bt_drawer_open" status="true" drawer_address="{drawer}"/>
+      <SubTree ID="LED_Open" _autoremap="true"/>
+      <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="100" led_topic="/led_cmd" leds="{leds}"/>
     </Sequence>
   </BehaviorTree>
 
   <BehaviorTree ID="default_electrical_drawer_tree">
     <BaseErrorDecorator topic="/robast_error">
       <Sequence>
-        <GetBlackboardEntry key="drawer_address"
-                            value="{drawer}"/>
-        <SubTree ID="LED_Start"
-                 _autoremap="true"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="500"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
+        <GetBlackboardEntry key="drawer_address" value="{drawer}"/>
+        <SubTree ID="LED_Start" _autoremap="true"/>
+        <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="500" led_topic="/led_cmd" leds="{leds}"/>
         <Delay delay_msec="1000">
-          <OpenDrawer drawer_address="{drawer}"
-                      drawer_open_topic="/open_drawer"/>
+          <OpenDrawer drawer_address="{drawer}" drawer_open_topic="/open_drawer"/>
         </Delay>
         <Delay delay_msec="1000">
-          <MoveElectricDrawer drawer_address="{drawer}"
-                              move_electric_drawer_topic="/electrical_drawer_task"
-                              speed="255"
-                              stall_guard_value="0"
-                              target_position="251"/>
+          <MoveElectricDrawer drawer_address="{drawer}" move_electric_drawer_topic="/electrical_drawer_task" speed="255" stall_guard_value="0" target_position="251"/>
         </Delay>
-        <SubTree ID="LED_unlocked"
-                 _autoremap="true"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="500"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
+        <SubTree ID="LED_unlocked" _autoremap="true"/>
+        <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="500" led_topic="/led_cmd" leds="{leds}"/>
         <ReactiveIfThenElse>
           <Inverter>
-            <BoolTopicCondition target_value="true"
-                                topic="/push_to_close_triggered"/>
+            <BoolTopicCondition target_value="true" topic="/push_to_close_triggered"/>
           </Inverter>
           <Sequence>
-            <SubTree ID="Opening_electrical_drawer"
-                     _autoremap="true"/>
-            <DrawerChangeStateReq drawer_address_topic="/close_drawer"
-                                  drawer_address="{drawer}"/>
-            <MoveElectricDrawer drawer_address="{drawer}"
-                                move_electric_drawer_topic="/electrical_drawer_task"
-                                speed="150"
-                                stall_guard_value="0"
-                                target_position="0"/>
+            <SubTree ID="Opening_electrical_drawer" _autoremap="true"/>
+            <DrawerChangeStateReq drawer_address_topic="/close_drawer" drawer_address="{drawer}"/>
+            <MoveElectricDrawer drawer_address="{drawer}" move_electric_drawer_topic="/electrical_drawer_task" speed="150" stall_guard_value="0" target_position="0"/>
           </Sequence>
           <AlwaysSuccess/>
         </ReactiveIfThenElse>
-        <SubTree ID="LED_Closing"
-                 _autoremap="true"/>
-        <LEDPublisherAction drawer_address="{drawer}"
-                            fading_time_ms="0"
-                            led_topic="/led_cmd"
-                            leds="{leds}"/>
-        <ElectricDrawerStatusCondition target_value="0"
-                                       topic="/electrical_drawer_status"/>
+        <SubTree ID="LED_Closing" _autoremap="true"/>
+        <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="0" led_topic="/led_cmd" leds="{leds}"/>
+        <ElectricDrawerStatusCondition target_value="0" topic="/electrical_drawer_status" use_stallguard="false"/>
         <Sequence>
-          <DrawerStatusCondition target_value="false"
-                                 topic="/drawer_is_open"/>
-          <SubTree ID="LED_Default"
-                   _autoremap="true"/>
-          <LEDPublisherAction drawer_address="{drawer}"
-                              fading_time_ms="500"
-                              led_topic="/led_cmd"
-                              leds="{leds}"/>
+          <DrawerStatusCondition target_value="false" topic="/drawer_is_open"/>
+          <SubTree ID="LED_Default" _autoremap="true"/>
+          <LEDPublisherAction drawer_address="{drawer}" fading_time_ms="500" led_topic="/led_cmd" leds="{leds}"/>
         </Sequence>
-        <PublishDrawerStatus topic_name="/bt_drawer_open"
-                             status="false"
-                             drawer_address="{drawer}"/>
+        <PublishDrawerStatus topic_name="/bt_drawer_open" status="false" drawer_address="{drawer}"/>
       </Sequence>
     </BaseErrorDecorator>
   </BehaviorTree>
@@ -181,103 +92,66 @@
   <!-- Description of Node Models (used by Groot) -->
   <TreeNodesModel>
     <Decorator ID="BaseErrorDecorator">
-      <input_port name="topic"
-                  default="/robast_error"/>
+      <input_port name="topic" default="/robast_error"/>
     </Decorator>
-    <Condition ID="BoolTopicCondition"
-               editable="true">
-      <input_port name="target_value"
-                  default="true">bool</input_port>
-      <input_port name="topic"
-                  default="/topic_name"/>
+    <Condition ID="BoolTopicCondition" editable="true">
+      <input_port name="target_value" default="true">bool</input_port>
+      <input_port name="topic" default="/topic_name"/>
     </Condition>
     <Action ID="DrawerChangeStateReq">
-      <input_port name="drawer_address_topic"
-                  default="/open_request"/>
-      <output_port name="drawer_address"
-                   default="{drawer}"/>
+      <input_port name="drawer_address_topic" default="/open_request"/>
+      <output_port name="drawer_address" default="{drawer}"/>
     </Action>
     <Condition ID="DrawerStatusCondition">
-      <input_port name="target_value"
-                  default="false"/>
-      <input_port name="topic"
-                  default="/drawer_is_open"/>
+      <input_port name="target_value" default="false"/>
+      <input_port name="topic" default="/drawer_is_open"/>
     </Condition>
     <Condition ID="ElectricDrawerStatusCondition">
-      <input_port name="target_value"
-                  default="0">uint8. wether the value should be true or false</input_port>
-      <input_port name="topic"
-                  default="/drawer_feedback_status"/>
+      <input_port name="target_value" default="0">uint8. wether the value should be true or false</input_port>
+      <input_port name="topic" default="/drawer_feedback_status"/>
+      <input_port name="use_stallguard" default="false">bool. wether to use the stallguard</input_port>
     </Condition>
     <Action ID="GetBlackboardEntry">
-      <input_port name="key"
-                  default="drawer_address">string</input_port>
-      <output_port name="value"
-                   default="{drawer}"/>
+      <input_port name="key" default="drawer_address">string</input_port>
+      <output_port name="value" default="{drawer}"/>
     </Action>
     <Action ID="InitLEDVector">
-      <input_port name="size"
-                  default="128">uint8_t</input_port>
-      <output_port name="led_vector"
-                   default="{leds}"/>
+      <input_port name="size" default="128">uint8_t</input_port>
+      <output_port name="led_vector" default="{leds}"/>
     </Action>
     <Action ID="LEDPublisherAction">
-      <input_port name="drawer_address"
-                  default="{drawer}"/>
-      <input_port name="fading_time_ms"
-                  default="0">uint8</input_port>
-      <input_port name="led_topic"
-                  default="/drawer_leds"/>
-      <input_port name="leds"
-                  default="{leds}"/>
+      <input_port name="drawer_address" default="{drawer}"/>
+      <input_port name="fading_time_ms" default="0">uint8</input_port>
+      <input_port name="led_topic" default="/drawer_leds"/>
+      <input_port name="leds" default="{leds}"/>
     </Action>
     <Action ID="MoveElectricDrawer">
-      <input_port name="drawer_address"
-                  default="{drawer}"/>
-      <input_port name="move_electric_drawer_topic"
-                  default="/move_electric_drawer"/>
-      <input_port name="speed"
-                  default="0">uint8</input_port>
-      <input_port name="stall_guard_value"
-                  default="0">uint8</input_port>
-      <input_port name="target_position"
-                  default="0">uint8</input_port>
+      <input_port name="drawer_address" default="{drawer}"/>
+      <input_port name="move_electric_drawer_topic" default="/move_electric_drawer"/>
+      <input_port name="speed" default="0">uint8</input_port>
+      <input_port name="stall_guard_value" default="0">uint8</input_port>
+      <input_port name="target_position" default="0">uint8</input_port>
     </Action>
     <Action ID="OpenDrawer">
-      <input_port name="drawer_address"
-                  default="{drawer}"/>
-      <input_port name="drawer_open_topic"
-                  default="/open_drawer"/>
+      <input_port name="drawer_address" default="{drawer}"/>
+      <input_port name="drawer_open_topic" default="/open_drawer"/>
     </Action>
     <Action ID="PartialColorizeLED">
-      <input_port name="LEDs"
-                  default="{leds}"/>
-      <input_port name="blue"
-                  default="0">uint8</input_port>
-      <input_port name="brightness"
-                  default="0">uint8 to determine the brightness</input_port>
-      <input_port name="green"
-                  default="0">uint8</input_port>
-      <input_port name="lower_bound"
-                  default="0.0">double</input_port>
-      <input_port name="red"
-                  default="0">uint8</input_port>
-      <input_port name="upper_bound"
-                  default="0.0">double</input_port>
-      <output_port name="LEDs_colored"
-                   default="{leds}"/>
+      <input_port name="LEDs" default="{leds}"/>
+      <input_port name="blue" default="0">uint8</input_port>
+      <input_port name="brightness" default="0">uint8 to determine the brightness</input_port>
+      <input_port name="green" default="0">uint8</input_port>
+      <input_port name="lower_bound" default="0.0">double</input_port>
+      <input_port name="red" default="0">uint8</input_port>
+      <input_port name="upper_bound" default="0.0">double</input_port>
+      <output_port name="LEDs_colored" default="{leds}"/>
     </Action>
-    <Action ID="PublishDrawerStatus"
-            editable="true">
-      <input_port name="topic_name"
-                  default="/bt_drawer_open"/>
-      <input_port name="status"
-                  default="false"/>
-      <input_port name="drawer_address"
-                  default="{drawer}"/>
+    <Action ID="PublishDrawerStatus" editable="true">
+      <input_port name="topic_name" default="/bt_drawer_open"/>
+      <input_port name="status" default="false"/>
+      <input_port name="drawer_address" default="{drawer}"/>
     </Action>
-    <Control ID="ReactiveIfThenElse"
-             editable="true"/>
+    <Control ID="ReactiveIfThenElse" editable="true"/>
   </TreeNodesModel>
 
 </root>

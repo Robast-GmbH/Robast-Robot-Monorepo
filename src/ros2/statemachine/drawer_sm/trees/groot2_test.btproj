@@ -36,6 +36,7 @@
         <Condition ID="ElectricDrawerStatusCondition">
             <input_port name="target_value" default="0">uint8. wether the value should be true or false</input_port>
             <input_port name="topic" default="/drawer_feedback_status"/>
+            <input_port name="use_stallguard" default="false"/>
         </Condition>
         <Action ID="GetBlackboardEntry">
             <input_port name="key" default="drawer_address">string</input_port>
