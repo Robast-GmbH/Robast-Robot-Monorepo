@@ -53,8 +53,7 @@ RUN apt-get update && apt-get install -y git
 
 
 WORKDIR /tmp
-# TODO: Replace with the correct branch "main"
-RUN git clone -b dev/RE-2121-fixed https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
+RUN git clone -b main https://$GIT_TOKEN@github.com/Robast-GmbH/Monorepo.git 
 RUN git clone https://github.com/BehaviorTree/BehaviorTree.CPP.git
 
 
