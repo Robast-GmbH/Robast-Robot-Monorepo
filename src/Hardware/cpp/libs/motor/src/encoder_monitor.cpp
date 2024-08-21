@@ -41,6 +41,7 @@ namespace motor
         return false;
       }
     }
+    return false;
   }
 
   bool EncoderMonitor::is_position_update_pending(const uint32_t current_timestamp_ms,
