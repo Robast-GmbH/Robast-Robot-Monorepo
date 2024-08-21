@@ -24,6 +24,7 @@ constexpr bool IS_ELECTRICAL_DRAWER = false;
 constexpr uint32_t MODULE_ID = 1;
 constexpr uint8_t LOCK_ID = 0;
 constexpr bool USE_ENCODER = false;
+constexpr bool IS_SHAFT_DIRECTION_INVERTED = false;
 constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_open;
 constexpr uint8_t NUM_OF_LEDS = 18;   // 18 LEDs at the old drawer and 21 LEDs at the new drawer
 
@@ -245,6 +246,7 @@ void setup()
 
   config_manager =
     std::make_unique<utils::ConfigManager>(drawer_config, encoder_config, motor_config, motor_monitor_config);
+  config_manager->set_config(module_config::motor::IS_SHAFT_DIRECTION_INVERTED, IS_SHAFT_DIRECTION_INVERTED ? 1 : 0);
 
   if (IS_ELECTRICAL_DRAWER)
   {
