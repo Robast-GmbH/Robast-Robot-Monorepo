@@ -16,7 +16,7 @@ jobs:
       uses: actions/checkout@v4
            
     - name: Execute tests 
-      working-directory: src/Hardware/cpp/libs
+      working-directory: src/Hardware/platformio_libs
       run: >
           cd $(pwd)/utils &&
           cmake -S . -B build -DBUILD_TESTING=ON &&

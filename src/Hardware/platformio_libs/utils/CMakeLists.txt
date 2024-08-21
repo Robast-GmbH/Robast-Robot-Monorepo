@@ -18,7 +18,7 @@ endif()
 # Find dependencies. No idea if this is the right way to do it, feel free to tell me a better way
 set(motor_dir ${CMAKE_SOURCE_DIR}/../motor)
 set(drawer_dir ${CMAKE_SOURCE_DIR}/../drawer)
-set(module_config_dir ${CMAKE_SOURCE_DIR}/../../../../../libs/module_config)
+set(module_config_dir ${CMAKE_SOURCE_DIR}/../../cpp/libs/module_config)
 include_directories(include)
 include_directories(${motor_dir}/include)
 include_directories(${drawer_dir}/include)

@@ -20,10 +20,10 @@
 #endif
 
 // These are the very basic top level configurations for the drawer controller you need to set.
-constexpr bool IS_ELECTRICAL_DRAWER = false;
-constexpr uint32_t MODULE_ID = 1;
+constexpr bool IS_ELECTRICAL_DRAWER = true;
+constexpr uint32_t MODULE_ID = 2;
 constexpr uint8_t LOCK_ID = 0;
-constexpr bool USE_ENCODER = false;
+constexpr bool USE_ENCODER = true;
 constexpr bool IS_SHAFT_DIRECTION_INVERTED = false;
 constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_open;
 constexpr uint8_t NUM_OF_LEDS = 18;   // 18 LEDs at the old drawer and 21 LEDs at the new drawer
