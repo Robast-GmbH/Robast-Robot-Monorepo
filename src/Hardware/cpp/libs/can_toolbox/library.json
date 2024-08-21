@@ -19,5 +19,5 @@
     "license": "MIT",
     "frameworks": "*",
     "platforms": "*",
-    "headers": ["can_controller.hpp", "can_msg_queue.hpp", "can_utils.hpp"]
+    "headers": ["can_controller.hpp", "can_controller_mcp2515.hpp", "can_msg_queue.hpp", "can_utils.hpp"]
   }

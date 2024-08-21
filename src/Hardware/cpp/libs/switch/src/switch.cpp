@@ -13,7 +13,7 @@ namespace switch_lib
         _type{type},
         _new_reading_weight{new_reading_weight}
   {
-    _gpio_wrapper->set_pin_mode(_pin_id, true);
+    _gpio_wrapper->set_pin_mode(_pin_id, interfaces::gpio::IS_INPUT);
   }
 
   bool Switch::is_switch_pressed()

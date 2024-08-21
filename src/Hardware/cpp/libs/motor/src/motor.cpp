@@ -26,8 +26,8 @@ namespace stepper_motor
                                                                 _STALL_GUARD_READER_WEIGHT_NEW_READINGS)},
         _current_stall_guard_value{_STALL_DEFAULT_VALUE}
   {
-    _gpio_wrapper->set_pin_mode(_stepper_enn_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
-    _gpio_wrapper->set_pin_mode(_stepper_stdby_tmc2209_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
+    _gpio_wrapper->set_pin_mode(_stepper_enn_tmc2209_pin_id, interfaces::gpio::IS_OUTPUT);
+    _gpio_wrapper->set_pin_mode(_stepper_stdby_tmc2209_pin_id, interfaces::gpio::IS_OUTPUT);
   }
 
   void Motor::init()

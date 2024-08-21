@@ -22,9 +22,9 @@ namespace lock
     // It is important to set this to low before configuring the pin mode, because the default output state is high
     set_lock_output_low();
 
-    _gpio_wrapper->set_pin_mode(_power_open_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
-    _gpio_wrapper->set_pin_mode(_power_close_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
-    _gpio_wrapper->set_pin_mode(_sensor_lock_pin_id, _gpio_wrapper->get_gpio_input_pin_mode());
+    _gpio_wrapper->set_pin_mode(_power_open_pin_id, interfaces::gpio::IS_OUTPUT);
+    _gpio_wrapper->set_pin_mode(_power_close_pin_id, interfaces::gpio::IS_OUTPUT);
+    _gpio_wrapper->set_pin_mode(_sensor_lock_pin_id, interfaces::gpio::IS_INPUT);
 
     _lock_state_previous_step = LockState::locked;
     set_expected_lock_state_current_step(LockState::locked);

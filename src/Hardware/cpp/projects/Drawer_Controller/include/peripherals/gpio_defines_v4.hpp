@@ -1,15 +1,15 @@
-#ifndef DRAWER_CONTROLLER_GPIO_DEFINES_HPP
-#define DRAWER_CONTROLLER_GPIO_DEFINES_HPP
+#ifndef PERIPHERALS_GPIO_DEFINES_V4_HPP
+#define PERIPHERALS_GPIO_DEFINES_V4_HPP
 
 #include <PCA95x5.h>
 
 #include "gpio/gpio_info.hpp"
 
-namespace drawer_controller
+namespace gpio_defines
 {
   using GpioInfo = gpio::GpioInfo;
 
-  using port_info = std::tuple<uint8_t, PCA95x5::Port::Port>;
+  using slave_address_by_port = std::tuple<uint8_t, PCA95x5::Port::Port>;
 
   namespace slave_address
   {
@@ -58,7 +58,7 @@ namespace drawer_controller
     {slave_address::PORT_EXPANDER_1, std::make_shared<PCA9535>()},
   };
 
-  const std::unordered_map<uint8_t, port_info> pin_mapping_id_to_port = {
+  const std::unordered_map<uint8_t, slave_address_by_port> pin_mapping_id_to_slave_address_by_port = {
     {pin_id::STEPPER_1_ENN_TMC2209, {slave_address::PORT_EXPANDER_1, PCA95x5::Port::P00}},
     {pin_id::LOCK_1_OPEN_CONTROL, {slave_address::PORT_EXPANDER_1, PCA95x5::Port::P01}},
     {pin_id::LOCK_1_CLOSE_CONTROL, {slave_address::PORT_EXPANDER_1, PCA95x5::Port::P02}},
@@ -75,6 +75,6 @@ namespace drawer_controller
     {pin_id::STEPPER_1_SPREAD, {slave_address::PORT_EXPANDER_1, PCA95x5::Port::P17}},
   };
 
-}   // namespace drawer_controller
+}   // namespace gpio_defines
 
-#endif   // DRAWER_CONTROLLER_GPIO_DEFINES_HPP
+#endif   // PERIPHERALS_GPIO_DEFINES_V4_HPP

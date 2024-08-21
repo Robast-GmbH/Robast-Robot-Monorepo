@@ -1,11 +1,11 @@
-#ifndef PARTIAL_DRAWER_CONTROLLER_GPIO_DEFINES_HPP
-#define PARTIAL_DRAWER_CONTROLLER_GPIO_DEFINES_HPP
+#ifndef PERIPHERALS_GPIO_DEFINES_HPP
+#define PERIPHERALS_GPIO_DEFINES_HPP
 
 #include <PCA95x5.h>
 
 #include "gpio/gpio_info.hpp"
 
-namespace partial_drawer_controller
+namespace peripherals
 {
   using GpioInfo = gpio::GpioInfo;
 
@@ -99,7 +99,7 @@ namespace partial_drawer_controller
     {slave_address::PORT_EXPANDER_3, std::make_shared<PCA9535>()},
   };
 
-  const std::unordered_map<uint8_t, port_info> pin_mapping_id_to_port = {
+  const std::unordered_map<uint8_t, port_info> pin_mapping_id_to_slave_address_by_port = {
     {pin_id::STEPPER_1_STDBY_TMC2209, {slave_address::PORT_EXPANDER_1, PCA95x5::Port::P00}},
     {pin_id::SENSE_INPUT_LID_3_CLOSED, {slave_address::PORT_EXPANDER_1, PCA95x5::Port::P01}},
     {pin_id::LOCK_2_OPEN_CONTROL, {slave_address::PORT_EXPANDER_1, PCA95x5::Port::P02}},
@@ -141,6 +141,6 @@ namespace partial_drawer_controller
     {pin_id::LOCK_5_OPEN_CONTROL, {slave_address::PORT_EXPANDER_3, PCA95x5::Port::P17}},
   };
 
-}   // namespace partial_drawer_controller
+}   // namespace peripherals
 
-#endif   // PARTIAL_DRAWER_CONTROLLER_GPIO_DEFINES_HPP
+#endif   // PERIPHERALS_GPIO_DEFINES_HPP

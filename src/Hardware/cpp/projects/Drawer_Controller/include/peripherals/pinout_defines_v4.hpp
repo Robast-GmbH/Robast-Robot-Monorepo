@@ -1,8 +1,9 @@
-#ifndef DRAWER_CONTROLLER_PINOUT_DEFINES_HPP
-#define DRAWER_CONTROLLER_PINOUT_DEFINES_HPP
+#ifndef PERIPHERALS_PINOUT_DEFINES_V4_HPP
+#define PERIPHERALS_PINOUT_DEFINES_V4_HPP
 
 namespace peripherals
 {
+  // All of these constants needs to known at compile time
   namespace pinout
   {
     constexpr gpio_num_t TWAI_RX_PIN = GPIO_NUM_4;
@@ -24,4 +25,4 @@ namespace peripherals
 
 }   // namespace peripherals
 
-#endif /* DRAWER_CONTROLLER_PINOUT_DEFINES_HPP */
+#endif /* PERIPHERALS_PINOUT_DEFINES_V4_HPP */

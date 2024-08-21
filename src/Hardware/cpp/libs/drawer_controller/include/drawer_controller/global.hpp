@@ -3,22 +3,19 @@
 
 #include <memory>
 
-#include "can_toolbox/can_controller.hpp"
 #include "debug/debug.hpp"
 #include "drawer/electrical_drawer.hpp"
 #include "drawer/manual_drawer.hpp"
-#include "gpio/gpio_wrapper_pca9535.hpp"
 #include "interfaces/i_gpio_wrapper.hpp"
 #include "led/led_strip.hpp"
 #include "motor/motor_monitor_config.hpp"
-#include "peripherals/gpio_defines.hpp"
 #include "switch/switch.hpp"
 #include "utils/can_message_converter.hpp"
 #include "utils/config_manager.hpp"
 #include "utils/queue.hpp"
 
 constexpr float SWITCH_PRESSED_THRESHOLD = 0.9;
-constexpr float SWITCH_WEIGHT_NEW_VALUES = 0.2;
+constexpr float SWITCH_WEIGHT_NEW_VALUES = 0.25;
 
 constexpr uint8_t STEPPER_MOTOR_1_ADDRESS = 0x00;
 
@@ -26,6 +23,8 @@ TaskHandle_t Task1;
 TaskHandle_t Task2;
 
 SemaphoreHandle_t can_queue_mutex = NULL;
+
+constexpr uint8_t MINIMAL_LOOP_TIME_IN_MS = 1;
 
 std::shared_ptr<robast_can_msgs::CanDb> can_db;
 
@@ -46,30 +45,7 @@ std::unique_ptr<utils::CanMessageConverter> can_message_converter;
 
 std::unique_ptr<utils::ConfigManager> config_manager;
 
-std::unique_ptr<can_toolbox::CanController> can_controller;
-
 // shared resource, so we need a mutex for this
 std::unique_ptr<utils::Queue<robast_can_msgs::CanMessage>> can_msg_queue;
-
-void receive_can_msg_task_loop(void* pvParameters)
-{
-  for (;;)
-  {
-    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
-    if (received_message.has_value())
-    {
-      if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
-      {
-        debug_println("[Main]: Received CAN message and adding it to the queue.");
-        can_msg_queue->enqueue(received_message.value());
-        xSemaphoreGive(can_queue_mutex);
-      }
-      else
-      {
-        Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
-      }
-    }
-  }
-}
 
 #endif   // DRAWER_CONTROLLER_GLOBAL_HPP

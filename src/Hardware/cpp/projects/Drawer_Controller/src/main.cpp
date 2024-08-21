@@ -3,24 +3,52 @@
 #include "drawer_controller/global.hpp"
 #include "led/led_strip.hpp"
 
+// VERY IMPORTANT: Set the hardware version of the drawer controller pcb here (currently 3 and 4 are supported):
+#define HARDWARE_VERSION 3
+#if HARDWARE_VERSION == 3
+#include "can_toolbox/can_controller_mcp2515.hpp"
+#include "gpio/gpio_wrapper_pca9554.hpp"
+#include "peripherals/gpio_defines_v3.hpp"
+#include "peripherals/pinout_defines_v3.hpp"
+#elif HARDWARE_VERSION == 4
+#include "can_toolbox/can_controller.hpp"
+#include "gpio/gpio_wrapper_pca9535.hpp"
+#include "peripherals/gpio_defines_v4.hpp"
+#include "peripherals/pinout_defines_v4.hpp"
+#else
+#error "Unsupported HARDWARE_VERSION. Please define HARDWARE_VERSION as 3 or 4."
+#endif
+
 // These are the very basic top level configurations for the drawer controller you need to set.
 constexpr bool IS_ELECTRICAL_DRAWER = false;
 constexpr uint32_t MODULE_ID = 1;
 constexpr uint8_t LOCK_ID = 0;
 constexpr bool USE_ENCODER = false;
 constexpr switch_lib::Switch::SwitchType ENDSTOP_SWITCH_TYPE = switch_lib::Switch::normally_open;
-constexpr uint8_t NUM_OF_LEDS = 21;
+constexpr uint8_t NUM_OF_LEDS = 18;   // 18 LEDs at the old drawer and 21 LEDs at the new drawer
 
 std::unique_ptr<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>> led_strip;
 
+// Initialize can_controller based on HARDWARE_VERSION
+#if HARDWARE_VERSION == 3
+std::unique_ptr<can_toolbox::CanController<peripherals::pinout::SPI_MISO,
+                                           peripherals::pinout::SPI_MOSI,
+                                           peripherals::pinout::SPI_CLK,
+                                           peripherals::pinout::SPI_CS,
+                                           peripherals::pinout::MCP2515_INT>>
+  can_controller;
+#elif HARDWARE_VERSION == 4
+std::unique_ptr<can_toolbox::CanController> can_controller;
+#endif
+
 stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
-  .stepper_enn_tmc2209_pin_id = drawer_controller::pin_id::STEPPER_1_ENN_TMC2209,
-  .stepper_stdby_tmc2209_pin_id = drawer_controller::pin_id::STEPPER_1_STDBY_TMC2209,
-  .stepper_spread_pin_id = drawer_controller::pin_id::STEPPER_1_SPREAD,
-  .stepper_dir_pin_id = drawer_controller::pin_id::STEPPER_1_DIR,
-  .stepper_diag_pin_id = drawer_controller::pin_id::STEPPER_1_DIAG,
-  .stepper_index_pin_id = drawer_controller::pin_id::STEPPER_1_INDEX,
-  .stepper_step_pin_id = drawer_controller::pin_id::STEPPER_1_STEP};
+  .stepper_enn_tmc2209_pin_id = gpio_defines::pin_id::STEPPER_1_ENN_TMC2209,
+  .stepper_stdby_tmc2209_pin_id = gpio_defines::pin_id::STEPPER_1_STDBY_TMC2209,
+  .stepper_spread_pin_id = gpio_defines::pin_id::STEPPER_1_SPREAD,
+  .stepper_dir_pin_id = gpio_defines::pin_id::STEPPER_1_DIR,
+  .stepper_diag_pin_id = gpio_defines::pin_id::STEPPER_1_DIAG,
+  .stepper_index_pin_id = gpio_defines::pin_id::STEPPER_1_INDEX,
+  .stepper_step_pin_id = gpio_defines::pin_id::STEPPER_1_STEP};
 
 /**********************************************************************************************************************
  * The program flow is organized as follows:
@@ -30,7 +58,57 @@ stepper_motor::StepperPinIdConfig stepper_1_pin_id_config = {
  *    - process_can_msgs_task_loop() is responsible for processing the CAN messages from the queue
  **********************************************************************************************************************/
 
-using namespace drawer_controller;
+void receive_can_msg_task_loop(void* pvParameters)
+{
+  uint8_t minimal_loop_time_in_ms = MINIMAL_LOOP_TIME_IN_MS;
+  uint8_t num_of_led_changes = 0;
+
+  for (;;)
+  {
+    TickType_t current_tick_count = xTaskGetTickCount();
+
+    std::optional<robast_can_msgs::CanMessage> received_message = can_controller->handle_receiving_can_msg();
+    if (received_message.has_value())
+    {
+      if (xSemaphoreTake(can_queue_mutex, pdMS_TO_TICKS(500)) == pdTRUE)
+      {
+        debug_println("[Main]: Received CAN message and adding it to the queue.");
+        can_msg_queue->enqueue(received_message.value());
+        xSemaphoreGive(can_queue_mutex);
+      }
+      else
+      {
+        Serial.println("[Main]: Error: Could not take the mutex. This should not occur.");
+      }
+
+      if (received_message.value().get_id() == robast_can_msgs::can_id::LED_HEADER)
+      {
+        // If a new LED header is received, we set the minimal loop time to 0 to handle the LED changes faster
+        minimal_loop_time_in_ms = 0;
+        num_of_led_changes = received_message.value()
+                               .get_can_signals()
+                               .at(robast_can_msgs::can_signal::id::led_header::NUM_OF_LEDS)
+                               .get_data();
+      }
+    }
+
+    unsigned long loop_time = pdTICKS_TO_MS(xTaskGetTickCount() - current_tick_count);
+
+    if (loop_time < minimal_loop_time_in_ms)
+    {
+      // Task yielding to give IDLE task a chance to run and reset watchdog timer
+      vTaskDelay(pdMS_TO_TICKS(minimal_loop_time_in_ms - pdTICKS_TO_MS(loop_time)));
+    }
+    if (num_of_led_changes > 0)
+    {
+      num_of_led_changes--;
+    }
+    if (num_of_led_changes == 0)
+    {
+      minimal_loop_time_in_ms = MINIMAL_LOOP_TIME_IN_MS;
+    }
+  }
+}
 
 void process_can_msgs_task_loop(void* pvParameters)
 {
@@ -115,11 +193,20 @@ void setup()
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(1);
   wire_port_expander->begin(peripherals::i2c::I2C_SDA, peripherals::i2c::I2C_SCL);
 
-  gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(
-    wire_port_expander, slave_address_to_port_expander, pin_mapping_id_to_gpio_info, pin_mapping_id_to_port);
+#if HARDWARE_VERSION == 3
+  gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9554>(wire_port_expander,
+                                                            gpio_defines::slave_address_to_port_expander,
+                                                            gpio_defines::pin_mapping_id_to_gpio_info,
+                                                            gpio_defines::pin_mapping_id_to_slave_address_by_register);
+#elif HARDWARE_VERSION == 4
+  gpio_wrapper = std::make_shared<gpio::GpioWrapperPca9535>(wire_port_expander,
+                                                            gpio_defines::slave_address_to_port_expander,
+                                                            gpio_defines::pin_mapping_id_to_gpio_info,
+                                                            gpio_defines::pin_mapping_id_to_slave_address_by_port);
+#endif
 
   endstop_switch = std::make_shared<switch_lib::Switch>(gpio_wrapper,
-                                                        pin_id::SENSE_INPUT_DRAWER_1_CLOSED,
+                                                        gpio_defines::pin_id::SENSE_INPUT_DRAWER_1_CLOSED,
                                                         SWITCH_PRESSED_THRESHOLD,
                                                         ENDSTOP_SWITCH_TYPE,
                                                         SWITCH_WEIGHT_NEW_VALUES);
@@ -129,16 +216,25 @@ void setup()
 
   led_strip = std::make_unique<led::LedStrip<peripherals::pinout::LED_PIXEL_PIN, NUM_OF_LEDS>>();
 
+#if HARDWARE_VERSION == 3
+  can_controller = std::make_unique<can_toolbox::CanController<peripherals::pinout::SPI_MISO,
+                                                               peripherals::pinout::SPI_MOSI,
+                                                               peripherals::pinout::SPI_CLK,
+                                                               peripherals::pinout::SPI_CS,
+                                                               peripherals::pinout::MCP2515_INT>>(
+    MODULE_ID, can_db, gpio_wrapper, gpio_defines::pin_id::OE_TXB0104);
+#elif HARDWARE_VERSION == 4
   can_controller = std::make_unique<can_toolbox::CanController>(
     MODULE_ID, can_db, peripherals::pinout::TWAI_TX_PIN, peripherals::pinout::TWAI_RX_PIN);
+#endif
 
   can_queue_mutex = xSemaphoreCreateMutex();
   can_msg_queue = std::make_unique<utils::Queue<robast_can_msgs::CanMessage>>();
 
   drawer_lock = std::make_shared<lock::ElectricalDrawerLock>(gpio_wrapper,
-                                                             pin_id::LOCK_1_OPEN_CONTROL,
-                                                             pin_id::LOCK_1_CLOSE_CONTROL,
-                                                             pin_id::LOCK_1_SENSE,
+                                                             gpio_defines::pin_id::LOCK_1_OPEN_CONTROL,
+                                                             gpio_defines::pin_id::LOCK_1_CLOSE_CONTROL,
+                                                             gpio_defines::pin_id::LOCK_1_SENSE,
                                                              SWITCH_PRESSED_THRESHOLD,
                                                              SWITCH_WEIGHT_NEW_VALUES);
 
@@ -152,22 +248,22 @@ void setup()
 
   if (IS_ELECTRICAL_DRAWER)
   {
-    i_drawer =
-      std::make_shared<drawer::ElectricalDrawer>(MODULE_ID,
-                                                 LOCK_ID,
-                                                 can_db,
-                                                 gpio_wrapper,
-                                                 stepper_1_pin_id_config,
-                                                 USE_ENCODER,
-                                                 gpio_wrapper->get_gpio_num_for_pin_id(pin_id::STEPPER_1_ENCODER_A),
-                                                 gpio_wrapper->get_gpio_num_for_pin_id(pin_id::STEPPER_1_ENCODER_B),
-                                                 STEPPER_MOTOR_1_ADDRESS,
-                                                 motor_config,
-                                                 endstop_switch,
-                                                 drawer_lock,
-                                                 drawer_config,
-                                                 encoder_config,
-                                                 motor_monitor_config);
+    i_drawer = std::make_shared<drawer::ElectricalDrawer>(
+      MODULE_ID,
+      LOCK_ID,
+      can_db,
+      gpio_wrapper,
+      stepper_1_pin_id_config,
+      USE_ENCODER,
+      gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_A),
+      gpio_wrapper->get_gpio_num_for_pin_id(gpio_defines::pin_id::STEPPER_1_ENCODER_B),
+      STEPPER_MOTOR_1_ADDRESS,
+      motor_config,
+      endstop_switch,
+      drawer_lock,
+      drawer_config,
+      encoder_config,
+      motor_monitor_config);
   }
   else
   {

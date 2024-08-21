@@ -14,8 +14,8 @@ namespace partial_drawer_controller
     // It is important to set this to low before configuring the pin mode, because the default output state is high
     set_lock_output_low();
 
-    _gpio_wrapper->set_pin_mode(_power_open_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
-    _gpio_wrapper->set_pin_mode(_power_close_pin_id, _gpio_wrapper->get_gpio_output_pin_mode());
+    _gpio_wrapper->set_pin_mode(_power_open_pin_id, interfaces::gpio::IS_OUTPUT);
+    _gpio_wrapper->set_pin_mode(_power_close_pin_id, interfaces::gpio::IS_OUTPUT);
 
     // on startup we assume the lock was open in the previous step to make sure the
     // lock will be closed when the set the lock to closed in the current step
