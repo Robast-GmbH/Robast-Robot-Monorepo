@@ -40,6 +40,8 @@ namespace can_toolbox
 
     static constexpr uint32_t _QUARTZ_FREQUENCY = 8 * 1000 * 1000;   // 8 MHz
 
+    static constexpr uint16_t _RECEIVE_BUFFER_SIZE = 150;
+
     uint64_t _rx_msg_id;
     uint8_t _rx_msg_dlc = 0;
     uint8_t _rx_data_buf[8];
@@ -78,6 +80,8 @@ namespace can_toolbox
     SPI.begin(spi_clk, spi_miso, spi_mosi, spi_cs);
 
     ACAN2515Settings settings2515(_QUARTZ_FREQUENCY, _CAN_BIT_RATE);
+
+    settings2515.mReceiveBufferSize = _RECEIVE_BUFFER_SIZE;
 
     const uint32_t errorCode2515 = _acan_2515->begin(settings2515,
                                                      []
