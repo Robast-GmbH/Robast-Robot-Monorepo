@@ -3,7 +3,10 @@ import 'package:flutter/material.dart';
 class ClockView extends StatefulWidget {
   const ClockView({
     super.key,
+    this.fontSize = 32,
   });
+
+  final double fontSize;
 
   @override
   State<ClockView> createState() => _ClockViewState();
@@ -29,9 +32,9 @@ class _ClockViewState extends State<ClockView> {
         return Text(
           "${date.hour}:${date.minute < 10 ? "0${date.minute}" : date.minute}",
           textAlign: TextAlign.center,
-          style: const TextStyle(
+          style: TextStyle(
             color: Colors.white,
-            fontSize: 32,
+            fontSize: widget.fontSize,
           ),
         );
       },

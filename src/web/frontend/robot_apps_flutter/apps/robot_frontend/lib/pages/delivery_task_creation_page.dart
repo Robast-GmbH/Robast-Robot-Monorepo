@@ -9,6 +9,7 @@ import 'package:robot_frontend/widgets/custom_button_view.dart';
 import 'package:robot_frontend/widgets/custom_scaffold.dart';
 import 'package:robot_frontend/widgets/location_selector.dart';
 import 'package:robot_frontend/widgets/module_content_creation_view.dart';
+import 'package:robot_frontend/widgets/rounded_button.dart';
 import 'package:robot_frontend/widgets/user_groups_selector.dart';
 import 'package:robot_frontend/widgets/user_selector.dart';
 
@@ -147,8 +148,9 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
             const SizedBox(
               height: 16,
             ),
-            CustomButtonView(
-              padding: const EdgeInsets.all(16),
+            RoundedButton(
+              padding: EdgeInsets.symmetric(horizontal: 4),
+              color: Colors.white.withOpacity(0.5),
               onPressed: () async {
                 await Provider.of<TaskProvider>(context, listen: false).createDeliveryTaskRequest(
                   requiredSubmoduleType: requiredSubmoduleType,
@@ -168,7 +170,13 @@ class _DeliveryTaskCreationPageState extends State<DeliveryTaskCreationPage> {
                   Navigator.of(context).pop();
                 }
               },
-              text: 'Auftrag erstellen',
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 8),
+                child: Text(
+                  'Auftrag erstellen',
+                  style: TextStyle(fontSize: 40, color: Colors.white),
+                ),
+              ),
             ),
           ],
         ),

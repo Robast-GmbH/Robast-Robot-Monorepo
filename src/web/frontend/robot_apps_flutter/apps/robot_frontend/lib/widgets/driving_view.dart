@@ -106,64 +106,16 @@ class _DrivingViewState extends State<DrivingView> {
                       ),
                     ),
                     const SizedBox(height: 64),
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        ShaderMask(
-                          blendMode: BlendMode.srcOut,
-                          child: const Text(
-                            'Bitte berühren',
-                            style: TextStyle(
-                              letterSpacing: 1.5,
-                              color: Color(0xFF755FE3),
-                              fontSize: 72,
-                              fontWeight: FontWeight.w300,
-                            ),
-                          ),
-                          shaderCallback: (bounds) => const LinearGradient(colors: [Colors.white], stops: [0.0]).createShader(bounds),
+                    Container(
+                      decoration: BoxDecoration(borderRadius: BorderRadius.circular(64), color: Colors.white),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 92),
+                        child: Text(
+                          'Bitte berühren',
+                          style: TextStyle(color: Color.fromARGB(255, 99, 201, 226), fontSize: 66),
                         ),
-                        Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.horizontal(left: Radius.circular(64)),
-                              ),
-                              width: 96,
-                              height: 85,
-                            ),
-                            Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                const Text(
-                                  'Bitte berühren',
-                                  style: TextStyle(
-                                    letterSpacing: 1.9,
-                                    color: Colors.transparent,
-                                    fontSize: 58,
-                                    fontWeight: FontWeight.w300,
-                                  ),
-                                ),
-                                Container(
-                                  color: Colors.white,
-                                  width: 480,
-                                  height: 2,
-                                ),
-                              ],
-                            ),
-                            Container(
-                              decoration: const BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.horizontal(right: Radius.circular(64)),
-                              ),
-                              width: 96,
-                              height: 85,
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    )
                   ],
                 ),
               ),

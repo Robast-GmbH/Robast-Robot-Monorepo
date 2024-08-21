@@ -6,13 +6,14 @@ class BackgroundView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Color(0xFF00DB9E), Color(0xFF8F44F2)],
-          ),
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
+          colors: [Color.fromARGB(255, 99, 201, 226), Color.fromARGB(255, 37, 173, 207)],
         ),
-        child: child,);
+      ),
+      child: child,
+    );
   }
 }
