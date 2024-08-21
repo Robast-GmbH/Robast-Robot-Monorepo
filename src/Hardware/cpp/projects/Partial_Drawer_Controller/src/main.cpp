@@ -189,7 +189,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 
 void setup()
 {
-  debug_setup(115200);
+  Serial.begin(115200);
   debug_println("[Main]: Start...");
 
   // TODO: In the hardware design of v1 the pins of SDA and SCL are mixed up unfortunately for the port expander

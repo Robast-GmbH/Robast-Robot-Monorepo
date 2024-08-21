@@ -188,7 +188,7 @@ void process_can_msgs_task_loop(void* pvParameters)
 
 void setup()
 {
-  debug_setup(115200);
+  Serial.begin(115200);
   debug_println("[Main]: Start...");
 
   std::shared_ptr<TwoWire> wire_port_expander = std::make_shared<TwoWire>(1);
