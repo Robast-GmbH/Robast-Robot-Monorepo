@@ -3,7 +3,7 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
-      - src/Hardware/cpp/**
+      - src/Hardware/platformio_libs/**
       - .github/workflows/run_hardware_node_tests.yml
        
 jobs:
