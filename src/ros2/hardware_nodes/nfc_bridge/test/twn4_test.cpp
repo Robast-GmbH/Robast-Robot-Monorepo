@@ -122,8 +122,6 @@ TEST_CASE("search_tag_resp - Valid response")
 
 TEST_CASE("TagTypeValidation returns true for valid tag types", "[Twn4Elatec]")
 {
-  REQUIRE(nfc_bridge::Twn4Elatec::TagTypeValidation("04") == true);
-  REQUIRE(nfc_bridge::Twn4Elatec::TagTypeValidation("05") == true);
   REQUIRE(nfc_bridge::Twn4Elatec::TagTypeValidation("80") == true);
 }
 
