@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 
 class ModuleDetailsDialog extends StatelessWidget {
-  const ModuleDetailsDialog({super.key, required this.moduleID, required this.submodules});
+  const ModuleDetailsDialog({required this.moduleID, required this.submodules, super.key});
 
   final int moduleID;
   final List<Submodule> submodules;
@@ -13,7 +13,7 @@ class ModuleDetailsDialog extends StatelessWidget {
       backgroundColor: Colors.white,
       title: Text(
         'Modul $moduleID',
-        style: TextStyle(fontSize: 32),
+        style: const TextStyle(fontSize: 32),
       ),
       content: FractionallySizedBox(
         heightFactor: 0.4,
@@ -30,25 +30,24 @@ class ModuleDetailsDialog extends StatelessWidget {
                     children: [
                       Text(
                         'Submodul ${submodule.address.submoduleID}',
-                        style: TextStyle(fontSize: 28, color: Colors.white),
+                        style: const TextStyle(fontSize: 28, color: Colors.white),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
                           Text(
                             'Status: ${submodule.isReserved() ? 'reserviert' : 'frei'}',
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Text(
                             'Typ: ${submodule.size}',
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
-                          SizedBox(width: 16),
+                          const SizedBox(width: 16),
                           Text(
                             'Variante: ${submodule.variant.toString().split('.').last}',
-                            style: TextStyle(color: Colors.white),
+                            style: const TextStyle(color: Colors.white),
                           ),
                         ],
                       ),
@@ -64,7 +63,7 @@ class ModuleDetailsDialog extends StatelessWidget {
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text(
+          child: const Text(
             'Schließen',
             style: TextStyle(color: Colors.black87, fontSize: 24),
           ),

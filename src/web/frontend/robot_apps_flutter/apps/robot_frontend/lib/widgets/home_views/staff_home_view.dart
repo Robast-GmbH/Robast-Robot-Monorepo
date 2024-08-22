@@ -1,9 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:middleware_api_utilities/middleware_api_utilities.dart';
-import 'package:provider/provider.dart';
-import 'package:robot_frontend/data/svgs.dart';
-import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/pages/content_distribution_task_creation_page.dart';
 import 'package:robot_frontend/pages/delivery_task_creation_page.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
@@ -23,17 +18,17 @@ class StaffHomeView extends StatelessWidget {
           flex: 2,
           child: Column(
             children: [
-              Expanded(
+              const Expanded(
                 child: WelcomeView(),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Expanded(
                 child: Row(
                   children: [
-                    Expanded(
+                    const Expanded(
                       child: WeatherView(),
                     ),
-                    SizedBox(
+                    const SizedBox(
                       width: 16,
                     ),
                     Expanded(
@@ -43,55 +38,52 @@ class StaffHomeView extends StatelessWidget {
                       content: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Expanded(
                             child: RoundedButton(
                               onPressed: () {
-                                Navigator.push(context, MaterialPageRoute<DeliveryTaskCreationPage>(builder: (context) => DeliveryTaskCreationPage()));
+                                Navigator.push(context, MaterialPageRoute<DeliveryTaskCreationPage>(builder: (context) => const DeliveryTaskCreationPage()));
                               },
-                              child: Text(
-                                "Abholen und Abliefern",
+                              child: const Text(
+                                'Abholen und Abliefern',
                                 style: TextStyle(fontSize: 32, color: Colors.white70),
                               ),
-                              color: Colors.black.withOpacity(0.1),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Expanded(
                             child: RoundedButton(
                               onPressed: () {
                                 Navigator.push(context,
-                                    MaterialPageRoute<ContentDistributionTaskCreationPage>(builder: (context) => ContentDistributionTaskCreationPage()));
+                                    MaterialPageRoute<ContentDistributionTaskCreationPage>(builder: (context) => const ContentDistributionTaskCreationPage()),);
                               },
-                              child: Text(
-                                "Beladen und Abliefern",
+                              child: const Text(
+                                'Beladen und Abliefern',
                                 style: TextStyle(fontSize: 32, color: Colors.white70),
                               ),
-                              color: Colors.black.withOpacity(0.1),
                             ),
                           ),
-                          SizedBox(height: 16),
+                          const SizedBox(height: 16),
                           Expanded(
                             child: RoundedButton(
                               onPressed: () {},
-                              child: Text(
-                                "Benutzerdefiniert",
+                              child: const Text(
+                                'Benutzerdefiniert',
                                 style: TextStyle(fontSize: 32, color: Colors.white70),
                               ),
-                              color: Colors.black.withOpacity(0.1),
                             ),
-                          )
+                          ),
                         ],
                       ),
-                    )),
+                    ),),
                   ],
                 ),
-              )
+              ),
             ],
           ),
         ),
-        SizedBox(width: 16),
-        Expanded(
+        const SizedBox(width: 16),
+        const Expanded(
           child: Column(
             children: [
               Expanded(

@@ -108,14 +108,14 @@ class _DrivingViewState extends State<DrivingView> {
                     const SizedBox(height: 64),
                     Container(
                       decoration: BoxDecoration(borderRadius: BorderRadius.circular(64), color: Colors.white),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 92),
+                      child: const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8, horizontal: 92),
                         child: Text(
                           'Bitte berühren',
                           style: TextStyle(color: Color.fromARGB(255, 99, 201, 226), fontSize: 66),
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),

@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
 import 'package:provider/provider.dart';
@@ -45,8 +44,12 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white.withOpacity(0.5),
+    return Container(
+      margin: const EdgeInsets.all(8),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.1),
+        borderRadius: BorderRadius.circular(16),
+      ),
       child: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
@@ -87,7 +90,10 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                       ),
                     );
                   },
-                  icon: const Icon(Icons.save_alt),
+                  icon: const Icon(
+                    Icons.save_alt,
+                    color: Colors.white70,
+                  ),
                 ),
               ],
             ),
@@ -107,6 +113,7 @@ class _UserManagementListTileState extends State<UserManagementListTile> {
                 ),
                 PopupMenuButton(
                   iconSize: 32,
+                  iconColor: Colors.white70,
                   itemBuilder: (BuildContext context) => <PopupMenuEntry<int>>[
                     PopupMenuItem(
                       child: ListTile(

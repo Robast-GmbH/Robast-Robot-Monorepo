@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class RoundedButton extends StatelessWidget {
   const RoundedButton({
-    super.key,
-    required this.onPressed,
-    required this.color,
-    required this.child,
+    required this.onPressed, required this.child, super.key,
+    this.color,
     this.padding = EdgeInsets.zero,
   });
-  final Color color;
+  final Color? color;
   final Widget child;
   final VoidCallback onPressed;
   final EdgeInsets padding;
@@ -18,10 +17,10 @@ class RoundedButton extends StatelessWidget {
         onTap: onPressed,
         child: Padding(
           padding: padding,
-          child: Container(
-            decoration: BoxDecoration(borderRadius: BorderRadius.circular(16), color: color),
+          child: RoundedContainer(
+            color: color,
             child: Center(child: child),
           ),
-        ));
+        ),);
   }
 }

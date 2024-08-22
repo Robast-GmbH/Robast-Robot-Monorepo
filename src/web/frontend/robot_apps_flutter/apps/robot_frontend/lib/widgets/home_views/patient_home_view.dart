@@ -12,12 +12,12 @@ class PatientHomeView extends StatelessWidget {
         Expanded(
           flex: 2,
           child: CustomButtonView(
-            text: "Hallo Nutzer:in,",
-            content: Text('mein Name ist Rosalina.', style: const TextStyle(color: Colors.white70, fontSize: 24)),
+            text: 'Hallo Nutzer:in,',
+            content: const Text('mein Name ist Rosalina.', style: TextStyle(color: Colors.white70, fontSize: 24)),
             onPressed: () {},
           ),
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             children: [
@@ -25,29 +25,29 @@ class PatientHomeView extends StatelessWidget {
                   child: CustomButtonView(
                 text: 'Lieferplan',
                 onPressed: () {},
-                content: Column(
+                content: const Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: Text('Essen:', style: const TextStyle(color: Colors.white70, fontSize: 24))),
-                        Expanded(child: Text('Lasagne', textAlign: TextAlign.start, style: const TextStyle(color: Colors.white70, fontSize: 24))),
-                        Expanded(child: Text('17:00 Uhr', textAlign: TextAlign.end, style: const TextStyle(color: Colors.white70, fontSize: 24))),
+                        Expanded(child: Text('Essen:', style: TextStyle(color: Colors.white70, fontSize: 24))),
+                        Expanded(child: Text('Lasagne', textAlign: TextAlign.start, style: TextStyle(color: Colors.white70, fontSize: 24))),
+                        Expanded(child: Text('17:00 Uhr', textAlign: TextAlign.end, style: TextStyle(color: Colors.white70, fontSize: 24))),
                       ],
                     ),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Expanded(child: Text('Medikament:', style: const TextStyle(color: Colors.white70, fontSize: 24))),
-                        Expanded(child: Text('Aspirin', textAlign: TextAlign.start, style: const TextStyle(color: Colors.white70, fontSize: 24))),
-                        Expanded(child: Text('19:00 Uhr', textAlign: TextAlign.end, style: const TextStyle(color: Colors.white70, fontSize: 24))),
+                        Expanded(child: Text('Medikament:', style: TextStyle(color: Colors.white70, fontSize: 24))),
+                        Expanded(child: Text('Aspirin', textAlign: TextAlign.start, style: TextStyle(color: Colors.white70, fontSize: 24))),
+                        Expanded(child: Text('19:00 Uhr', textAlign: TextAlign.end, style: TextStyle(color: Colors.white70, fontSize: 24))),
                       ],
                     ),
                   ],
                 ),
-              )),
-              SizedBox(height: 16),
+              ),),
+              const SizedBox(height: 16),
               Expanded(
                   child: CustomButtonView(
                 text: 'Aktivitäten',
@@ -55,45 +55,45 @@ class PatientHomeView extends StatelessWidget {
                 content: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Expanded(
                       child: RoundedButton(
                         onPressed: () {},
-                        child: Text(
-                          "Essen bestellen",
+                        color: Colors.black.withOpacity(0.1),
+                        child: const Text(
+                          'Essen bestellen',
                           style: TextStyle(fontSize: 32, color: Colors.white70),
                         ),
-                        color: Colors.black.withOpacity(0.1),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Expanded(
                       child: RoundedButton(
                         onPressed: () {},
-                        child: Text(
-                          "Getränke bestellen",
+                        color: Colors.black.withOpacity(0.1),
+                        child: const Text(
+                          'Getränke bestellen',
                           style: TextStyle(fontSize: 32, color: Colors.white70),
                         ),
-                        color: Colors.black.withOpacity(0.1),
                       ),
                     ),
-                    SizedBox(height: 16),
+                    const SizedBox(height: 16),
                     Expanded(
                       child: RoundedButton(
                         onPressed: () {},
-                        child: Text(
-                          "Pflegepersonal rufen",
-                          style: TextStyle(fontSize: 32, color: Colors.white70),
-                        ),
                         color: Colors.red.withOpacity(0.4),
+                        child: const Text(
+                          'Pflegepersonal rufen',
+                          style: TextStyle(fontSize: 32, color: Colors.white70),
+                        ),
                       ),
-                    )
+                    ),
                   ],
                 ),
-              )),
+              ),),
             ],
           ),
-        )
+        ),
       ],
     );
   }

@@ -5,14 +5,14 @@ import 'package:robot_frontend/models/provider/module_provider.dart';
 import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/titled_view.dart';
 
-class SubmodulesSetupPage extends StatefulWidget {
-  const SubmodulesSetupPage({super.key});
+class ModulesSetupPage extends StatefulWidget {
+  const ModulesSetupPage({super.key});
 
   @override
-  State<SubmodulesSetupPage> createState() => _SubmodulesSetupPageState();
+  State<ModulesSetupPage> createState() => _ModulesSetupPageState();
 }
 
-class _SubmodulesSetupPageState extends State<SubmodulesSetupPage> {
+class _ModulesSetupPageState extends State<ModulesSetupPage> {
   final List<bool> slotOccupancy = List.generate(8, (index) => false);
   final List<bool> selectedSlots = List.generate(8, (index) => false);
   final controller = TextEditingController();
@@ -51,7 +51,7 @@ class _SubmodulesSetupPageState extends State<SubmodulesSetupPage> {
       body: BackgroundView(
         child: TitledView(
           showBackButton: true,
-          title: 'Submodules Setup',
+          title: 'Modul Setup',
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

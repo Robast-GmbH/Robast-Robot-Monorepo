@@ -54,14 +54,14 @@ class CustomButtonView extends StatelessWidget {
                               fontWeight: FontWeight.w400,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Expanded(child: content),
                         ],
                       ),
                       Align(
                         alignment: Alignment.bottomRight,
                         child: trailing,
-                      )
+                      ),
                     ],
                   ),
                 ),

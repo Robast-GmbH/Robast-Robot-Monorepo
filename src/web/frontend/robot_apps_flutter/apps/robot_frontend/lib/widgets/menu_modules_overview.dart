@@ -10,7 +10,7 @@ class MenuModulesOverview extends StatelessWidget {
   const MenuModulesOverview({super.key});
 
   String getModuleStatus(List<Submodule> submodules) {
-    int reservedCount = 0;
+    var reservedCount = 0;
     for (final submodule in submodules) {
       if (submodule.isReserved()) {
         reservedCount++;
@@ -49,14 +49,23 @@ class MenuModulesOverview extends StatelessWidget {
                         flex: moduleIDsBySubmodules[moduleID]!.first.size,
                         child: Column(
                           children: [
-                            SizedBox(height: 16),
+                            const SizedBox(height: 16),
                             Expanded(
                               child: RoundedButton(
+                                onPressed: () {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) => ModuleDetailsDialog(
+                                            moduleID: moduleID,
+                                            submodules: moduleIDsBySubmodules[moduleID]!,
+                                          ),);
+                                },
+                                color: Colors.black.withOpacity(0.1),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      'Modul ${moduleID}',
+                                      'Modul $moduleID',
                                       style: const TextStyle(
                                         fontSize: 32,
                                         color: Colors.white70,
@@ -68,21 +77,12 @@ class MenuModulesOverview extends StatelessWidget {
                                     ),
                                   ],
                                 ),
-                                onPressed: () {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) => ModuleDetailsDialog(
-                                            moduleID: moduleID,
-                                            submodules: moduleIDsBySubmodules[moduleID]!,
-                                          ));
-                                },
-                                color: Colors.black.withOpacity(0.1),
                               ),
                             ),
                           ],
                         ),
-                      ))
-                  .toList()
+                      ),)
+                  ,
             ],
           );
         },

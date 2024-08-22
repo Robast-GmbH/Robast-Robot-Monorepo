@@ -14,9 +14,9 @@ class WeatherView extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             buildWeatherInfo(title: 'Mi.', icon: Icons.sunny, highestTemperature: 24, lowestTemperature: 16),
-            SizedBox(width: 32),
+            const SizedBox(width: 32),
             buildWeatherInfo(title: 'Do.', icon: Icons.sunny, highestTemperature: 22, lowestTemperature: 13),
-            SizedBox(width: 32),
+            const SizedBox(width: 32),
             buildWeatherInfo(title: 'Fr.', icon: Icons.cloud, highestTemperature: 19, lowestTemperature: 11),
           ],
         ),
@@ -30,13 +30,13 @@ class WeatherView extends StatelessWidget {
       children: [
         Text(
           title,
-          style: TextStyle(color: Colors.white70, fontSize: 32),
+          style: const TextStyle(color: Colors.white70, fontSize: 32),
         ),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Icon(icon, size: 100),
-        SizedBox(
+        const SizedBox(
           height: 8,
         ),
         Row(
@@ -44,17 +44,17 @@ class WeatherView extends StatelessWidget {
           children: [
             Text(
               '$highestTemperature°',
-              style: TextStyle(color: Colors.white70, fontSize: 32),
+              style: const TextStyle(color: Colors.white70, fontSize: 32),
             ),
-            SizedBox(
+            const SizedBox(
               width: 16,
             ),
             Text(
               '$lowestTemperature°',
-              style: TextStyle(color: Colors.white38, fontSize: 32),
+              style: const TextStyle(color: Colors.white38, fontSize: 32),
             ),
           ],
-        )
+        ),
       ],
     );
   }

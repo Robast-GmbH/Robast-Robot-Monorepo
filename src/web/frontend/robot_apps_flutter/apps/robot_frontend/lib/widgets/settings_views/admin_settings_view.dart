@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:robot_frontend/pages/config_page.dart';
+import 'package:robot_frontend/pages/modules_setup_page.dart';
 import 'package:robot_frontend/pages/more_settings_page.dart';
-import 'package:robot_frontend/pages/submodule_setup_page.dart';
 import 'package:robot_frontend/pages/user_management_page.dart';
 import 'package:robot_frontend/widgets/custom_button_view.dart';
 
@@ -17,18 +17,18 @@ class AdminSettingsView extends StatelessWidget {
             children: [
               Expanded(
                 child: CustomButtonView(
-                  text: 'Schubladen Setup',
+                  text: 'Modul Setup',
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute<SubmodulesSetupPage>(
-                        builder: (context) => const SubmodulesSetupPage(),
+                      MaterialPageRoute<ModulesSetupPage>(
+                        builder: (context) => const ModulesSetupPage(),
                       ),
                     );
                   },
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Expanded(
                 child: CustomButtonView(
                   text: 'Netzwerk Setup',
@@ -45,7 +45,7 @@ class AdminSettingsView extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(width: 16),
+        const SizedBox(width: 16),
         Expanded(
           child: Column(
             children: [
@@ -60,7 +60,7 @@ class AdminSettingsView extends StatelessWidget {
                   ),
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Expanded(
                 child: CustomButtonView(
                   text: 'Weitere Einstellungen',

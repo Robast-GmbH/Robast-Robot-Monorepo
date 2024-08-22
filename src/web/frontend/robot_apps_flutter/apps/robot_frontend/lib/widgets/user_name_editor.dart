@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:robot_frontend/models/controller/user_name_controller.dart';
 import 'package:robot_frontend/models/provider/user_provider.dart';
+import 'package:robot_frontend/widgets/custom_dropdown_button.dart';
+import 'package:robot_frontend/widgets/rounded_container.dart';
 
 class UserNameEditor extends StatefulWidget {
   const UserNameEditor({
@@ -28,29 +30,24 @@ class _UserNameEditorState extends State<UserNameEditor> {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      color: Colors.white.withOpacity(0.4),
+    return RoundedContainer(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 16),
         child: Row(
           children: [
+            const Text(
+              'Name',
+              style: TextStyle(fontSize: 24, color: Colors.white70),
+            ),
+            const SizedBox(
+              width: 16,
+            ),
             Expanded(
               flex: 2,
-              child: DropdownButton<String>(
-                isExpanded: true,
+              child: CustomDropdownButton(
                 value: widget.controller.title,
-                underline: const SizedBox(),
                 onChanged: (value) => setState(() => widget.controller.title = value ?? ''),
-                items: Provider.of<UserProvider>(context, listen: false)
-                    .availableTitles
-                    .map(
-                      (title) => DropdownMenuItem<String>(
-                        value: title,
-                        alignment: Alignment.center,
-                        child: Text(title, style: const TextStyle(fontSize: 24)),
-                      ),
-                    )
-                    .toList(),
+                items: Provider.of<UserProvider>(context, listen: false).availableTitles.toList(),
               ),
             ),
             const SizedBox(
@@ -61,7 +58,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
               child: TextField(
                 controller: firstNameController,
                 onChanged: (value) => widget.controller.firstName = value,
-                style: const TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 24, color: Colors.white70),
               ),
             ),
             const SizedBox(
@@ -72,7 +69,7 @@ class _UserNameEditorState extends State<UserNameEditor> {
               child: TextField(
                 controller: lastNameController,
                 onChanged: (value) => widget.controller.lastName = value,
-                style: const TextStyle(fontSize: 24),
+                style: const TextStyle(fontSize: 24, color: Colors.white70),
               ),
             ),
           ],

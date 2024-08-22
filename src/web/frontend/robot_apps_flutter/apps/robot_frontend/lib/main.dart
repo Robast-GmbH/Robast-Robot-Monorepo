@@ -54,6 +54,19 @@ class RobotFrontend extends StatelessWidget {
       scrollBehavior: MyCustomScrollBehavior(),
       theme: ThemeData.dark(useMaterial3: true).copyWith(
         textTheme: GoogleFonts.montserratTextTheme(),
+        textSelectionTheme: const TextSelectionThemeData(cursorColor: Colors.white70),
+        inputDecorationTheme: const InputDecorationTheme(
+          enabledBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.white38,
+            ),
+          ),
+          focusedBorder: UnderlineInputBorder(
+            borderSide: BorderSide(
+              color: Colors.white70,
+            ),
+          ),
+        ),
       ),
       home: const ConfigPage(
         autoClose: true,

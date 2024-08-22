@@ -9,8 +9,8 @@ class WelcomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CustomButtonView(
-      text: "Hallo Nutzer:in,",
-      content: Text('mein Name ist Rosalina.', style: const TextStyle(color: Colors.white70, fontSize: 24)),
+      text: 'Hallo Nutzer:in,',
+      content: const Text('mein Name ist Rosalina.', style: TextStyle(color: Colors.white70, fontSize: 24)),
       onPressed: () {},
       trailing: Padding(
         padding: const EdgeInsets.all(16),

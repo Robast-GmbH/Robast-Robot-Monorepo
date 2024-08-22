@@ -1,4 +1,3 @@
-import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:middleware_api_utilities/middleware_api_utilities.dart';
@@ -10,6 +9,7 @@ import 'package:robot_frontend/widgets/background_view.dart';
 import 'package:robot_frontend/widgets/clock_view.dart';
 import 'package:robot_frontend/widgets/home_views/patient_home_view.dart';
 import 'package:robot_frontend/widgets/home_views/staff_home_view.dart';
+import 'package:robot_frontend/widgets/info_view.dart';
 
 import 'package:robot_frontend/widgets/robot_map_view.dart';
 import 'package:robot_frontend/widgets/settings_views/admin_settings_view.dart';
@@ -28,21 +28,25 @@ class _MenuPageState extends State<MenuPage> {
 
   final sidebarMenuPoints = [
     SidebarMenuPoint(title: 'Home', icon: Icons.home, userGroupWidgets: {
-      'ADMIN': () => StaffHomeView(),
-      'STAFF': () => StaffHomeView(),
-      'PATIENT': () => PatientHomeView(),
-    }),
+      'ADMIN': StaffHomeView.new,
+      'STAFF': StaffHomeView.new,
+      'PATIENT': PatientHomeView.new,
+    },),
     SidebarMenuPoint(title: 'Karte', icon: Icons.map, userGroupWidgets: {
-      'ADMIN': () => RobotMapView(),
-      'STAFF': () => RobotMapView(),
-      'PATIENT': () => RobotMapView(),
-    }),
-    // SidebarMenuPoint(title: 'Infos', icon: Icons.info),
+      'ADMIN': RobotMapView.new,
+      'STAFF': RobotMapView.new,
+      'PATIENT': RobotMapView.new,
+    },),
+    SidebarMenuPoint(title: 'Infos', icon: Icons.info_outline, userGroupWidgets: {
+      'ADMIN': InfoView.new,
+      'STAFF': InfoView.new,
+      'PATIENT': InfoView.new,
+    },),
     SidebarMenuPoint(title: 'Einstellungen', icon: Icons.settings, userGroupWidgets: {
-      'ADMIN': () => AdminSettingsView(),
-      'STAFF': () => RobotMapView(),
-      'PATIENT': () => RobotMapView(),
-    }),
+      'ADMIN': AdminSettingsView.new,
+      'STAFF': RobotMapView.new,
+      'PATIENT': RobotMapView.new,
+    },),
   ];
 
   @override
@@ -59,7 +63,7 @@ class _MenuPageState extends State<MenuPage> {
           future: loadCurrentUserFuture,
           builder: (context, snapshot) {
             if (snapshot.connectionState != ConnectionState.done) {
-              return SizedBox.expand(child: Center(child: const CircularProgressIndicator()));
+              return const SizedBox.expand(child: Center(child: CircularProgressIndicator()));
             }
             final user = snapshot.data;
             return Row(
@@ -80,12 +84,11 @@ class _MenuPageState extends State<MenuPage> {
                       Container(
                         child: Stack(
                           children: [
-                            Padding(
-                              padding: const EdgeInsets.only(top: 12),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 12),
                               child: Align(
-                                alignment: Alignment.center,
                                 child: ClockView(
-                                  fontSize: 32,
+                                  
                                 ),
                               ),
                             ),
@@ -96,7 +99,7 @@ class _MenuPageState extends State<MenuPage> {
                                   padding: const EdgeInsets.only(left: 16),
                                   child: Text(
                                     sidebarMenuPoints[selectedMainMenuIndex].title,
-                                    style: TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w400),
+                                    style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.w400),
                                   ),
                                 ),
                                 InkWell(
@@ -109,8 +112,8 @@ class _MenuPageState extends State<MenuPage> {
                                     padding: const EdgeInsets.only(bottom: 16),
                                     child: Container(
                                       decoration: BoxDecoration(color: Colors.black.withOpacity(0.5), borderRadius: BorderRadius.circular(16)),
-                                      child: Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 8),
+                                      child: const Padding(
+                                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 8),
                                         child: Row(
                                           children: [
                                             Text(
@@ -148,10 +151,10 @@ class _MenuPageState extends State<MenuPage> {
                           child: Padding(
                         padding: const EdgeInsets.only(top: 16),
                         child: sidebarMenuPoints[selectedMainMenuIndex].userGroupWidgets[user!.userGroups.last]!(),
-                      )),
+                      ),),
                     ],
                   ),
-                )),
+                ),),
               ],
             );
           },

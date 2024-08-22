@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 
 class SidebarMenuPoint {
-  final String title;
-  final IconData icon;
-  final Map<String, Widget Function()> userGroupWidgets;
 
   SidebarMenuPoint({
     required this.title,
     required this.icon,
     required this.userGroupWidgets,
   });
+  final String title;
+  final IconData icon;
+  final Map<String, Widget Function()> userGroupWidgets;
 
   Widget getWidgetForUserGroup(String userGroup) {
     if (userGroupWidgets.containsKey(userGroup)) {
